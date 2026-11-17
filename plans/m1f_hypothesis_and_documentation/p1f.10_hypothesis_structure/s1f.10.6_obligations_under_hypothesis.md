@@ -14,7 +14,7 @@ Q-M1e.11 is recorded as ruled. **The stage is done**, but for the gate the main 
 **Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
 *what happens to an obligation derived under a hypothesis*, ruled 2026-11-16, and the register row
 **`W26/oblig-derived-activator`**, `fixed` that day by this stage, `open` and reviewed `deferred` until then
-([`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml)).
+([`corpus/wrong_answers.toml`](../../wrong_answers/register.toml)).
 **Was:** *obligations derived under a hypothesis, the review's `Q6`*: a probe of the walk's tree, whose rung
 mode could flip at a node. The tree and its guard were deleted on 2026-11-03. The question was never about the
 tree; M1e2's S1e2.2.25 restated it over R and banked the witness, and this stage starts there.

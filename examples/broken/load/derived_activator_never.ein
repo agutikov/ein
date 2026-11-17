@@ -1,6 +1,6 @@
 ;;; A derived activator, where no run derives it: `derived_activator.ein`
-;;; without `(item (a b))`, the witness of register row
-;;; `W59/derived-activator-never`. The loader refuses it with the same line
+;;; without `(item (a b))`, the witness of regression
+;;; `derived-activator-never`. The loader refuses it with the same line
 ;;; as its twin.
 ;;;
 ;;; No fact or candidate puts a fact in `item`, so no run derives an

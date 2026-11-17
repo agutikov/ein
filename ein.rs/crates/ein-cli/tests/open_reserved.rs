@@ -369,8 +369,8 @@ fn open_is_refused_wherever_it_is_not_the_verdict() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's twenty-four witnesses, W70 to W72, each read from its file,
-/// as `wrong_answers.rs` reads one command's run of each.
+/// The regressions' twenty-four witnesses of `open` written as a name, each
+/// read from its file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-open-witnesses");

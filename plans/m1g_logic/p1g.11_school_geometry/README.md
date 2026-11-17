@@ -244,7 +244,7 @@ survey, as S1f.8.1 was to re-take them.
   answered by a program of this phase** at its close: shown needed, shown not needed, or not reached, with the
   program. (Added 2026-11-13 with the user's note; it asks for evidence and builds nothing.)
 - **The repo's discipline:** a wrong answer found in the engine is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before it is fixed; every other engine
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml) before it is fixed; every other engine
   finding is a row of [`findings.md`](findings.md) with a ruling, a fix or an owner at the phase's close (the
   user's ruling of 2026-11-11: a phase keeps what it finds, and nothing goes to F25); every claim on a page
   carries its command, its date or the test that pins it; what ships passes the gates it joins (a corpus entry

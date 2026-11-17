@@ -1,7 +1,7 @@
 ;;; An hrule's parameter its `(solve :hrules …)` activator binds to `eq` heads
 ;;; a premise of one argument, so `ein saturate` answered where `ein solve`
-;;; stopped — **W60**, register row `W60/eq-arity-hrule`
-;;; (`corpus/wrong_answers.toml`).
+;;; stopped — **W60**, regression `eq-arity-hrule`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -27,7 +27,7 @@
 ;;;
 ;;; The loader refuses the program: every command that loads it exits 1 with
 ;;; one line, naming `h`, `?R`, the form and the solve form (`ein test`: 2),
-;;; in either build. The register's `now` is that refusal; the section above
+;;; in either build. The regression's `now` is that refusal; the section above
 ;;; is the record of the answer it replaced.
 
 (relation p Node :why "{?1} is a p")

@@ -1,5 +1,5 @@
 ;;; `open` written as a type in a relation's signature loads, as a type —
-;;; **W71**, register row `W71/signature-type`.
+;;; **W71**, regression `signature-type`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

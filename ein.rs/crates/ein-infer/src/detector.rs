@@ -72,7 +72,7 @@
 //!
 //! - `ein-infer/tests/region.rs::fact_grain_never_calls_a_violated_cube_monotone`
 //!   holds a *Monotone* verdict to no cube violation on every corpus file and
-//!   register witness within the oracle's limit, and on the random programs
+//!   regression witness within the oracle's limit, and on the random programs
 //!   `ein-cli/tests/region_dump.rs` draws;
 //! - `ein-infer/tests/detector.rs::a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`
 //!   builds every node of every monotone corpus cube with `n ≤ 10` by fork, by

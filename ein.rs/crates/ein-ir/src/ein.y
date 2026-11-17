@@ -194,7 +194,7 @@ Negated -> b::Id:
   | "(" "eq" Term Term ")" { b::list(p, b::name(p, $lexer, $2), vec![$3, $4]) }
   ;
 // `eq` and `neq` compare two values: a name, a variable, or a fact, which is
-// a value (Q-M1e2.26, W24/form-in-guard).
+// a value (Q-M1e2.26, form-in-guard).
 Guard -> b::Id:
     "(" "eq" Term Term ")" { b::list(p, b::name(p, $lexer, $2), vec![$3, $4]) }
   | "(" "neq" Term Term ")" { b::named(p, "neq", vec![$3, $4]) }

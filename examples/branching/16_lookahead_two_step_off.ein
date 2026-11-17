@@ -2,7 +2,7 @@
 ;;;
 ;;; 15_lookahead_two_step_on.ein and 16_lookahead_two_step_off.ein are the
 ;;; same program, byte for byte outside their comments, and the witnesses of
-;;; register rows W1/branching-15 and W1/branching-16: a maximal alive
+;;; regressions branching-15 and branching-16: a maximal alive
 ;;; commitment that an answer fails to list.
 ;;;
 ;;; A refutation that takes two firings is as final as one that takes one:

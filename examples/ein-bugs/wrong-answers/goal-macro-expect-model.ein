@@ -1,6 +1,6 @@
 ;;; A macro called in a query's `:goal` is not expanded, so the goal has no row
-;;; and the claim that it has none holds — **W77**, register row
-;;; `W77/goal-macro-expect-model`.
+;;; and the claim that it has none holds — **W77**, regression
+;;; `goal-macro-expect-model`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

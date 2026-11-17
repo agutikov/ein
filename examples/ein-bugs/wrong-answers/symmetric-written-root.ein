@@ -1,5 +1,5 @@
-;;; The control of `symmetric-derived-root.ein` — **W98**, register row
-;;; `W98/derived-at-root`'s control (`corpus/wrong_answers.toml`).
+;;; The control of `symmetric-derived-root.ein` — **W98**, regression
+;;; `derived-at-root`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the mark written as a fact, `(__symmetric__ near)`,
 ;;; and not derived by a rule. Nothing else differs. Root's fixpoint holds

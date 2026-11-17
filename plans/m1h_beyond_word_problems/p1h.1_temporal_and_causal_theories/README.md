@@ -181,7 +181,7 @@ Against other phases and milestones, stated and not resolved:
 - **The banked problems answer as they did** on every commit of the phase, but for `before.ein` if the user
   rules that its claim moves.
 - **The repo's discipline:** a wrong answer of the engine is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` before its fix; every other
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` before its fix; every other
   finding is a row of this phase's `findings.md`, shown; every number on a page carries its command and date;
   `./run_tests.sh` is green at every stage boundary that changed a tracked file outside `plans/`.
 

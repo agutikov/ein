@@ -16,7 +16,7 @@
 //!    commitment for commitment, by the cube
 //!    ([`ein_infer::region::compute`], `ein oracle`'s library) and by a bare
 //!    describe ([`ein_infer::explore::run`]). An invariance, so it does not
-//!    rest on a number: the register's witness and its control are one of the
+//!    rest on a number: the regression's witness and its control are one of the
 //!    pairs, read from their files.
 //! 2. **A dunder written as a value is no object**
 //!    ([`a_dunder_written_as_a_value_is_no_object`]): the program that hands
@@ -181,7 +181,7 @@ const NEAR: &str = "\
 fn pairs() -> Vec<(&'static str, Program, Program)> {
     vec![
         (
-            "the register's witness and its control",
+            "the regression's witness and its control",
             file("examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"),
             file("examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"),
         ),
@@ -268,7 +268,7 @@ fn the_shipped_closing_rule_leaves_no_dunder_to_propose() {
 
 /// A dunder written as a value, as `std.algebra`'s `(imply1 functional
 /// __closed__)` writes one: the rule `lift` is handed the dunder and derives
-/// `(__closed__ thing)`. The register's fourth witness.
+/// `(__closed__ thing)`. The regressions' fourth witness.
 const AS_VALUE: &str = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein";
 
 /// **A dunder a program writes as a value is no object either.** It is a

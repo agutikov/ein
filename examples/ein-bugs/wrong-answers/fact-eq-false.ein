@@ -1,5 +1,5 @@
 ;;; A written `eq` fact is stored, not checked against its definition — **W50**,
-;;; register row `W50/fact-eq-false` (`corpus/wrong_answers.toml`) (Q-M1e2.26:
+;;; regression `fact-eq-false` (`corpus/regressions.toml`) (Q-M1e2.26:
 ;;; `eq` and `neq` are relations whose facts are fixed by name identity,
 ;;; computed and never stored, and no fact, rule or commitment changes them; a
 ;;; rule may conclude a false one, which is a contradiction).

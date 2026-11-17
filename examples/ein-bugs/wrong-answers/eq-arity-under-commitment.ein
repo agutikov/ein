@@ -1,7 +1,7 @@
 ;;; A relation parameter a derived activator can bind to `eq` heads a premise
 ;;; of one argument, and only a commitment derives it, so `ein saturate`
-;;; answered where `ein solve` stopped — **W60**, register row
-;;; `W60/eq-arity-under-commitment` (`corpus/wrong_answers.toml`).
+;;; answered where `ein solve` stopped — **W60**, regression
+;;; `eq-arity-under-commitment` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -31,7 +31,7 @@
 ;;;
 ;;; The loader refuses the program: every command that loads it exits 1 with
 ;;; one line, naming `r`, `?R`, the form, `(mark eq)` and `mk` (`ein test`:
-;;; 2), in either build. The register's `now` is that refusal; the section
+;;; 2), in either build. The regression's `now` is that refusal; the section
 ;;; above is the record of the answer it replaced.
 ;;;
 

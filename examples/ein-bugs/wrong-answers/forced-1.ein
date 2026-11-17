@@ -1,6 +1,6 @@
 ;;; One candidate, refuted in ONE firing — **W2** under `-L`, and its control
-;;; under default flags. Register rows `W2/forced-1-L`
-;;; (`corpus/wrong_answers.toml`).
+;;; under default flags. Regressions `forced-1-L`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;

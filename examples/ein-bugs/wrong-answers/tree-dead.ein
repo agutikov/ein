@@ -1,5 +1,5 @@
 ;;; An owed instance whose alternatives each die in ONE firing — the control
-;;; for `owed-two-step.ein` (**W1**, register row `W1/owed-two-step`).
+;;; for `owed-two-step.ein` (**W1**, regression `owed-two-step`).
 ;;;
 ;;; `(total-owed likes is-a)`: Ann owes a Food, and each food is refuted
 ;;; outright. R is empty (`ein solve FILE`): both candidates are dead alone,

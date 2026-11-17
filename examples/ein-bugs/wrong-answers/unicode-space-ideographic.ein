@@ -1,5 +1,5 @@
 ;;; An ideographic space between two tokens is read as a space —
-;;; **W73**, register row `W73/ideographic-space`.
+;;; **W73**, regression `ideographic-space`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

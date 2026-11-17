@@ -1,6 +1,6 @@
 ;;; A rule that could derive an activator binding a relation parameter to a
 ;;; fact loaded and answered, since no run derives it — **W59**, register
-;;; row `W59/derived-activator-never` (`corpus/wrong_answers.toml`). The
+;;; regression `derived-activator-never` (`corpus/regressions.toml`). The
 ;;; refusal Q-M1f.1 states refuses this program, knowingly.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -29,7 +29,7 @@
 ;;;
 ;;; The loader refuses the program: every command
 ;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
-;;; test`: 2), in either build. The register's `now` is that
+;;; test`: 2), in either build. The regression's `now` is that
 ;;; refusal; the section above is the record of the answer it replaced.
 ;;;
 ;;;

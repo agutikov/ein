@@ -27,7 +27,7 @@ rows in p1f.5"*. So this stage files them, all at once and first, and M1e2 close
 
 ## What a row is
 
-One witness program in [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), with the answer
+One witness program in [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), with the answer
 the engine gives today, the right one, its status and its owner. `ein-cli/tests/wrong_answers.rs` runs every
 witness per commit. It holds an `open` row to its wrong answer, so a change to it fails the test, and a
 `fixed` row to its right answer.

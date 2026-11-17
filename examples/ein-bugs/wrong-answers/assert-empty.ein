@@ -1,5 +1,5 @@
 ;;; `:assert ()` stores a fact named `#empty`, which joins H — **W34**,
-;;; register row `W34/assert-empty` (`corpus/wrong_answers.toml`).
+;;; regression `assert-empty` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -24,7 +24,7 @@
 ;;;
 ;;; `:assert ()` asserts nothing: `r` matches `(q a)` and derives nothing, H
 ;;; is empty and R {∅}, the query one class, and the state files load, the
-;;; answer above by hand. The register's `now` is that answer; the section
+;;; answer above by hand. The regression's `now` is that answer; the section
 ;;; above is the record of the one it replaced.
 ;;;
 ;;;

@@ -1,5 +1,5 @@
 ;;; A `std.macro` macro called in a query's `:goal` without its import loads,
-;;; and the goal has no row — **W77**, register row `W77/goal-macro-unimported`.
+;;; and the goal has no row — **W77**, regression `goal-macro-unimported`.
 ;;;
 ;;;
 ;;;

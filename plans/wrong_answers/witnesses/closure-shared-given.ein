@@ -1,5 +1,5 @@
 ;;; The closure estimate counts a shared given twice — **W10**,
-;;; register row `W10/closure-shared-given` (`corpus/wrong_answers.toml`),
+;;; register row `W10/closure-shared-given` (`plans/wrong_answers/register.toml`),
 ;;; `open`. Its control is `closure-shared-given-control.ein`, the same
 ;;; program with two `x-cd` derivations fewer.
 ;;;

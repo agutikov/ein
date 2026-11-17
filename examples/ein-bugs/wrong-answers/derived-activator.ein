@@ -1,6 +1,6 @@
 ;;; An activator a rule derives binds a relation parameter to a fact, and the
-;;; run stopped where its plan is compiled — **W59**, register row
-;;; `W59/derived-activator` (`corpus/wrong_answers.toml`).
+;;; run stopped where its plan is compiled — **W59**, regression
+;;; `derived-activator/derived-activator` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -32,7 +32,7 @@
 ;;;
 ;;; The loader refuses the program: every command
 ;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
-;;; test`: 2), in either build. The register's `now` is that
+;;; test`: 2), in either build. The regression's `now` is that
 ;;; refusal; the section above is the record of the answer it replaced.
 ;;;
 ;;;

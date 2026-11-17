@@ -4,7 +4,7 @@
 
 What a stage of this phase finds outside its own scope: kept in the phase and shown to the user at its next
 stop (the first is [S1f.20.2](s1f.20.2_the_disposition_table.md)'s review), not fixed by the stage that found
-it. A wrong answer among them would be a row of [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml)
+it. A wrong answer among them would be a row of [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml)
 before anything fixed it; none below is one.
 
 | id | what | witness, and the command | found by | owner, by default |

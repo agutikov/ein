@@ -632,7 +632,7 @@ note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)`
 path   = "examples/lattice/10_fifo_gap.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region", "solve --minimal --region-limit 1", "solve --maximal --region-limit 1"]
-note   = "the FIFO gap, the counter-example of docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative. The two line modes at `--region-limit 1` are W27's smallest witness (`W27/fifo-gap-limit-1-minimal`, `-maximal`): past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}."
+note   = "the FIFO gap, the counter-example of docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative. The two line modes at `--region-limit 1` are W27's smallest witness (`fifo-gap-limit-1-minimal`, `-maximal`): past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}."
 
 [[entry]]
 path   = "examples/lattice/11_fifo_gap_static.ein"
@@ -917,13 +917,13 @@ note   = "the flagship. `solve --region-budget 1` is the corpus's budgeted run: 
 path   = "examples/ein-bugs/alive-empty-phase1.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "the record site at phase 1: a kill cache written into root after its consistency check recorded a model that re-saturates to a contradiction. A node is `sat(root ∪ C)` with nothing the search wrote, so root stores no `(not (p A))`, `totality` never fires, and R is {∅}, which the `:expect` states (W9/alive-empty-phase1-K, W12/alive-empty-phase1)."
+note   = "the record site at phase 1: a kill cache written into root after its consistency check recorded a model that re-saturates to a contradiction. A node is `sat(root ∪ C)` with nothing the search wrote, so root stores no `(not (p A))`, `totality` never fires, and R is {∅}, which the `:expect` states (alive-empty-phase1-K, alive-empty-phase1)."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-empty-interlayer.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "the same record-site defect between layers, whose trigger was the singleton writeback rather than the kill cache. **Refused** (*forbid*): `totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, so `solve` exits 1 (`W1/alive-empty-interlayer`)."
+note   = "the same record-site defect between layers, whose trigger was the singleton writeback rather than the kill cache. **Refused** (*forbid*): `totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, so `solve` exits 1 (`alive-empty-interlayer`)."
 
 [[entry]]
 path   = "examples/ein-bugs/closed-and-owing.ein"
@@ -935,13 +935,13 @@ note   = "the refusal of an obligation on a closed relation (*\"obligated relati
 path   = "examples/ein-bugs/naf-upward-closure.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive. **Refused** (*forbid*, Q-M1e2.5): `bad` concludes (false) from (absent (q ?x)) over q, which a commitment can extend, so `solve` exits 1 naming it and `saturate` still saturates. W3's witness of the refusal (`W3/naf-upward-closure`), and the library-level fixture the read-out's dead-hole line is held on. Its goal is on `is-a`; an empty goal extent is one a claim states like any other (Q-M1e.13)."
+note   = "`dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive. **Refused** (*forbid*, Q-M1e2.5): `bad` concludes (false) from (absent (q ?x)) over q, which a commitment can extend, so `solve` exits 1 naming it and `saturate` still saturates. W3's witness of the refusal (`naf-upward-closure`), and the library-level fixture the read-out's dead-hole line is held on. Its goal is on `is-a`; an empty goal extent is one a claim states like any other (Q-M1e.13)."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "the **alive-set invariant** broken on purpose (`W4/alive-set-fresh-name`): `spawn` asserts `(p ?b Z)` and no fact names `Z`. Candidate objects drawn from the KB's names alone would hold no candidate about `Z` and give R = {∅}, where `{(q A Z), (q B Z)}` is the maximal state. A rule's constant is a name of the program (Q-M1e.21), the candidates are seeded with it, and R is four states, the `-declared` twin's. `:expect` states that R."
+note   = "the **alive-set invariant** broken on purpose (`alive-set-fresh-name`): `spawn` asserts `(p ?b Z)` and no fact names `Z`. Candidate objects drawn from the KB's names alone would hold no candidate about `Z` and give R = {∅}, where `{(q A Z), (q B Z)}` is the maximal state. A rule's constant is a name of the program (Q-M1e.21), the candidates are seeded with it, and R is four states, the `-declared` twin's. `:expect` states that R."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name-declared.ein"
@@ -965,7 +965,7 @@ note   = "the control of `minimal-line-stated-obligation.ein`: the same program 
 path   = "examples/ein-bugs/complete-records-stale.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "a regression of the record site: a kill cache written into the fork the run then recorded. A node is `sat(root ∪ C)` with nothing the search wrote, so the cache's negatives are no state's: R has 5 states, maximal `{(q A)}` and `{(p A), (p B)}`, which the `:expect` states (W9/complete-records-stale-K)."
+note   = "a regression of the record site: a kill cache written into the fork the run then recorded. A node is `sat(root ∪ C)` with nothing the search wrote, so the cache's negatives are no state's: R has 5 states, maximal `{(q A)}` and `{(p A), (p B)}`, which the `:expect` states (complete-records-stale-K)."
 
 [[entry]]
 path   = "examples/ein-bugs/alt-cap-core.ein"
@@ -983,19 +983,19 @@ note   = "`alt-cap-core.ein` with `mk-w3` (which reads `(w1 X)` again as `(w3 X)
 path   = "examples/ein-bugs/unsat-core-id-space.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "oracle --dump {out}/region"]
-note   = "W11's first witness (`W11/unsat-core-id-space`), from `corpus/fuzz_findings/`: a core printed one way as interned and another under a permuted interner. R is three states, ∅ and two singletons, and N's four members have one core each, the same under every permutation of the id space; `id_order_invariance` permutes it per commit."
+note   = "W11's first witness (`unsat-core-id-space`), from `corpus/fuzz_findings/`: a core printed one way as interned and another under a permuted interner. R is three states, ∅ and two singletons, and N's four members have one core each, the same under every permutation of the id space; `id_order_invariance` permutes it per commit."
 
 [[entry]]
 path   = "examples/ein-bugs/d3-unsat-core.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W11's and W1's witness (`W11/d3-unsat-core`, `W1/d3-unsat-core`), from `corpus/fuzz_findings/`: an unsat core that moved with the fork path and with the interner. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `fire-0` concludes (not …) from r1, which `fire-1` derives under an `absent` a commitment can lift, so `solve` exits 1 naming them and `saturate` still saturates; the refusal is the same under every permutation `id_order_invariance` takes."
+note   = "W11's and W1's witness (`d3-unsat-core-id-order`, `d3-unsat-core/d3-unsat-core`), from `corpus/fuzz_findings/`: an unsat core that moved with the fork path and with the interner. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `fire-0` concludes (not …) from r1, which `fire-1` derives under an `absent` a commitment can lift, so `solve` exits 1 naming them and `saturate` still saturates; the refusal is the same under every permutation `id_order_invariance` takes."
 
 [[entry]]
 path   = "examples/ein-bugs/fork-delta-order.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "solve --dump-lattice {out}/lattice", "oracle --dump {out}/region"]
-note   = "W11 (`W11/fork-delta-order`), from `corpus/fuzz_findings/`: `(false)` has 1 600 equal-size derivations in N's one member, so its core is whichever four facts the 33 arrivals a full list keeps offer, and a resumed fork's delta sorted by `FactId` would make those arrive in interning order. The delta is in the order the commitment was written, and the core is (g G08) (h H40) (on A) (on B) under every seed, in nogoods.json, nodes.json and the oracle's region.json. Which of the equal-size cores is the canonical one is `W10/fork-delta-order`'s, open."
+note   = "W11 (`fork-delta-order`), from `corpus/fuzz_findings/`: `(false)` has 1 600 equal-size derivations in N's one member, so its core is whichever four facts the 33 arrivals a full list keeps offer, and a resumed fork's delta sorted by `FactId` would make those arrive in interning order. The delta is in the order the commitment was written, and the core is (g G08) (h H40) (on A) (on B) under every seed, in nogoods.json, nodes.json and the oracle's region.json. Which of the equal-size cores is the canonical one is `W10/fork-delta-order`'s, open."
 
 [[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
@@ -1013,13 +1013,13 @@ note   = "the same ordering of `alive`, over two nested-fact args instead of mix
 path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "render rules"]
-note   = "the empty-R arm of `query-goal-free-head.ein` (`W64/goal-free-head-no-state`): the same goal, whose relation is a variable, where R is empty, so no state is answered from it. The loader refuses a goal's relation variable whatever R is, so every command refuses this program too, exit 1, one line."
+note   = "the empty-R arm of `query-goal-free-head.ein` (`goal-free-head-no-state`): the same goal, whose relation is a variable, where R is empty, so no state is answered from it. The loader refuses a goal's relation variable whatever R is, so every command refuses this program too, exit 1, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "the fuzzer's shortest find — `(query :goal (?R Rex Animal))` (`W64/goal-free-head`). A query goal has no activator, so a head variable can never be bound: refused at load, every command, one line."
+note   = "the fuzzer's shortest find — `(query :goal (?R Rex Animal))` (`goal-free-head`). A query goal has no activator, so a head variable can never be bound: refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-assert-var.ein"
@@ -1079,7 +1079,7 @@ note   = "W7's family (Q-M1e.16): the binding-key program with the int activator
 path   = "examples/ein-bugs/binding-key-both.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "W7's witness (`W7/binding-key-layout`, Q-M1e.16), from `corpus/fuzz_findings/binding-key-layout.ein`: a digit name and a nested fact in one activator position. A binding key that interned only an activator's symbol arguments would let the two plans share a space with two register layouts, losing a `noted` fact in a release build and aborting a debug build in `check_layout`; the key interns every argument, as the compile cache's does. The solve holds `edge` and `noted` out, and the nested fact binds `?f` (W33) to `(src Y)`, so its plan derives nothing: R is four states, each with the int-only control's two `noted` facts, which `:expect` states."
+note   = "W7's witness (`binding-key-both/binding-key-layout`, Q-M1e.16), from `corpus/fuzz_findings/binding-key-layout.ein`: a digit name and a nested fact in one activator position. A binding key that interned only an activator's symbol arguments would let the two plans share a space with two register layouts, losing a `noted` fact in a release build and aborting a debug build in `check_layout`; the key interns every argument, as the compile cache's does. The solve holds `edge` and `noted` out, and the nested fact binds `?f` (W33) to `(src Y)`, so its plan derives nothing: R is four states, each with the int-only control's two `noted` facts, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-swapped.ein"
@@ -1091,25 +1091,25 @@ note   = "W7's twin: `binding-key-both.ein` with the two activator lines exchang
 path   = "examples/ein-bugs/activator-text-int-and-string.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "W16's witness (`W16/int-and-string`), from `corpus/fuzz_findings/activator-text-key.ein`: the activators `(note edge 1)` and `(note edge \"1\")`, a name and a string with one text. **Refused at the parse**: a string is natural-language text, so `(holds \"1\")` and `(note edge \"1\")` are refused, each at its `\"1\"`, and the file is kept as the refusal's witness, its row restated to it; it has no `test` cell, a refused file stating no claim. The compile key is the activator's values, which `rule_semantics.rs` holds."
+note   = "W16's witness (`int-and-string`), from `corpus/fuzz_findings/activator-text-key.ein`: the activators `(note edge 1)` and `(note edge \"1\")`, a name and a string with one text. **Refused at the parse**: a string is natural-language text, so `(holds \"1\")` and `(note edge \"1\")` are refused, each at its `\"1\"`, and the file is kept as the refusal's witness, its row restated to it; it has no `test` cell, a refused file stating no claim. The compile key is the activator's values, which `rule_semantics.rs` holds."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-text-string-then-int.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "W16's twin (`W16/string-then-int`): `activator-text-int-and-string.ein` with the two activator lines exchanged, from `corpus/fuzz_findings/activator-text-key-swapped.ein`. **Refused at the parse**, as its twin is, and kept as the refusal's witness; it has no `test` cell."
+note   = "W16's twin (`string-then-int`): `activator-text-int-and-string.ein` with the two activator lines exchanged, from `corpus/fuzz_findings/activator-text-key-swapped.ein`. **Refused at the parse**, as its twin is, and kept as the refusal's witness; it has no `test` cell."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-int.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W16's second shape (`W16/activator-all-int`): `flag` asserts the activator `(watch 1)` under `(absent (checked ?x))`, `watch` asserts `(alarm 1)`, and `alarm` concludes (false). *forbid* reads a plan's activator by the rule's parameters, not by its activator's symbols, so `solve` exits 1 naming `alarm`, as on the control; `saturate` still saturates."
+note   = "W16's second shape (`activator-all-int`): `flag` asserts the activator `(watch 1)` under `(absent (checked ?x))`, `watch` asserts `(alarm 1)`, and `alarm` concludes (false). *forbid* reads a plan's activator by the rule's parameters, not by its activator's symbols, so `solve` exits 1 naming `alarm`, as on the control; `saturate` still saturates."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-nested.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W16's second shape (`W16/activator-all-nested`): `activator-all-int.ein` with `(item (box a))`, an activator whose every argument is a nested fact. Refused, as the control is."
+note   = "W16's second shape (`activator-all-nested`): `activator-all-int.ein` with `(item (box a))`, an activator whose every argument is a nested fact. Refused, as the control is."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-symbol.ein"
@@ -1119,9 +1119,9 @@ note   = "W16's second shape, the control: `activator-all-int.ein` with `(item a
 
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
-# Witnesses of wrong answers, each a file a register row points at. **What
-# each one answers, and what it should answer, is `corpus/wrong_answers.toml`'s**,
-# held by `ein-cli/tests/wrong_answers.rs`; these rows only put the files in the
+# Witnesses of the regressions, each a file a regression points at. **What
+# each one answers, and what it should answer, is `corpus/regressions.toml`'s**,
+# held by `ein-cli/tests/regressions.rs`; these rows only put the files in the
 # sweep. Some carry an `:expect`, which states the right R. A witness that
 # copies a fixture with one dropped it on purpose: the copy's answer had an
 # empty goal extent (which a claim states like any other, Q-M1e.13), or the
@@ -1131,67 +1131,67 @@ note   = "W16's second shape, the control: `activator-all-int.ein` with `(item a
 path   = "examples/ein-bugs/wrong-answers/forced-1.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W2/forced-1-L`: one candidate refuted in one firing. Root is consistent and its one candidate dies, so R = {∅}, root itself; no route writes a dead candidate into root (docs/ein/user/reference/config.md)."
+note   = "`forced-1-L`: one candidate refuted in one firing. Root is consistent and its one candidate dies, so R = {∅}, root itself; no route writes a dead candidate into root (docs/ein/user/reference/config.md)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W1's control (`W1/forced-2-two`): two candidates, each refuted in one firing; root is consistent, so R = {∅}."
+note   = "W1's control (`forced-2-two`): two candidates, each refuted in one firing; root is consistent, so R = {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W2/forced-2`: one candidate refuted in two firings, in a consistent program, so R = {∅}, root itself."
+note   = "`forced-2`: one candidate refuted in two firings, in a consistent program, so R = {∅}, root itself."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W1/forced-2-off`: forced-2.ein with the forced-positive cascade off; the program is forced-2.ein's, and R its maximal line, {∅}."
+note   = "`forced-2-off`: forced-2.ein with the forced-positive cascade off; the program is forced-2.ein's, and R its maximal line, {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W1 at layer 0 (`W1/forced-2-two`): two candidates, each refuted in two firings; every singleton dies and root is consistent, so R = {∅}, as its one-firing control's."
+note   = "W1 at layer 0 (`forced-2-two`): two candidates, each refuted in two firings; every singleton dies and root is consistent, so R = {∅}, as its one-firing control's."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W1/owed-two-step`: an owed instance whose alternatives die in two firings. Root is consistent and owes what it cannot pay, so R is empty, every node owing, as `tree-dead.ein`'s with one-firing deaths."
+note   = "`owed-two-step`: an owed instance whose alternatives die in two firings. Root is consistent and owes what it cannot pay, so R is empty, every node owing, as `tree-dead.ein`'s with one-firing deaths."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/tree-dead.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W1's control (`W1/owed-two-step`): the same obligation with one-firing deaths: R empty, every node owing, as the witness's."
+note   = "W1's control (`owed-two-step`): the same obligation with one-firing deaths: R empty, every node owing, as the witness's."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W4 in isolation (`W4/fresh-name-default`): alive-set-fresh-name.ein's program. The candidates are seeded with a rule's constants, so `Z` is a candidate object, and R is four states, {(q A Z), (q B Z)} the maximal."
+note   = "W4 in isolation (`fresh-name-default`): alive-set-fresh-name.ein's program. The candidates are seeded with a rule's constants, so `Z` is a candidate object, and R is four states, {(q A Z), (q B Z)} the maximal."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W1/fresh-name-nospawn`: alive-set-fresh-name.ein without its spawn rule: every q is refuted and root is consistent, so R = {∅}, root itself, which `:expect` states. With no rule naming `Z`, seeding the candidates with a rule's constants changes nothing here."
+note   = "`fresh-name-nospawn`: alive-set-fresh-name.ein without its spawn rule: every q is refuted and root is consistent, so R = {∅}, root itself, which `:expect` states. With no rule naming `Z`, seeding the candidates with a rule's constants changes nothing here."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W3's lever row (`W3/naf-nowb-L`): naf-upward-closure.ein's program. **Refused** (*forbid*), as naf-upward-closure.ein: `solve` exits 1 naming `bad`."
+note   = "W3's lever row (`naf-nowb-L`): naf-upward-closure.ein's program. **Refused** (*forbid*), as naf-upward-closure.ein: `solve` exits 1 naming `bad`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W5/owed-seats`: two guests, two chairs, `total-owed` + `surjective-owed`: R is seven states, the two matchings its minimal line and every seat taken its maximal (Q-M1e2.1)."
+note   = "`owed-seats`: two guests, two chairs, `total-owed` + `surjective-owed`: R is seven states, the two matchings its minimal line and every seat taken its maximal (Q-M1e2.1)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats-renamed.ein"
@@ -1203,7 +1203,7 @@ note   = "W5's twin: owed-seats.ein with Ann renamed Zed: the same R under the r
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W6, contested (`W6/uncovered`): docs/ein/reasoning/kb-evolution/satisfiability.md § 5's witness: `knows`, which the rung never proposes, is a relation of the program, and R is over the universe, not over what a rung proposes (Q-M1e2.3)."
+note   = "W6, contested (`uncovered`): docs/ein/reasoning/kb-evolution/satisfiability.md § 5's witness: `knows`, which the rung never proposes, is a relation of the program, and R is over the universe, not over what a rung proposes (Q-M1e2.3)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
@@ -1215,19 +1215,19 @@ note   = "W6's twin: uncovered.ein plus (knows Ann Bob)."
 path   = "examples/ein-bugs/wrong-answers/alt-cap-shared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "W10 (`W10/alt-cap-shared`, open): `(false)` needs `(x K)` and `(z K)`; `(x K)` has 33 one-given derivations and a 34th over `(a K) (b K)`, `(z K)` only that pair. Over every derivation the core is `{(a K), (b K)}`; the 34th is `(x K)`'s per-fact worst, so a full list refuses it, and the list's retention, the arrival with the smallest closure kept beside it, keeps `(x K)`'s smallest-closure arrival, not it: the core is 3 facts. The reason no bounded retention is exact (Q-M1e2.11)."
+note   = "A known gap: `(false)` needs `(x K)` and `(z K)`; `(x K)` has 33 one-given derivations and a 34th over `(a K) (b K)`, `(z K)` only that pair. Over every derivation the core is `{(a K), (b K)}`; the 34th is `(x K)`'s per-fact worst, so a full list refuses it, and the list's retention, the arrival with the smallest closure kept beside it, keeps `(x K)`'s smallest-closure arrival, not it: the core is 3 facts. The reason no bounded retention is exact (Q-M1e2.11)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity3.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W6, contested (`W6/arity3`): a goal over a fact of three arguments, which the blind rung never proposes; R is four states, `{(r2 A B), (r2 B A)}` the maximal."
+note   = "W6, contested (`arity3`): a goal over a fact of three arguments, which the blind rung never proposes; R is four states, `{(r2 A B), (r2 B A)}` the maximal."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W8, contested (`W8/stale-naf-fork`): (p one), derived under (absent (q one)), would survive the commitment of (q one) and kill it — Q-M1e2.2. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `p-and-q-clash` reads `p` derived under (absent (q ?x)), so `solve` exits 1."
+note   = "W8, contested (`stale-naf-fork`): (p one), derived under (absent (q one)), would survive the commitment of (q one) and kill it — Q-M1e2.2. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `p-and-q-clash` reads `p` derived under (absent (q ?x)), so `solve` exits 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
@@ -1239,13 +1239,13 @@ note   = "W8's twin: stale-naf-fork.ein's program, kept for the shape a warning 
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W8's twin: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/reference/config.md): features/07's program, open as `W8/features-07` is."
+note   = "W8's twin: features/07 with the forced-positive cascade set off, a `(config …)` line gone with the cascade (docs/ein/user/reference/config.md): features/07's program, a flagged program whose answer the engine claims nothing of."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/match-only.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W15/match-only`: W4's program with `spawn` replaced by `reach-z`, which names `Z` only in its `:match`. A constant anywhere in a rule is a name of the program (Q-M1e2.9 (a)), the candidates hold every name of the program, and R is four states, the `-declared` control's, which `:expect` states."
+note   = "`match-only`: W4's program with `spawn` replaced by `reach-z`, which names `Z` only in its `:match`. A constant anywhere in a rule is a name of the program (Q-M1e2.9 (a)), the candidates hold every name of the program, and R is four states, the `-declared` control's, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/match-only-declared.ein"
@@ -1257,7 +1257,7 @@ note   = "W15's control for match-only.ein: the same program plus `(seen Z)`, wh
 path   = "examples/ein-bugs/wrong-answers/negative-only.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W15/negative-only`: W4's program without `spawn`, plus the stored negative `(not (q Z A))`. `Z` is written in a fact only inside a nested one; a constant a fact names at any depth is a name of the program (Q-M1e2.9 (a)), so R is four states, the `-declared` control's, which `:expect` states."
+note   = "`negative-only`: W4's program without `spawn`, plus the stored negative `(not (q Z A))`. `Z` is written in a fact only inside a nested one; a constant a fact names at any depth is a name of the program (Q-M1e2.9 (a)), so R is four states, the `-declared` control's, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/negative-only-declared.ein"
@@ -1269,7 +1269,7 @@ note   = "W15's control for negative-only.ein: the same program plus `(seen Z)`,
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W14/oblig-fresh-name`: Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. The obligations rung would build H from root's `(food ?b)` scan, so `(likes Ann Z)` would be in no candidate; it declines on a guard over a relation in D (Q-M1e2.10 (a)), the blind enumerator builds H, and R is one state, `{(likes Ann Z)}`, the `-declared` control's, which `:expect` states."
+note   = "`oblig-fresh-name`: Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. The obligations rung would build H from root's `(food ?b)` scan, so `(likes Ann Z)` would be in no candidate; it declines on a guard over a relation in D (Q-M1e2.10 (a)), the blind enumerator builds H, and R is one state, `{(likes Ann Z)}`, the `-declared` control's, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein"
@@ -1281,7 +1281,7 @@ note   = "W14's control for oblig-fresh-name.ein: the same program plus `(food Z
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W14/oblig-fresh-name-two`: oblig-fresh-name.ein plus Bob, who may like Soup. Committing `(likes Bob Soup)` derives `(food Z)`, where the rung itself would propose `(likes Ann Z)`. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the blind enumerator's twelve states, `(likes Ann Bob)` and `(likes Bob Ann)` free, which `:expect` states and the control answers too."
+note   = "`oblig-fresh-name-two`: oblig-fresh-name.ein plus Bob, who may like Soup. Committing `(likes Bob Soup)` derives `(food Z)`, where the rung itself would propose `(likes Ann Z)`. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the blind enumerator's twelve states, `(likes Ann Bob)` and `(likes Bob Ann)` free, which `:expect` states and the control answers too."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein"
@@ -1293,7 +1293,7 @@ note   = "W14's control for oblig-fresh-name-two.ein: the same program plus `(fo
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`W14/oblig-derived-domain`: oblig-fresh-name.ein's shape with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. The rung declines on a guard over a relation in D, and R is one state, `{(likes Ann Pie)}`, the `-declared` control's, which `:expect` states."
+note   = "`oblig-derived-domain`: oblig-fresh-name.ein's shape with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. The rung declines on a guard over a relation in D, and R is one state, `{(likes Ann Pie)}`, the `-declared` control's, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein"
@@ -1305,7 +1305,7 @@ note   = "W14's control for oblig-derived-domain.ein: the same program plus `(fo
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "W14 (`W14/oblig-stdlib-total-owed`) on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`) and not refused by *forbid*, whose refusal is about a refutation, so it takes route 2, the cube. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too."
+note   = "W14 (`oblig-stdlib-total-owed`) on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`) and not refused by *forbid*, whose refusal is about a refutation, so it takes route 2, the cube. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
@@ -1317,13 +1317,13 @@ note   = "W14's control for oblig-stdlib-total-owed.ein: the same program plus `
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W17/forbid-chain-1`: `mk` derives the activator `(q a)` under `(absent (p2 ?x))`, `q`'s plan the activator `(r2 a)`, and `r2`'s plan concludes (false), all at a node. *forbid* reads a rule with parameters root has no plan of whenever its activator relation is in D⁺, D followed through the rules root has no plan of, so `solve` exits 1 naming `r2`; `saturate` still saturates."
+note   = "`forbid-chain-1`: `mk` derives the activator `(q a)` under `(absent (p2 ?x))`, `q`'s plan the activator `(r2 a)`, and `r2`'s plan concludes (false), all at a node. *forbid* reads a rule with parameters root has no plan of whenever its activator relation is in D⁺, D followed through the rules root has no plan of, so `solve` exits 1 naming `r2`; `saturate` still saturates."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W17/forbid-chain-2`: forbid-chain-1.ein one activator longer, `r2` asserting `(r3 a)` and `r3` concluding (false). `solve` exits 1 naming `r3`."
+note   = "`forbid-chain-2`: forbid-chain-1.ein one activator longer, `r2` asserting `(r3 a)` and `r3` concluding (false). `solve` exits 1 naming `r3`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-0.ein"
@@ -1335,67 +1335,67 @@ note   = "W17's refused control: forbid-chain-1.ein one link shorter, `q` conclu
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W17's loading control: forbid-chain-1.ein with no `absent` in `mk`. The chain still concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}. Also W19's witness (`W19/forbid-chain-no-absent`): N {(p a)}'s core is `(p a) (seed a)`, the refutation resting on `(p a)` through the activators `(q a)` and `(r2 a)`."
+note   = "W17's loading control: forbid-chain-1.ein with no `absent` in `mk`. The chain still concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}. Also W19's witness (`forbid-chain-no-absent`): N {(p a)}'s core is `(p a) (seed a)`, the refutation resting on `(p a)` through the activators `(q a)` and `(r2 a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W17/forbid-chain-node-absent`: the `absent` is read by `q`'s plan, which only a node compiles, and `r2`'s plan concludes (false) from the activator `q` asserts. An open rule's own `absent` taints what it derives, so `solve` exits 1 naming `r2`."
+note   = "`forbid-chain-node-absent`: the `absent` is read by `q`'s plan, which only a node compiles, and `r2`'s plan concludes (false) from the activator `q` asserts. An open rule's own `absent` taints what it derives, so `solve` exits 1 naming `r2`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W17/forbid-chain-param-absent`: `watch`'s plan, compiled at a node from `(watch p2)`, derives `(y a)` while `(p2 a)` is absent, and `bad` concludes (false) from `y`. *forbid* follows what a rule derives under the `absent` over its parameter's relation, conservatively, and `solve` exits 1 naming `bad`."
+note   = "`forbid-chain-param-absent`: `watch`'s plan, compiled at a node from `(watch p2)`, derives `(y a)` while `(p2 a)` is absent, and `bad` concludes (false) from `y`. *forbid* follows what a rule derives under the `absent` over its parameter's relation, conservatively, and `solve` exits 1 naming `bad`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W17/forbid-chain-node-writes`: `chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`. *forbid*'s extendable is D⁺, which holds `x`, and `solve` exits 1 naming `chk`."
+note   = "`forbid-chain-node-writes`: `chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`. *forbid*'s extendable is D⁺, which holds `x`, and `solve` exits 1 naming `chk`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W18/str-in-match`: `s` matches `(holds \"1\")`, a string as a value; `t` (an atom matching a string fact) and `u` (a digit name) were the controls. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`str-in-match`: `s` matches `(holds \"1\")`, a string as a value; `t` (an atom matching a string fact) and `u` (a digit name) were the controls. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W18/str-in-assert`: `s` concludes `(tag ?x \"lbl\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`str-in-assert`: `s` concludes `(tag ?x \"lbl\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W18/str-in-guard`: `(eq ?x \"b\")` and `(neq ?x \"b\")`, a string as a guard's argument. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`str-in-guard`: `(eq ?x \"b\")` and `(neq ?x \"b\")`, a string as a guard's argument. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W18/str-in-absent`: `(absent (holds \"b\"))` beside the stated `(holds \"b\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`str-in-absent`: `(absent (holds \"b\"))` beside the stated `(holds \"b\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W18/str-in-hrule`: the hrule's template `(tag ?x \"lbl\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`str-in-hrule`: the hrule's template `(tag ?x \"lbl\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W19/core-activator-committed`: the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`. R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core is `(r2 a) (seed a)`: the core follows an activator a node derived or committed (Q-M1e2.12 (c))."
+note   = "`core-activator-committed`: the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`. R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core is `(r2 a) (seed a)`: the core follows an activator a node derived or committed (Q-M1e2.12 (c))."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-guard-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W19/core-activator-guard-only`: `mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise. R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is `(p a)`, the refutation resting on it through the activator."
+note   = "`core-activator-guard-only`: `mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise. R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is `(p a)`, the refutation resting on it through the activator."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-given.ein"
@@ -1413,7 +1413,7 @@ note   = "W19's boundary, an activator root derives: `mk0` derives `(r2 a)` from
 path   = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W20/wild-in-match`: `w`'s `:match` is `(holds _)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`wild-in-match`: `w`'s `:match` is `(holds _)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-match-twin.ein"
@@ -1425,7 +1425,7 @@ note   = "W20's twin of `wild-in-match.ein`: `_` written as `?any`, a variable t
 path   = "examples/ein-bugs/wrong-answers/wild-in-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W20/wild-in-head`: `w`'s `:match` is `(_ a)`, a head wildcard; a wildcard written as a relation is refused (Q-M1e2.22), as a range is (Q-M1e2.24). Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`wild-in-head`: `w`'s `:match` is `(_ a)`, a head wildcard; a wildcard written as a relation is refused (Q-M1e2.22), as a range is (Q-M1e2.24). Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-head-twin.ein"
@@ -1437,13 +1437,13 @@ note   = "W20's twin of `wild-in-head.ein`: the head wildcard written out as `(o
 path   = "examples/ein-bugs/wrong-answers/range-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W20/range-in-match`: `r`'s `:match` is `(n 1..3)`. Ein has no ranges (Q-M1e2.24) and `1..3` is one name: the program loads as a pattern over the name `1..3`, which no fact at root holds, R the cube of 8, both runs exit 0."
+note   = "`range-in-match`: `r`'s `:match` is `(n 1..3)`. Ein has no ranges (Q-M1e2.24) and `1..3` is one name: the program loads as a pattern over the name `1..3`, which no fact at root holds, R the cube of 8, both runs exit 0."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W20/wild-in-absent`: `(absent (holds _))` beside the fact `(holds a)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`wild-in-absent`: `(absent (holds _))` beside the fact `(holds a)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein"
@@ -1455,7 +1455,7 @@ note   = "W20's twin of `wild-in-absent.ein`: `_` written as `?any`. `z` never f
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W20/wild-in-hrule`: `(hrule h () :match (holds ?x _) …)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`wild-in-hrule`: `(hrule h () :match (holds ?x _) …)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein"
@@ -1467,25 +1467,25 @@ note   = "W20's twin of `wild-in-hrule.ein`: `_` written as `?any`. H {(tag a)},
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W21/pair-core-root-given`: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core is `(p a) (q a)`: a pair rests on both its sides."
+note   = "`pair-core-root-given`: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core is `(p a) (q a)`: a pair rests on both its sides."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W21/pair-core-root-derived`: the witness one derivation deeper, `(p a)` derived at root from `(seed a)`. R {∅}; N {(q a)}, whose core is `(q a) (seed a)`."
+note   = "`pair-core-root-derived`: the witness one derivation deeper, `(p a)` derived at root from `(seed a)`. R {∅}; N {(q a)}, whose core is `(q a) (seed a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forall-core-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W21/forall-core-false`: a `(false)` concluded through a `forall`, every slot excluding `a`. R ∅, {(tag s1)}, {(tag s2)}; N {(tag s1), (tag s2)}, whose core is `(item a) (tag s1) (tag s2)`: a firing records the facts its universal read (Q-M1e2.15 (b))."
+note   = "`forall-core-false`: a `(false)` concluded through a `forall`, every slot excluding `a`. R ∅, {(tag s1)}, {(tag s2)}; N {(tag s1), (tag s2)}, whose core is `(item a) (tag s1) (tag s2)`: a firing records the facts its universal read (Q-M1e2.15 (b))."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forall-core-elim.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W21/forall-core-elim`: a pair one of whose sides `elim` concludes through a `forall`, the stdlib's elimination shape. R ∅ and {(tag s2)}; N {(tag s1)}, whose core is `(item a) (not (in a s2)) (slot s1) (tag s1)` (Q-M1e2.15 (b))."
+note   = "`forall-core-elim`: a pair one of whose sides `elim` concludes through a `forall`, the stdlib's elimination shape. R ∅ and {(tag s2)}; N {(tag s1)}, whose core is `(item a) (not (in a s2)) (slot s1) (tag s1)` (Q-M1e2.15 (b))."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-negative.ein"
@@ -1503,7 +1503,7 @@ note   = "W21's boundary: the pair's negative side is the program's, `(not (p a)
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-neq-in-assert`: `r`'s `:assert` is `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(neqw a)`, R {∅}, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-assert`: `r`'s `:assert` is `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(neqw a)`, R {∅}, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert-twin.ein"
@@ -1515,7 +1515,7 @@ note   = "W22's twin of `kw-neq-in-assert.ein`: `neqw` renamed `nneqw`, a name t
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-or-in-assert`: `(orz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: root `(orz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-assert`: `(orz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: root `(orz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert-twin.ein"
@@ -1527,7 +1527,7 @@ note   = "W22's twin of `kw-or-in-assert.ein`: `orz` renamed `oorz`, a name that
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-and-in-assert`: `(andz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(andz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-assert`: `(andz ?x)` in `r`'s `:assert`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(andz a)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein"
@@ -1539,7 +1539,7 @@ note   = "W22's twin of `kw-and-in-assert.ein`: `andz` renamed `aandz`, a name t
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-and-in-match`: the premise `(andz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-match`: the premise `(andz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-match-twin.ein"
@@ -1551,7 +1551,7 @@ note   = "W22's twin of `kw-and-in-match.ein`: `andz` renamed `aandz`, a name th
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-neq-in-match`: the premise `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-match`: the premise `(neqw ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit b)`, R six states, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match-twin.ein"
@@ -1563,7 +1563,7 @@ note   = "W22's twin of `kw-neq-in-match.ein`: `neqw` renamed `nneqw`, a name th
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three candidates, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three candidates, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein"
@@ -1575,7 +1575,7 @@ note   = "W22's twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name t
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-neq-in-fact`: the fact `(box (neqw a))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(box (neqw a))`, R two states over `(box a)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-fact`: the fact `(box (neqw a))`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: root `(box (neqw a))`, R two states over `(box a)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact-twin.ein"
@@ -1587,7 +1587,7 @@ note   = "W22's twin of `kw-neq-in-fact.ein`: `neqw` renamed `nneqw`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-not-fact`: the fact `(notw)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `notw` is a name: root `(notw)`, R {∅}, the twin's answer (Q-M1e2.17)."
+note   = "`kw-not-fact`: the fact `(notw)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `notw` is a name: root `(notw)`, R {∅}, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-not-fact-twin.ein"
@@ -1599,7 +1599,7 @@ note   = "W22's twin of `kw-not-fact.ein`: `notw` renamed `nnotw`, a name that s
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-relation-fact`: the fact `(relationship alice bob)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `relationship` is a name: root `(relationship alice bob)`, R two states over `(relationship bob alice)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-relation-fact`: the fact `(relationship alice bob)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `relationship` is a name: root `(relationship alice bob)`, R two states over `(relationship bob alice)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein"
@@ -1611,7 +1611,7 @@ note   = "W22's twin of `kw-relation-fact.ein`: `relationship` renamed `rrelatio
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-neq-in-goal`: the query's goal `(neqw ?y)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: the read-out's `outside` names `neqw`, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-neq-in-goal`: the query's goal `(neqw ?y)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `neqw` is a name: the read-out's `outside` names `neqw`, the query's class `?y = a`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal-twin.ein"
@@ -1623,7 +1623,7 @@ note   = "W22's twin of `kw-neq-in-goal.ein`: `neqw` renamed `nneqw`, a name tha
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-or-in-hrule`: the hrule's template `(orz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: H `(orz a)`, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-hrule`: the hrule's template `(orz ?x)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: H `(orz a)`, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule-twin.ein"
@@ -1635,7 +1635,7 @@ note   = "W22's twin of `kw-or-in-hrule.ein`: `orz` renamed `oorz`, a name that 
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-or-in-obligation`: the obligation's guard `(orz ?a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R empty, owing, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-obligation`: the obligation's guard `(orz ?a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R empty, owing, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation-twin.ein"
@@ -1647,7 +1647,7 @@ note   = "W22's twin of `kw-or-in-obligation.ein`: `orz` renamed `oorz`, a name 
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-and-in-expect`: the query's goal and `:expect` write `(andz …)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
+note   = "`kw-and-in-expect`: the query's goal and `:expect` write `(andz …)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `andz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect-twin.ein"
@@ -1659,7 +1659,7 @@ note   = "W22's twin of `kw-and-in-expect.ein`: `andz` renamed `aandz`, a name t
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W22/kw-or-in-solve`: the `(solve …)` claim writes `(orz a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
+note   = "`kw-or-in-solve`: the `(solve …)` claim writes `(orz a)`. A keyword is a whole word (`grammar.md` § 1, fact 1), so `orz` is a name: R {∅}, the claim holds, the twin's answer (Q-M1e2.17)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve-twin.ein"
@@ -1671,7 +1671,7 @@ note   = "W22's twin of `kw-or-in-solve.ein`: `orz` renamed `oorz`, a name that 
 path   = "examples/ein-bugs/wrong-answers/core-search-cut.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W23/core-search-cut`: `(A k)` has 256 environments of eight facts, past the core search's 64 per fact, and the smallest core, the eight `y` facts, is not among those it keeps. R empty; root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten facts, and every surface says the search was cut at its 64 environments per fact."
+note   = "`core-search-cut`: `(A k)` has 256 environments of eight facts, past the core search's 64 per fact, and the smallest core, the eight `y` facts, is not among those it keeps. R empty; root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten facts, and every surface says the search was cut at its 64 environments per fact."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-search-cut-control.ein"
@@ -1689,79 +1689,55 @@ note   = "W23's twin: the witness's shape with five pairs, 32 environments under
 path   = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/wild-in-guard`: `_` as an argument of `eq` and `neq`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`wild-in-guard`: `_` as an argument of `eq` and `neq`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/bare-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/bare-premise`: `:match _`, `(and (hit ?y) _)` and `:match foo`, a premise that is not a form. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`bare-premise`: `:match _`, `(and (hit ?y) _)` and `:match foo`, a premise that is not a form. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/nested-unbound-head`: `(box (?r b))`, a pattern inside a pattern whose relation `?r` no parameter binds. Refused at load, as the top-level `(?r b)` is: both runs exit 1 with the loader's line."
+note   = "`nested-unbound-head`: `(box (?r b))`, a pattern inside a pattern whose relation `?r` no parameter binds. Refused at load, as the top-level `(?r b)` is: both runs exit 1 with the loader's line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/form-in-guard`: the form `(f a)` as a guard's argument. A nested fact is a value (Q-M1e2.26), so the program loads, both runs exit 0, and root holds `(hit-eq (f a))` and three `hit-neq` facts, the register's restated right."
+note   = "`form-in-guard`: the form `(f a)` as a guard's argument. A nested fact is a value (Q-M1e2.26), so the program loads, both runs exit 0, and root holds `(hit-eq (f a))` and three `hit-neq` facts, its regression's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/guard-before-binder`: `(and (eq ?x a) (p ?x))` and `(and (neq ?x a) (p ?x))`, a guard written before the premise that binds its variable. A `:match` means the same in any order of its conjuncts (Q-M1e2.26), so the program loads, both runs exit 0, each guard is judged after `(p ?x)`, and root holds `(hit-eq a)` and three `hit-neq` facts, the register's restated right."
+note   = "`guard-before-binder`: `(and (eq ?x a) (p ?x))` and `(and (neq ?x a) (p ?x))`, a guard written before the premise that binds its variable. A `:match` means the same in any order of its conjuncts (Q-M1e2.26), so the program loads, both runs exit 0, each guard is judged after `(p ?x)`, and root holds `(hit-eq a)` and three `hit-neq` facts, its regression's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/kwpair-in-guard`: `(eq ?x :k a)`, a keyword pair as a guard's argument (Q-M1e2.18). Refused at the parse (no keyword pair in a term), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`kwpair-in-guard`: `(eq ?x :k a)`, a keyword pair as a guard's argument (Q-M1e2.18). Refused at the parse (no keyword pair in a term), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W24/nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18): refused at load where the activator is written, both runs exit 1 with the loader's line."
+note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18): refused at load where the activator is written, both runs exit 1 with the loader's line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W8/f07-rules-swapped`: `features/07` with `derive-q` written before `derive-p`. The boundary admits the two rules in the order they are written, so root derives `(q one)` and R is `{∅, {(p one)}}`, the mirror of `features/07`'s `{∅, {(q one)}}`: R is not a function of the program. Open: the register holds today's answer and the right one."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/guard-only-second.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W25/guard-only-second`: a premise-less derivation of `(false)` from an activator a node derived is never recorded as an alternative, so where it arrives second N `{(p a)}`'s core is `early`'s `(b a) (p a) (seed a)`, not `(p a)`. Open: the register holds today's answer and the right one."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/guard-only-first.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "W25's control: `guard-only-second.ein` restated by its rules (`early` reads `(pp ?x)`, which `mk-pp` derives from `(p ?x)`, so `w`'s candidate queues first), so the premise-less derivation is `(false)`'s primary and N `{(p a)}`'s core is `(p a)`, the witness's right answer."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/closure-shared-given.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W10/closure-shared-given`: the closure estimate a full alternatives list keeps an arrival by is a sum, so `x-uv`'s two premises, which rest on the one given `(g K)`, estimate 2 and do not lower the list's 2; root's core is `(c C01) (d C01)` where `(g K)` suffices. Open: the register holds today's answer and the right one."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/closure-shared-given-control.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "W10's control for `closure-shared-given.ein`: two `x-cd` derivations fewer, so `(x K)`'s list is not full when `x-uv` arrives, and root's core is `(g K)`, the witness's right answer."
+note   = "`features/07` with `derive-q` written before `derive-p`. The boundary admits the two rules in the order they are written, so root derives `(q one)` and R is `{∅, {(p one)}}`, the mirror of `features/07`'s `{∅, {(q one)}}`: R is not a function of the program, a known wrong answer on a flagged program, whose answer the engine claims nothing of."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W26/oblig-derived-activator`: a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`. The obligations rung reads the activator off the rule and proposes at root what the debt it brings would (Q-M1e.11), so H holds `(drinks Ann Tea)` beside `(likes Ann Soup)` and R is the control's one state."
+note   = "`oblig-derived-activator`: a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`. The obligations rung reads the activator off the rule and proposes at root what the debt it brings would (Q-M1e.11), so H holds `(drinks Ann Tea)` beside `(likes Ann Soup)` and R is the control's one state."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
@@ -1773,217 +1749,205 @@ note   = "W26's control: `oblig-derived-activator.ein` with the activator also s
 path   = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
 group  = "regression"
 runs   = ["solve --region-limit 8", "saturate", "solve --minimal --region-limit 8", "solve --maximal --region-limit 8"]
-note   = "W27 (`W27/past-limit-lines-minimal`, `-maximal`, Q-M1e2.19): a flagged program of 17 candidates, past the default --region-limit, whose R is three states (`ein oracle --region-limit 17`): minimal line {∅}, maximal line {(meal Ann Soup), (seats Ann C1)}. Past the limit describe certifies {∅} minimal and says the maximal line is not known. The runs go past the limit at `--region-limit 8`, where every member is met by layer 2 and a run costs 2^8 saturations; the register's rows ask the default limit."
+note   = "W27 (`past-limit-lines-minimal`, `-maximal`, Q-M1e2.19): a flagged program of 17 candidates, past the default --region-limit, whose R is three states (`ein oracle --region-limit 17`): minimal line {∅}, maximal line {(meal Ann Soup), (seats Ann C1)}. Past the limit describe certifies {∅} minimal and says the maximal line is not known. The runs go past the limit at `--region-limit 8`, where every member is met by layer 2 and a run costs 2^8 saturations; the regressions ask the default limit."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W28/claim-int-name`: a query's `:expect` claims `(model (holds 1))` over the one state, which holds `(holds \"1\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated. `ein test` is not declared: on a refused file it exits 2, a load error, which no cell may."
+note   = "`claim-int-name`: a query's `:expect` claims `(model (holds 1))` over the one state, which holds `(holds \"1\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated. `ein test` is not declared: on a refused file it exits 2, a load error, which no cell may."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W28/claim-int-name-solve`: the solve form's `(region (model (holds 1)))` over the one state, which holds `(holds \"1\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated. `ein test` is not declared, as for `claim-int-name`."
+note   = "`claim-int-name-solve`: the solve form's `(region (model (holds 1)))` over the one state, which holds `(holds \"1\")`, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated. `ein test` is not declared, as for `claim-int-name`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W28/classes-int-name`: a goal `(got ?v)` answered by `1` in some states and by the string `\"1\"` in others, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its register row restated."
+note   = "`classes-int-name`: a goal `(got ?v)` answered by `1` in some states and by the string `\"1\"` in others, a string as a value. Refused at the parse (a string as a value, Q-M1e2.23), with the file, line and column, and kept as the refusal's witness; its regression restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-fact-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/fact-arg`: `(r _ a)`, a bare `_` as a fact's argument. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
+note   = "`fact-arg`: `(r _ a)`, a bare `_` as a fact's argument. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/is-a-arg`: `(is-a _ T)`, a bare `_` as an object. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
+note   = "`is-a-arg`: `(is-a _ T)`, a bare `_` as an object. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/nested-fact-arg`: `(r (f _ a) c)`, a bare `_` inside a nested fact. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
+note   = "`nested-fact-arg`: `(r (f _ a) c)`, a bare `_` inside a nested fact. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-activator-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/activator-arg`: the activator `(q _)`, a bare `_` as a parameter's binding. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
+note   = "`activator-arg`: the activator `(q _)`, a bare `_` as a parameter's binding. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-goal-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/goal-arg`: a query's goal `(holds _)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1. `ein test` is not declared: the query states no claim."
+note   = "`goal-arg`: a query's goal `(holds _)`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1. `ein test` is not declared: the query states no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W29/core-two-ways`: `_` in a rule's pattern, where its twin writes `?w0`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
+note   = "`core-two-ways`: `_` in a rule's pattern, where its twin writes `?w0`. Refused at the parse (a bare `_` is reserved, Q-M1e2.22), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W29 (`W29/core-two-ways`'s twin): the witness with the slot written `?w0`, whose root core is `(c x) (small s0)`."
+note   = "W29 (`core-two-ways`'s twin): the witness with the slot written `?w0`, whose root core is `(c x) (small s0)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W30/assert-neq-w-x`: a rule concludes `neq`, `(neq w a)` at root and the false `(neq w w)` at `{(p w)}`. A concluded `neq` is checked, never stored, so `{(p w)}` is dead (Q-M1e2.26), and its state files load."
+note   = "`assert-neq-w-x`: a rule concludes `neq`, `(neq w a)` at root and the false `(neq w w)` at `{(p w)}`. A concluded `neq` is checked, never stored, so `{(p w)}` is dead (Q-M1e2.26), and its state files load."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W30/assert-neq-x-x`: a rule concludes the false `(neq a a)`. A concluded `neq` is checked, never stored, so root is dead (Q-M1e2.26)."
+note   = "`assert-neq-x-x`: a rule concludes the false `(neq a a)`. A concluded `neq` is checked, never stored, so root is dead (Q-M1e2.26)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W30/assert-eq-x-w`: a rule concludes the false `(eq a w)`. A concluded `eq` is checked, never stored, so root is dead (Q-M1e2.26)."
+note   = "`assert-eq-x-w`: a rule concludes the false `(eq a w)`. A concluded `eq` is checked, never stored, so root is dead (Q-M1e2.26)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W31/empty-match-false`: a rule whose `:match` is `()`. An empty `:match` is true and fires once, so `r` fires, root is dead, its core `[]` and `refuted by r`."
+note   = "`empty-match-false`: a rule whose `:match` is `()`. An empty `:match` is true and fires once, so `r` fires, root is dead, its core `[]` and `refuted by r`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W31/empty-match-fact`: a rule whose `:match` is `()`, concluding `(q b)`. An empty `:match` is true and fires once: root holds `(q b :rule r)`."
+note   = "`empty-match-fact`: a rule whose `:match` is `()`, concluding `(q b)`. An empty `:match` is true and fires once: root holds `(q b :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W31/empty-match-activator`: a rule with a parameter whose `:match` is `()`, activated by `(r a)`. It fires once per activator: root holds `(hit a :rule r)`."
+note   = "`empty-match-activator`: a rule with a parameter whose `:match` is `()`, activated by `(r a)`. It fires once per activator: root holds `(hit a :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W31/empty-match-hrule`: an hrule whose `:match` is `()`. It proposes `(q b)`: H is `(q b)`, R two states."
+note   = "`empty-match-hrule`: an hrule whose `:match` is `()`. It proposes `(q b)`: H is `(q b)`, R two states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/where-in-and`: `:where (neq ?x a)` beside a `:match`'s conjuncts. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`where-in-and`: `:where (neq ?x a)` beside a `:match`'s conjuncts. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-in-pattern.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/where-in-pattern`: `:where (neq ?x a)` inside a pattern. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`where-in-pattern`: `:where (neq ?x a)` inside a pattern. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-on-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/where-on-rule`: `:where (neq ?x a)` as a keyword of the rule form. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`where-on-rule`: `:where (neq ?x a)` as a keyword of the rule form. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/kwpair-in-pattern`: the pair `:k v` inside a pattern. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`kwpair-in-pattern`: the pair `:k v` inside a pattern. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/kwpair-in-assert`: the pair `:k v` beside an `:assert`'s conjuncts. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`kwpair-in-assert`: the pair `:k v` beside an `:assert`'s conjuncts. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/kwpair-in-goal`: the pair `:zz 1` in a query's goal. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1. `ein test` is not declared, as for W22's goal witnesses: on a refused file it exits 2, a load error, which no cell may."
+note   = "`kwpair-in-goal`: the pair `:zz 1` in a query's goal. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1. `ein test` is not declared, as for W22's goal witnesses: on a refused file it exits 2, a load error, which no cell may."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W32/kwpair-in-macro`: the pair `:k v` in a `forall` call. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
+note   = "`kwpair-in-macro`: the pair `:k v` in a `forall` call. Refused at the parse (Q-M1e2.28), with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W33/activator-nested-value`: the activator `(act (f a))` binds the value parameter `?y` to the nested fact, so `act` derives `(hit (f a))` only, and H holds `(hit a)` and `(hit b)`: R four states."
+note   = "`activator-nested-value`: the activator `(act (f a))` binds the value parameter `?y` to the nested fact, so `act` derives `(hit (f a))` only, and H holds `(hit a)` and `(hit b)`: R four states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W34/assert-empty`: `:assert ()` asserts nothing, so no fact joins H, and R is {∅}."
+note   = "`assert-empty`: `:assert ()` asserts nothing, so no fact joins H, and R is {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W35/absent-empty`: `(absent ())`, an `absent` of the empty list. Refused at the parse, with the file, line and column; both runs exit 1."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W36/alt-flag-refuted-by`: `features/12_expect_false.ein` written without priorities and with `:record-alternative-justifications false` in the file prints `refuted by forced, occupied` beside the five-fact core whose default is `refuted by no-room`. Open: the register holds today's answer and the right one. `lever_invariance` compares it less that row under the flag."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "W36's second witness (`W36/alt-flag-two-derivations`): `(u a)` derived first by the longer of two joins of one kind, in every order, so with `:record-alternative-justifications false` in the file the core search takes the core `(g1 a) (g2 a)` over a pair, `refuted by v, w`, where the default takes it over `(false)`, `refuted by k1`. Open: the register holds today's answer and the right one. `lever_invariance` compares it less that row under the flag."
+note   = "`absent-empty`: `(absent ())`, an `absent` of the empty list. Refused at the parse, with the file, line and column; both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/template-var-star.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W37/template-var-star`: a template reference to the variable `?n*`: a reference reads the name rule's characters up to the first `}`, so the query's `:goal-text` prints *“a is a q”*, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates do."
+note   = "`template-var-star`: a template reference to the variable `?n*`: a reference reads the name rule's characters up to the first `}`, so the query's `:goal-text` prints *“a is a q”*, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates do."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/escape-past-unicode.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W38/escape-past-unicode`: a `:goal-text` writing `\\u{110000}`, one past the last code point, and `\\u{D800}`, a surrogate. `\\u{…}` names a character, and any other escape is refused (*\"reasonable escape symbols\"*, the user): both runs exit 1, refused at the parse with the file, line and column and a note naming each escape and where it is."
+note   = "`escape-past-unicode`: a `:goal-text` writing `\\u{110000}`, one past the last code point, and `\\u{D800}`, a surrogate. `\\u{…}` names a character, and any other escape is refused (*\"reasonable escape symbols\"*, the user): both runs exit 1, refused at the parse with the file, line and column and a note naming each escape and where it is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/or-one-key.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W39/or-one-key`: a top-level `(or …)` whose second disjunct binds what the first did is dropped as one application, so root's core is four facts where its twin's is two. Open: the register holds today's answer and the right one."
+note   = "A top-level `(or …)` whose second disjunct binds what the first did is dropped as one application, so root's core is four facts where its twin's is two: a known wrong answer, a core larger than the smallest."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/or-one-key-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W39 (`W39/or-one-key`'s twin): the witness with `w` written as two rules, whose root core is `(c x) (small s0)`."
+note   = "`or-one-key.ein`'s twin: the program with `w` written as two rules, whose root core is `(c x) (small s0)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
-note   = "W40 (`W40/saturate`, `/render-rules`, `/render-rule`, `/render-constraints`, `/render-program`, `/kb-save`): the register's rows save this file with `ein kb save` and run each command on the container (schema /16); every command answers the container as it answers this file."
+note   = "W40 (`einb-every-command/saturate`, `/render-rules`, `/render-rule`, `/render-constraints`, `/render-program`, `/kb-save`): the regressions save this file with `ein kb save` and run each command on the container (schema /16); every command answers the container as it answers this file."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/saturate-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W41/saturate-import`: a file-relative `(import saturate-import-mod :symbols (q))`. Every command loads a program against its own directory, and both runs answer, root holding `(q m)` and `(r m)`."
+note   = "`saturate-import`: a file-relative `(import saturate-import-mod :symbols (q))`. Every command loads a program against its own directory, and both runs answer, root holding `(q m)` and `(r m)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/saturate-import-mod.ein"
@@ -1995,475 +1959,475 @@ note   = "W41's module: `saturate-import.ein` imports `q` from it by its file-re
 path   = "examples/ein-bugs/wrong-answers/h-long-relation.ein"
 group  = "regression"
 runs   = ["solve", "solve -H"]
-note   = "`W42/h-long-relation`: a relation named `lives-next-door-to`, eighteen characters, which `-H`'s form pads to sixteen and prints its candidate count straight after, `lives-next-door-to2 candidates`. R is the cube of H's two facts, four states."
+note   = "`h-long-relation`: a relation named `lives-next-door-to`, eighteen characters, which `-H`'s form pads to sixteen and prints its candidate count straight after, `lives-next-door-to2 candidates`. R is the cube of H's two facts, four states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/einb-dump-answer.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W43/einb-dump-answer`: `ein solve --dump-answer DIR` on the `.einb` `ein kb save` writes from this file answers as the same run on this file does: R is three states, ∅, {(p a)} and {(p b)}, and N one member, refuted by `clash`. The register's row saves it and runs the dump on the container."
+note   = "`einb-dump-answer`: `ein solve --dump-answer DIR` on the `.einb` `ein kb save` writes from this file answers as the same run on this file does: R is three states, ∅, {(p a)} and {(p b)}, and N one member, refuted by `clash`. Its regression saves it and runs the dump on the container."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fact-eq-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W50/fact-eq-false`: a written `(eq a w)`. A fact of `eq` is checked as a conclusion with no premise, so root is dead (Q-M1e2.26, Q-M1f.33)."
+note   = "`fact-eq-false`: a written `(eq a w)`. A fact of `eq` is checked as a conclusion with no premise, so root is dead (Q-M1e2.26, Q-M1f.33)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W51/not-eq-premise`: a premise `(not (eq ?x ?y))`. It is `(neq ?x ?y)` (Q-M1f.31), and the rule fires."
+note   = "`not-eq-premise`: a premise `(not (eq ?x ?y))`. It is `(neq ?x ?y)` (Q-M1f.31), and the rule fires."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W51/not-eq-fact`: a written `(not (eq a a))`. It is the false `(neq a a)`, so root is dead (Q-M1f.31, Q-M1f.33)."
+note   = "`not-eq-fact`: a written `(not (eq a a))`. It is the false `(neq a a)`, so root is dead (Q-M1f.31, Q-M1f.33)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W51/not-eq-assert`: a rule's conclusion `(not (eq ?x ?x))`. It is `(neq ?x ?x)`, checked as W30's are (Q-M1f.31)."
+note   = "`not-eq-assert`: a rule's conclusion `(not (eq ?x ?x))`. It is `(neq ?x ?x)`, checked as W30's are (Q-M1f.31)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/relvar-eq-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W52/relvar-eq-premise`: a premise whose relation a parameter binds to `eq`. It is the `eq` guard (Q-M1e2.26), and the rule fires."
+note   = "`relvar-eq-premise`: a premise whose relation a parameter binds to `eq`. It is the `eq` guard (Q-M1e2.26), and the rule fires."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W52/relvar-eq-assert`: `W30/assert-eq-x-w`'s conclusion with its relation a parameter bound to `eq`, checked as W30's."
+note   = "`relvar-eq-assert`: `assert-eq-x-w`'s conclusion with its relation a parameter bound to `eq`, checked as W30's."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W53/hrule-eq`: an hrule concluding `(eq ?x ?y)`. An `eq` or `neq` instance is no hypothesis (Q-M1f.32)."
+note   = "`hrule-eq`: an hrule concluding `(eq ?x ?y)`. An `eq` or `neq` instance is no hypothesis (Q-M1f.32)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-nested-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W54/goal-nested-var`: a goal conjunct `(not (p ?x))` whose two rows a query's class substitutes at every depth, so the claim stating the two instances holds."
+note   = "`goal-nested-var`: a goal conjunct `(not (p ?x))` whose two rows a query's class substitutes at every depth, so the claim stating the two instances holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-neq-free.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W55/goal-neq-free`: a goal's free `neq`: it answers a row per name of the program but `w`, and the claim naming `neq` loads and holds (Q-M1e2.26)."
+note   = "`goal-neq-free`: a goal's free `neq`: it answers a row per name of the program but `w`, and the claim naming `neq` loads and holds (Q-M1e2.26)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W55/goal-guard-before-binder`: a goal's `(neq a ?y)` written before `(p ?y)`. A conjunction means the same in any order (Q-M1e2.26), so the class is `(model)` and the claim holds."
+note   = "`goal-guard-before-binder`: a goal's `(neq a ?y)` written before `(p ?y)`. A conjunction means the same in any order (Q-M1e2.26), so the class is `(model)` and the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W56/goal-absent`: a goal's `(absent (q ?y))`, judged with the goal's lifted guards: `?y = b` is no row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance loads and holds."
+note   = "`goal-absent`: a goal's `(absent (q ?y))`, judged with the goal's lifted guards: `?y = b` is no row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance loads and holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W57/assert-var-stops`: a conclusion's variable no premise binds, in a rule root fires. Refused at load, every command, one line."
+note   = "`assert-var-stops`: a conclusion's variable no premise binds, in a rule root fires. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "`W57/assert-var-under-commitment`: a conclusion's variable no premise binds, in a rule only a commitment fires. Refused at load on every command, one line, so no two runs can disagree on it."
+note   = "`assert-var-under-commitment`: a conclusion's variable no premise binds, in a rule only a commitment fires. Refused at load on every command, one line, so no two runs can disagree on it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W57/hrule-assert-var`: an hrule's template writes a variable no premise binds. Refused at load, every command, one line."
+note   = "`hrule-assert-var`: an hrule's template writes a variable no premise binds. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W57/assert-var-never-fires`: a conclusion's variable nothing binds, in a rule whose `:match` is `()`. Refused at load, every command, one line."
+note   = "`assert-var-never-fires`: a conclusion's variable nothing binds, in a rule whose `:match` is `()`. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W58/parameter-nested-assert`: a value parameter its activator binds to a nested fact, read only by the `:assert`. The parameter is bound (W33's cause): root holds `(hit (f a))`, every command answering, exit 0."
+note   = "`parameter-nested-assert`: a value parameter its activator binds to a nested fact, read only by the `:assert`. The parameter is bound (W33's cause): root holds `(hit (f a))`, every command answering, exit 0."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W59/derived-activator`: a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Refused at load, every command, one line naming `mk`, `r` and `?R` (Q-M1f.1 (b))"
+note   = "`derived-activator/derived-activator`: a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Refused at load, every command, one line naming `mk`, `r` and `?R` (Q-M1f.1 (b))"
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W59/derived-activator-never`: `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Refused at load with `derived-activator.ein`'s line, as the user ruled knowing it (Q-M1f.1 (b))"
+note   = "`derived-activator-never`: `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Refused at load with `derived-activator.ein`'s line, as the user ruled knowing it (Q-M1f.1 (b))"
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W60/eq-arity-premise`: a relation parameter its activator binds to `eq`, `(r eq)`, heads a premise of one argument, `(?R ?x)`, so every command stops at root where the plan is compiled, exit 1, with the compiler's arity line. Refused at load, every command, one line."
+note   = "`eq-arity-premise`: a relation parameter its activator binds to `eq`, `(r eq)`, heads a premise of one argument, `(?R ?x)`, so every command stops at root where the plan is compiled, exit 1, with the compiler's arity line. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "`W60/eq-arity-under-commitment`: the same premise under an activator a rule derives from `(mark eq)` only where a commitment holds a `p`, so `saturate` answers, exit 0, where `solve` and `solve --minimal` stop, exit 1, the three runs banking the disagreement. Refused at load, every command, one line (Q-M1f.46)."
+note   = "`eq-arity-under-commitment`: the same premise under an activator a rule derives from `(mark eq)` only where a commitment holds a `p`, so `saturate` answers, exit 0, where `solve` and `solve --minimal` stop, exit 1, the three runs banking the disagreement. Refused at load, every command, one line (Q-M1f.46)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W60/eq-arity-hrule`: an hrule's parameter its `(solve :hrules (h (eq)))` activator binds to `eq` heads a premise of one argument, so `saturate` answers, exit 0, where `solve` stops before reading a state, exit 1. Refused at load, every command, one line (Q-M1f.46)."
+note   = "`eq-arity-hrule`: an hrule's parameter its `(solve :hrules (h (eq)))` activator binds to `eq` heads a premise of one argument, so `saturate` answers, exit 0, where `solve` stops before reading a state, exit 1. Refused at load, every command, one line (Q-M1f.46)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W60/eq-arity-conclusion`: a relation parameter its activator binds to `eq` heads a conclusion of one argument, so root stores `(eq a :rule r)` and the program answers, R two states. Refused at load, every command, one line."
+note   = "`eq-arity-conclusion`: a relation parameter its activator binds to `eq` heads a conclusion of one argument, so root stores `(eq a :rule r)` and the program answers, R two states. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fact-eq-arity.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W61/fact-eq-arity`: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Refused at load, every command, one line."
+note   = "`fact-eq-arity`: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "render rules", "render program"]
-note   = "W62 (`W62/nested-or-stops`) and W65's witness: an `(or …)` written as a premise of an `(and …)`, in a rule root compiles, so every command that compiles stopped on the compiler's line in the Python IR's spelling while the views and `kb save` answered, the runs banking both. Refused at load, every command, one line."
+note   = "W62 (`nested-or-stops`) and W65's witness: an `(or …)` written as a premise of an `(and …)`, in a rule root compiles, so every command that compiles stopped on the compiler's line in the Python IR's spelling while the views and `kb save` answered, the runs banking both. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "`W62/nested-or-under-commitment`: the same disjunction in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped, exit 1, the three runs banking the disagreement. Refused at load, every command, one line."
+note   = "`nested-or-under-commitment`: the same disjunction in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped, exit 1, the three runs banking the disagreement. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W62/nested-or-hrule`: the same disjunction in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
+note   = "`nested-or-hrule`: the same disjunction in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W62/nested-or-never-compiled`: the same disjunction in a rule no activator activates, which every command answered. Refused at load, every command, one line."
+note   = "`nested-or-never-compiled`: the same disjunction in a rule no activator activates, which every command answered. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W62/nested-or-goal`: the same disjunction in a query's goal, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Refused at load, every command, one line."
+note   = "`nested-or-goal`: the same disjunction in a query's goal, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W62/nested-or-goal-no-state`: the same goal where R is empty, so no state is answered from it. Refused at load, every command, one line."
+note   = "`nested-or-goal-no-state`: the same goal where R is empty, so no state is answered from it. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wide-match-stops.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W63/wide-match-stops`: a rule whose `:match` writes 257 distinct variables, past the register file's 256, compiled at root, so every command that compiles stopped. Refused at load, every command, one line."
+note   = "`wide-match-stops`: a rule whose `:match` writes 257 distinct variables, past the register file's 256, compiled at root, so every command that compiles stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W63/wide-match-never-compiled`: the same width in a rule no activator activates, which every command answered. Refused at load, every command, one line."
+note   = "`wide-match-never-compiled`: the same width in a rule no activator activates, which every command answered. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wide-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W63/wide-goal`: a query's goal writing 257 distinct variables, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Refused at load, every command, one line."
+note   = "`wide-goal`: a query's goal writing 257 distinct variables, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-eq-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "`W66/macro-eq-under-commitment`: `(eq ?x)` from a macro's body, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped on the compiler's line, exit 1, the three runs banking the disagreement. Refused at load, every command, one line."
+note   = "`macro-eq-under-commitment`: `(eq ?x)` from a macro's body, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped on the compiler's line, exit 1, the three runs banking the disagreement. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-absent-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W66/macro-absent-hrule`: an `absent` of two premises from a macro's body, in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
+note   = "`macro-absent-hrule`: an `absent` of two premises from a macro's body, in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-eq-obligation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W66/macro-eq-obligation`: `(eq ?x)` from a macro's body headed by its parameter, in an obligation, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
+note   = "`macro-eq-obligation`: `(eq ?x)` from a macro's body headed by its parameter, in an obligation, which `saturate` never compiles, so it answered where `solve` stopped. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W66/macro-absent-never-compiled`: an `absent` of two premises from a macro's body headed by its parameter, in a rule no activator reaches, so every command answered. Refused at load, every command, one line."
+note   = "`macro-absent-never-compiled`: an `absent` of two premises from a macro's body headed by its parameter, in a rule no activator reaches, so every command answered. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-not-conjunction.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W67/macro-not-conjunction`: `(not (and …))` from a macro's body under an `absent`, which the matcher read as a pattern no fact holds, so the rule fired at root and every command answered. Refused at load, every command, one line."
+note   = "`macro-not-conjunction`: `(not (and …))` from a macro's body under an `absent`, which the matcher read as a pattern no fact holds, so the rule fired at root and every command answered. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-neq-connective.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W67/macro-neq-connective`: `(neq ?x (and (p k)))` from a macro's body, a guard comparing a name to a connective, which held, so the rule fired and every command answered. Refused at load, every command, one line."
+note   = "`macro-neq-connective`: `(neq ?x (and (p k)))` from a macro's body, a guard comparing a name to a connective, which held, so the rule fired and every command answered. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-neq-connective-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W67/macro-neq-connective-hrule`: the same `(neq ?x (and (p k)))` in an hrule, which the hypothesis layer evaluated, proposing `(p k)`. Refused at load, every command, one line."
+note   = "`macro-neq-connective-hrule`: the same `(neq ?x (and (p k)))` in an hrule, which the hypothesis layer evaluated, proposing `(p k)`. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-not-conjunction-obligation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W67/macro-not-conjunction-obligation`: the same `(not (and …))` in an obligation, which the obligation pass matched, so every state owed. Refused at load, every command, one line."
+note   = "`macro-not-conjunction-obligation`: the same `(not (and …))` in an obligation, which the obligation pass matched, so every state owed. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-eq-conclusion.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-eq-conclusion`: `(eq ?x)` from a macro's body as a conclusion, which the rule fired, storing `(eq k)`: the user's case, *not allow execution of (eq <arg>)*. Refused at load, every command, one line."
+note   = "`macro-eq-conclusion`: `(eq ?x)` from a macro's body as a conclusion, which the rule fired, storing `(eq k)`: the user's case, *not allow execution of (eq <arg>)*. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-false-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-false-argument`: `(false ?x)` from a macro's body as a conclusion, which the rule fired, storing `(false k)`, read as `(false)`: root dead. Refused at load, every command, one line."
+note   = "`macro-false-argument`: `(false ?x)` from a macro's body as a conclusion, which the rule fired, storing `(false k)`, read as `(false)`: root dead. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-or-conclusion.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-or-conclusion`: `(or (p ?x) (q ?x))` from a macro's body as a conclusion, which the rule fired, storing the disjunction as a fact. Refused at load, every command, one line."
+note   = "`macro-or-conclusion`: `(or (p ?x) (q ?x))` from a macro's body as a conclusion, which the rule fired, storing the disjunction as a fact. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-not-name-conclusion.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-not-name-conclusion`: `(not k)` from a macro's body as a conclusion, which the rule fired, storing the negation of a name. Refused at load, every command, one line."
+note   = "`macro-not-name-conclusion`: `(not k)` from a macro's body as a conclusion, which the rule fired, storing the negation of a name. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-connective-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-connective-value`: `(q (and (p ?x)))` from a macro's body as a conclusion, which the rule fired, storing a conjunction as a value. Refused at load, every command, one line."
+note   = "`macro-connective-value`: `(q (and (p ?x)))` from a macro's body as a conclusion, which the rule fired, storing a conjunction as a value. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-eq-candidate.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W68/macro-eq-candidate`: `(eq ?x)` from a macro's body as an hrule's conclusion, which the hypothesis layer proposed, so a state held `(eq k)`. Refused at load, every command, one line."
+note   = "`macro-eq-candidate`: `(eq ?x)` from a macro's body as an hrule's conclusion, which the hypothesis layer proposed, so a state held `(eq k)`. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "`W69/macro-bare-conclusion-under-commitment`: a conclusion that is a bare variable, from a macro whose body is its parameter, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered where describe stopped on the firing's line. Refused at load, every command, one line."
+note   = "`macro-bare-conclusion-under-commitment`: a conclusion that is a bare variable, from a macro whose body is its parameter, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered where describe stopped on the firing's line. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W69/macro-bare-conclusion-hrule`: the same bare conclusion in an hrule, which the hypothesis layer dropped in silence, proposing nothing. Refused at load, every command, one line."
+note   = "`macro-bare-conclusion-hrule`: the same bare conclusion in an hrule, which the hypothesis layer dropped in silence, proposing nothing. Refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-fact-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/fact-head`: `open`, the verdict, written as a top-level fact's relation. Refused at the parse, at the `open`, every command, with a note."
+note   = "`fact-head`: `open`, the verdict, written as a top-level fact's relation. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/nested-fact-head`: `open`, the verdict, written as a nested fact's relation, finding 3's. Refused at the parse, at the `open`, every command, with a note."
+note   = "`nested-fact-head`: `open`, the verdict, written as a nested fact's relation, finding 3's. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-negation-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/negation-head`: `open`, the verdict, written as a stored negation's relation. Refused at the parse, at the `open`, every command, with a note."
+note   = "`negation-head`: `open`, the verdict, written as a stored negation's relation. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/goal-pattern-head`: `open`, the verdict, written as a pattern's relation inside a query's goal. Refused at the parse, at the `open`, every command, with a note."
+note   = "`goal-pattern-head`: `open`, the verdict, written as a pattern's relation inside a query's goal. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/claim-fact-head`: `open`, the verdict, written as a nested fact's relation in a query's claim. Refused at the parse, at the `open`, every command, with a note."
+note   = "`claim-fact-head`: `open`, the verdict, written as a nested fact's relation in a query's claim. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/relation-parameter`: `open`, the verdict, written as a relation parameter's binding, with a fact of `open`. Refused at the parse, at the `open`, every command, with a note."
+note   = "`relation-parameter`: `open`, the verdict, written as a relation parameter's binding, with a fact of `open`. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W70/obligation-parameter`: `open`, the verdict, written as an obligation's relation parameter. Refused at the parse, at the `open`, every command, with a note."
+note   = "`obligation-parameter`: `open`, the verdict, written as an obligation's relation parameter. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-fact-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/fact-value`: `open`, the verdict, written as a fact's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`fact-value`: `open`, the verdict, written as a fact's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-is-a-object.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/is-a-object`: `open`, the verdict, written as an object's name, typed. Refused at the parse, at the `open`, every command, with a note."
+note   = "`is-a-object`: `open`, the verdict, written as an object's name, typed. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-signature-type.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/signature-type`: `open`, the verdict, written as a type in a relation's signature. Refused at the parse, at the `open`, every command, with a note."
+note   = "`signature-type`: `open`, the verdict, written as a type in a relation's signature. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-premise-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/premise-value`: `open`, the verdict, written as a premise pattern's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`premise-value`: `open`, the verdict, written as a premise pattern's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-eq-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/eq-value`: `open`, the verdict, written as a guard's value. Refused at the parse, at the `open`, every command, with a note."
+note   = "`eq-value`: `open`, the verdict, written as a guard's value. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/conclusion-value`: `open`, the verdict, written as a conclusion's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`conclusion-value`: `open`, the verdict, written as a conclusion's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-hrule-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/hrule-value`: `open`, the verdict, written as an hrule's conclusion argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`hrule-value`: `open`, the verdict, written as an hrule's conclusion argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/derived-activator`: `open`, the verdict, written as a derived activator's argument, bound to a relation parameter. Refused at the parse, at the `open`, every command, with a note."
+note   = "`open-derived-activator/derived-activator`: `open`, the verdict, written as a derived activator's argument, bound to a relation parameter. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-goal-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/goal-value`: `open`, the verdict, written as a query goal's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`goal-value`: `open`, the verdict, written as a query goal's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-claim-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/claim-value`: `open`, the verdict, written as a query claim's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`claim-value`: `open`, the verdict, written as a query claim's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/macro-argument`: `open`, the verdict, written as a macro call's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-argument`: `open`, the verdict, written as a macro call's argument. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-fact-clause.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/fact-clause`: `open`, the verdict, written as a fact's `:rule` clause. Refused at the parse, at the `open`, every command, with a note."
+note   = "`fact-clause`: `open`, the verdict, written as a fact's `:rule` clause. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-solve-list.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/solve-list`: `open`, the verdict, written as a `(solve …)` form's relation list. Refused at the parse, at the `open`, every command, with a note."
+note   = "`solve-list`: `open`, the verdict, written as a `(solve …)` form's relation list. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-trace-step.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W71/trace-step`: `open`, the verdict, written as a trace step's name. Refused at the parse, at the `open`, every command, with a note."
+note   = "`trace-step`: `open`, the verdict, written as a trace step's name. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W72/macro-verdict`: `open`, the verdict, written as a macro's body, the verdict, called in an `:assert`. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-verdict`: `open`, the verdict, written as a macro's body, the verdict, called in an `:assert`. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W72/macro-value`: `open`, the verdict, written as a macro's body, a value. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-value`: `open`, the verdict, written as a macro's body, a value. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-unused.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W72/macro-unused`: `open`, the verdict, written as a macro's body no rule calls. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-unused`: `open`, the verdict, written as a macro's body no rule calls. Refused at the parse, at the `open`, every command, with a note."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W73/nbsp`: a no-break space, U+00A0, between a relation and its value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
+note   = "`unicode-space-nbsp`: a no-break space, U+00A0, between a relation and its value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-in-a-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W73/nbsp-in-a-name`: a no-break space, U+00A0, inside what is written as one value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
+note   = "`nbsp-in-a-name`: a no-break space, U+00A0, inside what is written as one value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-ideographic.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W73/ideographic-space`: an ideographic space, U+3000, between a relation and its value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
+note   = "`ideographic-space`: an ideographic space, U+3000, between a relation and its value. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-line-separator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W73/line-separator`: a line separator, U+2028, between two facts. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
+note   = "`line-separator`: a line separator, U+2028, between two facts. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-next-line.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W73/next-line`: a next-line control, U+0085, between two facts. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
+note   = "`next-line`: a next-line control, U+0085, between two facts. Unicode is written only inside a string literal or a comment: refused at the parse, at the character, with its code point."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
@@ -2475,337 +2439,313 @@ note   = "`W74/directory-*`: a file-relative import of a module that resolves to
 path   = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W76/hrules-name`: a `:hrules` list naming an hrule the program does not declare, `gues` for `guess`. Refused at load, at the name, one line, on every command."
+note   = "`hrules-name`: a `:hrules` list naming an hrule the program does not declare, `gues` for `guess`. Refused at load, at the name, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W76/hrules-activator-relation`: a `:hrules` activator naming a relation the program does not have, `att` for `at`. Refused at load, at the name, one line, on every command."
+note   = "`hrules-activator-relation`: a `:hrules` activator naming a relation the program does not have, `att` for `at`. Refused at load, at the name, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W76/hrules-activator-arity`: a `:hrules` activator giving its hrule another number of arguments, `(at Color)` for `guess (?R ?T1 ?T2)`. Refused at load, at the name, one line, on every command."
+note   = "`hrules-activator-arity`: a `:hrules` activator giving its hrule another number of arguments, `(at Color)` for `guess (?R ?T1 ?T2)`. Refused at load, at the name, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W76/hypothesis-relations`: a `:hypothesis-relations` list naming a relation the program does not have, `like` for `likes`. Refused at load, at the name, one line, on every command."
+note   = "`hypothesis-relations`: a `:hypothesis-relations` list naming a relation the program does not have, `like` for `likes`. Refused at load, at the name, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W76/no-hypothesis`: a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`. Refused at load, at the name, one line, on every command."
+note   = "`no-hypothesis`: a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`. Refused at load, at the name, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-macro-unknown.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W77/goal-macro-unknown`: the stdlib's `unknown`, imported, called in a query's `:goal`, with the claim that lists what it means. The goal's macro calls are expanded at load, and the claim holds."
+note   = "`goal-macro-unknown`: the stdlib's `unknown`, imported, called in a query's `:goal`, with the claim that lists what it means. The goal's macro calls are expanded at load, and the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-macro-expect-model.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W77/goal-macro-expect-model`: a macro of the program's own called in a query's `:goal`, with the claim `(model)`, which held of a goal that had no row. The goal is expanded, its class is `(paid Ann)`, and the claim is FAILED, `solve`'s exit 1."
+note   = "`goal-macro-expect-model`: a macro of the program's own called in a query's `:goal`, with the claim `(model)`, which held of a goal that had no row. The goal is expanded, its class is `(paid Ann)`, and the claim is FAILED, `solve`'s exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-macro-unimported.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W77/goal-macro-unimported`: the stdlib's `unknown` called in a query's `:goal` without its import. Refused at load, one line, on every command."
+note   = "`goal-macro-unimported`: the stdlib's `unknown` called in a query's `:goal` without its import. Refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-macro-arity.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W77/goal-macro-arity`: a macro called in a query's `:goal` with two arguments where it takes one. Refused at load, one line, on every command."
+note   = "`goal-macro-arity`: a macro called in a query's `:goal` with two arguments where it takes one. Refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-no-such-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W78/goal-no-such-relation`: a query's `:goal` over a relation the program names nowhere else, `payed` for `paid`. Refused at load, at the pattern, one line, on every command."
+note   = "`goal-no-such-relation`: a query's `:goal` over a relation the program names nowhere else, `payed` for `paid`. Refused at load, at the pattern, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W78/goal-absent-no-such-relation`: a query's `:goal` whose `(absent …)` is over a relation the program names nowhere else. Refused at load, at the pattern, one line, on every command."
+note   = "`goal-absent-no-such-relation`: a query's `:goal` whose `(absent …)` is over a relation the program names nowhere else. Refused at load, at the pattern, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-derived-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W78/claim-derived-relation`: a query's claim listing a fact of a relation only a rule's `:assert` derives. A claim's relation is a relation of the program, and the claim holds."
+note   = "`claim-derived-relation`: a query's claim listing a fact of a relation only a rule's `:assert` derives. A claim's relation is a relation of the program, and the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W78/solve-claim-derived-relation`: a region claim listing a fact of a relation only a rule's `:assert` derives. A claim's relation is a relation of the program, and the claim holds."
+note   = "`solve-claim-derived-relation`: a region claim listing a fact of a relation only a rule's `:assert` derives. A claim's relation is a relation of the program, and the claim holds."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W79/goal-nested-relation-variable`: a query's `:goal` writing a pattern inside a pattern with a variable as its relation, `(says (?R ?g))`. Refused at load, one line, on every command."
+note   = "`goal-nested-relation-variable`: a query's `:goal` writing a pattern inside a pattern with a variable as its relation, `(says (?R ?g))`. Refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-absent-nested-relation-variable.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W79/goal-absent-nested-relation-variable`: a query's `:goal` whose `(absent …)` writes a pattern inside a pattern with a variable as its relation, which loaded and held in every state. Refused at load, one line, on every command."
+note   = "`goal-absent-nested-relation-variable`: a query's `:goal` whose `(absent …)` writes a pattern inside a pattern with a variable as its relation, which loaded and held in every state. Refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-fact-for-not.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W80/absent-fact-for-not`: A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored. Refused at load, on every command."
+note   = "`absent-fact-for-not`: A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-fact-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W80/absent-fact-name`: A written `(absent Bob)` adds `Bob` to the program's names, and H grows. Refused at load, on every command."
+note   = "`absent-fact-name`: A written `(absent Bob)` adds `Bob` to the program's names, and H grows. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W80/absent-fact-nested`: A value `(absent (paid Bob))` inside a fact is stored. Refused at load, on every command."
+note   = "`absent-fact-nested`: A value `(absent (paid Bob))` inside a fact is stored. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W80/absent-concluded`: A rule's `:assert (absent (paid ?g))` stores a fact of `absent`. Refused at load, on every command."
+note   = "`absent-concluded`: A rule's `:assert (absent (paid ?g))` stores a fact of `absent`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W80/absent-hrule-concluded`: An hrule's `:assert (absent (paid ?g))` splits R on a fact nothing reads. Refused at load, on every command."
+note   = "`absent-hrule-concluded`: An hrule's `:assert (absent (paid ?g))` splits R on a fact nothing reads. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/false-fact-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W81/false-fact-argument`: A written `(false Bob)` is stored, kills root, and names `Bob`. Refused at load, on every command."
+note   = "`false-fact-argument`: A written `(false Bob)` is stored, kills root, and names `Bob`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/false-fact-nested.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W81/false-fact-nested`: A value `(false Bob)` inside a fact is stored. Refused at load, on every command."
+note   = "`false-fact-nested`: A value `(false Bob)` inside a fact is stored. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/false-fact-negated.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W81/false-fact-negated`: A written `(not (false Bob))` is stored. Refused at load, on every command."
+note   = "`false-fact-negated`: A written `(not (false Bob))` is stored. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/false-premise-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W81/false-premise-argument`: A premise `(absent (false ?g))` holds of everything, so the rule fires. Refused at load, on every command."
+note   = "`false-premise-argument`: A premise `(absent (false ?g))` holds of everything, so the rule fires. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/false-goal-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W81/false-goal-argument`: A goal's `(absent (false ?g))` holds of everything. Refused at load, on every command."
+note   = "`false-goal-argument`: A goal's `(absent (false ?g))` holds of everything. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-value-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W82/eq-value-fact`: A value `(eq Ann Bob)` inside a fact is stored. Refused at load, on every command."
+note   = "`eq-value-fact`: A value `(eq Ann Bob)` inside a fact is stored. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-value-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W82/eq-value-concluded`: A rule's `:assert (asked (eq ?x ?y))` stores equalities as values. Refused at load, on every command."
+note   = "`eq-value-concluded`: A rule's `:assert (asked (eq ?x ?y))` stores equalities as values. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-value-matched-by-shape.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W82/eq-value-matched-by-shape`: A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape. Refused at load, on every command."
+note   = "`eq-value-matched-by-shape`: A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-value-negation-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W82/eq-value-negation-concluded`: `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)`. Refused at load, on every command."
+note   = "`eq-value-negation-concluded`: `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pattern-argument-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W83/pattern-argument-and`: A premise `(says (and (paid ?g)))` loads and never matches. Refused at load, on every command."
+note   = "`pattern-argument-and`: A premise `(says (and (paid ?g)))` loads and never matches. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pattern-argument-and-under-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W83/pattern-argument-and-under-absent`: Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires. Refused at load, on every command."
+note   = "`pattern-argument-and-under-absent`: Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W83/pattern-argument-hrule`: An hrule's premise `(says (or …))` loads and proposes nothing. Refused at load, on every command."
+note   = "`pattern-argument-hrule`: An hrule's premise `(says (or …))` loads and proposes nothing. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pattern-argument-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W83/pattern-argument-goal`: A goal's `(absent (says (neq ?g Bob)))` holds of everything. Refused at load, on every command."
+note   = "`pattern-argument-goal`: A goal's `(absent (says (neq ?g Bob)))` holds of everything. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pattern-argument-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W83/pattern-argument-macro`: A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires. Refused at load, on every command."
+note   = "`pattern-argument-macro`: A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-concluded`: A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)`. Refused at load, on every command."
+note   = "`not-name-concluded`: A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-hrule-concluded`: An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H. Refused at load, on every command."
+note   = "`not-name-hrule-concluded`: An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-parameter.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-parameter`: A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name. Refused at load, on every command."
+note   = "`not-name-parameter`: A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-macro`: A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)`. Refused at load, on every command."
+note   = "`not-name-macro`: A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-guard`: A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name. Refused at load, on every command."
+note   = "`not-name-guard`: A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-derived`: A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to. Refused at load, on every command."
+note   = "`not-name-derived`: A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-name-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W84/not-name-under-commitment`: A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest. Refused at load, on every command."
+note   = "`not-name-under-commitment`: A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "test"]
-note   = "`W85/hrule-reads-absent-not`: An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build. A debug build answers as a release build does."
+note   = "`hrule-reads-absent-not`: An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build. A debug build answers as a release build does."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-reads-not.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "test"]
-note   = "`W85/hrule-reads-not`: An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build. A debug build answers as a release build does."
+note   = "`hrule-reads-not`: An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build. A debug build answers as a release build does."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "test"]
-note   = "`W85/hrule-reads-unknown`: An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. A debug build answers as a release build does."
+note   = "`hrule-reads-unknown`: An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. A debug build answers as a release build does."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-fact`: A top-level `(settled Ann)` beside `(macro settled (?g) (paid ?g))` is stored as a fact of `settled`. Refused at load, on every command."
+note   = "`macro-call-fact`: A top-level `(settled Ann)` beside `(macro settled (?g) (paid ?g))` is stored as a fact of `settled`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-nested-fact`: A macro's call inside a fact, `(says (settled Ann))`, is stored as written. Refused at load, on every command."
+note   = "`macro-call-nested-fact`: A macro's call inside a fact, `(says (settled Ann))`, is stored as written. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-negated-fact`: `(not (settled Bob))` beside `(paid Bob)` is alive: the negation is of a fact of `settled`, not of `(paid Bob)`. Refused at load, on every command."
+note   = "`macro-call-negated-fact`: `(not (settled Bob))` beside `(paid Bob)` is alive: the negation is of a fact of `settled`, not of `(paid Bob)`. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-stdlib-fact`: `(unknown (paid Bob))` with `std.macro`'s `unknown` imported is stored as a fact. Refused at load, on every command."
+note   = "`macro-call-stdlib-fact`: `(unknown (paid Bob))` with `std.macro`'s `unknown` imported is stored as a fact. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-stdlib-unimported`: `(unknown (paid Bob))` with no import is stored as a fact, where a rule's `:match` writing the same is refused. Refused at load, on every command."
+note   = "`macro-call-stdlib-unimported`: `(unknown (paid Bob))` with no import is stored as a fact, where a rule's `:match` writing the same is refused. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-in-claim.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-in-claim`: A claim that lists `(says (settled Ann))` loads and fails. Refused at load, on every command."
+note   = "`macro-call-in-claim`: A claim that lists `(says (settled Ann))` loads and fails. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-call-in-region-claim`: A region claim that lists `(says (settled Ann))` loads and fails. Refused at load, on every command."
+note   = "`macro-call-in-region-claim`: A region claim that lists `(says (settled Ann))` loads and fails. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W86/macro-and-relation-one-name`: `(relation settled Guest)` beside `(macro settled …)` loads, and its fact is stored where no premise reads it. Refused at load, on every command."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W87/written-rule-no-such-rule`: `(paid Ann :rule zzz)` is stored as derived by a rule the program does not declare. Open: the register holds today's answer and the right one."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W87/written-rule-leaves-core`: a fact written with a `:rule` leaves every core, so a refutation resting on it reports the empty core. Open: the register holds today's answer and the right one."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "W87 (`W87/written-rule-leaves-core`'s twin): the witness with `(paid Ann)` written without a `:rule`, whose root core is `(paid Ann)`."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/written-using-never-held.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`W87/written-using-never-held`: a `:using` that names a fact no state holds loads, and the core is the empty set. Open: the register holds today's answer and the right one."
+note   = "`macro-and-relation-one-name`: `(relation settled Guest)` beside `(macro settled …)` loads, and its fact is stored where no premise reads it. Refused at load, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-library.ein"
@@ -2817,19 +2757,19 @@ note   = "W88's library of facts, an ontology: `is-a` declared with two facts, a
 path   = "examples/ein-bugs/wrong-answers/import-facts-flat.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W88/import-facts-flat`: `(import import-facts-library :symbols (is-a))`, which kept the declaration and dropped the library's two `is-a` facts, so the goal had no row. A listed name brings the facts whose relation it is, and the goal has two rows."
+note   = "`import-facts-flat`: `(import import-facts-library :symbols (is-a))`, which kept the declaration and dropped the library's two `is-a` facts, so the goal had no row. A listed name brings the facts whose relation it is, and the goal has two rows."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W88/import-facts-rule`: `(import import-facts-library :symbols (liquids))`, which kept the rule and the declaration it reads and dropped the facts, so the rule never fired. The closure brings the facts of every relation a kept declaration names, and root holds `(liquid Tea)` and `(liquid Milk)`."
+note   = "`import-facts-rule`: `(import import-facts-library :symbols (liquids))`, which kept the rule and the declaration it reads and dropped the facts, so the rule never fired. The closure brings the facts of every relation a kept declaration names, and root holds `(liquid Tea)` and `(liquid Milk)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-undeclared.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W88/import-facts-undeclared`: `(import import-facts-library :symbols (likes))`, a relation the library only states facts of, which was refused at load, *not provided by the module: likes*. A listed name may be such a relation, and root holds `(likes Tea Milk)` and `(not (likes Milk Tea))`."
+note   = "`import-facts-undeclared`: `(import import-facts-library :symbols (likes))`, a relation the library only states facts of, which was refused at load, *not provided by the module: likes*. A listed name may be such a relation, and root holds `(likes Tea Milk)` and `(not (likes Milk Tea))`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-table-module.ein"
@@ -2841,49 +2781,49 @@ note   = "W88's table module, the calculator's case: two rows of the full adder'
 path   = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/top-level-fact`: a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
+note   = "`top-level-fact`: a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-nested-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/nested-fact`: a nested fact, `(n 1)` as an operand of a request to `std.math.decimal-arith`, whose `(relation n Number Digit)` declares two arguments. Refused at load, at the form, one line, on every command."
+note   = "`nested-fact`: a nested fact, `(n 1)` as an operand of a request to `std.math.decimal-arith`, whose `(relation n Number Digit)` declares two arguments. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-request.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/request`: the calculator's request with one operand, `(add (n z 5))`, where `std.math.decimal-arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`), which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
+note   = "`arity-request`: the calculator's request with one operand, `(add (n z 5))`, where `std.math.decimal-arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`), which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/num9-eight-digits`: a `std.math.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine. Refused at load, at the form, one line, on every command."
+note   = "`num9-eight-digits`: a `std.math.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/in-match`: a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
+note   = "`in-match`: a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/in-assert`: a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
+note   = "`in-assert`: a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W89/in-goal`: a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
+note   = "`arity-in-goal`: a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-table.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W88/import-facts-table`: `(import import-facts-table-module :symbols (add2))`, which kept the rule and dropped the table it reads, so 9 + 1 was never answered. Root holds `(sum-of (num2 0 9) (num2 0 1) (num2 1 0))`."
+note   = "`import-facts-table`: `(import import-facts-table-module :symbols (add2))`, which kept the rule and dropped the table it reads, so 9 + 1 was never answered. Root holds `(sum-of (num2 0 9) (num2 0 1) (num2 1 0))`."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
@@ -2902,13 +2842,13 @@ note   = "`W88/import-facts-table`: `(import import-facts-table-module :symbols 
 path   = "examples/ein-bugs/wrong-answers/count-past-2-64.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W92/count-past-2-64`: 64 items and a rule that chooses all once one is chosen, two states and 2^64 commitments, past what 64 bits count: exit 0, two states, *9 223 372 036 854 775 807 or more* commitments."
+note   = "`count-past-2-64`: 64 items and a rule that chooses all once one is chosen, two states and 2^64 commitments, past what 64 bits count: exit 0, two states, *9 223 372 036 854 775 807 or more* commitments."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/count-past-2-128.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W92/count-past-2-128`: the same program with 130 items, one state reached by 2^130 − 1 commitments: exit 0, as its sibling."
+note   = "`count-past-2-128`: the same program with 130 items, one state reached by 2^130 − 1 commitments: exit 0, as its sibling."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dump-selection-library.ein"
@@ -2920,13 +2860,13 @@ note   = "W91's library: a relation and one rule with an empty `:match`, its ent
 path   = "examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W93/converse-lemma-subtype`: `tests/stdlib/typing/03`'s well-typed pair with `std.algebra`'s `converse-pair-symmetric` beside the two converse checks, which every program writing `converse` holds, an import bringing its module whole. A pair is well-typed where its two types are equal or one a subtype of the other, either way round, so the lemma's mirror holds: R {∅}."
+note   = "`converse-lemma-subtype`: `tests/stdlib/typing/03`'s well-typed pair with `std.algebra`'s `converse-pair-symmetric` beside the two converse checks, which every program writing `converse` holds, an import bringing its module whole. A pair is well-typed where its two types are equal or one a subtype of the other, either way round, so the lemma's mirror holds: R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dump-selection.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W91/dump-selection`: `(import dump-selection-library :symbols (palette))`, R {∅}, whose `--dump-answer` state file re-wrote a program with neither the rule nor the relation it names. A name a selection lists is live, and the file is the program as loaded."
+note   = "`dump-selection`: `(import dump-selection-library :symbols (palette))`, R {∅}, whose `--dump-answer` state file re-wrote a program with neither the rule nor the relation it names. A name a selection lists is live, and the file is the program as loaded."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"
@@ -2938,43 +2878,43 @@ note   = "W90's module: a declaration and a fact, and then what a program states
 path   = "examples/ein-bugs/wrong-answers/import-directives-as.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W90/import-directives-as`: `(import import-directives-module :as m)` brings the module's `(solve …)`, `(config …)` and `(query …)`, which left the program no candidate, R {∅}, and had it answer the module's query. No import brings a module's `(query …)`, `(solve …)` or `(config …)`, and R is four states, no query asked."
+note   = "`import-directives-as`: `(import import-directives-module :as m)` brings the module's `(solve …)`, `(config …)` and `(query …)`, which left the program no candidate, R {∅}, and had it answer the module's query. No import brings a module's `(query …)`, `(solve …)` or `(config …)`, and R is four states, no query asked."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-twice.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W90/import-directives-twice`: the same module imported `:as m` and `:as k`, which was refused at load, *2 (solve …) forms*, though the program writes none. It loads, R four states."
+note   = "`import-directives-twice`: the same module imported `:as m` and `:as k`, which was refused at load, *2 (solve …) forms*, though the program writes none. It loads, R four states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/and-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
-note   = "`W94/and-in-and`: a rule concluding `(and (r a) (and (p a) (q a)))`, which the grammar takes, stored `(r a)` and one fact headed `and`, and neither `(p a)` nor `(q a)`, so both queries' claims FAILED, exit 1. A conclusion is read flat at any depth, root holds the three facts and both claims hold."
+note   = "`and-in-and`: a rule concluding `(and (r a) (and (p a) (q a)))`, which the grammar takes, stored `(r a)` and one fact headed `and`, and neither `(p a)` nor `(q a)`, so both queries' claims FAILED, exit 1. A conclusion is read flat at any depth, root holds the three facts and both claims hold."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/and-in-and-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`W94/and-in-and-macro`: a macro whose body is `(and (p ?x) (q ?x))`, called as one conjunct of a rule's `(and …)` conclusion, which expands to `and-in-and.ein`'s conclusion. A conclusion is read flat at any depth, so it concludes each conjunct, as its sibling does."
+note   = "`and-in-and-macro`: a macro whose body is `(and (p ?x) (q ?x))`, called as one conjunct of a rule's `(and …)` conclusion, which expands to `and-in-and.ein`'s conclusion. A conclusion is read flat at any depth, so it concludes each conjunct, as its sibling does."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W95/hrule-and`: an hrule concluding `(and (p a) (q a))`. An hrule's conclusion is one fact (Q-M1f.271): refused at load, one line, on every command."
+note   = "`hrule-and`: an hrule concluding `(and (p a) (q a))`. An hrule's conclusion is one fact (Q-M1f.271): refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W95/hrule-and-in-and`: an hrule concluding `(and (and (p a) (q a)) (r a))`. Read flat, it concludes three facts, and an hrule's conclusion is one fact (Q-M1f.271): refused at load, as `hrule-and.ein` is."
+note   = "`hrule-and-in-and`: an hrule concluding `(and (and (p a) (q a)) (r a))`. Read flat, it concludes three facts, and an hrule's conclusion is one fact (Q-M1f.271): refused at load, as `hrule-and.ein` is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W96/closed-by-rule`: ten digits closed by a rule, `(__closed__ digit)` derived and never written, beside an open `total`. The blind enumerator takes `__closed__` for an object, the head of a fact only a rule derives being in the names index and in no registry: eleven candidates, `(total __closed__)` among them, and R 2 048 states where it is 1 024, the control's. The enumerator's objects leave the kernel's two dunders out by name, and the witness answers its control's R."
+note   = "`closed-by-rule`: ten digits closed by a rule, `(__closed__ digit)` derived and never written, beside an open `total`. The blind enumerator takes `__closed__` for an object, the head of a fact only a rule derives being in the names index and in no registry: eleven candidates, `(total __closed__)` among them, and R 2 048 states where it is 1 024, the control's. The enumerator's objects leave the kernel's two dunders out by name, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"
@@ -2986,25 +2926,25 @@ note   = "W96's control: `dunder-object-closed-by-rule.ein` with the closure wri
 path   = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W96/arith-closing-rule`: `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}, which it answers."
+note   = "`arith-closing-rule`: `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}, which it answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W96/symmetric-by-rule`: the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four, which it answers."
+note   = "`symmetric-by-rule`: the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four, which it answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W96/as-value`: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two, which it answers."
+note   = "`as-value`: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two, which it answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-unactivated.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W97/unactivated`: `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`, over one colour and two houses. The import loads the module's two obligation rules and nothing activates either; they take the ladder's second rung, which owes nothing: no candidate, and R {∅} where the blind enumerator's eleven candidates and 2 048 states are right, the control's. The second rung is taken where an obligation is activated at root, and the witness answers its control's R."
+note   = "`rung-unactivated`: `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`, over one colour and two houses. The import loads the module's two obligation rules and nothing activates either; they take the ladder's second rung, which owes nothing: no candidate, and R {∅} where the blind enumerator's eleven candidates and 2 048 states are right, the control's. The second rung is taken where an obligation is activated at root, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein"
@@ -3022,43 +2962,43 @@ note   = "W97's twin: `rung-unactivated.ein` with the obligation stated, `(total
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W97/symmetric-import`: `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The import's obligation rules, which nothing activates, take the ladder's second rung: no candidate, and R {∅} where four candidates and 8 states are right, the control's, which it answers."
+note   = "`symmetric-import`: `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The import's obligation rules, which nothing activates, take the ladder's second rung: no candidate, and R {∅} where four candidates and 8 states are right, the control's, which it answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W97's control for `W97/symmetric-import`: the import deleted and `std.algebra`'s `symmetric` written in its place, word for word. No obligation rule is loaded: four candidates, and R 16 commitments and 8 states, the witness's right answer."
+note   = "W97's control for `symmetric-import`: the import deleted and `std.algebra`'s `symmetric` written in its place, word for word. No obligation rule is loaded: four candidates, and R 16 commitments and 8 states, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W97/connex-import`: Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1, which it does: a program that loaded, refused at load."
+note   = "`connex-import`: Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1, which it does: a program that loaded, refused at load."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W98/derived-at-root`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. The saturation that derives the mark mirrors `near`, and the witness answers its control's R."
+note   = "`derived-at-root`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. The saturation that derives the mark mirrors `near`, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W98's control for `W98/derived-at-root`: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
+note   = "W98's control for `derived-at-root`: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`W98/derived-at-node`: the mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction. A node resumes root's saturation, whose mirror was seeded with nothing marked, and the mark offers `near`'s facts to none: no node holds `(near b a)`, and R is four states where it is {∅}, the control's. The node's saturation that derives the mark mirrors `near`, and the witness answers its control's R."
+note   = "`derived-at-node`: the mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction. A node resumes root's saturation, whose mirror was seeded with nothing marked, and the mark offers `near`'s facts to none: no node holds `(near b a)`, and R is four states where it is {∅}, the control's. The node's saturation that derives the mark mirrors `near`, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "W98's control for `W98/derived-at-node`: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
+note   = "W98's control for `derived-at-node`: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

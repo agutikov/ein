@@ -1,5 +1,5 @@
 ;;; The kernel's other dunder among the blind enumerator's objects — **W96**,
-;;; register row `W96/symmetric-by-rule` (`corpus/wrong_answers.toml`).
+;;; regression `symmetric-by-rule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

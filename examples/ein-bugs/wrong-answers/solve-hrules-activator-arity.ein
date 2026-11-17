@@ -1,6 +1,6 @@
 ;;; A `(solve :hrules …)` activator that gives its hrule another number of
 ;;; arguments loads, and proposes nothing —
-;;; **W76**, register row `W76/hrules-activator-arity`.
+;;; **W76**, regression `hrules-activator-arity`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

@@ -1,6 +1,6 @@
 ;;; A relation parameter its activator binds to `eq` heads a conclusion of one
-;;; argument, and root stored `(eq a)` — **W60**, register row
-;;; `W60/eq-arity-conclusion` (`corpus/wrong_answers.toml`).
+;;; argument, and root stored `(eq a)` — **W60**, regression
+;;; `eq-arity-conclusion` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -28,7 +28,7 @@
 ;;;
 ;;; The loader refuses the program: every command that loads it exits 1 with
 ;;; one line, naming `r`, `?R`, the form and `(r eq)` (`ein test`: 2), in
-;;; either build. The register's `now` is that refusal; the section above is
+;;; either build. The regression's `now` is that refusal; the section above is
 ;;; the record of the answer it replaced.
 ;;;
 

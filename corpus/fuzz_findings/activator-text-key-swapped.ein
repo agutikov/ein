@@ -1,5 +1,5 @@
 ;;; `activator-text-key.ein` with its two activator lines swapped, and
-;;; nothing else. Register row `W16/string-then-int`; the note is
+;;; nothing else. Regression `string-then-int`; the note is
 ;;; `activator-text-key.md`. Refused at the parse as its twin is: a
 ;;; string is no value.
 (relation edge  Node Node)

@@ -1,6 +1,6 @@
 ;;; A disjunction nested inside a conjunction, in a rule root compiles: every
 ;;; command that compiles the rule stops, and four that do not answer —
-;;; **W62**, register row `W62/nested-or-stops` (`corpus/wrong_answers.toml`).
+;;; **W62**, regression `nested-or-stops` (`corpus/regressions.toml`).
 ;;; The same witness is W65's, the four views and `kb save` that answer it.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

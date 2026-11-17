@@ -28,7 +28,7 @@
 //! cargo run --release -p ein-infer --example mechanism_census -- [--json] [FILE…]
 //! ```
 //!
-//! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
+//! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses.
 //! It writes nothing and changes no answer.
 
 #[allow(dead_code)]

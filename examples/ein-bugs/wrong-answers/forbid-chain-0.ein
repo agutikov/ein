@@ -1,4 +1,4 @@
-;;; A control for **W17** (`corpus/wrong_answers.toml`): `forbid-chain-1.ein`
+;;; A control for **W17** (`corpus/regressions.toml`): `forbid-chain-1.ein`
 ;;; one link shorter, which *forbid* refuses (Q-M1e2.5).
 ;;;
 ;;;

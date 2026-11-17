@@ -70,7 +70,7 @@ pub struct Firing {
 /// **No conclusion reads a register its match left unbound**, so there is no
 /// variant for one: the loader refuses a conclusion variable no premise or
 /// parameter binds (`W57`), and the compiler seeds every parameter from its
-/// activator, a nested fact too (`W33`, `W58/parameter-nested-assert`). What
+/// activator, a nested fact too (`W33`, `parameter-nested-assert`). What
 /// holds it is `resolve`'s assertion, and `ein-ir`'s
 /// `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]

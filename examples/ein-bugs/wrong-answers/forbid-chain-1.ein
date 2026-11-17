@@ -1,5 +1,5 @@
 ;;; *forbid* misses a refutation whose activator chain first appears at a node —
-;;; **W17**, register row `W17/forbid-chain-1` (`corpus/wrong_answers.toml`).
+;;; **W17**, regression `forbid-chain-1` (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;;

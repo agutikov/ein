@@ -1,6 +1,6 @@
 ;;; A value parameter its activator binds to a nested fact, read only by the
-;;; rule's conclusion, stops the run — **W58**, register row
-;;; `W58/parameter-nested-assert` (`corpus/wrong_answers.toml`), which shares
+;;; rule's conclusion, stops the run — **W58**, regression
+;;; `parameter-nested-assert` (`corpus/regressions.toml`), which shares
 ;;; a cause with W33.
 ;;;
 ;;;

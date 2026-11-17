@@ -1,5 +1,5 @@
-;;; A written fact of `eq` at one argument is stored — **W61**, register row
-;;; `W61/fact-eq-arity` (`corpus/wrong_answers.toml`), found beside W60.
+;;; A written fact of `eq` at one argument is stored — **W61**, regression
+;;; `fact-eq-arity` (`corpus/regressions.toml`), found beside W60.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -28,7 +28,7 @@
 ;;;
 ;;; The loader refuses the program now: every command that loads it exits 1 with
 ;;; one line, naming the fact (`ein test`: 2), in either build, where it stored
-;;; `(eq a)`. The register's `now` is that refusal; the section above is the
+;;; `(eq a)`. The regression's `now` is that refusal; the section above is the
 ;;; record of the answer it replaced.
 
 (relation p Node :why "{?1} is a p")

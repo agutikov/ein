@@ -1,5 +1,5 @@
 ;;; Which core a program reported moved with interner ids — **W11**,
-;;; register row `W11/unsat-core-id-space` (`corpus/wrong_answers.toml`).
+;;; regression `unsat-core-id-space` (`corpus/regressions.toml`).
 ;;; `corpus/fuzz_findings/unsat-core-id-space.ein` is the same program, a
 ;;; frontend-fuzzer seed.
 ;;;

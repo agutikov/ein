@@ -34,7 +34,7 @@
 //! ```
 //!
 //! With no `FILE` it sweeps `site_census`'s selection, `corpus_files()` plus
-//! the register's witnesses. It writes nothing, and no route reads it.
+//! the regressions' witnesses. It writes nothing, and no route reads it.
 
 #[allow(dead_code)]
 #[path = "shared/census.rs"]

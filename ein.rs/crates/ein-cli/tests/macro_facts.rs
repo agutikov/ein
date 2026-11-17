@@ -281,8 +281,8 @@ fn a_macros_call_written_as_a_fact_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's eight witnesses (W86), each read from its file, as
-/// `wrong_answers.rs` reads one command's run of each.
+/// The regressions' eight witnesses of a macro's call written as a fact, each
+/// read from its file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-macro-fact-witnesses");

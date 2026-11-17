@@ -381,7 +381,7 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 /// ([`diagnostics.md` § 2.13](../../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds);
 /// `examples/ein-bugs/unbound-assert-var.ein`), and a parameter its activator
 /// binds to a nested fact read only by a conclusion is seeded
-/// (`W58/parameter-nested-assert`), so `ein_infer::firing::FireError` has no
+/// (`parameter-nested-assert`), so `ein_infer::firing::FireError` has no
 /// such case.
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;

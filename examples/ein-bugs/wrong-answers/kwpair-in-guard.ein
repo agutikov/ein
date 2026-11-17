@@ -1,5 +1,5 @@
 ;;; A keyword pair as a guard's argument reads nothing, in silence — **W24**,
-;;; register row `W24/kwpair-in-guard` (`corpus/wrong_answers.toml`); a keyword
+;;; regression `kwpair-in-guard` (`corpus/regressions.toml`); a keyword
 ;;; pair is no guard's argument (Q-M1e2.18).
 ;;;
 ;;;

@@ -1,6 +1,6 @@
 ;;; One candidate, refuted in TWO firings — **W2**, the forced-positive cascade
-;;; refuting a consistent program, at **default flags**. Register row
-;;; `W2/forced-2` (`corpus/wrong_answers.toml`).
+;;; refuting a consistent program, at **default flags**. Regression
+;;; `forced-2` (`corpus/regressions.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;

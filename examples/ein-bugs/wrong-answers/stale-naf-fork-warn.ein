@@ -1,6 +1,6 @@
 ;;; `stale-naf-fork.ein` with `(config :warn-derived-naf true)` — the twin that
 ;;; shows **W8** is *not* contained by the warning that flag turned on.
-;;; Register row `W8/stale-naf-fork`, as a twin.
+;;; Regression `stale-naf-fork`, as a twin.
 ;;;
 ;;; As banked, below this header the program was `stale-naf-fork.ein` plus the
 ;;; one `(config …)` line. The engine's answer was the same — `Solution`
@@ -17,7 +17,7 @@
 ;;; at load. What this twin shows, that the warning did not see the derived
 ;;; case, is why the refusal reads derivations. `:warn-derived-naf` is a
 ;;; retired flag, refused at the parse, so the program below is
-;;; `stale-naf-fork.ein`'s; the file stays as the register's twin, whose
+;;; `stale-naf-fork.ein`'s; the file stays as the regression's twin, whose
 ;;; record says what the engine answered with the flag. It is refused at the
 ;;; same commands as `stale-naf-fork.ein`, with the same line, and
 ;;; `ein saturate` runs.

@@ -1,7 +1,7 @@
 //! How far the state route reaches, in process, beside
 //! [`route1_reach`](route1_reach.rs).
 //!
-//! Every corpus file and register witness that loads (or the `FILE`s given),
+//! Every corpus file and regression witness that loads (or the `FILE`s given),
 //! through [`ein_infer::states`] at a budget: one JSON line per program with
 //! the same names `route1_reach` uses where they mean the same thing — `n`,
 //! the static verdict, `visited` (saturations), `facts` (beyond root, summed),
@@ -21,7 +21,7 @@
 //!
 //! `--budget` is in visited commitments and `--facts` in facts beyond root,
 //! both off unless given, as in `route1_reach`. With no `FILE` it sweeps
-//! `corpus_files()` plus the register's witnesses. The rows are its output;
+//! `corpus_files()` plus the regressions' witnesses. The rows are its output;
 //! no script reads them.
 
 use std::path::{Path, PathBuf};
@@ -89,10 +89,8 @@ fn main() {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

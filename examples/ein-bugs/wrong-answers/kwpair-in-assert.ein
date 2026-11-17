@@ -1,5 +1,5 @@
 ;;; A keyword pair beside an `:assert`'s conjuncts is dropped in silence —
-;;; **W32**, register row `W32/kwpair-in-assert` (`corpus/wrong_answers.toml`);
+;;; **W32**, regression `kwpair-in-assert` (`corpus/regressions.toml`);
 ;;; each form takes a closed list of keywords (Q-M1e2.28).
 ;;;
 ;;;

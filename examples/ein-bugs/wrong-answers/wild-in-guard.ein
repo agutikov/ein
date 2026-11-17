@@ -1,5 +1,5 @@
-;;; `_` in a guard reads nothing, in silence — **W24**, register row
-;;; `W24/wild-in-guard` (`corpus/wrong_answers.toml`); a bare `_` is
+;;; `_` in a guard reads nothing, in silence — **W24**, regression
+;;; `wild-in-guard` (`corpus/regressions.toml`); a bare `_` is
 ;;; reserved and refused (Q-M1e2.22).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

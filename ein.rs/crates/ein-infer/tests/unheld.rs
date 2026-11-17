@@ -1,7 +1,7 @@
 //! **L9, a fact nothing proposes and nothing writes is in no state**
 //! (`ein_infer::unheld`), held four ways:
 //!
-//! - **Where it licenses**: over every corpus program and register witness,
+//! - **Where it licenses**: over every corpus program and regression witness,
 //!   the instances L9 licenses, each one L5 refuses for a witness that is no
 //!   candidate and not denied, and the programs it does not reach named with
 //!   why.
@@ -14,7 +14,7 @@
 //!   one of them (the licence). `explore.rs` holds every mode to the oracle
 //!   on the same cubes.
 //! - **With and without.** Every question of `ein solve` on every corpus
-//!   program and register witness with an instance L9 licenses is asked
+//!   program and regression witness with an instance L9 licenses is asked
 //!   twice, the route's table with L9 and L5's alone
 //!   (`unheld::without`, a switch on the calling thread that no lever
 //!   reaches): one answer, *one answer* as `known_dead.rs` defines it; the
@@ -63,13 +63,11 @@ fn rel_of(path: &Path) -> String {
         .to_string()
 }
 
-/// Every corpus file and register witness, once.
-fn corpus_and_register() -> Vec<PathBuf> {
+/// Every corpus file and regression witness, once.
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -137,7 +135,7 @@ fn licensed(path: &Path) -> Option<Vec<(Licensed, String)>> {
 /// written by two rules), held below.
 #[test]
 fn l9_licenses_where_nothing_writes_the_witness_relation() {
-    let files = corpus_and_register();
+    let files = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "unheld::census",
         &files,
@@ -222,7 +220,7 @@ fn l9_is_the_oracle_on_every_monotone_program_it_reaches() {
     };
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut nodes_read, mut owing) = (0usize, 0usize, 0usize);
-    for path in corpus_and_register() {
+    for path in corpus_and_regressions() {
         let rel = rel_of(&path);
         let Some(lic) = licensed(&path) else {
             continue;
@@ -380,7 +378,7 @@ fn closures(a: &Answer) -> BTreeSet<Vec<u32>> {
 }
 
 /// **Every question answers alike with L9 and without it**, on every corpus
-/// program and register witness with an instance L9 licenses: one verdict,
+/// program and regression witness with an instance L9 licenses: one verdict,
 /// one `exhausted`, a part of `R` listed whole the same states and minimal
 /// commitments, a listing stopped as asked as many states, each in `R` as
 /// describe lists it; describe and `--count` every field of R both compute
@@ -391,7 +389,7 @@ fn closures(a: &Answer) -> BTreeSet<Vec<u32>> {
 /// programs, the price list's first clause, each cell printed.
 #[test]
 fn every_question_answers_alike_with_l9_and_without() {
-    let files: Vec<PathBuf> = corpus_and_register()
+    let files: Vec<PathBuf> = corpus_and_regressions()
         .into_iter()
         .filter(|p| licensed(p).is_some_and(|l| !l.is_empty()))
         .collect();

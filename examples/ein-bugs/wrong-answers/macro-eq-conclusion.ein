@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `eq` with one argument, called as a conclusion:
 ;;; the rule fires and stores `(eq k)` —
-;;; **W68**, register row `W68/macro-eq-conclusion`.
+;;; **W68**, regression `macro-eq-conclusion`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

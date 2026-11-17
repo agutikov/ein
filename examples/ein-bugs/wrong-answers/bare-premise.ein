@@ -1,5 +1,5 @@
 ;;; A premise that is not a form is dropped, in silence — **W24**,
-;;; register row `W24/bare-premise` (`corpus/wrong_answers.toml`).
+;;; regression `bare-premise` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

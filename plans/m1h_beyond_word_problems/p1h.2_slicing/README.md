@@ -184,7 +184,7 @@ cites this section:
   2026-10-16).
 - **Every golden a stage moves is counted with a command and named in its record before it is blessed.**
 - **A wrong answer met on the way** is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` in a commit of its own
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` in a commit of its own
   before its fix.
 - **The gate, then the nightly,** on each code commit: `./run_tests.sh`, then `./run_tests.sh --nightly`;
   `utils/ci_container.sh` too on a commit that changes a DOT writer.

@@ -1,5 +1,5 @@
-;;; A written `(not (false Bob))` is stored — **W81**, register row
-;;; `W81/false-fact-negated`.
+;;; A written `(not (false Bob))` is stored — **W81**, regression
+;;; `false-fact-negated`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

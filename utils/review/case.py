@@ -42,7 +42,7 @@ from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_t
                         verdict_block, yes)
 from review.util import REPO, details, doc, load_json, read, rel, run, table, warning_words, write
 
-REGISTER = REPO / "corpus/wrong_answers.toml"
+REGISTER = REPO / "plans/wrong_answers/register.toml"
 
 # The last commit whose `ein solve` ran the walk: a build of it re-runs a
 # recorded `wrong` / `control` / `twin` block (status_2026-10-18.md § 9).
@@ -70,7 +70,7 @@ def models_file(right: dict) -> str | None:
     `closes` and the same fact lists, so the CLI compares what the row says."""
     if "models" not in right or not right.get("closes"):
         return None
-    lines = ["; written by utils/review_bundle.py from corpus/wrong_answers.toml",
+    lines = ["; written by utils/review_bundle.py from plans/wrong_answers/register.toml",
              "closes " + " ".join(right["closes"])]
     for m in right["models"]:
         lines.append("model")
@@ -136,7 +136,7 @@ def oracle_code(r: RunResult) -> str:
 
 def now_differences(want: dict, got: dict | None, run: RunResult | None = None) -> list[str]:
     """Every field where the run disagrees with the row's `[case.now]` —
-    `wrong_answers.rs`'s `differences`, which the gate holds. A refused `now`
+    the runner's `differences`, which the gate holds. A refused `now`
     (M1e2 S1e2.2.5, *forbid*) is exit 1, its stderr's first line, and no
     summary; so is one that ends in an error (M1e2 S1e2.2.18, W18)."""
     field = "refused" if want.get("refused") else "error" if want.get("error") else None
@@ -145,7 +145,7 @@ def now_differences(want: dict, got: dict | None, run: RunResult | None = None) 
         inv = run.invocations[0] if run and run.invocations else None
         first = first_line(inv.stderr if inv else "")
         # `{FILE}` is the path the run was handed (schema /16), and a solve's
-        # usage refusal exits 2 (schema /19), as `wrong_answers.rs` reads them.
+        # usage refusal exits 2 (schema /19), as the runner (`ein-cli/tests/held/`) reads them.
         line = want[field].replace("{FILE}", run.spec.file if run else "{FILE}")
         exit = want.get("exit", 1)
         out = []
@@ -423,7 +423,7 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
         return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
                 f"*{answer_words(w)}* (`ein {w['run']}`{won}, the "
                 f"register's `wrong`). `ein {now['run']}`{on} {said} — which is the register's `right`, "
-                f"{recorded_answer(right)}; `wrong_answers.rs` holds `[case.now]` to it, and this build re-ran it "
+                f"{recorded_answer(right)}; the runner (`ein-cli/tests/held/`) holds `[case.now]` to it, and this build re-ran it "
                 "(§ 3, § 4).", ""]
     if now.get("refused"):
         # A refusal (M1e2 S1e2.2.5, *forbid*): the program is refused, which
@@ -431,7 +431,7 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
         return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
                 f"*{answer_words(w)}* "
                 f"(`ein {w['run']}`{won}, the register's `wrong`). `ein {now['run']}`{on} now **refuses the program**, "
-                f"exit {now.get('exit', 1)}: *{now['refused']}* — which is the register's `right`, a refusal; `wrong_answers.rs` "
+                f"exit {now.get('exit', 1)}: *{now['refused']}* — which is the register's `right`, a refusal; the runner (`ein-cli/tests/held/`) "
                 "holds `[case.now]` to it, and this build re-ran it (§ 3).", ""]
     return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
             f"*{answer_words(w)}* "
@@ -463,10 +463,10 @@ def live_nogoods(r: RunResult | None) -> list | None:
 
 def nogoods_clause(now: dict, right: dict) -> str:
     """A fixed W19 row's N cores (M1e2 S1e2.2.19, schema /8): what the run
-    reports, `right`'s, and that `wrong_answers.rs` holds them."""
+    reports, `right`'s, and that the runner (`ein-cli/tests/held/`) holds them."""
     if right.get("nogoods") is None:
         return ""
-    return (f" N's cores are {nogoods_text(now.get('nogoods'))}, as `right`'s are; `wrong_answers.rs` holds "
+    return (f" N's cores are {nogoods_text(now.get('nogoods'))}, as `right`'s are; the runner (`ein-cli/tests/held/`) holds "
             "`[case.now] nogoods`, `--dump-answer`'s `nogoods.json`, to them.")
 
 
@@ -476,13 +476,13 @@ def core_clause(now: dict, right: dict) -> str:
     if right.get("core") is None:
         return ""
     return (f" Its unsat core is {' '.join(now.get('core') or []) or '∅'}, as `right`'s is; "
-            "`wrong_answers.rs` holds `[case.now] core`, the summary's `region.core`, to it.")
+            "the runner (`ein-cli/tests/held/`) holds `[case.now] core`, the summary's `region.core`, to it.")
 
 
 def outside_clause(now: dict, right: dict) -> str:
     """What a fixed row's read-out names outside the universe, when its
     `right` states it (W6, M1e2 S1e2.2.8): the relations, and the sentence
-    `wrong_answers.rs` holds the run's `outside` row to."""
+    the runner (`ein-cli/tests/held/`) holds the run's `outside` row to."""
     if right.get("outside") is None:
         return ""
     names = ", ".join(f"`{r}`" for r in now.get("outside") or []) or "nothing"
@@ -606,7 +606,7 @@ def write_right(out: Path, row: dict, mfile: str | None) -> None:
     right = row["right"]
     if right:
         write(out / "right" / "README.md", "\n".join(
-            [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `corpus/wrong_answers.toml`", "",
+            [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `plans/wrong_answers/register.toml`", "",
              "```json", json.dumps(right, indent=2, ensure_ascii=False), "```", ""]
             + ([f"`--diff-models` reads [right.models](right.models), written from it."] if mfile else [])))
 
@@ -638,7 +638,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     for label, a in recorded:
         cols.append(Col(label, None, None, a, recorded=True))
     # A `container` row (schema /16) reads the witness saved as a `.einb`, as
-    # `wrong_answers.rs` runs it (Q-M1f.55): every invocation reads the
+    # the runner (`ein-cli/tests/held/`) runs it (Q-M1f.55): every invocation reads the
     # container, and the program page shows the source it stores.
     file, save = row["witness"], None
     if now.get("container"):
@@ -945,7 +945,7 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
     version = run("version", [bin, "--version"]).stdout.splitlines()
     lines = ["# The review bundle", "",
              f"> Built {date.today().isoformat()} at commit `{git_commit()}` · `{version[0] if version else bin}` · "
-             f"from [`corpus/wrong_answers.toml`]({rel(REGISTER, page)}) — M1e2 P1e2.1, for "
+             f"from [`plans/wrong_answers/register.toml`]({rel(REGISTER, page)}) — M1e2 P1e2.1, for "
              f"[the review]({doc('plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md', page)}). "
              "`build/` is gitignored: rebuild with `python3 utils/review_bundle.py`.", ""]
     if built:

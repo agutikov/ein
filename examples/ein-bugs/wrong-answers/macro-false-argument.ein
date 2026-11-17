@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `false` with an argument, called as a conclusion:
 ;;; the rule fires, stores `(false k)`, and root is read as dead —
-;;; **W68**, register row `W68/macro-false-argument`.
+;;; **W68**, regression `macro-false-argument`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

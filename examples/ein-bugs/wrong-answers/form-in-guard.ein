@@ -1,5 +1,5 @@
 ;;; A form as a guard's argument read nothing, in silence — **W24**, register
-;;; row `W24/form-in-guard` (`corpus/wrong_answers.toml`); `eq` and `neq` are
+;;; regression `form-in-guard` (`corpus/regressions.toml`); `eq` and `neq` are
 ;;; relations, and a nested fact is a value (Q-M1e2.26).
 ;;;
 ;;;
@@ -25,8 +25,8 @@
 ;;; four `hit-neq` facts and no `hit-eq`, exit 0, with no word of the form (`ein
 ;;; saturate --dump FILE` and `ein solve FILE` at `f8c10730`). After it, and
 ;;; before `6841faff`, the loader refused it, every command exiting 1 (`ein
-;;; test`: 2). Now it loads and answers as above, which the register's row holds
-;;; (`ein-cli/tests/wrong_answers.rs`).
+;;; test`: 2). Now it loads and answers as above, which the regression holds
+;;; (`ein-cli/tests/regressions.rs`).
 ;;;
 ;;;
 

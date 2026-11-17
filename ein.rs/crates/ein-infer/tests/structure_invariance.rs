@@ -50,7 +50,7 @@
 //!    lines with the prefixes off, each form's spelled as its own file
 //!    spells a candidate, which is how its own document spells it.
 //!
-//! Over every corpus file and register witness that **searches**, whose
+//! Over every corpus file and regression witness that **searches**, whose
 //! describe saturates more than root (`corpus_ops`' `searches`, the same
 //! function): where there is a structure to move. The corpus's `slow`
 //! entries are read under `EIN_CORPUS_SLOW=1`, as the other corpus sweeps
@@ -103,7 +103,7 @@ fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
 
-/// Every corpus file and register witness, once; the `slow` entries that are
+/// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -113,10 +113,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

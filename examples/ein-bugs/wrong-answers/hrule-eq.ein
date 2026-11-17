@@ -1,6 +1,6 @@
 ;;; An hrule's `eq` instance is proposed as a hypothesis, and a commitment
-;;; stores it — **W53**, register row `W53/hrule-eq`
-;;; (`corpus/wrong_answers.toml`); no commitment changes `eq` or `neq`
+;;; stores it — **W53**, regression `hrule-eq`
+;;; (`corpus/regressions.toml`); no commitment changes `eq` or `neq`
 ;;; (Q-M1e2.26).
 ;;;
 ;;;

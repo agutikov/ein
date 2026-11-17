@@ -1,5 +1,5 @@
 ;;; a macro's body writes `open` as a value, and loads — **W72**, register
-;;; row `W72/macro-value`.
+;;; regression `macro-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

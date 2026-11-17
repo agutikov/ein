@@ -335,6 +335,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "snmalloc-rs",
+ "toml",
 ]
 
 [[package]]
@@ -382,7 +383,6 @@ dependencies = [
  "rayon",
  "rustc-hash",
  "serde_json",
- "toml",
 ]
 
 [[package]]

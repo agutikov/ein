@@ -1,5 +1,5 @@
 ;;; An hrule whose `:match` is `()` proposed nothing — **W31**, register
-;;; row `W31/empty-match-hrule` (`corpus/wrong_answers.toml`).
+;;; regression `empty-match-hrule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -22,7 +22,7 @@
 ;;;
 ;;; An hrule's `:match ()` matches once, so `h` proposes `(q b)`: H is one
 ;;; candidate and R is ∅ and `{(q b)}`, the answer above by hand. The
-;;; register's `now` is that answer; the section above is the record of the
+;;; regression's `now` is that answer; the section above is the record of the
 ;;; one it replaced.
 ;;;
 ;;;

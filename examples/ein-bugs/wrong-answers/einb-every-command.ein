@@ -1,7 +1,7 @@
 ;;; A command that takes a program refused its `.einb` — **W40**, register
-;;; rows `W40/saturate`, `W40/render-rules`, `W40/render-rule`,
-;;; `W40/render-constraints`, `W40/render-program` and `W40/kb-save`
-;;; (`corpus/wrong_answers.toml`).
+;;; rows `einb-every-command/saturate`, `einb-every-command/render-rules`, `einb-every-command/render-rule`,
+;;; `einb-every-command/render-constraints`, `einb-every-command/render-program` and `einb-every-command/kb-save`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -18,7 +18,7 @@
 ;;; save` writes from this file is answered by every command that takes a
 ;;; program, each as it answers this file: `saturate --dump` the same KB, each
 ;;; `render` view the same drawing (Q-M1f.17), and `kb save` a container
-;;; again. The register's rows run each command on the container (schema /16)
+;;; again. The regressions run each command on the container (schema /16)
 ;;; and hold its stdout to the same run's on this file.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────

@@ -43,11 +43,11 @@ mod written;
 /// fixtures that also state today's answer and are meant to break.
 const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 
-/// **What *forbid* refuses on the corpus and the register, exactly.**
+/// **What *forbid* refuses on the corpus and the regressions, exactly.**
 ///
 /// Each row is the program and the first clause of its refusal's line: the
 /// rule, what it concludes, and what it rests on. The `direct` rows are W3's
-/// four witnesses, `W1/alive-empty-interlayer` and the two `branching/`
+/// four witnesses, `alive-empty-interlayer` and the two `branching/`
 /// refusal fixtures; the `via` rows are `W8`'s `stale-naf-fork` pair and the
 /// fuzz finding `d3-unsat-core`; the three `per activator` rows are `W16`'s
 /// second shape: the symbol control, and its int and nested-fact twins, each
@@ -63,7 +63,7 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// the nested twin's names its fact, `[activator (box a)]`:
 /// `Plan::activator_args` keeps every argument (Q-M1f.43).
 /// `features/05` and `/12`, `direct` too, close
-/// the relation their refutations read and load. `W97/connex-import` is the
+/// the relation their refutations read and load. `connex-import` is the
 /// one row whose program loaded until the ladder's second rung was chosen by
 /// an obligation activated at root rather than by one loaded: `std.algebra`
 /// imported for `connex`, whose unactivated obligation rules kept `lt` off
@@ -130,7 +130,7 @@ const DESCRIBE: Mode = Mode {
 #[test]
 fn the_refused_set_is_exactly_these() {
     let mut files = corpus_files();
-    for row in ein_corpus::register().case {
+    for row in ein_corpus::regressions().case {
         files.push(repo_root().join(&row.witness));
     }
     files.sort();

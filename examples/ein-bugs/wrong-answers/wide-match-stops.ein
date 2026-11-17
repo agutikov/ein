@@ -1,6 +1,6 @@
 ;;; A rule whose `:match` writes 257 distinct variables, compiled at root:
-;;; every command that compiles it stops, and the views and `kb save` answer — **W63**, register row `W63/wide-match-stops`
-;;; (`corpus/wrong_answers.toml`).
+;;; every command that compiles it stops, and the views and `kb save` answer — **W63**, regression `wide-match-stops`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

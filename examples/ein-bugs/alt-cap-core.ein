@@ -1,6 +1,6 @@
 ;;; **The `MAX_ALT_JUSTIFICATIONS = 32` cap could enlarge the reported unsat
 ;;; core — and hand it back the order-dependence the AND/OR search removed.**
-;;; Register row `W10/alt-cap-core`.
+;;; Regression `alt-cap-core`.
 ;;;
 ;;; This file and [`alt-cap-core-reordered.ein`](alt-cap-core-reordered.ein)
 ;;; differ in the **written order** of one rule, `mk-w3` (§ The written
@@ -58,7 +58,7 @@
 ;;; (`docs/ein/user/reference/config.md` § 2.5). And a saving *between* two
 ;;; facts, behind a full list, is still refused —
 ;;; [`wrong-answers/alt-cap-shared.ein`](wrong-answers/alt-cap-shared.ein),
-;;; register row `W10/alt-cap-shared`, which stays open.
+;;; a known gap.
 ;;;
 ;;; This file is the shape that makes the promise's limit visible, not a
 ;;; report that a shipped puzzle is wrong.

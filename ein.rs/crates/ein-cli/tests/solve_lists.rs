@@ -238,8 +238,8 @@ fn a_list_naming_nothing_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's five witnesses (W76), each read from its file, as
-/// `wrong_answers.rs` reads one command's run of each.
+/// The regressions' five witnesses of a `(solve …)` list, each read from its
+/// file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-solve-list-witnesses");

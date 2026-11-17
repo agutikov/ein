@@ -37,5 +37,3 @@ ein-render = { path = "../ein-render" }
 # stopping point — shared by every test that has to know.
 ein-narration = { path = "../ein-narration" }
 serde_json.workspace = true
-# `register_region.rs` holds its bless to a register that still parses.
-toml.workspace = true

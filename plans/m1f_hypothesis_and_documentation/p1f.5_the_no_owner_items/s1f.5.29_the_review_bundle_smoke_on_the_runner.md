@@ -25,7 +25,7 @@ why it fails? - add new stage"*.
 
 [`utils/review_bundle.py`](../../../utils/review_bundle.py) builds **the review bundle** (M1e2 S1e2.1.6). It is
 markdown pages under `build/review/`, one per row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), each carrying every artefact the row's run writes,
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), each carrying every artefact the row's run writes,
 raw and rendered: each DOT drawn as an SVG by Graphviz, each JSON a table. It exists for the user's review of a wrong
 answer. The whole bundle is a nightly step.
 

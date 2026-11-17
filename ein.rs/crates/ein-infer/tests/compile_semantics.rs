@@ -604,7 +604,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
 ///
 /// Were it skipped, the parameter would be a free variable of the plan, so
 /// `(act (f a))` would fire `(p ?y)` on every `p` and conclude `(hit a)` and
-/// `(hit b)` beside `(hit (f a))` (`W33/activator-nested-value`), and a
+/// `(hit b)` beside `(hit (f a))` (`activator-nested-value`), and a
 /// conclusion that alone read the parameter would have no value (`W58`). The
 /// test beside it holds the relation half, which stays refused.
 #[test]

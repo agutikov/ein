@@ -1,7 +1,7 @@
 ;;; `alive-set-fresh-name.ein` without its `spawn` rule — **W1** at layer 0
 ;;; under `lookahead false`, and the proof that the banked file's refutation is
-;;; not W4's alone. Register row `W1/fresh-name-nospawn`
-;;; (`corpus/wrong_answers.toml`).
+;;; not W4's alone. Regression `fresh-name-nospawn`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is `../alive-set-fresh-name.ein` with the
 ;;; `spawn` rule deleted: no rule asserts a fresh name, so the alive-set

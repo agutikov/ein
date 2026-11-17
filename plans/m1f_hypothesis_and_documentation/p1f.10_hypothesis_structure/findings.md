@@ -4,7 +4,7 @@
 
 What a stage of this phase finds outside its own scope: kept in the phase and shown to the user at its stop,
 not fixed by the stage that found it. A wrong answer among them is a row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before anything fixes it; H9-4 is one, W98, filed
+[`corpus/wrong_answers.toml`](../../wrong_answers/register.toml) before anything fixes it; H9-4 is one, W98, filed
 and fixed at the phase's close, and none other below is.
 
 Track H's stages keep theirs under a heading each, below the table: H9-n, H6-n, H15-n.

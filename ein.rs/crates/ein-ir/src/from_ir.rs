@@ -493,7 +493,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 
 /// Intern every fact an `eq` or `neq` guard compares, `(f a)` in `(neq ?x (f
 /// a))`, for the same reason [`intern_program_names`] interns names: the
-/// compiler reads it as a value (`W24/form-in-guard`), and must not intern it
+/// compiler reads it as a value (`form-in-guard`), and must not intern it
 /// for the first time during
 /// a search. A form that holds a variable is refused (Q-M1f.30), and holds
 /// none of these.

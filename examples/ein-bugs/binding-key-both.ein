@@ -1,6 +1,6 @@
 ;;; Two activators of one rule, an int and a nested fact in one position,
-;;; lost a derivation — **W7**, register row `W7/binding-key-layout`
-;;; (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;; lost a derivation — **W7**, regression `binding-key-both/binding-key-layout`
+;;; (`corpus/regressions.toml`), Q-M1e.16.
 ;;; `corpus/fuzz_findings/binding-key-layout.ein` is the same program, a
 ;;; frontend-fuzzer seed.
 ;;;

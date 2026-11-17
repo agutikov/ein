@@ -4,8 +4,8 @@ Written by hand, not a fuzzer's find: the mechanism by which the core a dead nod
 interner. A resumed fork's delta is in the order its commitment was written, candidate order, and not in `FactId`
 order, so N's one member, `{(on A), (on B)}`, reports `(g G08) (h H40) (on A) (on B)` under every permutation of the
 id space, and nothing else a run reports moves either, narration included. The fixture is
-[`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein), the witness of register
-row `W11/fork-delta-order` ([`corpus/wrong_answers.toml`](../wrong_answers.toml)), which the id-order sweep permutes
+[`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein), the witness of
+regression `fork-delta-order` ([`corpus/regressions.toml`](../regressions.toml)), which the id-order sweep permutes
 on every commit.
 
 - property: **id-order** — the same answer under a permuted interner
@@ -29,5 +29,5 @@ that is the order `(on A)` and `(on B)` enter the resumed fork's delta: in `Fact
 reported core would move when the ids do.
 
 Over every derivation (an uncapped store) the core is `(g G01) (h H01) (on A) (on B)`. Which of the equal-size cores
-a full list leaves is the store's bounded retention, `W10/alt-cap-shared`'s class; this row asks only that it not
+a full list leaves is the store's bounded retention, `examples/ein-bugs/wrong-answers/alt-cap-shared.ein`'s class, a known gap; this row asks only that it not
 move with the ids.

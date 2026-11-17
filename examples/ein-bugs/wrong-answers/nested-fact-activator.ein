@@ -1,6 +1,6 @@
 ;;; A relation parameter its activator binds to a nested fact reads nothing,
-;;; in silence — **W24**, register row `W24/nested-fact-activator`
-;;; (`corpus/wrong_answers.toml`).
+;;; in silence — **W24**, regression `nested-fact-activator`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

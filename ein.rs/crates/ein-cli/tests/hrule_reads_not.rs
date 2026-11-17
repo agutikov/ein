@@ -44,7 +44,7 @@ fn states(out: &str) -> Option<usize> {
         .and_then(|n| n.parse().ok())
 }
 
-/// The register's three witnesses, and the state each has beside ∅.
+/// The regressions' three witnesses, and the state each has beside ∅.
 const WITNESSES: [(&str, &str); 3] = [
     ("hrule-reads-absent-not", "(model (paid Ann))"),
     ("hrule-reads-not", "(model (owes Bob))"),

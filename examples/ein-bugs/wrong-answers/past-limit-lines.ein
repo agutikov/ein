@@ -1,6 +1,6 @@
-;;; The line modes past `--region-limit` — **W27**, register rows
-;;; `W27/past-limit-lines-minimal` and `W27/past-limit-lines-maximal`
-;;; (`corpus/wrong_answers.toml`), under Q-M1e2.19: the smallest program the
+;;; The line modes past `--region-limit` — **W27**, regressions
+;;; `past-limit-lines-minimal` and `past-limit-lines-maximal`
+;;; (`corpus/regressions.toml`), under Q-M1e2.19: the smallest program the
 ;;; static check flags whose cube is past the default limit of 16, so a bare
 ;;; `ein solve` and its two line modes stop there with every member of R
 ;;; met.

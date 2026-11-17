@@ -68,7 +68,7 @@ pub fn ops() -> Vec<Op> {
 /// `--dump-lattice`'s `nodes.json`, each with the rules that refuted it, and
 /// these ops hold them: a dead node's `refuted_by` and its core are read off
 /// the order its fork's derivations arrive in, which is where an id order
-/// would show (`W11/fork-delta-order`,
+/// would show (`fork-delta-order`,
 /// `examples/ein-bugs/fork-delta-order.ein`).
 pub fn core_ops() -> Vec<Op> {
     READ_OUT_MODES.iter().map(|(m, _)| Op::Cores(m)).collect()

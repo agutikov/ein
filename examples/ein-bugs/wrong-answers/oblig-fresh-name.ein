@@ -1,6 +1,6 @@
 ;;; The obligations rung never proposed a domain value a commitment derives —
-;;; **W14**, register row `W14/oblig-fresh-name`
-;;; (`corpus/wrong_answers.toml`).
+;;; **W14**, regression `oblig-fresh-name`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -33,8 +33,8 @@
 ;;; empty: every alive node owed, `(region (owing (model)))`. The rung
 ;;; declines when an obligation's guard scans a relation in D (here `food`;
 ;;; Q-M1e2.10), the blind enumerator builds H, and this file answers its
-;;; control's R, which the `:expect` below states. The register row
-;;; `W14/oblig-fresh-name` is fixed.
+;;; control's R, which the `:expect` below states. The regression
+;;; `oblig-fresh-name` is fixed.
 ;;;
 
 (relation person T :why "{?1} is a person")

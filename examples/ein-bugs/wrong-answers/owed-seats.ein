@@ -1,6 +1,6 @@
 ;;; Two owed families on one relation — **W5**: the obligations rung
 ;;; recorded a strict superset of a model, chosen by name order, at **default
-;;; flags**. Register row `W5/owed-seats` (`corpus/wrong_answers.toml`).
+;;; flags**. Regression `owed-seats` (`corpus/regressions.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; A string written in a rule's `:assert` stops the run — **W18**,
-;;; register row `W18/str-in-assert` (`corpus/wrong_answers.toml`).
+;;; regression `str-in-assert` (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;;

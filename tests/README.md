@@ -180,7 +180,7 @@ program can show:
 
 | file | what it holds |
 |---|---|
-| `01_tables.ein` | an import brings the module whole, every table's rows (the register's W88, seen from the stdlib); each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and the module's own closing facts, which every import brings, leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
+| `01_tables.ein` | an import brings the module whole, every table's rows (W88's regression, seen from the stdlib); each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and the module's own closing facts, which every import brings, leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
 | `02_a_core_names_its_rows.ein` | a refutation through a lookup: root is dead and the unsat core is `(column 7 5 3)` and `(fa 7 5 0 2 1)`, the claim and the row it was checked against. The agreeing `(column 7 5 2)` is there so the rule is matched and silent once (*a refutation rule gets two files*, here two facts) |
 
 ### `stdlib/math/decimal-arith/`: a theory whose answers a program cannot check
@@ -740,7 +740,7 @@ self-converse lemma. The facts are those of the unmutated module, so no claim
 made of facts can tell them apart, and no program can load one of those rules
 without its lemma: they are banked. `converse-illtyped-dom` without its `neq`
 is killed, by `stdlib/algebra/27_converse_welltyped_either_way.ein`, the
-fixture of the register's W93.
+fixture of W93's regression.
 
 ### What holds this directory up
 

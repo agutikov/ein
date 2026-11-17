@@ -10,7 +10,7 @@
 //!
 //! The diff's claims are the three shapes `ein-render::models`' unit tests pin,
 //! seen through the CLI: a missing model, a spurious one, and one a fact off.
-//! The region read-out answers the register's rows right, so the shapes are
+//! The region read-out answers the regressions right, so the shapes are
 //! made here by writing the file wrong, over W1's witness.
 
 use std::collections::BTreeSet;

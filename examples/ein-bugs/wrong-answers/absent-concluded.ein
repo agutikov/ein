@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (absent (paid ?g))` stores a fact of `absent` —
-;;; **W80**, register row `W80/absent-concluded`.
+;;; **W80**, regression `absent-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

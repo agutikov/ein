@@ -7,8 +7,8 @@ after `:why`, `:source` or `:goal-text`, and never a value
 `(holds "1")` is refused at the parse, and both files are. A compile plan is keyed by its activator's values, never
 by their text, so two activators that print alike key two plans.
 
-The two files are frontend-fuzzer seeds whose recorded outcome is the parse refusal, and the witnesses of register
-rows `W16/int-and-string` and `W16/string-then-int` ([`corpus/wrong_answers.toml`](../wrong_answers.toml)). Their
+The two files are frontend-fuzzer seeds whose recorded outcome is the parse refusal, and the witnesses of
+regressions `int-and-string` and `string-then-int` ([`corpus/regressions.toml`](../regressions.toml)). Their
 fixtures,
 [`examples/ein-bugs/activator-text-int-and-string.ein`](../../examples/ein-bugs/activator-text-int-and-string.ein)
 and [`activator-text-string-then-int.ein`](../../examples/ein-bugs/activator-text-string-then-int.ein), are the

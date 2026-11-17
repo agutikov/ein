@@ -1,6 +1,6 @@
 ;;; An owed instance whose alternatives each die in TWO firings — **W1**
 ;;; turning an `Open` into a certified `Contradiction`, at **default
-;;; flags**. Register row `W1/owed-two-step` (`corpus/wrong_answers.toml`).
+;;; flags**. Regression `owed-two-step` (`corpus/regressions.toml`).
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;

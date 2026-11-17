@@ -1,5 +1,5 @@
 ;;; A kernel dunder among the blind enumerator's objects — **W96**, register
-;;; row `W96/closed-by-rule` (`corpus/wrong_answers.toml`).
+;;; regression `closed-by-rule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

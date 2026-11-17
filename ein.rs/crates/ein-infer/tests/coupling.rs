@@ -26,7 +26,7 @@
 //! The converse of neither is claimed: an edge may be of a derivation that
 //! never ends in a death.
 //!
-//! On every corpus file and register witness the loader accepts, the static
+//! On every corpus file and regression witness the loader accepts, the static
 //! check calls monotone and whose describe exhausts at the default
 //! `--region-budget`, the coupling read at the same budget. The corpus's
 //! `slow` entries are read under `EIN_CORPUS_SLOW=1`, as the other corpus
@@ -72,7 +72,7 @@ const Z2: &str = "examples/zebra2.ein";
 /// The instances every run reads, `slow` or not.
 const INSTANCES: [&str; 3] = ["examples/zebra.ein", Z2, L02];
 
-/// Every corpus file and register witness, once; the `slow` entries that are
+/// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -82,10 +82,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

@@ -1,6 +1,6 @@
 //! How far route 1 reaches, in process.
 //!
-//! Every corpus file and register witness that loads, through
+//! Every corpus file and regression witness that loads, through
 //! [`ein_infer::downset`] (route 1) at a budget, and through the oracle too
 //! where `n ≤ 16` and `--oracle` asks: one JSON line per program, with `n`,
 //! the static verdict, what route 1 visited per layer, whether it declined
@@ -17,7 +17,7 @@
 //! the engine's unit, facts beyond root (`downset::DEFAULT_BUDGET`), and is
 //! off unless given.
 //!
-//! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
+//! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses.
 //! The rows are its output; no script reads them.
 //!
 //! A row's `layers` are `[visited, dead, owing, in R, facts, wall]` per layer.
@@ -75,10 +75,8 @@ fn main() {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

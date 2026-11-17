@@ -1,5 +1,5 @@
-;;; `ein solve --dump-answer` refused a `.einb` — **W43**, register row
-;;; `W43/einb-dump-answer` (`corpus/wrong_answers.toml`).
+;;; `ein solve --dump-answer` refused a `.einb` — **W43**, regression
+;;; `einb-dump-answer` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

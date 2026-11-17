@@ -1,6 +1,6 @@
 ;;; A macro whose body writes an `(or …)`, called as a conclusion: the rule fires
 ;;; and stores the disjunction as a fact of the relation `or` —
-;;; **W68**, register row `W68/macro-or-conclusion`.
+;;; **W68**, regression `macro-or-conclusion`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

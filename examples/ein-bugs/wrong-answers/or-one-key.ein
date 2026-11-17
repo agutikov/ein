@@ -1,4 +1,4 @@
-;;; **W39**, register row `W39/or-one-key` (`corpus/wrong_answers.toml`): two
+;;; A known gap in the core: two
 ;;; disjuncts of one `(or …)` that bind the same registers are one rule
 ;;; application, so the second derivation is dropped and the core is larger
 ;;; than the smallest. Its twin, `or-one-key-twin.ein`, is the same program

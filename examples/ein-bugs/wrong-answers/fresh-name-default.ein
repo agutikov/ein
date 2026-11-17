@@ -1,6 +1,6 @@
 ;;; `alive-set-fresh-name.ein`'s twin — **W4** in isolation: a rule's fresh
-;;; constant never became a hypothesis. Register row `W4/fresh-name-default`
-;;; (`corpus/wrong_answers.toml`), **fixed**.
+;;; constant never became a hypothesis. Regression `fresh-name-default`
+;;; (`corpus/regressions.toml`), **fixed**.
 ;;;
 ;;;
 ;;; Below this header the program is `../alive-set-fresh-name.ein`'s but its
@@ -29,7 +29,7 @@
 ;;; --maximal` lists `(model (q A Z) (q B Z))`.
 ;;;
 ;;;
-;;; **No `:expect`**: the register states the run, and the banked file states
+;;; **No `:expect`**: the regression states the run, and the banked file states
 ;;; the region.
 ;;;
 ;;;

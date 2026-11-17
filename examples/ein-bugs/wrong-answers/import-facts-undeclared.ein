@@ -1,6 +1,6 @@
 ;;; A flat import cannot name a relation its module only states facts of —
-;;; **W88**, register row `W88/import-facts-undeclared`
-;;; (`corpus/wrong_answers.toml`).
+;;; **W88**, regression `import-facts-undeclared`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -1,5 +1,5 @@
 ;;; `open` written as a guard's value loads, and a rule concludes a fact about
-;;; it — **W71**, register row `W71/eq-value`.
+;;; it — **W71**, regression `eq-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -13,7 +13,7 @@
 //! `S ∪ {b}` is alive. A question is met by a set that holds one of its
 //! members.
 //!
-//! For every corpus file and register witness that loads and **searches**
+//! For every corpus file and regression witness that loads and **searches**
 //! (or the `FILE`s given), this reads:
 //!
 //! - **the whole node**, once, by `structure::node_coupling` on a load of its
@@ -672,10 +672,8 @@ fn run(args: Vec<String>) {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

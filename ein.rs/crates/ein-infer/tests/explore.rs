@@ -7,7 +7,7 @@
 //! - **C3** the same at a budget small enough to stop most runs;
 //! - **C4** the same answer at one job and at four.
 //!
-//! Over every corpus file and register witness whose cube the oracle
+//! Over every corpus file and regression witness whose cube the oracle
 //! enumerates, monotone or flagged. Where the oracle refuses the program
 //! (*forbid*, Q-M1e2.5), every mode refuses it with the same message.
 
@@ -30,13 +30,11 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once, in either build.
-fn corpus_and_register() -> Vec<PathBuf> {
+/// Every corpus file and every regression witness, once, in either build.
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -483,7 +481,7 @@ fn every_mode_is_the_oracle() {
     };
     // One unit per program on the pool, each with its own
     // tallies, folded back in the programs' order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::every_mode_is_the_oracle",
         &paths,
@@ -781,7 +779,7 @@ fn every_order_of_the_tree_is_the_oracle() {
         ..region::Options::default()
     };
     let orders = tree_orders();
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::every_order_of_the_tree_is_the_oracle",
         &paths,
@@ -1110,7 +1108,7 @@ impl ein_infer::events::Watch for DeadCores {
 /// for: root's core and, on the cube, each minimal hole's, which the read-out
 /// and the summary print, are the eager run's, and every other core the lazy
 /// run reports is empty. A core's status goes with it: a
-/// core not taken has none. Over every corpus file and register witness but the
+/// core not taken has none. Over every corpus file and regression witness but the
 /// slow entries, describe on each part of `R`, `-n 2` and `--single`.
 ///
 /// **And N's cores taken after the walk are the eager ones** (Q-M1f.25):
@@ -1148,7 +1146,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     .iter()
     .map(|r| repo_root().join(r))
     .collect();
-    let all: Vec<(PathBuf, bool)> = corpus_and_register()
+    let all: Vec<(PathBuf, bool)> = corpus_and_regressions()
         .into_iter()
         .map(|p| (p, false))
         .chain(studied.into_iter().map(|p| (p, true)))
@@ -1375,7 +1373,7 @@ fn a_description_asked_without_n_is_the_description_less_n() {
         .collect();
     let mut failures = Vec::new();
     let (mut runs, mut skipped, mut sets) = (0usize, 0usize, 0u64);
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::a_description_asked_without_n_is_the_description_less_n",
         &paths,

@@ -1,6 +1,6 @@
 ;;; The ladder's second rung taken by an obligation rule a program loads and
-;;; does not activate — **W97**, register row `W97/unactivated`
-;;; (`corpus/wrong_answers.toml`).
+;;; does not activate — **W97**, regression `rung-unactivated`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

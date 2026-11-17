@@ -203,7 +203,7 @@ fn a_conflict_of_three_is_one_edge() {
     assert_eq!(c.node.expect("read").saturations, 1);
 }
 
-/// Every corpus file and register witness, once, but the `slow` entries
+/// Every corpus file and regression witness, once, but the `slow` entries
 /// that are not named here.
 fn files() -> Vec<PathBuf> {
     let keep = [
@@ -219,10 +219,8 @@ fn files() -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

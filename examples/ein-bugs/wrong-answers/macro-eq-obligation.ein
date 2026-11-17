@@ -1,6 +1,6 @@
 ;;; A macro whose body heads a form with its parameter, called with `eq` and one
 ;;; argument in an obligation: `ein saturate` answers and every solve question stops —
-;;; **W66**, register row `W66/macro-eq-obligation`.
+;;; **W66**, regression `macro-eq-obligation`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

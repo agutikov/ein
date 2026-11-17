@@ -1,6 +1,6 @@
 ;;; `binding-key-layout.ein` with its two activator lines swapped, and nothing
 ;;; else: the twin, which derives the same two `noted` facts.
-;;; Register row `W7/binding-key-layout`, as a twin; the note is
+;;; Regression `binding-key-both/binding-key-layout`, as a twin; the note is
 ;;; `binding-key-layout.md`.
 (relation edge  Node Node :why "there is an edge from {?1} to {?2}")
 (relation holds Node      :why "{?1} holds")

@@ -1,6 +1,6 @@
 ;;; The blind rung never proposes an arity-3 fact, and the run was certified
-;;; anyway — **W6**'s second witness. Register row
-;;; `W6/arity3` (`corpus/wrong_answers.toml`).
+;;; anyway — **W6**'s second witness. Regression
+;;; `arity3` (`corpus/regressions.toml`).
 ;;;
 ;;; The goal is `(r3 ?x ?y ?z)`. `hypgen`'s `fill_slot` documents that arity ≥ 3
 ;;; is unenumerated, so the rung proposes the two `r2` facts it can build and
@@ -23,8 +23,8 @@
 ;;;             proposes arity 1 and 2 only. R holds of it only what the
 ;;;             program states and saturation derives
 ;;;
-;;; `is-a` is not named: the program scopes it out itself. The register's
-;;; row is fixed.
+;;; `is-a` is not named: the program scopes it out itself, which its
+;;; regression holds.
 ;;;
 ;;;
 ;;;

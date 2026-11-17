@@ -1,6 +1,6 @@
 //! The exposed set: every rule whose `(false)` or
 //! `(not …)` conclusion rests on an `(absent P)` over a relation the search can
-//! still extend, per corpus entry and register witness.
+//! still extend, per corpus entry and regression witness.
 //!
 //! *Still extendable* has two readings in the engine, and this prints both,
 //! because a refusal has to say which one it means:
@@ -29,7 +29,7 @@
 //! refuses (`direct`) or would through `via`. The fact grain, (c), is
 //! `site_census`'s per-site verdict.
 //!
-//! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
+//! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses.
 //! It writes nothing and changes no answer: it loads, saturates root, takes
 //! the universe and classifies, exactly as `region::prepare` does.
 

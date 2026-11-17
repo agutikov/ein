@@ -201,10 +201,11 @@ constrained-reasoning research.
   `tests/mutation_survivors.txt`.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
   the runs it is exercised under) plus `fuzz_findings/`, and
-  `wrong_answers.toml`, the register of every known wrong answer. The
-  register has one row per witness, with today's answer and the right one as
-  data, and `ein-cli/tests/wrong_answers.rs` holds an `open` row to its wrong
-  answer and a `fixed` one to its right one. A file under `examples/`,
+  `regressions.toml`, one row per program and run once answered wrong, with
+  today's answer and the right one as data, which `ein-cli/tests/regressions.rs`
+  holds to the right one (the format is `ein_corpus::regressions`; a known
+  wrong answer still open is process, [`plans/wrong_answers/`](plans/wrong_answers/README.md)).
+  A file under `examples/`,
   `stdlib/` or `tests/` with no entry fails a completeness check. What runs it
   is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the table of
   readers; the `--events` protocol is
@@ -306,9 +307,12 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   P1f.6's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
   (E-n) did.
 - **The wrong-answer register** is
-  [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml); its counts are
-  `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`. Every open row
-  is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
+  [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
+  open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
+  its count is `grep -c '^\[\[case\]\]' plans/wrong_answers/register.toml`,
+  and the fixed ones are the project's regressions (`corpus/regressions.toml`).
+  `python3 utils/wrong_answers.py`, a gate step, holds every row to what the
+  binary answers today. Every open row is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
   [F22](plans/followups/f22_exact_core_past_the_cap.md),
   [F24](plans/followups/f24_written_provenance.md)).
 - **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
@@ -482,10 +486,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   stays in `plans/`; a generated project file says it is generated and names
   no tool; a measurement lives beside the script that takes it. P1f.20 brings
   the tree there (the user's rulings of 2026-11-17).
-- **A wrong answer** is filed as an `open` row of the register, with a
-  witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, in a
-  commit of its own; the fix flips the row, and any `:expect` that stated the
-  wrong answer, in the fixing commit.
+- **A wrong answer** is filed and fixed by
+  [`plans/wrong_answers/README.md`](plans/wrong_answers/README.md)'s rules: a
+  row of the register with its witness, in a commit of its own; the fix moves
+  the row into `corpus/regressions.toml` and the witness into the corpus, with
+  any `:expect` that stated the wrong answer, in the fixing commit.
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
   or `stdlib_coverage.rs` fails. A rule or relation added to
   a module of the calculator goes into its closing rule's two lists
@@ -557,7 +562,7 @@ cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R 
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 ein show hyps FILE                                           # H as Ein facts, one candidate per line, uncut, nothing else on stdout: root's saturation and the generator, no search
 ein render h-space FILE [--view …] [--dump DIR] [--supports]   # the structure of H: a read-out, a graph as DOT, or h-space.json; `ein solve` computes none of it
-python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
+python3 utils/review_bundle.py                               # M1e2: build/review/, one page per open wrong answer
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
 python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary

@@ -265,7 +265,7 @@ fn a_macros_and_inside_an_and_is_read_flat() {
     same_answer(&flat, &written, "the expansion written out");
 }
 
-/// **The register's two witnesses of W94 answer as their flat twins**, the
+/// **The regressions' two witnesses of W94 answer as their flat twins**, the
 /// conclusion written `(and (r a) (p a) (q a))` and nothing else changed.
 #[test]
 fn the_witnesses_answer_as_their_flat_twins() {

@@ -1,6 +1,6 @@
 ;;; A table written as facts, and the rule that looks it up: the module
 ;;; `import-facts-table.ein` imports flat — **W88**
-;;; (`corpus/wrong_answers.toml`); the calculator's case. A program of its own
+;;; (`corpus/regressions.toml`); the calculator's case. A program of its own
 ;;; as well.
 ;;;
 ;;; `fa` is the full adder's table, two of its rows: digit + digit + carry in

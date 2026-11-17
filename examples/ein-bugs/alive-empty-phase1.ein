@@ -1,6 +1,6 @@
 ;;; The alive-∅ record site at PHASE 1 — a state a search that wrote negatives
-;;; into root called a model and its own rules refute. Register rows
-;;; W9/alive-empty-phase1-K and W12/alive-empty-phase1.
+;;; into root called a model and its own rules refute. Regressions
+;;; alive-empty-phase1-K and alive-empty-phase1.
 ;;
 ;; `phase1` checked `has_contradiction(root)` at solve.rs:1091, then called
 ;; `compute_alive` — which writes the lookahead kill cache INTO ROOT

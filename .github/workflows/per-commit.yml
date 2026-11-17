@@ -125,6 +125,11 @@ jobs:
       # gate-step
       - run: python3 utils/check_region_routes.py --bin ein.rs/target/gate/ein
         working-directory: ${{ github.workspace }}
+      # The open wrong answers, each row held to what the binary answers today
+      # by the project's runner, and the register's own keys.
+      # gate-step
+      - run: python3 utils/wrong_answers.py
+        working-directory: ${{ github.workspace }}
       # M1e2 S1e2.1.6 — the review bundle for one small case, with the gate
       # profile's `ein` the step above built (`target/gate/ein`), link-checked
       # in a temporary directory.

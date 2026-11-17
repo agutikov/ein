@@ -2,7 +2,7 @@
 //! the corpus, in process, beside [`state_reach`](state_reach.rs) and
 //! [`route1_reach`](route1_reach.rs).
 //!
-//! Every corpus file and register witness that loads (or the `FILE`s given),
+//! Every corpus file and regression witness that loads (or the `FILE`s given),
 //! through [`ein_infer::structure::pair_layer`] at a budget: one JSON line per
 //! program, and the lists themselves, as rendered text, in
 //! `<out>/<program>/pairs.json`, where `<program>` is the file's path from
@@ -18,7 +18,7 @@
 //! fixpoints, and defaults to the routes' default; `--jobs` is the node
 //! function's fan-out, and no line depends on it but in `wall`. `--out`
 //! defaults to `build/structure` under the repo root. With no `FILE` it
-//! sweeps `corpus_files()` plus the register's witnesses.
+//! sweeps `corpus_files()` plus the regressions' witnesses.
 //!
 //! A line's names: `n`; `monotone`, the static verdict, and under a flagged
 //! program `domain`, the sentence that says what the layer is there;
@@ -325,10 +325,8 @@ fn main() {
     }
     if files.is_empty() {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

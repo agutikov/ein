@@ -7,7 +7,7 @@
 //! switch that runs every saturation the calling thread builds in the written
 //! order alone, and no lever reaches it.
 //!
-//! Every question of `ein solve` on every corpus program and register witness
+//! Every question of `ein solve` on every corpus program and regression witness
 //! the static check calls monotone is asked twice, under the agenda and under
 //! the written order, at the default budget and limit, and every claim the
 //! program states is read under each: the two are held to the definition
@@ -86,7 +86,7 @@ fn rel_of(path: &Path) -> String {
 /// The programs every run reads, `slow` or not.
 const INSTANCES: [&str; 2] = ["examples/zebra.ein", "examples/zebra2.ein"];
 
-/// Every corpus file and register witness, once; the `slow` entries that are
+/// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only; this run's shard of them.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -96,10 +96,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

@@ -1,6 +1,6 @@
 ;;; The same `(neq ?x (and …))` in an hrule: the hypothesis layer matches it and
 ;;; proposes a candidate —
-;;; **W67**, register row `W67/macro-neq-connective-hrule`.
+;;; **W67**, regression `macro-neq-connective-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

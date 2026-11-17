@@ -543,7 +543,7 @@ a review taken four times.
   where the definition lives.
 - A wrong answer among them is a register row before it is fixed, as M1e2's
   acceptance asked when the phase was planned. The register,
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), outlives M1e2's plans.
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), outlives M1e2's plans.
 - Every golden a stage moves is named in its file before it moves.
 - The language's grammar changes once, at S1f.5.5's swap, and every answer the swap moves is attributed to a
   ruling before the old parser goes (the re-plan of 2026-11-08, [§ The order](#the-order)). The generated

@@ -1,5 +1,5 @@
-;;; W7's family, the nested-fact activator alone — register row
-;;; `W7/binding-key-layout` (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;; W7's family, the nested-fact activator alone — regression
+;;; `binding-key-both/binding-key-layout` (`corpus/regressions.toml`), Q-M1e.16.
 ;;;
 ;;; `binding-key-both.ein`'s program with `(note edge 1)` deleted. One
 ;;; activator compiles one plan, so the binding key has no second register
@@ -14,7 +14,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; An activator binds a parameter to a nested fact as to a name (W33,
-;;; register row `W33/activator-nested-value`): `(note edge (src Y))` binds
+;;; regression `activator-nested-value`): `(note edge (src Y))` binds
 ;;; `?R` to `edge` and `?f` to `(src Y)`, and no `(holds (src Y))` is a fact
 ;;; or a candidate, so the rule derives nothing and no state holds a `noted`
 ;;; fact, which the query at the end states.

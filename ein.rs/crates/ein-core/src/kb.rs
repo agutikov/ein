@@ -60,9 +60,9 @@ use std::sync::Arc;
 /// That is not every derivation, and no list of fixed length is: where the
 /// saving lies *between* two facts, the derivation a target needs is its own
 /// fact's worst, and a full list refuses it
-/// (`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`).
-/// So the promise is *the smallest frontier over every derivation the
-/// program records*, and that row is where it does not hold.
+/// (`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`). So the promise is
+/// *the smallest frontier over every derivation the program records*, and
+/// that program is where it does not hold: a known gap.
 ///
 /// **Where the cap is reached** is read off `ein solve FILE --events`, an
 /// `alt` event for every alternative a fact records, per entering: on a
@@ -1708,7 +1708,7 @@ impl Kb {
     /// Neither is every derivation. A saving that lies *between* two facts
     /// makes the derivation a target needs its own fact's worst, so a full
     /// list can still refuse it: `examples/ein-bugs/wrong-answers/alt-cap-shared.ein`,
-    /// `W10/alt-cap-shared`.
+    /// a known gap.
     pub fn record_justification(&mut self, terms: &Terms, fact: FactId, prov: ProvId) -> bool {
         let p = terms.provs.get(prov);
         if p.is_terminal() {

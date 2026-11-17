@@ -3,7 +3,7 @@
 //! ([`ein_infer::states`]), each forced through `explore::describe_by`.
 //!
 //! - [`every_field_both_routes_compute_is_one_on_the_corpus`]: on every corpus
-//!   program and register witness the static check calls monotone with an
+//!   program and regression witness the static check calls monotone with an
 //!   alive root, every field of `R` or around it that both routes computed is
 //!   the same (`Described::differences`), with `N` taken and without; where
 //!   the state route stops and the tree and the classes do not, every state
@@ -83,7 +83,7 @@ fn by(path: &Path, route: Route, nogoods: bool, budget: u64) -> Option<Described
     a.described.map(|d| *d)
 }
 
-/// Every corpus file and register witness, once; the `slow` entries where
+/// Every corpus file and regression witness, once; the `slow` entries where
 /// `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -93,10 +93,8 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

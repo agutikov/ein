@@ -6,7 +6,7 @@ a `render` view, `kb save {out}/again.einb`. It writes no summary. Its answer
 is a refusal or an error line, or that it answered: exit 0 with nothing on
 stderr, and with `container` (the witness saved as a `.einb` first) the same
 stdout the run prints on the witness, every number a line times masked and
-the lines that say what it read aside. `ein-cli/tests/wrong_answers.rs` holds
+the lines that say what it read aside. `the runner, ein-cli/tests/held/` holds
 the row so, and this page shows what it holds, under the user's rule that a
 review artefact carries every engine artefact, raw and rendered:
 
@@ -20,7 +20,7 @@ review artefact carries every engine artefact, raw and rendered:
 The case page is `case.py`'s for every row: its title, fixed callout, § 1
 table and checklist are the solve page's, and `case_page` hands a command's
 row here. Nothing here interprets an answer of its own: the comparison with
-`[case.now]` is `wrong_answers.rs`' (`differences`, `comparable` and the run
+`[case.now]` is the runner's (`differences`, `comparable` and the run
 planner `ein_corpus::plan::argv`, ported line for line).
 """
 
@@ -47,7 +47,7 @@ def is_command(run_name: str, stdout: str | None = None) -> bool:
 
 
 def panic_message(stderr: str) -> str | None:
-    """`wrong_answers.rs`' `panic_message`: the line of stderr after `thread
+    """the runner's `panic_message`: the line of stderr after `thread
     'main' (…) panicked at …:` (schema /21)."""
     ls = lines_of(stderr)
     at = next((i for i, l in enumerate(ls) if " panicked at " in l), None)
@@ -69,7 +69,7 @@ def plan_argv(run_name: str, file: str, out: Path | str) -> list[str]:
 
 
 def comparable(stdout: str) -> str:
-    """`wrong_answers.rs`' `comparable`: a command's stdout as two runs of it
+    """the runner's `comparable`: a command's stdout as two runs of it
     are compared (schema /16) — the lines that say what the run read
     (`input:`, its size, `parse:`, `kb load:`, `open:`) aside, every number a
     line times (`… ms`) masked, and runs of spaces one."""
@@ -112,7 +112,7 @@ def lines_of(text: str) -> list[str]:
 
 
 def first_line(stderr: str) -> str:
-    """The first non-empty line of stderr, as `wrong_answers.rs` reads it."""
+    """The first non-empty line of stderr, as the runner (`ein-cli/tests/held/`) reads it."""
     return next((l for l in lines_of(stderr) if l), "<empty>")
 
 
@@ -145,7 +145,7 @@ def fenced(text: str, lang: str = "text") -> list[str]:
 
 
 def save_container(witness: str, into: Path, bin: str) -> tuple[Invocation, Path]:
-    """`ein kb save WITNESS INTO/<stem>.einb`, as `wrong_answers.rs` saves a
+    """`ein kb save WITNESS INTO/<stem>.einb`, as the runner (`ein-cli/tests/held/`) saves a
     `container` row's witness before the run (schema /16)."""
     into.mkdir(parents=True, exist_ok=True)
     einb = into / f"{Path(witness).stem}.einb"
@@ -341,7 +341,7 @@ def run_page(row: dict, r: CommandRun) -> Path:
              + f" · {answer_of(r.main)} · "
              f"[raw/command.txt]({rel(r.raw / 'command.txt', page)})", ""]
     if r.save is not None:
-        lines += ["## The container", "", "The witness saved as a `.einb` first, as `wrong_answers.rs` saves it:", ""]
+        lines += ["## The container", "", "The witness saved as a `.einb` first, as the runner (`ein-cli/tests/held/`) saves it:", ""]
         lines += streams(r, r.save, page)
     lines += ["## The run", ""] + streams(r, r.main, page)
     if r.witness is not None:
@@ -402,7 +402,7 @@ def command_case(row: dict, out: Path, bin: str, page: Path, head: list[str], ca
               + f"; **now** is run here, through the corpus's run planner (`ein_corpus::plan::argv`), `{{out}}` "
               f"its scratch directory, `{shown(r.scratch)}`; *right* is the definitions'. A command's run writes no "
               "summary, so what is compared is its exit and stderr, and with a container its stdout against the "
-              "same run's on the witness, as `wrong_answers.rs` compares them.", ""]
+              "same run's on the witness, as the runner (`ein-cli/tests/held/`) compares them.", ""]
     rows = [
         ["run", f"`ein {w['run']}`" + (" on the container" if w.get("container") else ""),
          f"[`ein {now['run']}`]({rel(run_md, page)}){on}", "*(the definitions)*"],
@@ -420,7 +420,7 @@ def command_case(row: dict, out: Path, bin: str, page: Path, head: list[str], ca
         rows.append(["the same run on the witness", "—",
                      f"exit {r.witness.code}; stdout " + ("**the same**" if r.compared[0] == r.compared[1]
                                                           else "**not the same**")
-                     + " as the container's, compared as `wrong_answers.rs` compares them (§ 4)", "—"])
+                     + " as the container's, compared as the runner (`ein-cli/tests/held/`) compares them (§ 4)", "—"])
     rows.append(["the register's `now`", "—",
                  "**matches**" if not r.diffs else "**differs**: " + "; ".join(r.diffs), "—"])
     lines += table(["", f"wrong ({recorded_kind(w)}, recorded)", "now", "right"], rows) + [""]
@@ -441,7 +441,7 @@ def command_case(row: dict, out: Path, bin: str, page: Path, head: list[str], ca
         lines += [f"### the same run on the witness — `ein {now['run']}`", ""] + streams(r, r.witness, page)
         want, have = r.compared
         lines += ["### the two, compared", "",
-                  "As `wrong_answers.rs`' `comparable` reads them: the lines that say what the run read (`input:`, "
+                  "As the runner's `comparable` reads them: the lines that say what the run read (`input:`, "
                   "its size, `parse:`, `kb load:`, `open:`) aside, every number a line times masked, and runs of "
                   "spaces one. " + ("**The same.**" if want == have else "**They differ**:"), ""]
         if want != have:

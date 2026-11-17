@@ -354,7 +354,7 @@ and an integer that is no value (a `u32` id, `priority: int` in `01_entities.md`
 ### Task T1f.5.4.5 — a template names every variable (W37)
 
 **Added 2026-11-08**, on the user's ruling on S1f.5.5's T9 review stop, item 7 (*"Accept all as recommended"*):
-S1f.5.5's T10 filed [`W37/template-var-star`](../../../corpus/wrong_answers.toml), `open` and owned by this
+S1f.5.5's T10 filed [`W37/template-var-star`](../../wrong_answers/register.toml), `open` and owned by this
 stage, since the name rule is what gives a variable its characters. `ein_core::why::render_why` reads a template
 reference as `{?`, one letter or digit, then letters, digits, `_` and `-`, then `}`, so a reference to a variable
 holding any other character is printed as written: the stdlib's three `{?isR*}` `:why`s on `--trace` today, the

@@ -3,7 +3,7 @@
 //!
 //! [`read_out::run`] reads every state it lists through the node function,
 //! answers every query from one solve, and checks the program's claim against
-//! the R it described. Held here, on every corpus file and register witness
+//! the R it described. Held here, on every corpus file and regression witness
 //! whose cube the oracle enumerates:
 //!
 //! - **each state's `(model …)` is the oracle's state**: the positive facts of
@@ -32,12 +32,10 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-fn corpus_and_register() -> Vec<PathBuf> {
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -88,7 +86,7 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
     let mut claims = 0usize;
     let mut classes = 0usize;
     // One unit per program on the pool, read back in order.
-    let paths = corpus_and_register();
+    let paths = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "read_out",
         &paths,

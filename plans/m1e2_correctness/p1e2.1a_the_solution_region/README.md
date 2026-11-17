@@ -176,7 +176,7 @@ Taken 2026-10-15 against `caef67a`.
 | R, drawn | `ein render lattice` (survivors + pruned siblings), `--dump-lattice` (one page per entering), the bundle's `pages/lattice/` | the **whole lattice**, every node's status and the reason for it, R's lines and holes, with the engine's walk overlaid |
 | R, stated by a program | `:expect (model …)`, `(or (model …) …)`, `(false)`: one model set | no way to say *which line*, or to state a region |
 | R, reported | `verdict.k`, `solutions`, `open_states`, `exhausted` | no line named, no hole reported, and `k` is a count of recorded nodes, not of a line |
-| R, checked | [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml): hand-derived right answers for 26 witnesses | no computed right answer anywhere, and nothing checks a lever against the answer without it |
+| R, checked | [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml): hand-derived right answers for 26 witnesses | no computed right answer anywhere, and nothing checks a lever against the answer without it |
 
 ## Stages
 

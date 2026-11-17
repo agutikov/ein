@@ -1,5 +1,5 @@
-;;; **W10's second witness (`W10/alt-cap-shared`): a saving between two facts,
-;;; behind a full list, which no fix of the cap that keeps it bounded keeps.**
+;;; **A known gap: a saving between two facts, behind a full list, which no
+;;; fix of the cap that keeps it bounded keeps.**
 ;;;
 ;;; A core is the smallest frontier over **every** derivation the program
 ;;; records (Q-M1e2.11). `alt-cap-core.ein` gets it, because the store keeps

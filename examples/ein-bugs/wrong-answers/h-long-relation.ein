@@ -1,6 +1,6 @@
 ;;; A relation's name glued to its candidate count in `-H` — **W42**, register
-;;; row `W42/h-long-relation` (`corpus/wrong_answers.toml`), found beside
-;;; `W42/class-label-04-open`: the same column logic on another surface.
+;;; regression `h-long-relation` (`corpus/regressions.toml`), found beside
+;;; `class-label-04-open`: the same column logic on another surface.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,7 +14,7 @@
 ;;; `ein solve FILE -H` prints H's form after the read-out, a line per relation: its name, then how many
 ;;; candidates are over it. The name is padded to sixteen characters and the count printed straight after, so
 ;;; a name of sixteen or more touches it, and before `31e9c7f7` the line read `lives-next-door-to2
-;;; candidates, 0 dead alone`: a reader reads a relation `lives-next-door-to2`, and the register test's own
+;;; candidates, 0 dead alone`: a reader reads a relation `lives-next-door-to2`, and the regressions test's own
 ;;; reader of `-H` lost the relation. Right: one space at least, `lives-next-door-to 2 candidates, 0 dead
 ;;; alone`.
 (relation is-a T T

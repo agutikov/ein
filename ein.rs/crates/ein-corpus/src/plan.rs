@@ -5,7 +5,7 @@
 //! `ein render rules <file>`. That keeps the manifest readable while staying
 //! mechanical — the only two shapes are "subcommand takes the file first" and
 //! `render` and `kb`, whose view or verb comes before it (`kb save <file>
-//! <out>`, which the register's rows run from schema /16).
+//! <out>`, which a regression's row can run).
 //!
 //! Two substitutions happen here:
 //!

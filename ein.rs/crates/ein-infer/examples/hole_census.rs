@@ -33,7 +33,7 @@
 //! ```
 //!
 //! With no `FILE` it sweeps `site_census`'s selection, `corpus_files()` plus
-//! the register's witnesses, and keeps the programs the static check flags.
+//! the regressions' witnesses, and keeps the programs the static check flags.
 //! It writes nothing, and no route reads it.
 
 #[allow(dead_code)]

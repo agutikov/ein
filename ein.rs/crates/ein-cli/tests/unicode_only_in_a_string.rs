@@ -25,7 +25,7 @@
 //!
 //! Every place a token can stand, each on every command that reads a
 //! program, and every character this file names in every place through the
-//! parser; the register's witnesses; a string and a comment holding each
+//! parser; the regressions' witnesses; a string and a comment holding each
 //! character, loaded and answered by every command and through a container;
 //! and every way a module can fail to be read, on every command.
 
@@ -354,8 +354,8 @@ fn a_character_that_is_not_ascii_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The register's witnesses, W73's five and W74's, each read from its file,
-/// as `wrong_answers.rs` reads one command's run of each, and refused on
+/// The regressions' witnesses of Unicode outside a string, each read from its
+/// file, as `regressions.rs` reads one command's run of each, and refused on
 /// every command with the one line.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {

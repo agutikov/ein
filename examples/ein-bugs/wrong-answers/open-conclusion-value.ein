@@ -1,5 +1,5 @@
 ;;; `open` written as a conclusion's argument loads, and a rule derives a fact
-;;; about it — **W71**, register row `W71/conclusion-value`.
+;;; about it — **W71**, regression `conclusion-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

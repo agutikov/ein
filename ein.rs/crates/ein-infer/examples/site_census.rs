@@ -24,7 +24,7 @@
 //! cargo run --release -p ein-infer --example site_census -- [--json] [--jobs J] [FILE…]
 //! ```
 //!
-//! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses,
+//! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses,
 //! `refutation_census`'s selection. A `FILE` is read from the working
 //! directory, else from the repository root. `--json` prints one line per file, every
 //! file of the selection, so each of the older counts can be re-derived from

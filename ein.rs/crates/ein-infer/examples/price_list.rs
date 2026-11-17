@@ -31,7 +31,7 @@
 //! where both finish and against the cube within its limit, and every
 //! program the default makes dearer by more than a tenth named.
 //!
-//! Every corpus file and register witness that loads and **searches**, or
+//! Every corpus file and regression witness that loads and **searches**, or
 //! the `FILE`s given (`--all` keeps those that do not search too). For each
 //! the structure is read once ([`ein_infer::structure::theory_coupled`], and
 //! root's pair layer again node by node), and each of the six questions
@@ -1271,10 +1271,8 @@ fn run(args: Vec<String>) {
     let named = !files.is_empty();
     if !named {
         files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
+        for row in ein_corpus::regressions().case {
+            files.push(repo_root().join(&row.witness));
         }
         files.sort();
         files.dedup();

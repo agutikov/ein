@@ -1,6 +1,6 @@
 ;;; A goal's `neq` with a free variable holds with nothing bound, and a claim
-;;; naming `neq` is refused — **W55**, register row `W55/goal-neq-free`
-;;; (`corpus/wrong_answers.toml`); `eq` and `neq` are relations (Q-M1e2.26).
+;;; naming `neq` is refused — **W55**, regression `goal-neq-free`
+;;; (`corpus/regressions.toml`); `eq` and `neq` are relations (Q-M1e2.26).
 ;;;
 ;;;
 ;;;

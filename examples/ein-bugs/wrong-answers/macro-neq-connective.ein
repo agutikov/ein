@@ -1,6 +1,6 @@
 ;;; A macro whose body writes `(neq ?a ?b)`, called with a conjunction as a value:
 ;;; the guard compares a name to a connective, holds, and the rule fires —
-;;; **W67**, register row `W67/macro-neq-connective`.
+;;; **W67**, regression `macro-neq-connective`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

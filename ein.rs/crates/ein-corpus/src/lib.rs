@@ -8,7 +8,7 @@
 //! |---|---|
 //! | [`manifest`] | `corpus/corpus.toml` — one entry per `.ein` file, the runs it is exercised under, and the completeness check that fails on a file with no entry |
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
-//! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one |
+//! | [`mod@regressions`] | `corpus/regressions.toml` — one row per program and run once answered wrong, with today's answer and the right one; and the format any file of programs held to a recorded answer uses |
 //! | [`pool`] | the corpus sweeps' worker pool: a sweep's units on `EIN_TEST_JOBS` workers, the results in the units' order, so no verdict depends on the count |
 //! | [`shard`] | a sweep's shards: `EIN_TEST_SHARD=k/n` keeps the programs dealt to shard `k`, so `n` runs together hold every program the sweep holds |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere; and [`Scratch`], the one way a test makes a directory it does not keep |
@@ -22,14 +22,14 @@ pub mod manifest;
 pub mod mutants;
 pub mod plan;
 pub mod pool;
-pub mod register;
+pub mod regressions;
 pub mod shard;
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub use manifest::{Corpus, Entry};
-pub use register::{Register, Row};
+pub use regressions::{Regressions, Row};
 
 /// The repo root, found from the compiling crate rather than the working
 /// directory, so a test runs the same from anywhere.
@@ -306,10 +306,10 @@ pub const ZEBRA_GRID: [(&str, [&str; 5]); 5] = [
     ),
 ];
 
-/// The wrong-answer register, loaded from its one location.
-pub fn register() -> Register {
-    let path = repo_root().join(register::REGISTER);
-    Register::load(&path).unwrap_or_else(|e| panic!("{e}"))
+/// The regressions, loaded from their one location.
+pub fn regressions() -> Regressions {
+    let path = repo_root().join(regressions::REGRESSIONS);
+    Regressions::load(&path).unwrap_or_else(|e| panic!("{e}"))
 }
 
 /// Every `.ein` under `examples/`, `stdlib/` and `tests/`, sorted — the file

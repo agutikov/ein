@@ -1,6 +1,6 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the refuting plan matches no fact — **W19**, register row
-;;; `W19/core-activator-guard-only` (`corpus/wrong_answers.toml`), found by
+;;; the refuting plan matches no fact — **W19**, regression
+;;; `core-activator-guard-only` (`corpus/regressions.toml`), found by
 ;;; probing `forbid-chain-no-absent.ein`'s mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

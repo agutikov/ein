@@ -34,7 +34,7 @@ use std::path::Path;
 use std::process::Command;
 
 use ein_core::Terms;
-use ein_corpus::{Scratch, register, repo_root};
+use ein_corpus::{Scratch, regressions, repo_root};
 use ein_ir::Ast;
 use serde_json::Value as J;
 
@@ -170,15 +170,15 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     n
 }
 
-/// **The witnesses whose state files do not load**: a state holding a fact
-/// the printer writes as a line the parser refuses. It is the row's own wrong
-/// answer, which the register holds, so each is named rather than checked,
-/// with **how many** of its run's state files do not load, and each must
-/// still fail to load, for that reason alone; the fixing commit takes it off
-/// the list, with `answer_round_trip.rs`' copy. Empty: a concluded `neq` is
-/// checked, never stored (W30); `:assert ()` asserts nothing (W34); and a
-/// conclusion is read flat, so no state holds a fact headed `and`, which a
-/// state file would write as a fact line `(and (p a) (q a))` (W94, W95).
+/// **The programs whose state files do not load**: a state holding a fact
+/// the printer writes as a line the parser refuses. It is a known wrong
+/// answer of the program's, so each is named rather than checked, with **how
+/// many** of its run's state files do not load, and each must still fail to
+/// load, for that reason alone; the commit that fixes it takes it off the
+/// list, with `answer_round_trip.rs`' copy. Empty: a concluded `neq` is
+/// checked, never stored; `:assert ()` asserts nothing; and a conclusion is
+/// read flat, so no state holds a fact headed `and`, which a state file would
+/// write as a fact line `(and (p a) (q a))`.
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// The programs the per-commit checks run on, with a question each: all of R
@@ -219,34 +219,29 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 }
 
 /// **Every state file is a fixpoint of its own program** — over every run
-/// the register records and the cases above, the puzzle's model among them.
+/// the regressions record and the cases above, the puzzle's model among them.
 ///
-/// The register is the list that matters here: its rows are the runs a
-/// reviewer will open, and several of them are records the engine got wrong.
-/// *Wrong* is allowed. A written state that its own rules would extend or
-/// refute is not, and is what this would report.
+/// The regressions are the list that matters here: their rows are runs the
+/// engine once answered wrong. A written state that its own rules would
+/// extend or refute is what this would report.
 ///
-/// With no exception but [`DO_NOT_LOAD`]'s, whose state files the wrong
-/// answer the register holds makes unloadable. A run whose recorded claim is
-/// refuted (W28's) exits 1 and writes its states as any answer does.
+/// With no exception but [`DO_NOT_LOAD`]'s, whose state files a known wrong
+/// answer makes unloadable. A run whose recorded claim is refuted exits 1 and
+/// writes its states as any answer does.
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
     let mut states = 0;
     let mut runs: Vec<(String, String, i32)> = Vec::new();
-    for row in &register().case {
+    for row in &regressions().case {
         // A refused row (*forbid*) writes no state, nor one whose run ends in
-        // an error, nor a command's that is not a solve: `wrong_answers.rs`
+        // an error, nor a command's that is not a solve: `regressions.rs`
         // holds all three.
-        if row.status.starts_with("merged:")
-            || row.now.refused.is_some()
-            || row.now.error.is_some()
-            || row.now.is_command()
-        {
+        if row.now.refused.is_some() || row.now.error.is_some() || row.now.is_command() {
             continue;
         }
-        // A refuted claim exits 1 (schema /12, W28).
+        // A refuted claim exits 1.
         let code = i32::from(row.now.refutes());
         runs.push((row.witness.clone(), row.now.run.clone(), code));
     }
@@ -294,7 +289,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
             if unloaded != k || found.len() != k {
                 bad.push(format!(
                     "{file} :: {run}: DO_NOT_LOAD says {k} of its state files do not load, and \
-                     {unloaded} of its {n} do not (its row, W94 or W95, fixed? drop it from the \
+                     {unloaded} of its {n} do not (fixed? drop it from the \
                      list in the same commit): {found:?}"
                 ));
             }
@@ -303,7 +298,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         }
     }
     assert!(states > runs.len(), "no state file was checked");
-    // The cut is a real one: a register row still records a heavy dump, so a
+    // The cut is a real one: a regression still records a heavy dump, so a
     // per-commit run leaves something to the nightly, which reads it.
     assert!(
         left_out > 0,

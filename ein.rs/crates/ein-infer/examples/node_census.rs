@@ -36,7 +36,7 @@
 //! cargo run --release -p ein-infer --example node_census -- [--json] FILE…   # any files
 //! ```
 //!
-//! The selection is `site_census`'s, `corpus_files()` plus the register's
+//! The selection is `site_census`'s, `corpus_files()` plus the regressions'
 //! witnesses. No route reads this file, no command reaches it, and it writes
 //! nothing.
 

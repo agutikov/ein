@@ -602,10 +602,6 @@
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: test
-0    examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein :: saturate
-0    examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein :: solve
-0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: saturate
-0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: solve
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: solve
@@ -653,10 +649,6 @@
 1    examples/ein-bugs/wrong-answers/claim-int-name.ein :: solve
 1    examples/ein-bugs/wrong-answers/classes-int-name.ein :: saturate
 1    examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve
-0    examples/ein-bugs/wrong-answers/closure-shared-given-control.ein :: saturate
-0    examples/ein-bugs/wrong-answers/closure-shared-given-control.ein :: solve
-0    examples/ein-bugs/wrong-answers/closure-shared-given.ein :: saturate
-0    examples/ein-bugs/wrong-answers/closure-shared-given.ein :: solve
 0    examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein :: saturate
 0    examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-activator-committed.ein :: saturate
@@ -800,10 +792,6 @@
 1    examples/ein-bugs/wrong-answers/goal-no-such-relation.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: solve
-0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: saturate
-0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: solve
-0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: saturate
-0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve -H
 1    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: saturate
@@ -1218,14 +1206,6 @@
 0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: solve
 1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: saturate
 1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: solve
-0    examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein :: saturate
-0    examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein :: solve
-0    examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein :: saturate
-0    examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein :: solve
-0    examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein :: saturate
-0    examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein :: solve
-0    examples/ein-bugs/wrong-answers/written-using-never-held.ein :: saturate
-0    examples/ein-bugs/wrong-answers/written-using-never-held.ein :: solve
 0    examples/ein-bugs/zebra2-bad.ein :: render constraints
 0    examples/ein-bugs/zebra2-bad.ein :: render lattice
 0    examples/ein-bugs/zebra2-bad.ein :: render rules

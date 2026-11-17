@@ -1,5 +1,5 @@
 ;;; The **alive-set invariant**, broken on purpose, and the program on which
-;;; breaking it cost a model: **W4**, register row `W4/alive-set-fresh-name`.
+;;; breaking it cost a model: **W4**, regression `alive-set-fresh-name`.
 ;;; Its control, which names the rule's constant in a fact, is below.
 ;;;
 ;;; ── The premise this tested ────────────────────────────────────────────
@@ -48,7 +48,7 @@
 ;;; six `q` candidates over A, B and Z, and R is the four states above —
 ;;; `examples/ein-bugs/alive-set-fresh-name-declared.ein`'s, which names `Z`
 ;;; in a fact. `ein-infer/tests/alive_invariant.rs` holds the pair to one R,
-;;; and `corpus/wrong_answers.toml`'s `W4/alive-set-fresh-name` holds the run.
+;;; and `corpus/regressions.toml`'s `alive-set-fresh-name` holds the run.
 ;;;
 ;;; Deliberately **no `(absent …)` anywhere.** The obvious encoding of "Z must
 ;;; be reached" is a NAF guard, and it works — but it would also give this

@@ -510,7 +510,7 @@ impl Snapshot {
     /// arrive in, and what reads the first of them — a fact's primary (the
     /// store's order `refuted_by` names rules in, the `absent`s a refutation
     /// rests on) and a full alternatives list (the core) — would move with the
-    /// interner (`W11/fork-delta-order`).
+    /// interner (`fork-delta-order`).
     pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {
         kb.facts().filter(|f| !self.facts.contains(f)).collect()
     }
@@ -2112,7 +2112,7 @@ mod tests {
         );
     }
 
-    /// `W11/fork-delta-order`: a resumed fork's delta is in
+    /// `fork-delta-order`: a resumed fork's delta is in
     /// the order its facts were written, never in `FactId` order. The two
     /// facts here are interned one way round and written the other.
     #[test]

@@ -1,5 +1,5 @@
 ;;; A next-line control between two forms is read as a space —
-;;; **W73**, register row `W73/next-line`.
+;;; **W73**, regression `next-line`.
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

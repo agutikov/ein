@@ -1,6 +1,6 @@
 ;;; A symmetry a commitment brings a rule to derive, not mirrored by the
-;;; node's saturation — **W98**, register row `W98/derived-at-node`
-;;; (`corpus/wrong_answers.toml`).
+;;; node's saturation — **W98**, regression `derived-at-node`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

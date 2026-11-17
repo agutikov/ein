@@ -11,6 +11,6 @@ tests, and any claim that stated the wrong answer states the right one.
 **Why.** A wrong answer is temporary: while the engine gives it, it is something to do; once fixed, it is a fact
 about the engine that must stay true, which is what a regression test is.
 
-**Held by.** `corpus/wrong_answers.toml`, its fixed rows; `ein-cli/tests/wrong_answers.rs`:
+**Held by.** `corpus/regressions.toml`, its fixed rows; `ein-cli/tests/regressions.rs`:
 `every_row_answers_what_the_register_records`, which runs each row's question and holds a fixed row to its right
 answer; the witnesses' entries in `corpus/corpus.toml`.

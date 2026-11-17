@@ -1,5 +1,5 @@
-;;; W14 on the shipped obligation rule — **W14**, register row
-;;; `W14/oblig-stdlib-total-owed` (`corpus/wrong_answers.toml`).
+;;; W14 on the shipped obligation rule — **W14**, regression
+;;; `oblig-stdlib-total-owed` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -33,8 +33,8 @@
 ;;; flagged), H was 1 candidate, dead alone, and R was empty, root owing Ann's
 ;;; Food, `(region (owing (model)))`. The rung declines on `is-a`, a relation
 ;;; in D, the blind enumerator builds H, six candidates, and R is the sixteen
-;;; states the `:expect` below states. The register row
-;;; `W14/oblig-stdlib-total-owed` is fixed.
+;;; states the `:expect` below states. The regression
+;;; `oblig-stdlib-total-owed` is fixed.
 ;;;
 ;;;
 ;;;

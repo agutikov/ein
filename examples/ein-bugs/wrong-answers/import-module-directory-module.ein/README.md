@@ -1,7 +1,7 @@
 # `import-module-directory-module.ein/`
 
 A directory, on purpose: the module [`../import-module-directory.ein`](../import-module-directory.ein) imports,
-the witness of **W74** (`corpus/wrong_answers.toml`). `(import import-module-directory-module)` resolves to this
+the witness of **W74** (`corpus/regressions.toml`). `(import import-module-directory-module)` resolves to this
 path, which exists and is no file, so the import cannot read it.
 
 An imported module is read through the one read every command makes of the program it is given (`ein_ir::read`),

@@ -1,6 +1,6 @@
 ;;; A `(false)` concluded through a `forall`: its core leaves out every fact the
-;;; universal read — **W21**, register row `W21/forall-core-false`
-;;; (`corpus/wrong_answers.toml`); a derivation through a `forall` rests on each
+;;; universal read — **W21**, regression `forall-core-false`
+;;; (`corpus/regressions.toml`); a derivation through a `forall` rests on each
 ;;; fact it read (Q-M1e2.15).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

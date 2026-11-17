@@ -1,5 +1,5 @@
-;;; W7's family, the int activator alone — register row
-;;; `W7/binding-key-layout` (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;; W7's family, the int activator alone — regression
+;;; `binding-key-both/binding-key-layout` (`corpus/regressions.toml`), Q-M1e.16.
 ;;;
 ;;; `binding-key-both.ein`'s program with `(note edge (src Y))` deleted. One
 ;;; activator compiles one plan, so the binding key has no second register

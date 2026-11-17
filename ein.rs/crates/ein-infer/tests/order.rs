@@ -5,7 +5,7 @@
 //!
 //! - **Every order, one answer.** Each of the four questions the tree
 //!   answers, `--single`, `-n 1`, `--minimal` and `--maximal`, on every
-//!   corpus program and register witness that searches, asked under the
+//!   corpus program and regression witness that searches, asked under the
 //!   order the routes take and under every other order of [`orders`]: the
 //!   written order, its reverse, text, seeded permutations of the choice,
 //!   each queue, a learned order that starts the tree again as it goes, and
@@ -95,7 +95,7 @@ const SEND: &str = "examples/beyond_arith/send_more_money.ein";
 const SENDS_SHARD: usize = 4;
 const SEND_WRITTEN: &str = "examples/beyond_arith/send_more_money_written.ein";
 
-/// Every corpus file and register witness, once: the `slow` entries that
+/// Every corpus file and regression witness, once: the `slow` entries that
 /// are not [`INSTANCES`] where `slow` is asked, and the others where it is
 /// not.
 fn files(slow: bool) -> Vec<PathBuf> {
@@ -106,10 +106,8 @@ fn files(slow: bool) -> Vec<PathBuf> {
         .map(|e| repo_root().join(&e.path))
         .collect();
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();

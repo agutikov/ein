@@ -1,5 +1,5 @@
 ;;; The **control** for [`oblig-stdlib-total-owed.ein`](oblig-stdlib-total-owed.ein)
-;;; — that file plus one fact, `(is-a Z Food)` — case W14 of the register.
+;;; — that file plus one fact, `(is-a Z Food)` — case W14.
 ;;;
 ;;; With `(is-a Z Food)` at root `total-owed`'s `(is-a ?b Food)` scan would
 ;;; find Z: H `(likes Ann Soup)` and `(likes Ann Z)`, and R one state,

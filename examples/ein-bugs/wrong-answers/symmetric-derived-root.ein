@@ -1,5 +1,5 @@
 ;;; A symmetry a rule derives, not mirrored by the saturation that derives it
-;;; — **W98**, register row `W98/derived-at-root` (`corpus/wrong_answers.toml`).
+;;; — **W98**, regression `derived-at-root` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

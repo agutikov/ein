@@ -1,5 +1,5 @@
 ;;; A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name —
-;;; **W84**, register row `W84/not-name-parameter`.
+;;; **W84**, regression `not-name-parameter`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;

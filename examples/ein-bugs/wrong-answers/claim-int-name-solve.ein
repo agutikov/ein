@@ -1,6 +1,6 @@
 ;;; The solve form's claim about the int `1` held of a state holding the name
-;;; `"1"` — **W28**, register row `W28/claim-int-name-solve`
-;;; (`corpus/wrong_answers.toml`), beside `claim-int-name.ein`.
+;;; `"1"` — **W28**, regression `claim-int-name-solve`
+;;; (`corpus/regressions.toml`), beside `claim-int-name.ein`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

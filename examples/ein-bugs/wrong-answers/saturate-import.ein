@@ -1,5 +1,5 @@
-;;; `ein saturate` resolves no file-relative import — **W41**, register row
-;;; `W41/saturate-import` (`corpus/wrong_answers.toml`).
+;;; `ein saturate` resolves no file-relative import — **W41**, regression
+;;; `saturate-import` (`corpus/regressions.toml`).
 ;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────

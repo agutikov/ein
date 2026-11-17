@@ -779,7 +779,7 @@ def main() -> int:
     if args.only:
         pages = [p for p in pages if args.only in str(p)]
     # The decision half reads the project's files, which `-k` may narrow to
-    # some the link half does not read (`corpus/wrong_answers.toml`).
+    # some the link half does not read (`corpus/regressions.toml`).
     cited: list[Path] = []
     if args.links and args.tracked:
         cited = project_referrers()

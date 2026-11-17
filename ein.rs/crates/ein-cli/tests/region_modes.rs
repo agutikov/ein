@@ -1405,7 +1405,7 @@ fn one_verdict_on_every_corpus_program() {
          None since M1f S1f.5.21, whose loader refuses a goal's relation variable (W64): until \
          then `query-goal-free-head.ein` and `features/02_star_in_identifiers.ein`, whose \
          `--monotone` answered where the read-out stopped on the goal, the compiler's line; and \
-         `W57/assert-var-under-commitment` a third from M1f S1f.5.10's T1f.5.10.1 until \
+         `assert-var-under-commitment` a third from M1f S1f.5.10's T1f.5.10.1 until \
          T1f.5.10.2 refused it at load"
     );
     let (checked, flagged, refused) = (

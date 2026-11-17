@@ -7,12 +7,12 @@
 //! a view by the cube's size.
 //!
 //! Four tests hold the overlay, against a region run's dumps
-//! (`--dump-lattice`, `--dump-answer`), to what the register's witnesses
+//! (`--dump-lattice`, `--dump-answer`), to what the regressions' witnesses
 //! show: W1's maximal node that no reported state holds is
 //! MISSING, W3's hole and an exclusion the cube refutes, W2's root that a
 //! region run never moves, and a state that counts as the node its
 //! saturation lands on. A correct engine misses nothing, so where a test
-//! needs a wrong answer it writes one — the register's — into
+//! needs a wrong answer it writes one — the walk's — into
 //! a copy of the run's dump, which is the input the comparison is for.
 
 use std::io::Write;
@@ -382,7 +382,7 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
 
 /// **W1, drawn.** On `branching/15` `--maximal` reports both nodes of the
 /// maximal line, and nothing is missing. The walk reported only `{(p B),
-/// (p C)}` and called it exhausted (the register's `wrong`): written into the
+/// (p C)}` and called it exhausted (the walk's recorded answer): written into the
 /// run's answer, `{(p A)}` is MISSING, red, in the drawing and the table.
 /// Bare `ein solve` reports all of R — five states, five octagons.
 #[test]
@@ -408,7 +408,7 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
     );
     assert!(table.contains("- **missing** none"), "{table}");
 
-    // The walk's answer, as the register records it.
+    // The walk's answer, as it was recorded.
     doctor(&max.join("answer/index.json"), |j| {
         let states = j["region"]["states"].as_array_mut().expect("states");
         states.retain(|s| s["facts"] != serde_json::json!(["(p A)"]));

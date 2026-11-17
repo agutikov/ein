@@ -1,6 +1,6 @@
 ;;; A `:where` keyword on a rule is ignored, so the rule fires without its
-;;; guard — **W32**, register row `W32/where-on-rule`
-;;; (`corpus/wrong_answers.toml`).
+;;; guard — **W32**, regression `where-on-rule`
+;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

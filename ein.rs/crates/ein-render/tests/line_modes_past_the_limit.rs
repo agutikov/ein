@@ -10,7 +10,7 @@
 //!
 //! `ein-infer/tests/explore.rs` holds every mode to the oracle within the
 //! limit; this file holds the line modes past it, on every corpus program
-//! and register witness the static check flags, under a lowered
+//! and regression witness the static check flags, under a lowered
 //! `--region-limit` `k` for each `k` in [`LIMITS`] below its candidate
 //! count, in-process and through the read-out the binary prints:
 //!
@@ -106,13 +106,11 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once.
-fn corpus_and_register() -> Vec<PathBuf> {
+/// Every corpus file and every regression witness, once.
+fn corpus_and_regressions() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
-    for row in ein_corpus::register().case {
-        for (_, a) in row.answers() {
-            files.push(repo_root().join(row.witness_of(a)));
-        }
+    for row in ein_corpus::regressions().case {
+        files.push(repo_root().join(&row.witness));
     }
     files.sort();
     files.dedup();
@@ -192,9 +190,9 @@ fn oracle_line(r: &Region, which: Which) -> BTreeSet<u64> {
     masks.iter().map(|&m| r.nodes[m as usize].class).collect()
 }
 
-/// **The flagged programs whose oracle stops**, each the witness of an open
-/// register row, so named rather than failed, and held both ways: a program
-/// here whose oracle answers is its row fixed. The list is empty: no flagged
+/// **The flagged programs whose oracle stops**, each a known wrong answer,
+/// so named rather than failed, and held both ways: a program here whose
+/// oracle answers is its wrong answer fixed. The list is empty: no flagged
 /// program's oracle stops.
 const ORACLE_STOPS: [&str; 0] = [];
 
@@ -206,7 +204,7 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut runs, mut labelled_off_describe) = (0usize, 0usize, 0usize);
     let mut empty_ruled = 0usize;
-    for path in corpus_and_register() {
+    for path in corpus_and_regressions() {
         let rel = path
             .strip_prefix(repo_root())
             .unwrap_or(&path)

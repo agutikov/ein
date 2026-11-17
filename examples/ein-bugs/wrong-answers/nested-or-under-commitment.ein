@@ -1,6 +1,6 @@
 ;;; A disjunction nested inside a conjunction, in a rule only a commitment
 ;;; activates: four solve questions answer and five stop — **W62**,
-;;; register row `W62/nested-or-under-commitment`.
+;;; regression `nested-or-under-commitment`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

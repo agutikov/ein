@@ -1,5 +1,5 @@
-;;; An `absent` splits a name that starts with `neq` — **W22**, register row
-;;; `W22/kw-neq-in-absent` (`corpus/wrong_answers.toml`): a reserved word is a
+;;; An `absent` splits a name that starts with `neq` — **W22**, regression
+;;; `kw-neq-in-absent` (`corpus/regressions.toml`): a reserved word is a
 ;;; keyword only as a whole token (Q-M1e2.17).
 ;;;
 ;;;

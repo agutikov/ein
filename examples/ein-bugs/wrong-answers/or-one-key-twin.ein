@@ -1,5 +1,5 @@
-;;; The twin of `or-one-key.ein` — **W39**, register row `W39/or-one-key`
-;;; (`corpus/wrong_answers.toml`):
+;;; The twin of `or-one-key.ein`, whose core is larger than the smallest
+;;; (a known gap):
 ;;; the same program with `w`'s `(or …)` written as two rules, `w1` and `w2`,
 ;;; one per disjunct.
 ;;;

@@ -12,7 +12,7 @@
 ;;; mirrored facts below out of root's fixpoint would take the query's goal
 ;;; with them and change R, and no flag changes R:
 ;;; `(config :enable-symmetric-mirror false)` is refused at the parse
-;;; (register case W13, a config flag that changed R). A relation that is
+;;; (W13, a config flag that changed R). A relation that is
 ;;; not to be mirrored is not marked: symmetry is the program's, not the
 ;;; engine's (Q6), and a program marks the relation the engine mirrors.
 ;;;

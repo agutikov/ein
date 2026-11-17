@@ -848,6 +848,14 @@ python3 "${SCRIPT_DIR}/utils/check_generated.py" --bin "${SCRIPT_DIR}/ein.rs/tar
 step "utils/check_region_routes.py"
 python3 "${SCRIPT_DIR}/utils/check_region_routes.py" --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
 
+# The open wrong answers, `plans/wrong_answers/register.toml`: the register's
+# own keys, then the project's runner on the file (`ein-cli`'s example
+# `held_answers --open`), each row's run through the binary and its region
+# through the library, so a row whose answer changes fails here. Not behind
+# the `--tests-only` guard: it runs the engine.
+step "utils/wrong_answers.py"
+python3 "${SCRIPT_DIR}/utils/wrong_answers.py"
+
 # M1e2 S1e2.1.6 — the review bundle for one small register case, built into a
 # temporary directory with the gate profile's `ein` the step above just tested
 # (`target/gate/ein`, M1f S1f.6.39), every

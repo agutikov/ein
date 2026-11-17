@@ -1,5 +1,5 @@
-;;; The control of `dunder-object-closed-by-rule.ein` — **W96**, register row
-;;; `W96/closed-by-rule`'s control (`corpus/wrong_answers.toml`).
+;;; The control of `dunder-object-closed-by-rule.ein` — **W96**, regression
+;;; `closed-by-rule`'s control (`corpus/regressions.toml`).
 ;;;
 ;;; The same program with the closure written as a fact, `(__closed__
 ;;; digit)`, and not derived by a rule. Nothing else differs. A written fact

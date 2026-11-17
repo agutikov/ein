@@ -56,3 +56,5 @@ path = "src/main.rs"
 [dev-dependencies]
 ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true
+# `tests/regressions.rs` holds its bless to a file that still parses.
+toml.workspace = true

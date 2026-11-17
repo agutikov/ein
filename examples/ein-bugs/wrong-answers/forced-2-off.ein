@@ -1,6 +1,6 @@
 ;;; `forced-2.ein` with the walk's forced-positive cascade off — **W1** at layer
-;;; 0, reached once W2's mechanism is out of the way. Register row
-;;; `W1/forced-2-off` (`corpus/wrong_answers.toml`).
+;;; 0, reached once W2's mechanism is out of the way. Regression
+;;; `forced-2-off` (`corpus/regressions.toml`).
 ;;;
 ;;; Below this header the program is `forced-2.ein`'s: Ein has no flag that
 ;;; turns the cascade off. The answer by hand is the same: **`Solution`, k = 1,
@@ -19,8 +19,8 @@
 ;;; `Contradiction` — the core is a *hypothesis*, not a program fact.
 ;;;
 ;;; Now R is {∅}, root alone (`ein solve FILE`), as `forced-2.ein`'s. No config
-;;; option changes R (Q-M1e2.30), and the register keeps the walk's answer above
-;;; as its `wrong`.
+;;; option changes R (Q-M1e2.30); the answer above is the one the walk once
+;;; gave.
 ;;;
 ;;;
 ;;;

@@ -59,7 +59,7 @@ def run(name: str, argv: list[str], env: dict[str, str] | None = None, cwd: Path
 
 def run_closed(name: str, argv: list[str], cwd: Path = REPO, timeout: float | None = None) -> Invocation:
     """Run one process with its stdout a pipe whose reader closed before it
-    started, as `wrong_answers.rs` runs a row whose `now` states `stdout =
+    started, as the runner (`ein-cli/tests/held/`) runs a row whose `now` states `stdout =
     "closed"` (schema /21, M1f S1f.5.25): every write it makes meets no
     reader. Its stderr is captured; its code is minus the signal that ended
     it, where one did."""

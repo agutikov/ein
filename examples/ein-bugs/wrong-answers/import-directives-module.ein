@@ -1,5 +1,5 @@
 ;;; A module that states what a program states: a query, a lattice and a
-;;; configuration — **W90** (`corpus/wrong_answers.toml`). The
+;;; configuration — **W90** (`corpus/regressions.toml`). The
 ;;; `import-directives-*` witnesses import it qualified. A program of its own as
 ;;; well: no candidate, R {∅}, and its query has one row, *Tea is a drink*.
 ;;;

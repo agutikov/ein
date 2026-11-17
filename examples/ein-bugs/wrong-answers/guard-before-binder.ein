@@ -1,6 +1,6 @@
 ;;; A guard on a variable no premise before it binds read nothing, in silence —
-;;; **W24**, register row `W24/guard-before-binder`
-;;; (`corpus/wrong_answers.toml`); a conjunction means the same in any order of
+;;; **W24**, regression `guard-before-binder`
+;;; (`corpus/regressions.toml`); a conjunction means the same in any order of
 ;;; its conjuncts (Q-M1e2.26).
 ;;;
 ;;;
@@ -27,7 +27,7 @@
 ;;; no word of the order (`ein saturate --dump FILE`, `ein solve FILE` at
 ;;; `f8c10730`). After it, and before `6841faff`, the loader refused it, naming
 ;;; the variable, every command exiting 1 (`ein test`: 2). Now it loads and
-;;; answers as above, which the register's row holds (`wrong_answers.rs`).
+;;; answers as above, which the regression holds (`regressions.rs`).
 ;;;
 ;;;
 

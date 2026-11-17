@@ -1,5 +1,5 @@
 ;;; An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a
-;;; debug build — **W85**, register row `W85/hrule-reads-not`.
+;;; debug build — **W85**, regression `hrule-reads-not`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────

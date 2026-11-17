@@ -215,7 +215,7 @@ Against other phases and milestones, stated and not resolved:
   tested on a relation that may and on a Zebra relation that may not.
 - **Round 2's two outlines are each marked held, or corrected,** with the program.
 - **The repo's discipline:** a wrong answer of the engine is a row of
-  [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), filed `open` before its fix; every other
+  [`corpus/wrong_answers.toml`](../../wrong_answers/register.toml), filed `open` before its fix; every other
   finding is a row of this phase's `findings.md`, shown; every number carries its command and date.
 
 ## Risks, each with what checks it

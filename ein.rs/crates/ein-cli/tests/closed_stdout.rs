@@ -48,7 +48,7 @@ use ein_corpus::{Scratch, repo_root};
 /// The witness of every run but `ein test`'s: nine candidates, four rules, R
 /// five states, and no claim, so no question prints a `note:` (W75's).
 const W: &str = "examples/branching/05_mini_zebra.ein";
-/// `ein test`'s: a claim that holds, so the run exits 0 (W75/test's).
+/// `ein test`'s: a claim that holds, so the run exits 0 (closed-stdout/test's).
 const T: &str = "examples/features/11_expect_ambiguity.ein";
 /// SIGPIPE, on every Unix the binary ships for.
 const SIGPIPE: i32 = 13;

@@ -1,6 +1,6 @@
 ;;; The alive-∅ record site BETWEEN LAYERS: a search that wrote negatives
 ;;; into root recorded as a model a state its own rules refute, at stock
-;;; config with no flags. Register row W1/alive-empty-interlayer.
+;;; config with no flags. Regression alive-empty-interlayer.
 ;;
 ;; `phase2` recomputed `alive` after a layer, found it empty, and recorded root
 ;; — which by then held this layer's singleton writeback `(not (p Z))` and the
@@ -27,7 +27,7 @@
 ;; claim against, so the file states none.
 ;;
 ;; Deleting `totality` leaves a program the static check calls monotone,
-;; whose R is 4 states, maximal `{(p A), (p B)}`: the register row's
+;; whose R is 4 states, maximal `{(p A), (p B)}`: the regression's
 ;; alternative answer.
 ;;
 ;;
