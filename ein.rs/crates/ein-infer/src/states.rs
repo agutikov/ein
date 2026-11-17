@@ -315,6 +315,7 @@ pub(crate) fn compute_resumable(
     let Prepared {
         snapshot,
         root_dead,
+        node_dead: _,
         candidates,
         hypothesised,
         monotonicity,

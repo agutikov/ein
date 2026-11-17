@@ -277,6 +277,40 @@ pub(super) fn empty(p: &RefCell<B>) -> Id {
     named(p, ein_core::text::EMPTY_HEAD, none())
 }
 
+/// A saved file's `(program …)`, or `(module NAME …)` with `module`, its name
+/// and where its text starts: the head at its position, the name, and the
+/// text it wraps as written, a string node. The text is the bytes between
+/// the head (or the name) and the `)`, one line break off each end, which
+/// is how the writer frames it (`crate::saved`); the forms the grammar read
+/// in it are left in the arena unread, and the loader parses the text again
+/// as the file it was (Q-M1f.401). The one string that is no
+/// natural-language text: no loader reads a wrapper as a form.
+pub(super) fn carried(
+    p: &RefCell<B>,
+    lx: Lx,
+    head: Tok,
+    module: Option<(Id, usize)>,
+    close: Tok,
+) -> Id {
+    let h = lexeme(head);
+    let at = loc(p, h);
+    let start = module.map_or(h.span().end(), |(_, end)| end);
+    let end = lexeme(close).span().start().max(start);
+    let text = lx.span_str(lrpar::Span::new(start, end));
+    let text = text.strip_prefix('\n').unwrap_or(text);
+    let text = text.strip_suffix('\n').unwrap_or(text);
+    let word = lx.span_str(h.span());
+    let mut b = p.borrow_mut();
+    let head = b.ast.atom(word, at);
+    let s = b.ast.intern(text);
+    let body = b.ast.push(Node::Str(s), at);
+    let items = match module {
+        Some((name, _)) => vec![name, body],
+        None => vec![body],
+    };
+    b.ast.sform(head, &items, at)
+}
+
 /// A rule's or a macro's parameter list.
 pub(super) fn params(p: &RefCell<B>, vars: Vec<Id>) -> Id {
     named(p, ein_core::text::PARAMS_HEAD, vars)

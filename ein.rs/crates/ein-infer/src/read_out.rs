@@ -278,6 +278,12 @@ pub fn of_answer(
     };
 
     let goals = asked(root, ast);
+    // A saved file with a `(commit …)` checks no claim (Q-M1f.403).
+    let saved = root.program().commit.is_some();
+    let saved_not_checked = || Report {
+        outcome: Outcome::NotChecked,
+        lines: vec![SAVED_CHECKS_NO_CLAIM.to_string()],
+    };
     // Every state and frontier node, read once through the node function.
     let named: Vec<String> = {
         let mut v: Vec<String> = answer
@@ -482,6 +488,9 @@ pub fn of_answer(
                 .collect();
             let classes = classes(ast, g.goal, g.text.as_deref(), picked);
             let claim = g.expect.map(|node| {
+                if saved {
+                    return saved_not_checked();
+                }
                 let over = Coverage {
                     over: g.over,
                     as_asked,
@@ -502,6 +511,7 @@ pub fn of_answer(
 
     let claim = match root.program().solve().cloned() {
         Some(solve) => match solve_value(ast, &solve, "expect") {
+            Some(_) if saved => Some(saved_not_checked()),
             Some(node) => Some(check_claim(root, terms, ast, node, &answer, opts)?),
             None => None,
         },
@@ -706,6 +716,12 @@ fn asked(root: &Kb, ast: &Ast) -> Vec<Asked> {
         })
         .collect()
 }
+
+/// Why a saved file with a `(commit …)` checks no claim: the one line every
+/// claim it holds carries (Q-M1f.403). Its claims are its program's, about
+/// the program's R, and the file is a node of that R's lattice.
+pub const SAVED_CHECKS_NO_CLAIM: &str = "the claim is the program's, about the program's R, and \
+     this saved file is a node of its lattice: the program checks it";
 
 /// Why `--count` checks no claim: the one line every claim it leaves carries.
 pub const COUNT_CHECKS_NO_CLAIM: &str =

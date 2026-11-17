@@ -111,12 +111,28 @@ enum Unread {
 /// filesystem in one place.
 pub struct Resolver {
     stdlib: stdlib::Source,
+    /// A saved file's modules, where the resolver reads a saved file's
+    /// program ([`Resolver::carrying`]): every module is read from here and
+    /// never from the disk (Q-M1f.401).
+    carried: Option<Carried>,
+    /// Every module read, `(name, text)`, in the order the imports reached
+    /// them: what a saved file carries ([`Resolver::modules_read`]).
+    read_log: std::cell::RefCell<Vec<(String, String)>>,
+}
+
+/// The modules a saved file carries, by name, and the name the file is read
+/// under, which each module's positions name.
+struct Carried {
+    file: String,
+    modules: BTreeMap<String, String>,
 }
 
 impl Default for Resolver {
     fn default() -> Self {
         Resolver {
             stdlib: stdlib::resolve_default(),
+            carried: None,
+            read_log: Default::default(),
         }
     }
 }
@@ -188,7 +204,46 @@ impl Resolver {
     }
 
     pub fn with_stdlib(stdlib: stdlib::Source) -> Self {
-        Resolver { stdlib }
+        Resolver {
+            stdlib,
+            carried: None,
+            read_log: Default::default(),
+        }
+    }
+
+    /// A resolver over the modules a saved file carries, `(name, text)`:
+    /// every import is resolved against them and never the disk, so a saved
+    /// file reads no other file (Q-M1f.401). `file` is the name the saved
+    /// file is read under; a module's positions name it as
+    /// [`carried_name`] spells it.
+    pub fn carrying(file: &str, modules: &[(String, String)]) -> Self {
+        Resolver {
+            stdlib: stdlib::resolve_default(),
+            carried: Some(Carried {
+                file: file.to_string(),
+                modules: modules.iter().cloned().collect(),
+            }),
+            read_log: Default::default(),
+        }
+    }
+
+    /// Every module this resolver read, `(name, text)`, each once, sorted by
+    /// name: the modules a program's load read, as the bytes the resolution
+    /// chose, which a saved file carries (Q-M1f.401).
+    pub fn modules_read(&self) -> Vec<(String, String)> {
+        let mut out = self.read_log.borrow().clone();
+        out.sort_by(|a, b| a.0.cmp(&b.0));
+        out
+    }
+
+    /// The text of `std.x.y` as this resolver's standard library holds it,
+    /// the one a program's import of it reads: `None` where it has none.
+    pub fn stdlib_text(&self, module: &str) -> Option<String> {
+        let segments: Vec<&str> = module.split(MODULE_SEP).collect();
+        if segments.len() < 2 || segments[0] != STDLIB_ALIAS || self.stdlib.problem().is_some() {
+            return None;
+        }
+        self.read(&self.stdlib_root(), &segments[1..]).1.ok()
     }
 
     fn stdlib_root(&self) -> Root {
@@ -206,7 +261,13 @@ impl Resolver {
     ///
     /// Empty when `std.macro` is unreadable: degrade to no check.
     pub fn stdlib_macro_names(&self) -> Vec<String> {
-        let Ok(text) = self.read(&self.stdlib_root(), &["macro"]).1 else {
+        // A saved file's resolver reads no disk: the `std.macro` it carries,
+        // or none.
+        let text = match &self.carried {
+            Some(c) => c.modules.get("std.macro").cloned().ok_or(Unread::Missing),
+            None => self.read(&self.stdlib_root(), &["macro"]).1,
+        };
+        let Ok(text) = text else {
             return Vec::new();
         };
         let mut ast = Ast::new();
@@ -266,6 +327,9 @@ impl Resolver {
         let segments: Vec<&str> = module.split(MODULE_SEP).collect();
         if segments.iter().any(|s| s.is_empty() || s.contains('/')) {
             return false;
+        }
+        if let Some(c) = &self.carried {
+            return c.modules.contains_key(module);
         }
         if segments[0] == STDLIB_ALIAS {
             if segments.len() < 2 || self.stdlib.problem().is_some() {
@@ -414,6 +478,7 @@ impl Resolver {
                 None => {
                     let (key, text) = self.locate(&spec.module, &module, base_dir, &loc)?;
                     let parsed = parse(ast, &text, Some(&key))?;
+                    self.read_log.borrow_mut().push((module.clone(), text));
                     let file = File::new(Some(module.clone()), key, parsed, ast, is_std);
                     if let Some((short, decl)) =
                         file.declared.iter().find(|(n, _)| n.contains(MODULE_SEP))
@@ -453,6 +518,16 @@ impl Resolver {
         base_dir: Option<&Path>,
         loc: &str,
     ) -> Result<(String, String), LoadError> {
+        if let Some(c) = &self.carried {
+            return match c.modules.get(module) {
+                Some(text) => Ok((carried_name(module, &c.file), text.clone())),
+                None => Err(LoadError(format!(
+                    "(import {written}) — {} carries no module {module}, and a saved file \
+                     reads no other file ({loc})",
+                    c.file
+                ))),
+            };
+        }
         let segments: Vec<&str> = module.split(MODULE_SEP).collect();
         let (root, rel) = if segments[0] == STDLIB_ALIAS {
             // **The override proves itself here** ([`stdlib::Source::problem`]).
@@ -696,6 +771,13 @@ impl Resolver {
         }
         Ok(())
     }
+}
+
+/// The name a module a saved file carries is read under, which its positions
+/// name: `<module NAME saved in FILE>`, as a container's stored program is
+/// `<program stored in FILE>`.
+pub fn carried_name(module: &str, file: &str) -> String {
+    format!("<module {module} saved in {file}>")
 }
 
 /// Bind a short name in a file's table, refusing one bound to two full names

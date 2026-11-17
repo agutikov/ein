@@ -898,6 +898,7 @@ impl<'a> Space<'a> {
         let Prepared {
             snapshot,
             root_dead,
+            node_dead: _,
             candidates,
             hypothesised,
             monotonicity,
@@ -1572,7 +1573,8 @@ impl<'a> Space<'a> {
         table
     }
 
-    /// L5's table, read and handed to nothing.
+    /// L5's table, read and handed to nothing: at root's fixpoint, or a
+    /// saved file's node's ([`Self::at_root`]).
     fn table(&mut self) -> Result<Option<crate::oblgen::Alternatives>, SolveError> {
         if !self.monotonicity.is_monotone() || self.root.program().obligations.is_empty() {
             return Ok(None);
@@ -1583,14 +1585,29 @@ impl<'a> Space<'a> {
             .enumerate()
             .map(|(i, &f)| (f, i as u32))
             .collect();
-        Ok(Some(crate::oblgen::alternatives(
+        let (ast, memo, monotonicity) = (self.ast, self.memo.clone(), self.monotonicity.clone());
+        let table = self.at_root(|kb, terms| {
+            crate::oblgen::alternatives(kb, terms, ast, &memo, &monotonicity, &candidates)
+        })??;
+        Ok(Some(table))
+    }
+
+    /// `read` root's fixpoint, as every node of the run starts from it: the
+    /// program's root, or, for a saved file, its node's fixpoint, read
+    /// through the node function to quiescence, as the route's own node of
+    /// ∅ is (`region::Floor`).
+    fn at_root<R>(&mut self, read: impl FnOnce(&Kb, &mut Terms) -> R) -> Result<R, SolveError> {
+        if self.snapshot.floor().is_none() {
+            return Ok(read(self.root, self.terms));
+        }
+        let mut reader = region::Nodes::of_parts(
             self.root,
+            self.snapshot.clone(),
+            self.memo.clone(),
             self.terms,
             self.ast,
-            &self.memo,
-            &self.monotonicity,
-            &candidates,
-        )?))
+        );
+        reader.with_fixpoint(&[], read)
     }
 
     /// **What root owes, for a reader**: L5's table as [`Self::alternatives`]
@@ -1602,13 +1619,10 @@ impl<'a> Space<'a> {
         let Some(table) = self.table()? else {
             return Ok(None);
         };
-        let rows = crate::oblgen::witness_rows(
-            self.root,
-            self.terms,
-            self.ast,
-            &self.memo,
-            &self.monotonicity,
-        )?;
+        let (ast, memo, monotonicity) = (self.ast, self.memo.clone(), self.monotonicity.clone());
+        let rows = self.at_root(|kb, terms| {
+            crate::oblgen::witness_rows(kb, terms, ast, &memo, &monotonicity)
+        })??;
         // One enumeration, twice: the two lists name the same instances in
         // the same order.
         if rows.len() != table.instances.len()
@@ -2404,8 +2418,11 @@ fn flagged(
     let within = n <= opts.limit as usize && n < 64;
     // The ∅ rule (Q-M1f.23): a minimal question, under any ask, where ∅
     // is in `R` — root is alive here, so where it owes nothing — is decided
-    // by root's node, within the limit or past it (`Space::empty_state`).
-    let empty_in_r = opts.mode.which == Which::Minimal && prepared.root_owes == 0;
+    // by root's node, within the limit or past it (`Space::empty_state`). A
+    // saved file's node can be dead here, under live nodes
+    // (`region::Prepared::node_dead`).
+    let empty_in_r =
+        opts.mode.which == Which::Minimal && !prepared.node_dead && prepared.root_owes == 0;
     if early || !within || empty_in_r {
         // Layer order, stopping when the question is decided. Past the limit
         // a question that needs the whole cube stays undecided. The cube is

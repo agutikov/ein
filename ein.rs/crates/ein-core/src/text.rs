@@ -75,7 +75,7 @@ pub fn is_name_char(ch: char) -> bool {
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
 /// thirteen words that are never a name ([`LEXER_KEYWORDS`]), and not one of
 /// the engine's three writeback names (`ein.l`'s `WRITEBACK`). The
-/// ten words a position gives a meaning to (`relation`, `model`, …) are
+/// thirteen words a position gives a meaning to (`relation`, `model`, …) are
 /// names wherever a name goes, so they print bare.
 pub fn is_symbol(s: &str) -> bool {
     !s.is_empty()

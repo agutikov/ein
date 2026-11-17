@@ -9,7 +9,7 @@
 //! **A refused file reports every error recovery reaches** ([`ParseError`]),
 //! each with its true position, what was found there, its notes, and at most
 //! three of the repairs CPCT+ ranked, the first being the one the parse went
-//! on with, then a count of the rest. Where a place takes a name, the ten
+//! on with, then a count of the rest. Where a place takes a name, the thirteen
 //! words a position gives a meaning to ([`POSITION_WORDS`]) are names there
 //! too, so the repairs that differ only in which of them, or which name, they
 //! insert are one repair, *Insert a name*. Recovery is deterministic: `lrpar`
@@ -65,11 +65,13 @@ pub const RESERVED_WORDS: [&str; 13] = [
     "import", "open",
 ];
 
-/// The ten words a position gives a meaning to: tokens of their own in
+/// The thirteen words a position gives a meaning to: tokens of their own in
 /// `ein.l`, and names wherever a name goes (`ein.y`'s `Name`), so `(p model)`
-/// is a fact and `(relation step T)` a declaration.
-pub const POSITION_WORDS: [&str; 10] = [
+/// is a fact and `(relation step T)` a declaration. The last three head a
+/// saved file's wrappers at the top of a file (Q-M1f.401).
+pub const POSITION_WORDS: [&str; 13] = [
     "relation", "step", "eq", "absent", "false", "true", "model", "region", "merged", "owing",
+    "program", "module", "commit",
 ];
 
 /// What a parse error found at an `open` says (Q-M1f.88): the one place it is
@@ -307,6 +309,24 @@ pub fn is_one_name(text: &str) -> bool {
         l.span().start() == 0
             && l.span().len() == text.len()
             && rule_name(l.tok_id()) == Some("NAME")
+    })
+}
+
+/// Does `text` open as a saved file does, its first two tokens `(` and
+/// `program` (Q-M1f.401)? What tells a saved file from a program before
+/// either is parsed: a saved file opens with its `(program …)`, and a program
+/// holds none.
+pub fn opens_saved(text: &str) -> bool {
+    LEXER.with(|def| {
+        let lexer = def.lexer(text);
+        let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
+        let mut tokens = lexer.iter();
+        match (tokens.next(), tokens.next()) {
+            (Some(Ok(open)), Some(Ok(head))) => {
+                lexer.span_str(open.span()) == "(" && rule_name(head.tok_id()) == Some("program")
+            }
+            _ => false,
+        }
     })
 }
 

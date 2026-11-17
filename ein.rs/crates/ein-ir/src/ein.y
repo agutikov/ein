@@ -32,10 +32,14 @@
 %epp "BADTEXT" "a string glued to what follows"
 %epp "BADESCAPE" "a string with an unknown escape"
 %%
+// A file: a program's forms, or a saved file's (Q-M1f.401), whose wrappers
+// stand at the top alone.
 Program -> Vec<b::Id>:
     { b::none() }
-  | Program Form { b::push($1, $2) }
+  | Program TopForm { b::push($1, $2) }
   ;
+TopForm -> b::Id: Form { $1 } | Saved { $1 } ;
+Forms -> Vec<b::Id>: { b::none() } | Forms Form { b::push($1, $2) } ;
 
 Form -> b::Id:
     Relation { $1 } | Rule { $1 } | Query { $1 } | Solve { $1 } | Config { $1 }
@@ -54,6 +58,8 @@ Name -> b::Id:
   | "model" { b::name(p, $lexer, $1) }
   | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
   | "owing" { b::name(p, $lexer, $1) }
+  | "program" { b::name(p, $lexer, $1) } | "module" { b::name(p, $lexer, $1) }
+  | "commit" { b::name(p, $lexer, $1) }
   ;
 // A name a declarator binds: a relation's, a rule's, a macro's, an alias.
 // Not one of the kernel's reserved names (`ein_core::RESERVED`).
@@ -62,10 +68,13 @@ DeclName -> b::Id:
   | "step" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
   | "model" { b::name(p, $lexer, $1) } | "region" { b::name(p, $lexer, $1) }
   | "merged" { b::name(p, $lexer, $1) } | "owing" { b::name(p, $lexer, $1) }
+  | "program" { b::name(p, $lexer, $1) } | "module" { b::name(p, $lexer, $1) }
+  | "commit" { b::name(p, $lexer, $1) }
   ;
 // A top-level fact's relation: not `relation`, which declares, not a
 // claim's `region`, `merged` or `owing`, which belong under `(solve :expect)`,
-// and not `open`, the verdict, which no fact is of. Not `absent`, which is
+// not a saved file's `program`, `module` or `commit`, which wrap what it
+// carries, and not `open`, the verdict, which no fact is of. Not `absent`, which is
 // negation as failure, a premise's test and no relation a state holds a fact
 // of, and not `false`, which is shaped below: it takes no argument. `eq`
 // stays: a written equality is checked, never stored.
@@ -87,6 +96,8 @@ ValueHead -> b::Id:
   | "true" { b::name(p, $lexer, $1) } | "model" { b::name(p, $lexer, $1) }
   | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
   | "owing" { b::name(p, $lexer, $1) }
+  | "program" { b::name(p, $lexer, $1) } | "module" { b::name(p, $lexer, $1) }
+  | "commit" { b::name(p, $lexer, $1) }
   ;
 // A premise's relation: not `eq` or `absent`, which are shaped below, not
 // `false`, which takes no argument, and not `open`, a verdict
@@ -382,5 +393,21 @@ StepClauses -> Vec<b::Id>: { b::none() } | StepClauses StepClause { b::push($1, 
 // The steps and givens a step used: `(c10)`, `(s1 s2)`, `(and s1 c15)`.
 StepUsing -> b::Id: NameListPlus { $1 } | "(" "and" NamesPlus ")" { b::named(p, "and", $3) } ;
 Derived -> b::Id: NestedFact { $1 } | NegFact { $1 } ;
+
+// ── A saved file: the program, its modules, the choices made ─────────
+// `(program …)` and `(module NAME …)` hold a file's text as it was read,
+// parsed here as the forms it is and carried as its bytes, which the loader
+// reads again as the file they were (Q-M1f.401). `(commit …)` names the
+// candidates of H a node commits, each a fact as written (Q-M1f.400). None
+// stands inside another, and none is a fact.
+Saved -> b::Id:
+    "(" "program" Forms ")" { b::carried(p, $lexer, $2, None, $4) }
+  | "(" "module" ModuleName Forms ")" { b::carried(p, $lexer, $2, Some($3), $5) }
+  | "(" "commit" CommitFacts ")" { b::named(p, "commit", $3) }
+  ;
+// A module's name, and where its text starts: just after it.
+ModuleName -> (b::Id, usize): Name { ($1, $span.end()) } ;
+CommitFact -> b::Id: NestedFact { $1 } | NegFact { $1 } ;
+CommitFacts -> Vec<b::Id>: CommitFact { b::one($1) } | CommitFacts CommitFact { b::push($1, $2) } ;
 %%
 use super::b;

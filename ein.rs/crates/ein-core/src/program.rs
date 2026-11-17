@@ -66,6 +66,28 @@ pub struct Program {
     /// (`ein_infer::predicates::domain`), and shared by every fork. A load
     /// that changes the registries ([`crate::Kb::program_mut`]) clears it.
     pub domain: std::sync::OnceLock<Box<[crate::Value]>>,
+    /// **What the program was read from**: its text and every module the
+    /// load read, as the bytes the resolution chose, which a saved file
+    /// carries (Q-M1f.401). `None` where the loader was handed forms and no
+    /// text.
+    pub sources: Option<std::sync::Arc<Sources>>,
+    /// **The choices a saved file states**, its `(commit …)`: each candidate
+    /// of H as the file writes it, in its order, which a node commits after
+    /// root's fixpoint (Q-M1f.400). `None` for a program and for a saved
+    /// root.
+    pub commit: Option<Box<[String]>>,
+}
+
+/// A program's text and its modules' texts, each as it was read: what
+/// [`Program::sources`] holds and a saved file carries.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Sources {
+    /// The program file's text: a `.einb`'s, the program it stores.
+    pub program: String,
+    /// Every module the load read, each once, `(name, text)`, sorted by name:
+    /// `std.x.y`, or a path from the program file's directory, a dot a
+    /// directory.
+    pub modules: Vec<(String, String)>,
 }
 
 impl Program {

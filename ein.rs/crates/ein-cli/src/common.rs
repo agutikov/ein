@@ -37,40 +37,6 @@ pub fn read_program(path: &Path) -> Result<Held, String> {
     ein_ir::read::read_program(path).map_err(|e| e.line)
 }
 
-/// A program path's text, for the one caller that wants the text and not the
-/// loaded program: `--dump-answer`'s inlining (`solve::inlined_program`).
-pub struct ProgramText {
-    pub text: String,
-    /// The name its positions are parsed under.
-    pub name: Option<String>,
-    /// Where its file-relative imports resolve; `None` for a container's.
-    pub base: Option<std::path::PathBuf>,
-}
-
-/// The text of a program path: a text as written, named by its path and
-/// resolved against its directory; or the program a `.einb` stores, the
-/// resolved and import-flattened text `ein kb save` wrote, named
-/// `<program stored in x.einb>` (`ein_einb::program_name`) and with nothing
-/// left to resolve. A container is not refused here: `ein solve x.einb
-/// --dump-answer DIR` answers where the `.ein` does (Q-M1f.27).
-pub fn program_text(path: &Path) -> Result<ProgramText, String> {
-    match read_program(path)? {
-        Held::Text(text) => Ok(ProgramText {
-            text,
-            name: path.to_str().map(str::to_string),
-            base: path.parent().map(Path::to_path_buf),
-        }),
-        #[cfg(feature = "einb")]
-        Held::Container(bytes) => Ok(ProgramText {
-            text: ein_einb::program_of(&bytes, true).map_err(|e| format!("kb load error: {e}"))?,
-            name: Some(ein_einb::program_name(Some(&path.display().to_string()))),
-            base: None,
-        }),
-        #[cfg(not(feature = "einb"))]
-        Held::Container(_) => Err(no_einb_line(path)),
-    }
-}
-
 /// A program loaded from a path, and how it was read.
 pub struct Loaded {
     pub kb: Kb,
@@ -149,23 +115,39 @@ pub fn load_held(
 ) -> Result<Loaded, String> {
     match held {
         Held::Text(text) => {
+            // A program, or a saved file, its program read against the
+            // modules it carries (`ein_ir::saved`): one read and one load,
+            // so the parse is timed with it.
             let t = Instant::now();
-            let forms = ein_ir::parse(ast, &text, path.to_str()).map_err(|e| e.to_string())?;
-            let parse = t.elapsed();
-            let t = Instant::now();
-            let kb = ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load)
-                .map_err(|e| format!("kb load error: {e}"))?;
-            judge_mechanisms(ast, terms, &kb, |ast, terms| {
-                let forms = ein_ir::parse(ast, &text, path.to_str()).ok()?;
-                ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load).ok()
+            let loaded = ein_ir::saved::load_text(
+                ast,
+                terms,
+                &text,
+                path.to_str(),
+                path.parent(),
+                query,
+                load,
+            )
+            .map_err(|e| e.to_string())?;
+            let (parse, load) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
+            say_notes(&loaded.notes);
+            judge_mechanisms(ast, terms, &loaded.kb, |ast, terms| {
+                ein_ir::saved::load_text(
+                    ast,
+                    terms,
+                    &text,
+                    path.to_str(),
+                    path.parent(),
+                    query,
+                    load,
+                )
+                .ok()
+                .map(|l| l.kb)
             })?;
             Ok(Loaded {
-                kb,
-                forms,
-                how: How::Text {
-                    parse,
-                    load: t.elapsed(),
-                },
+                kb: loaded.kb,
+                forms: loaded.forms,
+                how: How::Text { parse, load },
             })
         }
         #[cfg(feature = "einb")]
@@ -181,7 +163,8 @@ pub fn load_held(
 /// **What the load noticed and did not refuse**, said once: each line on
 /// stderr as `note: <line>`, on every command, since every command that
 /// loads a program loads it through [`load_held`]: the hypothesis
-/// mechanisms' notes (Q-M1f.242). A command may load one file several times, once a
+/// mechanisms' notes (Q-M1f.242), and a saved file's module of the standard
+/// library that is not this binary's (Q-M1f.401). A command may load one file several times, once a
 /// query and once a question, and each line carries its file and position,
 /// so a line is printed the first time the process meets it and never again.
 /// No answer and no exit code moves.
@@ -244,7 +227,10 @@ fn judge_mechanisms(
 /// `constraints` and `program` read.
 pub fn parse_held(ast: &mut Ast, path: &Path, held: Held) -> Result<Vec<NodeId>, String> {
     match held {
-        Held::Text(text) => ein_ir::parse(ast, &text, path.to_str()).map_err(|e| e.to_string()),
+        // A saved file's program, as written.
+        Held::Text(text) => {
+            ein_ir::saved::parse_text(ast, &text, path.to_str()).map_err(|e| e.to_string())
+        }
         #[cfg(feature = "einb")]
         Held::Container(bytes) => {
             let text =

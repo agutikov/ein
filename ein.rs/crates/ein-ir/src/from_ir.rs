@@ -17,7 +17,6 @@
 use crate::ast::{Ast, Node, NodeId, loc_repr};
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
-use crate::parse;
 use ein_core::config::{FLAGS, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
@@ -108,7 +107,8 @@ fn missing_why(head: &str, name: &str) -> String {
     )
 }
 
-/// Parse and load a `.ein` file, resolving its imports file-relative.
+/// Parse and load a `.ein` file, resolving its imports file-relative: a
+/// program, or a saved file ([`crate::saved::load_text`]).
 pub fn load_file(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Result<Kb, KbLoadError> {
     load_file_with(ast, terms, path, &LoadOptions::default())
 }
@@ -122,8 +122,13 @@ pub fn load_file_with(
 ) -> Result<Kb, KbLoadError> {
     let text = std::fs::read_to_string(path)
         .map_err(|e| KbLoadError(format!("{}: {e}", path.display())))?;
-    let forms = parse(ast, &text, path.to_str()).map_err(|e| KbLoadError(e.to_string()))?;
-    load_with(ast, terms, &forms, path.parent(), opts)
+    // A program, or a saved file (`crate::saved`).
+    crate::saved::load_text(ast, terms, &text, path.to_str(), path.parent(), 0, opts)
+        .map(|l| l.kb)
+        .map_err(|e| match e {
+            crate::saved::TextError::Parse(e) => KbLoadError(e),
+            crate::saved::TextError::Load(e) => e,
+        })
 }
 
 /// Build a populated `Kb` from parsed IR forms, about the file's **first**
@@ -182,14 +187,53 @@ pub fn load_query_with(
     active_query: usize,
     opts: &LoadOptions,
 ) -> Result<Kb, KbLoadError> {
+    load_query_by(
+        &Resolver::new(),
+        ast,
+        terms,
+        forms,
+        base_dir,
+        active_query,
+        opts,
+    )
+}
+
+/// [`load_query_with`], its imports resolved by `resolver`: a saved file's
+/// program by the modules it carries ([`Resolver::carrying`]), and any load
+/// whose caller reads afterwards what the resolver read
+/// ([`Resolver::modules_read`], `crate::saved`).
+pub fn load_query_by(
+    resolver: &Resolver,
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    base_dir: Option<&Path>,
+    active_query: usize,
+    opts: &LoadOptions,
+) -> Result<Kb, KbLoadError> {
     let mut kb = Kb::new(Program::new());
     kb.program_mut().active_query = active_query;
     let mut errors: Vec<String> = Vec::new();
 
+    // A saved file's wrappers stand at the top of a saved file, which opens
+    // with its `(program …)` and is read by `crate::saved`: a program holds
+    // none (Q-M1f.401).
+    if let Some(&w) = forms
+        .iter()
+        .find(|&&f| matches!(ast.head_name(f), Some("program" | "module" | "commit")))
+    {
+        return Err(KbLoadError(format!(
+            "({} …) at {} — a saved file's, which opens with its (program …): a program \
+             holds no (program …), (module …) or (commit …)",
+            ast.head_name(w).unwrap_or(""),
+            loc_repr(ast, ast.loc(w))
+        )));
+    }
+
     // Imports resolve up front into one flat, import-free, qualified stream.
     // Resolution errors are **fatal** and return immediately: a half-resolved
     // program cannot be ingested.
-    let forms = Resolver::new().resolve_imports(ast, forms, base_dir)?;
+    let forms = resolver.resolve_imports(ast, forms, base_dir)?;
 
     let (mut relations, mut rules, mut macro_forms, mut facts) =
         (Vec::new(), Vec::new(), Vec::new(), Vec::new());
@@ -281,7 +325,7 @@ pub fn load_query_with(
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
     // A macro's call written as a fact, which nothing expands, and a relation
     // declared under a macro's name.
-    let stdlib_macros = Resolver::new().stdlib_macro_names();
+    let stdlib_macros = resolver.stdlib_macro_names();
     refuse_macro_facts(
         ast,
         &relations,

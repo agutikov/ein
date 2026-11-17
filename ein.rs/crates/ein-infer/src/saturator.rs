@@ -496,9 +496,26 @@ pub struct Snapshot {
     /// The agenda the saturation was built under, which a resumed one takes
     /// on whatever thread it runs (the module's § The agenda).
     fail_first: Option<FailFirst>,
+    /// A saved file's node ([`crate::region::Floor`]), whose commitment every
+    /// fork of this snapshot is written with beside its own: the node
+    /// function reads it and the saturator does not. `None` at a program's
+    /// root.
+    floor: Option<Arc<crate::region::Floor>>,
 }
 
 impl Snapshot {
+    /// The saved file's node every fork of this snapshot holds, if any.
+    pub(crate) fn floor(&self) -> Option<&crate::region::Floor> {
+        self.floor.as_deref()
+    }
+
+    /// The same snapshot, every fork of it written with `floor`'s
+    /// commitment beside its own.
+    pub(crate) fn above(mut self, floor: crate::region::Floor) -> Snapshot {
+        self.floor = Some(Arc::new(floor));
+        self
+    }
+
     /// The facts `kb` has and the snapshot did not — the first half of a
     /// resumed fork's delta — in the order `kb` holds them, which is the
     /// order the caller wrote them: every route writes a commitment in
@@ -601,6 +618,7 @@ impl Saturator {
             mirror_seeded: self.mirror_seeded,
             facts: kb.facts().collect(),
             fail_first: self.fail_first,
+            floor: None,
         }
     }
 

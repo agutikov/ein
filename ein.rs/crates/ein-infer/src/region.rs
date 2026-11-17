@@ -378,6 +378,11 @@ pub struct RootStats {
     /// Those instances, each through its rule's `:why`, or the rule's name
     /// where it has none: the node function's `owed`.
     pub owed: Vec<String>,
+    /// **A saved file's node**: the candidates of H its `(commit …)` names,
+    /// in H's order, which every node of the run holds beside its own, and
+    /// which `dead`, `owes` and `owed` above describe (Q-M1f.402). Empty
+    /// for a program, and for a saved root.
+    pub commit: Vec<Candidate>,
 }
 
 impl Region {
@@ -489,6 +494,7 @@ pub(crate) fn compute_prepared(
     let Prepared {
         snapshot,
         root_dead,
+        node_dead: _,
         candidates,
         hypothesised,
         monotonicity,
@@ -754,13 +760,94 @@ pub(crate) fn compute_prepared(
     })))
 }
 
+/// **A saved file's node** (Q-M1f.402): the commitment its `(commit …)`
+/// names, which every node of a run over the file holds beside its own. The
+/// run is the part of the program's lattice above that node: H is the
+/// program's, a route's universe is H less these candidates, and the node
+/// function writes them with a node's own facts, in H's order, into a fork of
+/// the program's root ([`Snapshot::floor`]), so a node of the run is the
+/// program's node of the union, fact for fact and origin for origin.
+#[derive(Clone, Debug)]
+pub struct Floor {
+    /// The commitment's candidates, in H's order.
+    pub candidates: Vec<Candidate>,
+    /// Each candidate of H's place in H.
+    rank: FxHashMap<FactId, u32>,
+    held: FxHashSet<FactId>,
+}
+
+impl Floor {
+    /// Whether `f` is one of the commitment's candidates.
+    pub fn holds(&self, f: FactId) -> bool {
+        self.held.contains(&f)
+    }
+
+    /// The commitment's facts and `facts`, in H's order: what a node of
+    /// `facts` writes.
+    fn with(&self, facts: &[FactId]) -> Vec<FactId> {
+        let mut out: Vec<FactId> = self.candidates.iter().map(|c| c.fact).collect();
+        out.extend(facts.iter().copied().filter(|f| !self.held.contains(f)));
+        let place = |f: &FactId| self.rank.get(f).copied().unwrap_or(u32::MAX);
+        // Stable: a fact no candidate of H keeps its place after them.
+        out.sort_by_key(place);
+        out
+    }
+}
+
+/// `facts`, and a saved file's commitment where `snapshot` carries one, in
+/// H's order: what a node writes into its fork of root.
+fn with_floor(snapshot: &Snapshot, facts: &[FactId]) -> Vec<FactId> {
+    match snapshot.floor() {
+        Some(floor) => floor.with(facts),
+        None => facts.to_vec(),
+    }
+}
+
+/// The candidates of H the `(commit …)` of a saved file names, `commit` its
+/// texts, in H's order, or why it names no node: a fact that is no
+/// candidate of H, or one named twice, refused with the fact (Q-M1f.400).
+fn floor_of(candidates: &[Candidate], commit: &[String]) -> Result<Floor, SolveError> {
+    let mut places: Vec<usize> = Vec::with_capacity(commit.len());
+    for text in commit {
+        let Some(i) = candidates.iter().position(|c| c.text == *text) else {
+            return Err(SolveError::Refused(format!(
+                "(commit …) names {text}, which is no candidate of the program's H: a saved \
+                 file's choices are candidates of H, which `ein show hyps` lists (Q-M1f.400)"
+            )));
+        };
+        if places.contains(&i) {
+            return Err(SolveError::Refused(format!(
+                "(commit …) names {text} twice: a commitment is a set of candidates of H \
+                 (Q-M1f.400)"
+            )));
+        }
+        places.push(i);
+    }
+    places.sort_unstable();
+    let chosen: Vec<Candidate> = places.iter().map(|&i| candidates[i].clone()).collect();
+    Ok(Floor {
+        held: chosen.iter().map(|c| c.fact).collect(),
+        candidates: chosen,
+        rank: candidates
+            .iter()
+            .enumerate()
+            .map(|(i, c)| (c.fact, i as u32))
+            .collect(),
+    })
+}
+
 /// What both routes start from: root's fixpoint, the universe, and the
 /// static check. [`compute`] (the oracle, route 2) and
 /// [`crate::downset::compute`] (route 1) read every node against it.
 pub(crate) struct Prepared {
     pub snapshot: Snapshot,
-    /// Root's own fixpoint derives `(false)`.
+    /// Root's own fixpoint derives `(false)`, so every node does (L0, and on
+    /// a monotone program L1). A saved file's run: its node's, on a monotone
+    /// program, and the program root's on a flagged one ([`above`]).
     pub root_dead: bool,
+    /// ∅'s node derives `(false)`: [`Self::root_dead`], but on a flagged
+    /// program's saved file, whose node can be dead under live nodes.
+    pub node_dead: bool,
     /// The universe, config-free, in rendered-text order.
     pub candidates: Vec<Candidate>,
     /// The candidates' relations — `H`.
@@ -820,6 +907,45 @@ pub fn root_derivation(
     let out = root_firings(&mut copy, terms, ast, &mut Events::off());
     terms.provs.discard_fork();
     out
+}
+
+/// The node a saved file names, as a file loads to it ([`saved_node`]).
+pub struct SavedNode {
+    /// The node's fixpoint: a fork of the program's root, the commitment
+    /// written in and saturated to quiescence, its provenance kept.
+    pub kb: Kb,
+    /// The plans its saturation and root's compiled.
+    pub plans: Vec<Arc<Plan>>,
+}
+
+/// **The state a saved file loads to** (Q-M1f.402): its program's root
+/// saturated, H built at root's fixpoint, and the node its `(commit …)`
+/// names, read by the node function as every route reads a node, to
+/// quiescence. `None`, with `root` untouched, for a file with no `(commit
+/// …)`, whose state is root's fixpoint. `root` is freshly loaded, as
+/// [`prepare`] takes it; a choice that is no candidate of H is refused here,
+/// as on every command.
+pub fn saved_node(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+) -> Result<Option<SavedNode>, SolveError> {
+    if root.program().commit.is_none() {
+        return Ok(None);
+    }
+    let prepared = prepare(root, terms, ast)?;
+    let kb = fixpoint(
+        root.sealed(),
+        &prepared.snapshot,
+        terms,
+        ast,
+        &prepared.memo,
+        &[],
+    )?;
+    Ok(Some(SavedNode {
+        kb,
+        plans: crate::monotone::plans_of(&prepared.memo),
+    }))
 }
 
 /// Saturate root, take the universe at its fixpoint, and classify the plans.
@@ -1037,9 +1163,10 @@ fn prepare_as(
             l.str("assumes", "fork");
         });
     }
-    Ok(Prepared {
+    let prepared = Prepared {
         snapshot,
         root_dead,
+        node_dead: root_dead,
         candidates,
         hypothesised,
         monotonicity,
@@ -1047,6 +1174,86 @@ fn prepare_as(
         plans,
         root: root_stats,
         root_owes,
+    };
+    match root.program().commit.clone() {
+        Some(commit) if universe.is_none() => above(prepared, root, terms, ast, &commit),
+        _ => Ok(prepared),
+    }
+}
+
+/// **A saved file's run** (Q-M1f.402): the part of the program's lattice
+/// above the node its `(commit …)` names. Root's fixpoint, H and the static
+/// check stay the program's; the node, read through the node function as a
+/// route reads one, is the run's root in every word a route and the read-out
+/// say of root (its standing, what it owes, ∅ of the run's lattice); the
+/// universe is H less the commitment's candidates; and every node is written
+/// with the commitment beside its own ([`Floor`]).
+///
+/// On a program the static check flags, a node above a dead one need not be
+/// dead, since a commitment can block what the node derived (L0 is a fork's,
+/// of the program's root): there [`Prepared::root_dead`], which the routes
+/// read as L0, stays the program root's, and the node's own standing is
+/// [`Prepared::node_dead`].
+fn above(
+    p: Prepared,
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    commit: &[String],
+) -> Result<Prepared, SolveError> {
+    let floor = floor_of(&p.candidates, commit)?;
+    root.seal_top();
+    let snapshot = p.snapshot.above(floor.clone());
+    terms.provs.open_fork();
+    let read = (|| -> Result<(bool, usize, Vec<String>), SolveError> {
+        let (fork, _) = saturated(
+            root,
+            &snapshot,
+            terms,
+            ast,
+            &p.memo,
+            &[],
+            false,
+            &mut Events::off(),
+            &mut |_| {},
+        )?;
+        let dead = crate::contradiction::has_contradiction(&fork, terms);
+        let owes = crate::obligations::tally(&fork, terms, ast, &p.memo, &mut Events::off())?;
+        let owed = owes
+            .instances()
+            .iter()
+            .map(|o| {
+                if o.why.is_empty() {
+                    terms.sym(o.rule).to_string()
+                } else {
+                    o.why.clone()
+                }
+            })
+            .collect();
+        Ok((dead, owes.total(), owed))
+    })();
+    terms.provs.discard_fork();
+    let (dead, owes, owed) = read?;
+    let candidates: Vec<Candidate> = p
+        .candidates
+        .iter()
+        .filter(|c| !floor.holds(c.fact))
+        .cloned()
+        .collect();
+    let monotone = p.monotonicity.is_monotone();
+    let mut stats = p.root;
+    stats.dead = dead;
+    stats.owes = owes as u32;
+    stats.owed = owed;
+    stats.commit = floor.candidates.clone();
+    Ok(Prepared {
+        snapshot,
+        root_dead: dead && (monotone || p.root_dead),
+        node_dead: dead,
+        candidates,
+        root: stats,
+        root_owes: owes,
+        ..p
     })
 }
 
@@ -1502,6 +1709,7 @@ impl<'a> Nodes<'a> {
         let mut derived = 0u64;
         let mut firings = Vec::new();
         let mut fork = self.root.branch();
+        let facts = &with_floor(&self.snapshot, facts);
         for &h in facts {
             let (rel, args) = self.terms.facts.get(h);
             let args = args.to_vec();
@@ -1794,6 +2002,7 @@ fn saturated(
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<(Kb, Saturator), SolveError> {
     let mut fork = root.branch();
+    let facts = &with_floor(snapshot, facts);
     for &h in facts {
         let (rel, args) = terms.facts.get(h);
         let args = args.to_vec();
@@ -1929,8 +2138,11 @@ fn node_in_region(
         .copied()
         .filter(|f| !axes.root_facts.contains(f))
         .collect();
+    // A saved file's commitment is H's, as a route's own candidates are.
+    let floor = snapshot.floor();
+    let is_candidate = |f: FactId| axes.is_candidate.contains(&f) || floor.is_some_and(|c| c.holds(f));
     for &f in &delta {
-        if axes.is_candidate.contains(&f) {
+        if is_candidate(f) {
             continue;
         }
         node.beyond += 1;
@@ -1940,9 +2152,7 @@ fn node_in_region(
     }
     // L9's premise at this node, where the table relies on it.
     let unheld = axes.instances.as_ref().and_then(|t| {
-        crate::unheld::breach(&fork, root, terms, &t.unheld_relations, |f| {
-            axes.is_candidate.contains(&f)
-        })
+        crate::unheld::breach(&fork, root, terms, &t.unheld_relations, is_candidate)
     });
     // The core, where one is taken, is the node's over its fixpoint, as the
     // oracle's is: a node stopped at its first contradiction goes on from
