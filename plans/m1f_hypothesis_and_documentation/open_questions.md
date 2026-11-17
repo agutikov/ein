@@ -4543,6 +4543,8 @@ declares `n` and flags a malformed numeral, `(not-decimal NUMERAL THING)` and `(
 with no request reading it; `std.math.int` and `std.math.rat` flag an undeclared name and a digit as an operand on
 the request, and a digit or a named constant in their own terms; no well-formed program's answer moved.
 
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
+
 ### Q-M1f.211 — Which fact carries the flag of a division by zero at the call
 
 **Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md)
@@ -5868,6 +5870,8 @@ written. No rule-level way is *right away* (the stage's § 2).
 **Defaulted 2026-11-14: (a). Ruled the same day: (a).** The user: *"E1 yes, separate std.math.decimal module, other
 defaults fine"*.
 
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
+
 ### Q-M1f.273 — Where decimal's numeral check lives
 
 **Decision file:** [`docs/decisions/stdlib/math/decimal/Q-M1f.273-the-decimal-numeral-is-std-math-decimal-s-which.md`](../../docs/decisions/stdlib/math/decimal/Q-M1f.273-the-decimal-numeral-is-std-math-decimal-s-which.md)
@@ -5912,6 +5916,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 
 **Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
 
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
+
 ### Q-M1f.276 — An integer's and a rational's own shape
 
 **Decision file:** [`docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md`](../../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)
@@ -5924,6 +5930,8 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 - **(b) Silent,** named on the page.
 
 **Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
+
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
 
 ### Q-M1f.277 — An operand of another type in int and rat
 
@@ -5977,6 +5985,8 @@ the declarations' mirrors show.
 
 **Defaulted 2026-11-14: (a), the user's to revise.**
 
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
+
 ### Q-M1f.280 — A program that writes `written`
 
 **Decision file:** [`docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md`](../../docs/decisions/language/Q-M1f.280-a-program-does-not-write-written.md)
@@ -5991,6 +6001,8 @@ T1f.6.38.2.
   check that reads it would no longer be decided at root.
 
 **Defaulted 2026-11-14: (a), the user's to revise.**
+
+**Reverted 2026-11-18** by [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it): `written` is erased, and a numeral is checked by the operation that takes it.
 
 ### Q-M1f.281 — A `let` that names a digit
 
@@ -7789,3 +7801,19 @@ none, 2 exit 1 where their program exits 0, both N-30's, and 1 exits 1 as its pr
 **Ruled 2026-11-18: (a).** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. A saved file with a commitment checks none of the program's claims: its
 read-out names them as the program's, NOT CHECKED, and it exits 0; a root's file checks them as the program does.
 Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+
+### Q-M1f.404 — `written` is erased; a numeral is checked by the operation that takes it
+
+**Ruled 2026-11-18** by the user, verbatim, after asking of `written` *"WTF is written ctx???"* and *"When it was
+added and what for?"*, and being told it was Q-M1f.272's loader step (E1), made for Q-M1f.210: *"revert this
+decision, completely erase this `written` crutch. insert malformed numbers detection into decimal and binary
+arithmetic operations. all numbers taken from input program will be checked once and labeled valid, and numbres
+produced by operations has to be labelled valid already. put current running stage into branch and pause its work,
+first remove `written` and then again draw multi-context examples and continue p1f.22.5"*.
+
+Reverted: Q-M1f.272, Q-M1f.275, Q-M1f.279 and Q-M1f.280 whole. From Q-M1f.210 and Q-M1f.276, the half that says a
+malformed number is flagged where it is written, with no calculation reading it. The loader states no `written`,
+and `written` is no reserved name. A numeral an operation takes from the program is checked once and labelled
+valid, or flagged. A numeral an operation produces is labelled valid as it is produced. Built by
+[S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), whose readings of the ruling are put as Q-M1f.405
+onward, each with a default.
