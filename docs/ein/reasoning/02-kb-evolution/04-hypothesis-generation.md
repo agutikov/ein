@@ -9,7 +9,8 @@ computation over it agrees).
 This page defines $H$: a function of the program and of root's fixpoint, given by cases. The cases are called the
 **ladder**, and each case a **rung**. How a program spells what the ladder reads is
 [hypotheses](../../user/03-syntax-and-semantics/09-hypotheses.md) and
-[obligations](../../user/03-syntax-and-semantics/08-obligations.md).
+[obligations](../../user/03-syntax-and-semantics/08-obligations.md); how the engine that ships computes $H$, and
+what holds it to this page, is [hypotheses and the answer, in code](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md).
 
 **The symbols.** $P$ is the program, $K_0$ its knowledge base as loaded, $\mathrm{root} = \operatorname{sat}(K_0)$,
 and $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$ the state of a commitment $C \subseteq H$

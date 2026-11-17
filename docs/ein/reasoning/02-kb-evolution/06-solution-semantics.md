@@ -11,8 +11,9 @@ $$
 This page defines every symbol of that line, each in terms of the ones before it, then the shape of $R$, what a
 shorter description of $R$ can rest on, and the questions a reader can ask of it. Why every way of finding $R$ gives
 this $R$ is [Finding R](07-finding-r.md); how a program spells each notion is
-[solutions and models](../../user/03-syntax-and-semantics/13-solutions-and-models.md), and what is printed of $R$ is
-the [read-out](../../user/04-reference/08-read-out.md).
+[solutions and models](../../user/03-syntax-and-semantics/13-solutions-and-models.md), what is printed of $R$ is
+the [read-out](../../user/04-reference/08-read-out.md), and where each notion lives in the engine that ships, with
+what holds it to this page, is [hypotheses and the answer, in code](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md).
 
 **Scope.** Every definition holds of every program. Where a statement needs the program to be **monotone** (§ 1.6),
 it says so. On a program that is not proved monotone every node is still built one way, by fork from root, and $R$ is

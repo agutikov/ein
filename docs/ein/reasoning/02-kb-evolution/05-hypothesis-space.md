@@ -504,6 +504,16 @@ coupling, and why the one-node reading exists.
 
 ---
 
+## How to see it
+
+Every object above is something the engine shows for a program, and each graph on this page is one of its drawings.
+Which command lists $H$ and which shows its structure is [the command line](../../user/04-reference/05-cli.md)'s; what
+the drawings' strokes mean is [rendering](../../user/04-reference/12-rendering.md)'s; and the read-out, the graphs
+and the document the engine writes, key by key, with what holds each to this page, are
+[hypotheses and the answer, in code](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md).
+
+---
+
 ## What each reading does not tell
 
 - **The pair layer does not see a conflict of three.** Where three candidates are needed for a contradiction and no

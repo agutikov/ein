@@ -14,7 +14,9 @@ $R$ needs only as much of the lattice as decides it
 the reference, each licence as a lemma with its condition and its argument, and the theorem that a computation which
 concludes only through licences returns the oracle's answer. It names no procedure: in which order nodes are
 evaluated, and what is done when a bound on the work is reached, is an implementation's, and an implementation is
-right exactly when each of its conclusions is an instance of a lemma below.
+right exactly when each of its conclusions is an instance of a lemma below. The routes of the engine that ships, as
+procedures, and the tests that hold them to the oracle are
+[hypotheses and the answer, in code](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md).
 
 **The symbols** are those of [Solution semantics](06-solution-semantics.md): $H$ and $n = \lvert H \rvert$;
 $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$; $\operatorname{dead}$, $\operatorname{alive}$,

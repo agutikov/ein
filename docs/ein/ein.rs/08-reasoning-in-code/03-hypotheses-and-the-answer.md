@@ -38,7 +38,7 @@ test under a crate's `tests/`.
 | $\operatorname{Obj}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names` |
 | $\operatorname{unsettled}$ | the candidate filters of `hypgen.rs`, in this order: `negated_fact`, `fact_already_exists`, `seen_in_call` |
 | $\operatorname{inscope}$ | the relation skips of `hypgen.rs`: `closed_relation`, `relation_not_whitelisted`, `no_hypothesis_relation`; and `self_edge` for a relation of two slots |
-| the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command |
+| the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.27](../../user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
 | what the universe leaves out, a type or a relation's name bound as an object | `scope.rs`, `types_as_objects.rs`, `relation_names.rs`: one sentence each, on every surface |
 
 ### 1.2 The ladder as the engine runs it
@@ -88,6 +88,30 @@ rung writes one `rung` event with its `mode`, its `reason` and its counts
 | `stuck` | the rung built nothing and root owes |
 | `declined` | the rung declined, and the blind enumerator built $H$ |
 | `blind` | neither an hrule nor an activated obligation |
+
+**A decline says why**, in the `rung` event's `reason`. For
+[`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein),
+`ein solve FILE --events e.jsonl` writes:
+
+<!-- output -->
+```text
+{"e": "rung", "n": 6, "mode": "declined", "reason": "an obligation scans `food`, a relation a commitment can change", "owed": 0, "branches": 0, "declined": 0, "candidates": 0, "uncovered": 0}
+```
+
+**A debt root is not told of is a row of the read-out**, under `universe`. For
+[`examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein),
+`ein solve FILE` prints:
+
+<!-- output -->
+```text
+  universe          2 candidates, 0 dead alone
+    later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)
+```
+
+**The two rules the reasoning draws** are `ein render rule`'s: the obligation is `std.algebra`'s `total-owed`,
+`ein render rule --name total-owed stdlib/algebra.ein`, whose `:match` is
+`(and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b))))` and whose `:assert` is `(open ?R)`;
+the hypothesis rule is an `(hrule …)` with no parameter, drawn the same way by its name.
 
 ### 1.3 H, listed
 
@@ -193,6 +217,12 @@ A relation of three slots or more has no blind candidate and is named outside th
 
 The whole of it is [`structure.rs`](../../../../ein.rs/crates/ein-infer/src/structure.rs), whose module comment is
 the fullest account of each object as built. No route reads a pair layer, the cover or the full coupling.
+
+**The small KB** is built over the same interned terms as the program, so a candidate is one fact in both. It keeps
+the loaded program's registries, every rule, declaration and import, and of the facts a file writes those the rule
+keeps; `(written T)` is stated again as the loader states it, so it follows the facts it is read in. The rule reads
+no relation by what it is called and no `:source`. Its nodes are the node function's, over its own saturated root
+and the universe **root** built: the small KB's own generator is not asked.
 
 ```plantuml
 @startuml
@@ -524,6 +554,17 @@ read knows which of them means *bijective*. A reader does: on `examples/zebra2.e
 | a declared bijection's rows and columns are owed groups, a grid each | [`examples/zebra2.ein`](../../../../examples/zebra2.ein), the read-out of § 2.3 | `ein-infer/tests/exactly_one.rs`: `a_declared_bijections_rows_and_columns_are_owed_groups` |
 | under the blind enumerator a cover can be all of candidates dead alone | [`examples/branching/06_lookahead_on.ein`](../../../../examples/branching/06_lookahead_on.ein) | `ein-cli/tests/h_space_view.rs` |
 
+**Where the small KB's rule does not fit a program**, the document says so in a key
+([the reasoning's § The domain](../../reasoning/02-kb-evolution/05-hypothesis-space.md#the-domain) has the classes):
+
+| what the reasoning says | the key of `h-space.json` |
+|---|---|
+| a clue written as a rule: the rules that name one of the candidates' objects | `theory.rules_naming_objects` |
+| a theory's pair whose node is alive at root | `cover.pairs_alive_at_root` |
+| a flagged program whose small KB is monotone | `cover.small_monotone` true beside `monotone` false |
+| dead in the small KB and alive at root; held by the small KB's fixpoint and not by root's | `theory.against_root`, `theory.small_beyond_root` |
+| which rung built $H$ | `rung`: `hrules`, `obligations`, `blind`, `declined`, `stuck` or `no-search` |
+
 The three small universes the reasoning's page draws, a guest's chair and drink, two people and two chairs, and the
 third question of the hat, are not corpus programs; their graphs are what `ein render h-space FILE --view exclusion`,
 `--view cover` and `--view coupling` print for such a program, with the file's name taken out of the title.
@@ -662,9 +703,9 @@ The files the three commands write are the region dump
 | a licensed instance and its alternatives $A(I)$ | `oblgen::Alternatives`, read at load, instance by instance; L9 is [`unheld.rs`](../../../../ein.rs/crates/ein-infer/src/unheld.rs) |
 | $\mathcal{K}$, what is known dead | [`known_dead.rs`](../../../../ein.rs/crates/ein-infer/src/known_dead.rs): one memory every route on a monotone program asks before it saturates a set, and writes to |
 | a question | `explore::Mode`: which part of $R$ (`Which`: all, the minimal line, the maximal line) and what is asked of it (`Ask`) |
-| the alive states by extension, a class from its closed subsets (§ 6.1) | the state route, [`states.rs`](../../../../ein.rs/crates/ein-infer/src/states.rs); the tree and the classes, [`tree_classes.rs`](../../../../ein.rs/crates/ein-infer/src/tree_classes.rs) |
-| the leaves (§ 6.2) | the obligation tree, [`tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs); which instance it branches on, [`order.rs`](../../../../ein.rs/crates/ein-infer/src/order.rs) |
-| the two completeness criteria, the duality (§ 6.3, § 6.4) | [`transversal.rs`](../../../../ein.rs/crates/ein-infer/src/transversal.rs): minimal transversals, dualise and advance |
+| the alive states by extension, a class from its closed subsets (its § 6.1) | the state route, [`states.rs`](../../../../ein.rs/crates/ein-infer/src/states.rs); the tree and the classes, [`tree_classes.rs`](../../../../ein.rs/crates/ein-infer/src/tree_classes.rs) |
+| the leaves (its § 6.2) | the obligation tree, [`tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs); which instance it branches on, [`order.rs`](../../../../ein.rs/crates/ein-infer/src/order.rs) |
+| the two completeness criteria, the duality (its § 6.3, § 6.4) | [`transversal.rs`](../../../../ein.rs/crates/ein-infer/src/transversal.rs): minimal transversals, dualise and advance |
 | a dead root | route 1, [`downset.rs`](../../../../ein.rs/crates/ein-infer/src/downset.rs): one saturation |
 | the static check that decides the class | `monotone::classify`; the detector, `detector.rs`, says more of a flagged program |
 
@@ -764,10 +805,10 @@ for every subset C of H:                   2^n nodes, n = |H|
 R = the C that are alive and owe nothing
 ```
 
-It refuses a universe past its limit, `--region-limit` (16 by default), and says how many saturations the region
-would have taken.
+It refuses a universe past its limit, `--region-limit`, 16 by default as `ein oracle --help` prints, and says how
+many saturations the region would have taken.
 
-**The state route**, every alive state once (§ 6.1, the alive states by extension):
+**The state route**, every alive state once (Finding R § 6.1, the alive states by extension):
 
 ```text
 visit the alive states by size, from cl of the empty commitment:
@@ -782,8 +823,8 @@ N      = the minimal transversals of the complements of the maximal alive states
 $N$, the merged states, the two lines and an empty $R$'s owing frontier, its maximal alive states, are read off the
 states it met.
 
-**The tree and the classes**, the default where root owes an instance a licence takes (§ 6.2 for the states, § 6.1
-for each class):
+**The tree and the classes**, the default where root owes an instance a licence takes (Finding R § 6.2 for the
+states, § 6.1 for each class):
 
 ```text
 R's states   = the leaves of the obligation tree, exhausted, and every alive state above them   (L5, L9, L2, L3)
@@ -806,7 +847,7 @@ alive sets: where root owes, that border can be far larger than the alive states
 read-out says so, with the members met: the candidates dead alone, and the owing states met with every extension
 dead.
 
-**The obligation tree**, for `--single`, `-n N`, `--minimal` and `--maximal` (§ 6.2, the leaves):
+**The obligation tree**, for `--single`, `-n N`, `--minimal` and `--maximal` (Finding R § 6.2, the leaves):
 
 ```text
 tree(C):   if C is known dead, or node(C) is dead      nothing below C
@@ -822,8 +863,8 @@ tree(C):   if C is known dead, or node(C) is dead      nothing below C
 - **`-n N`** lists the tree's leaves, then the states of $R$ above them (L2).
 - **`--minimal`** shrinks each leaf to a minimal commitment that stays discharged, and gets the rest of the line by
   duality: the minimal commitments of $R$ are the alive minimal transversals of the complements of the maximal owing
-  states (§ 6.4).
-- **`--maximal`** climbs a leaf to a maximal state (L4), then finds the others by dualise and advance (§ 6.3).
+  states (Finding R § 6.4).
+- **`--maximal`** climbs a leaf to a maximal state (L4), then finds the others by dualise and advance (Finding R § 6.3).
 
 **`--single`**, *is $R$ one state?* ([Finding R § 7](../../reasoning/02-kb-evolution/07-finding-r.md#7-proving-that-r-is-one-state-without-the-lattice)):
 
