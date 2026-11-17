@@ -7817,3 +7817,117 @@ and `written` is no reserved name. A numeral an operation takes from the program
 valid, or flagged. A numeral an operation produces is labelled valid as it is produced. Built by
 [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), whose readings of the ruling are put as Q-M1f.405
 onward, each with a default.
+
+### Q-M1f.405 — Which numerals are "taken from the input program", and what "once" is
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 1 of
+[Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it). **Put, not ruled.**
+The stage's Record shows it on real programs.
+
+- **(a)** **a numeral an operation takes**: the numeral an operand stands for, written as the operand or as a
+  `let`'s value (`std.math.positional`'s `operand-check`), a part of an integer or a rational an operation takes
+  (`int-check`, `rat-check`), and the number `to-bin`, `to-dec` and `to9` take. Whoever wrote the request, the file
+  or a rule of the program's own. **Once** is a fact of the numeral: the ask `(check N N)` and the label
+  `(valid N)`, so a numeral is walked once whatever reads it, however many requests name it. **Default.**
+- **(b)** only the numerals of requests the file writes, not of one a rule derives: needs a statement of what the
+  file wrote, the context the ruling erased.
+- **(c)** every numeral the knowledge base holds, a `let` nobody asks about and a fact of the program's own among
+  them: needs a walk of every fact for its nested terms, the loader's step again, or a rule over every relation.
+- **(d)** once a request: the check keyed by the operand's tag, walked again for every request that names the
+  numeral.
+- **(e)** as (a), and every tagged call asking the check of the numbers it is handed, `(add-walk TAG X Y 0 z)` and
+  the rest: a program's own theory that hands one a malformed numeral is flagged. Under (a) it is not: a call looks
+  nothing up, the walk stalls, no answer, root alive, where master flagged the numeral where it was written
+  (`(add-walk (mine a) (n z x) (n z 1) 0 z)`: `states (k_s) 1`, master `0`). Under (e) every number the calculator
+  hands itself, every intermediate of a product and a quotient, is walked again, a firing a place.
+
+### Q-M1f.406 — The label, and where a number an operation makes gets it
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 2. **Put, not ruled.**
+
+- **(a)** **`(valid N)`, `std.math.decimal`'s, and `(bin-valid N)`, `std.math.binary`'s, a fact of the numeral**:
+  the walk's end for a numeral an operation takes; for a number the arithmetic makes, a conclusion of the firing
+  that makes it, `std.math.positional`'s `turn-end` (every walk's hand-over, a tagged call's included) and
+  `div-end` (a quotient and its remainder); `z` by the representation's closing rule. Every number an operation
+  answers with, in every module over the bases, is so valid already. **Default.**
+- **(b)** the public answers alone, `sum-of`'s S and the like, each module's answer rules labelling what they hold:
+  a tagged call's hand-over unlabelled, and fourteen answer rules of `std.math.int` and `std.math.rat` to write.
+- **(c)** as (a), with `z` labelled only where a walk makes it or a check reaches it.
+
+### Q-M1f.407 — A numeral no operation takes is not checked
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 3. **Put, not ruled.**
+Three corpus programs answer otherwise, each dead before and R = {∅} after:
+`tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein`, `03_in_a_fact_of_the_programs_own.ein` and
+`04_in_a_rules_conclusion.ein`. Binary has no such program.
+
+- **(a)** **not checked**: a numeral in a `let` nobody asks about, in a fact of the program's own relation, in a
+  rule's conclusion that never fires. The three programs are rewritten to claim R = {∅}, no flag and no label,
+  with a sum answered beside each, and `07_in_a_rules_conclusion_that_fires.ein` added, the rule that fires and
+  hands its numeral to a request, which is flagged. **Default.**
+- **(b)** the same, the three programs deleted.
+- **(c)** a `let`'s value checked as the `let` is read, `let` being the calculator's relation: `02` dead again, and
+  `03` and `04` alive.
+
+### Q-M1f.408 — Where the check's rules live
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 4. **Put, not ruled.**
+
+- **(a)** **the representation's**: `std.math.decimal` declares `check` and `valid` and holds the walk
+  (`numeral-step`, `numeral-step-zero`, `numeral-valid`) and its four flags; `std.math.binary` the same under
+  `bin-`. The operations ask: `std.math.positional`'s `operand-check`, one rule activated for each base with its
+  `?CHECK`, and `std.math.convert`'s and `std.math.num9`'s requests. The label at a walk's end is written by
+  `std.math.positional` with the base's `?VALID`. **Default.**
+- **(b)** the walk in `std.math.positional`, parameterised by the base's digits, the representation keeping only
+  the flags.
+- **(c)** each operation checking its own operands, the representation keeping nothing.
+
+### Q-M1f.409 — An integer and a rational: their check and their label
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 5. **Put, not ruled.**
+
+- **(a)** **`(int-check I)` and `(rat-check Q)`, asked where an operand's look-up finds one** (`int-operand-check`,
+  `rat-check-ask`), read by the six shape rules of each, which flag a digit or a named constant where a part goes as
+  before; `int-check-parts` asks `std.math.decimal`'s check of each part, `rat-check-parts` `std.math.int`'s of the
+  numerator and `std.math.decimal`'s of the denominator. **No label of their own**: an integer's and a rational's
+  numerals carry `valid`, the parts of one an operation takes by their walks and those of one an operation makes as
+  the walks that make them end. **Default.**
+- **(b)** a label of their own, `(int-valid I)`, by a walk that carries the integer through both parts in turn,
+  since joining its parts' labels would join two facts on a number: a second walk of each part, once an integer
+  rather than once a numeral.
+- **(c)** the shapes left unchecked, only the numerals: `(int 7 z)` answered by silence.
+- **(d)** as (a), and `rat-check-parts` asking `std.math.decimal`'s check of a numerator that is a natural number.
+  Under (a) a rational whose numerator is a malformed natural, `(rat-add (rat (n z x) (n z 2)) Q)`, is answered
+  by silence and not flagged (`states (k_s) 1`; master `0`), since the numerator is no integer and the operation
+  computes nothing with it ([Q-M1f.277](../../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md));
+  where an integer goes, a natural number is flagged, `(int-add (n z x) I)` dead as on master, since
+  `std.math.decimal-arith`'s look-up finds it and checks it. No corpus program writes either.
+
+### Q-M1f.410 — No join on a number, and a result a program's rule hands on
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 6. **Put, not ruled.**
+The rule of the calculator ([Q-M1f.362](../../docs/decisions/stdlib/math/Q-M1f.362-no-rule-of-the-calculator-joins-two-facts-on.md))
+is kept: the walk carries the numeral it checks, so its end labels it with no second premise, and no operation
+waits for the label. One consequence: a number an operation made, which a rule of the program's own hands to a
+second request, is that request's operand and is walked again, deriving the label it has
+(`tests/stdlib/math/decimal-arith/19_div_named_and_chained.ein`, 1500 walked in five firings). Nothing positive
+tells it from a numeral the file wrote, and only a negation or a join could.
+
+- **(a)** **walked again**, a firing a place, its label already held. **Default.**
+- **(b)** the operations wait for the label, a probe `(valid ?v)` beside the operand: allowed by the static rule,
+  and it walks the made number again all the same.
+- **(c)** every prefix of a number labelled as the turn makes it, so that the ask of a made number finds its walk's
+  facts already held: no second walk, and a fact a digit more for every number any walk makes, the intermediate
+  ones included.
+
+### Q-M1f.411 — A numeral with two faults has one flag
+
+**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), found building the walk.
+**Put, not ruled.** The loader's statement read every place of a numeral at once, so `(n (n (n z x) y) 5)` was
+flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first fault it meets from the units.
+
+- **(a)** **one flag, the first place at fault from the units**
+  ([Q-M1f.274](../../docs/decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)
+  re-worded so): the program is dead either way, and no corpus program writes such a numeral. **Default.**
+- **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
+  fault bit carried, so that the label is not derived for a malformed numeral.
