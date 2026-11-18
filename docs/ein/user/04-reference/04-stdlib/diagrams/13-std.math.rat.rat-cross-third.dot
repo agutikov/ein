@@ -26,7 +26,7 @@ digraph rule_rat_cross_third_lhs_rhs {
     "(rat-x3 ?k ?n ?d ?m ?e)_L" -> "?e_L" [xlabel="6", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "mul-call_R" [label="mul-call", shape=box];
+    "mul-run_R" [label="mul-run", shape=box];
     "rat-x4_R" [label="rat-x4", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
@@ -35,14 +35,14 @@ digraph rule_rat_cross_third_lhs_rhs {
     "?n_R" [label="?n", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-x4 ?k ?d ?m ?s)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "mul-call_R" -> "h2_mul-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "(rat-x4 ?k ?d ?m ?s)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?n_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?e_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "mul-run_R" -> "h2_mul-run_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "(rat-x4 ?k ?d ?m ?s)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?n_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?e_R" [xlabel="4", color="#ff7f0e", style=dashed];
     "rat-x4_R" -> "(rat-x4 ?k ?d ?m ?s)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-x4 ?k ?d ?m ?s)_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(rat-x4 ?k ?d ?m ?s)_R" -> "?d_R" [xlabel="3", color="#2ca02c", style=dashed];

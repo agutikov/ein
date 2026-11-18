@@ -2,16 +2,16 @@ digraph rule_cmp_end_lhs_rhs {
   rankdir=TB;
   label="cmp-end"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "?CMP-WALK_L" [label="?CMP-WALK", shape=diamond];
+    "?CMP-RUN_L" [label="?CMP-RUN", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "z_L" [label="z", shape=box];
     "?o_L" [label="?o", shape=diamond];
-    "h1_CMP-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "?CMP-WALK_L" -> "h1_CMP-WALK_L" [xlabel="1", dir=back, color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [xlabel="3", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "z_L" [xlabel="4", color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?o_L" [xlabel="5", color="#7f7f7f"];
+    "h1_CMP-RUN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "?CMP-RUN_L" -> "h1_CMP-RUN_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h1_CMP-RUN_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
+    "h1_CMP-RUN_L" -> "z_L" [xlabel="3", color="#7f7f7f"];
+    "h1_CMP-RUN_L" -> "z_L" [xlabel="4", color="#7f7f7f"];
+    "h1_CMP-RUN_L" -> "?o_L" [xlabel="5", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
     "?ORDER-IS_R" [label="?ORDER-IS", shape=diamond];

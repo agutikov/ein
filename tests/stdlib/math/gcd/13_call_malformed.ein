@@ -1,0 +1,26 @@
+;;; `std.math.gcd` — a malformed numeral handed straight to the tagged call:
+;;; checked, flagged, dead.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The call is an interface (Q-M1f.300), and a numeral it is handed is
+;;; checked as an operand's is (Q-M1f.404): `gcd-call-check-y` asks
+;;; `std.math.decimal`'s check of `(n z x)`, `x` where a digit goes, and
+;;; `numeral-digit` flags it; `not-decimal-is-false` derives `(false)`.
+;;; `07_gcd_call.ein` is the call on numerals that are well formed.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty.
+
+(import std.math.gcd :symbols (gcd gcd-call))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation mine Thing
+  :why "{?3}, a divisor of this program's own")
+(__closed__ mine)
+
+(gcd-call (mine a) (n z 6) (n z x))
+
+(solve :expect (false))

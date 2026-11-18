@@ -6,7 +6,9 @@ and `std.math.binary` check a numeral
 [Q-M1f.295](binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md)), `std.math.int` an integer's own
 shape and `std.math.rat` a rational's ([Q-M1f.276](Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)).
 An operation that takes a number asks that module's check, and computes nothing of how the number is spelt
-([Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). What is wrong with an operand, a
+([Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). The walk that asks it of each place
+knows no base and is `std.math.positional`'s; what a numeral of the base is, the check's relations, its label and
+its flags, are the representation's. What is wrong with an operand, a
 digit where a number goes or a name no `let` states, is the fault of the module that reads the operand, flagged on
 the request ([Q-M1f.206](decimal/Q-M1f.206-an-operands-fault-travels-with-its-tag.md)).
 

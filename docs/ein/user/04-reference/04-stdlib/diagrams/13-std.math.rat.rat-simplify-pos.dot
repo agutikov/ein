@@ -26,21 +26,21 @@ digraph rule_rat_simplify_pos_lhs_rhs {
     "(int ?a z)_L" -> "z_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "gcd-call_R" [label="gcd-call", shape=box];
+    "gcd-run_R" [label="gcd-run", shape=box];
     "rat-g_R" [label="rat-g", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "pos_R" [label="pos", shape=box];
     "?a_R" [label="?a", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="gcd-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="gcd-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-g ?k pos ?a ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "gcd-call_R" -> "h2_gcd-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "?a_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "?d_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_gcd-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "gcd-run_R" -> "h2_gcd-run_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?d_R" [xlabel="4", color="#bcbd22", style=dashed];
     "rat-g_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-g ?k pos ?a ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-g ?k pos ?a ?d)_R" -> "pos_R" [xlabel="3", color="#1f77b4", style=dashed];

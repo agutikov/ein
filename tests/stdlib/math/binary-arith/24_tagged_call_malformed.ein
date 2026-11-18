@@ -1,0 +1,26 @@
+;;; `std.math.binary-arith` — a malformed numeral handed straight to a tagged
+;;; call: checked, flagged, dead.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Binary's twin of `tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein`
+;;; (Q-M1f.404): `(b2 z 2)` holds `2` where a bit goes, and the call it is
+;;; handed to asks its check (`mul-call-check-y`), which
+;;; `std.math.binary`'s `bin-numeral-bit` flags, `(not-binary (b2 z 2) 2)`;
+;;; `not-binary-is-false` derives `(false)` from the flag.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty.
+
+(import std.math.binary-arith :symbols (binary-arith bin-mul-call))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(relation mine Thing
+  :why "{?3}, a product of this program's own")
+(__closed__ mine)
+
+(bin-mul-call (mine a) (b2 z 1) (b2 z 2))
+
+(solve :expect (false))

@@ -1,0 +1,27 @@
+;;; `std.math.int` — a malformed numeral handed to a tagged call as a part:
+;;; checked, flagged, dead.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An integer built from an invalid decimal is invalid (Q-M1f.404): a call
+;;; asks `(int-check (int P N))` of the parts it is handed
+;;; (`int-add-call-runs`), the integer's check asks `std.math.decimal`'s of
+;;; its numeral part (`int-check-p`), and `numeral-digit` flags `(n z x)`,
+;;; `x` where a digit goes; `not-decimal-is-false` derives `(false)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty.
+
+(import std.math.int :symbols (int-arith int-add-call))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation mine Thing
+  :why "{?3}, a sum of this program's own")
+(__closed__ mine)
+
+(int-add-call (mine a) (n z x) z (n z 1) z)
+
+(solve :expect (false))

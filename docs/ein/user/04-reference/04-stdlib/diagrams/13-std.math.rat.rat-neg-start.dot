@@ -29,22 +29,22 @@ digraph rule_rat_neg_start_lhs_rhs {
     "(rat-neg ?x)_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
-    "rat-norm_R" [label="rat-norm", shape=box];
+    "rat-norm-run_R" [label="rat-norm-run", shape=box];
     "rat-neg_R" [label="rat-neg", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="rat-norm ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="rat-norm-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-neg ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h2_rat-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "rat-norm_R" -> "h2_rat-norm_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "(rat-neg ?x)_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?n_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?p_R" [xlabel="4", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?d_R" [xlabel="5", color="#bcbd22", style=dashed];
+    "h2_rat-norm-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "rat-norm-run_R" -> "h2_rat-norm-run_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "(rat-neg ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?n_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?p_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?d_R" [xlabel="5", color="#2ca02c", style=dashed];
     "rat-neg_R" -> "(rat-neg ?x)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-neg ?x)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
   }

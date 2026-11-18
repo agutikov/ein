@@ -37,7 +37,7 @@ digraph rule_rat_add_start_lhs_rhs {
     "(rat-add ?x ?y)_L" -> "?y_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "rat-cross_R" [label="rat-cross", shape=box];
+    "rat-cross-run_R" [label="rat-cross-run", shape=box];
     "rat-sum-num_R" [label="rat-sum-num", shape=box];
     "rat-add_R" [label="rat-add", shape=box];
     "?x_R" [label="?x", shape=diamond];
@@ -49,22 +49,22 @@ digraph rule_rat_add_start_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="rat-cross ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="rat-cross-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_R_1 {
       label="rat-sum-num ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-add ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "h2_rat-cross_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "rat-cross_R" -> "h2_rat-cross_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [xlabel="2", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?n_R" [xlabel="4", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?d_R" [xlabel="5", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?q_R" [xlabel="6", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?m_R" [xlabel="7", color="#d62728", style=dashed];
-    "h2_rat-cross_R" -> "?e_R" [xlabel="8", color="#d62728", style=dashed];
+    "h2_rat-cross-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "rat-cross-run_R" -> "h2_rat-cross-run_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?p_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?n_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?d_R" [xlabel="5", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?q_R" [xlabel="6", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?m_R" [xlabel="7", color="#2ca02c", style=dashed];
+    "h2_rat-cross-run_R" -> "?e_R" [xlabel="8", color="#2ca02c", style=dashed];
     "rat-sum-num_R" -> "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" -> "(rat-add ?x ?y)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(rat-sum-num (rat-add ?x ?y) ?d ?e)_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];

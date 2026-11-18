@@ -41,7 +41,7 @@ digraph rule_rat_div_neg_lhs_rhs {
     "(n ?a ?b)_L" -> "?b_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "rat-mul-call_R" [label="rat-mul-call", shape=box];
+    "rat-mul-run_R" [label="rat-mul-run", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
@@ -52,18 +52,18 @@ digraph rule_rat_div_neg_lhs_rhs {
     "?a_R" [label="?a", shape=diamond];
     "?b_R" [label="?b", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="rat-mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="rat-mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?a ?b)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_rat-mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "rat-mul-call_R" -> "h2_rat-mul-call_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?d_R" [xlabel="5", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "z_R" [xlabel="6", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?e_R" [xlabel="7", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "(n ?a ?b)_R" [xlabel="8", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "rat-mul-run_R" -> "h2_rat-mul-run_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?d_R" [xlabel="5", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "z_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?e_R" [xlabel="7", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "(n ?a ?b)_R" [xlabel="8", color="#8c564b", style=dashed];
     "n_R" -> "(n ?a ?b)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?a ?b)_R" -> "?a_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?a ?b)_R" -> "?b_R" [xlabel="3", color="#9467bd", style=dashed];

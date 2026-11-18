@@ -1,0 +1,41 @@
+digraph rule_mul_call_check_y_lhs_rhs {
+  rankdir=TB;
+  label="mul-call-check-y"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?MUL-CALL_L" [label="?MUL-CALL", shape=diamond];
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?MUL-CALL ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?q ?b)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h1_MUL-CALL_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?MUL-CALL_L" -> "h1_MUL-CALL_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "?x_L" [xlabel="3", color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "(?N ?q ?b)_L" [xlabel="4", color="#bcbd22"];
+    "?N_L" -> "(?N ?q ?b)_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "(?N ?q ?b)_L" -> "?q_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?q ?b)_L" -> "?b_L" [xlabel="3", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?CHECK_R" [label="?CHECK", shape=diamond];
+    "?N_R" [label="?N", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?CHECK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?q ?b)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h2_CHECK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "?CHECK_R" -> "h2_CHECK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "(?N ?q ?b)_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "(?N ?q ?b)_R" [xlabel="3", color="#d62728", style=dashed];
+    "?N_R" -> "(?N ?q ?b)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "(?N ?q ?b)_R" -> "?q_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(?N ?q ?b)_R" -> "?b_R" [xlabel="3", color="#7f7f7f", style=dashed];
+  }
+}

@@ -26,7 +26,7 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
     "(rat-q-num ?k ?s ?d ?g)_L" -> "?g_L" [xlabel="5", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "div-call_R" [label="div-call", shape=box];
+    "div-run_R" [label="div-run", shape=box];
     "rat-q-den_R" [label="rat-q-den", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
@@ -34,14 +34,14 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
     "?d_R" [label="?d", shape=diamond];
     "?g_R" [label="?g", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-q-den ?k ?s ?q)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(rat-q-den ?k ?s ?q)_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?d_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?g_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_div-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "div-run_R" -> "h2_div-run_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(rat-q-den ?k ?s ?q)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?d_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?g_R" [xlabel="4", color="#e377c2", style=dashed];
     "rat-q-den_R" -> "(rat-q-den ?k ?s ?q)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-q-den ?k ?s ?q)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-q-den ?k ?s ?q)_R" -> "?s_R" [xlabel="3", color="#1f77b4", style=dashed];

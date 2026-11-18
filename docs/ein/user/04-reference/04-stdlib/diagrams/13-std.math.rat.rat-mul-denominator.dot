@@ -22,21 +22,21 @@ digraph rule_rat_mul_denominator_lhs_rhs {
     "(rat-mul-num ?k ?d ?e)_L" -> "?e_L" [xlabel="4", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
-    "mul-call_R" [label="mul-call", shape=box];
+    "mul-run_R" [label="mul-run", shape=box];
     "rat-mul-den_R" [label="rat-mul-den", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?i_R" [label="?i", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-mul-den ?k ?i)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "mul-call_R" -> "h2_mul-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "(rat-mul-den ?k ?i)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?d_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?e_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "mul-run_R" -> "h2_mul-run_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "(rat-mul-den ?k ?i)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?d_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?e_R" [xlabel="4", color="#ff7f0e", style=dashed];
     "rat-mul-den_R" -> "(rat-mul-den ?k ?i)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(rat-mul-den ?k ?i)_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "(rat-mul-den ?k ?i)_R" -> "?i_R" [xlabel="3", color="#17becf", style=dashed];

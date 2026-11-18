@@ -22,21 +22,21 @@ digraph rule_lcm_divide_lhs_rhs {
     "(lcm-p ?x ?y ?g)_L" -> "?g_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "div-call_R" [label="div-call", shape=box];
+    "div-run_R" [label="div-run", shape=box];
     "lcm-q_R" [label="lcm-q", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
     "?g_R" [label="?g", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(lcm-q ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(lcm-q ?x ?y)_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?m_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?g_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_div-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "div-run_R" -> "h2_div-run_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(lcm-q ?x ?y)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?m_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?g_R" [xlabel="4", color="#e377c2", style=dashed];
     "lcm-q_R" -> "(lcm-q ?x ?y)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(lcm-q ?x ?y)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(lcm-q ?x ?y)_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];

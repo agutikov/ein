@@ -2,15 +2,15 @@ digraph rule_div_multiples_lhs_rhs {
   rankdir=TB;
   label="div-multiples"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "div-call_L" [label="div-call", shape=box];
+    "div-run_L" [label="div-run", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
-    "h1_div-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "div-call_L" -> "h1_div-call_L" [xlabel="1", dir=back, color="#bcbd22"];
-    "h1_div-call_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
-    "h1_div-call_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
-    "h1_div-call_L" -> "?v_L" [xlabel="4", color="#bcbd22"];
+    "h1_div-run_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "div-run_L" -> "h1_div-run_L" [xlabel="1", dir=back, color="#e377c2"];
+    "h1_div-run_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "h1_div-run_L" -> "?u_L" [xlabel="3", color="#e377c2"];
+    "h1_div-run_L" -> "?v_L" [xlabel="4", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
     "mul-walk_R" [label="mul-walk", shape=box];

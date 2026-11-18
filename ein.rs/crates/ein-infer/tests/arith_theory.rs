@@ -1051,29 +1051,32 @@ fn the_circuit_of_one_multiplication() {
 /// multiples, each a row of two columns; the dividend's six digits turned
 /// round; then a step a digit, each three trials, and a trial a subtraction
 /// with its strip and turn where it fits. One chain, so its depth is its
-/// size.
+/// size. A public division is a tagged call handed on to the walk
+/// (Q-M1f.404), a firing in the chain, and the call asks the check of its
+/// two numerals, which their look-up asked already: two firings beside it.
 /// A divisor of one digit and a dividend of one are the two ends.
 #[test]
 fn the_circuit_of_one_division() {
     let div = |x: &str, y: &str| circuit(&format!("(div {} {})\n", written(x), written(y)));
     assert_eq!(
         div("127645", "25"),
-        (232, 220),
+        (235, 221),
         "127645 / 25: (firings, depth)"
     );
-    assert_eq!(div("7", "3"), (90, 84), "7 / 3");
-    assert_eq!(div("999999", "7"), (240, 229), "six digits by one");
-    assert_eq!(div("999999999999", "7"), (411, 394), "twelve digits by one");
+    assert_eq!(div("7", "3"), (93, 85), "7 / 3");
+    assert_eq!(div("999999", "7"), (243, 230), "six digits by one");
+    assert_eq!(div("999999999999", "7"), (414, 395), "twelve digits by one");
     assert_eq!(
         div("999999999999", "777777"),
-        (677, 655),
+        (680, 656),
         "twelve digits by six"
     );
     // A division by zero stops at the divisor's normal form: the operands,
-    // one row, its strip, the flag and the contradiction. The call is
-    // flagged beside the request and is a contradiction too: two firings
-    // more, no deeper.
-    assert_eq!(div("127645", ""), (20, 10), "127645 / 0");
+    // the call handed on, one row, its strip, the flag and the
+    // contradiction. The call is flagged beside the request and is a
+    // contradiction too: two firings more, no deeper; and the call's ask of
+    // its dividend, found held.
+    assert_eq!(div("127645", ""), (22, 11), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────
@@ -1965,7 +1968,7 @@ fn one_call_of_the_macro_connects_each_base() {
             (name, params)
         })
         .collect();
-    assert_eq!(rules.len(), 78, "std.math.positional's rules");
+    assert_eq!(rules.len(), 96, "std.math.positional's rules");
     let (params, body) = the_macro();
     assert_eq!(
         body, rules,
@@ -2229,6 +2232,33 @@ const TAGGED: [(&str, &str, &str); 34] = [
     ("gcd", "(gcd-done TAG G)", "Tag Number"),
 ];
 
+/// **What each call is handed on to** (Q-M1f.404): `(module, the call, its
+/// walk)`. A call checks the numerals it is handed and hands itself on to a
+/// relation of its own, which checks nothing and which the calculator writes
+/// where it calls itself with numbers it checked or made. A walk is declared
+/// with its call's types, and a caller that starts one writes the call's
+/// start values in their places, as a caller of the call does.
+const RUNS: [(&str, &str, &str); 18] = [
+    ("decimal-arith", "add-walk", "add-run"),
+    ("decimal-arith", "sub-walk", "sub-run"),
+    ("decimal-arith", "cmp-walk", "cmp-run"),
+    ("decimal-arith", "mul-call", "mul-run"),
+    ("decimal-arith", "div-call", "div-run"),
+    ("int", "int-norm", "int-norm-run"),
+    ("int", "int-add-call", "int-add-run"),
+    ("int", "int-mul-call", "int-mul-run"),
+    ("int", "int-cmp-call", "int-cmp-run"),
+    ("rat", "rat-norm", "rat-norm-run"),
+    ("rat", "rat-mul-call", "rat-mul-run"),
+    ("rat", "rat-cross", "rat-cross-run"),
+    ("binary-arith", "bin-add-walk", "bin-add-run"),
+    ("binary-arith", "bin-sub-walk", "bin-sub-run"),
+    ("binary-arith", "bin-cmp-walk", "bin-cmp-run"),
+    ("binary-arith", "bin-mul-call", "bin-mul-run"),
+    ("binary-arith", "bin-div-call", "bin-div-run"),
+    ("gcd", "gcd-call", "gcd-run"),
+];
+
 /// A tagged call as written: its relation, and each argument's place, `None`
 /// where a caller writes its own value and the name every caller writes.
 fn tagged_shape(written: &str) -> (&str, Vec<Option<&str>>) {
@@ -2283,7 +2313,9 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
 ///   flat or under a prefix, writes every form of that relation with the
 ///   row's count of arguments; and where a rule's conclusion, or a written
 ///   fact, *starts* a walk (a rule whose `:match` reads no fact of that walk),
-///   it writes the row's names in their places, `z`, `0` or `eq`.
+///   it writes the row's names in their places, `z`, `0` or `eq`;
+/// - **the walks the calls are handed on to**, [`RUNS`]: each declared with
+///   its call's types, and held in every caller as its call is.
 ///
 /// The loader refuses a form of a declared relation with another count of
 /// arguments in a program it loads (Q-M1f.315); this holds the count against
@@ -2333,15 +2365,33 @@ fn the_tagged_calls_keep_their_shapes() {
             );
             declared.insert(relation, rest.clone());
         }
+        for &(_, call, run) in RUNS.iter().filter(|r| r.0 == module) {
+            let rest = decls
+                .get(run)
+                .unwrap_or_else(|| panic!("std.math.{module} declares no {run}"));
+            let types = |r: &Vec<String>| -> Vec<String> {
+                r.iter().filter(|w| !w.starts_with(':')).cloned().collect()
+            };
+            assert_eq!(
+                types(rest),
+                types(&declared[call]),
+                "std.math.{module}'s {run} is declared with other types than {call}"
+            );
+            declared.insert(run, rest.clone());
+        }
     }
     // ── every caller ──
-    let shape: BTreeMap<&str, (&str, Vec<Option<&str>>)> = TAGGED
+    let mut shape: BTreeMap<&str, (&str, Vec<Option<&str>>)> = TAGGED
         .iter()
         .map(|t| {
             let (relation, places) = tagged_shape(t.1);
             (relation, (t.1, places))
         })
         .collect();
+    for &(_, call, run) in &RUNS {
+        let held = shape[call].clone();
+        shape.insert(run, held);
+    }
     let mut bad: Vec<String> = Vec::new();
     let mut read: BTreeMap<String, usize> = BTreeMap::new();
     let mut started: BTreeMap<&str, usize> = BTreeMap::new();
@@ -2499,10 +2549,12 @@ fn the_tagged_calls_keep_their_shapes() {
     }
     for walk in [
         "add-walk",
-        "sub-walk",
         "cmp-walk",
-        "bin-add-walk",
-        "bin-sub-walk",
+        "add-run",
+        "sub-run",
+        "cmp-run",
+        "bin-add-run",
+        "bin-sub-run",
     ] {
         assert!(
             started.get(walk).is_some_and(|&n| n > 0),

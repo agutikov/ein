@@ -33,7 +33,7 @@ digraph rule_rat_operand_check_lhs_rhs {
     "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "cmp-walk_R" [label="cmp-walk", shape=box];
+    "cmp-run_R" [label="cmp-run", shape=box];
     "rat-den_R" [label="rat-den", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
@@ -42,15 +42,15 @@ digraph rule_rat_operand_check_lhs_rhs {
     "z_R" [label="z", shape=box];
     "eq_R" [label="eq", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="cmp-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="cmp-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-den ?k ?p ?n ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_cmp-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "cmp-walk_R" -> "h2_cmp-walk_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="2", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "eq_R" [xlabel="5", color="#9467bd", style=dashed];
+    "h2_cmp-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "cmp-run_R" -> "h2_cmp-run_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
+    "h2_cmp-run_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_cmp-run_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_cmp-run_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
+    "h2_cmp-run_R" -> "eq_R" [xlabel="5", color="#9467bd", style=dashed];
     "rat-den_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-den ?k ?p ?n ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-den ?k ?p ?n ?d)_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];

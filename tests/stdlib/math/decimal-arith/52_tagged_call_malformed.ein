@@ -1,0 +1,35 @@
+;;; `std.math.decimal-arith` — a malformed numeral handed straight to a tagged
+;;; call: checked, flagged, dead.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Every numeral an operation did not make from valid numbers is checked,
+;;; whatever its source (Q-M1f.404). A program hands `(n z x)`, `x` where a
+;;; digit goes, straight to the addition's tagged call:
+;;;
+;;;     (add-walk (mine a) (n z x) (n z 1) 0 z)
+;;;
+;;; A call looks nothing up, but it asks the check of each numeral it is
+;;; handed (`add-walk-check-x`), and `std.math.decimal`'s `numeral-digit`
+;;; flags `(not-decimal (n z x) x)`, from which `not-decimal-is-false`
+;;; derives `(false)`. Unchecked, the walk would find no row of the table for
+;;; `x` and stall: root alive, no answer, and nothing said.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty; `ein solve` names
+;;; the call in the unsat core and `not-decimal-is-false` as what refuted it.
+;;; `51_tagged_calls_checked.ein` is the same rules on numerals that are
+;;; well formed.
+
+(import std.math.decimal-arith :symbols (decimal-arith add-walk))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation mine Thing
+  :why "{?3}, a sum of this program's own")
+(__closed__ mine)
+
+(add-walk (mine a) (n z x) (n z 1) 0 z)
+
+(solve :expect (false))

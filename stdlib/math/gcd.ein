@@ -66,18 +66,18 @@
 ;;;
 ;;;   - **The operands,** each looked up by `std.math.decimal-arith`'s
 ;;;     `operand`.
-;;;   - **Each put into normal form,** an addition walk to zero, `(add-walk
+;;;   - **Each put into normal form,** an addition walk to zero, `(add-run
 ;;;     TAG X z 0 z)`, so that zero has one shape, `z`, and the answer none
 ;;;     but the normal one.
 ;;;   - **Euclid's chain:** the greatest common divisor of A and B is that of
 ;;;     B and the remainder of A divided by B, and of A and zero it is A. Each
-;;;     step is one tagged division of `std.math.decimal-arith`, `(div-call
+;;;     step is one tagged division of `std.math.decimal-arith`, `(div-run
 ;;;     TAG A B)`, the tag carrying what is left of the chain; the remainders
 ;;;     get smaller, so the chain ends. Where A is the smaller, the first
 ;;;     step's quotient is zero and its remainder A: the chain turns the two
 ;;;     round.
 ;;;   - **The least common multiple** is the product of the two divided by
-;;;     their greatest common divisor, one `mul-call` and one `div-call`,
+;;;     their greatest common divisor, one `mul-run` and one `div-run`,
 ;;;     whose remainder is zero; where the divisor is zero, both operands are,
 ;;;     and so is the answer.
 ;;;
@@ -92,7 +92,11 @@
 ;;;
 ;;; X and Y are natural numbers as `n` and `z` build them, high zeros allowed,
 ;;; and never a name a `let` states: a call looks nothing up. G is in normal
-;;; form. The TAG is the caller's and names one call.
+;;; form. The TAG is the caller's and names one call. **A call checks what it
+;;; is handed** (Q-M1f.404): a numeral is asked of `std.math.decimal`'s check,
+;;; and the call is handed on to `(gcd-run TAG X Y)`, which checks nothing and
+;;; which the requests and `std.math.rat` call themselves, with numbers they
+;;; checked or made.
 ;;;
 ;;; **No rule joins two facts on a number:** every rule of this module has
 ;;; one premise. `ein-infer/tests/gcd_theory.rs` holds that on this file's
@@ -108,16 +112,16 @@
 ;;;
 ;;; Its own: the requests `gcd` and `lcm`; the results `gcd-of` and `lcm-of`;
 ;;; the call `gcd-call` and its hand-over `gcd-done`; the circuit's own
-;;; `gcd-chain`; the tags `gcd-first`, `gcd-second`, `gcd-norm`,
+;;; `gcd-run` and `gcd-chain`; the tags `gcd-first`, `gcd-second`, `gcd-norm`,
 ;;; `gcd-norm-of`, `gcd-rem`, `lcm-g`, `lcm-p` and `lcm-q`; `gcd-rule`, and
 ;;; the entry `gcd`, which is also the request's name. Everything of
 ;;; `std.math.decimal-arith` comes with it. The interface is the requests, the
 ;;; results and the call with its hand-over; the rest is in the state for a
 ;;; query or a `--trace` to see, and is not a promise.
 
-(import std.math.decimal-arith :symbols (decimal-arith operand operand-is add-walk done
-                            mul-call div-call div-done bad-operand bad-request))
-(import std.math.decimal :symbols (decimal n))
+(import std.math.decimal-arith :symbols (decimal-arith operand operand-is add-run done
+                            mul-run div-run div-done bad-operand bad-request))
+(import std.math.decimal :symbols (decimal n check))
 (import std.math.arith :symbols (arith z))
 
 ;; ── The protocol ────────────────────────────────────────────────────────────
@@ -135,6 +139,8 @@
   :why "wanted, for {?3}: the greatest common divisor of {?4} and {?5}")
 (relation gcd-done Tag Number
   :why "the greatest common divisor for {?3} is {?4}")
+(relation gcd-run Tag Number Number
+  :why "to find, for {?3}: the greatest common divisor of {?4} and {?5}")
 (relation gcd-chain Tag Number Number
   :why "for {?3}: the greatest common divisor wanted is that of {?4} and {?5}")
 
@@ -156,18 +162,38 @@
 (relation lcm-q Operand Operand
   :why "the product divided by the greatest common divisor, for the least common multiple of {?3} and {?4}")
 
-;; ── The call: two numbers in normal form, then Euclid's chain ───────────────
-;; `(gcd-call TAG X Y)`: X and Y as `n` and `z` build them, each put into normal
+;; ── The call: what it is handed checked, then handed on ─────────────────────
+;; `(gcd-call TAG X Y)`, the interface (Q-M1f.300): a numeral a call is handed
+;; is checked, whoever made the call, as an operand is (Q-M1f.404), and the
+;; call is handed on to `(gcd-run TAG X Y)`, which this module's requests and
+;; `std.math.rat` call themselves with numbers they checked or made.
+(rule gcd-call-runs ()
+  :match  (gcd-call ?k ?x ?y)
+  :assert (gcd-run ?k ?x ?y)
+  :why    "the greatest common divisor of {?x} and {?y} is called for {?k}: it runs")
+
+(rule gcd-call-check-x ()
+  :match  (gcd-call ?k (n ?p ?a) ?y)
+  :assert (check (n ?p ?a) (n ?p ?a))
+  :why    "the call for {?k} is handed (n {?p} {?a}): it is checked, once, as a number")
+
+(rule gcd-call-check-y ()
+  :match  (gcd-call ?k ?x (n ?q ?b))
+  :assert (check (n ?q ?b) (n ?q ?b))
+  :why    "the call for {?k} is handed (n {?q} {?b}): it is checked, once, as a number")
+
+;; ── Two numbers in normal form, then Euclid's chain ─────────────────────────
+;; `(gcd-run TAG X Y)`: X and Y as `n` and `z` build them, each put into normal
 ;; form by an addition walk to zero, so that zero is `z` and the answer is in
 ;; normal form whatever the high zeros.
 (rule gcd-call-first ()
-  :match  (gcd-call ?k ?x ?y)
-  :assert (add-walk (gcd-norm ?k ?y) ?x z 0 z)
+  :match  (gcd-run ?k ?x ?y)
+  :assert (add-run (gcd-norm ?k ?y) ?x z 0 z)
   :why    "the greatest common divisor of {?x} and {?y} is wanted: first {?x} in normal form")
 
 (rule gcd-call-second ()
   :match  (done (gcd-norm ?k ?y) ?a)
-  :assert (add-walk (gcd-norm-of ?k ?a) ?y z 0 z)
+  :assert (add-run (gcd-norm-of ?k ?a) ?y z 0 z)
   :why    "the first is {?a}: now {?y} in normal form")
 
 (rule gcd-call-chain ()
@@ -180,7 +206,7 @@
 ;; `(n P D)` in normal form, so it is not zero, and no step divides by zero.
 (rule gcd-step ()
   :match  (gcd-chain ?k ?a (n ?b ?c))
-  :assert (div-call (gcd-rem ?k (n ?b ?c)) ?a (n ?b ?c))
+  :assert (div-run (gcd-rem ?k (n ?b ?c)) ?a (n ?b ?c))
   :why    "{?b}{?c} is not zero: divide {?a} by it, and the remainder is what goes on")
 
 (rule gcd-next ()
@@ -213,7 +239,7 @@
 
 (rule gcd-start ()
   :match  (operand-is (gcd-second (gcd ?x ?y) ?u) ?v)
-  :assert (gcd-call (gcd ?x ?y) ?u ?v)
+  :assert (gcd-run (gcd ?x ?y) ?u ?v)
   :why    "the greatest common divisor of {?u} and {?v}")
 
 (rule gcd-answer ()
@@ -226,7 +252,7 @@
 ;; zero, both are zero, and so is the answer.
 (rule lcm-start ()
   :match  (operand-is (gcd-second (lcm ?x ?y) ?u) ?v)
-  :assert (gcd-call (lcm-g ?x ?y ?u ?v) ?u ?v)
+  :assert (gcd-run (lcm-g ?x ?y ?u ?v) ?u ?v)
   :why    "first the greatest common divisor of {?u} and {?v}")
 
 (rule lcm-zero ()
@@ -236,12 +262,12 @@
 
 (rule lcm-product ()
   :match  (gcd-done (lcm-g ?x ?y ?u ?v) (n ?p ?d))
-  :assert (mul-call (lcm-p ?x ?y (n ?p ?d)) ?u ?v)
+  :assert (mul-run (lcm-p ?x ?y (n ?p ?d)) ?u ?v)
   :why    "the greatest common divisor is {?p}{?d}: multiply {?u} by {?v}")
 
 (rule lcm-divide ()
   :match  (done (lcm-p ?x ?y ?g) ?m)
-  :assert (div-call (lcm-q ?x ?y) ?m ?g)
+  :assert (div-run (lcm-q ?x ?y) ?m ?g)
   :why    "the product is {?m}: divide it by {?g}, which is not zero")
 
 (rule lcm-answer ()
@@ -277,11 +303,13 @@
 (rule gcd ()
   :match  ()
   :assert (and (__closed__ gcd) (__closed__ gcd-of) (__closed__ lcm) (__closed__ lcm-of)
-               (__closed__ gcd-call) (__closed__ gcd-done) (__closed__ gcd-chain)
+               (__closed__ gcd-call) (__closed__ gcd-done) (__closed__ gcd-run)
+               (__closed__ gcd-chain)
                (__closed__ gcd-first) (__closed__ gcd-second) (__closed__ gcd-norm)
                (__closed__ gcd-norm-of) (__closed__ gcd-rem) (__closed__ lcm-g)
                (__closed__ lcm-p) (__closed__ lcm-q) (__closed__ gcd-rule)
                (gcd-rule decimal-arith) (gcd-rule decimal) (gcd-rule arith)
+               (gcd-rule gcd-call-runs) (gcd-rule gcd-call-check-x) (gcd-rule gcd-call-check-y)
                (gcd-rule gcd-call-first) (gcd-rule gcd-call-second) (gcd-rule gcd-call-chain)
                (gcd-rule gcd-step) (gcd-rule gcd-next) (gcd-rule gcd-end)
                (gcd-rule gcd-ask) (gcd-rule lcm-ask) (gcd-rule gcd-ask-second)

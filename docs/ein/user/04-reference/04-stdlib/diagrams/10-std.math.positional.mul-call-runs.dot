@@ -1,0 +1,26 @@
+digraph rule_mul_call_runs_lhs_rhs {
+  rankdir=TB;
+  label="mul-call-runs"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?MUL-CALL_L" [label="?MUL-CALL", shape=diamond];
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "h1_MUL-CALL_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?MUL-CALL_L" -> "h1_MUL-CALL_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "?x_L" [xlabel="3", color="#bcbd22"];
+    "h1_MUL-CALL_L" -> "?y_L" [xlabel="4", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?MUL-RUN_R" [label="?MUL-RUN", shape=diamond];
+    "?k_R" [label="?k", shape=diamond];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "h2_MUL-RUN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "?MUL-RUN_R" -> "h2_MUL-RUN_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
+    "h2_MUL-RUN_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_MUL-RUN_R" -> "?x_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_MUL-RUN_R" -> "?y_R" [xlabel="4", color="#9467bd", style=dashed];
+  }
+}

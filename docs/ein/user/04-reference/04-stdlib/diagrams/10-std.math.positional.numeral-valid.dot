@@ -1,0 +1,20 @@
+digraph rule_numeral_valid_lhs_rhs {
+  rankdir=TB;
+  label="numeral-valid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?CHECK_L" [label="?CHECK", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "z_L" [label="z", shape=box];
+    "h1_CHECK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "?CHECK_L" -> "h1_CHECK_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_CHECK_L" -> "?w_L" [xlabel="2", color="#d62728"];
+    "h1_CHECK_L" -> "z_L" [xlabel="3", color="#d62728"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?VALID_R" [label="?VALID", shape=diamond];
+    "?w_R" [label="?w", shape=diamond];
+    "h2_VALID_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "?VALID_R" -> "h2_VALID_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
+    "h2_VALID_R" -> "?w_R" [xlabel="2", color="#17becf", style=dashed];
+  }
+}

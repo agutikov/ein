@@ -115,11 +115,13 @@
 ;;; is what `ein solve` names as the reason. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
 ;;;
-;;; **It is flagged wherever it is called** (Q-M1f.163). Every division goes
-;;; through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero
-;;; by value derives `(division-by-zero (div-call TAG X Y))`, the call as it
-;;; was asserted, and `(false)` from it, whoever made the call: this module
-;;; for a request, a module over this one, or a rule of a program's own. So a
+;;; **It is flagged wherever it is called** (Q-M1f.163). Every division runs
+;;; as `(div-run TAG X Y)`, the tagged call `(div-call TAG X Y)` handed on or
+;;; the calculator's own, and one whose Y is zero by value derives
+;;; `(division-by-zero (div-call TAG X Y))`, the call as it was asserted, and
+;;; `(false)` from it, whoever made the call: this module for a request, whose
+;;; division is a call, or a rule of a program's own; the modules over this
+;;; one divide by nothing that is zero. So a
 ;;; public division by zero holds two flags, the request's and its call's,
 ;;; and reads as it always did in `ein solve`; `--trace` shows the second
 ;;; flag and its contradiction as two steps more. A theory in which division
@@ -175,13 +177,21 @@
 ;;; module's `let`.
 ;;;
 ;;; In the five calls X and Y are numbers as `n` and `z` build them, high
-;;; zeros allowed, and never a name a `let` states: a call looks nothing up. Every answer is in
+;;; zeros allowed, and never a name a `let` states: a call looks nothing up.
+;;; **A call checks what it is handed** (Q-M1f.404): a numeral is asked of
+;;; `std.math.decimal`'s check, as an operand's is, so a malformed one is
+;;; flagged and the program is dead, whoever made the call; and the call is
+;;; handed on to the calculator's own walk, `add-run`, `sub-run`, `cmp-run`,
+;;; `mul-run` or `div-run`, which checks nothing. This theory, and every module
+;;; of the calculator over it, calls those walks itself, with numbers it
+;;; checked or made, which are not walked again. Every answer is in
 ;;; normal form. A walk starts at the units with no digits yet, `z`; a
 ;;; subtraction with no borrow, `0`, and a comparison with nothing yet
-;;; decided, `eq`: those are the values a caller writes, and the test holds
-;;; every caller to them. An addition's carry in is the caller's, `0` for X +
-;;; Y, or a bit: `std.math.convert` doubles a number and
-;;; adds a bit in one walk, `(add-walk TAG X X BIT z)`. The
+;;; decided, `eq`: those are the values a caller writes, and the calculator
+;;; where it starts a walk of its own, and the test holds every caller to
+;;; them. An addition's carry in is the caller's, `0` for X + Y, or a bit:
+;;; `std.math.convert` doubles a number and adds a bit in one walk of its
+;;; own, `(add-run TAG X X BIT z)`. The
 ;;; TAG is the caller's, a fact of a relation of its own, `(cnt K M)` in
 ;;; `examples/beyond_arith/casting_out_nines.ein`; one of this module's own
 ;;; tags, `(sum X Y)` or `(quotient X Y)`, is read back as a request of the
@@ -204,11 +214,12 @@
 ;;; (`operand-check`, `std.math.positional`'s; Q-M1f.404): once a numeral,
 ;;; whatever reads it. Its flag is `(not-decimal NUMERAL THING)`, and
 ;;; `(false)` follows; a well-formed one is labelled `(valid NUMERAL)`. A
-;;; numeral no request takes is not checked. **A number a walk makes is
-;;; labelled as it is made**, by `std.math.positional`'s turn and division's
-;;; end: `(sum-of X Y S)`'s S, every number of the other four answers, and a
-;;; tagged call's hand-over are valid already, and none is checked. What is
-;;; left here is
+;;; numeral a tagged call is handed is checked too, and one no request and
+;;; no call takes is not. **A number a walk makes is labelled as it is
+;;; made**, by `std.math.positional`'s turn and division's end: `(sum-of X Y
+;;; S)`'s S, every number of the other four answers, and a tagged call's
+;;; hand-over are valid already, and none is walked again. What is left here
+;;; is
 ;;; what is wrong with an **operand** or a **`let`**, which this module reads:
 ;;;
 ;;;     (malformed REQUEST)         a digit stands where a number goes,
@@ -356,7 +367,8 @@
 ;;; four answers, and the look-up, `operand` and `operand-is`.
 ;;;
 ;;; **The circuit's own**, in the state for a query or a `--trace` to see,
-;;; and not a promise: `b`, `mul-walk`,
+;;; and not a promise: `b`, the walks the calls are handed on to, `add-run`,
+;;; `sub-run`, `cmp-run`, `mul-run` and `div-run`, `mul-walk`,
 ;;; `strip`, `turn`, `top-first`, `top-first-is`, `mul-step`, `multiples`,
 ;;; `div-step`, `div-choose`, `div-digit`; the faults'
 ;;; `bad-operand`, `bad-request`, `no-let` and `not-a-number`; the tags
@@ -369,7 +381,7 @@
 ;;; `cl`, `nz`, `mid` and `adj`, with the bound `10`.
 ;;;
 ;;; **Its rules** are decimal's own 35 and the closing rule, each under its
-;;; full name, `std.math.decimal-arith.mul-column`; the 78 it activates are
+;;; full name, `std.math.decimal-arith.mul-column`; the 96 it activates are
 ;;; `std.math.positional`'s and print by that module's name.
 
 (import std.math.digits :symbols (fa fs md cl nz mid adj))
@@ -412,6 +424,8 @@
 (relation operand-is Tag Number
   :why "found, for {?3}: the number {?4}")
 (relation add-walk Tag Number Number Digit Digits
+  :why "wanted, for {?3}: {?4} + {?5}, with the carry {?6} in")
+(relation add-run Tag Number Number Digit Digits
   :why "adding, for {?3}: {?4} and {?5} are still to add, the carry is {?6}, and the digits so far are {?7}")
 (relation strip Tag Digits
   :why "for {?3}: the digits {?4}, high zeros not yet dropped")
@@ -420,10 +434,14 @@
 (relation done Tag Number
   :why "the answer for {?3} is {?4}")
 (relation sub-walk Tag Number Number Digit Digits
+  :why "wanted, for {?3}: {?4} - {?5}")
+(relation sub-run Tag Number Number Digit Digits
   :why "subtracting, for {?3}: {?5} is still to take from {?4}, the borrow is {?6}, and the digits so far are {?7}")
 (relation short Tag
   :why "{?3} has no answer: the number taken from is the smaller")
 (relation cmp-walk Tag Number Number Order
+  :why "wanted, for {?3}: {?4} compared with {?5}")
+(relation cmp-run Tag Number Number Order
   :why "comparing, for {?3}: {?4} and {?5} are still to compare, and the order of the digits below is {?6}")
 (relation order-is Tag Order
   :why "the answer for {?3} is {?4}")
@@ -435,10 +453,14 @@
   :why "multiplying, for {?3}: {?4} is still to multiply by {?5}, the carry is {?6}, and the digits so far are {?7}")
 (relation mul-call Tag Number Number
   :why "wanted, for {?3}: {?4} x {?5}")
+(relation mul-run Tag Number Number
+  :why "multiplying, for {?3}: {?4} by {?5}")
 (relation mul-step Tag Number Digits Number
   :why "multiplying, for {?3}: {?4} by the digits {?5} still to come, and the sum so far is {?6}")
 (relation div-call Tag Number Number
   :why "wanted, for {?3}: {?4} divided by {?5}")
+(relation div-run Tag Number Number
+  :why "dividing, for {?3}: {?4} by {?5}")
 (relation div-done Tag Number Number
   :why "the answer for {?3} is {?4}, remainder {?5}")
 (relation multiples Number Number Number Number Number Number Number Number Number
@@ -562,7 +584,7 @@
 
 (rule mul-add-row ()
   :match  (done (mul-row-of ?k ?u ?rest (n ?p ?a)) ?row)
-  :assert (add-walk (mul-sum ?k ?u ?rest) (n (n ?p ?a) 0) ?row 0 z)
+  :assert (add-run (mul-sum ?k ?u ?rest) (n (n ?p ?a) 0) ?row 0 z)
   :why    "ten times the sum so far, plus the row {?row}")
 
 ;; ── Division: the quotient's digit by bisection ─────────────────────────────
@@ -571,14 +593,15 @@
 ;; The call's ask, its start, its end, its answer and the division by zero
 ;; are `std.math.positional`'s.
 ;;
-;; `(div-call TAG X Y)`: X divided by Y for whoever TAG says, answered by
-;; `(div-done TAG QUOTIENT REMAINDER)`. First the divisor's nine multiples,
+;; `(div-run TAG X Y)`: X divided by Y for whoever TAG says, answered by
+;; `(div-done TAG QUOTIENT REMAINDER)`, the call `(div-call TAG X Y)` handed
+;; on, or the calculator's own. First the divisor's nine multiples,
 ;; each a row of multiplication, in a chain whose tags hold the multiples
 ;; already known. Y times 1 is Y in normal form, and shows whether Y is zero.
 ;; The first multiple's tag holds Y as the call wrote it, beside X, so that a
 ;; division by zero can be flagged with the call it was (below).
 (rule div-multiples ()
-  :match  (div-call ?k ?u ?v)
+  :match  (div-run ?k ?u ?v)
   :assert (mul-walk (div-m1 ?k ?u ?v) ?v 1 0 z)
   :why    "to divide {?u} by {?v}: first {?v} x 1, the divisor in normal form")
 
@@ -659,64 +682,64 @@
 (rule div-try-1 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 1))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)
-                    ?u ?m1 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)
+                   ?u ?m1 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 1, and take 1 times the divisor, {?m1}, from {?u}")
 
 (rule div-try-2 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 2))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)
-                    ?u ?m2 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)
+                   ?u ?m2 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 2, and take 2 times the divisor, {?m2}, from {?u}")
 
 (rule div-try-3 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 3))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)
-                    ?u ?m3 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)
+                   ?u ?m3 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 3, and take 3 times the divisor, {?m3}, from {?u}")
 
 (rule div-try-4 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 4))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)
-                    ?u ?m4 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)
+                   ?u ?m4 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 4, and take 4 times the divisor, {?m4}, from {?u}")
 
 (rule div-try-5 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 5))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)
-                    ?u ?m5 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)
+                   ?u ?m5 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 5, and take 5 times the divisor, {?m5}, from {?u}")
 
 (rule div-try-6 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 6))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)
-                    ?u ?m6 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)
+                   ?u ?m6 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 6, and take 6 times the divisor, {?m6}, from {?u}")
 
 (rule div-try-7 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 7))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)
-                    ?u ?m7 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)
+                   ?u ?m7 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 7, and take 7 times the divisor, {?m7}, from {?u}")
 
 (rule div-try-8 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 8))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)
-                    ?u ?m8 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)
+                   ?u ?m8 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 8, and take 8 times the divisor, {?m8}, from {?u}")
 
 (rule div-try-9 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 9))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)
-                    ?u ?m9 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)
+                   ?u ?m9 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 9, and take 9 times the divisor, {?m9}, from {?u}")
 
 (rule div-fits ()
@@ -815,7 +838,7 @@
 ;;
 ;; **And it connects the base** (Q-M1f.266): its last conjunct is one
 ;; call of `std.math.positional`'s
-;; macro with decimal's 63 relations, which derives the 78 activators of the
+;; macro with decimal's 68 relations, which derives the 96 activators of the
 ;; shared rules in this same firing. Those rules are named by their activators
 ;; and not here: a rule's name written as an argument makes every
 ;; parameterised conclusion of its arity a possible activator that binds a
@@ -849,13 +872,14 @@
                (__closed__ bad-request) (__closed__ not-a-number)
                (__closed__ no-let)
                (__closed__ operand) (__closed__ operand-is)
-               (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
-               (__closed__ done)
-               (__closed__ sub-walk) (__closed__ short)
-               (__closed__ cmp-walk) (__closed__ order-is)
+               (__closed__ add-walk) (__closed__ add-run) (__closed__ strip)
+               (__closed__ turn) (__closed__ done)
+               (__closed__ sub-walk) (__closed__ sub-run) (__closed__ short)
+               (__closed__ cmp-walk) (__closed__ cmp-run) (__closed__ order-is)
                (__closed__ top-first) (__closed__ top-first-is)
-               (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-step)
-               (__closed__ div-call) (__closed__ div-done)
+               (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-run)
+               (__closed__ mul-step)
+               (__closed__ div-call) (__closed__ div-run) (__closed__ div-done)
                (__closed__ multiples) (__closed__ div-step)
                (__closed__ div-choose) (__closed__ div-digit)
                (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
@@ -890,12 +914,12 @@
                (arith-rule div-too-big) (arith-rule div-digit-found)
                (arith-rule div-next) (arith-rule div-next-zero)
                (arith-rule div-next-none) (arith-rule operand-undeclared)
-               (positional operand operand-is n let named check add-walk fa b strip turn nz done
-                           valid add add-first add-second sum sum-of sub-walk fs short sub sub-first
-                           sub-second difference shortfall diff-of cmp-walk cl order-is cmp
-                           cmp-first cmp-second order cmp-of top-first top-first-is mul-call
-                           mul-digits mul-step mul-sum mul mul-first mul-second product product-of
-                           div-digits div-step div-done div div-first div-second div-call quotient
-                           quot-of div-m1 bad-operand not-a-number malformed bad-request no-let
-                           undeclared))
+               (positional operand operand-is n let named check nz valid add-walk add-run sub-walk
+                           sub-run cmp-walk cmp-run mul-call mul-run div-call div-run fa b strip
+                           turn done add add-first add-second sum sum-of fs short sub sub-first
+                           sub-second difference shortfall diff-of cl order-is cmp cmp-first
+                           cmp-second order cmp-of top-first top-first-is mul-digits mul-step
+                           mul-sum mul mul-first mul-second product product-of div-digits div-step
+                           div-done div div-first div-second quotient quot-of div-m1 bad-operand
+                           not-a-number malformed bad-request no-let undeclared))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

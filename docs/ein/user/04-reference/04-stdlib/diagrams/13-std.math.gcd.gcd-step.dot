@@ -22,7 +22,7 @@ digraph rule_gcd_step_lhs_rhs {
     "(n ?b ?c)_L" -> "?c_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "div-call_R" [label="div-call", shape=box];
+    "div-run_R" [label="div-run", shape=box];
     "gcd-rem_R" [label="gcd-rem", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "n_R" [label="n", shape=box];
@@ -30,18 +30,18 @@ digraph rule_gcd_step_lhs_rhs {
     "?c_R" [label="?c", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(gcd-rem ?k (n ?b ?c))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     subgraph cluster_ctx_R_1 {
-      label="div-call, gcd-rem ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run, gcd-rem ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?b ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(gcd-rem ?k (n ?b ?c))_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n ?b ?c)_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_div-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "div-run_R" -> "h2_div-run_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(gcd-rem ?k (n ?b ?c))_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?a_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(n ?b ?c)_R" [xlabel="4", color="#e377c2", style=dashed];
     "gcd-rem_R" -> "(gcd-rem ?k (n ?b ?c))_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(gcd-rem ?k (n ?b ?c))_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "(gcd-rem ?k (n ?b ?c))_R" -> "(n ?b ?c)_R" [xlabel="3", color="#d62728", style=dashed];

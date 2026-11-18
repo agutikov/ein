@@ -33,7 +33,7 @@ digraph rule_mul_add_row_lhs_rhs {
     "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "mul-sum_R" [label="mul-sum", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
@@ -45,7 +45,7 @@ digraph rule_mul_add_row_lhs_rhs {
     "?row_R" [label="?row", shape=diamond];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(mul-sum ?k ?u ?rest)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
       "(n (n ?p ?a) 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
@@ -53,13 +53,13 @@ digraph rule_mul_add_row_lhs_rhs {
       label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "add-walk_R" -> "h2_add-walk_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(mul-sum ?k ?u ?rest)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n (n ?p ?a) 0)_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?row_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "add-run_R" -> "h2_add-run_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(mul-sum ?k ?u ?rest)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(n (n ?p ?a) 0)_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?row_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "mul-sum_R" -> "(mul-sum ?k ?u ?rest)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(mul-sum ?k ?u ?rest)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(mul-sum ?k ?u ?rest)_R" -> "?u_R" [xlabel="3", color="#1f77b4", style=dashed];

@@ -22,7 +22,7 @@ digraph rule_cmp_start_lhs_rhs {
     "(?CMP-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
-    "?CMP-WALK_R" [label="?CMP-WALK", shape=diamond];
+    "?CMP-RUN_R" [label="?CMP-RUN", shape=diamond];
     "?ORDER_R" [label="?ORDER", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
@@ -30,15 +30,15 @@ digraph rule_cmp_start_lhs_rhs {
     "?v_R" [label="?v", shape=diamond];
     "eq_R" [label="eq", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="?CMP-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="?CMP-RUN ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(?ORDER ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_CMP-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "?CMP-WALK_R" -> "h2_CMP-WALK_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
-    "h2_CMP-WALK_R" -> "(?ORDER ?x ?y)_R" [xlabel="2", color="#7f7f7f", style=dashed];
-    "h2_CMP-WALK_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
-    "h2_CMP-WALK_R" -> "?v_R" [xlabel="4", color="#7f7f7f", style=dashed];
-    "h2_CMP-WALK_R" -> "eq_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_CMP-RUN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "?CMP-RUN_R" -> "h2_CMP-RUN_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h2_CMP-RUN_R" -> "(?ORDER ?x ?y)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_CMP-RUN_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_CMP-RUN_R" -> "?v_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_CMP-RUN_R" -> "eq_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "?ORDER_R" -> "(?ORDER ?x ?y)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?ORDER ?x ?y)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(?ORDER ?x ?y)_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];

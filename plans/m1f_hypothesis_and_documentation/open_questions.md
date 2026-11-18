@@ -332,14 +332,14 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **ruled 2026-11-18: (a)**: `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file; its four points as defaulted. **Built** by S1f.22.5. Point 2 amended the same day by the user's ruling on F23's D-24: no note, nothing compared; built by S1f.23.8 |
 | [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **ruled 2026-11-18: (C)** for a save of a loaded file, a saved file a node of its program's lattice; the defaults for the rest: no new command, the dump `ein saturate --dump`'s KB section, one fixed first line. **Built** by S1f.22.5 |
 | [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **ruled 2026-11-18: (a)**: a file with a commitment checks no claim, names each NOT CHECKED, and exits 0. **Built** by S1f.22.5; `ein test` of one asks nothing since Q-M1f.416 (b), S1f.23.8 |
-| [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it) | `written` is erased; a numeral is checked by the operation that takes it | **ruled 2026-11-18** by the user (*"revert this decision, completely erase this `written` crutch …"*): Q-M1f.272, .275, .279 and .280 reverted whole, and the half of .210 and .276 that flagged a numeral where it is written. **Built** by S1f.22.6 (`bf9693dc`); its readings are Q-M1f.405 to .411 |
-| [Q-M1f.405](#q-m1f405--which-numerals-are-taken-from-the-input-program-and-what-once-is) | which numerals are *taken from the input program*, and what *once* is | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a numeral an operation takes, whoever wrote the request, checked once as a fact of the numeral; built so. Under it a malformed numeral handed straight to a tagged call, dead on master, is alive, outside the corpus ((e) would flag it) |
-| [Q-M1f.406](#q-m1f406--the-label-and-where-a-number-an-operation-makes-gets-it) | the label, and where a number an operation makes gets it | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), `(valid N)` and `(bin-valid N)`, a fact of the numeral, concluded where a walk ends and where the arithmetic makes a number |
-| [Q-M1f.407](#q-m1f407--a-numeral-no-operation-takes-is-not-checked) | a numeral no operation takes is not checked | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), not checked; three corpus programs, dead before, answer R = {∅} and are rewritten to claim it |
-| [Q-M1f.408](#q-m1f408--where-the-checks-rules-live) | where the check's rules live | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the representation's, `std.math.decimal` and `std.math.binary`, the operations asking |
-| [Q-M1f.409](#q-m1f409--an-integer-and-a-rational-their-check-and-their-label) | an integer and a rational: their check and their label | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), `(int-check I)` and `(rat-check Q)`, no label of their own. Under it a rational whose numerator is a malformed natural number, dead on master, is alive, outside the corpus ((d) would flag it) |
-| [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a made number handed to a second request is walked again |
-| [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the first place at fault from the units |
+| [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it) | `written` is erased; a numeral is checked by the operation that takes it | **ruled 2026-11-18** by the user (*"revert this decision, completely erase this `written` crutch …"*): Q-M1f.272, .275, .279 and .280 reverted whole, and the half of .210 and .276 that flagged a numeral where it is written. **Built** by S1f.22.6 (`bf9693dc`); its readings are Q-M1f.405 to .411, ruled 2026-11-18 and built by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md) |
+| [Q-M1f.405](#q-m1f405--which-numerals-are-taken-from-the-input-program-and-what-once-is) | which numerals are *taken from the input program*, and what *once* is | **ruled 2026-11-18: (a), with the user's distinction** (*"(a) the difference is between numerals produced by operation from valid numerals, and all other numerals from any source"*): a numeral an operation makes from valid numerals is valid as made and not walked again; every other one is checked, a request's, a rule's, and one handed straight to a tagged call, which is dead again. **Built** by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md): each tagged call checks what it is handed and hands itself on to a walk of the calculator's own, which the calculator calls itself |
+| [Q-M1f.406](#q-m1f406--the-label-and-where-a-number-an-operation-makes-gets-it) | the label, and where a number an operation makes gets it | **ruled 2026-11-18: (a)**, the default as built: `(valid N)` and `(bin-valid N)`, a fact of the numeral, concluded where a walk ends and where the arithmetic makes a number |
+| [Q-M1f.407](#q-m1f407--a-numeral-no-operation-takes-is-not-checked) | a numeral no operation takes is not checked | **ruled 2026-11-18: (a)**, the default as built: not checked; the three corpus programs claim R = {∅} |
+| [Q-M1f.408](#q-m1f408--where-the-checks-rules-live) | where the check's rules live | **ruled 2026-11-18: (b)**, *the walk in `std.math.positional`, the representation keeping the flags*. **Built** by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md): `numeral-step`, `numeral-step-zero` and `numeral-valid` are `std.math.positional`'s, activated by each base's call with its representation's `check`, `valid`, numeral and `nz`; the relations, the label and the flags stay the representation's |
+| [Q-M1f.409](#q-m1f409--an-integer-and-a-rational-their-check-and-their-label) | an integer and a rational: their check and their label | **ruled 2026-11-18: (a)**, and, asked how L-101's rule reads a rational whose part is a natural numeral, *"Verify the natural"*: the numerator is checked as a numeral, so `(rat (n z x) (n z 2))` is dead again (the (d) case). **Built** by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md), with L-101 |
+| [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **ruled 2026-11-18: (a)**, the default as built: a made number a program's rule hands to a second request is walked again, and, under Q-M1f.405's ruling, one it hands to a tagged call |
+| [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **ruled 2026-11-18: (a)**, the default as built: the first place at fault from the units |
 | [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
 | [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **ruled 2026-11-18: (c)** (*"(c)"*: give the container a section for the commitment, so a node's container opens as that node); **built** by P1f.23's S1f.23.8 (`86d46410`): the section `COMMIT`, kind 13, the format `einb/2.1`, the decision [Q-M1f.413](../../docs/decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md). Before: defaulted (a), a node refused |
 | [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build (`fbe2ba66`, `3047bbae`, merged by `79dd213b`). Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
@@ -7973,12 +7973,13 @@ malformed number is flagged where it is written, with no calculation reading it.
 and `written` is no reserved name. A numeral an operation takes from the program is checked once and labelled
 valid, or flagged. A numeral an operation produces is labelled valid as it is produced. Built by
 S1f.22.6, whose readings of the ruling are put as Q-M1f.405
-onward, each with a default.
+onward, each with a default; the user ruled them 2026-11-18, and S1f.23.9 built the rulings (Q-M1f.405, .408,
+.409 and the milestone's L-101), the decision's file stating them.
 
 ### Q-M1f.405 — Which numerals are "taken from the input program", and what "once" is
 
 **Raised** 2026-11-18 by S1f.22.6, reading 1 of
-[Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it). **Put, not ruled.**
+[Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it). **Ruled 2026-11-18.**
 The stage's Record shows it on real programs.
 
 - **(a)** **a numeral an operation takes**: the numeral an operand stands for, written as the operand or as a
@@ -7998,11 +7999,20 @@ The stage's Record shows it on real programs.
   (`(add-walk (mine a) (n z x) (n z 1) 0 z)`: `states (k_s) 1`, master `0`). Under (e) every number the calculator
   hands itself, every intermediate of a product and a quotient, is walked again, a firing a place.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (a), with the user's distinction.** The user, verbatim: *"(a) the difference is between
+numerals produced by operation from valid numerals, and all other numerals from any source"*. A numeral an
+operation makes from valid numerals is valid as made and is not walked again; every other numeral is checked,
+whatever its source: one a request takes, written or made up by a rule of the program's own, and one handed
+straight to a tagged call, so the (e) case, `(add-walk (mine a) (n z x) (n z 1) 0 z)`, is dead again. *Once* stays
+a fact of the numeral. Built by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md), within the calculator's laws: each tagged call a program or a module over the
+calculator writes, the five of each base, `std.math.int`'s four, `std.math.rat`'s three and `std.math.gcd`'s, asks
+the check of what it is handed and hands itself on to a walk of the calculator's own (`add-run` and the rest),
+which checks nothing and which the calculator calls itself with numbers it checked or made; what is checked is told
+by the relation it is written in, and no rule joins two facts on a number. The decision Q-M1f.404 states it.
 
 ### Q-M1f.406 — The label, and where a number an operation makes gets it
 
-**Raised** 2026-11-18 by S1f.22.6, reading 2. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 2. **Ruled 2026-11-18.**
 
 - **(a)** **`(valid N)`, `std.math.decimal`'s, and `(bin-valid N)`, `std.math.binary`'s, a fact of the numeral**:
   the walk's end for a numeral an operation takes; for a number the arithmetic makes, a conclusion of the firing
@@ -8013,11 +8023,11 @@ The stage's Record shows it on real programs.
   a tagged call's hand-over unlabelled, and fourteen answer rules of `std.math.int` and `std.math.rat` to write.
 - **(c)** as (a), with `z` labelled only where a walk makes it or a check reaches it.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (a).** The user, verbatim: *"(a)"*. As built by S1f.22.6; the decision Q-M1f.404 states it.
 
 ### Q-M1f.407 — A numeral no operation takes is not checked
 
-**Raised** 2026-11-18 by S1f.22.6, reading 3. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 3. **Ruled 2026-11-18.**
 Three corpus programs answer otherwise, each dead before and R = {∅} after:
 `tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein`, `03_in_a_fact_of_the_programs_own.ein` and
 `04_in_a_rules_conclusion.ein`. Binary has no such program.
@@ -8030,11 +8040,11 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
 - **(c)** a `let`'s value checked as the `let` is read, `let` being the calculator's relation: `02` dead again, and
   `03` and `04` alive.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (a).** The user, verbatim: *"(a)"*. As built by S1f.22.6; the decision Q-M1f.404 states it.
 
 ### Q-M1f.408 — Where the check's rules live
 
-**Raised** 2026-11-18 by S1f.22.6, reading 4. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 4. **Ruled 2026-11-18.**
 
 - **(a)** **the representation's**: `std.math.decimal` declares `check` and `valid` and holds the walk
   (`numeral-step`, `numeral-step-zero`, `numeral-valid`) and its four flags; `std.math.binary` the same under
@@ -8045,11 +8055,15 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
   the flags.
 - **(c)** each operation checking its own operands, the representation keeping nothing.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (b).** The user, verbatim: *"(b)"*: the walk in `std.math.positional`, the representation
+keeping the flags. Built by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md): `numeral-step`, `numeral-step-zero` and `numeral-valid` moved into
+`std.math.positional`, `(?CHECK ?N ?NZ)`, `(?CHECK ?N)` and `(?CHECK ?VALID)`, activated by each base's call of the
+macro; `std.math.decimal` and `std.math.binary` keep `check`, `valid`, the flags and `not-decimal-is-false`, whose
+rules read the walk. The decision Q-M1f.404 states it.
 
 ### Q-M1f.409 — An integer and a rational: their check and their label
 
-**Raised** 2026-11-18 by S1f.22.6, reading 5. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 5. **Ruled 2026-11-18.**
 
 - **(a)** **`(int-check I)` and `(rat-check Q)`, asked where an operand's look-up finds one** (`int-operand-check`,
   `rat-check-ask`), read by the six shape rules of each, which flag a digit or a named constant where a part goes as
@@ -8068,11 +8082,15 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
   where an integer goes, a natural number is flagged, `(int-add (n z x) I)` dead as on master, since
   `std.math.decimal-arith`'s look-up finds it and checks it. No corpus program writes either.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (a)**, and the natural part. The user, verbatim: *"(a)"*; and, asked how L-101's rule
+reads a rational whose part is a natural numeral, *"Verify the natural"*: a rational built from a natural numeral
+checks it as a numeral, as an operation checks its operands, so `(rat (n z x) (n z 2))` is dead again (the (d)
+case). Built by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md) with [L-101](findings.md#the-standard-librarys-rules): `rat-check-z-natural`; no label of
+their own. The decision Q-M1f.404 states it.
 
 ### Q-M1f.410 — No join on a number, and a result a program's rule hands on
 
-**Raised** 2026-11-18 by S1f.22.6, reading 6. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 6. **Ruled 2026-11-18.**
 The rule of the calculator ([Q-M1f.362](../../docs/decisions/stdlib/math/Q-M1f.362-no-rule-of-the-calculator-joins-two-facts-on.md))
 is kept: the walk carries the numeral it checks, so its end labels it with no second premise, and no operation
 waits for the label. One consequence: a number an operation made, which a rule of the program's own hands to a
@@ -8087,12 +8105,14 @@ tells it from a numeral the file wrote, and only a negation or a join could.
   facts already held: no second walk, and a fact a digit more for every number any walk makes, the intermediate
   ones included.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+**Ruled 2026-11-18: (a).** The user, verbatim: *"(a)"*. As built by S1f.22.6; under Q-M1f.405's ruling a made number a
+program's rule hands to a tagged call is walked again too, as one it hands to a request. The decision Q-M1f.404
+states it.
 
 ### Q-M1f.411 — A numeral with two faults has one flag
 
 **Raised** 2026-11-18 by S1f.22.6, found building the walk.
-**Put, not ruled.** The loader's statement read every place of a numeral at once, so `(n (n (n z x) y) 5)` was
+**Ruled 2026-11-18.** The loader's statement read every place of a numeral at once, so `(n (n (n z x) y) 5)` was
 flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first fault it meets from the units.
 
 - **(a)** **one flag, the first place at fault from the units**
@@ -8101,7 +8121,7 @@ flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first 
 - **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
   fault bit carried, so that the label is not derived for a malformed numeral.
 
-**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.274 states it.
+**Ruled 2026-11-18: (a).** The user, verbatim: *"(a)"*. As built by S1f.22.6; the decision Q-M1f.274 states it.
 
 ### Q-M1f.412 — The read-out's `is-a` row
 

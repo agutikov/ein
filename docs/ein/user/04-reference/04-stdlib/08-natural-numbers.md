@@ -330,7 +330,12 @@ An interface for a theory built on this one
 looks nothing up: X and Y are numbers as `n` and `z` build them, high zeros allowed, never a name. TAG is a fact of
 the caller's own relation, which the answer carries back; a tag of the theory's own, `(sum X Y)` or
 `(quotient X Y)`, is read back as one of its requests. A tag names one call: two calls under one tag answer under
-one tag, and the rule that reads cannot tell them apart.
+one tag, and the rule that reads cannot tell them apart. **A call checks what it is handed**
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): a
+numeral in either place is asked `std.math.decimal`'s check, as an operand's is, so a malformed one is flagged
+whoever made the call, and the call is handed on to the calculator's own walk, `add-run`, `sub-run`, `cmp-run`,
+`mul-run` or `div-run`, which checks nothing; the calculator calls those itself with numbers it checked or made,
+which are not walked again.
 
 | a rule concludes | asked | the theory answers |
 |---|---|---|
@@ -371,18 +376,20 @@ It computes nothing.
 |---|---|---|
 | `(n PREFIX DIGIT)` | the program | the numeral |
 | `(named NAME)` | `std.math.decimal-arith`, for each name a `let` states | NAME stands for a number |
-| `(check N REST)` | an operation that takes N asks `(check N N)`; this module walks it | N is being checked; REST is still to check |
-| `(valid N)` | this module, where the walk reaches `z`; the arithmetic, for each number it makes; the closing rule, for `z` | N is a decimal number |
+| `(check N REST)` | an operation that takes N, or a call it is handed to, asks `(check N N)`; `std.math.positional`'s walk takes it a place a firing | N is being checked; REST is still to check |
+| `(valid N)` | `std.math.positional`'s walk, where it reaches `z`; the arithmetic, for each number it makes; the closing rule, for `z` | N is a decimal number |
 | `(not-decimal NUMERAL THING)` | this module: a **flag** | NUMERAL, which an operation took, holds THING where a digit or a prefix goes; `not-decimal-is-false` derives `(false)` |
 
-**A numeral is checked where an operation takes it**
+**A number an operation makes from valid numbers is valid as it is made, and every other numeral is checked**,
+whatever its source
 ([Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md),
-[Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). A request's operand, a part of an integer or a rational an operation takes, and a number a
-conversion takes are asked of this module's check, once a numeral whatever reads it: the walk goes a place a firing
-from the units and labels the numeral `(valid N)` where it reaches `z`, and a malformed place stops it and is flagged
-on its smallest `n` term at fault
+[Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). A request's operand, a numeral handed to a tagged call, a part of an integer or a rational an
+operation takes or a call is handed, and a number a conversion takes are asked of this module's check, once a
+numeral whatever reads it: [`std.math.positional`'s walk](10-positional-rules.md#the-checks-walk) goes a place a
+firing from the units and labels the numeral `(valid N)` where it reaches `z`, and a malformed place stops it and
+is flagged by this module on its smallest `n` term at fault
 ([Q-M1f.274](../../../../decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)).
-A number the arithmetic makes is labelled valid as it is made, and is not checked. **A numeral no operation takes is
+A number the arithmetic makes is labelled valid as it is made, and is not walked again. **A numeral no operation takes is
 not checked**: one in a `let` nobody asks about, in a fact of the program's own relation, or in a rule's conclusion
 that never fires. What it flags and what it leaves silent is
 [the calculator's page](07-calculator.md#malformed-numbers-what-is-flagged-and-where). A named constant is told by
@@ -390,7 +397,9 @@ that never fires. What it flags and what it leaves silent is
 ([Q-M1f.278](../../../../decisions/stdlib/math/decimal/Q-M1f.278-a-named-constant-is-told-by-named-the-numeral.md)).
 Entry `decimal`.
 
-A numeral a rule of the program's own hands to a request is checked as any operand is. This is
+A numeral a rule of the program's own hands to a request is checked as any operand is, and one it hands to a
+tagged call as any numeral a call is handed
+([`52_tagged_call_malformed.ein`](../../../../../tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein)). This is
 [`tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein`](../../../../../tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein):
 
 ```lisp
@@ -539,8 +548,8 @@ holds beyond the program, and these are the facts of the sum among them:
 
 <!-- output -->
 ```text
-  (std.math.decimal-arith.add-walk (std.math.decimal-arith.sum (n z 2) (n z 3)) (n z 2) (n z 3) 0 z)
-  (std.math.decimal-arith.add-walk (std.math.decimal-arith.sum (n z 2) (n z 3)) z z 0 (std.math.decimal-arith.b 5 z))
+  (std.math.decimal-arith.add-run (std.math.decimal-arith.sum (n z 2) (n z 3)) (n z 2) (n z 3) 0 z)
+  (std.math.decimal-arith.add-run (std.math.decimal-arith.sum (n z 2) (n z 3)) z z 0 (std.math.decimal-arith.b 5 z))
   …
   (std.math.decimal-arith.done (std.math.decimal-arith.sum (n z 2) (n z 3)) (n z 5))
   (std.math.decimal-arith.operand (std.math.decimal-arith.add-first (n z 2) (n z 3)) (n z 2))

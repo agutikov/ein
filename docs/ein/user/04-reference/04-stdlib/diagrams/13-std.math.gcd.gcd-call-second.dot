@@ -20,7 +20,7 @@ digraph rule_gcd_call_second_lhs_rhs {
     "(gcd-norm ?k ?y)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "gcd-norm-of_R" [label="gcd-norm-of", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
@@ -28,16 +28,16 @@ digraph rule_gcd_call_second_lhs_rhs {
     "z_R" [label="z", shape=box];
     "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(gcd-norm-of ?k ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "add-walk_R" -> "h2_add-walk_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(gcd-norm-of ?k ?a)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?y_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "add-run_R" -> "h2_add-run_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(gcd-norm-of ?k ?a)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "gcd-norm-of_R" -> "(gcd-norm-of ?k ?a)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(gcd-norm-of ?k ?a)_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(gcd-norm-of ?k ?a)_R" -> "?a_R" [xlabel="3", color="#7f7f7f", style=dashed];

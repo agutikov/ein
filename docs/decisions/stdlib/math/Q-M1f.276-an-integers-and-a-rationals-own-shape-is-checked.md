@@ -4,10 +4,12 @@ Each part of `(int P N)` is a natural number: a digit or a named constant where 
 `(int price z)`, is flagged `(not-integer INTEGER THING)` by `std.math.int`. A digit or a named constant where a
 rational's numerator or denominator goes is flagged `(not-rational RATIONAL THING)` by `std.math.rat`. Each is read
 off the module's check, `(int-check INTEGER)` or `(rat-check RATIONAL)`, which an operation asks of the integer or
-the rational it takes ([Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)), and each flag
-derives `(false)`. A part that is a malformed numeral is `std.math.decimal`'s to flag
-([Q-M1f.274](decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)), and a rational's numerator is
-`std.math.int`'s to check.
+the rational it takes, and a call of the module of each its parts make
+([Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)), and each flag derives `(false)`. The
+check asks its parts' checks a rule a shape: a part that is a numeral is asked `std.math.decimal`'s, which flags a
+malformed one ([Q-M1f.274](decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)); a rational's
+integer numerator is `std.math.int`'s to check, and a numerator that is a natural number `std.math.decimal`'s. A
+part `z` is valid already, and one that is a digit or a name is the shape rules'.
 
 **Why.** An integer and a rational are representations too, and their shapes are their own modules' to check
 ([Q-M1f.210](Q-M1f.210-a-malformed-number-is-its-representations-fault.md)).

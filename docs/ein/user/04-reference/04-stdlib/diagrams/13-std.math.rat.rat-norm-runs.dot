@@ -1,0 +1,50 @@
+digraph rule_rat_norm_runs_lhs_rhs {
+  rankdir=TB;
+  label="rat-norm-runs"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "rat-norm_L" [label="rat-norm", shape=box];
+    "?k_L" [label="?k", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    "h1_rat-norm_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "rat-norm_L" -> "h1_rat-norm_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_rat-norm_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
+    "h1_rat-norm_L" -> "?p_L" [xlabel="3", color="#bcbd22"];
+    "h1_rat-norm_L" -> "?n_L" [xlabel="4", color="#bcbd22"];
+    "h1_rat-norm_L" -> "?d_L" [xlabel="5", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "rat-norm-run_R" [label="rat-norm-run", shape=box];
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?d_R" [label="?d", shape=diamond];
+    "rat-check_R" [label="rat-check", shape=box];
+    "rat_R" [label="rat", shape=box];
+    "int_R" [label="int", shape=box];
+    subgraph cluster_ctx_R_0 {
+      label="rat ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    }
+    subgraph cluster_ctx_R_1 {
+      label="rat-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat (int ?p ?n) ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    }
+    "h2_rat-norm-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "rat-norm-run_R" -> "h2_rat-norm-run_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?p_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?n_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_rat-norm-run_R" -> "?d_R" [xlabel="5", color="#2ca02c", style=dashed];
+    "h3_rat-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "rat-check_R" -> "h3_rat-check_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h3_rat-check_R" -> "(rat (int ?p ?n) ?d)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "rat_R" -> "(rat (int ?p ?n) ?d)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "(rat (int ?p ?n) ?d)_R" -> "(int ?p ?n)_R" [xlabel="2", color="#d62728", style=dashed];
+    "(rat (int ?p ?n) ?d)_R" -> "?d_R" [xlabel="3", color="#d62728", style=dashed];
+    "int_R" -> "(int ?p ?n)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
+  }
+}

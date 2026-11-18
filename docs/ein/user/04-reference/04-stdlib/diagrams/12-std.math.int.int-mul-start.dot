@@ -37,7 +37,7 @@ digraph rule_int_mul_start_lhs_rhs {
     "(int ?q ?m)_L" -> "?m_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "int-mul-call_R" [label="int-mul-call", shape=box];
+    "int-mul-run_R" [label="int-mul-run", shape=box];
     "int-mul_R" [label="int-mul", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
@@ -46,16 +46,16 @@ digraph rule_int_mul_start_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?m_R" [label="?m", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="int-mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="int-mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-mul ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
-    "h2_int-mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "int-mul-call_R" -> "h2_int-mul-call_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "(int-mul ?x ?y)_R" [xlabel="2", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?p_R" [xlabel="3", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?n_R" [xlabel="4", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?q_R" [xlabel="5", color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "?m_R" [xlabel="6", color="#e377c2", style=dashed];
+    "h2_int-mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "int-mul-run_R" -> "h2_int-mul-run_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h2_int-mul-run_R" -> "(int-mul ?x ?y)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_int-mul-run_R" -> "?p_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_int-mul-run_R" -> "?n_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_int-mul-run_R" -> "?q_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_int-mul-run_R" -> "?m_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "int-mul_R" -> "(int-mul ?x ?y)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "(int-mul ?x ?y)_R" -> "?x_R" [xlabel="2", color="#e377c2", style=dashed];
     "(int-mul ?x ?y)_R" -> "?y_R" [xlabel="3", color="#e377c2", style=dashed];

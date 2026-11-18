@@ -42,7 +42,7 @@ digraph rule_int_div_pn_lhs_rhs {
     "(n ?b ?c)_L" -> "?c_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "div-call_R" [label="div-call", shape=box];
+    "div-run_R" [label="div-run", shape=box];
     "int-div-m_R" [label="int-div-m", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "pos_R" [label="pos", shape=box];
@@ -52,18 +52,18 @@ digraph rule_int_div_pn_lhs_rhs {
     "?c_R" [label="?c", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-div-m ?k pos neg (n ?b ?c))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     subgraph cluster_ctx_R_1 {
-      label="div-call, int-div-m ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run, int-div-m ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?b ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(int-div-m ?k pos neg (n ?b ?c))_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n ?b ?c)_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_div-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "div-run_R" -> "h2_div-run_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(int-div-m ?k pos neg (n ?b ?c))_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "?a_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(n ?b ?c)_R" [xlabel="4", color="#e377c2", style=dashed];
     "int-div-m_R" -> "(int-div-m ?k pos neg (n ?b ?c))_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(int-div-m ?k pos neg (n ?b ?c))_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-div-m ?k pos neg (n ?b ?c))_R" -> "pos_R" [xlabel="3", color="#ff7f0e", style=dashed];

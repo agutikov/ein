@@ -37,8 +37,8 @@
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;
-;;; **Decimal to binary:** X is divided by two with decimal's tagged division,
-;;; `(div-call TAG X (n z 2))`, until nothing is left; each remainder is a bit,
+;;; **Decimal to binary:** X is divided by two with decimal's own division,
+;;; `(div-run TAG X (n z 2))`, until nothing is left; each remainder is a bit,
 ;;; put in front of the bits so far, `(bin-b BIT BITS)`, and binary's own
 ;;; strip and turn make the number, `(bin-strip TAG BITS)` answered by
 ;;; `(bin-done TAG B)`.
@@ -46,17 +46,21 @@
 ;;; **Binary to decimal:** B's bits from the top, `(bin-top-first TAG B z)`
 ;;; answered by `(bin-top-first-is TAG BITS)`; the number so far is doubled
 ;;; and the bit added by one decimal addition walk, the number plus itself with
-;;; the bit as the carry in, `(add-walk TAG X X BIT z)`.
+;;; the bit as the carry in, `(add-run TAG X X BIT z)`. Both are the walks
+;;; decimal's tagged calls are handed on to, which check nothing: X is checked
+;;; where it is asked, and every number after it is one a walk made
+;;; (Q-M1f.404).
 ;;;
 ;;; The two directions do not cost the same: a halving is a whole decimal
 ;;; division, where a doubling is one addition walk: 255 to binary is 830
 ;;; firings and 1111101000 to decimal 111 (`ein saturate` of each request
 ;;; alone, the closing rules' firings left out).
 ;;;
-;;; It reaches into both theories: decimal's `div-call`, `div-done`,
-;;; `add-walk` and `done` are its interface (the tagged calls), and binary's
-;;; `bin-strip`, `bin-done`, `bin-top-first`, `bin-top-first-is` and `bin-b`
-;;; are binary's circuit, which this module, a module of the stdlib, may read:
+;;; It reaches into both theories: decimal's `div-run`, `div-done`,
+;;; `add-run` and `done` are decimal's circuit, the walks behind its tagged
+;;; calls, and binary's `bin-strip`, `bin-done`, `bin-top-first`,
+;;; `bin-top-first-is` and `bin-b` are binary's, which this module, a module
+;;; of the calculator, may read:
 ;;; `ein-infer/tests/binary_theory.rs` holds every conversion to Rust's
 ;;; integers both ways.
 ;;;
@@ -69,7 +73,7 @@
 (import std.math.arith :symbols (z))
 (import std.math.decimal :symbols (n check))
 (import std.math.binary :symbols (bin-check))
-(import std.math.decimal-arith :symbols (decimal-arith div-call div-done add-walk done))
+(import std.math.decimal-arith :symbols (decimal-arith div-run div-done add-run done))
 (import std.math.binary-arith :symbols (binary-arith bin-b bin-strip bin-done bin-top-first bin-top-first-is))
 
 (relation to-bin Number
@@ -102,7 +106,7 @@
 
 (rule to-bin-halve ()
   :match  (to-bin-go ?x (n ?p ?a) ?acc)
-  :assert (div-call (halving ?x ?acc) (n ?p ?a) (n z 2))
+  :assert (div-run (halving ?x ?acc) (n ?p ?a) (n z 2))
   :why    "divide {?p}{?a} by two: the remainder is the next bit")
 
 (rule to-bin-bit-0 ()
@@ -139,7 +143,7 @@
 
 (rule to-dec-double ()
   :match  (to-dec-go ?b (bin-b ?bit ?rest) ?acc)
-  :assert (add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)
+  :assert (add-run (doubling ?b ?rest) ?acc ?acc ?bit z)
   :why    "the next bit is {?bit}: the number so far, plus itself, plus the bit as the carry in")
 
 (rule to-dec-next ()

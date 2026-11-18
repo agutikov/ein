@@ -77,13 +77,20 @@
 ;;;                                   flagged where Y is zero by value
 ;;;     (bin-operand TAG X)           answered by (bin-operand-is TAG N)
 ;;;
+;;; A call checks what it is handed, as decimal's do (Q-M1f.404): a numeral is
+;;; asked of `std.math.binary`'s check, and the call is handed on to the
+;;; calculator's own walk, `bin-add-run`, `bin-sub-run`, `bin-cmp-run`,
+;;; `bin-mul-run` or `bin-div-run`, which checks nothing and which this theory
+;;; and `std.math.convert` call themselves with numbers they checked or made.
+;;;
 ;;; ── Malformed requests: a flag, and `(false)` from it ──────────────────────
 ;;;
 ;;; **A malformed numeral is not this module's**: whether `(b2 (b2 z 1) 2)` is
 ;;; a number is `std.math.binary`'s question, which the look-up of an operand
-;;; asks of the numeral it finds (`(not-binary NUMERAL THING)`, Q-M1f.404),
-;;; and a number a walk makes is labelled `(bin-valid N)` as it is made, as
-;;; decimal's are. What is left is what is wrong with
+;;; asks of the numeral it finds and a tagged call of each numeral it is
+;;; handed (`(not-binary NUMERAL THING)`, Q-M1f.404), and a number a walk makes
+;;; is labelled `(bin-valid N)` as it is made, as decimal's are, and is not
+;;; walked again. What is left is what is wrong with
 ;;; an operand or a `bin-let`, as far as decimal flags its own (Q-M1f.268),
 ;;; by the shared rules and one of binary's:
 ;;;
@@ -144,7 +151,9 @@
 ;;; `std.math.arith`'s `division-by-zero` and `std.math.binary`'s
 ;;; `not-binary`; the orders `lt`, `eq` and `gt`; and the tagged calls'
 ;;; answers. **The circuit's own**, in the state for a query or a `--trace` to
-;;; see, and not a promise: `bin-b`, `bin-strip`, `bin-turn`, `bin-top-first`,
+;;; see, and not a promise: `bin-b`, the walks the calls are handed on to,
+;;; `bin-add-run`, `bin-sub-run`, `bin-cmp-run`, `bin-mul-run` and
+;;; `bin-div-run`, `bin-strip`, `bin-turn`, `bin-top-first`,
 ;;; `bin-top-first-is`, `bin-mul-step`, `bin-div-step`, `bin-div-digits`,
 ;;; `bin-div-trial`; the faults' `bin-bad-operand`, `bin-bad-request`,
 ;;; `bin-not-a-number` and `bin-no-let`; the tags `bin-sum`, `bin-add-first`,
@@ -195,6 +204,8 @@
 (relation bin-operand-is Tag Number
   :why "found, for {?3}: the number {?4}")
 (relation bin-add-walk Tag Number Number Bit Bits
+  :why "wanted, for {?3}: {?4} + {?5}, with the carry {?6} in")
+(relation bin-add-run Tag Number Number Bit Bits
   :why "adding, for {?3}: {?4} and {?5} are still to add, the carry is {?6}, and the bits so far are {?7}")
 (relation bin-strip Tag Bits
   :why "for {?3}: the bits {?4}, high zeros not yet dropped")
@@ -203,10 +214,14 @@
 (relation bin-done Tag Number
   :why "the answer for {?3} is {?4}")
 (relation bin-sub-walk Tag Number Number Bit Bits
+  :why "wanted, for {?3}: {?4} - {?5}")
+(relation bin-sub-run Tag Number Number Bit Bits
   :why "subtracting, for {?3}: {?5} is still to take from {?4}, the borrow is {?6}, and the bits so far are {?7}")
 (relation bin-short Tag
   :why "{?3} has no answer: the number taken from is the smaller")
 (relation bin-cmp-walk Tag Number Number Order
+  :why "wanted, for {?3}: {?4} compared with {?5}")
+(relation bin-cmp-run Tag Number Number Order
   :why "comparing, for {?3}: {?4} and {?5} are still to compare, and the order of the bits below is {?6}")
 (relation bin-order-is Tag Order
   :why "the answer for {?3} is {?4}")
@@ -216,10 +231,14 @@
   :why "for {?3}: the bits, the top one first, are {?4}")
 (relation bin-mul-call Tag Number Number
   :why "wanted, for {?3}: {?4} x {?5}")
+(relation bin-mul-run Tag Number Number
+  :why "multiplying, for {?3}: {?4} by {?5}")
 (relation bin-mul-step Tag Number Bits Number
   :why "multiplying, for {?3}: {?4} by the bits {?5} still to come, and the sum so far is {?6}")
 (relation bin-div-call Tag Number Number
   :why "wanted, for {?3}: {?4} divided by {?5}")
+(relation bin-div-run Tag Number Number
+  :why "dividing, for {?3}: {?4} by {?5}")
 (relation bin-div-done Tag Number Number
   :why "the answer for {?3} is {?4}, remainder {?5}")
 (relation bin-div-step Tag Number Bits Number Number
@@ -295,12 +314,12 @@
 ;; never `(b2 z 0)`: four rules, so that no high zero is written.
 (rule bin-mul-one ()
   :match  (bin-mul-step ?k ?u (bin-b 1 ?rest) (b2 ?p ?a))
-  :assert (bin-add-walk (bin-mul-sum ?k ?u ?rest) (b2 (b2 ?p ?a) 0) ?u 0 z)
+  :assert (bin-add-run (bin-mul-sum ?k ?u ?rest) (b2 (b2 ?p ?a) 0) ?u 0 z)
   :why    "the next bit of the multiplier is 1: twice the sum so far, plus {?u}")
 
 (rule bin-mul-one-first ()
   :match  (bin-mul-step ?k ?u (bin-b 1 ?rest) z)
-  :assert (bin-add-walk (bin-mul-sum ?k ?u ?rest) z ?u 0 z)
+  :assert (bin-add-run (bin-mul-sum ?k ?u ?rest) z ?u 0 z)
   :why    "the next bit of the multiplier is 1 and nothing is summed yet: the sum is {?u}, in normal form")
 
 (rule bin-mul-zero ()
@@ -320,8 +339,8 @@
 ;; it is zero: the shared `div-by-zero` and `div-call-by-zero` read
 ;; `(bin-done (bin-div-m1 TAG X Y) z)`.
 (rule bin-div-multiples ()
-  :match  (bin-div-call ?k ?u ?v)
-  :assert (bin-add-walk (bin-div-m1 ?k ?u ?v) z ?v 0 z)
+  :match  (bin-div-run ?k ?u ?v)
+  :assert (bin-add-run (bin-div-m1 ?k ?u ?v) z ?v 0 z)
   :why    "to divide {?u} by {?v}: first the divisor in normal form, zero plus {?v}")
 
 ;; The dividend is turned round, so that its top bit comes first; the shared
@@ -337,12 +356,12 @@
 ;; that no high zero is written.
 (rule bin-div-bring ()
   :match  (bin-div-step ?k ?d (bin-b ?a ?rest) (b2 ?p ?c) ?w)
-  :assert (bin-sub-walk (bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a)) (b2 (b2 ?p ?c) ?a) ?d 0 z)
+  :assert (bin-sub-run (bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a)) (b2 (b2 ?p ?c) ?a) ?d 0 z)
   :why    "bring down {?a} beside what is left over, and try to take the divisor from it")
 
 (rule bin-div-bring-first ()
   :match  (bin-div-step ?k ?d (bin-b 1 ?rest) z ?w)
-  :assert (bin-sub-walk (bin-div-trial ?k ?d ?rest ?w (b2 z 1)) (b2 z 1) ?d 0 z)
+  :assert (bin-sub-run (bin-div-trial ?k ?d ?rest ?w (b2 z 1)) (b2 z 1) ?d 0 z)
   :why    "nothing was left over: bring down 1, and try to take the divisor from it")
 
 (rule bin-div-bring-zero ()
@@ -393,8 +412,8 @@
 ;; each table it reads, is closed, so the search has no candidate among them.
 ;; The rule names every rule of the module and the entries of the two modules
 ;; below, `arith` and `binary`; and its last conjunct connects the base, one
-;; call of `std.math.positional`'s macro with binary's 63 relations, which
-;; derives the 78 activators of the shared rules in this same firing
+;; call of `std.math.positional`'s macro with binary's 68 relations, which
+;; derives the 96 activators of the shared rules in this same firing
 ;; (Q-M1f.266). `ein-infer/tests/arith_theory.rs` holds that no
 ;; relation and no rule of this file is missing here, and that the call is the
 ;; macro's whole order.
@@ -411,13 +430,14 @@
                (__closed__ bin-mul) (__closed__ bin-product-of)
                (__closed__ bin-div) (__closed__ bin-quot-of)
                (__closed__ bin-operand) (__closed__ bin-operand-is)
-               (__closed__ bin-add-walk) (__closed__ bin-strip) (__closed__ bin-turn)
-               (__closed__ bin-done)
-               (__closed__ bin-sub-walk) (__closed__ bin-short)
-               (__closed__ bin-cmp-walk) (__closed__ bin-order-is)
+               (__closed__ bin-add-walk) (__closed__ bin-add-run) (__closed__ bin-strip)
+               (__closed__ bin-turn) (__closed__ bin-done)
+               (__closed__ bin-sub-walk) (__closed__ bin-sub-run) (__closed__ bin-short)
+               (__closed__ bin-cmp-walk) (__closed__ bin-cmp-run) (__closed__ bin-order-is)
                (__closed__ bin-top-first) (__closed__ bin-top-first-is)
-               (__closed__ bin-mul-call) (__closed__ bin-mul-step)
-               (__closed__ bin-div-call) (__closed__ bin-div-done) (__closed__ bin-div-step)
+               (__closed__ bin-mul-call) (__closed__ bin-mul-run) (__closed__ bin-mul-step)
+               (__closed__ bin-div-call) (__closed__ bin-div-run) (__closed__ bin-div-done)
+               (__closed__ bin-div-step)
                (__closed__ bin-sum) (__closed__ bin-add-first) (__closed__ bin-add-second)
                (__closed__ bin-difference) (__closed__ bin-shortfall)
                (__closed__ bin-sub-first) (__closed__ bin-sub-second)
@@ -439,16 +459,16 @@
                (bin-arith-rule bin-div-fits) (bin-arith-rule bin-div-too-big)
                (bin-arith-rule bin-div-too-big-none)
                (bin-arith-rule bin-operand-undeclared)
-               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-add-walk
-                           bin-fa bin-b bin-strip bin-turn bin-nz bin-done bin-valid bin-add
-                           bin-add-first bin-add-second bin-sum bin-sum-of bin-sub-walk bin-fs
-                           bin-short bin-sub bin-sub-first bin-sub-second bin-difference
-                           bin-shortfall bin-diff-of bin-cmp-walk bin-cl bin-order-is bin-cmp
+               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-nz
+                           bin-valid bin-add-walk bin-add-run bin-sub-walk bin-sub-run bin-cmp-walk
+                           bin-cmp-run bin-mul-call bin-mul-run bin-div-call bin-div-run bin-fa
+                           bin-b bin-strip bin-turn bin-done bin-add bin-add-first bin-add-second
+                           bin-sum bin-sum-of bin-fs bin-short bin-sub bin-sub-first bin-sub-second
+                           bin-difference bin-shortfall bin-diff-of bin-cl bin-order-is bin-cmp
                            bin-cmp-first bin-cmp-second bin-order bin-cmp-of bin-top-first
-                           bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step bin-mul-sum
-                           bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
-                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first
-                           bin-div-second bin-div-call bin-quotient bin-quot-of bin-div-m1
-                           bin-bad-operand bin-not-a-number bin-malformed bin-bad-request bin-no-let
-                           bin-undeclared))
+                           bin-top-first-is bin-mul-digits bin-mul-step bin-mul-sum bin-mul
+                           bin-mul-first bin-mul-second bin-product bin-product-of bin-div-digits
+                           bin-div-step bin-div-done bin-div bin-div-first bin-div-second
+                           bin-quotient bin-quot-of bin-div-m1 bin-bad-operand bin-not-a-number
+                           bin-malformed bin-bad-request bin-no-let bin-undeclared))
   :why    "binary arithmetic is computed and never guessed: every relation of the theory is closed")

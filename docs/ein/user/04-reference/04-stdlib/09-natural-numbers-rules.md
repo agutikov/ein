@@ -48,54 +48,12 @@ The entry: it closes the held extent of the flag's relation and names the module
 
 ## `std.math.decimal`
 
-The numeral's check, which an operation asks of a numeral it takes, `(check N N)` ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Three rules walk
-the numeral a place a firing from the units and label it valid where the walk reaches `z`; four flag the place at
-fault. Each rule has one premise that holds a number, `(check N REST)`, beside a guard, a row of `nz` or a probe.
-
-#### `numeral-step`
-
-The place holds a digit that is not zero: the walk goes on to the prefix.
-
-<!-- rule std.math.decimal numeral-step -->
-```lisp
-(rule numeral-step ()
-  :match  (and (check ?w (n ?p ?a)) (nz ?a))
-  :assert (check ?w ?p)
-  :why    "the digit {?a} is one: {?p} is still to check")
-```
-
-![The rule numeral-step of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-step.svg)
-<!-- /rule -->
-
-#### `numeral-step-zero`
-
-The place holds the digit 0: the walk goes on to the prefix.
-
-<!-- rule std.math.decimal numeral-step-zero -->
-```lisp
-(rule numeral-step-zero ()
-  :match  (check ?w (n ?p 0))
-  :assert (check ?w ?p)
-  :why    "the digit 0 is one: {?p} is still to check")
-```
-
-![The rule numeral-step-zero of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-step-zero.svg)
-<!-- /rule -->
-
-#### `numeral-valid`
-
-The walk reached `z`: every place held a digit, and the numeral is labelled `(valid N)`.
-
-<!-- rule std.math.decimal numeral-valid -->
-```lisp
-(rule numeral-valid ()
-  :match  (check ?w z)
-  :assert (valid ?w)
-  :why    "every place of {?w} holds a digit, and it ends in z: it is a decimal number")
-```
-
-![The rule numeral-valid of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-valid.svg)
-<!-- /rule -->
+The numeral's check, which an operation asks of a numeral it did not make, `(check N N)` ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). The walk
+that takes the numeral a place a firing from the units, and labels it valid where it reaches `z`, knows no base:
+it is [`std.math.positional`'s](10-positional-rules.md#the-checks-walk), `numeral-step`, `numeral-step-zero` and
+`numeral-valid`, activated with this module's `check`, `valid`, `n` and `nz`. What is this module's is what a
+decimal numeral is: four rules flag the place at fault, reading the walk. Each rule has one premise that holds a
+number, `(check N REST)`, beside a guard, a row of `nz` or a probe.
 
 #### `numeral-digit`
 
@@ -188,8 +146,6 @@ The entry: it closes the held extent of each of the module's relations, names it
                (__closed__ decimal-rule)
                (valid z)
                (decimal-rule arith)
-               (decimal-rule numeral-step) (decimal-rule numeral-step-zero)
-               (decimal-rule numeral-valid)
                (decimal-rule numeral-digit) (decimal-rule numeral-prefix-digit)
                (decimal-rule numeral-prefix-zero)
                (decimal-rule numeral-prefix-named)
@@ -291,7 +247,7 @@ with $m$ the multiplier's digit and $c_i$ a carry from `0` to `8`.
 ```lisp
 (rule mul-add-row ()
   :match  (done (mul-row-of ?k ?u ?rest (n ?p ?a)) ?row)
-  :assert (add-walk (mul-sum ?k ?u ?rest) (n (n ?p ?a) 0) ?row 0 z)
+  :assert (add-run (mul-sum ?k ?u ?rest) (n (n ?p ?a) 0) ?row 0 z)
   :why    "ten times the sum so far, plus the row {?row}")
 ```
 
@@ -308,7 +264,7 @@ one after another, and `div-turn` then turns the dividend's digits round so that
 <!-- rule std.math.decimal-arith div-multiples -->
 ```lisp
 (rule div-multiples ()
-  :match  (div-call ?k ?u ?v)
+  :match  (div-run ?k ?u ?v)
   :assert (mul-walk (div-m1 ?k ?u ?v) ?v 1 0 z)
   :why    "to divide {?u} by {?v}: first {?v} x 1, the divisor in normal form")
 ```
@@ -492,8 +448,8 @@ different place of the `multiples` fact for each.
 (rule div-try-1 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 1))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)
-                    ?u ?m1 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)
+                   ?u ?m1 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 1, and take 1 times the divisor, {?m1}, from {?u}")
 ```
 
@@ -507,8 +463,8 @@ different place of the `multiples` fact for each.
 (rule div-try-2 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 2))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)
-                    ?u ?m2 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)
+                   ?u ?m2 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 2, and take 2 times the divisor, {?m2}, from {?u}")
 ```
 
@@ -522,8 +478,8 @@ different place of the `multiples` fact for each.
 (rule div-try-3 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 3))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)
-                    ?u ?m3 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)
+                   ?u ?m3 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 3, and take 3 times the divisor, {?m3}, from {?u}")
 ```
 
@@ -537,8 +493,8 @@ different place of the `multiples` fact for each.
 (rule div-try-4 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 4))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)
-                    ?u ?m4 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)
+                   ?u ?m4 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 4, and take 4 times the divisor, {?m4}, from {?u}")
 ```
 
@@ -552,8 +508,8 @@ different place of the `multiples` fact for each.
 (rule div-try-5 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 5))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)
-                    ?u ?m5 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)
+                   ?u ?m5 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 5, and take 5 times the divisor, {?m5}, from {?u}")
 ```
 
@@ -567,8 +523,8 @@ different place of the `multiples` fact for each.
 (rule div-try-6 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 6))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)
-                    ?u ?m6 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)
+                   ?u ?m6 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 6, and take 6 times the divisor, {?m6}, from {?u}")
 ```
 
@@ -582,8 +538,8 @@ different place of the `multiples` fact for each.
 (rule div-try-7 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 7))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)
-                    ?u ?m7 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)
+                   ?u ?m7 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 7, and take 7 times the divisor, {?m7}, from {?u}")
 ```
 
@@ -597,8 +553,8 @@ different place of the `multiples` fact for each.
 (rule div-try-8 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 8))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)
-                    ?u ?m8 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)
+                   ?u ?m8 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 8, and take 8 times the divisor, {?m8}, from {?u}")
 ```
 
@@ -612,8 +568,8 @@ different place of the `multiples` fact for each.
 (rule div-try-9 ()
   :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
                (mid ?lo ?hi 9))
-  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)
-                    ?u ?m9 0 z)
+  :assert (sub-run (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)
+                   ?u ?m9 0 z)
   :why    "the digit is at least {?lo} and less than {?hi}: try 9, and take 9 times the divisor, {?m9}, from {?u}")
 ```
 
@@ -747,13 +703,14 @@ those facts.
                (__closed__ bad-request) (__closed__ not-a-number)
                (__closed__ no-let)
                (__closed__ operand) (__closed__ operand-is)
-               (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
-               (__closed__ done)
-               (__closed__ sub-walk) (__closed__ short)
-               (__closed__ cmp-walk) (__closed__ order-is)
+               (__closed__ add-walk) (__closed__ add-run) (__closed__ strip)
+               (__closed__ turn) (__closed__ done)
+               (__closed__ sub-walk) (__closed__ sub-run) (__closed__ short)
+               (__closed__ cmp-walk) (__closed__ cmp-run) (__closed__ order-is)
                (__closed__ top-first) (__closed__ top-first-is)
-               (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-step)
-               (__closed__ div-call) (__closed__ div-done)
+               (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-run)
+               (__closed__ mul-step)
+               (__closed__ div-call) (__closed__ div-run) (__closed__ div-done)
                (__closed__ multiples) (__closed__ div-step)
                (__closed__ div-choose) (__closed__ div-digit)
                (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
@@ -788,16 +745,14 @@ those facts.
                (arith-rule div-too-big) (arith-rule div-digit-found)
                (arith-rule div-next) (arith-rule div-next-zero)
                (arith-rule div-next-none) (arith-rule operand-undeclared)
-               (positional operand operand-is n let named check add-walk fa b strip turn nz done
-                           valid add add-first add-second sum sum-of sub-walk fs short sub sub-first
-                           sub-second difference shortfall diff-of cmp-walk cl order-is cmp
-                           cmp-first cmp-second order cmp-of top-first top-first-is mul-call
-                           mul-digits mul-step mul-sum mul mul-first mul-second product product-of
-                           div-digits div-step div-done div div-first div-second div-call quotient
-                           quot-of div-m1 bad-operand not-a-number malformed bad-request no-let
-                           undeclared))
+               (positional operand operand-is n let named check nz valid add-walk add-run sub-walk
+                           sub-run cmp-walk cmp-run mul-call mul-run div-call div-run fa b strip
+                           turn done add add-first add-second sum sum-of fs short sub sub-first
+                           sub-second difference shortfall diff-of cl order-is cmp cmp-first
+                           cmp-second order cmp-of top-first top-first-is mul-digits mul-step
+                           mul-sum mul mul-first mul-second product product-of div-digits div-step
+                           div-done div div-first div-second quotient quot-of div-m1 bad-operand
+                           not-a-number malformed bad-request no-let undeclared))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
-
-![The rule decimal-arith of std.math.decimal-arith, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/09-std.math.decimal-arith.decimal-arith.svg)
 <!-- /rule -->

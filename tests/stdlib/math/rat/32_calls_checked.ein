@@ -1,0 +1,56 @@
+;;; `std.math.rat` — the three tagged calls, each checking the rationals its
+;;; parts make, and handing itself on.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The calls are an interface (Q-M1f.189), and a part a program hands one is
+;;; checked as a rational operand's is (Q-M1f.404): `rat-norm-runs`,
+;;; `rat-mul-call-runs` and `rat-cross-runs` ask `(rat-check (rat (int P N)
+;;; D))` of each rational the parts make and hand the call on to the
+;;; module's own computation, which answers under the program's tag. The
+;;; check asks `std.math.int`'s of the numerator (`rat-check-z`) and
+;;; `std.math.decimal`'s of the denominator (`rat-check-d`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}. 6 less 2 over 08 is 4/8, not reduced; 1/2 times 3/4 is 3/8; the
+;;; cross products of 1/2 and 3/4 are 10 less 0. The rationals asked are
+;;; exactly the three the calls were handed, and the numerals asked exactly
+;;; their numerals that are not `z`: what the module makes and hands itself is
+;;; not asked.
+
+(import std.math.rat :symbols (rat-arith rat rat-norm rat-mul-call rat-cross rat-done rat-cross-is
+                               rat-check))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n check))
+(import std.math.arith :symbols (z))
+
+(relation mine Operation
+  :why "this program's {?3}")
+(__closed__ mine)
+
+(rat-norm (mine simplified) (n z 6) (n z 2) (n (n z 0) 8))
+(rat-mul-call (mine times) (n z 1) z (n z 2) (n z 3) z (n z 4))
+(rat-cross (mine crossed) (n z 1) z (n z 2) (n z 3) z (n z 4))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-done (mine ?what) ?q)
+       :goal-text "this program's {?what} is {?q}"
+       :expect (model (rat-done (mine simplified) (rat (int (n z 4) z) (n z 8)))
+                      (rat-done (mine times) (rat (int (n z 3) z) (n z 8)))))
+(query :goal (rat-cross-is (mine crossed) ?s ?t)
+       :goal-text "the cross products make {?s} less {?t}"
+       :expect (model (rat-cross-is (mine crossed) (n (n z 1) 0) z)))
+(query :goal (rat-check ?q)
+       :goal-text "{?q} is checked as a rational"
+       :expect (model (rat-check (rat (int (n z 6) (n z 2)) (n (n z 0) 8)))
+                      (rat-check (rat (int (n z 1) z) (n z 2)))
+                      (rat-check (rat (int (n z 3) z) (n z 4)))))
+(query :goal (check ?w ?w)
+       :goal-text "{?w} is asked for its check"
+       :expect (model (check (n z 6) (n z 6)) (check (n z 2) (n z 2))
+                      (check (n (n z 0) 8) (n (n z 0) 8))
+                      (check (n z 1) (n z 1)) (check (n z 3) (n z 3))
+                      (check (n z 4) (n z 4))))

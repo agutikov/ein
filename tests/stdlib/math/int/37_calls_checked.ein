@@ -1,0 +1,54 @@
+;;; `std.math.int` — the four tagged calls, each checking the integers its
+;;; parts make, and handing itself on.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The calls are an interface (Q-M1f.189), and a part a program hands one is
+;;; checked as an integer operand's is (Q-M1f.404): `int-norm-runs`,
+;;; `int-add-call-runs`, `int-mul-call-runs` and `int-cmp-call-runs` ask
+;;; `(int-check (int P N))` of each pair of parts and hand the call on to the
+;;; module's own computation, which answers under the program's tag. The
+;;; check asks `std.math.decimal`'s of a part that is a numeral, a rule a
+;;; place (`int-check-p`, `int-check-n`), and nothing of a part `z`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}. Each call is answered under its tag: 7 less 3 is 4; 7 less 3,
+;;; plus 2 less 5, is 1; times it is -12; and against it `gt`. The integers
+;;; asked are exactly the two pairs the calls were handed, and the numerals
+;;; asked exactly their four numerals: what the module makes and hands itself
+;;; is not asked.
+
+(import std.math.int :symbols (int-arith int int-norm int-add-call int-mul-call int-cmp-call int-done
+                               int-check))
+(import std.math.decimal-arith :symbols (decimal-arith order-is))
+(import std.math.decimal :symbols (n check))
+(import std.math.arith :symbols (z))
+
+(relation mine Operation
+  :why "this program's {?3}")
+(__closed__ mine)
+
+(int-norm (mine simplified) (n z 7) (n z 3))
+(int-add-call (mine plus) (n z 7) (n z 3) (n z 2) (n z 5))
+(int-mul-call (mine times) (n z 7) (n z 3) (n z 2) (n z 5))
+(int-cmp-call (mine against) (n z 7) (n z 3) (n z 2) (n z 5))
+
+(solve :expect (region (model)))
+
+(query :goal (int-done (mine ?what) ?i)
+       :goal-text "this program's {?what} is {?i}"
+       :expect (model (int-done (mine simplified) (int (n z 4) z))
+                      (int-done (mine plus) (int (n z 1) z))
+                      (int-done (mine times) (int z (n (n z 1) 2)))))
+(query :goal (order-is (mine against) ?o)
+       :goal-text "this program's comparison is {?o}"
+       :expect (model (order-is (mine against) gt)))
+(query :goal (int-check ?i)
+       :goal-text "{?i} is checked as an integer"
+       :expect (model (int-check (int (n z 7) (n z 3)))
+                      (int-check (int (n z 2) (n z 5)))))
+(query :goal (check ?w ?w)
+       :goal-text "{?w} is asked for its check"
+       :expect (model (check (n z 7) (n z 7)) (check (n z 3) (n z 3))
+                      (check (n z 2) (n z 2)) (check (n z 5) (n z 5))))

@@ -24,7 +24,7 @@ digraph rule_int_div_rest_lhs_rhs {
     "(int-div-q ?k ?s ?b ?r)_L" -> "?r_L" [xlabel="5", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "sub-walk_R" [label="sub-walk", shape=box];
+    "sub-run_R" [label="sub-run", shape=box];
     "int-div-r_R" [label="int-div-r", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
@@ -34,16 +34,16 @@ digraph rule_int_div_rest_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="sub-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="sub-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-div-r ?k ?s ?q)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
-    "h2_sub-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "sub-walk_R" -> "h2_sub-walk_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "(int-div-r ?k ?s ?q)_R" [xlabel="2", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "?b_R" [xlabel="3", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "?r_R" [xlabel="4", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "0_R" [xlabel="5", color="#8c564b", style=dashed];
-    "h2_sub-walk_R" -> "z_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h2_sub-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "sub-run_R" -> "h2_sub-run_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_sub-run_R" -> "(int-div-r ?k ?s ?q)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_sub-run_R" -> "?b_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_sub-run_R" -> "?r_R" [xlabel="4", color="#e377c2", style=dashed];
+    "h2_sub-run_R" -> "0_R" [xlabel="5", color="#e377c2", style=dashed];
+    "h2_sub-run_R" -> "z_R" [xlabel="6", color="#e377c2", style=dashed];
     "int-div-r_R" -> "(int-div-r ?k ?s ?q)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(int-div-r ?k ?s ?q)_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-div-r ?k ?s ?q)_R" -> "?s_R" [xlabel="3", color="#ff7f0e", style=dashed];

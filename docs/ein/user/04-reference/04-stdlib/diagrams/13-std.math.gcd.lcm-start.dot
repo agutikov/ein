@@ -29,21 +29,21 @@ digraph rule_lcm_start_lhs_rhs {
     "(lcm ?x ?y)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "gcd-call_R" [label="gcd-call", shape=box];
+    "gcd-run_R" [label="gcd-run", shape=box];
     "lcm-g_R" [label="lcm-g", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="gcd-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="gcd-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(lcm-g ?x ?y ?u ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "gcd-call_R" -> "h2_gcd-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "(lcm-g ?x ?y ?u ?v)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "?u_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "?v_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_gcd-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "gcd-run_R" -> "h2_gcd-run_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "(lcm-g ?x ?y ?u ?v)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?u_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?v_R" [xlabel="4", color="#bcbd22", style=dashed];
     "lcm-g_R" -> "(lcm-g ?x ?y ?u ?v)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(lcm-g ?x ?y ?u ?v)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(lcm-g ?x ?y ?u ?v)_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];

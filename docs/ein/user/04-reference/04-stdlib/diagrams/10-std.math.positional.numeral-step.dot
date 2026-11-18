@@ -1,0 +1,35 @@
+digraph rule_numeral_step_lhs_rhs {
+  rankdir=TB;
+  label="numeral-step"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?CHECK_L" [label="?CHECK", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?NZ_L" [label="?NZ", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?CHECK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h1_CHECK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "?CHECK_L" -> "h1_CHECK_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_CHECK_L" -> "?w_L" [xlabel="2", color="#d62728"];
+    "h1_CHECK_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#d62728"];
+    "h2_NZ_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "?NZ_L" -> "h2_NZ_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h2_NZ_L" -> "?a_L" [xlabel="2", color="#ff7f0e"];
+    "?N_L" -> "(?N ?p ?a)_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?CHECK_R" [label="?CHECK", shape=diamond];
+    "?w_R" [label="?w", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "h3_CHECK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "?CHECK_R" -> "h3_CHECK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h3_CHECK_R" -> "?w_R" [xlabel="2", color="#d62728", style=dashed];
+    "h3_CHECK_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
+  }
+}

@@ -26,7 +26,7 @@ digraph rule_int_mul_second_lhs_rhs {
     "(int-mul-pp ?k ?p ?n ?q ?m)_L" -> "?m_L" [xlabel="6", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
-    "mul-call_R" [label="mul-call", shape=box];
+    "mul-run_R" [label="mul-run", shape=box];
     "int-mul-nn_R" [label="int-mul-nn", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
@@ -35,14 +35,14 @@ digraph rule_int_mul_second_lhs_rhs {
     "?m_R" [label="?m", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "mul-call_R" -> "h2_mul-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?n_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?m_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "mul-run_R" -> "h2_mul-run_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?n_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?m_R" [xlabel="4", color="#ff7f0e", style=dashed];
     "int-mul-nn_R" -> "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(int-mul-nn ?k ?p ?n ?q ?m ?a)_R" -> "?p_R" [xlabel="3", color="#2ca02c", style=dashed];

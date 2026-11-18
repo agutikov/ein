@@ -3869,6 +3869,18 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.binary-arith` — what is not flagged: a flag means malformed, and no flag does not mean well-formed."
 
 [[entry]]
+path   = "tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.binary-arith`: binary's twin of decimal's `51`: 101 and 11 handed to the five tagged calls, each checking what it is handed and handed on to the calculator's own walk; every call answered under its tag, the asks exactly the two numerals. R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.binary-arith`: `(bin-mul-call (mine a) (b2 z 1) (b2 z 2))`, a malformed numeral handed straight to a tagged call: `mul-call-check-y`, `bin-numeral-bit`, `(solve :expect (false))`."
+
+[[entry]]
 path   = "tests/stdlib/math/bits/01_tables.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
@@ -4193,6 +4205,18 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.decimal-arith`: `(div (n z 5) 7)`, a digit as the second operand: `operand-digit`, `bad-div-second`, `(malformed …)`, `(solve :expect (false))`."
 
 [[entry]]
+path   = "tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.decimal-arith`: a rule of the program's own hands 47 and 38 to the five tagged calls, `add-walk` to `div-call`: each asks the check of what it is handed (`add-walk-check-x` to `div-call-check-y`, `std.math.positional`'s) and is handed on to the calculator's own walk (`add-walk-runs` to `div-call-runs`); every call answered under its tag, and the asks exactly the two numerals: what the calculator makes and hands itself is not asked. R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.decimal-arith`: `(add-walk (mine a) (n z x) (n z 1) 0 z)`, a malformed numeral handed straight to a tagged call: `add-walk-check-x`, `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
 path   = "tests/stdlib/math/decimal/01_well_formed_everywhere.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
@@ -4432,6 +4456,12 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.gcd`: natural numbers only: an integer of `std.math.int` where a number goes is answered by silence, and the request beside it is answered."
 
 [[entry]]
+path   = "tests/stdlib/math/gcd/13_call_malformed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.gcd`: `(gcd-call (mine a) (n z 6) (n z x))`, a malformed numeral handed straight to the tagged call: `gcd-call-check-y`, `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
 path   = "tests/stdlib/elim/01_domain_elimination.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
@@ -4666,6 +4696,18 @@ path   = "tests/stdlib/math/int/36_undeclared_only_operand.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.int`: `(int-neg foo)`: `int-bad-only`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/37_calls_checked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.int`: the four tagged calls written by the program: `int-norm-runs`, `int-add-call-runs`, `int-mul-call-runs`, `int-cmp-call-runs` ask `(int-check (int P N))` of each pair of parts and hand the call on; each answered under its tag, and the integers and numerals asked exactly those the calls were handed. R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/int/38_call_malformed_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.int`: `(int-add-call (mine a) (n z x) z (n z 1) z)`, a malformed part: `int-add-call-runs`, `int-check-p`, `numeral-digit`, `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/macro/01_forall.ein"
@@ -4940,6 +4982,30 @@ path   = "tests/stdlib/math/rat/31_equal_values_two_facts.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.rat`: an answer is not canonical: 1/2 + 1/2 = 4/4, 1/4 + 3/4 = 16/16 and 3/2 x 2/3 = 6/6, three facts of one value; a rule of the program's own asks `rat-cmp` of each against one, `eq`, and `rat-simplify` of each, 1/1."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/32_calls_checked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.rat`: the three tagged calls written by the program: `rat-norm-runs`, `rat-mul-call-runs`, `rat-cross-runs` ask `(rat-check (rat (int P N) D))` of each rational the parts make and hand the call on; each answered under its tag, and the rationals and numerals asked exactly those the calls were handed. R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/33_call_malformed_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.rat`: `(rat-norm (mine a) (n z 1) z (n z x))`, a malformed denominator handed to a call: `rat-norm-runs`, `rat-check-d`, `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/34_natural_numerator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.rat`: `(rat (n z 3) (n z 2))`, a natural number where the numerator's integer goes: verified as a numeral (`rat-check-z-natural`) and labelled valid; the request silent (Q-M1f.277), no flag, and a sum beside it answered. R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/35_natural_numerator_malformed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.rat`: `(rat (n z x) (n z 2))`, a malformed natural number as the numerator: `rat-check-z-natural`, `numeral-digit`, `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/slots/01_partition.ein"

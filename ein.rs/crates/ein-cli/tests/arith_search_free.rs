@@ -61,9 +61,20 @@ const ROOTS: [&str; 11] = [
 /// own reads where it calls the division itself (`decimal-arith/41`);
 /// `std.math.binary-arith`'s five and `std.math.convert`'s two; and
 /// `std.math.gcd`'s two, and `gcd-done`, its tagged call's hand-over, which a
-/// rule of a program's own reads as it reads `div-done`.
-const RESULTS: [&str; 41] = [
+/// rule of a program's own reads as it reads `div-done`; and the other calls'
+/// hand-overs, which a program that writes the calls reads
+/// (`decimal-arith/51`, `binary-arith/23`, `int/37`, `rat/32`): `done` and
+/// `order-is`, binary's three, `int-done`, `rat-done` and `rat-cross-is`.
+const RESULTS: [&str; 49] = [
     "div-done",
+    "done",
+    "order-is",
+    "bin-div-done",
+    "bin-done",
+    "bin-order-is",
+    "int-done",
+    "rat-done",
+    "rat-cross-is",
     "gcd-done",
     "gcd-of",
     "lcm-of",
