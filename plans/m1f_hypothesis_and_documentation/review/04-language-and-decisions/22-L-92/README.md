@@ -137,3 +137,39 @@ excerpt with its line numbers), writes the 4000 and 8000 programs with `gen_join
   itself"* (the text in § 3).
 - **(b)** keep it: *"does not key on a nested fact"* read as *no key's value is a fact*.
 - **Default**: none taken.
+
+## 9. A small program, drawn (added at the user's request, 2026-11-18)
+
+[`programs/small.ein`](programs/small.ein) puts the three joins the index serves differently into one program of
+five facts, each rule firing once:
+
+| rule | its join | how the index serves the second premise | concludes |
+|---|---|---|---|
+| `shares` | `(owns ?p ?x) (owns ?q ?x)`: on a **name**, `?x` | keyed directly, `(owns, slot 1, DIRECT, Dog)` | `(shares Ann Eve)`, `(shares Eve Ann)` |
+| `trust` | `(owns ?p ?x) (says ?a (owns ?p ?x))`: **one level inside** a nested fact | keyed at the nested fact's positions, `(says, slot 1, inner 0, Ann)` | `(trusts Bob Ann)` |
+| `agree` | `(says ?a ?f) (believes ?b ?f)`: on a **whole nested fact**, `?f` = `(owns Ann Dog)` | no key has a fact as its value: walks the held extent of `believes` (Q-M1f.362's sentence is about this one) | `(agrees Bob Carol)` |
+
+Runs, today's binary `ein-head-545e4d6b`: [`runs/small/solve.txt`](runs/small/solve.txt),
+[`runs/small/saturate.txt`](runs/small/saturate.txt) (the three rules' four facts at the end).
+
+Drawings, [`renders/small/`](renders/small/):
+
+- the knowledge base, `ein render kb`, as the binary suggests it (`fdp`): [`kb.svg`](renders/small/kb.svg), and
+  `--fold` [`kb-fold.svg`](renders/small/kb-fold.svg);
+- **the same, laid out in layers**, a MOCK of what S1f.23.6 builds on the user's L-100 answer (each fact's arrow 1
+  turned up to its relation, laid out by `dot`): [`kb.layered.MOCK.svg`](renders/small/kb.layered.MOCK.svg),
+  [`kb-fold.layered.MOCK.svg`](renders/small/kb-fold.layered.MOCK.svg). The five layers stand: `relation`, the
+  declarations, the relations and labels, the facts, the plain objects; the claimed `(owns Ann Cat)` in its
+  `says ctx` frame under the fact that says it;
+- the program, `ein render program`, its five digraphs: [`kb`](renders/small/program.1-kb.svg),
+  [`shares`](renders/small/program.2-rule_shares_lhs_rhs.svg), [`trust`](renders/small/program.3-rule_trust_lhs_rhs.svg),
+  [`agree`](renders/small/program.4-rule_agree_lhs_rhs.svg), [`query`](renders/small/program.5-query.svg);
+- each rule, `ein render rule --name`, canonical and `--fold`: [`shares`](renders/small/rule-shares.svg)
+  ([fold](renders/small/rule-shares-fold.svg)), [`trust`](renders/small/rule-trust.svg)
+  ([fold](renders/small/rule-trust-fold.svg)), [`agree`](renders/small/rule-agree.svg)
+  ([fold](renders/small/rule-agree-fold.svg)). In `agree` the variable `?f` stands where a fact goes: the drawing
+  shows the join the index cannot key, a diamond under arrow 3 of both premises.
+
+Re-run, from the repo root: `B=build/review-bin/ein-head-545e4d6b`; `$B saturate --dump
+plans/…/22-L-92/programs/small.ein`; `$B render kb …` (`--fold`), `$B render program …`, `$B render rule --name R …`
+(`--fold`); `. plans/m1f_hypothesis_and_documentation/review/tools/draw.sh; draw FILE.dot`.
