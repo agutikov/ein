@@ -2,7 +2,7 @@
 
 Every item that waits for the user's call, one folder each, built so that each call can be made by reading the
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
-and the readings later stages took. The drawings' items (`03-drawings/`) and the save-and-load items (`01-save-and-load/`) were answered by the user on
+and the readings later stages took. The drawings' items (`03-drawings/`) the save-and-load items (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on
 2026-11-18 and left the bundle, and the verdicts' two (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
@@ -23,7 +23,6 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
-| [02-numerals](02-numerals/README.md) | 8 | the calculator's check of a numeral after `written` was erased |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
@@ -66,17 +65,9 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
-| 04 | [Q-M1f.405](02-numerals/04-Q-M1f.405/README.md) | which numerals are taken from the program, and *once* | (a) |
-| 05 | [Q-M1f.409](02-numerals/05-Q-M1f.409/README.md) | an integer's and a rational's check and label | (a) |
 | 08 | [V-7](04-language-and-decisions/08-V-7/README.md) | a relation only an activator names is not counted | as is (leaning: the registry takes it) |
 | 09 | [F21 N-15](04-language-and-decisions/09-F21-N-15/README.md) | *everybody's thoughts are false* with `absent` is dead: twin of `W8/fifo-gap-root`? | none; nothing filed |
-| 11 | [Q-M1f.406](02-numerals/11-Q-M1f.406/README.md) | the label, and where a made number gets it | (a) |
-| 12 | [Q-M1f.407](02-numerals/12-Q-M1f.407/README.md) | a numeral no operation takes is not checked | (a) |
-| 13 | [Q-M1f.408](02-numerals/13-Q-M1f.408/README.md) | where the check's rules live | (a) |
-| 14 | [Q-M1f.410](02-numerals/14-Q-M1f.410/README.md) | no join on a number; a made number handed on is walked again | (a) |
-| 15 | [Q-M1f.411](02-numerals/15-Q-M1f.411/README.md) | a numeral with two faults has one flag | (a) |
 | 16 | [Q-M1f.412](04-language-and-decisions/16-Q-M1f.412/README.md) | the `is-a` row dropped: does a schema id move? | (a) no id moves for it (the report is `/6` for the diff) |
 | 22 | [L-92](04-language-and-decisions/22-L-92/README.md) | Q-M1f.362's sentence on the index | kept |
 | 23 | [L-93](04-language-and-decisions/23-L-93/README.md) | two stale sentences of the pages (a third found) | left |
 | 24 | [L-94](04-language-and-decisions/24-L-94/README.md) | Q-M1f.119 misses a fact's argument | kept |
-| 29 | [L-101](02-numerals/29-L-101/README.md) | `int-check-parts` / `rat-check-parts` ask non-numerals | as they are |
