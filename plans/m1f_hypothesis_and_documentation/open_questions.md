@@ -340,7 +340,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.409](#q-m1f409--an-integer-and-a-rational-their-check-and-their-label) | an integer and a rational: their check and their label | **ruled 2026-11-18: (a)**, and, asked how L-101's rule reads a rational whose part is a natural numeral, *"Verify the natural"*: the numerator is checked as a numeral, so `(rat (n z x) (n z 2))` is dead again (the (d) case). **Built** by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md), with L-101 |
 | [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **ruled 2026-11-18: (a)**, the default as built: a made number a program's rule hands to a second request is walked again, and, under Q-M1f.405's ruling, one it hands to a tagged call |
 | [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **ruled 2026-11-18: (a)**, the default as built: the first place at fault from the units |
-| [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a); put to the user in the review bundle, who asked instead how deep `is-a` goes into the kernel (2026-11-19): nowhere, answered in the entry; the default stands |
+| [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a); put to the user in the review bundle, who asked instead how deep `is-a` goes into the kernel (2026-11-19): nowhere, answered in the entry; **the default ruled 2026-11-19** with the phase's (*"accept all remain defaults in this phase"*) |
 | [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **ruled 2026-11-18: (c)** (*"(c)"*: give the container a section for the commitment, so a node's container opens as that node); **built** by P1f.23's S1f.23.8 (`86d46410`): the section `COMMIT`, kind 13, the format `einb/2.1`, the decision [Q-M1f.413](../../docs/decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md). Before: defaulted (a), a node refused |
 | [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build (`fbe2ba66`, `3047bbae`, merged by `79dd213b`). Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
 | [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **ruled 2026-11-18: (a)** (*"(a)"*), the default as built: both read the program's H, the node aside |
@@ -365,36 +365,36 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.434](#q-m1f434--the-standard-librarys-rule-drawings-past-the-bound) | the standard library's rule drawings past the bound | **ruled 2026-11-18 by the user**: (a), canonical, else folded, else Ein only; the bound kept (L-97); the decision Q-M1f.434 |
 | [Q-M1f.435](#q-m1f435--where-an-arrows-number-is-written) | where an arrow's number is written | **ruled 2026-11-18 by the user**: (a), its `xlabel`, and a folded arrow's relation in a knowledge base's drawing too; the decision Q-M1f.435 |
 | [Q-M1f.436](#q-m1f436--the-kernel-reads-no-theorys-name-and-the-built-in-symmetry-goes) | the kernel reads no theory's name, and the built-in symmetry goes | **ruled 2026-11-18 by the user**: the kernel gives a fixed meaning to its own names alone; `is-a`, `symmetric` and every other name a theory's or a program's; the native mirror dropped, `__symmetric__` an ordinary name; **built** by S1f.23.4, with S1f.23.1's and S1f.23.2's parts, held by the renaming test; the decision Q-M1f.436 |
-| [Q-M1f.437](#q-m1f437--the-flagged-spelling-of-symmetric-derived-node) | the flagged spelling of `symmetric-derived-node` | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), not the stop condition, the answer the same; the program retired |
-| [Q-M1f.438](#q-m1f438--the-programs-that-showed-only-the-mirror-retired-or-rewritten) | the programs that showed only the mirror: retired or rewritten | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), all six retired with their corpus entries and four regression rows |
-| [Q-M1f.439](#q-m1f439--examplesfeatures-numbering-with-06-gone) | `examples/features/`' numbering with `06` gone | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), kept, a gap at `06` |
-| [Q-M1f.440](#q-m1f440--the-retired-flag-enable-symmetric-mirror) | the retired flag `enable-symmetric-mirror` | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), stays retired, refused with a new reason, its field kept |
-| [Q-M1f.441](#q-m1f441--the---events-protocols-version-the-mirror-kind-gone) | the `--events` protocol's version, the `mirror` kind gone | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), stays `ein-events/1` |
-| [Q-M1f.442](#q-m1f442--q-m1f7s-file-name-its-title-changed) | Q-M1f.7's file name, its title changed | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), renamed to the new title's slug on the merge, every link with it |
-| [Q-M1f.443](#q-m1f443--a-decision-for-the-two-rulings) | a decision for the two rulings | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), a decision of its own, Q-M1f.436, taken on the merge; Q-M1f.7 cites it |
-| [Q-M1f.444](#q-m1f444--what-the-renaming-test-keeps) | what the renaming test keeps | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), as built: the kernel's names, `:over`'s values, the grammar's words, module names and aliases; the read-out's text not compared |
-| [Q-M1f.445](#q-m1f445--the-renaming-tests-tier) | the renaming test's tier | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), per commit outside `tests/`, every program in the nightly |
-| [Q-M1f.446](#q-m1f446--the-forall-drawing-the-renaming-test-found) | the `forall` drawing the renaming test found | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), S1f.23.1's, which dropped the read (Q-M1f.427); `READS` emptied on the merge |
+| [Q-M1f.437](#q-m1f437--the-flagged-spelling-of-symmetric-derived-node) | the flagged spelling of `symmetric-derived-node` | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), not the stop condition, the answer the same; the program retired |
+| [Q-M1f.438](#q-m1f438--the-programs-that-showed-only-the-mirror-retired-or-rewritten) | the programs that showed only the mirror: retired or rewritten | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), all six retired with their corpus entries and four regression rows |
+| [Q-M1f.439](#q-m1f439--examplesfeatures-numbering-with-06-gone) | `examples/features/`' numbering with `06` gone | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), kept, a gap at `06` |
+| [Q-M1f.440](#q-m1f440--the-retired-flag-enable-symmetric-mirror) | the retired flag `enable-symmetric-mirror` | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), stays retired, refused with a new reason, its field kept |
+| [Q-M1f.441](#q-m1f441--the---events-protocols-version-the-mirror-kind-gone) | the `--events` protocol's version, the `mirror` kind gone | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), stays `ein-events/1` |
+| [Q-M1f.442](#q-m1f442--q-m1f7s-file-name-its-title-changed) | Q-M1f.7's file name, its title changed | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), renamed to the new title's slug on the merge, every link with it |
+| [Q-M1f.443](#q-m1f443--a-decision-for-the-two-rulings) | a decision for the two rulings | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), a decision of its own, Q-M1f.436, taken on the merge; Q-M1f.7 cites it |
+| [Q-M1f.444](#q-m1f444--what-the-renaming-test-keeps) | what the renaming test keeps | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), as built: the kernel's names, `:over`'s values, the grammar's words, module names and aliases; the read-out's text not compared |
+| [Q-M1f.445](#q-m1f445--the-renaming-tests-tier) | the renaming test's tier | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), per commit outside `tests/`, every program in the nightly |
+| [Q-M1f.446](#q-m1f446--the-forall-drawing-the-renaming-test-found) | the `forall` drawing the renaming test found | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), S1f.23.1's, which dropped the read (Q-M1f.427); `READS` emptied on the merge |
 | [Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the loader's argument-count check, once `relation` is a convention: kept at load, a rule's verdict at run time, or dropped | **open, the user's, not ruled** (*"will think about it in p1f.21"*): no default taken; P1f.21's S1f.21.4 shows each option and does not choose |
-| [Q-M1f.448](#q-m1f448----models-with-key-and-grid-gone) | `--models`, with `key` and `grid` gone | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), removed whole, from `ein solve` and `ein oracle` |
-| [Q-M1f.449](#q-m1f449----models-removed-or-retired) | `--models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
-| [Q-M1f.450](#q-m1f450----models-grids-reading-of-is-a-and-the-grids-names) | `--models grid`'s reading of `is-a`, and the grid's names | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), ended with the code: `grid.rs` deleted, P1f.23's R-1 and R-3 with it |
-| [Q-M1f.451](#q-m1f451--the-determining-key-on-the-reasoning-page) | the determining key on the reasoning page | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), taken out with the term and *what models differ in* |
-| [Q-M1f.452](#q-m1f452--what-the-walkthrough-shows-where-it-showed-the-grids) | what the walkthrough shows where it showed the grids | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), `-f`'s output, Ein facts, no table |
-| [Q-M1f.453](#q-m1f453--modelsrs-name-once-it-holds-the-diff-alone) | `models.rs`' name, once it holds the diff alone | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), kept; superseded on the merge by S1f.23.3's `claim_diff.rs` (Q-M1f.465) |
-| [Q-M1f.454](#q-m1f454--ein-test---diffs-spelling) | `ein test --diff`'s spelling | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `--diff stats|full`, a bare `--diff` the stats where no word follows; before a path refused, exit 2 |
-| [Q-M1f.455](#q-m1f455--how-many-facts-off-a-near-model-is) | how many facts off a near model is | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), an edit distance: a fact replaced counts once |
-| [Q-M1f.456](#q-m1f456--what-the-diff-counts-as-a-match) | what the diff counts as a match | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), what the claim's check pairs, a maximum matching: a held claim's diff is all matches |
-| [Q-M1f.457](#q-m1f457--which-claims-have-a-diff) | which claims have a diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), every claim a run decided, held or FAILED, but the region's `(false)` |
-| [Q-M1f.458](#q-m1f458--a-missing-model-and-an-extra-found-item) | a missing model and an extra found item | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), a missing model against its nearest found item with its facts; an extra found item names its nearest model, without facts |
-| [Q-M1f.459](#q-m1f459--an-owing--claims-diff) | an `(owing …)` claim's diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), against the owing frontier, *owing node i* |
-| [Q-M1f.460](#q-m1f460--merged--and-the-diff) | `(merged …)` and the diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), not diffed: the claim's own lines say why |
-| [Q-M1f.461](#q-m1f461--where-the-diff-prints) | where the diff prints | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), after the claim's lines, every claim with a diff at the default volume; `-q` diffs only what it prints |
-| [Q-M1f.462](#q-m1f462--the-reports-diff-and-its-id) | the report's `diff`, and its id | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `diff` on every row, `null` where none; `ein-test-report/6` |
-| [Q-M1f.463](#q-m1f463--the-review-bundles-right-answer-written-as-claims) | the review bundle's right answer, written as claims | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), query claims, one per relation of `closes`, over the row's line |
-| [Q-M1f.464](#q-m1f464--the-review-run-pages-cross-check-1) | the review run page's cross-check 1 | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), the `ein test` run's claims against the listed states, by count |
-| [Q-M1f.465](#q-m1f465--the-diffs-module) | the diff's module | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `claim_diff.rs` |
-| [Q-M1f.466](#q-m1f466----diff-models-removed-or-retired) | `--diff-models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
+| [Q-M1f.448](#q-m1f448----models-with-key-and-grid-gone) | `--models`, with `key` and `grid` gone | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), removed whole, from `ein solve` and `ein oracle` |
+| [Q-M1f.449](#q-m1f449----models-removed-or-retired) | `--models`: removed, or retired | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), removed, not retired: clap refuses it, exit 2 |
+| [Q-M1f.450](#q-m1f450----models-grids-reading-of-is-a-and-the-grids-names) | `--models grid`'s reading of `is-a`, and the grid's names | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), ended with the code: `grid.rs` deleted, P1f.23's R-1 and R-3 with it |
+| [Q-M1f.451](#q-m1f451--the-determining-key-on-the-reasoning-page) | the determining key on the reasoning page | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), taken out with the term and *what models differ in* |
+| [Q-M1f.452](#q-m1f452--what-the-walkthrough-shows-where-it-showed-the-grids) | what the walkthrough shows where it showed the grids | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), `-f`'s output, Ein facts, no table |
+| [Q-M1f.453](#q-m1f453--modelsrs-name-once-it-holds-the-diff-alone) | `models.rs`' name, once it holds the diff alone | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), kept; superseded on the merge by S1f.23.3's `claim_diff.rs` (Q-M1f.465) |
+| [Q-M1f.454](#q-m1f454--ein-test---diffs-spelling) | `ein test --diff`'s spelling | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), `--diff stats|full`, a bare `--diff` the stats where no word follows; before a path refused, exit 2 |
+| [Q-M1f.455](#q-m1f455--how-many-facts-off-a-near-model-is) | how many facts off a near model is | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), an edit distance: a fact replaced counts once |
+| [Q-M1f.456](#q-m1f456--what-the-diff-counts-as-a-match) | what the diff counts as a match | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), what the claim's check pairs, a maximum matching: a held claim's diff is all matches |
+| [Q-M1f.457](#q-m1f457--which-claims-have-a-diff) | which claims have a diff | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), every claim a run decided, held or FAILED, but the region's `(false)` |
+| [Q-M1f.458](#q-m1f458--a-missing-model-and-an-extra-found-item) | a missing model and an extra found item | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), a missing model against its nearest found item with its facts; an extra found item names its nearest model, without facts |
+| [Q-M1f.459](#q-m1f459--an-owing--claims-diff) | an `(owing …)` claim's diff | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), against the owing frontier, *owing node i* |
+| [Q-M1f.460](#q-m1f460--merged--and-the-diff) | `(merged …)` and the diff | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), not diffed: the claim's own lines say why |
+| [Q-M1f.461](#q-m1f461--where-the-diff-prints) | where the diff prints | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), after the claim's lines, every claim with a diff at the default volume; `-q` diffs only what it prints |
+| [Q-M1f.462](#q-m1f462--the-reports-diff-and-its-id) | the report's `diff`, and its id | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), `diff` on every row, `null` where none; `ein-test-report/6` |
+| [Q-M1f.463](#q-m1f463--the-review-bundles-right-answer-written-as-claims) | the review bundle's right answer, written as claims | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), query claims, one per relation of `closes`, over the row's line |
+| [Q-M1f.464](#q-m1f464--the-review-run-pages-cross-check-1) | the review run page's cross-check 1 | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), the `ein test` run's claims against the listed states, by count |
+| [Q-M1f.465](#q-m1f465--the-diffs-module) | the diff's module | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), `claim_diff.rs` |
+| [Q-M1f.466](#q-m1f466----diff-models-removed-or-retired) | `--diff-models`: removed, or retired | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.3): (a), removed, not retired: clap refuses it, exit 2 |
 | [Q-M1f.467](#q-m1f467--a-commands-output-on-a-page-canonical-or-folded) | A command's output on a page: canonical or folded | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.467 |
 | [Q-M1f.468](#q-m1f468--a-pages-kb-drawing-the-whole-view-or-a-cut) | A page's KB drawing: the whole view or a cut | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.468 |
 | [Q-M1f.469](#q-m1f469--how-a-derivations-drawing-marks-a-terminal-and-the-core) | How a derivation's drawing marks a terminal and the core | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.469 |
@@ -403,54 +403,64 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.472](#q-m1f472--names-of-the-drawings-that-changed-form) | Names of the drawings that changed form | **ruled 2026-11-18 by the user**: (a) |
 | [Q-M1f.473](#q-m1f473--programs-a-page-draws-that-no-file-holds) | Programs a page draws that no file holds | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.473 |
 | [Q-M1f.474](#q-m1f474--an-arrow-in-a-hand-schematic-that-is-no-arrow-of-the-graph) | An arrow in a hand schematic that is no arrow of the graph | **ruled 2026-11-18 by the user**: (a) for a hand drawing, *"not render output"*; the decision Q-M1f.474 |
-| [Q-M1f.475](#q-m1f475--where-a-declarations-statement-prints-on-the-premises-line) | Where a declaration's statement prints on the premises line | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), right after the declaration, ` — <statement>`, the premises' sources still once after the last premise, so a line can carry two dashes (the examples page's open point 3 (a)) |
-| [Q-M1f.476](#q-m1f476--a-declaration-a-rule-concludes) | A declaration a rule concludes | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), it reads by its `:why` on the *Derives* line, however a run reaches it (open point 10); no corpus program derives one |
-| [Q-M1f.477](#q-m1f477--the-bound-on-a-declarations-references) | The bound on a declaration's references | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `{?2}` to `{?n+2}`, `{?1}` refused by `template_wellformedness.rs`, an untyped declaration bounded to `{?2}`; the engine prints a `{?1}` as `relation` and a reference past the arrows as written (open point 7 (a)) |
-| [Q-M1f.478](#q-m1f478--l-102s-reach) | L-102's reach | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `sentence.rs`' `fact_sentence`, `FactSentence`, `Origin` and `as_comment` go with the six functions L-102 names, which alone read them; the shape golden's `states` op digests each fact and its first origin, no English |
-| [Q-M1f.479](#q-m1f479--l-105s-reach) | L-105's reach | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `nl_census.py`'s `KERNEL` copy goes with its answer half, and `check_tool_mirrors.py`'s census mirror with it; § 4's registers stay held to `ein_core::RESERVED` by `natural_language_page.rs` |
-| [Q-M1f.480](#q-m1f480--the-decisions-the-ruling-rewrites) | The decisions the ruling rewrites | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), Q-M1f.58 rewritten as the ruling (title extended, slug kept); Q-M1f.61's title extended (slug kept); Q-M1f.60, Q-M1f.214, Q-M1f.12 and Q31 restated; Q27's example renumbered; Q-M1f.62, Q-M1f.57 and Q-M1f.63 stand |
-| [Q-M1f.481](#q-m1f481--the-pages-the-ruling-rewrites) | The pages the ruling rewrites | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `14-natural-language.md` rewritten, its § 3 block from `zebra2.ein`; six pages' trace blocks re-taken from their programs; the prose of nine more pages and AGENTS.md's rule on `:why` |
-| [Q-M1f.482](#q-m1f482--the-words-of-a-renumbered-why) | The words of a renumbered `:why` | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), not rewritten (open point 9): only the page examples that show the rule use the user's pattern, `a {?3} {?2} a {?4}`; the shipped texts read stiffly as their declaration, and the pages say so |
-| [Q-M1f.483](#q-m1f483--the-region-views-words-on-an-arrow) | The region view's words on an arrow | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), `sat` and `✗ alive`, words on arrows with `constraint=false`, counted as R-31's pattern and written as `xlabel`s, though Graphviz refused none |
-| [Q-M1f.484](#q-m1f484--a-traces-slice-that-graphviz-refuses) | A trace's slice that Graphviz refuses | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), left as it is and its refusals filed (the phase's R-33), since what routes them, `rankdir=TB`, changes how a slice is laid out (Q-M1f.428, Q-M1f.429) |
-| [Q-M1f.485](#q-m1f485--what-09-core-in-derivation-draws-heavy) | What `09-core-in-derivation` draws heavy | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), the facts the derivations added, *heavy* being *a derivation added it* as on the page and in `09-proof-graph`; the core red and double-bordered, not heavy |
-| [Q-M1f.486](#q-m1f486--long_numbersein-and-the-pools-long-lane) | `long_numbers.ein` and the pool's long lane | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), not on `ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds |
+| [Q-M1f.475](#q-m1f475--where-a-declarations-statement-prints-on-the-premises-line) | Where a declaration's statement prints on the premises line | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), right after the declaration, ` — <statement>`, the premises' sources still once after the last premise, so a line can carry two dashes (the examples page's open point 3 (a)) |
+| [Q-M1f.476](#q-m1f476--a-declaration-a-rule-concludes) | A declaration a rule concludes | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), it reads by its `:why` on the *Derives* line, however a run reaches it (open point 10); no corpus program derives one |
+| [Q-M1f.477](#q-m1f477--the-bound-on-a-declarations-references) | The bound on a declaration's references | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), `{?2}` to `{?n+2}`, `{?1}` refused by `template_wellformedness.rs`, an untyped declaration bounded to `{?2}`; the engine prints a `{?1}` as `relation` and a reference past the arrows as written (open point 7 (a)) |
+| [Q-M1f.478](#q-m1f478--l-102s-reach) | L-102's reach | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), `sentence.rs`' `fact_sentence`, `FactSentence`, `Origin` and `as_comment` go with the six functions L-102 names, which alone read them; the shape golden's `states` op digests each fact and its first origin, no English |
+| [Q-M1f.479](#q-m1f479--l-105s-reach) | L-105's reach | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), `nl_census.py`'s `KERNEL` copy goes with its answer half, and `check_tool_mirrors.py`'s census mirror with it; § 4's registers stay held to `ein_core::RESERVED` by `natural_language_page.rs` |
+| [Q-M1f.480](#q-m1f480--the-decisions-the-ruling-rewrites) | The decisions the ruling rewrites | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), Q-M1f.58 rewritten as the ruling (title extended, slug kept); Q-M1f.61's title extended (slug kept); Q-M1f.60, Q-M1f.214, Q-M1f.12 and Q31 restated; Q27's example renumbered; Q-M1f.62, Q-M1f.57 and Q-M1f.63 stand |
+| [Q-M1f.481](#q-m1f481--the-pages-the-ruling-rewrites) | The pages the ruling rewrites | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), `14-natural-language.md` rewritten, its § 3 block from `zebra2.ein`; six pages' trace blocks re-taken from their programs; the prose of nine more pages and AGENTS.md's rule on `:why` |
+| [Q-M1f.482](#q-m1f482--the-words-of-a-renumbered-why) | The words of a renumbered `:why` | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.5, task 2): (a), not rewritten (open point 9): only the page examples that show the rule use the user's pattern, `a {?3} {?2} a {?4}`; the shipped texts read stiffly as their declaration, and the pages say so |
+| [Q-M1f.483](#q-m1f483--the-region-views-words-on-an-arrow) | The region view's words on an arrow | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.1, task 4): (a), `sat` and `✗ alive`, words on arrows with `constraint=false`, counted as R-31's pattern and written as `xlabel`s, though Graphviz refused none |
+| [Q-M1f.484](#q-m1f484--a-traces-slice-that-graphviz-refuses) | A trace's slice that Graphviz refuses | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.1, task 4): (a), left as it is and its refusals filed (the phase's R-33), since what routes them, `rankdir=TB`, changes how a slice is laid out (Q-M1f.428, Q-M1f.429) |
+| [Q-M1f.485](#q-m1f485--what-09-core-in-derivation-draws-heavy) | What `09-core-in-derivation` draws heavy | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.1, task 4): (a), the facts the derivations added, *heavy* being *a derivation added it* as on the page and in `09-proof-graph`; the core red and double-bordered, not heavy |
+| [Q-M1f.486](#q-m1f486--long_numbersein-and-the-pools-long-lane) | `long_numbers.ein` and the pool's long lane | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.1, task 4): (a), not on `ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds |
 | [Q-M1f.487](#q-m1f487--how-the-layers-of-a-knowledge-bases-drawing-are-written) | How the layers of a knowledge base's drawing are written | **ruled 2026-11-19** by the user (item 56): (a) as built; the concentric layout the user asks about is put as examples by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2; before, defaulted (S1f.23.6): (a), from the arrows alone, no name read: `rankdir=TB`, a first arrow drawn back, and in a view of a knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest, ordered by invisible anchors; none where the arrows go round, nor in a panel, a slice or the derivation graph |
 | [Q-M1f.488](#q-m1f488--a-folded-arrow-within-a-layer-or-ranked) | A folded arrow: within a layer, or ranked | **ruled 2026-11-19** by the user (item 57): (a) as built; the concentric layout, [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2; before, defaulted (S1f.23.6): (a), within a layer, `constraint=false`, its fact placing its names as its octagon would, so a folded drawing keeps the canonical one's layers of objects; the first build's ranking reversed |
-| [Q-M1f.489](#q-m1f489--a-folded-arrow-in-a-rules-panel-and-in-a-slice) | A folded arrow in a rule's panel and in a slice | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), its `label` and its ranking kept (Q-M1f.435 (a)), since `constraint=false` beside a `label` is what Graphviz could not route (R-31) |
+| [Q-M1f.489](#q-m1f489--a-folded-arrow-in-a-rules-panel-and-in-a-slice) | A folded arrow in a rule's panel and in a slice | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.6): (a), its `label` and its ranking kept (Q-M1f.435 (a)), since `constraint=false` beside a `label` is what Graphviz could not route (R-31) |
 | [Q-M1f.490](#q-m1f490--a-stored-negation-under---fold) | A stored negation under `--fold` | **ruled 2026-11-19** by the user (item 58): (a) as built; before, defaulted (S1f.23.6): (a), `(not g)` folds into a loop on `g`'s octagon, as any fact of two arrows; no name read |
 | [Q-M1f.491](#q-m1f491--the-closing-rules-drawings-under---fold) | The closing rules' drawings under `--fold` | **ruled 2026-11-19** by the user (item 58): (a) as built; before, defaulted (S1f.23.6): (a), the five closing rules drawn folded, within `MAX_NODES` (L-97), where they were Ein only |
 | [Q-M1f.492](#q-m1f492--the-derivations-palette) | The derivation's palette | **ruled 2026-11-19** by the user (item 59): (a) amended: no colour near black; each rule's hue in two shades, the brighter the derived fact's; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1; before, defaulted (S1f.23.6): (a), eight dark colours by the rule's name, the derivation graph in the first, a step's border `penwidth=2`, a redundant firing dashed at that width |
 | [Q-M1f.493](#q-m1f493--how-a-derived-fact-is-marked-beside-a-derivation) | How a derived fact is marked beside a derivation | **ruled 2026-11-19** by the user (item 59): amended: a derived fact is drawn in its derivation's hue, the brightest shade, and thick; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1; before, defaulted (S1f.23.6): (a), bold, `penwidth=2`, the derivation's width, told from its arrows by colour |
 | [Q-M1f.494](#q-m1f494--a-steps-slice-under---fold) | A step's slice under `--fold` | **ruled 2026-11-19** by the user (item 59): (a) as built: a step's slice the same under `--fold`; before, defaulted (S1f.23.6): (a), the canonical one, every fact of it touched by the step's arrows (Q-M1f.429); `--fold` folds a trace's `-F` snapshots |
-| [Q-M1f.495](#q-m1f495--how-the-pages-copies-of-commands-outputs-were-drawn-again) | How the pages' copies of commands' outputs were drawn again | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), by a transformer validated against the binary, so that a cut stays its cut (Q-M1f.468); two hand derivations restyled by hand, `reasoning/01-static-ir/`'s hand graphs left |
-| [Q-M1f.496](#q-m1f496--the-fdp-provisioning-now-that-no-view-suggests-fdp) | The `fdp` provisioning, now that no view suggests `fdp` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), left: the CI's layout plugin, `run_tests.sh`'s exit 127 and the comments that say every KB view suggests `fdp`, wrong from the stage on; the main session's call |
+| [Q-M1f.495](#q-m1f495--how-the-pages-copies-of-commands-outputs-were-drawn-again) | How the pages' copies of commands' outputs were drawn again | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.6): (a), by a transformer validated against the binary, so that a cut stays its cut (Q-M1f.468); two hand derivations restyled by hand, `reasoning/01-static-ir/`'s hand graphs left |
+| [Q-M1f.496](#q-m1f496--the-fdp-provisioning-now-that-no-view-suggests-fdp) | The `fdp` provisioning, now that no view suggests `fdp` | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.6): (a), left: the CI's layout plugin, `run_tests.sh`'s exit 127 and the comments that say every KB view suggests `fdp`, wrong from the stage on; the main session's call |
 | [Q-M1f.497](#q-m1f497--where-r-33s-check-lives-and-what-it-reads) | Where R-33's check lives, and what it reads | **ruled 2026-11-19** by the user (item 60): (a) as built; before, defaulted (S1f.23.6): (a), `dot_wellformed`, per commit, every slice of two witnesses' traces (611 slices) |
-| [Q-M1f.498](#q-m1f498--whether-a-page-pins-the-layers) | Whether a page pins the layers | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), no page pins a `rank`: the layers a preference no test holds (Q21) |
-| [Q-M1f.499](#q-m1f499--what-a-reader-of-einb20-makes-of-a-nodes-container) | What a reader of `einb/2.0` makes of a node's container | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the minor moves, `einb/2.1`, as the format page's rule says, so a 2.0 reader opens a node's container as its program's root |
-| [Q-M1f.500](#q-m1f500--what-a-roots-container-is-unchanged-means) | What *a root's container is unchanged* means | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the same sections byte for byte and no `COMMIT`, its header's minor 1 |
-| [Q-M1f.501](#q-m1f501--the-words-a-nodes-container-prints) | The words a node's container prints | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the saved file's, not the mock's *container*: the container's output is its file's but the path (Q-M1a.22) |
-| [Q-M1f.502](#q-m1f502--a-load-notes-position-in-a-nodes-container) | A load note's position in a node's container | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the stored program's (Q-M1f.15), compared as `<position>` by `by_its_container`, and the pages say so |
-| [Q-M1f.503](#q-m1f503--a-nodes-container-and-the-standard-librarys-digest) | A node's container and the standard library's digest | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: the container records the digest and warns `StaleStdlib` under another library where the saved file says nothing; the answer the same |
-| [Q-M1f.504](#q-m1f504--ein-kb-save-of-a-node-whose-choice-is-no-candidate) | `ein kb save` of a node whose choice is no candidate | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: stored, and refused by every command that reads the node |
-| [Q-M1f.505](#q-m1f505--ein-kb-save---saturate-of-a-node) | `ein kb save --saturate` of a node | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: root's fixpoint and the commitment banked, not the node's state |
-| [Q-M1f.506](#q-m1f506--a-bad-commitment-under-ein-test) | A bad commitment under `ein test` | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), NOT CHECKED, exit 0, since no run builds H; the other commands still refuse it |
-| [Q-M1f.507](#q-m1f507----json-summary-and---events-under-ein-test-of-a-node) | `--json-summary` and `--events` under `ein test` of a node | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), nothing written, as for a file that states no claim |
-| [Q-M1f.508](#q-m1f508--the--v-header-of-a-saved-nodes-claims) | The `-v` header of a saved node's claims | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), no question named, the mock's *(a saved file's node: not run)* not taken |
-| [Q-M1f.509](#q-m1f509--the-reports-row-of-a-claim-no-run-checked) | The report's row of a claim no run checked | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), `outside` `null` and no `region` key, not the mock's `[]` and `region: null`; the id stays `ein-test-report/6` |
-| [Q-M1f.510](#q-m1f510--claimchecks-saved-file-branch) | `claim::check`'s saved-file branch | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), unchanged |
-| [Q-M1f.511](#q-m1f511--decision-files-for-q-m1f415-to-418) | Decision files for Q-M1f.415 to .418 | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), none: each answer is a file it already has (Q-M1f.403's, .402's, .185's) |
-| [Q-M1f.512](#q-m1f512--where-a-nodes-container-is-held-to-its-saved-file-and-its-cost) | Where a node's container is held to its saved file, and its cost | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), `answer_round_trip`'s `by_its_container`, beside the dump it reads; its cost against the nightly's five minutes left to the merged tree's nightly |
-| [Q-M1f.513](#q-m1f513--what-tells-a-numeral-to-check-from-one-an-operation-made) | What tells a numeral to check from one an operation made | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the relation it is written in: a tagged call, which asks the check and hands itself on to a walk of its own, which the calculator alone writes and which checks nothing |
-| [Q-M1f.514](#q-m1f514--the-names-of-the-calls-and-of-the-walks) | The names of the calls and of the walks | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the calls keep theirs (Q-M1f.189, Q-M1f.228), the walks are new, `add-run` … `gcd-run` |
-| [Q-M1f.515](#q-m1f515--the-public-division-a-call-or-a-walk) | The public division: a call or a walk | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), a call, so that its division-by-zero flag names a fact the state holds (Q-M1f.211); +3 firings a division |
-| [Q-M1f.516](#q-m1f516--what-the-division-by-zero-flag-names) | What the division-by-zero flag names | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the call, `(div-call …)`, whatever made the division; every flag's text as before |
-| [Q-M1f.517](#q-m1f517--what-an-integers-or-a-rationals-call-is-checked-as) | What an integer's or a rational's call is checked as | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), an operand of its kind, `int-check` and `rat-check`, so a digit handed as a part is flagged `not-integer` or `not-rational`, where it was silent |
-| [Q-M1f.518](#q-m1f518--the-calculators-own-constants) | The calculator's own constants | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), not checked: `(n z 1)` and `(n z 2)`, written by its own rules into its own walks |
-| [Q-M1f.519](#q-m1f519--the-decisions-the-numerals-rulings-live-in) | The decisions the numerals' rulings live in | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), Q-M1f.404's file, no new decision id |
-| [Q-M1f.520](#q-m1f520--the-walks-words-in-binary) | The walk's words in binary | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the base's: `numeral-step`'s `:why` says *digit* in binary too |
-| [Q-M1f.521](#q-m1f521--what-the-tagged-call-test-holds) | What the tagged-call test holds | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the walks as well as the calls, by `arith_theory.rs`' table `RUNS` |
+| [Q-M1f.498](#q-m1f498--whether-a-page-pins-the-layers) | Whether a page pins the layers | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.6): (a), no page pins a `rank`: the layers a preference no test holds (Q21) |
+| [Q-M1f.499](#q-m1f499--what-a-reader-of-einb20-makes-of-a-nodes-container) | What a reader of `einb/2.0` makes of a node's container | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), the minor moves, `einb/2.1`, as the format page's rule says, so a 2.0 reader opens a node's container as its program's root |
+| [Q-M1f.500](#q-m1f500--what-a-roots-container-is-unchanged-means) | What *a root's container is unchanged* means | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), the same sections byte for byte and no `COMMIT`, its header's minor 1 |
+| [Q-M1f.501](#q-m1f501--the-words-a-nodes-container-prints) | The words a node's container prints | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), the saved file's, not the mock's *container*: the container's output is its file's but the path (Q-M1a.22) |
+| [Q-M1f.502](#q-m1f502--a-load-notes-position-in-a-nodes-container) | A load note's position in a node's container | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), the stored program's (Q-M1f.15), compared as `<position>` by `by_its_container`, and the pages say so |
+| [Q-M1f.503](#q-m1f503--a-nodes-container-and-the-standard-librarys-digest) | A node's container and the standard library's digest | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), as is: the container records the digest and warns `StaleStdlib` under another library where the saved file says nothing; the answer the same |
+| [Q-M1f.504](#q-m1f504--ein-kb-save-of-a-node-whose-choice-is-no-candidate) | `ein kb save` of a node whose choice is no candidate | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), as is: stored, and refused by every command that reads the node |
+| [Q-M1f.505](#q-m1f505--ein-kb-save---saturate-of-a-node) | `ein kb save --saturate` of a node | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), as is: root's fixpoint and the commitment banked, not the node's state |
+| [Q-M1f.506](#q-m1f506--a-bad-commitment-under-ein-test) | A bad commitment under `ein test` | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), NOT CHECKED, exit 0, since no run builds H; the other commands still refuse it |
+| [Q-M1f.507](#q-m1f507----json-summary-and---events-under-ein-test-of-a-node) | `--json-summary` and `--events` under `ein test` of a node | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), nothing written, as for a file that states no claim |
+| [Q-M1f.508](#q-m1f508--the--v-header-of-a-saved-nodes-claims) | The `-v` header of a saved node's claims | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), no question named, the mock's *(a saved file's node: not run)* not taken |
+| [Q-M1f.509](#q-m1f509--the-reports-row-of-a-claim-no-run-checked) | The report's row of a claim no run checked | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), `outside` `null` and no `region` key, not the mock's `[]` and `region: null`; the id stays `ein-test-report/6` |
+| [Q-M1f.510](#q-m1f510--claimchecks-saved-file-branch) | `claim::check`'s saved-file branch | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), unchanged |
+| [Q-M1f.511](#q-m1f511--decision-files-for-q-m1f415-to-418) | Decision files for Q-M1f.415 to .418 | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), none: each answer is a file it already has (Q-M1f.403's, .402's, .185's) |
+| [Q-M1f.512](#q-m1f512--where-a-nodes-container-is-held-to-its-saved-file-and-its-cost) | Where a node's container is held to its saved file, and its cost | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.8): (a), `answer_round_trip`'s `by_its_container`, beside the dump it reads; its cost against the nightly's five minutes left to the merged tree's nightly |
+| [Q-M1f.513](#q-m1f513--what-tells-a-numeral-to-check-from-one-an-operation-made) | What tells a numeral to check from one an operation made | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), the relation it is written in: a tagged call, which asks the check and hands itself on to a walk of its own, which the calculator alone writes and which checks nothing |
+| [Q-M1f.514](#q-m1f514--the-names-of-the-calls-and-of-the-walks) | The names of the calls and of the walks | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), the calls keep theirs (Q-M1f.189, Q-M1f.228), the walks are new, `add-run` … `gcd-run` |
+| [Q-M1f.515](#q-m1f515--the-public-division-a-call-or-a-walk) | The public division: a call or a walk | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), a call, so that its division-by-zero flag names a fact the state holds (Q-M1f.211); +3 firings a division |
+| [Q-M1f.516](#q-m1f516--what-the-division-by-zero-flag-names) | What the division-by-zero flag names | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), the call, `(div-call …)`, whatever made the division; every flag's text as before |
+| [Q-M1f.517](#q-m1f517--what-an-integers-or-a-rationals-call-is-checked-as) | What an integer's or a rational's call is checked as | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), an operand of its kind, `int-check` and `rat-check`, so a digit handed as a part is flagged `not-integer` or `not-rational`, where it was silent |
+| [Q-M1f.518](#q-m1f518--the-calculators-own-constants) | The calculator's own constants | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), not checked: `(n z 1)` and `(n z 2)`, written by its own rules into its own walks |
+| [Q-M1f.519](#q-m1f519--the-decisions-the-numerals-rulings-live-in) | The decisions the numerals' rulings live in | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), Q-M1f.404's file, no new decision id |
+| [Q-M1f.520](#q-m1f520--the-walks-words-in-binary) | The walk's words in binary | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), the base's: `numeral-step`'s `:why` says *digit* in binary too |
+| [Q-M1f.521](#q-m1f521--what-the-tagged-call-test-holds) | What the tagged-call test holds | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-19 (S1f.23.9): (a), the walks as well as the calls, by `arith_theory.rs`' table `RUNS` |
 | [Q-M1f.522](#q-m1f522--a-relation-is-any-atom-first-in-a-tuple) | a relation of the program: which atoms are, and what a declaration is | **ruled 2026-11-19** by the user (P1f.21's V-7, in the review bundle): *"Its enough to be the first item in the tuple to became a relation"*, at any depth; a declaration an optional fact, a convention. To be built by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2 |
+| [Q-M1f.523](#q-m1f523--the-slice-by-a-query-its-definition) | The slice by a query: its definition | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): every fact a knowledge base holds with a relation of the program directly under an argument arrow (U (c)); not the constraint view's selection as it is, nor readings (a) or (b), nor at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.524](#q-m1f524--the-slice-by-a-query-what-a-relation-is) | The slice by a query: what *a relation* is | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): a relation of the program, one notion with the goal's and the claim's (Q-M1f.119, and Q-M1f.522 since the user's V-7); not a state's relations, nor the declared ones only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.525](#q-m1f525--the-slice-by-a-query-an-atom-that-is-a-relation-and-an-object) | The slice by a query: an atom that is a relation and an object | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): selected as the graph has it, `z` in a numeral and `eq` in an order among them; `eq` and `neq` not left out. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.526](#q-m1f526--the-slice-by-a-query-depth) | The slice by a query: depth | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): directly, the fact's arrows 2, 3, …; not at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.527](#q-m1f527--the-slice-by-a-query-what-is-drawn-with-it) | The slice by a query: what is drawn with it | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): what its facts point at, at any depth, a fact held nowhere in its frame; not the selected facts alone. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.528](#q-m1f528--the-slice-by-a-query-a-fact-under-an-arrow-held-nowhere) | The slice by a query: a fact under an arrow, held nowhere | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): selected only through a held fact that points at it. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.529](#q-m1f529--the-slice-by-a-query-how-a-goal-is-given) | The slice by a query: how a goal is given | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): `ein render kb FILE --goal '(…)'`, of root or a saved state, with `--query N` beside it; not the form only, nor a saved state only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.530](#q-m1f530--what-ein-render-constraints-becomes) | What `ein render constraints` becomes | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): the slice of Q-M1f.523 on root's saturated knowledge base, defined in the engine and drawn by the KB view's code, with no language change; not two computed relations, nor the view kept, nor removed for `--goal`. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.531](#q-m1f531--a-written-check-in-the-constraint-view) | A written check in the constraint view | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): `(eq a w)` left out, as the program view leaves it (R-40); not drawn as a fact. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
+| [Q-M1f.532](#q-m1f532--the-class-of-an-or--goal) | The class of an `(or …)` goal | **ruled 2026-11-19: the default** (the user, *"S1f.23.7 - I accept"*): a class lists the facts of the disjuncts that hold, and its `as :expect` parses back (R-39). To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8701,6 +8711,8 @@ route. The native mark derived at a node was invisible to the static check.
 
 **Default taken: (a).** Built: S1f.23.4's Record, step 1; no corpus program carries the difference.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.438 — The programs that showed only the mirror: retired or rewritten
 
 **Raised** 2026-11-18 by S1f.23.4's build, step 2. **Put, not ruled.** Six programs wrote `(__symmetric__ R)` or
@@ -8716,6 +8728,8 @@ existed as the control of one that did: `examples/features/06_symmetric_native.e
 
 **Default taken: (a).** Built: `corpus/corpus.toml`, `corpus/regressions.toml` (333 rows, 329 after).
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.439 — `examples/features/`' numbering with `06` gone
 
 **Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.**
@@ -8725,6 +8739,8 @@ existed as the control of one that did: `examples/features/06_symmetric_native.e
 - **(b)** renumbered, the programs after `06` moved down one, with every reference.
 
 **Default taken: (a).**
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.440 — The retired flag `enable-symmetric-mirror`
 
@@ -8737,6 +8753,8 @@ existed as the control of one that did: `examples/features/06_symmetric_native.e
 **Default taken: (a).** Built: `ein-core/src/config.rs`' `RETIRED`; the grammar table's golden line;
 `06-config.md` § 2.4.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.441 — The `--events` protocol's version, the `mirror` kind gone
 
 **Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.**
@@ -8746,6 +8764,8 @@ existed as the control of one that did: `examples/features/06_symmetric_native.e
 - **(b)** `ein-events/2`.
 
 **Default taken: (a).** Built: `05-events.md`; `ein-cli/tests/events_reference.rs` (eighteen kinds).
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.442 — Q-M1f.7's file name, its title changed
 
@@ -8759,6 +8779,8 @@ which links it.
 
 **Default taken: (a).** Built on the merge.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.443 — A decision for the two rulings
 
 **Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.** The stage gave the rulings no decision of their own:
@@ -8770,6 +8792,8 @@ Q-M1f.7 and the pages carried *the kernel reads no theory's name*, and the stage
 - **(b)** none: Q-M1f.7 and the pages carry the rulings, as the stage left them.
 
 **Default taken: (a).**
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.444 — What the renaming test keeps
 
@@ -8783,6 +8807,8 @@ Q-M1f.7 and the pages carried *the kernel reads no theory's name*, and the stage
 
 **Default taken: (a).** Built: `ein-render/tests/renaming_invariance.rs`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.445 — The renaming test's tier
 
 **Raised** 2026-11-18 by S1f.23.4's build, step 4. **Put, not ruled.**
@@ -8793,6 +8819,8 @@ Q-M1f.7 and the pages carried *the kernel reads no theory's name*, and the stage
 - **(b)** the nightly alone.
 
 **Default taken: (a).** Built: `run_tests.sh`, `.github/workflows/nightly.yml`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.446 — The `forall` drawing the renaming test found
 
@@ -8807,6 +8835,8 @@ left `rules.rs` to S1f.23.1, which was rewriting it.
 
 **Default taken: (a).** Built: S1f.23.1 drew a call of `forall` as the form it is; on the merge `READS` is empty and
 every view is compared.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.447 — The loader's argument-count check, once `relation` is a convention
 
@@ -8845,6 +8875,8 @@ named it in its presentation list alone), neither `ein test` nor any artefact.
 **Default taken: (a).** Built: `ein-cli/src/cmdline.rs`, `modes.rs`, `oracle.rs`; `help_surface.rs` and the help
 golden; `05-cli.md`, `06-config.md`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.449 — `--models`: removed, or retired
 
 **Raised** 2026-11-18 by S1f.23.2's build, reading 2. **Put, not ruled.** `ein solve` refuses a retired option with
@@ -8854,6 +8886,8 @@ what answers instead (`cmdline.rs`' `retired(…)`, `solve::RETIRED`); that tabl
 - **(b)** a retired entry, refused with what answers instead, `--maximal` and `-f`.
 
 **Default taken: (a).** `--diff-models` takes the same reading, Q-M1f.466.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.450 — `--models grid`'s reading of `is-a`, and the grid's names
 
@@ -8865,6 +8899,8 @@ type (R-3); both waited on the user's ruling on theory names, Q-M1f.436.
 - **(b)** kept open until the user rules on them by name.
 
 **Default taken: (a).** R-1 and R-3 are marked ended in P1f.23's findings.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.451 — The determining key on the reasoning page
 
@@ -8879,6 +8915,8 @@ key read; no other page uses either.
 
 **Default taken: (a).**
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.452 — What the walkthrough shows where it showed the grids
 
 **Raised** 2026-11-18 by S1f.23.2's build, reading 5. **Put, not ruled.** The guide's `06-zebra-walkthrough.md`
@@ -8890,6 +8928,8 @@ showed `--models grid`'s tables at root after step 1 and at the final state.
 
 **Default taken: (a).**
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.453 — `models.rs`' name, once it holds the diff alone
 
 **Raised** 2026-11-18 by S1f.23.2's build, reading 6. **Put, not ruled.** With the key and the grid gone,
@@ -8900,6 +8940,8 @@ showed `--models grid`'s tables at root after step 1 and at the final state.
 
 **Default taken: (a)**, and superseded on the merge by S1f.23.3, which removed `--diff-models` and renamed the module
 for what it holds, `claim_diff.rs` (Q-M1f.465).
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.454 — `ein test --diff`'s spelling
 
@@ -8915,6 +8957,8 @@ print stats and/or diffs"*).
 **Default taken: (a).** Built: `ein-cli/src/cmdline.rs`, `test.rs`; `test_cli.rs`'
 `a_bare_diff_before_a_path_is_refused_with_its_levels`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.455 — How many facts off a near model is
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 2. **Put, not ruled.**
@@ -8927,6 +8971,8 @@ print stats and/or diffs"*).
 
 **Default taken: (a).** Built: `ein-render/src/claim_diff.rs`; `a_claim_one_fact_off_reads_as_one_fact_off`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.456 — What the diff counts as a match
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 3. **Put, not ruled.**
@@ -8937,6 +8983,8 @@ print stats and/or diffs"*).
 - **(b)** every model equal to a found item a match, so a model listed twice is two matches of one state.
 
 **Default taken: (a).** Built: `claim::compared`, `claim_diff::diff_sets`; `the_diff_moves_no_verdict_and_no_exit_code`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.457 — Which claims have a diff
 
@@ -8950,6 +8998,8 @@ print stats and/or diffs"*).
 
 **Default taken: (a).**
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.458 — A missing model and an extra found item
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 5. **Put, not ruled.**
@@ -8962,6 +9012,8 @@ print stats and/or diffs"*).
 
 **Default taken: (a).** Built: `a_region_claim_names_the_missing_and_the_extra`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.459 — An `(owing …)` claim's diff
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 6. **Put, not ruled.**
@@ -8971,6 +9023,8 @@ print stats and/or diffs"*).
 - **(b)** compared with R's states, as a region claim's models are.
 
 **Default taken: (a).**
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.460 — `(merged …)` and the diff
 
@@ -8982,6 +9036,8 @@ print stats and/or diffs"*).
 
 **Default taken: (a).**
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.461 — Where the diff prints
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 8. **Put, not ruled.**
@@ -8992,6 +9048,8 @@ print stats and/or diffs"*).
 - **(b)** `--diff` overrides `-q`.
 
 **Default taken: (a).** Built: `quiet_diffs_only_the_claims_it_prints`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.462 — The report's `diff`, and its id
 
@@ -9005,6 +9063,8 @@ print stats and/or diffs"*).
 **Default taken: (a).** Built: `05-cli.md` § 4.4, `06-config.md`. On the merge master's report was still
 `ein-test-report/5`, [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row)'s default (a) having moved no id, so `/6` is the
 diff's alone (P1f.23's R-10).
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.463 — The review bundle's right answer, written as claims
 
@@ -9022,6 +9082,8 @@ file of its own format.
 
 **Default taken: (a).** Built: `utils/review/case.py`, `run.py`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.464 — The review run page's cross-check 1
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 11. **Put, not ruled.** Cross-check 1 compared the old second
@@ -9031,6 +9093,8 @@ solve's summary, under `--diff-models`, with the main run's.
 - **(b)** dropped, with the second solve.
 
 **Default taken: (a).** Built: `utils/review/run.py`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.465 — The diff's module
 
@@ -9043,6 +9107,8 @@ solve's summary, under `--diff-models`, with the main run's.
 
 **Default taken: (a).** Built: `ein-render/src/claim_diff.rs`; `01-architecture.md` and its module diagram.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.466 — `--diff-models`: removed, or retired
 
 **Raised** 2026-11-18 by S1f.23.3's build, reading 13. **Put, not ruled.** As Q-M1f.449 for `--models`.
@@ -9051,6 +9117,8 @@ solve's summary, under `--diff-models`, with the main run's.
 - **(b)** a retired entry, refused with what answers instead, `ein test --diff`.
 
 **Default taken: (a).**
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.467 — A command's output on a page: canonical or folded
 
@@ -9176,6 +9244,8 @@ premises line; where on the line was left to the build.
 
 **Default taken: (a).** Built: `bd21f0bb` (`TraceStep`'s `premise_statements`), merged by `79dd213b`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.476 — A declaration a rule concludes
 
 **Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 2. **Put, not ruled.** A rule may conclude a fact of
@@ -9187,6 +9257,8 @@ premises line; where on the line was left to the build.
 - **(b)** it reads as written there, as every other derived fact does, its statement on a premises line alone.
 
 **Default taken: (a).** Built: `bd21f0bb` (`ein_render::sentence::statement`).
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.477 — The bound on a declaration's references
 
@@ -9200,6 +9272,8 @@ held a relation's `:why` to `{?1}` … `{?n}`, n its labels, and admitted any `{
 - **(b)** `{?1}` to `{?n+2}`, every arrow of the form.
 
 **Default taken: (a).** Built: `bd21f0bb`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.478 — L-102's reach
 
@@ -9215,6 +9289,8 @@ L-102 names the functions of `ein_render::dump::serialise` that no command calls
 
 **Default taken: (a).** Built: `fbe2ba66` (454 `states` lines of the shape golden moved).
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.479 — L-105's reach
 
 **Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 5. **Put, not ruled.** [The milestone's findings](findings.md)
@@ -9228,6 +9304,8 @@ L-105: `utils/nl_census.py`'s answer half counts nothing on the saved format.
 
 **Default taken: (a).** Built: `3047bbae`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.480 — The decisions the ruling rewrites
 
 **Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 6. **Put, not ruled.**
@@ -9239,6 +9317,8 @@ L-105: `utils/nl_census.py`'s answer half counts nothing on the saved format.
 - **(b)** a decision of its own for the ruling, Q-M1f.58 superseded and its citations rewritten to the new id.
 
 **Default taken: (a).** Built: `bd21f0bb`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.481 — The pages the ruling rewrites
 
@@ -9256,6 +9336,8 @@ L-105: `utils/nl_census.py`'s answer half counts nothing on the saved format.
 
 **Default taken: (a).** Built: `bd21f0bb`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.482 — The words of a renumbered `:why`
 
 **Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 8: the examples page's open point 9, ruled as its
@@ -9267,6 +9349,8 @@ default by the user's *"defaults for the rest"*, as built.
 - **(b)** every declaration's text rewritten as a sentence about its declaration, in the user's pattern.
 
 **Default taken: (a).** Built: `bd21f0bb`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.483 — The region view's words on an arrow
 
@@ -9281,6 +9365,8 @@ words on such arrows.
 
 **Default taken: (a).** Built: `18bc66ac`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.484 — A trace's slice that Graphviz refuses
 
 **Raised** 2026-11-18 by S1f.23.1's task 4, reading (ii). **Put, not ruled.** The phase's
@@ -9294,6 +9380,8 @@ traces refused; `rankdir=TB` routes every refused block sampled.
 
 **Default taken: (a).** Nothing built; R-33 stays open, the main session's and the user's.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.485 — What `09-core-in-derivation` draws heavy
 
 **Raised** 2026-11-18 by S1f.23.1's task 4, reading (iii). **Put, not ruled.** The phase's R-28.
@@ -9305,6 +9393,8 @@ traces refused; `rankdir=TB` routes every refused block sampled.
 
 **Default taken: (a).** Built: `d5fceff9`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.486 — `long_numbers.ein` and the pool's long lane
 
 **Raised** 2026-11-18 by S1f.23.1's task 4, reading (iv). **Put, not ruled.** The phase's R-32: `dot_wellformed` on
@@ -9315,6 +9405,8 @@ the pool, 261.2 s on the runner's four threads, the work bounding it, not one fi
 - **(b)** added, so its seven views start first.
 
 **Default taken: (a).** Built: `82e8097b`, which leaves `LONG` as it was.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.487 — How the layers of a knowledge base's drawing are written
 
@@ -9363,6 +9455,8 @@ is what Graphviz could not route.
 - **(b)** within a layer there too, `constraint=false`, its relation an `xlabel`.
 
 **Default taken: (a).** Built: `29792a38`, which leaves the panels and the slices as `ad20a5e0` draws them.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.490 — A stored negation under `--fold`
 
@@ -9447,6 +9541,8 @@ base may be a cut.
 
 **Default taken: (a).** Built: `ad20a5e0` and `29792a38`, merged by `547afea5`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.496 — The `fdp` provisioning, now that no view suggests `fdp`
 
 **Raised** 2026-11-18 by S1f.23.6's build, reading 10. **Put, not ruled.** The layered layout dropped the KB view's
@@ -9460,6 +9556,8 @@ picks `fdp`, for files named `*ontology*` or `*constraints*`.
 - **(b)** the comments brought to the layered layout, and what CI installs and `run_tests.sh`'s check taken again.
 
 **Default taken: (a).** Nothing built: what CI installs, and the comments, the stage left to the main session.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.497 — Where R-33's check lives, and what it reads
 
@@ -9490,6 +9588,8 @@ here!"*, the layered layout the user's preference.
 
 **Default taken: (a).** Built: `ad20a5e0` (`12-rendering.md` § Layers, Q21 amended).
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.499 — What a reader of `einb/2.0` makes of a node's container
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 1. **Put, not ruled.** Q-M1f.413 (c) adds the section `COMMIT`,
@@ -9505,6 +9605,8 @@ the same major skips a kind it does not know.
 **Default taken: (a).** Built: `86d46410` (`FORMAT_MINOR = 1`), merged by `aad59286`. The stage leaves it to the user
 if the gap matters.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.500 — What *a root's container is unchanged* means
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 2. **Put, not ruled.** The stage's brief: *a root's container
@@ -9514,6 +9616,8 @@ stays as it is*.
 - **(b)** its header too: a root's container written at 2.0, the minor moved only where a `COMMIT` is written.
 
 **Default taken: (a).** Built: `86d46410`, held by `einb_cli.rs`' `a_nodes_container_opens_as_the_node`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.501 — The words a node's container prints
 
@@ -9526,6 +9630,8 @@ stays as it is*.
 
 **Default taken: (a).** Built: `86d46410`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.502 — A load note's position in a node's container
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 4. **Put, not ruled.** A position in a container names its stored
@@ -9537,6 +9643,8 @@ program (Q-M1f.15; F23's D-18).
 - **(b)** the saved file's own position, which a container does not store (Q-M1f.15: a format change).
 
 **Default taken: (a).** Built: `86d46410`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.503 — A node's container and the standard library's digest
 
@@ -9551,6 +9659,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 
 **Default taken: (a).** Nothing built. The stage marks it the user's.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.504 — `ein kb save` of a node whose choice is no candidate
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 6. **Put, not ruled.**
@@ -9561,6 +9671,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 
 **Default taken: (a).** Built: `86d46410`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.505 — `ein kb save --saturate` of a node
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 7. **Put, not ruled.**
@@ -9570,6 +9682,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 - **(b)** it banks the node's state.
 
 **Default taken: (a).** Built: `86d46410`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.506 — A bad commitment under `ein test`
 
@@ -9582,6 +9696,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 
 **Default taken: (a).** Built: `86d46410` (`test.rs`' `NotRun`).
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.507 — `--json-summary` and `--events` under `ein test` of a node
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 9. **Put, not ruled.** The ruling's (b) left them unsaid.
@@ -9590,6 +9706,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 - **(b)** each writes a record that names the node and no run.
 
 **Default taken: (a).** Built: `86d46410`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.508 — The `-v` header of a saved node's claims
 
@@ -9600,6 +9718,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 - **(b)** the review's mock, *(a saved file's node: not run)*.
 
 **Default taken: (a).** Built: `86d46410`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.509 — The report's row of a claim no run checked
 
@@ -9613,6 +9733,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 
 **Default taken: (a).** Built: `86d46410`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.510 — `claim::check`'s saved-file branch
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 12. **Put, not ruled.**
@@ -9623,6 +9745,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 
 **Default taken: (a).** Nothing built.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.511 — Decision files for Q-M1f.415 to .418
 
 **Raised** 2026-11-18 by S1f.23.8's build, reading 13. **Put, not ruled.**
@@ -9632,6 +9756,8 @@ since D-24, does not; the answer is the same (a loaded container drops nothing).
 - **(b)** a file each.
 
 **Default taken: (a).** Built: `86d46410` and the ledger `d07eb5bb`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.512 — Where a node's container is held to its saved file, and its cost
 
@@ -9644,6 +9770,8 @@ against the nightly's five minutes, L-106's (a) being today's shards.
 - **(b)** a test of its own.
 
 **Default taken: (a).** Built: `86d46410`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.513 — What tells a numeral to check from one an operation made
 
@@ -9661,6 +9789,8 @@ number would join two facts on a number.
 **Default taken: (a).** Built: `90e88122` (`std.math.positional`'s fifteen rules, three a call; `std.math.int`'s,
 `std.math.rat`'s and `std.math.gcd`'s calls), merged by `04433406`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.514 — The names of the calls and of the walks
 
 **Raised** 2026-11-19 by S1f.23.9's build, reading 2. **Put, not ruled.**
@@ -9670,6 +9800,8 @@ number would join two facts on a number.
 - **(b)** the walks keep the old names, and every call a program writes is renamed.
 
 **Default taken: (a).** Built: `90e88122`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.515 — The public division: a call or a walk
 
@@ -9683,6 +9815,8 @@ number would join two facts on a number.
 
 **Default taken: (a).** Built: `90e88122`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.516 — What the division-by-zero flag names
 
 **Raised** 2026-11-19 by S1f.23.9's build, reading 4. **Put, not ruled.**
@@ -9692,6 +9826,8 @@ number would join two facts on a number.
 - **(b)** the walk the division runs in, `(div-run …)`.
 
 **Default taken: (a).** Built: `90e88122`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.517 — What an integer's or a rational's call is checked as
 
@@ -9705,6 +9841,8 @@ number would join two facts on a number.
 
 **Default taken: (a).** Built: `90e88122` (`int-norm-runs` and its siblings).
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.518 — The calculator's own constants
 
 **Raised** 2026-11-19 by S1f.23.9's build, reading 6. **Put, not ruled.**
@@ -9714,6 +9852,8 @@ number would join two facts on a number.
 - **(b)** checked as any numeral no operation made.
 
 **Default taken: (a).** Built: `90e88122`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.519 — The decisions the numerals' rulings live in
 
@@ -9725,6 +9865,8 @@ number would join two facts on a number.
 
 **Default taken: (a).** Built: `90e88122`.
 
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
+
 ### Q-M1f.520 — The walk's words in binary
 
 **Raised** 2026-11-19 by S1f.23.9's build, reading 8. **Put, not ruled.** The walk moved into
@@ -9735,6 +9877,8 @@ number would join two facts on a number.
 - **(b)** a word each base passes, binary's *bit*.
 
 **Default taken: (a).** Built: `90e88122`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.521 — What the tagged-call test holds
 
@@ -9748,6 +9892,8 @@ number would join two facts on a number.
 - **(b)** the calls alone, as before the walks were split off.
 
 **Default taken: (a).** Built: `90e88122`.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ### Q-M1f.522 — A relation is any atom first in a tuple
 
@@ -9777,3 +9923,42 @@ stays open ([Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relatio
 **To be built** by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2: one notion for the four lists; R moves where the blind rung guessed about such
 a name as an object, each moved corpus program named.
 
+### Q-M1f.523 — The slice by a query: its definition
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 1](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: every fact a knowledge base holds with a relation of the program directly under an argument arrow (U (c)); not the constraint view's selection as it is, nor readings (a) or (b), nor at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.524 — The slice by a query: what *a relation* is
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 2](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a relation of the program, one notion with the goal's and the claim's (Q-M1f.119, and Q-M1f.522 since the user's V-7); not a state's relations, nor the declared ones only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.525 — The slice by a query: an atom that is a relation and an object
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 3](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected as the graph has it, `z` in a numeral and `eq` in an order among them; `eq` and `neq` not left out. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.526 — The slice by a query: depth
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 4](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: directly, the fact's arrows 2, 3, …; not at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.527 — The slice by a query: what is drawn with it
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 5](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: what its facts point at, at any depth, a fact held nowhere in its frame; not the selected facts alone. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.528 — The slice by a query: a fact under an arrow, held nowhere
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 6](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected only through a held fact that points at it. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.529 — The slice by a query: how a goal is given
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 7](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `ein render kb FILE --goal '(…)'`, of root or a saved state, with `--query N` beside it; not the form only, nor a saved state only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.530 — What `ein render constraints` becomes
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 8](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: the slice of Q-M1f.523 on root's saturated knowledge base, defined in the engine and drawn by the KB view's code, with no language change; not two computed relations, nor the view kept, nor removed for `--goal`. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.531 — A written check in the constraint view
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 9](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `(eq a w)` left out, as the program view leaves it (R-40); not drawn as a fact. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+
+### Q-M1f.532 — The class of an `(or …)` goal
+
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 10](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a class lists the facts of the disjuncts that hold, and its `as :expect` parses back (R-39). To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.

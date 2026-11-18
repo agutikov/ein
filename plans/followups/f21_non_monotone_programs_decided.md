@@ -914,7 +914,8 @@ not investigate here. Does ein detect non-monotone program here??? We already de
   rules that each wait on an `absent` at root's own boundary is none of its sites. Under the standing ruling (a
   non-monotone program is detected and warned of, and the engine claims nothing of its answer) this is a **gap in
   the detection**, the FIFO-gap section's call 2 above (*whether the static check should report an order finding at
-  root*), which is readable off the rules. Whether it is built now or stays here with this page is put to the user.
+  root*), which is readable off the rules. **The user, 2026-11-19, verbatim: *"N-15 - to F21"*: it stays here**, with
+  this page's other calls, and nothing is built in M1f.
 
 ## Why it is parked
 

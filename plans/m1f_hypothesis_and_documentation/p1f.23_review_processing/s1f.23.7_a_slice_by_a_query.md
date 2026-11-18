@@ -1,7 +1,7 @@
 # S1f.23.7 — a slice of the knowledge base defined by a query, and drawn
 
 **Phase:** [P1f.23](README.md)
-**Status:** planned 2026-11-18 on the user's answer to Q-M1f.426; task 1, the examples, started the same day on the user's word (*"go ahead"*); it stops for the user's look.
+**Status:** planned 2026-11-18 on the user's answer to Q-M1f.426; task 1, the examples, started the same day on the user's word (*"go ahead"*), and **accepted 2026-11-19** (*"S1f.23.7 - I accept"*): its ten open points ruled as their defaults, [Q-M1f.523 to .532](../open_questions.md#q-m1f523--the-slice-by-a-query-its-definition). **Task 2, the build, runs after S1f.23.10 is merged**: the slice selects by *a relation of the program*, which S1f.23.10 makes one notion (Q-M1f.522).
 
 ## The user's words
 
@@ -37,3 +37,9 @@ On Q-M1f.426, what the constraint view draws (the answers' file, `e4c0eaf6`), ve
   `(or …)` goal's class prints the `or` form (open point 10); the constraint view draws a written check, `(eq a w)`, as a
   fact (open point 9); a rule taking a fact's relation as its parameter is refused when activated with `symmetric`
   (Q-M1f.1, § 4.5).
+- Task 1 accepted by the user, 2026-11-19, verbatim: *"S1f.23.7 - I accept"*. The ten open points of
+  [§ 6](s1f.23.7_examples.md#6-open-points-for-the-user) are Q-M1f.523 to .532, each its default. Task 2 builds
+  them: the slice in the engine, `ein render kb --goal '(…)'` (of root or a saved state, `--query N` beside it), and
+  `ein render constraints` as the slice of Q-M1f.523 drawn by the KB view's code; with it R-40 (a written check left
+  out, Q-M1f.531) and R-39 (an `(or …)` goal's class lists the facts of the disjuncts that hold, Q-M1f.532). R-41
+  (a relation-parameter rule activated with `symmetric` refused, Q-M1f.1) stays open: no default was taken for it.
