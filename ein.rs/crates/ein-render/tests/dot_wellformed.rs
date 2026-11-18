@@ -269,33 +269,40 @@ fn a_view_splits_into_whole_digraphs() {
     assert_eq!(digraphs("digraph a { x; }\n").len(), 1);
 }
 
-/// What the sweep found in one corpus file.
-#[derive(Default)]
-struct FileSweep {
-    /// The views Graphviz complained of, or that errored.
-    bad: Vec<String>,
-    /// The non-empty views put to Graphviz.
-    checked: usize,
-    /// The non-empty views past [`DOT_LAYOUT_BOUND`], put to nothing: each
-    /// with its edges.
-    skipped: Vec<(String, usize)>,
-    /// The file's directory, from the repo's root.
-    dir: String,
-    /// Views that only Graphviz's own cross-graph bug objected to, kept for
-    /// the summary line: the check reached a verdict on them, it just took a
-    /// second question to get there.
-    resplit: Vec<String>,
+/// One view of one corpus file, as drawing it left it.
+enum Drawn {
+    /// The renderer refused it, past the reasons a fixture has.
+    Errored(String),
+    /// Empty, or skipped by its reason: nothing to put to Graphviz.
+    Nothing,
+    /// Past [`DOT_LAYOUT_BOUND`], with its edges: put to nothing.
+    Skipped(usize),
+    /// The DOT to put to Graphviz.
+    Dot(String),
 }
 
-/// Every view of one corpus file, put to Graphviz.
-fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
-    let mut file = FileSweep::default();
+/// Every view of one corpus file, drawn: the engine's half of the sweep,
+/// one unit a file, so that the file is loaded once.
+struct FileViews {
+    /// The file, from the repo's root.
+    name: String,
+    /// Its directory, from the repo's root.
+    dir: String,
+    /// Each view in `views`' order.
+    drawn: Vec<(&'static str, Drawn)>,
+}
+
+/// Every view of one corpus file, drawn and not yet put to Graphviz.
+fn draw_file(path: &std::path::Path, views: &[&'static str]) -> FileViews {
     let rel = path.strip_prefix(repo_root()).unwrap_or(path);
-    file.dir = rel
-        .parent()
-        .map(|d| d.display().to_string())
-        .unwrap_or_default();
-    let name = rel.display();
+    let mut file = FileViews {
+        name: rel.display().to_string(),
+        dir: rel
+            .parent()
+            .map(|d| d.display().to_string())
+            .unwrap_or_default(),
+        drawn: Vec::new(),
+    };
     let Ok(text) = std::fs::read_to_string(path) else {
         return file;
     };
@@ -337,105 +344,137 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
         };
         let out = match drawn {
             Ok(out) => out,
-            Err(_) if !loads && KB_VIEWS.contains(view) => continue,
-            Err(_) if !saturates && *view == "kb-since" => continue,
+            Err(_) if !loads && KB_VIEWS.contains(view) => {
+                file.drawn.push((view, Drawn::Nothing));
+                continue;
+            }
+            Err(_) if !saturates && *view == "kb-since" => {
+                file.drawn.push((view, Drawn::Nothing));
+                continue;
+            }
             Err(e) => {
-                file.bad
-                    .push(format!("{name} [{view}]\n  the view errored: {e}"));
+                file.drawn.push((view, Drawn::Errored(e)));
                 continue;
             }
         };
         let dot = digraphs_only(&out);
         // An empty view is not a broken one: a file with no rules renders
         // no rule library, and `(config …)` renders nothing at all.
-        if dot.trim().is_empty() {
-            continue;
-        }
-        if edges(&dot) > DOT_LAYOUT_BOUND {
-            file.skipped.push((format!("{name} [{view}]"), edges(&dot)));
-            continue;
-        }
-        file.checked += 1;
-        let why = match graphviz(&dot) {
-            Verdict::Accepted => continue,
-            Verdict::Rejected(why) => why,
-            Verdict::Crashed(why) => {
-                // Ask again, one digraph at a time. All accepted, and more
-                // than one of them, is the answer that the stream was fine
-                // and `dot` was not.
-                let parts = digraphs(&dot);
-                let per: Vec<String> = parts
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, part)| match graphviz(part) {
-                        Verdict::Accepted => None,
-                        Verdict::Rejected(w) | Verdict::Crashed(w) => {
-                            Some(format!("digraph {i}: {w}"))
-                        }
-                    })
-                    .collect();
-                if per.is_empty() && parts.len() > 1 {
-                    file.resplit
-                        .push(format!("{name} [{view}] ({} digraphs)", parts.len()));
-                    continue;
-                }
-                format!("{why}\n  {}", per.join("\n  "))
-            }
+        let drawn = if dot.trim().is_empty() {
+            Drawn::Nothing
+        } else if edges(&dot) > DOT_LAYOUT_BOUND {
+            Drawn::Skipped(edges(&dot))
+        } else {
+            Drawn::Dot(dot)
         };
-        file.bad.push(format!("{name} [{view}]\n  {why}"));
+        file.drawn.push((view, drawn));
     }
     file
 }
 
-/// The sweep, **several files at a time**: the files are independent, each
-/// view a `dot` process of its own, so they are
-/// shared out among the machine's cores, and what is reported is gathered in
-/// the files' order, so the report reads the same whatever ran first.
+/// What Graphviz made of one view: accepted, accepted digraph by digraph
+/// once `dot` had died on the stream (`Ok(true)`), or why not.
+fn put_to_graphviz(dot: &str) -> Result<bool, String> {
+    match graphviz(dot) {
+        Verdict::Accepted => Ok(false),
+        Verdict::Rejected(why) => Err(why),
+        Verdict::Crashed(why) => {
+            // Ask again, one digraph at a time. All accepted, and more
+            // than one of them, is the answer that the stream was fine
+            // and `dot` was not.
+            let parts = digraphs(dot);
+            let per: Vec<String> = parts
+                .iter()
+                .enumerate()
+                .filter_map(|(i, part)| match graphviz(part) {
+                    Verdict::Accepted => None,
+                    Verdict::Rejected(w) | Verdict::Crashed(w) => Some(format!("digraph {i}: {w}")),
+                })
+                .collect();
+            if per.is_empty() && parts.len() > 1 {
+                return Ok(true);
+            }
+            Err(format!("{why}\n  {}", per.join("\n  ")))
+        }
+    }
+}
+
+/// The sweep, **on the pool** (`ein_corpus::pool::map`), in two passes: each
+/// file's views drawn, a unit a file, so that it is loaded once; then each
+/// view put to Graphviz, a unit a (file, view), so that one file's views are
+/// laid out side by side, its `dot` processes being independent. What is
+/// reported is gathered in the files' and the views' order, so the report
+/// reads the same at any `EIN_TEST_JOBS`.
 #[test]
 fn graphviz_accepts_every_view_of_every_corpus_file() {
     require_graphviz();
     let views = all_views();
     let slow = slow_too();
     let root = repo_root();
+    let rel = |f: &std::path::Path| f.strip_prefix(&root).unwrap_or(f).display().to_string();
     let files: Vec<std::path::PathBuf> = corpus_files()
         .into_iter()
         .filter(|f| slow || !under_tests(f.strip_prefix(&root).unwrap_or(f)))
         .collect();
-    let next = std::sync::atomic::AtomicUsize::new(0);
-    let workers = std::thread::available_parallelism().map_or(1, |n| n.get());
-    let mut found: Vec<(usize, FileSweep)> = std::thread::scope(|scope| {
-        let handles: Vec<_> = (0..workers)
-            .map(|_| {
-                scope.spawn(|| {
-                    let mut mine = Vec::new();
-                    loop {
-                        let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                        let Some(path) = files.get(i) else {
-                            return mine;
-                        };
-                        mine.push((i, sweep_file(path, &views)));
-                    }
-                })
-            })
-            .collect();
-        handles
-            .into_iter()
-            .flat_map(|h| h.join().expect("a sweep thread panicked"))
-            .collect()
-    });
-    found.sort_by_key(|(i, _)| *i);
+    let drawn = ein_corpus::pool::map(
+        "dot_wellformed",
+        &files,
+        |f| (rel(f), "views".to_string()),
+        |f| draw_file(f, &views),
+    );
+    let units: Vec<(usize, usize)> = drawn
+        .iter()
+        .enumerate()
+        .flat_map(|(i, file)| {
+            file.drawn
+                .iter()
+                .enumerate()
+                .filter(|(_, (_, d))| matches!(d, Drawn::Dot(_)))
+                .map(move |(j, _)| (i, j))
+        })
+        .collect();
+    let verdicts = ein_corpus::pool::map(
+        "dot_wellformed",
+        &units,
+        |&(i, j)| (drawn[i].name.clone(), drawn[i].drawn[j].0.to_string()),
+        |&(i, j)| match &drawn[i].drawn[j].1 {
+            Drawn::Dot(dot) => put_to_graphviz(dot),
+            _ => unreachable!("a unit is a view drawn"),
+        },
+    );
+    let mut verdict = units.iter().zip(verdicts);
     let (mut bad, mut checked, mut resplit) = (Vec::new(), 0usize, Vec::new());
     let (mut skipped, mut skipped_files) = (Vec::new(), 0usize);
     let mut skipping = std::collections::BTreeSet::new();
-    for (_, file) in found {
-        bad.extend(file.bad);
-        checked += file.checked;
-        resplit.extend(file.resplit);
-        if !file.skipped.is_empty() {
-            skipped_files += 1;
-            skipping.insert(file.dir);
+    for file in &drawn {
+        let name = &file.name;
+        let mut skips = false;
+        for (view, d) in &file.drawn {
+            match d {
+                Drawn::Nothing => {}
+                Drawn::Errored(e) => bad.push(format!("{name} [{view}]\n  the view errored: {e}")),
+                Drawn::Skipped(edges) => {
+                    skips = true;
+                    skipped.push((format!("{name} [{view}]"), *edges));
+                }
+                Drawn::Dot(dot) => {
+                    let (_, said) = verdict.next().expect("a verdict a view drawn");
+                    checked += 1;
+                    match said {
+                        Ok(false) => {}
+                        Ok(true) => resplit.push(format!(
+                            "{name} [{view}] ({} digraphs)",
+                            digraphs(dot).len()
+                        )),
+                        Err(why) => bad.push(format!("{name} [{view}]\n  {why}")),
+                    }
+                }
+            }
         }
-        skipped.extend(file.skipped);
+        if skips {
+            skipped_files += 1;
+            skipping.insert(file.dir.clone());
+        }
     }
     assert!(
         bad.is_empty(),
