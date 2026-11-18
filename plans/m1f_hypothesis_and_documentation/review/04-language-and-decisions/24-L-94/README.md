@@ -90,18 +90,19 @@ that is an argument"*), [`02-syntax.md` § Query](../../../../../docs/ein/user/0
 
 ### 3.1 The decision (L-94)
 
-**(a) Re-word Q-M1f.119** to name the fact's argument. Proposed, lines 3–6:
+**(a) Re-word Q-M1f.119** to name the fact's argument. Proposed, lines 3–8, today's text with one clause added
+(*"writes as the relation of a fact that is an argument,"*) and nothing else:
 
 ```markdown
 Every relation a query's `:goal` asks about, at any depth and under `(absent …)` and `(not …)` too, and every
 relation a claim lists a fact of, is a relation of the program: one it declares, states a fact of, writes as the
 relation of a fact that is an argument, or writes in a rule's, an hrule's or an obligation's `:match` or `:assert`,
 at any depth, or passes where a relation's name is held; or one a `(solve :hrules …)` activator has its hrule
-propose. `eq`, `neq` and the declarations, `(relation ?R ?T)`, are every program's.
+propose. `eq`, `neq` and the declarations, `(relation ?R ?T)`, are every program's, and no theory's relation is:
+`is-a` is a relation of the program only where it writes one, as any relation is (Q-M1f.436).
 ```
 
-(the last sentence also brought to today's loader: `is-a` is no longer every program's, § 7), and its **Why** gains
-nothing: *"One notion of a relation of the program serves the `(solve …)` lists (Q-M1f.114), a
+Its **Why** gains nothing: *"One notion of a relation of the program serves the `(solve …)` lists (Q-M1f.114), a
 goal and a claim"* is then true of the two texts.
 
 **(b) Keep it**, reading *"states a fact of"* as covering a fact inside a fact. Q-M1f.114 and the pages say the
@@ -166,11 +167,11 @@ decisions' sentences, the three pages', and the code, each with its command and 
 - **Re-taken with `ein-head-17085b27`**: the fact's argument (L-94) and the two ways the refusal's line leaves out
   are as at the first look; the line itself is the same. **What moved is `is-a`**: since Q-M1f.436 (S1f.23.4) a goal
   over it in a program that writes none is refused, `every-programs.ein` exit 1 where it loaded at the first look.
-  Q-M1f.114, `12-query.md` and `07-diagnostics.md` § 2.20 and § 2.21 were brought to it; **Q-M1f.119 and
-  `02-syntax.md` § Query were not**: the decision still says *"`is-a`, `eq`, `neq` and the declarations … are every
-  program's"* and the reference page *"`is-a`, `eq`, `neq` and `relation` are every program's"*
-  ([`runs/sentences-and-code.txt`](runs/sentences-and-code.txt)). So Q-M1f.119 now misses one way and names one too
-  many; the proposed re-wording (§ 3.1) drops `is-a`.
+  Q-M1f.114, `12-query.md` and `07-diagnostics.md` § 2.20 and § 2.21 were brought to it, and **Q-M1f.119 and
+  `02-syntax.md` § Query too, by `d5fceff9`** (S1f.23.1's task 4, R-24), after this page's re-take: both now say
+  *"no theory's relation is: `is-a` is one where the program writes it"*. `runs/sentences-and-code.txt` was taken
+  before that commit and still shows the old *"`is-a`, `eq`, `neq` … are every program's"*. So Q-M1f.119 today misses
+  one way and names none too many; § 3.1's proposal is today's text with the one clause added.
 
 - **The refusal's line misses three ways, not one**: the fact's argument (D-23), a name passed by an activator
   (`passed-to-an-activator.ein` loads), and `eq`/`neq` (every program's; `is-a` was among them at the first look). The last needs no words in a line
@@ -183,7 +184,51 @@ decisions' sentences, the three pages', and the code, each with its command and 
 ## 8. Your call
 
 - **L-94**: (a) re-word Q-M1f.119 to add *"writes as the relation of a fact that is an argument"* (§ 3.1); (b) keep it.
-  Either way its `is-a` clause is stale since Q-M1f.436, as is `02-syntax.md`'s (§ 7).
+  Its `is-a` clause is already today's (§ 7).
 - **D-23** (F23's, shown here): the line re-worded (§ 3.2), or as it is.
 - The pages' missing activator clause (§ 3.3), with either.
 - **Default**: none taken.
+
+What each choice changes, and what it leaves, is § 9.
+
+## 9. What each choice leads to
+
+**No choice here changes what loads, an answer or an exit code.** The loader already takes every way in § 2.2
+(`relation_heads` recurses into a fact's arguments). The three choices are about which texts say so, and are
+independent: any combination can be taken.
+
+### 9.1 L-94: the decision
+
+| | (a) re-word Q-M1f.119 | (b) keep it |
+|---|---|---|
+| **What is edited** | one decision file, one clause (§ 3.1) | nothing |
+| **Code, tests, goldens** | none | none |
+| **The texts of one notion** | Q-M1f.114 (the solve lists), Q-M1f.119 (goals and claims), `12-query.md`, `02-syntax.md` and `07-diagnostics.md` § 2.20 and § 2.21 all name the fact's argument; Q-M1f.119's *Why*, *"one notion … serves the `(solve …)` lists, a goal and a claim"*, is true of the texts | Q-M1f.114 and the pages name it, Q-M1f.119 does not: two decisions give two lists of one notion, and Q-M1f.119's *Why* is true of the code only |
+| **What a reader of the decision concludes about the witness** (`(claims Carol (owns Bob Dog))`, `(query :goal (owns ?a ?b))`) | it loads, as it does | it loads only if *"states a fact of"* covers a fact written as another fact's argument. In the project's words it does not: the program states a fact of `claims`, and `(owns Bob Dog)` is a fact in `claims`' context, which no state holds (Q-M1f.394). Read that way, the decision says the witness is refused, and the engine loads it |
+| **What guards the way** | the decision: a loader that stopped taking a fact's argument would contradict Q-M1f.119 as well as Q-M1f.114 and the pages | Q-M1f.114 and the pages only |
+| **Tests** | none needed for the wording. `goal_premises.rs`' `a_goal_over_a_relation_of_the_program_loads` has 14 shapes and none is a relation written only as a fact's argument; a 15th would pin the way the decision then names | as today |
+
+### 9.2 D-23: the refusal's line
+
+| | the line re-worded (§ 3.2) | as it is |
+|---|---|---|
+| **What is edited** | `from_ir.rs`' `CLAIM_RELATION` (line 693), and `RELATION` (line 821), the solve lists' line with the same gap, if it goes with it | nothing |
+| **What moves with it** (grep today) | `CLAIM_RELATION`, which a goal's, a region claim's and an `:expect`'s refusal share: `goal_premises.rs:158`'s expected text, two `refused` texts in `corpus/regressions.toml` (`goal-no-such-relation`, `goal-absent-no-such-relation`), `examples/broken/load/expect_unknown_relation.expected`, and three rows of `07-diagnostics.md` (lines 212, 215, 730), the normative page, which a change to a refusal's text changes in the same commit. The solve lists' line: three `refused` texts in `regressions.toml` (`solve-hrules-…`, `solve-hypothesis-relations-…`, `solve-no-hypothesis-no-such-relation`) and two rows of `07-diagnostics.md` (683, 684). The shape golden's lines for those refused programs that digest the message, re-banked | nothing |
+| **What the user sees** | the line after the dash lists the fact's argument and a name passed where a relation's name is held; it is still a summary (it leaves out *an obligation* and *an activator's hrule proposes*, which the decision names) | the line lists three ways. The ones it leaves out never lead to the refusal, since a goal over such a relation loads, so the line never contradicts what happens to a program; it only teaches less: a user fixing `(payed ?g)` is not told that writing `payed` inside a fact or passing it to an activator would make it the program's |
+| **F23** | D-23 done | D-23 stays open in F23 |
+
+### 9.3 The pages' activator clause (§ 3.3)
+
+| | added | left |
+|---|---|---|
+| **What is edited** | `12-query.md` (line 212) and `02-syntax.md` § Query (line 681), one clause each; docs only, the link check | nothing |
+| **Effect** | the user's pages list every way Q-M1f.119 lists (`07-diagnostics.md` § 2.21 already covers it through § 2.20's notion) | a reader of the two pages takes `(symmetric next-to)` alone as not making `next-to` the program's, while the loader takes it (§ 2.2, row 2). The decision and the pages keep missing one way each, a different one, unless (a) is taken too, after which only the pages miss one |
+
+### 9.4 Taken together
+
+- **(a), the line re-worded, the clause added**: every text that lists the ways names the same ones the loader takes.
+  The line remains a shorter summary. One decision edit, one page edit pair, and one code change with its pinned
+  texts.
+- **(b), the line as it is, no clause**: nothing changes. Q-M1f.119 misses the fact's argument, the pages miss the
+  activator, and the line misses both. The pages and the line only say less than the loader takes; Q-M1f.119, read
+  in the project's words (§ 9.1), says the witness is refused, which the loader does not do.
