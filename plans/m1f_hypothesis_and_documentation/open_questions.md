@@ -8484,7 +8484,8 @@ verbatim: *"So, it turns out that we have commands that render part of KB. I'm n
 would be nice to formalize this KB slice with something, e.g. ein query or rule that selects all nodes where relation
 is argument (is it correct definition?), and together with `constraints` allow to render arbitrary query."* **(a)**;
 the addition, a slice of the knowledge base defined by a query and drawn, is
-[S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), planned and not started. Recorded by S1f.23.6;
+[S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), built (`519fadd2`, Q-M1f.523 to .532): the view
+now draws root's facts about relations by the KB view's code, and the decision file says so. Recorded by S1f.23.6;
 the decision [Q-M1f.426](../../docs/decisions/cli/Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md).
 
 The default had been (a). Built: `ein-render/src/constraints.rs`; held by `every_object_once.rs`'
@@ -9937,40 +9938,40 @@ its default, are in its Record.
 
 ### Q-M1f.523 — The slice by a query: its definition
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 1](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: every fact a knowledge base holds with a relation of the program directly under an argument arrow (U (c)); not the constraint view's selection as it is, nor readings (a) or (b), nor at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 1](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: every fact a knowledge base holds with a relation of the program directly under an argument arrow (U (c)); not the constraint view's selection as it is, nor readings (a) or (b), nor at any depth. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/cli/Q-M1f.523-…`](../../docs/decisions/cli/Q-M1f.523-the-facts-about-relations-are-every-fact.md): `ein_infer::slice::about_relations` over `ein_core::Program::relations_of`, the goal's and claim's list the loader now keeps.
 
 ### Q-M1f.524 — The slice by a query: what *a relation* is
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 2](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a relation of the program, one notion with the goal's and the claim's (Q-M1f.119, and Q-M1f.522 since the user's V-7); not a state's relations, nor the declared ones only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 2](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a relation of the program, one notion with the goal's and the claim's (Q-M1f.119, and Q-M1f.522 since the user's V-7); not a state's relations, nor the declared ones only. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), carried by Q-M1f.523's file: `Program::relations_of` is the list a goal and a claim are held to, the kernel's words the program writes, `eq`, `neq` and an activator's relations among them.
 
 ### Q-M1f.525 — The slice by a query: an atom that is a relation and an object
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 3](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected as the graph has it, `z` in a numeral and `eq` in an order among them; `eq` and `neq` not left out. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 3](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected as the graph has it, `z` in a numeral and `eq` in an order among them; `eq` and `neq` not left out. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), carried by Q-M1f.523's file; on the corpus `z` and `eq` are still the atoms that select most.
 
 ### Q-M1f.526 — The slice by a query: depth
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 4](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: directly, the fact's arrows 2, 3, …; not at any depth. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 4](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: directly, the fact's arrows 2, 3, …; not at any depth. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), carried by Q-M1f.523's file: arrows 2, 3, … of the held fact only.
 
 ### Q-M1f.527 — The slice by a query: what is drawn with it
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 5](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: what its facts point at, at any depth, a fact held nowhere in its frame; not the selected facts alone. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 5](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: what its facts point at, at any depth, a fact held nowhere in its frame; not the selected facts alone. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/cli/Q-M1f.527-…`](../../docs/decisions/cli/Q-M1f.527-a-slice-is-drawn-with-what-its-facts-point-at.md): `ein_render::kb_dot::KbDotOpts::only`.
 
 ### Q-M1f.528 — The slice by a query: a fact under an arrow, held nowhere
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 6](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected only through a held fact that points at it. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 6](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: selected only through a held fact that points at it. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), carried by Q-M1f.527's file: a slice keeps held facts alone, and a fact held nowhere is drawn in its frame through the kept fact that points at it.
 
 ### Q-M1f.529 — The slice by a query: how a goal is given
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 7](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `ein render kb FILE --goal '(…)'`, of root or a saved state, with `--query N` beside it; not the form only, nor a saved state only. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 7](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `ein render kb FILE --goal '(…)'`, of root or a saved state, with `--query N` beside it; not the form only, nor a saved state only. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/cli/Q-M1f.529-…`](../../docs/decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md): `ein render kb FILE --goal GOAL | --query N`, `ein_ir::read_goal`, `ein_infer::slice::answering`.
 
 ### Q-M1f.530 — What `ein render constraints` becomes
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 8](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: the slice of Q-M1f.523 on root's saturated knowledge base, defined in the engine and drawn by the KB view's code, with no language change; not two computed relations, nor the view kept, nor removed for `--goal`. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 8](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: the slice of Q-M1f.523 on root's saturated knowledge base, defined in the engine and drawn by the KB view's code, with no language change; not two computed relations, nor the view kept, nor removed for `--goal`. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/cli/Q-M1f.530-…`](../../docs/decisions/cli/Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md), Q-M1f.426's and Q-M1f.71's files amended.
 
 ### Q-M1f.531 — A written check in the constraint view
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 9](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `(eq a w)` left out, as the program view leaves it (R-40); not drawn as a fact. To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 9](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: `(eq a w)` left out, as the program view leaves it (R-40); not drawn as a fact. **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/cli/Q-M1f.531-…`](../../docs/decisions/cli/Q-M1f.531-the-constraint-view-draws-no-written-check.md); R-40 fixed.
 
 ### Q-M1f.532 — The class of an `(or …)` goal
 
-**Raised** 2026-11-18 by S1f.23.7's examples, [open point 10](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a class lists the facts of the disjuncts that hold, and its `as :expect` parses back (R-39). To be built by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2.
+**Raised** 2026-11-18 by S1f.23.7's examples, [open point 10](p1f.23_review_processing/s1f.23.7_examples.md#6-open-points-for-the-user). **Ruled 2026-11-19: the default**, the user verbatim: *"S1f.23.7 - I accept"*: a class lists the facts of the disjuncts that hold, and its `as :expect` parses back (R-39). **Built** by [S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), task 2 (`519fadd2`), filed as [`docs/decisions/read-out/Q-M1f.532-…`](../../docs/decisions/read-out/Q-M1f.532-an-or-goals-class-lists-the-facts.md); R-39 fixed.
