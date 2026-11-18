@@ -1,5 +1,147 @@
 # L-94 — Q-M1f.119's list of the ways a relation is the program's misses one
 
+## In short, by example: what Ein does now, and what each choice changes
+
+**Ein's behaviour does not change under any of the choices.** Every program below loads or is refused exactly as
+today, with the same answer and the same exit code, whichever way you pick. The choices change **words only**:
+
+- **L-94** changes the text of one decision, Q-M1f.119, the document that states the rule;
+- **D-23** changes the text of one error message, the part after the dash;
+- **§ 3.3** changes one sentence on each of two user pages.
+
+L-94 exists because the decision's text and Ein disagree on one program, example 1. Ein is right and the text is
+behind. The question is whether to bring the text up to date (a) or leave it as it is (b).
+
+Every output below is today's binary, `ein solve --no-require-why`, kept in [`runs/now/`](runs/now/).
+
+### Example 1: a relation written only inside a fact (L-94)
+
+[`programs/fact-argument.ein`](programs/fact-argument.ein):
+
+```lisp
+(claims Carol (owns Bob Dog))
+(query :goal (owns ?a ?b))
+```
+
+`owns` is never declared, never stated as a held fact and never in a rule. It appears only as the relation of the
+fact `(owns Bob Dog)`, which is an argument of `claims`.
+
+**What Ein does today, under (a), and under (b): it loads.** Exit 0, and the goal has no row, because Carol's claim
+is not a held fact ([`runs/now/fact-argument.solve.txt`](runs/now/fact-argument.solve.txt)):
+
+<!-- output -->
+```text
+  query             (owns ?a ?b)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1) — the goal has no row: undetermined here
+  as :expect        (model)
+exit 0
+```
+
+**What differs is only what the decision says about this program:**
+
+| | Q-M1f.119's list of what makes a relation the program's | what the decision says of example 1 | what Ein does |
+|---|---|---|---|
+| **today, and under (b)** | *"one it declares, states a fact of, or writes in a rule's, an hrule's or an obligation's `:match` or `:assert`, … or passes where a relation's name is held; or one a `(solve :hrules …)` activator has its hrule propose"* | `owns` is none of these (the program states a fact of `claims`, not of `owns`), so **read as written, the goal should be refused** | loads |
+| **under (a)** | the same, with **"writes as the relation of a fact that is an argument"** added | `owns` is the program's, so **it loads** | loads |
+
+For contrast, the same program with the relation misspelt inside the fact
+([`programs/fact-argument-misspelt.ein`](programs/fact-argument-misspelt.ein)):
+
+```lisp
+(claims Carol (own Bob Dog))
+(query :goal (owns ?a ?b)
+  :expect (model (owns Bob Dog)))
+```
+
+is **refused, exit 1, today and under every choice**
+([`runs/now/fact-argument-misspelt.solve.txt`](runs/now/fact-argument-misspelt.solve.txt)):
+
+<!-- output -->
+```text
+kb load error: programs/fact-argument-misspelt.ein:6:15: query: its :goal writes (owns ?a ?b), and the program names no relation owns — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of owns; …
+exit 1
+```
+
+So it is the `(owns Bob Dog)` inside the claim that makes `owns` the program's. Ein already works this way, and (a)
+writes it into the decision.
+
+### Example 2: a misspelt relation, and the error message (D-23)
+
+[`programs/named-nowhere.ein`](programs/named-nowhere.ein):
+
+```lisp
+(p a)
+(query :goal (payed ?g))
+```
+
+**Refused, exit 1, today and under every choice.** Only the explanation after the dash differs.
+
+Today, and with D-23 left as it is ([`runs/now/named-nowhere.solve.txt`](runs/now/named-nowhere.solve.txt)):
+
+<!-- output -->
+```text
+kb load error: programs/named-nowhere.ein:6:15: query: its :goal writes (payed ?g), and the program names no relation payed
+  — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule,
+  so no state holds a fact of payed
+```
+
+With D-23 re-worded (a mock, [`runs/named-nowhere.solve.MOCK.line-reworded.txt`](runs/named-nowhere.solve.MOCK.line-reworded.txt)):
+
+<!-- output -->
+```text
+kb load error: programs/named-nowhere.ein:6:15: query: its :goal writes (payed ?g), and the program names no relation payed
+  — a relation of the program is one it declares, states a fact of, writes in a fact, a rule or an hrule,
+  or passes where a relation's name is held, so no state holds a fact of payed
+```
+
+(Each is one line, broken here to fit.) Today's message lists three ways and leaves out two that Ein accepts: a relation written inside a fact (example 1)
+and one passed to an activator (example 3). The re-worded message lists them. Example 1's misspelt program prints
+the same message, so it changes the same way.
+
+### Example 3: a relation passed to an activator (the pages, § 3.3)
+
+[`programs/passed-to-an-activator.ein`](programs/passed-to-an-activator.ein):
+
+```lisp
+(person Ann)
+(rule tag (?R) :match (person ?x) :assert (?R ?x) :why "every person is {?R}")
+(tag happy)
+(query :goal (happy ?x))
+```
+
+`happy` is written only as an argument of `(tag happy)`, which activates the rule `tag` with `?R = happy`.
+**Today and under every choice it loads**, and the answer is `?x = Ann`, exit 0
+([`runs/now/passed-to-an-activator.solve.txt`](runs/now/passed-to-an-activator.solve.txt)):
+
+<!-- output -->
+```text
+  query             (happy ?x)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?x = Ann
+  as :expect        (model (happy Ann))
+exit 0
+```
+
+Q-M1f.119 already names this way (*"passes where a relation's name is held"*). The user pages
+[`12-query.md`](../../../../../docs/ein/user/03-syntax-and-semantics/12-query.md) and
+[`02-syntax.md`](../../../../../docs/ein/user/04-reference/02-syntax.md) § Query do not: their list stops at
+*"… written in a rule or an hrule, or proposed by an hrule a `(solve :hrules …)` activator turns on"*. § 3.3 adds
+*"passed by an activator where a relation's name is held, `(symmetric next-to)`,"* to both.
+
+### All three, at a glance
+
+| program | Ein today | after any choice | which text the choices touch |
+|---|---|---|---|
+| example 1, `owns` only inside a fact | loads, exit 0 | the same | L-94: the decision's list (a) or not (b) |
+| example 1 misspelt, `own` | refused, exit 1 | the same, and the message's last clause changes if D-23 is re-worded | D-23 |
+| example 2, `payed` nowhere | refused, exit 1 | the same, and the message's last clause changes if D-23 is re-worded | D-23 |
+| example 3, `happy` passed to an activator | loads, `?x = Ann` | the same | § 3.3: the two pages' list |
+
+**Changing Ein's behaviour would be a different question, and no option here proposes one.** For example, making the
+loader follow the decision's text as written today would refuse example 1.
+
 ## 1. The question
 
 A query's goal and a claim may ask only about **relations of the program**; any other is refused at load, so that a
@@ -169,8 +311,8 @@ decisions' sentences, the three pages', and the code, each with its command and 
   over it in a program that writes none is refused, `every-programs.ein` exit 1 where it loaded at the first look.
   Q-M1f.114, `12-query.md` and `07-diagnostics.md` § 2.20 and § 2.21 were brought to it, and **Q-M1f.119 and
   `02-syntax.md` § Query too, by `d5fceff9`** (S1f.23.1's task 4, R-24), after this page's re-take: both now say
-  *"no theory's relation is: `is-a` is one where the program writes it"*. `runs/sentences-and-code.txt` was taken
-  before that commit and still shows the old *"`is-a`, `eq`, `neq` … are every program's"*. So Q-M1f.119 today misses
+  *"no theory's relation is: `is-a` is one where the program writes it"* ([`runs/sentences-and-code.txt`](runs/sentences-and-code.txt),
+  re-taken). So Q-M1f.119 today misses
   one way and names none too many; § 3.1's proposal is today's text with the one clause added.
 
 - **The refusal's line misses three ways, not one**: the fact's argument (D-23), a name passed by an activator
