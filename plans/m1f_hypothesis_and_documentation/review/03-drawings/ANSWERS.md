@@ -17,7 +17,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **Raise it to ≥ 194**: the nine and `mul9-step` are drawn, and `props`, `arith9`, `binary-arith` with them.
 - **Raise it and leave closing rules out by kind**: the nine and `mul9-step` are drawn, no closing rule is.
 
-**Your answer:** 
+**Your answer:** Keep, and in future ignore all cases when render hits any limit, unless I explicitely ask about it.
 
 **Notes:** 
 
@@ -35,7 +35,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   `.dot` gains a *generated* line.
 - **As they are**: the README's line, nothing holding them. (No default is recorded.)
 
-**Your answer:** 
+**Your answer:** No tests required here! The only point I want to highlight here. There must be tests that verify dot graph structure produced by render, but not layout. Layout is user's preference and depends on concrete names used in program. For example I want to see as default layout: layered representation objects-facts-objects-facts-objects-....-facts-objects, it's trivial wihtout nested facts, and not trivial with, also would put `relation` as root object on top rank, so in simple case there are: `relation` object -> relations definitions facts -> relations and types objects -> relations facts -> simple objects, this 5-layers representation is preferred (not required). relation's properties, like `symmetic`, probably should go to the same level as `relation` object.
 
 **Notes:** 
 
@@ -50,7 +50,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** the first arrow `1`, at the relation, the arguments `2`, `3`, … (default, built).
 - **(b)** the arguments `1`, `2`, …, the first arrow unnumbered (or `0`).
 
-**Your answer:** 
+**Your answer:** (a) 
 
 **Notes:** 
 
@@ -65,7 +65,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** beside the octagon, an `xlabel`; after the relation's name on a folded arrow (default, built).
 - **(b)** a node of its own for each source and each rule, the fact pointing at it.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -81,7 +81,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   (default, built).
 - **(b)** a fact of two arrows folded too, into a loop on its argument.
 
-**Your answer:** 
+**Your answer:** (a) + (b)
 
 **Notes:** 
 
@@ -96,7 +96,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** each fact drawn as a fact, the declarations among them, no name read (default, built).
 - **(b)** the declarations left out by the name `relation`.
 
-**Your answer:** 
+**Your answer:** So, it turns out that we have commands that render part of KB. I'm not against it - (a). Small addition - would be nice to formalize this KB slice with something, e.g. ein query or rule that selects all nodes where relation is argument (is it correct definition?), and together with `constraints` allow to render arbitrary query.
 
 **Notes:** 
 
@@ -115,7 +115,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 
 **Your answer:** 
 
-**Notes:** 
+**Notes:** (a)
 
 ---
 
@@ -128,7 +128,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** each fact its node, each step a node of its own, a diamond for every derivation (default, built).
 - **(b)** the derivation graph's diamond only where a fact has two derivations.
 
-**Your answer:** 
+**Your answer:** (a) I like what we already have, just use more contrast colors and 2x thicker lines then default.
 
 **Notes:** 
 
@@ -143,7 +143,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** a fact of three arrows in a slice: a labelled arrow through a point (default, built).
 - **(b)** a slice folds nothing under `--fold`; only the `-F` snapshots fold.
 
-**Your answer:** 
+**Your answer:** do not fold, when we show derivation with additional arrow (of different color); general rule for rendering - no arrow to/from arrows, arrows go only to/from shapes; So other 3-facts and 2-facts can be folded, but not those that hold derivation arrows.
 
 **Notes:** 
 
@@ -160,7 +160,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) Drawn as facts**: each state, node or candidate a frame of canonical octagons, with the costs the mock shows
   (atoms drawn once per state, the shape channel and the minimal line's double border gone, three times as wide).
 
-**Your answer:** 
+**Your answer:**  (a)
 
 **Notes:** 
 
@@ -177,7 +177,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) The goal as text** in its note, as before.
 - And, in either: a claim's facts **as text in the note** (today), or **drawn**, a frame a model.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -194,7 +194,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) Both left out**, in the KB view and the program view's `kb`, by the relation's name, with what it takes along
   (§ 3).
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -209,7 +209,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a) A box** (default), in every view that draws facts.
 - **(b) An ellipse**, Graphviz's default.
 
-**Your answer:** 
+**Your answer:** (a) main: object - labelled box, fact - non-labelled octagon, variable - labelled diamond; 
 
 **Notes:** 
 
@@ -224,7 +224,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a) Canonical, else folded, else Ein only** (default): `div9-step-0` drawn folded.
 - **(b) Canonical or Ein only**: `div9-step-0` as Ein only, one form on every page.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -241,7 +241,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) `label`**, as the pages draw it: the same words on the arrow, the `dot` layouts of large views slower by the
   table's factor.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -256,7 +256,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** canonical by default, folded where the page's point is the compact view and the page says so (default).
 - **(b)** canonical on every page.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -271,7 +271,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** a cut, its page saying what it leaves out (default).
 - **(b)** whole views only.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -286,7 +286,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** terminals double-bordered, the core red (default).
 - **(b)** another mark (e.g. a frame, which reads as a context), or none (the page says it in words).
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -301,7 +301,8 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** left as they are: states, candidates, relations, steps and modules are no drawing of facts (default).
 - **(b)** each drawn with its facts canonical (and the region view with them, Q-M1f.430).
 
-**Your answer:** 
+**Your answer:** (a) canonical drawing is ONLY for Ein KB (objects and facts), everything else can be drawn in any other best way.
+plans/m1f_hypothesis_and_documentation/review/03-drawings/50-Q-M1f.470/renders/06-class-of-two.option-b-facts-drawn.MOCK.svg - this one looks good, it could be an option for small lattice and small KB, but it is an exception. plans/m1f_hypothesis_and_documentation/review/03-drawings/50-Q-M1f.470/renders/08-constructions.svg - this also looks good.
 
 **Notes:** 
 
@@ -316,7 +317,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** the chain of unlabelled octagons, the facts in TeX (default).
 - **(b)** each fact with its arrows, in the chain.
 
-**Your answer:** 
+**Your answer:** (a), their own arrows have nothing related to this ordering example
 
 **Notes:** 
 
@@ -331,7 +332,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** `canonical`, `folded`; `01-is-a-convention` dropped; `12-query-view` merged (default).
 - **(b)** the old names kept.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -346,7 +347,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** reconstructed from the page's text, no file (default).
 - **(b)** a program file for each (and a corpus entry), or the drawing dropped.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -361,7 +362,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** allowed where its page says so (default).
 - **(b)** never: the arrow taken off, or the binary's cut in its place.
 
-**Your answer:** 
+**Your answer:** Allowed as hand-written, for explanations, not render output. For rendering layout see L-100
 
 **Notes:** 
 
@@ -379,6 +380,6 @@ re-render of the bundle rewrites the READMEs and never this file.
   the KB views out by `fdp`).
 - **(d)** per drawing, a page's copy names its layout.
 
-**Your answer:** 
+**Your answer:** same as L-100
 
 **Notes:** 
