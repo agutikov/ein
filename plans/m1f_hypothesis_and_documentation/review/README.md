@@ -1,7 +1,9 @@
 # What waits for the user: the review bundle
 
-Every item of the list *Waiting for you* given at the close of P1f.22 (2026-11-18), one folder each, built so that
-each call can be made by reading the folder. **This folder is gitignored** (`/plans/*/review/`): nothing here is
+Every item of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **is still open**, one folder
+each, built so that each call can be made by reading the folder. An item whose question is resolved, by a ruling,
+by losing its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in
+its ledger and in `git log`. **This folder is gitignored** (`/plans/*/review/`): nothing here is
 committed; the ledgers it cites (`../open_questions.md`, `../findings.md`, P1f.21's `findings.md`, the followups)
 are where each item is recorded.
 
@@ -9,9 +11,9 @@ are where each item is recorded.
 
 | topic | items | what they are about |
 |---|---|---|
-| [01-save-and-load](01-save-and-load/README.md) | 11 | the saved file: what it prints, what reads it, what went with the state files (a fact's English) |
+| [01-save-and-load](01-save-and-load/README.md) | 8 | the saved file: what it prints, what reads it, what went with the state files (a fact's English) |
 | [02-numerals](02-numerals/README.md) | 8 | the calculator's check of a numeral after `written` was erased |
-| [03-drawings](03-drawings/README.md) | 6 | `ein render`'s views and the pages' drawings |
+| [03-drawings](03-drawings/README.md) | 2 | `ein render`'s views and the pages' drawings |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
 | [05-verdicts-as-rules](05-verdicts-as-rules/README.md) | 2 | P1f.21's two questions: what an obligation emits; the names `false` and `open` |
 
@@ -53,16 +55,11 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
-| 01 | [Q-M1f.414](01-save-and-load/01-Q-M1f.414/README.md) | a fact's English, which a state file wrote in a comment, now only in the trace | (a) the trace |
-| 02 | [L-102](01-save-and-load/02-L-102/README.md) | the writer of a fact's English that no command uses | the code goes, with Q-M1f.414 (a) |
-| 03 | [L-105](01-save-and-load/03-L-105/README.md) | `utils/nl_census.py` reads comments that are gone | retired, with Q-M1f.414 (a) |
 | 04 | [Q-M1f.405](02-numerals/04-Q-M1f.405/README.md) | which numerals are taken from the program, and *once* | (a) |
 | 05 | [Q-M1f.409](02-numerals/05-Q-M1f.409/README.md) | an integer's and a rational's check and label | (a) |
-| 06 | [L-107](03-drawings/06-L-107/README.md) | the extent's drawing: $g$, which no frame can mark | as built: grey, frame kept |
 | 07 | [L-106](01-save-and-load/07-L-106/README.md) | the round trip's nightly shards near five minutes | as it is |
 | 08 | [V-7](04-language-and-decisions/08-V-7/README.md) | a relation only an activator names is not counted | as is (leaning: the registry takes it) |
 | 09 | [F21 N-15](04-language-and-decisions/09-F21-N-15/README.md) | *everybody's thoughts are false* with `absent` is dead: twin of `W8/fifo-gap-root`? | none; nothing filed |
-| 10 | [L-96](03-drawings/10-L-96/README.md) | a literal `\n` in the KB view's octagon labels | as is |
 | 11 | [Q-M1f.406](02-numerals/11-Q-M1f.406/README.md) | the label, and where a made number gets it | (a) |
 | 12 | [Q-M1f.407](02-numerals/12-Q-M1f.407/README.md) | a numeral no operation takes is not checked | (a) |
 | 13 | [Q-M1f.408](02-numerals/13-Q-M1f.408/README.md) | where the check's rules live | (a) |
@@ -78,8 +75,6 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 | 23 | [L-93](04-language-and-decisions/23-L-93/README.md) | two stale sentences of the pages (a third found) | left |
 | 24 | [L-94](04-language-and-decisions/24-L-94/README.md) | Q-M1f.119 misses a fact's argument | kept |
 | 25 | [L-97](03-drawings/25-L-97/README.md) | nine `div9-step` rules have no drawing | the bound stays |
-| 26 | [L-98](03-drawings/26-L-98/README.md) | the program view is several digraphs | as is |
-| 27 | [L-99](03-drawings/27-L-99/README.md) | the derivation views keep a fact's text in a node | none |
 | 28 | [L-100](03-drawings/28-L-100/README.md) | the beliefs' two KB drawings have no test | as is |
 | 29 | [L-101](02-numerals/29-L-101/README.md) | `int-check-parts` / `rat-check-parts` ask non-numerals | as they are |
 | 30 | [L-104](01-save-and-load/30-L-104/README.md) | `saturate --dump` prints `:hypothesis 0` for every choice | as is |

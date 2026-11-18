@@ -1,6 +1,0 @@
-; A small program with a derivation, written for this review: a given fact that points at another, and a rule that
-; unpacks it, so the derivation's facts include one under an arrow.
-(relation owns Person Pet :why "{?1} owns {?2}")
-(claims Carol (owns Bob Dog) :source "c")
-(rule believe () :match (claims ?p (owns ?x ?y)) :assert (owns ?x ?y) :why "{?p} says {?x} owns {?y}, and is believed")
-(solve :no-search)

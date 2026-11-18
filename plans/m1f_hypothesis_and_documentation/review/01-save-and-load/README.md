@@ -8,9 +8,6 @@ went with the old state files: each fact written with its English in a comment.
 
 | # | item | the question | default |
 |---|---|---|---|
-| 01 | [Q-M1f.414](01-Q-M1f.414/README.md) | a fact's English, which a state file wrote in a comment, now only in the trace | (a) the trace |
-| 02 | [L-102](02-L-102/README.md) | the writer of a fact's English that no command uses | the code goes, with 414 (a) |
-| 03 | [L-105](03-L-105/README.md) | `utils/nl_census.py` reads comments that are gone | retired, with 414 (a) |
 | 07 | [L-106](07-L-106/README.md) | the round trip's nightly shards near five minutes | as it is |
 | 17 | [Q-M1f.413](17-Q-M1f.413/README.md) | `ein kb save` of a saved file | (a) a root's stored, a node's refused |
 | 18 | [Q-M1f.415](18-Q-M1f.415/README.md) | `ein show hyps` / `ein render h-space` of a saved file | (a) the program's H |
@@ -24,15 +21,6 @@ went with the old state files: each fact written with its English in a comment.
 
 What the ledger does not say, each on its item's page under *Found while building*.
 
-- **01**: the trace is byte for byte the same from both binaries, and never writes a given's statement or the
-  commitment's: of the 18 English lines the old state files had for the item's program, it writes 2 statements and 1
-  source. Option (b) (`saturate --dump` with comments) would cover every fact, givens too; (c) (`-p` with comments)
-  only what the program does not state. The trace's `Premises:` line puts all of a step's sources after all its
-  premises.
-- **02**: the shape golden's 671 `::states` lines still digest the English that no command shows; `serialise.rs`'
-  `firing_to_json` and `fact_summary` have no caller either (public, so no warning).
-- **03**: the census fails silently: exit 0, nothing on stderr, `—` for every rate. M1g plans to use it, and
-  `check_tool_mirrors.py` reads its list of kernel names.
 - **07**: shard 4 holds three heavy programs side by side, so spreading a program's files over workers alone does not
   move it; dealing the heavy programs one to a shard does (about 98 to 139 s a shard). The third heaviest is
   `cul-de-sac` (208 s), not `04_open`.
