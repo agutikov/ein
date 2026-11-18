@@ -30,7 +30,6 @@ use ein_infer::region::Class;
 use ein_infer::relation_names::RelationNamesAsObjects;
 use ein_infer::scope::{Outside, Why};
 use ein_infer::tree_classes::Part;
-use ein_infer::types_as_objects::TypesAsObjects;
 use ein_ir::expect::Over;
 
 /// The rule under the header.
@@ -175,8 +174,6 @@ rows! {
     LaterDebt => "later debt", Block;
     /// A relation H leaves out.
     Outside => "outside", Block;
-    /// A type the blind enumerator binds as an object.
-    Types => "types", Block;
     /// A relation's name the blind enumerator binds as an object.
     RelationNames => "relation names", Block;
     /// A fact of root's core.
@@ -333,7 +330,6 @@ impl Row {
                 Row::Commit,
                 Row::LaterDebt,
                 Row::Outside,
-                Row::Types,
                 Row::RelationNames,
             ],
         ),
@@ -988,37 +984,6 @@ fn outside_row(out: &mut Out, outside: &[Outside]) {
     }
 }
 
-/// What the untyped rung bound as an object, as one sentence (Q-M1e.12: *the
-/// fixture, with the warning*): the names on the right of an `is-a` that a
-/// candidate of the blind enumerator's H names, how many candidates and of
-/// which relations, and why. `None` when it bound none. The read-out prints it
-/// as the `types` row under `universe`, `ein test` beside each claim it
-/// prints, and `ein oracle --dump`'s `region.md` under its candidate count.
-pub fn types_text(t: &TypesAsObjects) -> Option<String> {
-    if t.is_empty() {
-        return None;
-    }
-    let one = t.objects.len() == 1;
-    let (it, one_of) = if one { ("it", "it") } else { ("them", "one") };
-    let name = if t.candidates == 1 { "names" } else { "name" };
-    Some(format!(
-        "{} — on the right of an is-a, and {} of {} {name} {one_of} as an object: the blind \
-         enumerator is untyped, and no signature names {it}",
-        t.objects.join(", "),
-        plural(t.candidates as u64, "candidate", "candidates"),
-        t.relations.join(", "),
-    ))
-}
-
-/// The `types` row under `universe`, when the untyped rung bound a type as
-/// an object: every question prints it, since every question is over the
-/// same H.
-fn types_row(out: &mut Out, t: &TypesAsObjects) {
-    if let Some(text) = types_text(t) {
-        out.line(sub_row(Row::Types, text));
-    }
-}
-
 /// A relation's name the blind enumerator bound as an object, as one
 /// sentence: the names that only a rule concludes a fact of and that a
 /// candidate of its H names, how many candidates and of which relations, and
@@ -1348,7 +1313,6 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     out.row(Row::Universe, plural(c.n as u64, "candidate", "candidates"));
     later_rows(&mut out, &c.root.later);
     outside_row(&mut out, &c.root.outside);
-    types_row(&mut out, &c.root.types_as_objects);
     relation_names_row(&mut out, &c.root.relation_names);
     out.row(
         Row::Route,
@@ -1446,7 +1410,6 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     commit_row(&mut out, &a.root);
     later_rows(&mut out, &a.root.later);
     outside_row(&mut out, &a.root.outside);
-    types_row(&mut out, &a.root.types_as_objects);
     relation_names_row(&mut out, &a.root.relation_names);
     out.row(Row::Route, ROOT_ROUTE);
     out.row(Row::Work, work_text(d.work.saturations, d.work.facts, None));
@@ -2089,7 +2052,6 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
-    types_row(out, &a.root.types_as_objects);
     relation_names_row(out, &a.root.relation_names);
     let route = match (d.route, o.command) {
         (Route::DownSet, _) => format!("1, the alive down-set — {}", licences(&a.licences)),
@@ -2321,7 +2283,6 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
-    types_row(out, &a.root.types_as_objects);
     relation_names_row(out, &a.root.relation_names);
     // The tree says what order it took: which keys decided its branches,
     // and where it read the couplings, how many and when.

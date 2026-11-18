@@ -3,9 +3,10 @@
 //!
 //! A fact that a drawn fact points at is its own node, an octagon with the
 //! relation's name in it and its argument arrows numbered: never a node
-//! labelled with the fact's text, and never an arrow beside its node. It is
-//! filled where the knowledge base holds it, and stands in a dashed frame
-//! named for the relations of the facts that point at it
+//! labelled with the fact's text, and never an arrow beside its node. Where
+//! the knowledge base does not hold it, in a context only, it stands in a
+//! dashed frame named for the relations of the facts that point at it; a held
+//! one stands in no frame, whatever points at it, and no octagon is filled
 //! (Q-M1f.398). A held fact that nothing points at is drawn
 //! as it was.
 //!
@@ -25,7 +26,7 @@ use ein_render::render_constraints;
 use ein_render::rules::{RuleMode, render_rule_form};
 
 /// One fact, `(= 5 (+ 2 2))`, held and in the contexts of two relations;
-/// one, `(+ 2 2)`, in a context and not held; one, `(= 4 (+ 2 2))`, held
+/// one, `(+ 2 2)`, in a context only, not held; one, `(= 4 (+ 2 2))`, held
 /// and under no arrow.
 const KB: &str = "\
 (think Alice (= 5 (+ 2 2)))
@@ -83,6 +84,11 @@ fn frame_of(dot: &str, id: &str) -> Option<String> {
     None
 }
 
+/// No node of the drawing is filled: *held* is *outside every frame*.
+fn nothing_is_filled(dot: &str) {
+    assert!(!dot.contains("filled"), "a filled node:\n{dot}");
+}
+
 /// No node of the drawing is labelled with a fact's text.
 fn no_label_is_a_facts_text(dot: &str) {
     for line in dot.lines() {
@@ -95,7 +101,7 @@ fn no_label_is_a_facts_text(dot: &str) {
 }
 
 #[test]
-fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
+fn the_kb_view_draws_a_fact_in_two_contexts_once() {
     let dot = kb_view(KB);
     // The KB view writes a relation's name in an octagon in parentheses, so
     // its labels are read by what stands after the opening one.
@@ -107,14 +113,14 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
         "one node for the one fact of = that a fact points at:\n{dot}"
     );
     let e = id_of(equalities[0]);
-    // Held: filled. In the contexts of `says` and `think`: one frame names
-    // the two.
-    assert!(equalities[0].contains("style=\"filled,solid\""), "{dot}");
+    // Held, and in the contexts of `says` and `think`: in no frame, and no
+    // octagon is filled.
     assert_eq!(
-        frame_of(&dot, e).as_deref(),
-        Some("says, think ctx"),
-        "{dot}"
+        frame_of(&dot, e),
+        None,
+        "a held fact is in no frame:\n{dot}"
     );
+    nothing_is_filled(&dot);
     // And no arrow of that fact: nothing leaves `5` under the label `=`.
     assert!(
         !dot.lines()
@@ -144,11 +150,12 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
         dot.contains(&format!("{e} -> {sum} [label=\"#2\"")),
         "{dot}"
     );
-    // `(+ 2 2)` is in a context and not held: one node, not filled.
+    // `(+ 2 2)` is in a context only, not held: one node, in the frame of
+    // the relation that points at it, and the one frame of the drawing.
     let plus: Vec<&&str> = nodes.iter().filter(|l| l.contains("label=\"(+)")).collect();
     assert_eq!(plus.len(), 1, "{dot}");
-    assert!(!plus[0].contains("filled"), "{dot}");
     assert_eq!(frame_of(&dot, sum).as_deref(), Some("= ctx"), "{dot}");
+    assert_eq!(dot.matches("subgraph cluster_ctx_").count(), 1, "{dot}");
     // `(= 4 (+ 2 2))` is held and nothing points at it: an arrow, as it was,
     // to the node of the fact under its third arrow.
     assert!(
@@ -162,6 +169,39 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once_in_one_frame() {
             "the text {text} is in the drawing:\n{dot}"
         );
     }
+}
+
+#[test]
+fn a_knowledge_base_whose_facts_under_an_arrow_are_all_held_has_no_frame() {
+    // `(owns Bob Dog)` is held, and Alice thinks it and Carol says it: one
+    // octagon in no frame, and the drawing has none.
+    let dot =
+        kb_view("(owns Bob Dog)\n(think Alice (owns Bob Dog))\n(says Carol (owns Bob Dog))\n");
+    let owns: Vec<&str> = node_lines(&dot)
+        .into_iter()
+        .filter(|l| l.contains("label=\"(owns)"))
+        .collect();
+    assert_eq!(owns.len(), 1, "{dot}");
+    assert!(!dot.contains("cluster_ctx_"), "{dot}");
+    assert!(
+        !dot.contains("newrank"),
+        "a view with no frame ranks as it did:\n{dot}"
+    );
+    nothing_is_filled(&dot);
+    // Two facts of one relation: the one held stands outside, the one only
+    // thought alone in `think ctx`.
+    let dot = kb_view(
+        "(owns Bob Dog)\n(think Alice (owns Bob Dog))\n(think Dan (owns Bob Dog))\n\
+         (think Dan (owns Bob Cat))\n",
+    );
+    let owns: Vec<&str> = node_lines(&dot)
+        .into_iter()
+        .filter(|l| l.contains("label=\"(owns)"))
+        .collect();
+    assert_eq!(owns.len(), 2, "{dot}");
+    let framed: Vec<Option<String>> = owns.iter().map(|l| frame_of(&dot, id_of(l))).collect();
+    assert_eq!(framed, [None, Some("think ctx".to_string())], "{dot}");
+    nothing_is_filled(&dot);
 }
 
 #[test]
@@ -185,8 +225,9 @@ fn the_program_view_draws_a_fact_under_an_arrow_as_its_node() {
             },
         );
         no_label_is_a_facts_text(&dot);
+        nothing_is_filled(&dot);
         // One node for the fact two facts point at, named for its relation,
-        // filled since the program states it, in the frame of both.
+        // in no frame since the program states it.
         let e = "\"(= 5 (+ 2 2))\"";
         let declared: Vec<&str> = node_lines(&dot)
             .into_iter()
@@ -194,12 +235,7 @@ fn the_program_view_draws_a_fact_under_an_arrow_as_its_node() {
             .collect();
         assert_eq!(declared.len(), 1, "levi={levi}:\n{dot}");
         assert!(declared[0].contains("shape=octagon, label=\"=\""), "{dot}");
-        assert!(declared[0].contains("style=filled"), "{dot}");
-        assert_eq!(
-            frame_of(&dot, e).as_deref(),
-            Some("says, think ctx"),
-            "{dot}"
-        );
+        assert_eq!(frame_of(&dot, e), None, "{dot}");
         assert!(
             dot.contains(&format!("{e} -> \"5\" [label=\"1\"]")),
             "{dot}"
@@ -208,15 +244,12 @@ fn the_program_view_draws_a_fact_under_an_arrow_as_its_node() {
             dot.contains(&format!("{e} -> \"(+ 2 2)\" [label=\"2\"]")),
             "{dot}"
         );
-        // The fact under it is in a context and not stated.
+        // The fact under it is in a context only, not stated.
         let sum = node_lines(&dot)
             .into_iter()
             .find(|l| id_of(l) == "\"(+ 2 2)\"")
             .expect("the node of (+ 2 2)");
-        assert!(
-            sum.contains("label=\"+\"") && !sum.contains("filled"),
-            "{dot}"
-        );
+        assert!(sum.contains("label=\"+\""), "{dot}");
         assert_eq!(
             frame_of(&dot, "\"(+ 2 2)\"").as_deref(),
             Some("= ctx"),
@@ -283,6 +316,7 @@ fn the_rule_view_draws_what_a_nested_pattern_binds() {
     let (ast, forms) = parsed(RULES);
     let dot = render_rule_form(&ast, rule(&ast, &forms, "trust"), RuleMode::SideBySide);
     no_label_is_a_facts_text(&dot);
+    nothing_is_filled(&dot);
     // In the match panel the pattern under `think`'s arrow is a node named
     // for its relation, in the frame `think ctx`, and its two variables are
     // drawn, each under a numbered arrow.
@@ -293,8 +327,11 @@ fn the_rule_view_draws_what_a_nested_pattern_binds() {
         .collect();
     assert_eq!(declared.len(), 1, "{dot}");
     assert!(declared[0].contains("shape=octagon, label=\"=\""), "{dot}");
-    assert!(!declared[0].contains("filled"), "no premise: {dot}");
-    assert_eq!(frame_of(&dot, u).as_deref(), Some("think ctx"), "{dot}");
+    assert_eq!(
+        frame_of(&dot, u).as_deref(),
+        Some("think ctx"),
+        "no premise: {dot}"
+    );
     for (i, v) in ["\"?a_L\"", "\"?b_L\""].iter().enumerate() {
         assert!(
             node_lines(&dot).iter().any(|l| id_of(l) == *v),
@@ -313,26 +350,33 @@ fn the_rule_view_draws_what_a_nested_pattern_binds() {
     assert!(dot.contains("\"?a_R\" -> \"?b_R\" [label=\"=\""), "{dot}");
 
     // The overlay is one drawing: the conclusion is the node the match
-    // points at, filled and dashed, and no arrow draws it again.
+    // points at, dashed, as what the conclusion adds, and in no frame, and no
+    // arrow draws it again.
     let overlay = render_rule_form(&ast, rule(&ast, &forms, "trust"), RuleMode::Overlay);
+    nothing_is_filled(&overlay);
     let node = node_lines(&overlay)
         .into_iter()
         .find(|l| id_of(l) == "\"(= ?a ?b)\"")
         .expect("the node");
-    assert!(node.contains("style=\"filled,dashed\""), "{overlay}");
+    assert!(node.contains("style=dashed"), "{overlay}");
+    assert_eq!(frame_of(&overlay, "\"(= ?a ?b)\""), None, "{overlay}");
+    assert!(!overlay.contains("cluster_ctx_"), "{overlay}");
     assert!(
         !overlay.contains("\"?a\" -> \"?b\" [label=\"=\""),
         "{overlay}"
     );
 
     // A pattern that is a premise and under an arrow of another is one node,
-    // filled, and no arrow.
+    // in no frame, and no arrow.
     let noted = render_rule_form(&ast, rule(&ast, &forms, "noted"), RuleMode::SideBySide);
+    nothing_is_filled(&noted);
     let node = node_lines(&noted)
         .into_iter()
         .find(|l| id_of(l) == "\"(= ?a ?b)_L\"")
         .expect("the node");
-    assert!(node.contains("style=filled"), "{noted}");
+    assert!(!node.contains("style="), "{noted}");
+    assert_eq!(frame_of(&noted, "\"(= ?a ?b)_L\""), None, "{noted}");
+    assert!(!noted.contains("cluster_ctx_"), "{noted}");
     assert!(
         !noted.contains("\"?a_L\" -> \"?b_L\" [label=\"=\""),
         "{noted}"
@@ -349,12 +393,13 @@ fn the_constraint_view_draws_a_fact_under_an_arrow_as_its_node() {
         .filter(|l| id_of(l) == f)
         .collect();
     assert_eq!(declared.len(), 1, "{dot}");
-    // Named for its relation, its unary property a badge as on any node,
-    // filled since the program states it, in the frame of both relations.
+    // Named for its relation, its unary property a badge as on any node, in
+    // no frame since the program states it.
     assert!(declared[0].contains("shape=octagon, label=\"f"), "{dot}");
-    assert!(declared[0].contains("style=filled"), "{dot}");
-    assert_eq!(frame_of(&dot, f).as_deref(), Some("act, pair ctx"), "{dot}");
+    assert_eq!(frame_of(&dot, f), None, "{dot}");
+    nothing_is_filled(&dot);
     assert!(dot.contains(&format!("{f} -> \"a\" [label=\"1\"")), "{dot}");
+    // One the program does not state is in the frame of what points at it.
     let g = "\"(g b c)\"";
     assert_eq!(frame_of(&dot, g).as_deref(), Some("pair ctx"), "{dot}");
     assert!(dot.contains(&format!("{g} -> \"c\" [label=\"2\"")), "{dot}");

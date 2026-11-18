@@ -5,7 +5,7 @@ digraph two_forms {
   subgraph cluster_graph { label="the graph"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
     "left-of";
     h1 [label="House-1"]; h2 [label="House-2"]; h3 [label="House-3"];
-    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+    node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
     f3 [xlabel="f3"]; f4 [xlabel="f4"];
     "left-of" -> f3 [label="1", dir=back];
     f3 -> h1 [label="2"];

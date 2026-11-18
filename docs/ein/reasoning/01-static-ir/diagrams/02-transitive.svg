@@ -22,7 +22,7 @@
 <!-- q1 -->
 <g id="node7" class="node">
 <title>q1</title>
-<polygon fill="#d9d9d9" stroke="black" points="141.55,-106.08 141.55,-115.02 135.22,-121.35 126.28,-121.35 119.95,-115.02 119.95,-106.08 126.28,-99.75 135.22,-99.75 141.55,-106.08"/>
+<polygon fill="none" stroke="black" points="141.55,-106.08 141.55,-115.02 135.22,-121.35 126.28,-121.35 119.95,-115.02 119.95,-106.08 126.28,-99.75 135.22,-99.75 141.55,-106.08"/>
 <text xml:space="preserve" text-anchor="middle" x="113.2" y="-124.4" font-family="Helvetica,sans-Serif" font-size="11.00">q1</text>
 </g>
 <!-- ?R&#45;&gt;q1 -->
@@ -35,7 +35,7 @@
 <!-- q2 -->
 <g id="node8" class="node">
 <title>q2</title>
-<polygon fill="#d9d9d9" stroke="black" points="199.55,-106.08 199.55,-115.02 193.22,-121.35 184.28,-121.35 177.95,-115.02 177.95,-106.08 184.28,-99.75 193.22,-99.75 199.55,-106.08"/>
+<polygon fill="none" stroke="black" points="199.55,-106.08 199.55,-115.02 193.22,-121.35 184.28,-121.35 177.95,-115.02 177.95,-106.08 184.28,-99.75 193.22,-99.75 199.55,-106.08"/>
 <text xml:space="preserve" text-anchor="middle" x="171.2" y="-124.4" font-family="Helvetica,sans-Serif" font-size="11.00">q2</text>
 </g>
 <!-- ?R&#45;&gt;q2 -->
@@ -48,7 +48,7 @@
 <!-- c -->
 <g id="node9" class="node">
 <title>c</title>
-<polygon fill="#d9d9d9" stroke="black" stroke-dasharray="5,2" points="79.55,-106.08 79.55,-115.02 73.22,-121.35 64.28,-121.35 57.95,-115.02 57.95,-106.08 64.28,-99.75 73.22,-99.75 79.55,-106.08"/>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="79.55,-106.08 79.55,-115.02 73.22,-121.35 64.28,-121.35 57.95,-115.02 57.95,-106.08 64.28,-99.75 73.22,-99.75 79.55,-106.08"/>
 <text xml:space="preserve" text-anchor="middle" x="54.58" y="-124.4" font-family="Helvetica,sans-Serif" font-size="11.00">e</text>
 </g>
 <!-- ?R&#45;&gt;c -->
@@ -85,7 +85,7 @@
 <!-- act -->
 <g id="node6" class="node">
 <title>act</title>
-<polygon fill="#d9d9d9" stroke="black" points="141.55,-284.18 141.55,-293.12 135.22,-299.45 126.28,-299.45 119.95,-293.12 119.95,-284.18 126.28,-277.85 135.22,-277.85 141.55,-284.18"/>
+<polygon fill="none" stroke="black" points="141.55,-284.18 141.55,-293.12 135.22,-299.45 126.28,-299.45 119.95,-293.12 119.95,-284.18 126.28,-277.85 135.22,-277.85 141.55,-284.18"/>
 <text xml:space="preserve" text-anchor="middle" x="111.33" y="-302.5" font-family="Helvetica,sans-Serif" font-size="11.00">act</text>
 </g>
 <!-- act&#45;&gt;transitive -->
@@ -146,4 +146,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 1fa90679a651593f71f6f6175a50bcc372d657128f8b9cd2d9590a25dd2d7bdd -->
+<!-- source sha256: 5bf4f41f53c2f30d1228742d38ab9bf5c405ca4ce293f2fe8bf0fce2bfe4b9ae -->

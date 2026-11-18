@@ -1,0 +1,32 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  f_0b9ad443f0 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_0b9ad443f0 -> "owns" [label="#1", color="#bcbd22", style=solid];
+  f_0b9ad443f0 -> "who" [label="#2", color="#bcbd22", style=solid];
+  f_0b9ad443f0 -> "what" [label="#3", color="#bcbd22", style=solid];
+  "owns" -> "owns" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_2e94b1088d [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_2e94b1088d -> "think" [label="#1", color="#bcbd22", style=solid];
+  f_2e94b1088d -> "who" [label="#2", color="#bcbd22", style=solid];
+  f_2e94b1088d -> "what" [label="#3", color="#bcbd22", style=solid];
+  "think" -> "think" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_2854650406 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_2854650406 -> "says" [label="#1", color="#bcbd22", style=solid];
+  f_2854650406 -> "who" [label="#2", color="#bcbd22", style=solid];
+  f_2854650406 -> "what" [label="#3", color="#bcbd22", style=solid];
+  "says" -> "says" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Alice" -> f_5b3adbf9bf [label="think", color="#17becf", fontcolor="#17becf", style=solid];
+  "Carol" -> f_5b3adbf9bf [label="says", color="#8c564b", fontcolor="#8c564b", style=solid];
+
+  // held facts that are also in a context: no frame
+  f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+
+  // facts in a context
+  newrank=true;
+  f_5b3adbf9bf -> "Bob" [label="#1", color="#ff7f0e", style=solid];
+  f_5b3adbf9bf -> "Dog" [label="#2", color="#ff7f0e", style=solid];
+}

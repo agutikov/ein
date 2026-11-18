@@ -261,8 +261,9 @@ fn projection(path: &Path, n: usize) -> Option<region::Projection> {
 
 /// What typing the blind rung could do to the flag, at relation grain and
 /// with the check as it ships: the verdict over `H` without the candidates
-/// that name a type (a type is an object on the right of an `is-a`,
-/// Q-M1e.12), and each relation of `H` whose removal alone
+/// that name a type (here, an atom on the right of an `is-a`: this census's
+/// reading, since the blind rung is untyped, Q-M1e.12), and each relation of
+/// `H` whose removal alone
 /// leaves no site — what the blind rung no longer proposing it would do —
 /// with how many of its facts root holds and whether a rule derives it, so
 /// a given-only relation can be told from a derived one.

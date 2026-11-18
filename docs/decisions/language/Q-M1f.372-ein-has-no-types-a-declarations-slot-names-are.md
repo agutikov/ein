@@ -28,7 +28,7 @@ has ([Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). It ca
 relation reads as. It is written once for a relation. And it tells the blind enumerator what to guess about: that
 rung proposes facts of declared relations of one or two arguments, over the guessable atoms, which are the program's
 names less those some declaration writes as a label
-([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md),
+([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md),
 [Q-M1f.306](../hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). That is the one place the
 engine itself reads which names are labels, and it reads them as names not to guess about, never as a kind an object
 has. A fact of `relation` that a rule concludes is a fact and declares nothing.
@@ -36,9 +36,8 @@ has. A fact of `relation` that a rule concludes is a fact and declares nothing.
 Where a drawing shows a box, it is a drawing convention: `ein render kb` draws the second argument of a fact of a
 relation spelt `is-a` as a box and a name that is only a first argument as an oval, and `ein render program` draws
 the first two labels of a declaration as boxes where no fact names them. Where the engine's own words say *type*,
-the read-out's `types`
-row, the option `--no-types` and a refusal's *as many arguments as its declaration has types*, they mean a label, or
-a name on the right of an `is-a` fact. No answer depends on either.
+the option `--no-types` and a refusal's *as many arguments as its declaration has types*, they mean a label, or a
+name on the right of an `is-a` fact. No answer depends on either.
 
 **Why.** Membership is a relation and what a thing is classified under is a name, so a rule reads, derives and
 explains *what a thing is* as it does any fact, and a program chooses what its labels mean: nothing, a check, a

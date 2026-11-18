@@ -19,11 +19,11 @@
 //! its argument arrows numbered, to its variables, its names and the patterns
 //! under its own arrows, so that what a nested pattern binds is drawn. It
 //! stands in a dashed frame named for the relations of the patterns that
-//! point at it (Q-M1f.398), and is filled where it is also a premise, or a
-//! literal of the conclusion: the pattern's own *held*. A pattern that is
-//! pointed at is that node and no arrow, in the panel it is pointed at in;
-//! the overlay is one drawing, so there a conclusion that the match points
-//! at is the node the match draws.
+//! point at it (Q-M1f.398), and in no frame where it is also a premise, or a
+//! literal of the conclusion: the pattern's own *held*; no octagon is
+//! filled. A pattern that is pointed at is that node and no arrow, in the
+//! panel it is pointed at in; the overlay is one drawing, so there a
+//! conclusion that the match points at is the node the match draws.
 
 use std::collections::{BTreeSet, HashMap, HashSet};
 
@@ -31,7 +31,7 @@ use ein_core::is_predicate;
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::dot_util::{
-    GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, ctx_frames, ctx_label, quote,
+    GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, ctx_frames, ctx_label, quote,
     value_label,
 };
 use crate::palette::hash_color;
@@ -371,6 +371,17 @@ struct RuleRenderer {
 /// A panel's node declarations, in first-declaration order.
 type Decls = Vec<(String, String)>;
 
+/// The node of a pattern under an arrow, as [`RuleRenderer::nested_lines`]
+/// draws it.
+struct Nested {
+    /// The label of its frame, `None` where the pattern is held in the
+    /// drawing: a premise, or a literal of the conclusion.
+    frame: Option<String>,
+    id: String,
+    attrs: String,
+    arrows: Vec<String>,
+}
+
 fn decls_setdefault(decls: &mut Decls, key: String, value: String) {
     if !decls.iter().any(|(k, _)| *k == key) {
         decls.push((key, value));
@@ -444,9 +455,9 @@ impl RuleRenderer {
         }
     }
 
-    /// The node of one pattern under an arrow, as `(frame, declaration)`,
-    /// and its numbered argument arrows; nothing where the drawing has it
-    /// already.
+    /// The node of one pattern under an arrow, as its frame, none where the
+    /// pattern is held in the drawing, its id and its attributes, and its
+    /// numbered argument arrows; nothing where the drawing has it already.
     fn nested_lines(
         &mut self,
         ast: &Ast,
@@ -454,7 +465,7 @@ impl RuleRenderer {
         label: &str,
         suffix: &str,
         dashed: bool,
-    ) -> Option<((String, String), Vec<String>)> {
+    ) -> Option<Nested> {
         let &i = scene.at.get(label)?;
         let (pattern, by) = &scene.nested[i];
         let id = nid(label, suffix);
@@ -467,17 +478,19 @@ impl RuleRenderer {
         } else {
             hash_color(head_label.trim_start_matches('?'))
         };
-        // Filled where the pattern is a premise; filled and dashed where it
-        // is a literal of the conclusion and no premise.
-        let fill = if scene.premises.contains(label) {
-            format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
+        // In no frame where the pattern is a premise, nor where it is a
+        // literal of the conclusion, dashed there where it is no premise, as
+        // what the conclusion adds; in the frame of what points at it where
+        // it is neither, in a context only.
+        let (frame, style) = if scene.premises.contains(label) {
+            (None, "")
         } else if scene.conclusions.contains(label) {
-            format!(", style=\"filled,dashed\", fillcolor=\"{HELD_FILL}\"")
+            (None, ", style=dashed")
         } else {
-            String::new()
+            (Some(ctx_label(by)), "")
         };
-        let decl = format!(
-            "{id} [shape={HYPER_SHAPE}, label={}, color=\"{colour}\", fontcolor=\"{colour}\"{fill}];",
+        let attrs = format!(
+            "shape={HYPER_SHAPE}, label={}, color=\"{colour}\", fontcolor=\"{colour}\"{style}",
             quote(&head_label)
         );
         let edge_style = if dashed { ", style=dashed" } else { "" };
@@ -492,7 +505,12 @@ impl RuleRenderer {
                 )
             })
             .collect();
-        Some(((ctx_label(by), decl), arrows))
+        Some(Nested {
+            frame,
+            id,
+            attrs,
+            arrows,
+        })
     }
 
     fn relation_lines(
@@ -573,9 +591,10 @@ impl RuleRenderer {
     /// Top-home nodes come back in the decl map, for the caller to emit at
     /// panel scope; guard-local nodes are declared inside their
     /// `cluster_absent` block within the body lines. A pattern under an
-    /// arrow comes back as a framed node, `(frame, declaration)`, for the
-    /// caller to write its frames; one that is an absence's own is framed
-    /// inside the absence's block.
+    /// arrow in a context only comes back as a framed node, `(frame,
+    /// declaration)`, for the caller to write its frames, and one held in the
+    /// drawing as a top-home node; one that is an absence's own is declared,
+    /// framed or not, inside the absence's block.
     fn panel(
         &mut self,
         ast: &Ast,
@@ -619,9 +638,12 @@ impl RuleRenderer {
                 continue;
             }
             if scene.at.contains_key(&nl) {
-                if let Some((node, arrows)) = self.nested_lines(ast, scene, &nl, suffix, dashed) {
-                    framed.push(node);
-                    nested_arrows.extend(arrows);
+                if let Some(n) = self.nested_lines(ast, scene, &nl, suffix, dashed) {
+                    match n.frame {
+                        Some(frame) => framed.push((frame, format!("{} [{}];", n.id, n.attrs))),
+                        None => decls_setdefault(&mut decls, n.id, n.attrs),
+                    }
+                    nested_arrows.extend(n.arrows);
                 }
                 continue;
             }
@@ -658,10 +680,13 @@ impl RuleRenderer {
                     continue;
                 }
                 if scene.at.contains_key(&nl) {
-                    if let Some((node, arrows)) = self.nested_lines(ast, scene, &nl, suffix, dashed)
-                    {
-                        local_framed.push(node);
-                        local_arrows.extend(arrows);
+                    if let Some(n) = self.nested_lines(ast, scene, &nl, suffix, dashed) {
+                        let decl = format!("{} [{}];", n.id, n.attrs);
+                        match n.frame {
+                            Some(frame) => local_framed.push((frame, decl)),
+                            None => block.push(format!("  {decl}")),
+                        }
+                        local_arrows.extend(n.arrows);
                     }
                     continue;
                 }

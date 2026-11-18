@@ -7407,6 +7407,17 @@ have.
 wait: it states today's kernel as rules under every ruling, and the ruling decides how it writes the verdict and
 the remark ([`design.md` § What S1f.21.2 writes under each ruling](p1f.21_verdicts_as_rules/design.md#what-s1f212-writes-under-each-ruling)).
 
+**The user's direction, 2026-11-18**, verbatim in [P1f.21 § The second instruction](p1f.21_verdicts_as_rules/README.md#the-second-instruction) (*"instead of emitting (open ?R) emit (open (?R ?a
+?b)) - the actual hypothesis … Can it be flexible or transactional move from open into global true context or into
+not context?"*). Not a ruling among the four options: it takes (d) further. The open facts are the hypotheses
+themselves, rules read them, and they leave the open context as a state decides them. Worked out in
+[`open_facts.md`](p1f.21_verdicts_as_rules/open_facts.md):
+- the open facts are $H$, and a debt is a disjunction of them, so `(open F J)` keeps the count;
+- the move is per node, after the fixpoint;
+- rules over open facts run in a stratum of their own and conclude no held fact.
+
+S1f.21.4 puts it again on programs.
+
 ### Q-M1f.391 — The negation of a negation that a rule builds
 
 **Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-1 of
@@ -7617,6 +7628,43 @@ context`"*. A frame is labelled with the relation of the facts that point at wha
 Two readings taken with it, both forced by *every object drawn once*: a fact pointed at by facts of two relations
 is in one frame that names both, and frames are never one inside another.
 
+**Re-ruled 2026-11-18.** The user, verbatim:
+
+> draw nested facts that were wrapped and still present also in global context
+>
+> structurally we see clearly nexted facts, and see what context they belong to, even without frames
+>
+> but the only thing we don't see on rendering is whether this fact is also in global context
+>
+> let's draw a frame around objects that are in context only
+
+So **a frame is around the objects that are in a context only**: pointed at, and not held. A held object is in no
+frame, whatever points at it. Which contexts it is in is read off the arrows that enter it, as before.
+
+**Tried on the three multi-context figures** of P1f.22's [`diagrams/`](p1f.22_nested_facts/diagrams/), as
+`frame-ctx-only-*.{dot,svg}`. Each is `ein render kb`'s output with every held octagon moved out of its frame and a
+frame left empty dropped:
+- *held-in-two-contexts*: `(owns Bob Dog)`, held and under `think` and `says`, stands in no frame, and the figure
+  has none.
+- *two-contexts-of-one-relation*: `(owns Bob Dog)`, held and thought by Alice and Dan, is outside; `(owns Bob Cat)`,
+  only thought, is alone in `think ctx`.
+- *two-contexts*: `(= 5 (+ 2 2))`, held and under `think` and `says`, is outside; `(+ 2 2)`, never held, is in
+  `= ctx`.
+
+**The filling, ruled 2026-11-18.** For a fact that is pointed at, *in no frame* and *held* are now one property, so
+the filling would be a second mark of it. The user: *"drop the filling"*. No octagon is filled; *held* is *outside
+every frame*. The trial figures are drawn so.
+
+**To build.** It is its own change on master, after the `is-a` row's change now on master. That one shares the
+main tree, and a gate builds the whole tree. It touches:
+- the KB view's and the program view's frames and filling, and the rule view's, whose pattern that is *also a
+  premise* (or a literal of the conclusion) leaves its frame and loses its filling;
+- `12-rendering.md`'s frame rule and its two context drawings;
+- Q-M1f.398's decision file;
+- the standard library's rule drawings, through their generator, and the shape golden.
+
+It writes no answer. Because the DOT writers change, `utils/ci_container.sh` is part of done.
+
 ### Q-M1f.399 — The names of what controls the search: `false` and `open`
 
 **Raised** 2026-11-17 by the user, ruling [P1f.22](p1f.22_nested_facts/README.md)'s questions: *"This also leads
@@ -7641,6 +7689,13 @@ also can infer (false) in global context, but the state considered dead only if 
 (ein.contradiction) from global (false), or from global (whatever); both (false) renaming and (open) facts belongs
 to p1f.21"*. Read: `false` is not renamed and stops being the kernel's; the kernel's verdict is a fact of its own,
 under the kernel's prefix, and what makes a state dead is a rule a theory states. Not built, and not this phase's.
+
+**The user's second direction, 2026-11-18**, verbatim in [P1f.21 § The second instruction](p1f.21_verdicts_as_rules/README.md#the-second-instruction): *"(false) controls not search but
+saturation, right? if we have dead node then somebody has to kill it, maybe (ein.kill) or (ein.die) or
+(ein.saturation.kill) ?"*. Read: the kernel's fact is a verb a rule concludes from a global `(false)`, and
+`(false)` is a proposition; `(ein.kill)` is the leaning
+([`open_facts.md` § 2 and § 3](p1f.21_verdicts_as_rules/open_facts.md#3-who-kills-a-dead-node-einkill)). S1f.21.4
+puts it on programs, with the reserved names that are left (§ 8 there).
 
 ### Q-M1f.400 — How a saved file states the choices made
 
@@ -7931,6 +7986,28 @@ flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first 
   re-worded so): the program is dead either way, and no corpus program writes such a numeral. **Default.**
 - **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
   fault bit carried, so that the label is not derived for a malformed numeral.
+
+### Q-M1f.412 — The read-out's `is-a` row
+
+**Raised** 2026-11-18 by the user, P1f.21's
+[V-6](p1f.21_verdicts_as_rules/findings.md#v-6--the-read-out-reads-is-a-by-its-name): *"is-a is just some random
+relation, or maybe not even a relation; what for is it read by kernel read-out?"* The read-out's `types` row named
+the atoms on the right of an `is-a` that the blind enumerator's candidates have as arguments, reading the relation
+by its spelling, and decided nothing.
+
+**Ruled 2026-11-18**, the user verbatim: *"V-6 (a), drop the is-a row"*. Built in `5a3f2979`: the row on every
+question, `region.md`'s line, the key `types_as_objects` in `region.json`, `--json-summary`'s `root.hypgen` and
+`ein test --json-report`'s rows, `ein test`'s line beside a claim, and `ein_infer::types_as_objects`. Q-M1e.12's
+second half goes with them: its file states the first half alone, *the blind enumerator is untyped*, and carries the
+ruling's reason in its **Why**, so this id has no decision file of its own.
+
+One reading taken with it, **put, not ruled**:
+
+- **(a)** **no schema id moves**: `ein-summary/2`, `ein-region/1` and `ein-test-report/5` lose the key and keep
+  their ids, as [Q-M1f.259](../../docs/decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md)
+  keeps an id where keys are added and no other key moves. **Default.**
+- **(b)** `ein-test-report/6`, as the report's id moved on each change of its row before; the summary and the
+  region dump keep theirs.
 
 ### Q-M1f.413 — `ein kb save` of a saved file
 

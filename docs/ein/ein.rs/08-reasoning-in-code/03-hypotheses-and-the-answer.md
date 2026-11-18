@@ -39,7 +39,7 @@ test under a crate's `tests/`.
 | $\operatorname{unsettled}$ | the candidate filters of `hypgen.rs`, in this order: `negated_fact`, `fact_already_exists`, `seen_in_call` |
 | $\operatorname{inscope}$ | the relation skips of `hypgen.rs`: `closed_relation`, a relation closed to hypotheses, `relation_not_whitelisted`, `no_hypothesis_relation`; and `self_edge` for a relation whose facts have two arguments |
 | the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.27](../../user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
-| what the universe leaves out, a label or a relation's name that is guessed about | `scope.rs`, `types_as_objects.rs`, `relation_names.rs`: one sentence each, on every surface |
+| what the universe leaves out, and a relation's name that is guessed about | `scope.rs`, `relation_names.rs`: one sentence each, on every surface |
 
 ### 1.2 The ladder as the engine runs it
 
@@ -193,7 +193,8 @@ no longer labels of any declaration, so the blind enumerator takes them for gues
 | $H$ holds the payments of a debt only a commitment brings, by the static reading, and $R$ over that $H$ is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles`, `the_rung_line_counts_a_later_debt_apart` |
 | every name of the program is a guessable atom, and no run reaches a name the program lacks | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
 | a kernel dunder is not guessable, and a held extent closed to hypotheses by a rule answers what one closed by a fact answers | `ein-infer/tests/dunder_objects.rs`: `a_dunder_written_as_a_value_is_no_object`, `a_closure_by_a_rule_answers_what_the_closure_by_a_fact_answers` |
-| a label that is guessed about, and a relation's name that is, are each named on every surface | `ein-cli/tests/read_out.rs`: `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs`: `a_relations_name_bound_as_an_object_is_one_sentence_on_every_surface` |
+| a relation's name that is guessed about is named on every surface | `ein-cli/tests/relation_names_row.rs`: `a_relations_name_bound_as_an_object_is_one_sentence_on_every_surface` |
+| the blind enumerator is untyped, and `is-a` is a relation like any other: spelt otherwise, a program prints the same on every surface that reports $R$ | `ein-cli/tests/read_out.rs`: `is_a_reads_as_any_other_relation_on_every_surface` |
 | a relation whose facts have three arguments or more has no blind candidate and is named outside the universe | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | an hrule that reads a negation proposes what the oracle's does | `ein-cli/tests/hrule_reads_not.rs`: `an_hrule_that_reads_not_is_answered_as_the_oracle_answers`, `every_hrule_reads_the_state_it_was_asked_about` |
 | an hrule's conclusion is one fact | `ein-cli/tests/conclusion_shapes.rs`: `an_hrule_concludes_one_fact` |
@@ -652,7 +653,7 @@ The files the three commands write are the region dump
 | every name of the program is a guessable atom, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
 | a dunder is not guessable, and a held extent closed to hypotheses by a rule answers what one closed by a fact answers | `ein-infer/tests/dunder_objects.rs` |
 | the obligations rung's reading of later debts, and $R$ over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
-| what the universe leaves out, a label that is guessed about and a relation's name that is are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`, `a_type_bound_as_an_object_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
+| what the universe leaves out and a relation's name that is guessed about are each one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface`; `ein-cli/tests/relation_names_row.rs` |
 | a state's identity is its fact list, never a digest; two different closures have different identities | `ein-infer/tests/search_semantics.rs`: `state_key_is_identity_not_a_digest`, `distinct_closures_have_distinct_keys` |
 | H is listed in the universe's order, as the binary lists it | `ein-cli/tests/show_hyps.rs`, which holds the listing on the hypothesis space's page to the binary's |
 | no option, lever or flag changes $R$ | `ein-cli/tests/lever_invariance.rs` |

@@ -408,7 +408,7 @@ and a reader of the same version marker on both would be right to expect the sam
 | `expect` | the claim's shape (`model`, `or`, `false` for a query; `region` or `false` for a solve claim), how many models it lists, its facts and negated facts, the relations it names, and what part of R it is over; a solve claim adds `merged` and `owing`. `null` where the query states no claim |
 | `answer` | what a query's classes are over, whether that is exact, and how many classes and states |
 | `region` | on a solve row, the R it was checked against: the `route`, `monotone`, `k_s`, `k_c` and the time it took |
-| `outside`, `types_as_objects` | what the universe leaves out beside a claim a run checked |
+| `outside` | what the universe leaves out beside a claim a run checked |
 | `route`, `fell_back_from` | the question the outcome was read off, spelled as `ein solve`'s flags (`--single`, `-n 4`, `--maximal -n 3`) or `describe`; and the question asked first where it left the claim undecided. Both `null` on a row no run checked |
 
 It takes **any selection**, where `--events` and `--json-summary` are refused over more than one file: those name one

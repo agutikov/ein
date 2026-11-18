@@ -10,10 +10,12 @@
 //! A digraph that holds a hyperedge node sets
 //! [`POLYGON_RANKSEP`].
 //!
-//! A node may be declared **in a frame**, the frame of a context
-//! ([`ctx_frames`]): it is then written inside that
-//! frame's subgraph, after the nodes that stand in none and before the
-//! edges, and a digraph with no framed node is written as it always was.
+//! The node of a fact that a drawn fact points at is declared with
+//! [`Builder::fact_node`], an octagon, and **in a frame**, the frame of a
+//! context ([`ctx_frames`]), where the fact is in a context only: it is then
+//! written inside that frame's subgraph, after the nodes that stand in none
+//! and before the edges, and a digraph with no framed node is written as it
+//! always was.
 
 use std::collections::HashMap;
 
@@ -29,6 +31,8 @@ pub struct Builder {
     index: HashMap<String, usize>,
     edges: Vec<String>,
     hcount: u32,
+    /// A fact's node has been declared by [`Builder::fact_node`].
+    fact_nodes: bool,
     /// Id → the label of the frame it is declared in. Lookups only.
     frames: HashMap<String, String>,
 }
@@ -57,13 +61,18 @@ impl Builder {
         }
     }
 
-    /// Declare a node in the frame labelled `frame`: a fact that a drawn
-    /// fact points at. A node is in one frame, the first it is given.
-    pub fn framed(&mut self, node_id: &str, attrs: &str, frame: &str) {
+    /// Declare the node of a fact that a drawn fact points at, an octagon:
+    /// in the frame labelled `frame` where the fact is in a context only,
+    /// and in none where it is held. A node is in one frame, the first it
+    /// is given.
+    pub fn fact_node(&mut self, node_id: &str, attrs: &str, frame: Option<&str>) {
         self.node(node_id, Some(attrs));
-        self.frames
-            .entry(node_id.to_string())
-            .or_insert_with(|| frame.to_string());
+        self.fact_nodes = true;
+        if let Some(frame) = frame {
+            self.frames
+                .entry(node_id.to_string())
+                .or_insert_with(|| frame.to_string());
+        }
     }
 
     pub fn edge(&mut self, src: &str, dst: &str, attrs: Option<&str>) {
@@ -90,10 +99,10 @@ impl Builder {
     }
 
     pub fn build(self) -> String {
-        // A hyperedge is an octagon, and `fresh_h` and `framed` are the only
-        // doors to one.
+        // A hyperedge is an octagon, and `fresh_h` and `fact_node` are the
+        // only doors to one.
         let mut lines: Vec<String> = Vec::new();
-        if self.hcount > 0 || !self.frames.is_empty() {
+        if self.hcount > 0 || self.fact_nodes {
             lines.push(format!("  {POLYGON_RANKSEP};"));
         }
         if !self.frames.is_empty() {

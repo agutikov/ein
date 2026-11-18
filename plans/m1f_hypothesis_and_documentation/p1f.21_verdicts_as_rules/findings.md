@@ -16,7 +16,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
-| [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **ruled (a)** 2026-11-18: the row is dropped, built after S1f.22.6 |
+| [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **fixed** by `5a3f2979`: ruled (a) 2026-11-18, Q-M1f.412 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -168,12 +168,12 @@ this entry is § 6's row *ask* there. Worked out in [`open_facts.md`](open_facts
 
 **What.** The user, 2026-11-18: *"is-a is just some random relation, or maybe not even a relation; what for is it
 read by kernel read-out?"* It is read for one row, and decides nothing.
-[Q-M1e.12](../../../docs/decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md): the
+[Q-M1e.12](../../../docs/decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md): the
 blind enumerator is untyped and fills every place with every name no declaration writes as a label. So
 `(relation co-located T T)` beside `(is-a Color T)` makes `(co-located Blue Color)` a candidate. Where the blind rung
 built $H$, every candidate naming the second argument of an `is-a` fact is counted in a `types` row under
 `universe`, and in the summary's `root.hypgen.types_as_objects`. The row is meant to warn the author that a *type*
-was bound as an object. [`types_as_objects.rs`](../../../ein.rs/crates/ein-infer/src/types_as_objects.rs) reads the
+was bound as an object. `types_as_objects.rs` reads the
 relation `is-a` by its spelling, the only module of `ein-infer` that does. The reserved names page lists `is-a` as
 not reserved (*"nothing else is special"*), and two conventions coexist (`zebra.ein`'s `type` and `instance`). So the
 row speaks for one convention and not the other.
@@ -198,4 +198,27 @@ nightly. It is its own change, outside S1f.21.4, in a subagent, on master. It dr
   'types_as_objects\|TypesAsObjects\|a_type_bound_as_an_object'` and `git grep -l 'Q-M1e\.12'` list them).
 
 Then the gate, on its last commit.
+
+**Built 2026-11-18**, `5a3f2979`; `./run_tests.sh` exits 0 on it (1 242 s). Gone: `types_as_objects.rs` and its
+three unit tests, `RootStats::types_as_objects` and `Outcome::Refused`'s; the `types` row under `universe` on every
+question (`Row::Types`); `region.md`'s *Types as objects* line; the key in `region.json`, in `--json-summary`'s
+`root.hypgen` and on `ein test --json-report`'s rows; `ein test`'s *a type as an object* line. No schema id moves,
+a default put in [Q-M1f.412](../open_questions.md#q-m1f412--the-read-outs-is-a-row). Q-M1e.12 states its first half
+alone, under the title *the blind enumerator is untyped* and the file renamed to its slug, and its **Why** carries
+the ruling's reason, so Q-M1f.412 has no decision file. The test
+`a_type_bound_as_an_object_is_one_sentence_on_every_surface` gave way to
+`is_a_reads_as_any_other_relation_on_every_surface` (`ein-cli/tests/read_out.rs`): `pets.ein` and a claim program,
+spelt `is-a` and `is-b`, print the same name for name under every question, in the summary, the oracle and its
+dump, and `ein test`'s lines and report; the binary before the change fails it by the row. The invariance:
+`ein solve --json-summary` and `ein oracle --dump` over the 900 corpus programs, the binary before and after, the
+same but for the 11 `types` lines, the key in the 652 summaries that carried it and in every `region.json`, and
+`region.md`'s line. `corpus_shapes.md5` re-banked with `EIN_CORPUS_SLOW=1`: 647 `oracle` lines, and 55 `read-out`
+and 11 `region-trace` lines of the eleven programs that printed the row, each one line shorter; nothing else
+moved. No DOT writer changed, so no `utils/ci_container.sh`.
+
+`ein-infer` reads `is-a` by its name nowhere now but its unit tests' programs. Still read by it elsewhere, not this
+ruling's: `ein-render`'s `kb_dot.rs` (the type boxes and the dashed edge) and `ir_dot.rs` (the same in `ein render
+program`), `grid.rs` (`--models grid` gathers a functional licence's rows from `is-a` facts), and `ein-ir`'s
+`from_ir.rs` `program_relations`, which counts `is-a` among every program's relations, so a goal or a claim may
+name it in a program with no `is-a`.
 

@@ -47,17 +47,10 @@ which the rung that built the list proposes no fact
 `region.md` says it under its candidate count, as the read-out's `outside` row does, and `region.json` lists it as
 `outside`.
 
-**What it proposes about, where a program may not mean it,** is named: where the blind enumerator built the list,
-the atoms on the right of an `is-a` that a candidate names, the candidates' relations and how many there are
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). `region.md`
-says it as `**Types as objects**`, under its candidate count, as the read-out's `types` row does, and `region.json`
-carries it as `types_as_objects`. The words are the engine's: its *type* is an atom an `is-a` fact points at, and
-its *object* a guessable atom, one the enumerator proposes about.
-
-**A relation among the guessable atoms** is named the same way: where the blind enumerator built the list and a
-candidate names a relation only a rule concludes, `region.md` says it as `**Relation names as objects**`, as the
-read-out's `relation names` row does, and `region.json` carries it as `relation_names_as_objects`, a key written only
-then.
+**A relation among the guessable atoms** is named: where the blind enumerator built the list and a candidate names
+a relation only a rule concludes, `region.md` says it as `**Relation names as objects**`, under its candidate count,
+as the read-out's `relation names` row does, and `region.json` carries it as `relation_names_as_objects`, a key
+written only then.
 
 **A node** is root's fixpoint with the commitment's facts written in and the saturation resumed to quiescence. It is
 never stopped at the first contradiction, so a dead node's debts are its fixpoint's. Each node carries two
@@ -88,10 +81,9 @@ They are what a node *is* that its coordinates do not say.
 `schema`, `source`, `n`, `limit`, `candidates`, `later_debts` (written only where H holds a candidate for a debt root
 does not owe: `--json-summary`'s `root.hypgen.later_debts`, one `{obligation, activator, relation, by, added,
 candidates}` each), `outside` (one `{relation, arity, why}` per relation outside the universe, `--json-summary`'s
-`root.hypgen.outside`, `[]` when none), `types_as_objects` (`{objects, relations, candidates}`, `--json-summary`'s
-`root.hypgen.types_as_objects`, the lists empty and the count 0 when none), `relation_names_as_objects` (written only
-where a candidate of the blind enumerator has such a relation as an argument: `{objects, relations, candidates}`,
-`--json-summary`'s `root.hypgen.relation_names_as_objects`), `monotonicity` (below), then either `region` with
+`root.hypgen.outside`, `[]` when none), `relation_names_as_objects` (written only where a candidate of the blind
+enumerator has such a relation as an argument: `{objects, relations, candidates}`, `--json-summary`'s
+`root.hypgen.relation_names_as_objects`), `monotonicity` (below), then either `region` with
 `refused: null`, or `region: null` with `refused` (`n`, `limit`, `note`). `region` holds:
 
 | key | what |

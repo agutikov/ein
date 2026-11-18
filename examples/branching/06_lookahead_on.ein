@@ -29,8 +29,8 @@
 ;;; over four commitments, ∅ and the state three commitments reach,
 ;;; {(co-located Blue H5)} with its mirror: Blue in the one free house,
 ;;; ?h = H5, as derived above. `ein solve --maximal` lists that one state,
-;;; and `--single` says Ambiguity because ∅ is in R too. No `types` row:
-;;; nothing H proposes names a type.
+;;; and `--single` says Ambiguity because ∅ is in R too. Nothing H
+;;; proposes names a type.
 ;;;
 ;;;
 ;;;
@@ -49,9 +49,8 @@
 ;; With `(relation co-located T T)` the program would be under-specified
 ;; (Q-M1e.12): it admits `(co-located Blue Color)`, the engine does what the
 ;; signature says, and the blind enumerator, which is untyped, binds the
-;; names on the right of an is-a as objects. On that shape the read-out
-;; prints a `types` row under `universe`
-;; (`ein solve examples/branching/02_one_dead_one_alive.ein` is one).
+;; names on the right of an is-a as objects
+;; (`examples/branching/02_one_dead_one_alive.ein` has that shape).
 ;;
 ;; `ein solve` on this file prints, among its rows:
 ;;

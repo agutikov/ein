@@ -3,7 +3,7 @@ digraph context_negation {
   node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
   edge [fontname="Helvetica", fontsize=10];
   "think"; "not"; "="; "+";
-  t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="t"]; n [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="n"];
+  t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="t"]; n [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="n"];
   subgraph cluster_ctx_not_think { label="not, think ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
     e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="e"];
   }

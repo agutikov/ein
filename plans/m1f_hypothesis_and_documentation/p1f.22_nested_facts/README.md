@@ -1,7 +1,7 @@
 # P1f.22 — nested facts
 
 **Milestone:** [M1f](../README.md)
-**Status:** created 2026-11-17 on the user's instruction (below), and **started 2026-11-17 on the user's word**
+**Status:** (2026-11-18: Q-M1f.398 re-ruled, *a frame around the objects that are in a context only*, and no filling; tried as [`diagrams/frame-ctx-only-*`](diagrams/), built after the `is-a` row's change, as S1f.22.7. **The phase runs to its end on the user's word** (*"continue till the end of phase"*): S1f.22.5, S1f.22.7 and the close, S1f.22.8.) created 2026-11-17 on the user's instruction (below), and **started 2026-11-17 on the user's word**
 (*"start p1f.22"*). [S1f.22.1](s1f.22.1_what_we_have.md) is done: [`analysis.md`](analysis.md) is what the engine
 and the pages do, the explanation drafted, and the six points for the user (Q-M1f.391 to .396);
 [`findings.md`](findings.md) is what it found outside its scope. The user answered the six with notes, which
@@ -76,7 +76,8 @@ consistent explanation.
 | [S1f.22.4](s1f.22.4_every_object_drawn_once.md) | **`ein render` draws every object once** (Q-M1f.395, Q-M1f.398): a fact that a fact points at is its node, filled where held, in a frame named for the context's relation | **done 2026-11-17**: `811846ce`, record `e506bfd9`; the gate here and `utils/ci_container.sh` on the commit exit 0; findings N-23 to N-28, each the user's call |
 | [S1f.22.5](s1f.22.5_save_and_load.md) | **A saved solution loads back as itself, in both directions** (Q-M1f.392): the program unchanged with the choices made, in one file; the two invariances as tests over the corpus | **started 2026-11-17** on the user's word (*"start s1f.22.5"*); task 1 **done 2026-11-18**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), N-29 to N-32; Q-M1f.400 to .403 **ruled 2026-11-18** ((a), (a), (C), (a)); tasks 2 to 4 started, then **paused 2026-11-18** on the user's word, their work in progress on the branch `s1f.22.5-save-load` (`db562a86`); they resume after S1f.22.6 |
 | [S1f.22.6](s1f.22.6_written_erased.md) | **`written` erased; a numeral is checked by the operation that takes it** (Q-M1f.404): the loader states no `written`; a numeral an operation takes from the program is checked once and labelled valid, one an operation produces is labelled valid as produced; runs before S1f.22.5's tasks 2 to 4 | **done 2026-11-18**: `bf9693dc`, `ec9049b5`, `dad4543f` (docs), record next to them; the gate, the batch, the nightly and `utils/ci_container.sh` exit 0 on `ec9049b5`; three corpus programs answer otherwise, each a malformed numeral no operation takes; Q-M1f.405 to .411 put, each with a default; findings N-33 to N-35, N-23 ended |
-| S1f.22.7 | **The close.** | last |
+| [S1f.22.7](s1f.22.7_the_frame_around_context_only.md) | **A frame around what is in a context only, and no filling** (Q-M1f.398 re-ruled 2026-11-18): a held object in no frame, whatever points at it; the DOT writers, the pages' drawings, the rule drawings, the decision | **planned 2026-11-18**, run after the `is-a` row's change, on the user's word (*"continue till the end of phase"*) |
+| S1f.22.8 | **The close.** | last; run on the user's word (*"continue till the end of phase"*) |
 
 ## Rules of the phase
 

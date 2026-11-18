@@ -34,8 +34,8 @@ renderer has a command that reaches it
 | a relation's declaration, in the program view | a dashed edge between its two labels, labelled with the relation |
 | a relation's declaration, in the KB view | an `octagon`, the fact it is stored as, with an edge to the declared relation and to each label |
 | a fact that a drawn fact points at, of any count, held or not | `octagon`, the relation's name in it, its argument arrows numbered: its one drawing, never an arrow and never a node labelled with its text ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)) |
-| that octagon where the knowledge base holds the fact | filled |
-| the context of that fact | a dashed, rounded frame around its octagon, labelled with the relations of the facts that point at it and `ctx`: `claims ctx`, `claims, doubts ctx` |
+| that octagon where the fact is in a context only, pointed at and not held | inside a dashed, rounded frame, labelled with the relations of the facts that point at it and `ctx`: `claims ctx`, `claims, doubts ctx` |
+| that octagon where the knowledge base holds the fact | in no frame, whatever points at it; no octagon is filled |
 | a fact of two arguments that no drawn fact points at | a solid edge from the first argument to the second, labelled with the relation's name |
 | a derived or committed fact of two arguments | a dashed edge, labelled the same way |
 | an `is-a` fact | a dashed edge with an empty arrowhead, labelled `is-a` |
@@ -80,17 +80,18 @@ not the knowledge base holds it. A fact of two arguments is an arrow **only wher
 that something points at is that octagon and no arrow, so a fact stated and also claimed is drawn once, not as
 an arrow and again as a node. No node is labelled with a fact's text.
 
-Two marks say the two things that may be true of such a fact
-([Q-M1f.398](../../../decisions/docs/Q-M1f.398-a-fact-in-a-context-is-drawn-in-a-frame-named.md)):
+The arrows that enter such a fact show which contexts it is in. What they cannot show is whether the knowledge
+base also holds it, and one mark says that
+([Q-M1f.398](../../../decisions/docs/Q-M1f.398-a-fact-in-a-context-only-is-drawn-in-a-frame.md)):
 
-- **it stands in a dashed frame**, the context it is in: the frame is labelled with the relations of the facts
-  that point at it and the word `ctx`. Facts of several relations that point at one fact name one frame,
-  `claims, doubts ctx`, in the relations' order. Frames stand side by side, one for each label, and none holds
-  another; an atom is in no frame; *which* fact speaks about a framed fact is read off the arrows that enter;
-- **it is filled** where the knowledge base holds it.
+- **a fact in a context only**, pointed at and not held, **stands in a dashed frame**, labelled with the relations
+  of the facts that point at it and the word `ctx`. Facts of several relations that point at one fact name one
+  frame, `claims, doubts ctx`, in the relations' order. Frames stand side by side, one for each label, and none
+  holds another; an atom is in no frame; *which* fact speaks about a framed fact is read off the arrows that enter;
+- **a held fact stands in no frame**, whatever points at it. No octagon is filled.
 
-Everything drawn outside a frame is held: an arrow, a loop, an octagon. Inside a frame the filling tells. The
-program below states one fact that two others are about, and claims one that it does not state:
+Everything drawn outside a frame is held: an arrow, a loop, an octagon. The program below states one fact that
+two others are about, and claims one that it does not state:
 
 ```lisp
 (claims Carol (owns Bob Dog))
@@ -99,18 +100,20 @@ program below states one fact that two others are about, and claims one that it 
 (claims Dan (owns Carol Cat))
 ```
 
-`ein render program` draws `(owns Bob Dog)` once, filled, in the frame of the two relations that point at it, and
-`(owns Carol Cat)` empty in the frame `claims ctx`:
+`ein render program` draws `(owns Bob Dog)` once, in no frame, with the arrows of the two relations that point at
+it entering it, and `(owns Carol Cat)` in the frame `claims ctx`:
 
-![ein render program: a fact stated and under two arrows is one filled octagon in the frame claims, doubts ctx; a fact only claimed is an empty octagon in the frame claims ctx](diagrams/12-context-program.svg)
+![ein render program: a fact stated and under the arrows claims and doubts is one octagon in no frame; a fact only claimed is an octagon in the frame claims ctx](diagrams/12-context-program.svg)
 
-`ein render kb` draws the same two octagons, in the same two frames, over the saturated knowledge base:
+`ein render kb` draws the same two octagons, one in no frame and one in the frame `claims ctx`, over the
+saturated knowledge base:
 
-![ein render kb: the same two octagons, the stated fact filled in the frame claims, doubts ctx and the claimed one empty in the frame claims ctx](diagrams/12-context-kb.svg)
+![ein render kb: the same two octagons, the stated fact in no frame and the claimed one in the frame claims ctx](diagrams/12-context-kb.svg)
 
-A fact under an arrow of a fact that is itself under an arrow is drawn the same way, each in the frame of what
-points at it, and a view that holds a frame asks Graphviz to rank the whole graph at once, `newrank=true`. A
-drawing with no fact under an arrow has no frame and no filling, and is the drawing it always was.
+A fact under an arrow of a fact that is itself under an arrow is drawn the same way, in the frame of what points
+at it where it is not held, and a view that holds a frame asks Graphviz to rank the whole graph at once,
+`newrank=true`. A drawing in which every fact under an arrow is held has no frame, and one with no fact under an
+arrow is the drawing it always was.
 
 ## The program as written — `ein render program`
 
@@ -166,10 +169,11 @@ Within each panel the drawing tells apart the three things a `:match` or an `:as
 - **a pattern under an arrow of a pattern**, the `(owns ?x ?y)` of `(claims ?p (owns ?x ?y))`, is its own octagon in
   the frame of the pattern that points at it, `claims ctx`, with a numbered arrow to each of its variables and
   names, so that what it binds is drawn ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)). It
-  is filled where it is also a premise, or, in the conclusion's panel, a literal of the conclusion; a pattern
-  that something points at is that octagon and no arrow, and a `(not P)` whose `P` is one is a red octagon `not`
-  that points at it. A frame is read in the drawing it is in: a panel of the side-by-side mode, or the whole
-  overlay, where a conclusion that the match points at is the match's octagon, filled and dashed.
+  stands in no frame where it is also a premise, or, in the conclusion's panel, a literal of the conclusion, dashed
+  there where it is no premise; a pattern that something points at is that octagon and no arrow, and a `(not P)`
+  whose `P` is one is a red octagon `not` that points at it. A frame is read in the drawing it is in: a panel of
+  the side-by-side mode, or the whole overlay, where a conclusion that the match points at is the match's octagon,
+  dashed and in no frame.
 
 ![ein render rule: the pattern under the arrow claims is an octagon owns in the frame claims ctx, with arrows 1 and 2 to its variables ?x and ?y](diagrams/12-context-rule.svg)
 
@@ -184,8 +188,9 @@ to its stated conditions. Each relation such a fact is about is a rectangle labe
 `next-to «symmetric»`, `color-loc «bijective»`; a property of two relations, `(implies right-of next-to)`, is an edge
 between them; a module the program imports is a rectangle labelled `«import»`. No property is built in, so the view
 draws whatever rules a program activates. A fact that such a fact has as an argument is drawn as in every view, an
-octagon in its frame ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)), with the properties
-stated of it under its relation's name.
+octagon, in its frame where the program does not state it
+([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)), with the properties stated of it under its
+relation's name.
 
 ## The KB — `ein render kb`
 
@@ -200,7 +205,7 @@ the forms that write it: `Norwegian` appears **once**, with its `is-a` edge to `
 | a fact of two arguments `(rel a b)` that no drawn fact points at | an edge `a -> b [label=rel …]` |
 | a fact of one argument `(rel a)`, a name, that no drawn fact points at | a self-loop `a -> a [label=rel …]` |
 | a fact of another arity, or of one argument that is a fact | a `shape=octagon` node and an edge to each argument, labelled `#1`, `#2`, … |
-| a fact that a drawn fact points at, held or not | that octagon, under `// facts in a context`, inside `subgraph cluster_ctx_…`, its frame; `style="filled,…"` where the knowledge base holds it ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)) |
+| a fact that a drawn fact points at, held or not | that octagon, under `// facts in a context`: inside `subgraph cluster_ctx_…`, its frame, where the knowledge base does not hold it, and outside every frame where it does ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)) |
 | an `is-a` fact | `style=dashed, arrowhead=empty, label="is-a"` |
 | a background fact | `style=solid` |
 | a given fact, `:source` | `style=solid`, its label carrying the short source id, `(10)` for `"condition (10)"` |
@@ -210,7 +215,7 @@ the forms that write it: `Norwegian` appears **once**, with its `is-a` edge to `
 
 **Left out**: a fact that activates a rule, `(symmetric co-located)`, which is the relation's context and not its data
 (the constraints view draws it), and a stored negation, `(not …)`. One of either that a drawn fact points at is
-drawn, as its octagon in its frame, and then points at what stands under its own arrows.
+drawn, as its octagon, in no frame since it is held, and then points at what stands under its own arrows.
 
 `is-a` is the one relation the drawing knows a convention for, and it is a convention of presentation, not of
 reasoning: a program that writes membership with relations of its own, as `zebra.ein` writes `type` and `instance`,

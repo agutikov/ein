@@ -8,13 +8,10 @@ digraph kb {
 
   // facts in a context
   newrank=true;
+  f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
   subgraph cluster_ctx_0 {
     label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_59aa5edda0 [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
-  }
-  subgraph cluster_ctx_1 {
-    label="claims, doubts ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style="filled,solid", fillcolor="#d9d9d9"];
   }
   f_5b3adbf9bf -> "Bob" [label="#1", color="#ff7f0e", style=solid];
   f_5b3adbf9bf -> "Dog" [label="#2", color="#ff7f0e", style=solid];

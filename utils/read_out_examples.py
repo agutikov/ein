@@ -374,9 +374,7 @@ one. The region comes first and takes them: stdout lists states 1–{last} outsi
 in one would claim to be all of R, then says what it left out and that `--dump-answer DIR` writes the whole
 `(region …)` to `DIR/answer.txt`. The query still gets its `over` row, its one class and its one-line `as :expect`.
 The rows are never cut. Stdout is {stdout_lines} lines, and `answer.txt` is {file_lines}. The state numbers are the
-same in both, so *state {last}* on the screen is *state {last}* in the file. The blind enumerator proposes facts about
-`Color`, the atom the program's `is-a` facts point at, and the `types` row says so: *type* and *object* are the
-row's words, for that atom and for an atom the enumerator proposes about.
+same in both, so *state {last}* on the screen is *state {last}* in the file.
 """)
 add(block(colors))
 

@@ -33,17 +33,11 @@ digraph kb {
 
   // facts in a context
   newrank=true;
+  f_b10ac10970 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  f_11e3b3411e [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
   subgraph cluster_ctx_0 {
     label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_0b12cdd493 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  }
-  subgraph cluster_ctx_1 {
-    label="claims, confirmed, knows ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    f_b10ac10970 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style="filled,solid", fillcolor="#d9d9d9"];
-  }
-  subgraph cluster_ctx_2 {
-    label="knows ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    f_11e3b3411e [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style="filled,solid", fillcolor="#d9d9d9"];
   }
   f_b10ac10970 -> "Dan" [label="#1", color="#1f77b4", style=solid];
   f_b10ac10970 -> "Soup" [label="#2", color="#1f77b4", style=solid];

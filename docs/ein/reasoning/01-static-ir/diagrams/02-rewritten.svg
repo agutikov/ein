@@ -58,7 +58,7 @@
 <!-- f1 -->
 <g id="node9" class="node">
 <title>f1</title>
-<polygon fill="#d9d9d9" stroke="black" points="49.8,-84.68 49.8,-93.62 43.47,-99.95 34.53,-99.95 28.2,-93.62 28.2,-84.68 34.53,-78.35 43.47,-78.35 49.8,-84.68"/>
+<polygon fill="none" stroke="black" points="49.8,-84.68 49.8,-93.62 43.47,-99.95 34.53,-99.95 28.2,-93.62 28.2,-84.68 34.53,-78.35 43.47,-78.35 49.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="22.95" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">f1</text>
 </g>
 <!-- f1&#45;&gt;owns -->
@@ -85,7 +85,7 @@
 <!-- f2 -->
 <g id="node10" class="node">
 <title>f2</title>
-<polygon fill="#d9d9d9" stroke="black" points="216.8,-84.68 216.8,-93.62 210.47,-99.95 201.53,-99.95 195.2,-93.62 195.2,-84.68 201.53,-78.35 210.47,-78.35 216.8,-84.68"/>
+<polygon fill="none" stroke="black" points="216.8,-84.68 216.8,-93.62 210.47,-99.95 201.53,-99.95 195.2,-93.62 195.2,-84.68 201.53,-78.35 210.47,-78.35 216.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="189.95" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">f2</text>
 </g>
 <!-- f2&#45;&gt;lives&#45;in -->
@@ -112,7 +112,7 @@
 <!-- f3 -->
 <g id="node11" class="node">
 <title>f3</title>
-<polygon fill="#d9d9d9" stroke="black" points="300.8,-84.68 300.8,-93.62 294.47,-99.95 285.53,-99.95 279.2,-93.62 279.2,-84.68 285.53,-78.35 294.47,-78.35 300.8,-84.68"/>
+<polygon fill="none" stroke="black" points="300.8,-84.68 300.8,-93.62 294.47,-99.95 285.53,-99.95 279.2,-93.62 279.2,-84.68 285.53,-78.35 294.47,-78.35 300.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="273.95" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">f3</text>
 </g>
 <!-- f3&#45;&gt;left&#45;of -->
@@ -139,7 +139,7 @@
 <!-- c -->
 <g id="node12" class="node">
 <title>c</title>
-<polygon fill="#d9d9d9" stroke="black" stroke-dasharray="5,2" points="133.8,-84.68 133.8,-93.62 127.47,-99.95 118.53,-99.95 112.2,-93.62 112.2,-84.68 118.53,-78.35 127.47,-78.35 133.8,-84.68"/>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="133.8,-84.68 133.8,-93.62 127.47,-99.95 118.53,-99.95 112.2,-93.62 112.2,-84.68 118.53,-78.35 127.47,-78.35 133.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="109.2" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">c</text>
 </g>
 <!-- c&#45;&gt;pet&#45;at -->
@@ -165,4 +165,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: a3b9c2b336b149930a3d5dc2ac09e7415f6124f4015efe8b09ed4e1b37e561c7 -->
+<!-- source sha256: f6e34ce66322b88ac85f43156a8aa78f0289f03aa0261bd166683674dc7c8c49 -->

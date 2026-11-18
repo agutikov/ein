@@ -5,7 +5,7 @@ digraph knowledge_base {
   { rank=min; "relation"; }
   { rank=same; "is-instance"; "lives-in"; }
   { rank=max; "Object"; "Type"; "Norwegian"; "Person"; "House-1"; "House"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   d1 [xlabel="d1"]; d2 [xlabel="d2"]; d3 [xlabel="d3"]; d4 [xlabel="d4"];
   m1 [xlabel="m1"]; m2 [xlabel="m2"]; f [xlabel="f"];
   { rank=same; d1; d2; d3; d4; }

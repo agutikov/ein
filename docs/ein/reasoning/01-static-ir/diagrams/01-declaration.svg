@@ -22,7 +22,7 @@
 <!-- f2 -->
 <g id="node10" class="node">
 <title>f2</title>
-<polygon fill="#d9d9d9" stroke="black" points="273.8,-84.68 273.8,-93.62 267.47,-99.95 258.53,-99.95 252.2,-93.62 252.2,-84.68 258.53,-78.35 267.47,-78.35 273.8,-84.68"/>
+<polygon fill="none" stroke="black" points="273.8,-84.68 273.8,-93.62 267.47,-99.95 258.53,-99.95 252.2,-93.62 252.2,-84.68 258.53,-78.35 267.47,-78.35 273.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="246.95" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">f2</text>
 </g>
 <!-- lives&#45;in&#45;&gt;f2 -->
@@ -41,7 +41,7 @@
 <!-- m1 -->
 <g id="node11" class="node">
 <title>m1</title>
-<polygon fill="#d9d9d9" stroke="black" points="201.8,-84.68 201.8,-93.62 195.47,-99.95 186.53,-99.95 180.2,-93.62 180.2,-84.68 186.53,-78.35 195.47,-78.35 201.8,-84.68"/>
+<polygon fill="none" stroke="black" points="201.8,-84.68 201.8,-93.62 195.47,-99.95 186.53,-99.95 180.2,-93.62 180.2,-84.68 186.53,-78.35 195.47,-78.35 201.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="171.57" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">m1</text>
 </g>
 <!-- is&#45;a&#45;&gt;m1 -->
@@ -54,7 +54,7 @@
 <!-- m2 -->
 <g id="node12" class="node">
 <title>m2</title>
-<polygon fill="#d9d9d9" stroke="black" points="152.8,-84.68 152.8,-93.62 146.47,-99.95 137.53,-99.95 131.2,-93.62 131.2,-84.68 137.53,-78.35 146.47,-78.35 152.8,-84.68"/>
+<polygon fill="none" stroke="black" points="152.8,-84.68 152.8,-93.62 146.47,-99.95 137.53,-99.95 131.2,-93.62 131.2,-84.68 137.53,-78.35 146.47,-78.35 152.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="122.58" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">m2</text>
 </g>
 <!-- is&#45;a&#45;&gt;m2 -->
@@ -91,7 +91,7 @@
 <!-- d1 -->
 <g id="node8" class="node">
 <title>d1</title>
-<polygon fill="#d9d9d9" stroke="black" points="102.8,-241.38 102.8,-250.32 96.47,-256.65 87.53,-256.65 81.2,-250.32 81.2,-241.38 87.53,-235.05 96.47,-235.05 102.8,-241.38"/>
+<polygon fill="none" stroke="black" points="102.8,-241.38 102.8,-250.32 96.47,-256.65 87.53,-256.65 81.2,-250.32 81.2,-241.38 87.53,-235.05 96.47,-235.05 102.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="74.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d1</text>
 </g>
 <!-- d1&#45;&gt;relation -->
@@ -125,7 +125,7 @@
 <!-- d2 -->
 <g id="node9" class="node">
 <title>d2</title>
-<polygon fill="#d9d9d9" stroke="black" points="157.8,-241.38 157.8,-250.32 151.47,-256.65 142.53,-256.65 136.2,-250.32 136.2,-241.38 142.53,-235.05 151.47,-235.05 157.8,-241.38"/>
+<polygon fill="none" stroke="black" points="157.8,-241.38 157.8,-250.32 151.47,-256.65 142.53,-256.65 136.2,-250.32 136.2,-241.38 142.53,-235.05 151.47,-235.05 157.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="129.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d2</text>
 </g>
 <!-- d2&#45;&gt;relation -->
@@ -186,4 +186,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 55d3d730c30eb326d0d67420335e21a3a2c068c559d6a7198eb7522313455cd0 -->
+<!-- source sha256: 25d55396fc78192c81270527e50b7312c60ae7d3306392f35592f02d065a23a3 -->

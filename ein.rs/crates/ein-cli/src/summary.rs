@@ -82,20 +82,12 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
             ein_render::dump::region::later_json(&stats.later),
         ));
     }
-    hypgen.extend([
-        // What the universe leaves out (Q-M1e2.3):
-        // on every run, `[]` when nothing.
-        (
-            "outside",
-            ein_render::dump::region::outside_json(&stats.outside),
-        ),
-        // What the untyped rung bound as an object (Q-M1e.12): on every
-        // run, empty when nothing.
-        (
-            "types_as_objects",
-            ein_render::dump::region::types_json(&stats.types_as_objects),
-        ),
-    ]);
+    // What the universe leaves out (Q-M1e2.3): on every run, `[]` when
+    // nothing.
+    hypgen.push((
+        "outside",
+        ein_render::dump::region::outside_json(&stats.outside),
+    ));
     // A relation's name the blind enumerator bound as an object: only where
     // it bound one, so every other program's block is what it was.
     if !stats.relation_names.is_empty() {

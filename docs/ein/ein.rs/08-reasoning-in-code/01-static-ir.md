@@ -101,10 +101,10 @@ name on the fact instead: as the label of an arrow, or, under `ein render progra
 fact, with numbered arrows to the arguments only. So `--levi` draws the name `left-of` on two octagons where the
 graph has one atom, and numbers the arrows by argument where the reasoning counts them from the relation's. The
 drawings of the graph on the two pages are written by hand in the reasoning's vocabulary: a box for an atom, an
-unlabelled octagon for a fact, filled where the knowledge base holds it, a number on each arrow for its place,
-and a dashed frame around a fact that a fact points at, named for the relation of the facts that point at it.
-Every view of `ein render` draws such a fact the same two ways, filled where held and in a frame so named, and
-draws it once, as an octagon and no arrow (`ein-render/src/dot_util.rs`' `ctx_frames`; held by
+unlabelled octagon for a fact, a number on each arrow for its place, and a dashed frame around a fact that a
+fact points at and the knowledge base does not hold, named for the relation of the facts that point at it; a held
+fact is in no frame. Every view of `ein render` draws such a fact the same way, in a frame so named where it is
+not held and in none where it is, and draws it once, as an octagon and no arrow (`ein-render/src/dot_util.rs`' `ctx_frames`; held by
 `ein-render/tests/every_object_once.rs`); what it does not draw is still the relation's node. The other
 hand-drawn schematics are the chain of objects in their order, the gluing square and the four levels.
 
@@ -163,7 +163,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | an atom sorts before a fact; facts order by relation, then arguments, then count | the term store's unit tests `semantic_order_sorts_names_by_text`, `facts_order_as_their_identity_tuples_do` in `ein-core/src/terms.rs` |
 | a name is printed bare exactly where it reads back as that name | the grammar's unit test `the_printers_symbol_is_the_lexers` in `ein-ir/src/grammar.rs`; `ein-core/tests/values_semantics.rs`: `display_renders_every_value_shape` |
 | every knowledge base an answer's files hold reads back as it was written | `ein-cli/tests/answer_round_trip.rs` |
-| every drawing draws an object once: a fact that a drawn fact points at is one octagon, in one frame that names every relation that points at it, filled where held, and no arrow; a held fact that nothing points at is drawn as it was; the variables of a pattern under an arrow are drawn | `ein-render/tests/every_object_once.rs`, the KB view, the program view, the rule view in both modes and the constraint view; every corpus program's drawings by `ein-render/tests/id_order_invariance.rs`, and Graphviz's reading of them by `ein-render/tests/dot_wellformed.rs` |
+| every drawing draws an object once: a fact that a drawn fact points at is one octagon, and no arrow, in one frame that names every relation that points at it where it is not held, and in no frame where it is; no node is filled; a held fact that nothing points at is drawn as it was; the variables of a pattern under an arrow are drawn | `ein-render/tests/every_object_once.rs`, the KB view, the program view, the rule view in both modes and the constraint view; every corpus program's drawings by `ein-render/tests/id_order_invariance.rs`, and Graphviz's reading of them by `ein-render/tests/dot_wellformed.rs` |
 | no keyword pair reaches an object's label in a drawing | the renderer's unit test `no_keyword_pair_reaches_a_values_label` in `ein-render/src/dot_util.rs`; `ein-ir/tests/grammar_pages.rs`: `every_row_of_the_grammars_table_is_refused_at_the_parse` |
 | the quoted form of every shape of object, and its escape for every code point | `ein-core/tests/format_tables.rs`: `repr_of_every_reachable_value_shape`, `repr_escape_table_code_point_by_code_point` |
 

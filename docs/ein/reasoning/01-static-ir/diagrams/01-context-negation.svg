@@ -26,7 +26,7 @@
 <!-- t -->
 <g id="node5" class="node">
 <title>t</title>
-<polygon fill="#d9d9d9" stroke="black" points="45.8,-270.88 45.8,-279.82 39.47,-286.15 30.53,-286.15 24.2,-279.82 24.2,-270.88 30.53,-264.55 39.47,-264.55 45.8,-270.88"/>
+<polygon fill="none" stroke="black" points="45.8,-270.88 45.8,-279.82 39.47,-286.15 30.53,-286.15 24.2,-279.82 24.2,-270.88 30.53,-264.55 39.47,-264.55 45.8,-270.88"/>
 <text xml:space="preserve" text-anchor="middle" x="21.95" y="-289.2" font-family="Helvetica,sans-Serif" font-size="11.00">t</text>
 </g>
 <!-- think&#45;&gt;t -->
@@ -45,7 +45,7 @@
 <!-- n -->
 <g id="node6" class="node">
 <title>n</title>
-<polygon fill="#d9d9d9" stroke="black" points="193.8,-270.88 193.8,-279.82 187.47,-286.15 178.53,-286.15 172.2,-279.82 172.2,-270.88 178.53,-264.55 187.47,-264.55 193.8,-270.88"/>
+<polygon fill="none" stroke="black" points="193.8,-270.88 193.8,-279.82 187.47,-286.15 178.53,-286.15 172.2,-279.82 172.2,-270.88 178.53,-264.55 187.47,-264.55 193.8,-270.88"/>
 <text xml:space="preserve" text-anchor="middle" x="168.82" y="-289.2" font-family="Helvetica,sans-Serif" font-size="11.00">n</text>
 </g>
 <!-- not&#45;&gt;n -->
@@ -162,4 +162,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 34f1f9b0988af1b810e1933be3d3fa5962afae33a138f27501433e9ae1c4f6c5 -->
+<!-- source sha256: c3d07521b347050a93d9a31a39d7d3f3a1c8c664d763663ef6604aee76303283 -->

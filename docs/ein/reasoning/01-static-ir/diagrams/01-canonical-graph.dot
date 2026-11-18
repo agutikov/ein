@@ -4,7 +4,7 @@ digraph knowledge_base {
   edge [fontname="Helvetica", fontsize=10];
   { rank=min; "owns"; "lives-in"; "left-of"; }
   { rank=max; "Dog"; "Norwegian"; "House-1"; "House-2"; "House-3"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"]; f4 [xlabel="f4"];
   { rank=same; f1; f2; f3; f4; }
   f1 -> "owns" [label="1"];

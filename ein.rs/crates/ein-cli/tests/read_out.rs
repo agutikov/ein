@@ -844,66 +844,49 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
     );
 }
 
-/// **A type the untyped rung binds as an object is one sentence, on every
-/// surface that reports R** (Q-M1e.12). Where the
-/// blind enumerator built H, a candidate that names an object on the right of
-/// an `is-a` is a type bound as an object, and the read-out names those
-/// objects (`ein_infer::types_as_objects`). Every question prints the same
-/// `types` row under `universe`, `ein oracle` and its dump say it, `ein test`
-/// says it beside a claim, and the summary carries it in
-/// `root.hypgen.types_as_objects`, on `--monotone` too. `pets.ein` binds
-/// `Pet`; `branching/06`, whose candidates are typed, prints no row and an
-/// empty object, and so does `tests/region/01_states.ein`, whose `Item` is
-/// on the right of an `is-a` but whose candidates its hrules type.
+/// **`is-a` is a relation like any other, on every surface that reports R**
+/// (Q-M1e.12). The blind enumerator is untyped: `pets.ein`'s `Pet`, the atom
+/// its `is-a` facts point at, is an argument of candidates of H like any
+/// other guessable atom, and R holds them. And nothing reads the relation by
+/// its spelling: the same program with `is-a` spelt `is-b` prints, name for
+/// name, what it prints under every question and in its summary, in `ein
+/// oracle`'s output and its dump, and in `ein test`'s lines and report, here
+/// on a claim that the maximal line holds `(likes Ann Person)`. Each pair is
+/// run from its own directory under one file name, so a path the outputs
+/// echo is the same in both.
 #[test]
-fn a_type_bound_as_an_object_is_one_sentence_on_every_surface() {
-    const PETS: &str = "Pet — on the right of an is-a, and 9 candidates of co-located, is-a name \
-                        it as an object: the blind enumerator is untyped, and no signature names it";
-    let cases: [(&str, &[&str], String, bool); 3] = [
-        (
-            "examples/saturation/type-exclusivity/pets.ein",
-            &["Pet"],
-            PETS.to_string(),
-            true,
-        ),
-        (
-            "examples/branching/06_lookahead_on.ein",
-            &[],
-            String::new(),
-            false,
-        ),
-        ("tests/region/01_states.ein", &[], String::new(), true),
-    ];
-    let run = |args: &[&str]| {
-        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-            .args(args)
-            .current_dir(repo_root())
-            .output()
-            .expect("the `ein` binary runs");
-        let stdout = String::from_utf8_lossy(&out.stdout).into_owned();
-        (out.status.code(), stdout)
-    };
-    let rows = |text: &str| -> Vec<String> {
-        text.lines()
-            .filter_map(|l| l.strip_prefix("    types           "))
-            .map(str::to_string)
-            .collect()
-    };
-    let objects = |json: &serde_json::Value| -> Vec<String> {
-        json["objects"]
-            .as_array()
-            .expect("an object on every run")
-            .iter()
-            .map(|o| o.as_str().expect("a name").to_string())
-            .collect()
-    };
-    for (file, named, sentence, cube) in &cases {
-        let want: Vec<String> = if sentence.is_empty() {
-            Vec::new()
-        } else {
-            vec![sentence.clone()]
+fn is_a_reads_as_any_other_relation_on_every_surface() {
+    let pets =
+        std::fs::read_to_string(repo_root().join("examples/saturation/type-exclusivity/pets.ein"))
+            .expect("pets.ein");
+    let likes = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
+                 (relation likes T T :why \"{?1} likes {?2}\")\n(__closed__ is-a)\n\
+                 (is-a Ann Person)\n\
+                 (query :goal (likes Ann ?x) :over maximal\n\
+                 \x20 :expect (model (likes Ann Person)))\n";
+    assert!(!pets.contains("is-b") && !likes.contains("is-b"));
+    let tmp = Scratch::new("ein-is-a");
+    // Every surface's text for one spelling, the other spelt back as `is-a`.
+    let surfaces = |spelling: &str| -> Vec<(String, String)> {
+        let dir = tmp.join(spelling);
+        std::fs::create_dir_all(&dir).expect("a directory");
+        std::fs::write(dir.join("pets.ein"), pets.replace("is-a", spelling)).expect("pets");
+        std::fs::write(dir.join("likes.ein"), likes.replace("is-a", spelling)).expect("likes");
+        let run = |args: &[&str]| -> (Option<i32>, String) {
+            let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+                .args(args)
+                .current_dir(&dir)
+                .output()
+                .expect("the `ein` binary runs");
+            let text = format!(
+                "{}{}",
+                String::from_utf8_lossy(&out.stdout),
+                String::from_utf8_lossy(&out.stderr)
+            );
+            (out.status.code(), text)
         };
-        let tmp = Scratch::new("ein-types");
+        let read = |name: &str| std::fs::read_to_string(dir.join(name)).expect(name);
+        let mut got = Vec::new();
         let questions: [&[&str]; 7] = [
             &[],
             &["--maximal"],
@@ -914,75 +897,66 @@ fn a_type_bound_as_an_object_is_one_sentence_on_every_surface() {
             &["--monotone"],
         ];
         for (i, flags) in questions.iter().enumerate() {
-            let json = tmp.join(format!("summary-{i}.json"));
-            let json = json.to_str().expect("a UTF-8 path");
-            let mut args = vec!["solve", file];
+            let json = format!("summary-{i}.json");
+            let mut args = vec!["solve", "pets.ein"];
             args.extend_from_slice(flags);
-            args.extend_from_slice(&["--json-summary", json]);
+            args.extend_from_slice(&["--json-summary", &json]);
             let (code, out) = run(&args);
-            assert_eq!(code, Some(0), "ein {args:?}:\n{out}");
-            assert_eq!(rows(&out), want, "ein solve {file} {flags:?}:\n{out}");
-            let summary: serde_json::Value =
-                serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))
-                    .expect("it parses");
-            let t = &summary["root"]["hypgen"]["types_as_objects"];
-            assert_eq!(objects(t), *named, "{file} {flags:?}: objects");
-            assert_eq!(
-                t["candidates"].as_u64() == Some(0),
-                named.is_empty(),
-                "{file} {flags:?}: candidates"
-            );
+            assert_eq!(code, Some(0), "ein {args:?} ({spelling}):\n{out}");
+            got.push((format!("ein solve {flags:?}"), out));
+            got.push((format!("ein solve {flags:?}: the summary"), read(&json)));
         }
-        if !cube {
-            continue;
+        let (code, out) = run(&["oracle", "pets.ein", "--dump", "cube"]);
+        assert_eq!(code, Some(0), "ein oracle ({spelling}):\n{out}");
+        got.push(("ein oracle".to_string(), out));
+        got.push(("region.json".to_string(), read("cube/region.json")));
+        // The cost line is wall-clock, and the one line of the dump that differs
+        // between two runs.
+        let md: String = read("cube/region.md")
+            .lines()
+            .filter(|l| !l.ends_with("differ between two runs."))
+            .map(|l| format!("{l}\n"))
+            .collect();
+        got.push(("region.md".to_string(), md));
+        let (code, out) = run(&["test", "-v", "likes.ein", "--json-report", "report.json"]);
+        assert_eq!(code, Some(0), "ein test ({spelling}):\n{out}");
+        // The tally's wall-clock, `  (0.00 s)`, is the one thing that differs.
+        let out: String = out
+            .lines()
+            .map(|l| match l.rfind("  (") {
+                Some(i) if l.ends_with(" s)") => format!("{}\n", &l[..i]),
+                _ => format!("{l}\n"),
+            })
+            .collect();
+        got.push(("ein test -v".to_string(), out));
+        let mut report: serde_json::Value =
+            serde_json::from_str(&read("report.json")).expect("the report parses");
+        for row in report["rows"].as_array_mut().expect("rows") {
+            if let Some(region) = row.get_mut("region").and_then(|r| r.as_object_mut()) {
+                region.remove("ms");
+            }
         }
-        let dump = tmp.join("cube");
-        let dump = dump.to_str().expect("a UTF-8 path");
-        let (code, out) = run(&["oracle", file, "--dump", dump]);
-        assert_eq!(code, Some(0), "ein oracle {file}:\n{out}");
-        assert_eq!(rows(&out), want, "ein oracle {file}:\n{out}");
-        let md = std::fs::read_to_string(tmp.join("cube/region.md")).expect("region.md");
-        assert_eq!(
-            md.contains("**Types as objects**: "),
-            !sentence.is_empty(),
-            "{file}: region.md"
-        );
-        if !sentence.is_empty() {
-            assert!(
-                md.contains(&format!("**Types as objects**: {sentence}.")),
-                "{md}"
-            );
-        }
-        let region: serde_json::Value = serde_json::from_str(
-            &std::fs::read_to_string(tmp.join("cube/region.json")).expect("region.json"),
-        )
-        .expect("it parses");
-        assert_eq!(
-            objects(&region["types_as_objects"]),
-            *named,
-            "{file}: region.json"
-        );
+        got.push(("the report".to_string(), report.to_string()));
+        got.into_iter()
+            .map(|(what, text)| (what, text.replace(spelling, "is-a")))
+            .collect()
+    };
+    let is_a = surfaces("is-a");
+    let is_b = surfaces("is-b");
+    assert_eq!(is_a.len(), is_b.len());
+    for ((what, a), (_, b)) in is_a.iter().zip(&is_b) {
+        assert_eq!(a, b, "{what}: `is-b` reads otherwise than `is-a`");
     }
-    // `ein test`, beside the claim it prints: no corpus program the warning
-    // names states one, so this one is written here: on the maximal line Ann
-    // likes her own type, and the claim says so.
-    let tmp = Scratch::new("ein-types-test");
-    let file = tmp.join("likes.ein");
-    std::fs::write(
-        &file,
-        "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation likes T T :why \"{?1} likes {?2}\")\n(__closed__ is-a)\n(is-a Ann Person)\n\
-         (query :goal (likes Ann ?x) :over maximal\n\
-         \x20 :expect (model (likes Ann Person)))\n",
-    )
-    .expect("the program");
-    let (code, out) = run(&["test", "-v", file.to_str().expect("a UTF-8 path")]);
-    assert_eq!(code, Some(0), "{out}");
+    // Untyped: `Pet` is an argument of candidates of H, and of states of R.
+    let describe = &is_a[0].1;
     assert!(
-        out.contains(
-            "    a type as an object: Person — on the right of an is-a, and 2 candidates of \
-             likes name it as an object: the blind enumerator is untyped, and no signature \
-             names it\n"
-        ),
-        "{out}"
+        describe.contains("  universe          15 candidates, 0 dead alone\n")
+            && describe.contains("(model (co-located Bird Pet) (is-a Bird Pet)"),
+        "{describe}"
     );
+    let summary: serde_json::Value = serde_json::from_str(&is_a[1].1).expect("it parses");
+    assert_eq!(summary["region"]["universe"]["candidates"], 15);
+    assert_eq!(summary["region"]["k_s"], 11_339);
+    let test = &is_a[is_a.len() - 2].1;
+    assert!(test.contains("  :goal (likes Ann ?x) — holds ("), "{test}");
 }

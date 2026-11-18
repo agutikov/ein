@@ -5,7 +5,7 @@ digraph declaration {
   { rank=min; "relation"; }
   "lives-in"; "is-a";
   { rank=max; "Person"; "House"; "Norwegian"; "House-1"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   d1 [xlabel="d1"]; d2 [xlabel="d2"]; f2 [xlabel="f2"]; m1 [xlabel="m1"]; m2 [xlabel="m2"];
   { rank=same; d1; d2; }
   { rank=same; f2; m1; m2; }

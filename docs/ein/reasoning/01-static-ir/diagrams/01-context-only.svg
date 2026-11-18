@@ -26,7 +26,7 @@
 <!-- t -->
 <g id="node4" class="node">
 <title>t</title>
-<polygon fill="#d9d9d9" stroke="black" points="45.8,-270.88 45.8,-279.82 39.47,-286.15 30.53,-286.15 24.2,-279.82 24.2,-270.88 30.53,-264.55 39.47,-264.55 45.8,-270.88"/>
+<polygon fill="none" stroke="black" points="45.8,-270.88 45.8,-279.82 39.47,-286.15 30.53,-286.15 24.2,-279.82 24.2,-270.88 30.53,-264.55 39.47,-264.55 45.8,-270.88"/>
 <text xml:space="preserve" text-anchor="middle" x="21.95" y="-289.2" font-family="Helvetica,sans-Serif" font-size="11.00">t</text>
 </g>
 <!-- think&#45;&gt;t -->
@@ -136,4 +136,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 21d95f3496a240da77266262eea4303ad4b89470aaf1de9e0a5ba4cbb6af16ee -->
+<!-- source sha256: 6f12d090a46e8e0fb9aea56d0fb0cb8fcb12a21a9b483ed894e63b0ca3a229a3 -->
