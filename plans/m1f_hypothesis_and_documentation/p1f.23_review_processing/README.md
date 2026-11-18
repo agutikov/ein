@@ -51,6 +51,7 @@ extent's drawing, in [the milestone's findings](../findings.md)); they answer L-
 |---|---|---|
 | [S1f.23.1](s1f.23.1_drawing.md) | **The drawing.** Every view of `ein render` draws a fact in the canonical form, and folds a fact of three arrows into a labelled arrow on request; no labelled octagon and no text node is produced, or drawn on any page; the KB and the program views label and number alike; `ein render program` is the program's knowledge base as one graph, its rules and its query; L-107's drawing as ruled; every drawing of the tree and of the review bundle drawn again; the user then reviews `review/03-drawings/` again | **started 2026-11-18** on the user's word |
 | [S1f.23.2](s1f.23.2_no_key_and_no_grid.md) | **`--models key` and `--models grid` removed**, with the code, tests, script runs, pages and decisions that exist only for them (the user: *"remove key and grid, add a stage for it"*) | **started 2026-11-18** on the user's word, in a worktree beside S1f.23.1, merged after it |
+| [S1f.23.3](s1f.23.3_test_diffs_its_claims.md) | **`--diff-models` leaves `ein solve`; `ein test` diffs a claim's models against what it found**, under an option, as stats and/or diffs, the near-miss (*one fact off*) kept (the user: *"remove --diff-models as it is now … can we add it as an option for test ?"*) | planned 2026-11-18 on the user's word; runs after S1f.23.2 is merged |
 | S1f.23.n | the next batch of the review's rulings | planned when ruled; run on the user's word |
 | S1f.23.z | **The close.** | last |
 
