@@ -162,7 +162,7 @@ Also:
   `jsonl2md.py` (events as a table), `kbsub.py` (the KB view cut by relation), `trace_excerpt.py` (a trace's steps
   of named rules), `steps_of.py` (a trace's steps that check or label one number), `check_census.py` (the check's rules of every
   module of a tree) and `draw_rules.sh` (§ 2's rule drawings of today, with
-  [`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh)).
+  [`../../tools/draw.sh`](../../tools/draw.sh)).
 
 ## 6. Re-run
 

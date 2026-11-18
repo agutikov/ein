@@ -252,7 +252,7 @@ bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/08-
 [`rerun.sh`](rerun.sh) runs every command above with `build/review-bin/ein-head-17085b27` (`solve`, `-p`,
 `--json-summary`, `--trace`, `--events`, `saturate --dump`, `show hyps`, `test -v`, `render h-space`, `render kb`,
 `render program`), writes the diffs, draws every `.dot` with
-[`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh), rewrites the code excerpts and runs the corpus
+[`../../tools/draw.sh`](../../tools/draw.sh), rewrites the code excerpts and runs the corpus
 census (`v7_census.py`, over every corpus program at root).
 
 ## 7. Found while building

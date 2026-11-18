@@ -144,7 +144,7 @@ Also:
   under one binary), `diffs.sh` (before → today diffs), `facts.py` (the facts of a dump that bear on the check),
   `jsonl2md.py` (events as a table), `kbsub.py` (the KB view cut by relation), `trace_excerpt.py` (a trace's steps
   of named rules), `steps_of.py` (a trace's steps that check or label one number), `draw_rules.sh` (§ 2's three rule drawings, with
-  [`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh)).
+  [`../../tools/draw.sh`](../../tools/draw.sh)).
 
 ## 6. Re-run
 

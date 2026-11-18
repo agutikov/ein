@@ -5,7 +5,7 @@
 **Rulings:** [Q-M1f.419](../open_questions.md#q-m1f419--how-ein-render-draws-a-fact),
 [Q-M1f.420](../open_questions.md#q-m1f420--what-ein-render-program-draws), L-107 in
 [the milestone's findings](../findings.md); the user's words are in [the phase's README](README.md#the-instruction).
-**Ends with** the user's second look at [`../review/03-drawings/`](../review/03-drawings/README.md).
+**Ends with** the user's second look at `review/03-drawings/` (answered by the user 2026-11-18 and removed).
 
 ## What is ruled
 

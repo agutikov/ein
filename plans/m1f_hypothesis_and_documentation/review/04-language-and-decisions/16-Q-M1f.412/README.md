@@ -202,7 +202,7 @@ bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/16-
 It runs every surface of `likes.ein` and `likes-is-b.ein` under both binaries from `programs/` (the `is-b` program
 copied as `likes.ein` into a directory of its own), the diffs, `pets.ein`'s read-out under both, the two goal
 programs, the `grep` of `is-a`, the reader and `jq`, the mocks (today's documents, the `schema` line edited), and the
-KB and program views, drawn with [`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh).
+KB and program views, drawn with [`../../tools/draw.sh`](../../tools/draw.sh).
 
 ## 7. Found while building
 

@@ -141,7 +141,7 @@ It runs, with `build/review-bin/ein-head-17085b27`, for each of the nine program
 `ein solve --monotone`, one `ein solve` with `--trace`, `--events` and `--json-summary`, `ein saturate --dump` and
 `ein render kb`; `ein test -v` and `ein solve` of the two corpus programs; the KB views of the two `kbview-*`
 programs and their diff; then it draws every `.dot` with
-[`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh).
+[`../../tools/draw.sh`](../../tools/draw.sh).
 
 ## 7. Found while building
 

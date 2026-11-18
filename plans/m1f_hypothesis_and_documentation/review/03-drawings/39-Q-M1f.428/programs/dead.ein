@@ -1,8 +1,0 @@
-(relation owns Person Pet :why "{?1} owns {?2}")
-(rule one-pet ()
-  :match  (and (owns ?p ?x) (owns ?p ?y) (neq ?x ?y))
-  :assert (false)
-  :why    "{?p} owns {?x} and {?y}, and one person owns one pet.")
-(owns Bob Dog)
-(owns Bob Cat)
-(solve :no-search :expect (false))

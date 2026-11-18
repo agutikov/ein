@@ -18,7 +18,7 @@ re-takes what the bundle shows of them, and stops for the user's next look. Each
 
 ## The instruction
 
-The user, 2026-11-18, verbatim, after reading [`../review/03-drawings/`](../review/03-drawings/README.md) and the
+The user, 2026-11-18, verbatim, after reading `review/03-drawings/` (answered by the user 2026-11-18 and removed) and the
 main session's account of the four ways a fact is drawn:
 
 > Ok, L-107 - I want all 3 - grey + octagon + color arrows; Then important: I want `ein render` now draw first form
