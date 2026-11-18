@@ -1,7 +1,7 @@
 # S1f.23.7 — a slice of the knowledge base defined by a query, and drawn
 
 **Phase:** [P1f.23](README.md)
-**Status:** planned 2026-11-18 on the user's answer to Q-M1f.426; **not started without the user's word**.
+**Status:** planned 2026-11-18 on the user's answer to Q-M1f.426; task 1, the examples, started the same day on the user's word (*"go ahead"*); it stops for the user's look.
 
 ## The user's words
 
