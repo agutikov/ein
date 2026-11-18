@@ -20,7 +20,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   that load's share, not measured.
 - No default.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -36,7 +36,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** refuse both; a container is made from a program file.
 - **(c)** give the container a section for the commitment, so a node's container opens as that node.
 
-**Your answer:** 
+**Your answer:** (c)
 
 **Notes:** 
 
@@ -51,7 +51,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** both read the program's H, the node aside — **the default**.
 - **(b)** both read the run's universe, H less the node's choices, as `ein solve -H` lists it.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -66,7 +66,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** root alone, the node: one saturation, each claim NOT CHECKED, no exit moved — **the default**.
 - **(b)** no run at all: each claim NOT CHECKED, no run's data in `--json-report`.
 
-**Your answer:** 
+**Your answer:** (b)
 
 **Notes:** 
 
@@ -81,7 +81,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** the `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` — **the default**.
 - **(b)** no row: the read-out of a saved file is the read-out of a program.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -96,7 +96,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** a saved file is parsed with one level more, its wrappers'; the limit is the texts' — **the default**.
 - **(b)** the limit stays; a program or module at exactly 1000 has a saved file that does not load.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -115,7 +115,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - No default. Every option but (a) changes `saved_files.rs:179` and `10-answer-dump.md`, and the claim's
   `hypothesised in branch 0` line with it.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -133,6 +133,6 @@ re-render of the bundle rewrites the READMEs and never this file.
   note for the file, or one per module.
 - No default.
 
-**Your answer:** 
+**Your answer:** Drop the note entirely, since the file is self-contained and comparing libraries isn't the loader's business
 
 **Notes:** 
