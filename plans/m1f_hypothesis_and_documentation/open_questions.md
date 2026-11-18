@@ -1074,7 +1074,7 @@ enum variant and its two sentences.
 
 ### Q-M1f.27 — What program a `.einb`'s answer directory writes
 
-**Decision file:** [`docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md`](../../docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md)
+**Decision file:** [`docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md`](../../docs/decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)
 
 **Raised** 2026-11-09 by S1f.5.12's T1f.5.12.5, which fixes
 W43: `ein solve X.einb --dump-answer DIR` writes the directory where it was refused, and every state file starts with
@@ -1742,7 +1742,7 @@ read by nothing and moves the positions its refusal prints; a record is not edit
 
 ### Q-M1f.58 — Where a fact is rendered in English, and what it reads from
 
-**Decision file:** [`docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md`](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md)
+**Decision file:** [`docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md`](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md)
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.2. The stage file's surface for a fact's sentence, the read-out's
 *rendered* answer table, went with the walk at M1e2 S1e2.1c.5; since then a relation's `:why` reaches no surface,
@@ -4017,7 +4017,7 @@ work by the batches' ratio, 4 and 12, which a tolerance of 15 % still catches.
 
 ### Q-M1f.185 — A state file nested past the parser's limit
 
-**Decision file:** [`docs/decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md`](../../docs/decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md)
+**Decision file:** [`docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md`](../../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md)
 
 **Raised** 2026-11-12 by S1f.6.9, whose stage file put the choice to the user
 from the start. **Open: the user's, and not defaulted.** It is E-4 of the phase's
@@ -7931,3 +7931,97 @@ flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first 
   re-worded so): the program is dead either way, and no corpus program writes such a numeral. **Default.**
 - **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
   fault bit carried, so that the label is not derived for a malformed numeral.
+
+### Q-M1f.413 — `ein kb save` of a saved file
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.** A
+`.einb` stores a program, resolved and import-flattened, and its root's sections; a saved file is a program with one
+commitment of H (Q-M1f.402), and a container has no place for the commitment. Resolving the saved file's imports
+from the disk, as the container's writer did, would read other files than the saved one.
+
+- **(a)** **a saved file of root, with no `(commit …)`, is stored as the program it carries, its imports read from
+  the modules it carries; one with a `(commit …)` is refused**, `kb save error: F is a saved file with a (commit …),
+  a node of its program's lattice, and a .einb holds a program's root — save the program, or the saved file of its
+  root`, exit 1. **Default.**
+- **(b)** both refused: a container is made from a program file.
+- **(c)** the container carries the commitment, a section of its own, and a container of a node opens as that node.
+
+**Default taken: (a).** Built: `ein-cli/src/kb.rs`, `ein_einb::sections::Carried`; held by
+`ein-cli/tests/saved_files.rs`' `what_a_saved_file_is_refused_for`; the page `10-answer-dump.md` and
+`07-diagnostics.md` § 2.30.
+
+### Q-M1f.414 — A fact's English, which a state file wrote in a comment
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.** A
+state file wrote every fact of the state with its reason and its statement in a comment
+([Q-M1f.58](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) as it stood). The ruled
+format, Q-M1f.400 and Q-M1f.401, holds no fact of the state, so no file holds a state's facts in English: `--trace`
+writes a firing's reason and each fact it derives with its statement, and `ein render kb` labels a fact's arrow with
+its source or its rule.
+
+- **(a)** **the English goes with the facts**: the trace is where a fact reads in English, Q-M1f.58 says so, and
+  `14-natural-language.md` § 3 shows a trace's lines instead of a state file's. **Default.**
+- **(b)** `ein saturate --dump` writes each fact's English in a comment after it, as the state file did.
+- **(c)** a listing of a state, `-p`'s, writes each fact's English.
+
+**Default taken: (a).** Built: the page, the decision, `ein-cli/tests/natural_language_page.rs`'
+`the_pages_trace_lines_are_a_runs`. The code that wrote the comments (`ein_render::dump::serialise`'s
+`facts_to_ein_text`, `kb_to_ein_text`) is read by no surface of the binary now (N-36).
+
+### Q-M1f.415 — `ein show hyps` and `ein render h-space` of a saved file
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+Q-M1f.402 (C): *H is the program's*; a run of a saved file is over H less the node's choices.
+
+- **(a)** **both read the program's H, the node aside**: `ein show hyps F` lists every candidate of H, the node's
+  choices among them, and `ein render h-space F` draws the program's structure. **Default.**
+- **(b)** both read the run's universe, H less the choices, as `ein solve -H` lists it.
+
+**Default taken: (a).** Built: `ein-cli/src/common.rs`' `program_of_saved`; held by `saved_files.rs`'
+`a_choice_is_saved_as_a_commitment_and_loaded_as_the_node`.
+
+### Q-M1f.416 — What `ein test` asks of a saved file's node, and how its claims exit
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build, on Q-M1f.403 (a)
+(*a file with a commitment checks no claim … and it exits 0*). `ein test` asks a file the least question that
+decides its claims, and a claim not checked exits 1 there but under `--no-search`.
+
+- **(a)** **root alone, the node**: no question about the node decides a claim of its program, so the least is
+  root's; each claim is NOT CHECKED with Q-M1f.403's line, and none moves the exit code, as under `--no-search`; the
+  verbose header says *(a saved file's node: root alone)*. **Default.**
+- **(b)** no run at all: each claim NOT CHECKED, no row of a run in `--json-report`.
+
+**Default taken: (a).** Built: `ein-cli/src/test.rs`; held by `saved_files.rs` and `test_cli.rs`'
+`the_verbose_header_and_the_report_row_agree_field_for_field` on `tests/saved/04_a_saved_node.ein`.
+
+### Q-M1f.417 — What a run of a saved file says of its node, and the directory's schema
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+Q-M1f.402's *what today's header says of the run moves to `index.json`*; and a run of a saved file, the part of R
+above a node, has to say which node.
+
+- **(a)** **as built**: the read-out's `commit` row under `universe`, the candidates the `(commit …)` names, with `∅`
+  the node; the summary's `root.commit`, and `root.dead`, `root.owes` and `root.owed` the node's standing while
+  `root.facts` stays the program root's fixpoint and `root.hypgen.emitted` the program's H; `index.json`'s per-file
+  `commit` beside `region.states`' `from`, `commitments` and `minimal_generators`; the directory's schema
+  `ein-answer/3`, whose writer clears an earlier schema's directory as its own. **Default.**
+- **(b)** no row: the read-out of a saved file is the read-out of a program.
+
+**Default taken: (a).** Built: `ein-render/src/read_out.rs`, `ein-cli/src/summary.rs`,
+`ein-render/src/dump/region_answer.rs`; the pages `08-read-out.md` § 5.3 and its example X21, and
+`10-answer-dump.md`.
+
+### Q-M1f.418 — The nesting limit, and a saved file's wrappers
+
+**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+`(program …)` and `(module …)` stand one level above the texts they carry, so a program at the parser's limit,
+1 000 parentheses, is one level past it inside its saved file, which would then not load.
+
+- **(a)** **a text that opens as a saved file is parsed with one level more**, its wrappers' own; each text it carries
+  is parsed again alone under the limit, as the file it was, so the limit is the texts'. **Default.**
+- **(b)** the limit stays, and a program at it has a state that cannot be saved.
+
+**Default taken: (a).** Built: `ein_ir::grammar`'s parse; held by `ein-ir/tests/generated_parser.rs`'
+`a_saved_file_carries_a_program_at_the_limit`; the decision
+[Q-M1f.185](../../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md), rewritten: a state
+deeper than the limit is answered, saved and loaded again.

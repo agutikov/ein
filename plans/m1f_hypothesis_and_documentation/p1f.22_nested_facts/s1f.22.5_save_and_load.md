@@ -5,7 +5,7 @@
 ends with the user's look at the format on real programs; nothing is built before it. **Task 1 is done
 (2026-11-18)**: [`s1f.22.5_the_format.md`](s1f.22.5_the_format.md), Q-M1f.400 to .403 put. **The user looked and
 ruled** (2026-11-18, *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*): the defaults but for Q-M1f.402's save of a loaded file, which is (C), **a saved file is
-a node of its program's lattice**. Tasks 2 to 4 were started on that ruling and **paused 2026-11-18** on the user's word, their work in progress on the branch `s1f.22.5-save-load` (`db562a86`), while [S1f.22.6](s1f.22.6_written_erased.md) erases `written`; they resume after it.
+a node of its program's lattice**. Tasks 2 to 4 were started on that ruling and **paused 2026-11-18** on the user's word, their work in progress on the branch `s1f.22.5-save-load` (`db562a86`), while [S1f.22.6](s1f.22.6_written_erased.md) erases `written`; they resume after it. **Resumed and done 2026-11-18** on the branch, master merged into it: the record's last part.
 **Rulings:** [Q-M1f.392](../open_questions.md#q-m1f392--a-state-file-that-reads-back-dead-through-written);
 [Q-M1f.400](../open_questions.md#q-m1f400--how-a-saved-file-states-the-choices-made) (a),
 [Q-M1f.401](../open_questions.md#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) (a),
