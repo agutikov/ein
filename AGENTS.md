@@ -200,9 +200,11 @@ constrained-reasoning research.
   rule's `(and …)`, never by naming them. A module over a module names the
   lower one's entry in its own closing rule, and lists every name of the lower
   one it writes. **A malformed term is its representation's**: a numeral's
-  fault is `std.math.decimal`'s or `std.math.binary`'s, flagged where an
-  operation takes it, and a number an operation makes is labelled valid as it
-  is made (Q-M1f.404); an operand's and a `let`'s are the module's that reads them. **Boolean functions and
+  fault and its label are `std.math.decimal`'s or `std.math.binary`'s, its
+  walk `std.math.positional`'s; a number an operation makes from valid ones is
+  labelled valid as it is made and not walked again, and every other numeral
+  is checked where an operation or a tagged call takes it, a tagged call
+  handing itself on to a walk of the calculator's own (Q-M1f.404); an operand's and a `let`'s are the module's that reads them. **Boolean functions and
   circuits are under `stdlib/bool/`**, their programs under
   `tests/stdlib/bool/`, each module's entry its last name: `std.bool.gates`
   (the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` whose
