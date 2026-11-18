@@ -138,38 +138,73 @@ excerpt with its line numbers), writes the 4000 and 8000 programs with `gen_join
 - **(b)** keep it: *"does not key on a nested fact"* read as *no key's value is a fact*.
 - **Default**: none taken.
 
-## 9. A small program, drawn (added at the user's request, 2026-11-18)
+## 9. The question in small: the three programs at N = 3
 
-[`programs/small.ein`](programs/small.ein) puts the three joins the index serves differently into one program of
-five facts, each rule firing once:
+The three programs measured above hold 2 000 objects a side. The same generator writes them at **N = 3**
+(`python3 programs/gen_joins.py programs 3`): [`join-on-a-name-3.ein`](programs/join-on-a-name-3.ein),
+[`join-on-a-fact-3.ein`](programs/join-on-a-fact-3.ein), [`join-one-level-in-3.ein`](programs/join-one-level-in-3.ein).
+Each holds three facts of `p`, three of `q`, and one rule `j` that joins them; each derives three facts of `hit`
+([`runs/small/`](runs/small/), `ein saturate --dump`, today's binary `ein-head-545e4d6b`).
 
-| rule | its join | how the index serves the second premise | concludes |
-|---|---|---|---|
-| `shares` | `(owns ?p ?x) (owns ?q ?x)`: on a **name**, `?x` | keyed directly, `(owns, slot 1, DIRECT, Dog)` | `(shares Ann Eve)`, `(shares Eve Ann)` |
-| `trust` | `(owns ?p ?x) (says ?a (owns ?p ?x))`: **one level inside** a nested fact | keyed at the nested fact's positions, `(says, slot 1, inner 0, Ann)` | `(trusts Bob Ann)` |
-| `agree` | `(says ?a ?f) (believes ?b ?f)`: on a **whole nested fact**, `?f` = `(owns Ann Dog)` | no key has a fact as its value: walks the held extent of `believes` (Q-M1f.362's sentence is about this one) | `(agrees Bob Carol)` |
+### 9.1 What each knowledge base holds
 
-Runs, today's binary `ein-head-545e4d6b`: [`runs/small/solve.txt`](runs/small/solve.txt),
-[`runs/small/saturate.txt`](runs/small/saturate.txt) (the three rules' four facts at the end).
+The knowledge bases are drawn in the layered layout the user asked for (each fact's arrow 1 up to its relation), a
+**MOCK** made from the binary's drawing until S1f.23.6 is merged; the binary's own drawings, laid out by `fdp`, are
+linked under each.
 
-Drawings, [`renders/small/`](renders/small/):
+**On a name**: the facts of `p` and `q` point at the atoms `a0`, `a1`, `a2` themselves.
 
-- the knowledge base, `ein render kb`, as the binary suggests it (`fdp`): [`kb.svg`](renders/small/kb.svg), and
-  `--fold` [`kb-fold.svg`](renders/small/kb-fold.svg);
-- **the same, laid out in layers**, a MOCK of what S1f.23.6 builds on the user's L-100 answer (each fact's arrow 1
-  turned up to its relation, laid out by `dot`): [`kb.layered.MOCK.svg`](renders/small/kb.layered.MOCK.svg),
-  [`kb-fold.layered.MOCK.svg`](renders/small/kb-fold.layered.MOCK.svg). The five layers stand: `relation`, the
-  declarations, the relations and labels, the facts, the plain objects; the claimed `(owns Ann Cat)` in its
-  `says ctx` frame under the fact that says it;
-- the program, `ein render program`, its five digraphs: [`kb`](renders/small/program.1-kb.svg),
-  [`shares`](renders/small/program.2-rule_shares_lhs_rhs.svg), [`trust`](renders/small/program.3-rule_trust_lhs_rhs.svg),
-  [`agree`](renders/small/program.4-rule_agree_lhs_rhs.svg), [`query`](renders/small/program.5-query.svg);
-- each rule, `ein render rule --name`, canonical and `--fold`: [`shares`](renders/small/rule-shares.svg)
-  ([fold](renders/small/rule-shares-fold.svg)), [`trust`](renders/small/rule-trust.svg)
-  ([fold](renders/small/rule-trust-fold.svg)), [`agree`](renders/small/rule-agree.svg)
-  ([fold](renders/small/rule-agree-fold.svg)). In `agree` the variable `?f` stands where a fact goes: the drawing
-  shows the join the index cannot key, a diamond under arrow 3 of both premises.
+![join on a name, N = 3: (p a_i), (q a_i b_i), and the three hit facts j derives](renders/small/join-on-a-name-3.kb.layered.MOCK.svg)
 
-Re-run, from the repo root: `B=build/review-bin/ein-head-545e4d6b`; `$B saturate --dump
-plans/…/22-L-92/programs/small.ein`; `$B render kb …` (`--fold`), `$B render program …`, `$B render rule --name R …`
-(`--fold`); `. plans/m1f_hypothesis_and_documentation/review/tools/draw.sh; draw FILE.dot`.
+([the binary's drawing](renders/small/join-on-a-name-3.kb.svg))
+
+**On a fact** and **one level in**: the same facts, each `a_i` wrapped in a nested fact `(f a_i)`, which `p` and `q`
+point at; the nested facts stand in the frame `p, q ctx`, since no fact holds them otherwise. The two programs hold
+the same knowledge base and differ only in their rule.
+
+![join on a fact, N = 3: (p (f a_i)), (q (f a_i) b_i), the nested (f a_i) in the frame p, q ctx](renders/small/join-on-a-fact-3.kb.layered.MOCK.svg)
+
+([the binary's drawing](renders/small/join-on-a-fact-3.kb.svg); one level in's:
+[layered MOCK](renders/small/join-one-level-in-3.kb.layered.MOCK.svg), [the binary's](renders/small/join-one-level-in-3.kb.svg))
+
+### 9.2 What the rule asks
+
+| program | `j`'s match | `?x` is bound to |
+|---|---|---|
+| on a name | `(p ?x) (q ?x ?y)` | a name, `a1` |
+| on a fact | `(p ?x) (q ?x ?y)` | a whole fact, `(f a1)` |
+| one level in | `(p (f ?x)) (q (f ?x) ?y)` | the name inside the fact, `a1` |
+
+The rule's drawings, `ein render rule --name j`: [on a name](renders/small/join-on-a-name-3.rule.svg),
+[on a fact](renders/small/join-on-a-fact-3.rule.svg), [one level in](renders/small/join-one-level-in-3.rule.svg).
+
+### 9.3 How the second premise is found
+
+After `(p …)` matches and binds `?x`, the engine looks for the facts of `q` that hold `?x` in their first argument.
+It asks its **fact index**, whose keys are `(relation, argument, name)`, and, for an argument that is a fact,
+`(relation, argument, position inside, name)`: a name is keyed where it stands and one level inside a nested fact.
+**No key has a whole fact as its value.** So:
+
+![on a name: the key (q, slot 0) = a1 finds its one fact](renders/small/idea-1-on-a-name.svg)
+
+![on a whole fact: there is no key (q, slot 0) = (f a1), so every fact of q is compared](renders/small/idea-2-on-a-fact.svg)
+
+![one level in: the key (q, slot 0, inner 0) = a1 finds its one fact](renders/small/idea-3-one-level-in.svg)
+
+### 9.4 What it costs
+
+![N matches of p, each a bucket of 1 or a scan of N: N against N squared](renders/small/idea-4-cost.svg)
+
+The measured times of § 2.3 are this picture at N = 2 000, 4 000 and 8 000: the join on a fact four times slower at
+each doubling, the other two linear.
+
+### 9.5 What L-92 asks
+
+Q-M1f.362 explains why no rule of the calculator joins two facts on a number with *"the engine's fact index does not
+key on a nested fact"*. 9.3 shows the sentence is right of the **second** picture, a join on a whole fact, and wrong of
+the **third**: the names inside a nested fact are keyed, as the engine's pages say. A number is a fact nested to any
+depth, `(n (n z 1) 2)`, so a join on a number is the second picture, and the decision holds; only its sentence says
+more than is true. The call is § 3's: re-word it to say both halves, (a), or keep it, (b).
+
+The pictures' sources: the hand drawings `renders/small/idea-*.dot` (explanations, not `ein render`'s output), the
+binary's `renders/small/*.kb.dot` and `*.rule.dot`, and the mocks `*.kb.layered.MOCK.dot`.

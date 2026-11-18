@@ -1,0 +1,12 @@
+;;; Written for this review (generated, N = 3): the same facts as join-on-a-fact, joined on the name one level inside: (p (f ?x)) (q (f ?x) ?y). The index keys (q, slot 0, inner 0) = a<i>, so the second premise is a bucket lookup again (the pages' one level in).
+
+(p (f a0))
+(p (f a1))
+(p (f a2))
+(q (f a0) b0)
+(q (f a1) b1)
+(q (f a2) b2)
+
+(rule j () :match (and (p (f ?x)) (q (f ?x) ?y)) :assert (hit ?y) :why "{?y} is paired with what p holds of")
+
+(solve :no-search)

@@ -1,0 +1,12 @@
+;;; Written for this review (generated, N = 3): a join on a name: (p ?x) (q ?x ?y), each ?x an atom. The index keys (q, slot 0) = a<i>, so the second premise is a bucket lookup.
+
+(p a0)
+(p a1)
+(p a2)
+(q a0 b0)
+(q a1 b1)
+(q a2 b2)
+
+(rule j () :match (and (p ?x) (q ?x ?y)) :assert (hit ?y) :why "{?y} is paired with what p holds of")
+
+(solve :no-search)
