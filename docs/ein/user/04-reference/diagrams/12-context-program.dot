@@ -3,16 +3,13 @@ digraph ontology {
   newrank=true;
   "Carol" [shape=rectangle];
   "Dan" [shape=rectangle];
+  "(owns Bob Dog)" [shape=octagon, label="owns"];
   "Bob" [shape=rectangle];
   "Dog" [shape=rectangle];
   "Cat" [shape=rectangle];
   subgraph cluster_ctx_0 {
     label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     "(owns Carol Cat)" [shape=octagon, label="owns"];
-  }
-  subgraph cluster_ctx_1 {
-    label="claims, doubts ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    "(owns Bob Dog)" [shape=octagon, label="owns", style=filled, fillcolor="#d9d9d9"];
   }
   "Carol" -> "(owns Bob Dog)" [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Dan" -> "(owns Bob Dog)" [label="doubts", color="#8c564b", fontcolor="#8c564b", style=solid];

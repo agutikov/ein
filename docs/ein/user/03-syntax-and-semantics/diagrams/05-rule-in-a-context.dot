@@ -5,8 +5,8 @@ digraph rule_in_a_context {
   "claims"; "knows";
   node [shape=diamond];
   "?who"; "?a"; "?b";
-  q [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="q"];
-  c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style="filled,dashed", fillcolor="#d9d9d9", xlabel="c"];
+  q [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="q"];
+  c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=dashed, xlabel="c"];
   subgraph cluster_ctx_claims { label="claims ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
     u [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="u"];
     v [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=dashed, xlabel="v"];

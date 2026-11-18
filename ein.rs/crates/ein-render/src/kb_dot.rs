@@ -13,20 +13,18 @@
 //! **Every object is drawn once** (Q-M1f.395). A fact that a
 //! drawn fact points at is its own node, an octagon with its argument arrows
 //! numbered, whatever its count and held or not: never a node labelled with
-//! the fact's text, and never an arrow beside its node. It is filled where
-//! the knowledge base holds it, and stands in a dashed frame named for the
-//! relations of the facts that point at it (Q-M1f.398;
-//! [`dot_util::ctx_frames`](crate::dot_util::ctx_frames)). A held fact that
-//! nothing points at is drawn as it was: an arrow, a loop, or an octagon
-//! outside every frame.
+//! the fact's text, and never an arrow beside its node. Where the knowledge
+//! base does not hold it, in a context only, it stands in a dashed frame
+//! named for the relations of the facts that point at it (Q-M1f.398;
+//! [`dot_util::ctx_frames`](crate::dot_util::ctx_frames)); a held one stands
+//! in no frame, and no octagon is filled. A held fact that nothing points at
+//! is drawn as it was: an arrow, a loop, or an octagon outside every frame.
 
 use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 
 use ein_core::{FactId, Kb, Prov, ProvKind, Tag, Terms, Value};
 
-use crate::dot_util::{
-    FRAMED_RANKING, HELD_FILL, ctx_frames, ctx_label, fact_key, hashed_id, quote,
-};
+use crate::dot_util::{FRAMED_RANKING, ctx_frames, ctx_label, fact_key, hashed_id, quote};
 use crate::palette::hash_color;
 
 /// Per-relation deterministic colour (the default), per-origin colour, or no
@@ -212,9 +210,8 @@ fn emit_unary_fact(terms: &Terms, f: FactId, s: &Styling) -> String {
     format!("  {only} -> {only} [{}];", attrs.join(", "))
 }
 
-/// A fact's octagon: its node's declaration, with no indent. `filled` is a
-/// fact in a frame that the knowledge base holds.
-fn hyperedge_node(terms: &Terms, f: FactId, s: &Styling, filled: bool) -> String {
+/// A fact's octagon: its node's declaration, with no indent.
+fn hyperedge_node(terms: &Terms, f: FactId, s: &Styling) -> String {
     let nid = fact_node_id(terms, f);
     let (rel, _) = terms.fact(f);
     let mut head_label = format!("({})", terms.sym(rel));
@@ -225,11 +222,6 @@ fn hyperedge_node(terms: &Terms, f: FactId, s: &Styling, filled: bool) -> String
         .penwidth
         .map_or(String::new(), |p| format!(", penwidth={p}"));
     let (colour, style) = (s.colour, s.style);
-    let style = if filled {
-        format!("\"filled,{style}\", fillcolor=\"{HELD_FILL}\"")
-    } else {
-        style.to_string()
-    };
     format!(
         "{nid} [shape=octagon, label={}, color=\"{colour}\", fontcolor=\"{colour}\", \
          style={style}{pw}];",
@@ -260,7 +252,7 @@ fn hyperedge_arrows(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
 /// A non-binary fact: one octagon node plus a labelled edge per argument.
 /// Arity 0 lands here too, with no participants.
 fn emit_hyperedge(terms: &Terms, f: FactId, s: &Styling) -> Vec<String> {
-    let mut lines = vec![format!("  {}", hyperedge_node(terms, f, s, false))];
+    let mut lines = vec![format!("  {}", hyperedge_node(terms, f, s))];
     lines.extend(hyperedge_arrows(terms, f, s));
     lines
 }
@@ -458,9 +450,10 @@ pub fn to_dot(kb: &Kb, terms: &Terms, opts: &KbDotOpts) -> String {
     if !nested.is_empty() {
         lines.push(String::new());
         lines.push("  // facts in a context".to_string());
-        lines.push(format!("  {FRAMED_RANKING};"));
-        // A fact in a frame is drawn as a held fact is where the knowledge
-        // base holds it, and filled; one it does not hold has no origin.
+        // A fact in a context is drawn as a held fact is where the knowledge
+        // base holds it, and stands in no frame; one it does not hold, in a
+        // context only, has no origin and stands in the frame of the
+        // relations that point at it.
         let style_of = |g: FactId| {
             if kb.contains(g) {
                 styling(kb, terms, g, opts.colour_by, is_new(g))
@@ -473,15 +466,20 @@ pub fn to_dot(kb: &Kb, terms: &Terms, opts: &KbDotOpts) -> String {
                 }
             }
         };
-        let members: Vec<(String, String)> = nested
-            .iter()
-            .map(|(g, by)| {
-                (
-                    ctx_label(by),
-                    hyperedge_node(terms, *g, &style_of(*g), kb.contains(*g)),
-                )
-            })
-            .collect();
+        let mut held: Vec<String> = Vec::new();
+        let mut members: Vec<(String, String)> = Vec::new();
+        for (g, by) in &nested {
+            let decl = hyperedge_node(terms, *g, &style_of(*g));
+            if kb.contains(*g) {
+                held.push(format!("  {decl}"));
+            } else {
+                members.push((ctx_label(by), decl));
+            }
+        }
+        if !members.is_empty() {
+            lines.push(format!("  {FRAMED_RANKING};"));
+        }
+        lines.extend(held);
         lines.extend(ctx_frames("", "  ", &members));
         for (g, _) in &nested {
             lines.extend(hyperedge_arrows(terms, *g, &style_of(*g)));

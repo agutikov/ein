@@ -21,7 +21,7 @@
 <!-- e -->
 <g id="node3" class="node">
 <title>e</title>
-<polygon fill="#d9d9d9" stroke="black" points="45.8,-177.78 45.8,-186.72 39.47,-193.05 30.53,-193.05 24.2,-186.72 24.2,-177.78 30.53,-171.45 39.47,-171.45 45.8,-177.78"/>
+<polygon fill="none" stroke="black" points="45.8,-177.78 45.8,-186.72 39.47,-193.05 30.53,-193.05 24.2,-186.72 24.2,-177.78 30.53,-171.45 39.47,-171.45 45.8,-177.78"/>
 <text xml:space="preserve" text-anchor="middle" x="20.83" y="-196.1" font-family="Helvetica,sans-Serif" font-size="11.00">e</text>
 </g>
 <!-- =&#45;&gt;e -->
@@ -92,4 +92,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: f98fcd5ac7ea12a96cc63a7723921392afe0b729921a5093fae476580ea3d63b -->
+<!-- source sha256: e674ea7b49ff31df95b406f1b9588ebe32ca9fc24f7963dc569b1785f8808f4f -->

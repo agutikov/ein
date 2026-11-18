@@ -6,15 +6,13 @@ digraph pack_match {
   subgraph cluster_rule { label="the rule: its premise q, its conclusion c"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
     node [shape=diamond];
     "?a"; "?b";
-    c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style="filled,dashed", fillcolor="#d9d9d9", xlabel="c"];
-    subgraph cluster_rule_ctx { label="think ctx"; labelloc=t; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
-      q [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="q"];
-    }
+    c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=dashed, xlabel="c"];
+    q [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="q"];
   }
   subgraph cluster_kb { label="the knowledge base"; labelloc=b; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
     node [shape=box];
     "+"; "5"; "2";
-    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="e"];
+    e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="e"];
     subgraph cluster_kb_ctx { label="= ctx"; labelloc=t; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
       s [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="s"];
     }

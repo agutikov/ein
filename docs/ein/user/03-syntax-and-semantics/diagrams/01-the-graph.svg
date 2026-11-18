@@ -16,7 +16,7 @@
 <!-- d1 -->
 <g id="node10" class="node">
 <title>d1</title>
-<polygon fill="#d9d9d9" stroke="black" points="128.8,-241.38 128.8,-250.32 122.47,-256.65 113.53,-256.65 107.2,-250.32 107.2,-241.38 113.53,-235.05 122.47,-235.05 128.8,-241.38"/>
+<polygon fill="none" stroke="black" points="128.8,-241.38 128.8,-250.32 122.47,-256.65 113.53,-256.65 107.2,-250.32 107.2,-241.38 113.53,-235.05 122.47,-235.05 128.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="100.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d1</text>
 </g>
 <!-- relation&#45;&gt;d1 -->
@@ -29,7 +29,7 @@
 <!-- d2 -->
 <g id="node11" class="node">
 <title>d2</title>
-<polygon fill="#d9d9d9" stroke="black" points="186.8,-241.38 186.8,-250.32 180.47,-256.65 171.53,-256.65 165.2,-250.32 165.2,-241.38 171.53,-235.05 180.47,-235.05 186.8,-241.38"/>
+<polygon fill="none" stroke="black" points="186.8,-241.38 186.8,-250.32 180.47,-256.65 171.53,-256.65 165.2,-250.32 165.2,-241.38 171.53,-235.05 180.47,-235.05 186.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="158.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d2</text>
 </g>
 <!-- relation&#45;&gt;d2 -->
@@ -42,7 +42,7 @@
 <!-- d3 -->
 <g id="node12" class="node">
 <title>d3</title>
-<polygon fill="#d9d9d9" stroke="black" points="298.8,-241.38 298.8,-250.32 292.47,-256.65 283.53,-256.65 277.2,-250.32 277.2,-241.38 283.53,-235.05 292.47,-235.05 298.8,-241.38"/>
+<polygon fill="none" stroke="black" points="298.8,-241.38 298.8,-250.32 292.47,-256.65 283.53,-256.65 277.2,-250.32 277.2,-241.38 283.53,-235.05 292.47,-235.05 298.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="270.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d3</text>
 </g>
 <!-- relation&#45;&gt;d3 -->
@@ -55,7 +55,7 @@
 <!-- d4 -->
 <g id="node13" class="node">
 <title>d4</title>
-<polygon fill="#d9d9d9" stroke="black" points="232.8,-241.38 232.8,-250.32 226.47,-256.65 217.53,-256.65 211.2,-250.32 211.2,-241.38 217.53,-235.05 226.47,-235.05 232.8,-241.38"/>
+<polygon fill="none" stroke="black" points="232.8,-241.38 232.8,-250.32 226.47,-256.65 217.53,-256.65 211.2,-250.32 211.2,-241.38 217.53,-235.05 226.47,-235.05 232.8,-241.38"/>
 <text xml:space="preserve" text-anchor="middle" x="204.45" y="-259.7" font-family="Helvetica,sans-Serif" font-size="11.00">d4</text>
 </g>
 <!-- relation&#45;&gt;d4 -->
@@ -74,7 +74,7 @@
 <!-- m1 -->
 <g id="node14" class="node">
 <title>m1</title>
-<polygon fill="#d9d9d9" stroke="black" points="362.8,-84.68 362.8,-93.62 356.47,-99.95 347.53,-99.95 341.2,-93.62 341.2,-84.68 347.53,-78.35 356.47,-78.35 362.8,-84.68"/>
+<polygon fill="none" stroke="black" points="362.8,-84.68 362.8,-93.62 356.47,-99.95 347.53,-99.95 341.2,-93.62 341.2,-84.68 347.53,-78.35 356.47,-78.35 362.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="332.57" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">m1</text>
 </g>
 <!-- is&#45;instance&#45;&gt;m1 -->
@@ -87,7 +87,7 @@
 <!-- m2 -->
 <g id="node15" class="node">
 <title>m2</title>
-<polygon fill="#d9d9d9" stroke="black" points="189.8,-84.68 189.8,-93.62 183.47,-99.95 174.53,-99.95 168.2,-93.62 168.2,-84.68 174.53,-78.35 183.47,-78.35 189.8,-84.68"/>
+<polygon fill="none" stroke="black" points="189.8,-84.68 189.8,-93.62 183.47,-99.95 174.53,-99.95 168.2,-93.62 168.2,-84.68 174.53,-78.35 183.47,-78.35 189.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="159.57" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">m2</text>
 </g>
 <!-- is&#45;instance&#45;&gt;m2 -->
@@ -106,7 +106,7 @@
 <!-- f -->
 <g id="node16" class="node">
 <title>f</title>
-<polygon fill="#d9d9d9" stroke="black" points="318.8,-84.68 318.8,-93.62 312.47,-99.95 303.53,-99.95 297.2,-93.62 297.2,-84.68 303.53,-78.35 312.47,-78.35 318.8,-84.68"/>
+<polygon fill="none" stroke="black" points="318.8,-84.68 318.8,-93.62 312.47,-99.95 303.53,-99.95 297.2,-93.62 297.2,-84.68 303.53,-78.35 312.47,-78.35 318.8,-84.68"/>
 <text xml:space="preserve" text-anchor="middle" x="295.32" y="-103" font-family="Helvetica,sans-Serif" font-size="11.00">f</text>
 </g>
 <!-- lives&#45;in&#45;&gt;f -->
@@ -252,4 +252,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: c6db1efaec5c7d87dcb4bb80c556c274eee26913d04101be07282787968bdc8b -->
+<!-- source sha256: f7be0590d9106c18555e004a0c8ea0c5d56a1fc79e6e17a93c60292c6b4db4e5 -->

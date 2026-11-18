@@ -118,8 +118,8 @@ in either or in both, and it is one node.
 | [transformations](03-rule-evolution/03-transformations.md) | $\tau$ a transformation; $\beta$ a renaming; $\alpha$ the map to full names; $\operatorname{resolve}$, $\operatorname{expand}$, $\operatorname{lits}$, $\operatorname{inst}_K(P)$ |
 
 **Graphs.** A knowledge base is a graph, and the first part draws it as it is: a box is an atom, with its name
-in it; an octagon is a fact, filled where the knowledge base holds it; an arrow carries its place among the
-arrows of its fact, the first pointing at the relation; a diamond is a variable
+in it; an octagon is a fact, in a dashed frame where the knowledge base only points at it and does not hold it;
+an arrow carries its place among the arrows of its fact, the first pointing at the relation; a diamond is a variable
 ([the knowledge base](01-static-ir/01-knowledge-base.md#the-graph)). The pages after it draw facts **with labelled arrows**, the way a
 program is drawn for its author ([rendering](../user/04-reference/12-rendering.md)): a fact with a relation and
 two arguments is one arrow from the first argument to the second, labelled with the relation's name; a fact of

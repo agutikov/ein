@@ -26,4 +26,4 @@ how the pages of `docs/ein/` are named and what each is written in. The format a
 - [Q-M1f.378](Q-M1f.378-the-grammar-page-is-the-two-grammar-files-as-ebnf.md) — The grammar page is the two grammar files as EBNF, translated and never typed
 - [Q-M1f.396](Q-M1f.396-nested-facts-are-explained-in-sections.md) — Nested facts are explained in sections of the knowledge-base and rules pages
 - [Q-M1f.397](Q-M1f.397-the-reserved-words-are-mathematics.md) — The reserved words are mathematics in the reasoning and the kernel's surface elsewhere
-- [Q-M1f.398](Q-M1f.398-a-fact-in-a-context-is-drawn-in-a-frame-named.md) — A fact in a context is drawn in a frame named for the context's relation
+- [Q-M1f.398](Q-M1f.398-a-fact-in-a-context-only-is-drawn-in-a-frame.md) — A fact in a context only is drawn in a frame named for the context's relation

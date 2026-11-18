@@ -2,112 +2,107 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: ontology Pages: 1 -->
-<svg width="222pt" height="460pt"
- viewBox="0.00 0.00 222.00 460.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 455.5)">
+<svg width="209pt" height="438pt"
+ viewBox="0.00 0.00 209.00 438.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 434.25)">
 <title>ontology</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-455.5 218.12,-455.5 218.12,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-434.25 205,-434.25 205,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_ctx_0</title>
-<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M50.12,-293C50.12,-293 122.12,-293 122.12,-293 128.12,-293 134.12,-299 134.12,-305 134.12,-305 134.12,-358.25 134.12,-358.25 134.12,-364.25 128.12,-370.25 122.12,-370.25 122.12,-370.25 50.12,-370.25 50.12,-370.25 44.12,-370.25 38.12,-364.25 38.12,-358.25 38.12,-358.25 38.12,-305 38.12,-305 38.12,-299 44.12,-293 50.12,-293"/>
-<text xml:space="preserve" text-anchor="middle" x="86.12" y="-352.95" font-family="Times,serif" font-size="14.00" fill="#888888">claims ctx</text>
-</g>
-<g id="clust2" class="cluster">
-<title>cluster_ctx_1</title>
-<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M72.12,-85.25C72.12,-85.25 194.12,-85.25 194.12,-85.25 200.12,-85.25 206.12,-91.25 206.12,-97.25 206.12,-97.25 206.12,-150.5 206.12,-150.5 206.12,-156.5 200.12,-162.5 194.12,-162.5 194.12,-162.5 72.12,-162.5 72.12,-162.5 66.12,-162.5 60.12,-156.5 60.12,-150.5 60.12,-150.5 60.12,-97.25 60.12,-97.25 60.12,-91.25 66.12,-85.25 72.12,-85.25"/>
-<text xml:space="preserve" text-anchor="middle" x="133.12" y="-145.2" font-family="Times,serif" font-size="14.00" fill="#888888">claims, doubts ctx</text>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M83,-271.75C83,-271.75 155,-271.75 155,-271.75 161,-271.75 167,-277.75 167,-283.75 167,-283.75 167,-337 167,-337 167,-343 161,-349 155,-349 155,-349 83,-349 83,-349 77,-349 71,-343 71,-337 71,-337 71,-283.75 71,-283.75 71,-277.75 77,-271.75 83,-271.75"/>
+<text xml:space="preserve" text-anchor="middle" x="119" y="-331.7" font-family="Times,serif" font-size="14.00" fill="#888888">claims ctx</text>
 </g>
 <!-- Carol -->
 <g id="node1" class="node">
 <title>Carol</title>
-<polygon fill="none" stroke="black" points="54.25,-243.75 0,-243.75 0,-207.75 54.25,-207.75 54.25,-243.75"/>
-<text xml:space="preserve" text-anchor="middle" x="27.12" y="-221.07" font-family="Times,serif" font-size="14.00">Carol</text>
+<polygon fill="none" stroke="black" points="129.12,-222.5 74.88,-222.5 74.88,-186.5 129.12,-186.5 129.12,-222.5"/>
+<text xml:space="preserve" text-anchor="middle" x="102" y="-199.82" font-family="Times,serif" font-size="14.00">Carol</text>
 </g>
 <!-- (owns Bob Dog) -->
-<g id="node7" class="node">
+<g id="node3" class="node">
 <title>(owns Bob Dog)</title>
-<polygon fill="#d9d9d9" stroke="black" points="173.18,-103.79 173.18,-118.71 149.72,-129.25 116.53,-129.25 93.07,-118.71 93.07,-103.79 116.53,-93.25 149.72,-93.25 173.18,-103.79"/>
-<text xml:space="preserve" text-anchor="middle" x="133.12" y="-106.58" font-family="Times,serif" font-size="14.00">owns</text>
+<polygon fill="none" stroke="black" points="103.05,-103.79 103.05,-118.71 79.59,-129.25 46.41,-129.25 22.95,-118.71 22.95,-103.79 46.41,-93.25 79.59,-93.25 103.05,-103.79"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-106.58" font-family="Times,serif" font-size="14.00">owns</text>
 </g>
 <!-- Carol&#45;&gt;(owns Bob Dog) -->
 <g id="edge1" class="edge">
 <title>Carol&#45;&gt;(owns Bob Dog)</title>
-<path fill="none" stroke="#bcbd22" d="M43.22,-207.66C60.73,-189.08 88.91,-159.17 109.06,-137.8"/>
-<polygon fill="#bcbd22" stroke="#bcbd22" points="111.53,-140.28 115.84,-130.6 106.43,-135.48 111.53,-140.28"/>
-<text xml:space="preserve" text-anchor="middle" x="99.82" y="-174.45" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
+<path fill="none" stroke="#bcbd22" d="M94.66,-186.34C89.09,-173.29 81.31,-155.08 74.85,-139.98"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="78.18,-138.86 71.03,-131.04 71.74,-141.61 78.18,-138.86"/>
+<text xml:space="preserve" text-anchor="middle" x="108.87" y="-153.2" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
 </g>
 <!-- Dan -->
 <g id="node2" class="node">
 <title>Dan</title>
-<polygon fill="none" stroke="black" points="147.12,-451.5 93.12,-451.5 93.12,-415.5 147.12,-415.5 147.12,-451.5"/>
-<text xml:space="preserve" text-anchor="middle" x="120.12" y="-428.82" font-family="Times,serif" font-size="14.00">Dan</text>
-</g>
-<!-- (owns Carol Cat) -->
-<g id="node6" class="node">
-<title>(owns Carol Cat)</title>
-<polygon fill="none" stroke="black" points="126.18,-311.54 126.18,-326.46 102.72,-337 69.53,-337 46.07,-326.46 46.07,-311.54 69.53,-301 102.72,-301 126.18,-311.54"/>
-<text xml:space="preserve" text-anchor="middle" x="86.12" y="-314.32" font-family="Times,serif" font-size="14.00">owns</text>
-</g>
-<!-- Dan&#45;&gt;(owns Carol Cat) -->
-<g id="edge3" class="edge">
-<title>Dan&#45;&gt;(owns Carol Cat)</title>
-<path fill="none" stroke="#bcbd22" d="M105.34,-415.08C101.11,-409.21 96.96,-402.39 94.38,-395.5 88.81,-380.64 86.65,-363.08 85.93,-348.63"/>
-<polygon fill="#bcbd22" stroke="#bcbd22" points="89.44,-348.76 85.66,-338.86 82.44,-348.96 89.44,-348.76"/>
-<text xml:space="preserve" text-anchor="middle" x="117.25" y="-382.2" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
+<polygon fill="none" stroke="black" points="90,-430.25 36,-430.25 36,-394.25 90,-394.25 90,-430.25"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-407.57" font-family="Times,serif" font-size="14.00">Dan</text>
 </g>
 <!-- Dan&#45;&gt;(owns Bob Dog) -->
 <g id="edge2" class="edge">
 <title>Dan&#45;&gt;(owns Bob Dog)</title>
-<path fill="none" stroke="#8c564b" d="M131.78,-415.17C135.16,-409.2 138.41,-402.3 140.12,-395.5 142.01,-388.07 140.21,-385.92 140.12,-378.25 139.11,-291.99 135.85,-190.03 134.16,-141.18"/>
-<polygon fill="#8c564b" stroke="#8c564b" points="137.66,-141.06 133.81,-131.19 130.66,-141.3 137.66,-141.06"/>
-<text xml:space="preserve" text-anchor="middle" x="162.65" y="-267.7" font-family="Times,serif" font-size="14.00" fill="#8c564b">doubts</text>
+<path fill="none" stroke="#8c564b" d="M61.56,-394.01C59.18,-363.48 54.82,-297.9 56.25,-242.5 57.16,-207.52 59.43,-167.31 61.09,-140.93"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="64.57,-141.23 61.72,-131.03 57.59,-140.78 64.57,-141.23"/>
+<text xml:space="preserve" text-anchor="middle" x="80.62" y="-246.45" font-family="Times,serif" font-size="14.00" fill="#8c564b">doubts</text>
+</g>
+<!-- (owns Carol Cat) -->
+<g id="node7" class="node">
+<title>(owns Carol Cat)</title>
+<polygon fill="none" stroke="black" points="159.05,-290.29 159.05,-305.21 135.59,-315.75 102.41,-315.75 78.95,-305.21 78.95,-290.29 102.41,-279.75 135.59,-279.75 159.05,-290.29"/>
+<text xml:space="preserve" text-anchor="middle" x="119" y="-293.07" font-family="Times,serif" font-size="14.00">owns</text>
+</g>
+<!-- Dan&#45;&gt;(owns Carol Cat) -->
+<g id="edge3" class="edge">
+<title>Dan&#45;&gt;(owns Carol Cat)</title>
+<path fill="none" stroke="#bcbd22" d="M71.51,-394.16C80.51,-376.07 94.85,-347.26 105.42,-326.02"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="108.42,-327.86 109.74,-317.35 102.15,-324.74 108.42,-327.86"/>
+<text xml:space="preserve" text-anchor="middle" x="112.2" y="-360.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">claims</text>
 </g>
 <!-- Bob -->
-<g id="node3" class="node">
-<title>Bob</title>
-<polygon fill="none" stroke="black" points="124.12,-36 70.12,-36 70.12,0 124.12,0 124.12,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="97.12" y="-13.32" font-family="Times,serif" font-size="14.00">Bob</text>
-</g>
-<!-- Dog -->
 <g id="node4" class="node">
-<title>Dog</title>
-<polygon fill="none" stroke="black" points="196.12,-36 142.12,-36 142.12,0 196.12,0 196.12,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="169.12" y="-13.32" font-family="Times,serif" font-size="14.00">Dog</text>
-</g>
-<!-- Cat -->
-<g id="node5" class="node">
-<title>Cat</title>
-<polygon fill="none" stroke="black" points="126.12,-243.75 72.12,-243.75 72.12,-207.75 126.12,-207.75 126.12,-243.75"/>
-<text xml:space="preserve" text-anchor="middle" x="99.12" y="-221.07" font-family="Times,serif" font-size="14.00">Cat</text>
-</g>
-<!-- (owns Carol Cat)&#45;&gt;Carol -->
-<g id="edge6" class="edge">
-<title>(owns Carol Cat)&#45;&gt;Carol</title>
-<path fill="none" stroke="black" d="M75.03,-300.84C66.43,-287.54 54.36,-268.87 44.49,-253.6"/>
-<polygon fill="black" stroke="black" points="47.56,-251.91 39.2,-245.42 41.69,-255.72 47.56,-251.91"/>
-<text xml:space="preserve" text-anchor="middle" x="66.41" y="-267.7" font-family="Times,serif" font-size="14.00">1</text>
-</g>
-<!-- (owns Carol Cat)&#45;&gt;Cat -->
-<g id="edge7" class="edge">
-<title>(owns Carol Cat)&#45;&gt;Cat</title>
-<path fill="none" stroke="black" d="M88.57,-300.84C90.39,-288.05 92.92,-270.28 95.05,-255.36"/>
-<polygon fill="black" stroke="black" points="98.49,-256.04 96.43,-245.65 91.56,-255.05 98.49,-256.04"/>
-<text xml:space="preserve" text-anchor="middle" x="98.29" y="-267.7" font-family="Times,serif" font-size="14.00">2</text>
+<title>Bob</title>
+<polygon fill="none" stroke="black" points="54,-36 0,-36 0,0 54,0 54,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-13.32" font-family="Times,serif" font-size="14.00">Bob</text>
 </g>
 <!-- (owns Bob Dog)&#45;&gt;Bob -->
 <g id="edge4" class="edge">
 <title>(owns Bob Dog)&#45;&gt;Bob</title>
-<path fill="none" stroke="black" d="M126.35,-93.09C121.21,-80.04 114.02,-61.83 108.06,-46.73"/>
-<polygon fill="black" stroke="black" points="111.47,-45.82 104.54,-37.8 104.96,-48.39 111.47,-45.82"/>
-<text xml:space="preserve" text-anchor="middle" x="122.85" y="-59.95" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="black" d="M56.23,-93.09C51.08,-80.04 43.9,-61.83 37.94,-46.73"/>
+<polygon fill="black" stroke="black" points="41.34,-45.82 34.42,-37.8 34.83,-48.39 41.34,-45.82"/>
+<text xml:space="preserve" text-anchor="middle" x="52.72" y="-59.95" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- Dog -->
+<g id="node5" class="node">
+<title>Dog</title>
+<polygon fill="none" stroke="black" points="126,-36 72,-36 72,0 126,0 126,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-13.32" font-family="Times,serif" font-size="14.00">Dog</text>
 </g>
 <!-- (owns Bob Dog)&#45;&gt;Dog -->
 <g id="edge5" class="edge">
 <title>(owns Bob Dog)&#45;&gt;Dog</title>
-<path fill="none" stroke="black" d="M139.9,-93.09C145.04,-80.04 152.23,-61.83 158.19,-46.73"/>
-<polygon fill="black" stroke="black" points="161.29,-48.39 161.71,-37.8 154.78,-45.82 161.29,-48.39"/>
-<text xml:space="preserve" text-anchor="middle" x="158.85" y="-59.95" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="black" d="M69.77,-93.09C74.92,-80.04 82.1,-61.83 88.06,-46.73"/>
+<polygon fill="black" stroke="black" points="91.17,-48.39 91.58,-37.8 84.66,-45.82 91.17,-48.39"/>
+<text xml:space="preserve" text-anchor="middle" x="88.72" y="-59.95" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- Cat -->
+<g id="node6" class="node">
+<title>Cat</title>
+<polygon fill="none" stroke="black" points="201,-222.5 147,-222.5 147,-186.5 201,-186.5 201,-222.5"/>
+<text xml:space="preserve" text-anchor="middle" x="174" y="-199.82" font-family="Times,serif" font-size="14.00">Cat</text>
+</g>
+<!-- (owns Carol Cat)&#45;&gt;Carol -->
+<g id="edge6" class="edge">
+<title>(owns Carol Cat)&#45;&gt;Carol</title>
+<path fill="none" stroke="black" d="M115.8,-279.59C113.42,-266.8 110.11,-249.03 107.33,-234.11"/>
+<polygon fill="black" stroke="black" points="110.79,-233.57 105.52,-224.38 103.91,-234.86 110.79,-233.57"/>
+<text xml:space="preserve" text-anchor="middle" x="116.52" y="-246.45" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- (owns Carol Cat)&#45;&gt;Cat -->
+<g id="edge7" class="edge">
+<title>(owns Carol Cat)&#45;&gt;Cat</title>
+<path fill="none" stroke="black" d="M129.35,-279.59C137.36,-266.29 148.61,-247.62 157.82,-232.35"/>
+<polygon fill="black" stroke="black" points="160.57,-234.56 162.73,-224.19 154.57,-230.95 160.57,-234.56"/>
+<text xml:space="preserve" text-anchor="middle" x="155.93" y="-246.45" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 231cb6818db32204796e2b4468a5518bfb1efc3a471b8e190c138341e059300b -->
+<!-- source sha256: 12243e8eb5dcd749c46488b096e218dbececf1c71fbfa693cfeb86e96f8f89a2 -->

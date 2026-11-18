@@ -42,8 +42,9 @@ q_2 &= \operatorname{lives-in}(p, h)
 \end{aligned}
 $$
 
-A diamond is a variable. A box is an atom and an octagon a fact pattern, filled where it is a premise, as in a
-knowledge base. The variable $p$ is one node, under an arrow of each premise: that the two premises share it is
+A diamond is a variable. A box is an atom and an octagon a fact pattern, drawn as a fact is in a knowledge base
+with a premise for *held*: a pattern under an argument arrow of another stands in a frame only where it is no
+premise. The variable $p$ is one node, under an arrow of each premise: that the two premises share it is
 what the pattern says.
 
 ## A match
@@ -412,10 +413,10 @@ K \cup \psi\theta &= \lbrace e, t \rbrace
 \end{aligned}
 $$
 
-![After the packing: t added and held, pointing at e, which is held as before and is now in a frame named think ctx](diagrams/02-pack-after.svg)
+![After the packing: t added and held, pointing at e, which is held as before and in no frame, and is now in a context](diagrams/02-pack-after.svg)
 
 The dashed octagon and its dashed arrows are what the rewriting added: one node, $t$. The fact $e$ was held and
-in no context, and is now held and in a context.
+in no context, and is now held and in a context: still in no frame, with the arrow of $t$ entering it.
 
 **Unpacking.** A rule **unpacks** when a literal of its conclusion is a fact pattern $u$ that stands under an
 argument arrow of one of its premises. The pattern graph already has the node $u$, as a fact pattern that is no
@@ -451,10 +452,10 @@ K \cup \psi\theta &= \lbrace t, e \rbrace
 \end{aligned}
 $$
 
-![After the unpacking: the same nodes and arrows, with e now held, in its frame named think ctx](diagrams/02-unpack-after.svg)
+![After the unpacking: the same nodes and arrows, with e now held, out of its frame](diagrams/02-unpack-after.svg)
 
-The graph after is the graph before. The octagon $e$ is filled, with a dashed outline for what the rewriting
-did, and its arrows are solid: they were there. The fact $e$ was in a context and not held, and is now held and
+The graph after is the graph before. The octagon $e$ has left its frame, with a dashed outline for what the
+rewriting did, and its arrows are solid: they were there. The fact $e$ was in a context and not held, and is now held and
 in a context.
 
 **Proposition (a fact changes case only by a rule that says so).** Let $K'$ be the result of rewriting $K$ by a

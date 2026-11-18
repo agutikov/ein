@@ -3,11 +3,11 @@ digraph facts_in_contexts {
   node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
   edge [fontname="Helvetica", fontsize=10];
   "claims"; "knows";
-  c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="c"]; d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="d"];
+  c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="c"]; d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="d"];
   subgraph cluster_ctx_claims { label="claims ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
     g [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=solid, xlabel="g"];
-    f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9", xlabel="f"];
   }
+  f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="f"];
   "claims" -> c [label="1", dir=back];
   "claims" -> d [label="1", dir=back];
   c -> "Carol" [label="2"];

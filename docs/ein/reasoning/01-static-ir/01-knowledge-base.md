@@ -54,11 +54,11 @@ the four facts it writes with a source sentence is this graph:
 
 **How the graph is drawn**, here and wherever these pages draw it. A box is a node with no outgoing arrow, and
 the word in it is its label. An octagon is a node with outgoing arrows; it has no label, and the letter beside
-it, $f_1$, is only what the text calls it. A filled octagon is held, an empty one is only pointed at. An octagon
-that an argument arrow of a fact points at stands inside a dashed frame, named for the relation of the facts that
-point at it ([below](#the-global-context-and-the-context-of-a-fact)). An arrow carries its place in the list: $1$
-on a first arrow, $2$ on a second. The picture has eight boxes and four octagons; every octagon is held, and none
-is in a frame, since no fact here points at a fact:
+it, $f_1$, is only what the text calls it. An octagon that is only pointed at, and not held, stands inside a
+dashed frame, named for the relation of the facts that point at it; a held one stands in no frame
+([below](#the-global-context-and-the-context-of-a-fact)). An arrow carries its place in the list: $1$ on a first
+arrow, $2$ on a second. The picture has eight boxes and four octagons; every octagon is held, and none is in a
+frame:
 
 $$
 \begin{aligned}
@@ -221,7 +221,7 @@ matches a fact of $r$. Which of the three a statement is about is read off where
 That one fact can speak of a whole relation is what the atom being one node makes possible. Part of the graph
 of the three-house example:
 
-![The relation left-of, three facts of its extent of which two are held, and two facts about it](diagrams/01-relation-extent.svg)
+![The relation left-of, three facts of its extent of which two are held and one, grey, is not, and two facts about it](diagrams/01-relation-extent.svg)
 
 $$
 \begin{aligned}
@@ -237,8 +237,8 @@ $$
 
 The first arrows of $f_3$, $f_4$ and $g$ meet at the atom $\mathsf{left\text{-}of}$, and the dashed frame around
 the three is the part of the extent drawn: every other fact of $\operatorname{left-of}$ is in it too. $f_3$ and
-$f_4$, filled, are held, and are the held extent; $g$, empty, is a fact of the relation that the knowledge base
-does not hold. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one fact
+$f_4$ are held, and are the held extent; $g$, drawn grey, is a fact of the relation that the knowledge base does
+not hold, and that no held fact points at. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one fact
 about the relation, and neither is in its extent. The third and fourth arrows of $d_1$ point at one atom,
 since the declaration writes the label $\mathsf{House}$ twice.
 
@@ -278,7 +278,7 @@ and it is stated [where it is used](../02-kb-evolution/04-hypothesis-generation.
 
 What a fact is about is what its arrows point at, and each of these is a fact like any other.
 
-![A fact about a relation, a fact about a fact, and a stored negation; the fact two of them point at is empty, in a frame named not, says ctx](diagrams/01-what-an-arrow-points-at.svg)
+![A fact about a relation, a fact about a fact, and a stored negation; the fact two of them point at is not held, and is in a frame named not, says ctx](diagrams/01-what-an-arrow-points-at.svg)
 
 $$
 \begin{aligned}
@@ -294,9 +294,9 @@ $$
 - **A fact about a relation.** The second arrow of $p$ points at $\mathsf{left\text{-}of}$: the atom that is the
   relation of $f_3$ is the argument of $p$.
 - **A fact about a fact.** The third arrow of $s$ points at the fact $g$: *the Norwegian says that the second
-  house is left of the first*. The knowledge base holds $s$ and does not hold $g$, which is the empty octagon, a
-  node the graph has because held facts point at it. Saying it does not make it held. The frame around $g$ is
-  named for the two relations whose facts point at it.
+  house is left of the first*. The knowledge base holds $s$ and does not hold $g$, which is the octagon in a
+  frame, a node the graph has because held facts point at it. Saying it does not make it held. The frame around
+  $g$ is named for the two relations whose facts point at it.
 - **A stored negation.** $n$ is a fact of the relation $\mathsf{not}$, and its one argument is the fact $g$. It is
   written $\lnot g$ and says that $g$ does not hold.
 - **Falsity.** $\bot$ is the fact of the relation $\mathsf{false}$ with its first arrow alone,
@@ -341,9 +341,9 @@ cases:
 
 | | in the global context, $g \in K$ | in a context, $\operatorname{ctx}_K(g) \neq \emptyset$ | drawn |
 |---|---|---|---|
-| **held, in no context** | yes | no | filled, in no frame |
-| **in a context, not held** | no | yes | empty, in a frame |
-| **held, and in a context** | yes | yes | filled, in a frame |
+| **held, in no context** | yes | no | in no frame, and no argument arrow enters it |
+| **in a context, not held** | no | yes | in a frame |
+| **held, and in a context** | yes | yes | in no frame, and an argument arrow enters it |
 
 The three cases of one fact, in three knowledge bases over four objects. $\mathsf{=}$, $\mathsf{+}$,
 $\mathsf{5}$ and $\mathsf{2}$ are names like any other: these pages have no numbers
@@ -359,18 +359,18 @@ $$
 
 $K = \lbrace e \rbrace$. The fact $e$ is held and in no context, and $s$ is in the context of $e$:
 
-![The fact e filled and in no frame; the fact s under its third arrow, empty, in a frame named = ctx](diagrams/01-context-held.svg)
+![The fact e in no frame; the fact s under its third arrow, not held, in a frame named = ctx](diagrams/01-context-held.svg)
 
 $K = \lbrace t \rbrace$. *Alice thinks that five is two plus two.* The fact $e$ is in the context of $t$ and is
 not held:
 
-![The fact t filled; e under its third arrow, empty, in a frame named think ctx; s under e, empty, in a frame named = ctx](diagrams/01-context-only.svg)
+![The fact t in no frame; e under its third arrow, not held, in a frame named think ctx; s under e, not held, in a frame named = ctx](diagrams/01-context-only.svg)
 
 $K = \lbrace t, e \rbrace$. The fact $e$ is held, and in the context of $t$:
 
-![The facts t and e filled, e in a frame named think ctx; s empty, in a frame named = ctx](diagrams/01-context-both.svg)
+![The facts t and e in no frame, the third arrow of t entering e; s, not held, in a frame named = ctx](diagrams/01-context-both.svg)
 
-The three graphs differ in one node, $t$, and in which octagons are filled. $e$ is the same node in all three,
+The three graphs differ in one node, $t$, and in whether $e$ stands in a frame. $e$ is the same node in all three,
 with the same arrows: writing a fact by itself and under an arrow of another writes one fact. And $s$ is in a
 context and not held in all three, since nothing states that two and two are added:
 
@@ -385,14 +385,17 @@ $$
 In the second, $s$ is in the context of $t$ through $e$, a fact that is not held: a path may pass through any
 fact of the graph, and only its first node is held.
 
-**How the two are drawn.** The two properties have one mark each. An octagon is **filled** exactly when the fact
-is in the global context. It stands **inside a dashed frame** exactly when an argument arrow of a fact points at
-it, which is when it is in a context. A frame carries the name of the relation of the facts that point at what is
-in it, and the word *ctx*: the facts that a fact of $\mathsf{think}$ points at are in the frame *think ctx*. A
-fact that facts of two relations point at is in one frame that names both, as $g$ above is in *not, says ctx*,
-since a node is drawn once. Frames stand side by side and never one inside another: $s$ is in *= ctx* beside
-*think ctx*, and that it is also in the context of $t$ is read off the path from $t$. Which fact speaks about a
-framed fact is read off the arrows that enter the frame. An atom is in no frame.
+**How the two are drawn.** That a fact is in a context is read off the argument arrows that enter its octagon.
+What the arrows do not show is whether it is also held, and one mark shows it: an octagon stands **inside a
+dashed frame** exactly when the fact is in a context and not held, a node the graph has only because held facts
+point at it. A held fact stands in no frame, whatever points at it, and no octagon is filled: in the third graph
+$e$ is in no frame, and the arrow of $t$ enters it. A frame carries the name of the relation of the facts that
+point at what is in it, and the word *ctx*: the facts that a fact of $\mathsf{think}$ points at, and that are not
+held, are in the frame *think ctx*. A fact that facts of two relations point at is in one frame that names both,
+as $g$ above is in *not, says ctx*, since a node is drawn once. Frames stand side by side and never one inside
+another: in the second graph $s$ is in *= ctx* beside *think ctx*, and that it is also in the context of $t$ is
+read off the path from $t$. Which fact speaks about a framed fact is read off the arrows that enter the frame. An
+atom is in no frame.
 
 What a context does and does not say of the fact in it is [below](#a-context-gives-a-fact-no-truth).
 
@@ -440,7 +443,7 @@ a reader, and never the representation: what it draws stands for the graph, by t
 | a held fact with three arrows that no fact points at: its node, its arrows, and its relation's atom as far as this fact goes | **one arrow** from the object under the second arrow to the object under the third, labelled with the relation's name |
 | a held fact with two arrows that no fact points at | one arrow from its argument to itself, a loop, labelled with the relation's name |
 | a held fact with any other count of arrows that no fact points at | its node, an octagon, with **the relation's name written in it**: the first arrow and the atom under it are folded into that label. The arrows that stay are numbered by argument, $1$ on the arrow to the first argument |
-| a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, with the relation's name in it and its argument arrows numbered. It is filled where the knowledge base holds it and stands in the dashed frame of its context, as in the graph ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow, and no node carries a fact's text |
+| a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, with the relation's name in it and its argument arrows numbered. It stands in the dashed frame of its context where the knowledge base does not hold it, and in no frame where it does, as in the graph ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow, and no node carries a fact's text |
 
 So every object is drawn once in this form too, and what is drawn outside a frame is held
 ([Q-M1f.395](../../../decisions/cli/Q-M1f.395-ein-render-draws-every-object-once.md)).
@@ -729,7 +732,7 @@ $$
 \end{cases}
 $$
 
-In the graph the four are the four ways two nodes can be filled: $f$, and the fact of $\mathsf{not}$ that
+In the graph the four are the four ways two nodes can be held or not: $f$, and the fact of $\mathsf{not}$ that
 points at it. A negated fact is not merely missing: a stored negation is a fact the set holds, and *open* is
 that it holds neither.
 
@@ -789,7 +792,7 @@ nothing of whether five is two plus two. The knowledge base below holds $t$ and 
 alive: one held fact says that Alice thinks $e$, another that $e$ does not hold, and no fact is held together
 with its negation.
 
-![The fact t and the stored negation n, both filled, both pointing at e, which is empty, in a frame named not, think ctx](diagrams/01-context-negation.svg)
+![The fact t and the stored negation n, both held and in no frame, both pointing at e, which is not held, in a frame named not, think ctx](diagrams/01-context-negation.svg)
 
 $$
 \begin{aligned}

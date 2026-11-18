@@ -13,21 +13,16 @@
 <text xml:space="preserve" text-anchor="middle" x="393" y="-136.1" font-family="Helvetica,sans-Serif" font-size="10.00">the rule: its premise q; its conclusion is u, under an arrow of q</text>
 </g>
 <g id="clust2" class="cluster">
-<title>cluster_rule_ctx</title>
-<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M261,-301.9C261,-301.9 296,-301.9 296,-301.9 302,-301.9 308,-307.9 308,-313.9 308,-313.9 308,-369 308,-369 308,-375 302,-381 296,-381 296,-381 261,-381 261,-381 255,-381 249,-375 249,-369 249,-369 249,-313.9 249,-313.9 249,-307.9 255,-301.9 261,-301.9"/>
-<text xml:space="preserve" text-anchor="middle" x="278.38" y="-367.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#888888">think ctx</text>
-</g>
-<g id="clust3" class="cluster">
 <title>cluster_kb</title>
 <path fill="none" stroke="#888888" d="M20,-8C20,-8 152,-8 152,-8 158,-8 164,-14 164,-20 164,-20 164,-448.35 164,-448.35 164,-454.35 158,-460.35 152,-460.35 152,-460.35 20,-460.35 20,-460.35 14,-460.35 8,-454.35 8,-448.35 8,-448.35 8,-20 8,-20 8,-14 14,-8 20,-8"/>
 <text xml:space="preserve" text-anchor="middle" x="86" y="-15.25" font-family="Helvetica,sans-Serif" font-size="10.00">the knowledge base</text>
 </g>
-<g id="clust4" class="cluster">
+<g id="clust3" class="cluster">
 <title>cluster_kb_ctx_think</title>
 <path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M105,-301.9C105,-301.9 140,-301.9 140,-301.9 146,-301.9 152,-307.9 152,-313.9 152,-313.9 152,-369 152,-369 152,-375 146,-381 140,-381 140,-381 105,-381 105,-381 99,-381 93,-375 93,-369 93,-369 93,-313.9 93,-313.9 93,-307.9 99,-301.9 105,-301.9"/>
 <text xml:space="preserve" text-anchor="middle" x="122.38" y="-367.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#888888">think ctx</text>
 </g>
-<g id="clust5" class="cluster">
+<g id="clust4" class="cluster">
 <title>cluster_kb_ctx_eq</title>
 <path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M120,-181.05C120,-181.05 138,-181.05 138,-181.05 144,-181.05 150,-187.05 150,-193.05 150,-193.05 150,-248.15 150,-248.15 150,-254.15 144,-260.15 138,-260.15 138,-260.15 120,-260.15 120,-260.15 114,-260.15 108,-254.15 108,-248.15 108,-248.15 108,-193.05 108,-193.05 108,-187.05 114,-181.05 120,-181.05"/>
 <text xml:space="preserve" text-anchor="middle" x="129.12" y="-246.65" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#888888">= ctx</text>
@@ -41,7 +36,7 @@
 <!-- q -->
 <g id="node6" class="node">
 <title>q</title>
-<polygon fill="#d9d9d9" stroke="black" points="283.8,-437.08 283.8,-446.02 277.47,-452.35 268.53,-452.35 262.2,-446.02 262.2,-437.08 268.53,-430.75 277.47,-430.75 283.8,-437.08"/>
+<polygon fill="none" stroke="black" points="283.8,-437.08 283.8,-446.02 277.47,-452.35 268.53,-452.35 262.2,-446.02 262.2,-437.08 268.53,-430.75 277.47,-430.75 283.8,-437.08"/>
 <text xml:space="preserve" text-anchor="middle" x="258.82" y="-455.4" font-family="Helvetica,sans-Serif" font-size="11.00">q</text>
 </g>
 <!-- think&#45;&gt;q -->
@@ -54,7 +49,7 @@
 <!-- t -->
 <g id="node11" class="node">
 <title>t</title>
-<polygon fill="#d9d9d9" stroke="black" points="139.8,-437.08 139.8,-446.02 133.47,-452.35 124.53,-452.35 118.2,-446.02 118.2,-437.08 124.53,-430.75 133.47,-430.75 139.8,-437.08"/>
+<polygon fill="none" stroke="black" points="139.8,-437.08 139.8,-446.02 133.47,-452.35 124.53,-452.35 118.2,-446.02 118.2,-437.08 124.53,-430.75 133.47,-430.75 139.8,-437.08"/>
 <text xml:space="preserve" text-anchor="middle" x="115.95" y="-455.4" font-family="Helvetica,sans-Serif" font-size="11.00">t</text>
 </g>
 <!-- think&#45;&gt;t -->
@@ -93,15 +88,15 @@
 <!-- u -->
 <g id="node7" class="node">
 <title>u</title>
-<polygon fill="#d9d9d9" stroke="black" stroke-dasharray="5,2" points="284.8,-316.23 284.8,-325.17 278.47,-331.5 269.53,-331.5 263.2,-325.17 263.2,-316.23 269.53,-309.9 278.47,-309.9 284.8,-316.23"/>
+<polygon fill="none" stroke="black" stroke-dasharray="5,2" points="284.8,-316.23 284.8,-325.17 278.47,-331.5 269.53,-331.5 263.2,-325.17 263.2,-316.23 269.53,-309.9 278.47,-309.9 284.8,-316.23"/>
 <text xml:space="preserve" text-anchor="middle" x="259.82" y="-334.55" font-family="Helvetica,sans-Serif" font-size="11.00">u</text>
 </g>
 <!-- =&#45;&gt;u -->
 <g id="edge4" class="edge">
 <title>=&#45;&gt;u</title>
-<path fill="none" stroke="black" d="M211.36,-420.5C217.28,-410.94 224.47,-399.36 231,-389 244.3,-367.88 260.16,-343.19 268.4,-330.39"/>
-<polygon fill="black" stroke="black" points="208.41,-418.62 206.13,-428.97 214.36,-422.3 208.41,-418.62"/>
-<text xml:space="preserve" text-anchor="middle" x="234" y="-392.25" font-family="Helvetica,sans-Serif" font-size="10.00">1</text>
+<path fill="none" stroke="black" d="M211.44,-420.84C227.88,-394.79 256.15,-349.98 268.25,-330.82"/>
+<polygon fill="black" stroke="black" points="208.58,-418.81 206.2,-429.14 214.5,-422.55 208.58,-418.81"/>
+<text xml:space="preserve" text-anchor="middle" x="232.78" y="-392.25" font-family="Helvetica,sans-Serif" font-size="10.00">1</text>
 </g>
 <!-- e -->
 <g id="node12" class="node">
@@ -245,4 +240,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 79b25a231abb95822925009a11c8d7ae1d5dec4061f570c13aaaa1119a6bb4e6 -->
+<!-- source sha256: cbb9acf95c212c0ad811688872e91b8aa7d3dced0cbcb80b4fa0ac9a961f9301 -->

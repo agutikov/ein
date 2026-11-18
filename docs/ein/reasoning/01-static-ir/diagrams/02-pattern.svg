@@ -40,7 +40,7 @@
 <!-- q1 -->
 <g id="node6" class="node">
 <title>q1</title>
-<polygon fill="#d9d9d9" stroke="black" points="83.55,-106.08 83.55,-115.02 77.22,-121.35 68.28,-121.35 61.95,-115.02 61.95,-106.08 68.28,-99.75 77.22,-99.75 83.55,-106.08"/>
+<polygon fill="none" stroke="black" points="83.55,-106.08 83.55,-115.02 77.22,-121.35 68.28,-121.35 61.95,-115.02 61.95,-106.08 68.28,-99.75 77.22,-99.75 83.55,-106.08"/>
 <text xml:space="preserve" text-anchor="middle" x="55.2" y="-124.4" font-family="Helvetica,sans-Serif" font-size="11.00">q1</text>
 </g>
 <!-- q1&#45;&gt;owns -->
@@ -67,7 +67,7 @@
 <!-- q2 -->
 <g id="node7" class="node">
 <title>q2</title>
-<polygon fill="#d9d9d9" stroke="black" points="168.55,-106.08 168.55,-115.02 162.22,-121.35 153.28,-121.35 146.95,-115.02 146.95,-106.08 153.28,-99.75 162.22,-99.75 168.55,-106.08"/>
+<polygon fill="none" stroke="black" points="168.55,-106.08 168.55,-115.02 162.22,-121.35 153.28,-121.35 146.95,-115.02 146.95,-106.08 153.28,-99.75 162.22,-99.75 168.55,-106.08"/>
 <text xml:space="preserve" text-anchor="middle" x="140.2" y="-124.4" font-family="Helvetica,sans-Serif" font-size="11.00">q2</text>
 </g>
 <!-- q2&#45;&gt;lives&#45;in -->
@@ -93,4 +93,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 5784d8729e6ca17f72dab567f4182af202c60121ff8885c1c029fe09aa7f8f30 -->
+<!-- source sha256: ce56797d2ad2e51055f500a8323dd0df6939b94bee3f9328350409965d031973 -->

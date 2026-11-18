@@ -63,9 +63,10 @@ A **given** fact is a solid arrow whose label carries its source, the short `(N)
 whole sentence otherwise; a **background** fact is a plain solid arrow; a **derived** fact is dashed, labelled with
 the rule that derived it. A fact that is an argument of another is a node of its own, an octagon with its
 relation's name in it and a numbered arrow to each of its arguments, in a dashed frame named for the relations of
-the facts that point at it, and filled where the knowledge base holds it; it is drawn once, and as no arrow
-([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)). Here the frame reads
-`claims ctx`: Carol's claim points at `(knows Carol Dan)`, and nothing else does. `--colour-by origin`
+the facts that point at it where the knowledge base does not hold it, and in no frame where it does; it is drawn
+once, and as no arrow ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)).
+Here the frame reads `claims ctx`: Carol's claim points at `(knows Carol Dan)`, which is not held, and nothing
+else does. `--colour-by origin`
 colours the arrows by the same three origins instead of by relation, and `--since OTHER` draws thick every fact that
 `OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
 negations; `ein render program FILE` draws a program's written negations.
@@ -247,14 +248,15 @@ The first question reads the global context and finds one fact. `(knows Carol Da
 Carol's claim, so it is no answer to it. `(knows Bob Carol)` is held and is also in the context of Dan's claim:
 the same fact, found by the first question because it is held and by the second because Dan claims it.
 
-**As a graph.** The graph has each fact once. A filled octagon is held; an octagon inside the dashed frame is in
-a context, and the frame is named for the relation of the facts that point into it:
+**As a graph.** The graph has each fact once. That a fact is in a context is read off the arrows that enter it;
+an octagon inside the dashed frame is in a context only, not held, and the frame is named for the relation of the
+facts that point into it. A held octagon is in no frame:
 
-![Two held facts of claims, c and d, point into a frame named claims ctx: at g, empty, which only Carol claims, and at f, filled, which is held too](diagrams/03-facts-in-contexts.svg)
+![Two held facts of claims, c and d: c points into a frame named claims ctx at g, which only Carol claims, and d at f, which is held too and in no frame](diagrams/03-facts-in-contexts.svg)
 
 $c$ and $d$ are the two claims, $g$ is `(knows Carol Dan)` and $f$ is `(knows Bob Carol)`. `ein render kb` draws
-the two the same way, each an octagon in a frame and $f$ filled, with the relation's name written in the octagon
-and on the arrows of the facts that nothing points at, as [above](#as-a-graph).
+the two the same way, each an octagon, $g$ in a frame and $f$ in none, with the relation's name written in the
+octagon and on the arrows of the facts that nothing points at, as [above](#as-a-graph).
 
 **In words.** A fact in a context is read inside the statement of the fact that speaks about it. `ein solve FILE
 --dump-answer DIR` writes the state's three facts:

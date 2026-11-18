@@ -5,7 +5,7 @@ digraph pattern {
   { rank=min; "owns"; "lives-in"; }
   node [shape=diamond];
   { rank=max; "?x"; "?p"; "?h"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   q1 [xlabel="q1"]; q2 [xlabel="q2"];
   q1 -> "owns" [label="1"];
   q1 -> "?p" [label="2"];

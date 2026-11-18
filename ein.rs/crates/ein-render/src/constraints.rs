@@ -12,17 +12,18 @@
 //!
 //! **A fact under an arrow of a drawn fact is its own node**
 //! (Q-M1f.395), as in every drawing of facts: an octagon
-//! with the relation's name in it and its argument arrows numbered, filled
-//! where the program states the fact, in a dashed frame named for the
-//! relations of the facts that point at it (Q-M1f.398).
+//! with the relation's name in it and its argument arrows numbered, in a
+//! dashed frame named for the relations of the facts that point at it where
+//! the program does not state the fact, and in no frame where it does
+//! (Q-M1f.398).
 
 use std::collections::{BTreeSet, HashMap, HashSet};
 
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::dot_util::{
-    FRAMED_RANKING, GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, TYPE_SHAPE, ctx_frames, ctx_label,
-    digraph_open, quote, value_label,
+    FRAMED_RANKING, GROUND_SHAPE, HYPER_SHAPE, TYPE_SHAPE, ctx_frames, ctx_label, digraph_open,
+    quote, value_label,
 };
 use crate::palette::hash_color;
 
@@ -241,7 +242,8 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
             relations.push(name.clone());
         }
     }
-    // What the program states: a fact in a frame is filled where it is one.
+    // What the program states: a fact under an arrow stands in no frame
+    // where it is one.
     let stated: HashSet<String> = forms
         .iter()
         .filter(|f| matches!(ast.node(**f), Node::SForm { .. }))
@@ -260,7 +262,8 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
         .collect();
 
     // Nodes — relations as boxes, badged with their unary properties; a fact
-    // under an arrow as an octagon in its frame.
+    // under an arrow as an octagon, in its frame where it is in a context
+    // only.
     let mut framed: Vec<(String, String)> = Vec::new();
     for rel in &relations {
         let props = unary.iter().find(|(k, _)| k == rel).map(|(_, v)| v);
@@ -272,20 +275,16 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str) -> String {
                 Some(props) => format!("{head}\\n«{}»", props.join(", ")),
                 None => head.to_string(),
             };
-            let fill = if stated.contains(rel) {
-                format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
+            let decl = format!(
+                "{} [shape={HYPER_SHAPE}, label={}, color=\"{colour}\", fontcolor=\"{colour}\"];",
+                quote(rel),
+                quote(&label)
+            );
+            if stated.contains(rel) {
+                lines.push(format!("  {decl}"));
             } else {
-                String::new()
-            };
-            framed.push((
-                ctx_label(by),
-                format!(
-                    "{} [shape={HYPER_SHAPE}, label={}, color=\"{colour}\", \
-                     fontcolor=\"{colour}\"{fill}];",
-                    quote(rel),
-                    quote(&label)
-                ),
-            ));
+                framed.push((ctx_label(by), decl));
+            }
             continue;
         }
         let shape = if types.contains(rel) && props.is_none() {

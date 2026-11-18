@@ -81,14 +81,12 @@ pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
 // (Q-M1f.395). A fact that a drawn fact points at is its own
 // node, an octagon with the relation's name in it and its argument arrows
 // numbered, never a node labelled with the fact's text and never also an
-// arrow. It is filled where the knowledge base holds it, and it stands in a
-// dashed frame named for the relations of the facts that point at it
-// (Q-M1f.398). The frame's chrome and the filling are named here because
-// four writers draw them: the KB view, the program view, the rule view and
-// the constraint view.
-
-/// The fill of a fact in a frame that the knowledge base also holds.
-pub const HELD_FILL: &str = "#d9d9d9";
+// arrow. Where it is in a context only, pointed at and not held, it stands
+// in a dashed frame named for the relations of the facts that point at it;
+// a held fact stands in no frame, whatever points at it, and no octagon is
+// filled (Q-M1f.398). The frame's chrome is named here because four writers
+// draw it: the KB view, the program view, the rule view and the constraint
+// view.
 
 /// The grey of a frame's line and label, an absence's in a rule's drawing.
 pub const FRAME_COLOUR: &str = "#888888";

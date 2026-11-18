@@ -5,12 +5,12 @@ digraph one_relation {
   { rank=min; "transitive"; "relation"; }
   "left-of";
   { rank=max; "House-1"; "House-2"; "House-3"; "House"; }
-  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, style=filled, fillcolor="#d9d9d9"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   p [xlabel="p"]; d1 [xlabel="d1"];
   { rank=same; p; d1; }
   subgraph cluster_extent { style="rounded,dashed"; color="#888888";
     f3 [xlabel="f3"]; f4 [xlabel="f4"];
-    g [xlabel="g", style=solid];
+    g [xlabel="g", color="#888888", fontcolor="#888888"];
   }
   p -> "transitive" [label="1"];
   p -> "left-of" [label="2"];
@@ -24,7 +24,7 @@ digraph one_relation {
   "left-of" -> f4 [label="1", dir=back];
   f4 -> "House-2" [label="2"];
   f4 -> "House-3" [label="3"];
-  "left-of" -> g [label="1", dir=back];
-  g -> "House-1" [label="2"];
-  g -> "House-3" [label="3"];
+  "left-of" -> g [label="1", dir=back, color="#888888", fontcolor="#888888"];
+  g -> "House-1" [label="2", color="#888888", fontcolor="#888888"];
+  g -> "House-3" [label="3", color="#888888", fontcolor="#888888"];
 }

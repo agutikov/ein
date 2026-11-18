@@ -147,7 +147,7 @@ the engine supposes no fact of them: a relation left open is one whose facts the
 
 **As a graph.** The problem's three sentences, from `ein render program` on that file: a fact of more than two
 arguments is an octagon with a numbered arrow to each, and a number or a quantity, itself a fact, is an octagon of
-its own, in a dashed frame named for the fact that points at it
+its own, in a dashed frame named for the fact that points at it, since the program does not state it
 ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)).
 
 ![The word problem's three sentences as facts](diagrams/08-problem-facts.svg)

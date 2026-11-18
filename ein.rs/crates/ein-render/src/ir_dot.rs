@@ -21,8 +21,8 @@ use ein_ir::{Ast, Node, NodeId};
 
 use crate::builder::Builder;
 use crate::dot_util::{
-    EQUALITY_SHAPE, GROUND_SHAPE, HELD_FILL, HYPER_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE,
-    ctx_label, multiline, quote, value_label,
+    EQUALITY_SHAPE, GROUND_SHAPE, HYPER_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, ctx_label,
+    multiline, quote, value_label,
 };
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, render_rule_form, render_rules_forms};
@@ -184,8 +184,8 @@ fn leading_symbol(ast: &Ast, form: NodeId) -> Option<&str> {
 struct Scene {
     nested: Vec<(NodeId, BTreeSet<String>)>,
     at: HashMap<String, usize>,
-    /// The texts of the facts the program states: a fact in a frame is
-    /// filled where it is one of them.
+    /// The texts of the facts the program states: a fact under an arrow
+    /// stands in no frame where it is one of them.
     held: HashSet<String>,
     /// The texts of the facts this digraph states.
     stated: HashSet<String>,
@@ -256,8 +256,8 @@ fn denied(ast: &Ast, fact: NodeId) -> Option<NodeId> {
 }
 
 /// The scene of the facts `facts`, one digraph's. `held` is the texts of
-/// every fact the program states, for the filling; a digraph drawn by itself
-/// passes none, and holds what it states.
+/// every fact the program states, which stand in no frame; a digraph drawn
+/// by itself passes none, and holds what it states.
 fn scene(ast: &Ast, facts: &[NodeId], held: &HashSet<String>) -> Scene {
     let mut s = Scene {
         held: held.clone(),
@@ -291,22 +291,19 @@ fn scene(ast: &Ast, facts: &[NodeId], held: &HashSet<String>) -> Scene {
     s
 }
 
-/// The nodes of the facts under an arrow, each in the frame of the relations
-/// that point at it, with its numbered argument arrows.
+/// The nodes of the facts under an arrow, each with its numbered argument
+/// arrows: in the frame of the relations that point at it where the program
+/// does not state it, in a context only, and in no frame where it does.
 fn emit_nested(b: &mut Builder, ast: &Ast, scene: &Scene, derived: bool) {
     for (fact, by) in &scene.nested {
         let text = value_label(ast, *fact);
         let head = ast.head_name(*fact).unwrap_or("");
-        let fill = if scene.held.contains(&text) {
-            format!(", style=filled, fillcolor=\"{HELD_FILL}\"")
-        } else {
-            String::new()
-        };
+        let frame = (!scene.held.contains(&text)).then(|| ctx_label(by));
         let id = quote(&text);
-        b.framed(
+        b.fact_node(
             &id,
-            &format!("shape={HYPER_SHAPE}, label={}{fill}", quote(head)),
-            &ctx_label(by),
+            &format!("shape={HYPER_SHAPE}, label={}", quote(head)),
+            frame.as_deref(),
         );
         // A fact this digraph states among its derived ones is dashed, as
         // its arrow would have been.
@@ -745,9 +742,9 @@ pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
             },
         }
     }
-    // What the program states, whichever group draws it: a fact in a frame
-    // is filled where the program holds it, and the three groups are three
-    // digraphs of one program.
+    // What the program states, whichever group draws it: a fact under an
+    // arrow stands in no frame where the program holds it, and the three
+    // groups are three digraphs of one program.
     let held: HashSet<String> = ontology
         .iter()
         .chain(&facts)
