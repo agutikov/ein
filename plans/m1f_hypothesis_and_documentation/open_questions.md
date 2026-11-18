@@ -7628,6 +7628,44 @@ context`"*. A frame is labelled with the relation of the facts that point at wha
 Two readings taken with it, both forced by *every object drawn once*: a fact pointed at by facts of two relations
 is in one frame that names both, and frames are never one inside another.
 
+**Re-ruled 2026-11-18.** The user, verbatim:
+
+> draw nested facts that were wrapped and still present also in global context
+>
+> structurally we see clearly nexted facts, and see what context they belong to, even without frames
+>
+> but the only thing we don't see on rendering is whether this fact is also in global context
+>
+> let's draw a frame around objects that are in context only
+
+So **a frame is around the objects that are in a context only**: pointed at, and not held. A held object is in no
+frame, whatever points at it. Which contexts it is in is read off the arrows that enter it, as before.
+
+**Tried on the three multi-context figures** of P1f.22's [`diagrams/`](p1f.22_nested_facts/diagrams/), as
+`frame-ctx-only-*.{dot,svg}`. Each is `ein render kb`'s output with every held octagon moved out of its frame and a
+frame left empty dropped:
+- *held-in-two-contexts*: `(owns Bob Dog)`, held and under `think` and `says`, stands in no frame, and the figure
+  has none.
+- *two-contexts-of-one-relation*: `(owns Bob Dog)`, held and thought by Alice and Dan, is outside; `(owns Bob Cat)`,
+  only thought, is alone in `think ctx`.
+- *two-contexts*: `(= 5 (+ 2 2))`, held and under `think` and `says`, is outside; `(+ 2 2)`, never held, is in
+  `= ctx`.
+
+**A reading taken, with a default.** For a fact that is pointed at, *in no frame* and *held* are now one property.
+The filling stays, so a filled octagon is now exactly the case of the user's first line: a fact held and also in
+a context. An octagon outside every frame and not filled is a held fact nothing points at, `(relation …)` say. The
+other way is to drop the filling as a second mark of one property.
+
+**To build.** It is its own change on master, after the `is-a` row's change now on master. That one shares the
+main tree, and a gate builds the whole tree. It touches:
+- the KB view's and the program view's frames, and the rule view's, whose framed pattern is *also a premise* where
+  it is filled;
+- `12-rendering.md`'s frame rule and its two context drawings;
+- Q-M1f.398's decision file;
+- the standard library's rule drawings, through their generator, and the shape golden.
+
+It writes no answer. Because the DOT writers change, `utils/ci_container.sh` is part of done.
+
 ### Q-M1f.399 — The names of what controls the search: `false` and `open`
 
 **Raised** 2026-11-17 by the user, ruling [P1f.22](p1f.22_nested_facts/README.md)'s questions: *"This also leads
