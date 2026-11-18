@@ -20,7 +20,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(c)** a page says such a relation is declared; nothing moves, and the four lists keep disagreeing.
 - **Default**: none taken; the ledger reads the user's third instruction (*any head is a relation*) as pointing at (a).
 
-**Your answer:** 
+**Your answer:** What does mean "program does not count relation" ? relation is almost any atom if it is 1st in the tuple. Also for nested facts. Its enough to be the first item in the tuple to became a relation. (XXX) - is a relation fact with relation 'XXX'. Relation declaration `(relation = Formula Formula)` is optional fact that can be used to handle some random labels associated with the relation, even maybe not arguments types, not arguments count. It is just by convention is "relation declaration", that is used to reason about arguments domains. You easily can use `(rel-arg-types <relation_name> Type Type)`, `(rel-arg-types <relation_name> (list Type Type))`, `(defrel <relation_name> Type Type)` WHATEVER for the same purpose. But `relation` is already used by SOME OF stdlib modules. That is it.
 
 **Notes:** 
 
@@ -38,7 +38,9 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(3) not a row**: the row's reading does not stand, and Q-M1f.313's scope note covers it.
 - **Default**: none taken.
 
-**Your answer:** 
+**Your answer:** This is non-monotone saturation. false inferred from absent. See followups where it belongs.
+Btw, into followup: what about optimistic saturation - at first step skip non-monotone rules and get a fixedpoint without them, and then check. But again, this belongs to non-monotone programs followup. Not decide and not investigate here.
+Does ein detect non-monotone program here??? We already decided to detect those cases.
 
 **Notes:** 
 
@@ -55,7 +57,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** the report's id moves for it too, `ein-test-report/7`; the summary and the region dump keep theirs.
 - **(c)** every id moves: `ein-summary/3`, `ein-region/2`, `ein-test-report/7`.
 
-**Your answer:** 
+**Your answer:** How deep does this `is-a` go into the kernel? I repeat again and again THERE IS NO TYPES in ein. It's substrate, field, data plane is a pure labelled graph. Does graph nodes have types? NO! Graphs are about structure. If we want - we add types-like behaviour to the program on relations and rules level, usually (Usually! not always) following stdlib convention. If we don't need - no types.
 
 **Notes:** 
 
@@ -72,7 +74,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** keep it: *"does not key on a nested fact"* read as *no key's value is a fact*.
 - **Default**: none taken.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -90,7 +92,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - Or neither, left as they are.
 - **Default**: none taken.
 
-**Your answer:** 
+**Your answer:** both, make docs consistent with the code and clear
 
 **Notes:** 
 
@@ -108,6 +110,6 @@ re-render of the bundle rewrites the READMEs and never this file.
 - The pages' missing activator clause (§ 3.3), with either.
 - **Default**: none taken.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
