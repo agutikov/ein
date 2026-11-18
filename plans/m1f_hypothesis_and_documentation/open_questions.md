@@ -347,6 +347,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), root alone, the node; each claim NOT CHECKED, no exit code |
 | [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
 | [Q-M1f.418](#q-m1f418--the-nesting-limit-and-a-saved-files-wrappers) | the nesting limit, and a saved file's wrappers | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a saved file parsed with one level more, each text it carries under the limit; Q-M1f.185 rewritten |
+| [Q-M1f.419](#q-m1f419--how-ein-render-draws-a-fact) | how `ein render` draws a fact | **ruled 2026-11-18 by the user**: the canonical form by default, a fact of three arrows folded into a labelled arrow on request, no labelled octagon and no text node produced or drawn on a page; built by P1f.23's S1f.23.1 |
+| [Q-M1f.420](#q-m1f420--what-ein-render-program-draws) | what `ein render program` draws | **ruled 2026-11-18 by the user**: the program's knowledge base as one graph, as the KB view draws one, its rules, its query; no split into ontology and facts; built by S1f.23.1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8134,3 +8136,37 @@ above a node, has to say which node.
 `a_saved_file_carries_a_program_at_the_limit`; the decision
 [Q-M1f.185](../../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md), rewritten: a state
 deeper than the limit is answered, saved and loaded again.
+
+### Q-M1f.419 — How `ein render` draws a fact
+
+**Raised and ruled** 2026-11-18 by the user, on reading the review bundle's drawings
+(`review/03-drawings/`) and the main session's account of the four ways the tree draws a fact: (1) **canonical**, an
+octagon with no name in it, its first arrow at the relation's atom, its next ones at the arguments, numbered; (2)
+**labelled octagon**, the relation's name in the octagon and no node for the relation; (3) **labelled arrow**, a fact
+of a relation and two arguments as one arrow labelled with the relation's name; (4) **text node**, a node labelled
+with a fact's text, in the drawings of a derivation. The user, verbatim:
+
+> Then important: I want `ein render` now draw first form by default and optionally fold 3-facts into labelled
+> arrows, and not produce labelled octagons anymore. Forms 2 and 4 must not be produces or used in docs. […] Both KB
+> and program view must follow the same label="owns", and number the arrows 1/2
+
+**Ruling.** Every view draws a fact in form (1) by default; on request, a fact of three arrows, a relation and two
+arguments, is folded into form (3); forms (2) and (4) are produced by no command and drawn on no page under `docs/`.
+The KB and the program views write a relation's name as it is, `owns`, and number arrows with digits alone. It
+answers L-99 (no text node in a derivation's drawing) and rewrites Q1, Q-M1f.382 and Q-M1f.395 where they say
+otherwise. **Built by** P1f.23's
+[S1f.23.1](p1f.23_review_processing/s1f.23.1_drawing.md), whose readings where the ruling is silent are put from
+Q-M1f.421 on.
+
+### Q-M1f.420 — What `ein render program` draws
+
+**Raised and ruled** 2026-11-18 by the user, with Q-M1f.419, verbatim:
+
+> `ein render kb` renders whole KB, `ein render program` renders 3 parts: the same as KB + rules + query; DO NOT
+> split KB into ontology and facts. This split is relevant during program sythesis, not during it's
+> review/analysis.
+
+**Ruling.** `ein render kb` draws the whole knowledge base, one graph. `ein render program` draws three parts: the
+program's knowledge base, drawn as the KB view draws one; its rules; its query. The digraphs `ontology` and `facts`
+go. It answers L-98 (the program view is several digraphs). **Built by**
+[S1f.23.1](p1f.23_review_processing/s1f.23.1_drawing.md).

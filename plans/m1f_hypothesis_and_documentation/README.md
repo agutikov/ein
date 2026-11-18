@@ -26,15 +26,18 @@ agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-r
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
-**Phase left** (2026-11-18): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
+**Phases left** (2026-11-18): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
 2026-11-17 on the user's instruction: its survey is done, its question put (Q-M1f.390) and its next stage, S1f.21.4,
-planned on the user's two further instructions of 2026-11-18; **it is not started without the user's word**.
+planned on the user's two further instructions of 2026-11-18; **it is not started without the user's word**. **And
+[P1f.23](p1f.23_review_processing/README.md)**, the review's rulings, built, opened 2026-11-18 on the user's
+instruction: the user reviews [`review/`](review/README.md), the bundle of every item that waited at P1f.22's close,
+and each batch of rulings is a stage, run on the user's word; its first, S1f.23.1, the drawing, is started.
 **P1f.22, nested facts, is closed** (2026-11-18, run to its end on the user's word, *"continue till the end of
 phase"*) and its folder deleted. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go
 ahead to close p1f.20"*) and its folder deleted. What the two found and left is [`findings.md`](findings.md). The
 user accepted the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop
-after M1f; the close of the milestone was started, then paused on the user's word, and resumes when P1f.21 is
-done.
+after M1f; the close of the milestone was started, then paused on the user's word, and resumes when P1f.21 and
+P1f.23 are done.
 
 ---
 
@@ -55,6 +58,7 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | P1f.20 | `docs/ein/`: the tree a released system would have — **closed 2026-11-17** | 10, every one done; the user reviewed the tree, and its last stage carried out the review's rulings | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
 | [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 5 planned; the first, the survey and the design, done; S1f.21.4, open facts and `(ein.kill)` on programs, planned 2026-11-18 and next | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390, with the user's further instructions on `(ein.kill)`, open facts and the reserved names. **Not started further without the user's word** |
 | P1f.22 | Nested facts — **closed 2026-11-18** | 8, every one done, the last run on the user's word | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .398; and what the rulings on the way asked for: `(not (not g))` a fact, every object drawn once with a frame around what is in a context only, `written` erased, and a saved state saved and loaded as itself |
+| [P1f.23](p1f.23_review_processing/README.md) | The review's rulings, built | a stage per batch of the user's rulings on the review bundle; S1f.23.1, the drawing, started 2026-11-18 on the user's word | — | every item of [`review/`](review/README.md) the user rules, built, and the bundle drawn again for the user's next look; the first batch: every view draws a fact in the canonical form, folds a fact of three arrows on request, and draws no labelled octagon and no text node (Q-M1f.419); the program view its knowledge base, its rules and its query (Q-M1f.420) |
 
 **P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 are finished, and their folders were deleted by
 P1f.20's history sweep, S1f.20.9**: their records are in git
