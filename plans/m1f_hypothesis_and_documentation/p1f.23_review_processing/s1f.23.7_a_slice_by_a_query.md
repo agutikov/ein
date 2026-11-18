@@ -32,4 +32,4 @@ On Q-M1f.426, what the constraint view draws (the answers' file, `e4c0eaf6`), ve
 
 ## Record
 
-Not started.
+- Task 1 done, `ef2010ce`, waiting for the user's look: [`s1f.23.7_examples.md`](s1f.23.7_examples.md), its programs, scripts and outputs in [`s1f.23.7_examples/`](s1f.23.7_examples/).
