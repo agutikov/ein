@@ -55,3 +55,6 @@ Planned from task 1 and the user's look; not started without the user's word.
 ## Record
 
 - Task 1 done, `11a113cf`, waiting for the user's look: [`s1f.23.5_examples.md`](s1f.23.5_examples.md).
+- **2026-11-18, the user on facts**, asked whether a fact must carry a `:why` or a `:source` (it need not, today): *"leave
+  facts as they are"*. So a fact carries no `:why`, and `:source` stays optional: the examples' open point 2 is
+  ruled as its default, (a). The other open points wait for the user's look.
