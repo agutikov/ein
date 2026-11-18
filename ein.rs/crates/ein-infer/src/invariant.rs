@@ -59,12 +59,14 @@
 //! signatures.
 //!
 //! **What is a new relation?** A fact head that is not in
-//! [`ein_core::Program::relations`]. That registry is *declared ∪
-//! auto-vivified*, exactly the invariant's own phrase: `from_ir` vivifies an
-//! undeclared head at load, and nothing can vivify one afterwards, because
-//! `Program` is an `Arc` every fork shares and `program_mut` panics once it is
-//! shared. A derived fact with an unregistered head is therefore a fact about a
-//! relation that does not exist.
+//! [`ein_core::Program::relations`], or a word of the kernel's. That registry
+//! is every relation of the program (Q-M1f.522): `from_ir` registers at load
+//! every atom the program writes first in a tuple, a fact's, a nested fact's,
+//! a rule's and the one an activator gives a parameter, and nothing can
+//! register one afterwards, because `Program` is an `Arc` every fork shares
+//! and `program_mut` panics once it is shared. A derived fact with an
+//! unregistered head is therefore a fact about a relation the program does
+//! not write.
 //!
 //! **When does it run?** At a fixpoint, and the honest scope is *every*
 //! fixpoint, because the warrant is used per KB. What it costs is
@@ -88,7 +90,8 @@ pub struct Universe {
     /// rule's `:match` or `:assert` names, plus the relation registry's names
     /// and the symbols in their signatures.
     objects: BitSet,
-    /// The relation registry as of load — declared ∪ auto-vivified.
+    /// The relation registry as of load, every relation of the program, and
+    /// the kernel's words.
     relations: BitSet,
     /// `terms.syms.len()` when the baseline was taken. A symbol numbered at or
     /// above this did not exist at load at all, which is a stronger fact than
@@ -196,8 +199,8 @@ impl RuleConstant {
 /// compiler names by the bound value's text: a name of the program, or a
 /// nested fact, refused at load or at compile, so it introduces nothing
 /// either. A **head** contributes
-/// nothing here: a relation a rule names is the registry's business
-/// ([`Universe::of`] reads it off `relation_names`).
+/// nothing here: a relation a rule names is the registry's, which holds every
+/// atom the program writes first in a tuple (Q-M1f.522).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
     let mut out = Vec::new();
     for (which, reg) in [
@@ -365,35 +368,12 @@ impl Universe {
                 u.objects.insert(ty.0);
             }
         }
-        // **…∪ rule-assertable**, wider than *declared ∪ auto-vivified*.
-        // `from_ir` vivifies an undeclared **fact** head and not an undeclared
-        // **rule-`:assert`** head, so a relation a rule derives and no fact
-        // states is in no registry at all: many such names in the corpus,
-        // nearly all stdlib activators (`total` derived from `(bijective …)`,
-        // `slot-endpoint-fwd`, `converse-illtyped-dom`, …;
-        // `examples/features/01_not_and_absent.ein`'s own
-        // `explicitly-dislikes` among the others). Reading the registry as the whole answer
-        // would make the check fire on the standard library on its first
-        // run, which is a check that says nothing.
+        // The registry is the whole of the program's relations (Q-M1f.522):
+        // `from_ir` registers every atom the program writes first in a tuple,
+        // a rule's `:assert` head and the relation an activator gives a
+        // parameter among them, so a relation a rule derives and no fact
+        // states is one there.
         //
-        // `Pattern::relation_names` is the head set already computed at load,
-        // with the structural primitives excluded — so this is free and it is
-        // the *same* list `rules_by_relation` is built from.
-        for reg in [
-            &kb.program().rules,
-            &kb.program().hrules,
-            &kb.program().obligations,
-        ] {
-            for (_, rule) in reg.iter() {
-                let Some(a) = rule.assert_.as_ref() else {
-                    continue;
-                };
-                for &r in a.relation_names.iter() {
-                    u.relations.insert(r.0);
-                    u.objects.insert(r.0);
-                }
-            }
-        }
         // The kernel's own vocabulary: a stored `(not X)` and a stored
         // `(false)` are facts whose head is reserved and therefore never in
         // the registry, and a `(__closed__ R)` a rule derives (`std.closure`'s)

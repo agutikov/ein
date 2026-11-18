@@ -475,7 +475,7 @@ finishes and shared by every fork as `Arc<Program>`.
 
 | field | type | holds |
 |---|---|---|
-| `relations` | `Registry<Relation>` | declared relations and open-world heads |
+| `relations` | `Registry<Relation>` | every relation of the program ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)): the declared ones, then each atom the program writes first in a tuple, open-world, a stated fact's in the order of the facts and every other in the order of its text; the kernel's words are none |
 | `rules` | `Registry<Rule>` | the saturation rules, the only registry the saturator walks |
 | `hrules` | `Registry<Rule>` | hypothesis rules, a `Rule` by shape, read by the hypothesis generator |
 | `obligations` | `Registry<Rule>` | rules whose `:assert` is `(open)` or `(open ?R)`; read once per quiescent KB, never on the agenda |

@@ -601,34 +601,10 @@ fn every_summary_counter_is_defined_on_this_page() {
         "root",
         &mut keys,
     );
-    // And a second: `root.hypgen.relation_names_as_objects`, a relation's
-    // name the blind enumerator bound as an object, read off the corpus's
-    // one program that has one.
-    let named = tmp.join("named");
-    let r = dump(
-        "examples/features/01_not_and_absent.ein",
-        &["-n", "1"],
-        &[],
-        &named,
-    );
-    assert_eq!(r.code, 0, "{}", r.err);
-    assert!(
-        !keys
-            .iter()
-            .any(|k| k.starts_with("root.hypgen.relation_names_as_objects")),
-        "a program that binds no relation's name as an object writes no \
-         `relation_names_as_objects`"
-    );
-    fields(
-        &json(&named.with_extension("json"))["root"],
-        "root",
-        &mut keys,
-    );
     assert!(
         keys.contains("root.hypgen.emitted")
             && keys.contains("root.saturator.naf_rounds")
-            && keys.contains("root.hypgen.later_debts")
-            && keys.contains("root.hypgen.relation_names_as_objects.candidates"),
+            && keys.contains("root.hypgen.later_debts"),
         "the root block was not walked: {keys:?}"
     );
     assert_eq!(

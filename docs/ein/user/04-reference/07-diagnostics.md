@@ -696,8 +696,9 @@ holds names something the program has, or the loader refuses the program, one li
 | `:hrules (guess (att Color House))`, `?R` naming a relation, and no relation is named `att` | `:hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
 | `:hypothesis-relations (like)` or `:no-hypothesis (like)`, and no relation is named `like` | `:no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
 
-**A relation of the program** is an atom the program writes as a relation outside the three lists: one it declares or
-states a fact of; `eq` and `neq`; the relation of any form in a rule's, an hrule's or an obligation's
+**A relation of the program** is an atom the program writes first in a tuple outside the three lists
+([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)): one it
+declares or states a fact of; `eq` and `neq`; the relation of any form in a rule's, an hrule's or an obligation's
 `:match` or `:assert`, in a query's `:goal` or in a fact's argument; and a name a fact or a conclusion passes where a
 relation's name is held, as `(bijective color-loc)` passes `color-loc` (§ 2.9's positions). So a relation only a
 rule's or an hrule's `:assert` derives is one, an imported rule's included. The test is *named elsewhere*, not *made
@@ -728,9 +729,9 @@ A query's `:goal` is a premise, and the loader reads it as it reads a rule's `:m
 - **Every relation a goal asks about, and every relation a claim lists a fact of, is a relation of the program**
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): § 2.20's
   notion without the goals, so one the program declares, states a fact of, writes as the relation of a fact that
-  is an argument, or writes in a rule, an hrule or an obligation, at any depth, a rule's `:assert` among them, and
-  one a `(solve :hrules …)` activator has its hrule
-  propose. `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are every program's; `is-a` is a
+  is an argument, or writes in a rule, an hrule or an obligation, at any depth, a rule's `:assert` among them, one it
+  passes by an activator where a relation's name is held, `(symmetric next-to)`, and one a `(solve :hrules …)`
+  activator has its hrule propose. `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are every program's; `is-a` is a
   relation of the program only where it writes one, as any relation is.
 
 | the goal writes | the line, after `kb load error: ` |

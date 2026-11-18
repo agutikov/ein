@@ -424,12 +424,12 @@ what is wrong.
 **The guessable atoms**, $\operatorname{guessable}(P)$, are the names of the program
 ([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names);
 [Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md),
-[Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)) and the relations
-of root's facts, less four kinds of atom, each left out by its name
+[Q-M1e2.9](../../../decisions/language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)), less four
+kinds of atom, each left out by its name
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)):
 
 $$
-\operatorname{guessable}(P) = \big( \operatorname{names}(P) \cup \operatorname{rels}(\mathrm{root}) \big) \setminus \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
+\operatorname{guessable}(P) = \operatorname{names}(P) \setminus \big( \operatorname{labels}(P) \cup \operatorname{Kw} \cup \operatorname{Res} \cup \operatorname{RelNames}(P) \big)
 $$
 
 - $\operatorname{names}(P)$ reads every depth, so an atom under an arrow of a fact that is only in a context
@@ -437,10 +437,6 @@ $$
   name of the program and may be guessable. A fact is never one: every guessable object is an atom, so no
   candidate the enumerator proposes points at a fact. And a fact that root only points at has no place of its
   own for that: it is a candidate exactly where any fact of its relation over the guessable atoms is;
-- $\operatorname{rels}(\mathrm{root})$ is the relations of the facts root holds
-  ([saturation](02-saturation.md#the-alive-set-invariant)). An atom is no name of the program by standing under a
-  first arrow, so the relations are counted beside the names; the atoms under the argument arrows of root's facts
-  are names of the program already, since a rewriting brings in no name;
 - $\operatorname{labels}(P)$ is the labels, the atoms a relation's declaration writes for its argument places
   ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where));
 - $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
@@ -450,17 +446,19 @@ $$
   a rule derives a fact of it nor where a program writes it as an argument, which stays legal and keeps it a name
   of the program. So a marker's fact stated by the program and the same fact derived by a rule give one $H$ and one
   $R$;
-- $\operatorname{RelNames}(P)$ is every atom the program declares as a relation, writes under the first arrow of a
-  fact, or names a rule or an obligation by
-  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)). The
-  relation of a fact that only a rule concludes is none of these, so **a relation whose facts only a rule concludes is a guessable atom**, and a
-  candidate can have it as an argument. The candidate stays, and the answer names it
-  ([solution semantics § 1.4](06-solution-semantics.md#14-candidate-and-universe)); declaring the relation takes the
-  atom out.
+- $\operatorname{RelNames}(P)$ is $\operatorname{rels}(P)$, the relations of the program
+  ([saturation](02-saturation.md#the-alive-set-invariant)): every atom it writes first in a tuple, at any depth,
+  the relation of a fact, of a fact inside one, of a rule's premise or conclusion, and the atom an activator gives a
+  parameter that stands first in a pattern, and every atom it declares as a relation
+  ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)); with
+  them, every atom that names a rule or an obligation
+  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)). So **no
+  relation is a guessable atom**, a relation whose facts only a rule concludes among them, and no candidate has a
+  relation as an argument ([solution semantics § 1.4](06-solution-semantics.md#14-candidate-and-universe)).
 
-Since every atom a rule writes under an argument arrow is guessable, no rule can bring a name into a state that
-$H$ lacks: the **alive-set invariant** holds of every program by construction
-([saturation](02-saturation.md#the-alive-set-invariant)).
+Since every atom a rule writes under an argument arrow is a name of the program, guessable unless it is of the four
+kinds, no rule can bring a name into a state that the program and $H$ lack: the **alive-set invariant** holds of
+every program by construction ([saturation](02-saturation.md#the-alive-set-invariant)).
 
 **The eligible relations** are those the program declares with labels and does not scope out (§ 6);
 $\operatorname{ar}(r)$ is the number of a declared relation's labels, the count of arguments of every fact of it

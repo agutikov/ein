@@ -27,7 +27,6 @@ use ein_infer::monotone::Monotonicity;
 use ein_infer::oblgen::LaterDebtText;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_infer::region::Class;
-use ein_infer::relation_names::RelationNamesAsObjects;
 use ein_infer::scope::{Outside, Why};
 use ein_infer::tree_classes::Part;
 use ein_ir::expect::Over;
@@ -174,8 +173,6 @@ rows! {
     LaterDebt => "later debt", Block;
     /// A relation H leaves out.
     Outside => "outside", Block;
-    /// A relation's name the blind enumerator binds as an object.
-    RelationNames => "relation names", Block;
     /// A fact of root's core.
     UnsatCore => "unsat core", Row;
     /// A cut core search.
@@ -324,15 +321,7 @@ impl Row {
             ],
         ),
         ("strata", &[Row::NegativeCycle]),
-        (
-            "universe",
-            &[
-                Row::Commit,
-                Row::LaterDebt,
-                Row::Outside,
-                Row::RelationNames,
-            ],
-        ),
+        ("universe", &[Row::Commit, Row::LaterDebt, Row::Outside]),
         (
             "empty",
             &[
@@ -984,41 +973,6 @@ fn outside_row(out: &mut Out, outside: &[Outside]) {
     }
 }
 
-/// A relation's name the blind enumerator bound as an object, as one
-/// sentence: the names that only a rule concludes a fact of and that a
-/// candidate of its H names, how many candidates and of which relations, and
-/// why they are objects ([`ein_infer::relation_names`]). `None` when it bound
-/// none. The read-out prints it as the `relation names` row under `universe`,
-/// and `ein oracle --dump`'s `region.md` under its candidate count.
-pub fn relation_names_text(r: &RelationNamesAsObjects) -> Option<String> {
-    if r.is_empty() {
-        return None;
-    }
-    let one = r.objects.len() == 1;
-    let (what, it, one_of) = if one {
-        ("a relation", "it", "it")
-    } else {
-        ("relations", "them", "one")
-    };
-    let name = if r.candidates == 1 { "names" } else { "name" };
-    Some(format!(
-        "{} — {what} only a rule concludes, and {} of {} {name} {one_of} as an object: no file \
-         declares {it} or writes a fact of {it}",
-        r.objects.join(", "),
-        plural(r.candidates as u64, "candidate", "candidates"),
-        r.relations.join(", "),
-    ))
-}
-
-/// The `relation names` row under `universe`, when the blind enumerator bound
-/// a relation's name as an object: every question prints it, since every
-/// question is over the same H.
-fn relation_names_row(out: &mut Out, r: &RelationNamesAsObjects) {
-    if let Some(text) = relation_names_text(r) {
-        out.line(sub_row(Row::RelationNames, text));
-    }
-}
-
 /// The warning's static half, as rows under its first: `assumes`, a `site`
 /// per site (at most [`WARNING_ROWS`] unless `uncut`), each `cycle`, each
 /// `order` — what `ein solve --monotone` prints, and every flagged read-out's
@@ -1313,7 +1267,6 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     out.row(Row::Universe, plural(c.n as u64, "candidate", "candidates"));
     later_rows(&mut out, &c.root.later);
     outside_row(&mut out, &c.root.outside);
-    relation_names_row(&mut out, &c.root.relation_names);
     out.row(
         Row::Route,
         "none — a question about the program: root's fixpoint, then the static check",
@@ -1410,7 +1363,6 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     commit_row(&mut out, &a.root);
     later_rows(&mut out, &a.root.later);
     outside_row(&mut out, &a.root.outside);
-    relation_names_row(&mut out, &a.root.relation_names);
     out.row(Row::Route, ROOT_ROUTE);
     out.row(Row::Work, work_text(d.work.saturations, d.work.facts, None));
     if !root.alive {
@@ -2052,7 +2004,6 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
-    relation_names_row(out, &a.root.relation_names);
     let route = match (d.route, o.command) {
         (Route::DownSet, _) => format!("1, the alive down-set — {}", licences(&a.licences)),
         (Route::States, _) => format!(
@@ -2283,7 +2234,6 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
-    relation_names_row(out, &a.root.relation_names);
     // The tree says what order it took: which keys decided its branches,
     // and where it read the couplings, how many and when.
     let order = match (a.route, &a.order) {

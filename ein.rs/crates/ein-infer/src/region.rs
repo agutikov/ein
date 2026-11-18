@@ -354,11 +354,6 @@ pub struct RootStats {
     /// relations the program can conclude or ask about, which it does not
     /// scope out itself, and of which the rung that built H proposes no fact.
     pub outside: Vec<crate::scope::Outside>,
-    /// The relations' names the blind enumerator bound as objects
-    /// ([`crate::relation_names`]): the names only a rule concludes a fact of
-    /// that a candidate of its H names. Empty where it bound none, so a
-    /// surface that prints it prints what it printed on every such program.
-    pub relation_names: crate::relation_names::RelationNamesAsObjects,
     /// The debts root does not owe and a commitment can bring for which H
     /// holds a candidate no debt of root's proposed, each with those
     /// candidates ([`crate::oblgen::LaterDebt`], as text): the obligations
@@ -458,9 +453,6 @@ pub enum Outcome {
         monotonicity: Monotonicity,
         /// What the universe leaves out, as [`RootStats::outside`].
         outside: Vec<crate::scope::Outside>,
-        /// The relations' names bound as objects, as
-        /// [`RootStats::relation_names`].
-        relation_names: crate::relation_names::RelationNamesAsObjects,
         /// What H holds for debts root does not owe, as [`RootStats::later`].
         later: Vec<crate::oblgen::LaterDebtText>,
     },
@@ -541,7 +533,6 @@ pub(crate) fn compute_prepared(
             candidates,
             monotonicity,
             outside: root_stats.outside,
-            relation_names: root_stats.relation_names,
             later: root_stats.later,
         });
     }
@@ -1005,8 +996,8 @@ pub(crate) fn prepare_with(
 /// [`prepare`] over a universe the caller names, in the order it names it,
 /// where the generator's list would be: root is saturated and the static
 /// check read as [`prepare`] reads them, *forbid* included, and the
-/// generator is not run, so [`RootStats::hypgen`], [`RootStats::outside`]
-/// and [`RootStats::relation_names`] say nothing. For a reader that asks
+/// generator is not run, so [`RootStats::hypgen`] and [`RootStats::outside`]
+/// say nothing. For a reader that asks
 /// what a program over fewer of its statements decides of the candidates
 /// another root proposed ([`crate::structure`]); no route calls it.
 pub(crate) fn prepare_over(
@@ -1136,11 +1127,6 @@ fn prepare_as(
             };
             crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans, &later)?
         };
-        // A relation's name the blind enumerator bound as an object: read off
-        // H and root's fixpoint, no event, and nothing it decides.
-        let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
-        root_stats.relation_names =
-            crate::relation_names::of(root, terms, root_stats.hypgen.rung.mode, &facts);
     }
     // *Forbid* (Q-M1e2.5): a refutation resting on an `absent` over a
     // relation a commitment can still extend refuses the program, here, after

@@ -383,34 +383,6 @@ pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
     )
 }
 
-/// The relations' names the blind enumerator bound as objects, as data: the
-/// names and the candidates' relations [`ein_infer::relation_names`] names,
-/// and the candidates' count. `--json-summary`'s
-/// `root.hypgen.relation_names_as_objects` and `region.json`'s
-/// `relation_names_as_objects`, each **written only where it bound one**: a
-/// program with none writes the document it wrote.
-pub fn relation_names_json(r: &ein_infer::relation_names::RelationNamesAsObjects) -> Json {
-    Json::obj(vec![
-        (
-            "objects",
-            Json::Array(r.objects.iter().map(Json::str).collect()),
-        ),
-        (
-            "relations",
-            Json::Array(r.relations.iter().map(Json::str).collect()),
-        ),
-        ("candidates", Json::int(r.candidates as i64)),
-    ])
-}
-
-/// The relations' names bound as objects, whichever arm the cube took.
-fn relation_names_of(oracle: &Outcome) -> &ein_infer::relation_names::RelationNamesAsObjects {
-    match oracle {
-        Outcome::Region(r) => &r.root.relation_names,
-        Outcome::Refused { relation_names, .. } => relation_names,
-    }
-}
-
 /// What H holds for debts root does not owe, as data: one object per debt
 /// the obligations rung read that H holds a candidate for
 /// ([`ein_infer::oblgen::LaterDebt`]), in the rung's order.
@@ -496,13 +468,6 @@ pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Js
         head.push(("later_debts", later_json(later_of(oracle))));
     }
     head.push(("outside", outside_json(outside_of(oracle))));
-    // Only where the blind enumerator bound a relation's name as an object.
-    if !relation_names_of(oracle).is_empty() {
-        head.push((
-            "relation_names_as_objects",
-            relation_names_json(relation_names_of(oracle)),
-        ));
-    }
     head.push(("monotonicity", m));
     let mut pairs = head;
     match oracle {
@@ -748,9 +713,6 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
     }
     if let Some(t) = crate::read_out::outside_text(outside_of(oracle)) {
         out.push_str(&format!("**Outside it**: {t}.\n\n"));
-    }
-    if let Some(t) = crate::read_out::relation_names_text(relation_names_of(oracle)) {
-        out.push_str(&format!("**Relation names as objects**: {t}.\n\n"));
     }
     if m.is_monotone() {
         out.push_str(&format!(

@@ -27,7 +27,7 @@ the test suite runs every caption again and compares the block, so every block i
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
 | [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
 | [X14](#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) | `features/07_unstratifiable.ein` | 1 | every row of the warning, the strata, and `--monotone` on a flagged program |
-| [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 35 | the warning past four stale nodes |
+| [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 19 | the warning past four stale nodes |
 | [X16](#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) | `ein-bugs/zebra2-bad.ein`, `ein-bugs/wrong-answers/core-search-cut.ein` | 0 | why root is dead: its core, a fact's `:source`, and a core search cut at its budget |
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
@@ -1940,19 +1940,15 @@ A flagged program past `--region-limit` whose nodes hold thousands of stale fact
 then one `…` row counts the rest and names what writes them, so the warning stays bounded on its own and takes none of
 the listings' 100 lines.
 
-Under `universe`, the `relation names` row: the rule `see-stored-neg` concludes `explicitly-dislikes` facts, no file
-declares the relation or writes a fact of it, so the relation is an atom the blind enumerator proposes about, the
-row's *object*, and a candidate can have it as an argument. The candidates stay in H, and the row counts them.
-
 `ein solve examples/features/01_not_and_absent.ein`
 
 ```text
 solve · examples/features/01_not_and_absent.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
-  states (k_s)      64 655   (a lower bound: the run stopped before R was exhausted)
-  commitments (k_c) 64 655   (a lower bound: the run stopped before R was exhausted)
-  exhausted         no — not monotone, and the question needs the whole cube: 2^35, past --region-limit 16
+  states (k_s)      65 299   (a lower bound: the run stopped before R was exhausted)
+  commitments (k_c) 65 299   (a lower bound: the run stopped before R was exhausted)
+  exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
   minimal line      1 state — ∅
   maximal line      not known — without a licence it needs the whole cube
@@ -1963,124 +1959,34 @@ solve · examples/features/01_not_and_absent.ein
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            unknown-feeling: its activator relation is one a commitment can change; a plan root compiled of it concludes a positive fact — at stake: the state, through a plan a node compiles
     site            unknown-feeling [activator Person]: absent reads likes at absent depth 1, concludes a positive fact — at stake: the state
-    status          not known — the cube is 2^35 nodes, past --region-limit 16
-    state           stale facts — 24 754 of the 64 655 nodes the run computed hold one: a fact whose absent guard the node's own fixpoint falsifies
+    status          not known — the cube is 2^19 nodes, past --region-limit 16
+    state           stale facts — 51 690 of the 65 299 nodes the run computed hold one: a fact whose absent guard the node's own fixpoint falsifies
     stale           {(likes Bob Alice)}, in R: (unknown-feeling Bob Alice) ← unknown-feeling (absent (likes Bob Alice)) (absent (not (likes Bob Alice)))
     stale           {(likes Bob Carol)}, in R: (unknown-feeling Bob Carol) ← unknown-feeling (absent (likes Bob Carol)) (absent (not (likes Bob Carol)))
     stale           {(likes Carol Alice)}, in R: (unknown-feeling Carol Alice) ← unknown-feeling (absent (likes Carol Alice)) (absent (not (likes Carol Alice)))
     stale           {(likes Carol Bob)}, in R: (unknown-feeling Carol Bob) ← unknown-feeling (absent (likes Carol Bob)) (absent (not (likes Carol Bob)))
-    …               24 750 more: --dump-answer DIR writes them
-    paths           not checked — the read-out prints no state of two commitments or more; its 64 655 members met would cost up to 386 524 saturations
-  universe          35 candidates, dead alone not known: the run stopped before it visited each alone
-    relation names  explicitly-dislikes — a relation only a rule concludes, and 16 candidates of is-a, likes name it as an object: no file declares it or writes a fact of it
+    …               51 686 more: --dump-answer DIR writes them
+    paths           not checked — the read-out prints no state of two commitments or more; its 65 299 members met would cost up to 391 332 saturations
+  universe          19 candidates, dead alone not known: the run stopped before it visited each alone
   route             2, the cube — no licence: the static check flags the program
-  work              64 655 saturations · 294 793 facts beyond root
+  work              65 299 saturations · 390 225 facts beyond root
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
   ;; state 1 of 1 — ∅, root itself · minimal
   (model (is-a Alice Person) (is-a Bob Person) (is-a Carol Person)
          (is-a Person T) (likes Alice Bob))
-  ;; 64 654 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
+  ;; 65 298 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (unknown-feeling ?a ?b)
-  over              the 64 655 members met — 64 655 states → 43 projection classes  (a lower bound)
-    class 1 of 43   57 579 states
+  over              the 65 299 members met — 65 299 states → 1 projection class  (a lower bound)
+    class 1 of 1    65 299 states
                       ?a = Bob · ?b = Alice
                       ?a = Bob · ?b = Carol
                       ?a = Carol · ?b = Alice
                       ?a = Carol · ?b = Bob
-    class 2 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Bob · ?b = explicitly-dislikes
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = Carol · ?b = explicitly-dislikes
-    class 3 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Bob · ?b = explicitly-dislikes
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Alice
-    class 4 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Bob · ?b = explicitly-dislikes
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Bob
-    class 5 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Bob · ?b = explicitly-dislikes
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Carol
-    class 6 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = Carol · ?b = explicitly-dislikes
-                      ?a = explicitly-dislikes · ?b = Alice
-    class 7 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = Carol · ?b = explicitly-dislikes
-                      ?a = explicitly-dislikes · ?b = Bob
-    class 8 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = Carol · ?b = explicitly-dislikes
-                      ?a = explicitly-dislikes · ?b = Carol
-    class 9 of 43   1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Alice
-                      ?a = explicitly-dislikes · ?b = Bob
-    class 10 of 43  1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Alice
-                      ?a = explicitly-dislikes · ?b = Carol
-    class 11 of 43  1 state
-                      ?a = Alice · ?b = explicitly-dislikes
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Bob
-                      ?a = explicitly-dislikes · ?b = Carol
-    class 12 of 43  1 state
-                      ?a = Bob · ?b = Alice
-                      ?a = Bob · ?b = Carol
-                      ?a = Bob · ?b = explicitly-dislikes
-                      ?a = Carol · ?b = Alice
-                      ?a = Carol · ?b = Bob
-                      ?a = Carol · ?b = explicitly-dislikes
-                      ?a = explicitly-dislikes · ?b = Alice
-                    … 31 more classes: --dump-answer DIR writes them to DIR/answer.txt
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: note: examples/features/01_not_and_absent.ein: partial — the question needs 2^35 saturations, past --region-limit 16
+stderr: note: examples/features/01_not_and_absent.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
 ```

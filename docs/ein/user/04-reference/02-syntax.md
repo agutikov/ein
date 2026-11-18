@@ -611,10 +611,11 @@ has one lattice and one answer, and every query asks about it. What each list do
     of the program; an argument at any other parameter is any object, and is not checked
     ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)).
   - `:hypothesis-relations` and `:no-hypothesis`: every name is a relation of the program. `()` names none.
-  - **A relation of the program** is an atom the program writes as a relation outside the three lists: one it declares
-    or states a fact of, `eq` and `neq`, the relation of a form in a rule, an hrule or a query's `:goal`, or
-    one it passes where a relation is expected, `(bijective color-loc)`. A relation of which only a rule's `:assert`
-    derives facts is one.
+  - **A relation of the program** is an atom the program writes first in a tuple outside the three lists
+    ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)): one it
+    declares or states a fact of, `eq` and `neq`, the relation of a fact that is an argument or of a form in a rule,
+    an hrule or a query's `:goal`, or one it passes where a relation is expected, `(bijective color-loc)`. A relation
+    of which only a rule's `:assert` derives facts is one.
 
 #### The expected region — `(solve … :expect …)`
 
@@ -677,9 +678,12 @@ command:
   ([Q-M1f.118](../../../decisions/language/Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md)).
 - **A goal asks about relations of the program**
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)). The relation of
-  every pattern it writes, at any depth, under `(absent …)` and `(not …)` too, is one the program declares, states a
-  fact of, writes as the relation of a fact that is an argument, writes in a rule or an hrule, or one a `(solve :hrules …)` activator has its hrule propose; `eq`, `neq` and
-  `relation` are every program's, and no theory's relation is: `is-a` is one where the program writes it
+  every pattern it writes, at any depth, under `(absent …)` and `(not …)` too, is an atom the program writes first in a
+  tuple ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)), one
+  it declares, states a fact of, writes as the relation of a fact that is an argument, writes in a rule or an hrule,
+  or passes by an activator where a relation's name is held, `(symmetric next-to)`; or one a `(solve :hrules …)`
+  activator has its hrule propose; `eq`, `neq` and `relation` are every program's, and no theory's relation is:
+  `is-a` is one where the program writes it
   ([Q-M1f.436](../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)). A goal over any other name, `(payed ?g)` for `paid`, is refused at the
   pattern: no state holds a fact of it, so the goal would have no row, and under `(absent …)` would hold of everything.
   A claim's relations are held to the same list, so a claim may list a fact only a rule's `:assert` derives.

@@ -524,6 +524,21 @@ fn a_goal_over_a_relation_of_the_program_loads() {
          (query :goal (injective ?R))\n"
             .to_string(),
     ));
+    // A relation written only as the relation of a fact that is an argument,
+    // and one only an activator gives a parameter that heads a conclusion:
+    // each is an atom the program writes first in a tuple (Q-M1f.522,
+    // Q-M1f.119).
+    programs.push((
+        "a-facts-argument".to_string(),
+        format!("{HEAD}{NO_H}(claims Carol (owns Bob Dog))\n(query :goal (owns ?a ?b))\n"),
+    ));
+    programs.push((
+        "passed-to-an-activator".to_string(),
+        format!(
+            "{HEAD}{NO_H}(rule tag (?R) :match (paid ?x) :assert (?R ?x) :why \"{{?x}} is {{?R}}\")\n\
+             (tag happy)\n(query :goal (happy ?x))\n"
+        ),
+    ));
     programs.push((
         "an-unused-macro".to_string(),
         format!(

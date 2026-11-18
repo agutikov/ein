@@ -88,14 +88,6 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
         "outside",
         ein_render::dump::region::outside_json(&stats.outside),
     ));
-    // A relation's name the blind enumerator bound as an object: only where
-    // it bound one, so every other program's block is what it was.
-    if !stats.relation_names.is_empty() {
-        hypgen.push((
-            "relation_names_as_objects",
-            ein_render::dump::region::relation_names_json(&stats.relation_names),
-        ));
-    }
     Json::obj(vec![
         ("facts", Json::int(kb.n_facts() as i64)),
         (

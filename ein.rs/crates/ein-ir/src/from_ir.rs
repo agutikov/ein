@@ -366,14 +366,19 @@ pub fn load_query_by(
     kb.program_mut().solve = solve_blocks.first().map(|&form| Solve {
         kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
     });
-    // The relations of the program, as it writes them outside its goals and
-    // its `(solve …)` lists (Q-M1f.114): what a claim may list and a goal may
-    // ask about. A program already refused
-    // is not read for them, since a rule the loader refused may be missing
-    // from the registries they are read off.
-    let relations_of = errors
-        .is_empty()
-        .then(|| program_relations(ast, terms, &kb, &facts, &relation_places));
+    // The relations of the program, every atom it writes first in a tuple
+    // outside its goals and its `(solve …)` lists (Q-M1f.522, Q-M1f.114):
+    // the registry takes them, and they are what a claim may list and a goal
+    // may ask about. A program already refused is not read for them, since a
+    // rule the loader refused may be missing from the registries they are
+    // read off.
+    let relations_of = if errors.is_empty() {
+        let written = relations_written(ast, terms, &kb, &facts, &relation_places);
+        register_relations(terms, &mut kb, &written)?;
+        Some(program_relations(&written))
+    } else {
+        None
+    };
     // What a state can hold a fact of: those, and the relations a
     // `(solve :hrules …)` activator has its hrule propose.
     let holdable = relations_of.as_ref().map(|known| {
@@ -643,36 +648,6 @@ struct RelationPlaces {
     passed: BTreeSet<String>,
 }
 
-/// **A `(solve …)` list names what the program has**.
-///
-/// The three lists choose the candidates, so a name in one that matches
-/// nothing would move H, and R with it, in silence: `:hrules (gues …)` beside
-/// an hrule `guess` would propose nothing, an activator `(att Color House)`
-/// facts of a relation `att` nothing else names, and `:no-hypothesis (like)`
-/// would restrict nothing. Each is refused here, one line per name, placed at
-/// the name:
-///
-/// - **`:hrules`**: the list's first name, and every bare name after it, is
-///   an hrule the program declares; an activator gives its hrule as many
-///   arguments as the hrule has parameters; and an activator's argument at a
-///   parameter that names a relation is a relation of the program.
-/// - **`:hypothesis-relations`**, **`:no-hypothesis`**: every name is a
-///   relation of the program.
-///
-/// **A relation of the program** is a name the program writes as a relation
-/// outside the `(solve …)` lists: one it declares or states a fact of,
-/// `is-a`, the relation of any form in a rule's, an hrule's or an
-/// obligation's `:match` or `:assert`, of a query's `:goal` or of a fact's
-/// argument, and a name a fact or a conclusion passes where a relation's name
-/// is held, `(bijective color-loc)`. So a relation only a rule's `:assert`
-/// derives is one, where the claim check ([`validate_solve`]) refuses it. It
-/// is not *a relation something makes*: an activator's hrule makes the
-/// relation it is given, `att` as well as `at`, so what tells a misspelt name
-/// is that the program writes it nowhere else (Q-M1f.114).
-///
-/// An activator's argument at a parameter that names no relation is a value,
-/// a type or an object, and is not checked: `(guess (at Colour House))`
-/// loads, and proposes nothing.
 /// The relation of every form at or under `node`, where it is a name.
 fn relation_heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
     match ast.node(node) {
@@ -693,18 +668,19 @@ fn relation_heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
 const CLAIM_RELATION: &str = "a relation of the program is one it declares, states a fact of, or \
                               writes in a rule or an hrule";
 
-/// **The relations of the program**, as it writes them outside its goals and
-/// its `(solve …)` lists (Q-M1f.114), which a goal and a claim are held to: a
-/// relation it declares or states a fact of,
-/// `eq` and `neq`, the relation of any form at any depth in a rule's,
-/// an hrule's or an obligation's `:match` or `:assert`, as expanded, or in a
-/// fact, a name a fact or a conclusion passes where a relation's name is held
-/// (`places.passed`). So a relation only a rule's `:assert` derives is one.
+/// **The atoms the program writes first in a tuple** (Q-M1f.522), outside its
+/// goals and its `(solve …)` lists (Q-M1f.114): the relation of every fact it
+/// states and of every fact inside one, at any depth; of every form at any
+/// depth in a rule's, an hrule's or an obligation's `:match` or `:assert`, as
+/// expanded; every relation it declares; and every name a fact or a conclusion
+/// passes where a relation's name is held (`places.passed`), the relation an
+/// activator gives a parameter that heads a form, `happy` in `(tag happy)`.
 ///
-/// A goal's own relations are not among them: a goal reads, and a relation
-/// only a goal names is one no state holds a fact of. [`refuse_solve_names`]
-/// adds them for its lists (Q-M1f.114).
-fn program_relations(
+/// The kernel's own words are among them where the program writes them, `not`
+/// or `__closed__`: a claim lists a state's `(__closed__ R)` as it lists any
+/// fact. [`register_relations`] takes the program's relations from it, and
+/// [`program_relations`] the list a goal and a claim are held to.
+fn relations_written(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
@@ -712,12 +688,11 @@ fn program_relations(
     places: &RelationPlaces,
 ) -> BTreeSet<String> {
     let program = kb.program();
-    let mut known: BTreeSet<String> = places.passed.clone();
-    // The two relations of equality, the kernel's computed ones, are every
-    // program's; no theory's relation is.
-    known.extend(["eq", "neq"].map(str::to_string));
-    for (name, _) in program.relations.iter() {
-        known.insert(terms.sym(name).to_string());
+    let mut written: BTreeSet<String> = places.passed.clone();
+    for (name, relation) in program.relations.iter() {
+        if relation.declared {
+            written.insert(terms.sym(name).to_string());
+        }
     }
     for registry in [&program.rules, &program.hrules, &program.obligations] {
         for (_, rule) in registry.iter() {
@@ -725,13 +700,60 @@ fn program_relations(
                 .into_iter()
                 .flatten()
             {
-                relation_heads(ast, NodeId(pat.expr.0), &mut known);
+                relation_heads(ast, NodeId(pat.expr.0), &mut written);
             }
         }
     }
     for &f in facts {
-        relation_heads(ast, f, &mut known);
+        relation_heads(ast, f, &mut written);
     }
+    written
+}
+
+/// **The program's relations, registered** (Q-M1f.522): every atom the program
+/// writes first in a tuple ([`relations_written`]) that the registry does not
+/// hold yet joins it as a relation no declaration made, in the order of its
+/// text, so that a relation is one whether a fact, a fact inside one, a rule
+/// or an activator writes it, and the blind enumerator takes none of them for
+/// an object. A word of the kernel's, `not`, `__closed__` or `relation`, is
+/// none ([`ein_core::terms::heads_a_relation`]).
+fn register_relations(
+    terms: &mut Terms,
+    kb: &mut Kb,
+    written: &BTreeSet<String>,
+) -> Result<(), Overflow> {
+    for name in written {
+        if !ein_core::terms::heads_a_relation(name) {
+            continue;
+        }
+        let name = terms.intern_text(name)?;
+        if !kb.program().relations.contains(name) {
+            kb.program_mut().add_relation(Relation {
+                name,
+                signature: Box::new([]),
+                declared: false,
+                why: None,
+                loc: None,
+            });
+        }
+    }
+    Ok(())
+}
+
+/// **The relations a goal and a claim are held to**: every atom the program
+/// writes first in a tuple ([`relations_written`]), its relations and the
+/// kernel's words it writes, and `eq` and `neq`, the kernel's computed
+/// relations, every program's. So a relation only a rule's `:assert` derives
+/// is one, and so is one written only inside a fact.
+///
+/// A goal's own relations are not among them: a goal reads, and a relation
+/// only a goal names is one no state holds a fact of. [`refuse_solve_names`]
+/// adds them for its lists (Q-M1f.114).
+fn program_relations(written: &BTreeSet<String>) -> BTreeSet<String> {
+    let mut known = written.clone();
+    // The two relations of equality, the kernel's computed ones, are every
+    // program's; no theory's relation is.
+    known.extend(["eq", "neq"].map(str::to_string));
     known
 }
 
@@ -767,6 +789,36 @@ fn activator_relations(ast: &Ast, kb: &Kb, places: &RelationPlaces) -> BTreeSet<
     known
 }
 
+/// **A `(solve …)` list names what the program has**.
+///
+/// The three lists choose the candidates, so a name in one that matches
+/// nothing would move H, and R with it, in silence: `:hrules (gues …)` beside
+/// an hrule `guess` would propose nothing, an activator `(att Color House)`
+/// facts of a relation `att` nothing else names, and `:no-hypothesis (like)`
+/// would restrict nothing. Each is refused here, one line per name, placed at
+/// the name:
+///
+/// - **`:hrules`**: the list's first name, and every bare name after it, is
+///   an hrule the program declares; an activator gives its hrule as many
+///   arguments as the hrule has parameters; and an activator's argument at a
+///   parameter that names a relation is a relation of the program.
+/// - **`:hypothesis-relations`**, **`:no-hypothesis`**: every name is a
+///   relation of the program.
+///
+/// **A relation of the program** is an atom the program writes first in a
+/// tuple outside the `(solve …)` lists ([`relations_written`], Q-M1f.522):
+/// the relation of a fact it states and of a fact inside one, of any form in
+/// a rule's, an hrule's or an obligation's `:match` or `:assert`, one it
+/// declares, and a name a fact or a conclusion passes where a relation's name
+/// is held, `(bijective color-loc)`; and here, for the lists, the relation of
+/// any form in a query's `:goal`. So a relation only a rule's `:assert`
+/// derives is one. It is not *a relation something makes*: an activator's
+/// hrule makes the relation it is given, `att` as well as `at`, so what tells
+/// a misspelt name is that the program writes it nowhere else (Q-M1f.114).
+///
+/// An activator's argument at a parameter that names no relation is a value,
+/// a type or an object, and is not checked: `(guess (at Colour House))`
+/// loads, and proposes nothing.
 fn refuse_solve_names(
     ast: &Ast,
     terms: &Terms,
@@ -5053,11 +5105,14 @@ fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Resul
         }
     }
 
-    // Undeclared relations are auto-created open-world, unless the head is a
-    // built-in predicate: predicates dispatch at the matcher level and are not
-    // relations, so vivifying one would put a phantom entry in the registry.
+    // An undeclared relation is registered where a fact of it is stated,
+    // unless the head is a word of the kernel's, which it reads as a form of
+    // its language and never as a relation: a stored `(not X)` is of X's
+    // relation, and `eq` and `neq` are computed (Q-M1f.522). The relations
+    // written inside a fact or in a rule join after the rules are read
+    // (`register_relations`).
     let head = terms.intern_text(&head_name)?;
-    if !kb.program().relations.contains(head) && !is_predicate(&head_name) {
+    if !kb.program().relations.contains(head) && ein_core::terms::heads_a_relation(&head_name) {
         kb.program_mut().add_relation(Relation {
             name: head,
             signature: Box::new([]),
@@ -6378,6 +6433,41 @@ mod tests {
             !kb.program().relations.contains(eq),
             "predicates dispatch at the matcher, and a phantom registry entry \
              would make one look like a relation"
+        );
+    }
+
+    /// **A relation is any atom the program writes first in a tuple**
+    /// (Q-M1f.522), and the registry holds each, declared or not: a stated
+    /// fact's (`think`, the activator `unpack`), a fact's inside another (`=`
+    /// and `+`, and `p` under a stored negation), a rule's pattern's at any
+    /// depth (`said`, `liquid`), and the relation an activator gives a
+    /// parameter that heads a form (`happy`). The kernel's words are none:
+    /// `not`, `__closed__`, `and`, `false`.
+    #[test]
+    fn the_registry_holds_every_atom_first_in_a_tuple() {
+        let (terms, kb) = ok(
+            "(think Bob (= 7 (+ 3 4)))\n(not (p a))\n(__closed__ think)\n\
+             (rule unpack (?R) :match (think ?p (?R ?a ?b)) :assert (?R ?a ?b) :why \"{?p} thinks it\")\n\
+             (unpack =)\n\
+             (rule tag (?R) :match (think ?p ?f) :assert (?R ?p) :why \"{?p} is {?R}\")\n\
+             (tag happy)\n\
+             (rule pour () :match (and (said ?x (liquid ?x)) (think ?x ?f)) \
+             :assert (and (liquid ?x) (not (q ?x))) :why \"{?x} is liquid\")\n\
+             (rule never () :match (think ?x ?f) :assert (false) :why \"no one thinks\")",
+        );
+        let open_world: Vec<&str> = kb
+            .program()
+            .relations
+            .iter()
+            .filter(|(_, r)| !r.declared)
+            .map(|(n, _)| terms.sym(n))
+            .collect();
+        assert_eq!(
+            open_world,
+            [
+                "think", "unpack", "tag", "+", "=", "happy", "liquid", "p", "q", "said"
+            ],
+            "the stated facts' relations in their order, then every other in the order of its text"
         );
     }
 
