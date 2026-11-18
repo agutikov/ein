@@ -54,4 +54,4 @@ Planned from task 1 and the user's look; not started without the user's word.
 
 ## Record
 
-Not started.
+- Task 1 done, `11a113cf`, waiting for the user's look: [`s1f.23.5_examples.md`](s1f.23.5_examples.md).
