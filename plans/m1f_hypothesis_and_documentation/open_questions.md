@@ -395,6 +395,14 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.464](#q-m1f464--the-review-run-pages-cross-check-1) | the review run page's cross-check 1 | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), the `ein test` run's claims against the listed states, by count |
 | [Q-M1f.465](#q-m1f465--the-diffs-module) | the diff's module | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `claim_diff.rs` |
 | [Q-M1f.466](#q-m1f466----diff-models-removed-or-retired) | `--diff-models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
+| [Q-M1f.467](#q-m1f467--a-commands-output-on-a-page-canonical-or-folded) | A command's output on a page: canonical or folded | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), on a page, the binary's output for the command as the page writes it, canonical by default; folded where the page's point is the compact view, and the page then writes `--fold` (in `reasoning/`, says that it folds) |
+| [Q-M1f.468](#q-m1f468--a-pages-kb-drawing-the-whole-view-or-a-cut) | A page's KB drawing: the whole view or a cut | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), a KB drawing may be a cut of the view: the facts of the relations the section is about and every fact they point at, a framed fact kept only where a kept fact points at it, the page saying what is left out; Q-M1f.368's *kept as the file the command wrote* read of a whole view |
+| [Q-M1f.469](#q-m1f469--how-a-derivations-drawing-marks-a-terminal-and-the-core) | How a derivation's drawing marks a terminal and the core | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), a terminal double-bordered, the core red, where both were filled before (no octagon is filled, Q-M1f.398) |
+| [Q-M1f.470](#q-m1f470--which-hand-drawings-the-canonical-form-leaves-as-they-are) | Which hand drawings the canonical form leaves as they are | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), as Q-M1f.430 for the views, extended to the pages: region, lattice, cube and h-space drawings, states and constructions, dependency graphs, schematics and flowcharts, the design diagrams: none of them a drawing of facts |
+| [Q-M1f.471](#q-m1f471--01-object-orders-drawing) | `01-object-order`'s drawing | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), six unlabelled octagons f1 to f6 in the order's chain, their arrows left out, the page giving each fact in TeX |
+| [Q-M1f.472](#q-m1f472--names-of-the-drawings-that-changed-form) | Names of the drawings that changed form | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), `levi` → `canonical`, `compact` → `folded`; `01-is-a-convention` dropped, its paragraph rewritten; the two `12-*-form` drawings merged into `12-query-view` |
+| [Q-M1f.473](#q-m1f473--programs-a-page-draws-that-no-file-holds) | Programs a page draws that no file holds | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), reconstructed for the drawing from the page's text: the hrule `guess-drink`, the written-out `bag-is-ready` |
+| [Q-M1f.474](#q-m1f474--an-arrow-in-a-hand-schematic-that-is-no-arrow-of-the-graph) | An arrow in a hand schematic that is no arrow of the graph | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), allowed where its page says so (`03-bijective-family`) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8830,3 +8838,75 @@ solve's summary, under `--diff-models`, with the main run's.
 - **(b)** a retired entry, refused with what answers instead, `ein test --diff`.
 
 **Default taken: (a).**
+
+### Q-M1f.467 — A command's output on a page: canonical or folded
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** on a page, the binary's output for the command as the page writes it, canonical by default; folded where the page's point is the compact view, and the page then writes `--fold` (in `reasoning/`, says that it folds). **Default.**
+- **(b)** the page shows the canonical form everywhere.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.468 — A page's KB drawing: the whole view or a cut
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** a KB drawing may be a cut of the view: the facts of the relations the section is about and every fact they point at, a framed fact kept only where a kept fact points at it, the page saying what is left out; Q-M1f.368's *kept as the file the command wrote* read of a whole view. **Default.**
+- **(b)** only whole views, however large.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.469 — How a derivation's drawing marks a terminal and the core
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** a terminal double-bordered, the core red, where both were filled before (no octagon is filled, Q-M1f.398). **Default.**
+- **(b)** another mark, or none.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.470 — Which hand drawings the canonical form leaves as they are
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** as Q-M1f.430 for the views, extended to the pages: region, lattice, cube and h-space drawings, states and constructions, dependency graphs, schematics and flowcharts, the design diagrams: none of them a drawing of facts. **Default.**
+- **(b)** each drawn with its facts in the canonical form.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.471 — `01-object-order`'s drawing
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** six unlabelled octagons f1 to f6 in the order's chain, their arrows left out, the page giving each fact in TeX. **Default.**
+- **(b)** each fact with its arrows.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.472 — Names of the drawings that changed form
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** `levi` → `canonical`, `compact` → `folded`; `01-is-a-convention` dropped, its paragraph rewritten; the two `12-*-form` drawings merged into `12-query-view`. **Default.**
+- **(b)** the old names kept.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.473 — Programs a page draws that no file holds
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** reconstructed for the drawing from the page's text: the hrule `guess-drink`, the written-out `bag-is-ready`. **Default.**
+- **(b)** a program file added for each, or the drawing dropped.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.474 — An arrow in a hand schematic that is no arrow of the graph
+
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+
+- **(a)** allowed where its page says so (`03-bijective-family`). **Default.**
+- **(b)** never.
+
+**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
