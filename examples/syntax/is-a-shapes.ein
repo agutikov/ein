@@ -1,7 +1,8 @@
 ;;; Syntax probe — is-a-shapes.
 ;;;
-;;; The kernel `is-a` head with each argument kind it can hold in the subject
-;;; position: a name, and digits, which are a name (the name rule).
+;;; `is-a`, a relation like any other, which the kernel does not read
+;;; (Q-M1f.436), with each argument kind its first argument can hold: a name,
+;;; and digits, which are a name (the name rule).
 ;;; The wildcards `_` and `?_` are refused at the parse (Q-M1e2.22), and the
 ;;; fixture holds neither.
 ;;;

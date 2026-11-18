@@ -1,7 +1,8 @@
 ;;; Syntax probe — unary-and-nary.
 ;;;
-;;; Arity 1 and arity 4, each with and without provenance, so the
-;;; renderers' unary special case and their n-ary fallback both appear.
+;;; Arity 1 and arity 4, each with and without provenance: a fact of two
+;;; arrows and one of five, each drawn as any fact is, an octagon with an
+;;; arrow at its relation and one at each argument (Q-M1f.419).
 ;;; A derived fact's `:using` lists its premises, each a fact:
 ;;; `:using ((u a))`. A list of names, `:using (x)`, would name no premise,
 ;;; a name being no fact, and the grammar refuses it at the parse.

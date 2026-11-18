@@ -9,10 +9,11 @@
 //! never reaches the *label*, so `?a` appears as `?a` in both panels without
 //! the two copies collapsing; guard predicates drawn as dotted undirected
 //! `≠` / `=` links rather than as relation arrows, because they are computed
-//! and not data; negation in red with a `¬` prefix; and a NAF `absent` guard
-//! as its own `cluster_absent`, with the guard's binder-local variables
-//! declared *inside* it and shared variables left outside — so "no such match
-//! exists" survives instead of flattening into overlay arrows.
+//! and not data; a stored negation as a red pattern of `not` (below); and a
+//! NAF `absent` guard as its own `cluster_absent`, with the guard's
+//! binder-local variables declared *inside* it and shared variables left
+//! outside — so "no such match exists" survives instead of flattening into
+//! overlay arrows.
 //!
 //! **A pattern is drawn as a fact is** (Q-M1f.419): an octagon with no name
 //! in it, its first arrow, numbered `1`, at its relation, a box, or the

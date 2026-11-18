@@ -1,11 +1,12 @@
 ;;; Syntax probe — equality.
 ;;;
-;;; `=` — the equality *fact*: a reserved head whose arity is pinned at two
-;;; ([02-syntax.md § Facts](../../docs/ein/user/04-reference/02-syntax.md)),
-;;; so `(= a b c)` is a parse error while `(= a b :k 1)` is not. Both argument
-;;; shapes are here — an atom pair, and a nested fact on the left — because
-;;; that is what the renderer keys on: an arity-2 `=` draws a `doublecircle`
-;;; equality-class node with an edge to each side, never an arrow between them.
+;;; `=` — the equality *fact*: `=` is a name like any other, and `(= a b)` a
+;;; fact of the relation `=`, as `(= a b c)` would be one
+;;; ([02-syntax.md § `=` is a fact head](../../docs/ein/user/04-reference/02-syntax.md)).
+;;; Both argument shapes are here — an atom pair, and a nested fact on the
+;;; left — and each is drawn as any fact is (Q-M1f.421): an octagon, its arrow
+;;; `1` at the atom `=` and `2`, `3` at its arguments, the nested fact its own
+;;; octagon under arrow `2`, in the frame of its context, since no state holds it.
 ;;;
 ;;; It has **no engine semantics**. The loader ingests it as an ordinary
 ;;; fact and auto-vivifies `=` as an open-world relation; nothing in `ein-infer`
