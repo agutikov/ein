@@ -11,9 +11,9 @@ digraph rule_rat_check_parts_lhs_rhs {
       "(rat ?i ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_rat-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_rat-check_L" -> "rat-check_L" [xlabel="1", color="#e377c2"];
+    "rat-check_L" -> "h1_rat-check_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_rat-check_L" -> "(rat ?i ?d)_L" [xlabel="2", color="#e377c2"];
-    "(rat ?i ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "rat_L" -> "(rat ?i ?d)_L" [xlabel="1", dir=back, color="#d62728"];
     "(rat ?i ?d)_L" -> "?i_L" [xlabel="2", color="#d62728"];
     "(rat ?i ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
   }
@@ -23,10 +23,10 @@ digraph rule_rat_check_parts_lhs_rhs {
     "check_R" [label="check", shape=box];
     "?d_R" [label="?d", shape=diamond];
     "h2_int-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_int-check_R" -> "int-check_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "int-check_R" -> "h2_int-check_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_int-check_R" -> "?i_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h3_check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h3_check_R" -> "check_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "check_R" -> "h3_check_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h3_check_R" -> "?d_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h3_check_R" -> "?d_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

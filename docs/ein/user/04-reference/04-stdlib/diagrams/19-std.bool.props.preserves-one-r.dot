@@ -6,7 +6,7 @@ digraph rule_preserves_one_r_lhs_rhs {
     "?f_L" [label="?f", shape=diamond];
     "1_L" [label="1", shape=box];
     "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h1_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h1_gate2_L" -> "1_L" [xlabel="3", color="#7f7f7f"];
     "h1_gate2_L" -> "1_L" [xlabel="4", color="#7f7f7f"];
@@ -16,7 +16,7 @@ digraph rule_preserves_one_r_lhs_rhs {
     "preserves-one_R" [label="preserves-one", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h2_preserves-one_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_preserves-one_R" -> "preserves-one_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "preserves-one_R" -> "h2_preserves-one_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_preserves-one_R" -> "?f_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

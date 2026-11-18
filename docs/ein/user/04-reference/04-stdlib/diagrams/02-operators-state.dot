@@ -1,5 +1,5 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   "Ann" -> "Person" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];

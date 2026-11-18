@@ -8,7 +8,7 @@ digraph rule_sub_end_lhs_rhs {
     "0_L" [label="0", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
+    "?SUB-WALK_L" -> "h1_SUB-WALK_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_SUB-WALK_L" -> "z_L" [xlabel="3", color="#d62728"];
     "h1_SUB-WALK_L" -> "z_L" [xlabel="4", color="#d62728"];
@@ -20,7 +20,7 @@ digraph rule_sub_end_lhs_rhs {
     "?k_R" [label="?k", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
     "h2_STRIP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_STRIP_R" -> "?STRIP_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?STRIP_R" -> "h2_STRIP_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_STRIP_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h2_STRIP_R" -> "?acc_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

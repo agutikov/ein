@@ -14,10 +14,10 @@ digraph rule_rat_lowest_numerator_lhs_rhs {
       "(rat-g ?k ?s ?a ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_gcd-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gcd-done_L" -> "gcd-done_L" [xlabel="1", color="#7f7f7f"];
+    "gcd-done_L" -> "h1_gcd-done_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gcd-done_L" -> "(rat-g ?k ?s ?a ?d)_L" [xlabel="2", color="#7f7f7f"];
     "h1_gcd-done_L" -> "?g_L" [xlabel="3", color="#7f7f7f"];
-    "(rat-g ?k ?s ?a ?d)_L" -> "rat-g_L" [xlabel="1", color="#1f77b4"];
+    "rat-g_L" -> "(rat-g ?k ?s ?a ?d)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(rat-g ?k ?s ?a ?d)_L" -> "?k_L" [xlabel="2", color="#1f77b4"];
     "(rat-g ?k ?s ?a ?d)_L" -> "?s_L" [xlabel="3", color="#1f77b4"];
     "(rat-g ?k ?s ?a ?d)_L" -> "?a_L" [xlabel="4", color="#1f77b4"];
@@ -36,11 +36,11 @@ digraph rule_rat_lowest_numerator_lhs_rhs {
       "(rat-q-num ?k ?s ?d ?g)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "div-call_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "(rat-q-num ?k ?s ?d ?g)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?g_R" [xlabel="4", color="#bcbd22", style=dashed];
-    "(rat-q-num ?k ?s ?d ?g)_R" -> "rat-q-num_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "rat-q-num_R" -> "(rat-q-num ?k ?s ?d ?g)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(rat-q-num ?k ?s ?d ?g)_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(rat-q-num ?k ?s ?d ?g)_R" -> "?s_R" [xlabel="3", color="#bcbd22", style=dashed];
     "(rat-q-num ?k ?s ?d ?g)_R" -> "?d_R" [xlabel="4", color="#bcbd22", style=dashed];

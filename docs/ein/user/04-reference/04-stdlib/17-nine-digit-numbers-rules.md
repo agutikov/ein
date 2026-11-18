@@ -392,7 +392,7 @@ drawing has more nodes than a page can show, and its folded one does not.
   :why    "bring down {?n8}: the number is less than the divisor, since taking the divisor from it borrows out of the top. The quotient's next digit is 0")
 ```
 
-![The rule div9-step-0 of std.math.num9, as the engine draws it folded, each pattern of three arrows one labelled arrow](diagrams/17-std.math.num9.div9-step-0.svg)
+![The rule div9-step-0 of std.math.num9, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/17-std.math.num9.div9-step-0.svg)
 <!-- /rule -->
 
 #### `div9-step-1`
@@ -1047,4 +1047,6 @@ drawing is not shown.
                (num9-rule division-by-zero-is-false))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
+
+![The rule arith9 of std.math.num9, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/17-std.math.num9.arith9.svg)
 <!-- /rule -->

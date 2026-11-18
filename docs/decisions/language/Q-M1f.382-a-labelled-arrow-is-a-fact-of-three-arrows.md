@@ -9,8 +9,10 @@ arrows meet at one atom ([Q-M1f.380](Q-M1f.380-an-objects-identity-is-its-name-o
 
 Folded, the same facts are as many arrows carrying one word, and the relation is no node. So the drawing has no
 place for a fact about the relation, a declaration or a property, which points at that node, nor for a fact that
-points at a fact, which keeps its node: a fact that a drawn fact points at is never folded. Nothing but a fact of
-three arrows is folded: a fact of two arrows, one argument, stays its node, and so does a fact of four or more. No
+points at a fact, which keeps its node: a fact that a drawn fact points at is never folded. A fact of two arrows, a
+relation and one argument, is folded the same way into a loop on its argument, labelled with the relation's name
+([Q-M1f.425](../cli/Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md)); a fact of one arrow, or of four
+or more, stays its node. No
 page defines a knowledge base, a fact or a relation by the fold: a drawing with labelled arrows says that it is
 one, or is a view drawn with `--fold`, whose legend states the convention.
 

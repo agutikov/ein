@@ -10,68 +10,68 @@
 <!-- Norwegian -->
 <g id="node1" class="node">
 <title>Norwegian</title>
-<polygon fill="none" stroke="black" points="117.62,-36 28.88,-36 28.88,0 117.62,0 117.62,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="73.25" y="-14.45" font-family="Inter" font-size="14.00">Norwegian</text>
+<polygon fill="none" stroke="black" points="117.62,-264 28.88,-264 28.88,-228 117.62,-228 117.62,-264"/>
+<text xml:space="preserve" text-anchor="middle" x="73.25" y="-242.45" font-family="Inter" font-size="14.00">Norwegian</text>
 </g>
 <!-- Person -->
 <g id="node2" class="node">
 <title>Person</title>
-<polygon fill="none" stroke="black" points="62.5,-112 0,-112 0,-76 62.5,-76 62.5,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="31.25" y="-90.45" font-family="Inter" font-size="14.00">Person</text>
+<polygon fill="none" stroke="black" points="62.5,-188 0,-188 0,-152 62.5,-152 62.5,-188"/>
+<text xml:space="preserve" text-anchor="middle" x="31.25" y="-166.45" font-family="Inter" font-size="14.00">Person</text>
 </g>
 <!-- Norwegian&#45;&gt;Person -->
 <g id="edge1" class="edge">
 <title>Norwegian&#45;&gt;Person</title>
-<path fill="none" stroke="#7f7f7f" d="M63.51,-36.16C58.51,-44.97 52.3,-55.91 46.67,-65.83"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="43.72,-63.93 41.83,-74.36 49.81,-67.39 43.72,-63.93"/>
-<text xml:space="preserve" text-anchor="middle" x="39.96" y="-42.55" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M63.51,-227.84C58.51,-219.03 52.3,-208.09 46.67,-198.17"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="49.81,-196.61 41.83,-189.64 43.72,-200.07 49.81,-196.61"/>
+<text xml:space="preserve" text-anchor="middle" x="39.96" y="-212.1" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- House&#45;1 -->
 <g id="node3" class="node">
 <title>House&#45;1</title>
-<polygon fill="none" stroke="black" points="152,-112 80.5,-112 80.5,-76 152,-76 152,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="116.25" y="-90.45" font-family="Inter" font-size="14.00">House&#45;1</text>
+<polygon fill="none" stroke="black" points="152,-188 80.5,-188 80.5,-152 152,-152 152,-188"/>
+<text xml:space="preserve" text-anchor="middle" x="116.25" y="-166.45" font-family="Inter" font-size="14.00">House&#45;1</text>
 </g>
 <!-- Norwegian&#45;&gt;House&#45;1 -->
 <g id="edge4" class="edge">
 <title>Norwegian&#45;&gt;House&#45;1</title>
-<path fill="none" stroke="#9467bd" d="M83.22,-36.16C88.34,-44.97 94.7,-55.91 100.46,-65.83"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="97.37,-67.48 105.42,-74.37 103.42,-63.96 97.37,-67.48"/>
-<text xml:space="preserve" text-anchor="middle" x="69.16" y="-59.8" font-family="Times,serif" font-size="14.00" fill="#9467bd">lives&#45;in</text>
+<path fill="none" stroke="#9467bd" d="M83.22,-227.84C88.34,-219.03 94.7,-208.09 100.46,-198.17"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="103.42,-200.04 105.42,-189.63 97.37,-196.52 103.42,-200.04"/>
+<text xml:space="preserve" text-anchor="middle" x="69.16" y="-194.85" font-family="Times,serif" font-size="14.00" fill="#9467bd">lives&#45;in</text>
 </g>
 <!-- House -->
 <g id="node4" class="node">
 <title>House</title>
-<polygon fill="none" stroke="black" points="145.62,-264 86.88,-264 86.88,-228 145.62,-228 145.62,-264"/>
-<text xml:space="preserve" text-anchor="middle" x="116.25" y="-242.45" font-family="Inter" font-size="14.00">House</text>
+<polygon fill="none" stroke="black" points="145.62,-36 86.88,-36 86.88,0 145.62,0 145.62,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="116.25" y="-14.45" font-family="Inter" font-size="14.00">House</text>
 </g>
 <!-- House&#45;1&#45;&gt;House -->
 <g id="edge2" class="edge">
 <title>House&#45;1&#45;&gt;House</title>
-<path fill="none" stroke="#7f7f7f" d="M111.24,-112.29C108.26,-123.5 104.77,-138.48 103.25,-152 101.46,-167.9 101.46,-172.1 103.25,-188 104.31,-197.4 106.32,-207.5 108.45,-216.56"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="105.05,-217.39 110.88,-226.24 111.84,-215.69 105.05,-217.39"/>
-<text xml:space="preserve" text-anchor="middle" x="89.53" y="-156.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M111.24,-151.71C108.26,-140.5 104.77,-125.52 103.25,-112 101.46,-96.1 101.46,-91.9 103.25,-76 104.31,-66.6 106.32,-56.5 108.45,-47.44"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="111.84,-48.31 110.88,-37.76 105.05,-46.61 111.84,-48.31"/>
+<text xml:space="preserve" text-anchor="middle" x="89.53" y="-97.95" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- House&#45;2 -->
 <g id="node5" class="node">
 <title>House&#45;2</title>
-<polygon fill="none" stroke="black" points="184,-188 112.5,-188 112.5,-152 184,-152 184,-188"/>
-<text xml:space="preserve" text-anchor="middle" x="148.25" y="-166.45" font-family="Inter" font-size="14.00">House&#45;2</text>
+<polygon fill="none" stroke="black" points="184,-112 112.5,-112 112.5,-76 184,-76 184,-112"/>
+<text xml:space="preserve" text-anchor="middle" x="148.25" y="-90.45" font-family="Inter" font-size="14.00">House&#45;2</text>
 </g>
 <!-- House&#45;1&#45;&gt;House&#45;2 -->
 <g id="edge5" class="edge">
 <title>House&#45;1&#45;&gt;House&#45;2</title>
-<path fill="none" stroke="#d62728" d="M123.67,-112.16C127.4,-120.79 132.01,-131.45 136.23,-141.21"/>
-<polygon fill="#d62728" stroke="#d62728" points="132.98,-142.5 140.16,-150.28 139.4,-139.72 132.98,-142.5"/>
-<text xml:space="preserve" text-anchor="middle" x="107.08" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#d62728">next&#45;to</text>
+<path fill="none" stroke="#d62728" d="M123.67,-151.84C127.4,-143.21 132.01,-132.55 136.23,-122.79"/>
+<polygon fill="#d62728" stroke="#d62728" points="139.4,-124.28 140.16,-113.72 132.98,-121.5 139.4,-124.28"/>
+<text xml:space="preserve" text-anchor="middle" x="107.08" y="-136.07" font-family="Times,serif" font-size="14.00" fill="#d62728">next&#45;to</text>
 </g>
 <!-- House&#45;2&#45;&gt;House -->
 <g id="edge3" class="edge">
 <title>House&#45;2&#45;&gt;House</title>
-<path fill="none" stroke="#7f7f7f" d="M140.83,-188.16C137.1,-196.79 132.49,-207.45 128.27,-217.21"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="125.1,-215.72 124.34,-226.28 131.52,-218.5 125.1,-215.72"/>
-<text xml:space="preserve" text-anchor="middle" x="119.92" y="-194.58" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M140.83,-75.84C137.1,-67.21 132.49,-56.55 128.27,-46.79"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="131.52,-45.5 124.34,-37.72 125.1,-48.28 131.52,-45.5"/>
+<text xml:space="preserve" text-anchor="middle" x="119.92" y="-60.07" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 3309d1c31b68398be2f24c30c47d0c10f12c0d4a66b03bc1a9219f188574b144 -->
+<!-- source sha256: 111192f9c2034c237d7f6b22f30678aca4dccdedbfafa8ca6e34e7da5a52d376 -->

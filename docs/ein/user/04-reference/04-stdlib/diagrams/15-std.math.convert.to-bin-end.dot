@@ -7,7 +7,7 @@ digraph rule_to_bin_end_lhs_rhs {
     "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_to-bin-go_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_to-bin-go_L" -> "to-bin-go_L" [xlabel="1", color="#17becf"];
+    "to-bin-go_L" -> "h1_to-bin-go_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_to-bin-go_L" -> "?x_L" [xlabel="2", color="#17becf"];
     "h1_to-bin-go_L" -> "z_L" [xlabel="3", color="#17becf"];
     "h1_to-bin-go_L" -> "?acc_L" [xlabel="4", color="#17becf"];
@@ -22,10 +22,10 @@ digraph rule_to_bin_end_lhs_rhs {
       "(bits ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_bin-strip_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_bin-strip_R" -> "bin-strip_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "bin-strip_R" -> "h2_bin-strip_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_bin-strip_R" -> "(bits ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_bin-strip_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(bits ?x)_R" -> "bits_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "bits_R" -> "(bits ?x)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(bits ?x)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

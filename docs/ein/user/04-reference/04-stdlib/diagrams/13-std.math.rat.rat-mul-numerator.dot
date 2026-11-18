@@ -11,7 +11,7 @@ digraph rule_rat_mul_numerator_lhs_rhs {
     "?m_L" [label="?m", shape=diamond];
     "?e_L" [label="?e", shape=diamond];
     "h1_rat-mul-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_rat-mul-call_L" -> "rat-mul-call_L" [xlabel="1", color="#8c564b"];
+    "rat-mul-call_L" -> "h1_rat-mul-call_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_rat-mul-call_L" -> "?k_L" [xlabel="2", color="#8c564b"];
     "h1_rat-mul-call_L" -> "?p_L" [xlabel="3", color="#8c564b"];
     "h1_rat-mul-call_L" -> "?n_L" [xlabel="4", color="#8c564b"];
@@ -35,13 +35,13 @@ digraph rule_rat_mul_numerator_lhs_rhs {
       "(rat-mul-num ?k ?d ?e)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_int-mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_int-mul-call_R" -> "int-mul-call_R" [xlabel="1", color="#e377c2", style=dashed];
+    "int-mul-call_R" -> "h2_int-mul-call_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_int-mul-call_R" -> "(rat-mul-num ?k ?d ?e)_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_int-mul-call_R" -> "?p_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_int-mul-call_R" -> "?n_R" [xlabel="4", color="#e377c2", style=dashed];
     "h2_int-mul-call_R" -> "?q_R" [xlabel="5", color="#e377c2", style=dashed];
     "h2_int-mul-call_R" -> "?m_R" [xlabel="6", color="#e377c2", style=dashed];
-    "(rat-mul-num ?k ?d ?e)_R" -> "rat-mul-num_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "rat-mul-num_R" -> "(rat-mul-num ?k ?d ?e)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(rat-mul-num ?k ?d ?e)_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(rat-mul-num ?k ?d ?e)_R" -> "?d_R" [xlabel="3", color="#bcbd22", style=dashed];
     "(rat-mul-num ?k ?d ?e)_R" -> "?e_R" [xlabel="4", color="#bcbd22", style=dashed];

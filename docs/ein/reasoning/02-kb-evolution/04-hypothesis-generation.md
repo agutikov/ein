@@ -197,11 +197,11 @@ as a dashed cluster:
 
 ![The rule total-owed: the obligation's trigger, and its witness as a dashed cluster](diagrams/04-rule-total-owed.svg)
 
-It folds each fact pattern of three arrows as the drawing above does. Outside the dashed cluster is the trigger:
+It folds each fact pattern of three arrows as the drawing above does, and each of two into a labelled loop. Outside the dashed cluster is the trigger:
 the octagon of four arrows, the first at $\mathsf{relation}$, declares $r$ with the labels $A$ and $B$, and $x$ is a
 member of $A$. Inside it is the witness: the arrow labelled with the relation, a fact pattern of it, is the witness
-step, and the membership of $y$ in $B$ beside it is the domain. The dashed octagon in the lower panel is the
-verdict, a fact of $\mathsf{open}$ whose second arrow is at the relation whose facts would pay. In formulas, with the rule's two parameters bound by the activator to a relation
+step, and the membership of $y$ in $B$ beside it is the domain. The dashed loop in the lower panel is the
+verdict, a fact of $\mathsf{open}$, on the relation whose facts would pay. In formulas, with the rule's two parameters bound by the activator to a relation
 $r$ and to a membership relation $\operatorname{isa}$:
 
 $$

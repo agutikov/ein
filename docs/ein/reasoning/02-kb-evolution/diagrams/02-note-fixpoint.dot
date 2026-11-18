@@ -1,15 +1,11 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   "1" -> "2" [xlabel="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
   "2" -> "3" [xlabel="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_fd73accba4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_fd73accba4 -> "holds" [xlabel="1", color="#bcbd22", style=solid];
-  f_fd73accba4 -> "1" [xlabel="2", color="#bcbd22", style=solid];
-  f_246eb971c3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_246eb971c3 -> "holds" [xlabel="1", color="#bcbd22", style=solid];
-  f_246eb971c3 -> "3" [xlabel="2", color="#bcbd22", style=solid];
+  "1" -> "1" [xlabel="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "3" -> "3" [xlabel="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "1" -> "1" [xlabel="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
   "2" -> "1" [xlabel="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed];
 }

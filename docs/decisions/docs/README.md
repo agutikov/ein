@@ -27,3 +27,10 @@ how the pages of `docs/ein/` are named and what each is written in. The format a
 - [Q-M1f.396](Q-M1f.396-nested-facts-are-explained-in-sections.md) — Nested facts are explained in sections of the knowledge-base and rules pages
 - [Q-M1f.397](Q-M1f.397-the-reserved-words-are-mathematics.md) — The reserved words are mathematics in the reasoning and the kernel's surface elsewhere
 - [Q-M1f.398](Q-M1f.398-a-fact-in-a-context-only-is-drawn-in-a-frame.md) — A fact in a context only is drawn in a frame named for the context's relation
+- [Q-M1f.434](Q-M1f.434-a-standard-library-rule-is-drawn-canonical-else.md) — A standard library rule is drawn canonical, else folded, else as Ein
+- [Q-M1f.467](Q-M1f.467-a-commands-drawing-on-a-page-is-its-output.md) — A command's drawing on a page is its output, canonical unless the page is about the fold
+- [Q-M1f.468](Q-M1f.468-a-pages-drawing-of-a-knowledge-base-may-be-a-cut.md) — A page's drawing of a knowledge base may be a cut of the view
+- [Q-M1f.469](Q-M1f.469-a-derivations-drawing-on-a-page-marks-its.md) — A derivation's drawing on a page marks its terminals with a double border and its core in red
+- [Q-M1f.470](Q-M1f.470-only-a-knowledge-base-is-drawn-in-the-canonical.md) — Only a knowledge base is drawn in the canonical form
+- [Q-M1f.473](Q-M1f.473-a-program-a-page-draws-and-no-file-holds.md) — A program a page draws and no file holds is drawn from the page's text
+- [Q-M1f.474](Q-M1f.474-a-hand-schematic-may-draw-an-arrow-the-graph.md) — A hand schematic may draw an arrow the graph lacks, a view never

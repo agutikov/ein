@@ -427,7 +427,8 @@ to, and no name a program writes is one
 ## Drawn with labelled arrows
 
 A fact with three arrows, a relation and two arguments, can be drawn as **one arrow**, from the object under its
-second arrow to the object under its third, labelled with the relation's name. Two facts of
+second arrow to the object under its third, labelled with the relation's name; a fact with two arrows, a relation
+and one argument, as **a loop** on the object under its second arrow, labelled the same way. Two facts of
 $\operatorname{left-of}$, as the graph on the left and as labelled arrows on the right:
 
 ![Two facts of left-of as the graph and drawn with labelled arrows](diagrams/01-two-forms.svg)
@@ -443,10 +444,11 @@ a reader, and never the representation: what it draws stands for the graph, by t
 | in the graph | drawn |
 |---|---|
 | a held fact with three arrows that no fact points at: its node, its arrows, and its relation's atom as far as this fact goes | **one arrow** from the object under the second arrow to the object under the third, labelled with the relation's name |
-| a held fact with any other count of arrows, two or four or more, that no fact points at | **its node**, an octagon, as in the graph: its first arrow at its relation's atom and the others at its arguments, numbered from the first. A fact of two arrows is no loop |
+| a held fact with two arrows that no fact points at | **a loop** on the object under the second arrow, labelled with the relation's name |
+| a held fact with any other count of arrows, one or four or more, that no fact points at | **its node**, an octagon, as in the graph: its first arrow at its relation's atom and the others at its arguments, numbered from the first |
 | a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, as in the graph. It stands in the dashed frame of its context where the knowledge base does not hold it, and in no frame where it does ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow |
 
-Nothing but a fact of three arrows is folded, and in neither form is a relation's name written in a fact's node,
+Nothing but a fact of three arrows or of two is folded, and in neither form is a relation's name written in a fact's node,
 or a fact's text in any node
 ([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)). So every object
 is drawn once in this form too, and what is drawn outside a frame is held

@@ -6,7 +6,7 @@ digraph rule_let_to_digit_zero_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "0_L" [label="0", shape=box];
     "h1_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "?LET_L" -> "h1_LET_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_LET_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "h1_LET_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -20,9 +20,9 @@ digraph rule_let_to_digit_zero_lhs_rhs {
       "(?LET ?x 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_MALFORMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_MALFORMED_R" -> "?MALFORMED_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?MALFORMED_R" -> "h2_MALFORMED_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_MALFORMED_R" -> "(?LET ?x 0)_R" [xlabel="2", color="#ff7f0e", style=dashed];
-    "(?LET ?x 0)_R" -> "?LET_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?LET_R" -> "(?LET ?x 0)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(?LET ?x 0)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(?LET ?x 0)_R" -> "0_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

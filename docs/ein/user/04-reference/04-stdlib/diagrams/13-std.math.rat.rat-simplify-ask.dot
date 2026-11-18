@@ -5,7 +5,7 @@ digraph rule_rat_simplify_ask_lhs_rhs {
     "rat-simplify_L" [label="rat-simplify", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "h1_rat-simplify_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_rat-simplify_L" -> "rat-simplify_L" [xlabel="1", color="#7f7f7f"];
+    "rat-simplify_L" -> "h1_rat-simplify_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_rat-simplify_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
@@ -27,14 +27,14 @@ digraph rule_rat_simplify_ask_lhs_rhs {
       "(rat-simplify ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(rat-of (rat-only (rat-simplify ?x)))_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-of_R" -> "(rat-of (rat-only (rat-simplify ?x)))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-of (rat-only (rat-simplify ?x)))_R" -> "(rat-only (rat-simplify ?x))_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-only (rat-simplify ?x))_R" -> "rat-only_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-only_R" -> "(rat-only (rat-simplify ?x))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-only (rat-simplify ?x))_R" -> "(rat-simplify ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-simplify ?x)_R" -> "rat-simplify_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "rat-simplify_R" -> "(rat-simplify ?x)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(rat-simplify ?x)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

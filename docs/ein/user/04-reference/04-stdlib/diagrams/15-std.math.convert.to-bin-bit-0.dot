@@ -13,11 +13,11 @@ digraph rule_to_bin_bit_0_lhs_rhs {
       "(halving ?x ?acc)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(halving ?x ?acc)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "z_L" [xlabel="4", color="#8c564b"];
-    "(halving ?x ?acc)_L" -> "halving_L" [xlabel="1", color="#bcbd22"];
+    "halving_L" -> "(halving ?x ?acc)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(halving ?x ?acc)_L" -> "?x_L" [xlabel="2", color="#bcbd22"];
     "(halving ?x ?acc)_L" -> "?acc_L" [xlabel="3", color="#bcbd22"];
   }
@@ -33,11 +33,11 @@ digraph rule_to_bin_bit_0_lhs_rhs {
       "(bin-b 0 ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_to-bin-go_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_to-bin-go_R" -> "to-bin-go_R" [xlabel="1", color="#17becf", style=dashed];
+    "to-bin-go_R" -> "h2_to-bin-go_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "?x_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "?q_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "(bin-b 0 ?acc)_R" [xlabel="4", color="#17becf", style=dashed];
-    "(bin-b 0 ?acc)_R" -> "bin-b_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "bin-b_R" -> "(bin-b 0 ?acc)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(bin-b 0 ?acc)_R" -> "0_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(bin-b 0 ?acc)_R" -> "?acc_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

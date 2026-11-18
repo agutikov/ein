@@ -8,11 +8,11 @@ digraph rule_type_hierarchy_converse_lhs_rhs {
     "type-hierarchy_L" [label="type-hierarchy", shape=box];
     "?isR*_L" [label="?isR*", shape=diamond];
     "h1_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h1_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_converse_L" -> "?R1_L" [xlabel="2", color="#2ca02c"];
     "h1_converse_L" -> "?R2_L" [xlabel="3", color="#2ca02c"];
     "h2_type-hierarchy_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_type-hierarchy_L" -> "type-hierarchy_L" [xlabel="1", color="#2ca02c"];
+    "type-hierarchy_L" -> "h2_type-hierarchy_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_type-hierarchy_L" -> "?isR*_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -22,12 +22,12 @@ digraph rule_type_hierarchy_converse_lhs_rhs {
     "?isR*_R" [label="?isR*", shape=diamond];
     "converse-illtyped-ran_R" [label="converse-illtyped-ran", shape=box];
     "h3_converse-illtyped-dom_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_converse-illtyped-dom_R" -> "converse-illtyped-dom_R" [xlabel="1", color="#d62728", style=dashed];
+    "converse-illtyped-dom_R" -> "h3_converse-illtyped-dom_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_converse-illtyped-dom_R" -> "?R1_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_converse-illtyped-dom_R" -> "?R2_R" [xlabel="3", color="#d62728", style=dashed];
     "h3_converse-illtyped-dom_R" -> "?isR*_R" [xlabel="4", color="#d62728", style=dashed];
     "h4_converse-illtyped-ran_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h4_converse-illtyped-ran_R" -> "converse-illtyped-ran_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "converse-illtyped-ran_R" -> "h4_converse-illtyped-ran_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h4_converse-illtyped-ran_R" -> "?R1_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h4_converse-illtyped-ran_R" -> "?R2_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h4_converse-illtyped-ran_R" -> "?isR*_R" [xlabel="4", color="#1f77b4", style=dashed];

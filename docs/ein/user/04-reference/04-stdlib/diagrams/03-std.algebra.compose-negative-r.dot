@@ -13,13 +13,13 @@ digraph rule_compose_negative_r_lhs_rhs {
       "(?T ?a ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h1_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_S_L" -> "?S_L" [xlabel="1", color="#2ca02c"];
+    "?S_L" -> "h1_S_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_S_L" -> "?b_L" [xlabel="2", color="#2ca02c"];
     "h1_S_L" -> "?c_L" [xlabel="3", color="#2ca02c"];
     "h2_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h2_not_L" -> "not_L" [xlabel="1", color="#d62728"];
+    "not_L" -> "h2_not_L" [xlabel="1", dir=back, color="#d62728"];
     "h2_not_L" -> "(?T ?a ?c)_L" [xlabel="2", color="#d62728"];
-    "(?T ?a ?c)_L" -> "?T_L" [xlabel="1", color="#ff7f0e"];
+    "?T_L" -> "(?T ?a ?c)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(?T ?a ?c)_L" -> "?a_L" [xlabel="2", color="#ff7f0e"];
     "(?T ?a ?c)_L" -> "?c_L" [xlabel="3", color="#ff7f0e"];
   }
@@ -33,9 +33,9 @@ digraph rule_compose_negative_r_lhs_rhs {
       "(?R ?a ?b)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h3_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_not_R" -> "not_R" [xlabel="1", color="#d62728", style=dashed];
+    "not_R" -> "h3_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_not_R" -> "(?R ?a ?b)_R" [xlabel="2", color="#d62728", style=dashed];
-    "(?R ?a ?b)_R" -> "?R_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?R_R" -> "(?R ?a ?b)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?R ?a ?b)_R" -> "?a_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(?R ?a ?b)_R" -> "?b_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

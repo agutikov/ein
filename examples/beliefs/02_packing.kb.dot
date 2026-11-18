@@ -1,69 +1,68 @@
 digraph kb {
-  // suggested layout: fdp
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
 
   // facts
   f_8caee6393b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_8caee6393b -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_8caee6393b [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_8caee6393b -> "likes" [xlabel="2", color="#bcbd22", style=solid];
   f_8caee6393b -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_8caee6393b -> "Food" [xlabel="4", color="#bcbd22", style=solid];
   f_a10b78f01e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_a10b78f01e -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_a10b78f01e [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_a10b78f01e -> "likes" [xlabel="2", color="#bcbd22", style=solid];
   f_152bec9ca2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_152bec9ca2 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_152bec9ca2 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_152bec9ca2 -> "witness" [xlabel="2", color="#bcbd22", style=solid];
   f_152bec9ca2 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_7b4f74685a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_7b4f74685a -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_7b4f74685a [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_7b4f74685a -> "witness" [xlabel="2", color="#bcbd22", style=solid];
   f_efd01a8d94 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_efd01a8d94 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_efd01a8d94 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_efd01a8d94 -> "knows" [xlabel="2", color="#bcbd22", style=solid];
   f_efd01a8d94 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_efd01a8d94 -> "Claim" [xlabel="4", color="#bcbd22", style=solid];
   f_fccc388ce9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_fccc388ce9 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_fccc388ce9 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_fccc388ce9 -> "knows" [xlabel="2", color="#bcbd22", style=solid];
   f_f63fda0b3f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f63fda0b3f -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_f63fda0b3f [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_f63fda0b3f -> "claims" [xlabel="2", color="#bcbd22", style=solid];
   f_f63fda0b3f -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_f63fda0b3f -> "Claim" [xlabel="4", color="#bcbd22", style=solid];
   f_0325585856 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_0325585856 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_0325585856 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_0325585856 -> "claims" [xlabel="2", color="#bcbd22", style=solid];
   f_63e57513cd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_63e57513cd -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_63e57513cd [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_63e57513cd -> "confirmed" [xlabel="2", color="#bcbd22", style=solid];
   f_63e57513cd -> "Claim" [xlabel="3", color="#bcbd22", style=solid];
   f_1e3c796301 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1e3c796301 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_1e3c796301 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_1e3c796301 -> "confirmed" [xlabel="2", color="#bcbd22", style=solid];
   f_eb4468f51f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=solid];
-  f_eb4468f51f -> "witness" [xlabel="1", color="#2ca02c", style=solid];
+  "witness" -> f_eb4468f51f [xlabel="1", dir=back, color="#2ca02c", style=solid];
   f_eb4468f51f -> "Ann" [xlabel="2", color="#2ca02c", style=solid];
   f_36af6cd3a3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_36af6cd3a3 -> "claims" [xlabel="1", color="#bcbd22", style=solid];
+  "claims" -> f_36af6cd3a3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_36af6cd3a3 -> "Bob" [xlabel="2", color="#bcbd22", style=solid];
   f_36af6cd3a3 -> f_b10ac10970 [xlabel="3", color="#bcbd22", style=solid];
   f_abb2ac34a9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_abb2ac34a9 -> "claims" [xlabel="1", color="#bcbd22", style=solid];
+  "claims" -> f_abb2ac34a9 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_abb2ac34a9 -> "Bob" [xlabel="2", color="#bcbd22", style=solid];
   f_abb2ac34a9 -> f_0b12cdd493 [xlabel="3", color="#bcbd22", style=solid];
   f_ed375cdca1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by witnessed"];
-  f_ed375cdca1 -> "knows" [xlabel="1", color="#17becf", style=dashed];
+  "knows" -> f_ed375cdca1 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_ed375cdca1 -> "Ann" [xlabel="2", color="#17becf", style=dashed];
   f_ed375cdca1 -> f_b10ac10970 [xlabel="3", color="#17becf", style=dashed];
   f_8924d53969 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by witnessed"];
-  f_8924d53969 -> "knows" [xlabel="1", color="#17becf", style=dashed];
+  "knows" -> f_8924d53969 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_8924d53969 -> "Ann" [xlabel="2", color="#17becf", style=dashed];
   f_8924d53969 -> f_11e3b3411e [xlabel="3", color="#17becf", style=dashed];
   f_aa754b6609 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by confirm"];
-  f_aa754b6609 -> "confirmed" [xlabel="1", color="#d62728", style=dashed];
+  "confirmed" -> f_aa754b6609 [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_aa754b6609 -> f_b10ac10970 [xlabel="2", color="#d62728", style=dashed];
 
   // facts in a context
@@ -74,13 +73,32 @@ digraph kb {
     label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_0b12cdd493 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid];
   }
-  f_b10ac10970 -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_b10ac10970 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_b10ac10970 -> "Dan" [xlabel="2", color="#1f77b4", style=solid];
   f_b10ac10970 -> "Soup" [xlabel="3", color="#1f77b4", style=solid];
-  f_0b12cdd493 -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_0b12cdd493 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_0b12cdd493 -> "Dan" [xlabel="2", color="#1f77b4", style=solid];
   f_0b12cdd493 -> "Tea" [xlabel="3", color="#1f77b4", style=solid];
-  f_11e3b3411e -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_11e3b3411e [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_11e3b3411e -> "Eve" [xlabel="2", color="#1f77b4", style=solid];
   f_11e3b3411e -> "Fish" [xlabel="3", color="#1f77b4", style=solid];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 5" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  "layer 4" -> "layer 5" [style=invis];
+  { rank=same; "layer 0"; "relation"; }
+  { rank=same; "layer 1"; f_8caee6393b; f_a10b78f01e; f_152bec9ca2; f_7b4f74685a; f_efd01a8d94; f_fccc388ce9; f_f63fda0b3f; f_0325585856; f_63e57513cd; f_1e3c796301; }
+  { rank=same; "layer 2"; "likes"; "Person"; "Food"; "witness"; "knows"; "Claim"; "claims"; "confirmed"; }
+  { rank=same; "layer 3"; f_eb4468f51f; f_36af6cd3a3; f_abb2ac34a9; f_ed375cdca1; f_8924d53969; f_aa754b6609; }
+  { rank=same; "layer 4"; f_b10ac10970; f_0b12cdd493; f_11e3b3411e; }
+  { rank=same; "layer 5"; "Ann"; "Bob"; "Dan"; "Soup"; "Tea"; "Eve"; "Fish"; }
 }

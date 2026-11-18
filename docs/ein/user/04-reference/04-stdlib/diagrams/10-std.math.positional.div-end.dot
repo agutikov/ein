@@ -9,7 +9,7 @@ digraph rule_div_end_lhs_rhs {
     "?t_L" [label="?t", shape=diamond];
     "?w_L" [label="?w", shape=diamond];
     "h1_DIV-STEP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_DIV-STEP_L" -> "?DIV-STEP_L" [xlabel="1", color="#ff7f0e"];
+    "?DIV-STEP_L" -> "h1_DIV-STEP_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_DIV-STEP_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
     "h1_DIV-STEP_L" -> "?ms_L" [xlabel="3", color="#ff7f0e"];
     "h1_DIV-STEP_L" -> "z_L" [xlabel="4", color="#ff7f0e"];
@@ -23,15 +23,15 @@ digraph rule_div_end_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "?VALID_R" [label="?VALID", shape=diamond];
     "h2_DIV-DONE_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_DIV-DONE_R" -> "?DIV-DONE_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?DIV-DONE_R" -> "h2_DIV-DONE_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_DIV-DONE_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_DIV-DONE_R" -> "?w_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_DIV-DONE_R" -> "?t_R" [xlabel="4", color="#2ca02c", style=dashed];
     "h3_VALID_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_VALID_R" -> "?VALID_R" [xlabel="1", color="#17becf", style=dashed];
+    "?VALID_R" -> "h3_VALID_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_VALID_R" -> "?w_R" [xlabel="2", color="#17becf", style=dashed];
     "h4_VALID_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h4_VALID_R" -> "?VALID_R" [xlabel="1", color="#17becf", style=dashed];
+    "?VALID_R" -> "h4_VALID_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h4_VALID_R" -> "?t_R" [xlabel="2", color="#17becf", style=dashed];
   }
 }

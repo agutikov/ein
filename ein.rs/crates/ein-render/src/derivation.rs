@@ -7,12 +7,16 @@
 //! **Each derivation is a node of its own**, a small diamond, with the
 //! premises feeding it and it feeding the conclusion, so that a fact with
 //! several recorded derivations shows them as alternatives rather than as
-//! one big conjunction.
+//! one big conjunction. The graph stands in layers, as a knowledge base does
+//! ([`crate::fact_graph`]), each premise above the derivation it feeds, and
+//! the derivation's arrows stand out (Q-M1f.428): twice Graphviz's default
+//! width, in a colour of the slice's [`crate::slice::DERIVATION_PALETTE`].
 
 use std::collections::HashSet;
 
 use crate::dot_util::{HYPER_SHAPE, POLYGON_RANKSEP, fact_key, hashed_id, quote};
-use crate::fact_graph::FACT_NODE;
+use crate::fact_graph::{FACT_NODE, first_arrow};
+use crate::slice::{DERIVATION_PALETTE, DERIVATION_WIDTH};
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 
 /// Render `dag` — the bytes `ein-render/tests/golden/dot/kb_provenance_dag.dot`
@@ -20,7 +24,7 @@ use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> String {
     let mut lines = vec![
         "digraph derivation {".to_string(),
-        "  rankdir=BT;".to_string(),
+        "  rankdir=TB;".to_string(),
         format!("  {POLYGON_RANKSEP};"),
         "  node [shape=box];".to_string(),
     ];
@@ -41,8 +45,8 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
         lines.push(format!("  {nid} [shape={HYPER_SHAPE}, {FACT_NODE}{note}];"));
         let (rel, args) = terms.fact(f);
         arrows.push(format!(
-            "  {nid} -> {} [xlabel=\"1\"];",
-            quote(terms.sym(rel))
+            "  {}",
+            first_arrow(&nid, &quote(terms.sym(rel)), "")
         ));
         for (j, a) in args.iter().enumerate() {
             let to = match a.as_fact() {
@@ -56,19 +60,20 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
         }
     }
     lines.extend(arrows);
+    // A derivation records no rule here: every one is drawn in the
+    // palette's first colour.
+    let colour = DERIVATION_PALETTE[0];
+    let attrs = format!("color=\"{colour}\", {DERIVATION_WIDTH}");
     for (i, (conclusion, premises)) in dag.and_nodes.iter().enumerate() {
         let jid = format!("j{i}");
         lines.push(format!(
-            "  {jid} [shape=diamond, width=.2, height=.2, label=\"\"];"
+            "  {jid} [shape=diamond, width=.2, height=.2, label=\"\", {attrs}];"
         ));
         for &p in premises {
-            lines.push(format!(
-                "  {} -> {jid} [style=bold];",
-                fact_dot_id(terms, p)
-            ));
+            lines.push(format!("  {} -> {jid} [{attrs}];", fact_dot_id(terms, p)));
         }
         lines.push(format!(
-            "  {jid} -> {} [style=bold];",
+            "  {jid} -> {} [{attrs}];",
             fact_dot_id(terms, *conclusion)
         ));
     }

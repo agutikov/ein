@@ -14,12 +14,12 @@ digraph rule_mul_row_lhs_rhs {
       "(b ?a ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_mul-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_mul-step_L" -> "mul-step_L" [xlabel="1", color="#bcbd22"];
+    "mul-step_L" -> "h1_mul-step_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_mul-step_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "h1_mul-step_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
     "h1_mul-step_L" -> "(b ?a ?rest)_L" [xlabel="4", color="#bcbd22"];
     "h1_mul-step_L" -> "?acc_L" [xlabel="5", color="#bcbd22"];
-    "(b ?a ?rest)_L" -> "b_L" [xlabel="1", color="#1f77b4"];
+    "b_L" -> "(b ?a ?rest)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(b ?a ?rest)_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
     "(b ?a ?rest)_L" -> "?rest_L" [xlabel="3", color="#1f77b4"];
   }
@@ -38,13 +38,13 @@ digraph rule_mul_row_lhs_rhs {
       "(mul-row-of ?k ?u ?rest ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "mul-walk_R" -> "h2_mul-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "(mul-row-of ?k ?u ?rest ?acc)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?a_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(mul-row-of ?k ?u ?rest ?acc)_R" -> "mul-row-of_R" [xlabel="1", color="#17becf", style=dashed];
+    "mul-row-of_R" -> "(mul-row-of ?k ?u ?rest ?acc)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?u_R" [xlabel="3", color="#17becf", style=dashed];
     "(mul-row-of ?k ?u ?rest ?acc)_R" -> "?rest_R" [xlabel="4", color="#17becf", style=dashed];

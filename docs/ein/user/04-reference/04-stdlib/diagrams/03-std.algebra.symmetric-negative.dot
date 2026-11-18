@@ -11,9 +11,9 @@ digraph rule_symmetric_negative_lhs_rhs {
       "(?rel ?a ?b)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_not_L" -> "not_L" [xlabel="1", color="#d62728"];
+    "not_L" -> "h1_not_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_not_L" -> "(?rel ?a ?b)_L" [xlabel="2", color="#d62728"];
-    "(?rel ?a ?b)_L" -> "?rel_L" [xlabel="1", color="#2ca02c"];
+    "?rel_L" -> "(?rel ?a ?b)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(?rel ?a ?b)_L" -> "?a_L" [xlabel="2", color="#2ca02c"];
     "(?rel ?a ?b)_L" -> "?b_L" [xlabel="3", color="#2ca02c"];
   }
@@ -27,9 +27,9 @@ digraph rule_symmetric_negative_lhs_rhs {
       "(?rel ?b ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h2_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_not_R" -> "not_R" [xlabel="1", color="#d62728", style=dashed];
+    "not_R" -> "h2_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_not_R" -> "(?rel ?b ?a)_R" [xlabel="2", color="#d62728", style=dashed];
-    "(?rel ?b ?a)_R" -> "?rel_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?rel_R" -> "(?rel ?b ?a)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?rel ?b ?a)_R" -> "?b_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?rel ?b ?a)_R" -> "?a_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

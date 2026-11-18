@@ -1013,6 +1013,8 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (rat-rule not-rational-is-false))
   :why    "rationals are computed and never guessed: every relation of the theory is closed")
 ```
+
+![The rule rat-arith of std.math.rat, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/13-std.math.rat.rat-arith.svg)
 <!-- /rule -->
 
 ## `std.math.gcd`

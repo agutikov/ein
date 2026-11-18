@@ -12,10 +12,10 @@ digraph rule_int_add_answer_lhs_rhs {
       "(int-add ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "int-done_L" -> "h1_int-done_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_int-done_L" -> "(int-add ?x ?y)_L" [xlabel="2", color="#1f77b4"];
     "h1_int-done_L" -> "?s_L" [xlabel="3", color="#1f77b4"];
-    "(int-add ?x ?y)_L" -> "int-add_L" [xlabel="1", color="#ff7f0e"];
+    "int-add_L" -> "(int-add ?x ?y)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(int-add ?x ?y)_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
     "(int-add ?x ?y)_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
   }
@@ -25,7 +25,7 @@ digraph rule_int_add_answer_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
     "h2_int-sum-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_int-sum-of_R" -> "int-sum-of_R" [xlabel="1", color="#17becf", style=dashed];
+    "int-sum-of_R" -> "h2_int-sum-of_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_int-sum-of_R" -> "?x_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_int-sum-of_R" -> "?y_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_int-sum-of_R" -> "?s_R" [xlabel="4", color="#17becf", style=dashed];

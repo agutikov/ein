@@ -67,8 +67,8 @@ way, once, an octagon under the arrow that points at it, in a dashed frame named
 that point at it where the knowledge base does not hold it, and in no frame where it does
 ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)). Here the frame reads
 `claims ctx`: Carol's claim points at `(knows Carol Dan)`, which is not held, and nothing else does. `--fold` draws
-each fact of three arrows that nothing points at as one arrow from its first argument to its second, labelled with
-its relation; `--colour-by origin` colours the facts by the same three origins instead of by relation, and `--since
+each fact of three arrows that nothing points at as one arrow from its first argument to its second, and each fact
+of two as a loop on its argument, labelled with its relation; `--colour-by origin` colours the facts by the same three origins instead of by relation, and `--since
 OTHER` draws thick every fact that `OTHER` lacks, which is how a state is drawn against root. The view draws every
 fact the knowledge base holds, a stored negation and a rule's activator fact among them.
 
@@ -78,9 +78,9 @@ as what it matches and what it asserts ([rules](05-rules.md)):
 ![The rule knows-back: what it matches and what it asserts](diagrams/03-rule-knows-back.svg)
 
 and where a derived fact came from is itself a graph, the fact's record drawn: `ein solve FILE --trace OUT.md`
-writes one drawing per firing, the premises on the left, the rule with its reason in the middle, the fact it added
-on the right, in bold, each fact its octagon with its arrows at its relation and its arguments. The first step of
-this program:
+writes one drawing per firing, the premises above, the rule with its reason under them, the fact it added below,
+in bold, each fact its octagon with its arrows at its relation and its arguments, and the firing's own arrows
+heavy and coloured. The first step of this program:
 
 ![The program's first firing: its premise, the rule with its reason, the fact it added](diagrams/03-first-firing.svg)
 

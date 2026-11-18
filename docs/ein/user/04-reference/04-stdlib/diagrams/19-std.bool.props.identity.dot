@@ -7,11 +7,11 @@ digraph rule_identity_lhs_rhs {
     "?e_L" [label="?e", shape=diamond];
     "left-identity-of_L" [label="left-identity-of", shape=box];
     "h1_right-identity-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_right-identity-of_L" -> "right-identity-of_L" [xlabel="1", color="#bcbd22"];
+    "right-identity-of_L" -> "h1_right-identity-of_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_right-identity-of_L" -> "?f_L" [xlabel="2", color="#bcbd22"];
     "h1_right-identity-of_L" -> "?e_L" [xlabel="3", color="#bcbd22"];
     "h2_left-identity-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h2_left-identity-of_L" -> "left-identity-of_L" [xlabel="1", color="#17becf"];
+    "left-identity-of_L" -> "h2_left-identity-of_L" [xlabel="1", dir=back, color="#17becf"];
     "h2_left-identity-of_L" -> "?f_L" [xlabel="2", color="#17becf"];
     "h2_left-identity-of_L" -> "?e_L" [xlabel="3", color="#17becf"];
   }
@@ -20,7 +20,7 @@ digraph rule_identity_lhs_rhs {
     "?f_R" [label="?f", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     "h3_identity-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_identity-of_R" -> "identity-of_R" [xlabel="1", color="#d62728", style=dashed];
+    "identity-of_R" -> "h3_identity-of_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_identity-of_R" -> "?f_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_identity-of_R" -> "?e_R" [xlabel="3", color="#d62728", style=dashed];
   }

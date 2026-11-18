@@ -18,9 +18,9 @@ digraph rule_div_too_big_lhs_rhs {
       "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_short_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_short_L" -> "short_L" [xlabel="1", color="#9467bd"];
+    "short_L" -> "h1_short_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_short_L" -> "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [xlabel="2", color="#9467bd"];
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "div-trial_L" [xlabel="1", color="#9467bd"];
+    "div-trial_L" -> "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?ms_L" [xlabel="3", color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
@@ -42,7 +42,7 @@ digraph rule_div_too_big_lhs_rhs {
     "?j_R" [label="?j", shape=diamond];
     "?left_R" [label="?left", shape=diamond];
     "h2_div-choose_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "div-choose_R" [xlabel="1", color="#8c564b", style=dashed];
+    "div-choose_R" -> "h2_div-choose_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?ms_R" [xlabel="3", color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?rest_R" [xlabel="4", color="#8c564b", style=dashed];

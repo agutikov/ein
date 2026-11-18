@@ -19,10 +19,10 @@ digraph rule_div_multiple_9_lhs_rhs {
       "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "done_L" -> "h1_done_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_done_L" -> "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" [xlabel="2", color="#e377c2"];
     "h1_done_L" -> "?m8_L" [xlabel="3", color="#e377c2"];
-    "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" -> "div-m8_L" [xlabel="1", color="#7f7f7f"];
+    "div-m8_L" -> "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" -> "?u_L" [xlabel="3", color="#7f7f7f"];
     "(div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7)_L" -> "?m1_L" [xlabel="4", color="#7f7f7f"];
@@ -54,13 +54,13 @@ digraph rule_div_multiple_9_lhs_rhs {
       "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "mul-walk_R" -> "h2_mul-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?m1_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "9_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" -> "div-m9_R" [xlabel="1", color="#d62728", style=dashed];
+    "div-m9_R" -> "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" -> "?u_R" [xlabel="3", color="#d62728", style=dashed];
     "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_R" -> "?m1_R" [xlabel="4", color="#d62728", style=dashed];

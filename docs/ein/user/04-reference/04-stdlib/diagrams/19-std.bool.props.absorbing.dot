@@ -7,11 +7,11 @@ digraph rule_absorbing_lhs_rhs {
     "?e_L" [label="?e", shape=diamond];
     "left-absorbing-of_L" [label="left-absorbing-of", shape=box];
     "h1_right-absorbing-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_right-absorbing-of_L" -> "right-absorbing-of_L" [xlabel="1", color="#2ca02c"];
+    "right-absorbing-of_L" -> "h1_right-absorbing-of_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_right-absorbing-of_L" -> "?f_L" [xlabel="2", color="#2ca02c"];
     "h1_right-absorbing-of_L" -> "?e_L" [xlabel="3", color="#2ca02c"];
     "h2_left-absorbing-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_left-absorbing-of_L" -> "left-absorbing-of_L" [xlabel="1", color="#1f77b4"];
+    "left-absorbing-of_L" -> "h2_left-absorbing-of_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_left-absorbing-of_L" -> "?f_L" [xlabel="2", color="#1f77b4"];
     "h2_left-absorbing-of_L" -> "?e_L" [xlabel="3", color="#1f77b4"];
   }
@@ -20,7 +20,7 @@ digraph rule_absorbing_lhs_rhs {
     "?f_R" [label="?f", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     "h3_absorbing-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_absorbing-of_R" -> "absorbing-of_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "absorbing-of_R" -> "h3_absorbing-of_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_absorbing-of_R" -> "?f_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h3_absorbing-of_R" -> "?e_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

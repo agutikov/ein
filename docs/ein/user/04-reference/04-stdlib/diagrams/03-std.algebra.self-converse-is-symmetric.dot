@@ -5,7 +5,7 @@ digraph rule_self_converse_is_symmetric_lhs_rhs {
     "converse_L" [label="converse", shape=box];
     "?R_L" [label="?R", shape=diamond];
     "h1_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h1_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_converse_L" -> "?R_L" [xlabel="2", color="#2ca02c"];
     "h1_converse_L" -> "?R_L" [xlabel="3", color="#2ca02c"];
   }
@@ -13,7 +13,7 @@ digraph rule_self_converse_is_symmetric_lhs_rhs {
     "symmetric_R" [label="symmetric", shape=box];
     "?R_R" [label="?R", shape=diamond];
     "h2_symmetric_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_symmetric_R" -> "symmetric_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "symmetric_R" -> "h2_symmetric_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_symmetric_R" -> "?R_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

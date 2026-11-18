@@ -270,8 +270,9 @@ pub struct Shape {
     pub relevant: bool,
     pub reorder: bool,
     pub full_kb: bool,
-    /// Every drawing folds a fact of three arrows into a labelled arrow
-    /// (Q-M1f.419); by default each fact is its octagon.
+    /// Every drawing folds a fact of three arrows into a labelled arrow and
+    /// a fact of two into a loop, but where a step's arrows touch it
+    /// (Q-M1f.425, Q-M1f.429); by default each fact is its octagon.
     pub fold: bool,
 }
 

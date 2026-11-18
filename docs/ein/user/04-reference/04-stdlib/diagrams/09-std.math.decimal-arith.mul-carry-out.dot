@@ -10,14 +10,14 @@ digraph rule_mul_carry_out_lhs_rhs {
     "?acc_L" [label="?acc", shape=diamond];
     "nz_L" [label="nz", shape=box];
     "h1_mul-walk_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_mul-walk_L" -> "mul-walk_L" [xlabel="1", color="#7f7f7f"];
+    "mul-walk_L" -> "h1_mul-walk_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_mul-walk_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "h1_mul-walk_L" -> "z_L" [xlabel="3", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?m_L" [xlabel="4", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?e_L" [xlabel="5", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?acc_L" [xlabel="6", color="#7f7f7f"];
     "h2_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "nz_L" -> "h2_nz_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_nz_L" -> "?e_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -32,11 +32,11 @@ digraph rule_mul_carry_out_lhs_rhs {
       "(b ?e ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h3_turn_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_turn_R" -> "turn_R" [xlabel="1", color="#17becf", style=dashed];
+    "turn_R" -> "h3_turn_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_turn_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h3_turn_R" -> "(b ?e ?acc)_R" [xlabel="3", color="#17becf", style=dashed];
     "h3_turn_R" -> "z_R" [xlabel="4", color="#17becf", style=dashed];
-    "(b ?e ?acc)_R" -> "b_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "b_R" -> "(b ?e ?acc)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(b ?e ?acc)_R" -> "?e_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(b ?e ?acc)_R" -> "?acc_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

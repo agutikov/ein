@@ -8,7 +8,7 @@ digraph rule_add_carry_out_lhs_rhs {
     "1_L" [label="1", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_ADD-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_ADD-WALK_L" -> "?ADD-WALK_L" [xlabel="1", color="#17becf"];
+    "?ADD-WALK_L" -> "h1_ADD-WALK_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_ADD-WALK_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "h1_ADD-WALK_L" -> "z_L" [xlabel="3", color="#17becf"];
     "h1_ADD-WALK_L" -> "z_L" [xlabel="4", color="#17becf"];
@@ -27,11 +27,11 @@ digraph rule_add_carry_out_lhs_rhs {
       "(?B 1 ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h2_TURN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "?TURN_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?TURN_R" -> "h2_TURN_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_TURN_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "(?B 1 ?acc)_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
-    "(?B 1 ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?B_R" -> "(?B 1 ?acc)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?B 1 ?acc)_R" -> "1_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B 1 ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

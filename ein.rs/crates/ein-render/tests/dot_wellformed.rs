@@ -9,6 +9,12 @@
 //! **Every corpus program outside `tests/`; under `EIN_CORPUS_SLOW=1`,
 //! every one**: the programs under `tests/` are each one stdlib
 //! rule's claim, drawn by the writers every other program is drawn by.
+//! **A trace's drawings**, its slices, for the two programs
+//! [`TRACE_WITNESSES`] names, at every tier: no view is a trace, and the
+//! corpus's traces are too many slices to lay out per commit.
+//!
+//! **No layout is a claim here**: where Graphviz puts a node is a reader's
+//! preference, and only its refusal is the DOT's fault (Q21).
 //!
 //! ## When Graphviz is the one that is broken
 //!
@@ -518,12 +524,76 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
     );
 }
 
+// ── A trace's drawings ───────────────────────────────────────────────
+
+/// The corpus's region trace, drawn as `ein solve FILE --trace OUT.md` draws
+/// it: the op the shape golden digests.
+mod corpus_ops;
+
+/// The programs whose traces' slices are put to Graphviz per commit: the two
+/// smallest of the calculator's programs a slice of which Graphviz refused
+/// while slices were laid out left to right (*triangulation failed*, *lost
+/// edge*), one in each form. A trace is not a view: [`all_views`] has none,
+/// and the corpus's traces hold some hundred and sixty thousand slices, past
+/// any per-commit budget, so these two stand for them. A slice under `--fold`
+/// is the canonical one, every fact of it the step's premise or conclusion,
+/// which is never folded (Q-M1f.429).
+const TRACE_WITNESSES: [&str; 2] = [
+    "examples/arith/div.ein",
+    "examples/binary_arithmetic/first.ein",
+];
+
+/// **Every drawing of the witnesses' traces is accepted by Graphviz**: each
+/// inline `dot` block of the region trace, a step's slice, put to `dot`, on
+/// the pool, a unit a block. Graphviz's refusal is a fault of the DOT's, as
+/// for every view; where it lays a slice out is no claim of this test.
+#[test]
+fn graphviz_accepts_every_slice_of_the_witnesses_traces() {
+    require_graphviz();
+    let root = repo_root();
+    let mut blocks: Vec<(&str, usize, String)> = Vec::new();
+    for rel in TRACE_WITNESSES {
+        let md = corpus_ops::run(
+            &mut Terms::new(),
+            &root.join(rel),
+            corpus_ops::Op::RegionTrace,
+        )
+        .unwrap_or_else(|| panic!("{rel}: no trace"));
+        let before = blocks.len();
+        for (i, rest) in md.split("```dot\n").skip(1).enumerate() {
+            let dot = rest.split("```").next().expect("a block").to_string();
+            blocks.push((rel, i + 1, dot));
+        }
+        assert!(blocks.len() > before, "{rel}: a trace with no drawing");
+    }
+    let verdicts = ein_corpus::pool::map(
+        "dot_wellformed::traces",
+        &blocks,
+        |(rel, i, _)| (rel.to_string(), format!("slice {i}")),
+        |(_, _, dot)| put_to_graphviz(dot),
+    );
+    let bad: Vec<String> = blocks
+        .iter()
+        .zip(verdicts)
+        .filter_map(|((rel, i, _), said)| said.err().map(|why| format!("{rel} slice {i}\n  {why}")))
+        .collect();
+    eprintln!(
+        "dot_wellformed: {} slices of {} traces put to Graphviz",
+        blocks.len(),
+        TRACE_WITNESSES.len()
+    );
+    assert!(
+        bad.is_empty(),
+        "{} slices refused by Graphviz:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
+}
+
 // ── The structure's graphs ────────────────────────────────────────────
 
-/// What *a program searches* means: the determinism sweeps' one definition.
-#[allow(dead_code)]
-#[path = "corpus_ops/searches.rs"]
-mod searching;
+// What *a program searches* means is the determinism sweeps' one definition,
+// `corpus_ops::searches`.
 
 /// The lines of one of the structure's graphs: its ` -- ` strokes. They are
 /// undirected graphs, so [`edges`] counts none of them.
@@ -598,7 +668,7 @@ fn sweep_structure(path: &std::path::Path) -> StructureSweep {
     let Ok(mut kb) = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) else {
         return out;
     };
-    if !searching::searches(&ast, &mut terms.clone(), &mut kb.clone()) {
+    if !corpus_ops::searches(&ast, &mut terms.clone(), &mut kb.clone()) {
         return out;
     }
     let asked = ein_infer::structure::WholeOptions::default();

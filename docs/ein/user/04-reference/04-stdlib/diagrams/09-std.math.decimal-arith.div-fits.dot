@@ -19,10 +19,10 @@ digraph rule_div_fits_lhs_rhs {
       "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "done_L" -> "h1_done_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_done_L" -> "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [xlabel="2", color="#e377c2"];
     "h1_done_L" -> "?t_L" [xlabel="3", color="#e377c2"];
-    "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "div-trial_L" [xlabel="1", color="#9467bd"];
+    "div-trial_L" -> "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?ms_L" [xlabel="3", color="#9467bd"];
     "(div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j)_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
@@ -44,7 +44,7 @@ digraph rule_div_fits_lhs_rhs {
     "?hi_R" [label="?hi", shape=diamond];
     "?t_R" [label="?t", shape=diamond];
     "h2_div-choose_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h2_div-choose_R" -> "div-choose_R" [xlabel="1", color="#8c564b", style=dashed];
+    "div-choose_R" -> "h2_div-choose_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?ms_R" [xlabel="3", color="#8c564b", style=dashed];
     "h2_div-choose_R" -> "?rest_R" [xlabel="4", color="#8c564b", style=dashed];

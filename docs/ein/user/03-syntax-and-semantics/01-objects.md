@@ -93,14 +93,15 @@ number beside it and colours a fact's arrows by its relation; the shapes are the
 [rendering reference](../04-reference/12-rendering.md)'s legend.
 
 **Folded**, `ein render kb --fold FILE`, each fact of three arrows that nothing points at, a relation and two
-arguments, is one arrow from its first argument to its second with the relation's name on it: the graph
+arguments, is one arrow from its first argument to its second with the relation's name on it, and each fact of two
+arrows a loop on its argument: the graph
 [drawn with labelled arrows](../../reasoning/01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows).
 
-![The same program under --fold: m1, m2 and f as three labelled arrows, the four declarations as octagons](diagrams/01-program-kb-fold.svg)
+![The same program under --fold: m1, m2 and f as three labelled arrows, the two declarations of four arrows as octagons, the two of two arrows as loops on the relations they declare](diagrams/01-program-kb-fold.svg)
 
-So `m1`, `m2` and `f` are three arrows here, `f` with its `(10)` after the relation's name, and the four
-declarations, of four arrows and of two, stay octagons: a fact of two arrows is never folded, nor is one that a
-drawn fact points at. Folded, a relation is a word written on as many arrows as it has facts, and no node of its
+So `m1`, `m2` and `f` are three arrows here, `f` with its `(10)` after the relation's name; the two declarations of
+four arrows stay octagons, and the two of two arrows, the facts the loader adds beside them, are loops labelled
+`relation` on the relations they declare. A fact that a drawn fact points at is never folded. Folded, a relation is a word written on as many arrows as it has facts, and no node of its
 own: `is-instance` is a box here only because its declarations point at it. The folded drawing is not the knowledge
 base: it stands for the graph by that rule, and what the engine reasons over is the graph.
 

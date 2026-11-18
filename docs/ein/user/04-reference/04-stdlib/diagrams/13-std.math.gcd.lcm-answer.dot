@@ -13,11 +13,11 @@ digraph rule_lcm_answer_lhs_rhs {
       "(lcm-q ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(lcm-q ?x ?y)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?l_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
-    "(lcm-q ?x ?y)_L" -> "lcm-q_L" [xlabel="1", color="#bcbd22"];
+    "lcm-q_L" -> "(lcm-q ?x ?y)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(lcm-q ?x ?y)_L" -> "?x_L" [xlabel="2", color="#bcbd22"];
     "(lcm-q ?x ?y)_L" -> "?y_L" [xlabel="3", color="#bcbd22"];
   }
@@ -27,7 +27,7 @@ digraph rule_lcm_answer_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "?l_R" [label="?l", shape=diamond];
     "h2_lcm-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "lcm-of_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "lcm-of_R" -> "h2_lcm-of_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "?l_R" [xlabel="4", color="#1f77b4", style=dashed];

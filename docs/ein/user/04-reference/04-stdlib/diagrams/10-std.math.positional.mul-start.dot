@@ -13,10 +13,10 @@ digraph rule_mul_start_lhs_rhs {
       "(?MUL-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?MUL-SECOND ?x ?y ?u)_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?v_L" [xlabel="3", color="#bcbd22"];
-    "(?MUL-SECOND ?x ?y ?u)_L" -> "?MUL-SECOND_L" [xlabel="1", color="#9467bd"];
+    "?MUL-SECOND_L" -> "(?MUL-SECOND ?x ?y ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?MUL-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?MUL-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
     "(?MUL-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
@@ -33,11 +33,11 @@ digraph rule_mul_start_lhs_rhs {
       "(?PRODUCT ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_MUL-CALL_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_MUL-CALL_R" -> "?MUL-CALL_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?MUL-CALL_R" -> "h2_MUL-CALL_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_MUL-CALL_R" -> "(?PRODUCT ?x ?y)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_MUL-CALL_R" -> "?u_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_MUL-CALL_R" -> "?v_R" [xlabel="4", color="#bcbd22", style=dashed];
-    "(?PRODUCT ?x ?y)_R" -> "?PRODUCT_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?PRODUCT_R" -> "(?PRODUCT ?x ?y)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(?PRODUCT ?x ?y)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(?PRODUCT ?x ?y)_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

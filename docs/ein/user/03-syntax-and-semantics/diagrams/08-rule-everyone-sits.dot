@@ -6,7 +6,7 @@ digraph rule_everyone_sits_lhs_rhs {
     "?p_L" [label="?p", shape=diamond];
     "Person_L" [label="Person", shape=box];
     "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "is-a_L" -> "h1_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_is-a_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "h1_is-a_L" -> "Person_L" [xlabel="3", color="#7f7f7f"];
     subgraph cluster_absent_L_0 {
@@ -15,11 +15,11 @@ digraph rule_everyone_sits_lhs_rhs {
       "Chair_L" [label="Chair", shape=box];
       "seat_L" [label="seat", shape=box];
       "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-      "h2_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+      "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
       "h2_is-a_L" -> "?c_L" [xlabel="2", color="#7f7f7f"];
       "h2_is-a_L" -> "Chair_L" [xlabel="3", color="#7f7f7f"];
       "h3_seat_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-      "h3_seat_L" -> "seat_L" [xlabel="1", color="#ff7f0e"];
+      "seat_L" -> "h3_seat_L" [xlabel="1", dir=back, color="#ff7f0e"];
       "h3_seat_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
       "h3_seat_L" -> "?c_L" [xlabel="3", color="#ff7f0e"];
     }
@@ -28,7 +28,7 @@ digraph rule_everyone_sits_lhs_rhs {
     "open_R" [label="open", shape=box];
     "seat_R" [label="seat", shape=box];
     "h4_open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h4_open_R" -> "open_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "open_R" -> "h4_open_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h4_open_R" -> "seat_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

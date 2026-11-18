@@ -1,13 +1,21 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_203bb25e0e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="demo"];
-  f_203bb25e0e -> "next-to" [xlabel="1", color="#d62728", style=solid];
+  "next-to" -> f_203bb25e0e [xlabel="1", dir=back, color="#d62728", style=solid];
   f_203bb25e0e -> "House-1" [xlabel="2", color="#d62728", style=solid];
   f_203bb25e0e -> "House-2" [xlabel="3", color="#d62728", style=solid];
   f_136135786a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by symmetric"];
-  f_136135786a -> "next-to" [xlabel="1", color="#d62728", style=dashed];
+  "next-to" -> f_136135786a [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_136135786a -> "House-2" [xlabel="2", color="#d62728", style=dashed];
   f_136135786a -> "House-1" [xlabel="3", color="#d62728", style=dashed];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "next-to"; }
+  { rank=same; "layer 1"; f_203bb25e0e; f_136135786a; }
+  { rank=same; "layer 2"; "House-1"; "House-2"; }
 }

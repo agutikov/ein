@@ -12,10 +12,10 @@ digraph rule_add_answer_lhs_rhs {
       "(?SUM ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_DONE_L" -> "?DONE_L" [xlabel="1", color="#9467bd"];
+    "?DONE_L" -> "h1_DONE_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_DONE_L" -> "(?SUM ?x ?y)_L" [xlabel="2", color="#9467bd"];
     "h1_DONE_L" -> "?s_L" [xlabel="3", color="#9467bd"];
-    "(?SUM ?x ?y)_L" -> "?SUM_L" [xlabel="1", color="#9467bd"];
+    "?SUM_L" -> "(?SUM ?x ?y)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?SUM ?x ?y)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?SUM ?x ?y)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -25,7 +25,7 @@ digraph rule_add_answer_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
     "h2_SUM-OF_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_SUM-OF_R" -> "?SUM-OF_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?SUM-OF_R" -> "h2_SUM-OF_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_SUM-OF_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_SUM-OF_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_SUM-OF_R" -> "?s_R" [xlabel="4", color="#bcbd22", style=dashed];

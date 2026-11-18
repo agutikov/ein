@@ -12,10 +12,10 @@ digraph rule_mul_begin_lhs_rhs {
       "(?MUL-DIGITS ?k ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_TOP-FIRST-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_TOP-FIRST-IS_L" -> "?TOP-FIRST-IS_L" [xlabel="1", color="#2ca02c"];
+    "?TOP-FIRST-IS_L" -> "h1_TOP-FIRST-IS_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_TOP-FIRST-IS_L" -> "(?MUL-DIGITS ?k ?u)_L" [xlabel="2", color="#2ca02c"];
     "h1_TOP-FIRST-IS_L" -> "?t_L" [xlabel="3", color="#2ca02c"];
-    "(?MUL-DIGITS ?k ?u)_L" -> "?MUL-DIGITS_L" [xlabel="1", color="#9467bd"];
+    "?MUL-DIGITS_L" -> "(?MUL-DIGITS ?k ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?MUL-DIGITS ?k ?u)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "(?MUL-DIGITS ?k ?u)_L" -> "?u_L" [xlabel="3", color="#9467bd"];
   }
@@ -26,7 +26,7 @@ digraph rule_mul_begin_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_MUL-STEP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_MUL-STEP_R" -> "?MUL-STEP_R" [xlabel="1", color="#17becf", style=dashed];
+    "?MUL-STEP_R" -> "h2_MUL-STEP_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?u_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?t_R" [xlabel="4", color="#17becf", style=dashed];

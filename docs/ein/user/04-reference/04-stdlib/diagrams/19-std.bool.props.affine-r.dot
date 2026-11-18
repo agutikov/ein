@@ -12,20 +12,20 @@ digraph rule_affine_r_lhs_rhs {
     "Xor_L" [label="Xor", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "h1_column_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_column_L" -> "column_L" [xlabel="1", color="#d62728"];
+    "column_L" -> "h1_column_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_column_L" -> "?f_L" [xlabel="2", color="#d62728"];
     "h1_column_L" -> "?a_L" [xlabel="3", color="#d62728"];
     "h1_column_L" -> "?b_L" [xlabel="4", color="#d62728"];
     "h1_column_L" -> "?c_L" [xlabel="5", color="#d62728"];
     "h1_column_L" -> "?d_L" [xlabel="6", color="#d62728"];
     "h2_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h2_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_gate2_L" -> "Xor_L" [xlabel="2", color="#7f7f7f"];
     "h2_gate2_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
     "h2_gate2_L" -> "?b_L" [xlabel="4", color="#7f7f7f"];
     "h2_gate2_L" -> "?x_L" [xlabel="5", color="#7f7f7f"];
     "h3_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h3_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h3_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h3_gate2_L" -> "Xor_L" [xlabel="2", color="#7f7f7f"];
     "h3_gate2_L" -> "?c_L" [xlabel="3", color="#7f7f7f"];
     "h3_gate2_L" -> "?d_L" [xlabel="4", color="#7f7f7f"];
@@ -35,7 +35,7 @@ digraph rule_affine_r_lhs_rhs {
     "affine_R" [label="affine", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h4_affine_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h4_affine_R" -> "affine_R" [xlabel="1", color="#e377c2", style=dashed];
+    "affine_R" -> "h4_affine_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h4_affine_R" -> "?f_R" [xlabel="2", color="#e377c2", style=dashed];
   }
 }

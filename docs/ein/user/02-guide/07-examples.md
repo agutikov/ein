@@ -58,13 +58,14 @@ premise `(neq ?a ?c)`, an ordinary conjunct of the `:match`. `(transitive co-loc
 is [`examples/zebra.ein`](../../../../examples/zebra.ein).
 
 As a graph, from `ein render kb --fold`, which folds each fact of three arrows, a relation and two arguments, into
-one arrow from its first argument to its second, labelled with its relation: the `is-a` facts and the three clues
-are such arrows, the clues with their numbers. Every other fact stays an octagon: each declaration is two, one whose
-arrow `1` is at `relation`, `2` at the relation it declares and `3`, `4` at its slots' labels, and one with only
-those first two arrows; and `(transitive co-located)`, of two arrows, is an octagon too. `transitive` adds nothing
-here, since no two `co-located` facts chain, so nothing is dashed as derived.
+one arrow from its first argument to its second, and each fact of two arrows into a loop on its argument, labelled
+with its relation: the `is-a` facts and the three clues are such arrows, the clues with their numbers. Each
+declaration is two facts: one whose arrow `1` is at `relation`, `2` at the relation it declares and `3`, `4` at its
+slots' labels, which stays an octagon, and one with only those first two arrows, a loop labelled `relation` on the
+relation it declares; and `(transitive co-located)`, of two arrows, is a loop on `co-located`. `transitive` adds
+nothing here, since no two `co-located` facts chain, so nothing is dashed as derived.
 
-![A larger Zebra fragment, folded: the declarations and the fact of transitive as octagons, the is-a facts and the three clues as labelled arrows](diagrams/07-zebra-fragment.svg)
+![A larger Zebra fragment, folded: the declarations of four arrows as octagons, the declarations of two and the fact of transitive as loops on the relations, the is-a facts and the three clues as labelled arrows](diagrams/07-zebra-fragment.svg)
 
 ## Two ontologies for one puzzle
 

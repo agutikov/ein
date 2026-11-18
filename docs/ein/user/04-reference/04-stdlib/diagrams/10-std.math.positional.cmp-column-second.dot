@@ -17,18 +17,18 @@ digraph rule_cmp_column_second_lhs_rhs {
       "(?N ?q ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_CMP-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_CMP-WALK_L" -> "?CMP-WALK_L" [xlabel="1", color="#7f7f7f"];
+    "?CMP-WALK_L" -> "h1_CMP-WALK_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_CMP-WALK_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "h1_CMP-WALK_L" -> "z_L" [xlabel="3", color="#7f7f7f"];
     "h1_CMP-WALK_L" -> "(?N ?q ?c)_L" [xlabel="4", color="#7f7f7f"];
     "h1_CMP-WALK_L" -> "?o_L" [xlabel="5", color="#7f7f7f"];
     "h2_CL_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h2_CL_L" -> "?CL_L" [xlabel="1", color="#ff7f0e"];
+    "?CL_L" -> "h2_CL_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h2_CL_L" -> "?o_L" [xlabel="2", color="#ff7f0e"];
     "h2_CL_L" -> "0_L" [xlabel="3", color="#ff7f0e"];
     "h2_CL_L" -> "?c_L" [xlabel="4", color="#ff7f0e"];
     "h2_CL_L" -> "?t_L" [xlabel="5", color="#ff7f0e"];
-    "(?N ?q ?c)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?q ?c)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?q_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?c_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -39,7 +39,7 @@ digraph rule_cmp_column_second_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?t_R" [label="?t", shape=diamond];
     "h3_CMP-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h3_CMP-WALK_R" -> "?CMP-WALK_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?CMP-WALK_R" -> "h3_CMP-WALK_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h3_CMP-WALK_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h3_CMP-WALK_R" -> "z_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h3_CMP-WALK_R" -> "?q_R" [xlabel="4", color="#7f7f7f", style=dashed];

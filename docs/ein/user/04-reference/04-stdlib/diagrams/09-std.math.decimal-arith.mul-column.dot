@@ -18,20 +18,20 @@ digraph rule_mul_column_lhs_rhs {
       "(n ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_mul-walk_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_mul-walk_L" -> "mul-walk_L" [xlabel="1", color="#7f7f7f"];
+    "mul-walk_L" -> "h1_mul-walk_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_mul-walk_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "h1_mul-walk_L" -> "(n ?p ?a)_L" [xlabel="3", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?m_L" [xlabel="4", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?e_L" [xlabel="5", color="#7f7f7f"];
     "h1_mul-walk_L" -> "?acc_L" [xlabel="6", color="#7f7f7f"];
     "h2_md_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_md_L" -> "md_L" [xlabel="1", color="#bcbd22"];
+    "md_L" -> "h2_md_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_md_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
     "h2_md_L" -> "?m_L" [xlabel="3", color="#bcbd22"];
     "h2_md_L" -> "?e_L" [xlabel="4", color="#bcbd22"];
     "h2_md_L" -> "?s_L" [xlabel="5", color="#bcbd22"];
     "h2_md_L" -> "?f_L" [xlabel="6", color="#bcbd22"];
-    "(n ?p ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?p ?a)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?p ?a)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
@@ -49,13 +49,13 @@ digraph rule_mul_column_lhs_rhs {
       "(b ?s ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h3_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h3_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "mul-walk_R" -> "h3_mul-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h3_mul-walk_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h3_mul-walk_R" -> "?p_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h3_mul-walk_R" -> "?m_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h3_mul-walk_R" -> "?f_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h3_mul-walk_R" -> "(b ?s ?acc)_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(b ?s ?acc)_R" -> "b_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "b_R" -> "(b ?s ?acc)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(b ?s ?acc)_R" -> "?s_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(b ?s ?acc)_R" -> "?acc_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

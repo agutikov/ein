@@ -13,10 +13,10 @@ digraph rule_div_call_by_zero_lhs_rhs {
       "(?DIV-M1 ?k ?u ?v)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_DONE_L" -> "?DONE_L" [xlabel="1", color="#9467bd"];
+    "?DONE_L" -> "h1_DONE_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_DONE_L" -> "(?DIV-M1 ?k ?u ?v)_L" [xlabel="2", color="#9467bd"];
     "h1_DONE_L" -> "z_L" [xlabel="3", color="#9467bd"];
-    "(?DIV-M1 ?k ?u ?v)_L" -> "?DIV-M1_L" [xlabel="1", color="#bcbd22"];
+    "?DIV-M1_L" -> "(?DIV-M1 ?k ?u ?v)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(?DIV-M1 ?k ?u ?v)_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "(?DIV-M1 ?k ?u ?v)_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
     "(?DIV-M1 ?k ?u ?v)_L" -> "?v_L" [xlabel="4", color="#bcbd22"];
@@ -32,9 +32,9 @@ digraph rule_div_call_by_zero_lhs_rhs {
       "(?DIV-CALL ?k ?u ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
     "h2_division-by-zero_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_division-by-zero_R" -> "division-by-zero_R" [xlabel="1", color="#e377c2", style=dashed];
+    "division-by-zero_R" -> "h2_division-by-zero_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_division-by-zero_R" -> "(?DIV-CALL ?k ?u ?v)_R" [xlabel="2", color="#e377c2", style=dashed];
-    "(?DIV-CALL ?k ?u ?v)_R" -> "?DIV-CALL_R" [xlabel="1", color="#e377c2", style=dashed];
+    "?DIV-CALL_R" -> "(?DIV-CALL ?k ?u ?v)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "(?DIV-CALL ?k ?u ?v)_R" -> "?k_R" [xlabel="2", color="#e377c2", style=dashed];
     "(?DIV-CALL ?k ?u ?v)_R" -> "?u_R" [xlabel="3", color="#e377c2", style=dashed];
     "(?DIV-CALL ?k ?u ?v)_R" -> "?v_R" [xlabel="4", color="#e377c2", style=dashed];

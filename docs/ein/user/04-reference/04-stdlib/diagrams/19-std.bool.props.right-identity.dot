@@ -8,13 +8,13 @@ digraph rule_right_identity_lhs_rhs {
     "?e_L" [label="?e", shape=diamond];
     "1_L" [label="1", shape=box];
     "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h1_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h1_gate2_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
     "h1_gate2_L" -> "?e_L" [xlabel="4", color="#7f7f7f"];
     "h1_gate2_L" -> "0_L" [xlabel="5", color="#7f7f7f"];
     "h2_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h2_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h2_gate2_L" -> "1_L" [xlabel="3", color="#7f7f7f"];
     "h2_gate2_L" -> "?e_L" [xlabel="4", color="#7f7f7f"];
@@ -25,7 +25,7 @@ digraph rule_right_identity_lhs_rhs {
     "?f_R" [label="?f", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     "h3_right-identity-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h3_right-identity-of_R" -> "right-identity-of_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "right-identity-of_R" -> "h3_right-identity-of_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h3_right-identity-of_R" -> "?f_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h3_right-identity-of_R" -> "?e_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

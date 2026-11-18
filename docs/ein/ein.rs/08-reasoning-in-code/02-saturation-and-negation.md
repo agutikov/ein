@@ -97,8 +97,8 @@ ein render kb --fold FILE                        # the knowledge base, saturated
 ```
 
 The page shows `ein render kb --fold`'s graph without the four declarations' own facts, two for each, as
-`(relation lives-in Person House)` and `(relation lives-in)` for `lives-in`, which the view draws as octagons whose
-arrow `1` is at the box `relation`.
+`(relation lives-in Person House)` and `(relation lives-in)` for `lives-in`, which the view draws as an octagon whose
+arrow `1` is at the box `relation` and a loop labelled `relation` on the box `lives-in`.
 
 ---
 

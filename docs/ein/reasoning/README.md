@@ -123,10 +123,12 @@ does not hold it; an arrow carries its place among the arrows of its fact, $1$ o
 relation; a diamond is a variable; a dashed octagon, with its dashed arrows, is a fact that was derived, or, in a
 rule, a fact the conclusion adds ([the knowledge base](01-static-ir/01-knowledge-base.md#the-graph)). No relation
 is drawn otherwise than another. A drawing may **fold** a fact with a relation and two arguments that no fact
-points at into one arrow from the first argument to the second, labelled with the relation's name, the way a
-program is often drawn for its author ([rendering](../user/04-reference/12-rendering.md)); a drawing that folds
-says so beside it, and [the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what
-the fold stands for and what it loses. Nothing else is folded: a fact of one argument is an octagon, never a loop.
+points at into one arrow from the first argument to the second, labelled with the relation's name, and a fact with a
+relation and one argument into a loop on its argument, labelled the same way, the way a program is often drawn for
+its author ([rendering](../user/04-reference/12-rendering.md)); a drawing that folds says so beside it, and
+[the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what the fold stands for and
+what it loses. Nothing else is folded. A drawing of facts stands in layers, each relation above its facts and each
+fact above its arguments, where its layout allows.
 Every drawing is an image, and its source is the file of the same name in the `diagrams/` folder beside
 its page ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).
 

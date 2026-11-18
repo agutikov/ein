@@ -11,10 +11,10 @@ digraph rule_to_dec_begin_lhs_rhs {
       "(dec-bits ?b)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
     "h1_bin-top-first-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_bin-top-first-is_L" -> "bin-top-first-is_L" [xlabel="1", color="#2ca02c"];
+    "bin-top-first-is_L" -> "h1_bin-top-first-is_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_bin-top-first-is_L" -> "(dec-bits ?b)_L" [xlabel="2", color="#2ca02c"];
     "h1_bin-top-first-is_L" -> "?t_L" [xlabel="3", color="#2ca02c"];
-    "(dec-bits ?b)_L" -> "dec-bits_L" [xlabel="1", color="#8c564b"];
+    "dec-bits_L" -> "(dec-bits ?b)_L" [xlabel="1", dir=back, color="#8c564b"];
     "(dec-bits ?b)_L" -> "?b_L" [xlabel="2", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
@@ -23,7 +23,7 @@ digraph rule_to_dec_begin_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_to-dec-go_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_to-dec-go_R" -> "to-dec-go_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "to-dec-go_R" -> "h2_to-dec-go_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_to-dec-go_R" -> "?b_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_to-dec-go_R" -> "?t_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_to-dec-go_R" -> "z_R" [xlabel="4", color="#bcbd22", style=dashed];

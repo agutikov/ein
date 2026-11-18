@@ -10,16 +10,16 @@ digraph rule_first_argument_fits_lhs_rhs {
     "?x2_L" [label="?x2", shape=diamond];
     "is-instance_L" [label="is-instance", shape=box];
     "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
     "h1_relation_L" -> "?T1_L" [xlabel="3", color="#bcbd22"];
     "h1_relation_L" -> "?T2_L" [xlabel="4", color="#bcbd22"];
     "h2_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "h2_R_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_R_L" -> "?x1_L" [xlabel="2", color="#1f77b4"];
     "h2_R_L" -> "?x2_L" [xlabel="3", color="#1f77b4"];
     "h3_is-instance_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h3_is-instance_L" -> "is-instance_L" [xlabel="1", color="#7f7f7f"];
+    "is-instance_L" -> "h3_is-instance_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h3_is-instance_L" -> "?x1_L" [xlabel="2", color="#7f7f7f"];
     "h3_is-instance_L" -> "?T1_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -33,9 +33,9 @@ digraph rule_first_argument_fits_lhs_rhs {
       "(?R ?x1 ?x2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h4_fits_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h4_fits_R" -> "fits_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "fits_R" -> "h4_fits_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h4_fits_R" -> "(?R ?x1 ?x2)_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "(?R ?x1 ?x2)_R" -> "?R_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?R_R" -> "(?R ?x1 ?x2)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?R ?x1 ?x2)_R" -> "?x1_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(?R ?x1 ?x2)_R" -> "?x2_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

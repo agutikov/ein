@@ -20,16 +20,16 @@ digraph rule_int_div_floor_nn_lhs_rhs {
       "(int-div-floor ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
-    "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" -> "int-div-m_L" [xlabel="1", color="#ff7f0e"];
+    "int-div-m_L" -> "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" -> "(int-div-floor ?x ?y)_L" [xlabel="2", color="#ff7f0e"];
     "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" -> "neg_L" [xlabel="3", color="#ff7f0e"];
     "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" -> "neg_L" [xlabel="4", color="#ff7f0e"];
     "(int-div-m (int-div-floor ?x ?y) neg neg ?b)_L" -> "?b_L" [xlabel="5", color="#ff7f0e"];
-    "(int-div-floor ?x ?y)_L" -> "int-div-floor_L" [xlabel="1", color="#7f7f7f"];
+    "int-div-floor_L" -> "(int-div-floor ?x ?y)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(int-div-floor ?x ?y)_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "(int-div-floor ?x ?y)_L" -> "?y_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -49,17 +49,17 @@ digraph rule_int_div_floor_nn_lhs_rhs {
       "(int z ?r)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_int-div-done_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "int-div-done_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "int-div-done_R" -> "h2_int-div-done_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int-div-floor ?x ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int ?q z)_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int z ?r)_R" [xlabel="4", color="#2ca02c", style=dashed];
-    "(int-div-floor ?x ?y)_R" -> "int-div-floor_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "int-div-floor_R" -> "(int-div-floor ?x ?y)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(int-div-floor ?x ?y)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(int-div-floor ?x ?y)_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
-    "(int ?q z)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?q z)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?q z)_R" -> "?q_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?q z)_R" -> "z_R" [xlabel="3", color="#17becf", style=dashed];
-    "(int z ?r)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int z ?r)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int z ?r)_R" -> "z_R" [xlabel="2", color="#17becf", style=dashed];
     "(int z ?r)_R" -> "?r_R" [xlabel="3", color="#17becf", style=dashed];
   }

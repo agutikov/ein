@@ -5,14 +5,14 @@ digraph rule_imply1_lhs_rhs {
     "?R1_L" [label="?R1", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "h1_R1_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_R1_L" -> "?R1_L" [xlabel="1", color="#bcbd22"];
+    "?R1_L" -> "h1_R1_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_R1_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
     "?R2_R" [label="?R2", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     "h2_R2_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_R2_R" -> "?R2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?R2_R" -> "h2_R2_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_R2_R" -> "?a_R" [xlabel="2", color="#bcbd22", style=dashed];
   }
 }

@@ -8,11 +8,11 @@ digraph rule_guess_lhs_rhs {
     "?c_L" [label="?c", shape=diamond];
     "Chair_L" [label="Chair", shape=box];
     "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "is-a_L" -> "h1_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_is-a_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "h1_is-a_L" -> "Person_L" [xlabel="3", color="#7f7f7f"];
     "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_is-a_L" -> "?c_L" [xlabel="2", color="#7f7f7f"];
     "h2_is-a_L" -> "Chair_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -21,7 +21,7 @@ digraph rule_guess_lhs_rhs {
     "?p_R" [label="?p", shape=diamond];
     "?c_R" [label="?c", shape=diamond];
     "h3_seat_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_seat_R" -> "seat_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "seat_R" -> "h3_seat_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_seat_R" -> "?p_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h3_seat_R" -> "?c_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

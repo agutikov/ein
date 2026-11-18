@@ -13,11 +13,11 @@ digraph rule_turn_step_lhs_rhs {
       "(?B ?a ?r)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_TURN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_TURN_L" -> "?TURN_L" [xlabel="1", color="#9467bd"];
+    "?TURN_L" -> "h1_TURN_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_TURN_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "h1_TURN_L" -> "(?B ?a ?r)_L" [xlabel="3", color="#9467bd"];
     "h1_TURN_L" -> "?acc_L" [xlabel="4", color="#9467bd"];
-    "(?B ?a ?r)_L" -> "?B_L" [xlabel="1", color="#2ca02c"];
+    "?B_L" -> "(?B ?a ?r)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(?B ?a ?r)_L" -> "?a_L" [xlabel="2", color="#2ca02c"];
     "(?B ?a ?r)_L" -> "?r_L" [xlabel="3", color="#2ca02c"];
   }
@@ -33,11 +33,11 @@ digraph rule_turn_step_lhs_rhs {
       "(?N ?acc ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_TURN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_TURN_R" -> "?TURN_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?TURN_R" -> "h2_TURN_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_TURN_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "?r_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_TURN_R" -> "(?N ?acc ?a)_R" [xlabel="4", color="#9467bd", style=dashed];
-    "(?N ?acc ?a)_R" -> "?N_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?N_R" -> "(?N ?acc ?a)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(?N ?acc ?a)_R" -> "?acc_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(?N ?acc ?a)_R" -> "?a_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

@@ -13,10 +13,10 @@ digraph rule_sub_start_lhs_rhs {
       "(?SUB-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?SUB-SECOND ?x ?y ?u)_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?v_L" [xlabel="3", color="#bcbd22"];
-    "(?SUB-SECOND ?x ?y ?u)_L" -> "?SUB-SECOND_L" [xlabel="1", color="#9467bd"];
+    "?SUB-SECOND_L" -> "(?SUB-SECOND ?x ?y ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?SUB-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?SUB-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
     "(?SUB-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
@@ -37,23 +37,23 @@ digraph rule_sub_start_lhs_rhs {
       "(?SHORTFALL ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_SUB-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_SUB-WALK_R" -> "?SUB-WALK_R" [xlabel="1", color="#d62728", style=dashed];
+    "?SUB-WALK_R" -> "h2_SUB-WALK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_SUB-WALK_R" -> "(?DIFFERENCE ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_SUB-WALK_R" -> "?u_R" [xlabel="3", color="#d62728", style=dashed];
     "h2_SUB-WALK_R" -> "?v_R" [xlabel="4", color="#d62728", style=dashed];
     "h2_SUB-WALK_R" -> "0_R" [xlabel="5", color="#d62728", style=dashed];
     "h2_SUB-WALK_R" -> "z_R" [xlabel="6", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?SUB-WALK_R" [xlabel="1", color="#d62728", style=dashed];
+    "?SUB-WALK_R" -> "h3_SUB-WALK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "(?SHORTFALL ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?v_R" [xlabel="3", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?u_R" [xlabel="4", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "0_R" [xlabel="5", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "z_R" [xlabel="6", color="#d62728", style=dashed];
-    "(?DIFFERENCE ?x ?y)_R" -> "?DIFFERENCE_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?DIFFERENCE_R" -> "(?DIFFERENCE ?x ?y)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(?DIFFERENCE ?x ?y)_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(?DIFFERENCE ?x ?y)_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
-    "(?SHORTFALL ?x ?y)_R" -> "?SHORTFALL_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?SHORTFALL_R" -> "(?SHORTFALL ?x ?y)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(?SHORTFALL ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(?SHORTFALL ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
   }

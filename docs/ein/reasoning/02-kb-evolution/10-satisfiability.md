@@ -52,10 +52,10 @@ $$
 
 ![The rule one-seat: two seats of one guest, and (false)](diagrams/10-rule-one-seat.svg)
 
-Both drawings fold each fact pattern of three arrows into a labelled arrow
-([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)); each conclusion,
-$\operatorname{open}(\operatorname{seats})$ and $\bot$, is an octagon whose first arrow is at $\mathsf{open}$ or at
-$\mathsf{false}$. In the first the trigger is the solid arrow and the witness the dashed cluster: the rule
+Both drawings fold each fact pattern of three arrows into a labelled arrow and each of two into a labelled loop
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): the conclusion
+$\operatorname{open}(\operatorname{seats})$ is a loop labelled $\mathsf{open}$ on $\mathsf{seats}$, and $\bot$,
+of one arrow, an octagon whose first arrow is at $\mathsf{false}$. In the first the trigger is the solid arrow and the witness the dashed cluster: the rule
 matches while the cluster finds nothing. With one guest and two chairs their region is the first cube of
 [monotonicity § 6](08-monotonicity.md#6-the-two-kinds-compared): the empty commitment owes, both seatings
 together are dead, and $R$ is the two seatings between.

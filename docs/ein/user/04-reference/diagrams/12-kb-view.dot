@@ -1,51 +1,66 @@
 digraph kb {
-  // suggested layout: fdp
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
 
   // facts
   f_1f1a2cc2f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_1f1a2cc2f3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "T" [xlabel="3", color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "T" [xlabel="4", color="#bcbd22", style=solid];
   f_7b05b7469c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_7b05b7469c -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_7b05b7469c [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_7b05b7469c -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
   f_d6c4ab1c24 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d6c4ab1c24 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_d6c4ab1c24 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_d6c4ab1c24 -> "co-located" [xlabel="2", color="#bcbd22", style=solid];
   f_d6c4ab1c24 -> "Attribute" [xlabel="3", color="#bcbd22", style=solid];
   f_d6c4ab1c24 -> "Attribute" [xlabel="4", color="#bcbd22", style=solid];
   f_c1e545ef0f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c1e545ef0f -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_c1e545ef0f [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_c1e545ef0f -> "co-located" [xlabel="2", color="#bcbd22", style=solid];
   f_17c4551680 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_17c4551680 -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_17c4551680 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_17c4551680 -> "Nationality" [xlabel="2", color="#7f7f7f", style=solid];
   f_17c4551680 -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
   f_8108d687ed [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_8108d687ed -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_8108d687ed [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_8108d687ed -> "House" [xlabel="2", color="#7f7f7f", style=solid];
   f_8108d687ed -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
   f_dc6eb765fe [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_dc6eb765fe -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_dc6eb765fe [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_dc6eb765fe -> "Norwegian" [xlabel="2", color="#7f7f7f", style=solid];
   f_dc6eb765fe -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
   f_81380bf2fd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_81380bf2fd -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_81380bf2fd [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_81380bf2fd -> "House-1" [xlabel="2", color="#7f7f7f", style=solid];
   f_81380bf2fd -> "House" [xlabel="3", color="#7f7f7f", style=solid];
   f_4b44fea3d9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_4b44fea3d9 -> "symmetric" [xlabel="1", color="#7f7f7f", style=solid];
+  "symmetric" -> f_4b44fea3d9 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_4b44fea3d9 -> "co-located" [xlabel="2", color="#7f7f7f", style=solid];
   f_6bc19ba38f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(10)"];
-  f_6bc19ba38f -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  "co-located" -> f_6bc19ba38f [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_6bc19ba38f -> "Norwegian" [xlabel="2", color="#bcbd22", style=solid];
   f_6bc19ba38f -> "House-1" [xlabel="3", color="#bcbd22", style=solid];
   f_433a32b1da [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by symmetric"];
-  f_433a32b1da -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  "co-located" -> f_433a32b1da [xlabel="1", dir=back, color="#bcbd22", style=dashed];
   f_433a32b1da -> "House-1" [xlabel="2", color="#bcbd22", style=dashed];
   f_433a32b1da -> "Norwegian" [xlabel="3", color="#bcbd22", style=dashed];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; "symmetric"; }
+  { rank=same; "layer 1"; f_1f1a2cc2f3; f_7b05b7469c; f_d6c4ab1c24; f_c1e545ef0f; f_4b44fea3d9; }
+  { rank=same; "layer 2"; "is-a"; "T"; "co-located"; }
+  { rank=same; "layer 3"; f_17c4551680; f_8108d687ed; f_dc6eb765fe; f_81380bf2fd; f_6bc19ba38f; f_433a32b1da; }
+  { rank=same; "layer 4"; "Attribute"; "Nationality"; "House"; "Norwegian"; "House-1"; }
 }

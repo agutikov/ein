@@ -6,7 +6,7 @@ digraph rule_operand_digit_zero_lhs_rhs {
     "?k_L" [label="?k", shape=diamond];
     "0_L" [label="0", shape=box];
     "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "?OPERAND_L" -> "h1_OPERAND_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_OPERAND_L" -> "0_L" [xlabel="3", color="#d62728"];
   }
@@ -20,10 +20,10 @@ digraph rule_operand_digit_zero_lhs_rhs {
       "(?NOT-A-NUMBER 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_BAD-OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_BAD-OPERAND_R" -> "?BAD-OPERAND_R" [xlabel="1", color="#17becf", style=dashed];
+    "?BAD-OPERAND_R" -> "h2_BAD-OPERAND_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_BAD-OPERAND_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_BAD-OPERAND_R" -> "(?NOT-A-NUMBER 0)_R" [xlabel="3", color="#17becf", style=dashed];
-    "(?NOT-A-NUMBER 0)_R" -> "?NOT-A-NUMBER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?NOT-A-NUMBER_R" -> "(?NOT-A-NUMBER 0)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?NOT-A-NUMBER 0)_R" -> "0_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

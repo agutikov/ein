@@ -12,10 +12,10 @@ digraph rule_bin_numeral_step_zero_lhs_rhs {
       "(b2 ?p 0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "bin-check_L" -> "h1_bin-check_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
     "h1_bin-check_L" -> "(b2 ?p 0)_L" [xlabel="3", color="#1f77b4"];
-    "(b2 ?p 0)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "b2_L" -> "(b2 ?p 0)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(b2 ?p 0)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "(b2 ?p 0)_L" -> "0_L" [xlabel="3", color="#bcbd22"];
   }
@@ -24,7 +24,7 @@ digraph rule_bin_numeral_step_zero_lhs_rhs {
     "?w_R" [label="?w", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "h2_bin-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_bin-check_R" -> "bin-check_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "bin-check_R" -> "h2_bin-check_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_bin-check_R" -> "?w_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_bin-check_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

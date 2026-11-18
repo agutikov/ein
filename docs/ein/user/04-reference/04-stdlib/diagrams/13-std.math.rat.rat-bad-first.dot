@@ -17,12 +17,12 @@ digraph rule_rat_bad_first_lhs_rhs {
       "(rat-first ?request ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_bad-operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_bad-operand_L" -> "bad-operand_L" [xlabel="1", color="#1f77b4"];
+    "bad-operand_L" -> "h1_bad-operand_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_bad-operand_L" -> "(rat-of (rat-first ?request ?y))_L" [xlabel="2", color="#1f77b4"];
     "h1_bad-operand_L" -> "?f_L" [xlabel="3", color="#1f77b4"];
-    "(rat-of (rat-first ?request ?y))_L" -> "rat-of_L" [xlabel="1", color="#2ca02c"];
+    "rat-of_L" -> "(rat-of (rat-first ?request ?y))_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(rat-of (rat-first ?request ?y))_L" -> "(rat-first ?request ?y)_L" [xlabel="2", color="#2ca02c"];
-    "(rat-first ?request ?y)_L" -> "rat-first_L" [xlabel="1", color="#bcbd22"];
+    "rat-first_L" -> "(rat-first ?request ?y)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(rat-first ?request ?y)_L" -> "?request_L" [xlabel="2", color="#bcbd22"];
     "(rat-first ?request ?y)_L" -> "?y_L" [xlabel="3", color="#bcbd22"];
   }
@@ -31,7 +31,7 @@ digraph rule_rat_bad_first_lhs_rhs {
     "?request_R" [label="?request", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
     "h2_bad-request_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_bad-request_R" -> "bad-request_R" [xlabel="1", color="#e377c2", style=dashed];
+    "bad-request_R" -> "h2_bad-request_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_bad-request_R" -> "?request_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_bad-request_R" -> "?f_R" [xlabel="3", color="#e377c2", style=dashed];
   }

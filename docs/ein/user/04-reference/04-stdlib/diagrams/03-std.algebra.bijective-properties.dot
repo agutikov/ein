@@ -5,7 +5,7 @@ digraph rule_bijective_properties_lhs_rhs {
     "bijective_L" [label="bijective", shape=box];
     "?R_L" [label="?R", shape=diamond];
     "h1_bijective_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_bijective_L" -> "bijective_L" [xlabel="1", color="#17becf"];
+    "bijective_L" -> "h1_bijective_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_bijective_L" -> "?R_L" [xlabel="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
@@ -15,16 +15,16 @@ digraph rule_bijective_properties_lhs_rhs {
     "total_R" [label="total", shape=box];
     "surjective_R" [label="surjective", shape=box];
     "h2_functional_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_functional_R" -> "functional_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "functional_R" -> "h2_functional_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_functional_R" -> "?R_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h3_injective_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_injective_R" -> "injective_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "injective_R" -> "h3_injective_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_injective_R" -> "?R_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h4_total_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h4_total_R" -> "total_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "total_R" -> "h4_total_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h4_total_R" -> "?R_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h5_surjective_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h5_surjective_R" -> "surjective_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "surjective_R" -> "h5_surjective_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h5_surjective_R" -> "?R_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

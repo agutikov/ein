@@ -11,20 +11,20 @@ digraph rule_compose_contravariant_lhs_rhs {
     "?Sc_L" [label="?Sc", shape=diamond];
     "?Tc_L" [label="?Tc", shape=diamond];
     "h1_compose_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_compose_L" -> "compose_L" [xlabel="1", color="#bcbd22"];
+    "compose_L" -> "h1_compose_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_compose_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
     "h1_compose_L" -> "?S_L" [xlabel="3", color="#bcbd22"];
     "h1_compose_L" -> "?T_L" [xlabel="4", color="#bcbd22"];
     "h2_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h2_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_converse_L" -> "?R_L" [xlabel="2", color="#2ca02c"];
     "h2_converse_L" -> "?Rc_L" [xlabel="3", color="#2ca02c"];
     "h3_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h3_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h3_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h3_converse_L" -> "?S_L" [xlabel="2", color="#2ca02c"];
     "h3_converse_L" -> "?Sc_L" [xlabel="3", color="#2ca02c"];
     "h4_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h4_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h4_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h4_converse_L" -> "?T_L" [xlabel="2", color="#2ca02c"];
     "h4_converse_L" -> "?Tc_L" [xlabel="3", color="#2ca02c"];
   }
@@ -34,7 +34,7 @@ digraph rule_compose_contravariant_lhs_rhs {
     "?Rc_R" [label="?Rc", shape=diamond];
     "?Tc_R" [label="?Tc", shape=diamond];
     "h5_compose_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h5_compose_R" -> "compose_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "compose_R" -> "h5_compose_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h5_compose_R" -> "?Sc_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h5_compose_R" -> "?Rc_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h5_compose_R" -> "?Tc_R" [xlabel="4", color="#bcbd22", style=dashed];

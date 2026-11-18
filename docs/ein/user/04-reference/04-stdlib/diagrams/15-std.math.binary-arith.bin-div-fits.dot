@@ -15,10 +15,10 @@ digraph rule_bin_div_fits_lhs_rhs {
       "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_bin-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_bin-done_L" -> "bin-done_L" [xlabel="1", color="#8c564b"];
+    "bin-done_L" -> "h1_bin-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_bin-done_L" -> "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [xlabel="2", color="#8c564b"];
     "h1_bin-done_L" -> "?t_L" [xlabel="3", color="#8c564b"];
-    "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "bin-div-trial_L" [xlabel="1", color="#17becf"];
+    "bin-div-trial_L" -> "(bin-div-trial ?k ?d ?rest ?w ?u)_L" [xlabel="1", dir=back, color="#17becf"];
     "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?d_L" [xlabel="3", color="#17becf"];
     "(bin-div-trial ?k ?d ?rest ?w ?u)_L" -> "?rest_L" [xlabel="4", color="#17becf"];
@@ -39,13 +39,13 @@ digraph rule_bin_div_fits_lhs_rhs {
       "(b2 ?w 1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_bin-div-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_bin-div-step_R" -> "bin-div-step_R" [xlabel="1", color="#9467bd", style=dashed];
+    "bin-div-step_R" -> "h2_bin-div-step_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?rest_R" [xlabel="4", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?t_R" [xlabel="5", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "(b2 ?w 1)_R" [xlabel="6", color="#9467bd", style=dashed];
-    "(b2 ?w 1)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "b2_R" -> "(b2 ?w 1)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(b2 ?w 1)_R" -> "?w_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(b2 ?w 1)_R" -> "1_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

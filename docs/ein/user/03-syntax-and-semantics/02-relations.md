@@ -79,8 +79,9 @@ declared:
 In both drawings a relation is one node: `lives-in` is the box under the first arrow of `(lives-in Norwegian
 House-1)` and under the second arrow of its declarations, and that one box is what makes them a fact of the
 relation and facts about it. Under `--fold` each fact of three arrows that nothing points at, `(lives-in Norwegian
-House-1)` and `(relation adult Person)` here, is one arrow labelled with its relation's name, and the relation is
-then no node for that fact ([objects](01-objects.md#as-a-graph) has the graph beside both drawings).
+House-1)` and `(relation adult Person)` here, is one arrow labelled with its relation's name, each fact of two arrows,
+`(adult Norwegian)`, `(relation solved)` and the facts the loader adds, a loop labelled the same way, and the relation is then no node
+for that fact ([objects](01-objects.md#as-a-graph) has the graph beside both drawings).
 
 ## In words
 

@@ -411,6 +411,8 @@ drawing is not shown.
                            bin-undeclared))
   :why    "binary arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
+
+![The rule binary-arith of std.math.binary-arith, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/15-std.math.binary-arith.binary-arith.svg)
 <!-- /rule -->
 
 ## `std.math.convert`

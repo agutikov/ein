@@ -7,13 +7,13 @@ digraph rule_idempotent_r_lhs_rhs {
     "0_L" [label="0", shape=box];
     "1_L" [label="1", shape=box];
     "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h1_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h1_gate2_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
     "h1_gate2_L" -> "0_L" [xlabel="4", color="#7f7f7f"];
     "h1_gate2_L" -> "0_L" [xlabel="5", color="#7f7f7f"];
     "h2_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h2_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h2_gate2_L" -> "1_L" [xlabel="3", color="#7f7f7f"];
     "h2_gate2_L" -> "1_L" [xlabel="4", color="#7f7f7f"];
@@ -23,7 +23,7 @@ digraph rule_idempotent_r_lhs_rhs {
     "idempotent_R" [label="idempotent", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h3_idempotent_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h3_idempotent_R" -> "idempotent_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "idempotent_R" -> "h3_idempotent_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h3_idempotent_R" -> "?f_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

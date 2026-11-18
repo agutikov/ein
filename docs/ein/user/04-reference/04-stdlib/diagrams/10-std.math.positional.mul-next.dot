@@ -13,10 +13,10 @@ digraph rule_mul_next_lhs_rhs {
       "(?MUL-SUM ?k ?u ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_DONE_L" -> "?DONE_L" [xlabel="1", color="#9467bd"];
+    "?DONE_L" -> "h1_DONE_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_DONE_L" -> "(?MUL-SUM ?k ?u ?rest)_L" [xlabel="2", color="#9467bd"];
     "h1_DONE_L" -> "?s_L" [xlabel="3", color="#9467bd"];
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?MUL-SUM_L" [xlabel="1", color="#9467bd"];
+    "?MUL-SUM_L" -> "(?MUL-SUM ?k ?u ?rest)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?MUL-SUM ?k ?u ?rest)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "(?MUL-SUM ?k ?u ?rest)_L" -> "?u_L" [xlabel="3", color="#9467bd"];
     "(?MUL-SUM ?k ?u ?rest)_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
@@ -28,7 +28,7 @@ digraph rule_mul_next_lhs_rhs {
     "?rest_R" [label="?rest", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
     "h2_MUL-STEP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_MUL-STEP_R" -> "?MUL-STEP_R" [xlabel="1", color="#17becf", style=dashed];
+    "?MUL-STEP_R" -> "h2_MUL-STEP_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?u_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_MUL-STEP_R" -> "?rest_R" [xlabel="4", color="#17becf", style=dashed];

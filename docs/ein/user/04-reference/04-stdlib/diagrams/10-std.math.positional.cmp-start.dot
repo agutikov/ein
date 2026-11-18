@@ -13,10 +13,10 @@ digraph rule_cmp_start_lhs_rhs {
       "(?CMP-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?CMP-SECOND ?x ?y ?u)_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?v_L" [xlabel="3", color="#bcbd22"];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?CMP-SECOND_L" [xlabel="1", color="#8c564b"];
+    "?CMP-SECOND_L" -> "(?CMP-SECOND ?x ?y ?u)_L" [xlabel="1", dir=back, color="#8c564b"];
     "(?CMP-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#8c564b"];
     "(?CMP-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#8c564b"];
     "(?CMP-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#8c564b"];
@@ -34,12 +34,12 @@ digraph rule_cmp_start_lhs_rhs {
       "(?ORDER ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_CMP-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_CMP-WALK_R" -> "?CMP-WALK_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?CMP-WALK_R" -> "h2_CMP-WALK_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_CMP-WALK_R" -> "(?ORDER ?x ?y)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_CMP-WALK_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_CMP-WALK_R" -> "?v_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_CMP-WALK_R" -> "eq_R" [xlabel="5", color="#7f7f7f", style=dashed];
-    "(?ORDER ?x ?y)_R" -> "?ORDER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?ORDER_R" -> "(?ORDER ?x ?y)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?ORDER ?x ?y)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(?ORDER ?x ?y)_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

@@ -1,9 +1,17 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid, xlabel="(10)"];
-  f_ba78d8e6bc -> "lives-in" [xlabel="1", color="#9467bd", style=solid];
+  "lives-in" -> f_ba78d8e6bc [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#9467bd", style=solid];
   f_ba78d8e6bc -> "House-1" [xlabel="3", color="#9467bd", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "lives-in"; }
+  { rank=same; "layer 1"; f_ba78d8e6bc; }
+  { rank=same; "layer 2"; "Norwegian"; "House-1"; }
 }

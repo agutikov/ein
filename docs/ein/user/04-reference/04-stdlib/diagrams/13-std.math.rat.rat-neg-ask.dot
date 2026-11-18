@@ -5,7 +5,7 @@ digraph rule_rat_neg_ask_lhs_rhs {
     "rat-neg_L" [label="rat-neg", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "h1_rat-neg_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_rat-neg_L" -> "rat-neg_L" [xlabel="1", color="#2ca02c"];
+    "rat-neg_L" -> "h1_rat-neg_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_rat-neg_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -27,14 +27,14 @@ digraph rule_rat_neg_ask_lhs_rhs {
       "(rat-neg ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(rat-of (rat-only (rat-neg ?x)))_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(rat-of (rat-only (rat-neg ?x)))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-of_R" -> "(rat-of (rat-only (rat-neg ?x)))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-of (rat-only (rat-neg ?x)))_R" -> "(rat-only (rat-neg ?x))_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-only (rat-neg ?x))_R" -> "rat-only_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-only_R" -> "(rat-only (rat-neg ?x))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-only (rat-neg ?x))_R" -> "(rat-neg ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-neg ?x)_R" -> "rat-neg_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-neg_R" -> "(rat-neg ?x)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-neg ?x)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

@@ -13,11 +13,11 @@ digraph rule_to_bin_halve_lhs_rhs {
       "(n ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_to-bin-go_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_to-bin-go_L" -> "to-bin-go_L" [xlabel="1", color="#17becf"];
+    "to-bin-go_L" -> "h1_to-bin-go_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_to-bin-go_L" -> "?x_L" [xlabel="2", color="#17becf"];
     "h1_to-bin-go_L" -> "(n ?p ?a)_L" [xlabel="3", color="#17becf"];
     "h1_to-bin-go_L" -> "?acc_L" [xlabel="4", color="#17becf"];
-    "(n ?p ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?p ?a)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?p ?a)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
@@ -38,17 +38,17 @@ digraph rule_to_bin_halve_lhs_rhs {
       "(n z 2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "div-call_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "(halving ?x ?acc)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "(n ?p ?a)_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "(n z 2)_R" [xlabel="4", color="#bcbd22", style=dashed];
-    "(halving ?x ?acc)_R" -> "halving_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "halving_R" -> "(halving ?x ?acc)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(halving ?x ?acc)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(halving ?x ?acc)_R" -> "?acc_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "(n ?p ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n ?p ?a)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?p ?a)_R" -> "?p_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?p ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n z 2)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n z 2)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n z 2)_R" -> "z_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n z 2)_R" -> "2_R" [xlabel="3", color="#9467bd", style=dashed];
   }

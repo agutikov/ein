@@ -1,16 +1,16 @@
 digraph step1 {
-  rankdir=LR;
+  rankdir=TB;
   node [fontname="Inter", shape=box];
   ranksep=0.55;
   "f_976d7e7ab9" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   "f_884e5d5933" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
-  "fire0_knows-back" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="knows-back\nAlice knows Bob, so Bob knows Alice"];
-  "f_976d7e7ab9" -> "knows" [xlabel="1"];
+  "fire0_knows-back" [shape=box, style="rounded", color="#1a237e", fontcolor="#1a237e", penwidth=2, label="knows-back\nAlice knows Bob, so Bob knows Alice"];
+  "knows" -> "f_976d7e7ab9" [xlabel="1", dir=back];
   "f_976d7e7ab9" -> "Alice" [xlabel="2"];
   "f_976d7e7ab9" -> "Bob" [xlabel="3"];
-  "f_884e5d5933" -> "knows" [xlabel="1", penwidth=2];
+  "knows" -> "f_884e5d5933" [xlabel="1", dir=back, penwidth=2];
   "f_884e5d5933" -> "Bob" [xlabel="2", penwidth=2];
   "f_884e5d5933" -> "Alice" [xlabel="3", penwidth=2];
-  "f_976d7e7ab9" -> "fire0_knows-back" [color="#8c564b"];
-  "fire0_knows-back" -> "f_884e5d5933" [color="#8c564b", style=bold];
+  "f_976d7e7ab9" -> "fire0_knows-back" [color="#1a237e", penwidth=2];
+  "fire0_knows-back" -> "f_884e5d5933" [color="#1a237e", penwidth=2];
 }

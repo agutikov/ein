@@ -25,7 +25,7 @@ COMMAND ein render
   ABOUT DOT for rules / constraints
 COMMAND ein render constraints
   ABOUT constraint-scope DOT (structural properties)
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   POSITIONAL file required=True help=
 COMMAND ein render h-space
@@ -40,7 +40,7 @@ COMMAND ein render h-space
 COMMAND ein render kb
   ABOUT a KB as one DOT digraph, entities fused across forms: FILE loaded and saturated. A --dump-answer state file is a FILE, so a model draws the same way root does
   OPTION --colour-by -- metavar=COLOUR_BY arity=1 default='relation' choices=relation|origin|none group=- required=False help=edge colour: per relation (default), per origin, or none
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   OPTION --since -- metavar=FILE arity=1 default=None choices=- group=- required=False help=load and saturate FILE too, and draw at penwidth 3 every fact it lacks — a model against its root.ein is what the commitment added
   POSITIONAL file required=True help=
@@ -52,7 +52,7 @@ COMMAND ein render lattice
   POSITIONAL file required=True help=
 COMMAND ein render program
   ABOUT the program as written, in three parts: its knowledge base as one DOT digraph, drawn as `render kb` draws one; a digraph per rule; the query. Read through the loader first, so a program it refuses is refused, as every command refuses it; drawn as parsed, its imports unresolved
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
@@ -64,14 +64,14 @@ COMMAND ein render region
   POSITIONAL dir required=True help=
 COMMAND ein render rule
   ABOUT a single rule's DOT, by name
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --name -- metavar=NAME arity=1 default=None choices=- group=- required=True help=rule name to render
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
 COMMAND ein render rules
   ABOUT one DOT digraph per rule
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
@@ -91,7 +91,7 @@ COMMAND ein solve
   OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write every node this run visited, in visit order, to DIR: nodes.json (ein-lattice/2) and nodes.md (docs/ein/ein.rs/06-lattice-dump.md). DIR is made before the run; past that, stdout, stderr and the exit code are unchanged.
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/ein/ein.rs/05-events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
-  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) draw a fact of three arrows (a relation and two arguments) as one arrow from its first argument to its second, labelled with the relation, in every drawing of the trace; by default every fact is an octagon with no name in it
+  OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) draw a fact of three arrows (a relation and two arguments) as one arrow from its first argument to its second, and a fact of two as a loop, labelled with the relation, in every drawing of the trace but at a step's premises and conclusions; by default every fact is an octagon with no name in it
   OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append each traced state's whole KB
   OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, H, the universe: the candidates by relation, each dead alone marked. Its candidates share stdout's 100 lines with the read-out; --dump-answer DIR writes it whole, as DIR/forms/hyp-stats.txt
   OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for each step's nodes, or 'auto' (default: 1). The same read-out, byte for byte

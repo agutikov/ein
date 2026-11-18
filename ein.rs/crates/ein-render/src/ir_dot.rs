@@ -26,6 +26,7 @@ use crate::fact_graph::{Fact, FactSet, Look, Under, fact_id};
 use crate::kb_dot::{kb_digraph_open, short_source};
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, goal_cluster, render_rule_form};
+use crate::slice::{DERIVATION_WIDTH, derivation_colour};
 
 /// The rendering options `to_dot` threads through every form.
 #[derive(Clone, Copy)]
@@ -33,7 +34,7 @@ pub struct DotOpts {
     pub rule_mode: RuleMode,
     pub trace_view: TraceView,
     /// Fold a fact or a pattern of three arrows that nothing drawn points
-    /// at into one labelled arrow (Q-M1f.419).
+    /// at into one labelled arrow, and of two into a loop (Q-M1f.425).
     pub fold: bool,
 }
 
@@ -438,7 +439,9 @@ pub fn render_trace(ast: &Ast, form: NodeId, view: TraceView) -> String {
 /// its own, from its premises to the fact it derives, and each fact derived
 /// drawn as its node in the canonical form (Q-M1f.419), never a node
 /// labelled with its text. A premise that names an earlier step is the fact
-/// that step derived; any other is a name.
+/// that step derived; any other is a name. A step and its arrows stand out
+/// as a slice's do (Q-M1f.428): twice the default width, in a colour of
+/// [`crate::slice::DERIVATION_PALETTE`] by its rule's name.
 fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
     let mut w = Written {
         ast,
@@ -472,8 +475,10 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
             Some(r) => multiline(&[&step_name, r]),
             None => quote(&step_name),
         };
+        let colour = derivation_colour(rule.as_deref().unwrap_or(&step_name));
+        let attrs = format!("color=\"{colour}\", {DERIVATION_WIDTH}");
         steps.push(format!(
-            "  {step_id} [shape=box, style=rounded, label={label}];"
+            "  {step_id} [shape=box, style=rounded, fontcolor=\"{colour}\", {attrs}, label={label}];"
         ));
         if let Some(using) = kw_get(ast, ev, "using").filter(|v| is_sform(ast, *v)) {
             for premise in trace_premises(ast, using) {
@@ -490,7 +495,7 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
                         atom_id(ast, premise)
                     }
                 };
-                edges.push(format!("  {pid} -> {step_id};"));
+                edges.push(format!("  {pid} -> {step_id} [{attrs}];"));
             }
         }
         if let Some(d) = kw_get(ast, ev, "derives").filter(|v| is_sform(ast, *v)) {
@@ -504,7 +509,7 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
                 w.set.drawn.push(i);
             }
             let did = w.set.facts[i].id.clone();
-            edges.push(format!("  {step_id} -> {did} [style=bold];"));
+            edges.push(format!("  {step_id} -> {did} [{attrs}];"));
             match derived_by_step.iter_mut().find(|(k, _)| *k == step_name) {
                 Some(slot) => slot.1 = did,
                 None => derived_by_step.push((step_name.clone(), did)),

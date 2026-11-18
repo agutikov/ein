@@ -12,10 +12,10 @@ digraph rule_div_ask_second_lhs_rhs {
       "(?DIV-FIRST ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?DIV-FIRST ?x ?y)_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
-    "(?DIV-FIRST ?x ?y)_L" -> "?DIV-FIRST_L" [xlabel="1", color="#9467bd"];
+    "?DIV-FIRST_L" -> "(?DIV-FIRST ?x ?y)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?DIV-FIRST ?x ?y)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?DIV-FIRST ?x ?y)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -30,10 +30,10 @@ digraph rule_div_ask_second_lhs_rhs {
       "(?DIV-SECOND ?x ?y ?u)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_OPERAND_R" -> "?OPERAND_R" [xlabel="1", color="#d62728", style=dashed];
+    "?OPERAND_R" -> "h2_OPERAND_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_OPERAND_R" -> "(?DIV-SECOND ?x ?y ?u)_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_OPERAND_R" -> "?y_R" [xlabel="3", color="#d62728", style=dashed];
-    "(?DIV-SECOND ?x ?y ?u)_R" -> "?DIV-SECOND_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?DIV-SECOND_R" -> "(?DIV-SECOND ?x ?y ?u)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(?DIV-SECOND ?x ?y ?u)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(?DIV-SECOND ?x ?y ?u)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
     "(?DIV-SECOND ?x ?y ?u)_R" -> "?u_R" [xlabel="4", color="#9467bd", style=dashed];

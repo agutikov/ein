@@ -238,10 +238,10 @@ $$
 ![The rule note: its pattern above its conclusion](diagrams/02-rule-note.svg)
 
 The upper panel is the pattern and the lower the conclusion; a diamond is a variable. The drawing folds each fact
-pattern of three arrows into a labelled arrow
+pattern of three arrows into a labelled arrow and each of two into a labelled loop
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): the arrow labelled by
 the variable in a relation's place stands for a fact of whichever relation the activator names. The premise
-$\operatorname{holds}(f)$, of two arrows, is an octagon whose first arrow is at $\mathsf{holds}$. The program
+$\operatorname{holds}(f)$, of two arrows, is a loop on $f$ labelled $\mathsf{holds}$. The program
 states four facts and two activators:
 
 $$
@@ -263,7 +263,8 @@ is the same:
 
 ![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
 
-It folds each fact of three arrows as the rule's drawing does; a fact of $\operatorname{holds}$ is an octagon.
+It folds each fact of three arrows and of two as the rule's drawing does; a fact of $\operatorname{holds}$ is a
+loop on its argument.
 The two dashed arrows labelled with the rule are the two conclusions, $\operatorname{noted}(\mathsf{1},
 \mathsf{1})$ an arrow from $\mathsf{1}$ to itself. The activators and the declarations' facts are left out of the
 drawing, and so is $\operatorname{src}(\mathsf{Y})$: nothing drawn points at it, and nothing

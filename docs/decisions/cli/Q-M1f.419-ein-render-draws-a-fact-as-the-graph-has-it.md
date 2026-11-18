@@ -10,10 +10,12 @@ is defined ([Q-M1f.379](../language/Q-M1f.379-an-object-is-a-node-of-the-knowled
 
 **On request**, `--fold` on each view that draws facts (`ein render program`, `kb`, `rules`, `rule`,
 `constraints`) and on `ein solve`, for the trace's drawings, a fact of three arrows, a relation and two arguments,
-that no drawn fact points at is **folded** into one arrow from its first argument to its second, labelled with its
-relation's name ([Q-M1f.382](../language/Q-M1f.382-a-labelled-arrow-is-a-fact-of-three-arrows.md)). Nothing else is
-folded: a fact of two arrows stays an octagon, and a fact a drawn fact points at is a node. In a drawing of a
-derivation a folded fact passes through a point where the steps' arrows meet it.
+that no drawn fact points at is **folded** into one arrow from its first argument to its second, and a fact of two
+arrows into a loop on its argument, each labelled with its relation's name
+([Q-M1f.425](Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md),
+[Q-M1f.382](../language/Q-M1f.382-a-labelled-arrow-is-a-fact-of-three-arrows.md)). Nothing else is folded: a fact a
+drawn fact points at is a node, and in a drawing of a derivation so is a fact the derivation's arrows touch, since no
+arrow goes to or from an arrow ([Q-M1f.429](Q-M1f.429-no-arrow-goes-to-or-from-an-arrow.md)).
 
 **No view draws an octagon with a name in it, and no node labelled with a fact's text**: the drawings of a
 derivation (the trace's slices, the derivation graph, a written trace's `dag` view) draw each fact as its node and

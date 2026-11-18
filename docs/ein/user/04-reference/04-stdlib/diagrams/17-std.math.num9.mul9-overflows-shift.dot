@@ -25,20 +25,20 @@ digraph rule_mul9_overflows_shift_lhs_rhs {
       "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_mul9-at_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_mul9-at_L" -> "mul9-at_L" [xlabel="1", color="#e377c2"];
+    "mul9-at_L" -> "h1_mul9-at_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_mul9-at_L" -> "?x_L" [xlabel="2", color="#e377c2"];
     "h1_mul9-at_L" -> "?y_L" [xlabel="3", color="#e377c2"];
     "h1_mul9-at_L" -> "?k_L" [xlabel="4", color="#e377c2"];
     "h1_mul9-at_L" -> "?left_L" [xlabel="5", color="#e377c2"];
     "h1_mul9-at_L" -> "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" [xlabel="6", color="#e377c2"];
     "h2_adj_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_adj_L" -> "adj_L" [xlabel="1", color="#bcbd22"];
+    "adj_L" -> "h2_adj_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_adj_L" -> "?j_L" [xlabel="2", color="#bcbd22"];
     "h2_adj_L" -> "?k_L" [xlabel="3", color="#bcbd22"];
     "h3_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h3_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "nz_L" -> "h3_nz_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h3_nz_L" -> "?a8_L" [xlabel="2", color="#2ca02c"];
-    "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" -> "num9_L" [xlabel="1", color="#d62728"];
+    "num9_L" -> "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" [xlabel="1", dir=back, color="#d62728"];
     "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" -> "?a8_L" [xlabel="2", color="#d62728"];
     "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" -> "?a7_L" [xlabel="3", color="#d62728"];
     "(num9 ?a8 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1 ?a0)_L" -> "?a6_L" [xlabel="4", color="#d62728"];
@@ -59,9 +59,9 @@ digraph rule_mul9_overflows_shift_lhs_rhs {
       "(mul9 ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
     "h4_overflow_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h4_overflow_R" -> "overflow_R" [xlabel="1", color="#d62728", style=dashed];
+    "overflow_R" -> "h4_overflow_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h4_overflow_R" -> "(mul9 ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
-    "(mul9 ?x ?y)_R" -> "mul9_R" [xlabel="1", color="#e377c2", style=dashed];
+    "mul9_R" -> "(mul9 ?x ?y)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "(mul9 ?x ?y)_R" -> "?x_R" [xlabel="2", color="#e377c2", style=dashed];
     "(mul9 ?x ?y)_R" -> "?y_R" [xlabel="3", color="#e377c2", style=dashed];
   }

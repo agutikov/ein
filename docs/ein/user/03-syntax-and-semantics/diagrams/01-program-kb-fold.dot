@@ -1,24 +1,28 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_d3022860ca [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d3022860ca -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_d3022860ca [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_d3022860ca -> "is-instance" [xlabel="2", color="#bcbd22", style=solid];
   f_d3022860ca -> "Object" [xlabel="3", color="#bcbd22", style=solid];
   f_d3022860ca -> "Type" [xlabel="4", color="#bcbd22", style=solid];
-  f_efd47dc5ca [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_efd47dc5ca -> "relation" [xlabel="1", color="#bcbd22", style=solid];
-  f_efd47dc5ca -> "is-instance" [xlabel="2", color="#bcbd22", style=solid];
+  "is-instance" -> "is-instance" [xlabel="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   f_37791a66b1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_37791a66b1 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_37791a66b1 -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
   f_37791a66b1 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_37791a66b1 -> "House" [xlabel="4", color="#bcbd22", style=solid];
-  f_bb680ca11c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_bb680ca11c -> "relation" [xlabel="1", color="#bcbd22", style=solid];
-  f_bb680ca11c -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
+  "lives-in" -> "lives-in" [xlabel="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "Norwegian" -> "Person" [xlabel="is-instance", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
   "House-1" -> "House" [xlabel="is-instance", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
   "Norwegian" -> "House-1" [xlabel="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "relation"; }
+  { rank=same; "layer 1"; f_d3022860ca; f_37791a66b1; }
+  { rank=same; "layer 2"; "is-instance"; "Object"; "Type"; "lives-in"; "Person"; "House"; }
 }

@@ -10,7 +10,7 @@ digraph rule_bin_operand_undeclared_lhs_rhs {
     "0_L" [label="0", shape=box];
     "1_L" [label="1", shape=box];
     "h1_bin-operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_bin-operand_L" -> "bin-operand_L" [xlabel="1", color="#e377c2"];
+    "bin-operand_L" -> "h1_bin-operand_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_bin-operand_L" -> "?k_L" [xlabel="2", color="#e377c2"];
     "h1_bin-operand_L" -> "?x_L" [xlabel="3", color="#e377c2"];
     "?v_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
@@ -22,7 +22,7 @@ digraph rule_bin_operand_undeclared_lhs_rhs {
       "bin-let_L" [label="bin-let", shape=box];
       "?w_L" [label="?w", shape=diamond];
       "h2_bin-let_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-      "h2_bin-let_L" -> "bin-let_L" [xlabel="1", color="#8c564b"];
+      "bin-let_L" -> "h2_bin-let_L" [xlabel="1", dir=back, color="#8c564b"];
       "h2_bin-let_L" -> "?x_L" [xlabel="2", color="#8c564b"];
       "h2_bin-let_L" -> "?w_L" [xlabel="3", color="#8c564b"];
     }
@@ -37,10 +37,10 @@ digraph rule_bin_operand_undeclared_lhs_rhs {
       "(bin-no-let ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h3_bin-bad-operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h3_bin-bad-operand_R" -> "bin-bad-operand_R" [xlabel="1", color="#9467bd", style=dashed];
+    "bin-bad-operand_R" -> "h3_bin-bad-operand_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h3_bin-bad-operand_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h3_bin-bad-operand_R" -> "(bin-no-let ?x)_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(bin-no-let ?x)_R" -> "bin-no-let_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "bin-no-let_R" -> "(bin-no-let ?x)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(bin-no-let ?x)_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
   }
 }

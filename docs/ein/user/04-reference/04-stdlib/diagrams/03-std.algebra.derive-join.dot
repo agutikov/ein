@@ -7,7 +7,7 @@ digraph rule_derive_join_lhs_rhs {
     "?R2_L" [label="?R2", shape=diamond];
     "?R3_L" [label="?R3", shape=diamond];
     "h1_join_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_join_L" -> "join_L" [xlabel="1", color="#9467bd"];
+    "join_L" -> "h1_join_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_join_L" -> "?R1_L" [xlabel="2", color="#9467bd"];
     "h1_join_L" -> "?R2_L" [xlabel="3", color="#9467bd"];
     "h1_join_L" -> "?R3_L" [xlabel="4", color="#9467bd"];
@@ -19,12 +19,12 @@ digraph rule_derive_join_lhs_rhs {
     "?R3_R" [label="?R3", shape=diamond];
     "join-r_R" [label="join-r", shape=box];
     "h2_join-l_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_join-l_R" -> "join-l_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "join-l_R" -> "h2_join-l_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_join-l_R" -> "?R1_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_join-l_R" -> "?R2_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_join-l_R" -> "?R3_R" [xlabel="4", color="#2ca02c", style=dashed];
     "h3_join-r_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h3_join-r_R" -> "join-r_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "join-r_R" -> "h3_join-r_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h3_join-r_R" -> "?R1_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h3_join-r_R" -> "?R2_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h3_join-r_R" -> "?R3_R" [xlabel="4", color="#bcbd22", style=dashed];

@@ -10,15 +10,15 @@ digraph rule_typecheck_setup_lhs_rhs {
     "typecheck-hierarchy_L" [label="typecheck-hierarchy", shape=box];
     "?isa_L" [label="?isa", shape=diamond];
     "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
     "h1_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
     "h1_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
     "h2_bijective_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h2_bijective_L" -> "bijective_L" [xlabel="1", color="#17becf"];
+    "bijective_L" -> "h2_bijective_L" [xlabel="1", dir=back, color="#17becf"];
     "h2_bijective_L" -> "?R_L" [xlabel="2", color="#17becf"];
     "h3_typecheck-hierarchy_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h3_typecheck-hierarchy_L" -> "typecheck-hierarchy_L" [xlabel="1", color="#7f7f7f"];
+    "typecheck-hierarchy_L" -> "h3_typecheck-hierarchy_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h3_typecheck-hierarchy_L" -> "?isa_L" [xlabel="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
@@ -29,12 +29,12 @@ digraph rule_typecheck_setup_lhs_rhs {
     "typecheck-arg-1_R" [label="typecheck-arg-1", shape=box];
     "?B_R" [label="?B", shape=diamond];
     "h4_typecheck-arg-0_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h4_typecheck-arg-0_R" -> "typecheck-arg-0_R" [xlabel="1", color="#17becf", style=dashed];
+    "typecheck-arg-0_R" -> "h4_typecheck-arg-0_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h4_typecheck-arg-0_R" -> "?R_R" [xlabel="2", color="#17becf", style=dashed];
     "h4_typecheck-arg-0_R" -> "?isa_R" [xlabel="3", color="#17becf", style=dashed];
     "h4_typecheck-arg-0_R" -> "?A_R" [xlabel="4", color="#17becf", style=dashed];
     "h5_typecheck-arg-1_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h5_typecheck-arg-1_R" -> "typecheck-arg-1_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "typecheck-arg-1_R" -> "h5_typecheck-arg-1_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h5_typecheck-arg-1_R" -> "?R_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h5_typecheck-arg-1_R" -> "?isa_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h5_typecheck-arg-1_R" -> "?B_R" [xlabel="4", color="#7f7f7f", style=dashed];

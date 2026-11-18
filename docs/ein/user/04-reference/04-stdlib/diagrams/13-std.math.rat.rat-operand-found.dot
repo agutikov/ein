@@ -14,10 +14,10 @@ digraph rule_rat_operand_found_lhs_rhs {
       "(rat-den ?k ?p ?n ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_order-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_order-is_L" -> "order-is_L" [xlabel="1", color="#d62728"];
+    "order-is_L" -> "h1_order-is_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_order-is_L" -> "(rat-den ?k ?p ?n ?d)_L" [xlabel="2", color="#d62728"];
     "h1_order-is_L" -> "gt_L" [xlabel="3", color="#d62728"];
-    "(rat-den ?k ?p ?n ?d)_L" -> "rat-den_L" [xlabel="1", color="#1f77b4"];
+    "rat-den_L" -> "(rat-den ?k ?p ?n ?d)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(rat-den ?k ?p ?n ?d)_L" -> "?k_L" [xlabel="2", color="#1f77b4"];
     "(rat-den ?k ?p ?n ?d)_L" -> "?p_L" [xlabel="3", color="#1f77b4"];
     "(rat-den ?k ?p ?n ?d)_L" -> "?n_L" [xlabel="4", color="#1f77b4"];
@@ -30,7 +30,7 @@ digraph rule_rat_operand_found_lhs_rhs {
     "?n_R" [label="?n", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "h2_rat-operand-is_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_rat-operand-is_R" -> "rat-operand-is_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "rat-operand-is_R" -> "h2_rat-operand-is_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_rat-operand-is_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_rat-operand-is_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h2_rat-operand-is_R" -> "?n_R" [xlabel="4", color="#1f77b4", style=dashed];

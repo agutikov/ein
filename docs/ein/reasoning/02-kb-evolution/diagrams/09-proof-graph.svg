@@ -17,15 +17,15 @@
 <!-- d1 -->
 <g id="node4" class="node">
 <title>d1</title>
-<path fill="none" stroke="#e377c2" stroke-width="2" d="M146.85,-122.8C146.85,-122.8 89.6,-122.8 89.6,-122.8 83.6,-122.8 77.6,-116.8 77.6,-110.8 77.6,-110.8 77.6,-87.8 77.6,-87.8 77.6,-81.8 83.6,-75.8 89.6,-75.8 89.6,-75.8 146.85,-75.8 146.85,-75.8 152.85,-75.8 158.85,-81.8 158.85,-87.8 158.85,-87.8 158.85,-110.8 158.85,-110.8 158.85,-116.8 152.85,-122.8 146.85,-122.8"/>
-<text xml:space="preserve" text-anchor="middle" x="118.22" y="-105.5" font-family="Inter" font-size="14.00" fill="#e377c2">δ₁: rule ρ₁</text>
-<text xml:space="preserve" text-anchor="middle" x="118.22" y="-86" font-family="Inter" font-size="14.00" fill="#e377c2">primary</text>
+<path fill="none" stroke="#0047ab" stroke-width="2" d="M146.85,-122.8C146.85,-122.8 89.6,-122.8 89.6,-122.8 83.6,-122.8 77.6,-116.8 77.6,-110.8 77.6,-110.8 77.6,-87.8 77.6,-87.8 77.6,-81.8 83.6,-75.8 89.6,-75.8 89.6,-75.8 146.85,-75.8 146.85,-75.8 152.85,-75.8 158.85,-81.8 158.85,-87.8 158.85,-87.8 158.85,-110.8 158.85,-110.8 158.85,-116.8 152.85,-122.8 146.85,-122.8"/>
+<text xml:space="preserve" text-anchor="middle" x="118.22" y="-105.5" font-family="Inter" font-size="14.00" fill="#0047ab">δ₁: rule ρ₁</text>
+<text xml:space="preserve" text-anchor="middle" x="118.22" y="-86" font-family="Inter" font-size="14.00" fill="#0047ab">primary</text>
 </g>
 <!-- A&#45;&gt;d1 -->
 <g id="edge1" class="edge">
 <title>A&#45;&gt;d1</title>
-<path fill="none" stroke="#e377c2" d="M38.84,-132.38C46.56,-129.12 56.67,-124.85 67.05,-120.47"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="68.19,-123.79 76.04,-116.68 65.47,-117.34 68.19,-123.79"/>
+<path fill="none" stroke="#0047ab" stroke-width="2" d="M38.84,-132.38C46.02,-129.35 55.26,-125.45 64.85,-121.4"/>
+<polygon fill="#0047ab" stroke="#0047ab" stroke-width="2" points="65.99,-124.72 73.84,-117.61 63.26,-118.27 65.99,-124.72"/>
 </g>
 <!-- B -->
 <g id="node2" class="node">
@@ -37,8 +37,8 @@
 <!-- B&#45;&gt;d1 -->
 <g id="edge2" class="edge">
 <title>B&#45;&gt;d1</title>
-<path fill="none" stroke="#e377c2" d="M38.84,-91.67C46.32,-92.4 56.04,-93.34 66.08,-94.32"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="65.64,-97.79 75.93,-95.28 66.32,-90.83 65.64,-97.79"/>
+<path fill="none" stroke="#0047ab" stroke-width="2" d="M38.84,-91.67C45.78,-92.34 54.65,-93.21 63.91,-94.11"/>
+<polygon fill="#0047ab" stroke="#0047ab" stroke-width="2" points="63.32,-97.57 73.61,-95.05 64,-90.6 63.32,-97.57"/>
 </g>
 <!-- C -->
 <g id="node3" class="node">
@@ -50,15 +50,15 @@
 <!-- d2 -->
 <g id="node5" class="node">
 <title>d2</title>
-<path fill="none" stroke="#17becf" stroke-width="2" stroke-dasharray="5,2" d="M149.85,-57.8C149.85,-57.8 86.6,-57.8 86.6,-57.8 80.6,-57.8 74.6,-51.8 74.6,-45.8 74.6,-45.8 74.6,-22.8 74.6,-22.8 74.6,-16.8 80.6,-10.8 86.6,-10.8 86.6,-10.8 149.85,-10.8 149.85,-10.8 155.85,-10.8 161.85,-16.8 161.85,-22.8 161.85,-22.8 161.85,-45.8 161.85,-45.8 161.85,-51.8 155.85,-57.8 149.85,-57.8"/>
-<text xml:space="preserve" text-anchor="middle" x="118.22" y="-40.5" font-family="Inter" font-size="14.00" fill="#17becf">δ₂: rule ρ₂</text>
-<text xml:space="preserve" text-anchor="middle" x="118.22" y="-21" font-family="Inter" font-size="14.00" fill="#17becf">alternative</text>
+<path fill="none" stroke="#8b008b" stroke-width="2" stroke-dasharray="5,2" d="M149.85,-57.8C149.85,-57.8 86.6,-57.8 86.6,-57.8 80.6,-57.8 74.6,-51.8 74.6,-45.8 74.6,-45.8 74.6,-22.8 74.6,-22.8 74.6,-16.8 80.6,-10.8 86.6,-10.8 86.6,-10.8 149.85,-10.8 149.85,-10.8 155.85,-10.8 161.85,-16.8 161.85,-22.8 161.85,-22.8 161.85,-45.8 161.85,-45.8 161.85,-51.8 155.85,-57.8 149.85,-57.8"/>
+<text xml:space="preserve" text-anchor="middle" x="118.22" y="-40.5" font-family="Inter" font-size="14.00" fill="#8b008b">δ₂: rule ρ₂</text>
+<text xml:space="preserve" text-anchor="middle" x="118.22" y="-21" font-family="Inter" font-size="14.00" fill="#8b008b">alternative</text>
 </g>
 <!-- C&#45;&gt;d2 -->
 <g id="edge3" class="edge">
 <title>C&#45;&gt;d2</title>
-<path fill="none" stroke="#17becf" d="M38.84,-34.3C45.51,-34.3 53.97,-34.3 62.83,-34.3"/>
-<polygon fill="#17becf" stroke="#17becf" points="62.67,-37.8 72.67,-34.3 62.67,-30.8 62.67,-37.8"/>
+<path fill="none" stroke="#8b008b" stroke-width="2" d="M38.84,-34.3C45,-34.3 52.68,-34.3 60.8,-34.3"/>
+<polygon fill="#8b008b" stroke="#8b008b" stroke-width="2" points="60.75,-37.8 70.75,-34.3 60.75,-30.8 60.75,-37.8"/>
 </g>
 <!-- F -->
 <g id="node6" class="node">
@@ -69,15 +69,15 @@
 <!-- d1&#45;&gt;F -->
 <g id="edge4" class="edge">
 <title>d1&#45;&gt;F</title>
-<path fill="none" stroke="#e377c2" stroke-width="2" d="M159.3,-84.34C168.63,-80.86 178.21,-77.29 186.36,-74.25"/>
-<polygon fill="#e377c2" stroke="#e377c2" stroke-width="2" points="186.09,-78.08 194.24,-71.31 183.64,-71.52 186.09,-78.08"/>
+<path fill="none" stroke="#0047ab" stroke-width="2" d="M159.81,-84.15C168.55,-80.89 177.47,-77.56 185.21,-74.67"/>
+<polygon fill="#0047ab" stroke="#0047ab" stroke-width="2" points="186.23,-78.03 194.38,-71.25 183.79,-71.47 186.23,-78.03"/>
 </g>
 <!-- d2&#45;&gt;F -->
 <g id="edge5" class="edge">
 <title>d2&#45;&gt;F</title>
-<path fill="none" stroke="#17becf" stroke-width="2" stroke-dasharray="5,2" d="M162.14,-49.83C170.59,-52.89 179.1,-55.97 186.43,-58.62"/>
-<polygon fill="#17becf" stroke="#17becf" stroke-width="2" points="183.7,-61.35 194.29,-61.47 186.08,-54.77 183.7,-61.35"/>
+<path fill="none" stroke="#8b008b" stroke-width="2" stroke-dasharray="5,2" d="M162.66,-50.02C170.33,-52.8 178.04,-55.58 184.85,-58.05"/>
+<polygon fill="#8b008b" stroke="#8b008b" stroke-width="2" points="183.49,-61.28 194.09,-61.39 185.87,-54.7 183.49,-61.28"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: d75b52747f50fa34f851a27dea5d3bdb095ae437c9d585185eb7d0e8be4f3924 -->
+<!-- source sha256: 9622bcd1407ec5d7683243dcee1efd3daa7537411d29b0dd01c4bc5c05865e19 -->

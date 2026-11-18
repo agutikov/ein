@@ -1,21 +1,21 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_2ead296350 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by co-located-negative"];
-  f_2ead296350 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  "not" -> f_2ead296350 [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_2ead296350 -> f_65909e78a6 [xlabel="2", color="#d62728", style=dashed];
   f_24c4d48dc3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.functional-negative"];
-  f_24c4d48dc3 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  "not" -> f_24c4d48dc3 [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_24c4d48dc3 -> f_78a5ae1544 [xlabel="2", color="#d62728", style=dashed];
   f_01f7072e42 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by adjacent-via-endpoint-bwd"];
-  f_01f7072e42 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  "not" -> f_01f7072e42 [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_01f7072e42 -> f_4165af95ef [xlabel="2", color="#d62728", style=dashed];
   f_9dda0bf33f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by adjacent-via-fwd-negative"];
-  f_9dda0bf33f -> "not" [xlabel="1", color="#d62728", style=dashed];
+  "not" -> f_9dda0bf33f [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_9dda0bf33f -> f_0469eb9213 [xlabel="2", color="#d62728", style=dashed];
   f_921117f58b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=dashed, xlabel="by std.bijection.range-elimination"];
-  f_921117f58b -> "color-loc" [xlabel="1", color="#8c564b", style=dashed];
+  "color-loc" -> f_921117f58b [xlabel="1", dir=back, color="#8c564b", style=dashed];
   f_921117f58b -> "Yellow" [xlabel="2", color="#8c564b", style=dashed];
   f_921117f58b -> "House-1" [xlabel="3", color="#8c564b", style=dashed];
   newrank=true;
@@ -26,16 +26,27 @@ digraph kb {
     f_4165af95ef [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
     f_0469eb9213 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
   }
-  f_65909e78a6 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  "color-loc" -> f_65909e78a6 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_65909e78a6 -> "Red" [xlabel="2", color="#8c564b", style=solid];
   f_65909e78a6 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
-  f_78a5ae1544 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  "color-loc" -> f_78a5ae1544 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_78a5ae1544 -> "Blue" [xlabel="2", color="#8c564b", style=solid];
   f_78a5ae1544 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
-  f_4165af95ef -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  "color-loc" -> f_4165af95ef [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_4165af95ef -> "Green" [xlabel="2", color="#8c564b", style=solid];
   f_4165af95ef -> "House-1" [xlabel="3", color="#8c564b", style=solid];
-  f_0469eb9213 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  "color-loc" -> f_0469eb9213 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_0469eb9213 -> "Ivory" [xlabel="2", color="#8c564b", style=solid];
   f_0469eb9213 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  { rank=same; "layer 0"; "not"; "color-loc"; }
+  { rank=same; "layer 1"; f_2ead296350; f_24c4d48dc3; f_01f7072e42; f_9dda0bf33f; f_921117f58b; }
+  { rank=same; "layer 2"; f_65909e78a6; f_78a5ae1544; f_4165af95ef; f_0469eb9213; }
+  { rank=same; "layer 3"; "Yellow"; "House-1"; "Red"; "Blue"; "Green"; "Ivory"; }
 }

@@ -13,13 +13,13 @@ digraph rule_numeral_step_lhs_rhs {
       "(n ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_check_L" -> "check_L" [xlabel="1", color="#7f7f7f"];
+    "check_L" -> "h1_check_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_check_L" -> "?w_L" [xlabel="2", color="#7f7f7f"];
     "h1_check_L" -> "(n ?p ?a)_L" [xlabel="3", color="#7f7f7f"];
     "h2_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "nz_L" -> "h2_nz_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_nz_L" -> "?a_L" [xlabel="2", color="#2ca02c"];
-    "(n ?p ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?p ?a)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?p ?a)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
@@ -28,7 +28,7 @@ digraph rule_numeral_step_lhs_rhs {
     "?w_R" [label="?w", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "h3_check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h3_check_R" -> "check_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "check_R" -> "h3_check_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h3_check_R" -> "?w_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h3_check_R" -> "?p_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

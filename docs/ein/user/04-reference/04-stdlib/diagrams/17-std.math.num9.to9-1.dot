@@ -11,9 +11,9 @@ digraph rule_to9_1_lhs_rhs {
       "(n z ?a1)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_to9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_to9_L" -> "to9_L" [xlabel="1", color="#9467bd"];
+    "to9_L" -> "h1_to9_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_to9_L" -> "(n z ?a1)_L" [xlabel="2", color="#9467bd"];
-    "(n z ?a1)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n z ?a1)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n z ?a1)_L" -> "z_L" [xlabel="2", color="#9467bd"];
     "(n z ?a1)_L" -> "?a1_L" [xlabel="3", color="#9467bd"];
   }
@@ -30,13 +30,13 @@ digraph rule_to9_1_lhs_rhs {
       "(num9 0 0 0 0 0 0 0 0 ?a1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_as9_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_as9_R" -> "as9_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "as9_R" -> "h2_as9_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_as9_R" -> "(n z ?a1)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_as9_R" -> "(num9 0 0 0 0 0 0 0 0 ?a1)_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(n z ?a1)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n z ?a1)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n z ?a1)_R" -> "z_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n z ?a1)_R" -> "?a1_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(num9 0 0 0 0 0 0 0 0 ?a1)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "num9_R" -> "(num9 0 0 0 0 0 0 0 0 ?a1)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 ?a1)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 ?a1)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 ?a1)_R" -> "0_R" [xlabel="4", color="#d62728", style=dashed];

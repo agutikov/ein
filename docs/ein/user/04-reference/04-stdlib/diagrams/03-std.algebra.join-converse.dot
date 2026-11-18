@@ -11,20 +11,20 @@ digraph rule_join_converse_lhs_rhs {
     "?Sc_L" [label="?Sc", shape=diamond];
     "?Uc_L" [label="?Uc", shape=diamond];
     "h1_join_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_join_L" -> "join_L" [xlabel="1", color="#9467bd"];
+    "join_L" -> "h1_join_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_join_L" -> "?R_L" [xlabel="2", color="#9467bd"];
     "h1_join_L" -> "?S_L" [xlabel="3", color="#9467bd"];
     "h1_join_L" -> "?U_L" [xlabel="4", color="#9467bd"];
     "h2_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h2_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_converse_L" -> "?R_L" [xlabel="2", color="#2ca02c"];
     "h2_converse_L" -> "?Rc_L" [xlabel="3", color="#2ca02c"];
     "h3_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h3_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h3_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h3_converse_L" -> "?S_L" [xlabel="2", color="#2ca02c"];
     "h3_converse_L" -> "?Sc_L" [xlabel="3", color="#2ca02c"];
     "h4_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h4_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h4_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h4_converse_L" -> "?U_L" [xlabel="2", color="#2ca02c"];
     "h4_converse_L" -> "?Uc_L" [xlabel="3", color="#2ca02c"];
   }
@@ -34,7 +34,7 @@ digraph rule_join_converse_lhs_rhs {
     "?Sc_R" [label="?Sc", shape=diamond];
     "?Uc_R" [label="?Uc", shape=diamond];
     "h5_join_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h5_join_R" -> "join_R" [xlabel="1", color="#9467bd", style=dashed];
+    "join_R" -> "h5_join_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h5_join_R" -> "?Rc_R" [xlabel="2", color="#9467bd", style=dashed];
     "h5_join_R" -> "?Sc_R" [xlabel="3", color="#9467bd", style=dashed];
     "h5_join_R" -> "?Uc_R" [xlabel="4", color="#9467bd", style=dashed];

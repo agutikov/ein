@@ -723,6 +723,8 @@ is not shown: it has a node for each of those facts.
                (props-rule complete-alone-r) (props-rule gates))
   :why    "what is known of the sixteen is derived from the rows and never guessed: every relation of the module is closed")
 ```
+
+![The rule props of std.bool.props, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/19-std.bool.props.props.svg)
 <!-- /rule -->
 
 ## `std.bool.circuit`

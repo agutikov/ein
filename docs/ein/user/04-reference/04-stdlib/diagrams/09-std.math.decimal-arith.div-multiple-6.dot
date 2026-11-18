@@ -16,10 +16,10 @@ digraph rule_div_multiple_6_lhs_rhs {
       "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "done_L" -> "h1_done_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_done_L" -> "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" [xlabel="2", color="#e377c2"];
     "h1_done_L" -> "?m5_L" [xlabel="3", color="#e377c2"];
-    "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "div-m5_L" [xlabel="1", color="#17becf"];
+    "div-m5_L" -> "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" [xlabel="1", dir=back, color="#17becf"];
     "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "?u_L" [xlabel="3", color="#17becf"];
     "(div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4)_L" -> "?m1_L" [xlabel="4", color="#17becf"];
@@ -45,13 +45,13 @@ digraph rule_div_multiple_6_lhs_rhs {
       "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "mul-walk_R" -> "h2_mul-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?m1_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "6_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" -> "div-m6_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "div-m6_R" -> "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" -> "?u_R" [xlabel="3", color="#1f77b4", style=dashed];
     "(div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5)_R" -> "?m1_R" [xlabel="4", color="#1f77b4", style=dashed];

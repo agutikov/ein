@@ -12,22 +12,22 @@ digraph rule_inputs_lhs_rhs {
     "required_R" [label="required", shape=box];
     "circuit_R" [label="circuit", shape=box];
     "h1___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h1___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h1___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h1___closed___R" -> "is-a_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h2___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2___closed___R" -> "require_R" [xlabel="2", color="#e377c2", style=dashed];
     "h3___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h3___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h3___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h3___closed___R" -> "inputs-rule_R" [xlabel="2", color="#e377c2", style=dashed];
     "h4_inputs-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h4_inputs-rule_R" -> "inputs-rule_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "inputs-rule_R" -> "h4_inputs-rule_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h4_inputs-rule_R" -> "in-drives_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h5_inputs-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h5_inputs-rule_R" -> "inputs-rule_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "inputs-rule_R" -> "h5_inputs-rule_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h5_inputs-rule_R" -> "required_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h6_inputs-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h6_inputs-rule_R" -> "inputs-rule_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "inputs-rule_R" -> "h6_inputs-rule_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h6_inputs-rule_R" -> "circuit_R" [xlabel="2", color="#ff7f0e", style=dashed];
   }
 }

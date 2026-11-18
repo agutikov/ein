@@ -7,7 +7,7 @@ digraph rule_mul_turn_lhs_rhs {
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     "h1_MUL-CALL_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?MUL-CALL_L" [xlabel="1", color="#bcbd22"];
+    "?MUL-CALL_L" -> "h1_MUL-CALL_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_MUL-CALL_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "h1_MUL-CALL_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
     "h1_MUL-CALL_L" -> "?v_L" [xlabel="4", color="#bcbd22"];
@@ -24,11 +24,11 @@ digraph rule_mul_turn_lhs_rhs {
       "(?MUL-DIGITS ?k ?u)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_TOP-FIRST_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "?TOP-FIRST_R" [xlabel="1", color="#e377c2", style=dashed];
+    "?TOP-FIRST_R" -> "h2_TOP-FIRST_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "(?MUL-DIGITS ?k ?u)_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "?v_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "z_R" [xlabel="4", color="#e377c2", style=dashed];
-    "(?MUL-DIGITS ?k ?u)_R" -> "?MUL-DIGITS_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?MUL-DIGITS_R" -> "(?MUL-DIGITS ?k ?u)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(?MUL-DIGITS ?k ?u)_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "(?MUL-DIGITS ?k ?u)_R" -> "?u_R" [xlabel="3", color="#9467bd", style=dashed];
   }

@@ -6,7 +6,7 @@ digraph rule_in_drives_lhs_rhs {
     "?w_L" [label="?w", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     "h1_in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_in_L" -> "in_L" [xlabel="1", color="#7f7f7f"];
+    "in_L" -> "h1_in_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_in_L" -> "?w_L" [xlabel="2", color="#7f7f7f"];
     "h1_in_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -15,7 +15,7 @@ digraph rule_in_drives_lhs_rhs {
     "?w_R" [label="?w", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
     "h2_val_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_val_R" -> "val_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "val_R" -> "h2_val_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_val_R" -> "?w_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_val_R" -> "?v_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

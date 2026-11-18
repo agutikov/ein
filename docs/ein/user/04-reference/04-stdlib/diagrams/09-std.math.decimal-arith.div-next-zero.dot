@@ -16,14 +16,14 @@ digraph rule_div_next_zero_lhs_rhs {
       "(n ?p ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_div-digit_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_div-digit_L" -> "div-digit_L" [xlabel="1", color="#9467bd"];
+    "div-digit_L" -> "h1_div-digit_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_div-digit_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "h1_div-digit_L" -> "?ms_L" [xlabel="3", color="#9467bd"];
     "h1_div-digit_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
     "h1_div-digit_L" -> "(n ?p ?c)_L" [xlabel="5", color="#9467bd"];
     "h1_div-digit_L" -> "0_L" [xlabel="6", color="#9467bd"];
     "h1_div-digit_L" -> "?t_L" [xlabel="7", color="#9467bd"];
-    "(n ?p ?c)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?p ?c)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?p ?c)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(n ?p ?c)_L" -> "?c_L" [xlabel="3", color="#9467bd"];
   }
@@ -46,16 +46,16 @@ digraph rule_div_next_zero_lhs_rhs {
       "(n ?p ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_div-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_div-step_R" -> "div-step_R" [xlabel="1", color="#d62728", style=dashed];
+    "div-step_R" -> "h2_div-step_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_div-step_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_div-step_R" -> "?ms_R" [xlabel="3", color="#d62728", style=dashed];
     "h2_div-step_R" -> "?rest_R" [xlabel="4", color="#d62728", style=dashed];
     "h2_div-step_R" -> "?t_R" [xlabel="5", color="#d62728", style=dashed];
     "h2_div-step_R" -> "(n (n ?p ?c) 0)_R" [xlabel="6", color="#d62728", style=dashed];
-    "(n (n ?p ?c) 0)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n ?p ?c) 0)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n ?p ?c) 0)_R" -> "(n ?p ?c)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n ?p ?c) 0)_R" -> "0_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n ?p ?c)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n ?p ?c)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?p ?c)_R" -> "?p_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?p ?c)_R" -> "?c_R" [xlabel="3", color="#9467bd", style=dashed];
   }

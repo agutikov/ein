@@ -15,13 +15,13 @@ digraph rule_int_operand_second_lhs_rhs {
       "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(int-first ?k ?y)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "(int ?p ?n)_L" [xlabel="3", color="#17becf"];
-    "(int-first ?k ?y)_L" -> "int-first_L" [xlabel="1", color="#ff7f0e"];
+    "int-first_L" -> "(int-first ?k ?y)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(int-first ?k ?y)_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
     "(int-first ?k ?y)_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
-    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?p ?n)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
     "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
@@ -37,10 +37,10 @@ digraph rule_int_operand_second_lhs_rhs {
       "(int-second ?k ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(int-second ?k ?p ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(int-second ?k ?p ?n)_R" -> "int-second_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "int-second_R" -> "(int-second ?k ?p ?n)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(int-second ?k ?p ?n)_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(int-second ?k ?p ?n)_R" -> "?p_R" [xlabel="3", color="#bcbd22", style=dashed];
     "(int-second ?k ?p ?n)_R" -> "?n_R" [xlabel="4", color="#bcbd22", style=dashed];

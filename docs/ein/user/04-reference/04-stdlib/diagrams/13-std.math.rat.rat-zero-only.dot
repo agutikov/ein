@@ -10,16 +10,16 @@ digraph rule_rat_zero_only_lhs_rhs {
       "(rat-only ?request)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_rat-zero-den_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_rat-zero-den_L" -> "rat-zero-den_L" [xlabel="1", color="#bcbd22"];
+    "rat-zero-den_L" -> "h1_rat-zero-den_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_rat-zero-den_L" -> "(rat-only ?request)_L" [xlabel="2", color="#bcbd22"];
-    "(rat-only ?request)_L" -> "rat-only_L" [xlabel="1", color="#2ca02c"];
+    "rat-only_L" -> "(rat-only ?request)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(rat-only ?request)_L" -> "?request_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "division-by-zero_R" [label="division-by-zero", shape=box];
     "?request_R" [label="?request", shape=diamond];
     "h2_division-by-zero_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_division-by-zero_R" -> "division-by-zero_R" [xlabel="1", color="#e377c2", style=dashed];
+    "division-by-zero_R" -> "h2_division-by-zero_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_division-by-zero_R" -> "?request_R" [xlabel="2", color="#e377c2", style=dashed];
   }
 }

@@ -18,13 +18,13 @@ digraph rule_gcd_start_lhs_rhs {
       "(gcd-second (gcd ?x ?y) ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(gcd-second (gcd ?x ?y) ?u)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "?v_L" [xlabel="3", color="#17becf"];
-    "(gcd-second (gcd ?x ?y) ?u)_L" -> "gcd-second_L" [xlabel="1", color="#1f77b4"];
+    "gcd-second_L" -> "(gcd-second (gcd ?x ?y) ?u)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(gcd-second (gcd ?x ?y) ?u)_L" -> "(gcd ?x ?y)_L" [xlabel="2", color="#1f77b4"];
     "(gcd-second (gcd ?x ?y) ?u)_L" -> "?u_L" [xlabel="3", color="#1f77b4"];
-    "(gcd ?x ?y)_L" -> "gcd_L" [xlabel="1", color="#2ca02c"];
+    "gcd_L" -> "(gcd ?x ?y)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(gcd ?x ?y)_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
     "(gcd ?x ?y)_L" -> "?y_L" [xlabel="3", color="#2ca02c"];
   }
@@ -40,11 +40,11 @@ digraph rule_gcd_start_lhs_rhs {
       "(gcd ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "gcd-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "gcd-call_R" -> "h2_gcd-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "(gcd ?x ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "?u_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "?v_R" [xlabel="4", color="#2ca02c", style=dashed];
-    "(gcd ?x ?y)_R" -> "gcd_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "gcd_R" -> "(gcd ?x ?y)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(gcd ?x ?y)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(gcd ?x ?y)_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

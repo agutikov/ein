@@ -12,16 +12,16 @@ digraph rule_converse_illtyped_dom_lhs_rhs {
     "?Rn2_L" [label="?Rn2", shape=diamond];
     "?isR*_L" [label="?isR*", shape=diamond];
     "h1_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h1_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_converse_L" -> "?R1_L" [xlabel="2", color="#2ca02c"];
     "h1_converse_L" -> "?R2_L" [xlabel="3", color="#2ca02c"];
     "h2_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "relation_L" -> "h2_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_relation_L" -> "?R1_L" [xlabel="2", color="#bcbd22"];
     "h2_relation_L" -> "?D1_L" [xlabel="3", color="#bcbd22"];
     "h2_relation_L" -> "?Rn1_L" [xlabel="4", color="#bcbd22"];
     "h3_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h3_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "relation_L" -> "h3_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h3_relation_L" -> "?R2_L" [xlabel="2", color="#bcbd22"];
     "h3_relation_L" -> "?D2_L" [xlabel="3", color="#bcbd22"];
     "h3_relation_L" -> "?Rn2_L" [xlabel="4", color="#bcbd22"];
@@ -29,14 +29,14 @@ digraph rule_converse_illtyped_dom_lhs_rhs {
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "h4_isR*_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-      "h4_isR*_L" -> "?isR*_L" [xlabel="1", color="#1f77b4"];
+      "?isR*_L" -> "h4_isR*_L" [xlabel="1", dir=back, color="#1f77b4"];
       "h4_isR*_L" -> "?Rn1_L" [xlabel="2", color="#1f77b4"];
       "h4_isR*_L" -> "?D2_L" [xlabel="3", color="#1f77b4"];
     }
     subgraph cluster_absent_L_1 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "h5_isR*_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-      "h5_isR*_L" -> "?isR*_L" [xlabel="1", color="#1f77b4"];
+      "?isR*_L" -> "h5_isR*_L" [xlabel="1", dir=back, color="#1f77b4"];
       "h5_isR*_L" -> "?D2_L" [xlabel="2", color="#1f77b4"];
       "h5_isR*_L" -> "?Rn1_L" [xlabel="3", color="#1f77b4"];
     }
@@ -44,6 +44,6 @@ digraph rule_converse_illtyped_dom_lhs_rhs {
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h6_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h6_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h6_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

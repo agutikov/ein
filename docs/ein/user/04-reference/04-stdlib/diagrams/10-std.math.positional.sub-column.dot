@@ -20,23 +20,23 @@ digraph rule_sub_column_lhs_rhs {
       "(?N ?q ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
+    "?SUB-WALK_L" -> "h1_SUB-WALK_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_SUB-WALK_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#d62728"];
     "h1_SUB-WALK_L" -> "(?N ?q ?c)_L" [xlabel="4", color="#d62728"];
     "h1_SUB-WALK_L" -> "?e_L" [xlabel="5", color="#d62728"];
     "h1_SUB-WALK_L" -> "?acc_L" [xlabel="6", color="#d62728"];
     "h2_FS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_FS_L" -> "?FS_L" [xlabel="1", color="#7f7f7f"];
+    "?FS_L" -> "h2_FS_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_FS_L" -> "?a_L" [xlabel="2", color="#7f7f7f"];
     "h2_FS_L" -> "?c_L" [xlabel="3", color="#7f7f7f"];
     "h2_FS_L" -> "?e_L" [xlabel="4", color="#7f7f7f"];
     "h2_FS_L" -> "?s_L" [xlabel="5", color="#7f7f7f"];
     "h2_FS_L" -> "?f_L" [xlabel="6", color="#7f7f7f"];
-    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?p ?a)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
-    "(?N ?q ?c)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?q ?c)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?q_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?c_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -54,13 +54,13 @@ digraph rule_sub_column_lhs_rhs {
       "(?B ?s ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h3_SUB-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?SUB-WALK_R" [xlabel="1", color="#d62728", style=dashed];
+    "?SUB-WALK_R" -> "h3_SUB-WALK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?q_R" [xlabel="4", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "?f_R" [xlabel="5", color="#d62728", style=dashed];
     "h3_SUB-WALK_R" -> "(?B ?s ?acc)_R" [xlabel="6", color="#d62728", style=dashed];
-    "(?B ?s ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?B_R" -> "(?B ?s ?acc)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?s_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

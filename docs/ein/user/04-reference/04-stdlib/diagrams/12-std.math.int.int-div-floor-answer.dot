@@ -13,11 +13,11 @@ digraph rule_int_div_floor_answer_lhs_rhs {
       "(int-div-floor ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_int-div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_int-div-done_L" -> "int-div-done_L" [xlabel="1", color="#2ca02c"];
+    "int-div-done_L" -> "h1_int-div-done_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_int-div-done_L" -> "(int-div-floor ?x ?y)_L" [xlabel="2", color="#2ca02c"];
     "h1_int-div-done_L" -> "?q_L" [xlabel="3", color="#2ca02c"];
     "h1_int-div-done_L" -> "?r_L" [xlabel="4", color="#2ca02c"];
-    "(int-div-floor ?x ?y)_L" -> "int-div-floor_L" [xlabel="1", color="#7f7f7f"];
+    "int-div-floor_L" -> "(int-div-floor ?x ?y)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(int-div-floor ?x ?y)_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "(int-div-floor ?x ?y)_L" -> "?y_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -28,7 +28,7 @@ digraph rule_int_div_floor_answer_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
     "h2_int-quot-floor-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_int-quot-floor-of_R" -> "int-quot-floor-of_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "int-quot-floor-of_R" -> "h2_int-quot-floor-of_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_int-quot-floor-of_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_int-quot-floor-of_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h2_int-quot-floor-of_R" -> "?q_R" [xlabel="4", color="#1f77b4", style=dashed];

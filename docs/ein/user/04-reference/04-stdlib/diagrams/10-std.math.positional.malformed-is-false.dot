@@ -5,12 +5,12 @@ digraph rule_malformed_is_false_lhs_rhs {
     "?MALFORMED_L" [label="?MALFORMED", shape=diamond];
     "?request_L" [label="?request", shape=diamond];
     "h1_MALFORMED_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_MALFORMED_L" -> "?MALFORMED_L" [xlabel="1", color="#ff7f0e"];
+    "?MALFORMED_L" -> "h1_MALFORMED_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_MALFORMED_L" -> "?request_L" [xlabel="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h2_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

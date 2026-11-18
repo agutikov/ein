@@ -13,11 +13,11 @@ digraph rule_gcd_next_lhs_rhs {
       "(gcd-rem ?k ?b)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(gcd-rem ?k ?b)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
-    "(gcd-rem ?k ?b)_L" -> "gcd-rem_L" [xlabel="1", color="#d62728"];
+    "gcd-rem_L" -> "(gcd-rem ?k ?b)_L" [xlabel="1", dir=back, color="#d62728"];
     "(gcd-rem ?k ?b)_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "(gcd-rem ?k ?b)_L" -> "?b_L" [xlabel="3", color="#d62728"];
   }
@@ -27,7 +27,7 @@ digraph rule_gcd_next_lhs_rhs {
     "?b_R" [label="?b", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
     "h2_gcd-chain_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_gcd-chain_R" -> "gcd-chain_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "gcd-chain_R" -> "h2_gcd-chain_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_gcd-chain_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_gcd-chain_R" -> "?b_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_gcd-chain_R" -> "?r_R" [xlabel="4", color="#7f7f7f", style=dashed];

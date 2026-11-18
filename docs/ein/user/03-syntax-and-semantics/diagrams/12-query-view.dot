@@ -6,7 +6,7 @@ digraph query {
     "?who_Q1" [label="?who", shape=diamond];
     "C1_Q1" [label="C1", shape=box];
     "h1_seat_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_seat_Q1" -> "seat_Q1" [xlabel="1", color="#ff7f0e"];
+    "seat_Q1" -> "h1_seat_Q1" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_seat_Q1" -> "?who_Q1" [xlabel="2", color="#ff7f0e"];
     "h1_seat_Q1" -> "C1_Q1" [xlabel="3", color="#ff7f0e"];
     "query_1" [shape=note, label=":goal-text \"{?who} sits on the first chair\"\n:over maximal\n:expect (or (model (seat Ann C1)) (model (seat Bob C1)))"];

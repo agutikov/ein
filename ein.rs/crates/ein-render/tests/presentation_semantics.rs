@@ -85,19 +85,22 @@ fn the_dag_trace_view_chains_through_derived_facts() {
         &["Norwegian".to_string(), "House-1".to_string()],
     );
     assert!(
-        dag.contains(&format!("  {lives_in} -> \"step s2\";")),
+        dag.contains(&format!("  {lives_in} -> \"step s2\" [")),
         "s2 does not hang off s1's derived fact:\n{dag}"
     );
     assert!(
-        dag.contains(&format!("  \"step s1\" -> {lives_in} [style=bold];")),
+        dag.contains(&format!("  \"step s1\" -> {lives_in} [")),
         "{dag}"
     );
     assert!(
-        dag.contains("\"step s2\" [shape=box, style=rounded, label=\"s2\\nexclusivity\"];"),
+        dag.contains("\"step s2\" [shape=box, style=rounded, ")
+            && dag.contains("penwidth=2, label=\"s2\\nexclusivity\"];"),
         "{dag}"
     );
     assert!(
-        dag.contains(&format!("  {lives_in} -> \"lives-in\" [xlabel=\"1\"")),
+        dag.contains(&format!(
+            "  \"lives-in\" -> {lives_in} [xlabel=\"1\", dir=back"
+        )),
         "the derived fact is its node, its first arrow at its relation:\n{dag}"
     );
     assert!(
@@ -110,7 +113,7 @@ fn the_dag_trace_view_chains_through_derived_facts() {
     );
     // The premise that is *not* a prior step is a name: `c10` is an input,
     // and the dag has nowhere else to root the chain.
-    assert!(dag.contains("  \"c10\" -> \"step s1\";"), "{dag}");
+    assert!(dag.contains("  \"c10\" -> \"step s1\" ["), "{dag}");
     // The per-step view is the other picture, and the contrast is total: its
     // spine is the step ids and it never names a fact at all. `s2` is the step
     // box; `s1` is drawn where it is *referenced*, as `s2`'s premise rectangle,
@@ -187,9 +190,13 @@ fn an_equality_fact_is_drawn_as_any_fact() {
     let (ast, forms) = parsed("(= a b :source \"(1)\")");
     let dot = to_dot(&ast, &forms, DotOpts::default());
     let id = ein_render::fact_graph::fact_id("=", &["a".to_string(), "b".to_string()]);
-    for (i, to) in ["=", "a", "b"].iter().enumerate() {
+    assert!(
+        dot.contains(&format!("  \"=\" -> {id} [xlabel=\"1\", dir=back")),
+        "{dot}"
+    );
+    for (i, to) in ["a", "b"].iter().enumerate() {
         assert!(
-            dot.contains(&format!("  {id} -> \"{to}\" [xlabel=\"{}\"", i + 1)),
+            dot.contains(&format!("  {id} -> \"{to}\" [xlabel=\"{}\"", i + 2)),
             "{dot}"
         );
     }
@@ -233,7 +240,7 @@ fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
     // pattern's first arrow.
     let var = render_rule_form(&ast, forms[0], RuleMode::Overlay, false);
     assert!(
-        var.contains("\"h1_r\" -> \"?r\" [xlabel=\"1\""),
+        var.contains("\"?r\" -> \"h1_r\" [xlabel=\"1\", dir=back"),
         "the rule parameter is not the node under the first arrow:\n{var}"
     );
     assert!(
@@ -515,7 +522,8 @@ fn an_absent_under_an_absent_is_a_cluster_inside_it() {
     assert!(
         inner
             .iter()
-            .any(|l| l.starts_with("\"h") && l.contains("_not_L\" -> \"not_L\"")),
+            .any(|l| l.starts_with("\"not_L\" -> \"h")
+                && l.contains("_not_L\" [xlabel=\"1\", dir=back")),
         "{two}"
     );
     // `?o` is named by both absences, so it is the outer one's.
@@ -604,7 +612,10 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
         |c: &str, h: &str| ein_render::hashed_id("f_", &format!("co-located|{c},{h}"), true);
     let got: Vec<String> = dot
         .lines()
-        .filter_map(|l| l.trim().strip_suffix("-> \"⊥\" [color=\"#d62728\"];"))
+        .filter_map(|l| {
+            l.trim()
+                .strip_suffix("-> \"⊥\" [color=\"#d62728\", penwidth=2];")
+        })
         .map(|src| src.trim().to_string())
         .collect();
     let want: Vec<String> = [

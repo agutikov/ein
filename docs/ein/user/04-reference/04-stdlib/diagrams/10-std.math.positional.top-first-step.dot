@@ -13,11 +13,11 @@ digraph rule_top_first_step_lhs_rhs {
       "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_TOP-FIRST_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?TOP-FIRST_L" [xlabel="1", color="#e377c2"];
+    "?TOP-FIRST_L" -> "h1_TOP-FIRST_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_TOP-FIRST_L" -> "?k_L" [xlabel="2", color="#e377c2"];
     "h1_TOP-FIRST_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#e377c2"];
     "h1_TOP-FIRST_L" -> "?acc_L" [xlabel="4", color="#e377c2"];
-    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?p ?a)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -33,11 +33,11 @@ digraph rule_top_first_step_lhs_rhs {
       "(?B ?a ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h2_TOP-FIRST_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "?TOP-FIRST_R" [xlabel="1", color="#e377c2", style=dashed];
+    "?TOP-FIRST_R" -> "h2_TOP-FIRST_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "?k_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "?p_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_TOP-FIRST_R" -> "(?B ?a ?acc)_R" [xlabel="4", color="#e377c2", style=dashed];
-    "(?B ?a ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?B_R" -> "(?B ?a ?acc)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?B ?a ?acc)_R" -> "?a_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B ?a ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

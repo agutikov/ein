@@ -14,12 +14,12 @@ digraph rule_rat_operand_second_lhs_rhs {
       "(rat-first ?k ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_rat-operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "rat-operand-is_L" [xlabel="1", color="#1f77b4"];
+    "rat-operand-is_L" -> "h1_rat-operand-is_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_rat-operand-is_L" -> "(rat-first ?k ?y)_L" [xlabel="2", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?p_L" [xlabel="3", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?n_L" [xlabel="4", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?d_L" [xlabel="5", color="#1f77b4"];
-    "(rat-first ?k ?y)_L" -> "rat-first_L" [xlabel="1", color="#bcbd22"];
+    "rat-first_L" -> "(rat-first ?k ?y)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(rat-first ?k ?y)_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "(rat-first ?k ?y)_L" -> "?y_L" [xlabel="3", color="#bcbd22"];
   }
@@ -41,12 +41,12 @@ digraph rule_rat_operand_second_lhs_rhs {
       "(rat-second ?k ?p ?n ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(rat-of (rat-second ?k ?p ?n ?d))_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(rat-of (rat-second ?k ?p ?n ?d))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-of_R" -> "(rat-of (rat-second ?k ?p ?n ?d))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-of (rat-second ?k ?p ?n ?d))_R" -> "(rat-second ?k ?p ?n ?d)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-second ?k ?p ?n ?d)_R" -> "rat-second_R" [xlabel="1", color="#8c564b", style=dashed];
+    "rat-second_R" -> "(rat-second ?k ?p ?n ?d)_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "(rat-second ?k ?p ?n ?d)_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
     "(rat-second ?k ?p ?n ?d)_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
     "(rat-second ?k ?p ?n ?d)_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];

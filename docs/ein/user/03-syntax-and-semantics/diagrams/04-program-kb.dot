@@ -1,51 +1,65 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_1f1a2cc2f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_1f1a2cc2f3 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_1f1a2cc2f3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "T" [xlabel="3", color="#bcbd22", style=solid];
   f_1f1a2cc2f3 -> "T" [xlabel="4", color="#bcbd22", style=solid];
   f_7b05b7469c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_7b05b7469c -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_7b05b7469c [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_7b05b7469c -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
   f_51e311dd81 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_51e311dd81 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_51e311dd81 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_51e311dd81 -> "can-drink" [xlabel="2", color="#bcbd22", style=solid];
   f_51e311dd81 -> "T" [xlabel="3", color="#bcbd22", style=solid];
   f_51e311dd81 -> "T" [xlabel="4", color="#bcbd22", style=solid];
   f_b5785fc49c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_b5785fc49c -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_b5785fc49c [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_b5785fc49c -> "can-drink" [xlabel="2", color="#bcbd22", style=solid];
   f_c5667e157c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_c5667e157c -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_c5667e157c [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_c5667e157c -> "Jack" [xlabel="2", color="#7f7f7f", style=solid];
   f_c5667e157c -> "Human" [xlabel="3", color="#7f7f7f", style=solid];
   f_4c81e15b5b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_4c81e15b5b -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_4c81e15b5b [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_4c81e15b5b -> "Coffee" [xlabel="2", color="#7f7f7f", style=solid];
   f_4c81e15b5b -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
   f_8f4d4b0157 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
-  f_8f4d4b0157 -> "can-drink" [xlabel="1", color="#17becf", style=solid];
+  "can-drink" -> f_8f4d4b0157 [xlabel="1", dir=back, color="#17becf", style=solid];
   f_8f4d4b0157 -> "Human" [xlabel="2", color="#17becf", style=solid];
   f_8f4d4b0157 -> "Drink" [xlabel="3", color="#17becf", style=solid];
   f_9bf0bc88bd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_9bf0bc88bd -> "inherit-left" [xlabel="1", color="#bcbd22", style=solid];
+  "inherit-left" -> f_9bf0bc88bd [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_9bf0bc88bd -> "can-drink" [xlabel="2", color="#bcbd22", style=solid];
   f_789b8dc20d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
-  f_789b8dc20d -> "inherit-right" [xlabel="1", color="#d62728", style=solid];
+  "inherit-right" -> f_789b8dc20d [xlabel="1", dir=back, color="#d62728", style=solid];
   f_789b8dc20d -> "can-drink" [xlabel="2", color="#d62728", style=solid];
   f_44d454a270 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-left"];
-  f_44d454a270 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_44d454a270 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_44d454a270 -> "Jack" [xlabel="2", color="#17becf", style=dashed];
   f_44d454a270 -> "Drink" [xlabel="3", color="#17becf", style=dashed];
   f_ab46084fb1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-right"];
-  f_ab46084fb1 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_ab46084fb1 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_ab46084fb1 -> "Human" [xlabel="2", color="#17becf", style=dashed];
   f_ab46084fb1 -> "Coffee" [xlabel="3", color="#17becf", style=dashed];
   f_d7e5985940 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-right"];
-  f_d7e5985940 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_d7e5985940 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_d7e5985940 -> "Jack" [xlabel="2", color="#17becf", style=dashed];
   f_d7e5985940 -> "Coffee" [xlabel="3", color="#17becf", style=dashed];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; "inherit-left"; "inherit-right"; }
+  { rank=same; "layer 1"; f_1f1a2cc2f3; f_7b05b7469c; f_51e311dd81; f_b5785fc49c; f_9bf0bc88bd; f_789b8dc20d; }
+  { rank=same; "layer 2"; "is-a"; "T"; "can-drink"; }
+  { rank=same; "layer 3"; f_c5667e157c; f_4c81e15b5b; f_8f4d4b0157; f_44d454a270; f_ab46084fb1; f_d7e5985940; }
+  { rank=same; "layer 4"; "Jack"; "Human"; "Coffee"; "Drink"; }
 }

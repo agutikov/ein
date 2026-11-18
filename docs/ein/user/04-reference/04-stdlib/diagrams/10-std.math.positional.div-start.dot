@@ -13,10 +13,10 @@ digraph rule_div_start_lhs_rhs {
       "(?DIV-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?DIV-SECOND ?x ?y ?u)_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?v_L" [xlabel="3", color="#bcbd22"];
-    "(?DIV-SECOND ?x ?y ?u)_L" -> "?DIV-SECOND_L" [xlabel="1", color="#9467bd"];
+    "?DIV-SECOND_L" -> "(?DIV-SECOND ?x ?y ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
@@ -33,11 +33,11 @@ digraph rule_div_start_lhs_rhs {
       "(?QUOTIENT ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_DIV-CALL_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_DIV-CALL_R" -> "?DIV-CALL_R" [xlabel="1", color="#e377c2", style=dashed];
+    "?DIV-CALL_R" -> "h2_DIV-CALL_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_DIV-CALL_R" -> "(?QUOTIENT ?x ?y)_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_DIV-CALL_R" -> "?u_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_DIV-CALL_R" -> "?v_R" [xlabel="4", color="#e377c2", style=dashed];
-    "(?QUOTIENT ?x ?y)_R" -> "?QUOTIENT_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?QUOTIENT_R" -> "(?QUOTIENT ?x ?y)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(?QUOTIENT ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(?QUOTIENT ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
   }

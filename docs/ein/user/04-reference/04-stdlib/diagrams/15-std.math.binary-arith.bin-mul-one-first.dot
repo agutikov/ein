@@ -14,12 +14,12 @@ digraph rule_bin_mul_one_first_lhs_rhs {
       "(bin-b 1 ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_bin-mul-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "bin-mul-step_L" [xlabel="1", color="#7f7f7f"];
+    "bin-mul-step_L" -> "h1_bin-mul-step_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?u_L" [xlabel="3", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "(bin-b 1 ?rest)_L" [xlabel="4", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "z_L" [xlabel="5", color="#7f7f7f"];
-    "(bin-b 1 ?rest)_L" -> "bin-b_L" [xlabel="1", color="#7f7f7f"];
+    "bin-b_L" -> "(bin-b 1 ?rest)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(bin-b 1 ?rest)_L" -> "1_L" [xlabel="2", color="#7f7f7f"];
     "(bin-b 1 ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -36,13 +36,13 @@ digraph rule_bin_mul_one_first_lhs_rhs {
       "(bin-mul-sum ?k ?u ?rest)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_bin-add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_bin-add-walk_R" -> "bin-add-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "bin-add-walk_R" -> "h2_bin-add-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "(bin-mul-sum ?k ?u ?rest)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "z_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "?u_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h2_bin-add-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(bin-mul-sum ?k ?u ?rest)_R" -> "bin-mul-sum_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "bin-mul-sum_R" -> "(bin-mul-sum ?k ?u ?rest)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(bin-mul-sum ?k ?u ?rest)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(bin-mul-sum ?k ?u ?rest)_R" -> "?u_R" [xlabel="3", color="#1f77b4", style=dashed];
     "(bin-mul-sum ?k ?u ?rest)_R" -> "?rest_R" [xlabel="4", color="#1f77b4", style=dashed];

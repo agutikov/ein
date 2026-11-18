@@ -6,17 +6,17 @@ digraph rule_owns_a_pet_lhs_rhs {
     "?p_L" [label="?p", shape=diamond];
     "has-dog_L" [label="has-dog", shape=box];
     "h1_has-cat_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_has-cat_L" -> "has-cat_L" [xlabel="1", color="#9467bd"];
+    "has-cat_L" -> "h1_has-cat_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_has-cat_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "h2_has-dog_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h2_has-dog_L" -> "has-dog_L" [xlabel="1", color="#17becf"];
+    "has-dog_L" -> "h2_has-dog_L" [xlabel="1", dir=back, color="#17becf"];
     "h2_has-dog_L" -> "?p_L" [xlabel="2", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
     "pet-owner_R" [label="pet-owner", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "h3_pet-owner_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_pet-owner_R" -> "pet-owner_R" [xlabel="1", color="#17becf", style=dashed];
+    "pet-owner_R" -> "h3_pet-owner_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_pet-owner_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
   }
 }

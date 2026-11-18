@@ -6,7 +6,7 @@ digraph rule_cmp_ask_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "h1_CMP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_CMP_L" -> "?CMP_L" [xlabel="1", color="#ff7f0e"];
+    "?CMP_L" -> "h1_CMP_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_CMP_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
     "h1_CMP_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
   }
@@ -20,10 +20,10 @@ digraph rule_cmp_ask_lhs_rhs {
       "(?CMP-FIRST ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_OPERAND_R" -> "?OPERAND_R" [xlabel="1", color="#d62728", style=dashed];
+    "?OPERAND_R" -> "h2_OPERAND_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_OPERAND_R" -> "(?CMP-FIRST ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_OPERAND_R" -> "?x_R" [xlabel="3", color="#d62728", style=dashed];
-    "(?CMP-FIRST ?x ?y)_R" -> "?CMP-FIRST_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?CMP-FIRST_R" -> "(?CMP-FIRST ?x ?y)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(?CMP-FIRST ?x ?y)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(?CMP-FIRST ?x ?y)_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

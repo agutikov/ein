@@ -11,10 +11,10 @@ digraph rule_div9_by_zero_lhs_rhs {
       "(num9 0 0 0 0 0 0 0 0 0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_div9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_div9_L" -> "div9_L" [xlabel="1", color="#d62728"];
+    "div9_L" -> "h1_div9_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_div9_L" -> "?n_L" [xlabel="2", color="#d62728"];
     "h1_div9_L" -> "(num9 0 0 0 0 0 0 0 0 0)_L" [xlabel="3", color="#d62728"];
-    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "num9_L" [xlabel="1", color="#d62728"];
+    "num9_L" -> "(num9 0 0 0 0 0 0 0 0 0)_L" [xlabel="1", dir=back, color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="2", color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="3", color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="4", color="#d62728"];
@@ -40,12 +40,12 @@ digraph rule_div9_by_zero_lhs_rhs {
       "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_division-by-zero_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_division-by-zero_R" -> "division-by-zero_R" [xlabel="1", color="#e377c2", style=dashed];
+    "division-by-zero_R" -> "h2_division-by-zero_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_division-by-zero_R" -> "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [xlabel="2", color="#e377c2", style=dashed];
-    "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" -> "div9_R" [xlabel="1", color="#d62728", style=dashed];
+    "div9_R" -> "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" -> "?n_R" [xlabel="2", color="#d62728", style=dashed];
     "(div9 ?n (num9 0 0 0 0 0 0 0 0 0))_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="3", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "num9_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="4", color="#d62728", style=dashed];

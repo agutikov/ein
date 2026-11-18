@@ -18,7 +18,7 @@ digraph rule_operand_undeclared_lhs_rhs {
     "8_L" [label="8", shape=box];
     "9_L" [label="9", shape=box];
     "h1_operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_operand_L" -> "operand_L" [xlabel="1", color="#2ca02c"];
+    "operand_L" -> "h1_operand_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_operand_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
     "h1_operand_L" -> "?x_L" [xlabel="3", color="#2ca02c"];
     "?v_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
@@ -38,7 +38,7 @@ digraph rule_operand_undeclared_lhs_rhs {
       "let_L" [label="let", shape=box];
       "?w_L" [label="?w", shape=diamond];
       "h2_let_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-      "h2_let_L" -> "let_L" [xlabel="1", color="#7f7f7f"];
+      "let_L" -> "h2_let_L" [xlabel="1", dir=back, color="#7f7f7f"];
       "h2_let_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
       "h2_let_L" -> "?w_L" [xlabel="3", color="#7f7f7f"];
     }
@@ -53,10 +53,10 @@ digraph rule_operand_undeclared_lhs_rhs {
       "(no-let ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h3_bad-operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h3_bad-operand_R" -> "bad-operand_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "bad-operand_R" -> "h3_bad-operand_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h3_bad-operand_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h3_bad-operand_R" -> "(no-let ?x)_R" [xlabel="3", color="#1f77b4", style=dashed];
-    "(no-let ?x)_R" -> "no-let_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "no-let_R" -> "(no-let ?x)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(no-let ?x)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

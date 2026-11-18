@@ -13,11 +13,11 @@ digraph rule_div_answer_lhs_rhs {
       "(?QUOTIENT ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_DIV-DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_DIV-DONE_L" -> "?DIV-DONE_L" [xlabel="1", color="#2ca02c"];
+    "?DIV-DONE_L" -> "h1_DIV-DONE_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_DIV-DONE_L" -> "(?QUOTIENT ?x ?y)_L" [xlabel="2", color="#2ca02c"];
     "h1_DIV-DONE_L" -> "?q_L" [xlabel="3", color="#2ca02c"];
     "h1_DIV-DONE_L" -> "?r_L" [xlabel="4", color="#2ca02c"];
-    "(?QUOTIENT ?x ?y)_L" -> "?QUOTIENT_L" [xlabel="1", color="#9467bd"];
+    "?QUOTIENT_L" -> "(?QUOTIENT ?x ?y)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?QUOTIENT ?x ?y)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?QUOTIENT ?x ?y)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -28,7 +28,7 @@ digraph rule_div_answer_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
     "h2_QUOT-OF_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_QUOT-OF_R" -> "?QUOT-OF_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?QUOT-OF_R" -> "h2_QUOT-OF_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_QUOT-OF_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_QUOT-OF_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_QUOT-OF_R" -> "?q_R" [xlabel="4", color="#9467bd", style=dashed];

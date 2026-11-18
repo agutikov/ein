@@ -1,5 +1,5 @@
 digraph step16 {
-  rankdir=LR;
+  rankdir=TB;
   node [fontname="Inter", shape=box];
   ranksep=0.55;
   "f_eab79754f0" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
@@ -10,16 +10,16 @@ digraph step16 {
     label="div ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     "f_0cb3773012" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   }
-  "fire0_std.math.arith.division-by-zero-is-false" [shape=box, style="rounded,bold", color="#bcbd22", fontcolor="#bcbd22", label="std.math.arith.division-by-zero-is-false\n(div (n z 7) z) divides by zero: no number is the answer"];
-  "f_eab79754f0" -> "std.math.arith.division-by-zero" [xlabel="1"];
+  "fire0_std.math.arith.division-by-zero-is-false" [shape=box, style="rounded", color="#00686b", fontcolor="#00686b", penwidth=2, label="std.math.arith.division-by-zero-is-false\n(div (n z 7) z) divides by zero: no number is the answer"];
+  "std.math.arith.division-by-zero" -> "f_eab79754f0" [xlabel="1", dir=back];
   "f_eab79754f0" -> "f_31efc4325b" [xlabel="2"];
-  "f_a1f94f5b63" -> "false" [xlabel="1", penwidth=2];
-  "f_31efc4325b" -> "div" [xlabel="1"];
+  "false" -> "f_a1f94f5b63" [xlabel="1", dir=back, penwidth=2];
+  "div" -> "f_31efc4325b" [xlabel="1", dir=back];
   "f_31efc4325b" -> "f_0cb3773012" [xlabel="2"];
   "f_31efc4325b" -> "z" [xlabel="3"];
-  "f_0cb3773012" -> "n" [xlabel="1"];
+  "n" -> "f_0cb3773012" [xlabel="1", dir=back];
   "f_0cb3773012" -> "z" [xlabel="2"];
   "f_0cb3773012" -> "7" [xlabel="3"];
-  "f_eab79754f0" -> "fire0_std.math.arith.division-by-zero-is-false" [color="#bcbd22"];
-  "fire0_std.math.arith.division-by-zero-is-false" -> "f_a1f94f5b63" [color="#bcbd22", style=bold];
+  "f_eab79754f0" -> "fire0_std.math.arith.division-by-zero-is-false" [color="#00686b", penwidth=2];
+  "fire0_std.math.arith.division-by-zero-is-false" -> "f_a1f94f5b63" [color="#00686b", penwidth=2];
 }

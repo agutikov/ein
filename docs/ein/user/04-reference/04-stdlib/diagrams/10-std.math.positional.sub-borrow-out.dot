@@ -8,7 +8,7 @@ digraph rule_sub_borrow_out_lhs_rhs {
     "1_L" [label="1", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
+    "?SUB-WALK_L" -> "h1_SUB-WALK_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_SUB-WALK_L" -> "z_L" [xlabel="3", color="#d62728"];
     "h1_SUB-WALK_L" -> "z_L" [xlabel="4", color="#d62728"];
@@ -19,7 +19,7 @@ digraph rule_sub_borrow_out_lhs_rhs {
     "?SHORT_R" [label="?SHORT", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "h2_SHORT_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_SHORT_R" -> "?SHORT_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?SHORT_R" -> "h2_SHORT_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_SHORT_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

@@ -1,33 +1,41 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_c5667e157c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_c5667e157c -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_c5667e157c [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_c5667e157c -> "Jack" [xlabel="2", color="#7f7f7f", style=solid];
   f_c5667e157c -> "Human" [xlabel="3", color="#7f7f7f", style=solid];
   f_4c81e15b5b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_4c81e15b5b -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-a" -> f_4c81e15b5b [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_4c81e15b5b -> "Coffee" [xlabel="2", color="#7f7f7f", style=solid];
   f_4c81e15b5b -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
   f_8f4d4b0157 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
-  f_8f4d4b0157 -> "can-drink" [xlabel="1", color="#17becf", style=solid];
+  "can-drink" -> f_8f4d4b0157 [xlabel="1", dir=back, color="#17becf", style=solid];
   f_8f4d4b0157 -> "Human" [xlabel="2", color="#17becf", style=solid];
   f_8f4d4b0157 -> "Drink" [xlabel="3", color="#17becf", style=solid];
   f_1322f96e23 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", fontcolor="#e377c2", style=solid, xlabel="puzzle text"];
-  f_1322f96e23 -> "drinks" [xlabel="1", color="#e377c2", style=solid];
+  "drinks" -> f_1322f96e23 [xlabel="1", dir=back, color="#e377c2", style=solid];
   f_1322f96e23 -> "Jack" [xlabel="2", color="#e377c2", style=solid];
   f_1322f96e23 -> "Coffee" [xlabel="3", color="#e377c2", style=solid];
   f_44d454a270 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-rel-lhs"];
-  f_44d454a270 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_44d454a270 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_44d454a270 -> "Jack" [xlabel="2", color="#17becf", style=dashed];
   f_44d454a270 -> "Drink" [xlabel="3", color="#17becf", style=dashed];
   f_ab46084fb1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-rel-rhs"];
-  f_ab46084fb1 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_ab46084fb1 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_ab46084fb1 -> "Human" [xlabel="2", color="#17becf", style=dashed];
   f_ab46084fb1 -> "Coffee" [xlabel="3", color="#17becf", style=dashed];
   f_d7e5985940 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by inherit-rel-rhs"];
-  f_d7e5985940 -> "can-drink" [xlabel="1", color="#17becf", style=dashed];
+  "can-drink" -> f_d7e5985940 [xlabel="1", dir=back, color="#17becf", style=dashed];
   f_d7e5985940 -> "Jack" [xlabel="2", color="#17becf", style=dashed];
   f_d7e5985940 -> "Coffee" [xlabel="3", color="#17becf", style=dashed];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "is-a"; "can-drink"; "drinks"; }
+  { rank=same; "layer 1"; f_c5667e157c; f_4c81e15b5b; f_8f4d4b0157; f_1322f96e23; f_44d454a270; f_ab46084fb1; f_d7e5985940; }
+  { rank=same; "layer 2"; "Jack"; "Human"; "Coffee"; "Drink"; }
 }

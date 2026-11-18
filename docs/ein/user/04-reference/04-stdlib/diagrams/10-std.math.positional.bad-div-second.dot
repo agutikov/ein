@@ -13,10 +13,10 @@ digraph rule_bad_div_second_lhs_rhs {
       "(?DIV-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_BAD-OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_BAD-OPERAND_L" -> "?BAD-OPERAND_L" [xlabel="1", color="#17becf"];
+    "?BAD-OPERAND_L" -> "h1_BAD-OPERAND_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_BAD-OPERAND_L" -> "(?DIV-SECOND ?x ?y ?u)_L" [xlabel="2", color="#17becf"];
     "h1_BAD-OPERAND_L" -> "?f_L" [xlabel="3", color="#17becf"];
-    "(?DIV-SECOND ?x ?y ?u)_L" -> "?DIV-SECOND_L" [xlabel="1", color="#9467bd"];
+    "?DIV-SECOND_L" -> "(?DIV-SECOND ?x ?y ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
     "(?DIV-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
@@ -32,10 +32,10 @@ digraph rule_bad_div_second_lhs_rhs {
       "(?DIV ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h2_BAD-REQUEST_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_BAD-REQUEST_R" -> "?BAD-REQUEST_R" [xlabel="1", color="#d62728", style=dashed];
+    "?BAD-REQUEST_R" -> "h2_BAD-REQUEST_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_BAD-REQUEST_R" -> "(?DIV ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_BAD-REQUEST_R" -> "?f_R" [xlabel="3", color="#d62728", style=dashed];
-    "(?DIV ?x ?y)_R" -> "?DIV_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?DIV_R" -> "(?DIV ?x ?y)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(?DIV ?x ?y)_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(?DIV ?x ?y)_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

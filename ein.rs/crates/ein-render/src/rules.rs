@@ -19,9 +19,13 @@
 //! **A pattern is drawn as a fact is** (Q-M1f.419): an octagon with no name
 //! in it, its first arrow, numbered `1`, at its relation, a box, or the
 //! variable's diamond where the relation is a variable, and an arrow
-//! numbered `2`, `3`, … at each argument. Folded (`fold`), a pattern of three
-//! arrows that no drawn pattern points at is one arrow from its first
-//! argument to its second, labelled with its relation, as a fact is folded.
+//! numbered `2`, `3`, … at each argument; the first arrow is written from the
+//! relation to the octagon and drawn back, so that the relation stands above
+//! the pattern and its arguments below, in layers, as a knowledge base's
+//! facts do ([`crate::fact_graph::first_arrow`]). Folded (`fold`), a pattern
+//! of three arrows that no drawn pattern points at is one arrow from its
+//! first argument to its second, and a pattern of two arrows a loop on its
+//! argument, labelled with its relation, as a fact is folded (Q-M1f.425).
 //! A stored negation `(not P)` is a pattern of `not`, drawn red, whose second
 //! arrow points at `P`'s node, as the reasoning pages draw a negation.
 //!
@@ -43,7 +47,7 @@ use crate::dot_util::{
     GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, ctx_frames, ctx_label, quote,
     value_label,
 };
-use crate::fact_graph::FACT_NODE;
+use crate::fact_graph::{FACT_NODE, first_arrow, folds};
 use crate::palette::hash_color;
 
 const NEG_COLOUR: &str = "#d62728"; // red — negated premises / conclusions
@@ -142,10 +146,10 @@ impl Scene {
         self.at.contains_key(&value_label(ast, clause))
     }
 
-    /// A pattern drawn as one labelled arrow: of three arrows, folded, and
-    /// pointed at by no drawn pattern.
+    /// A pattern drawn as one labelled arrow, or a loop: of three arrows,
+    /// or two, folded, and pointed at by no drawn pattern.
     fn folds(&self, ast: &Ast, clause: NodeId) -> bool {
-        self.fold && positional(ast, clause).len() == 2 && !self.is_nested(ast, clause)
+        self.fold && folds(positional(ast, clause).len()) && !self.is_nested(ast, clause)
     }
 
     /// Everything `form` points at is pointed at by a drawn pattern, `by`
@@ -489,19 +493,19 @@ fn pattern_arrows(
     colour: &str,
     edge_style: &str,
 ) -> Vec<String> {
-    let mut targets = vec![head_label(ast, clause)];
-    targets.extend(positional(ast, clause).iter().map(|a| value_label(ast, *a)));
-    targets
-        .iter()
-        .enumerate()
-        .map(|(i, t)| {
-            format!(
-                "{from} -> {} [xlabel=\"{}\", color=\"{colour}\"{edge_style}];",
-                nid(t, suffix),
-                i + 1
-            )
-        })
-        .collect()
+    let mut out = vec![first_arrow(
+        from,
+        &nid(&head_label(ast, clause), suffix),
+        &format!(", color=\"{colour}\"{edge_style}"),
+    )];
+    out.extend(positional(ast, clause).iter().enumerate().map(|(i, a)| {
+        format!(
+            "{from} -> {} [xlabel=\"{}\", color=\"{colour}\"{edge_style}];",
+            nid(&value_label(ast, *a), suffix),
+            i + 2
+        )
+    }));
+    out
 }
 
 impl RuleRenderer {
@@ -585,10 +589,14 @@ impl RuleRenderer {
         let colour = pattern_colour(&head);
         let edge_style = if dashed { ", style=dashed" } else { "" };
         if scene.folds(ast, clause) {
+            // Of three arrows, an arrow from the first argument to the
+            // second; of two, a loop on the one argument.
+            let from = nid(&value_label(ast, pos[0]), suffix);
+            let to = pos
+                .get(1)
+                .map_or(from.clone(), |a| nid(&value_label(ast, *a), suffix));
             return vec![format!(
-                "{} -> {} [label={}, color=\"{colour}\", fontcolor=\"{colour}\"{edge_style}];",
-                nid(&value_label(ast, pos[0]), suffix),
-                nid(&value_label(ast, pos[1]), suffix),
+                "{from} -> {to} [label={}, color=\"{colour}\", fontcolor=\"{colour}\"{edge_style}];",
                 quote(&head)
             )];
         }

@@ -73,14 +73,14 @@ with the dual of each on the other side. Totality and its obligations are `std.a
   as :expect        (model (wears Ann Blue) (wears Bob Green) (wears Cid Red))
 ```
 
-`ein render kb --fold` draws the state, each fact of three arrows one labelled arrow; below are its facts of
-`is-a`, `wears` and `not`, the declarations' facts and the facts that apply a rule (`(bijective wears)` and the
-activators the setup derived) left out. The two dashed `wears` arrows are the facts elimination forced, each labelled
-with the rule. Each stored negation is an octagon whose arrow `1` is at `not` and whose arrow `2` is at the `wears`
-fact it denies, an octagon in the frame `not ctx`, since the knowledge base points at it and does not hold it: the
-program's `(not (wears Ann Red))` solid, the five the rules derived dashed.
+`ein render kb --fold` draws the state, each fact of three arrows one labelled arrow and each of two a labelled
+loop; below are its facts of `is-a`, `wears` and `not`, the declarations' facts and the facts that apply a rule
+(`(bijective wears)` and the activators the setup derived) left out. The two dashed `wears` arrows are the facts
+elimination forced, each labelled with the rule. Each stored negation, a fact of two arrows, is a loop labelled
+`not` on the `wears` fact it denies, an octagon in the frame `not ctx`, since the knowledge base points at it and
+does not hold it: the program's `(not (wears Ann Red))` solid, the five the rules derived dashed.
 
-![The state after elimination, folded: the two wears facts it forced dashed, and each stored negation an octagon pointing at the wears fact it denies, in the frame not ctx](diagrams/04-elimination-state.svg)
+![The state after elimination, folded: the two wears facts it forced dashed, and each stored negation a loop labelled not on the wears fact it denies, an octagon in the frame not ctx](diagrams/04-elimination-state.svg)
 
 Bob's green excludes green for Ann; red was excluded for her by the program; blue is the one colour left, and it is
 forced. Then red is the one colour left for Cid. Nothing is guessed.

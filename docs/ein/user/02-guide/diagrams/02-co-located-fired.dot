@@ -1,29 +1,37 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_0721be1f84 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(1)"];
-  f_0721be1f84 -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  "co-located" -> f_0721be1f84 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_0721be1f84 -> "Alice" [xlabel="2", color="#bcbd22", style=solid];
   f_0721be1f84 -> "Tea" [xlabel="3", color="#bcbd22", style=solid];
   f_cc83d9e543 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(2)"];
-  f_cc83d9e543 -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  "co-located" -> f_cc83d9e543 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_cc83d9e543 -> "Alice" [xlabel="2", color="#bcbd22", style=solid];
   f_cc83d9e543 -> "Cat" [xlabel="3", color="#bcbd22", style=solid];
   f_87bd571572 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by symmetric"];
-  f_87bd571572 -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  "co-located" -> f_87bd571572 [xlabel="1", dir=back, color="#bcbd22", style=dashed];
   f_87bd571572 -> "Tea" [xlabel="2", color="#bcbd22", style=dashed];
   f_87bd571572 -> "Alice" [xlabel="3", color="#bcbd22", style=dashed];
   f_6b98aa2513 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by symmetric"];
-  f_6b98aa2513 -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  "co-located" -> f_6b98aa2513 [xlabel="1", dir=back, color="#bcbd22", style=dashed];
   f_6b98aa2513 -> "Cat" [xlabel="2", color="#bcbd22", style=dashed];
   f_6b98aa2513 -> "Alice" [xlabel="3", color="#bcbd22", style=dashed];
   f_62afb3297e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by transitive"];
-  f_62afb3297e -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  "co-located" -> f_62afb3297e [xlabel="1", dir=back, color="#bcbd22", style=dashed];
   f_62afb3297e -> "Tea" [xlabel="2", color="#bcbd22", style=dashed];
   f_62afb3297e -> "Cat" [xlabel="3", color="#bcbd22", style=dashed];
   f_3b18dcc77f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by transitive"];
-  f_3b18dcc77f -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  "co-located" -> f_3b18dcc77f [xlabel="1", dir=back, color="#bcbd22", style=dashed];
   f_3b18dcc77f -> "Cat" [xlabel="2", color="#bcbd22", style=dashed];
   f_3b18dcc77f -> "Tea" [xlabel="3", color="#bcbd22", style=dashed];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "co-located"; }
+  { rank=same; "layer 1"; f_0721be1f84; f_cc83d9e543; f_87bd571572; f_6b98aa2513; f_62afb3297e; f_3b18dcc77f; }
+  { rank=same; "layer 2"; "Alice"; "Tea"; "Cat"; }
 }
