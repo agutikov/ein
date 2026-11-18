@@ -80,9 +80,9 @@ What makes the rules a theory is how they connect: one rule's conclusion is anot
 drawings of the division by zero share a node, the flag, concluded by a rule of one module and read by a rule of
 another:
 
-![The firing that concludes the division by zero's flag: the finished division a premise, the flag in bold, each fact an octagon](diagrams/10-div-by-zero-flagged.svg)
+![The firing that concludes the division by zero's flag: the finished division a premise, in black, the flag the firing added in a bright colour and wide, each fact an octagon](diagrams/10-div-by-zero-flagged.svg)
 
-![The next firing, which reads the flag and concludes (false), an octagon whose arrow 1 is at false](diagrams/10-div-by-zero-refuted.svg)
+![The next firing, which reads the flag and concludes (false), an octagon whose arrow 1 is at false, bright and wide](diagrams/10-div-by-zero-refuted.svg)
 
 The same connection, over relations and rules and not over one run's facts, is a graph no `ein render` view draws
 as a whole. Drawn by hand for the division above, a relation a box and a rule a hexagon:

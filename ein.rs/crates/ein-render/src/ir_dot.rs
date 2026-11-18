@@ -26,7 +26,7 @@ use crate::fact_graph::{Fact, FactSet, Look, Under, fact_id};
 use crate::kb_dot::{kb_digraph_open, short_source};
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, goal_cluster, render_rule_form};
-use crate::slice::{DERIVATION_WIDTH, derivation_colour};
+use crate::slice::{DEFAULT_INK, DERIVATION_WIDTH, DERIVED_WIDTH, derivation_hue};
 
 /// The rendering options `to_dot` threads through every form.
 #[derive(Clone, Copy)]
@@ -439,9 +439,12 @@ pub fn render_trace(ast: &Ast, form: NodeId, view: TraceView) -> String {
 /// its own, from its premises to the fact it derives, and each fact derived
 /// drawn as its node in the canonical form (Q-M1f.419), never a node
 /// labelled with its text. A premise that names an earlier step is the fact
-/// that step derived; any other is a name. A step and its arrows stand out
-/// as a slice's do (Q-M1f.428): twice the default width, in a colour of
-/// [`crate::slice::DERIVATION_PALETTE`] by its rule's name.
+/// that step derived; any other is a name. The derivation stands out as a
+/// slice's does (Q-M1f.428), in a hue of
+/// [`crate::slice::DERIVATION_PALETTE`] by its rule's name: the fact a step
+/// derives in the hue's derived shade at [`DERIVED_WIDTH`], the step and its
+/// arrows in its explanation's shade at twice the default width, and every
+/// other fact in the default black.
 fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
     let mut w = Written {
         ast,
@@ -475,7 +478,8 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
             Some(r) => multiline(&[&step_name, r]),
             None => quote(&step_name),
         };
-        let colour = derivation_colour(rule.as_deref().unwrap_or(&step_name));
+        let hue = derivation_hue(rule.as_deref().unwrap_or(&step_name));
+        let colour = hue.explanation;
         let attrs = format!("color=\"{colour}\", {DERIVATION_WIDTH}");
         steps.push(format!(
             "  {step_id} [shape=box, style=rounded, fontcolor=\"{colour}\", {attrs}, label={label}];"
@@ -501,10 +505,9 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
         if let Some(d) = kw_get(ast, ev, "derives").filter(|v| is_sform(ast, *v)) {
             let i = w.add(d);
             if drawn.insert(i) {
-                let head = ast.head_name(d).unwrap_or("");
                 w.set.facts[i].look = Look {
-                    penwidth: Some(2),
-                    ..Look::plain(hash_color(head))
+                    penwidth: Some(DERIVED_WIDTH),
+                    ..Look::plain(hue.derived)
                 };
                 w.set.drawn.push(i);
             }
@@ -514,6 +517,13 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
                 Some(slot) => slot.1 = did,
                 None => derived_by_step.push((step_name.clone(), did)),
             }
+        }
+    }
+    // A fact no step derives, one under a derived fact's arrow, is the rest:
+    // the default black.
+    for (i, fact) in w.set.facts.iter_mut().enumerate() {
+        if !drawn.contains(&i) {
+            fact.look = Look::plain(DEFAULT_INK);
         }
     }
     let mut lines = vec![

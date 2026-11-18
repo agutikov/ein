@@ -1,9 +1,9 @@
-digraph step15 {
+digraph step17 {
   rankdir=TB;
   node [fontname="Inter", shape=box];
   ranksep=0.55;
   "f_9934285045" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
-  "f_eab79754f0" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
+  "f_eab79754f0" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#418cfa", fontcolor="#418cfa", penwidth=3];
   "f_31efc4325b" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   newrank=true;
   subgraph cluster_ctx_0 {
@@ -18,12 +18,12 @@ digraph step15 {
     label="std.math.decimal-arith.done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     "f_0996b70fe8" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   }
-  "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded", color="#00686b", fontcolor="#00686b", penwidth=2, label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
+  "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded", color="#0e61cc", fontcolor="#0e61cc", penwidth=2, label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
   "std.math.decimal-arith.done" -> "f_9934285045" [xlabel="1", dir=back];
   "f_9934285045" -> "f_0996b70fe8" [xlabel="2"];
   "f_9934285045" -> "z" [xlabel="3"];
-  "std.math.arith.division-by-zero" -> "f_eab79754f0" [xlabel="1", dir=back, penwidth=2];
-  "f_eab79754f0" -> "f_31efc4325b" [xlabel="2", penwidth=2];
+  "std.math.arith.division-by-zero" -> "f_eab79754f0" [xlabel="1", dir=back, color="#418cfa", penwidth=3];
+  "f_eab79754f0" -> "f_31efc4325b" [xlabel="2", color="#418cfa", penwidth=3];
   "std.math.decimal-arith.div-m1" -> "f_0996b70fe8" [xlabel="1", dir=back];
   "f_0996b70fe8" -> "f_6c93b95ea5" [xlabel="2"];
   "f_0996b70fe8" -> "f_0cb3773012" [xlabel="3"];
@@ -37,6 +37,6 @@ digraph step15 {
   "n" -> "f_0cb3773012" [xlabel="1", dir=back];
   "f_0cb3773012" -> "z" [xlabel="2"];
   "f_0cb3773012" -> "7" [xlabel="3"];
-  "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#00686b", penwidth=2];
-  "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#00686b", penwidth=2];
+  "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#0e61cc", penwidth=2];
+  "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#0e61cc", penwidth=2];
 }

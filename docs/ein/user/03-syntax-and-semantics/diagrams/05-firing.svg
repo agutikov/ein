@@ -15,15 +15,15 @@
 <!-- fire0_chain -->
 <g id="node4" class="node">
 <title>fire0_chain</title>
-<path fill="none" stroke="#006400" stroke-width="2" d="M427.6,-184.6C427.6,-184.6 35.85,-184.6 35.85,-184.6 29.85,-184.6 23.85,-178.6 23.85,-172.6 23.85,-172.6 23.85,-149.6 23.85,-149.6 23.85,-143.6 29.85,-137.6 35.85,-137.6 35.85,-137.6 427.6,-137.6 427.6,-137.6 433.6,-137.6 439.6,-143.6 439.6,-149.6 439.6,-149.6 439.6,-172.6 439.6,-172.6 439.6,-178.6 433.6,-184.6 427.6,-184.6"/>
-<text xml:space="preserve" text-anchor="middle" x="231.72" y="-167.3" font-family="Inter" font-size="14.00" fill="#006400">chain</text>
-<text xml:space="preserve" text-anchor="middle" x="231.72" y="-147.8" font-family="Inter" font-size="14.00" fill="#006400">Ann ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid</text>
+<path fill="none" stroke="#11706e" stroke-width="2" d="M427.6,-184.6C427.6,-184.6 35.85,-184.6 35.85,-184.6 29.85,-184.6 23.85,-178.6 23.85,-172.6 23.85,-172.6 23.85,-149.6 23.85,-149.6 23.85,-143.6 29.85,-137.6 35.85,-137.6 35.85,-137.6 427.6,-137.6 427.6,-137.6 433.6,-137.6 439.6,-143.6 439.6,-149.6 439.6,-149.6 439.6,-172.6 439.6,-172.6 439.6,-178.6 433.6,-184.6 427.6,-184.6"/>
+<text xml:space="preserve" text-anchor="middle" x="231.72" y="-167.3" font-family="Inter" font-size="14.00" fill="#11706e">chain</text>
+<text xml:space="preserve" text-anchor="middle" x="231.72" y="-147.8" font-family="Inter" font-size="14.00" fill="#11706e">Ann ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid</text>
 </g>
 <!-- f_0d0f2e8c80&#45;&gt;fire0_chain -->
 <g id="edge10" class="edge">
 <title>f_0d0f2e8c80&#45;&gt;fire0_chain</title>
-<path fill="none" stroke="#006400" stroke-width="2" d="M329.96,-228.48C318.29,-220.59 296.77,-206.05 276.84,-192.59"/>
-<polygon fill="#006400" stroke="#006400" stroke-width="2" points="279.07,-189.87 268.83,-187.17 275.15,-195.67 279.07,-189.87"/>
+<path fill="none" stroke="#11706e" stroke-width="2" d="M329.96,-228.48C318.29,-220.59 296.77,-206.05 276.84,-192.59"/>
+<polygon fill="#11706e" stroke="#11706e" stroke-width="2" points="279.07,-189.87 268.83,-187.17 275.15,-195.67 279.07,-189.87"/>
 </g>
 <!-- Ann -->
 <g id="node6" class="node">
@@ -59,8 +59,8 @@
 <!-- f_03bbfb1dff&#45;&gt;fire0_chain -->
 <g id="edge11" class="edge">
 <title>f_03bbfb1dff&#45;&gt;fire0_chain</title>
-<path fill="none" stroke="#006400" stroke-width="2" d="M473.52,-231.2C447.82,-223.85 382.47,-205.18 326.18,-189.09"/>
-<polygon fill="#006400" stroke="#006400" stroke-width="2" points="327.44,-185.81 316.86,-186.43 325.51,-192.54 327.44,-185.81"/>
+<path fill="none" stroke="#11706e" stroke-width="2" d="M473.52,-231.2C447.82,-223.85 382.47,-205.18 326.18,-189.09"/>
+<polygon fill="#11706e" stroke="#11706e" stroke-width="2" points="327.44,-185.81 316.86,-186.43 325.51,-192.54 327.44,-185.81"/>
 </g>
 <!-- f_03bbfb1dff&#45;&gt;Bea -->
 <g id="edge5" class="edge">
@@ -85,27 +85,27 @@
 <!-- f_b8f7bcae1f -->
 <g id="node3" class="node">
 <title>f_b8f7bcae1f</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="357.52,-82.33 357.52,-91.27 351.19,-97.6 342.25,-97.6 335.92,-91.27 335.92,-82.33 342.25,-76 351.19,-76 357.52,-82.33"/>
+<polygon fill="none" stroke="#1c9e9a" stroke-width="3" points="357.52,-82.33 357.52,-91.27 351.19,-97.6 342.25,-97.6 335.92,-91.27 335.92,-82.33 342.25,-76 351.19,-76 357.52,-82.33"/>
 </g>
 <!-- f_b8f7bcae1f&#45;&gt;Ann -->
 <g id="edge8" class="edge">
 <title>f_b8f7bcae1f&#45;&gt;Ann</title>
-<path fill="none" stroke="black" stroke-width="2" d="M338.48,-78.65C329.18,-70.58 313.51,-56.98 299.47,-44.81"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="301.79,-42.19 291.94,-38.28 297.2,-47.48 301.79,-42.19"/>
-<text xml:space="preserve" text-anchor="middle" x="309.37" y="-61.25" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="#1c9e9a" stroke-width="3" d="M338.19,-78.4C329.13,-70.54 314.29,-57.66 300.73,-45.91"/>
+<polygon fill="#1c9e9a" stroke="#1c9e9a" stroke-width="3" points="303.08,-43.31 293.24,-39.4 298.5,-48.6 303.08,-43.31"/>
+<text xml:space="preserve" text-anchor="middle" x="309.42" y="-61.3" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- f_b8f7bcae1f&#45;&gt;Cid -->
 <g id="edge9" class="edge">
 <title>f_b8f7bcae1f&#45;&gt;Cid</title>
-<path fill="none" stroke="black" stroke-width="2" d="M354.96,-78.65C364.26,-70.58 379.94,-56.98 393.97,-44.81"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="396.24,-47.48 401.5,-38.28 391.65,-42.19 396.24,-47.48"/>
-<text xml:space="preserve" text-anchor="middle" x="375.08" y="-61.25" font-family="Times,serif" font-size="14.00">3</text>
+<path fill="none" stroke="#1c9e9a" stroke-width="3" d="M355.26,-78.4C364.31,-70.54 379.15,-57.66 392.71,-45.91"/>
+<polygon fill="#1c9e9a" stroke="#1c9e9a" stroke-width="3" points="394.94,-48.6 400.2,-39.4 390.36,-43.31 394.94,-48.6"/>
+<text xml:space="preserve" text-anchor="middle" x="375.02" y="-61.3" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 <!-- fire0_chain&#45;&gt;f_b8f7bcae1f -->
 <g id="edge12" class="edge">
 <title>fire0_chain&#45;&gt;f_b8f7bcae1f</title>
-<path fill="none" stroke="#006400" stroke-width="2" d="M269.06,-136.63C288.29,-124.53 310.97,-110.28 326.84,-100.3"/>
-<polygon fill="#006400" stroke="#006400" stroke-width="2" points="328.31,-103.51 334.91,-95.22 324.58,-97.58 328.31,-103.51"/>
+<path fill="none" stroke="#11706e" stroke-width="2" d="M269.06,-136.63C288.08,-124.67 310.48,-110.59 326.32,-100.63"/>
+<polygon fill="#11706e" stroke="#11706e" stroke-width="2" points="327.82,-103.82 334.43,-95.53 324.1,-97.89 327.82,-103.82"/>
 </g>
 <!-- ancestor -->
 <g id="node5" class="node">
@@ -130,10 +130,10 @@
 <!-- ancestor&#45;&gt;f_b8f7bcae1f -->
 <g id="edge7" class="edge">
 <title>ancestor&#45;&gt;f_b8f7bcae1f</title>
-<path fill="none" stroke="black" stroke-width="2" d="M503.46,-274.77C524.31,-239.23 551.27,-178.12 520.72,-137.6 500.58,-110.88 393.5,-94.15 358.09,-89.28"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="500.54,-272.84 498.3,-283.2 506.51,-276.5 500.54,-272.84"/>
-<text xml:space="preserve" text-anchor="middle" x="443" y="-109.77" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#1c9e9a" stroke-width="3" d="M504.28,-273.37C525,-237.64 550.88,-177.6 520.72,-137.6 500.72,-111.07 395,-94.38 358.85,-89.39"/>
+<polygon fill="#1c9e9a" stroke="#1c9e9a" stroke-width="3" points="501.3,-271.54 499.08,-281.9 507.27,-275.18 501.3,-271.54"/>
+<text xml:space="preserve" text-anchor="middle" x="443.69" y="-109.94" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: e3b089d876a46d939bd6e50c42a5fbb1122ff1d3752d723fa2f5149b7ef56361 -->
+<!-- source sha256: 036ae39cc88608213378b9f521b9f84192d9b6011e10b14fef1b5f723808bf83 -->

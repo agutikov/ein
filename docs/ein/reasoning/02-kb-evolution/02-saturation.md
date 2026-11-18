@@ -85,10 +85,11 @@ is a node, a firing is a node, an arrow leads from each premise into the firing 
 adds. Two firings below take three stated facts to a contradiction; the first adds
 $\operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2})$ and the second reads it.
 
-![A derivation as a graph: two firings take three stated facts, each an octagon with its arrows at its relation and arguments, to a contradiction](diagrams/02-derivation.svg)
+![A derivation as a graph: two firings take three stated facts, each an octagon with its arrows at its relation and arguments, to a contradiction, each fact a firing added heavy in the brighter shade of the firing's colour](diagrams/02-derivation.svg)
 
-An octagon is a fact, its first arrow at its relation and its next ones at its arguments; a heavy octagon is a
-fact a firing added, $\bot$ the one whose only arrow is at $\mathsf{false}$; a coloured box is a firing. The
+An octagon is a fact, its first arrow at its relation and its next ones at its arguments; a heavy octagon, in the
+brighter shade of its firing's colour, is a fact a firing added, $\bot$ the one whose only arrow is at
+$\mathsf{false}$; a coloured box is a firing, its arrows in its colour. The
 octagons no firing points at are $K$; each firing to the right of another is one more application of $T_P$:
 
 $$

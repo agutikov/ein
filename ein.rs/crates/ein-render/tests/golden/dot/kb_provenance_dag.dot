@@ -2,20 +2,20 @@ digraph derivation {
   rankdir=TB;
   ranksep=0.55;
   node [shape=box];
-  f_0b8a036bc4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="by triangle"];
+  f_0b8a036bc4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#418cfa", penwidth=3, xlabel="by triangle"];
   f_69510aab53 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="(1)"];
   f_b34b2c73fa [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="(2)"];
-  "q" -> f_0b8a036bc4 [xlabel="1", dir=back];
-  f_0b8a036bc4 -> "a" [xlabel="2"];
-  f_0b8a036bc4 -> "c" [xlabel="3"];
+  "q" -> f_0b8a036bc4 [xlabel="1", dir=back, color="#418cfa", penwidth=3];
+  f_0b8a036bc4 -> "a" [xlabel="2", color="#418cfa", penwidth=3];
+  f_0b8a036bc4 -> "c" [xlabel="3", color="#418cfa", penwidth=3];
   "p" -> f_69510aab53 [xlabel="1", dir=back];
   f_69510aab53 -> "a" [xlabel="2"];
   f_69510aab53 -> "b" [xlabel="3"];
   "p" -> f_b34b2c73fa [xlabel="1", dir=back];
   f_b34b2c73fa -> "b" [xlabel="2"];
   f_b34b2c73fa -> "c" [xlabel="3"];
-  j0 [shape=diamond, width=.2, height=.2, label="", color="#0047ab", penwidth=2];
-  f_69510aab53 -> j0 [color="#0047ab", penwidth=2];
-  f_b34b2c73fa -> j0 [color="#0047ab", penwidth=2];
-  j0 -> f_0b8a036bc4 [color="#0047ab", penwidth=2];
+  j0 [shape=diamond, width=.2, height=.2, label="", color="#0e61cc", penwidth=2];
+  f_69510aab53 -> j0 [color="#0e61cc", penwidth=2];
+  f_b34b2c73fa -> j0 [color="#0e61cc", penwidth=2];
+  j0 -> f_0b8a036bc4 [color="#0e61cc", penwidth=2];
 }

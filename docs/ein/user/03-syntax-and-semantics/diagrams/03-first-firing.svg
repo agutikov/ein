@@ -15,15 +15,15 @@
 <!-- fire0_knows&#45;back -->
 <g id="node3" class="node">
 <title>fire0_knows&#45;back</title>
-<path fill="none" stroke="#1a237e" stroke-width="2" d="M320.75,-184.6C320.75,-184.6 88,-184.6 88,-184.6 82,-184.6 76,-178.6 76,-172.6 76,-172.6 76,-149.6 76,-149.6 76,-143.6 82,-137.6 88,-137.6 88,-137.6 320.75,-137.6 320.75,-137.6 326.75,-137.6 332.75,-143.6 332.75,-149.6 332.75,-149.6 332.75,-172.6 332.75,-172.6 332.75,-178.6 326.75,-184.6 320.75,-184.6"/>
-<text xml:space="preserve" text-anchor="middle" x="204.38" y="-167.3" font-family="Inter" font-size="14.00" fill="#1a237e">knows&#45;back</text>
-<text xml:space="preserve" text-anchor="middle" x="204.38" y="-147.8" font-family="Inter" font-size="14.00" fill="#1a237e">Alice knows Bob, so Bob knows Alice</text>
+<path fill="none" stroke="#af2b94" stroke-width="2" d="M320.75,-184.6C320.75,-184.6 88,-184.6 88,-184.6 82,-184.6 76,-178.6 76,-172.6 76,-172.6 76,-149.6 76,-149.6 76,-143.6 82,-137.6 88,-137.6 88,-137.6 320.75,-137.6 320.75,-137.6 326.75,-137.6 332.75,-143.6 332.75,-149.6 332.75,-149.6 332.75,-172.6 332.75,-172.6 332.75,-178.6 326.75,-184.6 320.75,-184.6"/>
+<text xml:space="preserve" text-anchor="middle" x="204.38" y="-167.3" font-family="Inter" font-size="14.00" fill="#af2b94">knows&#45;back</text>
+<text xml:space="preserve" text-anchor="middle" x="204.38" y="-147.8" font-family="Inter" font-size="14.00" fill="#af2b94">Alice knows Bob, so Bob knows Alice</text>
 </g>
 <!-- f_976d7e7ab9&#45;&gt;fire0_knows&#45;back -->
 <g id="edge7" class="edge">
 <title>f_976d7e7ab9&#45;&gt;fire0_knows&#45;back</title>
-<path fill="none" stroke="#1a237e" stroke-width="2" d="M134.14,-227.2C142.51,-219.44 156.43,-206.55 169.67,-194.27"/>
-<polygon fill="#1a237e" stroke="#1a237e" stroke-width="2" points="171.93,-196.94 176.89,-187.58 167.17,-191.81 171.93,-196.94"/>
+<path fill="none" stroke="#af2b94" stroke-width="2" d="M134.14,-227.2C142.51,-219.44 156.43,-206.55 169.67,-194.27"/>
+<polygon fill="#af2b94" stroke="#af2b94" stroke-width="2" points="171.93,-196.94 176.89,-187.58 167.17,-191.81 171.93,-196.94"/>
 </g>
 <!-- Alice -->
 <g id="node5" class="node">
@@ -54,27 +54,27 @@
 <!-- f_884e5d5933 -->
 <g id="node2" class="node">
 <title>f_884e5d5933</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="173.18,-82.33 173.18,-91.27 166.85,-97.6 157.9,-97.6 151.57,-91.27 151.57,-82.33 157.9,-76 166.85,-76 173.18,-82.33"/>
+<polygon fill="none" stroke="#f240cd" stroke-width="3" points="173.18,-82.33 173.18,-91.27 166.85,-97.6 157.9,-97.6 151.57,-91.27 151.57,-82.33 157.9,-76 166.85,-76 173.18,-82.33"/>
 </g>
 <!-- f_884e5d5933&#45;&gt;Alice -->
 <g id="edge6" class="edge">
 <title>f_884e5d5933&#45;&gt;Alice</title>
-<path fill="none" stroke="black" stroke-width="2" d="M156.04,-76.79C150.59,-69.05 142.43,-57.45 134.85,-46.68"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="137.94,-44.99 129.32,-38.82 132.21,-49.02 137.94,-44.99"/>
-<text xml:space="preserve" text-anchor="middle" x="137.17" y="-60.32" font-family="Times,serif" font-size="14.00">3</text>
+<path fill="none" stroke="#f240cd" stroke-width="3" d="M155.64,-76.23C150.44,-68.84 142.96,-58.21 135.86,-48.11"/>
+<polygon fill="#f240cd" stroke="#f240cd" stroke-width="3" points="138.78,-46.19 130.17,-40.02 133.06,-50.22 138.78,-46.19"/>
+<text xml:space="preserve" text-anchor="middle" x="137.05" y="-60.15" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 <!-- f_884e5d5933&#45;&gt;Bob -->
 <g id="edge5" class="edge">
 <title>f_884e5d5933&#45;&gt;Bob</title>
-<path fill="none" stroke="black" stroke-width="2" d="M168.77,-76.51C174.05,-68.85 181.82,-57.56 189.09,-47.01"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="191.84,-49.18 194.63,-38.96 186.08,-45.21 191.84,-49.18"/>
-<text xml:space="preserve" text-anchor="middle" x="178.06" y="-60.44" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="#f240cd" stroke-width="3" d="M168.97,-76.23C174.05,-68.84 181.37,-58.21 188.33,-48.11"/>
+<polygon fill="#f240cd" stroke="#f240cd" stroke-width="3" points="191.09,-50.27 193.88,-40.05 185.32,-46.3 191.09,-50.27"/>
+<text xml:space="preserve" text-anchor="middle" x="178.26" y="-60.15" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- fire0_knows&#45;back&#45;&gt;f_884e5d5933 -->
 <g id="edge8" class="edge">
 <title>fire0_knows&#45;back&#45;&gt;f_884e5d5933</title>
-<path fill="none" stroke="#1a237e" stroke-width="2" d="M190.85,-136.83C185.57,-127.74 179.57,-117.39 174.44,-108.56"/>
-<polygon fill="#1a237e" stroke="#1a237e" stroke-width="2" points="177.5,-106.87 169.45,-99.98 171.45,-110.39 177.5,-106.87"/>
+<path fill="none" stroke="#af2b94" stroke-width="2" d="M190.85,-136.83C185.7,-127.96 179.86,-117.9 174.82,-109.22"/>
+<polygon fill="#af2b94" stroke="#af2b94" stroke-width="2" points="177.94,-107.62 169.89,-100.74 171.89,-111.14 177.94,-107.62"/>
 </g>
 <!-- knows -->
 <g id="node4" class="node">
@@ -92,10 +92,10 @@
 <!-- knows&#45;&gt;f_884e5d5933 -->
 <g id="edge4" class="edge">
 <title>knows&#45;&gt;f_884e5d5933</title>
-<path fill="none" stroke="black" stroke-width="2" d="M29,-272.82C30.09,-236.96 36.85,-177.2 67.38,-137.6 88.86,-109.73 130.4,-95.87 150.68,-90.52"/>
-<polygon fill="black" stroke="black" stroke-width="2" points="25.5,-272.66 28.87,-282.71 32.5,-272.76 25.5,-272.66"/>
-<text xml:space="preserve" text-anchor="middle" x="44.27" y="-174.06" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#f240cd" stroke-width="3" d="M29.05,-271.38C30.27,-235.37 37.25,-176.67 67.38,-137.6 88.75,-109.87 129.96,-96.01 150.35,-90.61"/>
+<polygon fill="#f240cd" stroke="#f240cd" stroke-width="3" points="25.55,-271.14 28.9,-281.19 32.55,-271.25 25.55,-271.14"/>
+<text xml:space="preserve" text-anchor="middle" x="43.89" y="-174.96" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 0864ef713d7790fe2a0e19d5d04ab6c16c2bba2634fe05f4203517dc6429999e -->
+<!-- source sha256: 116ccae47720c96a89f6009fdca9736c1380bfd7b83a096777997d527953304d -->
