@@ -813,7 +813,7 @@ fn circuit(body: &str) -> (usize, usize) {
 /// are its walks' and its operands' checks': `std.math.binary`'s walk of each
 /// numeral an operand stands for, a firing a bit and one for the label
 /// (Q-M1f.404), beside the chain, and deeper than it where a division by zero
-/// stops the chain early. Against decimal's 35, 42, 42, 27, 82, 232 and 20
+/// stops the chain early. Against decimal's 35, 42, 42, 27, 82, 235 and 22
 /// (`arith_theory.rs`): a walk is three times as long, a product's row needs
 /// no walk of its own, and a quotient's bit is one subtraction where
 /// decimal's digit is up to four.
@@ -853,8 +853,8 @@ fn the_circuit_of_each_operation() {
             ("4567 - 123078", (95, 43)),
             ("123078 against 4567", (58, 24)),
             ("123 x 456", (140, 120)),
-            ("127645 / 25", (271, 245)),
-            ("127645 / 0", (31, 21)),
+            ("127645 / 25", (274, 246)),
+            ("127645 / 0", (33, 21)),
         ],
         "(firings, depth)"
     );

@@ -2,22 +2,22 @@ digraph rule_int_cmp_left_lhs_rhs {
   rankdir=TB;
   label="int-cmp-left"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "int-cmp-call_L" [label="int-cmp-call", shape=box];
+    "int-cmp-run_L" [label="int-cmp-run", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     "?q_L" [label="?q", shape=diamond];
     "?m_L" [label="?m", shape=diamond];
-    "h1_int-cmp-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "int-cmp-call_L" [xlabel="1", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?k_L" [xlabel="2", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?p_L" [xlabel="3", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?n_L" [xlabel="4", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?q_L" [xlabel="5", color="#1f77b4"];
-    "h1_int-cmp-call_L" -> "?m_L" [xlabel="6", color="#1f77b4"];
+    "h1_int-cmp-run_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "int-cmp-run_L" [xlabel="1", color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "?p_L" [xlabel="3", color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "?n_L" [xlabel="4", color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "?q_L" [xlabel="5", color="#ff7f0e"];
+    "h1_int-cmp-run_L" -> "?m_L" [xlabel="6", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "int-cmp-l_R" [label="int-cmp-l", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
@@ -27,16 +27,16 @@ digraph rule_int_cmp_left_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-cmp-l ?k ?n ?q)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(int-cmp-l ?k ?n ?q)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?p_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?m_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(int-cmp-l ?k ?n ?q)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?p_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?m_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(int-cmp-l ?k ?n ?q)_R" -> "int-cmp-l_R" [xlabel="1", color="#d62728", style=dashed];
     "(int-cmp-l ?k ?n ?q)_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "(int-cmp-l ?k ?n ?q)_R" -> "?n_R" [xlabel="3", color="#d62728", style=dashed];

@@ -9,12 +9,18 @@ The decimal arithmetic's interface is six calls and their answers:
 - `(div-call TAG X Y)`: answered by `(div-done TAG Q R)`;
 - `(operand TAG X)`: what X stands for, a number or a name a `let` states; answered by `(operand-is TAG N)`.
 
-In the first five X and Y are numbers, high zeros allowed, and never a name: a call looks nothing up. Every answer
-is in normal form. A module over this one may answer `operand` for its own kind of number
+In the first five X and Y are numbers, high zeros allowed, and never a name: a call looks nothing up. Each of them
+asks the check of a numeral it is handed and is handed on to the calculator's own walk, `add-run`, `sub-run`,
+`cmp-run`, `mul-run` or `div-run`, which checks nothing and which the calculator calls itself with numbers it
+checked or made ([Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)); the walks are not the
+interface. Every answer is in normal form. A module over this one may answer `operand` for its own kind of number
 ([Q-M1f.177](Q-M1f.177-a-module-over-the-decimal-arithmetic-tags-each.md)).
 
-**Why.** It promises what the callers depend on: `std.math.int` subtracts by the walk, `std.math.int` and
-`std.math.rat` look every operand up and extend the look-up, and `std.math.convert` doubles a number and adds a bit
-in one walk, the bit as the carry in.
+**Why.** It promises what the callers depend on: a program's own theory calls the five, as
+`examples/beyond_arith/` does, and `std.math.int` and `std.math.rat` look every operand up and extend the look-up.
+The calculator's own modules call the walks behind the calls, `std.math.int` subtracting by one and
+`std.math.convert` doubling a number and adding a bit in one, the bit as the carry in, at the shapes the calls
+have.
 
-**Held by.** `ein-infer/tests/arith_theory.rs`: `the_tagged_calls_keep_their_shapes`.
+**Held by.** `ein-infer/tests/arith_theory.rs`: `the_tagged_calls_keep_their_shapes`, the calls and the walks
+they are handed on to.

@@ -1,0 +1,31 @@
+digraph rule_numeral_step_zero_lhs_rhs {
+  rankdir=TB;
+  label="numeral-step-zero"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?CHECK_L" [label="?CHECK", shape=diamond];
+    "?w_L" [label="?w", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "0_L" [label="0", shape=box];
+    subgraph cluster_ctx_L_0 {
+      label="?CHECK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p 0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h1_CHECK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_CHECK_L" -> "?CHECK_L" [xlabel="1", color="#d62728"];
+    "h1_CHECK_L" -> "?w_L" [xlabel="2", color="#d62728"];
+    "h1_CHECK_L" -> "(?N ?p 0)_L" [xlabel="3", color="#d62728"];
+    "(?N ?p 0)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "(?N ?p 0)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?p 0)_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?CHECK_R" [label="?CHECK", shape=diamond];
+    "?w_R" [label="?w", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "h2_CHECK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "?CHECK_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "?w_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
+  }
+}

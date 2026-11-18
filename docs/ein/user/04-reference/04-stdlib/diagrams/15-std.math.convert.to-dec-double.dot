@@ -22,7 +22,7 @@ digraph rule_to_dec_double_lhs_rhs {
     "(bin-b ?bit ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "doubling_R" [label="doubling", shape=box];
     "?b_R" [label="?b", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
@@ -30,16 +30,16 @@ digraph rule_to_dec_double_lhs_rhs {
     "?bit_R" [label="?bit", shape=diamond];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(doubling ?b ?rest)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(doubling ?b ?rest)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?acc_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?acc_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?bit_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(doubling ?b ?rest)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?acc_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?acc_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?bit_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(doubling ?b ?rest)_R" -> "doubling_R" [xlabel="1", color="#bcbd22", style=dashed];
     "(doubling ?b ?rest)_R" -> "?b_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(doubling ?b ?rest)_R" -> "?rest_R" [xlabel="3", color="#bcbd22", style=dashed];

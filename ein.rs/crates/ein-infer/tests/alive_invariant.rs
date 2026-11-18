@@ -151,7 +151,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 138] = [
+const SEEDED: [(&str, &[&str]); 149] = [
     (
         "examples/arith/int.ein",
         &[
@@ -466,7 +466,7 @@ const SEEDED: [(&str, &[&str]); 138] = [
     (
         "stdlib/math/positional.ein",
         &[
-            "`0`, matched by rule `add-column-first`",
+            "`0`, matched by rule `numeral-step-zero`",
             "`1`, matched by rule `add-carry-out`",
         ],
     ),
@@ -504,6 +504,23 @@ const SEEDED: [(&str, &[&str]); 138] = [
         ],
     ),
     (
+        "tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein",
+        &[
+            "`against`, asserted by rule `every-call`",
+            "`minus`, asserted by rule `every-call`",
+            "`over`, asserted by rule `every-call`",
+            "`plus`, asserted by rule `every-call`",
+            "`times`, asserted by rule `every-call`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein",
+        &[
+            "`2`, in (bin-mul-call (mine a) (b2 z 1) (b2 z 2))",
+            "`a`, in (bin-mul-call (mine a) (b2 z 1) (b2 z 2))",
+        ],
+    ),
+    (
         "tests/stdlib/math/binary/01_well_formed_everywhere.ein",
         &["`high`, asserted by rule `ask-mask`"],
     ),
@@ -534,6 +551,23 @@ const SEEDED: [(&str, &[&str]); 138] = [
         &["`end`, in (add (n end 1) (n z 5))"],
     ),
     (
+        "tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein",
+        &[
+            "`against`, asserted by rule `every-call`",
+            "`minus`, asserted by rule `every-call`",
+            "`over`, asserted by rule `every-call`",
+            "`plus`, asserted by rule `every-call`",
+            "`times`, asserted by rule `every-call`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein",
+        &[
+            "`a`, in (add-walk (mine a) (n z x) (n z 1) 0 z)",
+            "`x`, in (add-walk (mine a) (n z x) (n z 1) 0 z)",
+        ],
+    ),
+    (
         "tests/stdlib/math/decimal/01_well_formed_everywhere.ein",
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
@@ -558,6 +592,13 @@ const SEEDED: [(&str, &[&str]); 138] = [
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/gcd/13_call_malformed.ein",
+        &[
+            "`a`, in (gcd-call (mine a) (n z 6) (n z x))",
+            "`x`, in (gcd-call (mine a) (n z 6) (n z x))",
         ],
     ),
     (
@@ -818,6 +859,26 @@ const SEEDED: [(&str, &[&str]); 138] = [
         ],
     ),
     (
+        "tests/stdlib/math/int/37_calls_checked.ein",
+        &[
+            "`against`, in (int-cmp-call (mine against) (n z 7) (n z 3) (n z 2) (n z 5))",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`plus`, in (int-add-call (mine plus) (n z 7) (n z 3) (n z 2) (n z 5))",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`simplified`, in (int-norm (mine simplified) (n z 7) (n z 3))",
+            "`times`, in (int-mul-call (mine times) (n z 7) (n z 3) (n z 2) (n z 5))",
+        ],
+    ),
+    (
+        "tests/stdlib/math/int/38_call_malformed_part.ein",
+        &[
+            "`a`, in (int-add-call (mine a) (n z x) z (n z 1) z)",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`x`, in (int-add-call (mine a) (n z x) z (n z 1) z)",
+        ],
+    ),
+    (
         "tests/stdlib/math/rat/01_simplify.ein",
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
@@ -1035,6 +1096,40 @@ const SEEDED: [(&str, &[&str]); 138] = [
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/rat/32_calls_checked.ein",
+        &[
+            "`crossed`, in (rat-cross (mine crossed) (n z 1) z (n z 2) (n z 3) z (n z 4))",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`simplified`, in (rat-norm (mine simplified) (n z 6) (n z 2) (n (n z 0) 8))",
+            "`times`, in (rat-mul-call (mine times) (n z 1) z (n z 2) (n z 3) z (n z 4))",
+        ],
+    ),
+    (
+        "tests/stdlib/math/rat/33_call_malformed_part.ein",
+        &[
+            "`a`, in (rat-norm (mine a) (n z 1) z (n z x))",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`x`, in (rat-norm (mine a) (n z 1) z (n z x))",
+        ],
+    ),
+    (
+        "tests/stdlib/math/rat/34_natural_numerator.ein",
+        &[
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/rat/35_natural_numerator_malformed.ein",
+        &[
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`x`, in (rat-add (rat (n z x) (n z 2)) (rat (int (n z 1) z) (n z 2)))",
         ],
     ),
 ];

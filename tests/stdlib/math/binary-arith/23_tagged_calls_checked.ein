@@ -1,0 +1,57 @@
+;;; `std.math.binary-arith` — the five tagged calls a program's own rule makes,
+;;; each checking the numerals it is handed, as decimal's do.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Binary's twin of `stdlib/math/decimal-arith/51_tagged_calls_checked.ein`
+;;; (Q-M1f.404): each call, `(bin-add-walk TAG X Y 0 z)` and the rest, asks
+;;; `std.math.binary`'s check of a numeral in either place and is handed on
+;;; to the calculator's own walk, which answers under the program's tag. Here
+;;; 101 and 11, five and three, are handed to all five; what the calculator
+;;; hands itself, the product's rows and the division's trials, is not asked.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}. The answers are the five calls', each under its tag, and the
+;;; asks, `(bin-check N N)`, are exactly the two numerals the calls were
+;;; handed.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add-walk bin-sub-walk bin-cmp-walk bin-mul-call
+                                        bin-div-call bin-done bin-order-is bin-div-done))
+(import std.math.binary :symbols (b2 bin-check))
+(import std.math.arith :symbols (z))
+
+(relation pair Number Number
+  :why "{?3} and {?4}, handed to every call")
+(relation mine Operation Number Number
+  :why "this program's {?3} of {?4} and {?5}")
+(__closed__ pair) (__closed__ mine)
+
+(rule every-call ()
+  :match  (pair ?x ?y)
+  :assert (and (bin-add-walk (mine plus ?x ?y) ?x ?y 0 z)
+               (bin-sub-walk (mine minus ?x ?y) ?x ?y 0 z)
+               (bin-cmp-walk (mine against ?x ?y) ?x ?y eq)
+               (bin-mul-call (mine times ?x ?y) ?x ?y)
+               (bin-div-call (mine over ?x ?y) ?x ?y))
+  :why    "{?x} and {?y} are handed to each of the five calls")
+
+(pair (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-done (mine ?what ?x ?y) ?s)
+       :goal-text "{?x} {?what} {?y} is {?s}"
+       :expect (model (bin-done (mine plus (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1)) (b2 (b2 (b2 (b2 z 1) 0) 0) 0))
+                      (bin-done (mine minus (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1)) (b2 (b2 z 1) 0))
+                      (bin-done (mine times (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1)) (b2 (b2 (b2 (b2 z 1) 1) 1) 1))))
+(query :goal (bin-order-is (mine against ?x ?y) ?o)
+       :goal-text "{?x} against {?y} is {?o}"
+       :expect (model (bin-order-is (mine against (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1)) gt)))
+(query :goal (bin-div-done (mine over ?x ?y) ?q ?r)
+       :goal-text "{?x} divided by {?y} is {?q}, remainder {?r}"
+       :expect (model (bin-div-done (mine over (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1)) (b2 z 1) (b2 (b2 z 1) 0))))
+(query :goal (bin-check ?w ?w)
+       :goal-text "{?w} is asked for its check"
+       :expect (model (bin-check (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 0) 1))
+                      (bin-check (b2 (b2 z 1) 1) (b2 (b2 z 1) 1))))

@@ -269,9 +269,12 @@ guess.
 
 **A theory over a theory.** `std.math.int` computes with integers by asking `std.math.decimal-arith` for the natural
 numbers' parts, and `std.math.rat` asks both. Inside, a theory calls the one below it with a **tag**, a fact that
-names the caller, and gets the answer back under it, `(div-call TAG X Y)` answered by `(div-done TAG Q R)`, so the
-rule that reads it has one premise and no join on a number. The tagged calls are an interface, held to their shapes
-([Q-M1f.189](../../../decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md)).
+names the caller, and gets the answer back under it, `(div-run TAG X Y)` answered by `(div-done TAG Q R)`, so the
+rule that reads it has one premise and no join on a number. The same calls are an interface for a theory of a
+program's own, `(div-call TAG X Y)` and the rest, held to their shapes
+([Q-M1f.189](../../../decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md)), and each
+checks the numerals it is handed before it hands itself on to the walk
+([Q-M1f.404](../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
 **One theory, two bases.** The rules decimal and binary arithmetic share are written once, in `std.math.positional`,
 every relation they use a parameter, and a base connects to them by one call of the module's macro inside its closing

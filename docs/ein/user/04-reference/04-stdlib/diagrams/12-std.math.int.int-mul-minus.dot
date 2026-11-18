@@ -22,7 +22,7 @@ digraph rule_int_mul_minus_lhs_rhs {
     "(int-mul-np ?k ?s ?c)_L" -> "?c_L" [xlabel="4", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "int-mul-neg_R" [label="int-mul-neg", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
@@ -31,16 +31,16 @@ digraph rule_int_mul_minus_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-mul-neg ?k ?s)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(int-mul-neg ?k ?s)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?c_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?d_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(int-mul-neg ?k ?s)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?c_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?d_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(int-mul-neg ?k ?s)_R" -> "int-mul-neg_R" [xlabel="1", color="#9467bd", style=dashed];
     "(int-mul-neg ?k ?s)_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "(int-mul-neg ?k ?s)_R" -> "?s_R" [xlabel="3", color="#9467bd", style=dashed];

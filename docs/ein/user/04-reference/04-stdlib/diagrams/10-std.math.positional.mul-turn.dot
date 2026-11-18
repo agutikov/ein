@@ -2,15 +2,15 @@ digraph rule_mul_turn_lhs_rhs {
   rankdir=TB;
   label="mul-turn"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "?MUL-CALL_L" [label="?MUL-CALL", shape=diamond];
+    "?MUL-RUN_L" [label="?MUL-RUN", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
-    "h1_MUL-CALL_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?MUL-CALL_L" [xlabel="1", color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
-    "h1_MUL-CALL_L" -> "?v_L" [xlabel="4", color="#bcbd22"];
+    "h1_MUL-RUN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_MUL-RUN_L" -> "?MUL-RUN_L" [xlabel="1", color="#9467bd"];
+    "h1_MUL-RUN_L" -> "?k_L" [xlabel="2", color="#9467bd"];
+    "h1_MUL-RUN_L" -> "?u_L" [xlabel="3", color="#9467bd"];
+    "h1_MUL-RUN_L" -> "?v_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
     "?TOP-FIRST_R" [label="?TOP-FIRST", shape=diamond];

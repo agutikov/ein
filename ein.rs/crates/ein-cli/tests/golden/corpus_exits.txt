@@ -2264,6 +2264,16 @@
 0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: solve
 0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: test
+0    tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein :: render constraints
+0    tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein :: render rules
+0    tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein :: saturate
+0    tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein :: solve
+0    tests/stdlib/math/binary-arith/23_tagged_calls_checked.ein :: test
+0    tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein :: render constraints
+1    tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein :: render rules
+0    tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein :: saturate
+0    tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein :: solve
+0    tests/stdlib/math/binary-arith/24_tagged_call_malformed.ein :: test
 0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: render constraints
 0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: render rules
 0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: saturate
@@ -2569,6 +2579,16 @@
 0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: saturate
 0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: solve
 0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: test
+0    tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein :: render constraints
+0    tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein :: render rules
+0    tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein :: saturate
+0    tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein :: solve
+0    tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein :: test
+0    tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein :: render rules
+0    tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein :: saturate
+0    tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein :: solve
+0    tests/stdlib/math/decimal-arith/52_tagged_call_malformed.ein :: test
 0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: render constraints
 0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: render rules
 0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: saturate
@@ -2674,6 +2694,11 @@
 0    tests/stdlib/math/gcd/12_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/gcd/12_what_stays_silent.ein :: solve
 0    tests/stdlib/math/gcd/12_what_stays_silent.ein :: test
+0    tests/stdlib/math/gcd/13_call_malformed.ein :: render constraints
+1    tests/stdlib/math/gcd/13_call_malformed.ein :: render rules
+0    tests/stdlib/math/gcd/13_call_malformed.ein :: saturate
+0    tests/stdlib/math/gcd/13_call_malformed.ein :: solve
+0    tests/stdlib/math/gcd/13_call_malformed.ein :: test
 0    tests/stdlib/math/int/01_simplify.ein :: render constraints
 1    tests/stdlib/math/int/01_simplify.ein :: render rules
 0    tests/stdlib/math/int/01_simplify.ein :: saturate
@@ -2854,6 +2879,16 @@
 0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: saturate
 0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: solve
 0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: test
+0    tests/stdlib/math/int/37_calls_checked.ein :: render constraints
+1    tests/stdlib/math/int/37_calls_checked.ein :: render rules
+0    tests/stdlib/math/int/37_calls_checked.ein :: saturate
+0    tests/stdlib/math/int/37_calls_checked.ein :: solve
+0    tests/stdlib/math/int/37_calls_checked.ein :: test
+0    tests/stdlib/math/int/38_call_malformed_part.ein :: render constraints
+1    tests/stdlib/math/int/38_call_malformed_part.ein :: render rules
+0    tests/stdlib/math/int/38_call_malformed_part.ein :: saturate
+0    tests/stdlib/math/int/38_call_malformed_part.ein :: solve
+0    tests/stdlib/math/int/38_call_malformed_part.ein :: test
 0    tests/stdlib/math/num9/01_add.ein :: render constraints
 1    tests/stdlib/math/num9/01_add.ein :: render rules
 0    tests/stdlib/math/num9/01_add.ein :: saturate
@@ -3074,6 +3109,26 @@
 0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: saturate
 0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: solve
 0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: test
+0    tests/stdlib/math/rat/32_calls_checked.ein :: render constraints
+1    tests/stdlib/math/rat/32_calls_checked.ein :: render rules
+0    tests/stdlib/math/rat/32_calls_checked.ein :: saturate
+0    tests/stdlib/math/rat/32_calls_checked.ein :: solve
+0    tests/stdlib/math/rat/32_calls_checked.ein :: test
+0    tests/stdlib/math/rat/33_call_malformed_part.ein :: render constraints
+1    tests/stdlib/math/rat/33_call_malformed_part.ein :: render rules
+0    tests/stdlib/math/rat/33_call_malformed_part.ein :: saturate
+0    tests/stdlib/math/rat/33_call_malformed_part.ein :: solve
+0    tests/stdlib/math/rat/33_call_malformed_part.ein :: test
+0    tests/stdlib/math/rat/34_natural_numerator.ein :: render constraints
+1    tests/stdlib/math/rat/34_natural_numerator.ein :: render rules
+0    tests/stdlib/math/rat/34_natural_numerator.ein :: saturate
+0    tests/stdlib/math/rat/34_natural_numerator.ein :: solve
+0    tests/stdlib/math/rat/34_natural_numerator.ein :: test
+0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: render constraints
+1    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: render rules
+0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: saturate
+0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: solve
+0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

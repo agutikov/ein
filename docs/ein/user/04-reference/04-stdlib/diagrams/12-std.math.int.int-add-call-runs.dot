@@ -1,0 +1,53 @@
+digraph rule_int_add_call_runs_lhs_rhs {
+  rankdir=TB;
+  label="int-add-call-runs"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "int-add-call_L" [label="int-add-call", shape=box];
+    "?k_L" [label="?k", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?q_L" [label="?q", shape=diamond];
+    "?m_L" [label="?m", shape=diamond];
+    "h1_int-add-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_int-add-call_L" -> "int-add-call_L" [xlabel="1", color="#e377c2"];
+    "h1_int-add-call_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "h1_int-add-call_L" -> "?p_L" [xlabel="3", color="#e377c2"];
+    "h1_int-add-call_L" -> "?n_L" [xlabel="4", color="#e377c2"];
+    "h1_int-add-call_L" -> "?q_L" [xlabel="5", color="#e377c2"];
+    "h1_int-add-call_L" -> "?m_L" [xlabel="6", color="#e377c2"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "int-add-run_R" [label="int-add-run", shape=box];
+    "?k_R" [label="?k", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    "?q_R" [label="?q", shape=diamond];
+    "?m_R" [label="?m", shape=diamond];
+    "int-check_R" [label="int-check", shape=box];
+    "int_R" [label="int", shape=box];
+    subgraph cluster_ctx_R_0 {
+      label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+      "(int ?q ?m)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    }
+    "h2_int-add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "int-add-run_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "?n_R" [xlabel="4", color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "?q_R" [xlabel="5", color="#d62728", style=dashed];
+    "h2_int-add-run_R" -> "?m_R" [xlabel="6", color="#d62728", style=dashed];
+    "h3_int-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h3_int-check_R" -> "int-check_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h3_int-check_R" -> "(int ?p ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h4_int-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h4_int-check_R" -> "int-check_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h4_int-check_R" -> "(int ?q ?m)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(int ?p ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
+    "(int ?q ?m)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int ?q ?m)_R" -> "?q_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?q ?m)_R" -> "?m_R" [xlabel="3", color="#17becf", style=dashed];
+  }
+}

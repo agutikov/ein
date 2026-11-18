@@ -22,7 +22,7 @@ digraph rule_add_start_lhs_rhs {
     "(?ADD-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "?ADD-WALK_R" [label="?ADD-WALK", shape=diamond];
+    "?ADD-RUN_R" [label="?ADD-RUN", shape=diamond];
     "?SUM_R" [label="?SUM", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
@@ -31,16 +31,16 @@ digraph rule_add_start_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="?ADD-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="?ADD-RUN ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(?SUM ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_ADD-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "?ADD-WALK_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "(?SUM ?x ?y)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "?u_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "?v_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_ADD-WALK_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_ADD-RUN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "?ADD-RUN_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "(?SUM ?x ?y)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "?u_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "?v_R" [xlabel="4", color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "0_R" [xlabel="5", color="#ff7f0e", style=dashed];
+    "h2_ADD-RUN_R" -> "z_R" [xlabel="6", color="#ff7f0e", style=dashed];
     "(?SUM ?x ?y)_R" -> "?SUM_R" [xlabel="1", color="#9467bd", style=dashed];
     "(?SUM ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(?SUM ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];

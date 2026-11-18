@@ -35,11 +35,11 @@ the addition walk in a decimal program, from `ein solve -P`:
 
 <!-- output -->
 ```text
-  (std.math.positional.add-carry-out std.math.decimal-arith.add-walk std.math.decimal-arith.turn std.math.decimal-arith.b)
-  (std.math.positional.add-column std.math.decimal-arith.add-walk n std.math.digits.fa std.math.decimal-arith.b)
-  (std.math.positional.add-column-first std.math.decimal-arith.add-walk n std.math.digits.fa std.math.decimal-arith.b)
-  (std.math.positional.add-column-second std.math.decimal-arith.add-walk n std.math.digits.fa std.math.decimal-arith.b)
-  (std.math.positional.add-end std.math.decimal-arith.add-walk std.math.decimal-arith.strip)
+  (std.math.positional.add-carry-out std.math.decimal-arith.add-run std.math.decimal-arith.turn std.math.decimal-arith.b)
+  (std.math.positional.add-column std.math.decimal-arith.add-run n std.math.digits.fa std.math.decimal-arith.b)
+  (std.math.positional.add-column-first std.math.decimal-arith.add-run n std.math.digits.fa std.math.decimal-arith.b)
+  (std.math.positional.add-column-second std.math.decimal-arith.add-run n std.math.digits.fa std.math.decimal-arith.b)
+  (std.math.positional.add-end std.math.decimal-arith.add-run std.math.decimal-arith.strip)
 ```
 
 ## How it works
@@ -49,28 +49,45 @@ the addition walk in a decimal program, from `ein solve -P`:
 The module declares no relation and has one macro, `positional`, whose one call inside a base's closing rule
 activates every shared rule with that base's relations
 ([Q-M1f.266](../../../../decisions/stdlib/math/Q-M1f.266-a-base-is-connected-to-the-shared-rules-by-one.md)):
-`(positional operand operand-is n let named check add-walk fa b strip turn nz done valid …)` in decimal's,
+`(positional operand operand-is n let named check nz valid add-walk add-run …)` in decimal's,
 `(positional bin-operand … b2 bin-let …)` in binary's.
 
 ```lisp
-(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?CHECK ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
-                   ?DONE ?VALID ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
-                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL ?ORDER-IS
-                   ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST ?TOP-FIRST-IS ?MUL-CALL
-                   ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST ?MUL-SECOND ?PRODUCT ?PRODUCT-OF
-                   ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT
-                   ?QUOT-OF ?DIV-M1 ?BAD-OPERAND ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET
-                   ?UNDECLARED)
+(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?CHECK ?NZ ?VALID ?ADD-WALK ?ADD-RUN ?SUB-WALK ?SUB-RUN
+                   ?CMP-WALK ?CMP-RUN ?MUL-CALL ?MUL-RUN ?DIV-CALL ?DIV-RUN ?FA ?B ?STRIP ?TURN ?DONE ?ADD ?ADD-FIRST
+                   ?ADD-SECOND ?SUM ?SUM-OF ?FS ?SHORT ?SUB ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CL
+                   ?ORDER-IS ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST ?TOP-FIRST-IS ?MUL-DIGITS ?MUL-STEP
+                   ?MUL-SUM ?MUL ?MUL-FIRST ?MUL-SECOND ?PRODUCT ?PRODUCT-OF ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV
+                   ?DIV-FIRST ?DIV-SECOND ?QUOTIENT ?QUOT-OF ?DIV-M1 ?BAD-OPERAND ?NOT-A-NUMBER ?MALFORMED
+                   ?BAD-REQUEST ?NO-LET ?UNDECLARED)
   (and (operand-zero ?OPERAND ?OPERAND-IS)
        (operand-number ?OPERAND ?N ?OPERAND-IS)
        (let-named ?LET ?NAMED)
        (operand-name ?OPERAND ?NAMED ?LET ?OPERAND-IS)
        (operand-check ?OPERAND-IS ?N ?CHECK)
-       (add-column ?ADD-WALK ?N ?FA ?B)
-       (add-column-first ?ADD-WALK ?N ?FA ?B)
-       (add-column-second ?ADD-WALK ?N ?FA ?B)
-       (add-end ?ADD-WALK ?STRIP)
-       (add-carry-out ?ADD-WALK ?TURN ?B)
+       (numeral-step ?CHECK ?N ?NZ)
+       (numeral-step-zero ?CHECK ?N)
+       (numeral-valid ?CHECK ?VALID)
+       (add-walk-runs ?ADD-WALK ?ADD-RUN)
+       (add-walk-check-x ?ADD-WALK ?N ?CHECK)
+       (add-walk-check-y ?ADD-WALK ?N ?CHECK)
+       (sub-walk-runs ?SUB-WALK ?SUB-RUN)
+       (sub-walk-check-x ?SUB-WALK ?N ?CHECK)
+       (sub-walk-check-y ?SUB-WALK ?N ?CHECK)
+       (cmp-walk-runs ?CMP-WALK ?CMP-RUN)
+       (cmp-walk-check-x ?CMP-WALK ?N ?CHECK)
+       (cmp-walk-check-y ?CMP-WALK ?N ?CHECK)
+       (mul-call-runs ?MUL-CALL ?MUL-RUN)
+       (mul-call-check-x ?MUL-CALL ?N ?CHECK)
+       (mul-call-check-y ?MUL-CALL ?N ?CHECK)
+       (div-call-runs ?DIV-CALL ?DIV-RUN)
+       (div-call-check-x ?DIV-CALL ?N ?CHECK)
+       (div-call-check-y ?DIV-CALL ?N ?CHECK)
+       (add-column ?ADD-RUN ?N ?FA ?B)
+       (add-column-first ?ADD-RUN ?N ?FA ?B)
+       (add-column-second ?ADD-RUN ?N ?FA ?B)
+       (add-end ?ADD-RUN ?STRIP)
+       (add-carry-out ?ADD-RUN ?TURN ?B)
        (strip-zero ?STRIP ?B)
        (strip-top ?STRIP ?B ?NZ ?TURN)
        (strip-none ?STRIP ?DONE)
@@ -78,35 +95,35 @@ activates every shared rule with that base's relations
        (turn-end ?TURN ?DONE ?VALID)
        (add-ask ?ADD ?OPERAND ?ADD-FIRST)
        (add-ask-second ?OPERAND-IS ?ADD-FIRST ?OPERAND ?ADD-SECOND)
-       (add-start ?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
+       (add-start ?OPERAND-IS ?ADD-SECOND ?ADD-RUN ?SUM)
        (add-answer ?DONE ?SUM ?SUM-OF)
-       (sub-column ?SUB-WALK ?N ?FS ?B)
-       (sub-column-first ?SUB-WALK ?N ?FS ?B)
-       (sub-column-second ?SUB-WALK ?N ?FS ?B)
-       (sub-end ?SUB-WALK ?STRIP)
-       (sub-borrow-out ?SUB-WALK ?SHORT)
+       (sub-column ?SUB-RUN ?N ?FS ?B)
+       (sub-column-first ?SUB-RUN ?N ?FS ?B)
+       (sub-column-second ?SUB-RUN ?N ?FS ?B)
+       (sub-end ?SUB-RUN ?STRIP)
+       (sub-borrow-out ?SUB-RUN ?SHORT)
        (sub-ask ?SUB ?OPERAND ?SUB-FIRST)
        (sub-ask-second ?OPERAND-IS ?SUB-FIRST ?OPERAND ?SUB-SECOND)
-       (sub-start ?OPERAND-IS ?SUB-SECOND ?SUB-WALK ?DIFFERENCE ?SHORTFALL)
+       (sub-start ?OPERAND-IS ?SUB-SECOND ?SUB-RUN ?DIFFERENCE ?SHORTFALL)
        (sub-answer ?DONE ?DIFFERENCE ?DIFF-OF)
        (sub-answer-short ?DONE ?SHORTFALL ?DIFF-OF)
-       (cmp-column ?CMP-WALK ?N ?CL)
-       (cmp-column-first ?CMP-WALK ?N ?CL)
-       (cmp-column-second ?CMP-WALK ?N ?CL)
-       (cmp-end ?CMP-WALK ?ORDER-IS)
+       (cmp-column ?CMP-RUN ?N ?CL)
+       (cmp-column-first ?CMP-RUN ?N ?CL)
+       (cmp-column-second ?CMP-RUN ?N ?CL)
+       (cmp-end ?CMP-RUN ?ORDER-IS)
        (cmp-ask ?CMP ?OPERAND ?CMP-FIRST)
        (cmp-ask-second ?OPERAND-IS ?CMP-FIRST ?OPERAND ?CMP-SECOND)
-       (cmp-start ?OPERAND-IS ?CMP-SECOND ?CMP-WALK ?ORDER)
+       (cmp-start ?OPERAND-IS ?CMP-SECOND ?CMP-RUN ?ORDER)
        (cmp-answer ?ORDER-IS ?ORDER ?CMP-OF)
        (top-first-step ?TOP-FIRST ?N ?B)
        (top-first-end ?TOP-FIRST ?TOP-FIRST-IS)
-       (mul-turn ?MUL-CALL ?TOP-FIRST ?MUL-DIGITS)
+       (mul-turn ?MUL-RUN ?TOP-FIRST ?MUL-DIGITS)
        (mul-begin ?TOP-FIRST-IS ?MUL-DIGITS ?MUL-STEP)
        (mul-next ?DONE ?MUL-SUM ?MUL-STEP)
        (mul-end ?MUL-STEP ?DONE)
        (mul-ask ?MUL ?OPERAND ?MUL-FIRST)
        (mul-ask-second ?OPERAND-IS ?MUL-FIRST ?OPERAND ?MUL-SECOND)
-       (mul-start ?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
+       (mul-start ?OPERAND-IS ?MUL-SECOND ?MUL-RUN ?PRODUCT)
        (mul-answer ?DONE ?PRODUCT ?PRODUCT-OF)
        (div-begin ?TOP-FIRST-IS ?DIV-DIGITS ?DIV-STEP)
        (div-end ?DIV-STEP ?DIV-DONE ?VALID)
@@ -139,13 +156,14 @@ activates every shared rule with that base's relations
        (bad-request-undeclared ?BAD-REQUEST ?NO-LET ?UNDECLARED)
        (malformed-is-false ?MALFORMED)
        (undeclared-is-false ?UNDECLARED))
-  :why "the rules every positional base shares, each activated once with this base's relations: {?N} the numeral, {?ADD-WALK} the addition's walk, {?FA} its table, and the rest")
+  :why "the rules every positional base shares, each activated once with this base's relations: {?N} the numeral, {?ADD-RUN} the addition's walk, {?FA} its table, and the rest")
 ```
 
 A parameter is the relation a base names for it: `?N` the numeral's constructor, `?B` the accumulator, `?FA`,
 `?FS`, `?CL` and `?NZ` the tables of the full adder, the full subtractor, the comparator and *not zero*, `?CHECK`
 and `?VALID` the representation's check and its label; the rest are named as decimal names them, `?ADD-WALK` for
-`add-walk`. The digits `0` and `1`, which every base has, are
+`add-walk`, the tagged call, and `?ADD-RUN` for `add-run`, the walk it is handed on to. The digits `0` and `1`,
+which every base has, are
 written as themselves: the carry and the borrow in and out, the high zero, the digit `0` as no number. So are `z`,
 zero, and `eq`, a comparison's start.
 
@@ -217,7 +235,8 @@ tells a constant from a stray name.
 #### `operand-check`
 
 The numeral an operand stands for, written as the operand or as a `let`'s value, is asked of the base's
-representation, `(CHECK N N)`, which walks it once whatever reads it and labels it valid, or flags it
+representation, `(CHECK N N)`, which [the walk below](#the-checks-walk) takes once whatever asks, labelling it
+valid, or which the representation flags
 ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). No operation waits for the label.
 
 <!-- rule std.math.positional operand-check -->
@@ -229,6 +248,269 @@ representation, `(CHECK N N)`, which walks it once whatever reads it and labels 
 ```
 
 ![The rule operand-check of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.operand-check.svg)
+<!-- /rule -->
+
+### The check's walk
+
+`(CHECK N REST)`: N is being checked, and REST is what is still to check. A place whose digit is one of the base's
+goes on to the prefix, and the walk that reaches `z` has found a digit in every place and a numeral that ends in
+`z`: N is labelled `(VALID N)`. The walk knows no base, and is here; what is at fault in a place, and the flag that
+says so, are the representation's, whose rules read the same `(CHECK N REST)` and stop the walk there:
+[`std.math.decimal`'s](09-natural-numbers-rules.md#stdmathdecimal) and
+[`std.math.binary`'s](15-binary-rules.md#stdmathbinary)
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md),
+[Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)).
+The walk carries the numeral it checks, so its end labels it with no second premise.
+
+#### `numeral-step`
+
+The place holds a digit that is not zero, a row of `NZ`: the walk goes on to the prefix.
+
+<!-- rule std.math.positional numeral-step -->
+```lisp
+(rule numeral-step (?CHECK ?N ?NZ)
+  :match  (and (?CHECK ?w (?N ?p ?a)) (?NZ ?a))
+  :assert (?CHECK ?w ?p)
+  :why    "the digit {?a} is one: {?p} is still to check")
+```
+
+![The rule numeral-step of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.numeral-step.svg)
+<!-- /rule -->
+
+#### `numeral-step-zero`
+
+The place holds the digit 0: the walk goes on to the prefix.
+
+<!-- rule std.math.positional numeral-step-zero -->
+```lisp
+(rule numeral-step-zero (?CHECK ?N)
+  :match  (?CHECK ?w (?N ?p 0))
+  :assert (?CHECK ?w ?p)
+  :why    "the digit 0 is one: {?p} is still to check")
+```
+
+![The rule numeral-step-zero of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.numeral-step-zero.svg)
+<!-- /rule -->
+
+#### `numeral-valid`
+
+The walk reached `z`: every place held a digit, and the numeral is labelled valid.
+
+<!-- rule std.math.positional numeral-valid -->
+```lisp
+(rule numeral-valid (?CHECK ?VALID)
+  :match  (?CHECK ?w z)
+  :assert (?VALID ?w)
+  :why    "every place of {?w} holds a digit, and it ends in z: it is a number")
+```
+
+![The rule numeral-valid of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.numeral-valid.svg)
+<!-- /rule -->
+
+### The tagged calls: what a call is handed is checked
+
+The five calls are the interface a module over the base or a rule of a program's own calls
+([Q-M1f.189](../../../../decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md)): `(ADD-WALK TAG X Y
+C z)`, `(SUB-WALK TAG X Y 0 z)`, `(CMP-WALK TAG X Y eq)`, `(MUL-CALL TAG X Y)` and `(DIV-CALL TAG X Y)`. A number
+an operation makes from valid numbers is valid as it is made, and every other one is checked, whatever its source
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): a
+call asks the check of a numeral in either place, and hands itself on to the walk, `(ADD-RUN …)` and the rest,
+which checks nothing. The calculator calls those walks itself, with numbers it checked or made, which are not
+walked again. Three rules a call: one hands it on, and one a place asks the check of a numeral there.
+
+#### `add-walk-runs`
+
+<!-- rule std.math.positional add-walk-runs -->
+```lisp
+(rule add-walk-runs (?ADD-WALK ?ADD-RUN)
+  :match  (?ADD-WALK ?k ?x ?y ?c ?acc)
+  :assert (?ADD-RUN ?k ?x ?y ?c ?acc)
+  :why    "{?x} + {?y} + carry {?c} is called for {?k}: the walk runs")
+```
+
+![The rule add-walk-runs of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-walk-runs.svg)
+<!-- /rule -->
+
+#### `add-walk-check-x`
+
+<!-- rule std.math.positional add-walk-check-x -->
+```lisp
+(rule add-walk-check-x (?ADD-WALK ?N ?CHECK)
+  :match  (?ADD-WALK ?k (?N ?p ?a) ?y ?c ?acc)
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the call for {?k} is handed ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule add-walk-check-x of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-walk-check-x.svg)
+<!-- /rule -->
+
+#### `add-walk-check-y`
+
+<!-- rule std.math.positional add-walk-check-y -->
+```lisp
+(rule add-walk-check-y (?ADD-WALK ?N ?CHECK)
+  :match  (?ADD-WALK ?k ?x (?N ?q ?b) ?c ?acc)
+  :assert (?CHECK (?N ?q ?b) (?N ?q ?b))
+  :why    "the call for {?k} is handed ({?N} {?q} {?b}): it is checked, once, as a number")
+```
+
+![The rule add-walk-check-y of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.add-walk-check-y.svg)
+<!-- /rule -->
+
+#### `sub-walk-runs`
+
+<!-- rule std.math.positional sub-walk-runs -->
+```lisp
+(rule sub-walk-runs (?SUB-WALK ?SUB-RUN)
+  :match  (?SUB-WALK ?k ?x ?y ?e ?acc)
+  :assert (?SUB-RUN ?k ?x ?y ?e ?acc)
+  :why    "{?x} - {?y} is called for {?k}: the walk runs")
+```
+
+![The rule sub-walk-runs of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-walk-runs.svg)
+<!-- /rule -->
+
+#### `sub-walk-check-x`
+
+<!-- rule std.math.positional sub-walk-check-x -->
+```lisp
+(rule sub-walk-check-x (?SUB-WALK ?N ?CHECK)
+  :match  (?SUB-WALK ?k (?N ?p ?a) ?y ?e ?acc)
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the call for {?k} is handed ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule sub-walk-check-x of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-walk-check-x.svg)
+<!-- /rule -->
+
+#### `sub-walk-check-y`
+
+<!-- rule std.math.positional sub-walk-check-y -->
+```lisp
+(rule sub-walk-check-y (?SUB-WALK ?N ?CHECK)
+  :match  (?SUB-WALK ?k ?x (?N ?q ?b) ?e ?acc)
+  :assert (?CHECK (?N ?q ?b) (?N ?q ?b))
+  :why    "the call for {?k} is handed ({?N} {?q} {?b}): it is checked, once, as a number")
+```
+
+![The rule sub-walk-check-y of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.sub-walk-check-y.svg)
+<!-- /rule -->
+
+#### `cmp-walk-runs`
+
+<!-- rule std.math.positional cmp-walk-runs -->
+```lisp
+(rule cmp-walk-runs (?CMP-WALK ?CMP-RUN)
+  :match  (?CMP-WALK ?k ?x ?y ?o)
+  :assert (?CMP-RUN ?k ?x ?y ?o)
+  :why    "{?x} compared with {?y} is called for {?k}: the walk runs")
+```
+
+![The rule cmp-walk-runs of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-walk-runs.svg)
+<!-- /rule -->
+
+#### `cmp-walk-check-x`
+
+<!-- rule std.math.positional cmp-walk-check-x -->
+```lisp
+(rule cmp-walk-check-x (?CMP-WALK ?N ?CHECK)
+  :match  (?CMP-WALK ?k (?N ?p ?a) ?y ?o)
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the call for {?k} is handed ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule cmp-walk-check-x of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-walk-check-x.svg)
+<!-- /rule -->
+
+#### `cmp-walk-check-y`
+
+<!-- rule std.math.positional cmp-walk-check-y -->
+```lisp
+(rule cmp-walk-check-y (?CMP-WALK ?N ?CHECK)
+  :match  (?CMP-WALK ?k ?x (?N ?q ?b) ?o)
+  :assert (?CHECK (?N ?q ?b) (?N ?q ?b))
+  :why    "the call for {?k} is handed ({?N} {?q} {?b}): it is checked, once, as a number")
+```
+
+![The rule cmp-walk-check-y of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.cmp-walk-check-y.svg)
+<!-- /rule -->
+
+#### `mul-call-runs`
+
+<!-- rule std.math.positional mul-call-runs -->
+```lisp
+(rule mul-call-runs (?MUL-CALL ?MUL-RUN)
+  :match  (?MUL-CALL ?k ?x ?y)
+  :assert (?MUL-RUN ?k ?x ?y)
+  :why    "{?x} x {?y} is called for {?k}: the multiplication runs")
+```
+
+![The rule mul-call-runs of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-call-runs.svg)
+<!-- /rule -->
+
+#### `mul-call-check-x`
+
+<!-- rule std.math.positional mul-call-check-x -->
+```lisp
+(rule mul-call-check-x (?MUL-CALL ?N ?CHECK)
+  :match  (?MUL-CALL ?k (?N ?p ?a) ?y)
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the call for {?k} is handed ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule mul-call-check-x of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-call-check-x.svg)
+<!-- /rule -->
+
+#### `mul-call-check-y`
+
+<!-- rule std.math.positional mul-call-check-y -->
+```lisp
+(rule mul-call-check-y (?MUL-CALL ?N ?CHECK)
+  :match  (?MUL-CALL ?k ?x (?N ?q ?b))
+  :assert (?CHECK (?N ?q ?b) (?N ?q ?b))
+  :why    "the call for {?k} is handed ({?N} {?q} {?b}): it is checked, once, as a number")
+```
+
+![The rule mul-call-check-y of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.mul-call-check-y.svg)
+<!-- /rule -->
+
+#### `div-call-runs`
+
+<!-- rule std.math.positional div-call-runs -->
+```lisp
+(rule div-call-runs (?DIV-CALL ?DIV-RUN)
+  :match  (?DIV-CALL ?k ?x ?y)
+  :assert (?DIV-RUN ?k ?x ?y)
+  :why    "{?x} divided by {?y} is called for {?k}: the division runs")
+```
+
+![The rule div-call-runs of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-call-runs.svg)
+<!-- /rule -->
+
+#### `div-call-check-x`
+
+<!-- rule std.math.positional div-call-check-x -->
+```lisp
+(rule div-call-check-x (?DIV-CALL ?N ?CHECK)
+  :match  (?DIV-CALL ?k (?N ?p ?a) ?y)
+  :assert (?CHECK (?N ?p ?a) (?N ?p ?a))
+  :why    "the call for {?k} is handed ({?N} {?p} {?a}): it is checked, once, as a number")
+```
+
+![The rule div-call-check-x of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-call-check-x.svg)
+<!-- /rule -->
+
+#### `div-call-check-y`
+
+<!-- rule std.math.positional div-call-check-y -->
+```lisp
+(rule div-call-check-y (?DIV-CALL ?N ?CHECK)
+  :match  (?DIV-CALL ?k ?x (?N ?q ?b))
+  :assert (?CHECK (?N ?q ?b) (?N ?q ?b))
+  :why    "the call for {?k} is handed ({?N} {?q} {?b}): it is checked, once, as a number")
+```
+
+![The rule div-call-check-y of std.math.positional, as the engine draws it](diagrams/10-std.math.positional.div-call-check-y.svg)
 <!-- /rule -->
 
 ### The addition walk
@@ -252,10 +534,10 @@ own.
 
 <!-- rule std.math.positional add-column -->
 ```lisp
-(rule add-column (?ADD-WALK ?N ?FA ?B)
-  :match  (and (?ADD-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
+(rule add-column (?ADD-RUN ?N ?FA ?B)
+  :match  (and (?ADD-RUN ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
                (?FA ?a ?c ?e ?s ?f))
-  :assert (?ADD-WALK ?k ?p ?q ?f (?B ?s ?acc))
+  :assert (?ADD-RUN ?k ?p ?q ?f (?B ?s ?acc))
   :why    "{?a} + {?c} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
 ```
 
@@ -266,10 +548,10 @@ own.
 
 <!-- rule std.math.positional add-column-first -->
 ```lisp
-(rule add-column-first (?ADD-WALK ?N ?FA ?B)
-  :match  (and (?ADD-WALK ?k (?N ?p ?a) z ?e ?acc)
+(rule add-column-first (?ADD-RUN ?N ?FA ?B)
+  :match  (and (?ADD-RUN ?k (?N ?p ?a) z ?e ?acc)
                (?FA ?a 0 ?e ?s ?f))
-  :assert (?ADD-WALK ?k ?p z ?f (?B ?s ?acc))
+  :assert (?ADD-RUN ?k ?p z ?f (?B ?s ?acc))
   :why    "the second number has run out: {?a} + carry {?e} is {?s}, carry {?f}")
 ```
 
@@ -280,10 +562,10 @@ own.
 
 <!-- rule std.math.positional add-column-second -->
 ```lisp
-(rule add-column-second (?ADD-WALK ?N ?FA ?B)
-  :match  (and (?ADD-WALK ?k z (?N ?q ?c) ?e ?acc)
+(rule add-column-second (?ADD-RUN ?N ?FA ?B)
+  :match  (and (?ADD-RUN ?k z (?N ?q ?c) ?e ?acc)
                (?FA 0 ?c ?e ?s ?f))
-  :assert (?ADD-WALK ?k z ?q ?f (?B ?s ?acc))
+  :assert (?ADD-RUN ?k z ?q ?f (?B ?s ?acc))
   :why    "the first number has run out: {?c} + carry {?e} is {?s}, carry {?f}")
 ```
 
@@ -294,8 +576,8 @@ own.
 
 <!-- rule std.math.positional add-end -->
 ```lisp
-(rule add-end (?ADD-WALK ?STRIP)
-  :match  (?ADD-WALK ?k z z 0 ?acc)
+(rule add-end (?ADD-RUN ?STRIP)
+  :match  (?ADD-RUN ?k z z 0 ?acc)
   :assert (?STRIP ?k ?acc)
   :why    "no column is left and no carry: the digits are {?acc}")
 ```
@@ -307,8 +589,8 @@ own.
 
 <!-- rule std.math.positional add-carry-out -->
 ```lisp
-(rule add-carry-out (?ADD-WALK ?TURN ?B)
-  :match  (?ADD-WALK ?k z z 1 ?acc)
+(rule add-carry-out (?ADD-RUN ?TURN ?B)
+  :match  (?ADD-RUN ?k z z 1 ?acc)
   :assert (?TURN ?k (?B 1 ?acc) z)
   :why    "no column is left: the carry is the top digit, in front of {?acc}")
 ```
@@ -422,9 +704,9 @@ becomes the result fact with the operands as the request wrote them.
 
 <!-- rule std.math.positional add-start -->
 ```lisp
-(rule add-start (?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
+(rule add-start (?OPERAND-IS ?ADD-SECOND ?ADD-RUN ?SUM)
   :match  (?OPERAND-IS (?ADD-SECOND ?x ?y ?u) ?v)
-  :assert (?ADD-WALK (?SUM ?x ?y) ?u ?v 0 z)
+  :assert (?ADD-RUN (?SUM ?x ?y) ?u ?v 0 z)
   :why    "add {?u} and {?v} from the units, with no carry in")
 ```
 
@@ -464,10 +746,10 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-column -->
 ```lisp
-(rule sub-column (?SUB-WALK ?N ?FS ?B)
-  :match  (and (?SUB-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
+(rule sub-column (?SUB-RUN ?N ?FS ?B)
+  :match  (and (?SUB-RUN ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
                (?FS ?a ?c ?e ?s ?f))
-  :assert (?SUB-WALK ?k ?p ?q ?f (?B ?s ?acc))
+  :assert (?SUB-RUN ?k ?p ?q ?f (?B ?s ?acc))
   :why    "{?a} - {?c} - borrow {?e} is {?s}, borrow {?f}: {?s} goes in front of the digits so far")
 ```
 
@@ -478,10 +760,10 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-column-first -->
 ```lisp
-(rule sub-column-first (?SUB-WALK ?N ?FS ?B)
-  :match  (and (?SUB-WALK ?k (?N ?p ?a) z ?e ?acc)
+(rule sub-column-first (?SUB-RUN ?N ?FS ?B)
+  :match  (and (?SUB-RUN ?k (?N ?p ?a) z ?e ?acc)
                (?FS ?a 0 ?e ?s ?f))
-  :assert (?SUB-WALK ?k ?p z ?f (?B ?s ?acc))
+  :assert (?SUB-RUN ?k ?p z ?f (?B ?s ?acc))
   :why    "the number taken away has run out: {?a} - borrow {?e} is {?s}, borrow {?f}")
 ```
 
@@ -492,10 +774,10 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-column-second -->
 ```lisp
-(rule sub-column-second (?SUB-WALK ?N ?FS ?B)
-  :match  (and (?SUB-WALK ?k z (?N ?q ?c) ?e ?acc)
+(rule sub-column-second (?SUB-RUN ?N ?FS ?B)
+  :match  (and (?SUB-RUN ?k z (?N ?q ?c) ?e ?acc)
                (?FS 0 ?c ?e ?s ?f))
-  :assert (?SUB-WALK ?k z ?q ?f (?B ?s ?acc))
+  :assert (?SUB-RUN ?k z ?q ?f (?B ?s ?acc))
   :why    "the number taken from has run out: 0 - {?c} - borrow {?e} is {?s}, borrow {?f}")
 ```
 
@@ -506,8 +788,8 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-end -->
 ```lisp
-(rule sub-end (?SUB-WALK ?STRIP)
-  :match  (?SUB-WALK ?k z z 0 ?acc)
+(rule sub-end (?SUB-RUN ?STRIP)
+  :match  (?SUB-RUN ?k z z 0 ?acc)
   :assert (?STRIP ?k ?acc)
   :why    "no column is left and no borrow: the digits are {?acc}")
 ```
@@ -519,8 +801,8 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-borrow-out -->
 ```lisp
-(rule sub-borrow-out (?SUB-WALK ?SHORT)
-  :match  (?SUB-WALK ?k z z 1 ?acc)
+(rule sub-borrow-out (?SUB-RUN ?SHORT)
+  :match  (?SUB-RUN ?k z z 1 ?acc)
   :assert (?SHORT ?k)
   :why    "no column is left and a borrow is: the number taken from is the smaller")
 ```
@@ -558,10 +840,10 @@ difference's place or in the shortfall's.
 
 <!-- rule std.math.positional sub-start -->
 ```lisp
-(rule sub-start (?OPERAND-IS ?SUB-SECOND ?SUB-WALK ?DIFFERENCE ?SHORTFALL)
+(rule sub-start (?OPERAND-IS ?SUB-SECOND ?SUB-RUN ?DIFFERENCE ?SHORTFALL)
   :match  (?OPERAND-IS (?SUB-SECOND ?x ?y ?u) ?v)
-  :assert (and (?SUB-WALK (?DIFFERENCE ?x ?y) ?u ?v 0 z)
-               (?SUB-WALK (?SHORTFALL ?x ?y) ?v ?u 0 z))
+  :assert (and (?SUB-RUN (?DIFFERENCE ?x ?y) ?u ?v 0 z)
+               (?SUB-RUN (?SHORTFALL ?x ?y) ?v ?u 0 z))
   :why    "take {?v} from {?u}, and {?u} from {?v}, from the units, with no borrow in: one of the two has an answer")
 ```
 
@@ -603,10 +885,10 @@ digit overrule it. It starts at `eq`.
 
 <!-- rule std.math.positional cmp-column -->
 ```lisp
-(rule cmp-column (?CMP-WALK ?N ?CL)
-  :match  (and (?CMP-WALK ?k (?N ?p ?a) (?N ?q ?c) ?o)
+(rule cmp-column (?CMP-RUN ?N ?CL)
+  :match  (and (?CMP-RUN ?k (?N ?p ?a) (?N ?q ?c) ?o)
                (?CL ?o ?a ?c ?t))
-  :assert (?CMP-WALK ?k ?p ?q ?t)
+  :assert (?CMP-RUN ?k ?p ?q ?t)
   :why    "the order below is {?o}; {?a} against {?c} above it makes it {?t}")
 ```
 
@@ -617,10 +899,10 @@ digit overrule it. It starts at `eq`.
 
 <!-- rule std.math.positional cmp-column-first -->
 ```lisp
-(rule cmp-column-first (?CMP-WALK ?N ?CL)
-  :match  (and (?CMP-WALK ?k (?N ?p ?a) z ?o)
+(rule cmp-column-first (?CMP-RUN ?N ?CL)
+  :match  (and (?CMP-RUN ?k (?N ?p ?a) z ?o)
                (?CL ?o ?a 0 ?t))
-  :assert (?CMP-WALK ?k ?p z ?t)
+  :assert (?CMP-RUN ?k ?p z ?t)
   :why    "the second number has run out: the order below is {?o}, and {?a} against nothing makes it {?t}")
 ```
 
@@ -631,10 +913,10 @@ digit overrule it. It starts at `eq`.
 
 <!-- rule std.math.positional cmp-column-second -->
 ```lisp
-(rule cmp-column-second (?CMP-WALK ?N ?CL)
-  :match  (and (?CMP-WALK ?k z (?N ?q ?c) ?o)
+(rule cmp-column-second (?CMP-RUN ?N ?CL)
+  :match  (and (?CMP-RUN ?k z (?N ?q ?c) ?o)
                (?CL ?o 0 ?c ?t))
-  :assert (?CMP-WALK ?k z ?q ?t)
+  :assert (?CMP-RUN ?k z ?q ?t)
   :why    "the first number has run out: the order below is {?o}, and nothing against {?c} makes it {?t}")
 ```
 
@@ -645,8 +927,8 @@ digit overrule it. It starts at `eq`.
 
 <!-- rule std.math.positional cmp-end -->
 ```lisp
-(rule cmp-end (?CMP-WALK ?ORDER-IS)
-  :match  (?CMP-WALK ?k z z ?o)
+(rule cmp-end (?CMP-RUN ?ORDER-IS)
+  :match  (?CMP-RUN ?k z z ?o)
   :assert (?ORDER-IS ?k ?o)
   :why    "no column is left: the order is {?o}")
 ```
@@ -684,9 +966,9 @@ digit overrule it. It starts at `eq`.
 
 <!-- rule std.math.positional cmp-start -->
 ```lisp
-(rule cmp-start (?OPERAND-IS ?CMP-SECOND ?CMP-WALK ?ORDER)
+(rule cmp-start (?OPERAND-IS ?CMP-SECOND ?CMP-RUN ?ORDER)
   :match  (?OPERAND-IS (?CMP-SECOND ?x ?y ?u) ?v)
-  :assert (?CMP-WALK (?ORDER ?x ?y) ?u ?v eq)
+  :assert (?CMP-RUN (?ORDER ?x ?y) ?u ?v eq)
   :why    "compare {?u} with {?v} from the units: equal so far")
 ```
 
@@ -742,8 +1024,8 @@ decimal multiplies by a digit, binary adds the multiplicand or nothing.
 
 <!-- rule std.math.positional mul-turn -->
 ```lisp
-(rule mul-turn (?MUL-CALL ?TOP-FIRST ?MUL-DIGITS)
-  :match  (?MUL-CALL ?k ?u ?v)
+(rule mul-turn (?MUL-RUN ?TOP-FIRST ?MUL-DIGITS)
+  :match  (?MUL-RUN ?k ?u ?v)
   :assert (?TOP-FIRST (?MUL-DIGITS ?k ?u) ?v z)
   :why    "to multiply {?u} by {?v}: first {?v}'s digits, the top one first")
 ```
@@ -820,9 +1102,9 @@ decimal multiplies by a digit, binary adds the multiplicand or nothing.
 
 <!-- rule std.math.positional mul-start -->
 ```lisp
-(rule mul-start (?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
+(rule mul-start (?OPERAND-IS ?MUL-SECOND ?MUL-RUN ?PRODUCT)
   :match  (?OPERAND-IS (?MUL-SECOND ?x ?y ?u) ?v)
-  :assert (?MUL-CALL (?PRODUCT ?x ?y) ?u ?v)
+  :assert (?MUL-RUN (?PRODUCT ?x ?y) ?u ?v)
   :why    "multiply {?u} by {?v}")
 ```
 
@@ -927,7 +1209,10 @@ digit of the quotient, are the base's own.
 
 ### Division by zero
 
-The divisor times one is zero: the flag, at the request and at the call.
+The divisor times one is zero: the flag, at the request and at the call. Every division runs as `(DIV-RUN TAG X
+Y)`, a call `(DIV-CALL TAG X Y)` handed on or the calculator's own, and the call's flag names the call,
+`(division-by-zero (DIV-CALL TAG X Y))`: a public request's division is a call, as a program's is, and the
+calculator's own divide by nothing that is zero.
 
 #### `div-by-zero`
 

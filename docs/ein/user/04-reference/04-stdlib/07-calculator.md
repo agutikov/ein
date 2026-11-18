@@ -161,7 +161,8 @@ guards, or a probe
 theory a program builds on the calculator keeps to it by the **tagged calls**: a request's result repeats its
 operands, so a rule that wanted an answer for a purpose of its own would have to find it by its operands, a join on
 a number; a tagged call hands the answer back under a tag the caller chose, and the rule that reads it has one
-premise. The tag is a fact of the caller's own relation:
+premise. A call checks the numerals it is handed, as a request's operands are, and a malformed one is flagged.
+The tag is a fact of the caller's own relation:
 
 ```lisp
 (import std.math.decimal-arith :symbols (add-walk done))
@@ -204,7 +205,8 @@ Each module's page lists its tagged calls.
 A fault is flagged by the module whose term it is a fault of
 ([Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md),
 [Q-M1f.316](../../../../decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)): a
-numeral's by its representation, where an operation takes it, and one no operation takes is not checked
+numeral's by its representation, where an operation takes it or a tagged call is handed it, unless an operation
+made it from valid numbers, and one no operation takes is not checked
 ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)); an operand's and a `let`'s by the module that reads it.
 
 | what the program wrote | the flag | by |

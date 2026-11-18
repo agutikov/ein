@@ -2,18 +2,18 @@ digraph rule_add_carry_out_lhs_rhs {
   rankdir=TB;
   label="add-carry-out"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "?ADD-WALK_L" [label="?ADD-WALK", shape=diamond];
+    "?ADD-RUN_L" [label="?ADD-RUN", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "z_L" [label="z", shape=box];
     "1_L" [label="1", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
-    "h1_ADD-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_ADD-WALK_L" -> "?ADD-WALK_L" [xlabel="1", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?k_L" [xlabel="2", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [xlabel="3", color="#17becf"];
-    "h1_ADD-WALK_L" -> "z_L" [xlabel="4", color="#17becf"];
-    "h1_ADD-WALK_L" -> "1_L" [xlabel="5", color="#17becf"];
-    "h1_ADD-WALK_L" -> "?acc_L" [xlabel="6", color="#17becf"];
+    "h1_ADD-RUN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "?ADD-RUN_L" [xlabel="1", color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "z_L" [xlabel="3", color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "z_L" [xlabel="4", color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "1_L" [xlabel="5", color="#ff7f0e"];
+    "h1_ADD-RUN_L" -> "?acc_L" [xlabel="6", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
     "?TURN_R" [label="?TURN", shape=diamond];

@@ -24,7 +24,7 @@ digraph rule_rat_sum_denominator_lhs_rhs {
     "(rat-sum-num ?k ?d ?e)_L" -> "?e_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "mul-call_R" [label="mul-call", shape=box];
+    "mul-run_R" [label="mul-run", shape=box];
     "rat-sum-den_R" [label="rat-sum-den", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
@@ -32,14 +32,14 @@ digraph rule_rat_sum_denominator_lhs_rhs {
     "?d_R" [label="?d", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-sum-den ?k ?s ?t)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
-    "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "mul-call_R" [xlabel="1", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "(rat-sum-den ?k ?s ?t)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?d_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "?e_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "mul-run_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "(rat-sum-den ?k ?s ?t)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?d_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_mul-run_R" -> "?e_R" [xlabel="4", color="#ff7f0e", style=dashed];
     "(rat-sum-den ?k ?s ?t)_R" -> "rat-sum-den_R" [xlabel="1", color="#8c564b", style=dashed];
     "(rat-sum-den ?k ?s ?t)_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
     "(rat-sum-den ?k ?s ?t)_R" -> "?s_R" [xlabel="3", color="#8c564b", style=dashed];

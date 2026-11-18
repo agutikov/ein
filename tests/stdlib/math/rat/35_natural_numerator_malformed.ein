@@ -1,0 +1,27 @@
+;;; `std.math.rat` — a rational whose numerator is a malformed natural number:
+;;; verified, flagged, dead.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A rational built from something other than integers verifies it as an
+;;; operation verifies its operands (Q-M1f.404): the numerator `(n z x)`, `x`
+;;; where a digit goes, is asked `std.math.decimal`'s check
+;;; (`rat-check-z-natural`), and `numeral-digit` flags it;
+;;; `not-decimal-is-false` derives `(false)`. The operation would compute
+;;; nothing with it (Q-M1f.277): unchecked, the request would be answered by
+;;; silence, and nothing would say the numeral is malformed.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty;
+;;; `34_natural_numerator.ein` is the numerator well formed.
+
+(import std.math.rat :symbols (rat-arith rat rat-add))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-add (rat (n z x) (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (false))

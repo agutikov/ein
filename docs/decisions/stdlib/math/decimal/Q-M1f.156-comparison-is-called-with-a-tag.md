@@ -1,8 +1,9 @@
 # Q-M1f.156 — Comparison is called with a tag
 
-A comparison is a walk under a tag, `(cmp-walk TAG X Y eq)`, which hands its order over as `(order-is TAG O)`. The
-public request calls it under the tag `(order X Y)`, and `cmp-answer` reads `(order-is (order X Y) O)` into
-`(cmp-of X Y O)`.
+A comparison is a walk under a tag, `(cmp-run TAG X Y eq)`, which hands its order over as `(order-is TAG O)`; the
+tagged call `(cmp-walk TAG X Y eq)` checks what it is handed and is handed on to it
+([Q-M1f.404](../Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). The public request starts the
+walk under the tag `(order X Y)`, and `cmp-answer` reads `(order-is (order X Y) O)` into `(cmp-of X Y O)`.
 
 **Why.** A theory over this one compares numbers inside its own circuits, and a call from inside a theory starts a
 walk with a tag of its own.

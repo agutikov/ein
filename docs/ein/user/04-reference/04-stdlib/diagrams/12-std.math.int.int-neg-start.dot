@@ -31,20 +31,20 @@ digraph rule_int_neg_start_lhs_rhs {
     "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "int-norm_R" [label="int-norm", shape=box];
+    "int-norm-run_R" [label="int-norm-run", shape=box];
     "int-neg_R" [label="int-neg", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="int-norm ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="int-norm-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-neg ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_int-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "int-norm_R" [xlabel="1", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "(int-neg ?x)_R" [xlabel="2", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?n_R" [xlabel="3", color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "?p_R" [xlabel="4", color="#e377c2", style=dashed];
+    "h2_int-norm-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_int-norm-run_R" -> "int-norm-run_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_int-norm-run_R" -> "(int-neg ?x)_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_int-norm-run_R" -> "?n_R" [xlabel="3", color="#d62728", style=dashed];
+    "h2_int-norm-run_R" -> "?p_R" [xlabel="4", color="#d62728", style=dashed];
     "(int-neg ?x)_R" -> "int-neg_R" [xlabel="1", color="#9467bd", style=dashed];
     "(int-neg ?x)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
   }

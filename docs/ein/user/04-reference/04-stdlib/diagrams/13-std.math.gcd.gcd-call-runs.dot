@@ -1,0 +1,26 @@
+digraph rule_gcd_call_runs_lhs_rhs {
+  rankdir=TB;
+  label="gcd-call-runs"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "gcd-call_L" [label="gcd-call", shape=box];
+    "?k_L" [label="?k", shape=diamond];
+    "?x_L" [label="?x", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "h1_gcd-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_gcd-call_L" -> "gcd-call_L" [xlabel="1", color="#2ca02c"];
+    "h1_gcd-call_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
+    "h1_gcd-call_L" -> "?x_L" [xlabel="3", color="#2ca02c"];
+    "h1_gcd-call_L" -> "?y_L" [xlabel="4", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "gcd-run_R" [label="gcd-run", shape=box];
+    "?k_R" [label="?k", shape=diamond];
+    "?x_R" [label="?x", shape=diamond];
+    "?y_R" [label="?y", shape=diamond];
+    "h2_gcd-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "gcd-run_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?x_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?y_R" [xlabel="4", color="#bcbd22", style=dashed];
+  }
+}

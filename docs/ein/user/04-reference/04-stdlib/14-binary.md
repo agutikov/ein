@@ -230,6 +230,10 @@ Decimal's with `bin-` before each name
 | `(bin-div-call TAG X Y)` | `(bin-div-done TAG Q R)` |
 | `(bin-operand TAG X)` | `(bin-operand-is TAG N)` |
 
+A call checks the numerals it is handed and hands itself on to the calculator's own walk, `bin-add-run` and the
+rest, as decimal's do
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
 [`examples/binary_arithmetic/`](../../../../../examples/binary_arithmetic/README.md) has programs over binary
 arithmetic, and [`tests/stdlib/math/binary-arith/`](../../../../../tests/stdlib/math/binary-arith/) one for each
 request and each fault.
@@ -238,7 +242,8 @@ request and each fault.
 
 The binary representation: the numeral `b2`, `bin-named`, which the module that declares `bin-let` writes for
 each name, the check `bin-check`, its label `bin-valid`, and the flag `not-binary`. It computes nothing, and
-checks a numeral where an operation takes it, as `std.math.decimal` checks decimal's
+flags a numeral an operation takes or a call is handed, as `std.math.decimal` flags decimal's, reading
+`std.math.positional`'s walk
 ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). A program lists `b2` from it wherever it writes a binary numeral.
 
 ```lisp
@@ -387,7 +392,7 @@ y_i &\in \lbrace 0, 1 \rbrace
 \end{aligned}
 $$
 
-The conversions are circuits over the two bases' tagged calls. `to-bin` halves X by decimal's tagged division
+The conversions are circuits over the two bases' own walks. `to-bin` halves X by decimal's division
 until nothing is left, each remainder a bit; `to-dec` reads B's bits from the top and doubles the number so far by
 one addition walk, the bit as its carry in:
 

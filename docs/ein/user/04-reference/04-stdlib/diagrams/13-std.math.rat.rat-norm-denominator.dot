@@ -20,7 +20,7 @@ digraph rule_rat_norm_denominator_lhs_rhs {
     "(rat-num ?k ?d)_L" -> "?d_L" [xlabel="3", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "rat-den-norm_R" [label="rat-den-norm", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?i_R" [label="?i", shape=diamond];
@@ -28,16 +28,16 @@ digraph rule_rat_norm_denominator_lhs_rhs {
     "z_R" [label="z", shape=box];
     "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-den-norm ?k ?i)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(rat-den-norm ?k ?i)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?d_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(rat-den-norm ?k ?i)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?d_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(rat-den-norm ?k ?i)_R" -> "rat-den-norm_R" [xlabel="1", color="#17becf", style=dashed];
     "(rat-den-norm ?k ?i)_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "(rat-den-norm ?k ?i)_R" -> "?i_R" [xlabel="3", color="#17becf", style=dashed];

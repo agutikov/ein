@@ -314,6 +314,12 @@ The calls a later theory makes, each part a natural number written out. A call's
 | `(int-mul-call TAG P1 N1 P2 N2)` | P1 less N1, times P2 less N2 | `(int-done TAG INTEGER)` |
 | `(int-cmp-call TAG P1 N1 P2 N2)` | P1 less N1, against P2 less N2 | `(order-is TAG O)` |
 
+A call checks what it is handed
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)):
+each pair of parts is asked the check an integer operand is asked, so a malformed part is flagged whoever made the
+call; **an integer built from an invalid decimal is invalid**. A part the theory made itself from valid numbers is
+valid as it was made, and is not checked again.
+
 [`tests/stdlib/math/int/`](../../../../../tests/stdlib/math/int/) has a program for each request and each fault.
 
 ## Using `std.math.rat` — rational numbers
@@ -413,7 +419,7 @@ $$
 operation answers as computed, its numerator in `std.math.int`'s normal form and its denominator with no high zero
 ([Q-M1f.302](../../../../decisions/stdlib/math/rat/Q-M1f.302-an-unreduced-answer-has-its-numerator-in-normal.md)):
 1/2 + 1/2 is 4/4, and two equal answers may be two facts. Lowest terms, zero written 0 over 1, is the one normal
-form every rational has, and `rat-simplify` answers it, by `std.math.gcd`'s tagged call
+form every rational has, and `rat-simplify` answers it, by `std.math.gcd`'s chain
 ([Q-M1f.303](../../../../decisions/stdlib/math/rat/Q-M1f.303-lowest-terms-hands-the-numerator-to-the-greatest.md)).
 A chain of operations grows unless the program asks `rat-simplify` on the way.
 
@@ -521,11 +527,17 @@ The calls a later theory makes; the denominators must not be zero.
 | `(rat-mul-call TAG P1 N1 D1 P2 N2 D2)` | the product, not reduced | `(rat-done TAG RATIONAL)` |
 | `(rat-cross TAG P1 N1 D1 P2 N2 D2)` | $P_1 D_2 + P_2 D_1$ and $N_1 D_2 + N_2 D_1$ | `(rat-cross-is TAG POSITIVE NEGATIVE)` |
 
+A call checks what it is handed, as an integer's do: each rational its parts make is asked the check a rational
+operand is asked. **A rational built from invalid integers is invalid**, and one whose numerator is a natural
+number, `(rat (n z 3) (n z 2))`, which an operation answers by silence, has the numeral verified as an operation
+verifies its operands, so `(rat (n z x) (n z 2))` is flagged
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
 [`tests/stdlib/math/rat/`](../../../../../tests/stdlib/math/rat/) has a program for each request and each fault.
 
 ## Using `std.math.gcd` — greatest common divisor and least common multiple
 
-Of two natural numbers, by Euclid's chain over the tagged division
+Of two natural numbers, by Euclid's chain over the natural numbers' division
 ([Q-M1f.336](../../../../decisions/stdlib/math/gcd/Q-M1f.336-gcd-and-lcm-are-a-module-of-their-own-over.md)). `gcd`
 is both the request and the module's entry.
 
@@ -537,7 +549,7 @@ is both the request and the module's entry.
 |---|---|---|
 | `(gcd X Y)` | `(gcd-of X Y G)` | G divides both and is the greatest that does; $\gcd(X, 0) = X$, and $\gcd(0, 0) = 0$ ([Q-M1f.299](../../../../decisions/stdlib/math/gcd/Q-M1f.299-the-greatest-common-divisor-of-zero-and-zero-is.md)) |
 | `(lcm X Y)` | `(lcm-of X Y L)` | both divide L, the least that both divide; zero where an operand is zero |
-| `(gcd-call TAG X Y)`, in a rule | `(gcd-done TAG G)` | the tagged call ([Q-M1f.300](../../../../decisions/stdlib/math/gcd/Q-M1f.300-the-greatest-common-divisors-tagged-call-is.md)): X and Y numbers, never a name |
+| `(gcd-call TAG X Y)`, in a rule | `(gcd-done TAG G)` | the tagged call ([Q-M1f.300](../../../../decisions/stdlib/math/gcd/Q-M1f.300-the-greatest-common-divisors-tagged-call-is.md)): X and Y numbers, never a name, each checked as an operand is ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)) |
 
 ```lisp
 (import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
@@ -637,16 +649,17 @@ The tagged call, under a tag of the program's own:
 
 ## How it works
 
-Each of the three is a circuit of tagged calls into the module below it, and none joins two facts on a number.
+Each of the three is a circuit of walks of the module below it, the walks its tagged calls are handed on to, and
+none joins two facts on a number.
 
 - **An integer** is computed on its parts. A sum adds the two positive parts and the two negative parts by two
   addition walks; a product is four products of parts, summed two and two; a comparison compares the cross sums
   $P_1 + N_2$ and $P_2 + N_1$; and every answer goes through one normalisation, a subtraction walk that leaves one
-  part zero. A division divides the two magnitudes by the natural numbers' `div-call` and then sets the signs, and
+  part zero. A division divides the two magnitudes by the natural numbers' division and then sets the signs, and
   the remainder, by its convention. The rules are [the integers' rules](12-integers-rules.md).
 - **A rational** is computed on its integer and its denominator: the cross products by the integers' and the
   natural numbers' multiplications, and nothing divided. `rat-simplify` hands the numerator's magnitude and the
-  denominator to `gcd-call` and divides both by what comes back.
+  denominator to `std.math.gcd`'s chain and divides both by what comes back.
 - **The greatest common divisor** is Euclid's chain, $\gcd(x, y) = \gcd(y, x \bmod y)$ until the second is zero,
-  each remainder one `div-call`; the least common multiple is the product divided by it. Their rules, with the
+  each remainder one division; the least common multiple is the product divided by it. Their rules, with the
   rationals', are [the next page but one](13-rationals-and-gcd-rules.md).

@@ -41,7 +41,7 @@ digraph rule_int_div_euclid_np_more_lhs_rhs {
     "(n ?r ?d)_L" -> "?d_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "int-div-q_R" [label="int-div-q", shape=box];
     "int-div-euclid_R" [label="int-div-euclid", shape=box];
     "?x_R" [label="?x", shape=diamond];
@@ -56,7 +56,7 @@ digraph rule_int_div_euclid_np_more_lhs_rhs {
     "1_R" [label="1", shape=box];
     "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
       "(n z 1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
@@ -65,13 +65,13 @@ digraph rule_int_div_euclid_np_more_lhs_rhs {
       "(int-div-euclid ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
       "(n ?r ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(n z 1)_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?q_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(n z 1)_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" -> "int-div-q_R" [xlabel="1", color="#1f77b4", style=dashed];
     "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" -> "(int-div-euclid ?x ?y)_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d))_R" -> "neg_R" [xlabel="3", color="#1f77b4", style=dashed];

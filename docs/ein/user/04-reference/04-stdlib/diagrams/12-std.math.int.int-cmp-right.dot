@@ -22,7 +22,7 @@ digraph rule_int_cmp_right_lhs_rhs {
     "(int-cmp-l ?k ?n ?q)_L" -> "?q_L" [xlabel="4", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "add-walk_R" [label="add-walk", shape=box];
+    "add-run_R" [label="add-run", shape=box];
     "int-cmp-r_R" [label="int-cmp-r", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?l_R" [label="?l", shape=diamond];
@@ -31,16 +31,16 @@ digraph rule_int_cmp_right_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="add-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(int-cmp-r ?k ?l)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
-    "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "(int-cmp-r ?k ?l)_R" [xlabel="2", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "?q_R" [xlabel="4", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
+    "h2_add-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "add-run_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "(int-cmp-r ?k ?l)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?n_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "?q_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_add-run_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
     "(int-cmp-r ?k ?l)_R" -> "int-cmp-r_R" [xlabel="1", color="#ff7f0e", style=dashed];
     "(int-cmp-r ?k ?l)_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-cmp-r ?k ?l)_R" -> "?l_R" [xlabel="3", color="#ff7f0e", style=dashed];

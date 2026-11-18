@@ -1,0 +1,45 @@
+digraph rule_sub_walk_check_x_lhs_rhs {
+  rankdir=TB;
+  label="sub-walk-check-x"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?SUB-WALK_L" [label="?SUB-WALK", shape=diamond];
+    "?k_L" [label="?k", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?y_L" [label="?y", shape=diamond];
+    "?e_L" [label="?e", shape=diamond];
+    "?acc_L" [label="?acc", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?SUB-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_SUB-WALK_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?y_L" [xlabel="4", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?e_L" [xlabel="5", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?acc_L" [xlabel="6", color="#d62728"];
+    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?CHECK_R" [label="?CHECK", shape=diamond];
+    "?N_R" [label="?N", shape=diamond];
+    "?p_R" [label="?p", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?CHECK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h2_CHECK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "?CHECK_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "(?N ?p ?a)_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_CHECK_R" -> "(?N ?p ?a)_R" [xlabel="3", color="#d62728", style=dashed];
+    "(?N ?p ?a)_R" -> "?N_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(?N ?p ?a)_R" -> "?p_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(?N ?p ?a)_R" -> "?a_R" [xlabel="3", color="#7f7f7f", style=dashed];
+  }
+}

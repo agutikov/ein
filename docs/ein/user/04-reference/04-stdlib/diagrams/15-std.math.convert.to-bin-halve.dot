@@ -22,7 +22,7 @@ digraph rule_to_bin_halve_lhs_rhs {
     "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "div-call_R" [label="div-call", shape=box];
+    "div-run_R" [label="div-run", shape=box];
     "halving_R" [label="halving", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
@@ -32,16 +32,16 @@ digraph rule_to_bin_halve_lhs_rhs {
     "z_R" [label="z", shape=box];
     "2_R" [label="2", shape=box];
     subgraph cluster_ctx_R_0 {
-      label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="div-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(halving ?x ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
       "(n ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
       "(n z 2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "div-call_R" [xlabel="1", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(halving ?x ?acc)_R" [xlabel="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n ?p ?a)_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n z 2)_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_div-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "div-run_R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(halving ?x ?acc)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(n ?p ?a)_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_div-run_R" -> "(n z 2)_R" [xlabel="4", color="#e377c2", style=dashed];
     "(halving ?x ?acc)_R" -> "halving_R" [xlabel="1", color="#bcbd22", style=dashed];
     "(halving ?x ?acc)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(halving ?x ?acc)_R" -> "?acc_R" [xlabel="3", color="#bcbd22", style=dashed];

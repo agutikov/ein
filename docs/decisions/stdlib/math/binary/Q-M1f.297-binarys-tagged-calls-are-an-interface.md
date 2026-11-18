@@ -3,6 +3,8 @@
 `std.math.binary-arith`'s tagged calls are an interface, as decimal's are: `(bin-add-walk TAG X Y C z)`,
 `(bin-sub-walk TAG X Y 0 z)`, `(bin-cmp-walk TAG X Y eq)`, `(bin-mul-call TAG X Y)`, `(bin-div-call TAG X Y)` and
 `(bin-operand TAG X)`, answered by `bin-done`, `bin-short`, `bin-order-is`, `bin-div-done` and `bin-operand-is`.
+Each of the five calls checks the numerals it is handed and is handed on to the calculator's own walk,
+`bin-add-run` and the rest ([Q-M1f.404](../Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 `std.math.convert`, a module of the stdlib, also reads binary's circuit: `bin-strip`, `bin-done`, `bin-top-first`,
 `bin-top-first-is` and `bin-b`. Binary's module writes no fact that names its closing rule.
 

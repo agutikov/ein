@@ -1,0 +1,46 @@
+digraph rule_int_check_p_lhs_rhs {
+  rankdir=TB;
+  label="int-check-p"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "int-check_L" [label="int-check", shape=box];
+    "int_L" [label="int", shape=box];
+    "n_L" [label="n", shape=box];
+    "?q_L" [label="?q", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="int ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?q ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int (n ?q ?a) ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    }
+    "h1_int-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_int-check_L" -> "int-check_L" [xlabel="1", color="#2ca02c"];
+    "h1_int-check_L" -> "(int (n ?q ?a) ?n)_L" [xlabel="2", color="#2ca02c"];
+    "(int (n ?q ?a) ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int (n ?q ?a) ?n)_L" -> "(n ?q ?a)_L" [xlabel="2", color="#17becf"];
+    "(int (n ?q ?a) ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
+    "(n ?q ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n ?q ?a)_L" -> "?q_L" [xlabel="2", color="#9467bd"];
+    "(n ?q ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "check_R" [label="check", shape=box];
+    "n_R" [label="n", shape=box];
+    "?q_R" [label="?q", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(n ?q ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    }
+    "h2_check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "check_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "(n ?q ?a)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "(n ?q ?a)_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "(n ?q ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n ?q ?a)_R" -> "?q_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n ?q ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
+  }
+}

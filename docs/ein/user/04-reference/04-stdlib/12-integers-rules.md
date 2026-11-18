@@ -55,6 +55,71 @@ The integer an operand stands for is asked for its check, `(int-check I)`, once 
 ![The rule int-operand-check of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-operand-check.svg)
 <!-- /rule -->
 
+## A call: what it is handed checked, then handed on
+
+The four calls are an interface
+([Q-M1f.189](../../../../decisions/stdlib/math/Q-M1f.189-the-decimal-arithmetics-tagged-calls-are.md)): a module
+over this one, or a rule of a program's own, asks `(int-norm TAG P N)`, `(int-add-call TAG P1 N1 P2 N2)`,
+`(int-mul-call …)` or `(int-cmp-call …)`. A part an operation made from valid numbers is valid as it was made, and
+every other one is checked, whoever made the call
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)):
+each rule asks `(int-check (int P N))` of each pair of parts it is handed, [below](#an-integers-own-shape), and
+hands the call on to the module's own computation, `int-norm-run`, `int-add-run`, `int-mul-run` or `int-cmp-run`,
+which checks nothing. The module and `std.math.rat` call those themselves, with parts they checked or numbers a
+walk made.
+
+#### `int-norm-runs`
+
+<!-- rule std.math.int int-norm-runs -->
+```lisp
+(rule int-norm-runs ()
+  :match  (int-norm ?k ?p ?n)
+  :assert (and (int-norm-run ?k ?p ?n) (int-check (int ?p ?n)))
+  :why    "{?p} less {?n} is called for {?k}: it is checked as an integer, and simplified")
+```
+
+![The rule int-norm-runs of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-norm-runs.svg)
+<!-- /rule -->
+
+#### `int-add-call-runs`
+
+<!-- rule std.math.int int-add-call-runs -->
+```lisp
+(rule int-add-call-runs ()
+  :match  (int-add-call ?k ?p ?n ?q ?m)
+  :assert (and (int-add-run ?k ?p ?n ?q ?m) (int-check (int ?p ?n)) (int-check (int ?q ?m)))
+  :why    "{?p} less {?n}, plus {?q} less {?m}, is called for {?k}: each is checked as an integer, and added")
+```
+
+![The rule int-add-call-runs of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-add-call-runs.svg)
+<!-- /rule -->
+
+#### `int-mul-call-runs`
+
+<!-- rule std.math.int int-mul-call-runs -->
+```lisp
+(rule int-mul-call-runs ()
+  :match  (int-mul-call ?k ?p ?n ?q ?m)
+  :assert (and (int-mul-run ?k ?p ?n ?q ?m) (int-check (int ?p ?n)) (int-check (int ?q ?m)))
+  :why    "{?p} less {?n}, times {?q} less {?m}, is called for {?k}: each is checked as an integer, and multiplied")
+```
+
+![The rule int-mul-call-runs of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-mul-call-runs.svg)
+<!-- /rule -->
+
+#### `int-cmp-call-runs`
+
+<!-- rule std.math.int int-cmp-call-runs -->
+```lisp
+(rule int-cmp-call-runs ()
+  :match  (int-cmp-call ?k ?p ?n ?q ?m)
+  :assert (and (int-cmp-run ?k ?p ?n ?q ?m) (int-check (int ?p ?n)) (int-check (int ?q ?m)))
+  :why    "{?p} less {?n}, against {?q} less {?m}, is called for {?k}: each is checked as an integer, and compared")
+```
+
+![The rule int-cmp-call-runs of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-cmp-call-runs.svg)
+<!-- /rule -->
+
 ## The normal form
 
 For $P$ less $N$, two subtraction walks, each part from the other, as a natural subtraction runs them: one of the
@@ -73,9 +138,9 @@ $$
 <!-- rule std.math.int int-norm-walks -->
 ```lisp
 (rule int-norm-walks ()
-  :match  (int-norm ?k ?p ?n)
-  :assert (and (sub-walk (int-plus ?k) ?p ?n 0 z)
-               (sub-walk (int-minus ?k) ?n ?p 0 z))
+  :match  (int-norm-run ?k ?p ?n)
+  :assert (and (sub-run (int-plus ?k) ?p ?n 0 z)
+               (sub-run (int-minus ?k) ?n ?p 0 z))
   :why    "take {?n} from {?p}, and {?p} from {?n}: one of the two has an answer")
 ```
 
@@ -131,7 +196,7 @@ Simplifying is the normal form; negating is the normal form with the parts excha
 ```lisp
 (rule int-simplify-start ()
   :match  (operand-is (int-only (int-simplify ?x)) (int ?p ?n))
-  :assert (int-norm (int-simplify ?x) ?p ?n)
+  :assert (int-norm-run (int-simplify ?x) ?p ?n)
   :why    "simplify {?p} less {?n}")
 ```
 
@@ -170,7 +235,7 @@ Simplifying is the normal form; negating is the normal form with the parts excha
 ```lisp
 (rule int-neg-start ()
   :match  (operand-is (int-only (int-neg ?x)) (int ?p ?n))
-  :assert (int-norm (int-neg ?x) ?n ?p)
+  :assert (int-norm-run (int-neg ?x) ?n ?p)
   :why    "the parts change places: simplify {?n} less {?p}")
 ```
 
@@ -204,8 +269,8 @@ addition of the second operand with its parts exchanged.
 <!-- rule std.math.int int-add-plus -->
 ```lisp
 (rule int-add-plus ()
-  :match  (int-add-call ?k ?p ?n ?q ?m)
-  :assert (add-walk (int-add-p ?k ?n ?m) ?p ?q 0 z)
+  :match  (int-add-run ?k ?p ?n ?q ?m)
+  :assert (add-run (int-add-p ?k ?n ?m) ?p ?q 0 z)
   :why    "first the positive parts: {?p} + {?q}")
 ```
 
@@ -218,7 +283,7 @@ addition of the second operand with its parts exchanged.
 ```lisp
 (rule int-add-minus ()
   :match  (done (int-add-p ?k ?n ?m) ?s)
-  :assert (add-walk (int-add-n ?k ?s) ?n ?m 0 z)
+  :assert (add-run (int-add-n ?k ?s) ?n ?m 0 z)
   :why    "the positive parts make {?s}: now the negative parts, {?n} + {?m}")
 ```
 
@@ -231,7 +296,7 @@ addition of the second operand with its parts exchanged.
 ```lisp
 (rule int-add-norm ()
   :match  (done (int-add-n ?k ?s) ?t)
-  :assert (int-norm ?k ?s ?t)
+  :assert (int-norm-run ?k ?s ?t)
   :why    "the negative parts make {?t}: simplify {?s} less {?t}")
 ```
 
@@ -257,7 +322,7 @@ addition of the second operand with its parts exchanged.
 ```lisp
 (rule int-add-start ()
   :match  (operand-is (int-second (int-add ?x ?y) ?p ?n) (int ?q ?m))
-  :assert (int-add-call (int-add ?x ?y) ?p ?n ?q ?m)
+  :assert (int-add-run (int-add ?x ?y) ?p ?n ?q ?m)
   :why    "add {?p} less {?n} and {?q} less {?m}")
 ```
 
@@ -296,7 +361,7 @@ addition of the second operand with its parts exchanged.
 ```lisp
 (rule int-sub-start ()
   :match  (operand-is (int-second (int-sub ?x ?y) ?p ?n) (int ?q ?m))
-  :assert (int-add-call (int-sub ?x ?y) ?p ?n ?m ?q)
+  :assert (int-add-run (int-sub ?x ?y) ?p ?n ?m ?q)
   :why    "to take {?q} less {?m} away, add {?m} less {?q}")
 ```
 
@@ -329,8 +394,8 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 <!-- rule std.math.int int-mul-first -->
 ```lisp
 (rule int-mul-first ()
-  :match  (int-mul-call ?k ?p ?n ?q ?m)
-  :assert (mul-call (int-mul-pp ?k ?p ?n ?q ?m) ?p ?q)
+  :match  (int-mul-run ?k ?p ?n ?q ?m)
+  :assert (mul-run (int-mul-pp ?k ?p ?n ?q ?m) ?p ?q)
   :why    "first the positive parts: {?p} x {?q}")
 ```
 
@@ -343,7 +408,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-second ()
   :match  (done (int-mul-pp ?k ?p ?n ?q ?m) ?a)
-  :assert (mul-call (int-mul-nn ?k ?p ?n ?q ?m ?a) ?n ?m)
+  :assert (mul-run (int-mul-nn ?k ?p ?n ?q ?m ?a) ?n ?m)
   :why    "the positive parts make {?a}: now the negative parts, {?n} x {?m}")
 ```
 
@@ -356,7 +421,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-plus ()
   :match  (done (int-mul-nn ?k ?p ?n ?q ?m ?a) ?b)
-  :assert (add-walk (int-mul-pos ?k ?p ?n ?q ?m) ?a ?b 0 z)
+  :assert (add-run (int-mul-pos ?k ?p ?n ?q ?m) ?a ?b 0 z)
   :why    "the negative parts make {?b}: the product's positive part is {?a} + {?b}")
 ```
 
@@ -369,7 +434,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-third ()
   :match  (done (int-mul-pos ?k ?p ?n ?q ?m) ?s)
-  :assert (mul-call (int-mul-pn ?k ?n ?q ?s) ?p ?m)
+  :assert (mul-run (int-mul-pn ?k ?n ?q ?s) ?p ?m)
   :why    "the positive part is {?s}: now across, {?p} x {?m}")
 ```
 
@@ -382,7 +447,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-fourth ()
   :match  (done (int-mul-pn ?k ?n ?q ?s) ?c)
-  :assert (mul-call (int-mul-np ?k ?s ?c) ?n ?q)
+  :assert (mul-run (int-mul-np ?k ?s ?c) ?n ?q)
   :why    "that makes {?c}: and across the other way, {?n} x {?q}")
 ```
 
@@ -395,7 +460,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-minus ()
   :match  (done (int-mul-np ?k ?s ?c) ?d)
-  :assert (add-walk (int-mul-neg ?k ?s) ?c ?d 0 z)
+  :assert (add-run (int-mul-neg ?k ?s) ?c ?d 0 z)
   :why    "that makes {?d}: the product's negative part is {?c} + {?d}")
 ```
 
@@ -408,7 +473,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-norm ()
   :match  (done (int-mul-neg ?k ?s) ?t)
-  :assert (int-norm ?k ?s ?t)
+  :assert (int-norm-run ?k ?s ?t)
   :why    "the negative part is {?t}: simplify {?s} less {?t}")
 ```
 
@@ -434,7 +499,7 @@ Four products of natural numbers and two sums, with no case on a sign, then the 
 ```lisp
 (rule int-mul-start ()
   :match  (operand-is (int-second (int-mul ?x ?y) ?p ?n) (int ?q ?m))
-  :assert (int-mul-call (int-mul ?x ?y) ?p ?n ?q ?m)
+  :assert (int-mul-run (int-mul ?x ?y) ?p ?n ?q ?m)
   :why    "multiply {?p} less {?n} by {?q} less {?m}")
 ```
 
@@ -467,8 +532,8 @@ Two sums of natural numbers, and one comparison walk between them.
 <!-- rule std.math.int int-cmp-left -->
 ```lisp
 (rule int-cmp-left ()
-  :match  (int-cmp-call ?k ?p ?n ?q ?m)
-  :assert (add-walk (int-cmp-l ?k ?n ?q) ?p ?m 0 z)
+  :match  (int-cmp-run ?k ?p ?n ?q ?m)
+  :assert (add-run (int-cmp-l ?k ?n ?q) ?p ?m 0 z)
   :why    "add across: the left side is {?p} + {?m}")
 ```
 
@@ -481,7 +546,7 @@ Two sums of natural numbers, and one comparison walk between them.
 ```lisp
 (rule int-cmp-right ()
   :match  (done (int-cmp-l ?k ?n ?q) ?l)
-  :assert (add-walk (int-cmp-r ?k ?l) ?n ?q 0 z)
+  :assert (add-run (int-cmp-r ?k ?l) ?n ?q 0 z)
   :why    "the left side is {?l}: the right side is {?n} + {?q}")
 ```
 
@@ -494,7 +559,7 @@ Two sums of natural numbers, and one comparison walk between them.
 ```lisp
 (rule int-cmp-sides ()
   :match  (done (int-cmp-r ?k ?l) ?r)
-  :assert (cmp-walk ?k ?l ?r eq)
+  :assert (cmp-run ?k ?l ?r eq)
   :why    "the right side is {?r}: compare {?l} with {?r}")
 ```
 
@@ -520,7 +585,7 @@ Two sums of natural numbers, and one comparison walk between them.
 ```lisp
 (rule int-cmp-start ()
   :match  (operand-is (int-second (int-cmp ?x ?y) ?p ?n) (int ?q ?m))
-  :assert (int-cmp-call (int-cmp ?x ?y) ?p ?n ?q ?m)
+  :assert (int-cmp-run (int-cmp ?x ?y) ?p ?n ?q ?m)
   :why    "compare {?p} less {?n} with {?q} less {?m}")
 ```
 
@@ -554,7 +619,7 @@ need.
 ```lisp
 (rule int-div-start ()
   :match  (operand-is (int-second (int-div-of ?k) ?p ?n) (int ?q ?m))
-  :assert (int-norm (int-div-a ?k ?q ?m) ?p ?n)
+  :assert (int-norm-run (int-div-a ?k ?q ?m) ?p ?n)
   :why    "first the dividend, simplified: {?p} less {?n}")
 ```
 
@@ -567,7 +632,7 @@ need.
 ```lisp
 (rule int-div-divisor ()
   :match  (int-done (int-div-a ?k ?q ?m) ?a)
-  :assert (int-norm (int-div-b ?k ?a) ?q ?m)
+  :assert (int-norm-run (int-div-b ?k ?a) ?q ?m)
   :why    "the dividend is {?a}: now the divisor, simplified, {?q} less {?m}")
 ```
 
@@ -593,7 +658,7 @@ need.
 ```lisp
 (rule int-div-pp ()
   :match  (int-done (int-div-b ?k (int ?a z)) (int (n ?b ?c) z))
-  :assert (div-call (int-div-m ?k pos pos (n ?b ?c)) ?a (n ?b ?c))
+  :assert (div-run (int-div-m ?k pos pos (n ?b ?c)) ?a (n ?b ?c))
   :why    "neither is negative: divide the sizes, {?a} by (n {?b} {?c})")
 ```
 
@@ -606,7 +671,7 @@ need.
 ```lisp
 (rule int-div-pn ()
   :match  (int-done (int-div-b ?k (int ?a z)) (int z (n ?b ?c)))
-  :assert (div-call (int-div-m ?k pos neg (n ?b ?c)) ?a (n ?b ?c))
+  :assert (div-run (int-div-m ?k pos neg (n ?b ?c)) ?a (n ?b ?c))
   :why    "the divisor is negative: divide the sizes, {?a} by (n {?b} {?c})")
 ```
 
@@ -619,7 +684,7 @@ need.
 ```lisp
 (rule int-div-np ()
   :match  (int-done (int-div-b ?k (int z (n ?a ?d))) (int (n ?b ?c) z))
-  :assert (div-call (int-div-m ?k neg pos (n ?b ?c)) (n ?a ?d) (n ?b ?c))
+  :assert (div-run (int-div-m ?k neg pos (n ?b ?c)) (n ?a ?d) (n ?b ?c))
   :why    "the dividend is negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
 ```
 
@@ -632,7 +697,7 @@ need.
 ```lisp
 (rule int-div-nn ()
   :match  (int-done (int-div-b ?k (int z (n ?a ?d))) (int z (n ?b ?c)))
-  :assert (div-call (int-div-m ?k neg neg (n ?b ?c)) (n ?a ?d) (n ?b ?c))
+  :assert (div-run (int-div-m ?k neg neg (n ?b ?c)) (n ?a ?d) (n ?b ?c))
   :why    "both are negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
 ```
 
@@ -645,7 +710,7 @@ need.
 ```lisp
 (rule int-div-rest ()
   :match  (done (int-div-q ?k ?s ?b ?r) ?q)
-  :assert (sub-walk (int-div-r ?k ?s ?q) ?b ?r 0 z)
+  :assert (sub-run (int-div-r ?k ?s ?q) ?b ?r 0 z)
   :why    "the quotient's size is {?q}: now the divisor's size less the remainder, {?b} - {?r}")
 ```
 
@@ -735,7 +800,7 @@ divisor's size less the sizes' remainder.
 ```lisp
 (rule int-div-euclid-np-more ()
   :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg pos ?b) ?q (n ?r ?d))
-  :assert (add-walk (int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :assert (add-run (int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
@@ -748,7 +813,7 @@ divisor's size less the sizes' remainder.
 ```lisp
 (rule int-div-euclid-nn-more ()
   :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg neg ?b) ?q (n ?r ?d))
-  :assert (add-walk (int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :assert (add-run (int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
@@ -953,7 +1018,7 @@ remainder has the divisor's sign.
 ```lisp
 (rule int-div-floor-pn-more ()
   :match  (div-done (int-div-m (int-div-floor ?x ?y) pos neg ?b) ?q (n ?r ?d))
-  :assert (add-walk (int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :assert (add-run (int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
@@ -966,7 +1031,7 @@ remainder has the divisor's sign.
 ```lisp
 (rule int-div-floor-np-more ()
   :match  (div-done (int-div-m (int-div-floor ?x ?y) neg pos ?b) ?q (n ?r ?d))
-  :assert (add-walk (int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :assert (add-run (int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
   :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
 ```
 
@@ -1071,21 +1136,37 @@ These four carry it from this module's tags to the request, where the shared rul
 
 ## An integer's own shape
 
-A digit or a named constant where a part goes, checked where an operation takes the integer: each rule has one
-premise, `(int-check (int P N))`, and a row of `nz` or of `named`. `int-check-parts` asks `std.math.decimal`'s
-check of each part, which flags a malformed numeral and labels a well-formed one valid.
+A digit or a named constant where a part goes, checked where an operation takes the integer or a call is handed its
+parts: each rule has one premise, `(int-check (int P N))`, and a row of `nz` or of `named`. **An integer built from
+an invalid decimal is invalid**: `int-check-p` and `int-check-n` ask `std.math.decimal`'s check of a part that is a
+numeral, a rule a place, which flags a malformed numeral and labels a well-formed one valid; a part `z` is valid
+already and is asked nothing, and one that is a digit or a name is the rules after them
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
 
-#### `int-check-parts`
+#### `int-check-p`
 
-<!-- rule std.math.int int-check-parts -->
+<!-- rule std.math.int int-check-p -->
 ```lisp
-(rule int-check-parts ()
-  :match  (int-check (int ?p ?n))
-  :assert (and (check ?p ?p) (check ?n ?n))
-  :why    "each part of {?p} less {?n} is checked as a number")
+(rule int-check-p ()
+  :match  (int-check (int (n ?q ?a) ?n))
+  :assert (check (n ?q ?a) (n ?q ?a))
+  :why    "the positive part of (n {?q} {?a}) less {?n} is checked as a number")
 ```
 
-![The rule int-check-parts of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-check-parts.svg)
+![The rule int-check-p of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-check-p.svg)
+<!-- /rule -->
+
+#### `int-check-n`
+
+<!-- rule std.math.int int-check-n -->
+```lisp
+(rule int-check-n ()
+  :match  (int-check (int ?p (n ?q ?a)))
+  :assert (check (n ?q ?a) (n ?q ?a))
+  :why    "the negative part of {?p} less (n {?q} {?a}) is checked as a number")
+```
+
+![The rule int-check-n of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-check-n.svg)
 <!-- /rule -->
 
 #### `int-p-digit`
@@ -1201,6 +1282,8 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (__closed__ int-norm) (__closed__ int-done)
                (__closed__ int-add-call) (__closed__ int-mul-call)
                (__closed__ int-cmp-call)
+               (__closed__ int-norm-run) (__closed__ int-add-run)
+               (__closed__ int-mul-run) (__closed__ int-cmp-run)
                (__closed__ int-only) (__closed__ int-first)
                (__closed__ int-second)
                (__closed__ int-plus) (__closed__ int-minus)
@@ -1219,7 +1302,10 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (__closed__ int-rule)
                (int-rule decimal-arith) (int-rule decimal) (int-rule arith)
                (int-rule int-operand) (int-rule int-operand-second)
-               (int-rule int-operand-check) (int-rule int-check-parts)
+               (int-rule int-operand-check)
+               (int-rule int-check-p) (int-rule int-check-n)
+               (int-rule int-norm-runs) (int-rule int-add-call-runs)
+               (int-rule int-mul-call-runs) (int-rule int-cmp-call-runs)
                (int-rule int-norm-walks) (int-rule int-norm-plus)
                (int-rule int-norm-minus)
                (int-rule int-simplify-ask) (int-rule int-simplify-start)

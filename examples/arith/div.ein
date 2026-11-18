@@ -29,7 +29,7 @@
 ;;;
 ;;; Nothing is guessed: a trial is a subtraction, and the tables decide it.
 ;;; `ein solve examples/arith/div.ein --trace T.md` writes every step as a
-;;; sentence; this division takes 220 of them.
+;;; sentence; this division's chain is 221 of them.
 ;;;
 ;;; ── The chain ──────────────────────────────────────────────────────────
 ;;;

@@ -954,7 +954,7 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **Each operation as a circuit.** An operation divides nothing: a sum is
 /// the cross products, a product of the denominators and the numerator
 /// simplified, about a fifth of what it would be with lowest terms after it
-/// (1/2 + 1/3 is 113 firings, the operands' checks among them).
+/// (1/2 + 1/3 is 114 firings, the operands' checks among them).
 /// Lowest terms is `rat-simplify`'s alone: the numerator simplified,
 /// `std.math.gcd`'s call, Euclid's chain, a division a step, each computing
 /// its divisor's nine multiples first, and two more divisions by what the
@@ -989,13 +989,13 @@ const CIRCUITS: [(usize, usize); 10] = [
     (353, 343),
     (901, 883),
     (33, 23),
-    (113, 99),
-    (116, 102),
-    (94, 79),
-    (106, 87),
-    (88, 76),
-    (410, 379),
-    (294, 270),
+    (114, 99),
+    (117, 102),
+    (95, 79),
+    (107, 87),
+    (89, 76),
+    (411, 379),
+    (295, 270),
 ];
 
 // ── the module's text ──────────────────────────────────────────────

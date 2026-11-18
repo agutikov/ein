@@ -37,7 +37,7 @@ digraph rule_rat_mul_start_lhs_rhs {
     "(rat-mul ?x ?y)_L" -> "?y_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "rat-mul-call_R" [label="rat-mul-call", shape=box];
+    "rat-mul-run_R" [label="rat-mul-run", shape=box];
     "rat-mul_R" [label="rat-mul", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
@@ -48,18 +48,18 @@ digraph rule_rat_mul_start_lhs_rhs {
     "?m_R" [label="?m", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="rat-mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="rat-mul-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-mul ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h2_rat-mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "rat-mul-call_R" [xlabel="1", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "(rat-mul ?x ?y)_R" [xlabel="2", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?d_R" [xlabel="5", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?q_R" [xlabel="6", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?m_R" [xlabel="7", color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "?e_R" [xlabel="8", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "rat-mul-run_R" [xlabel="1", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "(rat-mul ?x ?y)_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?d_R" [xlabel="5", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?q_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?m_R" [xlabel="7", color="#8c564b", style=dashed];
+    "h2_rat-mul-run_R" -> "?e_R" [xlabel="8", color="#8c564b", style=dashed];
     "(rat-mul ?x ?y)_R" -> "rat-mul_R" [xlabel="1", color="#17becf", style=dashed];
     "(rat-mul ?x ?y)_R" -> "?x_R" [xlabel="2", color="#17becf", style=dashed];
     "(rat-mul ?x ?y)_R" -> "?y_R" [xlabel="3", color="#17becf", style=dashed];

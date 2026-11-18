@@ -1,0 +1,45 @@
+digraph rule_rat_check_z_lhs_rhs {
+  rankdir=TB;
+  label="rat-check-z"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "rat-check_L" [label="rat-check", shape=box];
+    "rat_L" [label="rat", shape=box];
+    "int_L" [label="int", shape=box];
+    "?p_L" [label="?p", shape=diamond];
+    "?n_L" [label="?n", shape=diamond];
+    "?d_L" [label="?d", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="rat ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    }
+    subgraph cluster_ctx_L_1 {
+      label="rat-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(rat (int ?p ?n) ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    }
+    "h1_rat-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_rat-check_L" -> "rat-check_L" [xlabel="1", color="#e377c2"];
+    "h1_rat-check_L" -> "(rat (int ?p ?n) ?d)_L" [xlabel="2", color="#e377c2"];
+    "(rat (int ?p ?n) ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "(rat (int ?p ?n) ?d)_L" -> "(int ?p ?n)_L" [xlabel="2", color="#d62728"];
+    "(rat (int ?p ?n) ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
+    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "int-check_R" [label="int-check", shape=box];
+    "int_R" [label="int", shape=box];
+    "?p_R" [label="?p", shape=diamond];
+    "?n_R" [label="?n", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(int ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    }
+    "h2_int-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_int-check_R" -> "int-check_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_int-check_R" -> "(int ?p ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(int ?p ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
+  }
+}

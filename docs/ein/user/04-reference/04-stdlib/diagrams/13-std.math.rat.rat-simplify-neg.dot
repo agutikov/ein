@@ -35,7 +35,7 @@ digraph rule_rat_simplify_neg_lhs_rhs {
     "(n ?b ?c)_L" -> "?c_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "gcd-call_R" [label="gcd-call", shape=box];
+    "gcd-run_R" [label="gcd-run", shape=box];
     "rat-g_R" [label="rat-g", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "neg_R" [label="neg", shape=box];
@@ -44,18 +44,18 @@ digraph rule_rat_simplify_neg_lhs_rhs {
     "?c_R" [label="?c", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="gcd-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="gcd-run ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat-g ?k neg (n ?b ?c) ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     subgraph cluster_ctx_R_1 {
-      label="gcd-call, rat-g ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="gcd-run, rat-g ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?b ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "gcd-call_R" [xlabel="1", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "(rat-g ?k neg (n ?b ?c) ?d)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "(n ?b ?c)_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "?d_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_gcd-run_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "gcd-run_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "(rat-g ?k neg (n ?b ?c) ?d)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "(n ?b ?c)_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_gcd-run_R" -> "?d_R" [xlabel="4", color="#bcbd22", style=dashed];
     "(rat-g ?k neg (n ?b ?c) ?d)_R" -> "rat-g_R" [xlabel="1", color="#1f77b4", style=dashed];
     "(rat-g ?k neg (n ?b ?c) ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-g ?k neg (n ?b ?c) ?d)_R" -> "neg_R" [xlabel="3", color="#1f77b4", style=dashed];

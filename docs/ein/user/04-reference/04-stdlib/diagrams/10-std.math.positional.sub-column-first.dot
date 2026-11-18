@@ -2,7 +2,7 @@ digraph rule_sub_column_first_lhs_rhs {
   rankdir=TB;
   label="sub-column-first"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "?SUB-WALK_L" [label="?SUB-WALK", shape=diamond];
+    "?SUB-RUN_L" [label="?SUB-RUN", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?N_L" [label="?N", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
@@ -15,16 +15,16 @@ digraph rule_sub_column_first_lhs_rhs {
     "?s_L" [label="?s", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
     subgraph cluster_ctx_L_0 {
-      label="?SUB-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="?SUB-RUN ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [xlabel="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?e_L" [xlabel="5", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [xlabel="6", color="#d62728"];
+    "h1_SUB-RUN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_SUB-RUN_L" -> "?SUB-RUN_L" [xlabel="1", color="#17becf"];
+    "h1_SUB-RUN_L" -> "?k_L" [xlabel="2", color="#17becf"];
+    "h1_SUB-RUN_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#17becf"];
+    "h1_SUB-RUN_L" -> "z_L" [xlabel="4", color="#17becf"];
+    "h1_SUB-RUN_L" -> "?e_L" [xlabel="5", color="#17becf"];
+    "h1_SUB-RUN_L" -> "?acc_L" [xlabel="6", color="#17becf"];
     "h2_FS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     "h2_FS_L" -> "?FS_L" [xlabel="1", color="#7f7f7f"];
     "h2_FS_L" -> "?a_L" [xlabel="2", color="#7f7f7f"];
@@ -37,7 +37,7 @@ digraph rule_sub_column_first_lhs_rhs {
     "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "?SUB-WALK_R" [label="?SUB-WALK", shape=diamond];
+    "?SUB-RUN_R" [label="?SUB-RUN", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "z_R" [label="z", shape=box];
@@ -46,16 +46,16 @@ digraph rule_sub_column_first_lhs_rhs {
     "?s_R" [label="?s", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
     subgraph cluster_ctx_R_0 {
-      label="?SUB-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="?SUB-RUN ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(?B ?s ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h3_SUB-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?SUB-WALK_R" [xlabel="1", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?p_R" [xlabel="3", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "z_R" [xlabel="4", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "?f_R" [xlabel="5", color="#d62728", style=dashed];
-    "h3_SUB-WALK_R" -> "(?B ?s ?acc)_R" [xlabel="6", color="#d62728", style=dashed];
+    "h3_SUB-RUN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "?SUB-RUN_R" [xlabel="1", color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "?p_R" [xlabel="3", color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "z_R" [xlabel="4", color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "?f_R" [xlabel="5", color="#17becf", style=dashed];
+    "h3_SUB-RUN_R" -> "(?B ?s ?acc)_R" [xlabel="6", color="#17becf", style=dashed];
     "(?B ?s ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?s_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];

@@ -11,53 +11,11 @@ prints.
 
 ## `std.math.binary`
 
-The numeral's check, `std.math.decimal`'s twin, which an operation asks of a numeral it takes, `(bin-check N N)`
-([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): each rule has one premise that holds a number, `(bin-check N REST)`.
-
-#### `bin-numeral-step`
-
-The place holds the bit 1: the walk goes on to the prefix.
-
-<!-- rule std.math.binary bin-numeral-step -->
-```lisp
-(rule bin-numeral-step ()
-  :match  (and (bin-check ?w (b2 ?p ?a)) (bin-nz ?a))
-  :assert (bin-check ?w ?p)
-  :why    "the bit {?a} is one: {?p} is still to check")
-```
-
-![The rule bin-numeral-step of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-step.svg)
-<!-- /rule -->
-
-#### `bin-numeral-step-zero`
-
-The place holds the bit 0: the walk goes on to the prefix.
-
-<!-- rule std.math.binary bin-numeral-step-zero -->
-```lisp
-(rule bin-numeral-step-zero ()
-  :match  (bin-check ?w (b2 ?p 0))
-  :assert (bin-check ?w ?p)
-  :why    "the bit 0 is one: {?p} is still to check")
-```
-
-![The rule bin-numeral-step-zero of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-step-zero.svg)
-<!-- /rule -->
-
-#### `bin-numeral-valid`
-
-The walk reached `z`: every place held a bit, and the numeral is labelled `(bin-valid N)`.
-
-<!-- rule std.math.binary bin-numeral-valid -->
-```lisp
-(rule bin-numeral-valid ()
-  :match  (bin-check ?w z)
-  :assert (bin-valid ?w)
-  :why    "every place of {?w} holds a bit, and it ends in z: it is a binary number")
-```
-
-![The rule bin-numeral-valid of std.math.binary, as the engine draws it](diagrams/15-std.math.binary.bin-numeral-valid.svg)
-<!-- /rule -->
+The numeral's check, `std.math.decimal`'s twin, which an operation asks of a numeral it did not make, `(bin-check N N)`
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). The
+walk is [`std.math.positional`'s](10-positional-rules.md#the-checks-walk), activated with this module's
+`bin-check`, `bin-valid`, `b2` and `bin-nz`; what is this module's is what a binary numeral is: four rules flag the
+place at fault, reading the walk. Each rule has one premise that holds a number, `(bin-check N REST)`.
 
 #### `bin-numeral-bit`
 
@@ -136,8 +94,6 @@ The walk reached `z`: every place held a bit, and the numeral is labelled `(bin-
                (__closed__ binary-rule)
                (bin-valid z)
                (binary-rule arith)
-               (binary-rule bin-numeral-step) (binary-rule bin-numeral-step-zero)
-               (binary-rule bin-numeral-valid)
                (binary-rule bin-numeral-bit) (binary-rule bin-numeral-prefix-bit)
                (binary-rule bin-numeral-prefix-zero)
                (binary-rule bin-numeral-prefix-named)
@@ -161,7 +117,7 @@ one addition walk of the number with itself.
 ```lisp
 (rule bin-mul-one ()
   :match  (bin-mul-step ?k ?u (bin-b 1 ?rest) (b2 ?p ?a))
-  :assert (bin-add-walk (bin-mul-sum ?k ?u ?rest) (b2 (b2 ?p ?a) 0) ?u 0 z)
+  :assert (bin-add-run (bin-mul-sum ?k ?u ?rest) (b2 (b2 ?p ?a) 0) ?u 0 z)
   :why    "the next bit of the multiplier is 1: twice the sum so far, plus {?u}")
 ```
 
@@ -174,7 +130,7 @@ one addition walk of the number with itself.
 ```lisp
 (rule bin-mul-one-first ()
   :match  (bin-mul-step ?k ?u (bin-b 1 ?rest) z)
-  :assert (bin-add-walk (bin-mul-sum ?k ?u ?rest) z ?u 0 z)
+  :assert (bin-add-run (bin-mul-sum ?k ?u ?rest) z ?u 0 z)
   :why    "the next bit of the multiplier is 1 and nothing is summed yet: the sum is {?u}, in normal form")
 ```
 
@@ -217,8 +173,8 @@ to take the divisor from it: it fits, and the quotient's next bit is `1`, or it 
 <!-- rule std.math.binary-arith bin-div-multiples -->
 ```lisp
 (rule bin-div-multiples ()
-  :match  (bin-div-call ?k ?u ?v)
-  :assert (bin-add-walk (bin-div-m1 ?k ?u ?v) z ?v 0 z)
+  :match  (bin-div-run ?k ?u ?v)
+  :assert (bin-add-run (bin-div-m1 ?k ?u ?v) z ?v 0 z)
   :why    "to divide {?u} by {?v}: first the divisor in normal form, zero plus {?v}")
 ```
 
@@ -244,7 +200,7 @@ to take the divisor from it: it fits, and the quotient's next bit is `1`, or it 
 ```lisp
 (rule bin-div-bring ()
   :match  (bin-div-step ?k ?d (bin-b ?a ?rest) (b2 ?p ?c) ?w)
-  :assert (bin-sub-walk (bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a)) (b2 (b2 ?p ?c) ?a) ?d 0 z)
+  :assert (bin-sub-run (bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a)) (b2 (b2 ?p ?c) ?a) ?d 0 z)
   :why    "bring down {?a} beside what is left over, and try to take the divisor from it")
 ```
 
@@ -257,7 +213,7 @@ to take the divisor from it: it fits, and the quotient's next bit is `1`, or it 
 ```lisp
 (rule bin-div-bring-first ()
   :match  (bin-div-step ?k ?d (bin-b 1 ?rest) z ?w)
-  :assert (bin-sub-walk (bin-div-trial ?k ?d ?rest ?w (b2 z 1)) (b2 z 1) ?d 0 z)
+  :assert (bin-sub-run (bin-div-trial ?k ?d ?rest ?w (b2 z 1)) (b2 z 1) ?d 0 z)
   :why    "nothing was left over: bring down 1, and try to take the divisor from it")
 ```
 
@@ -369,13 +325,14 @@ drawing is not shown.
                (__closed__ bin-mul) (__closed__ bin-product-of)
                (__closed__ bin-div) (__closed__ bin-quot-of)
                (__closed__ bin-operand) (__closed__ bin-operand-is)
-               (__closed__ bin-add-walk) (__closed__ bin-strip) (__closed__ bin-turn)
-               (__closed__ bin-done)
-               (__closed__ bin-sub-walk) (__closed__ bin-short)
-               (__closed__ bin-cmp-walk) (__closed__ bin-order-is)
+               (__closed__ bin-add-walk) (__closed__ bin-add-run) (__closed__ bin-strip)
+               (__closed__ bin-turn) (__closed__ bin-done)
+               (__closed__ bin-sub-walk) (__closed__ bin-sub-run) (__closed__ bin-short)
+               (__closed__ bin-cmp-walk) (__closed__ bin-cmp-run) (__closed__ bin-order-is)
                (__closed__ bin-top-first) (__closed__ bin-top-first-is)
-               (__closed__ bin-mul-call) (__closed__ bin-mul-step)
-               (__closed__ bin-div-call) (__closed__ bin-div-done) (__closed__ bin-div-step)
+               (__closed__ bin-mul-call) (__closed__ bin-mul-run) (__closed__ bin-mul-step)
+               (__closed__ bin-div-call) (__closed__ bin-div-run) (__closed__ bin-div-done)
+               (__closed__ bin-div-step)
                (__closed__ bin-sum) (__closed__ bin-add-first) (__closed__ bin-add-second)
                (__closed__ bin-difference) (__closed__ bin-shortfall)
                (__closed__ bin-sub-first) (__closed__ bin-sub-second)
@@ -397,18 +354,18 @@ drawing is not shown.
                (bin-arith-rule bin-div-fits) (bin-arith-rule bin-div-too-big)
                (bin-arith-rule bin-div-too-big-none)
                (bin-arith-rule bin-operand-undeclared)
-               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-add-walk
-                           bin-fa bin-b bin-strip bin-turn bin-nz bin-done bin-valid bin-add
-                           bin-add-first bin-add-second bin-sum bin-sum-of bin-sub-walk bin-fs
-                           bin-short bin-sub bin-sub-first bin-sub-second bin-difference
-                           bin-shortfall bin-diff-of bin-cmp-walk bin-cl bin-order-is bin-cmp
+               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-nz
+                           bin-valid bin-add-walk bin-add-run bin-sub-walk bin-sub-run bin-cmp-walk
+                           bin-cmp-run bin-mul-call bin-mul-run bin-div-call bin-div-run bin-fa
+                           bin-b bin-strip bin-turn bin-done bin-add bin-add-first bin-add-second
+                           bin-sum bin-sum-of bin-fs bin-short bin-sub bin-sub-first bin-sub-second
+                           bin-difference bin-shortfall bin-diff-of bin-cl bin-order-is bin-cmp
                            bin-cmp-first bin-cmp-second bin-order bin-cmp-of bin-top-first
-                           bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step bin-mul-sum
-                           bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
-                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first
-                           bin-div-second bin-div-call bin-quotient bin-quot-of bin-div-m1
-                           bin-bad-operand bin-not-a-number bin-malformed bin-bad-request bin-no-let
-                           bin-undeclared))
+                           bin-top-first-is bin-mul-digits bin-mul-step bin-mul-sum bin-mul
+                           bin-mul-first bin-mul-second bin-product bin-product-of bin-div-digits
+                           bin-div-step bin-div-done bin-div bin-div-first bin-div-second
+                           bin-quotient bin-quot-of bin-div-m1 bin-bad-operand bin-not-a-number
+                           bin-malformed bin-bad-request bin-no-let bin-undeclared))
   :why    "binary arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
 <!-- /rule -->
@@ -439,7 +396,7 @@ so far.
 ```lisp
 (rule to-bin-halve ()
   :match  (to-bin-go ?x (n ?p ?a) ?acc)
-  :assert (div-call (halving ?x ?acc) (n ?p ?a) (n z 2))
+  :assert (div-run (halving ?x ?acc) (n ?p ?a) (n z 2))
   :why    "divide {?p}{?a} by two: the remainder is the next bit")
 ```
 
@@ -535,7 +492,7 @@ addition walk with itself, the next bit as its carry in.
 ```lisp
 (rule to-dec-double ()
   :match  (to-dec-go ?b (bin-b ?bit ?rest) ?acc)
-  :assert (add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)
+  :assert (add-run (doubling ?b ?rest) ?acc ?acc ?bit z)
   :why    "the next bit is {?bit}: the number so far, plus itself, plus the bit as the carry in")
 ```
 
