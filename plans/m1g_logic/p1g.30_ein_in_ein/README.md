@@ -69,7 +69,7 @@ and **reflection** (the step from reading rules to adding them, which is M12's r
    then the hypothesis layer as far as it goes), with where it stops and why.
 5. **S1g.30.5 — Self-reference and its limits.** A quine (a program whose saturation derives its own code); the
    diagonal lemma made concrete over a bound; the liar as a program (a fact that says its own quotation is not
-   derived) and what R is for it, with [F21](../../followups/f21_non_monotone_programs_decided.md); Gödel's
+   derived) and what R is for it, with [F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md); Gödel's
    sentence for P1g.20's encoded proof system; a truth predicate for quoted facts and the place Tarski's theorem
    stops it. **S1g.5.4's discipline:** every claim shown by a program or marked as the textbook's, not Ein's.
 6. **S1g.30.6 — Introspection and reflection, a report.** A program reading its own derivation (the event

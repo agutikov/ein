@@ -5,7 +5,7 @@
 ;;; and the program is monotone.
 ;;;
 ;;; Re-take (2026-11-02):
-;;;   ein solve plans/followups/f21_probes/features12_scoped.ein
+;;;   ein solve plans/m1n_non_monotone_programs/f21_probes/features12_scoped.ein
 
 (relation instance Thing Type)
 (relation in       Pigeon Hole :why "{1} is in {2}")

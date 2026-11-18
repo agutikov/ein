@@ -9,7 +9,7 @@
 ;;; S1e2.1c.5, so the probe had been a load error since 2026-11-03.
 ;;;
 ;;; Re-take (2026-11-02):
-;;;   ein solve plans/followups/f21_probes/b14_without_signoff.ein
+;;;   ein solve plans/m1n_non_monotone_programs/f21_probes/b14_without_signoff.ein
 
 
 (relation pending      T)

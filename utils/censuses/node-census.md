@@ -20,7 +20,7 @@ the fixpoint, and the facts that are **stale** (§ 4).
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census                  # § 2, the flagged cubes, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --control      # § 3, the monotone cubes, 59 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- \
-    plans/followups/f21_probes/*.ein                                                                     # § 2.2, S1e2.4.1's probes
+    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                     # § 2.2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --written      # § 2.3, three programs written into it
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 0.9 s
@@ -408,7 +408,7 @@ under *forbid* the program it writes would be refused.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance                         # the flagged cubes, 0.9 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --written
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance \
-    plans/followups/f21_probes/*.ein
+    plans/m1n_non_monotone_programs/f21_probes/*.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --control --max-n 9    # 149 monotone cubes, 10 s
 ```
 
@@ -633,7 +633,7 @@ of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
 ```sh
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths                    # § 11.2, the flagged cubes, 1.3 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths \
-    plans/followups/f21_probes/*.ein                                                                                # § 11.3, 1.1 s
+    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                                # § 11.3, 1.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --written          # § 11.3
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # § 11.4, 36 s
 ```
@@ -825,7 +825,7 @@ can leave scratch ≠ fork through a FIFO race over a static read*.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative                      # § 12.3, the flagged cubes, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --written
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative \
-    plans/followups/f21_probes/*.ein
+    plans/m1n_non_monotone_programs/f21_probes/*.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --control --max-n 12   # § 12.3, 6.7 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4            # § 12.4, 0.3 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --invariance \

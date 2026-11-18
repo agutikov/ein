@@ -49,7 +49,7 @@ So the two readings agree that the program is outside what is claimed; they diff
 the other answers it. The refusal is also at relation grain: it is issued for `clash-0` under an activator
 whether or not any rule can conclude the negation of that relation's fact.
 
-**Whose.** The reading of *forbid* is [F21](../../followups/f21_non_monotone_programs_decided.md)'s ground. It
+**Whose.** The reading of *forbid* is [F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s ground. It
 bears on S1f.21.2 only as one line of the contradiction rule's account: what the kernel does differs from firing
 the rule in that *forbid* does not read it.
 

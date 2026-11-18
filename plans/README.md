@@ -159,6 +159,11 @@ the tree they left, and one out of that review's close:
   facts …"*): a labelled graph read as a knowledge base, the inverse of `ein render` (P1k.10, moved from M1f's
   P1f.30, its examples done), and arbitrary S-expressions (Lisp, SMT-LIB, link grammar's output) parsed as Ein facts
   and drawn (P1k.20). Each phase runs only on the user's word.
+- **M1n — non-monotone programs** ([m1n_non_monotone_programs/](m1n_non_monotone_programs/README.md))
+  — created 2026-11-19 on the user's instruction (*"create new milestone M1n for non-monotone programs"*, *"pull F21
+  and related followups and ideas"*): F21 moved into it with its probes and the register's five `W8` rows; four
+  phases drafted from F21's decisions (detection complete, what a node's state is, what a flagged program's answer
+  is, other ways to compute). Each phase runs only on the user's word.
 - **M1j — `nlp/` and `smt/` as one proof of concept** (`m1j_nlp_smt_poc/`, deleted
   by M1f's S1f.20.9 and in git) — **done 2026-11-13**, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's
   note; small. The Zebra puzzle's sentences, over a limited vocabulary,
@@ -264,6 +269,10 @@ plans/
 │   ├── README.md                     (the user's instruction verbatim)
 │   ├── p1k.10_graph_to_kb/           a labelled graph as a knowledge base (was M1f's P1f.30); its examples done
 │   └── p1k.20_s_expressions_as_facts/  S-expressions as Ein facts — not started
+├── m1n_non_monotone_programs/      non-monotone programs — created 2026-11-19
+│   ├── README.md                     (the user's instruction verbatim; four phases drafted)
+│   ├── f21_non_monotone_programs_decided.md  F21, moved from followups/: the analysis, D1–D7, what was handed over
+│   └── f21_probes/                   F21's fourteen probes, read by three censuses
 ├── m1h_beyond_word_problems/         beyond word problems — planned 2026-11-12, phases written out 2026-11-13
 │   ├── README.md                     (the user's TODO verbatim; each phase's source section)
 │   ├── open_questions.md             Q-M1h.1–20, none ruled
@@ -346,6 +355,7 @@ Stage files have a stable shape:
 | [M1g](m1g_logic/README.md) | **full** — 11 phases, 40 stage files (1 optional; P1g.6's seven provisional; P1g.7, P1g.8 and P1g.9 a README each, added 2026-11-12; P1g.10 and P1g.11, school algebra and school geometry, eleven stage files, moved in from M1f's P1f.8 on 2026-11-13) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
 | [M1h](m1h_beyond_word_problems/README.md) | **full to each phase's stop** — 7 phases, 37 stage files (13 past a stop, in outline; two of those hold the place of a plan written after a survey), written out 2026-11-13 on the user's instruction | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Every phase stops for the user before anything ships; Q-M1h.1–20 are open, and its place against M1g is not ruled | — (no estimates, the user's ruling of 2026-11-08) P1h.6, statements, negations and questions (F20 promoted, an open fact read as a question), added 2026-11-18 as a README. |
 | [M1k](m1k_notations_as_facts/README.md) | 2 phases: P1k.10 (from M1f's P1f.30, examples done), P1k.20 (README) | **created** 2026-11-18 on the user's instruction, not started as a milestone: other notations (DOT, S-expressions) read as Ein facts | — |
+| [M1n](m1n_non_monotone_programs/README.md) | F21 moved in, with its probes; 4 phases drafted (README) | **created** 2026-11-19 on the user's instruction, not started: non-monotone programs, the decisions F21 deferred |
 | M1j | *(plans removed at M1f's S1f.20.9 — git history)* | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |

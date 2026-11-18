@@ -1,7 +1,7 @@
 # The hole census — 2026-11-02
 
 **S1e2.1b.3's measurement** (the stage), the evidence
-for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D4, which is
+for [F21](../../plans/m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s D4, which is
 [Q-M1e2.7](../../docs/decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)'s
 sub-question (d): *what is reported when R has holes?* It lists every hole of
 every flagged cube the oracle reaches, by kind and by cause, each with the
@@ -11,7 +11,7 @@ site that made it, and R's shape around its holes. It decides nothing.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census                    # § 1–6, the flagged cubes, 0.2 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --written       # § 2, the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- \
-    plans/followups/f21_probes/*.ein                                                                          # § 2, S1e2.4.1's probes
+    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                          # § 2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- \
     --limit 19 examples/lattice/06_friends_tables.ein                                                         # § 7, 29 s at 16 jobs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example site_census                    # § 8, 6.6 s
@@ -336,7 +336,7 @@ it computed:
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
     examples/ein-bugs/naf-upward-closure.ein examples/lattice/04_obligation_trigger_hole.ein \
     examples/lattice/08_absent_witness_hole.ein examples/lattice/synth/trigger_hole.ein \
-    plans/followups/f21_probes/via_hole.ein
+    plans/m1n_non_monotone_programs/f21_probes/via_hole.ein
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
     --limit 19 examples/lattice/06_friends_tables.ein
 ```
@@ -560,7 +560,7 @@ error: examples/lattice/synth/trigger_hole.ein: not monotone, so R can have a ho
 
 ### via_hole, dead through a derived relation
 
-`plans/followups/f21_probes/via_hole.ein`.
+`plans/m1n_non_monotone_programs/f21_probes/via_hole.ein`.
 
 Today, printed by `ein solve`:
 
@@ -596,7 +596,7 @@ Today, printed by `ein solve`:
 (d), drafted, on stderr:
 
 ```
-error: plans/followups/f21_probes/via_hole.ein: not monotone, so R can have a hole — refused: derive-p: absent reads q at absent depth 1
+error: plans/m1n_non_monotone_programs/f21_probes/via_hole.ein: not monotone, so R can have a hole — refused: derive-p: absent reads q at absent depth 1
 ```
 
 ### `06_friends_tables` at `--region-limit 19`, 166 holes

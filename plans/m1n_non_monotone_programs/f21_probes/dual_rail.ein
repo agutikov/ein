@@ -14,8 +14,8 @@
 ;;; relation the search guesses; a derived relation needs its negative derived
 ;;; (completion), which this file does not show.
 ;;;
-;;;   ein solve  plans/followups/f21_probes/dual_rail.ein
-;;;   ein oracle plans/followups/f21_probes/dual_rail.ein
+;;;   ein solve  plans/m1n_non_monotone_programs/f21_probes/dual_rail.ein
+;;;   ein oracle plans/m1n_non_monotone_programs/f21_probes/dual_rail.ein
 ;;;
 ;;; Taken 2026-11-02: 3 states, "monotone (the static check) — R is convex: no
 ;;; hole", `solve` by "route 1, the alive down-set — L1 dead is upward-closed";

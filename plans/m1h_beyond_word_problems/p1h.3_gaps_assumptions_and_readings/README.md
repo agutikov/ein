@@ -15,7 +15,7 @@ which rebuilds the readings to *always owed* and banks `listed_is_all.ein` (done
 banked under `examples/word_problems/`).
 **Reads:** [P1h.2](../p1h.2_slicing/README.md)'s slice, for how an answer reports what it rests on;
 [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md), which rules open against false;
-[F21](../../followups/f21_non_monotone_programs_decided.md), which owns what a non-monotone program means.
+[F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md), which owns what a non-monotone program means.
 None is waited for ([§ The order](#the-order)).
 **Blocks:** [P1h.4](../p1h.4_the_formula_and_the_calculation/README.md) reads its page on readings.
 
@@ -244,7 +244,7 @@ Against other phases and milestones, stated and not resolved:
   subject; S1h.3.4 hands it the two states with one answer.
 - **[M1g](../../m1g_logic/README.md):** P1g.7, unsatisfiable against owing; P1g.8, a theory of types, which
   the user's *"relation arguments are marked with some objects that can be treated as types"* touches.
-- **[F21](../../followups/f21_non_monotone_programs_decided.md):** non-monotone programs.
+- **[F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md):** non-monotone programs.
 - **[F26](../../followups/f26_consistency_and_completeness.md):** its senses of *complete*, which a text
   that leaves things unsaid meets at once.
 - **[Idea 03](../../ideas/03-three-task-classes.md):** a gap is class B.

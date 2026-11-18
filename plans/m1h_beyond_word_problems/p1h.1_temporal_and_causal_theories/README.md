@@ -196,7 +196,7 @@ Against other phases and milestones, stated and not resolved:
   ([M1g's C-1](../../m1g_logic/p1g.6_engine_requirements/README.md#the-candidates-as-seeded-2026-11-11)).
   Every prototype run carries `-T`, and a theory that builds terms is written demand-driven.
 - ***Soft* reads as *retractable*,** and a fact that is retracted is a non-monotone program
-  ([F21](../../followups/f21_non_monotone_programs_decided.md)). Every prototype is put through
+  ([F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)). Every prototype is put through
   `ein solve --monotone`, and a flagged one is shown with its site and not shipped without the user's word.
 - **H is not empty by default.** A program beside a theory that does not close its relations hands them to
   the blind enumerator. Every program of the phase states its lattice or imports a closing rule, as the word

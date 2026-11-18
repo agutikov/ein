@@ -7,7 +7,7 @@
 **Pulls in:** [F1b](../../followups/f1b_logical_formulation.md)'s PFL.1;
 [F20](../../m1h_beyond_word_problems/p1h.6_statements_negations_questions/f20_rule_kinds_as_sentence_moods.md)'s three rule kinds;
 [F7](../../followups/f7_rule_induction.md)'s four-class taxonomy;
-[F21](../../followups/f21_non_monotone_programs_decided.md) for `absent`;
+[F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md) for `absent`;
 [F17](../../followups/f17_formal_verification/ideas.md)'s comparison with rewriting logic.
 
 ## What it asks

@@ -64,7 +64,7 @@ Logic also has more than one thing under each word, and the confusion between th
   sense, and each fact that differs between two states is a sentence the program leaves undecided.
 - **Closed-world completeness** (Reiter, Clark's completion, the databases' sense): what is not derivable is
   false. Ein's `absent` and `__closed__`, and the reason non-monotone programs have their own followup
-  ([F21](f21_non_monotone_programs_decided.md)).
+  ([F21](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)).
 
 **A sketch of the map**, each row a question:
 
@@ -102,7 +102,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   cannot name their rules as values today ([F5](f5_rules_as_data.md),
   [rules as data](../../docs/ein/reasoning/03-rule-evolution/01-rules-as-data.md)), and idea 09's liar's
   sentence is the puzzle form of it. An Ein that could write *this rule does not fire* would have to say what
-  its answer is, and [F21](f21_non_monotone_programs_decided.md)'s cycles through `absent` are the nearest thing
+  its answer is, and [F21](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s cycles through `absent` are the nearest thing
   the engine has: a program with no stable reading.
 - **The second theorem, and what a certificate is.** A system of that strength cannot prove its own
   consistency. Ein's practical form of the question is what `exhausted` and a green gate license one to say,
@@ -147,7 +147,7 @@ problem's text, and where Ein's verdicts are meant to be read as plain statement
 ## Connections
 
 - [F1b](f1b_logical_formulation.md), the fragment; [F1](f1_categorical_formulation.md), the categorical reading.
-- [F21](f21_non_monotone_programs_decided.md), programs with no stable reading; [F17](f17_formal_verification/ideas.md),
+- [F21](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md), programs with no stable reading; [F17](f17_formal_verification/ideas.md),
   `Spec ≠ Intent`, which is *the model is not the world* said of programs.
 - M1d, where *no model* was separated from *not yet a model*.
 - [M2](../m2_nl_to_ir/README.md), whose benchmark holds instances whose right answer is *ambiguous*, and whose

@@ -67,7 +67,7 @@ programs:
 - **Not a change to R.** Whatever is ruled here, the region of every program is the set it is today. The
   acceptance says so and a sweep holds it.
 - **Not F21.** Whether a refutation may rest on an `absent` and what a non-monotone program means are
-  [F21](../../followups/f21_non_monotone_programs_decided.md)'s. This phase's programs are monotone: the
+  [F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s. This phase's programs are monotone: the
   debt is the engine's, not a fact a rule reads
   (round 2, item 30).
 - **Not a SAT solver.** Propagating *dead because every completion is dead* is what a solver learns from;

@@ -1,7 +1,7 @@
 # The taint census — 2026-11-02
 
 **S1e2.1b.4's measurement** (the stage),
-the evidence for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s
+the evidence for [F21](../../plans/m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s
 D6, *may a route learn from a refutation that rests on an `absent`?*, and for
 S1e2.2.5's F1–F3. It
 reads every dead node of every flagged cube the oracle reaches, and what its
@@ -12,7 +12,7 @@ until D6 is decided no route learns on a flagged program.
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census                 # § 1–5 and § 7, 0.2 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- --written    # the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- \
-    plans/followups/f21_probes/*.ein                                                                       # S1e2.4.1's probes
+    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                       # S1e2.4.1's probes
 cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-infer --test region an_untainted_death_is_dead_in_every_superset   # § 6
 ```
 
@@ -254,7 +254,7 @@ fact.
   F1 per dead node (§ 3), the `via` deaths for F2 (§ 2, § 5), and the
   compiled refutation for F3 (§ 7), each with its numbers, and that
   `ACTIVATOR_UNDER_ABSENT` escapes both of F3's placements.
-- [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D6: the census
+- [F21](../../plans/m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)'s D6: the census
   and the test, linked, with the agent's recommendation, (b) with the
   activator walk; and a fifth item under *what forbid does not cover*.
 - `docs/kernel/inference/monotonicity.md` at `50739fdb`: § 3's

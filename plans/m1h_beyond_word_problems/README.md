@@ -320,7 +320,7 @@ item 33) and which the phase starts from and re-takes on programs:
 - **Readings:** *a reading is always chosen*, and its consequence, two states with one answer. What tells a
   right answer by the wrong reading from a right solution, which is P1h.4's subject from the other side.
 - **Non-monotone or not:** round 2's distinction held to programs, with
-  [F21](../followups/f21_non_monotone_programs_decided.md), which owns what a non-monotone program means.
+  [F21](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md), which owns what a non-monotone program means.
 
 ## P1h.4 — The formula and the calculation
 
@@ -593,7 +593,7 @@ that puts it to the user and what waits for it.
   things unsaid meets at once.
 - **[M2](../m2_nl_to_ir/README.md):** each text with its hand-written facts is a pair M2 would have to
   produce, and P1h.10's fifty questions with expected answers are a small benchmark with graded difficulty.
-- **[F21](../followups/f21_non_monotone_programs_decided.md):** non-monotone programs, for P1h.3.
+- **[F21](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md):** non-monotone programs, for P1h.3.
 - **Ideas:** [03, three task classes](../ideas/03-three-task-classes.md);
   [08, the human-style deductive trace](../ideas/08-human-style-deductive-trace.md), which P1h.4's *pupil's
   page* is an instance of; [09, puzzles beyond Zebra](../ideas/09-puzzles-beyond-zebra.md).

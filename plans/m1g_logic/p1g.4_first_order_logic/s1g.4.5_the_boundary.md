@@ -7,7 +7,7 @@
 [F26](../../followups/f26_consistency_and_completeness.md)'s promotions 1 (the glossary), 2 (the
 decidability table) and 4 (the chase reading), and its sketch of a map, row by row;
 [F8](../../followups/f8_FCA_RCA_odis_tptp/ideas.md) for TPTP;
-[F21](../../followups/f21_non_monotone_programs_decided.md) for programs with no stable reading.
+[F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md) for programs with no stable reading.
 
 ## What it asks
 

@@ -538,7 +538,7 @@ the other side: if $g \land \lnot g \Rightarrow \bot$ becomes a rule of Ein, its
 wrapped (§ 10.2), and the two read alike. A check, `(eq …)` or `(neq …)`, cannot be wrapped: it is computed, never
 stored, and is refused under an arrow.
 
-**A finding on the way** (P1f.22's N-15, now [F21's](../../followups/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root)). The same *everybody* written as two rules over `absent`, a rule
+**A finding on the way** (P1f.22's N-15, now [F21's](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root)). The same *everybody* written as two rules over `absent`, a rule
 that derives `(some-sane)` where a person has no `(think ?p (false))` and a rule that concludes `(false)` where
 `(some-sane)` is absent, answers **dead with Bob not confused** (`x2b.ein`), under `lattice monotone (the static
 check)`. It is the open wrong answer `W8/fifo-gap-root` met again: two rules that wait on an `absent` at one

@@ -29,7 +29,7 @@ the R-n it was, with the call its row recorded, *left as is* where it recorded n
 A row marked **the user's call** needs a ruling before anything is built; the others are small and need none.
 None is a known wrong answer: the one P1f.20 found, L-61, is a row of the register, and the one P1f.22's notes
 met, its N-15, is
-[F21's](../followups/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root),
+[F21's](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root),
 the user's call.
 [§ Defaults the documentation tree took](#defaults-the-documentation-tree-took),
 [§ Defaults nested facts took](#defaults-nested-facts-took) and
@@ -70,7 +70,7 @@ which writes every vertex of a stored negation, and says that no premise is of t
 |---|---|
 | L-48, M2's plans mean to write into a page that is gone | [M2's P2.1](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/README.md#the-page-this-phase-writes-into) |
 | L-59, the engine's own words say *type*; and what the lanes on the ruled words listed of *value*, *atom*, *object* and *relation* in what the binary prints | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-20, **the user's call** |
-| L-61, rule order decides root's fixpoint under a *monotone* verdict | the register's `W8/fifo-gap-root`, and [F21 § Handed over by M1f, 2026-11-17](../followups/f21_non_monotone_programs_decided.md#handed-over-by-m1f-2026-11-17-the-fifo-gap-at-root), with **the user's three calls** |
+| L-61, rule order decides root's fixpoint under a *monotone* verdict | the register's `W8/fifo-gap-root`, and [F21 § Handed over by M1f, 2026-11-17](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md#handed-over-by-m1f-2026-11-17-the-fifo-gap-at-root), with **the user's three calls** |
 | L-71, a list of activators written with the hrule's name twice is refused with a message about something else | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-21 |
 | L-87, an import of a module that is not there is refused with a line that ends `(None)` (a stage's record held it; no row did) | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-22 |
 
@@ -85,7 +85,7 @@ filed. N-18 is part of N-50, L-107. N-13's third sentence, Q-M1f.41's *type*, we
 
 | finding | where it is |
 |---|---|
-| N-15, *everybody's thoughts are false* written over `absent` answers dead with one person not confused, under a monotone verdict: `W8/fifo-gap-root` met at a dead root | [F21 § Met again by P1f.22](../followups/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root), **the user's call**: a twin of that row, or a row of its own |
+| N-15, *everybody's thoughts are false* written over `absent` answers dead with one person not confused, under a monotone verdict: `W8/fifo-gap-root` met at a dead root | [F21 § Met again by P1f.22](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root), **the user's call**: a twin of that row, or a row of its own |
 | N-20's message half, the goal refusal's line leaving out a fact's argument among the ways a relation is the program's | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-23; the decision's half is L-94 here |
 | N-22, a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count | [P1f.21's V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count), **the user's call**, with its § 8's `relation` |
 | N-39, the note on a carried standard-library module where the binary cannot read its own | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-24, **the user's call** |

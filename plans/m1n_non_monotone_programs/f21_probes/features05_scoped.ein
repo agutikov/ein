@@ -6,7 +6,7 @@
 ;;; original is partial over 56.
 ;;;
 ;;; Re-take (2026-11-02):
-;;;   ein solve plans/followups/f21_probes/features05_scoped.ein
+;;;   ein solve plans/m1n_non_monotone_programs/f21_probes/features05_scoped.ein
 
 ;; ── Stdlib rules: imported from the `std.elim` module (P1.8 S1.8.A8).
 ;; ── They are generic (parametrised over a relation), so they are imported

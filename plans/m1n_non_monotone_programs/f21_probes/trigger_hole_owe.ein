@@ -5,7 +5,7 @@
 ;;; the original's R: the same 9 states and 7 holes, every hole now owing.
 ;;;
 ;;; Re-take (2026-11-02):
-;;;   ein solve plans/followups/f21_probes/trigger_hole_owe.ein
+;;;   ein solve plans/m1n_non_monotone_programs/f21_probes/trigger_hole_owe.ein
 
 (relation h T)
 (relation slot T)

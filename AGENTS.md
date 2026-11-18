@@ -365,9 +365,9 @@ paragraph, no register count, no measurement (the user's rule).
   its count is `grep -c '^\[\[case\]\]' plans/wrong_answers/register.toml`,
   and the fixed ones are the project's regressions (`corpus/regressions.toml`).
   `python3 utils/wrong_answers.py`, a gate step, holds every row to what the
-  binary answers today. Every open row is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
-  [F22](plans/followups/f22_exact_core_past_the_cap.md),
-  [F24](plans/followups/f24_written_provenance.md)).
+  binary answers today. Every open row is owned by a followup ([F22](plans/followups/f22_exact_core_past_the_cap.md),
+  [F24](plans/followups/f24_written_provenance.md)) or by a stage of a plan: the
+  non-monotone rows by [M1n](plans/m1n_non_monotone_programs/README.md)'s S1n.2.1.
 - **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
   algebra and geometry are its P1g.10 and P1g.11);
   [M1h](plans/m1h_beyond_word_problems/README.md);
@@ -376,7 +376,9 @@ paragraph, no register count, no measurement (the user's rule).
   [M15](plans/m15_mcp_server/README.md);
   [M1k](plans/m1k_notations_as_facts/README.md), other notations read as Ein
   facts: a labelled graph as a knowledge base (P1k.10, from M1f's P1f.30) and
-  S-expressions as facts (P1k.20), each phase **run only on the user's word**.
+  S-expressions as facts (P1k.20); [M1n](plans/m1n_non_monotone_programs/README.md),
+  non-monotone programs (F21, moved into it, with its probes and the register's
+  `W8` rows); each phase **run only on the user's word**.
 
 ## Standing rules
 

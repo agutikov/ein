@@ -81,7 +81,7 @@ built. Ein's own rule language is neither.
 - **The liar in Ein's own negation as failure:** a rule that concludes `p` when `p` is absent. A program
   with a cycle through `absent` and no stable reading. What the engine does with it today (the strata
   diagnostic since S1f.5.15; *forbid*'s refusal; the flagged-lattice description) is shown as it is, and
-  [F21](../../followups/f21_non_monotone_programs_decided.md) owns what it should do.
+  [F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md) owns what it should do.
 - **A Gödel sentence** for the proof checker of S1g.5.3 would say *I have no checked proof*. To write it one
   must (a) code formulas and proofs as numbers of the object theory, or accept terms in place of numbers,
   which the object language here could do since formulas are already terms; (b) define *is a proof of* as

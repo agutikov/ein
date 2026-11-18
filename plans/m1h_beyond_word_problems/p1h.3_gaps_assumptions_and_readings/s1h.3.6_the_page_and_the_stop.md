@@ -42,7 +42,7 @@ the stop is pages only.
    assumptions as a module; and any question the five stages raised, filed under the next free id first.
    What is **not** asked here, and where it is parked: open against false (M1g's P1g.7,
    [Q-M1g.13](../../m1g_logic/open_questions.md#q-m1g13--may-a-finished-search-call-an-unpayable-debt-dead));
-   what a non-monotone program means ([F21](../../followups/f21_non_monotone_programs_decided.md)); a theory
+   what a non-monotone program means ([F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md)); a theory
    of solutions (M2).
 5. **T1h.3.6.5 — the findings shown.** Every row of this phase's `findings.md`, each with its witness.
 6. **T1h.3.6.6 — the stop.** The user reads the page. The rulings are recorded on it in the user's words and

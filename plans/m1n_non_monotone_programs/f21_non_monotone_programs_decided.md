@@ -1,5 +1,9 @@
 # F21 — Non-monotone programs: node functions and path dependence, decided
 
+> **Pulled into [M1n](README.md), non-monotone programs (2026-11-19)**, on the user's instruction of that day
+> (*"create new milestone M1n for non-monotone programs"*, *"pull F21 and related followups and ideas"*), and moved
+> here from `plans/followups/` with its probes. The register's five `W8` rows it owned are owned by M1n's S1n.2.1.
+
 **Filed 2026-11-02**, from M1e2's
 P1e2.1b, on
 the user's direction of that day, verbatim:

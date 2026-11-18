@@ -5,7 +5,7 @@
 ;;; every node, `{(p A)}` stays dead in every superset, and the static check
 ;;; calls the lattice monotone. R = {∅}: the universe is `(p A)` alone, dead.
 ;;;
-;;;   ein oracle plans/followups/f21_probes/closed_q.ein
+;;;   ein oracle plans/m1n_non_monotone_programs/f21_probes/closed_q.ein
 ;;;
 ;;; Taken 2026-11-02: 1 state, "monotone (the static check) — R is convex: no
 ;;; hole", "the cube 0 dead nodes with an alive superset".

@@ -37,7 +37,7 @@ Only what the user ruled at the stop. Of the things that could be ruled, and wha
 
 - `gaps_assumptions_readings.md` gets a closing section: what was ruled, what was built, what was left.
 - Every row of this phase's `findings.md` has a ruling, a fix or an owner.
-- The list for [F21](../../followups/f21_non_monotone_programs_decided.md) and the witness for
+- The list for [F21](../../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md) and the witness for
   [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md) are where those two will find
   them; nothing is edited in either but a pointer line.
 - The phase's README and the milestone's phase table are restated to what was built.

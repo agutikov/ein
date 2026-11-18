@@ -7,7 +7,7 @@
 ;;; root's `(not (p A))`. Whether it should is P1e2.1b's S1e2.1b.2 (fork or
 ;;; scratch); this file only shows the shape the question names.
 ;;;
-;;;   ein oracle plans/followups/f21_probes/not_conclusion.ein
+;;;   ein oracle plans/m1n_non_monotone_programs/f21_probes/not_conclusion.ein
 ;;;
 ;;; Taken 2026-11-02: "universe 1 candidate", R = {∅, {(q A)}}, "not monotone:
 ;;; 1 site (the static check) — no hole in this cube".
