@@ -21,6 +21,12 @@ and:
 
 > p1f.30: isolated node becomes a unary fact
 
+and, during S1f.30.1's examples:
+
+> p1f.30 - each generated ein is loaded, but no need to saturate it, because it has no rules; undirected arcs can be
+> replaced with 2 directed, main requirement are labels, but for experiment we can allow default labels - options
+> are a single one or all different.
+
 ## What it is
 
 Two readings of a drawing, as the main session put them that day:
