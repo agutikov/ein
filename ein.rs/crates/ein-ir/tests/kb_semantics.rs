@@ -107,9 +107,8 @@ fn write(dir: &Path, name: &str, text: &str) -> PathBuf {
 /// complements: a `:source`-kind record *with* a source id is given, any
 /// non-`:source` kind is derived, and both a missing record and a `:source`
 /// record with no id are **neither**. That third bucket is where a puzzle's
-/// background ontology lives, which is why `kb_to_ein_text` emits it first and
-/// why `--print-final-facts` drops it — a two-way reading would classify the
-/// whole ontology as authored input.
+/// background ontology lives: a two-way reading would classify the whole
+/// ontology as authored input.
 ///
 /// The frontier is a *fourth* reading of the same records and deliberately
 /// disagrees with both: a hypothesis is derived and is still a walk terminal.

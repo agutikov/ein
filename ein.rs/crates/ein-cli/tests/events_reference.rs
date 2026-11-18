@@ -28,9 +28,8 @@ use std::path::{Path, PathBuf};
 
 use ein_corpus::repo_root;
 
-/// The crates that narrate. `ein-render` is **excluded on purpose**: its
-/// `dump/serialise.rs` has an `emit` of its own, for the state-dump JSON, and
-/// it is not this protocol.
+/// The crates that narrate. `ein-render` is **excluded on purpose**: it
+/// draws and writes what a run reports, and emits no event of this protocol.
 const NARRATING_CRATES: [&str; 2] = ["ein-infer", "ein-cli"];
 
 fn page() -> String {

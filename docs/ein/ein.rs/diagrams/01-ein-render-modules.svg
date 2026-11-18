@@ -2,11 +2,11 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: ein_render Pages: 1 -->
-<svg width="866pt" height="544pt"
- viewBox="0.00 0.00 866.00 544.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="845pt" height="544pt"
+ viewBox="0.00 0.00 845.00 544.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 540.34)">
 <title>ein_render</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-540.34 861.5,-540.34 861.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-540.34 841.25,-540.34 841.25,4 -4,4"/>
 <!-- forms -->
 <g id="node1" class="node">
 <title>forms</title>
@@ -59,15 +59,15 @@
 <!-- trace -->
 <g id="node11" class="node">
 <title>trace</title>
-<polygon fill="none" stroke="black" points="546.38,-150 447.88,-150 447.88,-114 546.38,-114 546.38,-150"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-135.05" font-family="Helvetica,sans-Serif" font-size="11.00">trace/, slice.rs,</text>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-121.55" font-family="Helvetica,sans-Serif" font-size="11.00">sentence.rs</text>
+<polygon fill="none" stroke="black" points="536.25,-150 437.75,-150 437.75,-114 536.25,-114 536.25,-150"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-135.05" font-family="Helvetica,sans-Serif" font-size="11.00">trace/, slice.rs,</text>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-121.55" font-family="Helvetica,sans-Serif" font-size="11.00">sentence.rs</text>
 </g>
 <!-- firings&#45;&gt;trace -->
 <g id="edge3" class="edge">
 <title>firings&#45;&gt;trace</title>
-<path fill="none" stroke="black" d="M340.97,-132C369.99,-132 406.09,-132 436.17,-132"/>
-<polygon fill="black" stroke="black" points="435.87,-135.5 445.87,-132 435.87,-128.5 435.87,-135.5"/>
+<path fill="none" stroke="black" d="M340.98,-132C367.21,-132 399.03,-132 426.17,-132"/>
+<polygon fill="black" stroke="black" points="425.97,-135.5 435.97,-132 425.97,-128.5 425.97,-135.5"/>
 </g>
 <!-- ro -->
 <g id="node4" class="node">
@@ -80,33 +80,33 @@
 <!-- ro&#45;&gt;trace -->
 <g id="edge4" class="edge">
 <title>ro&#45;&gt;trace</title>
-<path fill="none" stroke="black" d="M351.18,-85.98C378.39,-94.62 410.05,-104.67 436.83,-113.17"/>
-<polygon fill="black" stroke="black" points="435.57,-116.44 446.16,-116.14 437.69,-109.77 435.57,-116.44"/>
+<path fill="none" stroke="black" d="M351.09,-86.97C375.32,-95.06 402.88,-104.26 426.76,-112.23"/>
+<polygon fill="black" stroke="black" points="425.41,-115.47 436,-115.31 427.63,-108.83 425.41,-115.47"/>
 </g>
 <!-- text -->
 <g id="node12" class="node">
 <title>text</title>
-<polygon fill="none" stroke="black" points="536.25,-90 458,-90 458,-54 536.25,-54 536.25,-90"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-68.3" font-family="Helvetica,sans-Serif" font-size="11.00">read_out.rs</text>
+<polygon fill="none" stroke="black" points="526.12,-90 447.88,-90 447.88,-54 526.12,-54 526.12,-90"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-68.3" font-family="Helvetica,sans-Serif" font-size="11.00">read_out.rs</text>
 </g>
 <!-- ro&#45;&gt;text -->
 <g id="edge5" class="edge">
 <title>ro&#45;&gt;text</title>
-<path fill="none" stroke="black" d="M351.18,-67.82C381.64,-68.7 417.69,-69.74 446.22,-70.56"/>
-<polygon fill="black" stroke="black" points="445.94,-74.05 456.04,-70.84 446.14,-67.06 445.94,-74.05"/>
+<path fill="none" stroke="black" d="M351.09,-67.91C378.55,-68.74 410.31,-69.7 436.11,-70.49"/>
+<polygon fill="black" stroke="black" points="435.89,-73.98 446,-70.79 436.11,-66.98 435.89,-73.98"/>
 </g>
 <!-- dans -->
 <g id="node14" class="node">
 <title>dans</title>
-<polygon fill="none" stroke="black" points="591.75,-36 402.5,-36 402.5,0 591.75,0 591.75,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region_answer.rs,</text>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">dump/json.rs, dump/serialise.rs</text>
+<polygon fill="none" stroke="black" points="560.62,-36 413.38,-36 413.38,0 560.62,0 560.62,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region_answer.rs,</text>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">dump/json.rs</text>
 </g>
 <!-- ro&#45;&gt;dans -->
 <g id="edge6" class="edge">
 <title>ro&#45;&gt;dans</title>
-<path fill="none" stroke="black" d="M351.18,-51.47C368.11,-47.56 386.75,-43.25 404.88,-39.07"/>
-<polygon fill="black" stroke="black" points="405.65,-42.48 414.6,-36.82 404.07,-35.66 405.65,-42.48"/>
+<path fill="none" stroke="black" d="M351.09,-50.75C367.23,-46.83 384.86,-42.55 401.89,-38.42"/>
+<polygon fill="black" stroke="black" points="402.61,-41.84 411.5,-36.08 400.96,-35.04 402.61,-41.84"/>
 </g>
 <!-- cube -->
 <g id="node5" class="node">
@@ -119,15 +119,15 @@
 <!-- dreg -->
 <g id="node16" class="node">
 <title>dreg</title>
-<polygon fill="none" stroke="black" points="581.62,-274 412.62,-274 412.62,-238 581.62,-238 581.62,-274"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-259.05" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region.rs,</text>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-245.55" font-family="Helvetica,sans-Serif" font-size="11.00">region_doc.rs, region_dot.rs</text>
+<polygon fill="none" stroke="black" points="571.5,-274 402.5,-274 402.5,-238 571.5,-238 571.5,-274"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-259.05" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region.rs,</text>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-245.55" font-family="Helvetica,sans-Serif" font-size="11.00">region_doc.rs, region_dot.rs</text>
 </g>
 <!-- cube&#45;&gt;dreg -->
 <g id="edge8" class="edge">
 <title>cube&#45;&gt;dreg</title>
-<path fill="none" stroke="black" d="M365.36,-261.03C376.92,-260.59 388.95,-260.12 400.83,-259.67"/>
-<polygon fill="black" stroke="black" points="400.79,-263.17 410.64,-259.29 400.52,-256.18 400.79,-263.17"/>
+<path fill="none" stroke="black" d="M365.27,-260.88C373.72,-260.54 382.39,-260.19 391.02,-259.84"/>
+<polygon fill="black" stroke="black" points="390.95,-263.35 400.8,-259.45 390.67,-256.35 390.95,-263.35"/>
 </g>
 <!-- hs -->
 <g id="node6" class="node">
@@ -140,14 +140,14 @@
 <!-- struc -->
 <g id="node17" class="node">
 <title>struc</title>
-<polygon fill="none" stroke="black" points="537.38,-217 456.88,-217 456.88,-181 537.38,-181 537.38,-217"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-195.3" font-family="Helvetica,sans-Serif" font-size="11.00">structure.rs</text>
+<polygon fill="none" stroke="black" points="527.25,-217 446.75,-217 446.75,-181 527.25,-181 527.25,-217"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-195.3" font-family="Helvetica,sans-Serif" font-size="11.00">structure.rs</text>
 </g>
 <!-- hs&#45;&gt;struc -->
 <g id="edge9" class="edge">
 <title>hs&#45;&gt;struc</title>
-<path fill="none" stroke="black" d="M352.32,-198.31C382.2,-198.45 417.26,-198.62 445.29,-198.76"/>
-<polygon fill="black" stroke="black" points="444.91,-202.25 454.92,-198.8 444.94,-195.25 444.91,-202.25"/>
+<path fill="none" stroke="black" d="M352.18,-198.32C379.09,-198.46 409.96,-198.62 435.27,-198.74"/>
+<polygon fill="black" stroke="black" points="434.94,-202.24 444.96,-198.79 434.98,-195.24 434.94,-202.24"/>
 </g>
 <!-- visits -->
 <g id="node7" class="node">
@@ -160,14 +160,14 @@
 <!-- dlat -->
 <g id="node15" class="node">
 <title>dlat</title>
-<polygon fill="none" stroke="black" points="566.62,-460 427.62,-460 427.62,-424 566.62,-424 566.62,-460"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-438.3" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region_lattice.rs</text>
+<polygon fill="none" stroke="black" points="556.5,-460 417.5,-460 417.5,-424 556.5,-424 556.5,-460"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-438.3" font-family="Helvetica,sans-Serif" font-size="11.00">dump/region_lattice.rs</text>
 </g>
 <!-- visits&#45;&gt;dlat -->
 <g id="edge7" class="edge">
 <title>visits&#45;&gt;dlat</title>
-<path fill="none" stroke="black" d="M366.84,-442.62C383,-442.54 400.03,-442.46 416.24,-442.38"/>
-<polygon fill="black" stroke="black" points="415.81,-445.89 425.79,-442.34 415.77,-438.89 415.81,-445.89"/>
+<path fill="none" stroke="black" d="M366.97,-442.6C379.8,-442.54 393.1,-442.47 405.96,-442.4"/>
+<polygon fill="black" stroke="black" points="405.63,-445.91 415.62,-442.36 405.6,-438.91 405.63,-445.91"/>
 </g>
 <!-- cmp -->
 <g id="node8" class="node">
@@ -193,186 +193,186 @@
 <!-- facts -->
 <g id="node18" class="node">
 <title>facts</title>
-<polygon fill="none" stroke="black" points="541.12,-366 453.12,-366 453.12,-330 541.12,-330 541.12,-366"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-344.3" font-family="Helvetica,sans-Serif" font-size="11.00">fact_graph.rs</text>
+<polygon fill="none" stroke="black" points="531,-366 443,-366 443,-330 531,-330 531,-366"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-344.3" font-family="Helvetica,sans-Serif" font-size="11.00">fact_graph.rs</text>
 </g>
 <!-- prog&#45;&gt;facts -->
 <g id="edge11" class="edge">
 <title>prog&#45;&gt;facts</title>
-<path fill="none" stroke="black" d="M359.79,-332.26C386.57,-335.35 416.55,-338.81 441.56,-341.7"/>
-<polygon fill="black" stroke="black" points="440.83,-345.14 451.16,-342.81 441.63,-338.19 440.83,-345.14"/>
+<path fill="none" stroke="black" d="M359.64,-332.66C383.29,-335.53 409.21,-338.68 431.39,-341.37"/>
+<polygon fill="black" stroke="black" points="430.77,-344.82 441.12,-342.55 431.61,-337.87 430.77,-344.82"/>
 </g>
 <!-- dot -->
 <g id="node19" class="node">
 <title>dot</title>
-<polygon fill="none" stroke="black" points="764.12,-327 631.12,-327 631.12,-291 764.12,-291 764.12,-327"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-312.05" font-family="Helvetica,sans-Serif" font-size="11.00">builder.rs, dot_util.rs,</text>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-298.55" font-family="Helvetica,sans-Serif" font-size="11.00">palette.rs</text>
+<polygon fill="none" stroke="black" points="743.88,-327 610.88,-327 610.88,-291 743.88,-291 743.88,-327"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-312.05" font-family="Helvetica,sans-Serif" font-size="11.00">builder.rs, dot_util.rs,</text>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-298.55" font-family="Helvetica,sans-Serif" font-size="11.00">palette.rs</text>
 </g>
 <!-- prog&#45;&gt;dot -->
 <g id="edge14" class="edge">
 <title>prog&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M359.85,-321.37C432.63,-318.7 545.01,-314.57 619.66,-311.83"/>
-<polygon fill="black" stroke="black" points="619.47,-315.34 629.34,-311.47 619.22,-308.34 619.47,-315.34"/>
+<path fill="none" stroke="black" d="M359.44,-321.25C427.33,-318.62 529.31,-314.68 599.14,-311.99"/>
+<polygon fill="black" stroke="black" points="599.12,-315.49 608.98,-311.6 598.85,-308.49 599.12,-315.49"/>
 </g>
 <!-- kbv&#45;&gt;facts -->
 <g id="edge12" class="edge">
 <title>kbv&#45;&gt;facts</title>
-<path fill="none" stroke="black" d="M359.5,-371C386.41,-366.47 416.57,-361.4 441.69,-357.16"/>
-<polygon fill="black" stroke="black" points="442.08,-360.65 451.36,-355.54 440.92,-353.75 442.08,-360.65"/>
+<path fill="none" stroke="black" d="M359.36,-370.41C383.12,-366.21 409.21,-361.59 431.51,-357.64"/>
+<polygon fill="black" stroke="black" points="432.06,-361.1 441.29,-355.91 430.84,-354.21 432.06,-361.1"/>
 </g>
 <!-- kbv&#45;&gt;dot -->
 <g id="edge15" class="edge">
 <title>kbv&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M359.24,-391.56C421.84,-396.68 514.82,-398.3 591.75,-375 619.3,-366.66 646.7,-349 666.58,-334.05"/>
-<polygon fill="black" stroke="black" points="668.47,-337.02 674.24,-328.13 664.19,-331.48 668.47,-337.02"/>
+<path fill="none" stroke="black" d="M359.46,-391.21C417.77,-395.53 501.72,-396.2 571.5,-375 598.87,-366.69 626.09,-349.21 645.94,-334.33"/>
+<polygon fill="black" stroke="black" points="647.82,-337.3 653.59,-328.42 643.54,-331.76 647.82,-337.3"/>
 </g>
 <!-- trace&#45;&gt;dot -->
 <g id="edge16" class="edge">
 <title>trace&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M546.75,-143.94C562.91,-150.01 579.81,-158.97 591.75,-172 626.5,-209.93 592.43,-244.6 627.75,-282 628.23,-282.51 628.73,-283.01 629.23,-283.5"/>
-<polygon fill="black" stroke="black" points="626.99,-286.2 636.98,-289.74 631.38,-280.74 626.99,-286.2"/>
+<path fill="none" stroke="black" d="M536.63,-147.33C549.39,-153.32 562.17,-161.37 571.5,-172 605.43,-210.67 572.18,-244.6 607.5,-282 607.98,-282.51 608.48,-283.01 608.98,-283.5"/>
+<polygon fill="black" stroke="black" points="606.74,-286.2 616.73,-289.74 611.13,-280.74 606.74,-286.2"/>
 </g>
 <!-- o_md -->
 <g id="node21" class="node">
 <title>o_md</title>
-<polygon fill="none" stroke="black" points="757,-150 632.25,-150 632.25,-114 763,-114 763,-144 757,-150"/>
-<polyline fill="none" stroke="black" points="757,-150 757,-144"/>
-<polyline fill="none" stroke="black" points="763,-144 757,-144"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-128.3" font-family="Helvetica,sans-Serif" font-size="11.00">the trace, markdown</text>
+<polygon fill="none" stroke="black" points="736.75,-150 612,-150 612,-114 742.75,-114 742.75,-144 736.75,-150"/>
+<polyline fill="none" stroke="black" points="736.75,-150 736.75,-144"/>
+<polyline fill="none" stroke="black" points="742.75,-144 736.75,-144"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-128.3" font-family="Helvetica,sans-Serif" font-size="11.00">the trace, markdown</text>
 </g>
 <!-- trace&#45;&gt;o_md -->
 <g id="edge21" class="edge">
 <title>trace&#45;&gt;o_md</title>
-<path fill="none" stroke="black" d="M546.68,-132C568.98,-132 595.94,-132 620.82,-132"/>
-<polygon fill="black" stroke="black" points="620.56,-135.5 630.56,-132 620.56,-128.5 620.56,-135.5"/>
+<path fill="none" stroke="black" d="M536.51,-132C555.92,-132 578.73,-132 600.25,-132"/>
+<polygon fill="black" stroke="black" points="600.18,-135.5 610.18,-132 600.18,-128.5 600.18,-135.5"/>
 </g>
 <!-- o_out -->
 <g id="node22" class="node">
 <title>o_out</title>
-<polygon fill="none" stroke="black" points="751.75,-90 637.5,-90 637.5,-54 757.75,-54 757.75,-84 751.75,-90"/>
-<polyline fill="none" stroke="black" points="751.75,-90 751.75,-84"/>
-<polyline fill="none" stroke="black" points="757.75,-84 751.75,-84"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-68.3" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s text</text>
+<polygon fill="none" stroke="black" points="731.5,-90 617.25,-90 617.25,-54 737.5,-54 737.5,-84 731.5,-90"/>
+<polyline fill="none" stroke="black" points="731.5,-90 731.5,-84"/>
+<polyline fill="none" stroke="black" points="737.5,-84 731.5,-84"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-68.3" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s text</text>
 </g>
 <!-- text&#45;&gt;o_out -->
 <g id="edge22" class="edge">
 <title>text&#45;&gt;o_out</title>
-<path fill="none" stroke="black" d="M536.4,-72C561.77,-72 595.83,-72 626.02,-72"/>
-<polygon fill="black" stroke="black" points="625.86,-75.5 635.86,-72 625.86,-68.5 625.86,-75.5"/>
+<path fill="none" stroke="black" d="M526.58,-72C549.37,-72 578.93,-72 605.76,-72"/>
+<polygon fill="black" stroke="black" points="605.56,-75.5 615.56,-72 605.56,-68.5 605.56,-75.5"/>
 </g>
 <!-- o_diff -->
 <g id="node27" class="node">
 <title>o_diff</title>
-<polygon fill="none" stroke="black" points="556.88,-521 431.38,-521 431.38,-485 562.88,-485 562.88,-515 556.88,-521"/>
-<polyline fill="none" stroke="black" points="556.88,-521 556.88,-515"/>
-<polyline fill="none" stroke="black" points="562.88,-515 556.88,-515"/>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-506.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein test &#45;&#45;diff&#39;s block,</text>
-<text xml:space="preserve" text-anchor="middle" x="497.12" y="-492.55" font-family="Helvetica,sans-Serif" font-size="11.00">the report&#39;s diff</text>
+<polygon fill="none" stroke="black" points="546.75,-521 421.25,-521 421.25,-485 552.75,-485 552.75,-515 546.75,-521"/>
+<polyline fill="none" stroke="black" points="546.75,-521 546.75,-515"/>
+<polyline fill="none" stroke="black" points="552.75,-515 546.75,-515"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-506.05" font-family="Helvetica,sans-Serif" font-size="11.00">ein test &#45;&#45;diff&#39;s block,</text>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-492.55" font-family="Helvetica,sans-Serif" font-size="11.00">the report&#39;s diff</text>
 </g>
 <!-- cdiff&#45;&gt;o_diff -->
 <g id="edge27" class="edge">
 <title>cdiff&#45;&gt;o_diff</title>
-<path fill="none" stroke="black" d="M328.33,-503C354.28,-503 388.91,-503 419.97,-503"/>
-<polygon fill="black" stroke="black" points="419.71,-506.5 429.71,-503 419.71,-499.5 419.71,-506.5"/>
+<path fill="none" stroke="black" d="M328.74,-503C352.08,-503 382.18,-503 409.79,-503"/>
+<polygon fill="black" stroke="black" points="409.52,-506.5 419.52,-503 409.52,-499.5 409.52,-506.5"/>
 </g>
 <!-- o_ans -->
 <g id="node23" class="node">
 <title>o_ans</title>
-<polygon fill="none" stroke="black" points="753.62,-36 635.62,-36 635.62,0 759.62,0 759.62,-30 753.62,-36"/>
-<polyline fill="none" stroke="black" points="753.62,-36 753.62,-30"/>
-<polyline fill="none" stroke="black" points="759.62,-30 753.62,-30"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">&#45;&#45;dump&#45;answer DIR,</text>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">&#45;&#45;json&#45;summary</text>
+<polygon fill="none" stroke="black" points="733.38,-36 615.38,-36 615.38,0 739.38,0 739.38,-30 733.38,-36"/>
+<polyline fill="none" stroke="black" points="733.38,-36 733.38,-30"/>
+<polyline fill="none" stroke="black" points="739.38,-30 733.38,-30"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">&#45;&#45;dump&#45;answer DIR,</text>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">&#45;&#45;json&#45;summary</text>
 </g>
 <!-- dans&#45;&gt;o_ans -->
 <g id="edge23" class="edge">
 <title>dans&#45;&gt;o_ans</title>
-<path fill="none" stroke="black" d="M592.14,-18C602.77,-18 613.48,-18 623.78,-18"/>
-<polygon fill="black" stroke="black" points="623.7,-21.5 633.7,-18 623.7,-14.5 623.7,-21.5"/>
+<path fill="none" stroke="black" d="M561.1,-18C575,-18 589.54,-18 603.43,-18"/>
+<polygon fill="black" stroke="black" points="603.41,-21.5 613.41,-18 603.41,-14.5 603.41,-21.5"/>
 </g>
 <!-- dlat&#45;&gt;dot -->
 <g id="edge17" class="edge">
 <title>dlat&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M560.23,-423.51C571.11,-419.15 582.03,-413.99 591.75,-408 623.6,-388.37 653.99,-357.93 673.78,-335.98"/>
-<polygon fill="black" stroke="black" points="676.33,-338.39 680.33,-328.58 671.09,-333.75 676.33,-338.39"/>
+<path fill="none" stroke="black" d="M541.59,-423.62C551.87,-419.16 562.29,-413.93 571.5,-408 602.96,-387.76 633.42,-357.42 653.34,-335.67"/>
+<polygon fill="black" stroke="black" points="655.84,-338.12 659.93,-328.34 650.64,-333.43 655.84,-338.12"/>
 </g>
 <!-- o_lat -->
 <g id="node24" class="node">
 <title>o_lat</title>
-<polygon fill="none" stroke="black" points="760,-460 629.25,-460 629.25,-424 766,-424 766,-454 760,-460"/>
-<polyline fill="none" stroke="black" points="760,-460 760,-454"/>
-<polyline fill="none" stroke="black" points="766,-454 760,-454"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-438.3" font-family="Helvetica,sans-Serif" font-size="11.00">nodes.json, nodes.md</text>
+<polygon fill="none" stroke="black" points="739.75,-460 609,-460 609,-424 745.75,-424 745.75,-454 739.75,-460"/>
+<polyline fill="none" stroke="black" points="739.75,-460 739.75,-454"/>
+<polyline fill="none" stroke="black" points="745.75,-454 739.75,-454"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-438.3" font-family="Helvetica,sans-Serif" font-size="11.00">nodes.json, nodes.md</text>
 </g>
 <!-- dlat&#45;&gt;o_lat -->
 <g id="edge24" class="edge">
 <title>dlat&#45;&gt;o_lat</title>
-<path fill="none" stroke="black" d="M566.99,-442C583.28,-442 600.77,-442 617.47,-442"/>
-<polygon fill="black" stroke="black" points="617.37,-445.5 627.37,-442 617.37,-438.5 617.37,-445.5"/>
+<path fill="none" stroke="black" d="M556.81,-442C570.03,-442 583.97,-442 597.48,-442"/>
+<polygon fill="black" stroke="black" points="597.18,-445.5 607.18,-442 597.18,-438.5 597.18,-445.5"/>
 </g>
 <!-- dreg&#45;&gt;dot -->
 <g id="edge18" class="edge">
 <title>dreg&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M567.27,-274.46C584.32,-279.01 602.68,-283.92 620.06,-288.56"/>
-<polygon fill="black" stroke="black" points="618.7,-291.82 629.27,-291.02 620.51,-285.05 618.7,-291.82"/>
+<path fill="none" stroke="black" d="M553.62,-274.46C568.49,-278.65 584.4,-283.12 599.68,-287.42"/>
+<polygon fill="black" stroke="black" points="598.64,-290.76 609.21,-290.1 600.54,-284.03 598.64,-290.76"/>
 </g>
 <!-- o_reg -->
 <g id="node25" class="node">
 <title>o_reg</title>
-<polygon fill="none" stroke="black" points="761.5,-273 627.75,-273 627.75,-237 767.5,-237 767.5,-267 761.5,-273"/>
-<polyline fill="none" stroke="black" points="761.5,-273 761.5,-267"/>
-<polyline fill="none" stroke="black" points="767.5,-267 761.5,-267"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-258.05" font-family="Helvetica,sans-Serif" font-size="11.00">an oracle dump:</text>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-244.55" font-family="Helvetica,sans-Serif" font-size="11.00">region.json, region.md</text>
+<polygon fill="none" stroke="black" points="741.25,-273 607.5,-273 607.5,-237 747.25,-237 747.25,-267 741.25,-273"/>
+<polyline fill="none" stroke="black" points="741.25,-273 741.25,-267"/>
+<polyline fill="none" stroke="black" points="747.25,-267 741.25,-267"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-258.05" font-family="Helvetica,sans-Serif" font-size="11.00">an oracle dump:</text>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-244.55" font-family="Helvetica,sans-Serif" font-size="11.00">region.json, region.md</text>
 </g>
 <!-- dreg&#45;&gt;o_reg -->
 <g id="edge25" class="edge">
 <title>dreg&#45;&gt;o_reg</title>
-<path fill="none" stroke="black" d="M582.02,-255.58C593.25,-255.52 604.75,-255.46 615.92,-255.41"/>
-<polygon fill="black" stroke="black" points="615.93,-258.91 625.91,-255.36 615.89,-251.91 615.93,-258.91"/>
+<path fill="none" stroke="black" d="M572,-255.55C579.91,-255.51 587.91,-255.47 595.79,-255.43"/>
+<polygon fill="black" stroke="black" points="595.72,-258.93 605.7,-255.38 595.68,-251.93 595.72,-258.93"/>
 </g>
 <!-- struc&#45;&gt;dot -->
 <g id="edge19" class="edge">
 <title>struc&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M537.74,-205.58C555.54,-210 576.03,-217.24 591.75,-229 614.55,-246.05 605.5,-264.23 627.75,-282 628.88,-282.9 630.04,-283.78 631.23,-284.62"/>
-<polygon fill="black" stroke="black" points="629.22,-287.49 639.56,-289.82 632.93,-281.56 629.22,-287.49"/>
+<path fill="none" stroke="black" d="M527.54,-207.66C542.37,-212.26 558.72,-219.09 571.5,-229 594,-246.45 585.25,-264.23 607.5,-282 608.63,-282.9 609.79,-283.78 610.98,-284.62"/>
+<polygon fill="black" stroke="black" points="608.97,-287.49 619.31,-289.82 612.68,-281.56 608.97,-287.49"/>
 </g>
 <!-- o_hs -->
 <g id="node26" class="node">
 <title>o_hs</title>
-<polygon fill="none" stroke="black" points="736,-217 653.25,-217 653.25,-181 742,-181 742,-211 736,-217"/>
-<polyline fill="none" stroke="black" points="736,-217 736,-211"/>
-<polyline fill="none" stroke="black" points="742,-211 736,-211"/>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-202.05" font-family="Helvetica,sans-Serif" font-size="11.00">h&#45;space.json,</text>
-<text xml:space="preserve" text-anchor="middle" x="697.62" y="-188.55" font-family="Helvetica,sans-Serif" font-size="11.00">its read&#45;out</text>
+<polygon fill="none" stroke="black" points="715.75,-217 633,-217 633,-181 721.75,-181 721.75,-211 715.75,-217"/>
+<polyline fill="none" stroke="black" points="715.75,-217 715.75,-211"/>
+<polyline fill="none" stroke="black" points="721.75,-211 715.75,-211"/>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-202.05" font-family="Helvetica,sans-Serif" font-size="11.00">h&#45;space.json,</text>
+<text xml:space="preserve" text-anchor="middle" x="677.38" y="-188.55" font-family="Helvetica,sans-Serif" font-size="11.00">its read&#45;out</text>
 </g>
 <!-- struc&#45;&gt;o_hs -->
 <g id="edge26" class="edge">
 <title>struc&#45;&gt;o_hs</title>
-<path fill="none" stroke="black" d="M537.82,-199C567.57,-199 608.66,-199 641.59,-199"/>
-<polygon fill="black" stroke="black" points="641.35,-202.5 651.35,-199 641.35,-195.5 641.35,-202.5"/>
+<path fill="none" stroke="black" d="M527.49,-199C554.75,-199 591.38,-199 621.48,-199"/>
+<polygon fill="black" stroke="black" points="621.15,-202.5 631.15,-199 621.15,-195.5 621.15,-202.5"/>
 </g>
 <!-- facts&#45;&gt;dot -->
 <g id="edge13" class="edge">
 <title>facts&#45;&gt;dot</title>
-<path fill="none" stroke="black" d="M541.2,-339.54C564.14,-335.03 593.07,-329.35 619.72,-324.11"/>
-<polygon fill="black" stroke="black" points="620.36,-327.55 629.49,-322.19 619.01,-320.68 620.36,-327.55"/>
+<path fill="none" stroke="black" d="M531.22,-339.05C551.38,-334.88 576,-329.78 599.2,-324.98"/>
+<polygon fill="black" stroke="black" points="599.88,-328.41 608.97,-322.96 598.47,-321.56 599.88,-328.41"/>
 </g>
 <!-- o_dot -->
 <g id="node20" class="node">
 <title>o_dot</title>
-<polygon fill="none" stroke="black" points="851.5,-327 803.5,-327 803.5,-291 857.5,-291 857.5,-321 851.5,-327"/>
-<polyline fill="none" stroke="black" points="851.5,-327 851.5,-321"/>
-<polyline fill="none" stroke="black" points="857.5,-321 851.5,-321"/>
-<text xml:space="preserve" text-anchor="middle" x="830.5" y="-305.3" font-family="Helvetica,sans-Serif" font-size="11.00">DOT</text>
+<polygon fill="none" stroke="black" points="831.25,-327 783.25,-327 783.25,-291 837.25,-291 837.25,-321 831.25,-327"/>
+<polyline fill="none" stroke="black" points="831.25,-327 831.25,-321"/>
+<polyline fill="none" stroke="black" points="837.25,-321 831.25,-321"/>
+<text xml:space="preserve" text-anchor="middle" x="810.25" y="-305.3" font-family="Helvetica,sans-Serif" font-size="11.00">DOT</text>
 </g>
 <!-- dot&#45;&gt;o_dot -->
 <g id="edge20" class="edge">
 <title>dot&#45;&gt;o_dot</title>
-<path fill="none" stroke="black" d="M764.45,-309C773.79,-309 783.13,-309 791.69,-309"/>
-<polygon fill="black" stroke="black" points="791.68,-312.5 801.68,-309 791.68,-305.5 791.68,-312.5"/>
+<path fill="none" stroke="black" d="M744.2,-309C753.54,-309 762.88,-309 771.44,-309"/>
+<polygon fill="black" stroke="black" points="771.43,-312.5 781.43,-309 771.43,-305.5 771.43,-312.5"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: 7dad06d270cdcf7ee2b05fc41117c25de12afcb97cdb6cdb20a7abf7ac035f7c -->
+<!-- source sha256: 3f3ab2e915edc42cb4e1485262757648f36eb60a581b659c26fa8a031336957a -->
