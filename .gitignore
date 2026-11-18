@@ -32,3 +32,7 @@ corpus/out/
 # re-measure wants a diff, not a fresh start.
 ein.rs/bench-out/
 ein.rs/target-*
+
+# A review bundle built for the user under a milestone's plans: programs, dumps and
+# drawings to read a question by, generated and never committed.
+/plans/*/review/
