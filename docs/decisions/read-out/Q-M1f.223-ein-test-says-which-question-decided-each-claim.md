@@ -4,7 +4,7 @@ Under `ein test -v` a query claim's line names the question before what the run 
 and `describe` for the bare run: *holds (--single: all of R, 1 class over 1 states)*, *holds (-n 4: …)*, and where
 the least question left the claim undecided, *holds (describe, after -n 3: …)*. A solve claim's line names the route
 describe took. A claim still not checked says which question was asked first and why it did not decide.
-`--json-report` writes `ein-test-report/5`, every row carrying `route`, the question its outcome was read off, and
+`--json-report` writes on every row `route`, the question its outcome was read off, and
 `fell_back_from`, the one asked first where it fell back, both `null` on a row no run checked. Where a file was asked
 two questions, `--events` and `--json-summary` hold the last, the describing run.
 

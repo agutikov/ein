@@ -65,17 +65,73 @@ def env_of(answer: dict) -> dict[str, str]:
     return dict(e.split("=", 1) for e in answer.get("env", []))
 
 
-def models_file(right: dict) -> str | None:
-    """The register's `right.models` in `--diff-models`' spelling — the same
-    `closes` and the same fact lists, so the CLI compares what the row says."""
+def line_of(run_name: str) -> str:
+    """The part of R a register run asks about: `all`, `minimal` or
+    `maximal`, as a query's `:over` names it."""
+    flags = flags_of(run_name)
+    return "maximal" if "--maximal" in flags else "minimal" if "--minimal" in flags else "all"
+
+
+def arguments(fact: str) -> int:
+    """`(p a (q b))` → 2: the arguments of a fact as the register spells it."""
+    depth, count, word = 0, 0, False
+    for ch in fact.strip():
+        if ch == "(":
+            depth += 1
+            if depth == 2:
+                count += 1
+            word = False
+        elif ch == ")":
+            depth -= 1
+            word = False
+        elif ch.isspace():
+            word = False
+        elif depth == 1 and not word:
+            count += 1
+            word = True
+    return count - 1
+
+
+def right_claims(row: dict) -> tuple[str, int, str] | None:
+    """The witness with the register's right answer written into it as the
+    claims it is: for each relation of `right.closes`, a `(query …)` over the
+    part of R the row's run asks about, whose `:expect` lists that relation's
+    facts in each right model, as classes. A row's models are over `closes`,
+    and naming a relation in a query's goal closes it, so the claims say what
+    the row says relation by relation; where `right` states more than one
+    model, they say each relation's facts across the models and not which go
+    together. Returns the program, how many queries it adds, and a note on
+    what it could not write, or `None` where `right` states no models over
+    `closes`."""
+    right = row["right"]
     if "models" not in right or not right.get("closes"):
         return None
-    lines = ["; written by utils/review_bundle.py from plans/wrong_answers/register.toml",
-             "closes " + " ".join(right["closes"])]
-    for m in right["models"]:
-        lines.append("model")
-        lines += list(m)
-    return "\n".join(lines) + "\n"
+    src = read(REPO / row["witness"])
+    labels = {m.group(1): len(m.group(2).split()) for m in
+              re.finditer(r"\(relation\s+([^\s()]+)((?:\s+[^\s():;\"]+)*)", src)}
+    for model in right["models"]:
+        for f in model:
+            labels.setdefault(re.match(r"\(\s*([^\s()]+)", f).group(1), arguments(f))
+    line = line_of(row["now"]["run"])
+    queries, skipped = [], []
+    for rel in right["closes"]:
+        if rel not in labels:
+            skipped.append(rel)
+            continue
+        goal = f"({rel} {' '.join(f'?a{i + 1}' for i in range(labels[rel]))})".replace(" )", ")")
+        classes = sorted({tuple(sorted(f for f in m if project([f], [rel]))) for m in right["models"]})
+        models = [f"(model {' '.join(c)})".replace(" )", ")") for c in classes]
+        expect = ("(false)" if not models else models[0] if len(models) == 1
+                  else "(or " + "\n              ".join(models) + ")")
+        over = "" if line == "all" else f"\n       :over   {line}"
+        queries.append(f"(query :goal   {goal}{over}\n       :expect {expect})")
+    note = (f"no claim for {', '.join(f'`{r}`' for r in skipped)}: neither declared in the witness nor named by "
+            "a right model, so its arguments are not known" if skipped else "")
+    text = (src.rstrip("\n") + "\n\n;; ── The register's right answer, as claims ──\n"
+            f";; Written by utils/review_bundle.py from plans/wrong_answers/register.toml, row {row['id']}:\n"
+            f";; each relation of `closes`, its facts in each right model, over "
+            f"{'all of R' if line == 'all' else f'the {line} line'}.\n" + "\n".join(queries) + "\n")
+    return text, len(queries), note
 
 
 def owner_page(owner: str) -> Path | None:
@@ -365,7 +421,8 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
         lines += [f"**The answer — {part}**: the oracle's, the register's `right` and the run's. `right` is in the "
                   f"walk's vocabulary, the models over `closes` (= {', '.join(right.get('closes') or []) or '—'}); "
                   "the oracle and the run are in the cube's, the candidates each state holds. § 4 holds the run "
-                  "to `right` over `closes`, through `--diff-models`.", ""]
+                  "to `right` over `closes`, as claims written into a copy of the witness that `ein test --diff "
+                  "full` runs.", ""]
         lines += table(["", f"the oracle's {part} — candidates held", "the register's `right` — models over `closes`",
                         "now — candidates held"], [
             ["k", len(o_states), f"{right.get('verdict', '—')}, k = {right.get('k', '—')}",
@@ -601,14 +658,16 @@ def case_rows(row: dict, page: Path) -> list[list[str]]:
     return rows
 
 
-def write_right(out: Path, row: dict, mfile: str | None) -> None:
+def write_right(out: Path, row: dict, claims: Path | None, note: str = "") -> None:
     """`right/README.md`: the register's `[case.right]`, verbatim."""
     right = row["right"]
     if right:
         write(out / "right" / "README.md", "\n".join(
             [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `plans/wrong_answers/register.toml`", "",
              "```json", json.dumps(right, indent=2, ensure_ascii=False), "```", ""]
-            + ([f"`--diff-models` reads [right.models](right.models), written from it."] if mfile else [])))
+            + ([f"`ein test --diff full` runs [{claims.name}]({claims.name}), the witness with this answer written "
+                "into it as claims, one `(query …)` per relation of `closes`."] if claims else [])
+            + ([f"It writes {note}."] if note else [])))
 
 
 def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
@@ -626,10 +685,15 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         write_right(out, row, None)
         return page, [Col("wrong", None, None, w, recorded=True), Col("now", None, r, now),
                       Col("right", None, None, None, right)]
-    mfile = models_file(right)
-    diff_path = None
-    if mfile:
-        diff_path = write(out / "right" / "right.models", mfile)
+    # The right answer as claims, in a copy of the witness. A copy elsewhere
+    # finds no module beside the witness, so a witness that imports one is
+    # not copied.
+    claims, n_claims, note = right_claims(row) or (None, 0, "")
+    claims_path = None
+    if claims is not None and re.search(r"\(import\s+(?!std\.)", read(REPO / row["witness"])):
+        note = "no copy: the witness imports a module of its own, which a copy elsewhere would not find"
+    elif claims is not None:
+        claims_path = write(out / "right" / Path(row["witness"]).name, claims)
     cols: list[Col] = []
     recorded = [("wrong", row["wrong"])]
     if "control" in row:
@@ -648,7 +712,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         file = shown(einb)
     spec = RunSpec(file, flags_of(now["run"]), {},
                    title=f"{row['id']} — now: `ein {now['run']}`" + (" on the container" if save else ""),
-                   diff_models=diff_path, source=row["witness"] if save else None)
+                   right_claims=claims_path, right_queries=n_claims, source=row["witness"] if save else None)
     r = build_run(spec, out / "runs" / "now", bin)
     nowcol = Col("now", spec, r, now)
     cols.append(nowcol)
@@ -796,7 +860,8 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         lines.append("")
         diff_inv = next((i for i in c.result.invocations if i.name == "diff"), None)
         if diff_inv:
-            lines += [f"**{c.label} against the right answer** (`--diff-models`, verbatim):", "", "```text",
+            lines += [f"**{c.label} against the right answer** (`ein test --diff full` on "
+                      f"[right/{Path(row['witness']).name}](right/{Path(row['witness']).name}), verbatim):", "", "```text",
                       diff_block(diff_inv, c.result.out), "```", ""]
 
     # 5 — the region.
@@ -827,7 +892,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     lines += [f"- [ ] {q}" for q in checklist(row)]
     lines += ["", "Verdict: *confirmed* · *right answer corrected* · *not wrong* · *split* · *merge* · "
               "*deferred* (the user deferred the reading to a followup, which owns the open row)", ""]
-    write_right(out, row, mfile)
+    write_right(out, row, claims_path, note)
     write(page, "\n".join(lines) + "\n")
     return page, cols
 
@@ -912,8 +977,9 @@ def index_row(row: dict, link: str, now: str) -> list[str]:
 def register_pass(rows: list[dict] | None = None) -> list[tuple[str, str]]:
     """Every row of the register through every part of the bundle that reads
     the register alone — the index's row, each case page's title, fixed
-    callout, § 1 table and checklist, and a command's run planned — with no
-    run (M1f S1f.5.19, Q-M1f.53). A row shape the bundle cannot read fails
+    callout, § 1 table and checklist, a command's run planned, and a solve's
+    right answer written as claims (P1f.23) — with no run (M1f S1f.5.19,
+    Q-M1f.53). A row shape the bundle cannot read fails
     here, per commit, and not first in the nightly's whole bundle, which is
     how W41's refusal and W40's command runs went unread from `fc53818f` to
     S1f.5.19. Returns `(row id, error)` for each row that fails."""
@@ -930,6 +996,7 @@ def register_pass(rows: list[dict] | None = None) -> list[tuple[str, str]]:
                 plan_argv(row["now"]["run"], row["witness"], "out")
             else:
                 flags_of(row["now"]["run"])
+                right_claims(row)
         except Exception as e:  # noqa: BLE001 — every row is read, each failure named
             failed.append((row.get("id", "?"), f"{type(e).__name__}: {e}"))
     return failed

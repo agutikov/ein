@@ -570,7 +570,7 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | $R$ described: the lines, the components, the sub-cubes, $N$, $E$, the holes | `described::Described`, built once and read by the read-out, the summary, the answer dump and a region claim's check; `explore::Shape` |
 | $k_s$, $k_c$ | `explore::Counts`, exact in [`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs) and reported up to $2^{63} - 1$ |
 | monotone | `monotone::classify`, the static check; `ein solve FILE --monotone` asks it alone |
-| $\operatorname{model}(C)$, $\pi_g$ | `ein-render/src/models.rs`; `verdict.rs`, a query projected over a state |
+| $\operatorname{model}(C)$, $\pi_g$ | `ein-cli/src/factdump.rs`, `-P`'s facts; `verdict.rs`, a query projected over a state |
 | a claim compared with $R$ | `claim.rs`, `expect.rs` |
 | the verdict of *is $R$ one state?* | `explore::Verdict`: `Solution`, `Ambiguity`, `Contradiction`, `Open` |
 

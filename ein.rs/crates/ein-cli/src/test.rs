@@ -38,7 +38,13 @@
 //! finds this out is the whole of its cost.
 //!
 //! **A failure names what differs.** The solve claim's report says which
-//! state is missing or extra; a query's, which projection class.
+//! state is missing or extra; a query's, which projection class. Under
+//! `--diff` every claim checked is followed by its diff
+//! ([`ein_render::claim_diff`]): the models it lists against the states,
+//! owing nodes or classes the run found, over what its check compares, as
+//! counts and, at `full`, model by model, the near-miss *one fact off* among
+//! them. It explains and decides nothing: every verdict, every line but the
+//! diff's and the exit code are the same with it and without.
 
 //! ## Exit codes, and the one that differs from `solve`
 //!
@@ -61,14 +67,15 @@
 //!
 //! The runner's own output, machine-readable: **one row per `(query …)` of
 //! the whole selection**, whether or not it claims anything, and one per
-//! region claim, `ein-test-report/5`. A query row's `answer` says what its
+//! region claim, `ein-test-report/6`. A query row's `answer` says what its
 //! classes are over and how many. Every row carries `outside`, what the
 //! universe leaves out beside a claim the run checked, as the summary's
 //! `root.hypgen` writes it; `route`, the question
 //! its claim's outcome was read off, as `ein solve`'s flags spell it and
 //! `describe` for the bare run; and `fell_back_from`, the question asked
 //! first where it left the claim undecided; each `null` on a row no run
-//! checked. `--json-summary`
+//! checked; and `diff`, the claim's diff under `--diff`, `null` without it
+//! and on a row no run checked. `--json-summary`
 //! is a *run*'s summary — verdict, counters, config — and is refused over a
 //! selection of more than one run for the reason every artefact flag is: it
 //! names one path. A report is the other shape. It has no run to be more than
@@ -103,6 +110,7 @@ use ein_infer::explore::{self, Mode};
 use ein_infer::read_out::{self, ReadOut, Stands};
 use ein_ir::Ast;
 use ein_ir::expect::Over;
+use ein_render::claim_diff::{self, Level};
 use ein_render::dump::Json;
 use ein_render::dump::json::dumps_indent;
 
@@ -113,7 +121,7 @@ const ONE_PATH_FLAGS: [&str; 2] = ["events", "json-summary"];
 /// `--json-report`'s version. **Not** `ein-summary/2`'s: a report is one row
 /// per query of a selection, a summary is one run, and a consumer that read
 /// the same version marker on both would be right to expect the same fields.
-const REPORT_SCHEMA: &str = "ein-test-report/5";
+const REPORT_SCHEMA: &str = "ein-test-report/6";
 
 /// What one query came to — [`Outcome`] plus the two ways a run can fail to
 /// produce one at all.
@@ -348,6 +356,9 @@ struct Row {
     /// The question asked first, where it left the claim undecided and the
     /// outcome is the describing question's.
     fell_back_from: Option<String>,
+    /// The claim's diff under `--diff` ([`claim_diff::json`]), where a run
+    /// decided the claim.
+    diff: Option<Json>,
 }
 
 impl Row {
@@ -430,6 +441,7 @@ impl Row {
         let word = |w: &Option<String>| w.as_deref().map_or(Json::Null, Json::str);
         pairs.push(("route", word(&self.route)));
         pairs.push(("fell_back_from", word(&self.fell_back_from)));
+        pairs.push(("diff", self.diff.clone().unwrap_or(Json::Null)));
         Json::obj(pairs)
     }
 }
@@ -718,6 +730,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         scope: None,
         route: None,
         fell_back_from: None,
+        diff: None,
     };
     let load_opts = crate::common::load_options(m);
     let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
@@ -947,6 +960,15 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             Err(why) => return failed(tally, why),
         };
     }
+    // `--diff`: the solve claim's models against R, of the run its outcome
+    // is read off.
+    let level = m.get_one::<String>("diff").and_then(|w| Level::parse(w));
+    let solve_diff = match (level, solve_claim.as_ref()) {
+        (Some(level), Some(claim)) => {
+            solve_diff(by_states.as_mut().unwrap_or(&mut first), claim, m, level)
+        }
+        _ => None,
+    };
     let solve_run = by_states.as_ref().unwrap_or(&first);
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
         // A solve claim is asked the describing question alone.
@@ -991,7 +1013,8 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             }
             ein_ir::claim::Claim::Region(_) => "(region …)",
         };
-        if volume == Volume::Verbose || came != Came::Held {
+        let diffed = solve_diff.is_some() && volume != Volume::Quiet;
+        if volume == Volume::Verbose || came != Came::Held || diffed {
             lines.push(match volume {
                 // `--no-search` counts no state of R, and a saved file's
                 // node asks root alone (Q-M1f.403).
@@ -1016,8 +1039,10 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  solve · :expect {shape} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
+            lines.extend(solve_diff.iter().flat_map(|d| d.lines.iter().cloned()));
             lines.extend(beside.lines());
         }
+        rows[i].diff = solve_diff.map(|d| d.json);
     }
     for (qi, report, fell_back) in settled {
         let run = match (&second, fell_back) {
@@ -1046,7 +1071,18 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             row.route = Some(run.flags());
             row.fell_back_from = fell_back.then(|| least.flags());
         }
-        if volume == Volume::Verbose || came != Came::Held {
+        // `--diff`: the claim's models against the classes it was read off,
+        // where they decided it.
+        let diff = match (level, at) {
+            (Some(level), Some(q)) if report.outcome != Outcome::NotChecked => {
+                ein_infer::query_value(&run.ast, &run.kb.program().queries[qi], "expect")
+                    .and_then(|node| ein_infer::read_out::query_compared(&run.ast, node, q))
+                    .map(|c| Diffed::of(&c, level))
+            }
+            _ => None,
+        };
+        let diffed = diff.is_some() && volume != Volume::Quiet;
+        if volume == Volume::Verbose || came != Came::Held || diffed {
             let goal = row.goal.clone().unwrap_or_else(|| "?".to_string());
             let where_ = if n_queries == 1 {
                 format!(":goal {goal}")
@@ -1078,8 +1114,10 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  {where_} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
+            lines.extend(diff.iter().flat_map(|d| d.lines.iter().cloned()));
             lines.extend(beside.lines());
         }
+        row.diff = diff.map(|d| d.json);
     }
 
     if volume != Volume::Quiet || worst != Came::Held {
@@ -1087,6 +1125,55 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         for l in lines {
             println!("{l}");
         }
+    }
+}
+
+/// A claim's diff, as `ein test` prints it under the claim and as the
+/// report writes it on the claim's row.
+struct Diffed {
+    lines: Vec<String>,
+    json: Json,
+}
+
+impl Diffed {
+    fn of(c: &ein_infer::claim::Compared, level: Level) -> Diffed {
+        let d = claim_diff::diff(c);
+        Diffed {
+            lines: claim_diff::lines(c, &d, level, "    "),
+            json: claim_diff::json(c, &d, level),
+        }
+    }
+}
+
+/// The `(solve … :expect …)` claim's diff, of the run `run` its outcome was
+/// read off, where that run decided it: R's states, or its owing frontier,
+/// each saturated again as the check reads it. A claim that lists no model,
+/// `(false)`, has none. Taking it moves nothing the run answered; a run that
+/// cannot take it says why where the diff would be, and writes `null`.
+fn solve_diff(
+    run: &mut Asked,
+    claim: &ein_ir::claim::Claim,
+    m: &ArgMatches,
+    level: Level,
+) -> Option<Diffed> {
+    if run
+        .r
+        .claim
+        .as_ref()
+        .is_none_or(|c| c.outcome == Outcome::NotChecked)
+    {
+        return None;
+    }
+    let mut opts = ein_infer::claim::Options::default();
+    if let Some(&b) = m.get_one::<i64>("region-budget") {
+        opts.budget = b as u64;
+    }
+    match ein_infer::claim::compared(&mut run.kb, &mut run.terms, &run.ast, claim, &run.r, &opts) {
+        Ok(c) => c.map(|c| Diffed::of(&c, level)),
+        Err(e) => Some(Diffed {
+            lines: vec![format!("    diff: not taken — {e}")],
+            json: Json::Null,
+        }),
     }
 }
 

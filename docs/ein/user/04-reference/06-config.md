@@ -181,9 +181,9 @@ default build (the `einb`, `parallel` and `snmalloc` features, which `ein --vers
 
 | parser | options |
 |---|---:|
-| `ein solve` | 35 |
+| `ein solve` | 34 |
+| `ein test` | 11 |
 | `ein oracle` | 10 |
-| `ein test` | 10 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
 | `ein render kb` | 5 |
@@ -291,25 +291,25 @@ a program to answer about.
   mismatch is an engine error, exit 2; never a different answer.
 - **Execution** — `-j`/`--jobs N`, or `--jobs auto`: the same read-out, byte for byte, at every job count
   ([Q-M1a.7](../../../decisions/engine/Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md)). The default is 1.
-- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `--diff-models FILE`,
-  `ein render program`'s and `ein render
+- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `ein test`'s `-v`,
+  `-q` and `--diff`, `ein render program`'s and `ein render
   kb`'s options, which draw a file and solve nothing, and `ein render region`'s three, which draw an `ein oracle
   --dump` directory (`--view`) with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
-  `--answer`) and load nothing. They change stdout and stderr only. Under `-v`, `-g N` logs every N-th node; `-g 0`
+  `--answer`) and load nothing. They change stdout and stderr only, and `--diff` the `diff` of `--json-report`'s
+  rows. Under `-v`, `-g N` logs every N-th node; `-g 0`
   logs none, and a negative is refused, exit 2
-  ([Q-M1e.17](../../../decisions/cli/Q-M1e.17-g-0-logs-no-node-line-and-a-negative-is-refused.md)). A
-  `--diff-models` file is a line `closes R …` and `model` lines, with `;` comments, and its facts are read by the
-  parser and compared as facts and not as text, so a fact may span lines and carry a comment, and `(p  a)` matches `(p a)`; a file
-  whose facts do not parse is a usage error, exit 2, before the run, with every error the parser reaches and its
-  line and column. **Five of them are forms printed after the read-out, and share its 100 lines**
+  ([Q-M1e.17](../../../decisions/cli/Q-M1e.17-g-0-logs-no-node-line-and-a-negative-is-refused.md)). **Four of them
+  are forms printed after the read-out, and share its 100 lines**
   ([Q-M1e2.34](../../../decisions/read-out/Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md)): `-H`, `-p`,
-  `-P`, `-f` and `--diff-models` are drawn from the states stdout showed and print what fits, at least one item, then
+  `-P` and `-f` are drawn from the states stdout showed and print what fits, at least one item, then
   a line naming the rest; that rest is `--dump-answer DIR`'s `forms/<form>.txt`, uncut and drawn from every listed
-  state ([`10-answer-dump.md`](10-answer-dump.md)). **`--diff-models` pairs the models it did not match pairwise, and
-  prices that table before it allocates it**, against a fixed bound of 16 MiB that is not an option: past the bound
-  it pairs nothing near, says so in its block, and lists every unmatched model as missing or spurious.
+  state ([`10-answer-dump.md`](10-answer-dump.md)). **`ein test --diff` compares each claim's models with what its
+  run found, and decides nothing** ([`05-cli.md` § 2.3](05-cli.md#23-ein-test)): every verdict and the exit code are
+  the same with it and without. It pairs the models it did not match pairwise, and **prices that table before it
+  allocates it**, against a fixed bound of 16 MiB that is not an option: past the bound it pairs nothing near, seeks
+  no nearest, says so in its block, and counts every unmatched model missing and every unmatched found one extra.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary` (`ein-summary/2`), `--json-report`
-  (`ein-test-report/5`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
+  (`ein-test-report/6`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
   ([`docs/ein/ein.rs/06-lattice-dump.md`](../../ein.rs/06-lattice-dump.md)), `--dump-answer`
   ([`10-answer-dump.md`](10-answer-dump.md)), and `ein oracle`'s `--dump` with `--states`
   ([`11-region-dump.md`](11-region-dump.md)). The directories are made before the run. **Additive** in the strict sense:

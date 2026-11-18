@@ -1,9 +1,9 @@
 //! **The diff prices its near pairing before it allocates it.**
 //!
-//! A pair table over many models is gigabytes — `pets.ein`'s 11 339 states
-//! against a file of them each one fact off — so `--diff-models`' near
+//! A pair table over many models is gigabytes — a claim of many models
+//! against as many states, each a few facts off — so `ein test --diff`'s near
 //! pairing compares the cost with [`PAIR_TABLE_BOUND`] before it builds
-//! anything, and past it pairs nothing and says why.
+//! anything, and past it pairs nothing, seeks no nearest, and says why.
 //!
 //! *Allocates nothing* is measured here rather than asserted. A counting
 //! allocator keeps the bytes live on the calling thread and their peak, and
@@ -17,7 +17,8 @@
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::cell::Cell;
 
-use ein_render::models::{PAIR_TABLE_BOUND, diff_model_sets};
+use ein_infer::claim::{Against, Compared};
+use ein_render::claim_diff::{Level, PAIR_TABLE_BOUND, diff_sets, lines};
 
 thread_local! {
     static LIVE: Cell<isize> = const { Cell::new(0) };
@@ -82,8 +83,8 @@ fn peak_during<R>(f: impl FnOnce() -> R) -> (R, usize) {
 }
 
 /// `n` models, all distinct: one fact of its own and three every model
-/// shares, so any two are two facts apart, within *near*'s bound of half of
-/// four.
+/// shares, so any two are one fact off, the one replaced, within *near*'s
+/// bound of half of four.
 fn models(tag: &str, n: usize) -> Vec<Vec<String>> {
     (0..n)
         .map(|i| {
@@ -95,51 +96,64 @@ fn models(tag: &str, n: usize) -> Vec<Vec<String>> {
         .collect()
 }
 
-/// **The diff, over the bound.** 1 000 recorded against 1 000 expected, none
-/// equal: 1 000 000 candidates at 24 bytes is 23 MiB. Nothing is paired near,
-/// every model is missing or spurious, the block says why, and the candidate
-/// list was never allocated.
+/// **The diff, over the bound.** 1 000 found against 1 000 listed, none
+/// equal: 1 000 000 candidates at 32 bytes is 31 MiB. Nothing is paired near,
+/// every model is missing and every found item extra, the block says why, and
+/// the candidate list was never allocated.
 #[test]
 fn the_diff_declines_its_near_pairing_past_the_bound() {
     assert_eq!(PAIR_TABLE_BOUND, 16 << 20);
-    const { assert!(24 * 1_000 * 1_000 > PAIR_TABLE_BOUND) };
+    const { assert!(32 * 1_000 * 1_000 > PAIR_TABLE_BOUND) };
     let (got, want) = (models("g", 1_000), models("w", 1_000));
-    let (d, peak) = peak_during(|| diff_model_sets(&got, &want));
+    let (d, peak) = peak_during(|| diff_sets(&got, &want, &[]));
     eprintln!("{} against {}: peak {peak} bytes", got.len(), want.len());
     let why = d.unpaired.as_deref().expect("declines the near pairing");
     assert!(
-        why.contains("1 000 unmatched recorded against 1 000 unmatched expected are 1 000 000 candidate pairs, 23 MiB"),
+        why.contains(
+            "1 000 models and 1 000 found items left unmatched are 1 000 000 candidate pairs, \
+             31 MiB at 32 bytes each"
+        ),
         "{why}"
     );
     assert!(d.near.is_empty() && d.matched.is_empty());
-    assert_eq!((d.missing.len(), d.spurious.len()), (1_000, 1_000));
+    assert_eq!((d.missing.len(), d.extra.len()), (1_000, 1_000));
+    assert!(
+        d.missing.iter().all(|(_, n)| n.is_none()) && d.extra.iter().all(|(_, n)| n.is_none()),
+        "a nearest was sought past the bound"
+    );
     assert!(!d.agrees());
     assert!(
-        peak < 24 * 1_000 * 1_000 / 10,
+        peak < 32 * 1_000 * 1_000 / 10,
         "held {peak} bytes: the candidate list was allocated"
     );
-    let lines =
-        ein_render::models::diff_lines(&d, "what", &|i| i.to_string(), &|j| j.to_string(), "");
+    let c = Compared {
+        against: Against::States,
+        exact: true,
+        over: vec!["q".to_string(), "s".to_string()],
+        presence: Vec::new(),
+        models: want,
+        found: got,
+    };
+    let text = lines(&c, &d, Level::Stats, "");
     assert!(
-        lines
-            .iter()
+        text.iter()
             .any(|l| l.contains("no model was paired as near")),
-        "{lines:#?}"
+        "{text:#?}"
     );
 }
 
-/// **The diff, under the bound, the control.** 500 against 500 is 5.7 MiB of
+/// **The diff, under the bound, the control.** 500 against 500 is 7.6 MiB of
 /// candidates: reserved, paired, and seen by the probe.
 #[test]
 fn under_the_bound_the_diff_pairs_near() {
-    const { assert!(24 * 500 * 500 <= PAIR_TABLE_BOUND) };
+    const { assert!(32 * 500 * 500 <= PAIR_TABLE_BOUND) };
     let (got, want) = (models("g", 500), models("w", 500));
-    let (d, peak) = peak_during(|| diff_model_sets(&got, &want));
+    let (d, peak) = peak_during(|| diff_sets(&got, &want, &[]));
     eprintln!("{} against {}: peak {peak} bytes", got.len(), want.len());
     assert!(d.unpaired.is_none());
     assert_eq!(d.near.len(), 500);
     assert!(
-        peak >= 24 * 500 * 500,
+        peak >= 32 * 500 * 500,
         "held {peak} bytes: the probe does not see the list"
     );
 }

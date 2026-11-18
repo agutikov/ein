@@ -203,7 +203,6 @@ pub fn run(m: &ArgMatches) -> i32 {
         &mut kb,
         &mut terms,
         &ast,
-        None,
     ) {
         eprintln!("{e}");
         return 1;

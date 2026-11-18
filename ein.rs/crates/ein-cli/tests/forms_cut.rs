@@ -1,6 +1,6 @@
 //! **The forms after the read-out share its 100 lines** (Q-M1e2.34).
 //!
-//! The five forms (`-p`, `-P`, `-f`, `--diff-models`, `-H`) are listings,
+//! The four forms (`-p`, `-P`, `-f`, `-H`) are listings,
 //! and share stdout's 100 lines with the read-out's. Each is drawn from the states stdout
 //! showed, prints its items while what the read-out left lasts, at least
 //! one, and then where the rest is; `--dump-answer DIR` writes each uncut,
@@ -188,23 +188,14 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
 
 /// **Where nothing is cut, the form on stdout is its file**: seven states,
 /// every form whole, no `not shown` line, and `forms/<form>.txt` is exactly
-/// what stdout printed after the read-out. `--diff-models` is a form too.
+/// what stdout printed after the read-out.
 #[test]
 fn where_nothing_is_cut_stdout_is_the_file() {
     let dir = scratch("three");
-    let want = dir.join("want.txt");
-    std::fs::write(
-        &want,
-        "closes a-prop b-prop c-prop\nmodel\n(a-prop X)\n(b-prop X)\nmodel\n(a-prop X)\n(c-prop X)\n",
-    )
-    .unwrap();
-    let w = want.to_string_lossy().to_string();
     let bare = ein(&["solve", THREE]);
-    let mut forms: Vec<(&str, Vec<&str>)> = FORMS.iter().map(|(n, f)| (*n, f.to_vec())).collect();
-    forms.push(("diff-models", vec!["--diff-models", &w]));
-    for (name, flags) in forms {
+    for (name, flags) in FORMS {
         let d = dir.join(name);
-        let r = dump(THREE, &flags, &d);
+        let r = dump(THREE, flags, &d);
         assert_eq!(r.code, 0, "{flags:?}: {}", r.err);
         let lines = added(&bare.out, &r.out);
         assert!(

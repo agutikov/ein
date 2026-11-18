@@ -16,7 +16,7 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{Scratch, golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 67 options across 12
+/// The surface, counted from the parsers themselves — 70 options across 12
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
@@ -33,7 +33,7 @@ const EXPECTED: [(&str, usize); 12] = [
     // Among them `--jobs`
     // ([03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)),
     // `--layer-progress`, `--dump-answer`, `--dump-lattice`,
-    // `--diff-models`, `--region-limit`, the four region flags
+    // `--region-limit`, the four region flags
     // `--minimal`, `--maximal`, `--single` and `--region-budget`
     // ([`05-cli.md`](../../../../docs/ein/user/04-reference/05-cli.md)), `--monotone`,
     // `--count`, `--no-require-why`, as every command that loads a program
@@ -41,7 +41,7 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--describe-route`, describe's two routes, one R. The retired options
     // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
     // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
-    ("COMMAND ein solve\n", 35),
+    ("COMMAND ein solve\n", 34),
     // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
     // `--stats`; the four from `solve`, `-T`, `--json-summary`, `-p` and
     // `-P`; and `--no-require-why`.
@@ -65,17 +65,18 @@ const EXPECTED: [(&str, usize); 12] = [
 
 /// `ein test`'s parser
 /// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
-/// **Ten**, and the number is the design: the two that decide whether a run
-/// can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
+/// **Eleven**, and the number is the design: the two that decide whether a
+/// run can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
 /// `solve`'s), the two that decide how much of a passing run to print (`-v`,
-/// `-q`), the three file-only artefact ones (`--events`, `--events-level`,
-/// `--json-summary`), `--json-report`, `--no-require-why`, which every
-/// command that loads a program takes, and `--no-search`, which asks each
-/// file root alone: no question about R. There is deliberately no `-n`, no
+/// `-q`), `--diff`, which explains each claim, its models against what the
+/// run found, and decides nothing, the three file-only artefact ones
+/// (`--events`, `--events-level`, `--json-summary`), `--json-report`,
+/// `--no-require-why`, which every command that loads a program takes, and
+/// `--no-search`, which asks each file root alone: no question about R. There is deliberately no `-n`, no
 /// line flag and no `--exhaustive`: a claim says what it is about, and `ein
 /// test` runs the mode that decides it, so a *missing* option is exactly the
 /// kind of thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 10)];
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 11)];
 
 /// The container's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
@@ -107,10 +108,10 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        71 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        70 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "71 options across the twelve parsers of `ein`, `solve`, `oracle`, \
-         `saturate` and `render`, plus `ein test`'s ten and `ein kb save`'s two"
+        "70 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s eleven and `ein kb save`'s two"
     );
 }
 

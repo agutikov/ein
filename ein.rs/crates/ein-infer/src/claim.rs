@@ -156,6 +156,135 @@ pub fn check_described(
     compare(root, terms, ast, claim, &of_described(d.clone()), opts)
 }
 
+/// **What a claim's check compares**, laid out for a reader that diffs it
+/// (`ein test --diff`): the models the claim lists, and the states, owing
+/// nodes or projection classes the run found, each as the check reads it, the
+/// same facts by the same printer. A listed model and a found item the check
+/// pairs differ in nothing here but a listed negative's absence from the
+/// model, which [`Compared::presence`] says is no difference, so a held
+/// claim's diff is all matches.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Compared {
+    pub against: Against,
+    /// The found items are all of what the claim is about; otherwise a part
+    /// of it, the classes a run found of a part it did not exhaust.
+    pub exact: bool,
+    /// The relations a region claim closes, sorted: every one it names
+    /// positively. Empty on a query's claim, whose models and classes are its
+    /// goal's instances.
+    pub over: Vec<String>,
+    /// The `(not …)` facts the compared models list, sorted. Each is checked
+    /// for presence and closes nothing: a found item holds one only where it
+    /// is listed, and one it holds that a model does not list is no
+    /// difference.
+    pub presence: Vec<String>,
+    /// Each listed model's facts, sorted, in the claim's order.
+    pub models: Vec<Vec<String>>,
+    /// Each found item's facts as the check reads them, sorted, in the order
+    /// the read-out numbers them.
+    pub found: Vec<Vec<String>>,
+}
+
+/// What a claim's models are compared with.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Against {
+    /// A region claim's `(model …)`s, R's states.
+    States,
+    /// A region claim's `(owing …)`, the owing frontier of an empty R.
+    Owing,
+    /// A query's claim, its projection classes over the part its `:over`
+    /// names.
+    Classes(ein_ir::expect::Over),
+}
+
+/// What `claim`'s check compares, against the run `r` read, `root` its
+/// program: R's states, in the listing's order, for a `(region …)` that lists
+/// states or none, and the owing frontier, in the read-out's order, for one
+/// whose `(owing …)` lists it. `None` for `(false)`, which lists no model, and
+/// where `r` did not describe all of R, so checked no region claim.
+///
+/// Each state is saturated again, root's facts included, as the check reads
+/// it.
+pub fn compared(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    claim: &Claim,
+    r: &crate::read_out::ReadOut,
+    opts: &Options,
+) -> Result<Option<Compared>, SolveError> {
+    let Claim::Region(stated) = claim else {
+        return Ok(None);
+    };
+    if !r.described().is_some_and(|d| d.exhausted) {
+        return Ok(None);
+    }
+    let (against, listed, sets): (Against, &[Model], Vec<Vec<u32>>) = if stated.owing.is_empty() {
+        let sets = r.states.iter().map(|s| s.rep.to_vec()).collect();
+        (Against::States, &stated.models, sets)
+    } else {
+        let sets = match &r.listing {
+            crate::read_out::Listing::Owing(o) => o.iter().map(|o| o.node.set.to_vec()).collect(),
+            _ => Vec::new(),
+        };
+        (Against::Owing, &stated.owing, sets)
+    };
+    // The relations the claim closes, as `compare` reads them: every one a
+    // model, a `<to>` or an owing model names positively.
+    let mut closed: BTreeSet<String> = BTreeSet::new();
+    for m in stated
+        .models
+        .iter()
+        .chain(stated.merged.iter().map(|m| &m.to))
+        .chain(stated.owing.iter())
+    {
+        closed.extend(want(ast, m).closes.into_keys());
+    }
+    let wants: Vec<Want> = listed.iter().map(|m| want(ast, m)).collect();
+    let presence: BTreeSet<String> = wants
+        .iter()
+        .flat_map(|w| w.negatives.iter().cloned())
+        .collect();
+    let models = wants
+        .iter()
+        .map(|w| {
+            let mut v: Vec<String> = w
+                .closes
+                .values()
+                .flatten()
+                .chain(&w.negatives)
+                .cloned()
+                .collect();
+            v.sort();
+            v.dedup();
+            v
+        })
+        .collect();
+    let seen = fixpoints(root, terms, ast, &r.answer.candidates, &sets, opts)?;
+    let found = seen
+        .iter()
+        .map(|s| {
+            let mut v: Vec<String> = closed
+                .iter()
+                .filter_map(|rel| s.by_rel.get(rel))
+                .flatten()
+                .chain(presence.iter().filter(|n| s.all.contains(*n)))
+                .cloned()
+                .collect();
+            v.sort();
+            v
+        })
+        .collect();
+    Ok(Some(Compared {
+        against,
+        exact: true,
+        over: closed.into_iter().collect(),
+        presence: presence.into_iter().collect(),
+        models,
+        found,
+    }))
+}
+
 /// R, by route 1 on a monotone program and by the cube otherwise — or why no
 /// route described it, with the static verdict.
 fn lattice(

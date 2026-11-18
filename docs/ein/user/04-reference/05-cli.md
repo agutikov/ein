@@ -120,7 +120,7 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
 ### 2.3 `ein test`
 
 ```text
-ein test PATH…  [-v | -q] [--region-budget FACTS] [-T SECONDS] [--no-search]
+ein test PATH…  [-v | -q] [--diff [stats | full]] [--region-budget FACTS] [-T SECONDS] [--no-search]
                 [--json-report FILE] [--json-summary FILE] [--events FILE]
 ```
 
@@ -156,6 +156,45 @@ Four things about it are decisions rather than implementation:
 - **A query with no `:expect` is never solved.** A file that states no claim costs its load.
 - **1 means a claim is false, so a load error takes 2**, and so does a selection that checked nothing (§ 3). A runner
   that cannot tell a broken file from a false claim is the one failure a test runner must not have.
+
+**`--diff` says how a claim's models differ from what its run found.** After the line of every claim a run decided,
+it compares the models the claim lists with the states, owing nodes or classes the run found, over what the claim's
+own check compares: R's states over the relations a region claim names, a listed `(not …)` for its presence alone; the
+owing frontier against an `(owing …)`; a query's classes over the part its `:over` names. `--diff stats`, or a bare
+`--diff` after the paths, prints what was compared and the counts: how many models **match** a found one, how many are
+**near** one and how many facts off, how many are **missing** and how many found ones are **extra**. `--diff full`
+adds each model in the claim's order, `=` the one it matches, `~` the one it is near, `-` missing and the one nearest
+it, with the facts that differ under each pair, `-` the model's that the found one lacks and `+` the found one's beyond
+the model, and then each extra found one with the model nearest it. A fact replaced is one fact off, as a fact lacking
+or one too many is:
+
+```text
+$ ein test knights.ein --diff full
+FAILED       knights.ein
+  query 1 of 2 · :goal (in C ?c) — holds
+    diff: 1 model against the 1 class of all of R
+      1 match, 0 near, 0 missing, 0 extra
+      = model 1 is class 1
+  query 2 of 2 · :goal (and (in A ?a) (in B ?b) (in C ?c)) — FAILED
+    the claim lists 2 classes, the query has 2: (model (in A 1) (in B 0) (in C 0)) is not listed
+    (model (in A 1) (in B 0) (in C 0)) is a class the claim does not list
+    the claim lists (model (in A 1) (in B 0) (in C 1)), which is no class
+    diff: 2 models against the 2 classes of all of R
+      1 match, 1 near (1 fact off), 0 missing, 0 extra
+      = model 1 is class 1
+      ~ model 2 is class 2, 1 fact off
+          - (in C 1)
+          + (in C 0)
+1 file, 2 expectations: 1 held, 1 FAILED, 0 not checked, 0 errors  (… s)
+```
+
+`knights.ein` is [`examples/binary_logic/knights.ein`](../../../../examples/binary_logic/knights.ein) with its second
+claim's second model written `(in C 1)`. A model is near a found one no model matched while they are at most half the
+larger off, at least one fact; the nearest is the fewest facts off, ties to the found ones' order. It decides nothing:
+every verdict, every other line and the exit code are the same with it and without, a held claim's diff is all
+matches, and a claim the run did not decide, and the region's `(false)`, which lists no model, have none. Under `-v`
+and by default the line of every claim with a diff prints; under `-q`, only those that print anyway. A bare `--diff`
+before a path takes the path for its level and is refused, exit 2, with the two levels.
 
 `--no-search` asks each file root alone, as `ein solve --no-search` does: a claim root decides is held or `FAILED`
 as the full run decides it, and every other is `NOT CHECKED`, which moves no exit code
@@ -306,6 +345,7 @@ itself, is in R there, and every alive extension is a second state. That is what
 | question | command |
 |---|---|
 | Is the answer I stated in the program right? | `ein test F` |
+| Where does a claim that FAILED differ from what the run found? | `ein test F --diff full`: each model against the state or class it matches or is nearest, the facts that differ |
 | Is this partial assignment consistent, and is it a solution? | add its facts to a copy of F, then `ein saturate COPY` for that node's state (dead? owing?), or `ein solve COPY -n 1` for what extends it |
 | Does `ein solve` agree with the reference? | `ein oracle F` beside `ein solve F`: the same R wherever both finish |
 | Is the program monotone, and which shortcuts did a run take? | `ein solve F --monotone` for the static check; a run's `route` row names the licences it used; `ein oracle F` checks the static verdict against the cube |
@@ -393,7 +433,7 @@ stdout, the exit code and every counter are the same with them and without.
 **`ein test --json-report FILE.json` writes one row per claim and per `(query …)` of the whole selection.** It is
 additive in the strict sense the other artefact options are: stdout, stderr, the exit code and what is solved are the
 same with it and without, so a query with no `:expect` is still never solved, and its row says so. The schema is
-`ein-test-report/5`, deliberately not `ein-summary/2`: a summary is one run's answer, a report is one row per claim,
+`ein-test-report/6`, deliberately not `ein-summary/2`: a summary is one run's answer, a report is one row per claim,
 and a reader of the same version marker on both would be right to expect the same fields. Its top level is the
 `schema`, a `tally` (`files`, `silent`, `held`, `failed`, `not_checked`, `errors`) and the `rows`. Every row carries:
 
@@ -408,6 +448,7 @@ and a reader of the same version marker on both would be right to expect the sam
 | `region` | on a solve row, the R it was checked against: the `route`, `monotone`, `k_s`, `k_c` and the time it took |
 | `outside` | what the universe leaves out beside a claim a run checked |
 | `route`, `fell_back_from` | the question the outcome was read off, spelled as `ein solve`'s flags (`--single`, `-n 4`, `--maximal -n 3`) or `describe`; and the question asked first where it left the claim undecided. Both `null` on a row no run checked |
+| `diff` | under `--diff`, the claim's diff: what it was `against` (`states`, `owing` or `classes`), whether the found ones are `exact`, all of what the claim is about, the relations it is compared `over` and the negatives read for their `presence`, how many `models` and `found`, how many `match`, are `near`, `missing` and `extra`, `near_off`, how many near at each number of facts off, `unpaired`, why nothing was paired near where the pairing was past its bound, and under `full` its `items`, each a `kind` (`match`, `near`, `missing`, `extra`), the `model` and the `found` one by their numbers as printed, how many facts `off`, and the facts it `lacks` and `has`, `null` where it has none; `items` is `null` under `stats`, and `diff` is `null` without the option, on a claim no run decided and on the region's `(false)` |
 
 It takes **any selection**, where `--events` and `--json-summary` are refused over more than one file: those name one
 run, and a report has no run to be more than one of. **A file that did not load carries no claim**: its row is

@@ -149,7 +149,7 @@ line: one reads the compiled plans, the other a dead node's derivations.
 | crate | modules |
 |---|---|
 | `ein-einb` | `header.rs` (the header and the section table), `sections.rs`, `tables.rs` (ids across the boundary), `meta.rs` (what a file was made from), `solutions.rs`, `wire.rs`, `cast.rs` (the audited zero-copy casts) |
-| `ein-render` | `read_out.rs` (the read-out as text), `trace/` (the trace: its AST, its steps, relevance, the region trace), `dump/` (the answer, the lattice, the oracle's cube, `--json-summary`), `rules.rs`, `constraints.rs`, `ir_dot.rs`, `kb_dot.rs`, `derivation.rs`, `slice.rs`, `region_dot.rs`, `region_doc.rs` (the views), `structure.rs` (the hypothesis space written out), `models.rs` (`--diff-models`), `sentence.rs` (a fact in English), `shape.rs` |
+| `ein-render` | `read_out.rs` (the read-out as text), `trace/` (the trace: its AST, its steps, relevance, the region trace), `dump/` (the answer, the lattice, the oracle's cube, `--json-summary`), `rules.rs`, `constraints.rs`, `ir_dot.rs`, `kb_dot.rs`, `derivation.rs`, `slice.rs`, `region_dot.rs`, `region_doc.rs` (the views), `structure.rs` (the hypothesis space written out), `claim_diff.rs` (a claim's models against what its run found, `ein test --diff`), `sentence.rs` (a fact in English), `shape.rs` |
 | `ein-cli` | `cmdline.rs` (the argument surface), `common.rs`, one module per command (`solve.rs` and `modes.rs`, `oracle.rs`, `test.rs`, `render.rs`, `show.rs`, `saturate.rs`, `kb.rs`), `summary.rs`, `factdump.rs`, `printers.rs`, `version.rs`, `help_shape.rs` |
 
 `ein-render` by what each module is handed and what it writes. A view is DOT text and the read-out is text, both

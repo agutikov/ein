@@ -628,7 +628,6 @@ fn solve_command() -> Command {
                     "region-budget",
                     "trace",
                     "dump-lattice",
-                    "diff-models",
                     "print-final-state",
                     "print-final-positive",
                     "print-final-hfacts",
@@ -777,20 +776,6 @@ fn solve_command() -> Command {
             "print the wall clock under the read-out",
         ))
         // ── the listed states' projection ──
-        .arg(
-            Arg::new("diff-models")
-                .long("diff-models")
-                .value_name("FILE")
-                .help(
-                    "after the read-out, compare the states it showed with the \
-                     models FILE lists ('closes R …', then 'model' and its facts, read as a \
-                     program's, so a fact may span lines and carry a comment): \
-                     what matches, what is missing, what is spurious and \
-                     what is one fact off, in what the read-out left of stdout's \
-                     100 lines. --dump-answer DIR writes it uncut, over every \
-                     listed state, as DIR/forms/diff-models.txt",
-                ),
-        )
         .arg(flag(
             'p',
             "print-final-state",
@@ -825,7 +810,7 @@ fn solve_command() -> Command {
                      uncut), answer.json (= --json-summary), index.json, one \
                      saved file per state (its program and the choices made, \
                      which load to it), the owing frontier, N, and each \
-                     form asked for (-H, -p, -P, -f, --diff-models) \
+                     form asked for (-H, -p, -P, -f) \
                      uncut under forms/ (docs/ein/user/04-reference/10-answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \
                      the exit code are unchanged.",
@@ -925,7 +910,8 @@ fn solve_command() -> Command {
 /// The two file-only flags are here because a failing expectation is exactly
 /// when someone wants the stream. Each still names one path, so each is
 /// refused on a selection that
-/// is more than one run.
+/// is more than one run. `--diff` explains a claim, its models against what
+/// the run found, and decides nothing.
 fn test_command() -> Command {
     let cmd = Command::new("test")
         .about("run the expectations the programs state about themselves")
@@ -1000,6 +986,27 @@ fn test_command() -> Command {
             "quiet",
             "the summary line, and whatever was not ok",
         ))
+        // A claim's models against what its run found: an explanation after
+        // the claim's line, which moves no verdict and no exit code.
+        .arg(
+            Arg::new("diff")
+                .long("diff")
+                .value_name("LEVEL")
+                .num_args(0..=1)
+                .default_missing_value("stats")
+                .value_parser(["stats", "full"])
+                .help(
+                    "after the line of each claim checked, compare the models it \
+                     lists with the states, classes or owing nodes the run found, \
+                     over what the claim's check compares: `stats` (a bare --diff) \
+                     how many match, are near and how many facts off, are missing \
+                     and are extra; `full` also each model against the one it \
+                     matches or is nearest, its facts the found one lacks (-) and \
+                     the found one's beyond it (+). A held claim's diff is all \
+                     matches. It moves no verdict and no exit code; under -q, only \
+                     the claims printed",
+                ),
+        )
         .group(
             ArgGroup::new("volume")
                 .args(["verbose", "quiet"])
@@ -1025,8 +1032,9 @@ fn test_command() -> Command {
             .help(
                 "write one row per claim and per (query …) of the whole \
                  selection — the claim's shape, the relations its :goal \
-                 closes, the outcome, the question it was read off, and what \
-                 the run found — to FILE as ein-test-report/5. Additive. \
+                 closes, the outcome, the question it was read off, what \
+                 the run found, and under --diff the claim's diff — to FILE \
+                 as ein-test-report/6. Additive. \
                  Unlike --json-summary it is the report of the selection \
                  rather than of one run, so it takes any selection.",
             ),

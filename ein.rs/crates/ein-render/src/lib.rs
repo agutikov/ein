@@ -12,13 +12,13 @@
 #![forbid(unsafe_code)]
 
 pub mod builder;
+pub mod claim_diff;
 pub mod constraints;
 pub mod derivation;
 pub mod dot_util;
 pub mod dump;
 pub mod ir_dot;
 pub mod kb_dot;
-pub mod models;
 pub mod palette;
 pub mod read_out;
 pub mod region_doc;

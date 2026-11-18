@@ -205,7 +205,7 @@ def check_review_driver() -> list[str]:
         if f'"{words[1]}"' not in driver:
             missing.append(words[1])
     bad = []
-    if len(flags) < 6:
+    if len(flags) < 5:
         bad.append(f"found only {flags} in {HELP}: the reader stopped looking")
     if missing:
         bad.append(f"`ein solve` writes artefacts the review bundle never asks for: {missing}. "
