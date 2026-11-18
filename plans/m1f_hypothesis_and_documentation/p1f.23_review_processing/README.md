@@ -74,6 +74,18 @@ earlier step under 45 s. That step's time is `examples/arith/long_numbers.ein`'s
 64 s each under `dot`, one after another in one worker: 265.5 s on four P-core threads as on sixteen
 (`bench_env.sh --cores PT:4`), and per commit too (259.6 s).
 
+**The final checks after S1f.23.5's merge, 2026-11-18**, on AC: `./run_tests.sh` on `14fa2636` (the merge `79dd213b`
+and its filing) **exit 0, 19 m 22 s**, 162 test binaries, 1 350 tests, none failed; `utils/ci_container.sh
+--tests-only` on `23539de5` (the main session's plans-only commits on top, with `.gitignore`) **exit 0, 20 m 37 s**,
+the same 1 350 tests; the other static steps and the bench smoke in the same image on the same clone **exit 0, 50 s**
+but the link check, whose 2 551 findings are every one a *file missing* in the review bundle's pages, 2 184 in
+[`../review/`](../review/README.md) and 367 in [P1f.21's](../p1f.21_verdicts_as_rules/review/README.md), each target
+one of 1 942 ignored outputs the root tree holds and none tracked, and none elsewhere; every decision id resolves.
+`./run_tests.sh --nightly` on `23539de5` **exit 0, 37 m 56 s**, every step under four minutes on this host's every
+thread: the longest `answer_round_trip`'s shard 2/4 (225.6 s), then its shards 3/4 (159.6 s) and 4/4 (149.5 s);
+`dot_wellformed, every program` 120.6 s (264.9 s before R-32's fix); each `stdlib_mutants.py` shard about 50 s.
+S1f.23.6's stage ran `dot` in its worktree alongside the nightly.
+
 ## Rules of the phase
 
 The standing ones ([`AGENTS.md`](../../../AGENTS.md)): a stage per subagent; a claim about the engine is a run; what a
