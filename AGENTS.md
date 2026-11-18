@@ -724,8 +724,8 @@ alone is not the gate**: it checks none of the ten, and none of what the
 process holds itself to. **The tests read only the project**: what ties a
 process file to the project is a `utils/` check and a gate step, never a crate
 test — `check_gate_steps.py` (the step lists), `check_tool_mirrors.py` (the
-editor grammar, `nl_census.py` and the review driver against the engine's
-lists), `check_generated.py` (every generator's `--check`) and
+editor grammar and the review driver against the engine's lists),
+`check_generated.py` (every generator's `--check`) and
 `check_region_routes.py` (the oracle against `region.py` and
 `region_synth.py`). A local gate that is a subset of the remote one is a local
 gate that lies — keep the two lists the same; `utils/check_gate_steps.py`

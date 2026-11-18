@@ -3,10 +3,9 @@
 
     python3 utils/check_tool_mirrors.py
 
-Three tools under `utils/` hold a copy of something the engine defines, and a
+Two tools under `utils/` hold a copy of something the engine defines, and a
 copy drifts with no symptom anyone would notice: a new predicate that does
-not colour in an editor, a census that files a kernel name as a puzzle's, a
-review bundle that never shows a new artefact. The engine's crates read
+not colour in an editor, a review bundle that never shows a new artefact. The engine's crates read
 nothing of the process, so the process holds its own copies to the project,
 here, as a static step of the gate. It reads files only: no binary.
 
@@ -20,10 +19,7 @@ here, as a static step of the gate. It reads files only: no binary.
      predicates `ein_infer::predicates::names()`, each read out of the source;
    - the four block heads the language does not have (`ontology`, `facts`,
      `reasoning`, `rules`) are highlighted by none of the three scopes.
-2. **The natural-language census**, `nl_census.py`: its `KERNEL` is
-   `ein_core::RESERVED`, name for name, and it assigns the four registers
-   `docs/ein/user/03-syntax-and-semantics/14-natural-language.md` § 4 names.
-3. **The review bundle's driver**, `review/run.py`: every `ein solve` option
+2. **The review bundle's driver**, `review/run.py`: every `ein solve` option
    whose value is a path (`metavar=FILE…` or `DIR`), read off the help
    surface's golden (`ein-cli/tests/golden/help_shape.txt`, which a crate
    test holds to the binary), is one the driver asks for, so the bundle is
@@ -42,8 +38,6 @@ GRAMMAR = "utils/vscode-ein/ein.tmLanguage.json"
 TERMS = "ein.rs/crates/ein-core/src/terms.rs"
 PREDICATES = "ein.rs/crates/ein-infer/src/predicates.rs"
 RESERVED_PAGE = "docs/ein/user/04-reference/03-reserved-names.md"
-NL_PAGE = "docs/ein/user/03-syntax-and-semantics/14-natural-language.md"
-NL_CENSUS = "utils/nl_census.py"
 HELP = "ein.rs/crates/ein-cli/tests/golden/help_shape.txt"
 DRIVER = "utils/review/run.py"
 REMOVED_WRAPPERS = ["ontology", "facts", "reasoning", "rules"]
@@ -170,24 +164,6 @@ def check_grammar(structural: list[str], reserved: list[str], predicates: list[s
     return bad
 
 
-def check_nl_census(reserved: list[str]) -> list[str]:
-    bad = []
-    census = read(NL_CENSUS)
-    m = re.search(r"^KERNEL = \{(.*?)\}", census, re.M | re.S)
-    if not m:
-        return [f"{NL_CENSUS}: no `KERNEL = {{…}}`"]
-    kernel = sorted(re.findall(r'"([^"]*)"', m.group(1)))
-    if kernel != sorted(reserved):
-        bad.append(f"{NL_CENSUS}'s KERNEL {kernel} is not ein_core::RESERVED {sorted(reserved)}")
-    page = read(NL_PAGE)
-    for reg in ["puzzle", "stdlib", "kernel", "undeclared"]:
-        if f"| **{reg}** |" not in page:
-            bad.append(f"{NL_PAGE}: no register row {reg}")
-        if f'return "{reg}"' not in census:
-            bad.append(f"{NL_CENSUS} assigns no register {reg}")
-    return bad
-
-
 def check_review_driver() -> list[str]:
     golden = read(HELP)
     if "COMMAND ein solve\n" not in golden:
@@ -220,15 +196,14 @@ def main() -> int:
         print(f"check_tool_mirrors: {e}", file=sys.stderr)
         return 1
     bad = (check_grammar(structural, reserved, predicates)
-           + check_nl_census(reserved)
            + check_review_driver())
     for b in bad:
         print(f"check_tool_mirrors: {b}", file=sys.stderr)
     if bad:
         print(f"check_tool_mirrors: {len(bad)} finding(s)", file=sys.stderr)
         return 1
-    print("check_tool_mirrors: the editor grammar, the natural-language census and the review "
-          "driver copy what the engine defines")
+    print("check_tool_mirrors: the editor grammar and the review driver copy what the engine "
+          "defines")
     return 0
 
 
