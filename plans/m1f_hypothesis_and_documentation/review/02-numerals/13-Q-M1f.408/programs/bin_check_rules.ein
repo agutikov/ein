@@ -1,0 +1,14 @@
+;;; Q-M1f.408, written for this review: binary's twin, one sum whose first
+;;; operand holds `x` where a bit goes, one place in, and one well formed,
+;;; 10 + 1. The ask is `std.math.positional.operand-check` again, with
+;;; binary's names; the walk, the label and the flag are `std.math.binary`'s.
+;;; The claim is the answer under both engines.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 z 1) 0) (b2 z 1))
+(bin-add (b2 (b2 (b2 z 1) x) 1) (b2 z 1))
+
+(solve :expect (false))

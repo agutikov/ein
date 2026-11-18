@@ -1,0 +1,6 @@
+;;; WRITTEN FOR THIS REVIEW (item 21, Q-M1f.418): a program whose module, deep_module.ein, is at the parser's limit.
+;;; Its saved file carries the module in a (module deep_module …) wrapper, one level above the module's text.
+
+(import deep_module :symbols (p))
+
+(solve :no-search)

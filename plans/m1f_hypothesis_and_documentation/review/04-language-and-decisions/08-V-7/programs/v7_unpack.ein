@@ -1,0 +1,15 @@
+;;; V-7's witness, as the ledger writes it (findings.md § V-7, "Shown by"),
+;;; with a :why that reads. Bob thinks a fact of `=`; the rule `unpack`, activated
+;;; with `=` for its parameter ?R, concludes the thought as a fact of `=`.
+;;; `=` is declared nowhere and no fact of the file is headed by it: it is
+;;; written only under an arrow of a fact (inside `think`) and named by the
+;;; activator `(unpack =)`.
+
+(think Bob (= 7 (+ 3 4)))
+
+(rule unpack (?R)
+  :match  (think ?p (?R ?a ?b))
+  :assert (?R ?a ?b)
+  :why    "what {?p} thinks of {?R} holds")
+
+(unpack =)

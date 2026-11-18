@@ -1,0 +1,16 @@
+;;; Written for this review: v7_blind.ein with `happy` declared, and nothing else:
+;;; the program as option (b) would make its author write it (or as option (c)'s
+;;; page would tell them to).
+
+(relation person P   :why "{?1} is a person")
+(relation likes  P X :why "{?1} likes {?2}")
+(relation happy  P   :why "{?1} is happy")
+
+(person Ann)
+
+(rule tag (?R)
+  :match  (person ?x)
+  :assert (?R ?x)
+  :why    "every person is {?R}")
+
+(tag happy)

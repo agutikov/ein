@@ -1,0 +1,3 @@
+;;; Written for this review: a nested form whose head is a form, `(r ((f b) a))`.
+
+(r ((f b) a))

@@ -1,0 +1,19 @@
+;;; eq and neq on nested facts: open_facts.md § 8.4's eqn.ein, as written there.
+;;; Depth, a negation, a derived fact against a written one, a bound free side,
+;;; a free neq and a conclusion.
+(relation p X :why "p {?1}")
+(relation q X :why "q {?1}")
+(relation r X :why "r {?1}")
+(relation f X :why "f {?1}")
+(relation g X :why "g {?1}")
+(relation hit C X Y :why "case {?1}: {?2} {?3}")
+(p (f a)) (p (f b)) (p (g (f a))) (p a) (p (not (f a)))
+(q (f a)) (q (g (f a))) (q (not (f a)))
+(rule mk () :match (p a) :assert (r (f a)) :why "a rule builds (f a)")
+(rule c1 () :match (and (p ?x) (q ?y) (eq ?x ?y)) :assert (hit c1-eq ?x ?y) :why "eq")
+(rule c2 () :match (and (p ?x) (q ?y) (neq ?x ?y)) :assert (hit c2-neq ?x ?y) :why "neq")
+(rule c3 () :match (and (r ?x) (q ?y) (eq ?x ?y)) :assert (hit c3-derived-eq ?x ?y) :why "derived")
+(rule c4 () :match (and (p a) (eq ?z (g (f a)))) :assert (hit c4-bind ?z ?z) :why "bind")
+(rule c6 () :match (and (p (g ?x)) (neq ?v ?x)) :assert (hit c6-free-neq ?x ?v) :why "free neq")
+(rule c7 () :match (and (p ?x) (q ?y) (eq ?x ?y)) :assert (eq ?x ?y) :why "check holds")
+(solve :no-search)

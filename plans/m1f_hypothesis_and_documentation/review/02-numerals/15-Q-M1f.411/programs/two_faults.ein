@@ -1,0 +1,14 @@
+;;; Q-M1f.411, written for this review: a numeral with two faults, the
+;;; ledger's `(n (n (n z x) y) 5)`: `y` where the tens digit goes and `x`
+;;; where the hundreds digit goes. It is an operand of a request, so an
+;;; operation takes it. The engine before Q-M1f.404 flagged every place at
+;;; fault where it was written; today the walk from the units stops at the
+;;; first fault it meets. Dead either way; the claim is the answer under both.
+
+(import std.math.decimal-arith :symbols (decimal-arith add))
+(import std.math.decimal :symbols (n not-decimal))
+(import std.math.arith :symbols (z))
+
+(add (n (n (n z x) y) 5) (n z 1))
+
+(solve :expect (false))

@@ -1,0 +1,15 @@
+;;; (false) under an arrow: open_facts.md § 10.4's x1.ein, as written there, the
+;;; relations declared and root judged alone (:no-search: declared, they would be
+;;; guessed by the blind rung). A context's (false) is a proposition: the state stays alive.
+(relation think P F :why "{?1} thinks {?2}")
+(relation =     A B :why "{?1} is {?2}")
+(relation +     A B :why "{?1} plus {?2}")
+(think Ann (= 5 (+ 2 2)))
+(think Ann (not (= 5 (+ 2 2))))
+(think Bob (= 5 (+ 2 2)))
+(rule ctx-contradiction ()
+  :match  (and (think ?p (= ?a ?b)) (think ?p (not (= ?a ?b))))
+  :assert (think ?p (false))
+  :why    "{?p} thinks {?a} is {?b} and thinks it is not")
+(query :goal (think ?p (false)))
+(solve :no-search)

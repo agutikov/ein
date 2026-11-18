@@ -1,0 +1,59 @@
+;; MOCK — kill.ein with the hypothesis written as an open fact, `(open (locks ?k ?d))`:
+;; the hrule is a rule that concludes `(open F)` (open_facts.md § 4 and § 6, row 1).
+;; Hand-edited from programs/kill.ein; the diff is runs/kill.open.MOCK.diff. Today's parse
+;; refuses `open` anywhere but an obligation's whole :assert (Q-M1f.66). An hrule pays no
+;; debt, so its open fact carries no J: `(open F)` alone, or J the hrule's instance,
+;; `(open (locks ?k ?d) (guess))`. The kernel moves each open fact into held when a
+;; commitment takes it, so `(locks k1 back)` is held at {(locks k1 back)} and its
+;; `(open …)` is gone there.
+;;;
+;;; (false) acting within one saturation, and the search reading only the verdict.
+;;; Written for the review of Q-M1f.399.
+;;;
+;;; One key, two doors; each door the key locks is a guess. A locked door has its
+;;; alarm on, every alarm on is logged, and the front door's alarm is broken: it is
+;;; never on. So the node {(locks k1 front)} derives (alarmed front), then (false).
+;;; `alarm-logged` is written before `front-alarm-broken`: in written order it would
+;;; fire first, and the agenda fires first what leads to (false) (Q-M1f.313).
+;;; `dead-from-false` reads a held (false): it fires only where a saturation goes on
+;;; past it.
+(relation key     Key      :why "{?1} is a key")
+(relation door    Door     :why "{?1} is a door")
+(relation locks   Key Door :why "{?1} locks {?2}")
+(relation alarmed Door     :why "{?1} has its alarm on")
+(relation logged  Door     :why "{?1}'s alarm is logged")
+(relation dead             :why "the state is dead")
+
+(key k1)
+(door front) (door back)
+
+(rule alarm-when-locked ()
+  :match  (locks ?k ?d)
+  :assert (alarmed ?d)
+  :why    "{?k} locks {?d}, so its alarm is on")
+(rule alarm-logged ()
+  :match  (alarmed ?d)
+  :assert (logged ?d)
+  :why    "{?d}'s alarm is on, so it is logged")
+(rule front-alarm-broken ()
+  :match  (alarmed front)
+  :assert (false)
+  :why    "the front door's alarm is broken: it is never on")
+(rule dead-from-false ()
+  :match  (false)
+  :assert (dead)
+  :why    "a state that holds (false) is dead")
+
+(rule guess ()
+  :match  (and (key ?k) (door ?d))
+  :assert (open (locks ?k ?d))
+  :why    "suppose {?k} locks {?d}")
+
+;; A rule over open facts runs after the held fixpoint and concludes no held fact
+;; (open_facts.md § 6): here a report, which candidates stay open in a state.
+(rule still-open ()
+  :match  (open (locks ?k ?d))
+  :assert (open (alarmed ?d))
+  :why    "if {?k} locks {?d}, its alarm would be on: that is open too")
+
+(query :goal (locks ?k ?d))

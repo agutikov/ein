@@ -1,0 +1,8 @@
+;;; eq on nested facts, concluded false: open_facts.md § 8.4's eqn8.ein, written from
+;;; its description there: (p (f a)) (q (f b)) with :assert (eq ?x ?y) over (p ?x) (q ?y).
+(relation p X :why "p {?1}")
+(relation q X :why "q {?1}")
+(relation f X :why "f {?1}")
+(p (f a)) (q (f b))
+(rule c8 () :match (and (p ?x) (q ?y)) :assert (eq ?x ?y) :why "{?x} is {?y}")
+(solve :no-search)

@@ -1,0 +1,24 @@
+;;; Q-M1f.406, written for this review: an addition and a division, 47 + 8
+;;; and 47 / 5. Today each operand is walked by `std.math.decimal`'s check
+;;; and labelled `(valid N)` where its walk reaches z; the sum is labelled by
+;;; `turn-end` as the walk that makes it turns round, and the quotient and the
+;;; remainder by `div-end`; every number the division makes on the way (the
+;;; multiples of 5 it tries) is labelled by `turn-end` too. No name `valid` is
+;;; written here, so the program loads under the engine before Q-M1f.404 as
+;;; well. The claims are the answer under both.
+
+(import std.math.decimal-arith :symbols (decimal-arith add div sum-of quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(add (n (n z 4) 7) (n z 8))
+(div (n (n z 4) 7) (n z 5))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n z 4) 7) (n z 8) (n (n z 5) 5))))
+(query :goal (quot-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (quot-of (n (n z 4) 7) (n z 5) (n z 9) (n z 2))))

@@ -1,0 +1,26 @@
+;;; Q-M1f.409 (a)'s case, written for this review: an integer and a rational,
+;;; each well formed, each taken by an operation. 7 + (-3) = 4, and
+;;; 1/2 + 1/3 = 5/6. The integer an operand stands for is asked
+;;; `(int-check I)`, the rational `(rat-check Q)`; each part that is a numeral
+;;; is walked by `std.math.decimal`'s check and labelled `(valid N)`; neither
+;;; the integer nor the rational gets a label of its own. The claims are
+;;; today's answer (the build at b5fb8d70).
+
+(import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of))
+(import std.math.int :symbols (int int-add int-sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (int (n z 7) z) (int z (n z 3)))
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+
+(solve :expect (region (model)))
+
+(query :goal (int-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (int-sum-of (int (n z 7) z) (int z (n z 3)) (int (n z 4) z))))
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3))
+                                  (rat (int (n z 5) z) (n z 6)))))

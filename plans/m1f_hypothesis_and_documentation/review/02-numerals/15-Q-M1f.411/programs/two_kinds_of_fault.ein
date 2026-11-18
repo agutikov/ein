@@ -1,0 +1,13 @@
+;;; Q-M1f.411, written for this review: two faults of two kinds, `(n (n 1 x) 5)`:
+;;; `x` where the tens digit goes, and the digit 1 where the numeral should end
+;;; in z. The walk from the units stops at `(n 1 x)`, where two flags of the
+;;; check fire on one place: `numeral-digit` (x) and `numeral-prefix-digit` (1).
+;;; Dead either way; the claim is the answer under both engines.
+
+(import std.math.decimal-arith :symbols (decimal-arith add))
+(import std.math.decimal :symbols (n not-decimal))
+(import std.math.arith :symbols (z))
+
+(add (n (n 1 x) 5) (n z 1))
+
+(solve :expect (false))

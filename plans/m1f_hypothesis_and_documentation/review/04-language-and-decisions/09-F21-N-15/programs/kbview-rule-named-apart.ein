@@ -1,0 +1,6 @@
+;;; Written for this review: kbview-rule-named-like-its-relation.ein with the
+;;; rule named `c` instead of `confused`, and nothing else.
+
+(person Ann)
+(think Ann (false))
+(rule c () :match (think ?p (false)) :assert (confused ?p) :why "c")

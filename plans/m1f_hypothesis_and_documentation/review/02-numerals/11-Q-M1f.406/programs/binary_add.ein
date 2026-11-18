@@ -1,0 +1,16 @@
+;;; Q-M1f.406, written for this review: binary's label is `(bin-valid N)`,
+;;; `std.math.binary`'s, written by the same rules of `std.math.positional`
+;;; with binary's names: 10 + 1 = 11 in base two. No name `bin-valid` is
+;;; written here, so it loads under both engines.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 z 1) 0) (b2 z 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of (b2 (b2 z 1) 0) (b2 z 1) (b2 (b2 z 1) 1))))

@@ -1,0 +1,6 @@
+;;; F23 D-23's witness: a goal over a relation the program names nowhere. Refused
+;;; at the pattern, with the line whose list of the ways a relation is the
+;;; program's this item is about.
+
+(p a)
+(query :goal (payed ?g))

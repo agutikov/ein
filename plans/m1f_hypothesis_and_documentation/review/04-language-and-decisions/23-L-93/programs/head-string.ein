@@ -1,0 +1,3 @@
+;;; Written for this review: a nested form whose head is a string, `(r ("x" a))`.
+
+(r ("x" a))

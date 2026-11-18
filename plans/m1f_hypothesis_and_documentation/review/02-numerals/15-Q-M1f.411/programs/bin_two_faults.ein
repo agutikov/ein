@@ -1,0 +1,11 @@
+;;; Q-M1f.411, written for this review: binary's twin, `(b2 (b2 (b2 z x) y) 1)`,
+;;; `y` and `x` where bits go, an operand of a request. Dead either way; the
+;;; claim is the answer under both engines.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add))
+(import std.math.binary :symbols (b2 not-binary))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 (b2 z x) y) 1) (b2 z 1))
+
+(solve :expect (false))

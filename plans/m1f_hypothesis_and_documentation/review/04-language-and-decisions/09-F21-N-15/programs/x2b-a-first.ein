@@ -1,0 +1,10 @@
+;;; Written for this review: x2b.ein with all-confused written before someone-sane,
+;;; and nothing else. all-confused concludes (false), so the agenda admits it
+;;; first whatever the written order (Q-M1f.313).
+
+(person Ann)
+(person Bob)
+(think Ann (false))
+(rule confused () :match (think ?p (false)) :assert (confused ?p) :why "c")
+(rule all-confused () :match (absent (some-sane)) :assert (false) :why "a")
+(rule someone-sane () :match (and (person ?p) (absent (think ?p (false)))) :assert (some-sane) :why "s")

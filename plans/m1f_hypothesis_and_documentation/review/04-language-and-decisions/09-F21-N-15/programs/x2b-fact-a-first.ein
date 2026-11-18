@@ -1,0 +1,13 @@
+;;; Written for this review: x2b-fact.ein with all-confused written before
+;;; someone-sane, and nothing else: fifo-gap-root's shape exactly (a rule waiting
+;;; on an absent written before the rule that derives what it waits on). The
+;;; query asks whether root holds (all-mad), as x2b-fact.ein's does.
+
+(person Ann)
+(person Bob)
+(think Ann (false))
+(rule confused () :match (think ?p (false)) :assert (confused ?p) :why "c")
+(rule all-confused () :match (absent (some-sane)) :assert (all-mad) :why "a")
+(rule someone-sane () :match (and (person ?p) (absent (think ?p (false)))) :assert (some-sane) :why "s")
+
+(query :goal (all-mad))

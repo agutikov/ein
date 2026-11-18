@@ -1,0 +1,12 @@
+;;; Written for this review: x2b.ein with someone-sane also concluding a stored
+;;; negation, (not (insane ?p)), of a relation nothing reads, and nothing else:
+;;; fifo-gap-root-negation.ein's move. A rule that concludes a stored negation
+;;; is in the agenda's first half too (Q-M1f.313), so both waiting rules are
+;;; there, admitted in written order: someone-sane first.
+
+(person Ann)
+(person Bob)
+(think Ann (false))
+(rule confused () :match (think ?p (false)) :assert (confused ?p) :why "c")
+(rule someone-sane () :match (and (person ?p) (absent (think ?p (false)))) :assert (and (some-sane) (not (insane ?p))) :why "s")
+(rule all-confused () :match (absent (some-sane)) :assert (false) :why "a")

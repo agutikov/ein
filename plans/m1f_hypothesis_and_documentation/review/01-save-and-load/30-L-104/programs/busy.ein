@@ -1,0 +1,22 @@
+;;; A small program for the review: three people, an hrule that supposes
+;;; each of them busy, and a rule that reads two commitments at once. No
+;;; refutation, so R is the whole cube of three candidates, eight states;
+;;; the top one rests on a commitment of three facts.
+
+(relation person Thing :why "{?1} is a person")
+(relation busy Thing :why "{?1} is busy")
+(relation both-busy Thing Thing :why "{?1} and {?2} are both busy")
+
+(person Alice :source "sentence 1")
+(person Bob :source "sentence 2")
+(person Carol :source "sentence 3")
+
+(hrule guess ()
+  :match  (person ?p)
+  :assert (busy ?p)
+  :why    "suppose {?p} is busy")
+
+(rule pair ()
+  :match  (and (busy ?a) (busy ?b) (neq ?a ?b))
+  :assert (both-busy ?a ?b)
+  :why    "{?a} is busy and {?b} is busy")

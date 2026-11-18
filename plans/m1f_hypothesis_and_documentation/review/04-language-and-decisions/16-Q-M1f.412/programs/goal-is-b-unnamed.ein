@@ -1,0 +1,7 @@
+;;; Written for this review: goal-is-a-unnamed.ein with is-a spelt is-b and
+;;; nothing else. Refused: the program names no relation is-b.
+
+(relation p T :why "p holds of {?1}")
+(p a)
+(solve :no-search)
+(query :goal (is-b ?x ?y))

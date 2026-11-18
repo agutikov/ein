@@ -1,0 +1,17 @@
+;;; v7_tag.ein with the query misspelt, hapy for happy, and nothing else: the
+;;; goal check refuses it, since the program names hapy nowhere.
+
+(relation person P :why "{?1} is a person")
+
+(person Ann)
+
+(rule tag (?R)
+  :match  (person ?x)
+  :assert (?R ?x)
+  :why    "every person is {?R}")
+
+(tag happy)
+
+(solve :no-search)
+(query :goal (hapy ?x)
+  :expect (model (hapy Ann)))

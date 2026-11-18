@@ -1,0 +1,6 @@
+;;; L-94's witness: `owns` is written only as the relation of a fact that is an
+;;; argument, inside `claims`. A goal over `owns` loads, and has no row, since no
+;;; state holds a fact of `owns` (Carol's claim is not held).
+
+(claims Carol (owns Bob Dog))
+(query :goal (owns ?a ?b))

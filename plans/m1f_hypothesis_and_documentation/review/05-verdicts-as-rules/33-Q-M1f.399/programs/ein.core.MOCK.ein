@@ -1,0 +1,37 @@
+;; MOCK — the module every program would get with no import line (open_facts.md § 3,
+;; § 8.3): the kernel's contradiction, the kill and the double negation's elimination
+;; as rules. Nothing in the ledger names the module; `ein.core` here, written as a module
+;; file holds it (no wrapper), so that today's binary can load it on its own. Written by hand
+;; from design.md Appendix A.1 (the contradiction rule set), open_facts.md § 3 (the
+;; kill) and § 10.5 (`dne`, there `eliminate` in examples/beliefs/06_double_negation.ein).
+;; (false) is a proposition; a state that holds it, held, is killed.
+(rule kill ()
+  :match  (false)
+  :assert (ein.kill)
+  :why    "a state that holds (false) is killed")
+
+;; A fact beside its negation concludes (false): one rule a count of arguments, the
+;; relation a parameter, its activator read off the declaration (design.md A.1; counts
+;; 3 to 6 alike).
+(rule clash-0 (?R)
+  :match  (and (?R) (not (?R)))
+  :assert (false)
+  :why    "({?R}) holds beside its negation")
+(rule clash-1 (?R)
+  :match  (and (?R ?a) (not (?R ?a)))
+  :assert (false)
+  :why    "({?R} {?a}) holds beside its negation")
+(rule clash-2 (?R)
+  :match  (and (?R ?a ?b) (not (?R ?a ?b)))
+  :assert (false)
+  :why    "({?R} {?a} {?b}) holds beside its negation")
+(rule clash-of-0 () :match (relation ?R)       :assert (clash-0 ?R) :why "{?R} is declared with no argument")
+(rule clash-of-1 () :match (relation ?R ?A)    :assert (clash-1 ?R) :why "{?R} is declared with one argument")
+(rule clash-of-2 () :match (relation ?R ?A ?B) :assert (clash-2 ?R) :why "{?R} is declared with two arguments")
+
+;; The elimination of a double negation (Q-M1f.391): where it lives is this phase's.
+(rule dne-2 (?R)
+  :match  (not (not (?R ?a ?b)))
+  :assert (?R ?a ?b)
+  :why    "not not ({?R} {?a} {?b})")
+(rule dne-of-2 () :match (relation ?R ?A ?B) :assert (dne-2 ?R) :why "{?R} is declared with two arguments")

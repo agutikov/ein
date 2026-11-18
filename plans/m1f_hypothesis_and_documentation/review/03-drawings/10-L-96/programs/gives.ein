@@ -1,0 +1,6 @@
+; L-96's witness, written for this review: one given fact of three arguments with a :source, and a rule that
+; derives a second one, so the KB view draws two octagons, one with a source and one with a rule.
+(relation gives Person Person Pet :why "{?1} gives {?2} the {?3}")
+(gives Ann Bob Rex :source "s1")
+(rule pass () :match (gives ?a ?b ?p) :assert (gives ?b ?a ?p) :why "{?b} gives {?p} back to {?a}")
+(solve :no-search)

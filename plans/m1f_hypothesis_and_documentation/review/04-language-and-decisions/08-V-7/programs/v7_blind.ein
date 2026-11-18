@@ -1,0 +1,16 @@
+;;; Written for this review: v7_tag.ein with a second declared relation and no
+;;; (solve :no-search), so the blind rung builds H. `happy` is named only by the
+;;; activator (tag happy); the registry does not hold it, so the blind rung
+;;; takes it for an object and proposes facts about it.
+
+(relation person P   :why "{?1} is a person")
+(relation likes  P X :why "{?1} likes {?2}")
+
+(person Ann)
+
+(rule tag (?R)
+  :match  (person ?x)
+  :assert (?R ?x)
+  :why    "every person is {?R}")
+
+(tag happy)

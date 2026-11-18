@@ -1,0 +1,21 @@
+;;; Q-M1f.406 (b)'s case, written for this review: a program's own theory
+;;; calls the addition walk under a tag of its own, `(add-walk TAG X Y 0 z)`,
+;;; and reads the hand-over `(done TAG S)`. Today the hand-over's number is
+;;; labelled valid by `turn-end` as it is made; under (b), only the public
+;;; answers (`sum-of` and the like) would be labelled, and this one not. The
+;;; claims are the answer under both engines.
+
+(import std.math.decimal-arith :symbols (decimal-arith add-walk done))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation mine Thing :why "a sum of {?1}'s own")
+(__closed__ mine)
+
+(add-walk (mine a) (n z 4) (n z 3) 0 z)
+
+(solve :expect (region (model)))
+
+(query :goal (done ?tag ?s)
+       :goal-text "{?tag} is answered {?s}"
+       :expect (model (done (mine a) (n z 7))))

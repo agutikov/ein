@@ -1,0 +1,75 @@
+;;; 01_common_belief — a fact every person believes is true.
+;;;
+;;; A fact can be another fact's argument: `(believes Ann (likes Dan Soup))`
+;;; states Ann's belief, and its second argument is a fact in the context of
+;;; that belief, not one the state holds. Nothing makes `(likes Dan Soup)`
+;;; held but a rule that says when a belief's content holds. This one says: **what every person
+;;; believes is true**.
+;;;
+;;; Two things the language asks of such a rule:
+;;;
+;;; - **one rule per shape of content.** A rule concludes a fact with its head
+;;;   written out, never a bare variable (`:assert ?c` is refused), so "any
+;;;   fact" is one rule per relation a belief can be about: here `likes`, and
+;;;   the stored negation `(not (likes …))`, each a rule of its own.
+;;; - **"every person" is a `forall`**, `std.macro`'s sugar for
+;;;   `(absent (and (person ?y) (absent (believes ?y C))))`: no person who
+;;;   does not believe C. That is an `absent` over `person`, so it needs the
+;;;   people **closed**: with no hrule the blind enumerator would guess more
+;;;   people, and a rule resting on "no person disbelieves C" could then be
+;;;   undone by a guess. Without the closing line below the loader refuses the
+;;;   second rule (*forbid*: a `(not …)` concluded from an `absent` over a
+;;;   relation a commitment can still extend) and the static check flags the
+;;;   first. `(__closed__ person)` says the people are Ann, Bob and Cid and no
+;;;   one else; the program is then monotone.
+;;;
+;;; The three people believe `(likes Dan Soup)`, so it is true; Ann and Bob
+;;; believe `(likes Dan Tea)` and Cid does not, so it is not; only Ann
+;;; believes `(likes Eve Fish)`. All three believe `(not (likes Dan Fish))`,
+;;; so Dan does not like fish: a stored negation, which a query reads as
+;;; `(not …)`. There is nothing to guess: `(solve :no-search)` says the
+;;; answer is root's fixpoint, so the blind enumerator does not propose
+;;; `likes` or `believes` facts, and the claims are about root.
+
+(import std.macro :symbols (forall))
+
+(relation person   Person       :why "{?1} is a person")
+(relation likes    Person Food  :why "{?1} likes {?2}")
+(relation believes Person Claim :why "{?1} believes that {?2}")
+
+(person Ann)
+(person Bob)
+(person Cid)
+(__closed__ person)   ; the people are exactly these three
+
+(believes Ann (likes Dan Soup))
+(believes Bob (likes Dan Soup))
+(believes Cid (likes Dan Soup))
+
+(believes Ann (likes Dan Tea))
+(believes Bob (likes Dan Tea))
+
+(believes Ann (likes Eve Fish))
+
+(believes Ann (not (likes Dan Fish)))
+(believes Bob (not (likes Dan Fish)))
+(believes Cid (not (likes Dan Fish)))
+
+(rule common-belief-likes ()
+  :match  (and (believes ?x (likes ?p ?f))
+               (forall ?y (person ?y) (believes ?y (likes ?p ?f))))
+  :assert (likes ?p ?f)
+  :why    "every person believes that {?p} likes {?f}, so {?p} likes {?f}")
+
+(rule common-belief-not-likes ()
+  :match  (and (believes ?x (not (likes ?p ?f)))
+               (forall ?y (person ?y) (believes ?y (not (likes ?p ?f)))))
+  :assert (not (likes ?p ?f))
+  :why    "every person believes that {?p} does not like {?f}, so {?p} does not")
+
+(solve :no-search)
+
+(query :goal (likes ?p ?f)
+  :expect (model (likes Dan Soup)))
+(query :goal (not (likes ?p ?f))
+  :expect (model (not (likes Dan Fish))))

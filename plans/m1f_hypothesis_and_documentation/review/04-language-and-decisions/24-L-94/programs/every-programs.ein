@@ -1,0 +1,6 @@
+;;; Written for this review: `is-a`, `eq` and `neq` are every program's, so goals
+;;; over them load in a program that names none of them.
+
+(p a)
+(query :goal (is-a ?x ?y))
+(query :goal (neq w ?y))

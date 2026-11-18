@@ -1,0 +1,26 @@
+;;; Q-M1f.409 (d)'s case, written for this review from the S1f.22.6 record: a
+;;; rational whose numerator is a malformed natural number, `(n z x)`, where an
+;;; integer `(int P N)` goes. `rat-check-parts` asks `std.math.int`'s check of
+;;; the numerator, which reads only an integer's shape, so nothing walks
+;;; `(n z x)`; and the operation computes nothing with a numerator that is no
+;;; integer (Q-M1f.277). The claims are today's answer (the build at
+;;; b5fb8d70): root alive, R = {∅}, no sum and no flag. The engine before
+;;; Q-M1f.404 flagged the numeral where it was written, and these claims fail
+;;; under it.
+
+(import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n not-decimal))
+(import std.math.arith :symbols (z))
+
+(rat-add (rat (n z x) (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model))
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))

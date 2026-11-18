@@ -1,0 +1,7 @@
+; The rendering page's example (12-rendering.md, § A fact under an arrow), with a :source on the three facts that
+; point at another, so that they are given facts and (owns Bob Dog) a background one: written for this review.
+(claims Carol (owns Bob Dog) :source "c1")
+(doubts Dan (owns Bob Dog) :source "c2")
+(owns Bob Dog)
+(claims Dan (owns Carol Cat) :source "c3")
+(solve :no-search)

@@ -1,0 +1,17 @@
+;;; Q-M1f.408, written for this review: one sum whose first operand is
+;;; malformed one place in, 1x5 (`x` where the tens digit goes), and one well
+;;; formed, 10 + 5. The trace names each rule by its full name, so it shows
+;;; which module each rule of the check lives in: the ask is
+;;; `std.math.positional.operand-check`, the walk, the label and the flag are
+;;; `std.math.decimal`'s. No name `check` or `valid` is written here, so the
+;;; program loads under the engine before Q-M1f.404, whose flag read
+;;; `(written N)`. The claim is the answer under both.
+
+(import std.math.decimal-arith :symbols (decimal-arith add))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(add (n (n z 1) 0) (n z 5))
+(add (n (n (n z 1) x) 5) (n z 5))
+
+(solve :expect (false))

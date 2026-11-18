@@ -1,0 +1,43 @@
+;;; `owed-seats` with both upper bounds — the sixth of the seven programs
+;;; whose regions `ein-infer/tests/region.rs` pins (Q-M1e2.7).
+;;;
+;;; `examples/ein-bugs/wrong-answers/owed-seats.ein` states only the lower
+;;; bounds (`total-owed`, `surjective-owed`), so its region is every set that
+;;; covers both guests and both chairs: 7 nodes, the two matchings at the
+;;; bottom and all four seatings at the top. Adding `functional` and
+;;; `injective` kills every node with a clash, and what is left is the two
+;;; matchings, each a component of its own and a point:
+;;;
+;;;   |R| = 2   minimal = maximal = {(seats Ann C1), (seats Bob C2)},
+;;;                                 {(seats Ann C2), (seats Bob C1)}
+;;;
+;;; It is also the witness for the oracle's *saturation alone*: the commitment
+;;; `{(seats Ann C1)}` owes 2 (Bob unseated, C2 empty). Read through a solve,
+;;; the forced-positive cascade had already written `(seats Bob C2)` at root
+;;; and the same commitment owed nothing.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+
+(relation is-a   T T         :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} is seated at {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(query :goal (seats ?g ?c))
+
+;; ── added for this review: the commitment {(seats Ann C1)} written as a fact, so that root is that state
+(seats Ann C1)
+
+;; ── stand-in for this review: option (d)'s fact `(open R j)`, written under
+;; `open-debt` since the parse refuses `open` here, the instance j under
+;; `total-owed-of` / `surjective-owed-of`. One per debt the state
+;; {(seats Ann C1)} owes. Written by hand: nothing derives them.
+(relation open-debt R J :why "{?1} owes {?2}")
+(open-debt seats (total-owed-of seats is-a Guest Chair Bob))
+(open-debt seats (surjective-owed-of seats is-a Guest Chair C2))

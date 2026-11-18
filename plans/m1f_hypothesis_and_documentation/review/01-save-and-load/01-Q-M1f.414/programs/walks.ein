@@ -1,0 +1,40 @@
+;;; A small program for the review: three facts given with a source, one
+;;; background fact, a rule that derives from the givens, an hrule that
+;;; supposes, a rule that derives from what is supposed, and a refutation.
+;;;
+;;; R is three states: root; Alice busy; Bob busy. Both busy is refuted by
+;;; `one-busy`.
+
+(relation person Thing :why "{?1} is a person")
+(relation dog Thing :why "{?1} is a dog")
+(relation owns Thing Thing :why "{?1} owns {?2}")
+(relation walks Thing Thing :why "{?1} walks {?2}")
+(relation busy Thing :why "{?1} is busy")
+(relation tired Thing :why "{?1} is tired")
+
+(person Alice :source "sentence 1")
+(person Bob :source "sentence 2")
+(owns Alice Rex :source "sentence 3")
+(dog Rex)
+
+(rule walk ()
+  :match  (and (owns ?p ?d) (dog ?d))
+  :assert (walks ?p ?d)
+  :why    "{?p} owns the dog {?d}, so {?p} walks {?d}")
+
+(hrule guess ()
+  :match  (person ?p)
+  :assert (busy ?p)
+  :why    "suppose {?p} is busy")
+
+(rule tire ()
+  :match  (and (busy ?p) (walks ?p ?d))
+  :assert (tired ?p)
+  :why    "{?p} is busy and walks {?d}, so {?p} is tired")
+
+(rule one-busy ()
+  :match  (and (busy Alice) (busy Bob))
+  :assert (false)
+  :why    "Alice and Bob are not both busy")
+
+(solve :expect (region (model) (model (busy Alice)) (model (busy Bob))))

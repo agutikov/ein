@@ -1,0 +1,29 @@
+;;; The twin of `fifo-gap-root.ein` (register row `W8/fifo-gap-root`,
+;;; `plans/wrong_answers/register.toml`): the same program with `r1` written
+;;; before `r2` and nothing else changed. The boundary admits `r1` first, root
+;;; derives `(q one)`, `r2`'s guard fails, and root holds no `p`: the perfect
+;;; model, which the witness does not reach.
+
+(relation thing T :why "{?1} is a thing")
+(relation a T :why "a holds of {?1}")
+(relation b T :why "b holds of {?1}")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
+(relation z T :why "z holds of {?1}")
+
+(thing one)
+(a one)
+(b one)
+
+(rule r1 ()
+  :match  (and (a ?x) (absent (z ?x)))
+  :assert (q ?x)
+  :why    "{?x} has a and no z")
+
+(rule r2 ()
+  :match  (and (a ?x) (b ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :why    "{?x} has a and b and no q")
+
+(solve :no-search)
+(query :goal (p ?x))

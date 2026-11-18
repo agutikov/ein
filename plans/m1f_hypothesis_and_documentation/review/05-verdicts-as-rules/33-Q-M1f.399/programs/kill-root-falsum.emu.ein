@@ -1,0 +1,57 @@
+;;; kill.ein under the direction of Q-M1f.399, emulated with today's engine: the
+;;; proposition the program concludes is `(falsum)`, an ordinary fact standing in for
+;;; `(false)` once it is no longer the kernel's; the kernel's verb, `(ein.kill)`, is
+;;; played by today's `(false)`, concluded by one rule, `kill`, as the module every
+;;; program would get states it. Nothing else differs from kill.ein.
+;;;
+;;; One key, two doors; each door the key locks is a guess. A locked door has its
+;;; alarm on, every alarm on is logged, and the front door's alarm is broken: it is
+;;; never on. So the node {(locks k1 front)} derives (alarmed front), then (false).
+;;; `alarm-logged` is written before `front-alarm-broken`: in written order it would
+;;; fire first, and the agenda fires first what leads to (false) (Q-M1f.313).
+;;; `dead-from-false` reads a held (false): it fires only where a saturation goes on
+;;; past it.
+(relation key     Key      :why "{?1} is a key")
+(relation door    Door     :why "{?1} is a door")
+(relation locks   Key Door :why "{?1} locks {?2}")
+(relation alarmed Door     :why "{?1} has its alarm on")
+(relation logged  Door     :why "{?1}'s alarm is logged")
+(relation dead             :why "the state is dead")
+(relation falsum           :why "a contradiction: the stand-in for (false) as a proposition")
+
+(key k1)
+(door front) (door back)
+
+(rule alarm-when-locked ()
+  :match  (locks ?k ?d)
+  :assert (alarmed ?d)
+  :why    "{?k} locks {?d}, so its alarm is on")
+(rule alarm-logged ()
+  :match  (alarmed ?d)
+  :assert (logged ?d)
+  :why    "{?d}'s alarm is on, so it is logged")
+(rule front-alarm-broken ()
+  :match  (alarmed front)
+  :assert (falsum)
+  :why    "the front door's alarm is broken: it is never on")
+(rule dead-from-false ()
+  :match  (falsum)
+  :assert (dead)
+  :why    "a state that holds (false) is dead")
+
+;; the module every program would get: (false) ⟹ (ein.kill), here (falsum) ⟹ (false)
+(rule kill ()
+  :match  (falsum)
+  :assert (false)
+  :why    "a state that holds (false) is killed")
+
+(hrule guess ()
+  :match  (and (key ?k) (door ?d))
+  :assert (locks ?k ?d)
+  :why    "suppose {?k} locks {?d}")
+
+(query :goal (locks ?k ?d))
+
+;; ── the variant kill-root-falsum.emu.ein: the commitment {(locks k1 front)} written as a
+;; fact, so root is the state that dies.
+(locks k1 front)

@@ -1,0 +1,14 @@
+;;; Q-M1f.405 (e)'s cost, written for this review: a product, 47 x 38. Inside,
+;;; the theory hands itself numbers through its own tagged calls, `mul-call`
+;;; and an `add-walk` a row. Under (a) only the two operands are walked; under
+;;; (e) every number handed to a call would be walked too.
+
+(import std.math.decimal-arith :symbols (decimal-arith mul product-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(mul (n (n z 4) 7) (n (n z 3) 8))
+
+(query :goal (product-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model (product-of (n (n z 4) 7) (n (n z 3) 8) (n (n (n (n z 1) 7) 8) 6))))

@@ -1,0 +1,8 @@
+;;; eq with a side that is a fact with a variable inside: open_facts.md § 8.4 says it
+;;; is refused at load. eq does not take a fact apart; a premise (p (f ?w)) does.
+(relation p X :why "p {?1}")
+(relation f X :why "f {?1}")
+(relation hit X Y :why "{?1} {?2}")
+(p (f a))
+(rule c9 () :match (and (p ?x) (eq ?x (f ?w))) :assert (hit ?x ?w) :why "take (f ?w) apart")
+(solve :no-search)

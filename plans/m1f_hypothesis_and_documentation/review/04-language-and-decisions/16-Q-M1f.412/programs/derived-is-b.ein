@@ -1,0 +1,16 @@
+;;; Written for this review: one is-b fact written, (is-b Rex Dog), and one a
+;;; rule derives, (is-b Rex Pet); and the same two of `likes`, to compare how
+;;; the KB view draws a derived fact of each.
+
+(relation is-b  T T :why "{?1} is a {?2}")
+(relation likes T T :why "{?1} likes {?2}")
+
+(is-b Rex Dog)
+(likes Rex Bone)
+
+(rule dogs-are-pets ()
+  :match  (is-b ?x Dog)
+  :assert (and (is-b ?x Pet) (likes ?x Ball))
+  :why    "{?x} is a dog, so a pet that likes balls")
+
+(solve :no-search)

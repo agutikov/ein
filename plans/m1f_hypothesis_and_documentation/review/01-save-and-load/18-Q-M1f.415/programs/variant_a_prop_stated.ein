@@ -1,0 +1,84 @@
+;;; WRITTEN FOR THIS REVIEW (item 18, Q-M1f.415), not a corpus program: examples/lattice/02_genuine_3set_death.ein
+;;; with the saved node's choice, (a-prop X), stated as a fact, and its instance dropped from (solve :hrules …).
+;;; Its root is the node's state and its H is the program's H less the node's choice: the universe option (b)
+;;; would read. It is run only to make option (b)'s mocks. Below, the corpus file as it is, those two edits made.
+;;;
+;;; Lattice fixture — genuine 3-element death.
+;;;
+;;; Demonstrates: a 3-element commitment {h1, h2, h3} dies but no
+;;; 2-subset of it does. Every pair is alive, so no dead subset rules the
+;;; triple out: it has to be saturated, and its fixpoint holds (false).
+;;;
+;;; This is the genuine combinatorial core: no amount of subset
+;;; elimination can avoid the size-3 fork, and the pair layer of the
+;;; hypothesis space does not see the conflict either
+;;; (docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md). Every node of
+;;; the cube is saturated: the dead triple is the one node no smaller
+;;; dead set accounts for, and the route reaches it last, at the
+;;; cube's top.
+;;;
+;;; Three hypothesis candidates from three distinct relations:
+;;;
+;;;   (a-prop X)    h1
+;;;   (b-prop X)    h2
+;;;   (c-prop X)    h3
+;;;
+;;; A custom three-way conflict rule fires ONLY when ALL three are
+;;; present in the fork's kb:
+;;;
+;;;   (rule three-conflict ()
+;;;     :match (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+;;;     :assert (false))
+;;;
+;;; Committing any 2-subset leaves one relation empty in the
+;;; fork → rule doesn't fire → fork stays alive.
+;;; Committing the full 3-subset hits all three → rule fires →
+;;; (false) → the node is dead.
+;;;
+;;; What `ein solve` reports:
+;;;
+;;;   states (k_s)     7: ∅, the three singletons and the three pairs;
+;;;                    nothing is owed, so every alive node is in R
+;;;   maximal line     the three pairs: k = 3. Regression
+;;;                    lattice-02-L; the region is Q-M1e2.7.
+;;;   minimal line     ∅, root itself
+;;;   components       1; sub-cubes 3, each of dimension 2, one below
+;;;                    each pair
+;;;   N                1 minimal dead set, the triple itself
+;;;   work             8 saturations: root, the three singletons, the
+;;;                    three pairs and the triple
+;;;
+;;; docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md § 2.5 works this
+;;; region through, with its drawing, and `ein render lattice` draws the
+;;; cube as a node-coloured lattice.
+;;;
+;;;
+;;;
+;;;
+
+(rule three-conflict ()
+  :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+  :assert (false)
+  :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden")
+
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation a-prop T   :why "a-prop holds of {?1}")
+(relation b-prop T   :why "b-prop holds of {?1}")
+(relation c-prop T   :why "c-prop holds of {?1}")
+
+(is-a Item T)
+(is-a X    Item)
+(a-prop X)
+
+(solve
+  :hrules (
+    guess (b-prop Item)
+    guess (c-prop Item)))
+
+(query
+  :goal (a-prop ?x))

@@ -1,0 +1,5 @@
+; L-98's witness, written for this review: a fact stated with no :source (a background fact, the ontology group)
+; and a fact that points at it with a :source (a given fact, the facts group).
+(owns Bob Dog)
+(claims Carol (owns Bob Dog) :source "c")
+(solve :no-search)

@@ -33,6 +33,10 @@ corpus/out/
 ein.rs/bench-out/
 ein.rs/target-*
 
-# A review bundle built for the user under a milestone's plans: programs, dumps and
-# drawings to read a question by, generated and never committed.
-/plans/*/review/
+# A review bundle built for the user under a milestone's plans: its pages and the
+# programs they run are kept; what the runs produce (outputs, dumps, drawings, logs,
+# scripts' results) is ignored and re-taken by each item's re-run.
+/plans/*/review/**
+!/plans/*/review/**/
+!/plans/*/review/**/README.md
+!/plans/*/review/**/programs/*.ein

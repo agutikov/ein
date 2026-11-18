@@ -1,0 +1,18 @@
+;;; Q-M1f.406, written for this review: the smallest addition, 4 + 3, with
+;;; `valid`'s extent queried. Its KB view is drawn whole. It lists `valid`,
+;;; a name of today's `std.math.decimal`, so it runs under today's engine only.
+
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n valid))
+(import std.math.arith :symbols (z))
+
+(add (n z 4) (n z 3))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 4) (n z 3) (n z 7))))
+(query :goal (valid ?numeral)
+       :goal-text "{?numeral} is a decimal number"
+       :expect (model (valid z) (valid (n z 3)) (valid (n z 4)) (valid (n z 7))))

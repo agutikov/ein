@@ -1,0 +1,15 @@
+;;; Written for this review: v7_blind.ein with the relation written in the rule
+;;; instead of passed by an activator: `tag` has no parameter and concludes
+;;; (happy ?x) itself. `happy` is again in no declaration and heads no fact a
+;;; file writes, so the registry does not hold it either; but it is a constant
+;;; head of a rule's :assert, which the alive-set invariant's baseline reads.
+
+(relation person P   :why "{?1} is a person")
+(relation likes  P X :why "{?1} likes {?2}")
+
+(person Ann)
+
+(rule tag ()
+  :match  (person ?x)
+  :assert (happy ?x)
+  :why    "every person is happy")

@@ -1,0 +1,12 @@
+;;; Written for this review: the claim program of today's
+;;; ein-cli/tests/read_out.rs `is_a_reads_as_any_other_relation_on_every_surface`,
+;;; as that test writes it, with this comment added. `Person` is on the right of
+;;; an is-b, and the blind rung's candidates of `likes` have it as an argument:
+;;; the dropped `types` row's case, on a cube of four candidates.
+
+(relation is-b T T :why "{?1} is a {?2}")
+(relation likes T T :why "{?1} likes {?2}")
+(__closed__ is-b)
+(is-b Ann Person)
+(query :goal (likes Ann ?x) :over maximal
+  :expect (model (likes Ann Person)))

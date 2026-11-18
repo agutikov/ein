@@ -1,0 +1,8 @@
+;;; Written for this review: why `ein render kb` of x2b.ein draws no
+;;; (confused Ann). Two programs in one comparison: this one names the rule
+;;; `confused`, like the relation it concludes (as x2b.ein does), and its twin
+;;; kbview-rule-named-apart.ein names it `c`. Both hold (confused Ann) at root.
+
+(person Ann)
+(think Ann (false))
+(rule confused () :match (think ?p (false)) :assert (confused ?p) :why "c")

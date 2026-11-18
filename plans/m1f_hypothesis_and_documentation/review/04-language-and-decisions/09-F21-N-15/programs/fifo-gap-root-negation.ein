@@ -1,0 +1,32 @@
+;;; A twin of `fifo-gap-root.ein` (register row `W8/fifo-gap-root`,
+;;; `plans/wrong_answers/register.toml`): the witness's order, `r2` written
+;;; first, with `r1` concluding a stored negation beside `q`. The agenda fires
+;;; first what leads to `(false)` (Q-M1f.313), a stored negation among it, so
+;;; `r1` is admitted before `r2` though it is written second: root derives
+;;; `(q one)`, `r2`'s guard fails, and root holds no `p`, as in the perfect
+;;; model. Nothing reads `w`.
+
+(relation thing T :why "{?1} is a thing")
+(relation a T :why "a holds of {?1}")
+(relation b T :why "b holds of {?1}")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
+(relation z T :why "z holds of {?1}")
+(relation w T :why "w holds of {?1}")
+
+(thing one)
+(a one)
+(b one)
+
+(rule r2 ()
+  :match  (and (a ?x) (b ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :why    "{?x} has a and b and no q")
+
+(rule r1 ()
+  :match  (and (a ?x) (absent (z ?x)))
+  :assert (and (q ?x) (not (w ?x)))
+  :why    "{?x} has a and no z")
+
+(solve :no-search)
+(query :goal (p ?x))
