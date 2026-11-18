@@ -400,9 +400,9 @@ What a context does and does not say of the fact in it is [below](#a-context-giv
 
 A finite set $W \subset \Sigma^{+}$ of names is **reserved**: the language gives the atom one fixed part to play,
 and no declaration takes its name ([the reserved names](../../user/04-reference/03-reserved-names.md) lists $W$).
-Those the graph itself has a part for are $\mathsf{relation}$, $\mathsf{not}$ and $\mathsf{false}$, above;
-$\mathsf{written}$, [below](#the-knowledge-base-of-a-program); and two markers, which a program may write as a
-relation or as an argument and which are read where a knowledge base grows
+Those the graph itself has a part for are $\mathsf{relation}$, $\mathsf{not}$ and $\mathsf{false}$, above, and
+two markers, which a program may write as a relation or as an argument and which are read where a knowledge base
+grows
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). A subset
 $W_{\!c} \subset W$ is the relation of no fact at all: the words that join and test the parts of a pattern,
 equality and inequality among them, which [the next page](02-rewriting-rules.md) defines. So no equality, no
@@ -456,26 +456,22 @@ arrows.
 ## The knowledge base of a program
 
 A **program** $P$ is a text. Each form of it is a fact, a declaration, or a question, and reading it gives one
-knowledge base, $K_0$. For a program that declares no rule,
+knowledge base, $K_0$:
 
 $$
-K_0 \;=\; T \;\cup\; D \;\cup\; \{\, \operatorname{written}(t) \;:\; t \in \operatorname{sub}(f),\ f \in T \,\}
+K_0 \;=\; T \;\cup\; D
 $$
 
 - $T$ is the facts the text writes, the nodes $\nu$ sends its tuples to. A fact written twice is one fact.
 - $D$ is the facts its relation declarations are, two for each as [above](#what-is-where). A declaration's own
   text, the sentence a fact of the relation reads as, is no part of the graph.
-- The third set states, for each fact nested in a written fact, that the text wrote it
-  ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)); $\operatorname{sub}$
-  is defined [below](#nesting). No program writes a fact of $\mathsf{written}$
-  ([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)); what reads these
-  facts is a rule that checks a representation where its terms are written
-  ([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)).
-  $\operatorname{written}(t)$ is a held fact that points at $t$, so it is one of the contexts of $t$: the one
-  reading a program makes. It says that the text wrote $t$ under an arrow, and nothing of whether $t$ is held.
 
-A program also declares rules. A rule is no fact of $K_0$; its declaration adds to $K_0$ only facts of
-$\mathsf{written}$, which are stated with the rules
+Reading a text states nothing else: a fact under an arrow of a written fact is in $K_0$ only where the text writes
+it on its own, and its contexts are the facts that point at it. Whether a nested term is well-formed for the theory
+that reads it is that theory's to ask, of the terms it takes
+([Q-M1f.404](../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
+A program also declares rules. A rule is no fact of $K_0$, and its declaration adds no fact to $K_0$
 ([the next page](02-rewriting-rules.md#the-program-and-its-names)).
 
 A written fact may carry a **source sentence**, a text. It says where the fact comes from, is no part of the

@@ -1,23 +1,21 @@
-;;; `std.math.decimal` — a malformed numeral written whole in a rule's conclusion.
+;;; `std.math.decimal` — a malformed numeral written whole in a rule's conclusion that never fires.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; The loader states the facts nested in a rule's conclusion where they hold
-;;; no variable, so a numeral written whole in a rule's text is checked as a
-;;; fact's is, whether or not the rule fires (Q-M1f.275 (a)). Here the rule
-;;; never fires, nothing being a seed: `(n 0 3)` ends in the digit `0` where
-;;; `z` goes, and `numeral-prefix-zero` derives `(not-decimal (n 0 3) 0)` at
-;;; root.
+;;; A numeral is checked where an operation takes it (Q-M1f.404). Here the
+;;; request that would take it is the conclusion of a rule that never fires,
+;;; nothing being a seed: `(n 0 3)` ends in the digit `0` where `z` goes, and
+;;; since no request holds it, nothing asks whether it is a number, and
+;;; `numeral-prefix-zero` does not fire. The sum beside it is answered. The
+;;; rule's twin that fires is `07_in_a_rules_conclusion_that_fires.ein`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
-;;; empty, and it is the one claim such a program can make.
-;;; The numeral rests on no fact, the rule's text holding it: the unsat core
-;;; is ∅.
+;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
+;;; nothing, the sum is answered, and `not-decimal`'s extent is empty.
 
-(import std.math.decimal-arith :symbols (decimal-arith add))
-(import std.math.decimal :symbols (n))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n not-decimal))
 (import std.math.arith :symbols (z))
 
 (relation seed Thing :why "{?1} is a seed")
@@ -26,5 +24,14 @@
   :match  (seed ?s)
   :assert (add (n 0 3) (n z 5))
   :why    "{?s} asks for 3 + 5, the 3 written with a zero where z goes")
+(add (n z 4) (n z 3))
 
-(solve :expect (false))
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 4) (n z 3) (n z 7))))
+
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))

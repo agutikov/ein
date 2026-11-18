@@ -3462,7 +3462,7 @@ note   = "school arithmetic on binary numerals, `std.math.decimal-arith`'s twin:
 path   = "stdlib/math/binary.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "the binary numeral, `(b2 PREFIX BIT)`, on `std.math.decimal`'s pattern: `bin-named` and the check where a numeral is written, four rules over the loader's `(written (b2 P A))` flagging `(not-binary NUMERAL THING)` and `not-binary-is-false` deriving `(false)`. `binary`, the closing rule, closes every relation and `bin-nz`, and names every rule and `arith`. The module alone states no request: its closing rules fire and nothing else."
+note   = "the binary numeral, `(b2 PREFIX BIT)`, on `std.math.decimal`'s pattern: `bin-named`, and the check an operation asks of a numeral it takes, `(bin-check N N)` walked a place a firing to `(bin-valid N)`, four rules flagging `(not-binary NUMERAL THING)` and `not-binary-is-false` deriving `(false)` (Q-M1f.404). `binary`, the closing rule, closes every relation and `bin-nz`, labels `z` valid, and names every rule and `arith`. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/math/bits.ein"
@@ -3480,7 +3480,7 @@ note   = "decimal to binary and back as requests, `(to-bin X)` answered by `(bin
 path   = "stdlib/math/decimal.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "the decimal numeral, `(n PREFIX DIGIT)`, moved from `std.math.decimal-arith`, with `named`, and its check where it is written: five rules over the loader's `(written (n P A))` flag a malformed numeral, `(not-decimal NUMERAL THING)`, and `(false)` from it, wherever a file writes it. `decimal`, the closing rule, closes every relation and `nz`, and names every rule and `arith`. The module alone states no request: its closing rules fire and nothing else."
+note   = "the decimal numeral, `(n PREFIX DIGIT)`, with `named`, and the check an operation asks of a numeral it takes, `(check N N)` walked a place a firing to `(valid N)`: four rules flag a malformed numeral, `(not-decimal NUMERAL THING)`, and `(false)` follows (Q-M1f.404). `decimal`, the closing rule, closes every relation and `nz`, labels `z` valid, and names every rule and `arith`. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/math/decimal-arith.ein"
@@ -3734,7 +3734,7 @@ note   = "The case of regression `converse-lemma-subtype`: `converse-illtyped-do
 path   = "tests/stdlib/math/binary/01_well_formed_everywhere.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.binary` — a well-formed numeral, wherever it is written, is flagged nowhere."
+note   = "`std.math.binary` — a well-formed numeral, wherever it is written, is flagged nowhere: the sum's operands walked to `z` and labelled `bin-valid`, the sum labelled as it is made, and a numeral no operation takes neither checked nor labelled."
 
 [[entry]]
 path   = "tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein"
@@ -3764,7 +3764,7 @@ note   = "`std.math.binary` — a malformed numeral: ends in a name."
 path   = "tests/stdlib/math/binary/06_what_stays_silent.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.binary` — what the check does not flag: a flag means malformed, and no flag does not mean well-formed."
+note   = "`std.math.binary` — what the check does not flag, `(b2 end 1)`, `(b2 7 1)` and `(b2 (pair 1 0) 1)`, each a request's operand: no flag, no label, no answer; R is {∅}."
 
 [[entry]]
 path   = "tests/stdlib/math/binary/07_a_programs_own_named_z.ein"
@@ -4070,19 +4070,19 @@ note   = "`std.math.decimal-arith`: a fact in a digit's place, the second operan
 path   = "tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal-arith`: a number that ends in a digit where `z` goes, `(n 1 2)`: `std.math.decimal`'s `numeral-prefix-digit`; root is dead."
+note   = "`std.math.decimal-arith`: a number whose second place ends in a digit where `z` goes, `(n (n 1 2) 3)`: `std.math.decimal`'s `numeral-prefix-digit`, on the place the walk reaches past the units; root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal-arith`: a number that ends in the digit 0, `(n 0 2)`: `std.math.decimal`'s `numeral-prefix-zero`; root is dead."
+note   = "`std.math.decimal-arith`: a number whose second place ends in the digit 0, `(n (n 0 2) 7)`: `std.math.decimal`'s `numeral-prefix-zero`, on the place the walk reaches past the units; root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal-arith`: a number that ends in a named constant, `(n price 1)`: `std.math.decimal`'s `numeral-prefix-named`; root is dead."
+note   = "`std.math.decimal-arith`: a number whose second place ends in a named constant, `(n (n price 1) 4)`: `std.math.decimal`'s `numeral-prefix-named`, on the place the walk reaches past the units; root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein"
@@ -4232,37 +4232,43 @@ note   = "`std.math.decimal-arith`: `(div (n z 5) 7)`, a digit as the second ope
 path   = "tests/stdlib/math/decimal/01_well_formed_everywhere.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal`: a well-formed numeral in each place a file can write one, an operand, an unused `let`, a fact of the program's own, an integer's and a rational's part, a rule's conclusion; no `(not-decimal …)`, R is {∅}."
+note   = "`std.math.decimal`: a well-formed numeral in each place a file can write one, an operand, an unused `let`, a fact of the program's own, an integer's and a rational's part, a rule's conclusion; no `(not-decimal …)`, R is {∅}, and `valid` labels the two operands, the sum and `z`, and nothing no operation takes (Q-M1f.404)."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal`: `(let price (n (n z 1) x))` and no request: `numeral-digit` flags it where it is written, `(solve :expect (false))`."
+note   = "`std.math.decimal`: `(let price (n (n z 1) x))` and no request: no operation takes it, so it is not checked (Q-M1f.404); R is {∅}, no flag, no label, and a sum beside it answered."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal`: `(price apple (n 1 2))`, a numeral in the program's own fact: `numeral-prefix-digit`, `(solve :expect (false))`."
+note   = "`std.math.decimal`: `(price apple (n 1 2))`, a malformed numeral in the program's own fact, which no operation takes: not checked (Q-M1f.404), R is {∅} and a sum beside it answered."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal`: `(n 0 3)` in a rule's conclusion that never fires, stated at load (Q-M1f.275 (a)): `numeral-prefix-zero`, core ∅, `(solve :expect (false))`."
+note   = "`std.math.decimal`: `(n 0 3)` in a request a rule never concludes: no operation takes it, so it is not checked (Q-M1f.404), R is {∅} and a sum beside it answered."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal/05_what_stays_silent.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.decimal`: what the check does not flag, `(n end 1)`, `(n (pair 1 2) 3)`, a numeral a rule assembles, `(n ?p x)`, and a top-level fact of `n`; R is {∅}."
+note   = "`std.math.decimal`: what the check does not flag, `(n end 1)` behind a name and `(n (pair 1 2) 3)`, each a request's operand: no flag, no label, no answer; R is {∅}."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal/06_a_programs_own_named_z.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`std.math.decimal`: `(named z)` written by the program beside `(price apple (n z 3))`, R = {∅} and a sum answered, which `numeral-prefix-named`'s `(neq ?m z)` holds: it kills that rule's `drop-neq` mutant."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`std.math.decimal`: a rule that fires hands `(n (n z 1) x)` to a request, and the operand's look-up checks it: `numeral-digit`, `(solve :expect (false))`; its twin whose rule never fires is `04`."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

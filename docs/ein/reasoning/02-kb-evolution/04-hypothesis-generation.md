@@ -448,9 +448,8 @@ $$
   $R$;
 - $\operatorname{RelNames}(P)$ is every atom the program declares as a relation, writes under the first arrow of a
   fact, or names a rule or an obligation by
-  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)), with
-  $\mathsf{written}$, the relation of the facts that reading the text adds. The relation of a fact that only a rule
-  concludes is none of these, so **a relation whose facts only a rule concludes is a guessable atom**, and a
+  ([Q-M1f.226](../../../decisions/hypotheses/Q-M1f.226-an-obligations-name-is-no-guessable-atom.md)). The
+  relation of a fact that only a rule concludes is none of these, so **a relation whose facts only a rule concludes is a guessable atom**, and a
   candidate can have it as an argument. The candidate stays, and the answer names it
   ([solution semantics § 1.4](06-solution-semantics.md#14-candidate-and-universe)); declaring the relation takes the
   atom out.

@@ -36,7 +36,6 @@ partition "from_ir.rs" {
   :pass 1: the relations, each storing its declaration fact;
   :pass 2: the rules and hrules,\ntheir :match and :assert macro-expanded first;
   :pass 3: the facts, with their provenance;
-  :state (written T) for every nested fact;
   :the program-wide refusals, the queries,\nthe one (solve ...), the last (config ...);
   :the unimported std.macro guard;
   :intern every name a rule or a query mentions;

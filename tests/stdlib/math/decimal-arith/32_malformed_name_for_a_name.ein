@@ -11,10 +11,10 @@
 ;;; `let-to-name` reads the `let` and `(named price)`, which `let-named`
 ;;; writes for `price`'s own `let`, and flags `(malformed (let alias
 ;;; price))`, whether or not a request names `alias`: the `let` is flagged
-;;; where it is written (Q-M1f.207). No request hands the value it finds to
-;;; a numeral's check, which is `std.math.decimal`'s, of what is written
-;;; (Q-M1f.210); a `let`'s value is the `let`'s to read, and a request that
-;;; names `alias` is computed all the same.
+;;; where it is written (Q-M1f.207). A request that names `alias` finds
+;;; `price`, a name, and no numeral for `std.math.decimal`'s check to walk
+;;; (Q-M1f.210, Q-M1f.404); a `let`'s value is the `let`'s to read, and that
+;;; request is computed all the same.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

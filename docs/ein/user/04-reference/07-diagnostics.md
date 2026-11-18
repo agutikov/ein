@@ -1069,56 +1069,6 @@ conjunct, read after a macro's expansion:
 An `(and …)` of one conjunct, `(and (p ?x))`, is one conclusion and loads. A macro's call that leaves the `(and …)`
 is placed as § 2.16 places a form a body writes, at the macro's body.
 
-### 2.30 `written` is the loader's: what a file writes, stated at load
-
-**The loader states every fact nested in what a file writes**, as it states each declaration's mirror
-([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md),
-[Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)): for each fact stored
-from a file, a program's, a local module's or a stdlib module's, each fact nested among its arguments at any depth is
-stated once, `(written T)`; for a stored negation `(not P)`, the facts nested in P's arguments, P being the fact it
-denies and no term the file writes, and where P is itself a stored negation the same again of the fact P denies. And the facts nested in every rule's and hrule's conclusion that hold no
-variable: a nested fact a rule assembles from a variable is stated by nothing. A fact of `eq`, which is checked and
-never stored, states nothing.
-
-| a file writes | root holds, beside it |
-|---|---|
-| `(add (n (n z 1) 2) (n z 5))` | `(written (n (n z 1) 2))`, `(written (n z 1))`, `(written (n z 5))` |
-| `(not (p (q (k a))))` | `(written (q (k a)))`, `(written (k a))`: P's arguments' facts, and nothing of `(p (q (k a)))`, the fact denied |
-| `(not (not (p (q a))))` | `(written (q a))`: nothing of `(not (p (q a)))` nor of `(p (q a))`, the two facts denied |
-| `(rule r () :match (s ?x) :assert (p (q a) (k ?x)) …)` | `(written (q a))`, from the rule's text |
-
-`written` is a **kernel relation**, as `relation` is: reserved, so no declarator binds it
-([`03-reserved-names.md`](03-reserved-names.md)); never a hypothesis target, no relation of the program's registry; and
-decided at root, as nothing but the loader states it. Each `(written T)` is derived by the loader's step
-`#written` from the fact it was read in, its one premise
-([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)), so a **core
-that rests on one names the fact as written**, and `refuted by` names the rule that read it; one stated from a rule's
-text rests on no fact, and its core is $\emptyset$. What reads it is a representation module's check of its own terms,
-`std.math.decimal`'s of a numeral, which so sees every numeral a file writes, wherever it sits, with no calculation
-started ([malformed numbers](04-stdlib/07-calculator.md#malformed-numbers-what-is-flagged-and-where)).
-
-**Where it shows** is where the mirror facts show: `ein saturate --dump` lists each,
-`(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts it; `ein render kb` draws it, an octagon
-that points at the fact; a `.einb` stores it.
-A `--dump-answer` state file writes none, as it writes no declaration's mirror, because the loader states them again
-from the facts the file holds, a fact the run derived among them, and says so in its header where the state holds
-any; a knowledge base written out as Ein text, one fact a line, leaves them out for the same reason; `-P`'s
-blocks, the facts *beyond the program as loaded*, and a `(model …)`'s comparison leave them out. The read-out prints none: a state's listing is its facts over
-the candidates' relations, and `written` is no candidate's.
-
-**A program does not write it**
-([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)). A fact of `written`, or a
-stored negation of one, written in a file, and a rule's or an hrule's conclusion of one, is refused at load, one
-`kb load error:` line each, placed at the form:
-
-| the program | the line |
-|---|---|
-| `(written (p a))` | `kb load error: w.ein:2:2: (written (p a)) — written is the loader's: it states (written T) for each fact nested in a fact a file writes, and a program does not write it` |
-| `(rule r () :match (p ?x) :assert (and (q ?x) (written (p ?x))) …)` | `kb load error: w.ein:4:47: rule 'r': its :assert writes (written (p ?x)) — written is the loader's: …` |
-| `(relation written T …)` | `kb load error: relation 'written' shadows a reserved kernel name at None` |
-
-A rule may **read** it, `:match (written (n ?p ?a))`, and so may a goal.
-
 ## See also
 
 - [`05-cli.md`](05-cli.md) — the commands, their options and every exit code.

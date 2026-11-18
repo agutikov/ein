@@ -2,23 +2,37 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A numeral is checked as it is written, with no calculation started: here
-;;; it is a `let`'s value, and no request names the constant. `(n (n z 1) x)`
-;;; holds `x` where a digit goes, so `numeral-digit` derives `(not-decimal (n
-;;; (n z 1) x) x)` and `not-decimal-is-false` derives `(false)`. The check
-;;; runs where a numeral is written, and not at a request's operand, so a
-;;; `let` nobody asks about is read as any numeral is (Q-M1f.210).
+;;; A numeral is checked where an operation takes it, and a numeral no
+;;; operation takes is not checked (Q-M1f.404). Here it is a `let`'s value,
+;;; and no request names the constant: `(n (n z 1) x)` holds `x` where a
+;;; digit goes, and nothing asks whether it is a number, so `numeral-digit`
+;;; does not fire, no flag is derived, and the numeral has no label. The sum
+;;; beside it is answered, its operands checked and labelled.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
-;;; empty, and it is the one claim such a program can make.
-;;; `ein solve` names the `let` in the unsat core.
+;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
+;;; nothing. The sum is answered, `not-decimal`'s extent is empty, and
+;;; `valid`'s is the sum's operands, its answer and `z`, and not the `let`'s
+;;; numeral.
 
-(import std.math.decimal-arith :symbols (decimal-arith let))
-(import std.math.decimal :symbols (n))
+(import std.math.decimal-arith :symbols (decimal-arith let add sum-of))
+(import std.math.decimal :symbols (n not-decimal valid))
 (import std.math.arith :symbols (z))
 
 (let price (n (n z 1) x))
+(add (n z 4) (n z 3))
 
-(solve :expect (false))
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 4) (n z 3) (n z 7))))
+
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))
+
+(query :goal (valid ?numeral)
+       :goal-text "{?numeral} is a decimal number"
+       :expect (model (valid z) (valid (n z 3)) (valid (n z 4)) (valid (n z 7))))

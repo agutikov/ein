@@ -61,7 +61,7 @@ such a fact as a terminal labelled with the empty environment.
 
 ## Names the parser and the loader make up
 
-Six names stand for something a program writes no name for. Each starts with `#`, which is no name character (`#|`
+Five names stand for something a program writes no name for. Each starts with `#`, which is no name character (`#|`
 opens a comment), so no program can spell one. `ein_core::text::INTERNAL_NAMES` lists them,
 `ein_core::text::is_internal` is the test the dumper and `(import … :symbols …)` read, and
 [`ein-ir/tests/generated_parser.rs`](../../../ein.rs/crates/ein-ir/tests/generated_parser.rs)'
@@ -74,7 +74,6 @@ opens a comment), so no program can spell one. `ein_core::text::INTERNAL_NAMES` 
 | `#params` | a rule's or a macro's parameter list | the list, with no head |
 | `#list` | a fact's `:using` list, in the parse tree | the list, with no head |
 | `#query` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
-| `#written` | the loader's step a `(written T)` fact is derived by, from the fact it was read in (`ein_core::terms::WRITTEN_STEP`) | a quoted name, `:rule "#written"` in `ein saturate --dump` |
 
 `:match ()` is the empty conjunction, which fires once, and `:assert ()` the empty conclusion, which asserts
 nothing: each compiles with no synthetic head, so no run reaches an atom `#empty`.

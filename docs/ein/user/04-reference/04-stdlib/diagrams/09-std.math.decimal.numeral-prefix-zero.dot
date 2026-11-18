@@ -2,14 +2,14 @@ digraph rule_numeral_prefix_zero_lhs_rhs {
   rankdir=TB;
   label="numeral-prefix-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
     "0_L" [label="0", shape=rectangle];
     "?a_L" [label="?a", shape=diamond];
     subgraph cluster_ctx_L_0 {
-      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n 0 ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
     }
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n 0 ?a)_L" [label="1", color="#d62728"];
+    "?w_L" -> "(n 0 ?a)_L" [label="check", color="#7f7f7f", fontcolor="#7f7f7f"];
     "(n 0 ?a)_L" -> "0_L" [label="1", color="#9467bd"];
     "(n 0 ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
   }

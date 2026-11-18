@@ -2294,7 +2294,7 @@
 0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: solve
 0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: test
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: render constraints
-0    tests/stdlib/math/binary/06_what_stays_silent.ein :: render rules
+1    tests/stdlib/math/binary/06_what_stays_silent.ein :: render rules
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: solve
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: test
@@ -2594,7 +2594,7 @@
 0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: solve
 0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: test
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: render constraints
-0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: render rules
+1    tests/stdlib/math/decimal/05_what_stays_silent.ein :: render rules
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: solve
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: test
@@ -2603,6 +2603,11 @@
 0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: saturate
 0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: solve
 0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: test
+0    tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein :: render constraints
+0    tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein :: render rules
+0    tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein :: saturate
+0    tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein :: solve
+0    tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein :: test
 0    tests/stdlib/math/digits/01_tables.ein :: render constraints
 1    tests/stdlib/math/digits/01_tables.ein :: render rules
 0    tests/stdlib/math/digits/01_tables.ein :: saturate

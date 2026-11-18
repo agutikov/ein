@@ -22,7 +22,7 @@
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
 //! | **a division by zero is flagged at the call, whoever made it** (Q-M1f.163): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
-//! | **a malformed numeral has exactly one flag where it is written, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag (Q-M1f.210) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
+//! | **a malformed numeral an operation takes has exactly one flag, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag, and a numeral no operation takes is not checked (Q-M1f.210, Q-M1f.404) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
 //! | **the tagged calls are an interface** (Q-M1f.189, Q-M1f.297): `std.math.decimal-arith`'s, `std.math.int`'s, `std.math.rat`'s and `std.math.binary-arith`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
@@ -616,8 +616,9 @@ fn outcome(body: &str) -> Outcome {
     }
 }
 
-/// **A malformed numeral is flagged where it is written, a malformed operand
-/// at its request, and neither is answered** (Q-M1f.210, Q-M1f.206). Every
+/// **A malformed numeral is flagged where an operation takes it, a malformed
+/// operand at its request, and neither is answered** (Q-M1f.210, Q-M1f.206,
+/// Q-M1f.404). Every
 /// operation, either operand, every kind of malformed operand:
 ///
 /// - a digit's place holding a name that is no digit, at the units and a
@@ -627,7 +628,8 @@ fn outcome(body: &str) -> Outcome {
 ///
 /// Each derives `std.math.decimal`'s `(not-decimal NUMERAL THING)`, on the
 /// smallest numeral at fault, once whatever request holds it: the numeral is
-/// checked as it is written, and no request is flagged for it. **A digit where
+/// checked where the operand's look-up finds it, and no request is flagged
+/// for it. **A digit where
 /// a number goes** is the operand's fault, `std.math.decimal-arith`'s: `(malformed
 /// REQUEST)`, the request as written. **A name for a name**, `alias`, is the
 /// `let`'s: `(malformed (let alias price))`. Nothing else flags; the flags
@@ -726,16 +728,11 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
             op.request
         );
     }
-    // **Where it is written does not matter**: the same numeral, asked about
-    // by no request, is flagged as it is written.
+    // **A numeral no operation takes is not checked**: the same numeral,
+    // asked about by no request, has no flag, and nothing is a contradiction.
     let got = outcome("(let unused (n (n z 1) x))\n");
-    assert_eq!(
-        got.not_decimal,
-        ["(not-decimal (n (n z 1) x) x)".to_string()]
-            .into_iter()
-            .collect::<BTreeSet<_>>()
-    );
-    assert_eq!(got.contradiction, ["(false)"]);
+    assert!(got.not_decimal.is_empty(), "{:?}", got.not_decimal);
+    assert!(got.contradiction.is_empty(), "{:?}", got.contradiction);
 }
 
 /// **A name no `let` states is undeclared** (Q-M1f.317):
@@ -941,11 +938,14 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **One addition, as a circuit.** 123078 + 4567: two operands looked up
 /// (5 firings with the request's own), six columns, the end of the walk, the
 /// check for a high zero, six digits turned round, the hand-over and the
-/// answer: 21 firings, one chain, every call carrying its continuation. The
-/// check of a numeral is `std.math.decimal`'s, read off what the loader
-/// states, and costs
-/// a well-formed numeral no firing, so every pin of the four tests below is
-/// its chain again, its size its depth but where walks run side by side.
+/// answer: 21 firings, one chain, every call carrying its continuation. Beside
+/// the chain, each operand's numeral is checked (Q-M1f.404): the ask, a
+/// firing a place and one for the label, 7 and 5 firings here, so 35 in all.
+/// The check runs beside the chain and never in it, so it adds to a
+/// circuit's size, and to its depth only where a walk of it is longer than
+/// the chain, and a numeral two operands share is checked once: every pin of
+/// the four tests below has its chain's depth, and its size is the chain's
+/// and the checks' together.
 ///
 /// The numbers are pinned so that a change to the wiring shows as a change
 /// to them: `cargo test -p ein-infer --test arith_theory the_circuit` is the
@@ -956,7 +956,7 @@ fn the_circuit_of_one_addition() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(add {six} {four})\n")),
-        (21, 21),
+        (35, 21),
         "123078 + 4567: (firings, depth)"
     );
     // The carry out of the top column goes straight to the turn: nine columns,
@@ -967,14 +967,14 @@ fn the_circuit_of_one_addition() {
             written("999999999"),
             written("1")
         )),
-        (27, 27),
+        (41, 27),
         "999999999 + 1: (firings, depth)"
     );
     // Named operands cost what numbers cost, a lookup either way, and each
     // `let` one firing that says its name is one.
     assert_eq!(
         circuit(&format!("(let a {six})\n(let b {four})\n(add a b)\n")),
-        (23, 21),
+        (37, 21),
         "the same sum by name"
     );
 }
@@ -993,24 +993,24 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(sub {six} {four})\n")),
-        (28, 21),
+        (42, 21),
         "123078 - 4567: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(sub {four} {six})\n")),
-        (28, 21),
+        (42, 21),
         "4567 - 123078: (firings, depth)"
     );
     // Equal numbers: both walks end with no borrow, each drops its six
     // zeros and hands over zero, and the two answer rules say the one fact.
     assert_eq!(
         circuit(&format!("(sub {six} {six})\n")),
-        (35, 20),
+        (44, 20),
         "123078 - 123078: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(cmp {six} {four})\n")),
-        (13, 13),
+        (27, 13),
         "123078 against 4567: (firings, depth)"
     );
 }
@@ -1024,25 +1024,25 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
 #[test]
 fn the_circuit_of_one_multiplication() {
     let mul = |x: &str, y: &str| circuit(&format!("(mul {} {})\n", written(x), written(y)));
-    assert_eq!(mul("123", "456"), (72, 72), "123 x 456: (firings, depth)");
+    assert_eq!(mul("123", "456"), (82, 72), "123 x 456: (firings, depth)");
     assert_eq!(
         mul("123078", "123078"),
-        (227, 227),
+        (236, 227),
         "123078 x 123078: (firings, depth)"
     );
     // The two lengths: a multiplier of one digit is one row; each digit more
     // is a row and an addition.
-    assert_eq!(mul("999999", "9"), (28, 28), "six digits by one");
-    assert_eq!(mul("9", "999999"), (128, 128), "one digit by six");
-    assert_eq!(mul("999999", "999999"), (238, 238), "six digits by six");
+    assert_eq!(mul("999999", "9"), (39, 28), "six digits by one");
+    assert_eq!(mul("9", "999999"), (139, 128), "one digit by six");
+    assert_eq!(mul("999999", "999999"), (247, 238), "six digits by six");
     assert_eq!(
         mul("999999999999", "999999"),
-        (370, 370),
+        (392, 370),
         "twelve digits by six"
     );
     assert_eq!(
         mul("999999", "999999999999"),
-        (556, 556),
+        (578, 556),
         "six digits by twelve"
     );
 }
@@ -1058,22 +1058,22 @@ fn the_circuit_of_one_division() {
     let div = |x: &str, y: &str| circuit(&format!("(div {} {})\n", written(x), written(y)));
     assert_eq!(
         div("127645", "25"),
-        (220, 220),
+        (232, 220),
         "127645 / 25: (firings, depth)"
     );
-    assert_eq!(div("7", "3"), (84, 84), "7 / 3");
-    assert_eq!(div("999999", "7"), (229, 229), "six digits by one");
-    assert_eq!(div("999999999999", "7"), (394, 394), "twelve digits by one");
+    assert_eq!(div("7", "3"), (90, 84), "7 / 3");
+    assert_eq!(div("999999", "7"), (240, 229), "six digits by one");
+    assert_eq!(div("999999999999", "7"), (411, 394), "twelve digits by one");
     assert_eq!(
         div("999999999999", "777777"),
-        (655, 655),
+        (677, 655),
         "twelve digits by six"
     );
     // A division by zero stops at the divisor's normal form: the operands,
     // one row, its strip, the flag and the contradiction. The call is
     // flagged beside the request and is a contradiction too: two firings
     // more, no deeper.
-    assert_eq!(div("127645", ""), (12, 10), "127645 / 0");
+    assert_eq!(div("127645", ""), (20, 10), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────
@@ -1145,6 +1145,9 @@ struct Spec {
     /// over, which a program writes and no rule of the theory derives.
     absent: Option<(&'static str, &'static str)>,
     exceptions: &'static [Exception],
+    /// A representation's label, which its closing rule asserts of `z`
+    /// (Q-M1f.404): `valid` for decimal, `bin-valid` for binary.
+    zero_label: Option<&'static str>,
 }
 
 /// `std.math.decimal-arith`, decimal's own rules: the digit multiplier, the
@@ -1159,6 +1162,7 @@ const DECIMAL_ARITH: Spec = Spec {
     false_rules: &[],
     absent: Some(("operand-undeclared", "let")),
     exceptions: &[],
+    zero_label: None,
 };
 
 /// `std.math.positional` as decimal activates it.
@@ -1174,10 +1178,12 @@ const POSITIONAL_DECIMAL: Spec = Spec {
     ],
     absent: None,
     exceptions: &[NAME_LOOKUP, NAME_TWICE],
+    zero_label: None,
 };
 
-/// `std.math.decimal`, the numeral and its check over `written`: the ten
-/// digits' guards in `numeral-digit`, *not `z`* in `numeral-prefix-named`.
+/// `std.math.decimal`, the numeral and its check, which an operation asks
+/// for: the ten digits' guards in `numeral-digit`, *not `z`* in
+/// `numeral-prefix-named`.
 const DECIMAL: Spec = Spec {
     file: "stdlib/math/decimal.ein",
     instance: None,
@@ -1187,6 +1193,7 @@ const DECIMAL: Spec = Spec {
     false_rules: &[("not-decimal-is-false", "not-decimal")],
     absent: None,
     exceptions: &[],
+    zero_label: Some("valid"),
 };
 
 /// `std.math.arith`, arithmetic itself: `z`, and the division by zero's flag
@@ -1200,6 +1207,7 @@ const ARITH: Spec = Spec {
     false_rules: &[("division-by-zero-is-false", "division-by-zero")],
     absent: None,
     exceptions: &[],
+    zero_label: None,
 };
 
 /// `std.math.binary-arith`, binary's own rules: a product's row, the division
@@ -1213,6 +1221,7 @@ const BINARY_ARITH: Spec = Spec {
     false_rules: &[],
     absent: Some(("bin-operand-undeclared", "bin-let")),
     exceptions: &[],
+    zero_label: None,
 };
 
 /// `std.math.positional` as binary activates it.
@@ -1228,11 +1237,12 @@ const POSITIONAL_BINARY: Spec = Spec {
     ],
     absent: None,
     exceptions: &[BIN_NAME_LOOKUP, BIN_NAME_TWICE],
+    zero_label: None,
 };
 
-/// `std.math.binary`, the binary numeral and its check over `written`, on
-/// `std.math.decimal`'s pattern: the two bits' guards in `bin-numeral-bit`,
-/// *not `z`* in `bin-numeral-prefix-named`.
+/// `std.math.binary`, the binary numeral and its check, which an operation
+/// asks for, on `std.math.decimal`'s pattern: the two bits' guards in
+/// `bin-numeral-bit`, *not `z`* in `bin-numeral-prefix-named`.
 const BINARY: Spec = Spec {
     file: "stdlib/math/binary.ein",
     instance: None,
@@ -1242,6 +1252,7 @@ const BINARY: Spec = Spec {
     false_rules: &[("not-binary-is-false", "not-binary")],
     absent: None,
     exceptions: &[],
+    zero_label: Some("bin-valid"),
 };
 
 /// Every module of the calculator's two bases, each held to the same text
@@ -1274,6 +1285,7 @@ fn call_of(base: &str) -> Vec<String> {
         false_rules: &[],
         absent: None,
         exceptions: &[],
+        zero_label: None,
     });
     let mut calls = Vec::new();
     for (_, rule) in m.declared("rule") {
@@ -1770,6 +1782,7 @@ fn the_closing_rule_of(spec: &Spec) {
         "{file}: `{closer_name}` fires at root, on nothing"
     );
     let (mut closed, mut named, mut calls) = (BTreeSet::new(), BTreeSet::new(), 0usize);
+    let mut zero_labelled = false;
     for c in m.conjuncts(m.clause(*closer, "assert")) {
         if m.ast.head_name(c) == Some("positional") {
             calls += 1;
@@ -1787,9 +1800,19 @@ fn the_closing_rule_of(spec: &Spec) {
             Some(h) if h == spec.names_by => {
                 assert!(named.insert(arg.clone()), "named twice: {arg}")
             }
+            // A representation labels its zero valid (Q-M1f.404), once.
+            Some(h) if Some(h) == spec.zero_label && arg == "z" => {
+                assert!(!zero_labelled, "{file}: `z` labelled twice");
+                zero_labelled = true;
+            }
             other => panic!("{file}: `{closer_name}` asserts a {other:?}"),
         }
     }
+    assert_eq!(
+        zero_labelled,
+        spec.zero_label.is_some(),
+        "{file}: `{closer_name}` labels `z` valid where the module is a representation"
+    );
 
     // The tables the module imports, read off its import of a module of
     // tables, the entries of the calculator's modules it imports, and whether
@@ -1942,7 +1965,7 @@ fn one_call_of_the_macro_connects_each_base() {
             (name, params)
         })
         .collect();
-    assert_eq!(rules.len(), 77, "std.math.positional's rules");
+    assert_eq!(rules.len(), 78, "std.math.positional's rules");
     let (params, body) = the_macro();
     assert_eq!(
         body, rules,

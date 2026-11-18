@@ -204,7 +204,8 @@ Each module's page lists its tagged calls.
 A fault is flagged by the module whose term it is a fault of
 ([Q-M1f.210](../../../../decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md),
 [Q-M1f.316](../../../../decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)): a
-numeral's by its representation, as soon as it is written; an operand's and a `let`'s by the module that reads it.
+numeral's by its representation, where an operation takes it, and one no operation takes is not checked
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)); an operand's and a `let`'s by the module that reads it.
 
 | what the program wrote | the flag | by |
 |---|---|---|

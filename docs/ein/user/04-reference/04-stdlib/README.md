@@ -251,7 +251,7 @@ module is loaded.
   algebra's properties mean; [Obligations](../../03-syntax-and-semantics/08-obligations.md) — `(open R)`;
   [Macros and imports](../../03-syntax-and-semantics/11-macros.md).
 - [The syntax reference](../02-syntax.md) — the `import` form; [Reserved names](../03-reserved-names.md) —
-  `__closed__`, `written`, `open` and the kernel relations these modules build on;
+  `__closed__`, `open` and the kernel relations these modules build on;
   [Diagnostics](../07-diagnostics.md) — what a load refuses.
 - [Word problems](../../02-guide/08-word-problems.md) — programs over the calculator.
 - [`examples/arith/`](../../../../../examples/arith/) — one program per operation of the calculator;

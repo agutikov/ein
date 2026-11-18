@@ -38,9 +38,14 @@ digraph rule_from9_3_lhs_rhs {
     subgraph cluster_ctx_R_1 {
       label="of9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(num9 0 0 0 0 0 0 ?a3 ?a2 ?a1)_R" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+    }
+    subgraph cluster_ctx_R_2 {
+      label="of9, valid ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n (n (n z ?a3) ?a2) ?a1)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
     }
     "(num9 0 0 0 0 0 0 ?a3 ?a2 ?a1)_R" -> "(n (n (n z ?a3) ?a2) ?a1)_R" [label="of9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "h3_valid_R" [shape=octagon, label="valid", color="#17becf", fontcolor="#17becf"];
+    "h3_valid_R" -> "(n (n (n z ?a3) ?a2) ?a1)_R" [label="1", color="#17becf", style=dashed];
     "(num9 0 0 0 0 0 0 ?a3 ?a2 ?a1)_R" -> "0_R" [label="1", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 ?a3 ?a2 ?a1)_R" -> "0_R" [label="2", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 ?a3 ?a2 ?a1)_R" -> "0_R" [label="3", color="#d62728", style=dashed];

@@ -373,43 +373,6 @@ fn what_not_does_not_deny_is_refused_under_a_negation_too() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **A negation nests what the fact it denies nests, at every negation**
-/// (Q-M1f.275): the loader states `(written T)` for the facts nested in the
-/// arguments of the fact under the negations, for a negation that is an
-/// argument, and for none of the facts denied on the way.
-#[test]
-fn the_loader_states_what_the_fact_under_the_negations_nests() {
-    let scratch = Scratch::new("ein-negneg-written-step");
-    let f = write(
-        &scratch,
-        "written.ein",
-        "(p (q a) (not (not (r (s b)))))\n\
-         (not (not (not (u (v c)))))\n\
-         (rule k () :match (p ?x ?y) :assert (not (not (m (n d)))) :why \"k\")\n\
-         (rule k2 () :match (p ?x ?y) :assert (told ?x (not (not (m2 (n2 d))))) :why \"k2\")\n",
-    );
-    let r = ein(&["saturate", "--dump", &f]);
-    assert_eq!(r.code, 0, "{}", r.err);
-    let written: Vec<String> = held(&r.out)
-        .into_iter()
-        .filter(|l| l.starts_with("(written "))
-        .collect();
-    assert_eq!(
-        written,
-        [
-            "(written (q a))",
-            "(written (not (not (r (s b)))))",
-            "(written (s b))",
-            "(written (v c))",
-            "(written (n d))",
-            "(written (not (not (m2 (n2 d)))))",
-            "(written (n2 d))",
-        ],
-        "{}",
-        r.out
-    );
-}
-
 /// A state that holds one is written as a file that loads: the fact a rule
 /// built is a fact a file may write.
 #[test]

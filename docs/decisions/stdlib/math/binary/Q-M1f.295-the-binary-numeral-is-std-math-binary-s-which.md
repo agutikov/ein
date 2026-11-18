@@ -1,8 +1,9 @@
 # Q-M1f.295 — The binary numeral is `std.math.binary`'s, which checks it
 
 `std.math.binary` is binary's representation, on `std.math.decimal`'s pattern: it declares `b2` and `bin-named`,
-and four rules over the loader's `(written (b2 P A))` flag `(not-binary NUMERAL THING)`, from which
-`not-binary-is-false` derives `(false)`. A decimal digit as a prefix, `(b2 7 1)`, is a name in binary's eyes, and
+the check `bin-check` an operation asks of a numeral it takes and its label `bin-valid`
+([Q-M1f.404](../Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)), and four rules over the check's
+walk flag `(not-binary NUMERAL THING)`, from which `not-binary-is-false` derives `(false)`. A decimal digit as a prefix, `(b2 7 1)`, is a name in binary's eyes, and
 silent, as `(n end 1)` is in decimal. The module's entry is `binary`.
 
 **Why.** A malformed binary numeral is its representation's fault

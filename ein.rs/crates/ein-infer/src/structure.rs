@@ -84,8 +84,7 @@
 //!
 //! **The small KB is the program over fewer of its facts.** It has the
 //! loaded program's registries, every rule, declaration and import, and of
-//! the facts a file writes those a rule keeps ([`small_kb`]); `(written T)`
-//! is stated again as the loader states it. It is built over the same
+//! the facts a file writes those a rule keeps ([`small_kb`]). It is built over the same
 //! [`Terms`], so a candidate is one fact in both, and it is what loading the
 //! program's text with the other facts deleted gives. Its nodes are the node
 //! function's, over its own saturated root and the universe **root** built
@@ -406,8 +405,8 @@
 use std::collections::BTreeMap;
 use std::time::Instant;
 
-use ein_core::entities::{Loc, NameCategory};
-use ein_core::{FactId, Kb, Program, Prov, ProvId, Symbol, Terms, Value};
+use ein_core::entities::NameCategory;
+use ein_core::{FactId, Kb, Program, ProvId, Symbol, Terms};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -985,9 +984,6 @@ pub enum Origin {
     Fact,
     /// The fact a `(relation …)` declaration stores.
     Declaration,
-    /// `(written T)`, the loader's, for a fact nested in what a file writes
-    /// or in a rule's conclusion.
-    Written,
 }
 
 impl Origin {
@@ -995,7 +991,6 @@ impl Origin {
         match self {
             Origin::Fact => "fact",
             Origin::Declaration => "declaration",
-            Origin::Written => "written",
         }
     }
 }
@@ -1146,87 +1141,35 @@ pub(crate) struct Loaded {
     /// Every fact the loaded program holds, in the order the loader stored
     /// them, each with its record.
     facts: Vec<(FactId, Option<ProvId>)>,
-    /// The terms the loader states `(written T)` for from the rules' text.
-    conclusions: Vec<(Value, Option<Loc>)>,
 }
 
 impl Loaded {
     /// Of `root`, **before** anything saturates it.
-    pub(crate) fn of(root: &Kb, terms: &mut Terms, ast: &Ast) -> Result<Loaded, SolveError> {
+    pub(crate) fn of(root: &Kb) -> Loaded {
         let mut program = root.program().clone();
         program.domain.take();
-        let conclusions =
-            ein_ir::written_in_conclusions(ast, terms, &program, &mut FxHashSet::default())
-                .map_err(|e| SolveError::Unsupported(e.to_string()))?;
-        Ok(Loaded {
+        Loaded {
             program,
             facts: root.facts().map(|f| (f, root.primary(f))).collect(),
-            conclusions,
-        })
+        }
     }
 
     /// **The program over the facts `keep` keeps**: the loaded program's
     /// registries, every rule, declaration and import among them, and of
     /// its facts those `keep` says, in the order written, each with its own
-    /// record. `(written T)` is the loader's and is stated again as the
-    /// loader states it, for each fact nested in a fact kept and each one a
-    /// rule's conclusion holds (`ein_ir::written_in`), so `keep` is not asked
-    /// about one. The KB is what loading the program's text with the other
+    /// record. The KB is what loading the program's text with the other
     /// facts deleted gives, unsaturated, over the same [`Terms`]: a fact of
     /// either is the same [`FactId`] in both.
     fn over(&self, terms: &mut Terms, keep: &dyn Fn(FactId) -> bool) -> Kb {
-        let written = terms.kernel.written;
-        let step = terms.kernel.written_step;
         let mut kb = Kb::new(self.program.clone());
-        let mut kept: Vec<(FactId, Option<ProvId>)> = Vec::new();
-        let mut records: FxHashMap<FactId, ProvId> = FxHashMap::default();
         for &(f, prov) in &self.facts {
-            let (rel, args) = terms.fact(f);
-            if rel == written {
-                records.extend(prov.map(|p| (f, p)));
-                continue;
-            }
             if !keep(f) {
                 continue;
             }
+            let (rel, args) = terms.fact(f);
             let args = args.to_vec();
             kb.add_fact(terms, rel, &args, prov)
                 .expect("a fact the program holds");
-            kept.push((f, prov));
-        }
-        let mut seen: FxHashSet<Value> = FxHashSet::default();
-        for (f, prov) in kept {
-            for t in ein_ir::written_in(terms, f, &mut seen) {
-                let id = terms
-                    .intern_fact(written, &[t])
-                    .expect("a term the program writes");
-                // The loaded program's own record where it read the term in
-                // this fact, and a record of the same step where it read it
-                // in one the KB leaves out.
-                let prov = match records.get(&id) {
-                    Some(&p) if *terms.provs.get(p).premises == [f] => p,
-                    _ => {
-                        let loc = prov.and_then(|p| terms.provs.get(p).loc);
-                        terms.provs.push(Prov::from_rule(step, Box::new([f]), loc))
-                    }
-                };
-                kb.add_fact(terms, written, &[t], Some(prov))
-                    .expect("a term the program writes");
-            }
-        }
-        for &(t, loc) in &self.conclusions {
-            if !seen.insert(t) {
-                continue;
-            }
-            let id = terms
-                .intern_fact(written, &[t])
-                .expect("a term the program writes");
-            let prov = match records.get(&id) {
-                Some(&p) if terms.provs.get(p).premises.is_empty() => p,
-                _ => terms.provs.push(Prov::from_rule(step, Box::new([]), loc)),
-            };
-            kb.add_fact(terms, written, &[t], Some(prov))
-                .expect("a term the program writes");
         }
         kb.rebuild_indexes(terms);
         kb
@@ -1574,9 +1517,8 @@ pub fn theory(
 /// nothing else will use, with the small KB what `rule` says it is: root's
 /// pair layer, the small KB's over the same universe, and where
 /// [`TheoryOptions::supports`] asks, the support of every pair root
-/// excludes. `rule` is asked once about each fact a file writes; a
-/// declaration's fact is kept, and `(written T)` follows the facts it is
-/// read in.
+/// excludes. `rule` is asked once about each fact a file writes, and a
+/// declaration's fact is kept.
 ///
 /// [`theory`] is this under [`small_kb`]. A caller that names another rule
 /// measures an alternative, as `ein-infer/examples/pair_layer.rs` does;
@@ -1588,7 +1530,7 @@ pub fn theory_by(
     opts: &TheoryOptions,
     rule: &dyn Fn(&Stated<'_>, FactId) -> Verdict,
 ) -> Result<Theory, SolveError> {
-    let loaded = Loaded::of(root, terms, ast)?;
+    let loaded = Loaded::of(root);
     let reading = if opts.root_pairs {
         Reading::Pairs
     } else {
@@ -1748,9 +1690,7 @@ fn theory_in(
     let mut stated: Vec<Statement> = Vec::with_capacity(loaded.facts.len());
     for &(fact, prov) in &loaded.facts {
         let rel = terms.fact(fact).0;
-        let (origin, verdict) = if rel == terms.kernel.written {
-            (Origin::Written, Verdict::theory("written"))
-        } else if rel == terms.kernel.relation {
+        let (origin, verdict) = if rel == terms.kernel.relation {
             (
                 Origin::Declaration,
                 Verdict::theory("a declaration is kept"),
@@ -1791,14 +1731,6 @@ fn theory_in(
     // The small KB, and its layer over root's universe.
     let kept: FxHashSet<FactId> = stated.iter().filter(|s| s.kept).map(|s| s.fact).collect();
     let mut small_kb = loaded.over(terms, &|f| kept.contains(&f));
-    for s in stated.iter_mut().filter(|s| s.origin == Origin::Written) {
-        s.kept = small_kb.contains(s.fact);
-        s.clause = if s.kept {
-            "written in a fact the small KB keeps, or in a rule"
-        } else {
-            "written only in facts the small KB drops"
-        };
-    }
     let small = with_space(
         &mut small_kb,
         terms,
@@ -2736,7 +2668,7 @@ pub fn cover(
     ast: &Ast,
     opts: &CoverOptions,
 ) -> Result<Cover, SolveError> {
-    let loaded = Loaded::of(root, terms, ast)?;
+    let loaded = Loaded::of(root);
     with_space(root, terms, ast, &opts.layer, None, |sp| {
         cover_in(sp, &loaded, opts)
     })
@@ -3393,7 +3325,7 @@ pub fn exactly_one(
     ast: &Ast,
     opts: &CoverOptions,
 ) -> Result<(Cover, ExactlyOne), SolveError> {
-    let loaded = Loaded::of(root, terms, ast)?;
+    let loaded = Loaded::of(root);
     with_space(root, terms, ast, &opts.layer, None, |sp| {
         exactly_one_in(sp, &loaded, opts)
     })
@@ -3474,13 +3406,13 @@ mod tests {
     ];
 
     /// **The program over every fact it states is the program**: the same
-    /// facts in the same order, `(written …)` among them, each with a record
-    /// of the same step from the same premises.
+    /// facts in the same order, each with a record of the same step from the
+    /// same premises.
     #[test]
     fn the_program_over_all_its_facts_is_the_program() {
         for rel in SHAPES {
-            let (kb, mut terms, ast) = fresh(rel);
-            let loaded = Loaded::of(&kb, &mut terms, &ast).expect("loaded");
+            let (kb, mut terms, _) = fresh(rel);
+            let loaded = Loaded::of(&kb);
             let again = loaded.over(&mut terms, &|_| true);
             let facts = |kb: &Kb| -> Vec<FactId> { kb.facts().collect() };
             assert_eq!(facts(&again), facts(&kb), "{rel}");
@@ -3493,17 +3425,9 @@ mod tests {
                 };
                 assert_eq!(record(&again), record(&kb), "{rel}: {}", sexpr(&terms, f));
             }
-            // And over none of them, the declarations' and the rules' own
-            // statements are left.
+            // And over none of them, nothing is left.
             let none = loaded.over(&mut terms, &|_| false);
-            assert!(
-                none.facts().all(|f| {
-                    let p = none.primary(f).map(|p| terms.provs.get(p));
-                    terms.fact(f).0 == terms.kernel.written
-                        && p.is_some_and(|p| p.premises.is_empty())
-                }),
-                "{rel}"
-            );
+            assert_eq!(none.facts().count(), 0, "{rel}");
         }
     }
 

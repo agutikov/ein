@@ -3,15 +3,14 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A malformed numeral is `std.math.decimal`'s, flagged as it is written,
-;;; wherever it sits, with no request reading it (Q-M1f.210): the loader
-;;; states every fact nested in a fact the program writes, `(written T)`, and
-;;; the module's rules read each place of each numeral off it (Q-M1f.272).
-;;; The flag is `(not-decimal NUMERAL THING)`, on the smallest numeral at
-;;; fault (Q-M1f.274), and `not-decimal-is-false` derives `(false)` from it.
-;;; The request that holds the numeral is checked for none of it: no walk of
-;;; `std.math.decimal-arith`'s reads a numeral's places for a fault, and the
-;;; request's own flag, `(malformed REQUEST)`, is a digit's where a number goes.
+;;; A malformed numeral is `std.math.decimal`'s, flagged where an operation
+;;; takes it (Q-M1f.210, Q-M1f.404): the request's operand is looked up, and
+;;; `operand-check` asks the module's check of the numeral it finds, which
+;;; walks it a place a firing from the units. The flag is `(not-decimal
+;;; NUMERAL THING)`, on the smallest numeral at fault (Q-M1f.274), and
+;;; `not-decimal-is-false` derives `(false)` from it. No walk of the
+;;; arithmetic reads a numeral's places for a fault, and the request's own
+;;; flag, `(malformed REQUEST)`, is a digit's where a number goes.
 ;;;
 ;;; `numeral-digit`: the place of a digit holds `x`, which is none of the ten,
 ;;; in `(n (n z 1) x)`, inside the first operand. The rule has ten `neq` guards
@@ -22,9 +21,9 @@
 ;;;
 ;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
 ;;; a program can make. The sum beside it was computed and is in root's state,
-;;; but a dead state is no answer. `ein solve` names the request, the fact the
-;;; numeral was written in, in the unsat core, and `--trace` shows the flag
-;;; and the contradiction as the first steps of root.
+;;; but a dead state is no answer. `ein solve` names the request that took the
+;;; numeral in the unsat core, and `--trace` shows the check's walk, the flag
+;;; and the contradiction as root's steps.
 
 (import std.math.decimal-arith :symbols (decimal-arith add))
 (import std.math.decimal :symbols (n))

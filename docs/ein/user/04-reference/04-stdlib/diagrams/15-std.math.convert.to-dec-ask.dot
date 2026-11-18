@@ -13,6 +13,7 @@ digraph rule_to_dec_ask_lhs_rhs {
       label="bin-top-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(dec-bits ?b)_R" [shape=octagon, label="dec-bits", color="#8c564b", fontcolor="#8c564b"];
     }
+    "?b_R" -> "?b_R" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
     "h2_bin-top-first_R" [shape=octagon, label="bin-top-first", color="#ff7f0e", fontcolor="#ff7f0e"];
     "h2_bin-top-first_R" -> "(dec-bits ?b)_R" [label="1", color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "?b_R" [label="2", color="#ff7f0e", style=dashed];

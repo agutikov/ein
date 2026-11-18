@@ -40,6 +40,21 @@ looks up.
 ![The rule int-operand-second of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-operand-second.svg)
 <!-- /rule -->
 
+#### `int-operand-check`
+
+The integer an operand stands for is asked for its check, `(int-check I)`, once whatever reads it ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
+<!-- rule std.math.int int-operand-check -->
+```lisp
+(rule int-operand-check ()
+  :match  (operand-is ?k (int ?p ?n))
+  :assert (int-check (int ?p ?n))
+  :why    "the operand found for {?k} is {?p} less {?n}: it is checked, once, as an integer")
+```
+
+![The rule int-operand-check of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-operand-check.svg)
+<!-- /rule -->
+
 ## The normal form
 
 For $P$ less $N$, two subtraction walks, each part from the other, as a natural subtraction runs them: one of the
@@ -1056,15 +1071,29 @@ These four carry it from this module's tags to the request, where the shared rul
 
 ## An integer's own shape
 
-A digit or a named constant where a part goes, checked where the integer is written: each rule has one premise,
-`(written (int P N))`, and a row of `nz` or of `named`.
+A digit or a named constant where a part goes, checked where an operation takes the integer: each rule has one
+premise, `(int-check (int P N))`, and a row of `nz` or of `named`. `int-check-parts` asks `std.math.decimal`'s
+check of each part, which flags a malformed numeral and labels a well-formed one valid.
+
+#### `int-check-parts`
+
+<!-- rule std.math.int int-check-parts -->
+```lisp
+(rule int-check-parts ()
+  :match  (int-check (int ?p ?n))
+  :assert (and (check ?p ?p) (check ?n ?n))
+  :why    "each part of {?p} less {?n} is checked as a number")
+```
+
+![The rule int-check-parts of std.math.int, as the engine draws it](diagrams/12-std.math.int.int-check-parts.svg)
+<!-- /rule -->
 
 #### `int-p-digit`
 
 <!-- rule std.math.int int-p-digit -->
 ```lisp
 (rule int-p-digit ()
-  :match  (and (written (int ?x ?n)) (nz ?x))
+  :match  (and (int-check (int ?x ?n)) (nz ?x))
   :assert (not-integer (int ?x ?n) ?x)
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
@@ -1077,7 +1106,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 <!-- rule std.math.int int-p-zero -->
 ```lisp
 (rule int-p-zero ()
-  :match  (written (int 0 ?n))
+  :match  (int-check (int 0 ?n))
   :assert (not-integer (int 0 ?n) 0)
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
@@ -1090,7 +1119,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 <!-- rule std.math.int int-p-named -->
 ```lisp
 (rule int-p-named ()
-  :match  (and (written (int ?x ?n)) (named ?x))
+  :match  (and (int-check (int ?x ?n)) (named ?x))
   :assert (not-integer (int ?x ?n) ?x)
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
@@ -1103,7 +1132,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 <!-- rule std.math.int int-n-digit -->
 ```lisp
 (rule int-n-digit ()
-  :match  (and (written (int ?p ?x)) (nz ?x))
+  :match  (and (int-check (int ?p ?x)) (nz ?x))
   :assert (not-integer (int ?p ?x) ?x)
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
@@ -1116,7 +1145,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 <!-- rule std.math.int int-n-zero -->
 ```lisp
 (rule int-n-zero ()
-  :match  (written (int ?p 0))
+  :match  (int-check (int ?p 0))
   :assert (not-integer (int ?p 0) 0)
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
@@ -1129,7 +1158,7 @@ A digit or a named constant where a part goes, checked where the integer is writ
 <!-- rule std.math.int int-n-named -->
 ```lisp
 (rule int-n-named ()
-  :match  (and (written (int ?p ?x)) (named ?x))
+  :match  (and (int-check (int ?p ?x)) (named ?x))
   :assert (not-integer (int ?p ?x) ?x)
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
@@ -1161,7 +1190,8 @@ The closing rule: it closes the held extent of every relation of the module, nam
 ```lisp
 (rule int-arith ()
   :match  ()
-  :assert (and (__closed__ int) (__closed__ nz) (__closed__ not-integer)
+  :assert (and (__closed__ int) (__closed__ nz) (__closed__ int-check)
+               (__closed__ not-integer)
                (__closed__ int-simplify) (__closed__ int-simple-of)
                (__closed__ int-neg) (__closed__ int-neg-of)
                (__closed__ int-add) (__closed__ int-sum-of)
@@ -1189,6 +1219,7 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (__closed__ int-rule)
                (int-rule decimal-arith) (int-rule decimal) (int-rule arith)
                (int-rule int-operand) (int-rule int-operand-second)
+               (int-rule int-operand-check) (int-rule int-check-parts)
                (int-rule int-norm-walks) (int-rule int-norm-plus)
                (int-rule int-norm-minus)
                (int-rule int-simplify-ask) (int-rule int-simplify-start)

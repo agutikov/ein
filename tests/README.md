@@ -101,7 +101,7 @@ these programs give each rule one.
 | [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | `std.math.decimal-arith`, school arithmetic computed by saturation alone: addition, subtraction and comparison, multiplication, division, and the faults of an operand and a `let`: one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but those that divide by zero and those that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
-| [`stdlib/math/decimal/`](stdlib/math/decimal/) | `std.math.decimal`, the numeral and its check where it is written: a well-formed numeral in every place a file writes one; a malformed one in a `let` nobody asks about, in a fact of the program's own and in a rule's conclusion, each claiming `(false)`; what stays silent; and a program's own `(named z)`. `std.math.arith`, whose two rules the division-by-zero programs activate, has none of its own; see [below](#stdlibmathdecimal-a-numeral-checked-where-it-is-written) |
+| [`stdlib/math/decimal/`](stdlib/math/decimal/) | `std.math.decimal`, the numeral and the check an operation asks of one it takes: a well-formed numeral in every place a file writes one, labelled where an operation takes or makes it; a malformed one in a `let` nobody asks about, in a fact of the program's own and in a rule's conclusion that never fires, each unchecked, and one a rule hands to a request, checked; what stays silent; and a program's own `(named z)`. `std.math.arith`, whose two rules the division-by-zero programs activate, has none of its own; see [below](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it) |
 | [`stdlib/math/num9/`](stdlib/math/num9/) | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules: a program a rule or tight family: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
 | [`stdlib/math/int/`](stdlib/math/int/) | `std.math.int`, integers as a positive and a negative part over `std.math.decimal-arith`: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; a division by zero under each, claiming `(false)`; and the integer's faults and its own shape: a malformed numeral in a part, an undeclared name and a digit as an operand, a digit or a named constant as a part, each claiming `(false)`, and a natural number for an integer, silent. See [below](#stdlibmathint-a-theory-over-a-theory) |
 | [`stdlib/math/rat/`](stdlib/math/rat/) | `std.math.rat`, rational numbers over `std.math.int` and `std.math.decimal-arith`, reduced only by `rat-simplify` over `std.math.gcd`: lowest terms by `std.math.gcd`'s call; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand; the rational's faults and its own shape, as `std.math.int`'s; and two answers of one value, two facts, `rat-cmp` saying `eq`. See [below](#stdlibmathrat-lowest-terms-on-request-and-four-ways-to-divide-by-zero) |
@@ -235,14 +235,14 @@ at every length, a borrow through every length, and requests by name.
 | `21_div_by_zero_spelt_and_named.ein` | the same two, the zero written 00 and named by a `let` | a zero that is not seen because it is not written `z` |
 | `22_malformed_digit.ein` | `std.math.decimal`'s `numeral-digit` and `not-decimal-is-false`: a name that is no digit in a digit's place, one place up; `(solve :expect (false))` | a malformed number passed over in silence |
 | `23_malformed_fact_as_digit.ein` | `numeral-digit` on a fact | a guard that holds of names only |
-| `24_malformed_ends_in_digit.ein` | `numeral-prefix-digit`: `(n 1 2)` | a number that ends in a digit read as a number |
-| `25_malformed_ends_in_zero.ein` | `numeral-prefix-zero`: `(n 0 2)` | the digit 0, which `nz` has no row for, missed |
-| `26_malformed_ends_in_a_name.ein` | `numeral-prefix-named`: `(n price 1)` | a named constant inside a number |
+| `24_malformed_ends_in_digit.ein` | `numeral-prefix-digit`: `(n 1 2)`, the second place of `(n (n 1 2) 3)` | a number that ends in a digit read as a number; a flag rule that reads the walk's ask and not the place it reached |
+| `25_malformed_ends_in_zero.ein` | `numeral-prefix-zero`: `(n 0 2)`, the second place of `(n (n 0 2) 7)` | the digit 0, which `nz` has no row for, missed; the same misreading of the walk |
+| `26_malformed_ends_in_a_name.ein` | `numeral-prefix-named`: `(n price 1)`, the second place of `(n (n price 1) 4)` | a named constant inside a number; the same misreading of the walk |
 | `27_malformed_digit_as_number.ein` | `operand-digit` and `bad-cmp-second`: `(cmp X 7)` | a digit read as an operand that is merely never found |
 | `28_malformed_zero_digit_as_number.ein` | `operand-digit-zero` and `bad-mul-first`: `(mul 0 X)` | the digit 0 as an operand |
 | `29_undeclared_name.ein` | `operand-undeclared`, `bad-mul-second`, `bad-request-undeclared`, `undeclared-is-false`: a name no `let` states | an undeclared name passed over in silence |
 | `30_declared_name.ein` | the same rules loaded and not firing: `29` with the `let` stated; the product answered, and `undeclared`'s and `malformed`'s extents empty | a flag left behind once the `let` is stated; a flag on a well-formed request |
-| `31_malformed_through_a_name.ein` | `numeral-digit` on a `let`'s value, a request naming it and one nobody asks about, each flagged where it is written | a malformed number that hides behind a name |
+| `31_malformed_through_a_name.ein` | `numeral-digit` on a `let`'s value a request names, checked where the operand is looked up through the `let`, beside one nobody asks about, which is not checked | a malformed number that hides behind a name |
 | `32_malformed_name_for_a_name.ein` | `let-to-name`: `(let alias price)` | a name that stands for a name read as a number |
 | `33_let_twice.ein` | `let-twice`: a name stated twice with two numbers | two answers to one request |
 | `34_let_twice_the_same.ein` | `let-twice` loaded and not firing: the same `let` written twice is one fact | a flag on a fact stated twice |
@@ -252,7 +252,7 @@ at every length, a borrow through every length, and requests by name.
 | `38_what_stays_silent.ein` | no rule: what the theory does **not** flag, a number that ends in a name that is neither a digit nor a constant, a fact of another relation as an operand and inside a number, the accumulator's shape; beside an operand with high zeros, a foreign fact of `n` and `z` in a relation of the program's own, which are fine | a rule that starts flagging one of them, which makes the module's page wrong; a check that fires on a fact nobody asked about |
 | `42_let_to_a_digit.ein` | `let-to-digit`: `(let seven 7)`, with no request that uses it | a digit a `let` names read as a number, or flagged only when asked about |
 | `43_let_to_the_digit_zero.ein` | `let-to-digit-zero`: `(let none 0)` | the digit 0, which `nz` has no row for, missed |
-| `44_digit_as_the_first_operand_of_add.ein` to `50_digit_as_the_second_operand_of_div.ein` | `operand-digit` and, one a program, `bad-add-first`, `bad-add-second`, `bad-sub-first`, `bad-sub-second`, `bad-cmp-first`, `bad-div-first`, `bad-div-second`: a malformed numeral is `std.math.decimal`'s, flagged where it is written, so a digit as the operand is what reaches each of these rules | a rule from a tag to its request that reads the wrong tag |
+| `44_digit_as_the_first_operand_of_add.ein` to `50_digit_as_the_second_operand_of_div.ein` | `operand-digit` and, one a program, `bad-add-first`, `bad-add-second`, `bad-sub-first`, `bad-sub-second`, `bad-cmp-first`, `bad-div-first`, `bad-div-second`: a malformed numeral is `std.math.decimal`'s, flagged by the check the operand's look-up asks for, so a digit as the operand is what reaches each of these rules | a rule from a tag to its request that reads the wrong tag |
 
 **A division by zero gets the refutation idiom**, *one file where it fires and
 one where it is loaded and satisfied*: `20` and `21` fire the two rules, and
@@ -268,7 +268,7 @@ the requests that divide by zero and to no other.
 `27` to `29` and `44` to `50` through one of the ten rules from an operand's
 tag to its request, so that a mutant of any of them is seen, and claim
 `(false)` (`22` to `26` and `31` reach `std.math.decimal`'s check of a numeral,
-where it is written); `30`, `34` and `38` load the same
+which the operand's look-up asks for); `30`, `34` and `38` load the same
 rules where none fires and claim an R of one state with the flags' extents
 empty. **One fault a program, and one malformed request**, because a dead
 program's one claim cannot say which rule killed it: two faults in a file
@@ -309,24 +309,24 @@ so `div-by-zero` with its premise exchanged survives, banked.
 whose core names a `(div X Y)` has exactly two flags in root's state, each by
 its own rule, and `arith_theory.rs` holds the two for every public request.
 
-### `stdlib/math/decimal/`: a numeral checked where it is written
+### `stdlib/math/decimal/`: a numeral checked where an operation takes it
 
-`std.math.decimal` declares the numeral `n` and checks every numeral a file
-writes, off the `(written T)` facts the loader states
-([Q-M1f.275](../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)),
-wherever it sits and with no request reading it. Its rules are activated by
-`22` to `26` of `stdlib/math/decimal-arith/`, whose numerals are a request's
-operands; the programs here are for **where it is written**, each one place,
-one fault:
+`std.math.decimal` declares the numeral `n` and the check an operation asks of
+a numeral it takes, `(check N N)`, which walks it to `(valid N)` or flags it;
+a numeral no operation takes is not checked ([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Its flagging rules
+are activated by `22` to `26` of `stdlib/math/decimal-arith/`, whose numerals
+are a request's operands; the programs here are for **where a numeral is
+written**, each one place, and what is checked and labelled there:
 
 | file | the rules it is there for | what would fail it |
 |---|---|---|
-| `01_well_formed_everywhere.ein` | the check loaded and silent: a well-formed numeral as an operand, in an unused `let`, in a fact of the program's own, in an integer and a rational, and in a rule's conclusion; R is {∅}, the sum answered and `not-decimal`'s extent empty | a well-formed numeral flagged; a place whose numerals are never stated |
-| `02_in_a_let_nobody_asks_about.ein` | `numeral-digit` on a `let` no request names | a numeral checked only where a calculation reads it |
-| `03_in_a_fact_of_the_programs_own.ein` | `numeral-prefix-digit` on a fact of the program's own relation, `(price apple (n 1 2))` | a numeral checked only in the calculator's own requests |
-| `04_in_a_rules_conclusion.ein` | `numeral-prefix-zero` on a numeral written whole in a rule's conclusion, a rule that never fires: core ∅ | the loader stating facts but not the ground terms of a conclusion |
-| `05_what_stays_silent.ein` | no rule: `(n end 1)`, `(n (pair 1 2) 3)`, a numeral a rule assembles from a variable, and a top-level fact of `n`, each silent beside a sum answered | a rule that starts flagging one of them, which makes the module's page wrong |
-| `06_a_programs_own_named_z.ein` | `numeral-prefix-named`'s `(neq ?m z)`: the program lists `named` and writes `(named z)` itself beside `(price apple (n z 3))`, and R is {∅}, a sum answered | the guard dropped, which flags every numeral, all of which end in `z` |
+| `01_well_formed_everywhere.ein` | `numeral-step`, `numeral-step-zero` and `numeral-valid` on the sum's operands, `turn-end`'s label on the sum, the closing rule's on `z`: a well-formed numeral as an operand, in an unused `let`, in a fact of the program's own, in an integer and a rational, and in a rule's conclusion; R is {∅}, the sum answered, `not-decimal`'s extent empty, and `valid`'s the two operands, the sum and `z` | a well-formed numeral flagged; a label missing, or one on a numeral no operation takes |
+| `02_in_a_let_nobody_asks_about.ein` | no rule: a malformed numeral in a `let` no request names, R {∅}, no flag and no label, a sum beside it answered | a numeral checked where no operation takes it |
+| `03_in_a_fact_of_the_programs_own.ein` | no rule: a malformed numeral in a fact of the program's own relation, `(price apple (n 1 2))`, R {∅}, a sum beside it answered | a numeral checked outside the calculator's requests |
+| `04_in_a_rules_conclusion.ein` | no rule: a malformed numeral written whole in a request a rule that never fires would conclude, R {∅}, a sum beside it answered | a numeral checked before any request takes it |
+| `05_what_stays_silent.ein` | the walk stopping unlabelled: `(n end 1)` behind a name and `(n (pair 1 2) 3)`, each a request's operand, each silent and unanswered beside a sum answered | a rule that starts flagging one of them, which makes the module's page wrong; a label on a numeral the walk did not reach `z` in |
+| `06_a_programs_own_named_z.ein` | `numeral-prefix-named`'s `(neq ?m z)`: the program lists `named` and writes `(named z)` itself beside the request's operand `(n z 3)`, and R is {∅}, a sum answered | the guard dropped, which flags every numeral an operation takes, all of which end in `z` |
+| `07_in_a_rules_conclusion_that_fires.ein` | `numeral-digit` on a numeral a rule of the program's own assembles and hands to a request: `(false)` | a numeral checked only where a file writes the request |
 
 `std.math.arith` has two rules, `division-by-zero-is-false`, which
 `20_div_by_zero.ein` and the other divisions by zero activate, and its closing
@@ -360,7 +360,7 @@ right for the other is seen, and activate each of binary's own:
 | directory | what they are there for |
 |---|---|
 | `binary-arith/` | `01` to `07` the five operations, zero, lengths, high zeros and `bin-let`, every shared rule of the walks and the protocol and binary's product and division rules (`07` reaches `bin-div-bring-zero-none` with a dividend written `0101`); `08` and `09` a division by zero, the request's and a call a rule of the program's own makes; `10` a bit as either operand of every request, the ten routes from a tag to its request once each; `11` the bit `0` as an operand; `12` and `13` an undeclared name, `7` among them, and the same names stated (`bin-operand-undeclared` fired and satisfied); `14` to `20` each `let` rule; `21` both bases in one program, each answering its own; `22` what stays silent |
-| `binary/` | `01` a well-formed numeral in every place, `not-binary-is-false` loaded and satisfied; `02` to `05` each of the four rules of the check, one fault each; `06` what stays silent, a decimal digit as a prefix among it; `07` `(bin-named z)` written by the program beside `(b2 z 1)`, R {∅} and a sum answered, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds |
+| `binary/` | `01` a well-formed numeral in every place, the operands walked and labelled `bin-valid` and nothing no operation takes, `not-binary-is-false` loaded and satisfied; `02` to `05` each of the four rules of the check, one fault each, on a request's operand; `06` what stays silent, each a request's operand, a decimal digit as a prefix among it; `07` `(bin-named z)` written by the program beside `(b2 z 1)`, R {∅} and a sum answered, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds |
 | `bits/` | the tables seen from a program, as `digits/01_tables.ein`; the rows are `ein-ir/tests/digit_tables.rs`' |
 | `convert/` | each way, and a round trip a rule of the program asks back |
 
@@ -440,7 +440,7 @@ under every operation. Every claim here was computed from Python's integers.
 **No request here is another the other way round,** `stdlib/math/num9/`'s
 lesson: `03_add.ein`'s header says why. **Every mutant of the module's
 operations is killed**; its checks' survivors are
-[above](#stdlibmathdecimal-a-numeral-checked-where-it-is-written).
+[above](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it).
 
 **Integer division, under three conventions.**
 The three programs ask the same eighteen requests, so the three answers to
@@ -463,7 +463,7 @@ sum beside its request:
 
 | file | the rules it is there for | what would fail it |
 |---|---|---|
-| `15` to `19`, `24`, `30` | `std.math.decimal`'s check of a numeral in a part, in either part, either operand, behind a name and in a division: the numeral's fault is decimal's, flagged where it is written | a numeral inside an integer never checked |
+| `15` to `19`, `24`, `30` | `int-operand-check`, `int-check-parts` and `std.math.decimal`'s check of a numeral in a part, in either part, either operand, behind a name and in a division: the numeral's fault is decimal's, flagged where the operation takes the integer | a numeral inside an integer never checked |
 | `20_undeclared_first_operand.ein`, `21_undeclared_second_operand.ein`, `36_undeclared_only_operand.ein` | `int-bad-first`, `int-bad-second`, `int-bad-only`: an undeclared name, flagged on the request | an operand's fault seen under the module's tag and not flagged |
 | `22_digit_as_an_operand.ein` | `int-bad-first` on a digit as the operand | a digit as an integer operand passed over |
 | `35_undeclared_divisor.ein` | `int-bad-first` and `int-bad-div`: a division's tag holds `(int-div-of REQUEST)`, and the request as written is flagged beside it | a division's flag that names no request |
@@ -511,7 +511,7 @@ with zero through.
 
 **Every mutant of the module's operations is killed**, `rat-simplify`'s and
 the normal form's among them; its checks' survivors are
-[above](#stdlibmathdecimal-a-numeral-checked-where-it-is-written). No request
+[above](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it). No request
 here is another the other way round where both would be answered alike,
 `stdlib/math/num9/`'s lesson.
 

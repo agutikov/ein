@@ -159,7 +159,7 @@ registers:
 |---|---|---|
 | **puzzle** | declared by the program or a module of its own it imports, or the name of one of their rules (an activator) | the program |
 | **stdlib** | the name of a standard library rule (an activator, `(bijective color-loc)`), or a relation a standard library rule concludes without declaring it | nobody: no form declares it, and a fact of it reads by its reason |
-| **kernel** | a name the engine reserves: `__closed__`, `__symmetric__`, `absent`, `and`, `eq`, `false`, `neq`, `not`, `open`, `or`, `relation`, `written` | the engine, which does not (§ 6) |
+| **kernel** | a name the engine reserves: `__closed__`, `__symmetric__`, `absent`, `and`, `eq`, `false`, `neq`, `not`, `open`, `or`, `relation` | the engine, which does not (§ 6) |
 | **undeclared** | written or derived, never declared, and no rule's | nobody, until the program declares it |
 
 So a fact that reads as an s-expression says who could fix it: a program that wants its own relations read declares
@@ -188,8 +188,8 @@ engine's**: the read-out's labels ([the read-out reference](../04-reference/08-r
 *Derives* and *Premises*, the provenance words a state file writes (`source`, `rule`, `hypothesis`) and its
 separators (`: `, ` — `), and the verdict and protocol words the engine reserves
 ([the engine's reserved strings](../../ein.rs/07-reserved-engine-strings.md)). The engine owns no domain
-word: it has no sentence for a relation that has none, and a kernel relation, `not`, `relation` or `written`, reads
-as its s-expression. A word the engine adds to an output is the engine's, listed on one of those two pages, and never
+word: it has no sentence for a relation that has none, and a kernel relation, `not` or `relation`, reads as its
+s-expression. A word the engine adds to an output is the engine's, listed on one of those two pages, and never
 part of a vocabulary for the domain.
 
 ## 7. What is checked

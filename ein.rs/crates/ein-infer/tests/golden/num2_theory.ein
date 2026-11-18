@@ -56,7 +56,10 @@
 ;;;                      or (big X)   where X is written with more than 2 digits
 ;;;     (from2 W)       (of2 W X)   X in normal form, with no high zero
 ;;;
-;;; One firing each. Nothing converts a number because it exists, and nothing
+;;; One firing each. The number `to2` takes is checked by
+;;; `std.math.decimal`, which flags a malformed one or labels it valid, and the
+;;; number `from2` answers with is labelled valid as it is made
+;;; (Q-M1f.404). Nothing converts a number because it exists, and nothing
 ;;; routes a request of one module to the other: a program that wants both
 ;;; writes the rule that asks (`examples/arith/num9_both_ways.ein`).
 ;;;
@@ -103,7 +106,8 @@
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Its own: `num2`, `add2`, `sum2-of`, `sub2`, `diff2-of`, `cmp2`, `cmp2-of`, `mul2`, `product2-of`, `div2`, `quot2-of`, `overflow`, `to2`, `as2`, `big`, `from2`, `of2`, `mul2-at`, `row2`, `multiples2`, `div2-at`, `num2-rule`, the entry
-;;; `arith2`, and its rules' names. From `std.math.decimal`: `n`, for the conversions;
+;;; `arith2`, and its rules' names. From `std.math.decimal`: `n`, `check` and `valid`,
+;;; for the conversions;
 ;;; from `std.math.arith`: `z`, and `division-by-zero` with the rule from it to `(false)`.
 ;;; From `std.math.digits`: `fa`, `fs`, `md`, `cl`, `nz`, `adj`, with the orders `lt`, `eq`,
 ;;; `gt`. The interface is the number, the requests, the results, the two
@@ -113,7 +117,7 @@
 
 (import std.math.digits :symbols (fa fs md cl nz adj))
 (import std.math.decimal-arith)
-(import std.math.decimal :symbols (n))
+(import std.math.decimal :symbols (n check valid))
 (import std.math.arith :symbols (z division-by-zero division-by-zero-is-false))
 
 ;; ── The number: 2 digits, the most significant first ──
@@ -401,6 +405,11 @@
 
 ;; ── Conversions to and from `std.math.decimal`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each
 ;;    way, one firing, a rule for each count of digits ──
+(rule to2-check ()
+  :match  (to2 ?x)
+  :assert (check ?x ?x)
+  :why    "{?x} is taken to be converted: it is checked as a number")
+
 (rule to2-zero ()
   :match  (to2 z)
   :assert (as2 z (num2 0 0))
@@ -429,13 +438,13 @@
 (rule from2-2 ()
   :match  (and (from2 (num2 ?a2 ?a1))
                (nz ?a2))
-  :assert (of2 (num2 ?a2 ?a1) (n (n z ?a2) ?a1))
+  :assert (and (of2 (num2 ?a2 ?a1) (n (n z ?a2) ?a1)) (valid (n (n z ?a2) ?a1)))
   :why    "the top digit that is not zero is {?a2}: a number of 2 digits, with no high zero")
 
 (rule from2-1 ()
   :match  (and (from2 (num2 0 ?a1))
                (nz ?a1))
-  :assert (of2 (num2 0 ?a1) (n z ?a1))
+  :assert (and (of2 (num2 0 ?a1) (n z ?a1)) (valid (n z ?a1)))
   :why    "the top digit that is not zero is {?a1}: a number of 1 digit, with no high zero")
 
 ;; ── The closing rule, and the theory's one entry ──
@@ -479,8 +488,8 @@
                (num2-rule div2-step-5) (num2-rule div2-step-6)
                (num2-rule div2-step-7) (num2-rule div2-step-8)
                (num2-rule div2-step-9) (num2-rule div2-done)
-               (num2-rule div2-by-zero) (num2-rule to2-zero) (num2-rule to2-1)
-               (num2-rule to2-2) (num2-rule to2-big) (num2-rule from2-zero)
-               (num2-rule from2-2) (num2-rule from2-1)
-               (num2-rule division-by-zero-is-false))
+               (num2-rule div2-by-zero) (num2-rule to2-check)
+               (num2-rule to2-zero) (num2-rule to2-1) (num2-rule to2-2)
+               (num2-rule to2-big) (num2-rule from2-zero) (num2-rule from2-2)
+               (num2-rule from2-1) (num2-rule division-by-zero-is-false))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

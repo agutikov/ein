@@ -71,11 +71,11 @@ files are modules.
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
-| `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and its check where it is written ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `decimal` |
+| `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and the check an operation asks of one it takes ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `decimal` |
 | `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | natural numbers of any length, school arithmetic over `std.math.decimal`'s numerals ([§](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone)) | `decimal-arith` |
 | `std.math.positional` | [`math/positional.ein`](math/positional.ein) | the rules every positional base shares, every relation a parameter, and the macro `positional` whose one call connects a base ([§](#stdmathpositional-the-rules-every-positional-base-shares)) | the macro |
 | `std.math.bits` | [`math/bits.ein`](math/bits.ein) | the binary tables, facts and no rule, generated ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)) | none |
-| `std.math.binary` | [`math/binary.ein`](math/binary.ein) | the binary numeral `(b2 PREFIX BIT)`, and its check where it is written ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)) | `binary` |
+| `std.math.binary` | [`math/binary.ein`](math/binary.ein) | the binary numeral `(b2 PREFIX BIT)`, and the check an operation asks of one it takes ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)) | `binary` |
 | `std.math.binary-arith` | [`math/binary-arith.ein`](math/binary-arith.ein) | binary arithmetic, decimal's twin under `bin-` names ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)) | `binary-arith` |
 | `std.math.convert` | [`math/convert.ein`](math/convert.ein) | decimal to binary and back, as requests ([§](#stdmathconvert-decimal-to-binary-and-back)) | `convert` |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over the natural numbers, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part)) | `int-arith` |
@@ -319,7 +319,7 @@ and a division by zero is a contradiction of arithmetic itself, in every base
 | module | declares | rules | entry |
 |---|---|---|---|
 | `std.math.arith` | `z`, zero, a relation of no argument no fact is of, so that it has one full name both bases share; the flag `division-by-zero` | `division-by-zero-is-false`, and the closing rule | `arith` |
-| `std.math.decimal` | the numeral `n`; `named`, a name that stands for a number, which the module that declares `let` writes; the flag `not-decimal` | the numeral's check, five rules over `(written (n P A))`, and the closing rule | `decimal` |
+| `std.math.decimal` | the numeral `n`; `named`, a name that stands for a number, which the module that declares `let` writes; the flag `not-decimal` | the check an operation asks of a numeral it takes, `(check N N)`: three rules walk it to `(valid N)`, four flag a malformed place, `not-decimal-is-false`; and the closing rule, which labels `z` valid | `decimal` |
 
 `std.math.decimal-arith` imports both and lists what it writes of them, `z`,
 `n` and `named`; `std.math.int`, `std.math.rat` and `std.math.num9` import
@@ -333,14 +333,11 @@ numeral, nothing being re-exported:
 (import std.math.arith :symbols (z))
 ```
 
-**The numeral's check reads what the loader states.** The loader states every
-fact nested in a fact a file writes, and in a rule's conclusion where it holds
-no variable, as `(written T)`
-([`07-diagnostics.md` § 2.30](../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load),
-[Q-M1f.272](../docs/decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)),
-so `std.math.decimal`'s rules see every place of every numeral a file writes,
-wherever it sits, and flag a malformed one in root's first layer, with no
-request reading it: § [Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)
+**A numeral is checked where an operation takes it** ([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): the
+operation asks `std.math.decimal`'s check of the numeral, which walks it a
+place a firing and labels it `(valid N)`, or flags a malformed place, and a
+number the arithmetic makes is labelled valid as it is made:
+§ [Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)
 has the table. `named` is `std.math.decimal`'s so that the module below
 `let` can say *the prefix is a named constant* by a probe, at no cost a
 well-formed numeral pays
@@ -389,7 +386,7 @@ stdlib/math/decimal-arith.ein stdlib/math/positional.ein`).
 | **division** | `(div X Y)` is answered by `(quot-of X Y Q R)`, the quotient and the remainder: X = Q × Y + R, and R less than Y |
 | **division by zero** | a contradiction, **in two steps**: a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)` by `std.math.arith`'s rule ([Q-M1f.269](../docs/decisions/stdlib/math/Q-M1f.269-division-by-zero-is-a-contradiction.md)). Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)`. **It is flagged wherever it is called** ([Q-M1f.163](../docs/decisions/stdlib/math/decimal/Q-M1f.163-a-division-by-zero-is-flagged-wherever-division.md)): every division goes through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero by value derives `(division-by-zero (div-call TAG X Y))`, the call as it was asserted, and `(false)` from it, whoever made the call, a rule of a program's own included. A public request therefore holds two flags, its own and its call's under the tag `(quotient X Y)` ([Q-M1f.211](../docs/decisions/stdlib/math/decimal/Q-M1f.211-a-public-division-by-zero-holds-two-flags.md)); `ein solve`'s read-out names the request, and `--trace` and `ein saturate --dump` show the second flag. `std.math.int`, `std.math.rat` and `std.math.num9` see a zero divisor before they call, so theirs is one flag, the request's. **A theory in which division by zero is allowed** (a wheel, a meadow, transreal arithmetic) would be a module of its own that does not import `std.math.arith`; none is built |
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)` ([Q-M1f.149](../docs/decisions/stdlib/math/decimal/Q-M1f.149-a-request-may-name-an-operand-by-a-let.md)). The same sum written with the numbers is another request with its own answer. A name stands for one number: a name no `let` states, a name stated twice with two numbers, and `z` or a digit as a name are each flagged (below) |
-| **a malformed request** | a contradiction, **in two steps**, as a division by zero is ([Q-M1f.316](../docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)). `(malformed REQUEST)`, the request as written, where a digit stands for an operand; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. A malformed **numeral** is `std.math.decimal`'s, `(not-decimal NUMERAL THING)`, flagged where it is written, with no request reading it. Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the fact the fault was written in, in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
+| **a malformed request** | a contradiction, **in two steps**, as a division by zero is ([Q-M1f.316](../docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)). `(malformed REQUEST)`, the request as written, where a digit stands for an operand; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. A malformed **numeral** is `std.math.decimal`'s, `(not-decimal NUMERAL THING)`, flagged where the request's operand is looked up; a numeral no request takes is not checked ([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the request that holds the fault, in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
 | **the one entry** | `decimal-arith`, the closing rule: it names every rule of the theory and closes the held extent of every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. The held extent of a relation the importing program declares is the program's to close |
 | **the tagged calls** | what a theory built on the calculator calls, below: an interface, held to its shapes by a test |
 
@@ -449,7 +446,8 @@ the answer most significant digit outermost; high zeros are dropped there; the
 answer is turned round into the public shape and handed over as `(done TAG
 ANSWER)`. Every call carries its continuation as the TAG, a nested fact
 holding what the caller needs next. 123078 + 4567 is 21 firings, each the
-next step of one chain, so the circuit is 21 deep (`arith_theory.rs`'s
+next step of one chain, so the circuit is 21 deep, and 14 firings beside the
+chain check the two operands: 35 in all (`arith_theory.rs`'s
 `the_circuit_of_one_addition`).
 
 **Subtraction is two walks side by side,** X − Y and Y − X over the full
@@ -457,10 +455,11 @@ subtractor's table, since which number is the smaller is not known before the
 top column and nothing is guessed
 ([Q-M1f.364](../docs/decisions/stdlib/math/decimal/Q-M1f.364-a-subtraction-answers-the-difference.md)).
 The walk that ends with no borrow hands its answer over; the other derives
-`(short TAG)` and no number. 123078 − 4567 is 28 firings and 21 deep, and so
-is the reverse. **Comparison is one walk** over the comparator's table that
-builds no number and hands over `(order-is TAG O)`: 13 firings for the same
-pair (`the_circuit_of_one_subtraction_and_one_comparison`).
+`(short TAG)` and no number. 123078 − 4567 is 42 firings, the operands' checks
+among them, and 21 deep, and so is the reverse. **Comparison is one walk** over
+the comparator's table that builds no number and hands over `(order-is TAG
+O)`: 27 firings for the same pair, and 13 deep
+(`the_circuit_of_one_subtraction_and_one_comparison`).
 
 **Multiplication is the school method from the multiplier's top digit.** The
 multiplier is turned round once (`top-first`, the other turn); each of its
@@ -468,9 +467,10 @@ digits is a row, the multiplicand times one digit, a walk over the digit
 multiplier's table; and the sum so far times ten, one constructor, plus the
 row is the addition walk, called with a tag that holds the digits still to
 come. It is tagged throughout, `(mul-call TAG X Y)` answered by `(done TAG
-P)`, so a later theory can call it. 123 × 456 is 72 firings and 123078 ×
-123078 is 227, each one chain; the size grows as the product of the two
-lengths (`the_circuit_of_one_multiplication`).
+P)`, so a later theory can call it. 123 × 456 is 82 firings, 72 deep, and
+123078 × 123078 is 236, 227 deep, each one chain beside its operands' checks;
+the size grows as the product of the two lengths
+(`the_circuit_of_one_multiplication`).
 
 **Division is school long division, the quotient's digit by bisection**
 ([Q-M1f.324](../docs/decisions/stdlib/math/decimal/Q-M1f.324-decimal-division-is-long-division-each-digit.md)).
@@ -489,7 +489,8 @@ one rule written nine times, since a rule cannot pick the J-th of nine by a
 digit without joining on a number; `arith_theory.rs` holds that they differ
 by the digit alone
 ([Q-M1f.164](../docs/decisions/stdlib/math/decimal/Q-M1f.164-divisions-families-of-nine-rules-are-written.md)).
-127645 ÷ 25 is 220 firings, one chain (`the_circuit_of_one_division`).
+127645 ÷ 25 is 232 firings, one chain of 220 beside its operands' checks
+(`the_circuit_of_one_division`).
 
 Each count above is pinned by the test named beside it, so that a change to
 the wiring shows as a change to it, and `cargo test -p ein-infer --test
@@ -612,31 +613,43 @@ module declares
 
 A fault is flagged by the module whose term it is a fault of
 ([Q-M1f.210](../docs/decisions/stdlib/math/Q-M1f.210-a-malformed-number-is-its-representations-fault.md)):
-a numeral's by `std.math.decimal`, as soon as the numeral is written, wherever
-it sits; an operand's and a `let`'s by the module that reads the operand,
+a numeral's by `std.math.decimal`, where an operation takes the numeral; an
+operand's and a `let`'s by the module that reads the operand,
 `std.math.decimal-arith`, and by `std.math.int` and `std.math.rat` for their
 own
 ([Q-M1f.316](../docs/decisions/stdlib/math/Q-M1f.316-the-calculator-flags-each-malformed-request-it.md)).
 
-**A numeral is checked where it is written.** The loader states every fact
-nested in a fact a file writes, and in a rule's conclusion where it holds no
-variable, as `(written T)`
-([`07-diagnostics.md` § 2.30](../docs/ein/user/04-reference/07-diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
-and every place of a numeral is such a fact, so `std.math.decimal`'s five
-rules over `(written (n P A))` see every place of every numeral, as an
-operand, inside an integer or a rational, as a `let`'s value nobody asks
-about, or in a fact of the program's own relation. The flag names the
-smallest `n` term at fault
+**A numeral is checked where an operation takes it** ([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). The
+look-up of a request's operand, `std.math.positional`'s `operand-check`, asks
+`(check N N)` of the numeral it finds, written as the operand or as a `let`'s
+value; `std.math.int` asks `(int-check I)` of an integer it takes and
+`std.math.rat` `(rat-check Q)` of a rational, each of which asks the check of
+its parts; `std.math.convert` and `std.math.num9` ask it of the number they
+convert. The check walks the numeral a place a firing from the units,
+`(check N REST)`, and the walk that reaches `z` labels it `(valid N)`. **Once**:
+the ask and the label are facts of the numeral, so a numeral is checked once
+whatever reads it. **A number the arithmetic makes is labelled as it is
+made**, by `std.math.positional`'s `turn-end` and `div-end`, so every number an
+operation answers with, a tagged call's included, is valid already; `z` is
+valid by the closing rule. A number a program's own rule hands to a second
+request is that request's operand, and is walked again: only its label tells
+it from a numeral the program wrote, and reading the label beside the operand
+would join two facts on a number. **A numeral no operation takes is not
+checked**: one in a `let` nobody asks about, in a fact of the program's own
+relation, or in a rule's conclusion that never fires.
+
+A malformed place stops the walk, and the flag names the smallest `n` term at
+fault
 ([Q-M1f.274](../docs/decisions/stdlib/math/decimal/Q-M1f.274-a-malformed-numeral-is-flagged-on-its-smallest.md)),
-and comes in root's first layer, before any calculation:
+the first the walk meets from the units:
 
 | what the program wrote | the flag | by |
 |---|---|---|
 | a digit's place that holds a name that is no digit, `(n (n z 1) x)`, `10` and a sign among such names, or a fact, `(n z (n z 1))` | `(not-decimal NUMERAL THING)` | `std.math.decimal`'s `numeral-digit`: ten `neq` guards, which hold of every other name and of a fact |
 | a numeral that ends in a digit where `z` goes, `(n 1 2)`, `(n 0 2)` | `(not-decimal NUMERAL THING)` | `numeral-prefix-digit`, `numeral-prefix-zero` |
 | a numeral that ends in a named constant, `(n price 1)` | `(not-decimal NUMERAL THING)` | `numeral-prefix-named`, by the probe `(named ?m)`: `named` is `std.math.decimal`'s, and `std.math.decimal-arith`, which declares `let`, writes it |
-| a digit or a named constant where a part of an integer goes, `(int 7 z)`, `(int price z)` | `(not-integer INTEGER THING)` | `std.math.int`'s six shape rules, over `(written (int P N))` |
-| a digit or a named constant where a rational's integer or its denominator goes, `(rat 7 (n z 2))`, `(rat (int (n z 1) z) two)` | `(not-rational RATIONAL THING)` | `std.math.rat`'s six shape rules, over `(written (rat Z D))` |
+| a digit or a named constant where a part of an integer goes, `(int 7 z)`, `(int price z)` | `(not-integer INTEGER THING)` | `std.math.int`'s six shape rules, over `(int-check (int P N))` |
+| a digit or a named constant where a rational's integer or its denominator goes, `(rat 7 (n z 2))`, `(rat (int (n z 1) z) two)` | `(not-rational RATIONAL THING)` | `std.math.rat`'s six shape rules, over `(rat-check (rat Z D))` |
 | a digit where a number goes, `(add 7 X)`: seven is `(n z 7)` | `(malformed REQUEST)` | `operand-digit`, `operand-digit-zero` |
 | a name stated twice with two numbers | `(malformed (let NAME NUMBER))`, each of the two | `let-twice`, a join on the name |
 | `z` or a digit as a constant's name, `(let z N)`, `(let 7 N)` | `(malformed (let NAME NUMBER))` | `let-zero`, `let-digit`, `let-digit-zero` |
@@ -656,9 +669,9 @@ contradiction as the next:
   refuted by        std.math.decimal.not-decimal-is-false
 ```
 
-The core names the fact the numeral was written in, the `written` fact being
-derived from it; a numeral written whole in a rule's conclusion rests on no
-fact, and its core is ∅. A request has one flag, the request as written, and
+The core names the request that took the numeral, with the `let` that named
+it where an operand is a name, and the table rows the walk read on the way. A
+request has one flag, the request as written, and
 no result fact; the well-formed requests beside it are computed in root's
 state, which is dead and so no answer. Such a program can claim only
 `(solve :expect (false))`. A `let` that is added answers an undeclared
@@ -678,10 +691,6 @@ holds that the list is this one:
   inside a number, `(add (pair 1 2) X)`, the accumulator's own shape `(b 1
   z)` among them. No rule can say *not of this shape*;
 - **a name that stands for either**;
-- **a numeral a rule assembles from a variable**, `(n ?p x)`: no file writes
-  it, so nothing states it
-  ([Q-M1f.275](../docs/decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)),
-  and a top-level fact of `n`, which is no nested term;
 - **in `std.math.int` and `std.math.rat`, an operand of another kind of
   number**: a natural number where an integer goes, and an integer or a natural
   number where a rational goes
@@ -690,10 +699,12 @@ holds that the list is this one:
   another representation
   ([Q-M1f.320](../docs/decisions/stdlib/math/num9/Q-M1f.320-std-math-num9-is-a-second-representation.md)).
 
-**What the check costs.** A well-formed numeral costs it no firing: its ten
-`neq` guards and two probes a place, read off a `written` fact the loader
-stated, and the loader's statement of each nested fact. 123078 + 4567 is 21
-firings and 21 deep, the walk alone (`the_circuit_of_one_addition`).
+**What the check costs.** A numeral an operation takes costs it the ask, a
+firing a place and one for its label, beside the computation's chain and never
+in it, once a numeral whatever takes it: 123078 + 4567 is 35 firings and 21
+deep, 14 of the firings the two operands' checks
+(`the_circuit_of_one_addition`). A number the arithmetic makes costs no
+check, and its label is a conclusion of the firing that makes it.
 
 **What the undeclared name costs.** To say that an operand is a *name*, and
 not a number, which is a fact, `operand-undeclared` ranges a variable over
@@ -774,7 +785,7 @@ has every relation).
 | module | what it is |
 |---|---|
 | `std.math.bits` | the tables, **facts and no rule**, generated beside `std.math.digits` and held to Rust's integers by `ein-ir/tests/digit_tables.rs`: `bin-fa` 8 rows, `bin-fs` 8, `bin-cl` 12, `bin-nz` 1, where decimal's seven tables have 1 664. No digit multiplier and no bisection: a row of a product is nothing or the multiplicand, and one subtraction decides a bit of a quotient |
-| `std.math.binary` | the numeral `(b2 PREFIX BIT)`, twice the prefix plus the bit, and its check where it is written, on `std.math.decimal`'s pattern ([Q-M1f.295](../docs/decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md)): four rules over the loader's `(written (b2 P A))` flag `(not-binary NUMERAL THING)`, a bit's place holding no bit, a bit or a named constant as the prefix, and `not-binary-is-false` derives `(false)`; `bin-named`. Entry `binary` |
+| `std.math.binary` | the numeral `(b2 PREFIX BIT)`, twice the prefix plus the bit, and the check an operation asks of one it takes, on `std.math.decimal`'s pattern ([Q-M1f.295](../docs/decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md), [Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)): `(bin-check N N)`, three rules walk it to `(bin-valid N)`, four flag `(not-binary NUMERAL THING)`, a bit's place holding no bit, a bit or a named constant as the prefix, and `not-binary-is-false` derives `(false)`; `bin-named`; the closing rule labels `z` valid. Entry `binary` |
 | `std.math.binary-arith` | the arithmetic, `std.math.decimal-arith`'s twin: 57 relations and 14 rules of its own (`grep -c '^(relation '` and `grep -c '^(rule ' stdlib/math/binary-arith.ein`, less the closing rule), and `std.math.positional`'s 77 activated by one call in its closing rule. Entry `binary-arith` |
 
 ```lisp
@@ -815,8 +826,8 @@ shapes as decimal's are
 
 **Malformed requests, as far as decimal flags its own**
 ([Q-M1f.268](../docs/decisions/stdlib/math/binary/Q-M1f.268-binary-flags-a-malformed-request-as-far-as.md)):
-a malformed numeral is `std.math.binary`'s, `(not-binary …)`, flagged where it
-is written; a bit where a number goes, `(bin-add 1 X)`, and a `bin-let` that
+a malformed numeral is `std.math.binary`'s, `(not-binary …)`, flagged where a
+request's operand is looked up; a bit where a number goes, `(bin-add 1 X)`, and a `bin-let` that
 cannot be read are `(bin-malformed …)`; a name no `bin-let` states is
 `(bin-undeclared NAME REQUEST)`, by `bin-operand-undeclared`, the theory's one
 `absent`, over `bin-let`. A decimal digit is a name in binary: `(bin-add 7 X)`
@@ -827,9 +838,11 @@ decimal number among them, is answered by silence.
 **What it costs**, in firings and depth, at decimal's example operands
 (`ein-infer/tests/binary_theory.rs`' `the_circuit_of_each_operation` pins
 them; `cargo test -p ein-infer --test binary_theory the_circuit` re-takes
-them): 123078 + 4567, 43 and 43 (decimal 21); 123078 − 4567, 61 and 43 (28);
-against, 24 (13); 123 × 456, 120 (72); 127645 ÷ 25, 245 (220); 127645 ÷ 0, 12
-and 10 (12). A walk is three times as long; a product's row and a quotient's
+them), the operands' checks among the firings: 123078 + 4567, 77 and 43
+(decimal 35 and 21); 123078 − 4567, 95 and 43 (42 and 21); against, 58 and 24
+(27 and 13); 123 × 456, 140 and 120 (82 and 72); 127645 ÷ 25, 271 and 245 (232
+and 220); 127645 ÷ 0, 31 and 21 (20 and 10), the check of 127645's seventeen
+bits deeper than the chain a division by zero stops. A walk is three times as long; a product's row and a quotient's
 bit are cheaper. `binary_theory.rs` holds every answer to Rust's integers,
 every pair to 64 and lengths around every power of two to 64 bits, and
 `arith_batch.rs` a batch to cost in proportion to its count.
@@ -855,10 +868,13 @@ remainder a bit, and binary's strip and turn make the number; `(to-dec B)`
 reads B's bits from the top and doubles the number so far by one decimal
 addition walk, the bit as the carry in. Eleven rules, each a step in a chain
 of the two theories' own calls, and no rule joins two facts on a number. The
-two directions do not cost the same: 255 to binary is 826 firings and
-1111101000 to decimal 100, a halving being a whole division and a doubling one
+two directions do not cost the same: 255 to binary is 830 firings and
+1111101000 to decimal 111, a halving being a whole division and a doubling one
 addition walk (`ein saturate` of each request alone, the six firings of the
-closing rules left out). An operand is a number; a name is not looked up.
+closing rules left out), each with the check of the number it takes, a
+firing a place and one more for its label
+([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+An operand is a number; a name is not looked up.
 `binary_theory.rs` holds every number to 300, and a sample to 2^40, both ways
 and round trip.
 
@@ -895,7 +911,7 @@ of that, and `div9-start`, the widest here, binds 162
 | **the protocol** | as `std.math.decimal-arith`'s, under names of its own, so the two import into one program ([Q-M1f.167](../docs/decisions/stdlib/math/num9/Q-M1f.167-the-names-of-std-math-num9-are-decimals-with-a-9.md)): `(add9 X Y)` answered by `(sum9-of X Y S)`; `(sub9 X Y)` by `(diff9-of X Y D R)`, two numbers, one of them zero; `(cmp9 X Y)` by `(cmp9-of X Y O)`, O one of `lt`, `eq`, `gt`; `(mul9 X Y)` by `(product9-of X Y P)`; `(div9 X Y)` by `(quot9-of X Y Q R)`. An operand is a number written out: the module has no named constants ([Q-M1f.170](../docs/decisions/stdlib/math/num9/Q-M1f.170-a-num9-operand-is-a-number-written-out.md)) |
 | **overflow** | **a fact, and no number** ([Q-M1f.168](../docs/decisions/stdlib/math/num9/Q-M1f.168-overflow-is-a-fact-and-no-number-and-a-division.md)). A sum or a product that does not fit nine digits derives `(overflow REQUEST)`, the request as written, and no result fact: never a truncated number. Root stays alive, the program's other requests are answered, and a rule of the program may match the flag. A difference, a comparison and a quotient cannot overflow |
 | **division by zero** | a contradiction, as everywhere in the calculator: `div9-by-zero` derives `(division-by-zero (div9 X ZERO))`, and `std.math.arith`'s `division-by-zero-is-false`, which this module imports, derives `(false)`. Root is dead and R is empty |
-| **conversions** | a request each way, one firing: `(to9 X)`, X a natural number of `std.math.decimal`, is answered by `(as9 X W)`, or by `(big X)` where X is written with more than nine digits; `(from9 W)` by `(of9 W X)`, X in normal form. Nothing converts a number because it exists, and no rule of either module hands a request to the other: a program that wants both writes the rules that ask ([`examples/arith/num9_both_ways.ein`](../examples/arith/num9_both_ways.ein)) |
+| **conversions** | a request each way, one firing: `(to9 X)`, X a natural number of `std.math.decimal`, is answered by `(as9 X W)`, or by `(big X)` where X is written with more than nine digits; `(from9 W)` by `(of9 W X)`, X in normal form and labelled `(valid X)` as it is made. The number `to9` takes is asked of `std.math.decimal`'s check, `(check X X)`, which flags a malformed one ([Q-M1f.404](../docs/decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Nothing converts a number because it exists, and no rule of either module hands a request to the other: a program that wants both writes the rules that ask ([`examples/arith/num9_both_ways.ein`](../examples/arith/num9_both_ways.ein)) |
 | **the one entry** | `arith9`, the closing rule: it names every rule and closes the held extent of every relation of the module, the six tables it reads, and the two relations it takes from the modules below, `n` and `division-by-zero` |
 
 **How it computes.** `add9-fits` has a premise for the request and nine rows
@@ -996,7 +1012,7 @@ of its own (a program that imports it holds `std.math.decimal-arith`'s one
 |---|---|
 | **the integer** | `(int P N)`. 7 is `(int (n z 7) z)`, −7 is `(int z (n z 7))`, zero is `(int z z)`, and `(int (n z 5) (n z 3))` is 2, not simplified. The **normal form** has one part `z` and the other in `std.math.decimal-arith`'s normal form; every integer has exactly one. An operand is read by value, whatever its parts and their high zeros, and every answer is in normal form, so a rule of a program tells a negative answer by its shape, `(int z (n ?p ?a))`, with no negation written |
 | **the protocol** | `(int-simplify X)` answered by `(int-simple-of X S)`; `(int-neg X)` by `(int-neg-of X S)`; `(int-add X Y)` by `(int-sum-of X Y S)`; `(int-sub X Y)` by `(int-diff-of X Y S)`, **one integer**, where `std.math.decimal-arith`'s `diff-of` answers two numbers: they are its two parts; `(int-mul X Y)` by `(int-product-of X Y S)`; `(int-cmp X Y)` by `(int-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value ([Q-M1f.174](../docs/decisions/stdlib/math/int/Q-M1f.174-the-names-of-std-math-int-carry-the-prefix-int.md)) |
-| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.math.decimal-arith`'s. A natural number is **not** an integer operand, and such a request is never answered and not flagged ([Q-M1f.175](../docs/decisions/stdlib/math/int/Q-M1f.175-an-integer-operand-is-an-integer-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). **An undeclared name and a digit as an operand are flagged** on the request, by the module's three rules from its tags to the request and `int-bad-div`; **a digit or a named constant where a part goes**, `(int 7 z)`, `(int price z)`, is the integer's own fault, `(not-integer INTEGER THING)`, flagged where it is written ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)); a malformed numeral inside a part is `std.math.decimal`'s ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
+| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.math.decimal-arith`'s. A natural number is **not** an integer operand, and such a request is never answered and not flagged ([Q-M1f.175](../docs/decisions/stdlib/math/int/Q-M1f.175-an-integer-operand-is-an-integer-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). **An undeclared name and a digit as an operand are flagged** on the request, by the module's three rules from its tags to the request and `int-bad-div`; **a digit or a named constant where a part goes**, `(int 7 z)`, `(int price z)`, is the integer's own fault, `(not-integer INTEGER THING)`, flagged where an operation takes the integer ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)); a malformed numeral inside a part is `std.math.decimal`'s ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent)) |
 | **division** | **names its convention** ([Q-M1f.179](../docs/decisions/stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md)); there is no bare `int-div`. Each request is answered by one fact with a quotient and a remainder, X = Q·Y + R: `(int-div-euclid X Y)` by `(int-quot-euclid-of X Y Q R)`, 0 ≤ R < \|Y\|, Q an integer and R a **natural number** of `std.math.decimal-arith`; `(int-div-trunc X Y)` by `(int-quot-trunc-of X Y Q R)`, Q rounded toward zero and R with the dividend's sign, both integers; `(int-div-floor X Y)` by `(int-quot-floor-of X Y Q R)`, Q rounded down and R with the divisor's sign, both integers ([Q-M1f.200](../docs/decisions/stdlib/math/int/Q-M1f.200-an-integer-divisions-result-is-named-after.md)). The three agree where neither operand is negative, and with `std.math.decimal-arith`'s `div` there |
 | **division by zero** | a divisor that is zero by value, however written or named, derives `std.math.arith`'s flag, `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s rule derives `(false)`: root is dead and R is empty, as everywhere in the calculator. The module's one rule that concludes `(false)` is its integer's shape's, `not-integer-is-false` |
 | **the one entry** | `int-arith`, the closing rule: it closes the held extent of every relation of the module and of `nz`, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
@@ -1026,9 +1042,9 @@ divisor's size less the remainder, a subtraction walk.
 | 7 ÷ −2 | −3, 1 | −3, 1 | −4, −1 |
 | −7 ÷ −2 | 4, 1 | 3, −1 | 3, −1 |
 
-−7 ÷ 2 is 124 firings under Euclidean and floored and 112 under truncated;
-123078 + −4567 is 59 firings, two addition walks and the two subtraction walks
-of the simplification, 52 deep (`int_theory.rs`' `the_circuit_of_each_operation`
+−7 ÷ 2 is 133 firings under Euclidean and floored and 121 under truncated;
+123078 + −4567 is 76 firings, two addition walks, the two subtraction walks
+of the simplification and the operands' checks, 52 deep (`int_theory.rs`' `the_circuit_of_each_operation`
 pins them; `cargo test -p ein-infer --test int_theory the_circuit` re-takes
 them). **A call's tag is its request**: `(int-add X Y)` is the tag of its own
 computation. **The tagged calls a later theory makes are an interface,** as
@@ -1093,7 +1109,7 @@ program asks `rat-simplify` on the way.
 |---|---|
 | **the rational** | `(rat Z D)`. 1/2 is `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. **An answer is unreduced**: its numerator in `std.math.int`'s normal form, one part `z`, its denominator with no high zero ([Q-M1f.302](../docs/decisions/stdlib/math/rat/Q-M1f.302-an-unreduced-answer-has-its-numerator-in-normal.md)); a common factor of the two stays, and zero is 0 over any denominator, 0/6. **Lowest terms**, the two with no common divisor but 1 and zero written 0 over 1, `(rat (int z z) (n z 1))`, is the one normal form every rational has, and `rat-simplify` answers it. An operand is read by value, 2/4 as 1/2 |
 | **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`, X in lowest terms, the one request that reduces; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value ([Q-M1f.180](../docs/decisions/stdlib/math/rat/Q-M1f.180-the-names-of-std-math-rat-carry-the-prefix-rat.md)) |
-| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand, and is not flagged ([Q-M1f.181](../docs/decisions/stdlib/math/rat/Q-M1f.181-a-rational-operand-is-a-rational-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). An undeclared name and a digit as an operand are flagged on the request, by the module's three rules from its tags to the request; a digit or a named constant where the integer or the denominator goes, `(rat 7 (n z 2))`, is the rational's own fault, `(not-rational RATIONAL THING)`, flagged where it is written ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)), as in `std.math.int` |
+| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand, and is not flagged ([Q-M1f.181](../docs/decisions/stdlib/math/rat/Q-M1f.181-a-rational-operand-is-a-rational-written-out.md), [Q-M1f.277](../docs/decisions/stdlib/math/Q-M1f.277-an-operand-of-another-kind-of-number-is-answered.md)). An undeclared name and a digit as an operand are flagged on the request, by the module's three rules from its tags to the request; a digit or a named constant where the integer or the denominator goes, `(rat 7 (n z 2))`, is the rational's own fault, `(not-rational RATIONAL THING)`, flagged where an operation takes the rational ([Q-M1f.276](../docs/decisions/stdlib/math/Q-M1f.276-an-integers-and-a-rationals-own-shape-is-checked.md)), as in `std.math.int` |
 | **a zero denominator** | **a division by zero, and a contradiction**, as in `std.math.decimal-arith`, and by `std.math.arith`'s rule ([Q-M1f.182](../docs/decisions/stdlib/math/rat/Q-M1f.182-a-zero-denominator-is-a-division-by-zero.md)). A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty |
 | **the one entry** | `rat-arith`, the closing rule: it closes the held extent of every relation of the module and of `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of the modules it imports |
 
@@ -1145,16 +1161,16 @@ test -p ein-infer --test rat_theory the_circuit` re-takes them):
 
 | request | firings | depth |
 |---|---:|---:|
-| 2/4 in lowest terms | 345 | 343 |
-| 1071/462 in lowest terms, a chain of three divisions | 888 | 883 |
-| −3/4 negated | 25 | 23 |
-| 1/2 + 1/3 | 101 | 99 |
-| 1/2 − 1/3 | 104 | 102 |
-| 2/3 × 3/4 | 81 | 79 |
-| 1/2 ÷ −3/4 | 91 | 87 |
-| 1/2 against 1/3 | 76 | 76 |
-| 123/456 + 789/1011 | 386 | 379 |
-| 123/456 against 789/1011 | 270 | 270 |
+| 2/4 in lowest terms | 353 | 343 |
+| 1071/462 in lowest terms, a chain of three divisions | 901 | 883 |
+| −3/4 negated | 33 | 23 |
+| 1/2 + 1/3 | 113 | 99 |
+| 1/2 − 1/3 | 116 | 102 |
+| 2/3 × 3/4 | 94 | 79 |
+| 1/2 ÷ −3/4 | 106 | 87 |
+| 1/2 against 1/3 | 88 | 76 |
+| 123/456 + 789/1011 | 410 | 379 |
+| 123/456 against 789/1011 | 294 | 270 |
 
 Lowest terms is most of a `rat-simplify`, and most of that is
 `std.math.decimal-arith`'s division computing its divisor's nine multiples
@@ -1198,7 +1214,7 @@ and no guard of its own (a program that imports it holds
 | | |
 |---|---|
 | **the protocol** | `(gcd X Y)` answered by `(gcd-of X Y G)`; `(lcm X Y)` by `(lcm-of X Y L)`. The operands are repeated as written; every answer is in normal form |
-| **an operand** | a natural number of `std.math.decimal-arith`, high zeros allowed and read by value, or a name a `(let NAME NUMBER)` states. **Natural numbers only**: an integer or a rational where a number goes is answered by silence. An undeclared name and a digit as an operand are flagged on the request, by the module's two rules from its tags to the request, as `std.math.int`'s are; a malformed numeral is `std.math.decimal`'s, where it is written |
+| **an operand** | a natural number of `std.math.decimal-arith`, high zeros allowed and read by value, or a name a `(let NAME NUMBER)` states. **Natural numbers only**: an integer or a rational where a number goes is answered by silence. An undeclared name and a digit as an operand are flagged on the request, by the module's two rules from its tags to the request, as `std.math.int`'s are; a malformed numeral is `std.math.decimal`'s, flagged where the operand is looked up |
 | **zero** | gcd(X, 0) = gcd(0, X) = X, and **gcd(0, 0) = 0**, the usual convention ([Q-M1f.299](../docs/decisions/stdlib/math/gcd/Q-M1f.299-the-greatest-common-divisor-of-zero-and-zero-is.md)); lcm with a zero is zero, lcm(0, 0) too. **No request of this module divides by zero**: the chain divides only by a number whose shape says it is not zero, and the least common multiple divides by the greatest common divisor only where that is not zero |
 | **the one entry** | `gcd`, the closing rule, which has the request's name: it closes the held extent of every relation of the module, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
 
@@ -1235,13 +1251,13 @@ gcd_theory the_circuit -- --nocapture` re-takes them):
 
 | request | firings | depth |
 |---|---:|---:|
-| gcd(1071, 462), a chain of three divisions | 553 | 553 |
-| gcd(462, 1071), four: the first turns the two round | 742 | 742 |
-| lcm(1071, 462) | 866 | 866 |
-| gcd(5, 6) | 257 | 257 |
-| gcd(7, 0) | 17 | 17 |
+| gcd(1071, 462), a chain of three divisions | 564 | 553 |
+| gcd(462, 1071), four: the first turns the two round | 753 | 742 |
+| lcm(1071, 462) | 877 | 866 |
+| gcd(5, 6) | 263 | 257 |
+| gcd(7, 0) | 20 | 17 |
 | gcd(0, 0), and lcm(0, 0) | 14 | 14 |
-| gcd(102334155, 63245986), F(40) and F(39): 38 divisions | 10 337 | 10 337 |
+| gcd(102334155, 63245986), F(40) and F(39): 38 divisions | 10 358 | 10 337 |
 
 A step is a long division, and most of it is the divisor's nine multiples,
 computed before the first digit. The count of steps is linear in the

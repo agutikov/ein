@@ -10,7 +10,7 @@ a program that imports only binary holds no decimal row. A program that imports 
 | module | what it is |
 |---|---|
 | `std.math.bits` | the tables, facts and no rule, generated |
-| `std.math.binary` | the numeral `(b2 PREFIX BIT)`, `bin-named`, and the numeral's check where it is written ([Q-M1f.295](../../../../decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md)); entry `binary` |
+| `std.math.binary` | the numeral `(b2 PREFIX BIT)`, `bin-named`, and the check an operation asks of a numeral it takes ([Q-M1f.295](../../../../decisions/stdlib/math/binary/Q-M1f.295-the-binary-numeral-is-std-math-binary-s-which.md)); entry `binary` |
 | `std.math.binary-arith` | the arithmetic, `std.math.decimal-arith`'s twin ([Q-M1f.267](../../../../decisions/stdlib/math/binary/Q-M1f.267-binarys-names-carry-the-prefix-bin.md)); entry `binary-arith` |
 | `std.math.convert` | decimal to binary and back; entry `convert` |
 
@@ -237,8 +237,9 @@ request and each fault.
 ## Using `std.math.binary` — the binary numeral
 
 The binary representation: the numeral `b2`, `bin-named`, which the module that declares `bin-let` writes for
-each name, and the flag `not-binary`. It computes nothing, and checks every numeral where it is written, as
-`std.math.decimal` checks decimal's. A program lists `b2` from it wherever it writes a binary numeral.
+each name, the check `bin-check`, its label `bin-valid`, and the flag `not-binary`. It computes nothing, and
+checks a numeral where an operation takes it, as `std.math.decimal` checks decimal's
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). A program lists `b2` from it wherever it writes a binary numeral.
 
 ```lisp
 (import std.math.binary :symbols (b2))

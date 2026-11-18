@@ -2,24 +2,27 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; The loader states every fact nested in a fact a file writes, and in a
-;;; rule's conclusion where it holds no variable, as `(written T)`, and the
-;;; module's five rules read every place of every numeral off it. Here a
-;;; numeral is written in each place it can be: a request's operand, a `let`
-;;; nobody asks about, a fact of the program's own relation, a part of an
-;;; integer and of a rational, and a rule's conclusion. Each is a decimal
-;;; number, so no rule of the check fires: `(not-decimal …)` has no fact, and
-;;; the sum is answered.
+;;; A numeral is checked where an operation takes it (Q-M1f.404): the sum's
+;;; two operands are walked to `z`, by `numeral-step` and, past the 0 of 107,
+;;; `numeral-step-zero`, and `numeral-valid` labels each `(valid N)`. The sum
+;;; is labelled as it is made, by `std.math.positional`'s `turn-end`, and `z`
+;;; by the closing rule. Here a
+;;; numeral is also written in each place no operation takes it from: a
+;;; `let` nobody asks about, a fact of the program's own relation, a part of
+;;; an integer and of a rational, and a rule's conclusion. Those are neither
+;;; checked nor labelled. Each numeral is a decimal number, so no rule of the
+;;; check flags one: `(not-decimal …)` has no fact, and the sum is answered.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; R is {∅}: root is alive, and the program's own relations are closed. The
-;;; sum is answered, and the flag's extent is empty.
+;;; sum is answered, the flag's extent is empty, and `valid`'s is the two
+;;; operands, the sum and `z`, and no numeral nobody takes.
 
 (import std.math.rat :symbols (rat-arith rat))
 (import std.math.int :symbols (int))
 (import std.math.decimal-arith :symbols (decimal-arith add let sum-of))
-(import std.math.decimal :symbols (n not-decimal))
+(import std.math.decimal :symbols (n not-decimal valid))
 (import std.math.arith :symbols (z))
 
 (relation price Item Amount :why "{?1} costs {?2}")
@@ -30,7 +33,7 @@
   :why    "the program's own relations are closed, as the theory's are")
 
 (seed z)
-(add (n (n z 1) 2) (n z 5))
+(add (n (n (n z 1) 0) 7) (n z 5))
 (let unused (n (n z 4) 2))
 (price apple (n (n z 1) 0))
 (price half (rat (int (n z 1) z) (n z 2)))
@@ -43,8 +46,12 @@
 
 (query :goal (sum-of ?x ?y ?s)
        :goal-text "{?x} + {?y} = {?s}"
-       :expect (model (sum-of (n (n z 1) 2) (n z 5) (n (n z 1) 7))))
+       :expect (model (sum-of (n (n (n z 1) 0) 7) (n z 5) (n (n (n z 1) 1) 2))))
 
 (query :goal (not-decimal ?numeral ?thing)
        :goal-text "{?numeral} is not a decimal number"
        :expect (model))
+
+(query :goal (valid ?numeral)
+       :goal-text "{?numeral} is a decimal number"
+       :expect (model (valid z) (valid (n (n (n z 1) 0) 7)) (valid (n z 5)) (valid (n (n (n z 1) 1) 2))))

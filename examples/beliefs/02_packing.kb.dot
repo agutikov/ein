@@ -23,17 +23,32 @@ digraph kb {
   "claims" -> "claims" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "confirmed" -> "Claim" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "confirmed" -> "confirmed" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Dan" -> "Soup" [label="likes", color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  "Eve" -> "Fish" [label="likes", color="#1f77b4", fontcolor="#1f77b4", style=solid];
   "Ann" -> "Ann" [label="witness", color="#2ca02c", fontcolor="#2ca02c", style=solid];
-  "Bob" -> "(likes Dan Soup)" [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Bob" -> "(likes Dan Tea)" [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_2568147a6a [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_2568147a6a -> "(likes Dan Soup)" [label="#1", color="#d62728", style=dashed];
-  f_10b87d22c1 [shape=octagon, label="(written)\\nby #written", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_10b87d22c1 -> "(likes Dan Tea)" [label="#1", color="#d62728", style=dashed];
-  "Ann" -> "(likes Dan Soup)" [label="knows by witnessed", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Ann" -> "(likes Eve Fish)" [label="knows by witnessed", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Bob" -> f_b10ac10970 [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Bob" -> f_0b12cdd493 [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Ann" -> f_b10ac10970 [label="knows by witnessed", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Ann" -> f_11e3b3411e [label="knows by witnessed", color="#17becf", fontcolor="#17becf", style=dashed];
   f_aa754b6609 [shape=octagon, label="(confirmed)\\nby confirm", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_aa754b6609 -> "(likes Dan Soup)" [label="#1", color="#d62728", style=dashed];
+  f_aa754b6609 -> f_b10ac10970 [label="#1", color="#d62728", style=dashed];
+
+  // facts in a context
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_0b12cdd493 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  }
+  subgraph cluster_ctx_1 {
+    label="claims, confirmed, knows ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_b10ac10970 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style="filled,solid", fillcolor="#d9d9d9"];
+  }
+  subgraph cluster_ctx_2 {
+    label="knows ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_11e3b3411e [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style="filled,solid", fillcolor="#d9d9d9"];
+  }
+  f_b10ac10970 -> "Dan" [label="#1", color="#1f77b4", style=solid];
+  f_b10ac10970 -> "Soup" [label="#2", color="#1f77b4", style=solid];
+  f_0b12cdd493 -> "Dan" [label="#1", color="#1f77b4", style=solid];
+  f_0b12cdd493 -> "Tea" [label="#2", color="#1f77b4", style=solid];
+  f_11e3b3411e -> "Eve" [label="#1", color="#1f77b4", style=solid];
+  f_11e3b3411e -> "Fish" [label="#2", color="#1f77b4", style=solid];
 }

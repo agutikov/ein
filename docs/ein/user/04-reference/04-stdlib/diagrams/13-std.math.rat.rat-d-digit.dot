@@ -5,11 +5,11 @@ digraph rule_rat_d_digit_lhs_rhs {
     "?i_L" [label="?i", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     subgraph cluster_ctx_L_0 {
-      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="rat-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(rat ?i ?x)_L" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
     }
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(rat ?i ?x)_L" [label="1", color="#d62728"];
+    "h1_rat-check_L" [shape=octagon, label="rat-check", color="#e377c2", fontcolor="#e377c2"];
+    "h1_rat-check_L" -> "(rat ?i ?x)_L" [label="1", color="#e377c2"];
     "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
     "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
     "(rat ?i ?x)_L" -> "?i_L" [label="1", color="#d62728"];

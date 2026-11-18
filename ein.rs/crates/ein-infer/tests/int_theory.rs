@@ -762,20 +762,20 @@ fn the_circuit_of_each_operation() {
 
 /// The pinned measures, in the order [`the_circuit_of_each_operation`] asks.
 const CIRCUITS: [(usize, usize); 14] = [
-    (28, 21),
-    (22, 17),
-    (59, 52),
-    (50, 43),
-    (33, 33),
-    (142, 136),
-    (342, 330),
-    (413, 406),
-    (124, 120),
-    (112, 108),
-    (124, 120),
-    (279, 269),
-    (259, 249),
-    (279, 269),
+    (42, 21),
+    (30, 17),
+    (76, 52),
+    (67, 43),
+    (50, 33),
+    (155, 136),
+    (353, 330),
+    (434, 406),
+    (133, 120),
+    (121, 108),
+    (133, 120),
+    (294, 269),
+    (274, 249),
+    (294, 269),
 ];
 
 // ── the module's text ──────────────────────────────────────────────
@@ -860,7 +860,8 @@ impl Module {
 /// number would change no answer and make every batch cost the square of its
 /// count: the index does not key a nested fact.
 /// The rules of the integer's own shape (Q-M1f.276): each
-/// reads `(written (int P N))` and probes what it binds, `nz` or `named`.
+/// reads `(int-check (int P N))`, which an operation asks, and probes
+/// what it binds, `nz` or `named`.
 const SHAPE_RULES: [&str; 6] = [
     "int-p-digit",
     "int-p-zero",
@@ -886,17 +887,17 @@ fn every_rule_has_one_premise() {
             continue;
         }
         if SHAPE_RULES.contains(&name.as_str()) {
-            // The integer's own shape: `(written (int P N))`, the
+            // The integer's own shape: `(int-check (int P N))`, the
             // one premise that holds numbers, and a probe of what it binds.
             let heads: Vec<&str> = premises
                 .iter()
                 .filter_map(|&p| m.ast.head_name(p))
                 .collect();
             assert!(
-                heads.first() == Some(&"written")
+                heads.first() == Some(&"int-check")
                     && heads[1..].iter().all(|h| ["nz", "named"].contains(h))
                     && heads.len() <= 2,
-                "rule {name}: `(written (int P N))` and at most a probe: {heads:?}"
+                "rule {name}: `(int-check (int P N))` and at most a probe: {heads:?}"
             );
             continue;
         }
@@ -1046,15 +1047,17 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     );
 }
 
-/// **An integer's own malformation is its flag, as written, and `(false)`**
-/// (Q-M1f.276); **an operand's fault is the request's**, and a division's is
-/// its request's beside its tag's (Q-M1f.282). A
+/// **An integer's own malformation is its flag, as written, and `(false)`**,
+/// where an operation takes the integer (Q-M1f.276, Q-M1f.404), and an
+/// integer no operation takes is not checked; **an operand's fault is the
+/// request's**, and a division's is its request's beside its tag's
+/// (Q-M1f.282). A
 /// program here is dead, and a dead program's one claim, `(false)`, cannot say
 /// which flag killed it nor how the flag is written: the mutation census
 /// banks the mutants that exchange a flag's arguments, and this holds the text
 /// from outside the language.
 #[test]
-fn a_malformed_integer_and_an_operands_fault_are_flagged_as_written() {
+fn a_malformed_integer_and_an_operands_fault_are_flagged() {
     let fine = "(int (n z 1) z)";
     for (int, flag) in [
         ("(int 7 z)", "(not-integer (int 7 z) 7)"),
@@ -1067,6 +1070,12 @@ fn a_malformed_integer_and_an_operands_fault_are_flagged_as_written() {
         let body = format!("(let price (n z 5))\n(int-add {int} {fine})\n");
         assert_eq!(run(&body, "not-integer"), [flag], "{int}");
         assert_eq!(run(&body, "false"), ["(false)"], "{int}");
+        let untaken = format!("(let price (n z 5))\n(let unused {int})\n(int-add {fine} {fine})\n");
+        assert!(
+            run(&untaken, "not-integer").is_empty(),
+            "{int}, taken by nothing"
+        );
+        assert!(run(&untaken, "false").is_empty(), "{int}, taken by nothing");
     }
     let body = format!("(int-div-trunc foo {fine})\n");
     let mut flags = run(&body, "undeclared");

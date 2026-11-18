@@ -2,41 +2,35 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; Five numerals are not flagged, as their like are not in decimal. One whose
-;;; prefix is a name that is neither a bit nor a named constant, `(b2 end 1)`,
-;;; and so one whose prefix is a decimal digit, `(b2 7 1)`, a name in binary's
-;;; eyes: saying *a name* costs a walk of the program's names. One whose prefix
-;;; is a fact of another relation, `(b2 (pair 1 0) 1)`: no rule can say *not
-;;; of this shape*. One a rule assembles from a variable, `(b2 ?p 2)`, which is
-;;; no term a file writes. And a top-level fact of `b2`, `(b2 alice bob)`,
-;;; which is no numeral nested in anything.
+;;; Three numerals a request takes are checked, and none is flagged or
+;;; labelled, as their like are not in decimal. One whose prefix is a name
+;;; that is neither a bit nor a named constant, `(b2 end 1)`, and so one
+;;; whose prefix is a decimal digit, `(b2 7 1)`, a name in binary's eyes:
+;;; saying *a name* costs a walk of the program's names. One whose prefix is
+;;; a fact of another relation, `(b2 (pair 1 0) 1)`: no rule can say *not of
+;;; this shape*. The walk of each stops at what is no numeral, so none
+;;; reaches `z`, none is labelled valid, and no request of theirs is
+;;; answered. A numeral no operation takes is not checked at all
+;;; (Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; R is {∅}: root is alive, the sum beside them is answered, and no flag
-;;; has a fact.
+;;; R is {∅}: root is alive, the sum beside them is answered, no flag has a
+;;; fact, and `bin-valid`'s extent is the numerals the walk reached `z` from,
+;;; the sum, and `z`.
 
 (import std.math.binary-arith :symbols (binary-arith bin-let bin-add bin-sum-of))
-(import std.math.binary :symbols (b2 not-binary))
+(import std.math.binary :symbols (b2 not-binary bin-valid))
 (import std.math.arith :symbols (z))
 
-(relation mask Item Bits :why "{?1} is masked by {?2}")
 (relation pair Thing Thing :why "the pair of {?1} and {?2}")
-(relation seed Thing :why "{?1} is a seed")
-(rule the-program-guesses-nothing ()
-  :match  ()
-  :assert (and (__closed__ mask) (__closed__ pair) (__closed__ seed))
-  :why    "the program's own relations are closed, as the theory's are")
+(__closed__ pair)
 
-(seed z)
 (bin-let far (b2 end 1))
 (bin-let seven (b2 7 1))
-(mask low (b2 (pair 1 0) 1))
-(b2 alice bob)
-(rule assemble ()
-  :match  (seed ?p)
-  :assert (mask high (b2 ?p 2))
-  :why    "a mask, assembled from {?p} and the name 2")
+(bin-add far (b2 z 1))
+(bin-add seven (b2 z 1))
+(bin-add (b2 (pair 1 0) 1) (b2 z 1))
 (bin-add (b2 z 1) (b2 (b2 z 1) 1))
 
 (solve :expect (region (model)))
@@ -48,3 +42,8 @@
 (query :goal (not-binary ?numeral ?thing)
        :goal-text "{?numeral} is not a binary number"
        :expect (model))
+
+(query :goal (bin-valid ?numeral)
+       :goal-text "{?numeral} is a binary number"
+       :expect (model (bin-valid z) (bin-valid (b2 z 1)) (bin-valid (b2 (b2 z 1) 1))
+                      (bin-valid (b2 (b2 (b2 z 1) 0) 0))))

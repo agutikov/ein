@@ -118,9 +118,10 @@ fn number(rng: &mut u64, digits: u32) -> String {
 /// constants nobody asks about. The requests are the same whatever `lets`
 /// is: the constants are drawn from a stream of their own, and each is
 /// written with a high zero, `(n (n z 0) …)`, so that no numeral of a
-/// constant's is one of a request's. The loader states a numeral once,
-/// `(written T)`, and `std.math.decimal` checks it once, so a
-/// numeral the two shared would cost the program less than the two apart.
+/// constant's is one of a request's. A constant nobody asks about is not
+/// checked, and `std.math.decimal` checks a numeral an operation takes once,
+/// whatever takes it (Q-M1f.404), so a numeral the two shared would cost the
+/// program less than the two apart.
 fn batch(op: &str, count: usize, lets: usize) -> String {
     let (mut rng, mut names) = (0x5146_0603_u64, 0x5146_0604_u64);
     let mut src = String::from(IMPORT);

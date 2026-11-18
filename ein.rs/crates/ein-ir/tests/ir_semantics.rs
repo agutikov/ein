@@ -159,7 +159,7 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `reserved-macro-names-beyond-absent` — the loader's shadowing check covers
 /// the whole kernel vocabulary, not just `absent`.
 ///
-/// [`ein_core::RESERVED`] is **twelve** names, and four of them (`not` /
+/// [`ein_core::RESERVED`] is **eleven** names, and four of them (`not` /
 /// `and` / `or` / `neq`) cannot even be *written* as a macro name — the
 /// grammar stops them first (see
 /// `a_reserved_keyword_cannot_be_written_as_a_macro_name`). Five more,
@@ -170,8 +170,7 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `__symmetric__`, are used and never bound (Q-M1f.7): they are names the
 /// grammar reads, so nothing but this check stands between a puzzle and a
 /// macro called `__closed__` silently shadowing the kernel's marker in every
-/// rule that mentions it. (`written`, the twelfth, is the loader's, and no
-/// declarator binds it either.) The last half of the test is what makes the
+/// rule that mentions it. The last half of the test is what makes the
 /// claim "exactly": `forall` and `unknown` are kernel *sugar* and look just
 /// as reserved, but they are stdlib macros — a puzzle must be free to define
 /// its own.

@@ -48,8 +48,54 @@ The entry: it closes the held extent of the flag's relation and names the module
 
 ## `std.math.decimal`
 
-The numeral's check. The loader states `(written T)` for every fact nested in a fact a file writes, so each rule
-has one premise that holds a number, a written numeral, beside a guard or a row of `nz`.
+The numeral's check, which an operation asks of a numeral it takes, `(check N N)` ([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)). Three rules walk
+the numeral a place a firing from the units and label it valid where the walk reaches `z`; four flag the place at
+fault. Each rule has one premise that holds a number, `(check N REST)`, beside a guard, a row of `nz` or a probe.
+
+#### `numeral-step`
+
+The place holds a digit that is not zero: the walk goes on to the prefix.
+
+<!-- rule std.math.decimal numeral-step -->
+```lisp
+(rule numeral-step ()
+  :match  (and (check ?w (n ?p ?a)) (nz ?a))
+  :assert (check ?w ?p)
+  :why    "the digit {?a} is one: {?p} is still to check")
+```
+
+![The rule numeral-step of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-step.svg)
+<!-- /rule -->
+
+#### `numeral-step-zero`
+
+The place holds the digit 0: the walk goes on to the prefix.
+
+<!-- rule std.math.decimal numeral-step-zero -->
+```lisp
+(rule numeral-step-zero ()
+  :match  (check ?w (n ?p 0))
+  :assert (check ?w ?p)
+  :why    "the digit 0 is one: {?p} is still to check")
+```
+
+![The rule numeral-step-zero of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-step-zero.svg)
+<!-- /rule -->
+
+#### `numeral-valid`
+
+The walk reached `z`: every place held a digit, and the numeral is labelled `(valid N)`.
+
+<!-- rule std.math.decimal numeral-valid -->
+```lisp
+(rule numeral-valid ()
+  :match  (check ?w z)
+  :assert (valid ?w)
+  :why    "every place of {?w} holds a digit, and it ends in z: it is a decimal number")
+```
+
+![The rule numeral-valid of std.math.decimal, as the engine draws it](diagrams/09-std.math.decimal.numeral-valid.svg)
+<!-- /rule -->
 
 #### `numeral-digit`
 
@@ -58,7 +104,7 @@ The last place of a numeral holds something that is none of the ten digits: one 
 <!-- rule std.math.decimal numeral-digit -->
 ```lisp
 (rule numeral-digit ()
-  :match  (and (written (n ?p ?a))
+  :match  (and (check ?w (n ?p ?a))
                (neq ?a 0) (neq ?a 1) (neq ?a 2) (neq ?a 3) (neq ?a 4)
                (neq ?a 5) (neq ?a 6) (neq ?a 7) (neq ?a 8) (neq ?a 9))
   :assert (not-decimal (n ?p ?a) ?a)
@@ -75,7 +121,7 @@ The prefix is a digit that is not zero, `(n 1 2)`.
 <!-- rule std.math.decimal numeral-prefix-digit -->
 ```lisp
 (rule numeral-prefix-digit ()
-  :match  (and (written (n ?m ?a)) (nz ?m))
+  :match  (and (check ?w (n ?m ?a)) (nz ?m))
   :assert (not-decimal (n ?m ?a) ?m)
   :why    "the digit {?m} stands where a number goes: a number ends in z")
 ```
@@ -90,7 +136,7 @@ The prefix is the digit `0`, `(n 0 2)`.
 <!-- rule std.math.decimal numeral-prefix-zero -->
 ```lisp
 (rule numeral-prefix-zero ()
-  :match  (written (n 0 ?a))
+  :match  (check ?w (n 0 ?a))
   :assert (not-decimal (n 0 ?a) 0)
   :why    "the digit 0 stands where a number goes: a number ends in z")
 ```
@@ -105,7 +151,7 @@ The prefix is a named constant, `(n price 1)`.
 <!-- rule std.math.decimal numeral-prefix-named -->
 ```lisp
 (rule numeral-prefix-named ()
-  :match  (and (written (n ?m ?a)) (neq ?m z) (named ?m))
+  :match  (and (check ?w (n ?m ?a)) (neq ?m z) (named ?m))
   :assert (not-decimal (n ?m ?a) ?m)
   :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
 ```
@@ -137,9 +183,13 @@ The entry: it closes the held extent of each of the module's relations, names it
 (rule decimal ()
   :match  ()
   :assert (and (__closed__ nz)
-               (__closed__ n) (__closed__ named) (__closed__ not-decimal)
+               (__closed__ n) (__closed__ named) (__closed__ check)
+               (__closed__ valid) (__closed__ not-decimal)
                (__closed__ decimal-rule)
+               (valid z)
                (decimal-rule arith)
+               (decimal-rule numeral-step) (decimal-rule numeral-step-zero)
+               (decimal-rule numeral-valid)
                (decimal-rule numeral-digit) (decimal-rule numeral-prefix-digit)
                (decimal-rule numeral-prefix-zero)
                (decimal-rule numeral-prefix-named)
@@ -738,15 +788,14 @@ those facts.
                (arith-rule div-too-big) (arith-rule div-digit-found)
                (arith-rule div-next) (arith-rule div-next-zero)
                (arith-rule div-next-none) (arith-rule operand-undeclared)
-               (positional operand operand-is n let named add-walk fa b strip turn nz done
-                           add add-first add-second sum sum-of
-                           sub-walk fs short sub sub-first sub-second difference shortfall diff-of
-                           cmp-walk cl order-is cmp cmp-first cmp-second order cmp-of
-                           top-first top-first-is mul-call mul-digits mul-step mul-sum
-                           mul mul-first mul-second product product-of
-                           div-digits div-step div-done div div-first div-second div-call
-                           quotient quot-of div-m1
-                           bad-operand not-a-number malformed bad-request no-let undeclared))
+               (positional operand operand-is n let named check add-walk fa b strip turn nz done
+                           valid add add-first add-second sum sum-of sub-walk fs short sub sub-first
+                           sub-second difference shortfall diff-of cmp-walk cl order-is cmp
+                           cmp-first cmp-second order cmp-of top-first top-first-is mul-call
+                           mul-digits mul-step mul-sum mul mul-first mul-second product product-of
+                           div-digits div-step div-done div div-first div-second div-call quotient
+                           quot-of div-m1 bad-operand not-a-number malformed bad-request no-let
+                           undeclared))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
 <!-- /rule -->

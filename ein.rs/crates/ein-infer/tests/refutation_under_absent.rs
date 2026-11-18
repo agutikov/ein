@@ -316,7 +316,12 @@ fn beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list() {
                         ));
                     }
                 }
-                if m.lines().count() != 4 {
+                // One line a rule that concludes `(false)` from a flag a
+                // request derived by `words`' rules can raise: the program's
+                // own, and the calculator's division by zero, malformed and
+                // undeclared requests, and malformed numeral, which an
+                // operand's look-up checks (Q-M1f.404).
+                if m.lines().count() != 5 {
                     bad.push(format!(
                         "listed {listed}, list {list}: {} lines:\n{m}",
                         m.lines().count()

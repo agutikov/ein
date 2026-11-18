@@ -516,7 +516,9 @@ fn a_division_by_zero_is_flagged_and_false() {
 /// subtractors concluding the same fact. A product is eleven: a start, a
 /// step for each of nine digits, an end. A quotient is eleven: the start
 /// that computes the divisor's multiples, nine steps, an end. A conversion
-/// is one. A product that overflows stops where it does.
+/// is one, and `to9`'s number is checked besides, `std.math.decimal`'s ask,
+/// a firing a place and one for the label (Q-M1f.404): eight for 123078. A
+/// product that overflows stops where it does.
 ///
 /// Pinned, so that a change to the wiring shows: `cargo test -p ein-infer
 /// --test num9_theory the_circuit` re-takes them.
@@ -530,7 +532,7 @@ fn the_circuit_of_each_operation() {
         (format!("(cmp9 {} {})", n(123_078), n(4_567)), 1),
         (format!("(mul9 {} {})", n(123), n(456)), 11),
         (format!("(div9 {} {})", n(127_645), n(25)), 11),
-        (format!("(to9 {})", normal(123_078)), 1),
+        (format!("(to9 {})", normal(123_078)), 9),
         (format!("(from9 {})", n(123_078)), 1),
         (format!("(add9 {} {})", n(999_999_999), n(1)), 1),
         // 123078 x 123078: the start, seven steps, to where the sum so far has
@@ -551,13 +553,13 @@ const TABLES: [&str; 6] = ["fa", "fs", "md", "cl", "nz", "adj"];
 
 /// What the module takes from `std.math.decimal-arith`: the number's relation, for the
 /// conversions, and the flag with the rule from it to `(false)`.
-/// What the module takes from the modules below it, by module (`n` is
-/// `std.math.decimal`'s, `z`, the flag of a division by zero and its
-/// rule `std.math.arith`'s; `std.math.decimal-arith` comes whole, its import
-/// bare).
+/// What the module takes from the modules below it, by module (`n`, the
+/// check a conversion asks and its label are `std.math.decimal`'s, `z`, the
+/// flag of a division by zero and its rule `std.math.arith`'s;
+/// `std.math.decimal-arith` comes whole, its import bare).
 const FROM_ARITH: [(&str, &[&str]); 3] = [
     ("std.math.decimal-arith", &[]),
-    ("std.math.decimal", &["n"]),
+    ("std.math.decimal", &["n", "check", "valid"]),
     (
         "std.math.arith",
         &["z", "division-by-zero", "division-by-zero-is-false"],

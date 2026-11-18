@@ -2,23 +2,32 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; The numeral need not be the calculator's operand at all: `(price apple (n
-;;; 1 2))` is a fact of the program's own relation, and `(n 1 2)` ends in a
-;;; digit where `z` goes. `numeral-prefix-digit` derives `(not-decimal (n 1 2)
-;;; 1)`, and `(false)` follows.
+;;; The numeral is not the calculator's operand at all: `(price apple (n 1
+;;; 2))` is a fact of the program's own relation, and `(n 1 2)` ends in a
+;;; digit where `z` goes. No operation takes it, so it is not checked
+;;; (Q-M1f.404): `numeral-prefix-digit` does not fire, and no flag is
+;;; derived. The sum beside it is answered.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
-;;; empty, and it is the one claim such a program can make.
-;;; `ein solve` names the program's fact, as written, in the unsat core.
+;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
+;;; nothing, the sum is answered, and `not-decimal`'s extent is empty.
 
-(import std.math.decimal-arith :symbols (decimal-arith))
-(import std.math.decimal :symbols (n))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n not-decimal))
 (import std.math.arith :symbols (z))
 
 (relation price Item Amount :why "{?1} costs {?2}")
 (__closed__ price)
 (price apple (n 1 2))
+(add (n z 4) (n z 3))
 
-(solve :expect (false))
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 4) (n z 3) (n z 7))))
+
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))

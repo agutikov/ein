@@ -2,8 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `int-n-zero` reads `(written (int (n z 1) 0))` and derives `(not-integer
-;;; (int (n z 1) 0) 0)`.
+;;; `int-n-zero` reads `(int-check (int (n z 1) 0))`, which the operand's
+;;; look-up asks, and derives `(not-integer (int (n z 1) 0) 0)`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -80,8 +80,10 @@
 ;;; ── Malformed requests: a flag, and `(false)` from it ──────────────────────
 ;;;
 ;;; **A malformed numeral is not this module's**: whether `(b2 (b2 z 1) 2)` is
-;;; a number is `std.math.binary`'s question, asked where the numeral is
-;;; written (`(not-binary NUMERAL THING)`). What is left is what is wrong with
+;;; a number is `std.math.binary`'s question, which the look-up of an operand
+;;; asks of the numeral it finds (`(not-binary NUMERAL THING)`, Q-M1f.404),
+;;; and a number a walk makes is labelled `(bin-valid N)` as it is made, as
+;;; decimal's are. What is left is what is wrong with
 ;;; an operand or a `bin-let`, as far as decimal flags its own (Q-M1f.268),
 ;;; by the shared rules and one of binary's:
 ;;;
@@ -155,7 +157,7 @@
 
 (import std.math.bits :symbols (bin-fa bin-fs bin-cl bin-nz))
 (import std.math.arith :symbols (arith z))
-(import std.math.binary :symbols (binary b2 bin-named))
+(import std.math.binary :symbols (binary b2 bin-named bin-check bin-valid))
 (import std.math.positional :symbols (positional))
 
 ;; ── The accumulator: the number is `std.math.binary`'s ──────────────────────
@@ -391,8 +393,8 @@
 ;; each table it reads, is closed, so the search has no candidate among them.
 ;; The rule names every rule of the module and the entries of the two modules
 ;; below, `arith` and `binary`; and its last conjunct connects the base, one
-;; call of `std.math.positional`'s macro with binary's 61 relations, which
-;; derives the 77 activators of the shared rules in this same firing
+;; call of `std.math.positional`'s macro with binary's 63 relations, which
+;; derives the 78 activators of the shared rules in this same firing
 ;; (Q-M1f.266). `ein-infer/tests/arith_theory.rs` holds that no
 ;; relation and no rule of this file is missing here, and that the call is the
 ;; macro's whole order.
@@ -437,17 +439,16 @@
                (bin-arith-rule bin-div-fits) (bin-arith-rule bin-div-too-big)
                (bin-arith-rule bin-div-too-big-none)
                (bin-arith-rule bin-operand-undeclared)
-               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-add-walk bin-fa bin-b
-                           bin-strip bin-turn bin-nz bin-done
-                           bin-add bin-add-first bin-add-second bin-sum bin-sum-of
-                           bin-sub-walk bin-fs bin-short bin-sub bin-sub-first bin-sub-second
-                           bin-difference bin-shortfall bin-diff-of
-                           bin-cmp-walk bin-cl bin-order-is bin-cmp bin-cmp-first bin-cmp-second
-                           bin-order bin-cmp-of
-                           bin-top-first bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step
-                           bin-mul-sum bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
-                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first bin-div-second
-                           bin-div-call bin-quotient bin-quot-of bin-div-m1
+               (positional bin-operand bin-operand-is b2 bin-let bin-named bin-check bin-add-walk
+                           bin-fa bin-b bin-strip bin-turn bin-nz bin-done bin-valid bin-add
+                           bin-add-first bin-add-second bin-sum bin-sum-of bin-sub-walk bin-fs
+                           bin-short bin-sub bin-sub-first bin-sub-second bin-difference
+                           bin-shortfall bin-diff-of bin-cmp-walk bin-cl bin-order-is bin-cmp
+                           bin-cmp-first bin-cmp-second bin-order bin-cmp-of bin-top-first
+                           bin-top-first-is bin-mul-call bin-mul-digits bin-mul-step bin-mul-sum
+                           bin-mul bin-mul-first bin-mul-second bin-product bin-product-of
+                           bin-div-digits bin-div-step bin-div-done bin-div bin-div-first
+                           bin-div-second bin-div-call bin-quotient bin-quot-of bin-div-m1
                            bin-bad-operand bin-not-a-number bin-malformed bin-bad-request bin-no-let
                            bin-undeclared))
   :why    "binary arithmetic is computed and never guessed: every relation of the theory is closed")

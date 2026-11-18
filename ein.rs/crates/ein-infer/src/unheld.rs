@@ -170,10 +170,9 @@ impl Unwritten {
         let program = kb.program();
         let k = &terms.kernel;
         // determinism-ok: a set asked for membership alone.
-        let mut written: FxHashSet<Symbol> =
-            [k.not, k.r#false, k.open, k.closed, k.symmetric, k.written]
-                .into_iter()
-                .collect();
+        let mut written: FxHashSet<Symbol> = [k.not, k.r#false, k.open, k.closed, k.symmetric]
+            .into_iter()
+            .collect();
         let mut every = false;
         for plan in crate::monotone::plans_of(memo) {
             // An hrule proposes candidates and runs at no node.

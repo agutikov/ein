@@ -11,11 +11,10 @@ its own records, which no program writes, are
 
 **The reserved names are the surface between the engine's kernel and a theory written in Ein**
 ([Q-M1f.397](../../../decisions/docs/Q-M1f.397-the-reserved-words-are-mathematics.md)). They are where
-the kernel acts of its own accord: on a declaration, a stored negation, `(false)`, the two markers, and `written`,
-which it states. What a fact of any other relation means is what rules make of it, the program's own or the
-standard library's. So of whether a fact inside a fact holds, the kernel reads one thing, a held `(not P)`, and of
-such a fact it states one, `(written T)`; what `(claims Carol …)` or any other context says of the fact it points
-at is a theory's
+the kernel acts of its own accord: on a declaration, a stored negation, `(false)` and the two markers. What a fact
+of any other relation means is what rules make of it, the program's own or the standard library's. So of whether a
+fact inside a fact holds, the kernel reads one thing, a held `(not P)`; what `(claims Carol …)` or any other
+context says of the fact it points at is a theory's
 ([a fact inside a fact](../03-syntax-and-semantics/03-facts.md#a-fact-inside-a-fact)).
 
 ## Quick reference — from intent to word
@@ -43,7 +42,6 @@ program can be written without reading anything else.
 | say *for every b with G, B holds* | `(forall ?b G B)`, imported from `std.macro` | [§ Pattern macros](#pattern-macros-forall-and-unknown--not-reserved) |
 | make a relation symmetric, transitive, … | `(symmetric R)` and the rule that reads it | [§ Not reserved](#not-reserved) |
 | keep the facts of a relation from being guessed | `(__closed__ R)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
-| read a fact nested in what a file writes | `(written T)` in a `:match` | [§ `written`](#written--what-a-file-writes-stated-by-the-loader) |
 | choose what the blind enumerator guesses | `(solve :hypothesis-relations (…))` / `:no-hypothesis (…)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | judge root alone | `(solve :no-search)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 
@@ -76,9 +74,7 @@ malformed form is a parse error too.
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
 vocabulary is the structural primitives `absent` and `false`, the verdict `open`, the computed relations `eq` and
 `neq`, `relation`, the two dunders `__closed__` and `__symmetric__`, which a program uses and never binds
-([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)), and `written`,
-the relation the loader states what a file writes in
-([§ `written`](#written--what-a-file-writes-stated-by-the-loader)). The engine's three writeback rule names,
+([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
 `<forced-positive>`, `<monotonic-unconditional>` and `<lookahead-dies-immediately>`, are refused wherever a program
 writes them. The guard is about *binding* a name: a fact may still carry a reserved head, a stored `(not X)`.
 `unknown` and `forall` are deliberately *not* reserved: they are macros of the `std.macro` module.
@@ -92,7 +88,7 @@ Two sets answer two questions, and neither contains the other:
 
 | | the question it answers | its members | how it fails |
 |---|---|---|---|
-| the vocabulary | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` `written` | a **load** error, at the declaration |
+| the vocabulary | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
 | the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` | a **parse** error, wherever a name goes |
 
 Five names are in both. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
@@ -168,24 +164,6 @@ activated by `bijective-setup`. `std.slots` declares `slot-owed-room` and `slot-
 `slot-partition-setup`. All four assert `(open ?R)` and nothing else, and the *direction* is nowhere in the head: it
 falls out of which slot the rule's own `absent` leaves free
 ([`total-owed` and `surjective-owed`](04-stdlib/02-relation-algebra.md#obligations-total-owed-and-surjective-owed), [`std.slots`](04-stdlib/05-slots.md)).
-
-## `written` — what a file writes, stated by the loader
-
-Reserved, and a relation of the language as `relation` is: the loader states `(written T)` for every fact `T` nested
-at any depth in a fact a file writes, a program's, a local module's or a standard-library module's (for a stored
-negation `(not P)`, the facts nested in P's arguments), and for the facts a rule's or an hrule's conclusion nests where
-they hold no variable ([Q-M1f.275](../../../decisions/language/Q-M1f.275-written-states-every-fact-a-file-nests.md)).
-
-| | |
-|---|---|
-| form | `(written T)`, one argument, a fact |
-| who writes it | the loader alone. A fact of it, its negation, and a conclusion of it are refused at load, and no declarator binds the name ([Q-M1f.280](../../../decisions/language/Q-M1f.280-a-program-does-not-write-written.md)) |
-| who reads it | a rule's `:match` or a goal, `(written (n ?p ?a))`: a module's check of its own terms, `std.math.decimal`'s of a numeral, wherever the numeral is written ([Q-M1f.272](../../../decisions/language/Q-M1f.272-a-representation-module-reads-what-a-file-writes.md)) |
-| the search | never guessed, and decided at root, so nothing that reads it is stale |
-| its provenance | the loader's step `#written`, from the fact it was read in, so a core names the fact as written; from a rule's text, from no fact ([Q-M1f.279](../../../decisions/language/Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md)) |
-
-It shows where `relation`'s mirror facts show, in `ein saturate --dump`, a KB view and a `.einb`; a `--dump-answer`
-state file writes none of it, since the loader states it again when the file is read.
 
 ## Rule-body primitives
 

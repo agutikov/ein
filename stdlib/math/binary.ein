@@ -1,12 +1,13 @@
-;;; Ein stdlib — `std.math.binary`: the binary numeral, and whether a written
-;;; one is one, on `std.math.decimal`'s pattern: a malformed binary numeral is
-;;; this module's fault, flagged where it is written (Q-M1f.295,
-;;; Q-M1f.210).
+;;; Ein stdlib — `std.math.binary`: the binary numeral, and the check of one an
+;;; operation takes, on `std.math.decimal`'s pattern: a malformed binary
+;;; numeral is this module's fault, flagged where an operation takes it
+;;; (Q-M1f.295, Q-M1f.210, Q-M1f.404).
 ;;;
 ;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
-;;; This module is the binary **representation**: the constructor `b2` and what
-;;; a numeral written with it must be. It computes nothing;
-;;; `std.math.binary-arith` is the arithmetic over it, and imports it.
+;;; This module is the binary **representation**: the constructor `b2`, what
+;;; a numeral written with it must be, and the label `bin-valid` of one that
+;;; is. It computes nothing; `std.math.binary-arith` is the arithmetic over
+;;; it, imports it, and asks it to check what the arithmetic takes.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -37,16 +38,23 @@
 ;;; as binary's names carry `bin-` where decimal's carry none
 ;;; (Q-M1f.267).
 ;;;
-;;; ── A numeral is well-formed from the start ────────────────────────────────
+;;; ── A numeral is checked where an operation takes it ──────────────────────
 ;;;
-;;; As `std.math.decimal`'s check, of what was written and of nothing a
-;;; calculation does: the loader states every fact nested in a fact a file
-;;; writes, and in a rule's conclusion where it holds no variable, as
-;;; `(written T)` (Q-M1f.275), and five rules over
-;;; `(written (b2 P A))` see every place of every numeral a file writes,
-;;; wherever it sits. A well-formed place costs no firing; a malformed one
-;;; derives the flag on the smallest `b2` term at fault, and the flag derives
-;;; `(false)`:
+;;; As `std.math.decimal`'s check (Q-M1f.404): an operation that takes a
+;;; numeral from the program asks for it, the operand found for a request of
+;;; `std.math.binary-arith` or a number `std.math.convert` is asked to convert,
+;;; by one fact, `(bin-check N N)`, and the check walks N a place a firing, as
+;;; `(bin-check N REST)`. The walk that reaches `z` labels the numeral
+;;; `(bin-valid N)`: it is a binary number, and `z` is valid by the closing
+;;; rule below. The ask and the label are facts of the numeral, so a numeral
+;;; is checked once whatever reads it. A number the arithmetic makes is
+;;; labelled as it is made, by the walk that makes it, and no operation
+;;; checks it; one a program's own rule hands to another request is that
+;;; request's operand, walked as any. A numeral no operation takes is not
+;;; checked.
+;;;
+;;; A malformed place stops the walk and derives the flag on the smallest `b2`
+;;; term at fault, and the flag derives `(false)`:
 ;;;
 ;;;     (not-binary NUMERAL THING)    THING stands in NUMERAL where a bit or a
 ;;;                                   prefix goes, and is neither:
@@ -58,20 +66,18 @@
 ;;;                                   - the prefix is a named constant,
 ;;;                                     `(b2 mask 1)`
 ;;;
-;;; Root is dead from its first layer, R is empty, every command exits 0, and
-;;; `ein solve` names, in the unsat core, the fact the numeral was written in
-;;; and, in `refuted by`, `not-binary-is-false`.
+;;; Root is dead, R is empty, every command exits 0, and `ein solve` names, in
+;;; the unsat core, the request that took the numeral and, in `refuted by`,
+;;; `not-binary-is-false`.
 ;;;
 ;;; **A flag means malformed; no flag does not mean well-formed.** Silent, as
-;;; `std.math.decimal` is silent on their like:
+;;; `std.math.decimal` is silent on their like, and with no label:
 ;;;
 ;;;   - a prefix that is a name neither `z`, a bit nor a named constant,
 ;;;     `(b2 end 1)`, and so a decimal digit as a prefix, `(b2 7 1)`, which
 ;;;     is a name in binary's eyes: saying *a name* costs a walk of the
 ;;;     program's names (Q-M1f.318);
-;;;   - a prefix that is a fact of another relation, `(b2 (pair 1 0) 1)`;
-;;;   - a numeral a rule assembles from a variable, `(b2 ?p 2)`;
-;;;   - a numeral written as a top-level fact of `b2`, which is no term.
+;;;   - a prefix that is a fact of another relation, `(b2 (pair 1 0) 1)`.
 ;;;
 ;;; A wrong count of arguments, `(b2 1)`, is refused when the program is loaded
 ;;; (Q-M1f.315). What is not a numeral's fault is not this module's: a name no
@@ -86,16 +92,18 @@
 ;;; ── The rule of the calculator ─────────────────────────────────────────────
 ;;;
 ;;; No rule joins two facts on a number: each rule here has one premise that
-;;; holds a numeral, `(written (b2 P A))`, and its others are guards or a probe
-;;; with every argument bound, `(bin-nz ?m)` and `(bin-named ?m)`.
-;;; `ein-infer/tests/arith_theory.rs` holds it.
+;;; holds a numeral, `(bin-check N REST)`, and its others are guards, a row of
+;;; the table `bin-nz`, or a probe with every argument bound, `(bin-named
+;;; ?m)`. `ein-infer/tests/arith_theory.rs` holds it.
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
-;;; `b2`, `bin-named`, the flag `not-binary`, its rules `bin-numeral-bit`,
-;;; `bin-numeral-prefix-bit`, `bin-numeral-prefix-zero`,
-;;; `bin-numeral-prefix-named` and `not-binary-is-false`, `binary-rule`, and
-;;; the entry `binary`. The interface is `b2`, `bin-named` and the flag.
+;;; `b2`, `bin-named`, the check `bin-check` and its label `bin-valid`, the
+;;; flag `not-binary`, the rules `bin-numeral-step`, `bin-numeral-step-zero`,
+;;; `bin-numeral-valid`, `bin-numeral-bit`, `bin-numeral-prefix-bit`,
+;;; `bin-numeral-prefix-zero`, `bin-numeral-prefix-named` and
+;;; `not-binary-is-false`, `binary-rule`, and the entry `binary`. The
+;;; interface is `b2`, `bin-named`, `bin-check`, `bin-valid` and the flag.
 
 (import std.math.arith :symbols (arith z))
 (import std.math.bits :symbols (bin-nz))
@@ -108,13 +116,36 @@
 (relation bin-named Name
   :why "{?1} is a named constant")
 
-;; ── The check: every place of every numeral a file writes ───────────────────
+;; ── The check, which an operation asks for, and its label ───────────────────
+;; `(bin-check N N)` asks whether N is a binary number; `(bin-check N REST)`
+;; is the walk, REST what is still to check.
+(relation bin-check Number Number
+  :why "checking {?1}: {?2} is still to check")
+(relation bin-valid Number
+  :why "{?1} is a binary number")
 (relation not-binary Number Thing
   :why "{?1} is not a binary number: {?2} stands where a bit or a number goes")
 
+;; A place whose bit is one of the two: the walk goes on to the prefix.
+(rule bin-numeral-step ()
+  :match  (and (bin-check ?w (b2 ?p ?a)) (bin-nz ?a))
+  :assert (bin-check ?w ?p)
+  :why    "the bit {?a} is one: {?p} is still to check")
+
+(rule bin-numeral-step-zero ()
+  :match  (bin-check ?w (b2 ?p 0))
+  :assert (bin-check ?w ?p)
+  :why    "the bit 0 is one: {?p} is still to check")
+
+;; The walk reached `z`: every place held a bit, and the numeral ends in `z`.
+(rule bin-numeral-valid ()
+  :match  (bin-check ?w z)
+  :assert (bin-valid ?w)
+  :why    "every place of {?w} holds a bit, and it ends in z: it is a binary number")
+
 ;; Neither of the two bits: `neq` holds of every other name, and of a fact.
 (rule bin-numeral-bit ()
-  :match  (and (written (b2 ?p ?a)) (neq ?a 0) (neq ?a 1))
+  :match  (and (bin-check ?w (b2 ?p ?a)) (neq ?a 0) (neq ?a 1))
   :assert (not-binary (b2 ?p ?a) ?a)
   :why    "{?a} stands where a bit goes and is neither of the two")
 
@@ -122,19 +153,19 @@
 ;; constant, `(b2 mask 1)`, is flagged; one whose prefix is any other name is
 ;; not, since saying *a name* costs a walk of the program's names.
 (rule bin-numeral-prefix-bit ()
-  :match  (and (written (b2 ?m ?a)) (bin-nz ?m))
+  :match  (and (bin-check ?w (b2 ?m ?a)) (bin-nz ?m))
   :assert (not-binary (b2 ?m ?a) ?m)
   :why    "the bit {?m} stands where a number goes: a number ends in z")
 
 (rule bin-numeral-prefix-zero ()
-  :match  (written (b2 0 ?a))
+  :match  (bin-check ?w (b2 0 ?a))
   :assert (not-binary (b2 0 ?a) 0)
   :why    "the bit 0 stands where a number goes: a number ends in z")
 
 ;; `(neq ?m z)`: a program that names `z` with a `bin-let` is flagged for the
 ;; `bin-let`, and its numerals, which end in `z`, are not.
 (rule bin-numeral-prefix-named ()
-  :match  (and (written (b2 ?m ?a)) (neq ?m z) (bin-named ?m))
+  :match  (and (bin-check ?w (b2 ?m ?a)) (neq ?m z) (bin-named ?m))
   :assert (not-binary (b2 ?m ?a) ?m)
   :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
 
@@ -153,9 +184,13 @@
 (rule binary ()
   :match  ()
   :assert (and (__closed__ bin-nz)
-               (__closed__ b2) (__closed__ bin-named) (__closed__ not-binary)
+               (__closed__ b2) (__closed__ bin-named) (__closed__ bin-check)
+               (__closed__ bin-valid) (__closed__ not-binary)
                (__closed__ binary-rule)
+               (bin-valid z)
                (binary-rule arith)
+               (binary-rule bin-numeral-step) (binary-rule bin-numeral-step-zero)
+               (binary-rule bin-numeral-valid)
                (binary-rule bin-numeral-bit) (binary-rule bin-numeral-prefix-bit)
                (binary-rule bin-numeral-prefix-zero)
                (binary-rule bin-numeral-prefix-named)

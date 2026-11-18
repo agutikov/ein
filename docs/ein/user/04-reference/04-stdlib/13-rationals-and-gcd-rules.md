@@ -84,6 +84,22 @@ walk against `z`, before anything is computed.
 ![The rule rat-operand-second of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-operand-second.svg)
 <!-- /rule -->
 
+#### `rat-check-ask`
+
+The rational an operand stands for is asked for its check, `(rat-check Q)`, once whatever reads it
+([Q-M1f.404](../../../../decisions/stdlib/math/Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md)).
+
+<!-- rule std.math.rat rat-check-ask -->
+```lisp
+(rule rat-check-ask ()
+  :match  (operand-is ?k (rat ?i ?d))
+  :assert (rat-check (rat ?i ?d))
+  :why    "the operand found for {?k} is {?i} over {?d}: it is checked, once, as a rational")
+```
+
+![The rule rat-check-ask of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-check-ask.svg)
+<!-- /rule -->
+
 ### A zero denominator
 
 The flag is `std.math.arith`'s `division-by-zero`, on the request.
@@ -817,14 +833,29 @@ The rules that carry a fault found below from this module's tags to the request.
 
 ### A rational's own shape
 
-A digit or a named constant where the integer or the denominator goes, checked where the rational is written.
+A digit or a named constant where the integer or the denominator goes, checked where an operation takes the
+rational: each rule reads `(rat-check (rat Z D))`. `rat-check-parts` asks `std.math.int`'s check of the integer and
+`std.math.decimal`'s of the denominator.
+
+#### `rat-check-parts`
+
+<!-- rule std.math.rat rat-check-parts -->
+```lisp
+(rule rat-check-parts ()
+  :match  (rat-check (rat ?i ?d))
+  :assert (and (int-check ?i) (check ?d ?d))
+  :why    "{?i} is checked as an integer, and {?d} as a number")
+```
+
+![The rule rat-check-parts of std.math.rat, as the engine draws it](diagrams/13-std.math.rat.rat-check-parts.svg)
+<!-- /rule -->
 
 #### `rat-z-digit`
 
 <!-- rule std.math.rat rat-z-digit -->
 ```lisp
 (rule rat-z-digit ()
-  :match  (and (written (rat ?x ?d)) (nz ?x))
+  :match  (and (rat-check (rat ?x ?d)) (nz ?x))
   :assert (not-rational (rat ?x ?d) ?x)
   :why    "the digit {?x} stands where an integer goes: it is (int (n z {?x}) z)")
 ```
@@ -837,7 +868,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 <!-- rule std.math.rat rat-z-zero -->
 ```lisp
 (rule rat-z-zero ()
-  :match  (written (rat 0 ?d))
+  :match  (rat-check (rat 0 ?d))
   :assert (not-rational (rat 0 ?d) 0)
   :why    "the digit 0 stands where an integer goes: zero is (int z z)")
 ```
@@ -850,7 +881,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 <!-- rule std.math.rat rat-z-named -->
 ```lisp
 (rule rat-z-named ()
-  :match  (and (written (rat ?x ?d)) (named ?x))
+  :match  (and (rat-check (rat ?x ?d)) (named ?x))
   :assert (not-rational (rat ?x ?d) ?x)
   :why    "the name {?x} stands where an integer goes: a name stands for a number as an operand, not inside one")
 ```
@@ -863,7 +894,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 <!-- rule std.math.rat rat-d-digit -->
 ```lisp
 (rule rat-d-digit ()
-  :match  (and (written (rat ?i ?x)) (nz ?x))
+  :match  (and (rat-check (rat ?i ?x)) (nz ?x))
   :assert (not-rational (rat ?i ?x) ?x)
   :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
 ```
@@ -876,7 +907,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 <!-- rule std.math.rat rat-d-zero -->
 ```lisp
 (rule rat-d-zero ()
-  :match  (written (rat ?i 0))
+  :match  (rat-check (rat ?i 0))
   :assert (not-rational (rat ?i 0) 0)
   :why    "the digit 0 stands where a natural number goes: zero is z")
 ```
@@ -889,7 +920,7 @@ A digit or a named constant where the integer or the denominator goes, checked w
 <!-- rule std.math.rat rat-d-named -->
 ```lisp
 (rule rat-d-named ()
-  :match  (and (written (rat ?i ?x)) (named ?x))
+  :match  (and (rat-check (rat ?i ?x)) (named ?x))
   :assert (not-rational (rat ?i ?x) ?x)
   :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
 ```
@@ -921,7 +952,8 @@ The closing rule: it closes the held extent of every relation of the module, nam
 ```lisp
 (rule rat-arith ()
   :match  ()
-  :assert (and (__closed__ rat) (__closed__ nz) (__closed__ not-rational)
+  :assert (and (__closed__ rat) (__closed__ nz) (__closed__ rat-check)
+               (__closed__ not-rational)
                (__closed__ rat-simplify)
                (__closed__ rat-simple-of) (__closed__ rat-neg)
                (__closed__ rat-neg-of) (__closed__ rat-add)
@@ -947,7 +979,8 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (rat-rule int-arith) (rat-rule decimal) (rat-rule arith) (rat-rule gcd)
                (rat-rule rat-operand)
                (rat-rule rat-operand-check) (rat-rule rat-operand-found)
-               (rat-rule rat-operand-zero) (rat-rule rat-operand-second)
+               (rat-rule rat-operand-zero) (rat-rule rat-check-ask)
+               (rat-rule rat-operand-second)
                (rat-rule rat-zero-only) (rat-rule rat-zero-first)
                (rat-rule rat-zero-second) (rat-rule rat-norm-numerator)
                (rat-rule rat-norm-denominator) (rat-rule rat-norm-done)
@@ -974,7 +1007,7 @@ The closing rule: it closes the held extent of every relation of the module, nam
                (rat-rule rat-div-pos) (rat-rule rat-div-neg)
                (rat-rule rat-div-zero) (rat-rule rat-div-answer)
                (rat-rule rat-bad-only) (rat-rule rat-bad-first)
-               (rat-rule rat-bad-second)
+               (rat-rule rat-bad-second) (rat-rule rat-check-parts)
                (rat-rule rat-z-digit) (rat-rule rat-z-zero) (rat-rule rat-z-named)
                (rat-rule rat-d-digit) (rat-rule rat-d-zero) (rat-rule rat-d-named)
                (rat-rule not-rational-is-false))

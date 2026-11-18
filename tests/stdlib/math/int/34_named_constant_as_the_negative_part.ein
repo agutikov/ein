@@ -2,8 +2,9 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `int-n-named` reads `(written (int z price))` and `(named price)`, and
-;;; derives `(not-integer (int z price) price)`.
+;;; `int-n-named` reads `(int-check (int z price))`, which the operand's
+;;; look-up asks, and `(named price)`, and derives `(not-integer (int z
+;;; price) price)`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -181,7 +181,7 @@ constrained-reasoning research.
   `std.math.digits` (the digit tables, a library of *facts*, generated),
   `std.math.arith` (`arith`: `z` and the division by zero's flag and rule,
   what every base shares), `std.math.decimal` (`decimal`: the numeral `n`,
-  `named`, and the numeral's check over `written`), `std.math.decimal-arith`
+  `named`, and the check an operation asks of a numeral), `std.math.decimal-arith`
   (`(import std.math.decimal-arith :symbols (decimal-arith add sum-of))`, with
   `(import std.math.decimal :symbols (n))` and `(import std.math.arith
   :symbols (z))` where a program writes a numeral), `std.math.num9`
@@ -200,8 +200,9 @@ constrained-reasoning research.
   rule's `(and …)`, never by naming them. A module over a module names the
   lower one's entry in its own closing rule, and lists every name of the lower
   one it writes. **A malformed term is its representation's**: a numeral's
-  fault is `std.math.decimal`'s or `std.math.binary`'s, flagged where it is
-  written; an operand's and a `let`'s are the module's that reads them. **Boolean functions and
+  fault is `std.math.decimal`'s or `std.math.binary`'s, flagged where an
+  operation takes it, and a number an operation makes is labelled valid as it
+  is made (Q-M1f.404); an operand's and a `let`'s are the module's that reads them. **Boolean functions and
   circuits are under `stdlib/bool/`**, their programs under
   `tests/stdlib/bool/`, each module's entry its last name: `std.bool.gates`
   (the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` whose
@@ -425,12 +426,6 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   fact of one or a program writes one as an argument, which stays legal
   (`ein-infer/tests/dunder_objects.rs`); names the loader makes up start
   with `#` (`ein_core::text::INTERNAL_NAMES`).
-- **`written` is the loader's**: it states `(written T)` for every fact
-  nested in a fact a file writes, and for each one a rule's conclusion nests
-  that holds no variable, derived from the fact it was read in. A rule reads
-  it, which is how a representation module checks its own terms where they
-  are written (`std.math.decimal`'s numeral); no program writes it, and no
-  declarator binds it (`07-diagnostics.md` § 2.30).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.

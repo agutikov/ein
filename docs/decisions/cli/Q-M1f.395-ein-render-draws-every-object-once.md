@@ -10,8 +10,7 @@ The octagon carries the two marks of the drawings of the graph
 ([Q-M1f.398](../docs/Q-M1f.398-a-fact-in-a-context-is-drawn-in-a-frame-named.md)): it is **filled** where the
 knowledge base holds the fact, and it stands in a **dashed frame** labelled with the relations of the facts that
 point at it and the word `ctx`, one frame naming every such relation, in order, frames side by side. A fact that
-points is every fact the view draws: in the KB view the loader's `written` facts among them, so a frame there may
-read `claims, written ctx`. What is drawn outside every frame is held.
+points is every fact the view draws. What is drawn outside every frame is held.
 
 It holds of the four writers that draw facts, each in its own drawing: the KB view, a state among them
 (`ein render kb`), the program view with its Levi form (`ein render program`), a rule's two modes

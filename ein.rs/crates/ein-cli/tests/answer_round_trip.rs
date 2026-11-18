@@ -15,13 +15,6 @@
 //! as the two-argument `(holds x y)`, and a name `#|` would open a block
 //! comment.
 //!
-//! **The loader's `(written T)` facts are held apart** (Q-M1f.272): a
-//! state file writes none of them, and the loader states one for each fact
-//! nested in a fact the file holds, so the reloaded state holds every one the
-//! state held, and one more for each fact nested only in a fact the run
-//! derived, which the file writes as a given. The rest is held fact for fact;
-//! `written` is held as a superset.
-//!
 //! **And every member of N is written with its core**: the same run's
 //! `nogoods.json` gives each member of N it met a core, its search's status
 //! beside it (`within-budget`, `cut-…`) and its rules, past `--region-limit`
@@ -83,38 +76,27 @@ fn include_slow() -> bool {
     on("EIN_CORPUS_SLOW") || on("EIN_BLESS")
 }
 
-/// A KB's facts by value, each its `repr`, a name and an int apart: those
-/// that are not the loader's `(written T)`, and those that are.
-fn by_value(kb: &Kb, terms: &Terms) -> (BTreeSet<String>, BTreeSet<String>) {
-    let written = terms.kernel.written;
-    let (mut facts, mut stated) = (BTreeSet::new(), BTreeSet::new());
-    for f in kb.facts() {
-        let text = ein_core::repr::repr(&terms.repr_fact(f));
-        if terms.fact(f).0 == written {
-            stated.insert(text);
-        } else {
-            facts.insert(text);
-        }
-    }
-    (facts, stated)
+/// A KB's facts by value, each its `repr`, a name and an int apart.
+fn by_value(kb: &Kb, terms: &Terms) -> BTreeSet<String> {
+    kb.facts()
+        .map(|f| ein_core::repr::repr(&terms.repr_fact(f)))
+        .collect()
 }
 
-/// A state file, loaded: its facts by value, its `written` facts, and how
-/// many of the others carry a provenance other than a given fact's.
-fn reloaded(path: &Path) -> Result<(BTreeSet<String>, BTreeSet<String>, usize), String> {
+/// A state file, loaded: its facts by value, and how many of them carry a
+/// provenance other than a given fact's.
+fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| format!("{e}"))?;
     let not_given = kb
         .facts()
-        .filter(|&f| terms.fact(f).0 != terms.kernel.written)
         .filter(|&f| {
             kb.primary(f)
                 .is_some_and(|p| terms.provs.get(p).kind != ProvKind::Source)
         })
         .count();
-    let (facts, stated) = by_value(&kb, &terms);
-    Ok((facts, stated, not_given))
+    Ok((by_value(&kb, &terms), not_given))
 }
 
 /// **The state files that do not load**, each a known wrong answer of its
@@ -244,23 +226,13 @@ fn check(
     let mut unloaded = 0usize;
     for (path, set) in &files {
         let facts: Vec<_> = set.iter().map(|&b| candidates[b as usize].fact).collect();
-        let (want, want_stated) = nodes
+        let want = nodes
             .with_fixpoint(&facts, |kb, terms| by_value(kb, terms))
             .expect("saturates");
         match reloaded(&dir.join(path)) {
             Err(_) if named.is_some() => unloaded += 1,
             Err(e) => bad.push(format!("{file}: {path} does not load: {e}")),
-            Ok((got, got_stated, not_given)) => {
-                if !want_stated.is_subset(&got_stated) {
-                    bad.push(format!(
-                        "{file}: {path}: {} written facts of the state not stated again ({:?}…)",
-                        want_stated.difference(&got_stated).count(),
-                        want_stated
-                            .difference(&got_stated)
-                            .take(3)
-                            .collect::<Vec<_>>()
-                    ));
-                }
+            Ok((got, not_given)) => {
                 let dropped = SELECTION_DROPPED.contains(&file);
                 if got != want && !dropped {
                     bad.push(format!("{file}: {path}: {}", diff(&want, &got)));

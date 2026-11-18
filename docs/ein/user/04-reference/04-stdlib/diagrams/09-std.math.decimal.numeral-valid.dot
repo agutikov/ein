@@ -1,0 +1,14 @@
+digraph rule_numeral_valid_lhs_rhs {
+  rankdir=TB;
+  label="numeral-valid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
+    "z_L" [label="z", shape=rectangle];
+    "?w_L" -> "z_L" [label="check", color="#7f7f7f", fontcolor="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?w_R" [label="?w", shape=diamond];
+    "h1_valid_R" [shape=octagon, label="valid", color="#17becf", fontcolor="#17becf"];
+    "h1_valid_R" -> "?w_R" [label="1", color="#17becf", style=dashed];
+  }
+}

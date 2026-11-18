@@ -954,7 +954,7 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **Each operation as a circuit.** An operation divides nothing: a sum is
 /// the cross products, a product of the denominators and the numerator
 /// simplified, about a fifth of what it would be with lowest terms after it
-/// (1/2 + 1/3 is 101 firings).
+/// (1/2 + 1/3 is 113 firings, the operands' checks among them).
 /// Lowest terms is `rat-simplify`'s alone: the numerator simplified,
 /// `std.math.gcd`'s call, Euclid's chain, a division a step, each computing
 /// its divisor's nine multiples first, and two more divisions by what the
@@ -986,16 +986,16 @@ fn the_circuit_of_each_operation() {
 
 /// The pinned measures, in the order [`the_circuit_of_each_operation`] asks.
 const CIRCUITS: [(usize, usize); 10] = [
-    (345, 343),
-    (888, 883),
-    (25, 23),
-    (101, 99),
-    (104, 102),
-    (81, 79),
-    (91, 87),
-    (76, 76),
-    (386, 379),
-    (270, 270),
+    (353, 343),
+    (901, 883),
+    (33, 23),
+    (113, 99),
+    (116, 102),
+    (94, 79),
+    (106, 87),
+    (88, 76),
+    (410, 379),
+    (294, 270),
 ];
 
 // ── the module's text ──────────────────────────────────────────────
@@ -1079,7 +1079,8 @@ impl Module {
 /// call's tag (the index does not key a nested fact, so a second premise
 /// looked up by a number would make a batch cost the square of its count).
 /// The rules of the rational's own shape (Q-M1f.276): each
-/// reads `(written (rat Z D))` and probes what it binds, `nz` or `named`.
+/// reads `(rat-check (rat Z D))`, which an operation asks, and probes
+/// what it binds, `nz` or `named`.
 const SHAPE_RULES: [&str; 6] = [
     "rat-z-digit",
     "rat-z-zero",
@@ -1105,17 +1106,17 @@ fn every_rule_has_one_premise() {
             continue;
         }
         if SHAPE_RULES.contains(&name.as_str()) {
-            // The rational's own shape: `(written (rat Z D))`, the
+            // The rational's own shape: `(rat-check (rat Z D))`, the
             // one premise that holds numbers, and a probe of what it binds.
             let heads: Vec<&str> = premises
                 .iter()
                 .filter_map(|&p| m.ast.head_name(p))
                 .collect();
             assert!(
-                heads.first() == Some(&"written")
+                heads.first() == Some(&"rat-check")
                     && heads[1..].iter().all(|h| ["nz", "named"].contains(h))
                     && heads.len() <= 2,
-                "rule {name}: `(written (rat Z D))` and at most a probe: {heads:?}"
+                "rule {name}: `(rat-check (rat Z D))` and at most a probe: {heads:?}"
             );
             continue;
         }
@@ -1282,12 +1283,14 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     );
 }
 
-/// **A rational's own malformation is its flag, as written, and `(false)`**
-/// (Q-M1f.276), held from outside the language as
+/// **A rational's own malformation is its flag, as written, and `(false)`**,
+/// where an operation takes the rational (Q-M1f.276, Q-M1f.404), and a
+/// rational no operation takes is not checked, held from outside the language
+/// as
 /// `int_theory.rs` holds an integer's: a dead program's one claim cannot say
 /// how its flag is written.
 #[test]
-fn a_malformed_rational_is_flagged_as_written() {
+fn a_malformed_rational_is_flagged() {
     let fine = "(rat (int (n z 1) z) (n z 2))";
     for (rat, flag) in [
         ("(rat 7 (n z 2))", "(not-rational (rat 7 (n z 2)) 7)"),
@@ -1312,5 +1315,11 @@ fn a_malformed_rational_is_flagged_as_written() {
         let body = format!("(let half (n z 2))\n(rat-add {rat} {fine})\n");
         assert_eq!(run(&body, "not-rational"), [flag], "{rat}");
         assert_eq!(run(&body, "false"), ["(false)"], "{rat}");
+        let untaken = format!("(let half (n z 2))\n(let unused {rat})\n(rat-add {fine} {fine})\n");
+        assert!(
+            run(&untaken, "not-rational").is_empty(),
+            "{rat}, taken by nothing"
+        );
+        assert!(run(&untaken, "false").is_empty(), "{rat}, taken by nothing");
     }
 }

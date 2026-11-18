@@ -2,9 +2,10 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `(rat Z D)` holds an integer and a natural number: `rat-z-digit` reads
-;;; `(written (rat 7 (n z 2)))` and derives `(not-rational (rat 7 (n z 2)) 7)`
-;;; (Q-M1f.276 (a)).
+;;; `(rat Z D)` holds an integer and a natural number. The request's operand
+;;; is looked up, and `rat-check-ask` asks the rational's check, `(rat-check
+;;; (rat 7 (n z 2)))`: `rat-z-digit` reads it and derives `(not-rational (rat
+;;; 7 (n z 2)) 7)` (Q-M1f.276 (a), Q-M1f.404).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

@@ -22,5 +22,9 @@ digraph rule_div_end_lhs_rhs {
     "h2_DIV-DONE_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
     "h2_DIV-DONE_R" -> "?w_R" [label="2", color="#2ca02c", style=dashed];
     "h2_DIV-DONE_R" -> "?t_R" [label="3", color="#2ca02c", style=dashed];
+    "h3_VALID_R" [shape=octagon, label="?VALID", color="#17becf", fontcolor="#17becf"];
+    "h3_VALID_R" -> "?w_R" [label="1", color="#17becf", style=dashed];
+    "h4_VALID_R" [shape=octagon, label="?VALID", color="#17becf", fontcolor="#17becf"];
+    "h4_VALID_R" -> "?t_R" [label="1", color="#17becf", style=dashed];
   }
 }

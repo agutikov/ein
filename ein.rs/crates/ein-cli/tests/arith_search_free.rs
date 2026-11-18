@@ -190,8 +190,8 @@ const READS: [&str; 16] = [
 
 /// The ways an arithmetic program is dead, by the rule that concludes
 /// `(false)`: the start of its flag's text, and what the flag names. The last
-/// three are a representation's (Q-M1f.210): the term at fault, which the core
-/// does not name, naming the fact it was written in instead. A
+/// four are a representation's (Q-M1f.210): the term at fault, which the core
+/// does not name, naming the request that took it instead (Q-M1f.404). A
 /// rule may conclude `(false)` from one flag of two, decimal's or binary's,
 /// `std.math.positional`'s rules being activated once a base: the one whose
 /// flag root holds is read.
@@ -396,10 +396,11 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         .map(|f| f.as_str().expect("a fact"))
         .collect();
     if representation {
-        // A term a representation flags is checked where it is written: the
-        // core names the facts it was written in, or none where a rule's text
-        // writes it, and beside them only `let`s and table rows. The rest is
-        // read below, off the flag.
+        // A term a representation flags is checked where an operation takes
+        // it (Q-M1f.404): the core names the request that took it, the `let`
+        // that named it and the table rows the walk read; or, where a rule of
+        // the program's own built the request, what that rule matched. The
+        // rest is read below, off the flag.
     } else if division {
         assert_eq!(
             core.iter()
@@ -458,12 +459,14 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
             );
             let term = balanced(&line[flag.len()..]);
             let inner = &term[..term.len().saturating_sub(1)];
+            let built = !core.iter().any(|f| READS.iter().any(|h| f.starts_with(h)));
             assert!(
                 core.is_empty()
+                    || built
                     || core
                         .iter()
                         .any(|f| f.contains(inner) || RESTS_ON.iter().any(|h| f.starts_with(h))),
-                "{file}: the core names where {term} is written: {core:?}"
+                "{file}: the core names the request that took {term}: {core:?}"
             );
         }
     } else if division {

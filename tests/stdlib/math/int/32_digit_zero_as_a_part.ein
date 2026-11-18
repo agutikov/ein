@@ -2,8 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; Zero is `z`: `int-p-zero` reads `(written (int 0 z))` and derives `(not-
-;;; integer (int 0 z) 0)`.
+;;; Zero is `z`: `int-p-zero` reads `(int-check (int 0 z))`, which the
+;;; operand's look-up asks, and derives `(not-integer (int 0 z) 0)`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

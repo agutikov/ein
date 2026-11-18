@@ -2,6 +2,7 @@ digraph rule_numeral_digit_lhs_rhs {
   rankdir=TB;
   label="numeral-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?w_L" [label="?w", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "0_L" [label="0", shape=rectangle];
@@ -15,11 +16,10 @@ digraph rule_numeral_digit_lhs_rhs {
     "8_L" [label="8", shape=rectangle];
     "9_L" [label="9", shape=rectangle];
     subgraph cluster_ctx_L_0 {
-      label="written ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      label="check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "(n ?p ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
     }
-    "h1_written_L" [shape=octagon, label="written", color="#d62728", fontcolor="#d62728"];
-    "h1_written_L" -> "(n ?p ?a)_L" [label="1", color="#d62728"];
+    "?w_L" -> "(n ?p ?a)_L" [label="check", color="#7f7f7f", fontcolor="#7f7f7f"];
     "?a_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];

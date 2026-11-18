@@ -13,7 +13,7 @@ ir --> cli : the top-level forms
 cli -> ir : load_query_with(ast, terms, forms, dir)
 note right of ir
   resolve imports, expand macros,
-  relations, rules, facts, written,
+  relations, rules, facts,
   the refusals, the indexes
 end note
 ir --> cli : Kb

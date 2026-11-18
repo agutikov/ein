@@ -1,0 +1,27 @@
+digraph rule_operand_check_lhs_rhs {
+  rankdir=TB;
+  label="operand-check"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?k_L" [label="?k", shape=diamond];
+    "?p_L" [label="?p", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="?OPERAND-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
+    "?k_L" -> "(?N ?p ?a)_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
+    "(?N ?p ?a)_L" -> "?p_L" [label="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [label="2", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?p_R" [label="?p", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="?CHECK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?N ?p ?a)_R" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+    }
+    "(?N ?p ?a)_R" -> "(?N ?p ?a)_R" [label="?CHECK", color="#d62728", fontcolor="#d62728", style=dashed];
+    "(?N ?p ?a)_R" -> "?p_R" [label="1", color="#7f7f7f", style=dashed];
+    "(?N ?p ?a)_R" -> "?a_R" [label="2", color="#7f7f7f", style=dashed];
+  }
+}

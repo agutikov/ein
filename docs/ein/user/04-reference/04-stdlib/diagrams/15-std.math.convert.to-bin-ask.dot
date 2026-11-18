@@ -9,6 +9,7 @@ digraph rule_to_bin_ask_lhs_rhs {
   subgraph cluster_rhs { label="assert";
     "?x_R" [label="?x", shape=diamond];
     "z_R" [label="z", shape=rectangle];
+    "?x_R" -> "?x_R" [label="check", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
     "h2_to-bin-go_R" [shape=octagon, label="to-bin-go", color="#17becf", fontcolor="#17becf"];
     "h2_to-bin-go_R" -> "?x_R" [label="1", color="#17becf", style=dashed];
     "h2_to-bin-go_R" -> "?x_R" [label="2", color="#17becf", style=dashed];

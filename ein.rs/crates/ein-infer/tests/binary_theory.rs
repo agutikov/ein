@@ -549,8 +549,9 @@ fn outcome(body: &str) -> Outcome {
     }
 }
 
-/// **A malformed numeral is flagged where it is written, a malformed operand
-/// at its request, and neither is answered**, as in decimal (Q-M1f.268,
+/// **A malformed numeral is flagged where an operation takes it, a malformed
+/// operand at its request, and neither is answered**, as in decimal (Q-M1f.268,
+/// Q-M1f.404,
 /// defaulted: as far as decimal flags). A bit's place holding a name that is
 /// no bit, a decimal digit among them, or holding a fact; a numeral that ends
 /// in a bit where `z` goes, or in a named constant; the same in a `bin-let`'s
@@ -634,15 +635,11 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
             op.request
         );
     }
-    // Where it is written does not matter: asked about by no request.
+    // A numeral no operation takes is not checked (Q-M1f.404): asked about
+    // by no request, it has no flag, and nothing is a contradiction.
     let got = outcome("(bin-let unused (b2 (b2 z 1) 2))\n");
-    assert_eq!(
-        got.not_binary,
-        ["(not-binary (b2 (b2 z 1) 2) 2)".to_string()]
-            .into_iter()
-            .collect::<BTreeSet<_>>()
-    );
-    assert_eq!(got.contradiction, ["(false)"]);
+    assert!(got.not_binary.is_empty(), "{:?}", got.not_binary);
+    assert!(got.contradiction.is_empty(), "{:?}", got.contradiction);
 }
 
 /// **A name no `bin-let` states is undeclared**, a decimal digit among the
@@ -813,12 +810,13 @@ fn circuit(body: &str) -> (usize, usize) {
 /// walk is three times decimal's six columns. The numbers are pinned so that
 /// a change to the wiring shows as a change to them: `cargo test -p
 /// ein-infer --test binary_theory the_circuit` re-takes them. Binary's firings
-/// are its walks' and no check's: a numeral is `std.math.binary`'s, checked
-/// where it is written at no firing. They are the example theory's
-/// (`examples/binary_arithmetic/`) to the firing, against decimal's 21, 28,
-/// 28, 13, 72, 220 and 12 (`arith_theory.rs`): a
-/// walk is three times as long, a product's row needs no walk of its own, and
-/// a quotient's bit is one subtraction where decimal's digit is up to four.
+/// are its walks' and its operands' checks': `std.math.binary`'s walk of each
+/// numeral an operand stands for, a firing a bit and one for the label
+/// (Q-M1f.404), beside the chain, and deeper than it where a division by zero
+/// stops the chain early. Against decimal's 35, 42, 42, 27, 82, 232 and 20
+/// (`arith_theory.rs`): a walk is three times as long, a product's row needs
+/// no walk of its own, and a quotient's bit is one subtraction where
+/// decimal's digit is up to four.
 #[test]
 fn the_circuit_of_each_operation() {
     let n = |v: u128| normal(v);
@@ -850,13 +848,13 @@ fn the_circuit_of_each_operation() {
     assert_eq!(
         got,
         [
-            ("123078 + 4567", (43, 43)),
-            ("123078 - 4567", (61, 43)),
-            ("4567 - 123078", (61, 43)),
-            ("123078 against 4567", (24, 24)),
-            ("123 x 456", (120, 120)),
-            ("127645 / 25", (245, 245)),
-            ("127645 / 0", (12, 10)),
+            ("123078 + 4567", (77, 43)),
+            ("123078 - 4567", (95, 43)),
+            ("4567 - 123078", (95, 43)),
+            ("123078 against 4567", (58, 24)),
+            ("123 x 456", (140, 120)),
+            ("127645 / 25", (271, 245)),
+            ("127645 / 0", (31, 21)),
         ],
         "(firings, depth)"
     );

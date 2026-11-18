@@ -619,17 +619,9 @@ has no match ([Q-M1f.120](../../../decisions/language/Q-M1f.120-a-rule-may-read-
 
 A program $P$ is read into its knowledge base $K_0$ ([the knowledge base](01-knowledge-base.md#the-knowledge-base-of-a-program))
 and its finite set of rules, also written $P$ where a rule set is meant. A rule is no fact: $K_0$ holds no node
-for a rule's pattern or its conclusion. What a declaration of a rule adds to $K_0$ is one kind of fact: for
-each fact $t$, a fact pattern with no variable, that is nested in a literal of its conclusion,
-
-$$
-\operatorname{written}(t) \in K_0
-$$
-
-as $K_0$ holds it for each fact nested in a written fact, a negation and the fact it denies read as one there
-too. The **names of a rule** are the atoms under an
-argument arrow of its fact patterns, at any depth, and those its equalities and inequalities compare; the
-**names of the program** are those of its knowledge base and of its rules:
+for a rule's pattern or its conclusion, and a declaration of a rule adds no fact to $K_0$. The **names of a rule**
+are the atoms under an argument arrow of its fact patterns, at any depth, and those its equalities and
+inequalities compare; the **names of the program** are those of its knowledge base and of its rules:
 
 $$
 \operatorname{names}(P) \;=\; \operatorname{names}(K_0) \;\cup \bigcup_{\rho \in P} \operatorname{names}(\rho)

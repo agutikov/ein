@@ -1,11 +1,11 @@
-;;; Ein stdlib — `std.math.decimal`: the decimal numeral, and whether a written
-;;; one is one (Q-M1f.273; Q-M1f.210, and Q-M1f.272 to
-;;; Q-M1f.277).
+;;; Ein stdlib — `std.math.decimal`: the decimal numeral, and the check of one
+;;; an operation takes (Q-M1f.273, Q-M1f.210, Q-M1f.404).
 ;;;
 ;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
-;;; This module is the decimal **representation**: the constructor `n` and
-;;; what a numeral written with it must be. It computes nothing;
-;;; `std.math.decimal-arith` is the arithmetic over it, and imports it.
+;;; This module is the decimal **representation**: the constructor `n`, what
+;;; a numeral written with it must be, and the label `valid` of one that is.
+;;; It computes nothing; `std.math.decimal-arith` is the arithmetic over it,
+;;; imports it, and asks it to check what the arithmetic takes.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -32,26 +32,43 @@
 ;;; numeral. Any length; high zeros are allowed in what a program writes,
 ;;; `(n (n z 0) 7)` is 7, and the arithmetic answers in normal form.
 ;;;
-;;; ── A numeral is well-formed from the start ────────────────────────────────
+;;; ── A numeral is checked where an operation takes it ──────────────────────
 ;;;
-;;; A malformed decimal number is a problem of this module (Q-M1f.210), and
-;;; it is detected right away, without a calculation started with it. Think
-;;; of it as a number written on paper: one that contains letters, signs,
-;;; whitespace or hieroglyphs is not a decimal number from the beginning,
-;;; whatever is later done with it, and no calculation has to start for that
-;;; to be seen.
+;;; A malformed decimal number is a problem of this module (Q-M1f.210): a
+;;; number that contains letters, signs, whitespace or hieroglyphs is not a
+;;; decimal number. The check is this module's, and an operation asks for it
+;;; where it takes a numeral from the program (Q-M1f.404): the operand found
+;;; for a request of `std.math.decimal-arith`, a part of an integer or of a
+;;; rational an operation takes, a number `std.math.convert` or
+;;; `std.math.num9` is asked to convert. The ask is one fact, `(check N N)`,
+;;; and the check walks N a place a firing, from the units, as
+;;; `(check N REST)`, REST what is still to check:
 ;;;
-;;; So the check is this module's, of what was written, and of nothing a
-;;; calculation does. The loader states every fact nested in a fact a file
-;;; writes, and in a rule's conclusion where it holds no variable, as
-;;; `(written T)` (the kernel relation `written`, Q-M1f.275,
-;;; Q-M1f.272). Every place of a numeral is a nested fact
-;;; of its own, so five rules over `(written (n P A))` see every place of
-;;; every numeral a file writes, wherever it sits: a request's operand, a part
-;;; of an integer or a rational, a `let`'s value nobody asks about, a fact of
-;;; the program's own relation. A well-formed place costs no firing, its ten
-;;; `neq` guards and two probes; a malformed one derives the flag on the
-;;; smallest `n` term at fault, and the flag derives `(false)`:
+;;;     (check (n (n z 4) 2) (n (n z 4) 2))   asked
+;;;     (check (n (n z 4) 2) (n z 4))         the digit 2 is one
+;;;     (check (n (n z 4) 2) z)               the digit 4 is one
+;;;     (valid (n (n z 4) 2))                 the walk reached z
+;;;
+;;; **Once.** The ask and the label are facts of the numeral, so a numeral is
+;;; checked once whatever reads it, however many requests name it. **The
+;;; label `(valid N)`** is the walk's end: N is a decimal number. `z` is
+;;; valid by the closing rule below. **A number the arithmetic makes is
+;;; labelled as it is made**, by the walk that makes it
+;;; (`std.math.positional`'s turn and division's end), so every number an
+;;; operation answers with, `(sum-of X Y S)`'s S, is valid already, and no
+;;; operation checks it. One a program's own rule hands to another request is
+;;; that request's operand, and is walked as any operand is: nothing tells it
+;;; from a numeral the program wrote but its label, and reading the label
+;;; beside the operand would join two facts on a number. No rule of the
+;;; calculator waits for a label: a malformed numeral is a contradiction, and
+;;; a well-formed one is computed with as it is found.
+;;;
+;;; **A numeral no operation takes is not checked**: a `let`'s value nobody
+;;; asks about, a numeral in a fact of the program's own relation, one in a
+;;; rule's conclusion that never fires.
+;;;
+;;; A malformed place stops the walk and derives the flag on the smallest
+;;; `n` term at fault, and the flag derives `(false)`:
 ;;;
 ;;;     (not-decimal NUMERAL THING)   THING stands in NUMERAL where a digit or
 ;;;                                   a prefix goes, and is neither:
@@ -63,21 +80,19 @@
 ;;;                                   - the prefix is a named constant,
 ;;;                                     `(n price 1)`
 ;;;
-;;; Root is dead from its first layer, R is empty, every command exits 0, and
-;;; `ein solve` names, in the unsat core, the fact the numeral was written in
-;;; and, in `refuted by`, `not-decimal-is-false`. A numeral in a rule's
-;;; conclusion that holds no variable rests on no fact: its core is ∅.
+;;; Root is dead, R is empty, every command exits 0, and `ein solve` names,
+;;; in the unsat core, the request that took the numeral, with the `let` that
+;;; named it where an operand is a name, and, in `refuted by`,
+;;; `not-decimal-is-false`.
 ;;;
-;;; **A flag means malformed; no flag does not mean well-formed.** Silent:
+;;; **A flag means malformed; no flag does not mean well-formed.** Silent, and
+;;; with no label:
 ;;;
 ;;;   - a prefix that is a name neither `z`, a digit nor a named constant,
 ;;;     `(n end 1)`: saying *a name* costs a walk of the program's names
 ;;;     (Q-M1f.318);
 ;;;   - a prefix that is a fact of another relation, `(n (pair 1 2) 3)`: no
-;;;     rule can say *not of this shape*;
-;;;   - a numeral a rule assembles from a variable, `(n ?p x)`: it is no term
-;;;     a file writes;
-;;;   - a numeral written as a top-level fact of `n`, which is no term.
+;;;     rule can say *not of this shape*.
 ;;;
 ;;; A wrong count of arguments, `(n 1)` or `(n z 1 2)`, is refused when the
 ;;; program is loaded (Q-M1f.315), and a character that is no name character
@@ -98,16 +113,20 @@
 ;;; ── The rule of the calculator ─────────────────────────────────────────────
 ;;;
 ;;; No rule joins two facts on a number: each rule here has one premise that
-;;; holds a numeral, `(written (n P A))`, and its others are guards, which
-;;; compare and look nothing up, or a probe with every argument bound, `(nz
-;;; ?m)` and `(named ?m)`. `ein-infer/tests/arith_theory.rs` holds it.
+;;; holds a numeral, `(check N REST)`, and its others are guards, which
+;;; compare and look nothing up, a row of the table `nz`, or a probe with every
+;;; argument bound, `(named ?m)`. The walk carries the numeral it checks, so
+;;; its end labels it with no second premise. `ein-infer/tests/arith_theory.rs`
+;;; holds it.
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
-;;; `n`, `named`, the flag `not-decimal`, its rules `numeral-digit`,
-;;; `numeral-prefix-digit`, `numeral-prefix-zero`, `numeral-prefix-named` and
-;;; `not-decimal-is-false`, `decimal-rule`, and the entry `decimal`. The
-;;; interface is `n`, `named` and the flag.
+;;; `n`, `named`, the check `check` and its label `valid`, the flag
+;;; `not-decimal`, the rules `numeral-step`, `numeral-step-zero`,
+;;; `numeral-valid`, `numeral-digit`, `numeral-prefix-digit`,
+;;; `numeral-prefix-zero`, `numeral-prefix-named` and `not-decimal-is-false`,
+;;; `decimal-rule`, and the entry `decimal`. The interface is `n`, `named`,
+;;; `check`, `valid` and the flag.
 
 (import std.math.arith :symbols (arith z))
 (import std.math.digits :symbols (nz))
@@ -120,13 +139,39 @@
 (relation named Name
   :why "{?1} is a named constant")
 
-;; ── The check: every place of every numeral a file writes ───────────────────
+;; ── The check, which an operation asks for, and its label ───────────────────
+;; `(check N N)` asks whether N is a decimal number; `(check N REST)` is the
+;; walk, REST what is still to check. An operation that takes a numeral from
+;; the program writes the ask, and one that answers with a number writes the
+;; label.
+(relation check Number Number
+  :why "checking {?1}: {?2} is still to check")
+(relation valid Number
+  :why "{?1} is a decimal number")
 (relation not-decimal Number Thing
   :why "{?1} is not a decimal number: {?2} stands where a digit or a number goes")
 
+;; A place whose digit is one of the ten: the walk goes on to the prefix.
+(rule numeral-step ()
+  :match  (and (check ?w (n ?p ?a)) (nz ?a))
+  :assert (check ?w ?p)
+  :why    "the digit {?a} is one: {?p} is still to check")
+
+(rule numeral-step-zero ()
+  :match  (check ?w (n ?p 0))
+  :assert (check ?w ?p)
+  :why    "the digit 0 is one: {?p} is still to check")
+
+;; The walk reached `z`: every place held a digit, and the numeral ends in
+;; `z`.
+(rule numeral-valid ()
+  :match  (check ?w z)
+  :assert (valid ?w)
+  :why    "every place of {?w} holds a digit, and it ends in z: it is a decimal number")
+
 ;; None of the ten digits: `neq` holds of every other name, and of a fact.
 (rule numeral-digit ()
-  :match  (and (written (n ?p ?a))
+  :match  (and (check ?w (n ?p ?a))
                (neq ?a 0) (neq ?a 1) (neq ?a 2) (neq ?a 3) (neq ?a 4)
                (neq ?a 5) (neq ?a 6) (neq ?a 7) (neq ?a 8) (neq ?a 9))
   :assert (not-decimal (n ?p ?a) ?a)
@@ -136,19 +181,19 @@
 ;; constant, `(n price 1)`, is flagged; one whose prefix is any other name is
 ;; not, since saying *a name* costs a walk of the program's names.
 (rule numeral-prefix-digit ()
-  :match  (and (written (n ?m ?a)) (nz ?m))
+  :match  (and (check ?w (n ?m ?a)) (nz ?m))
   :assert (not-decimal (n ?m ?a) ?m)
   :why    "the digit {?m} stands where a number goes: a number ends in z")
 
 (rule numeral-prefix-zero ()
-  :match  (written (n 0 ?a))
+  :match  (check ?w (n 0 ?a))
   :assert (not-decimal (n 0 ?a) 0)
   :why    "the digit 0 stands where a number goes: a number ends in z")
 
 ;; `(neq ?m z)`: a program that names `z` with a `let` is flagged for the
 ;; `let`, and its numerals, which end in `z`, are not.
 (rule numeral-prefix-named ()
-  :match  (and (written (n ?m ?a)) (neq ?m z) (named ?m))
+  :match  (and (check ?w (n ?m ?a)) (neq ?m z) (named ?m))
   :assert (not-decimal (n ?m ?a) ?m)
   :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
 
@@ -167,9 +212,13 @@
 (rule decimal ()
   :match  ()
   :assert (and (__closed__ nz)
-               (__closed__ n) (__closed__ named) (__closed__ not-decimal)
+               (__closed__ n) (__closed__ named) (__closed__ check)
+               (__closed__ valid) (__closed__ not-decimal)
                (__closed__ decimal-rule)
+               (valid z)
                (decimal-rule arith)
+               (decimal-rule numeral-step) (decimal-rule numeral-step-zero)
+               (decimal-rule numeral-valid)
                (decimal-rule numeral-digit) (decimal-rule numeral-prefix-digit)
                (decimal-rule numeral-prefix-zero)
                (decimal-rule numeral-prefix-named)

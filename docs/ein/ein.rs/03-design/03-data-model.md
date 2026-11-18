@@ -111,7 +111,7 @@ loader interns every name a rule can produce (`ein_ir::from_ir::intern_program_n
 | `syms` | `Table<Interner>` | the symbols |
 | `facts` | `Table<FactStore>` | the propositions (§ 4) |
 | `provs` | `ProvArena` | the derivation records (§ 8.2) |
-| `kernel` | `Kernel` | the kernel's own names (`not`, `relation`, `rule`, `and`, `absent`, `false`, `open`, `written`, the engine's writeback names, …), interned first by `Terms::new` in a fixed order, so a comparison against one is an integer compare |
+| `kernel` | `Kernel` | the kernel's own names (`not`, `relation`, `rule`, `and`, `absent`, `false`, `open`, the engine's writeback names, …), interned first by `Terms::new` in a fixed order, so a comparison against one is an integer compare |
 | `refused` | `AtomicBool` | set when an interning call met a lent table |
 
 `Table<T>` is `Own(T)` or `Shared(Arc<T>)`. A lent table is read by `&` from any thread and grown from none:
@@ -510,7 +510,7 @@ explicitly, so a record shared between a root and its forks cannot answer for on
 | `NameEntry` | `as_head: Vec<FactId>`, `as_arg: Vec<FactId>` |
 
 There is no type or instance record: a program's membership facts are ordinary facts. `Program::categorise` gives
-each name a `NameCategory`: `Relation` for the kernel's `relation`, `rule` and `written` and for every registered
+each name a `NameCategory`: `Relation` for the kernel's `relation` and `rule` and for every registered
 relation, `Rule` for a saturation or obligation rule's name, `Object` for everything else, an hrule's name included.
 `Object` is the category's name in the code and no sort of node; the blind enumerator draws the guessable atoms from
 `Object` names alone.

@@ -2,8 +2,8 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `int-n-digit` reads `(written (int z 7))` and derives `(not-integer (int z
-;;; 7) 7)`.
+;;; `int-n-digit` reads `(int-check (int z 7))`, which the operand's look-up
+;;; asks, and derives `(not-integer (int z 7) 7)`.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;

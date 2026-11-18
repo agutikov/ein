@@ -29,8 +29,11 @@
 ;;; The names are Q-M1f.267's. An operand is a number as its
 ;;; representation writes it, high zeros allowed; a name, a `let` of decimal's
 ;;; or a `bin-let` of binary's, is not looked up, and a request over one is
-;;; answered by silence. A malformed numeral is its representation's, flagged
-;;; where it is written.
+;;; answered by silence. A malformed numeral is its representation's: a
+;;; request asks its representation's check of the numeral it takes,
+;;; `(check X X)` or `(bin-check B B)`, which flags it, or labels it valid
+;;; (Q-M1f.404). An answer is a number a walk makes, labelled valid as it is
+;;; made.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;
@@ -46,8 +49,8 @@
 ;;; the bit as the carry in, `(add-walk TAG X X BIT z)`.
 ;;;
 ;;; The two directions do not cost the same: a halving is a whole decimal
-;;; division, where a doubling is one addition walk: 255 to binary is 826
-;;; firings and 1111101000 to decimal 100 (`ein saturate` of each request
+;;; division, where a doubling is one addition walk: 255 to binary is 830
+;;; firings and 1111101000 to decimal 111 (`ein saturate` of each request
 ;;; alone, the closing rules' firings left out).
 ;;;
 ;;; It reaches into both theories: decimal's `div-call`, `div-done`,
@@ -64,7 +67,8 @@
 ;;; `doubling`; `convert-rule`, and the entry `convert`.
 
 (import std.math.arith :symbols (z))
-(import std.math.decimal :symbols (n))
+(import std.math.decimal :symbols (n check))
+(import std.math.binary :symbols (bin-check))
 (import std.math.decimal-arith :symbols (decimal-arith div-call div-done add-walk done))
 (import std.math.binary-arith :symbols (binary-arith bin-b bin-strip bin-done bin-top-first bin-top-first-is))
 
@@ -93,8 +97,8 @@
 ;; Each remainder is a bit, the units first, put in front of the bits so far.
 (rule to-bin-ask ()
   :match  (to-bin ?x)
-  :assert (to-bin-go ?x ?x z)
-  :why    "{?x} in binary is asked: halve it until nothing is left")
+  :assert (and (check ?x ?x) (to-bin-go ?x ?x z))
+  :why    "{?x} in binary is asked: it is checked as a number, and halved until nothing is left")
 
 (rule to-bin-halve ()
   :match  (to-bin-go ?x (n ?p ?a) ?acc)
@@ -125,8 +129,8 @@
 ;;    bit, one decimal addition ──────────────────────────────────────────────
 (rule to-dec-ask ()
   :match  (to-dec ?b)
-  :assert (bin-top-first (dec-bits ?b) ?b z)
-  :why    "{?b} in decimal is asked: first its bits, the top one first")
+  :assert (and (bin-check ?b ?b) (bin-top-first (dec-bits ?b) ?b z))
+  :why    "{?b} in decimal is asked: it is checked as a binary number, and its bits are read, the top one first")
 
 (rule to-dec-begin ()
   :match  (bin-top-first-is (dec-bits ?b) ?t)
