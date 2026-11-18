@@ -8,7 +8,7 @@ digraph ein_infer {
     compile [label="compile.rs, plan.rs\na rule and an activator to a Plan;\nthe run's PlanMemo"];
     engine  [label="engine.rs\nthe ordered plan list, fired"];
     match   [label="match_.rs, predicates.rs\nthe register matcher; eq, neq"];
-    sat     [label="saturator.rs\nthe agenda, the closure step,\nthe NAF boundary, the mirror"];
+    sat     [label="saturator.rs\nthe agenda, the closure step,\nthe NAF boundary"];
     firing  [label="firing.rs, contradiction.rs\none application; (false) and X, (not X)"];
     obl     [label="obligations.rs\nwhat a quiescent KB owes"];
   }

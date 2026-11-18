@@ -364,8 +364,8 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   premise goes, so an `(or …)` written as a premise of an `(and …)`, under an `(absent …)` or as a whole `:match`
   parses; so do a `:match` or a `:goal` of any width, and a goal's premise whose relation is a variable
   (`PremiseHead`'s `Var`). The loader refuses each shape no plan can be compiled from, a macro's expansion included.
-- **The kernel's names.** A dunder, `__closed__` or `__symmetric__`, is a `NAME` the loader refuses where a program
-  binds one ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
+- **The kernel's names.** The dunder `__closed__` is a `NAME` the loader refuses where a program
+  binds it ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
   Where `open` stands is the grammar's; what the loader still refuses of it is the program's to tell, an `(open ?R)`
   whose `?R` is no parameter or whose projection does not resolve, each line placed where the `(open …)` is written
   ([`03-reserved-names.md` § The verdict](03-reserved-names.md#the-verdict--open)).

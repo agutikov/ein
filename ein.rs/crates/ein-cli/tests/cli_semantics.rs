@@ -2003,7 +2003,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// No row needs an environment variable: a kind reachable only under one is a
 /// kind no default-environment sweep can see, and so one that can ship
 /// undocumented.
-const EVENT_COVER: [(&str, &str); 6] = [
+const EVENT_COVER: [(&str, &str); 5] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer, `enter`, `layer` and `region`",
@@ -2015,10 +2015,6 @@ const EVENT_COVER: [(&str, &str); 6] = [
     (
         "examples/branching/12_typed_blind_solve.ein",
         "park / admit / retire — the NAF boundary, and alt",
-    ),
-    (
-        "examples/features/06_symmetric_native.ein",
-        "mirror — the native arg swap",
     ),
     (
         "examples/zebra2-obligations.ein",

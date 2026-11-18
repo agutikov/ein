@@ -696,7 +696,7 @@ const CLAIM_RELATION: &str = "a relation of the program is one it declares, stat
 /// **The relations of the program**, as it writes them outside its goals and
 /// its `(solve …)` lists (Q-M1f.114), which a goal and a claim are held to: a
 /// relation it declares or states a fact of,
-/// `is-a`, `eq` and `neq`, the relation of any form at any depth in a rule's,
+/// `eq` and `neq`, the relation of any form at any depth in a rule's,
 /// an hrule's or an obligation's `:match` or `:assert`, as expanded, or in a
 /// fact, a name a fact or a conclusion passes where a relation's name is held
 /// (`places.passed`). So a relation only a rule's `:assert` derives is one.
@@ -713,8 +713,9 @@ fn program_relations(
 ) -> BTreeSet<String> {
     let program = kb.program();
     let mut known: BTreeSet<String> = places.passed.clone();
-    // `is-a` and the two relations of equality are every program's.
-    known.extend(["is-a", "eq", "neq"].map(str::to_string));
+    // The two relations of equality, the kernel's computed ones, are every
+    // program's; no theory's relation is.
+    known.extend(["eq", "neq"].map(str::to_string));
     for (name, _) in program.relations.iter() {
         known.insert(terms.sym(name).to_string());
     }
@@ -4241,8 +4242,8 @@ fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
 /// `(not …)` and `(absent …)`, and in a fact's `:using` are read.
 ///
 /// **What it does not read**: a relation nothing declares, which has no count
-/// to be held to, the kernel's own among them, `__closed__`, `__symmetric__`
-/// and the `(relation R T…)` fact a declaration stores, read at any count
+/// to be held to, the kernel's own among them, `__closed__` and the
+/// `(relation R T…)` fact a declaration stores, read at any count
 /// (Q-M1f.203); a relation written as a variable, `(?R ?a ?b)`, whatever the
 /// program shows its parameter holds (Q-M1f.202); and an activator against
 /// its rule's parameters, which is no declared relation's count. It is no

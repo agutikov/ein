@@ -810,8 +810,7 @@ impl Graph {
     /// The whole node `kb`, a fork of `root`, with the applications that
     /// reached it: every application's premises, what its universals read
     /// and the activator its plan was compiled from, and beside them every
-    /// justification the store kept, so that a derivation the saturator
-    /// records without an application, a mirror's, is read too.
+    /// justification the store kept.
     fn of(
         root: &Kb,
         kb: &Kb,

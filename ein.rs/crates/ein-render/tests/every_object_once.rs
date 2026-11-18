@@ -611,8 +611,8 @@ fn kb_less_the_loaders(kb: &str, ast: &Ast, forms: &[NodeId]) -> String {
 }
 
 /// What `ein render kb` draws of a file: loaded, saturated. With it, the
-/// parsed program, and whether saturation derived a fact: by a rule of the
-/// kernel's, `__symmetric__`, or by the check of a written `(eq …)`.
+/// parsed program, and whether saturation derived a fact, as the check of a
+/// written `(eq …)` can with no rule.
 struct KbCommand {
     dot: String,
     ast: Ast,

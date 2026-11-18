@@ -3135,7 +3135,7 @@ fn load_error(text: &str) -> String {
 /// **The lines the grammar does not cover are still reached**, each by a
 /// program the grammar accepts, which is why the loader keeps them.
 ///
-/// - **A reserved name a declarator binds**: the kernel's two dunders are names
+/// - **A reserved name a declarator binds**: the kernel's dunder is a name
 ///   (Q-M1f.7), so the loader refuses `__closed__` bound by a
 ///   relation, a rule, a macro or an import's `:as`; the other reserved words
 ///   are tokens no declarator takes, refused at the parse (the table above).
@@ -3163,8 +3163,8 @@ fn the_lines_the_grammar_does_not_cover_are_still_reached() {
             "relation '__closed__' shadows a reserved kernel name",
         ),
         (
-            "(relation p T) (rule __symmetric__ () :match (p ?x) :assert (p ?x))",
-            "rule '__symmetric__' shadows a reserved kernel name",
+            "(relation p T) (rule __closed__ () :match (p ?x) :assert (p ?x))",
+            "rule '__closed__' shadows a reserved kernel name",
         ),
         (
             "(macro __closed__ (?x) (p ?x))",

@@ -30,8 +30,8 @@
 //! writes through a parameter, `(?Q ?r)`, is read by the first clause alone,
 //! where root holds a fact of it.
 //!
-//! The kernel's two dunders are never among them: `__closed__` and
-//! `__symmetric__` are no objects, whoever concludes a fact of them.
+//! The kernel's dunder is never among them: `__closed__` is no object,
+//! whoever concludes a fact of it.
 //!
 //! **A fact about the KB.** It decides nothing: H, R, every count and every
 //! exit code are what they are without it. Nothing is named when a rung the

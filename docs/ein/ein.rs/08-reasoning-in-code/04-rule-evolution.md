@@ -21,7 +21,7 @@ The page: [rules as data](../../reasoning/03-rule-evolution/01-rules-as-data.md)
 | a declaration held as facts of `relation` | `ingest_relation` in `ein-ir/src/from_ir.rs` |
 | a pattern over `relation` is an ordinary premise | no special case: the compiler and the matcher read a `relation` row as any row (`ein-infer/src/compile.rs`, `ein-infer/src/match_.rs`) |
 | the property algebra | rules of `stdlib/algebra.ein` and `stdlib/bijection.ein`, each applied by the fact that names it; the modules are the user's [standard library reference](../../user/04-reference/README.md) |
-| the kernel's marker of symmetry | [`07-reserved-engine-strings.md` § `__symmetric__`](../07-reserved-engine-strings.md#__symmetric__--engine-effect) |
+| no property has a kernel counterpart: symmetry is a rule | `std.algebra`'s `symmetric`; the kernel closes no relation under the swap, `ein-infer/tests/stdlib_semantics.rs`' `the_kernel_mirrors_no_relation_and_symmetric_is_a_rule`, and reads no theory's name ([`07-reserved-engine-strings.md` § No theory's name](../07-reserved-engine-strings.md#no-theorys-name)) |
 | `forall` and `unknown` | macros of `stdlib/macro.ein`, read from the module by `stdlib_macro_names` in `ein-ir/src/imports.rs` and expanded by `expand_macros` in `ein-ir/src/macros.rs` |
 | a rule is not data | the grammar: `rule` is a reserved word, never a name, so no pattern is headed by it; a conclusion is facts (`ein_ir::Ast::conjuncts`), and the program's registries (`ein-core/src/program.rs`) are written by the loader alone |
 | no declaration binds a reserved word | the guard on declarators in `ein-ir/src/from_ir.rs`, over `ein_core::terms::RESERVED` |

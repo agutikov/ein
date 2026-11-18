@@ -722,8 +722,6 @@
 0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein :: solve
 0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein :: saturate
 0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein :: solve
-0    examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein :: saturate
-0    examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: saturate
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints
@@ -1175,14 +1173,6 @@
 1    examples/ein-bugs/wrong-answers/str-in-hrule.ein :: solve
 1    examples/ein-bugs/wrong-answers/str-in-match.ein :: saturate
 1    examples/ein-bugs/wrong-answers/str-in-match.ein :: solve
-0    examples/ein-bugs/wrong-answers/symmetric-derived-node.ein :: saturate
-0    examples/ein-bugs/wrong-answers/symmetric-derived-node.ein :: solve
-0    examples/ein-bugs/wrong-answers/symmetric-derived-root.ein :: saturate
-0    examples/ein-bugs/wrong-answers/symmetric-derived-root.ein :: solve
-0    examples/ein-bugs/wrong-answers/symmetric-rule-node.ein :: saturate
-0    examples/ein-bugs/wrong-answers/symmetric-rule-node.ein :: solve
-0    examples/ein-bugs/wrong-answers/symmetric-written-root.ein :: saturate
-0    examples/ein-bugs/wrong-answers/symmetric-written-root.ein :: solve
 0    examples/ein-bugs/wrong-answers/template-var-star.ein :: saturate
 0    examples/ein-bugs/wrong-answers/template-var-star.ein :: solve
 0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve
@@ -1281,12 +1271,6 @@
 1    examples/features/05_stdlib_domain_elim.ein :: render rules
 0    examples/features/05_stdlib_domain_elim.ein :: saturate
 0    examples/features/05_stdlib_domain_elim.ein :: saturate --dump
-0    examples/features/06_symmetric_native.ein :: render constraints
-0    examples/features/06_symmetric_native.ein :: render lattice
-1    examples/features/06_symmetric_native.ein :: render rules
-0    examples/features/06_symmetric_native.ein :: saturate
-0    examples/features/06_symmetric_native.ein :: saturate --dump
-0    examples/features/06_symmetric_native.ein :: solve
 0    examples/features/07_unstratifiable.ein :: render constraints
 0    examples/features/07_unstratifiable.ein :: render lattice
 0    examples/features/07_unstratifiable.ein :: render rules

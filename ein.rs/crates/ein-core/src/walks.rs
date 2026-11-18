@@ -7,8 +7,8 @@
 //! [`Justifications::Primary`] or [`Justifications::All`] — rather than
 //! taking the first-recorded one by accident.
 //!
-//! Cycles are real here and are not an error: the symmetric mirror makes
-//! `(R a b)` and `(R b a)` justify each other in any ordinary puzzle. The
+//! Cycles are real here and are not an error: a symmetric relation's rule
+//! makes `(R a b)` and `(R b a)` justify each other in any ordinary puzzle. The
 //! walks break at re-visit; [`detect_provenance_cycles`] rejects only
 //! *user-authored* cycles, at load time, where a circular `:using` chain is a
 //! malformed input.

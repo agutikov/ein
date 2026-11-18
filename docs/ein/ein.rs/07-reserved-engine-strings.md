@@ -4,7 +4,7 @@ Engine-**internal** vocabulary: the strings the engine keys on that are not a pr
 one named constant in [`ein_core::terms`](../../../ein.rs/crates/ein-core/src/terms.rs),
 [`ein_core::text`](../../../ein.rs/crates/ein-core/src/text.rs) or the module that reads it, and a name is reserved
 if and only if it appears here or among the names the language reserves for a program to write (`relation`, `not`,
-`absent`, `eq`, `open`, …, which `ein_core::terms::RESERVED` lists with the two below).
+`absent`, `eq`, `open`, …, which `ein_core::terms::RESERVED` lists with the dunder below).
 
 **The words around a program's English are the engine's too**: the provenance words `ein saturate --dump` writes
 after a fact (`:source`, `:rule`, `:hypothesis`), the trace's *Derives*, *Premises* and *Assuming*, and the read-out's
@@ -19,21 +19,40 @@ writing or binding it, and where the engine reads it.
 ## The engine's names
 
 A name that triggers behaviour hard-coded in the engine is written `__dunder__`, lexically distinct from a
-program's relation and rule names; a bare name never triggers engine behaviour. Each name below is written only
-with its fixed meaning, and is refused as a program's own:
+program's relation and rule names; a bare name never triggers engine behaviour, and no name of a theory does
+either: `is-a`, `symmetric`, `bijective` and `slot-partition` are a library's, which the engine reads by no name
+([§ No theory's name](#no-theorys-name)). Each name below is written only with its fixed meaning, and is refused as
+a program's own:
 
 | name | a program may | a program may not | refused by |
 |---|---|---|---|
-| `__closed__`, `__symmetric__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as an argument, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): the two are in `ein_core::terms::RESERVED`, the names a declarator may not bind |
+| `__closed__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as an argument, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): it is in `ein_core::terms::RESERVED`, the names a declarator may not bind |
 | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | — | write it anywhere: each names a conclusion no rule drew, which a program cannot | the parse: the grammar's `WRITEBACK` token, which no production takes (*unexpected `<forced-positive>`: the engine's writeback rule name (reserved)*) |
 
-So a printed `:rule <lookahead-dies-immediately>` would always be the engine's, and a rule's firings never print
-`:rule __symmetric__`, the native mirror's. The name in a string or a comment is not the name, and a longer run that
-starts with one (`<forced-positive>x`) is the name it spells.
+So a printed `:rule <lookahead-dies-immediately>` would always be the engine's. The name in a string or a comment
+is not the name, and a longer run that starts with one (`<forced-positive>x`) is the name it spells.
 [`ein-ir/tests/engine_names.rs`](../../../ein.rs/crates/ein-ir/tests/engine_names.rs) holds each name in each
-position. Both groups, with the query rule and the mirror's two variable names, are interned first, at fixed places,
-by `ein_core::terms::ENGINE`, so the interner does not grow with them during a search
-([`03-design/08-parallelism.md`](03-design/08-parallelism.md)).
+position. Both groups, with the query rule, are interned first, at fixed places, by `ein_core::terms::ENGINE`, so the
+interner does not grow with them during a search ([`03-design/08-parallelism.md`](03-design/08-parallelism.md)).
+
+## No theory's name
+
+The engine gives a fixed meaning to its own names and to none other: the names `ein_core::terms::Kernel` holds,
+which `Terms::new` interns before a program arrives, the words of the grammar, and the three names `:over` takes
+(`ein_ir::expect::Over::NAMES`). A theory's names, `is-a`, `T`,
+`symmetric`, `bijective`, `slot-partition`, are the standard library's or a program's, and mean what the rules that
+read them make them mean; a relation's symmetry is `std.algebra`'s rule `symmetric`, and the kernel mirrors no
+relation ([Q-M1f.7](../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
+`__symmetric__` is such a name: a program may bind it, and a fact of it derives nothing
+(`ein-infer/tests/stdlib_semantics.rs`' `the_kernel_mirrors_no_relation_and_symmetric_is_a_rule`). A goal or a claim
+over `is-a` is held to the program's relations as one over any relation is: a program that writes no `is-a` has no
+such relation, and the load refuses it.
+
+[`ein-render/tests/renaming_invariance.rs`](../../../ein.rs/crates/ein-render/tests/renaming_invariance.rs) holds it:
+every corpus program, with every name that is not the kernel's renamed by an order-preserving bijection, in its
+text and in every module its load reads, answers alike, its claims' verdicts among the answer, and is drawn alike,
+apart from the names. A drawing that still reads a theory's name is listed in the test's `READS`, with the name, and
+a listed drawing that no longer moves on any program fails it.
 
 ## Bookkeeping carrier heads
 
@@ -92,32 +111,6 @@ ones a program writes or a rule derives (`std.closure`'s `infer-closure` asserts
 candidates of every other relation. It is genuinely the engine's: a saturation rule can neither suppress the
 generator nor observe that no rule asserts R. The hypothesis mechanisms are read together, and a closure that
 contradicts an hrule or a list is refused ([`03-design/07-search.md`](03-design/07-search.md)).
-
-## `__symmetric__` — engine effect
-
-`(__symmetric__ R)` closes R's extension under argument swap **natively in the saturator**: each `(R a b)` produces
-`(R b a)` directly (a self-loop `a = a` and a mirror already present are skipped), as a firing with rule
-`__symmetric__` that threads the source edge as its premise and is narrated as a `mirror` event
-([`05-events.md`](05-events.md)). Its single source is `SYMMETRIC` and the mirror machinery (`symmetric_rels`,
-`enqueue_mirror_sources`, `next_mirror_firing`) in [`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs)
-([`03-design/06-saturation.md`](03-design/06-saturation.md)).
-
-**The mark is read in the saturation it comes to hold in.** Written as a fact, derived by a rule at root, or derived
-in a node's saturation once a commitment brings a rule to it: the saturation in which `(__symmetric__ R)` comes to
-hold offers every fact of R already stored to the mirror, as it does for a relation marked from its first step, and
-every fact of R stored after the mark as it arrives. So the fixpoint is closed under the swap however the mark came
-to hold, a second saturation of it writes nothing, and one symmetry stated as a fact or by a rule has one root and
-one R. Each mirror's derivation records the mark as its activator, as a rule's firing records the fact that
-activated its plan, so a dead node's core follows the mark where the node derived it and names the commitment that
-brought it, and never follows a mark root holds (`ein-infer/tests/corpus_cores.rs`;
-`ein-infer/tests/stdlib_semantics.rs`'s `the_native_mirror_reads_a_mark_a_rule_derives` and
-`a_derived_mark_answers_what_its_control_answers`).
-
-**A cost, not a capability.** It computes the same closure as the stdlib's `symmetric` rule (`std.algebra`), pinned
-by `stdlib_semantics.rs`'s `the_native_mirror_computes_the_same_closure_as_the_stdlib_rule`, and skips the plan and
-the match the rule pays per mirror. It is opt-in by marking the relation: with nothing marked the mirror queue is
-empty and a saturation takes the path with no mirror. Symmetry itself is the program's, never the engine's
-([Q6](../../decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md)).
 
 ## Hypothesis-scoping keys
 

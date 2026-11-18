@@ -81,11 +81,6 @@ use crate::firing::{BindingKey, Env, FireError, Firing, build_conclusion, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 
-/// The kernel-native symmetric mirror trigger. A relation marked
-/// `(__symmetric__ R)` has its extension closed under arg-swap directly by the
-/// saturator — no plan, no matcher.
-pub const SYMMETRIC: &str = ein_core::terms::SYMMETRIC;
-
 /// Which rules a saturation fires first: those whose `:assert` writes, by
 /// [`crate::monotone::writes_of`]'s reading of the compiled plan, a fact a
 /// contradiction can be made of.
@@ -389,11 +384,6 @@ pub struct Saturator {
     may_collide: bool,
     /// The plan count `may_collide` was last computed at.
     plans_seen: usize,
-    sym_rels: Vec<Symbol>,
-    sym_n: usize,
-    sym_sym: Symbol,
-    mirror_queue: Vec<FactId>,
-    mirror_seeded: bool,
     record_alternatives: bool,
     /// Keep what each application's universals read, a **redundant** one's
     /// among them, for [`Saturator::take_universal`]. Off on every route: a
@@ -489,9 +479,6 @@ pub struct Snapshot {
     watched_sizes: Vec<usize>,
     may_collide: bool,
     plans_seen: usize,
-    sym_rels: Vec<Symbol>,
-    sym_n: usize,
-    mirror_seeded: bool,
     facts: FxHashSet<FactId>,
     /// The agenda the saturation was built under, which a resumed one takes
     /// on whatever thread it runs (the module's § The agenda).
@@ -536,7 +523,6 @@ impl Snapshot {
 impl Saturator {
     pub fn new(s: &mut Session<'_>) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
-        let sym_sym = s.terms.kernel.symmetric;
         let mut sat = Saturator {
             engine: Engine::with_memo(s.memo.clone()),
             matcher: Matcher::new(),
@@ -560,15 +546,8 @@ impl Saturator {
             retired_scratch: Vec::new(),
             may_collide: false,
             plans_seen: usize::MAX,
-            sym_rels: Vec::new(),
-            sym_n: usize::MAX,
-            sym_sym,
-            mirror_queue: Vec::new(),
-            mirror_seeded: false,
             // Read once from the resolved config: it is consulted on the
             // redundant-firing path, the highest-volume path in the engine.
-            // The mirror is not a setting: a marked relation is always
-            // closed.
             record_alternatives: cfg.record_alternative_justifications,
             reading_universals: false,
             last_universal: Box::default(),
@@ -613,9 +592,6 @@ impl Saturator {
             watched_sizes: self.watched_sizes.clone(),
             may_collide: self.may_collide,
             plans_seen: self.plans_seen,
-            sym_rels: self.sym_rels.clone(),
-            sym_n: self.sym_n,
-            mirror_seeded: self.mirror_seeded,
             facts: kb.facts().collect(),
             fail_first: self.fail_first,
             floor: None,
@@ -651,7 +627,6 @@ impl Saturator {
         delta: Vec<FactId>,
     ) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
-        let sym_sym = s.terms.kernel.symmetric;
         let mut sat = Saturator {
             engine: snapshot.engine.clone(),
             matcher: Matcher::new(),
@@ -678,17 +653,6 @@ impl Saturator {
             retired_scratch: Vec::new(),
             may_collide: snapshot.may_collide,
             plans_seen: snapshot.plans_seen,
-            sym_rels: snapshot.sym_rels.clone(),
-            sym_n: snapshot.sym_n,
-            sym_sym,
-            mirror_queue: Vec::new(),
-            // The parent already seeded the mirror from the whole extent, so
-            // re-seeding would re-walk it; what the mirror has not seen is the
-            // delta, and a delta fact reaches the KB by a direct write rather
-            // than by a firing, so nothing else would offer it. A relation
-            // the delta or a later firing marks has its whole extent offered
-            // when the marks are read again (`symmetric_rels`).
-            mirror_seeded: snapshot.mirror_seeded,
             record_alternatives: cfg.record_alternative_justifications,
             reading_universals: false,
             last_universal: Box::default(),
@@ -723,10 +687,6 @@ impl Saturator {
                     Reverse(((tb & !LATE) | sat.late(sat.entries.get(e).plan), e))
                 })
                 .collect();
-        }
-        if sat.mirror_seeded {
-            let delta = sat.delta.clone().unwrap_or_default();
-            sat.enqueue_mirror_sources(s, &delta);
         }
         Ok(sat)
     }
@@ -852,8 +812,8 @@ impl Saturator {
     }
 
     /// What the universals of the application [`Self::step`] last returned
-    /// read ([`ein_core::Prov::universal`]), once: empty for a mirror's
-    /// derivation, and wherever [`Self::read_universals`] was not asked.
+    /// read ([`ein_core::Prov::universal`]), once: empty wherever
+    /// [`Self::read_universals`] was not asked.
     pub(crate) fn take_universal(&mut self) -> Box<[FactId]> {
         std::mem::take(&mut self.last_universal)
     }
@@ -900,9 +860,6 @@ impl Saturator {
         let _ = self.delta.take();
         self.enqueue_pass(s, None)?;
         self.needs_enqueue = false;
-        if self.has_pending_mirror(s) {
-            return Ok(false);
-        }
         let unfired = self
             .queue
             .iter()
@@ -920,11 +877,6 @@ impl Saturator {
             let delta = self.delta.take();
             self.enqueue_pass(s, delta)?;
             self.needs_enqueue = false;
-        }
-        // The native mirror runs before rule firings so the closure is
-        // available to them. A no-op when no relation is marked.
-        if let Some(firing) = self.next_mirror_firing(s)? {
-            return Ok(Some(firing));
         }
         while let Some(Reverse((_, entry))) = self.queue.pop() {
             if self.engine.fired.contains(self.entry_key(entry)) {
@@ -945,7 +897,6 @@ impl Saturator {
                 self.delta
                     .get_or_insert_with(Vec::new)
                     .extend(firing.derived.iter().copied());
-                self.enqueue_mirror_sources(s, &firing.derived);
             }
             return Ok(Some(firing));
         }
@@ -1689,178 +1640,6 @@ impl Saturator {
         }
         seen.into_boxed_slice()
     }
-
-    // ── The `__symmetric__` native mirror ──────────────────────────
-
-    /// Relations marked `(__symmetric__ R)`; cached, refreshed when the marker
-    /// count changes: a rule may derive one, and a fork's delta may hold one.
-    ///
-    /// **A relation marked after the mirror was seeded has its whole extent
-    /// offered here**, as the seed offers a marked relation's: its facts stored
-    /// before the mark reached the KB were offered to no mirror, and the ones
-    /// stored after are offered as they arrive. So a symmetry a rule derives
-    /// closes its relation in the saturation that derives it, as one written
-    /// as a fact does, and one program stated either way has one fixpoint
-    /// (`ein-infer/tests/stdlib_semantics.rs`'s
-    /// `the_native_mirror_reads_a_mark_a_rule_derives`).
-    fn symmetric_rels(&mut self, s: &Session<'_>) -> &[Symbol] {
-        let n = s.kb.n_facts_of(self.sym_sym);
-        if n != self.sym_n {
-            let mut rels: Vec<Symbol> =
-                s.kb.facts_of(self.sym_sym)
-                    .filter_map(|f| s.terms.facts.args(f).first().and_then(|v| v.as_sym()))
-                    .collect();
-            // Sorted by name and held sorted throughout: a hash-ordered set
-            // here leaks into firing order
-            // (`docs/ein/ein.rs/03-design/01-determinism-and-order.md` § 2.3). So the mirror
-            // sequence is a function of the input alone.
-            rels.sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
-            rels.dedup();
-            if self.mirror_seeded {
-                // In name order, each extent in the store's order, as the
-                // seed pushes them.
-                for &rel in &rels {
-                    if !self.sym_rels.contains(&rel) {
-                        self.mirror_queue.extend(s.kb.facts_of(rel));
-                    }
-                }
-            }
-            self.sym_rels = rels;
-            self.sym_n = n;
-        }
-        &self.sym_rels
-    }
-
-    fn enqueue_mirror_sources(&mut self, s: &Session<'_>, facts: &[FactId]) {
-        if self.symmetric_rels(s).is_empty() {
-            return;
-        }
-        for &f in facts {
-            let rel = s.terms.facts.rel(f);
-            if self.sym_rels.contains(&rel) {
-                self.mirror_queue.push(f);
-            }
-        }
-    }
-
-    /// True iff some marked edge `(R a b)` with `a ≠ b` lacks its mirror.
-    /// It derives nothing, so `is_stalled` can consult it; the one thing it
-    /// may change is the mirror's queue, where a relation marked since the
-    /// last refresh has its extent offered ([`Self::symmetric_rels`]).
-    fn has_pending_mirror(&mut self, s: &Session<'_>) -> bool {
-        let rels = self.symmetric_rels(s).to_vec();
-        for rel in rels {
-            for f in s.kb.facts_of(rel).collect::<Vec<_>>() {
-                let args = s.terms.facts.args(f);
-                if args.len() == 2
-                    && args[0] != args[1]
-                    && s.terms
-                        .probe_fact(rel, &[args[1], args[0]])
-                        .is_none_or(|m| !s.kb.contains(m))
-                {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    /// One native mirror write, or `None`.
-    ///
-    /// A marked `R`'s extension is closed under arg-swap: rather than
-    /// compiling the stdlib `symmetric` rule and running the matcher each
-    /// pass, pop a source `(R a b)` and write `(R b a)` directly. The mirror
-    /// feeds the delta so rules re-enqueue against it.
-    fn next_mirror_firing(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
-        if !self.mirror_seeded {
-            // Refreshed before the seed is marked, so that the refresh offers
-            // nothing the seed is about to offer.
-            let rels = self.symmetric_rels(s).to_vec();
-            self.mirror_seeded = true;
-            for rel in rels {
-                let extent: Vec<FactId> = s.kb.facts_of(rel).collect();
-                self.mirror_queue.extend(extent);
-            }
-        }
-        // `.pop()` — the queue is a **stack**, LIFO despite the name.
-        while let Some(src) = self.mirror_queue.pop() {
-            let rel = s.terms.facts.rel(src);
-            if !self.symmetric_rels(s).contains(&rel) {
-                continue;
-            }
-            let args = s.terms.facts.args(src);
-            if args.len() != 2 {
-                continue;
-            }
-            let (a, b) = (args[0], args[1]);
-            if a == b {
-                continue;
-            }
-            let existing = s
-                .terms
-                .probe_fact(rel, &[b, a])
-                .filter(|&m| s.kb.contains(m));
-            // The mark the mirror rests on, recorded as the derivation's
-            // activator, as a rule's firing records the fact that activated
-            // its plan: a core follows it where a node derived or committed
-            // it (`ein_core::walks::node_activator`), so a dead node whose
-            // commitment brought a rule to derive the mark names the
-            // commitment, and one root states names nothing more.
-            let mark = s
-                .terms
-                .probe_fact(self.sym_sym, &[Value::sym(rel)])
-                .filter(|&m| s.kb.contains(m));
-            let mirrored = |src: FactId| {
-                let mut prov = Prov::from_rule(self.sym_sym, Box::new([src]), None);
-                prov.activator = mark;
-                prov
-            };
-            if let Some(mirror) = existing {
-                // The mirror already exists (typically because the
-                // stdlib `symmetric` rule, or the mirror of the mirror, got
-                // there first). Arg-swap is a real second derivation of it, so
-                // record it rather than dropping it. This is what makes the
-                // justification graph genuinely cyclic — `(R a b)` and
-                // `(R b a)` justify each other — which the explanation search
-                // handles by taking a least fixpoint from the sources up.
-                if self.record_alternatives && s.kb.accepts_justification(s.terms, mirror, &[src]) {
-                    let id = s.terms.provs.push(mirrored(src));
-                    s.kb.record_justification(s.terms, mirror, id);
-                }
-                continue;
-            }
-            let id = s.terms.provs.push(mirrored(src));
-            let stored =
-                s.kb.add_and_index_fact(s.terms, rel, &[b, a], Some(id))
-                    .map_err(|e| SaturateError::Fire(FireError::Overflow(e)))?
-                    .id();
-            self.needs_enqueue = true;
-            self.delta.get_or_insert_with(Vec::new).push(stored);
-            self.enqueue_mirror_sources(s, &[stored]);
-            if s.events.on() {
-                let (relation, src_s, derived_s) = (
-                    s.terms.sym(rel).to_string(),
-                    events::sexpr(s.terms, src),
-                    events::sexpr(s.terms, stored),
-                );
-                s.events.emit("mirror", |l| {
-                    l.str("relation", &relation);
-                    l.str("src", &src_s);
-                    l.str("derived", &derived_s);
-                });
-            }
-            let (a_sym, b_sym) = (s.terms.kernel.mirror_a, s.terms.kernel.mirror_b);
-            return Ok(Some(Firing {
-                rule: self.sym_sym,
-                activator: Box::new([Value::sym(rel)]),
-                bindings: Box::new([(a_sym, a), (b_sym, b)]),
-                derived: Box::new([stored]),
-                premises: Box::new([src]),
-                redundant: false,
-            }));
-        }
-        Ok(None)
-    }
 }
 
 /// `world._collect_refs` — ground a guard sub-plan's relation patterns against
@@ -1991,27 +1770,6 @@ mod tests {
             order = derived.iter().map(|&f| events::sexpr(s.terms, f)).collect();
         }
         (terms, kb, order, rounds)
-    }
-
-    /// The `__symmetric__` cold seed iterates the marked relations **sorted by
-    /// name**, so the mirror firing sequence is a function of the input alone.
-    ///
-    /// A hash-ordered set here would, with two or more markers, leak into the
-    /// seed order, hence into the firing order, hence into every
-    /// derivation-order observable
-    /// ([03-design/01-determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#23-hash-containers)).
-    #[test]
-    fn the_mirror_seeds_its_relations_in_name_order() {
-        let src = "(relation zeta A B :why \"zeta holds of {?1} and {?2}\")\n(relation alpha A B :why \"alpha holds of {?1} and {?2}\")\n(relation mid A B :why \"mid holds of {?1} and {?2}\")\n\
-                   (__symmetric__ zeta)\n(__symmetric__ alpha)\n(__symmetric__ mid)\n\
-                   (zeta z1 z2)\n(alpha a1 a2)\n(mid m1 m2)\n";
-        let (_, _, order, _) = saturate(src);
-        assert_eq!(
-            order,
-            ["(zeta z2 z1)", "(mid m2 m1)", "(alpha a2 a1)"],
-            "the seed is sorted by name — alpha, mid, zeta — and the queue is \
-             a LIFO **stack**, so the last relation seeded mirrors first"
-        );
     }
 
     /// One admission per boundary round, and it is a soundness requirement.

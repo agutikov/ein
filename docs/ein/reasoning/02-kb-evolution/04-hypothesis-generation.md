@@ -441,9 +441,9 @@ $$
   ([the knowledge base](../01-static-ir/01-knowledge-base.md#what-is-where));
 - $\operatorname{Kw}$ is the seven words of the rule language, *not*, *false*, *and*, *or*, *absent*, *equal* and
   *unequal*, whether or not a program writes one as an argument;
-- $\operatorname{Res}$ is the two reserved markers of the kernel, *closed* and *symmetric*
-  ([reserved names](../../user/04-reference/03-reserved-names.md) has their spelling): never guessable, neither where
-  a rule derives a fact of one nor where a program writes one as an argument, which stays legal and keeps it a name
+- $\operatorname{Res}$ is the reserved marker of the kernel, *closed*
+  ([reserved names](../../user/04-reference/03-reserved-names.md) has its spelling): never guessable, neither where
+  a rule derives a fact of it nor where a program writes it as an argument, which stays legal and keeps it a name
   of the program. So a marker's fact stated by the program and the same fact derived by a rule give one $H$ and one
   $R$;
 - $\operatorname{RelNames}(P)$ is every atom the program declares as a relation, writes under the first arrow of a

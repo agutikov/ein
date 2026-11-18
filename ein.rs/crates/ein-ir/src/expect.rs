@@ -98,6 +98,10 @@ pub enum Over {
 }
 
 impl Over {
+    /// The names `:over` takes, in [`Over`]'s order: the language's words for
+    /// a part of R, read in that one place, as a keyword is.
+    pub const NAMES: [&'static str; 3] = ["all", "minimal", "maximal"];
+
     /// Read `:over`'s value, a name (`ein.y`'s `QueryClause`), or say what
     /// is wrong with it: which name, the grammar does not say. A value that is
     /// no name the grammar refuses.
@@ -106,11 +110,12 @@ impl Over {
             .atom_name(node)
             .expect(":over takes a name (ein.y's QueryClause)")
         {
-            "all" => Ok(Over::All),
-            "minimal" => Ok(Over::Minimal),
-            "maximal" => Ok(Over::Maximal),
+            n if n == Self::NAMES[0] => Ok(Over::All),
+            n if n == Self::NAMES[1] => Ok(Over::Minimal),
+            n if n == Self::NAMES[2] => Ok(Over::Maximal),
             other => Err(format!(
-                "(query …): :over {other} — one of all, minimal, maximal"
+                "(query …): :over {other} — one of {}",
+                Self::NAMES.join(", ")
             )),
         }
     }

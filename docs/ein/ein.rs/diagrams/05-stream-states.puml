@@ -2,7 +2,7 @@
 hide empty description
 state "run" as Run
 state "load" as Load
-state "root's saturation" as Sat : compile, enqueue, fire, mirror,\nquiesce, park, admit, retire, alt
+state "root's saturation" as Sat : compile, enqueue, fire,\nquiesce, park, admit, retire, alt
 state "H is built" as Gen : hyp, hypskip (verbose),\nat most one rung
 state "root's obligation pass" as Owe : owe, one a debt
 state "monotonicity" as Mono : one line, a flagged program's

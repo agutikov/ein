@@ -1021,7 +1021,7 @@ fn a_flagged_programs_document_says_what_it_is_about() {
 /// exits 0 with a document, and the graphs hold their titles alone.
 #[test]
 fn a_program_that_does_not_search_says_so() {
-    let file = "examples/features/06_symmetric_native.ein";
+    let file = "examples/saturation/symmetric/couple.ein";
     let d = document_of(file, &[]);
     assert_eq!(d["n"], 0);
     assert_eq!(d["whole"], true);

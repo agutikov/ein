@@ -3,15 +3,13 @@
 //! `stdlib/*.ein` is the language's own library, not "ein.rs behaviour", and
 //! what is asserted here is what those rules *mean*: that `(bijective R)` fans
 //! out into the operational activators, that elimination forces a survivor and
-//! stays silent when there are two, that a typecheck fires on the mistyped
-//! fact and on nothing else, and that the kernel's `__symmetric__` fast path
-//! computes the same closure as the userspace rule it replaces.
+//! stays silent when there are two, and that a typecheck fires on the
+//! mistyped fact and on nothing else.
 //!
 //! | subject |
 //! |---|
 //! | `std.bijection` — the signature-driven, is-a-free bijection family |
 //! | `std.elim` — the positional variant of the same family |
-//! | `__symmetric__` vs `std.algebra`'s `symmetric` |
 //! | a branched-on symmetric relation counts models once |
 //! | a rule that derives its own activator still terminates |
 //! | `sibling-exclusive` with both parameters bound to one relation |
@@ -130,37 +128,6 @@ fn try_saturate(src: &str, max_steps: usize) -> Result<Sat, SaturateError> {
 
 fn saturate(src: &str) -> Sat {
     try_saturate(src, 20_000).unwrap_or_else(|e| panic!("the fixture must reach a fixpoint: {e}"))
-}
-
-/// The `knows` extension after saturating `src`, as sorted s-expressions.
-///
-/// Rendered rather than compared by `FactId`, because the native and the
-/// userspace runs intern into two different arenas: an id comparison there would
-/// report a difference where there is only a different interning order.
-fn knows_extension(src: &str) -> Vec<String> {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let src = &ein_corpus::listed(src);
-    let forms = parse(&mut ast, src, Some("<symmetric>")).expect("parses");
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
-    let mut events = Events::off();
-    {
-        let mut s = Session {
-            kb: &mut kb,
-            terms: &mut terms,
-            ast: &ast,
-            events: &mut events,
-            memo: SharedMemo::default(),
-        };
-        let mut sat = Saturator::new(&mut s).expect("compiles");
-        sat.saturate(&mut s, Some(20_000), &mut |_| {})
-            .expect("saturates");
-    }
-    let rel = terms.syms.get("knows").expect("declared");
-    let mut out: Vec<String> = kb.facts_of(rel).map(|f| sexpr(&terms, f)).collect();
-    out.sort();
-    out.dedup();
-    out
 }
 
 // ── the shared preambles ───────────────────────────────────────────
@@ -569,168 +536,30 @@ fn domain_elimination_needs_the_algebraic_properties_not_just_its_activator() {
     assert!(declared.derived("(color-of H1 Blue)"));
 }
 
-// ── the native symmetric mirror ────────────────────────────────────
+// ── symmetry is a rule's ───────────────────────────────────────────
 
-/// **`native-mirror-equals-the-userspace-rule`.**
-///
-/// `(__symmetric__ R)` closes R under arg-swap inside the saturator — no
-/// compiled plan, no matcher run — and it exists only because that is faster
-/// than the `(symmetric R)` rule in `std.algebra`. An optimisation is allowed
-/// to be faster and nothing else, so the two must agree on the extension, and
-/// this is the assertion that lets the kernel path be substituted for the
-/// library one.
-///
-/// Equality alone would be satisfied by two paths that both do nothing, so the
-/// closure is spelled out as well. The self-loop is in the fixture on purpose:
-/// mirroring `(knows E E)` produces the fact it started from, and an
-/// implementation that treated its own output as new work would either
-/// duplicate it or loop.
+/// **The kernel closes no relation under arg-swap.** `(__symmetric__ knows)`
+/// is a fact of a relation like any other, which no rule reads, so nothing
+/// mirrors `knows`; `std.algebra`'s `symmetric`, a rule, closes it, the
+/// self-loop onto itself.
 #[test]
-fn the_native_mirror_computes_the_same_closure_as_the_stdlib_rule() {
+fn the_kernel_mirrors_no_relation_and_symmetric_is_a_rule() {
     let edges =
         "(relation knows T T :why \"{?1} knows {?2}\")\n(knows A B)\n(knows C D)\n(knows E E)\n";
-    let native = knows_extension(&format!("(__symmetric__ knows)\n{edges}"));
-    let userspace = knows_extension(&format!(
+    let marked = saturate(&format!("(__symmetric__ knows)\n{edges}"));
+    assert!(
+        marked.derived_of("knows").is_empty(),
+        "a fact of __symmetric__ derives nothing: {:?}",
+        marked.productive
+    );
+    let ruled = saturate(&format!(
         "(import std.algebra :symbols (symmetric))\n(symmetric knows)\n{edges}"
     ));
     assert_eq!(
-        native,
-        [
-            "(knows A B)",
-            "(knows B A)",
-            "(knows C D)",
-            "(knows D C)",
-            "(knows E E)"
-        ],
-        "three edges mirror to five facts — the self-loop mirrors onto itself"
+        ruled.derived_of("knows"),
+        ["(knows B A)", "(knows D C)"],
+        "the rule mirrors each edge, the self-loop onto itself"
     );
-    assert_eq!(
-        native, userspace,
-        "the kernel fast path must be the userspace rule's closure, not another one"
-    );
-}
-
-/// How many facts a second saturation of `src`'s fixpoint writes: a fresh
-/// saturator over the KB the first one left, as every later preparation of a
-/// root is.
-fn second_saturation_writes(src: &str) -> usize {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let src = &ein_corpus::listed(src);
-    let forms = parse(&mut ast, src, Some("<symmetric>")).expect("parses");
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
-    let mut events = Events::off();
-    let mut s = Session {
-        kb: &mut kb,
-        terms: &mut terms,
-        ast: &ast,
-        events: &mut events,
-        memo: SharedMemo::default(),
-    };
-    let mut first = Saturator::new(&mut s).expect("compiles");
-    first
-        .saturate(&mut s, Some(20_000), &mut |_| {})
-        .expect("saturates");
-    let n = s.kb.n_facts();
-    let mut second = Saturator::new(&mut s).expect("compiles");
-    second
-        .saturate(&mut s, Some(20_000), &mut |_| {})
-        .expect("saturates");
-    s.kb.n_facts() - n
-}
-
-/// **A mark a rule derives is the mark** (`corpus/regressions.toml`'s
-/// `derived-at-root`). The saturator seeds its mirror at its first step,
-/// and a rule derives `(__symmetric__ R)` after it: with an empty `:match`,
-/// or once a fact of R it reads is stored. Either way the saturation that
-/// derives the mark closes R as the written mark does, and it is a fixpoint:
-/// a second saturation of the same KB writes nothing. Until the fix a derived
-/// mark offered R's stored facts to no mirror, and only a later saturation,
-/// whose seed read the mark, closed R.
-#[test]
-fn the_native_mirror_reads_a_mark_a_rule_derives() {
-    let edges =
-        "(relation knows T T :why \"{?1} knows {?2}\")\n(knows A B)\n(knows C D)\n(knows E E)\n";
-    let written = format!("(__symmetric__ knows)\n{edges}");
-    let closure = knows_extension(&written);
-    assert_eq!(second_saturation_writes(&written), 0, "the written mark");
-    for (how, premise) in [
-        ("an empty :match", "()"),
-        ("a :match over the relation", "(knows C D)"),
-    ] {
-        let src = format!(
-            "(rule mark () :match {premise} :assert (__symmetric__ knows) \
-             :why \"knows holds both ways round\")\n{edges}"
-        );
-        assert_eq!(
-            knows_extension(&src),
-            closure,
-            "{how}: the derived mark closes knows as the written one does"
-        );
-        assert_eq!(
-            second_saturation_writes(&src),
-            0,
-            "{how}: the saturation that derives the mark is a fixpoint"
-        );
-    }
-}
-
-/// One program's H and R by the cube, `ein oracle`'s library: the candidates
-/// in their order, and R's members as sets of them.
-fn cube(rel: &str) -> (Vec<String>, std::collections::BTreeSet<Vec<String>>) {
-    use ein_infer::region::{self, Outcome};
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
-    let out = region::compute(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &region::Options::default(),
-        &mut |_| {},
-    )
-    .unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let Outcome::Region(r) = out else {
-        panic!("{rel}: the cube is within the oracle's limit");
-    };
-    let n = r.n();
-    let h: Vec<String> = r.candidates.iter().map(|c| c.text.clone()).collect();
-    let members = (0..1u64 << n)
-        .filter(|&m| r.in_r(m))
-        .map(|m| {
-            (0..n)
-                .filter(|i| m >> i & 1 == 1)
-                .map(|i| h[i].clone())
-                .collect()
-        })
-        .collect();
-    (h, members)
-}
-
-/// **One symmetry stated two ways is one symmetry, at root and at a node**
-/// (`corpus/regressions.toml`'s `derived-at-root`). The mark a rule derives at
-/// root answers what the mark written as a fact answers; the mark a commitment
-/// brings a rule to derive, in a node's saturation, which resumes root's,
-/// answers what the same closure written as the program's own rule answers.
-/// Each pair has one H and one R, by the cube.
-#[test]
-fn a_derived_mark_answers_what_its_control_answers() {
-    for (witness, control) in [
-        (
-            "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein",
-            "examples/ein-bugs/wrong-answers/symmetric-written-root.ein",
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein",
-            "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein",
-        ),
-    ] {
-        assert_eq!(
-            cube(witness),
-            cube(control),
-            "{witness}: its control's H and R"
-        );
-    }
 }
 
 // ── symmetric relations under search ───────────────────────────────

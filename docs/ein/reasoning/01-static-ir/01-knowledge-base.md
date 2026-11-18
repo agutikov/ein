@@ -404,9 +404,11 @@ What a context does and does not say of the fact in it is [below](#a-context-giv
 A finite set $W \subset \Sigma^{+}$ of names is **reserved**: the language gives the atom one fixed part to play,
 and no declaration takes its name ([the reserved names](../../user/04-reference/03-reserved-names.md) lists $W$).
 Those the graph itself has a part for are $\mathsf{relation}$, $\mathsf{not}$ and $\mathsf{false}$, above, and
-two markers, which a program may write as a relation or as an argument and which are read where a knowledge base
-grows
-([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). A subset
+one marker, of closure, which a program may write as a relation or as an argument and which is read where a
+knowledge base grows
+([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). No name of a
+theory is reserved: a relation's symmetry, a type and a bijection are rules a library states over names the
+program chooses. A subset
 $W_{\!c} \subset W$ is the relation of no fact at all: the words that join and test the parts of a pattern,
 equality and inequality among them, which [the next page](02-rewriting-rules.md) defines. So no equality, no
 test and no connective is a fact, and none is an object:

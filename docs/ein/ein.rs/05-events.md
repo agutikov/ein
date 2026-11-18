@@ -4,7 +4,7 @@
 
 `ein solve --events FILE`, `ein saturate --events FILE` and `ein test --events FILE` make the engine narrate what
 it did: **one JSON object per line**, opt-in, off by default. The narration is every compile miss, enqueue,
-firing, mirror write, park, admission and retirement, quiescence, alternative justification, obligation,
+firing, park, admission and retirement, quiescence, alternative justification, obligation,
 generation rung, hypothesis candidate, node visited, layer, monotonicity finding and region, in the order the
 engine performed them. [§ Events](#events) is the enumeration, and
 [`events_reference.rs`](../../../ein.rs/crates/ein-cli/tests/events_reference.rs) holds it to the emitters in both
@@ -95,7 +95,6 @@ asks for it alone. The corpus fixture that emits it is `examples/lattice/04_obli
 | `compile` | `Engine::compile_for`, **on a miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
 | `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `tiebreaker` (the order it is queued in, which the agenda ranks within its half), `parked` |
 | `fire` | every firing the closure step yields | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
-| `mirror` | the native `__symmetric__` argument-swap write | `relation`, `src`, `derived` |
 | `park` / `retire` | the boundary round: the candidate waits for a later round, or is dead | `tiebreaker`, `round`, `rule`, `watched` (**the failing guard's** watch set, sorted) |
 | `admit` | the boundary round: the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`**: nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
@@ -130,8 +129,7 @@ saturation agenda and runs as one pass over the KB after the fixpoint
   discharge. Reading the KB again does not find what this line reports; `--json-summary`'s `owes` block is the
   same tally as a document.
 
-A mirror write produces a `mirror` event and **not** a `fire`, so every derivation is reported exactly once,
-whichever path made it. `alt` is narrower than it looks: `record_justification` returns true only for a rule's
+Every derivation is reported exactly once, as a `fire`. `alt` is narrower than it looks: `record_justification` returns true only for a rule's
 provenance with at least one premise, so a source fact derived again records nothing and emits nothing.
 
 `enqueue`'s `tiebreaker` is the value the saturator's tiebreaker took for that entry. It is the engine's own total
@@ -210,7 +208,7 @@ hypothesis event, which is what closes root's. Within a segment:
 | | compared |
 |---|---|
 | the **spine**: the lifecycle and search kinds (`run`, `load`, `hyp`, `hypskip`, `enter`, …) | in order, exactly |
-| the **derivation**: every `fire` with `redundant = false`, and every `mirror` | the **multiset of facts derived** and the **set of rules** that derived them |
+| the **derivation**: every `fire` with `redundant = false` | the **multiset of facts derived** and the **set of rules** that derived them |
 | the scheduling traffic: `enqueue`, `park`, `admit`, `retire`, `quiesce`, `alt`, `compile`, and every redundant `fire` | nothing; counted per side and reported |
 
 The derivation is a multiset of facts and a set of rules, not an ordered list of firings, because a node may record

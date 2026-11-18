@@ -273,6 +273,27 @@ fn a_goal_a_rule_would_be_refused_for_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
+/// **`is-a` is a relation of a program as any relation is**: one that writes
+/// no `is-a` has none, and a goal over it is refused as a goal over a
+/// misspelt relation is. The kernel holds no theory's relation for a program.
+#[test]
+fn a_goal_over_is_a_in_a_program_that_writes_none_is_refused() {
+    let scratch = Scratch::new("ein-goal-premises-is-a");
+    let file = scratch.path().join("no-is-a.ein");
+    std::fs::write(
+        &file,
+        "(relation paid Guest :why \"{?1} has paid\")\n(paid Ann)\n\
+         (query :goal (is-a ?g Guest))\n",
+    )
+    .expect("written");
+    let bad = refused_everywhere(
+        &file,
+        "query: its :goal writes (is-a ?g Guest), and the program names no relation is-a",
+        scratch.path(),
+    );
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
 /// A refusal that names a place names where the pattern writes its relation.
 #[test]
 fn a_goals_relation_is_refused_at_its_pattern() {

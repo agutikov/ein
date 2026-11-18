@@ -20,11 +20,8 @@
 //! | the engine's own | `<lookahead-dies-immediately>` (19 files), `<forced-positive>` (4), `<monotonic-unconditional>` (4) | [`ein_core::terms::ENGINE`], interned by `Terms::new` with the rest of the kernel vocabulary |
 //! | a rule's constants | `Ann`, from `(hrule guess … :assert (seat Ann ?v))` in `examples/ein-bugs/mixed-type-hypothesis.ein` — a name no fact mentions, so the compiler was the first to see it | `ein_ir::from_ir::intern_program_names`, a load pass over the registered rules and the query |
 //!
-//! `ENGINE` holds **eight**. The other five land during *root saturation*,
-//! which is single-threaded and so never a hazard; `__symmetric__`, which
-//! every `Saturator::new` reads, and `a` / `b`, the names the native mirror
-//! reports a firing's bindings under, are each a field read, never an intern
-//! per saturator or per mirror firing.
+//! `ENGINE` holds **five**. The other two land during *root saturation*,
+//! which is single-threaded and so never a hazard.
 //!
 //! # What this asserts, and what it deliberately does not
 //!
@@ -132,7 +129,7 @@ fn the_search_interns_no_names() {
     eprintln!("interning: {solved} files solved ({skipped} skipped), 0 grew a table after root");
 }
 
-/// The eight engine names are interned by `Terms::new`, before a program can
+/// The five engine names are interned by `Terms::new`, before a program can
 /// reach the table — which is what makes the sweep above a statement about
 /// *programs* rather than about the order the engine happened to warm up in.
 #[test]
@@ -151,9 +148,6 @@ fn the_engine_names_are_interned_before_any_program_is() {
         k.monotonic_unconditional,
         k.query_rule,
         k.closed,
-        k.symmetric,
-        k.mirror_a,
-        k.mirror_b,
     ];
     for (sym, name) in by_field.iter().zip(ein_core::terms::ENGINE) {
         assert_eq!(

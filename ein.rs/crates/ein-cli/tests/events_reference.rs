@@ -192,6 +192,6 @@ fn every_row_has_an_emitter() {
 /// above already force the two sets equal, so this only guards against both
 /// halves shrinking together.
 #[test]
-fn the_protocol_has_nineteen_kinds() {
-    assert_eq!(emitted_kinds().len(), 19, "{:?}", emitted_kinds());
+fn the_protocol_has_eighteen_kinds() {
+    assert_eq!(emitted_kinds().len(), 18, "{:?}", emitted_kinds());
 }

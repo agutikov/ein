@@ -316,6 +316,24 @@ pub fn is_one_name(text: &str) -> bool {
     })
 }
 
+/// The byte spans of every `NAME` token of `text`, in order: what a tool that
+/// rewrites a program's names reads, by the lexer every parse goes through. A
+/// word of the grammar (`relation`, `model`, `step`, …), a keyword, a
+/// variable, a string and a comment are no `NAME`, and the lexing stops at the
+/// first character no rule takes, where a parse would refuse the text.
+pub fn name_spans(text: &str) -> Vec<std::ops::Range<usize>> {
+    LEXER.with(|def| {
+        let lexer = def.lexer(text);
+        let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
+        lexer
+            .iter()
+            .map_while(Result::ok)
+            .filter(|l| rule_name(l.tok_id()) == Some("NAME"))
+            .map(|l| l.span().start()..l.span().end())
+            .collect()
+    })
+}
+
 /// Does `text` open as a saved file does, its first two tokens `(` and
 /// `program` (Q-M1f.401)? What tells a saved file from a program before
 /// either is parsed: a saved file opens with its `(program …)`, and a program

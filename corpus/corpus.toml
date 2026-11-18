@@ -248,12 +248,6 @@ runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "
 note   = "same shape as 04: the demo is the stdlib elimination rules, and the hypothesis space is incidental to it. no `solve`: it would measure the blind enumerator rather than the elimination rules, which `saturate` shows; affordable is not the test, asking the fixture's question is. It closes `is-a`, `(solve :no-hypothesis (is-a))`, as its tests/stdlib/elim/ siblings do: `std.elim`'s typechecks conclude (false) from an absent over `is-a`, which *forbid* refuses while a commitment can extend it; R is 32 states over 26 candidates."
 
 [[entry]]
-path   = "examples/features/06_symmetric_native.ein"
-group  = "positive"
-runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "the only fixture that marks a relation `(__symmetric__ R)`, and the only one that marks three — the reproducer for hazard H1."
-
-[[entry]]
 path   = "examples/features/07_unstratifiable.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
@@ -2983,12 +2977,6 @@ runs   = ["solve", "saturate"]
 note   = "`arith-closing-rule`: `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}, which it answers."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`symmetric-by-rule`: the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four, which it answers."
-
-[[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
@@ -3029,30 +3017,6 @@ path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "Probe of Q-M1f.308: `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The blind enumerator proposes `lt` and *forbid* refuses `connex` at load, exit 1, where a ladder that gave its second rung to the import's obligation rules, which nothing activates, would propose nothing, read `connex`'s `absent` closed-world and load it, root dead, R empty."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "`derived-at-root`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. The saturation that derives the mark mirrors `near`, and the witness answers its control's R."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "The control for `derived-at-root`: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "The symmetry mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction: the node's saturation that derives the mark mirrors `near`, and R is {∅}, its control's, where a node that resumed root's saturation, its mirror seeded with nothing marked, would hold no `(near b a)` and give R four states."
-
-[[entry]]
-path   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
-group  = "regression"
-runs   = ["solve", "saturate"]
-note   = "The control for `derived-at-node`: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

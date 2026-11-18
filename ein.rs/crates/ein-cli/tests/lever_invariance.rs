@@ -663,12 +663,7 @@ fn reach(path: &Path) -> Reach {
 }
 
 /// **No `(config …)` flag moves a line of any mode**, on any program whose R
-/// is known.
-///
-/// `enable-symmetric-mirror` off would take the mirror's three facts out of
-/// root's fixpoint on `examples/features/06_symmetric_native.ein`, on every
-/// question, so R would move: the flag is retired, a program that sets
-/// it is a load error, and it is not among [`FLAGS`].
+/// is known. A retired flag is a load error, and it is not among [`FLAGS`].
 #[test]
 fn no_config_flag_moves_a_line_of_any_mode() {
     let files = programs();

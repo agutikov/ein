@@ -1,10 +1,10 @@
-//! **The engine's five names are reserved** (Q-M1f.7: the dunders are never
+//! **The engine's four names are reserved** (Q-M1f.7: the dunder is never
 //! bound).
 //!
 //! | name | where a program may write it | what holds it |
 //! |---|---|---|
 //! | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | nowhere: they are the rule names the engine writes for a conclusion no rule drew, with no meaning a program can give them | the grammar's `WRITEBACK` token, which no production takes |
-//! | `__closed__`, `__symmetric__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
+//! | `__closed__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
 //!
 //! ```text
 //! cargo test -p ein-ir --test engine_names
@@ -20,8 +20,8 @@ const WRITEBACKS: [&str; 3] = [
     ein_core::terms::LOOKAHEAD_DIES,
 ];
 
-/// The kernel's two dunders.
-const DUNDERS: [&str; 2] = [ein_core::terms::CLOSED, ein_core::terms::SYMMETRIC];
+/// The kernel's dunder.
+const DUNDERS: [&str; 1] = [ein_core::terms::CLOSED];
 
 /// What the parser says of a writeback name where it stands.
 const WRITEBACK_REFUSED: &str = "the engine's writeback rule name (reserved)";
@@ -136,15 +136,15 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
 
 /// **A probe, refused at its three writeback names**. It declares a
 /// relation named `<forced-positive>`,
-/// names two rules after the other two, and asks for both dunders' behaviour as
+/// names two rules after the other two, and asks for the dunder's behaviour as
 /// the relation of a fact, which Q-M1f.7 keeps legal. The
 /// parser reports every error recovery reaches: one at each place a writeback
-/// name is written, and none on the dunders' lines, not only the first `<`,
+/// name is written, and none on the dunder's line, not only the first `<`,
 /// at 5:11.
 #[test]
 fn a_probe_is_refused_at_its_three_writeback_names() {
     let probe = ";; A probe: the engine's writeback rule names and the
-;; kernel's dunders are names under the name rule. A program writes each.
+;; kernel's dunder are names under the name rule. A program writes each.
 (relation p T :why \"{?1} is p\")
 (relation hit T :why \"{?1} is hit\")
 (relation <forced-positive> T :why \"{?1} forced\")
@@ -153,7 +153,6 @@ fn a_probe_is_refused_at_its_three_writeback_names() {
 (rule <monotonic-unconditional> () :match (hit ?x) :assert (<forced-positive> ?x) :why \"and one named after the singleton writeback\")
 (p a)
 (s a b)
-(__symmetric__ s)
 (__closed__ hit)
 ";
     let report = refusal(probe);
@@ -182,7 +181,7 @@ fn a_probe_is_refused_at_its_three_writeback_names() {
     }
     assert!(
         report.errors.iter().all(|e| e.line < 9),
-        "an error on the dunders' lines:\n{report}"
+        "an error on the dunder's line:\n{report}"
     );
 }
 
@@ -230,11 +229,30 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
     }
 }
 
+/// **`__symmetric__` is no kernel name**: the kernel mirrors no relation, so
+/// the name is a program's like any other, which a program may bind in each
+/// place the kernel's dunder is refused, and a fact of it means what the
+/// program's rules make it mean.
+#[test]
+fn a_name_the_kernel_does_not_read_binds_as_any_name_does() {
+    let name = "__symmetric__";
+    for (position, template) in [
+        ("relation", "(relation D T :why \"D holds of {?1}\")"),
+        (
+            "rule",
+            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
+        ),
+        ("an import's `:as`", "(import std.macro :as D)"),
+    ] {
+        let text = format!("{}\n", template.replace('D', name));
+        load(&text).unwrap_or_else(|e| panic!("{name} as {position}: {e}"));
+    }
+}
+
 /// **A dunder is legal wherever a program uses it** (Q-M1f.7): as the
 /// relation of a fact, a nested fact, a premise, a conclusion, a goal and a
 /// claim's fact, and as a value: an argument, `std.algebra`'s documented
-/// `(imply1 functional __closed__)`, a `:no-hypothesis` list and a fact's
-/// `:rule`. One program.
+/// `(imply1 functional __closed__)` and a `:no-hypothesis` list. One program.
 #[test]
 fn a_dunder_is_legal_wherever_a_program_uses_it() {
     let text = "(import std.algebra :symbols (imply1))
@@ -245,15 +263,13 @@ fn a_dunder_is_legal_wherever_a_program_uses_it() {
 (relation foo T T :why \"foo holds of {?1} and {?2}\")
 (p a b)
 (__closed__ p)
-(__symmetric__ knows)
 (q (__closed__ p))
-(q __symmetric__)
-(knows b a :rule __symmetric__)
+(q __closed__)
 (imply1 functional __closed__)
 (functional foo)
 (rule r () :match (__closed__ ?R) :assert (q ?R) :why \"the extension of {?R} is closed, so q holds of {?R}\")
-(rule s () :match (p ?x ?y) :assert (__symmetric__ ?x) :why \"p holds of {?x} and {?y}, so {?x} is declared symmetric\")
-(solve :no-hypothesis (__closed__ __symmetric__))
+(rule s () :match (p ?x ?y) :assert (__closed__ ?x) :why \"p holds of {?x} and {?y}, so the extension of {?x} is closed\")
+(solve :no-hypothesis (__closed__))
 (query :goal (__closed__ ?R) :expect (model (__closed__ p)))
 ";
     load(text).unwrap_or_else(|e| panic!("{e}"));

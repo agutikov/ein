@@ -167,6 +167,12 @@ jobs:
         env: { EIN_CORPUS_SLOW: "1" }
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test dot_wellformed
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.23.4 — the kernel reads no theory's name: every corpus program,
+      # every name but the kernel's renamed in it and in the standard library,
+      # answers and is drawn alike; per commit the programs outside `tests/`.
+      # Whole, 86 s on four P-core threads with four workers (2026-11-18).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test renaming_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,

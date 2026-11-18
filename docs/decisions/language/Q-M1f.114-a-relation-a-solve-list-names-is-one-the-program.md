@@ -2,7 +2,7 @@
 
 A relation named in `:hypothesis-relations` or `:no-hypothesis`, or given to an `:hrules` activator at a parameter
 that names a relation, is one the program writes as a relation outside the three lists: one it declares or states a
-fact of; `is-a`, `eq` and `neq`; the relation of any form in a rule's, an hrule's or an obligation's `:match` or
+fact of; `eq` and `neq`, the kernel's computed relations; the relation of any form in a rule's, an hrule's or an obligation's `:match` or
 `:assert`, in a query's `:goal` or in a fact's argument; or a name a fact or a conclusion passes where a relation's
 name is held, as `(bijective color-loc)` passes `color-loc`. Any other name is refused at load, one line per name,
 placed at the name, on every command: `:no-hypothesis names like, and the program names no relation like — …`.

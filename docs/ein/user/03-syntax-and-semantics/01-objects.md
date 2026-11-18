@@ -336,8 +336,8 @@ no more one atom than any other fact does
 
 **Names the program cannot write.** The loader makes up names of its own, each starting with `#`, which no program
 can write ([Q-M1f.339](../../../decisions/language/Q-M1f.339-every-name-the-loader-makes-up-starts-with.md)), and
-`__closed__` and `__symmetric__` are the kernel's: a program writes them as a fact's relation, never binds them, and
-neither is a guessable atom, so no hypothesis is ever about them
+`__closed__` is the kernel's: a program writes it as a fact's relation, never binds it, and it is no guessable
+atom, so no hypothesis is ever about it
 ([reserved names](../04-reference/03-reserved-names.md)).
 
 ## What is refused

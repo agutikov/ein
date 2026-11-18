@@ -30,7 +30,7 @@ one function, `rung`):
    candidate the program's rules do not allow is refuted by those rules, in its own node. The guessable atoms,
    `hypgen::candidate_objects` in the code, are drawn from the names the alive-set invariant lists for the program
    ([`invariant.rs`](../../../../ein.rs/crates/ein-infer/src/invariant.rs): no rule asserts a name the program
-   lacks), never `__closed__` or `__symmetric__`. The invariant is what lets H be taken once, at root, and it is
+   lacks), never `__closed__`. The invariant is what lets H be taken once, at root, and it is
    enforced: [`ein-infer/tests/alive_invariant.rs`](../../../../ein.rs/crates/ein-infer/tests/alive_invariant.rs)'s
    `every_name_of_the_program_is_a_candidate_object` holds the static reading and
    `no_run_reaches_a_name_the_program_does_not_have` the one in the search, which fails when a node reaches a name

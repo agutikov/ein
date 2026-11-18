@@ -873,7 +873,7 @@
 ## 124. a config's keyword (was: config-retired)
     (config :enable-symmetric-mirror false)
 <row>:1:9: unexpected `:enable-symmetric-mirror`: a keyword this form does not take
-  note: config flag :enable-symmetric-mirror is retired: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked (Q-M1e2.30)
+  note: config flag :enable-symmetric-mirror is retired: it switched the kernel's native mirror, and the kernel mirrors no relation: a relation closed under swapping its two arguments is std.algebra's (symmetric R), a rule
   repair: Insert `:lattice-sanity-check`, Delete `:enable-symmetric-mirror`
   repair: Insert `:record-alternative-justifications`, Delete `:enable-symmetric-mirror`
   repair: Delete `:enable-symmetric-mirror`, Delete `false`

@@ -11,7 +11,7 @@ its own records, which no program writes, are
 
 **The reserved names are the surface between the engine's kernel and a theory written in Ein**
 ([Q-M1f.397](../../../decisions/docs/Q-M1f.397-the-reserved-words-are-mathematics.md)). They are where
-the kernel acts of its own accord: on a declaration, a stored negation, `(false)` and the two markers. What a fact
+the kernel acts of its own accord: on a declaration, a stored negation, `(false)` and the marker of closure. What a fact
 of any other relation means is what rules make of it, the program's own or the standard library's. So of whether a
 fact inside a fact holds, the kernel reads one thing, a held `(not P)`; what `(claims Carol …)` or any other
 context says of the fact it points at is a theory's
@@ -74,7 +74,7 @@ malformed form is a parse error too.
 **Declared names are the program's, with one guard**: a `(rule …)`, `(hrule …)`, `(relation …)` or `(macro …)` may
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
 vocabulary is the structural primitives `absent` and `false`, the verdict `open`, the computed relations `eq` and
-`neq`, `relation`, the two dunders `__closed__` and `__symmetric__`, which a program uses and never binds
+`neq`, `relation`, and the dunder `__closed__`, which a program uses and never binds
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
 `<forced-positive>`, `<monotonic-unconditional>` and `<lookahead-dies-immediately>`, are refused wherever a program
 writes them. The guard is about *binding* a name: a fact may still carry a reserved head, a stored `(not X)`.
@@ -89,7 +89,7 @@ Two sets answer two questions, and neither contains the other:
 
 | | the question it answers | its members | how it fails |
 |---|---|---|---|
-| the vocabulary | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
+| the vocabulary | what may a declarator **bind**? | `__closed__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
 | the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` | a **parse** error, wherever a name goes |
 
 Five names are in both. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
@@ -225,7 +225,6 @@ expansion, and `not` does, a stored negation being a fact.
 | name | form | meaning |
 |---|---|---|
 | `__closed__` | `(__closed__ R)` | no fact of R is proposed as a hypothesis: the held extent of R is fixed, and R is a **closed relation**. Written by a program, or derived by `std.closure` or a module's closing rule; the engine infers it for no relation. Used as a relation or as an argument, never bound, and never a guessable atom, one the blind enumerator proposes about. No hrule proposes a fact of a closed relation and no obligation owes one ([below](#the-mechanisms-and-each-pair)) |
-| `__symmetric__` | `(__symmetric__ R)` | the held extent of R is closed under swapping a fact's two arguments, $R(a, b) \implies R(b, a)$, in the saturation the mark comes to hold in, whether written or derived: the closure the `symmetric` rule of `std.algebra` derives, with no rule firing per mirror. Used as a relation or as an argument, never bound, and never a guessable atom |
 | `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator and the obligations rung guess facts of the listed relations only; the hrule rung reads no list. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are |
 | `:no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual: never guess a fact of the listed relations, while saturation rules still derive their facts; read by the blind enumerator and the obligations rung, never the hrule rung |
 | `:no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, nothing is proposed whatever else the program declares, so R is $\lbrace \emptyset \rbrace$ where root is alive and discharged and empty otherwise. The way to say *judge root alone* |
@@ -233,7 +232,7 @@ expansion, and `not` does, a stored negation being a fact.
 | `:expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region: R's states, `(merged …)` states, `(owing …)`, written only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error; `model` is a name ([`02-syntax.md` § Solve](02-syntax.md#solve)) |
 
 **A `(query …)` takes four keywords**, `:goal`, `:goal-text`, `:over` and `:expect`, and any other is refused at the
-parse: the two dunders above are facts, not keywords. `(solve …)` takes `:hrules`, `:hypothesis-relations`,
+parse: the dunder above is a fact, not a keyword. `(solve …)` takes `:hrules`, `:hypothesis-relations`,
 `:no-hypothesis`, `:no-search` and `:expect`, and on a query each of the first four is a parse error whose note names
 `(solve …)`. A keyword that loaded and did nothing would be a silent no-op, which is not survivable once a keyword can
 carry a claim.
