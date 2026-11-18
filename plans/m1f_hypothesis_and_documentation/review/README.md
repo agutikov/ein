@@ -4,7 +4,7 @@ Every item that waits for the user's call, one folder each, built so that each c
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
 and the readings later stages took. The first drawings' items (34 to 55), the save-and-load items
 (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on 2026-11-18 and left the
-bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` held what S1f.23.6 built of those answers (56 to 60), answered on 2026-11-19 and gone with them; the verdicts' two
+bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` held what S1f.23.6 built of those answers (56 to 60), answered on 2026-11-19 and gone with them, and holds now what S1f.23.11 built of those (61, 62); the verdicts' two
 (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
@@ -25,8 +25,7 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
-
-No topic is open: the drawings' five items S1f.23.6 put (56 to 60) were answered by the user on 2026-11-19 and left the bundle; S1f.23.11 builds the answers and puts its own items here.
+| [Drawings](03-drawings/README.md) · [answers](03-drawings/ANSWERS.md) | 61, 62 | your question on a concentric layout, answered with examples; your answer on a derivation's colours, built |
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -61,6 +60,8 @@ was changed or built for this bundle.
 | `build/review-bin/ein-head-b5fb8d70` | master at the first look, before P1f.23: every object drawn once, labelled octagons, `--models` | *the first look*, and *before* of a drawing |
 | `build/review-bin/ein-0a4a97a3` | before `written` was erased (Q-M1f.404), with the read-out's `types` row | *before* of the numeral questions and of Q-M1f.412; run with `EIN_STDLIB=build/wt-rev-0a4/stdlib` |
 | `build/review-bin/ein-a8d595eb` | before save and load was merged: state files with each fact's English, `ein-answer/2` | *before* of the save-and-load items; run with `EIN_STDLIB=build/wt-rev-a8d/stdlib` |
+| `build/review-bin/ein-head-d124e63b` | master when the drawings' 56 to 60 were answered | *before* of 62 |
+| `build/review-bin/ein-s1f2311` | S1f.23.11's branch: a derivation's three levels | *after* of 62, and every drawing of 61 |
 
 The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8d/` (detached, gitignored under
 `build/`); a re-run script of an item that compares needs them.
@@ -69,3 +70,5 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
+| 61 | [a concentric layout](03-drawings/61-concentric/README.md) | does Graphviz draw a knowledge base's layers as rings; twopi, the layers bent into rings and three more ways, on nine drawings, in both Graphviz builds | (a) no ring layout built until you choose one |
+| 62 | [a derivation's three levels](03-drawings/62-derivation-colours/README.md) | your answer on 59, built: the added fact the brightest, the explanation deeper, the rest black; six readings | (a) as built |
