@@ -48,6 +48,8 @@ register is filed from here: N-1 is the one that could become one, on the user's
 | N-38 | **`ein saturate --dump` prints every committed fact `:hypothesis 0`**: N-29's unset branch, which the state file's comment printed, is the dump's now, and every choice of a saved file loads with it | `ein saturate --dump tests/saved/04_a_saved_node.ein` prints `(note (bad a) :hypothesis 0)` | S1f.22.5 | N-29's: the user's call |
 | N-39 | **The note on a carried module of the standard library names every carried `std` module where the binary cannot read its own**: with `$EIN_STDLIB` pointing nowhere, each is *not this binary's standard library's*, though the binary has none to compare it with, and the file loads as carried | `EIN_STDLIB=/nonexistent ein solve DIR/models/01.ein` of `tests/saved/03_the_standard_library.ein`'s dump: five `note:` lines, exit 0 | S1f.22.5 | the user's call: a note naming why there is nothing to compare, or as it is |
 | N-40 | **`utils/nl_census.py` reads a state file's comments, which a saved file has none of**: its census of what reads as English counted the facts of every state file `--dump-answer` writes, through the `;; ── the state` marker and each fact's comment; on the format it finds no state and counts nothing | `grep -n 'STATE_MARK' utils/nl_census.py` | S1f.22.5 | the process's: the census reads `ein saturate --dump` of each saved file and `--trace` for the English, or is retired with Q-M1f.414's (a) |
+| N-41 | **`answer_round_trip`'s nightly shards are bound by one program each, close to the five minutes.** Every state file of a `heavy_dump` entry is loaded twice and checked three ways, in one pool unit, so a shard's time is its heaviest program's: on four P-core threads at four workers, shards 1 to 4 take 180, 194, 55 and 211 s (`features/01_not_and_absent`, 211 s; `square-unique/corner-house`, 210 s; `features/04_open`, 194 s); at the runner's 1.13 to 1.34 times (Q-M1f.103), up to about 283 s | `utils/bench_env.sh --cores PT:4 env EIN_TEST_JOBS=4 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=k/4 EIN_TEST_UNITS=u.tsv cargo test --profile gate -p ein-cli --test answer_round_trip` | S1f.22.5 | the user's call: as it is; a heavy program's files dealt to the pool in parts; or the second load on a share of a heavy program's files |
+| N-50 | **The extent's drawing has a fact that no frame can mark.** `reasoning/01-static-ir/diagrams/01-relation-extent.dot` draws the extent of `left-of` with $g$, a fact no knowledge base holds and that nothing points at: no node of the knowledge base's graph, drawn to show the extent. The filling was its one mark (*$g$, empty*); with no octagon filled, nothing in the rule tells it from $f_3$ and $f_4$. S1f.22.7 drew it **grey**, octagon and arrows, and the page says *drawn grey*: a mark of its own, which the ruling does not give. And the extent stands in an unlabelled dashed frame around $f_3$, $f_4$ and $g$, which now reads against the convention, since a dashed frame says *in a context and not held* and $f_3$, $f_4$ are held | `docs/ein/reasoning/01-static-ir/diagrams/01-relation-extent.svg`, on the knowledge-base page, § the extent | S1f.22.7 | the user's call: as built (grey, the frame kept); the extent drawn as its first arrows, with no frame (as the first trial drew it, [`contexts.md`](contexts.md) § 14); or $g$ left out, the figure showing the held extent only |
 
 N-5 of the analysis, `ein saturate`'s census of names reading the top level only, is stated on
 `08-reasoning-in-code/01-static-ir.md` and is no finding.
@@ -89,6 +91,11 @@ saying nothing of `written`; N-20's Q-M1f.279 is deleted. N-24's literal `\n` is
 on the pages' drawings, and stays in the view for an octagon with a source or a rule. New: N-33 to N-35. The others
 are as they were.
 
+**After S1f.22.7** (2026-11-18). The frame is around what is in a context only, and no octagon is filled
+(Q-M1f.398 as re-ruled), in every writer and on every page. N-33's two drawings are drawn again by their line once
+more, for the same reason; the user's call on them stands. New: N-50, the extent's drawing, whose fact no
+knowledge base holds lost its one mark with the filling and is drawn grey.
+
 **After S1f.22.5, tasks 2 to 4** (2026-11-18). A state is saved as its program and the choices made, `(program …)`,
 `(module NAME …)` and `(commit …)`, and loads as the node of its program's lattice (Q-M1f.392, Q-M1f.400 to .403, built).
 **N-2 ends**: a saved state loads as itself, the first load the state the run saved fact for fact and origin for
@@ -96,5 +103,5 @@ origin, on every state file of every corpus program (`answer_round_trip.rs`). **
 ends**: its two programs' saved states load to their states, and `tests/saved/` holds the demo and its standard
 library's twin. **N-31 ends**: the round trip holds each file's load to the run's state, saturated, and both
 invariances. **N-32 ends**: no file writes a fact of its state. **N-35 ends**: the branch merged master, one
-conflict, `ein-ir/src/lib.rs`' export line, taken as master's with the stage's `load_query_by`. New: N-36 to N-40.
+conflict, `ein-ir/src/lib.rs`' export line, taken as master's with the stage's `load_query_by`. New: N-36 to N-41.
 The others are as they were.

@@ -7665,6 +7665,8 @@ main tree, and a gate builds the whole tree. It touches:
 
 It writes no answer. Because the DOT writers change, `utils/ci_container.sh` is part of done.
 
+**Built by S1f.22.7**, `58b91dc3`.
+
 ### Q-M1f.399 — The names of what controls the search: `false` and `open`
 
 **Raised** 2026-11-17 by the user, ruling [P1f.22](p1f.22_nested_facts/README.md)'s questions: *"This also leads
