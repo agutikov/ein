@@ -45,7 +45,8 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// beside it (`docs/ein/user/04-reference/06-config.md` § 2.4), so a program
 /// that sets one is refused with the reason rather than as an unknown flag:
 /// the walk's levers and order seeds, which no route reads;
-/// `enable-symmetric-mirror`, the one flag that changed R (Q-M1e2.30); and
+/// `enable-symmetric-mirror`, which switched a mirror the kernel no longer
+/// has; and
 /// `warn-derived-naf`, whose refutation half is *forbid*'s refusal. Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which writes and reads every entry of [`FIELDS`] in order, so
@@ -81,9 +82,9 @@ pub const RETIRED: &[(&str, &str)] = &[
     ),
     (
         "enable-symmetric-mirror",
-        "off, it changed the answer, and no config option may. The mirror is \
-         what `(__symmetric__ R)` means, so it is always on: a relation that is \
-         not to be mirrored is not marked (Q-M1e2.30)",
+        "it switched the kernel's native mirror, and the kernel mirrors no \
+         relation: a relation closed under swapping its two arguments is \
+         std.algebra's (symmetric R), a rule",
     ),
     (
         "enable-singleton-writeback",
@@ -209,11 +210,10 @@ pub struct SolverConfig {
     /// **Retired, and read by nothing**: learned clauses, which no route
     /// keeps.
     pub enable_path_nogoods: bool,
-    /// **Retired, and read by nothing.** The saturator
-    /// mirrors every relation marked `(__symmetric__ R)`, always; off, this
-    /// flag took the mirror's facts out of root's fixpoint and so changed R,
-    /// which no config option may (Q-M1e2.30). The field stays,
-    /// at `true`, because the `.einb` container round-trips [`FIELDS`].
+    /// **Retired, and read by nothing.** It switched the kernel's native
+    /// mirror, which is gone: a symmetric relation is `std.algebra`'s
+    /// `symmetric`, a rule. The field stays, at `true`, because the `.einb`
+    /// container round-trips [`FIELDS`].
     pub enable_symmetric_mirror: bool,
     /// **Retired**, as is the next, and read by nothing; kept at its default
     /// for the `.einb` layout. Both wrote what the walk learned into root,

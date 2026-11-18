@@ -125,7 +125,7 @@ opened, so a container whose program sets a retired flag is refused where its `.
 | `enable-lookahead-kill-cache` | it wrote the pre-filter's kills into root, which no route does: a candidate dead alone leaves the universe, and nothing is written |
 | `enable-path-nogoods` | learned clauses: every route reads N, the minimal dead sets, by construction |
 | `enable-fail-fast-fork` | a node is never stopped at its first contradiction: a dead node's debts and its core are its fixpoint's |
-| `enable-symmetric-mirror` | off, it took the mirror's facts out of root's fixpoint and so changed R, which no option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked |
+| `enable-symmetric-mirror` | it switched the kernel's native mirror, and the kernel mirrors no relation: a relation closed under swapping its two arguments is `std.algebra`'s `(symmetric R)`, a rule |
 | `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight`, `lattice-order`, `lattice-order-seed` | order levers: every route's order is part of its definition, so `-n N` prints the same states whatever the order would have been |
 | `enable-singleton-writeback`, `enable-forced-positive` | they wrote into root, which no route does: a candidate dead alone leaves the universe |
 | `print-alive`, `candidate-order-seed` | inert: no code read them ([Q-M1e.10](../../../decisions/language/Q-M1e.10-two-inert-config-flags-are-refused.md)) |
@@ -137,8 +137,7 @@ opened, so a container whose program sets a retired flag is refused where its `.
 the region R, and it is the same under every knob on this page. A **budget** (`--region-budget`, `--region-limit`,
 § [3.3](#33-what-an-option-can-do-to-the-answer)) does not change R either: it stops a run, and the read-out then says
 the answer is partial. `-T` aborts a run and prints no answer. A knob that changed R, or changed a reported answer
-that does not say it is partial, would be a wrong answer and not a mode, and is retired, as
-`enable-symmetric-mirror` was (§ 2.4).
+that does not say it is partial, would be a wrong answer and not a mode, and is retired (§ 2.4).
 
 - **R.** The oracle's universe is built with no configuration, and its nodes by saturation alone
   ([`11-region-dump.md`](11-region-dump.md)), so no flag reaches it.

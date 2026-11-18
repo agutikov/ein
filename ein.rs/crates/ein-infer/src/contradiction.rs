@@ -16,7 +16,7 @@
 //! accept a flatly inconsistent puzzle in silence.
 //!
 //! The lookup is two bit tests
-//! ([03-design/06-saturation.md § 6.2](../../../../docs/ein/ein.rs/03-design/06-saturation.md#62-contradiction)):
+//! ([03-design/06-saturation.md § 6.1](../../../../docs/ein/ein.rs/03-design/06-saturation.md#61-contradiction)):
 //! is `X` negated, and is `X` in the KB. The result **order** is fixed —
 //! direct ⊥ first, then pairs in extent order — because it reaches the unsat
 //! core and the trace.

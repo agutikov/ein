@@ -608,7 +608,7 @@ has one lattice and one answer, and every query asks about it. What each list do
     ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)).
   - `:hypothesis-relations` and `:no-hypothesis`: every name is a relation of the program. `()` names none.
   - **A relation of the program** is an atom the program writes as a relation outside the three lists: one it declares
-    or states a fact of, `is-a`, `eq` and `neq`, the relation of a form in a rule, an hrule or a query's `:goal`, or
+    or states a fact of, `eq` and `neq`, the relation of a form in a rule, an hrule or a query's `:goal`, or
     one it passes where a relation is expected, `(bijective color-loc)`. A relation of which only a rule's `:assert`
     derives facts is one.
 

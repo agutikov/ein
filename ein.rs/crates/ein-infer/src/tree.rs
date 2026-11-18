@@ -95,7 +95,7 @@
 //! **L9, a witness no node can hold.** An instance L5 refuses only because
 //! some of its witnesses are no candidate and not denied at root is
 //! licensed all the same where every such witness is of a relation no plan
-//! root compiled writes and the kernel does not mirror, and some witness is
+//! root compiled writes, and some witness is
 //! a candidate: such a fact is in no node's fixpoint, alive or dead, so it
 //! is counted with the denied ones, and the instance's alternatives are the
 //! candidates among its witnesses. [`crate::unheld`] has the argument. The
@@ -104,7 +104,7 @@
 //! that is no candidate, and the run refuses on one; and the `route` row
 //! names L9 where a branch took such an instance. `zebra.ein`'s
 //! `slot-owed-fill` witnesses are of `co-located`, which the slot rules
-//! write and the kernel mirrors, so L9 does not take them; a witness a
+//! and `symmetric` write, so L9 does not take them; a witness a
 //! candidate's closure holds does not stand for that candidate, which
 //! `examples/lattice/13_witness_of_two.ein` shows.
 //!

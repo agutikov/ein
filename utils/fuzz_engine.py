@@ -79,7 +79,6 @@ paths the engine has actually broken on:
 |---|---|
 | several `(or …)` disjuncts binding the same variables | the S1.22.0 collision — two disjuncts, one binding key |
 | `(absent …)` guards, nested via `forall` / `open` | the NAF boundary's admission order |
-| `(__symmetric__ R)` markers | hazard H1 — the native mirror's insertion order |
 | `(not (R …))` facts *and* `(absent (R …))` premises | the two negations that look alike |
 | mixed `str` / `int` fact arguments | `defined_behaviour.md` §2.1's total order |
 | a `(config …)` lever | the flags the corpus exercises only on `solve` |
@@ -348,9 +347,6 @@ class Gen:
             for rel in self.bins:
                 if self.r.random() < 0.4:
                     f.append(f"({self.r.choice(['symmetric', 'transitive'])} {rel})")
-        for rel in self.bins:                       # hazard H1
-            if self.r.random() < 0.25:
-                f.append(f"(__symmetric__ {rel})")
         n_rules = self.r.randint(1, 4)
         for i in range(n_rules):
             f.append(self.rule(i))

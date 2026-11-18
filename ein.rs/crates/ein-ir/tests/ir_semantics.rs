@@ -166,9 +166,9 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `absent`, `eq`, `false`, `open` (the verdict atom) and `relation`, are
 /// words a position gives a meaning to, tokens of their own that no
 /// declarator takes, so a macro named one is refused at the parse, at the
-/// name, as `not` is. The kernel's two dunders, `__closed__` and
-/// `__symmetric__`, are used and never bound (Q-M1f.7): they are names the
-/// grammar reads, so nothing but this check stands between a puzzle and a
+/// name, as `not` is. The kernel's dunder, `__closed__`, is used and never
+/// bound (Q-M1f.7): it is a name the grammar reads, so nothing but this check
+/// stands between a puzzle and a
 /// macro called `__closed__` silently shadowing the kernel's marker in every
 /// rule that mentions it. The last half of the test is what makes the
 /// claim "exactly": `forall` and `unknown` are kernel *sugar* and look just
@@ -185,7 +185,8 @@ fn the_kernel_names_a_macro_may_not_shadow() {
             "{src}"
         );
     }
-    for name in ["__closed__", "__symmetric__"] {
+    {
+        let name = "__closed__";
         let src = format!("(macro {name} (?p) (rel ?p) :why \"rel holds of {{?p}}\")");
         let err = load_macro_names(&src).expect_err("reserved names are rejected at load");
         assert!(
@@ -193,7 +194,7 @@ fn the_kernel_names_a_macro_may_not_shadow() {
             "{name}: {err}"
         );
     }
-    for name in ["forall", "unknown", "co"] {
+    for name in ["forall", "unknown", "co", "__symmetric__"] {
         let src = format!("(macro {name} (?p) (rel ?p) :why \"rel holds of {{?p}}\")");
         let names = load_macro_names(&src).expect("a non-reserved name loads");
         assert_eq!(names, vec![name.to_string()]);

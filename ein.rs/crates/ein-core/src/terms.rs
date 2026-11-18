@@ -213,7 +213,7 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// `open`. So what still reaches the loader as a declared name is the
 /// structural primitives a position gives a meaning to (`absent`, `false`),
 /// the predicate `eq`, `relation` — a name wherever a name goes, so
-/// `(relation ?R ?A ?B)` stays a legal pattern — and the two dunders. This is
+/// `(relation ?R ?A ?B)` stays a legal pattern — and the kernel's dunder. This is
 /// about *binding* a name: a fact may still have a reserved head, such as a
 /// stored `(not X)` octagon.
 ///
@@ -223,17 +223,16 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// verdict a rule's `:assert` writes, `(open)` or `(open ?R)`, and never as a
 /// name, so no program binds it and none writes it as a value.
 ///
-/// **The kernel's two dunders are here** (Q-M1f.7): [`CLOSED`] and
-/// [`SYMMETRIC`] are written only with their fixed
-/// meaning, so a program may not bind either, as a relation it declares, a
-/// rule's, an hrule's or a macro's name, or an import's `:as`; it may use
-/// either wherever a name is used, as a relation or as a value, which is how
-/// `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
+/// **The kernel's dunder is here** (Q-M1f.7): [`CLOSED`] is written only
+/// with its fixed meaning, so a program may not bind it, as a relation it
+/// declares, a rule's, an hrule's or a macro's name, or an import's `:as`; it
+/// may use it wherever a name is used, as a relation or as a value, which is
+/// how `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
 /// three writeback names ([`FORCED_POSITIVE`], [`MONOTONIC_UNCONDITIONAL`],
 /// [`LOOKAHEAD_DIES`]) are not here: the grammar refuses them wherever a
 /// program writes them.
-pub const RESERVED: [&str; 11] = [
-    CLOSED, SYMMETRIC, "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
+pub const RESERVED: [&str; 10] = [
+    CLOSED, "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
 ];
 
 pub fn is_predicate(name: &str) -> bool {
@@ -247,14 +246,12 @@ pub fn is_reserved(name: &str) -> bool {
 /// The engine's **own** names — the ones it writes into a KB rather than reads
 /// out of a program.
 ///
-/// Four are provenance rule-names for a derivation no rule performed
-/// ([`crate::prov`]), one marks a relation the kernel closes under arg-swap,
-/// one names the synthetic rule a `(query …)` goal compiles to, one is the
-/// `(__closed__ R)` marker, and the last two are the mirror firing's binding
-/// variables. Not a style list: together with
-/// `ein_ir::from_ir::intern_program_names` — which closes a *rule's* argument
-/// constants at load — **these eight are why nothing interns a name during a
-/// search**, measured over the whole corpus by
+/// Three are provenance rule-names for a derivation no rule performed
+/// ([`crate::prov`]), one names the synthetic rule a `(query …)` goal
+/// compiles to, and one is the `(__closed__ R)` marker. Not a style list:
+/// together with `ein_ir::from_ir::intern_program_names` — which closes a
+/// *rule's* argument constants at load — **these five are why nothing
+/// interns a name during a search**, measured over the whole corpus by
 /// `ein-infer/tests/interning.rs`.
 ///
 /// Why that matters is [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md)'s
@@ -262,21 +259,15 @@ pub fn is_reserved(name: &str) -> bool {
 /// [`Interner::text`](crate::Interner::text) hands out a `&str` borrowed from
 /// the arena, which no lock can do, so a shareable interner is one that does
 /// not **grow** while it is shared, and the search is where it would be
-/// shared. Three of the eight were growing it there
+/// shared. Three of the five were growing it there
 /// ([03-design/08-parallelism.md § 3](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#3-what-must-be-sync-and-how));
-/// the other five arrive during root saturation, which is single-threaded —
-/// they are here because `__symmetric__` was interned by every
-/// `Saturator::new` and [`MIRROR_A`] / [`MIRROR_B`] by every mirror firing,
-/// which is a hash lookup for a constant.
-pub const ENGINE: [&str; 8] = [
+/// the other two arrive during root saturation, which is single-threaded.
+pub const ENGINE: [&str; 5] = [
     FORCED_POSITIVE,
     LOOKAHEAD_DIES,
     MONOTONIC_UNCONDITIONAL,
     QUERY_RULE,
     CLOSED,
-    SYMMETRIC,
-    MIRROR_A,
-    MIRROR_B,
 ];
 
 /// The forced-positive cascade's promotion — a fact root writes because every
@@ -295,11 +286,6 @@ pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
 pub const QUERY_RULE: &str = "#query";
 /// `(__closed__ R)` — R is a relation no rule can positively conclude.
 pub const CLOSED: &str = "__closed__";
-/// `(__symmetric__ R)` — R's extension is closed under arg-swap by the kernel.
-pub const SYMMETRIC: &str = "__symmetric__";
-/// The two binding-variable names the native mirror reports its firing under.
-pub const MIRROR_A: &str = "a";
-pub const MIRROR_B: &str = "b";
 
 /// The names the kernel itself knows. Interning them first costs nothing:
 /// symbol ids are never observable, so their assignment order is free.
@@ -340,9 +326,6 @@ pub struct Kernel {
     pub monotonic_unconditional: Symbol,
     pub query_rule: Symbol,
     pub closed: Symbol,
-    pub symmetric: Symbol,
-    pub mirror_a: Symbol,
-    pub mirror_b: Symbol,
 }
 
 impl Terms {
@@ -373,9 +356,6 @@ impl Terms {
             monotonic_unconditional: intern(MONOTONIC_UNCONDITIONAL),
             query_rule: intern(QUERY_RULE),
             closed: intern(CLOSED),
-            symmetric: intern(SYMMETRIC),
-            mirror_a: intern(MIRROR_A),
-            mirror_b: intern(MIRROR_B),
             // Interned last on purpose: a kernel name's id is its position in
             // this list, and appending is the one edit that moves none of the
             // others. `id_order_invariance` says a permuted id space moves no

@@ -423,11 +423,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   answer.
 - **`:why` is required** on every relation, rule, hrule and macro;
   `--no-require-why` loads a program without.
-- `__closed__` and `__symmetric__` are reserved and never bound, and never
-  an atom the blind enumerator guesses about, whether a rule derives a
-  fact of one or a program writes one as an argument, which stays legal
+- `__closed__` is reserved and never bound, and never an atom the blind
+  enumerator guesses about, whether a rule derives a fact of it or a
+  program writes it as an argument, which stays legal
   (`ein-infer/tests/dunder_objects.rs`); names the loader makes up start
-  with `#` (`ein_core::text::INTERNAL_NAMES`).
+  with `#` (`ein_core::text::INTERNAL_NAMES`). **The kernel reads no
+  theory's name**: its names are `ein_core::terms::Kernel`'s, and `is-a`,
+  `symmetric` or `__symmetric__` mean only what a rule makes them mean; the
+  kernel mirrors no relation (a symmetric one is `std.algebra`'s rule).
+  `ein-render/tests/renaming_invariance.rs` holds every corpus program to
+  its answer with every other name renamed.
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.

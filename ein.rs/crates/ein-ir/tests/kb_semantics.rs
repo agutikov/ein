@@ -439,8 +439,8 @@ fn an_import_brings_the_module_whole_with_its_own_imports() {
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
 ///
-/// **Only the kernel's dunders, `__closed__` and `__symmetric__`, reach the
-/// guard** (Q-M1f.7): the other names of [`ein_core::RESERVED`] a program can
+/// **Only the kernel's dunder, `__closed__`, reaches the guard** (Q-M1f.7):
+/// the other names of [`ein_core::RESERVED`] a program can
 /// write, `and`, `neq`, `not`, `or`, `absent`, `eq`, `false`, `open` and
 /// `relation`, are tokens of their own that no declarator takes, so
 /// `(hrule not …)` is a parse error, refused where a declarator binds one,
@@ -464,7 +464,7 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     assert!(names(&terms, &kb.program().rules).contains(&"eq-elim".to_string()));
     assert!(names(&terms, &kb.program().relations).contains(&"absent-of".to_string()));
 
-    // Non-vacuity: the guard is live on the whole names, the dunders; the
+    // Non-vacuity: the guard is live on the whole name, the dunder; the
     // names those two extend are refused at the parse.
     for (declarator, source, at) in [
         (
@@ -498,7 +498,7 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
         ),
         (
             "relation",
-            "(relation __symmetric__ T T :why \"__symmetric__ holds of {?1} and {?2}\")",
+            "(relation __closed__ T T :why \"__closed__ holds of {?1} and {?2}\")",
         ),
         (
             "hrule",

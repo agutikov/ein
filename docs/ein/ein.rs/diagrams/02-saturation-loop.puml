@@ -7,7 +7,7 @@ repeat
   :closure step;
   note right
     the enqueue pass where one is due,
-    then the mirror, then the queue
+    then the queue
   end note
   if (a firing?) then (yes)
     :hand it to the caller;

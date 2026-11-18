@@ -40,8 +40,8 @@ replaced by a token of its kind, equal names equal tokens:
 Kept as written, being structure and not names: the heads `and`, `or`, `not`,
 `absent`, `eq`, `neq`, `false`, `open`; a macro's name at the head of a form
 (`forall`, `unknown` of `std.macro` where the file imports it, and a macro the
-file declares); and the kernel's two dunders `__closed__` and `__symmetric__`
-wherever they are written.  A structure word in an argument's place is a name
+file declares); and the kernel's dunder `__closed__` wherever it is
+written.  A structure word in an argument's place is a name
 (`eq` in `(cmp-of ?x ?y eq)` is the constant it spells).
 
 The levels (each a column of `rules.tsv`):
@@ -99,7 +99,7 @@ ROOTS = ("stdlib", "examples", "tests")
 BROKEN = "examples/broken/"
 
 HEAD_STRUCT = frozenset(("and", "or", "not", "absent", "eq", "neq", "false", "open"))
-ANY_STRUCT = frozenset(("__closed__", "__symmetric__"))
+ANY_STRUCT = frozenset(("__closed__",))
 COMMUTATIVE = frozenset(("and", "or", "eq", "neq"))
 DECLARATORS = frozenset(("relation", "rule", "hrule", "query", "solve", "config", "trace",
                          "macro", "import"))

@@ -190,8 +190,8 @@ them in:
 | $\operatorname{injective}(r)$ | $(a, c), (b, c) \in \operatorname{ext}_K(r) \land a \ne b \implies \bot \in K$ |
 
 Union, intersection, composition, converse and inclusion are one rule each over the one notion of a match, and
-the cardinality properties are rules that conclude $\bot$. The one kernel counterpart is the marker that closes the
-held extent of a relation under the swap of its arguments, as the rule of symmetry does, without the rule
+the cardinality properties are rules that conclude $\bot$. None has a kernel counterpart: symmetry too is a rule,
+and the kernel reserves no name of a theory
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)).
 
 **The quantifiers are Ein in Ein.** The bounded universal and the open fact

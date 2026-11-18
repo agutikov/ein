@@ -29,7 +29,7 @@
 //! | | compared |
 //! |---|---|
 //! | the **spine** (`run`, `load`, `hyp`, `hypskip`, `enter`, `nogood`, `writeback`, `warn`, `verdict`) | in order, exactly — minus `enter`'s `n_firings` and a `dead-post` `enter`'s `core` |
-//! | the **derivation** — every `fire` with `redundant = false`, and every `mirror` | the **multiset of facts derived**, and the **set of rules** that derived them |
+//! | the **derivation** — every `fire` with `redundant = false` | the **multiset of facts derived**, and the **set of rules** that derived them |
 //! | the scheduling traffic — `enqueue`, `park`, `admit`, `retire`, `quiesce`, `alt`, `compile` — and every redundant `fire` | nothing; counted per side and reported |
 //!
 //! A **`dead-post`** segment's derivation is not compared at all.
@@ -71,8 +71,7 @@ pub struct Segment {
     /// What the productive firings derived, as a multiset — so a *dropped*
     /// firing whose fact another firing also derives still changes the count.
     pub facts: BTreeMap<String, usize>,
-    /// Which rules derived it. `__symmetric__` is the native arg-swap mirror,
-    /// which the engine reports as its own event and not as a `fire`.
+    /// Which rules derived it.
     pub rules: BTreeSet<String>,
     /// How many productive firings the segment performed. Reported, not
     /// compared: it is a firing count, which is narration by rule 1.
@@ -175,16 +174,14 @@ pub fn split(events: &[Value]) -> Split {
             *elided.entry(bucket).or_insert(0) += 1;
             continue;
         }
-        if kind == "fire" || kind == "mirror" {
+        if kind == "fire" {
             productive += 1;
-            rules.insert(match kind {
-                "mirror" => "__symmetric__".to_string(),
-                _ => e
-                    .get("rule")
+            rules.insert(
+                e.get("rule")
                     .and_then(Value::as_str)
                     .unwrap_or("<no rule>")
                     .to_string(),
-            });
+            );
             if let Some(ds) = e.get("derived").and_then(Value::as_array) {
                 for d in ds {
                     let key = d.as_str().map_or_else(|| d.to_string(), str::to_string);

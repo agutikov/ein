@@ -140,23 +140,14 @@ Applying a match instantiates every conclusion of its `:assert`, a conjunction r
 and nothing else (the one exemption the configuration principle makes,
 [Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)).
 
-### 6.1 The native mirror
-
-A relation marked `(__symmetric__ R)` has its held extent closed under argument swap by the saturator directly, with
-no plan and no match: each fact of R is offered to the mirror, whose write is a firing with rule `__symmetric__` and
-the source edge as its premise, narrated as a `mirror` event. The marked relations are read sorted by name, so no
-hash order reaches the firing order. Where the mirror fact already exists, the derivation is recorded as an
-alternative, which makes the justification graph cyclic; the explanation search takes a least fixpoint from the
-sources up, so the cycle costs it nothing ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
-
-### 6.2 Contradiction
+### 6.1 Contradiction
 
 A KB is contradictory when it holds `(false)` (a rule concluded it outright) or a pair `X` and `(not X)`, however
 either fact got there: a written clue, a commitment and a derivation are alike. The check is two bit tests per new
 fact, is `X` negated and is `X` present, and its result order is fixed, `(false)` first, then pairs in the order the
 KB holds them, because it reaches the core and the trace.
 
-### 6.3 Obligations
+### 6.2 Obligations
 
 A rule whose `:assert` is `(open ?R)` derives nothing and is not in the agenda: it runs as one pass over the KB
 **after** the fixpoint ([`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)), and what it reports,

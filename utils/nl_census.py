@@ -78,7 +78,7 @@ ROOTS = ("examples", "tests", "corpus", "stdlib")
 FORMS = ("relation", "rule", "hrule", "macro")
 
 #: `ein_core::RESERVED` (ein-core/src/terms.rs) — the names the engine owns.
-KERNEL = {"__closed__", "__symmetric__", "absent", "and", "eq", "false", "neq",
+KERNEL = {"__closed__", "absent", "and", "eq", "false", "neq",
           "not", "open", "or", "relation"}
 
 TOK = re.compile(r'#\|.*?\|#|;[^\n]*|"(?:\\.|[^"\\])*"|[()]|[^\s()";]+', re.S)

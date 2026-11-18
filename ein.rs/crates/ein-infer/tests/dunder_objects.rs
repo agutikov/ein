@@ -1,6 +1,6 @@
-//! **A kernel dunder is never an object of the blind enumerator** — what
+//! **The kernel's dunder is never an object of the blind enumerator** — what
 //! [`ein_infer::hypgen::candidate_objects`] takes for an object where a
-//! program holds `__closed__` or `__symmetric__`.
+//! program holds `__closed__`.
 //!
 //! The KB's names index holds the head of every fact, and the registry the
 //! head of every fact a file writes. So a dunder whose every fact a rule
@@ -10,7 +10,7 @@
 //! was an object the same way, by the list of the program's names. This file
 //! holds that neither is.
 //!
-//! 1. **Two ways of stating one closure or one symmetry have one H and one
+//! 1. **Two ways of stating one closure have one H and one
 //!    R** ([`pairs`]): the form whose rule derives the dunder's fact answers
 //!    what the form that writes the fact answers, candidate for candidate and
 //!    commitment for commitment, by the cube
@@ -144,7 +144,7 @@ fn answered(p: &Program) -> Answered {
     }
 }
 
-const DUNDERS: [&str; 2] = [ein_core::terms::CLOSED, ein_core::terms::SYMMETRIC];
+const DUNDERS: [&str; 1] = [ein_core::terms::CLOSED];
 
 /// The candidates of `universe` that name a kernel dunder in an argument
 /// position.
@@ -165,15 +165,6 @@ const DIGITS: &str = "\
 (relation digit Digit :why \"{?1} is a digit\")
 (digit 0) (digit 1) (digit 2)
 (relation total Number :why \"the total is {?1}\")
-";
-
-/// A symmetric relation, written both ways round and scoped out, beside an
-/// open `total`.
-const NEAR: &str = "\
-(relation near Thing Thing :why \"{?1} is near {?2}\")
-(near a b) (near b a)
-(relation total Number :why \"the total is {?1}\")
-(solve :no-hypothesis (near))
 ";
 
 /// Each pair: one program whose rule derives the dunder's fact, and the same
@@ -206,20 +197,6 @@ fn pairs() -> Vec<(&'static str, Program, Program)> {
                 ),
             ),
             inline("closed by a fact", &format!("{DIGITS}(__closed__ digit)")),
-        ),
-        (
-            "a symmetry, by a rule and by a fact",
-            inline(
-                "symmetric by a rule",
-                &format!(
-                    "{NEAR}(rule near-symmetric () :match () :assert (__symmetric__ near) \
-                     :why \"near holds both ways round\")"
-                ),
-            ),
-            inline(
-                "symmetric by a fact",
-                &format!("{NEAR}(__symmetric__ near)"),
-            ),
         ),
     ]
 }

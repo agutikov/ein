@@ -302,7 +302,7 @@ impl Op {
 
 /// The ops that do not load: the frontend modes and the DOT views drawn off
 /// the parse, each over a parse of its own.
-fn run_unloaded(path: &Path, op: Op) -> Option<String> {
+pub fn run_unloaded(path: &Path, op: Op) -> Option<String> {
     debug_assert!(!op.loads(), "{op} loads: run_loaded's");
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
@@ -331,7 +331,7 @@ fn run_unloaded(path: &Path, op: Op) -> Option<String> {
 /// **Every op that reads the loaded program**, over a load already made: the
 /// AST and `Terms` the load left, and its KB or its refusal. The region ops
 /// take the job count, through [`region_op`]; nothing else can read it.
-fn run_loaded(
+pub fn run_loaded(
     ast: &Ast,
     terms: &mut Terms,
     kb: Result<ein_core::Kb, ein_ir::KbLoadError>,
@@ -754,6 +754,49 @@ fn region_op(
         }
         _ => unreachable!("a region op"),
     }
+}
+
+/// **The answer as documents**, under describe: every block of the summary
+/// the read-out writes (`--json-summary`'s `asked`, `region`, `verdict`,
+/// `queries`, `claim` and `work`), `--dump-answer`'s `nogoods.json` and
+/// `--dump-lattice`'s `nodes.json`, from one run. No layout: what a sweep
+/// compares across two spellings of one program, whose names differ in
+/// length, reads this rather than the read-out's text.
+pub fn answer(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut ein_core::Kb,
+    path: &Path,
+) -> Result<String, String> {
+    use ein_render::dump::json::{Json, dumps_indent};
+    let file = path.to_string_lossy().to_string();
+    let mut opts = explore::Options::new(READ_OUT_MODES[0].1);
+    opts.budget = SWEEP_BUDGET;
+    opts.limit = SWEEP_LIMIT;
+    opts.cores = ein_infer::region::Cores::ALL;
+    let visits = Arc::new(Mutex::new(Default::default()));
+    let mut events = ein_infer::events::Events::off().watched(Box::new(Keep(visits.clone())));
+    let r = ein_infer::read_out::run_with(kb, terms, ast, &opts, &mut events)
+        .map_err(|e| e.to_string())?;
+    let blocks = Json::obj(ein_render::dump::region_answer::summary_blocks(&r));
+    let nogoods = ein_render::dump::region_answer::nogoods(&r)?;
+    let v = visits.lock().expect("done").clone();
+    let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
+    let nodes = ein_render::dump::region_lattice::json(
+        &v,
+        &ein_render::dump::region_lattice::Inputs {
+            source: &file,
+            argv: &file,
+            route: route_words(&r.answer),
+            candidates: &candidates,
+        },
+    );
+    Ok(format!(
+        "--- summary\n{}\n--- nogoods.json\n{}\n--- nodes.json\n{}\n",
+        dumps_indent(&blocks),
+        dumps_indent(&nogoods),
+        dumps_indent(&nodes)
+    ))
 }
 
 /// The route's words, as the binary's `--dump-lattice` and `ein render

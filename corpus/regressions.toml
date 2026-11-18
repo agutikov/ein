@@ -1153,38 +1153,6 @@ models    = [
 ]
 
 [[case]]
-id       = "symmetric-mirror-off"
-title    = "a config flag changes R"
-settings = "lever: (config :enable-symmetric-mirror false), appended to the file; a load error"
-decisions = ["Q-M1e2.7"]
-witness  = "examples/features/06_symmetric_native.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["knows"]
-models    = [["(knows Ann Bob)", "(knows Bob Ann)", "(knows Gil Gil)"]]
-
-[case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 1
-relations = []
-models    = [
-  [],
-]
-
-[[case]]
 id       = "oblig-fresh-name"
 title    = "the obligations rung never proposes a domain value a commitment derives"
 settings = "default"
@@ -7366,36 +7334,6 @@ k         = 1
 models    = [[]]
 
 [[case]]
-id       = "symmetric-by-rule"
-title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
-settings = "default"
-decisions = ["Q-M1f.306"]
-witness  = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 4
-k_c      = 4
-minimal  = [[]]
-maximal  = [["(total a)", "(total b)"]]
-
-[case.right]
-verdict   = "Ambiguity"
-k         = 4
-exhausted = true
-closes    = ["total"]
-models    = [[], ["(total a)"], ["(total a)", "(total b)"], ["(total b)"]]
-
-[case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 4
-relations = ["total"]
-models    = [[], ["(total a)"], ["(total a)", "(total b)"], ["(total b)"]]
-
-[[case]]
 id       = "as-value"
 title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
 settings = "default"
@@ -7517,60 +7455,3 @@ refused   = true
 run     = "solve"
 line    = "all"
 refused = "rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over lt, a relation a commitment can still extend — so it calls a state that has not yet decided lt a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (lt)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "derived-at-root"
-title    = "a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it, so the state that holds the mark is not closed under the symmetry it states"
-settings = "default"
-witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["near"]
-models    = [["(near a b)", "(near b a)"]]
-
-[case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 1
-models    = [[]]
-
-[[case]]
-id       = "derived-at-node"
-title    = "a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it, so the state that holds the mark is not closed under the symmetry it states"
-settings = "default"
-witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["close"]
-models    = [[]]
-
-[case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 1
-relations = ["close"]
-models    = [[]]

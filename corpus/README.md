@@ -24,11 +24,12 @@ Everything is `cargo test`.
 | [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **every core names its cause**: every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the regressions' witnesses, and reads `slow` to leave the zebra family to the slow half |
 | [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip**: every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file loaded as the state the run saved, and saved and loaded again in both directions; reads `slow` and `heavy_dump` to leave those entries to the slow half, and holds `heavy_dump` to the state files it counts |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space |
+| [`ein-render/tests/renaming_invariance.rs`](../ein.rs/crates/ein-render/tests/renaming_invariance.rs) | **the kernel reads no theory's name**: runs every corpus *file* again with every name that is not the kernel's renamed, in it and in every module it imports, and holds the answer, the claims' verdicts and every drawing to the file's own, apart from the names |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs; `EIN_JOBS_SWEEP` names the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
 | [`ein-cli/tests/regressions.rs`](../ein.rs/crates/ein-cli/tests/regressions.rs) | **the regressions**, [`regressions.toml`](regressions.toml): one row per program and run once answered wrong, each run through the binary and held to the right answer it records, and each witness's region recomputed with the library. Every witness is a manifest entry or a file under `fuzz_findings/`, and every row's recorded answer is its right one, which `ein-corpus`'s `regressions` module checks without a run |
 
-`corpus_cores`, `id_order_invariance` and `jobs_invariance` walk the *files* (`ein_corpus::corpus_files`) rather than the
+`corpus_cores`, `id_order_invariance`, `jobs_invariance` and `renaming_invariance` walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
 The completeness check is what keeps the two views the same set.
 
@@ -268,6 +269,7 @@ release codegen with the debug assertions and overflow checks on.
 | `structure_invariance` | every program that searches but the `slow` ones, and three named instances | the `slow` ones too |
 | `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too; no test runs past the default region budget |
 | `id_order_invariance` | one permutation of the id space; `EIN_ID_SEEDS=N` takes N | the same, over every file |
+| `renaming_invariance` | every file outside `tests/` | every file |
 | `fuzz_properties` | 2 000 inputs; `EIN_FUZZ_ITERS` and `EIN_FUZZ_SEED` set the budget and the stream | the same |
 
 ## Levers

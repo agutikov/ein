@@ -294,6 +294,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: dot_wellformed, every program"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test dot_wellformed
 
+    nightly_step "deep-corpus: renaming_invariance, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test renaming_invariance
+
     nightly_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -550,6 +553,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus: dot_wellformed, every program"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test dot_wellformed
+
+    dev_host_step "deep-corpus: renaming_invariance, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test renaming_invariance
 
     dev_host_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"

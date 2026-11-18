@@ -543,7 +543,7 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 
 An obligation rule is compiled like any other and kept out of the agenda. After a node's fixpoint the pass runs
 each obligation plan once and counts its matches; the event is `owe`
-([`06-saturation.md` § 6.3](../03-design/06-saturation.md#63-obligations); the pass as a flow is
+([`06-saturation.md` § 6.2](../03-design/06-saturation.md#62-obligations); the pass as a flow is
 [`02-algorithms.md` § 10](../02-algorithms.md#10-the-obligation-pass)).
 
 `ein test` asks a file the least question that decides the claims it states, and reads every claim off that

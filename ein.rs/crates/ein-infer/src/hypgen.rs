@@ -606,16 +606,15 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// never puzzle objects; without the guard the enumerator would propose
 /// `(R x not)` garbage.
 ///
-/// **A kernel dunder is never an object.** `__closed__` and `__symmetric__`
-/// are the kernel's words for a relation's closure and its symmetry, not
-/// things a puzzle is about, and they are left out by name, as the primitives
-/// are. Without the guard a dunder was an object wherever no file wrote a
-/// fact headed by it: the names index holds the head of every fact, the
-/// registry the head of a fact a file writes, so a closure a rule derives put
-/// `__closed__` among the objects where the same closure written as a fact
-/// did not, and one program stated two ways had two answers. A dunder a
-/// program writes in an argument position, as `(imply1 functional __closed__)`
-/// does, is a name of the program all the same
+/// **The kernel's dunder is never an object.** `__closed__` is the kernel's
+/// word for a relation's closure, not a thing a puzzle is about, and it is
+/// left out by name, as the primitives are. Without the guard it was an object
+/// wherever no file wrote a fact headed by it: the names index holds the head
+/// of every fact, the registry the head of a fact a file writes, so a closure
+/// a rule derives put `__closed__` among the objects where the same closure
+/// written as a fact did not, and one program stated two ways had two answers.
+/// The dunder a program writes in an argument position, as `(imply1 functional
+/// __closed__)` does, is a name of the program all the same
 /// ([`crate::invariant::program_names`] lists it, and the alive-set invariant
 /// reads that list); it is this set, the enumerator's, that leaves it out.
 /// `ein-infer/tests/dunder_objects.rs` holds both.
@@ -639,9 +638,9 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     }
     let k = &terms.kernel;
     let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
-    // The kernel's two dunders: its own words, never an object, whether a
-    // rule derives a fact headed by one or a program writes one as a value.
-    let dunders = [k.closed, k.symmetric];
+    // The kernel's dunder: its own word, never an object, whether a rule
+    // derives a fact headed by it or a program writes it as a value.
+    let dunder = k.closed;
     let mut names = kb.names();
     // The seed: a name of the program the names index lacks joins it, once
     // (`alive_invariant.rs` lists the corpus's).
@@ -664,7 +663,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     names.retain(|&n| {
         !type_nodes.contains(n.0)
             && !reserved.contains(&n)
-            && !dunders.contains(&n)
+            && n != dunder
             && kb.category(terms, n) == NameCategory::Object
     });
     // By name, which the rank table turns into a `u32` sort. `Kb::names` is
@@ -920,10 +919,11 @@ mod tests {
         assert_eq!(names, ["A", "B"], "sorted by name, T and `not` excluded");
     }
 
-    /// **A kernel dunder is never an object**, however the program comes to
-    /// hold it: `__closed__` written as a rule's relation parameter and
-    /// `__symmetric__` as an ordinary argument, each a name of the program.
-    /// Neither is proposed about; `a`, beside them, is.
+    /// **The kernel's dunder is never an object**, however the program comes
+    /// to hold it: `__closed__` written as a rule's relation parameter, a
+    /// name of the program, is not proposed about. `__symmetric__` written as
+    /// an ordinary argument is a name like `a` beside it, the kernel's no
+    /// longer, and both are.
     #[test]
     fn candidate_objects_never_hold_a_kernel_dunder() {
         let (ast, terms, kb) = kb_of(
@@ -943,7 +943,11 @@ mod tests {
             .iter()
             .map(|&s| terms.sym(s))
             .collect();
-        assert_eq!(names, ["a"], "neither dunder is an object");
+        assert_eq!(
+            names,
+            ["__symmetric__", "a"],
+            "`__closed__` is no object, and `__symmetric__` is an ordinary name"
+        );
     }
 
     /// **The seed** (Q-M1e.21): a constant only a rule's

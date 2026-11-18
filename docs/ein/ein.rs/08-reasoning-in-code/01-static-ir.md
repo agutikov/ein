@@ -126,7 +126,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | the name characters, and a name as a run of them | the lexer's `NAME` rule in `ein-ir/src/ein.l`; `ein_core::text::is_name_char` and `is_symbol`, the printer's copy of it, held equal to the lexer's by a test |
 | the reserved words: where the kernel meets a theory written in Ein | `ein_core::terms::RESERVED` (what no declaration binds), `STRUCTURAL` and `PREDICATES` (the words of the pattern language); the grammar's own list in `ein-ir/src/grammar.rs`; the names the kernel itself knows, `ein_core::terms::Kernel`. A relation that is none of these is read by rules only |
 | a name the loader makes up | `ein_core::text::INTERNAL_MARK`, `#`, and `INTERNAL_NAMES` ([`07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)) |
-| the kernel's two markers | `ein_core::terms::CLOSED`, `SYMMETRIC` |
+| the kernel's one marker, of closure | `ein_core::terms::CLOSED`; no name of a theory is the kernel's, held by [`ein-render/tests/renaming_invariance.rs`](../../../../ein.rs/crates/ein-render/tests/renaming_invariance.rs) |
 | a stored negation, falsity | a fact of the relation `not`, one argument, and the fact of `false`, none: `ein_core::terms::Terms`' `kernel` symbols |
 | what is an object and what is not | the grammar: `FactHead`, `ValueHead`, `NestedFact`, `NegFact`, `NegPattern`, `Negated` in `ein-ir/src/ein.y`; after macro expansion, `refuse_malformed_primitives` in `ein-ir/src/from_ir.rs` |
 | a declaration as facts | `ingest_relation` in `ein-ir/src/from_ir.rs` |

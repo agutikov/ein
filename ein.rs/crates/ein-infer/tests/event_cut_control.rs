@@ -30,12 +30,11 @@ use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, parse};
 use serde_json::Value;
 
-/// The three fixtures `golden_events.rs` pinned until the walk left, for the
-/// same reason: they are the smallest set that emits the whole elided
-/// vocabulary. A control that ran on a stream with no redundant firings would
-/// pass its second row by having nothing to delete.
+/// Three small fixtures that between them emit the whole elided vocabulary,
+/// redundant firings among it: a control that ran on a stream with no
+/// redundant firings would pass its second row by having nothing to delete.
 const STREAMS: [&str; 3] = [
-    "examples/features/06_symmetric_native.ein",
+    "examples/saturation/symmetric/couple.ein",
     "examples/branching/12_typed_blind_solve.ein",
     "examples/domain_elim/ab.ein",
 ];

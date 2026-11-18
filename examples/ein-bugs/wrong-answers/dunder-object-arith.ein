@@ -20,7 +20,7 @@
 ;;; One candidate, `(total __closed__)`, and R two states: the head of the
 ;;; facts the module's closing rule derives is in the KB's names index and in
 ;;; no registry, so the blind enumerator took it for an object. It leaves the
-;;; kernel's two dunders out by name now, and the answer is the one above.
+;;; kernel's dunder out by name now, and the answer is the one above.
 
 (import std.math.arith)
 (relation total Number :why "the total is {?1}")

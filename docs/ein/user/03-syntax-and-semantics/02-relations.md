@@ -224,10 +224,10 @@ show.
 ## Relations the kernel gives meaning to
 
 A few atoms are relations whose meaning is the engine's: `not` (a stored negation, [constraints](06-constraints.md)),
-`false` (a contradiction), `relation` (the declarations' facts above), `__closed__` (its one argument a relation no fact of which is proposed as a hypothesis) and
-`__symmetric__` (its one argument a relation whose held extent is closed under swapping a fact's two arguments,
-the same closure the standard library's `symmetric` rule derives), and the computed relations `eq` and `neq`,
-whose facts are never stored. [Reserved names](../04-reference/03-reserved-names.md) lists each and what may be
+`false` (a contradiction), `relation` (the declarations' facts above) and `__closed__` (its one argument a relation
+no fact of which is proposed as a hypothesis), and the computed relations `eq` and `neq`, whose facts are never
+stored. No other relation is the engine's: a symmetric relation is one the standard library's `symmetric` rule
+closes, a rule like any other. [Reserved names](../04-reference/03-reserved-names.md) lists each and what may be
 written with it.
 
 ## See also

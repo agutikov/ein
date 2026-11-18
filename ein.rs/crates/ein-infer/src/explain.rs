@@ -128,8 +128,8 @@
 //! justification graph safe by construction: a fact can never ground itself,
 //! because at the moment its own label is still empty it contributes nothing.
 //! That is not a corner case — once re-derivations are recorded, `(R a b)` and
-//! `(R b a)` justify each other through the symmetric mirror in any ordinary
-//! puzzle.
+//! `(R b a)` justify each other through a symmetric relation's rule
+//! (`std.algebra`'s `symmetric`) in any ordinary puzzle.
 //!
 //! ### Where a rewrite can change the answer
 //!

@@ -2,49 +2,34 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: reserved Pages: 1 -->
-<svg width="600pt" height="309pt"
- viewBox="0.00 0.00 600.00 309.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 304.5)">
+<svg width="600pt" height="252pt"
+ viewBox="0.00 0.00 600.00 252.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 247.5)">
 <title>reserved</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-304.5 596.25,-304.5 596.25,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-247.5 596.25,-247.5 596.25,4 -4,4"/>
 <!-- dunder -->
 <g id="node1" class="node">
 <title>dunder</title>
-<polygon fill="none" stroke="black" points="142,-106.25 46.5,-106.25 46.5,-70.25 142,-70.25 142,-106.25"/>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-91.3" font-family="Helvetica,sans-Serif" font-size="11.00">__closed__</text>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-77.8" font-family="Helvetica,sans-Serif" font-size="11.00">__symmetric__</text>
+<polygon fill="none" stroke="black" points="130.38,-102.25 58.12,-102.25 58.12,-66.25 130.38,-66.25 130.38,-102.25"/>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-80.55" font-family="Helvetica,sans-Serif" font-size="11.00">__closed__</text>
 </g>
 <!-- loader -->
 <g id="node6" class="node">
 <title>loader</title>
-<polygon fill="none" stroke="black" points="549.5,-172.5 379,-172.5 379,-124 549.5,-124 549.5,-172.5"/>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-158.05" font-family="Helvetica,sans-Serif" font-size="11.00">the loader</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-144.55" font-family="Helvetica,sans-Serif" font-size="11.00">ein_core::terms::RESERVED:</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-131.05" font-family="Helvetica,sans-Serif" font-size="11.00">a declarator may not bind it</text>
+<polygon fill="none" stroke="black" points="549.5,-115.5 379,-115.5 379,-67 549.5,-67 549.5,-115.5"/>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-101.05" font-family="Helvetica,sans-Serif" font-size="11.00">the loader</text>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-87.55" font-family="Helvetica,sans-Serif" font-size="11.00">ein_core::terms::RESERVED:</text>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-74.05" font-family="Helvetica,sans-Serif" font-size="11.00">a declarator may not bind it</text>
 </g>
 <!-- dunder&#45;&gt;loader -->
 <g id="edge4" class="edge">
 <title>dunder&#45;&gt;loader</title>
-<path fill="none" stroke="black" d="M142.23,-95.91C198.81,-105.14 295.27,-120.86 367.72,-132.67"/>
-<polygon fill="black" stroke="black" points="366.75,-136.06 377.19,-134.22 367.88,-129.15 366.75,-136.06"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-126.32" font-family="Helvetica,sans-Serif" font-size="9.00">may be used, not bound</text>
-</g>
-<!-- sat -->
-<g id="node7" class="node">
-<title>sat</title>
-<polygon fill="none" stroke="black" points="519.12,-106.25 409.38,-106.25 409.38,-70.25 519.12,-70.25 519.12,-106.25"/>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-91.3" font-family="Helvetica,sans-Serif" font-size="11.00">saturator.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-77.8" font-family="Helvetica,sans-Serif" font-size="11.00">the native mirror</text>
-</g>
-<!-- dunder&#45;&gt;sat -->
-<g id="edge5" class="edge">
-<title>dunder&#45;&gt;sat</title>
-<path fill="none" stroke="black" d="M142.23,-88.25C207.07,-88.25 324.26,-88.25 397.69,-88.25"/>
-<polygon fill="black" stroke="black" points="397.57,-91.75 407.57,-88.25 397.57,-84.75 397.57,-91.75"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-90.95" font-family="Helvetica,sans-Serif" font-size="9.00">(__symmetric__ R)</text>
+<path fill="none" stroke="black" d="M130.87,-84.93C185.03,-85.96 289.96,-87.95 367.5,-89.43"/>
+<polygon fill="black" stroke="black" points="367.15,-92.92 377.22,-89.61 367.29,-85.92 367.15,-92.92"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-91.08" font-family="Helvetica,sans-Serif" font-size="9.00">may be used, not bound</text>
 </g>
 <!-- gen -->
-<g id="node8" class="node">
+<g id="node7" class="node">
 <title>gen</title>
 <polygon fill="none" stroke="black" points="566.75,-48.5 361.75,-48.5 361.75,0 566.75,0 566.75,-48.5"/>
 <text xml:space="preserve" text-anchor="middle" x="464.25" y="-34.05" font-family="Helvetica,sans-Serif" font-size="11.00">hypgen.rs</text>
@@ -52,77 +37,77 @@
 <text xml:space="preserve" text-anchor="middle" x="464.25" y="-7.05" font-family="Helvetica,sans-Serif" font-size="11.00">the two lists scope the generator</text>
 </g>
 <!-- dunder&#45;&gt;gen -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>dunder&#45;&gt;gen</title>
-<path fill="none" stroke="black" d="M142.23,-80.08C194.37,-71.01 280.39,-56.05 350.26,-43.9"/>
-<polygon fill="black" stroke="black" points="350.58,-47.4 359.84,-42.23 349.38,-40.5 350.58,-47.4"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-70.25" font-family="Helvetica,sans-Serif" font-size="9.00">(__closed__ R)</text>
+<path fill="none" stroke="black" d="M130.87,-78.44C181.16,-70.24 275.23,-54.91 350.49,-42.63"/>
+<polygon fill="black" stroke="black" points="350.65,-46.15 359.96,-41.09 349.53,-39.25 350.65,-46.15"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-67.54" font-family="Helvetica,sans-Serif" font-size="9.00">(__closed__ R)</text>
 </g>
 <!-- wb -->
 <g id="node2" class="node">
 <title>wb</title>
-<polygon fill="none" stroke="black" points="188.5,-300.5 0,-300.5 0,-252 188.5,-252 188.5,-300.5"/>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-286.05" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;forced&#45;positive&gt;</text>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-272.55" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;monotonic&#45;unconditional&gt;</text>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-259.05" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;lookahead&#45;dies&#45;immediately&gt;</text>
+<polygon fill="none" stroke="black" points="188.5,-243.5 0,-243.5 0,-195 188.5,-195 188.5,-243.5"/>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-229.05" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;forced&#45;positive&gt;</text>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-215.55" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;monotonic&#45;unconditional&gt;</text>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-202.05" font-family="Helvetica,sans-Serif" font-size="11.00">&lt;lookahead&#45;dies&#45;immediately&gt;</text>
 </g>
 <!-- lexer -->
 <g id="node5" class="node">
 <title>lexer</title>
-<polygon fill="none" stroke="black" points="592.25,-296.5 336.25,-296.5 336.25,-248 592.25,-248 592.25,-296.5"/>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-282.05" font-family="Helvetica,sans-Serif" font-size="11.00">the lexer, ein.l</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-268.55" font-family="Helvetica,sans-Serif" font-size="11.00">WRITEBACK is a token no production takes;</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-255.05" font-family="Helvetica,sans-Serif" font-size="11.00"># is no name character</text>
+<polygon fill="none" stroke="black" points="592.25,-239.5 336.25,-239.5 336.25,-191 592.25,-191 592.25,-239.5"/>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-225.05" font-family="Helvetica,sans-Serif" font-size="11.00">the lexer, ein.l</text>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-211.55" font-family="Helvetica,sans-Serif" font-size="11.00">WRITEBACK is a token no production takes;</text>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-198.05" font-family="Helvetica,sans-Serif" font-size="11.00"># is no name character</text>
 </g>
 <!-- wb&#45;&gt;lexer -->
 <g id="edge1" class="edge">
 <title>wb&#45;&gt;lexer</title>
-<path fill="none" stroke="black" d="M188.59,-275.24C229.81,-274.79 279.13,-274.25 324.53,-273.76"/>
-<polygon fill="black" stroke="black" points="324.5,-277.26 334.46,-273.65 324.42,-270.26 324.5,-277.26"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-277.66" font-family="Helvetica,sans-Serif" font-size="9.00">refused where written</text>
+<path fill="none" stroke="black" d="M188.59,-218.24C229.81,-217.79 279.13,-217.25 324.53,-216.76"/>
+<polygon fill="black" stroke="black" points="324.5,-220.26 334.46,-216.65 324.42,-213.26 324.5,-220.26"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-220.66" font-family="Helvetica,sans-Serif" font-size="9.00">refused where written</text>
 </g>
 <!-- hash -->
 <g id="node3" class="node">
 <title>hash</title>
-<polygon fill="none" stroke="black" points="180.25,-230.25 8.25,-230.25 8.25,-194.25 180.25,-194.25 180.25,-230.25"/>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-215.3" font-family="Helvetica,sans-Serif" font-size="11.00">#empty &#160;#nested &#160;#params</text>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-201.8" font-family="Helvetica,sans-Serif" font-size="11.00">#list &#160;#query</text>
+<polygon fill="none" stroke="black" points="180.25,-173.25 8.25,-173.25 8.25,-137.25 180.25,-137.25 180.25,-173.25"/>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-158.3" font-family="Helvetica,sans-Serif" font-size="11.00">#empty &#160;#nested &#160;#params</text>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-144.8" font-family="Helvetica,sans-Serif" font-size="11.00">#list &#160;#query</text>
 </g>
 <!-- hash&#45;&gt;lexer -->
 <g id="edge2" class="edge">
 <title>hash&#45;&gt;lexer</title>
-<path fill="none" stroke="black" d="M180.6,-226.17C223.35,-233.14 276.18,-241.75 324.55,-249.64"/>
-<polygon fill="black" stroke="black" points="323.84,-253.07 334.27,-251.22 324.97,-246.16 323.84,-253.07"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-250.32" font-family="Helvetica,sans-Serif" font-size="9.00">cannot be spelt</text>
+<path fill="none" stroke="black" d="M180.6,-169.17C223.35,-176.14 276.18,-184.75 324.55,-192.64"/>
+<polygon fill="black" stroke="black" points="323.84,-196.07 334.27,-194.22 324.97,-189.16 323.84,-196.07"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-193.32" font-family="Helvetica,sans-Serif" font-size="9.00">cannot be spelt</text>
 </g>
 <!-- parser -->
-<g id="node9" class="node">
+<g id="node8" class="node">
 <title>parser</title>
-<polygon fill="none" stroke="black" points="576.5,-226.25 352,-226.25 352,-190.25 576.5,-190.25 576.5,-226.25"/>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-211.3" font-family="Helvetica,sans-Serif" font-size="11.00">the parser&#39;s builder, the loader,</text>
-<text xml:space="preserve" text-anchor="middle" x="464.25" y="-197.8" font-family="Helvetica,sans-Serif" font-size="11.00">the compiler: they make the name up</text>
+<polygon fill="none" stroke="black" points="576.5,-169.25 352,-169.25 352,-133.25 576.5,-133.25 576.5,-169.25"/>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-154.3" font-family="Helvetica,sans-Serif" font-size="11.00">the parser&#39;s builder, the loader,</text>
+<text xml:space="preserve" text-anchor="middle" x="464.25" y="-140.8" font-family="Helvetica,sans-Serif" font-size="11.00">the compiler: they make the name up</text>
 </g>
 <!-- hash&#45;&gt;parser -->
 <g id="edge3" class="edge">
 <title>hash&#45;&gt;parser</title>
-<path fill="none" stroke="black" d="M192.04,-209.27C196.93,-209.17 201.77,-209.08 206.5,-209 254.08,-208.24 306.62,-207.98 351.71,-207.94"/>
-<polygon fill="black" stroke="black" points="192.01,-205.77 182.1,-209.49 192.17,-212.77 192.01,-205.77"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-211.7" font-family="Helvetica,sans-Serif" font-size="9.00">made up by</text>
+<path fill="none" stroke="black" d="M192.04,-152.27C196.93,-152.17 201.77,-152.08 206.5,-152 254.08,-151.24 306.62,-150.98 351.71,-150.94"/>
+<polygon fill="black" stroke="black" points="192.01,-148.77 182.1,-152.49 192.17,-155.77 192.01,-148.77"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-154.7" font-family="Helvetica,sans-Serif" font-size="9.00">made up by</text>
 </g>
 <!-- keys -->
 <g id="node4" class="node">
 <title>keys</title>
-<polygon fill="none" stroke="black" points="160,-38.25 28.5,-38.25 28.5,-2.25 160,-2.25 160,-38.25"/>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-23.3" font-family="Helvetica,sans-Serif" font-size="11.00">:hypothesis&#45;relations</text>
-<text xml:space="preserve" text-anchor="middle" x="94.25" y="-9.8" font-family="Helvetica,sans-Serif" font-size="11.00">:no&#45;hypothesis</text>
+<polygon fill="none" stroke="black" points="160,-41.25 28.5,-41.25 28.5,-5.25 160,-5.25 160,-41.25"/>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-26.3" font-family="Helvetica,sans-Serif" font-size="11.00">:hypothesis&#45;relations</text>
+<text xml:space="preserve" text-anchor="middle" x="94.25" y="-12.8" font-family="Helvetica,sans-Serif" font-size="11.00">:no&#45;hypothesis</text>
 </g>
 <!-- keys&#45;&gt;gen -->
-<g id="edge7" class="edge">
+<g id="edge6" class="edge">
 <title>keys&#45;&gt;gen</title>
-<path fill="none" stroke="black" d="M160.14,-20.14C204.64,-20.15 265.02,-20.31 318.25,-21 328.62,-21.13 339.41,-21.31 350.21,-21.51"/>
-<polygon fill="black" stroke="black" points="349.88,-25 359.94,-21.69 350.01,-18 349.88,-25"/>
-<text xml:space="preserve" text-anchor="middle" x="262.38" y="-23.7" font-family="Helvetica,sans-Serif" font-size="9.00">read off (solve ...)</text>
+<path fill="none" stroke="black" d="M160.19,-23.43C212.64,-23.57 287.7,-23.77 350,-23.94"/>
+<polygon fill="black" stroke="black" points="349.96,-27.44 359.96,-23.97 349.97,-20.44 349.96,-27.44"/>
+<text xml:space="preserve" text-anchor="middle" x="262.38" y="-26.54" font-family="Helvetica,sans-Serif" font-size="9.00">read off (solve ...)</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: b32565ae35619389d75a9d67bcdcfb4a273f2ca8dd3e606d13e2ed3d69db09d9 -->
+<!-- source sha256: 50cbf786377f6842b29a65129e483ebc2e9d89c23413db91553a9ba014589153 -->

@@ -200,7 +200,7 @@ only through a licence.
 | **L5** an owed instance's alternatives are exhaustive | for $C$ alive, owing a licensed instance $I$ with alternatives $\operatorname{alt}(I)$: $\;D \in R \land C \subseteq D \implies \exists a \in \operatorname{alt}(I).\; a \in \operatorname{cl}(D)$ | every extension of $C$ by a candidate that is not an alternative of $I$. An alive node owing an instance whose every alternative is dead has no member of $R$ above it |
 | **L7** the cube | the definition | nothing: $2^{n}$ evaluations decide everything. The oracle, and every question on a flagged program |
 | **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(s) \implies \operatorname{dead}(s \cup \lbrace b \rbrace)$ | the extension of a state by a candidate the state's own rules have already denied |
-| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation of which no rule concludes a fact and no symmetry mirrors one, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
+| **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation of which no rule concludes a fact, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
 
 There is no licence numbered six.
 
@@ -241,10 +241,9 @@ Why an obligation's alternatives are jointly exhaustive in general is [Satisfiab
 *L8.* $\operatorname{st}(s \cup \lbrace b \rbrace) \supseteq \operatorname{st}(s) \ni \lnot b$, and it holds $b$: a
 fact beside its stored negation.
 
-*L9.* A fact enters a state only by being committed, by being in root, by a rule concluding it, or as the mirror of
-a fact of a relation marked symmetric. A witness that is no candidate, is not in root, and is a fact of a relation of
-which no rule concludes a fact and no symmetry mirrors one enters none, so the alternatives of the instance are its
-witnesses in $H$.
+*L9.* A fact enters a state only by being committed, by being in root, or by a rule concluding it. A witness that
+is no candidate, is not in root, and is a fact of a relation of which no rule concludes a fact enters none, so the
+alternatives of the instance are its witnesses in $H$.
 
 **The trivial lines.** On a program with restrictions only, root alive gives $\emptyset \in R$, so
 $\min R = \lbrace \emptyset \rbrace$ from one evaluation; with obligations only, $\max R = \lbrace H \rbrace$: both

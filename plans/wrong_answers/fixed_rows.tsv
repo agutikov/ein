@@ -32,7 +32,6 @@ W11/unsat-core-id-space	unsat-core-id-space
 W11/d3-unsat-core	d3-unsat-core-id-order
 W11/fork-delta-order	fork-delta-order
 W12/alive-empty-phase1	alive-empty-phase1
-W13/symmetric-mirror-off	symmetric-mirror-off
 W14/oblig-fresh-name	oblig-fresh-name
 W14/oblig-fresh-name-two	oblig-fresh-name-two
 W14/oblig-derived-domain	oblig-derived-domain
@@ -325,10 +324,7 @@ W95/hrule-and	hrule-and
 W95/hrule-and-in-and	hrule-and-in-and
 W96/closed-by-rule	closed-by-rule
 W96/arith-closing-rule	arith-closing-rule
-W96/symmetric-by-rule	symmetric-by-rule
 W96/as-value	as-value
 W97/unactivated	rung-unactivated
 W97/symmetric-import	symmetric-import
 W97/connex-import	connex-import
-W98/derived-at-root	derived-at-root
-W98/derived-at-node	derived-at-node

@@ -5,17 +5,17 @@ holds every fact's relation and arguments, and every name of the program
 ([Q-M1e.21](Q-M1e.21-a-rule-brings-in-no-name.md)), less the names a declaration writes as a label, the reserved
 words, and every name the registry calls a relation or a rule. Of what remains:
 
-- **a kernel dunder is never guessable**: `__closed__` and `__symmetric__` are left out by name, where a rule
-  derives a fact of one and where a program writes one as an argument, which stays legal and keeps it a name of the
-  program. One closure stated by a fact or by a rule has one H and one R;
+- **the kernel's dunder is never guessable**: `__closed__` is left out by name, where a rule derives a fact of it
+  and where a program writes it as an argument, which stays legal and keeps it a name of the program. One closure
+  stated by a fact or by a rule has one H and one R;
 - **a relation's name that only a rule's conclusion writes is guessable**: the candidates stay in H, every question
   prints a `relation names` row under `universe`, and the summary carries `root.hypgen.relation_names_as_objects`,
   *object* being the read-out's word for a guessable atom. Declaring the relation takes its name out;
 - **what an import brings is the program's**: a name only an imported module writes is guessable as the main file's
   are, whatever the import form.
 
-**Why.** A dunder is the kernel's word for a relation's closure or symmetry, nothing a puzzle is about, and guessed
-about it gave one program stated two ways two answers. A derived relation's name is guessable for the reason an atom
+**Why.** The dunder is the kernel's word for a relation's closure, nothing a puzzle is about, and guessed about it
+gave one program stated two ways two answers. A derived relation's name is guessable for the reason an atom
 on the right of an `is-a` is: the program left it undeclared, and the row tells it how to say otherwise. Every
 import brings its module whole, and the answer does not depend on the import form.
 

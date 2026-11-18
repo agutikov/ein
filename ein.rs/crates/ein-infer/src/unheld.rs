@@ -7,8 +7,8 @@
 //! negative stored at root: the second kind is in no alive state, so the
 //! candidates are all that can pay. A third kind of witness is in **no
 //! state at all**: a fact that is no candidate, that root's fixpoint does not
-//! hold, and whose relation no rule of the program writes and the kernel
-//! does not mirror. This module says which relations those are
+//! hold, and whose relation no rule of the program writes. This module says
+//! which relations those are
 //! (`Unwritten`), and L9 counts such a witness with the denied ones: the
 //! instance is licensed, its alternatives the candidates among its witnesses
 //! ([`crate::oblgen::Instance::unheld`]).
@@ -26,9 +26,8 @@
 //!    candidates and resumes root's saturation ([`crate::region`], § What a
 //!    node is). A fact the saturation adds is the conclusion of a plan's
 //!    firing, whose relation is the plan's own (a conclusion is a fact with
-//!    a relation the plan names, `crate::firing::build_fact`), or the
-//!    kernel's mirror of a fact of a relation some fact
-//!    `(__symmetric__ R)` marks. Nothing else in a saturation writes a fact.
+//!    a relation the plan names, `crate::firing::build_fact`). Nothing else
+//!    in a saturation writes a fact.
 //! 2. *`w` is in neither of the first two.* Root owes `I`, and every other
 //!    read of its guard is static, so no witness of `I` is in root's
 //!    fixpoint; and `w` is no candidate, so no commitment writes it.
@@ -37,9 +36,6 @@
 //!    flags the program), so the plans a node runs are plans root compiled,
 //!    and `Unwritten::of` reads every one of them but an hrule's, which
 //!    proposes and runs at no node: none writes `R`.
-//! 4. *The kernel mirrors no fact of `R`.* Root's fixpoint holds no
-//!    `(__symmetric__ R)`, and no plan writes `__symmetric__`, so no node
-//!    holds one root does not.
 //!
 //! So `w` is in no fixpoint, alive or dead. In L5's argument a member `D`
 //! of `R` above a state owing `I` holds a witness of `I` in its fixpoint;
@@ -49,7 +45,7 @@
 //! **It is L5 with one more kind of witness left out**, and named apart
 //! because its premise is another: L5's rests on the negations root stores,
 //! which a contradiction enforces in every node; L9's on what the program's
-//! plans and the kernel can write, which the check below enforces.
+//! plans can write, which the check below enforces.
 //!
 //! **An instance with no candidate among its witnesses is not L9's.** Its
 //! alternatives would be none, and the branch would end where it owes; no
@@ -151,16 +147,13 @@ fn with_flag<T>(flag: &'static std::thread::LocalKey<Cell<bool>>, f: impl FnOnce
 
 /// **The relations a node can hold a fact of that neither root nor its
 /// commitment holds**: those a plan root compiled writes, an hrule's apart,
-/// those the kernel mirrors, and every kernel relation. Every other relation
+/// and every kernel relation. Every other relation
 /// is *unwritten*: a fact of it that root does not hold and that is no
 /// candidate is in no node's fixpoint, on a monotone program (the module's
 /// § L9).
 #[derive(Clone, Debug, Default)]
 pub(crate) struct Unwritten {
     written: FxHashSet<Symbol>,
-    /// Some plan writes `__symmetric__`, so a node may mirror a relation
-    /// root does not mark: every relation is written.
-    every: bool,
 }
 
 impl Unwritten {
@@ -170,10 +163,8 @@ impl Unwritten {
         let program = kb.program();
         let k = &terms.kernel;
         // determinism-ok: a set asked for membership alone.
-        let mut written: FxHashSet<Symbol> = [k.not, k.r#false, k.open, k.closed, k.symmetric]
-            .into_iter()
-            .collect();
-        let mut every = false;
+        let mut written: FxHashSet<Symbol> =
+            [k.not, k.r#false, k.open, k.closed].into_iter().collect();
         for plan in crate::monotone::plans_of(memo) {
             // An hrule proposes candidates and runs at no node.
             if program.hrules.contains(plan.rule) && !program.rules.contains(plan.rule) {
@@ -185,22 +176,16 @@ impl Unwritten {
                 if w.negated {
                     continue;
                 }
-                every |= w.name == k.symmetric;
                 written.insert(w.name);
             }
         }
-        for f in kb.facts_of(k.symmetric) {
-            if let Some(r) = terms.facts.args(f).first().and_then(|v| v.as_sym()) {
-                written.insert(r);
-            }
-        }
-        Unwritten { written, every }
+        Unwritten { written }
     }
 
     /// No node holds a fact of `rel` that root does not hold and that is no
     /// candidate.
     pub(crate) fn is_unwritten(&self, rel: Symbol) -> bool {
-        TRUSTING.with(Cell::get) || (!self.every && !self.written.contains(&rel))
+        TRUSTING.with(Cell::get) || !self.written.contains(&rel)
     }
 }
 

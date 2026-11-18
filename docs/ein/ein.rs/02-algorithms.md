@@ -68,8 +68,6 @@ The contract is [`03-design/06-saturation.md`](03-design/06-saturation.md).
 closure_step():
     if needs_enqueue:
         enqueue_pass(delta.take())          # None: a full pass
-    if the mirror has a fact to swap:       # relations marked (__symmetric__ R)
-        return the mirror's firing
     while the queue is not empty:
         entry = queue.pop()                 # least rank: the agenda's half, then the tiebreaker
         if entry.key in fired: continue
@@ -304,7 +302,7 @@ and the status says it was cut. A core is taken only where a surface prints one 
 
 A rule whose `:assert` is `(open ?R)` is in no agenda. `obligations::tally` runs once over a KB after its
 saturation returns and reports what the KB still owes; nothing it reports is stored
-([`03-design/06-saturation.md` § 6.3](03-design/06-saturation.md#63-obligations)).
+([`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)).
 
 ![The obligation pass as a flow over a saturated knowledge base](diagrams/02-obligation-pass.svg)
 

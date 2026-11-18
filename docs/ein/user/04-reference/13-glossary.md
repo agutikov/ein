@@ -168,7 +168,7 @@ A fact the generator proposes at root. Which ones exist is the **generation ladd
 blind enumerator. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide which relations are eligible,
 so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about the **guessable
 atoms**: the program's names, less a signature's labels, the language's own words, every relation and rule, and the
-two dunders
+dunder `__closed__`
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)); where
 `ein` prints *object* of the enumerator, it means one of them. See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).

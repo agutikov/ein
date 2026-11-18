@@ -111,7 +111,7 @@ fn stdout_is_the_facts_and_stderr_one_note() {
 fn an_empty_h_prints_nothing_and_says_why() {
     for (file, rung, why) in [
         (
-            "examples/features/06_symmetric_native.ein",
+            "examples/saturation/symmetric/couple.ein",
             "blind",
             "no candidate",
         ),

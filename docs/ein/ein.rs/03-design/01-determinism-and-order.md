@@ -108,7 +108,6 @@ itself one of the fixed orders below.
 | a match's bindings, `Prov::bindings` | bind order, the matcher's trail | `Box<[(Symbol, Value)]>` |
 | a match's premises, `Prov::premises` | plan-step order, a seeded fact at its own step | `Box<[FactId]>` |
 | the agenda and the parked set | rank ([§ 3.1](#31-the-agendas-key-is-total)) | `BinaryHeap<Reverse<(u64, u32)>>`, `BTreeSet<(u64, u32)>` |
-| the symmetric mirror's queue | a stack, popped last in first out | `Saturator::mirror_queue: Vec<FactId>` |
 | the hypothesis set H | content order ([§ 4.2](#42-the-hypothesis-set-and-the-search)) | `Vec<Candidate>`, bit `i` of every node mask |
 | derivation records | push order | `ProvArena` |
 
@@ -145,8 +144,6 @@ core of a dead node.
 | a seeded match | the delta fact at each matching step, in step order, at its own premise position |
 | compilation, `Engine` | each rule with each of its activators, in registry and append order; the memo shares plans, never the order |
 | the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then `pos_index[rel]` |
-| the closure step | the symmetric mirror before rule firings, its queue a stack |
-| the mirror's seed | the relations marked `(__symmetric__ R)` sorted by name, each held extent in store order: `saturator.rs`' `the_mirror_seeds_its_relations_in_name_order` |
 | the boundary | parked candidates in rank order; the first whose guards pass is admitted, one per round |
 | a resumed node's delta | the facts the snapshot lacks in the order the KB holds them, which is the order the caller wrote them (`Snapshot::new_facts_of`); every route writes a commitment in H's order |
 
@@ -300,7 +297,7 @@ matter is changed.
 | `ein-cli/tests/lever_invariance.rs`, `import_invariance.rs` | every lever and `(config …)` flag; every import form |
 | `ein-cli/tests/einb_cli.rs` | `a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source`, `a_container_saved_again_is_the_container` |
 | `ein-ir/tests/generated_parser.rs`, `fuzz_properties.rs` | `a_report_is_the_same_twice`; `a_generated_refusal_is_the_same_twice_and_within_its_budget` |
-| unit tests | `the_mirror_seeds_its_relations_in_name_order`, `narrowing_never_changes_the_match_sequence`, the two digest tests of § 8; `ein-core/tests/values_semantics.rs`, `format_tables.rs` |
+| unit tests | `narrowing_never_changes_the_match_sequence`, the two digest tests of § 8; `ein-core/tests/values_semantics.rs`, `format_tables.rs` |
 
 ### 9.1 The seeded generator
 
