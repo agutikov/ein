@@ -3,6 +3,8 @@
 **Phase:** [P1f.23](README.md)
 **Status:** started 2026-11-19 on the user's word (*"answered plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/ANSWERS.md - process"*),
 built 2026-11-19 in a worktree (§ Record); merged by the main session, and one `utils/ci_container.sh` and one nightly hold it with R-42's fix.
+**Done and merged 2026-11-19** by `cbb9635b`; its six readings filed as Q-M1f.533 to .538 and its two findings as R-43 and R-44, each ruled
+as its default by the user's *"Go with all defaults to the end of this phase p1f.23 and stop"*.
 **The answers:** the user's file as written, `b0e9c412`
 (`git show b0e9c412:plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/ANSWERS.md`), and the
 removed items' pages beside it in that commit (`…/04-language-and-decisions/NN-…/README.md`), with their programs.
@@ -92,7 +94,7 @@ stdlib modules use to reason about a relation's arguments; nothing makes a relat
 Run 2026-11-19 in the worktree `build/wt-s1f2310`, branch `s1f.23.10-language`, on `f68f4adf`. Commits: `f88aae72`
 (task 1's L-92 and L-93: one decision's and three pages' sentences, three doc comments; no code), `fdbb71ae` (task 2,
 V-7 as Q-M1f.522, with L-94's texts and Q-M1f.412's comment written to its notion: the engine, the decision, the
-pages, the tests, the shape golden) and this record (plans only). Not merged: the main session merges it.
+pages, the tests, the shape golden) and this record (plans only). Merged into master by `cbb9635b`, 2026-11-19.
 
 ### Task 1 — the sentences
 
@@ -219,35 +221,41 @@ On `fdbb71ae`, in the worktree, with this branch's binary:
 - Not run, the main session's on the merged tree: `./run_tests.sh`, the whole `cargo test --workspace`, the nightly,
   `utils/ci_container.sh`.
 
-### Readings taken, each with its default (the main session files them)
+### Readings taken, each with its default
+
+Filed in this order as Q-M1f.533 to .538, each ruled 2026-11-19 as its default (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*).
 
 - **The kernel's words** that heading a tuple does not make a relation of the program: `ein_core::terms::RESERVED`
   (`__closed__`, `absent`, `and`, `eq`, `false`, `neq`, `not`, `open`, `or`, `relation`) and the loader's `#` names.
   **Default**: that list, read by one function, `heads_a_relation`. `=`, which `Kernel` interns for the grammar's
   sake (`Kernel::equals`), is a relation: the kernel reads no form of it, the user's answer writes `(relation =
   Formula Formula)`, and `06_double_negation.ein` declares it. The other declarator words (`rule`, `query`, …) never
-  head a tuple: the grammar reads them as no name.
+  head a tuple: the grammar reads them as no name. [Q-M1f.533](../open_questions.md#q-m1f533--the-kernels-words-no-relation-by-heading-a-tuple).
 - **The goal's and claim's list keeps the kernel's words a program writes**, the registry does not. **Default**: the
   list is the written set and `eq`, `neq`, unchanged from before, so a region claim listing a state's
   `(__closed__ r)` loads as it did; the registry, which decides what is an object, leaves them out.
+  [Q-M1f.534](../open_questions.md#q-m1f534--the-goals-and-claims-list-and-the-kernels-words).
 - **A `(solve :hrules …)` activator's relation** (`att` of `(guess (att Color House))`) stays out of the registry and
   of the solve lists' set, as Q-M1f.114 says (*outside the three lists*), and stays a relation a goal and a claim may
-  name. **Default**: as before.
+  name. **Default**: as before. [Q-M1f.535](../open_questions.md#q-m1f535--a-solve-hrules--activators-relation).
 - **A declared relation stays a relation of the program** with no tuple written: the blind rung's eligible relations
   are the declared ones, and whether a declaration should count once `relation` is a convention is P1f.21's
-  (Q-M1f.447). **Default**: as before.
+  (Q-M1f.447). **Default**: as before. [Q-M1f.536](../open_questions.md#q-m1f536--a-declared-relation-that-no-tuple-heads).
 - **The relation of a fact root's fixpoint holds is no object** though no text writes it first in a tuple (a
   parameter a guard binds). **Default**: left out by `candidate_objects`; the registry, fixed at load, does not take
   it, so `alive_invariant.rs` would report it as a new relation where a describe meets one (no corpus program does).
+  [Q-M1f.537](../open_questions.md#q-m1f537--a-relation-only-roots-fixpoint-shows).
 - **The `relation names` row, its keys and its module are removed**, not kept for a case that cannot arise.
-  **Default**: removed; no schema id moves (Q-M1f.412 (a)).
+  **Default**: removed; no schema id moves (Q-M1f.412 (a)). [Q-M1f.538](../open_questions.md#q-m1f538--the-relation-names-row-its-keys-and-its-module).
 
 ### Found, outside the stage
 
 - **A claim listing a declaration is refused though Q-M1f.119 says the declarations are every program's**: `(query
   :goal (relation ?R ?T) :expect (model (relation person P)))` → `:expect names relation, and the program names no
-  relation relation — …`; the goal alone loads. Not moved by this stage (the list is the one it was).
+  relation relation — …`; the goal alone loads. Not moved by this stage (the list is the one it was). Filed as
+  [R-43](findings.md), open, its default *left as is*.
 - **`walk_pattern` reads `=` as a connective** (`and`, `or`, `not`, `neq`, `eq`, `=`), so `Pattern::relation_names`
   and `pattern_relations` leave `=` out: `rules_by_relation` (the shape dump's `RULESREL`), `scope::outside`'s
   *asked*, and `ein test --json-report`'s `goal_relations` of a goal over `=`. Nothing the stage's four lists read;
-  left as it is, since moving it moves a read-out row and a report, which the ruling does not ask.
+  left as it is, since moving it moves a read-out row and a report, which the ruling does not ask. Filed as
+  [R-44](findings.md), open, its default *left as is*.

@@ -4,7 +4,7 @@ Every item that waits for the user's call, one folder each, built so that each c
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
 and the readings later stages took. The first drawings' items (34 to 55), the save-and-load items
 (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on 2026-11-18 and left the
-bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` held what S1f.23.6 built of those answers (56 to 60), answered on 2026-11-19 and gone with them, and holds now what S1f.23.11 built of those (61, 62); the verdicts' two
+bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` held what S1f.23.6 built of those answers (56 to 60), answered on 2026-11-19 and gone with them, and then what S1f.23.11 built of those (61, 62), ruled as their defaults on 2026-11-19 (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*) and gone with the topic; the verdicts' two
 (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
@@ -25,7 +25,8 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
-| [Drawings](03-drawings/README.md) · [answers](03-drawings/ANSWERS.md) | 61, 62 | your question on a concentric layout, answered with examples; your answer on a derivation's colours, built |
+
+No topic is open: the drawings' two items S1f.23.11 put (61, a concentric layout, and 62, a derivation's three levels) were ruled as their defaults on 2026-11-19 and left the bundle.
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -70,5 +71,3 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
-| 61 | [a concentric layout](03-drawings/61-concentric/README.md) | does Graphviz draw a knowledge base's layers as rings; twopi, the layers bent into rings and three more ways, on nine drawings, in both Graphviz builds | (a) no ring layout built until you choose one |
-| 62 | [a derivation's three levels](03-drawings/62-derivation-colours/README.md) | your answer on 59, built: the added fact the brightest, the explanation deeper, the rest black; six readings | (a) as built |

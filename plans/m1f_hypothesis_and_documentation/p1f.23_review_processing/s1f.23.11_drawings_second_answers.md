@@ -5,6 +5,9 @@
 in a worktree beside S1f.23.10; merged by the main session, and one `utils/ci_container.sh` and one nightly hold
 both. Task 2 stops for the user's look. **Ran to its stop 2026-11-19** in `build/wt-s1f2311` (branch
 `s1f.23.11-drawings`): task 1 built, task 2's examples made, items 61 and 62 put; waits for the user's look.
+**Done and merged 2026-11-19** by `9f5c0487` (`21728654`, `7c39c671`): the user's *"Go with all defaults to the end of this phase p1f.23 and stop"*
+ruled items 61 and 62 and the readings as their defaults, filed as Q-M1f.539 to .548 and R-45, and `review/03-drawings/` left
+the bundle.
 **The answers:** the user's file as written, `d124e63b`
 (`git show d124e63b:plans/m1f_hypothesis_and_documentation/review/03-drawings/ANSWERS.md`), and the removed items'
 pages beside it in that commit (`…/03-drawings/NN-…/README.md`), with their programs.
@@ -171,28 +174,41 @@ rows in the bundle's `README.md`. Follow the bundle's `.gitignore`: pages and pr
 `62-derivation-colours/` (pages and programs tracked; `rerun.sh`, `tools/`, `runs/`, `renders/` ignored, made in this
 worktree); the bundle's README: the topic row, the two binaries, the item rows. The binaries are
 `build/review-bin/ein-head-d124e63b` (master's engine at `d124e63b` = `7d5b6262`) and `build/review-bin/ein-s1f2311`.
+**Removed from the bundle 2026-11-19**, items 61 and 62 ruled as their defaults (Q-M1f.547, .548): the pages and
+programs are in `git log` at `7c39c671`; the ignored outputs, `tools/` and `rerun.sh` among them, went with the folder.
 
-### Readings, each with its default (to be filed)
+### Readings, each with its default
+
+Filed 2026-11-19, each ruled as its default (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): 1 to 8 as Q-M1f.539 to .546; 9 a
+note, not filed; 10 a finding outside item 59, filed as R-45; 11 item 61's own default, filed with the item as
+Q-M1f.547 (item 62 is Q-M1f.548).
 
 1. **A premise's own node is the rest**, black at the default width; its arrow into the step is the explanation. A
-   premise another step of the drawing added keeps that step's bright shade.
+   premise another step of the drawing added keeps that step's bright shade. [Q-M1f.539](../open_questions.md#q-m1f539--a-premises-own-node-in-a-derivations-drawing).
 2. **A commitment's red and a negation's grey are kept** beside the three levels; a derived negation takes its step's
    bright shade (it was grey and bold), the added fact being the brightest whatever its relation.
+   [Q-M1f.540](../open_questions.md#q-m1f540--a-commitments-red-and-a-negations-grey-beside-the-three-levels).
 3. **The widths**: level 1 `penwidth=3`, level 2 `penwidth=2`, the order told by brightness and width both.
+   [Q-M1f.541](../open_questions.md#q-m1f541--the-widths-of-a-derivations-two-emphasised-levels).
 4. **A redundant firing adds nothing** (`Firing::derived` holds facts already there): its conclusion is the rest; it
-   was bold. Its step stays dashed in the deeper shade.
+   was bold. Its step stays dashed in the deeper shade. [Q-M1f.542](../open_questions.md#q-m1f542--a-redundant-firings-conclusion).
 5. **The refutation's arrows are red**: the core's to `⊥` were; the learned no-good's, black at width 2, are red now
-   (library only: no CLI path draws a `⊥` slice).
+   (library only: no CLI path draws a `⊥` slice). [Q-M1f.543](../open_questions.md#q-m1f543--the-refutations-arrows).
 6. **The derivation graph's added fact** is one a drawn derivation concludes whose first record is a rule's; its
    provenance note stays black, since a bright shade is for lines and reads poorly as text.
+   [Q-M1f.544](../open_questions.md#q-m1f544--the-derivation-graphs-added-fact).
 7. **"Near black"** read as a contrast under 3.5 against black, and readable as a contrast of 5.5 against white for
    the shade a step's label is written in, 3 for a line; held by a test. Six hues, not eight: fewer hues that stay
-   distinct at two shades each, clear of red and grey.
+   distinct at two shades each, clear of red and grey. [Q-M1f.545](../open_questions.md#q-m1f545--what-near-black-means-and-how-many-hues).
 8. **The reasoning pages' hand drawings** follow the rule: `09-cyclic`'s given `r(a, b)`, which the alternative
    derivation also concludes, stays plain (given, not added); `09-proof-graph`'s `F` in the primary's hue.
+   [Q-M1f.546](../open_questions.md#q-m1f546--the-reasoning-pages-hand-drawings-of-a-derivation).
 9. **The re-taken user slices keep the binary's bytes**, digraph names `step17`, `step18` for the division by zero.
+   **A note, not filed**: a page's copy of a command's output is that output, so there is no choice to rule.
 10. **Not touched, outside item 59**: `ein render kb --since` still draws what one state holds beyond another at
     `penwidth=3` in black; `render_slice`'s library-only `since` keeps width 3. Black emphasis in a view that is no
-    derivation's: the user's rule may reach it; the main session's to put.
+    derivation's: the user's rule may reach it; the main session's to put. **Filed as [R-45](findings.md)**, a finding,
+    open, its default *left as is*.
 11. **Item 61**: straight arrows in the radial ways; frames in the bent ways from computed boxes (`neato -n2` draws a
-    frame only from a given `bb`); the default (a), nothing built, since the user asked whether it is possible.
+    frame only from a given `bb`); the default (a), nothing built, since the user asked whether it is possible. **Filed
+    with item 61** as [Q-M1f.547](../open_questions.md#q-m1f547--a-concentric-layout-the-layers-drawn-as-rings), the two drawing choices notes of the examples.
