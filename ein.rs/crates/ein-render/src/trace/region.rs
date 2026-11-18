@@ -263,13 +263,16 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
 }
 
 /// The trace flags: `--no-diagrams`, `--relevant`, `--reorder`,
-/// `--full-kb-snapshots`.
+/// `--full-kb-snapshots`, `--fold`.
 #[derive(Clone, Copy, Debug)]
 pub struct Shape {
     pub diagrams: bool,
     pub relevant: bool,
     pub reorder: bool,
     pub full_kb: bool,
+    /// Every drawing folds a fact of three arrows into a labelled arrow
+    /// (Q-M1f.419); by default each fact is its octagon.
+    pub fold: bool,
 }
 
 /// `ein solve --trace FILE.md`: root's derivation, then each state stdout
@@ -292,7 +295,12 @@ pub fn of_read_out(
         relevant,
         reorder,
         full_kb,
+        fold,
     } = shape;
+    let drawing = crate::trace::Diagrams {
+        drawn: diagrams,
+        fold,
+    };
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
     let name = |set: &[u32]| -> String {
@@ -318,7 +326,7 @@ pub fn of_read_out(
         .take_while(|l| !l.is_empty())
         .map(str::to_string)
         .collect();
-    let root = crate::trace::steps_of_with(ast, terms, root_firings, kb, diagrams, &[], relevant);
+    let root = crate::trace::steps_of_with(ast, terms, root_firings, kb, drawing, &[], relevant);
     let mut states = Vec::new();
     let k = r.states.len();
     {
@@ -335,9 +343,9 @@ pub fn of_read_out(
                 .with_fixpoint_traced(&facts, |kb, terms, firings| {
                     (
                         crate::trace::steps_of_with(
-                            ast, terms, firings, kb, diagrams, &facts, relevant,
+                            ast, terms, firings, kb, drawing, &facts, relevant,
                         ),
-                        full_kb.then(|| crate::slice::render_state(kb, terms, None, "state")),
+                        full_kb.then(|| crate::slice::render_state(kb, terms, None, "state", fold)),
                     )
                 })
                 .map_err(|e| e.to_string())?;

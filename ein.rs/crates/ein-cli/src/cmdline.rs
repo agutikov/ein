@@ -155,9 +155,29 @@ fn rule_mode() -> Arg {
         )
 }
 
+/// `--fold`, on every view that draws facts and on `ein solve`'s trace: a
+/// fact of three arrows, a relation and two arguments, that nothing drawn
+/// points at is drawn as one arrow from its first argument to its second,
+/// labelled with the relation's name; by default every fact is drawn in the
+/// canonical form, an octagon with no name in it whose first arrow is at its
+/// relation (Q-M1f.419). One builder, so the views cannot describe it
+/// differently. It changes a drawing and nothing else.
+fn fold() -> Arg {
+    Arg::new("fold")
+        .long("fold")
+        .action(ArgAction::SetTrue)
+        .help(
+            "draw a fact of three arrows (a relation and two arguments) that \
+             nothing drawn points at as one arrow from its first argument to its \
+             second, labelled with the relation. By default every fact is an \
+             octagon with no name in it, its arrow 1 at the relation's atom and \
+             2, 3, … at its arguments",
+        )
+}
+
 /// `--no-require-why`, on every command that loads a program. A `:why` is
 /// optional in the grammar and required by the loader by default, and this
-/// option, the CLI's spelling of a negative (`--no-types`, `--no-instances`),
+/// option, the CLI's spelling of a negative (`--no-search`, `--no-diagrams`),
 /// loads a program without them (Q-M1f.62). It sets
 /// [`ein_ir::LoadOptions::require_why`] false and nothing else, so it decides
 /// whether a program loads and never what a loaded one answers. The four
@@ -241,6 +261,7 @@ fn render_command() -> Command {
                 .about("one DOT digraph per rule")
                 .arg(Arg::new("file").required(true))
                 .arg(rule_mode())
+                .arg(fold())
                 .arg(no_require_why()),
         )
         .subcommand(
@@ -255,33 +276,28 @@ fn render_command() -> Command {
                         .help("rule name to render"),
                 )
                 .arg(rule_mode())
+                .arg(fold())
                 .arg(no_require_why()),
         )
         .subcommand(
             Command::new("constraints")
                 .about("constraint-scope DOT (structural properties)")
                 .arg(Arg::new("file").required(true))
+                .arg(fold())
                 .arg(no_require_why()),
         )
         // Two renderers a command reaches as every renderer is (Q-M1e.20).
         .subcommand(
             Command::new("program")
                 .about(
-                    "the program as written: one DOT digraph per group — rules, \
-                     ontology, facts, the query. Read through the loader first, \
-                     so a program it refuses is refused, as every command refuses \
-                     it; drawn as parsed, its imports unresolved",
+                    "the program as written, in three parts: its knowledge base as \
+                     one DOT digraph, drawn as `render kb` draws one; a digraph per \
+                     rule; the query. Read through the loader first, so a program it \
+                     refuses is refused, as every command refuses it; drawn as \
+                     parsed, its imports unresolved",
                 )
                 .arg(Arg::new("file").required(true))
-                .arg(
-                    Arg::new("levi")
-                        .long("levi")
-                        .action(ArgAction::SetTrue)
-                        .help(
-                            "draw unary and binary facts as Levi-bipartite \
-                             octagons rather than labelled arrows",
-                        ),
-                )
+                .arg(fold())
                 .arg(rule_mode())
                 .arg(no_require_why()),
         )
@@ -306,18 +322,7 @@ fn render_command() -> Command {
                         .default_value("relation")
                         .help("edge colour: per relation (default), per origin, or none"),
                 )
-                .arg(
-                    Arg::new("no-types")
-                        .long("no-types")
-                        .action(ArgAction::SetTrue)
-                        .help("leave out the type boxes and their is-a edges"),
-                )
-                .arg(
-                    Arg::new("no-instances")
-                        .long("no-instances")
-                        .action(ArgAction::SetTrue)
-                        .help("leave out the instance ovals and every fact edge"),
-                )
+                .arg(fold())
                 .arg(no_require_why()),
         )
         // The cube an `ein oracle --dump` directory holds, drawn from the
@@ -921,6 +926,12 @@ fn solve_command() -> Command {
             'l',
             "relevant",
             "(--trace) prune each derivation to the goal-relevant slice",
+        ))
+        .arg(fold().help(
+            "(--trace) draw a fact of three arrows (a relation and two \
+                 arguments) as one arrow from its first argument to its second, \
+                 labelled with the relation, in every drawing of the trace; by \
+                 default every fact is an octagon with no name in it",
         ))
 }
 

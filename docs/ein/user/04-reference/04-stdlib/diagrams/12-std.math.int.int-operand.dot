@@ -2,27 +2,39 @@ digraph rule_int_operand_lhs_rhs {
   rankdir=TB;
   label="int-operand"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand_L" [label="operand", shape=box];
     "?k_L" [label="?k", shape=diamond];
+    "int_L" [label="int", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int ?p ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "?k_L" -> "(int ?p ?n)_L" [label="operand", color="#2ca02c", fontcolor="#2ca02c"];
-    "(int ?p ?n)_L" -> "?p_L" [label="1", color="#17becf"];
-    "(int ?p ?n)_L" -> "?n_L" [label="2", color="#17becf"];
+    "h1_operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_operand_L" -> "operand_L" [xlabel="1", color="#2ca02c"];
+    "h1_operand_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
+    "h1_operand_L" -> "(int ?p ?n)_L" [xlabel="3", color="#2ca02c"];
+    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand-is_R" [label="operand-is", shape=box];
     "?k_R" [label="?k", shape=diamond];
+    "int_R" [label="int", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int ?p ?n)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "?k_R" -> "(int ?p ?n)_R" [label="operand-is", color="#17becf", fontcolor="#17becf", style=dashed];
-    "(int ?p ?n)_R" -> "?p_R" [label="1", color="#17becf", style=dashed];
-    "(int ?p ?n)_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
+    "h2_operand-is_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h2_operand-is_R" -> "operand-is_R" [xlabel="1", color="#17becf", style=dashed];
+    "h2_operand-is_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "h2_operand-is_R" -> "(int ?p ?n)_R" [xlabel="3", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?p ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
   }
 }

@@ -89,23 +89,22 @@ from one is the digraph the command names, with the layout hints and comment lin
 |---|---|---|
 | the knowledge base | the graph of the four facts; the relation, its extent and two facts about it; the declaration of `lives-in`; what an arrow points at; the three cases of a fact in a context; a negation beside a context | **none**: drawn by hand, see below |
 | the knowledge base | the definitions as a class diagram | by hand, in PlantUML |
-| the knowledge base | the two forms side by side | by hand; its right half is what `ein render program three-houses.ein` draws of two facts in its digraph `facts` |
+| the knowledge base | the two forms side by side | by hand; its left half is what `ein render program three-houses.ein` draws of two facts in its digraph `kb`, its right half what `ein render program --fold three-houses.ein` draws of them |
 | the rules | the pattern, the match, the result of rewriting, the rule `transitive` with its activator pattern; a packing and an unpacking, each with its match and its result | **none**: drawn by hand |
 | the rules | `pet-follows-owner`, `nobody-home` | `ein render rules three-houses.ein` |
 | the rules | `pet-follows-owner` as one graph | `ein render rules --rule-mode overlay three-houses.ein` |
 | the rules | `domain-elimination` | `ein render rule --name domain-elimination stdlib/bijection.ein` |
 
-**No command draws the graph as the reasoning defines it.** In that graph a relation is a node, the atom under
-the first arrow of each of its facts, and a fact has no label. Every view `ein render` has writes the relation's
-name on the fact instead: as the label of an arrow, or, under `ein render program --levi`, in the octagon of the
-fact, with numbered arrows to the arguments only. So `--levi` draws the name `left-of` on two octagons where the
-graph has one atom, and numbers the arrows by argument where the reasoning counts them from the relation's. The
-drawings of the graph on the two pages are written by hand in the reasoning's vocabulary: a box for an atom, an
-unlabelled octagon for a fact, a number on each arrow for its place, and a dashed frame around a fact that a
-fact points at and the knowledge base does not hold, named for the relation of the facts that point at it; a held
-fact is in no frame. Every view of `ein render` draws such a fact the same way, in a frame so named where it is
-not held and in none where it is, and draws it once, as an octagon and no arrow (`ein-render/src/dot_util.rs`' `ctx_frames`; held by
-`ein-render/tests/every_object_once.rs`); what it does not draw is still the relation's node. The other
+**Every view draws the graph as the reasoning defines it**
+([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)): a box for an atom,
+the relation's atom one node under the first arrow of each of its facts, an unlabelled octagon for a fact, a
+number on each arrow for its place counted from the relation's, and a dashed frame around a fact that a fact points
+at and the knowledge base does not hold, named for the relation of the facts that point at it; a held fact is in no
+frame, and a fact is drawn once, its octagon and no arrow (`ein-render/src/fact_graph.rs`, the one drawing of facts
+the KB, program and constraint views share; `ein-render/src/dot_util.rs`' `ctx_frames`). Under `--fold` a fact of
+three arrows that nothing points at is one arrow labelled with its relation's name, which is the drawing with
+labelled arrows the knowledge base page shows. The drawings of the graph on the two pages are written by hand in
+the same vocabulary. The other
 hand-drawn schematics are the chain of objects in their order, the gluing square and the four levels.
 
 ## The knowledge base
@@ -163,7 +162,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | an atom sorts before a fact; facts order by relation, then arguments, then count | the term store's unit tests `semantic_order_sorts_names_by_text`, `facts_order_as_their_identity_tuples_do` in `ein-core/src/terms.rs` |
 | a name is printed bare exactly where it reads back as that name | the grammar's unit test `the_printers_symbol_is_the_lexers` in `ein-ir/src/grammar.rs`; `ein-core/tests/values_semantics.rs`: `display_renders_every_value_shape` |
 | every knowledge base an answer's files hold reads back as it was written | `ein-cli/tests/answer_round_trip.rs` |
-| every drawing draws an object once: a fact that a drawn fact points at is one octagon, and no arrow, in one frame that names every relation that points at it where it is not held, and in no frame where it is; no node is filled; a held fact that nothing points at is drawn as it was; the variables of a pattern under an arrow are drawn | `ein-render/tests/every_object_once.rs`, the KB view, the program view, the rule view in both modes and the constraint view; every corpus program's drawings by `ein-render/tests/id_order_invariance.rs`, and Graphviz's reading of them by `ein-render/tests/dot_wellformed.rs` |
+| every drawing draws a fact as the graph has it, an octagon with no name in it whose arrow `1` is at its relation's atom, or under `--fold` a fact of three arrows that nothing points at as one labelled arrow; no relation is drawn otherwise than another; an object is drawn once: a fact that a drawn fact points at is one octagon, and no arrow, in one frame that names every relation that points at it where it is not held, and in no frame where it is; no node is filled; the variables of a pattern under an arrow are drawn | `ein-render/tests/every_object_once.rs`, the KB view, the program view, the rule view in both modes and the constraint view, in both forms, and every view of every corpus program; the program view's `kb` against the KB view, `the_program_views_kb_is_the_kb_views_drawing_on_the_corpus`; every corpus program's drawings by `ein-render/tests/id_order_invariance.rs`, and Graphviz's reading of them by `ein-render/tests/dot_wellformed.rs` |
 | no keyword pair reaches an object's label in a drawing | the renderer's unit test `no_keyword_pair_reaches_a_values_label` in `ein-render/src/dot_util.rs`; `ein-ir/tests/grammar_pages.rs`: `every_row_of_the_grammars_table_is_refused_at_the_parse` |
 | the quoted form of every shape of object, and its escape for every code point | `ein-core/tests/format_tables.rs`: `repr_of_every_reachable_value_shape`, `repr_escape_table_code_point_by_code_point` |
 
@@ -171,8 +170,8 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 
 ```sh
 ein saturate three-houses.ein --dump     # the facts held, the declarations' two facts each among them, and a census of the names
-ein render program three-houses.ein      # the facts drawn with labelled arrows: the digraph `facts`
-ein render program --levi three-houses.ein   # each fact an octagon with its relation's name in it, arrows to its arguments
+ein render program three-houses.ein          # the knowledge base as the graph: the digraph `kb`, each fact an octagon, its arrow 1 at its relation
+ein render program --fold three-houses.ein   # each fact of three arrows one arrow labelled with its relation
 ```
 
 The census `ein saturate` prints is of the atoms, under its row `names`, and counts how often each stands as a

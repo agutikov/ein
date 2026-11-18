@@ -2,21 +2,33 @@ digraph rule_complete_alone_r_lhs_rhs {
   rankdir=TB;
   label="complete-alone-r"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "escapes-zero_L" [label="escapes-zero", shape=box];
     "?f_L" [label="?f", shape=diamond];
-    "h1_escapes-zero_L" [shape=octagon, label="escapes-zero", color="#9467bd", fontcolor="#9467bd"];
-    "h1_escapes-zero_L" -> "?f_L" [label="1", color="#9467bd"];
-    "h2_escapes-one_L" [shape=octagon, label="escapes-one", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_escapes-one_L" -> "?f_L" [label="1", color="#1f77b4"];
-    "h3_escapes-monotone_L" [shape=octagon, label="escapes-monotone", color="#e377c2", fontcolor="#e377c2"];
-    "h3_escapes-monotone_L" -> "?f_L" [label="1", color="#e377c2"];
-    "h4_escapes-affine_L" [shape=octagon, label="escapes-affine", color="#8c564b", fontcolor="#8c564b"];
-    "h4_escapes-affine_L" -> "?f_L" [label="1", color="#8c564b"];
-    "h5_escapes-self-dual_L" [shape=octagon, label="escapes-self-dual", color="#2ca02c", fontcolor="#2ca02c"];
-    "h5_escapes-self-dual_L" -> "?f_L" [label="1", color="#2ca02c"];
+    "escapes-one_L" [label="escapes-one", shape=box];
+    "escapes-monotone_L" [label="escapes-monotone", shape=box];
+    "escapes-affine_L" [label="escapes-affine", shape=box];
+    "escapes-self-dual_L" [label="escapes-self-dual", shape=box];
+    "h1_escapes-zero_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_escapes-zero_L" -> "escapes-zero_L" [xlabel="1", color="#9467bd"];
+    "h1_escapes-zero_L" -> "?f_L" [xlabel="2", color="#9467bd"];
+    "h2_escapes-one_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h2_escapes-one_L" -> "escapes-one_L" [xlabel="1", color="#1f77b4"];
+    "h2_escapes-one_L" -> "?f_L" [xlabel="2", color="#1f77b4"];
+    "h3_escapes-monotone_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h3_escapes-monotone_L" -> "escapes-monotone_L" [xlabel="1", color="#e377c2"];
+    "h3_escapes-monotone_L" -> "?f_L" [xlabel="2", color="#e377c2"];
+    "h4_escapes-affine_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+    "h4_escapes-affine_L" -> "escapes-affine_L" [xlabel="1", color="#8c564b"];
+    "h4_escapes-affine_L" -> "?f_L" [xlabel="2", color="#8c564b"];
+    "h5_escapes-self-dual_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h5_escapes-self-dual_L" -> "escapes-self-dual_L" [xlabel="1", color="#2ca02c"];
+    "h5_escapes-self-dual_L" -> "?f_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
+    "complete-alone_R" [label="complete-alone", shape=box];
     "?f_R" [label="?f", shape=diamond];
-    "h6_complete-alone_R" [shape=octagon, label="complete-alone", color="#1f77b4", fontcolor="#1f77b4"];
-    "h6_complete-alone_R" -> "?f_R" [label="1", color="#1f77b4", style=dashed];
+    "h6_complete-alone_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
+    "h6_complete-alone_R" -> "complete-alone_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "h6_complete-alone_R" -> "?f_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

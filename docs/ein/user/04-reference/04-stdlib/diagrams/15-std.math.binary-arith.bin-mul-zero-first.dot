@@ -2,32 +2,38 @@ digraph rule_bin_mul_zero_first_lhs_rhs {
   rankdir=TB;
   label="bin-mul-zero-first"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-mul-step_L" [label="bin-mul-step", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
+    "bin-b_L" [label="bin-b", shape=box];
+    "0_L" [label="0", shape=box];
     "?rest_L" [label="?rest", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     subgraph cluster_ctx_L_0 {
       label="bin-mul-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bin-b 0 ?rest)_L" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(bin-b 0 ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_bin-mul-step_L" [shape=octagon, label="bin-mul-step", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "?k_L" [label="1", color="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "?u_L" [label="2", color="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "(bin-b 0 ?rest)_L" [label="3", color="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "z_L" [label="4", color="#7f7f7f"];
-    "(bin-b 0 ?rest)_L" -> "0_L" [label="1", color="#7f7f7f"];
-    "(bin-b 0 ?rest)_L" -> "?rest_L" [label="2", color="#7f7f7f"];
+    "h1_bin-mul-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_bin-mul-step_L" -> "bin-mul-step_L" [xlabel="1", color="#7f7f7f"];
+    "h1_bin-mul-step_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
+    "h1_bin-mul-step_L" -> "?u_L" [xlabel="3", color="#7f7f7f"];
+    "h1_bin-mul-step_L" -> "(bin-b 0 ?rest)_L" [xlabel="4", color="#7f7f7f"];
+    "h1_bin-mul-step_L" -> "z_L" [xlabel="5", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "bin-b_L" [xlabel="1", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "0_L" [xlabel="2", color="#7f7f7f"];
+    "(bin-b 0 ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "bin-mul-step_R" [label="bin-mul-step", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h2_bin-mul-step_R" [shape=octagon, label="bin-mul-step", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_bin-mul-step_R" -> "?k_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_bin-mul-step_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_bin-mul-step_R" -> "?rest_R" [label="3", color="#7f7f7f", style=dashed];
-    "h2_bin-mul-step_R" -> "z_R" [label="4", color="#7f7f7f", style=dashed];
+    "z_R" [label="z", shape=box];
+    "h2_bin-mul-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_bin-mul-step_R" -> "bin-mul-step_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_bin-mul-step_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_bin-mul-step_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_bin-mul-step_R" -> "?rest_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_bin-mul-step_R" -> "z_R" [xlabel="5", color="#7f7f7f", style=dashed];
   }
 }

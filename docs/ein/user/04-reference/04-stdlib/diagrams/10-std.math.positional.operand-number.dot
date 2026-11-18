@@ -2,27 +2,39 @@ digraph rule_operand_number_lhs_rhs {
   rankdir=TB;
   label="operand-number"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?OPERAND_L" [label="?OPERAND", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?N ?p ?a)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "?k_L" -> "(?N ?p ?a)_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-    "(?N ?p ?a)_L" -> "?p_L" [label="1", color="#7f7f7f"];
-    "(?N ?p ?a)_L" -> "?a_L" [label="2", color="#7f7f7f"];
+    "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_OPERAND_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#d62728"];
+    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "?OPERAND-IS_R" [label="?OPERAND-IS", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
+    "?N_R" [label="?N", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?OPERAND-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?N ?p ?a)_R" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?N ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "?k_R" -> "(?N ?p ?a)_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-    "(?N ?p ?a)_R" -> "?p_R" [label="1", color="#7f7f7f", style=dashed];
-    "(?N ?p ?a)_R" -> "?a_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_OPERAND-IS_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_OPERAND-IS_R" -> "?OPERAND-IS_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_OPERAND-IS_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_OPERAND-IS_R" -> "(?N ?p ?a)_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(?N ?p ?a)_R" -> "?N_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(?N ?p ?a)_R" -> "?p_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(?N ?p ?a)_R" -> "?a_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

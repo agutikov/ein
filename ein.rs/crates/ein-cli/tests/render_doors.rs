@@ -4,8 +4,8 @@
 //! nodes' lattice:
 //!
 //! ```text
-//! ein render program FILE [--levi] [--rule-mode …]          the program as written
-//! ein render kb FILE [--since FILE] [--colour-by …] …        a KB, one digraph
+//! ein render program FILE [--fold] [--rule-mode …]          the program as written
+//! ein render kb FILE [--since FILE] [--colour-by …] [--fold] a KB, one digraph
 //! ein solve FILE --dump-lattice DIR …                        every node the run visited
 //! ein render lattice FILE [--view full]                      those nodes drawn
 //! ```
@@ -81,10 +81,14 @@ fn every_door_prints_dot_that_dot_draws() {
             vec!["render", "program", "examples/zebra2.ein"],
         ),
         (
-            "render program --levi",
-            vec!["render", "program", "examples/zebra2.ein", "--levi"],
+            "render program --fold",
+            vec!["render", "program", "examples/zebra2.ein", "--fold"],
         ),
         ("render kb", vec!["render", "kb", "examples/zebra2.ein"]),
+        (
+            "render kb --fold",
+            vec!["render", "kb", "examples/zebra2.ein", "--fold"],
+        ),
         (
             "render kb --colour-by origin",
             vec![
@@ -209,12 +213,106 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
     assert_eq!(r.code, 0, "{}", r.err);
     dot_accepts("render kb --since", &r.out);
     let bold: Vec<&str> = r.out.lines().filter(|l| l.contains("penwidth=3")).collect();
-    // State 6 seats two guests: two `seat` edges ∅ did not have.
+    // State 6 seats two guests: two facts of `seat` ∅ did not have, each
+    // drawn bold with its first arrow at the relation.
     assert_eq!(
-        bold.iter().filter(|l| l.contains("seat")).count(),
+        bold.iter()
+            .filter(|l| l.contains(" -> \"seat\" [xlabel=\"1\""))
+            .count(),
         2,
-        "the bold edges are not the commitment's:\n{}",
+        "the bold facts are not the commitment's:\n{}",
         bold.join("\n")
+    );
+}
+
+/// **One program in both forms, through every door that draws facts**
+/// (Q-M1f.419): by default a fact of three arrows is an octagon with no name
+/// in it, its arrow `1` at the relation's atom, and under `--fold` it is one
+/// arrow from its first argument to its second, labelled with the relation.
+/// The trace's drawings take the option too.
+#[test]
+fn every_door_draws_a_fact_in_both_forms() {
+    let tmp = scratch("fold");
+    let file = "examples/zebra2.ein";
+    // A folded arrow: an edge with its relation's name on it, its `label` in a
+    // rule's panel and its `xlabel` in a knowledge base, where a number is an
+    // `xlabel` too; a guard's link, undirected, carries its glyph.
+    let folded = |out: &str| {
+        out.lines().any(|l| {
+            l.contains(" -> ")
+                && !l.contains("dir=none")
+                && (l.contains("[label=\"")
+                    || l.split("[xlabel=\"")
+                        .nth(1)
+                        .is_some_and(|rest| !rest.starts_with(|c: char| c.is_ascii_digit())))
+        })
+    };
+    for door in [
+        &["render", "program", file][..],
+        &["render", "kb", file],
+        &["render", "rules", file],
+        &["render", "rule", "--name", "co-located", file],
+    ] {
+        let canonical = ein(door);
+        assert_eq!(canonical.code, 0, "{door:?}: {}", canonical.err);
+        assert!(
+            canonical.out.contains("[xlabel=\"1\""),
+            "{door:?}: no first arrow at a relation:\n{}",
+            canonical.out
+        );
+        assert!(!folded(&canonical.out), "{door:?}: folded by default");
+        assert!(!canonical.out.contains("label=\"#"), "{door:?}");
+        let mut with = door.to_vec();
+        with.push("--fold");
+        let fold = ein(&with);
+        assert_eq!(fold.code, 0, "{with:?}: {}", fold.err);
+        assert!(folded(&fold.out), "{with:?}: nothing folded:\n{}", fold.out);
+        dot_accepts(&format!("{with:?}"), &fold.out);
+    }
+    let r = ein(&["render", "constraints", "--fold", file]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    dot_accepts("render constraints --fold", &r.out);
+    // The trace: each step's drawing and each state's knowledge base.
+    let trace = |extra: &[&str]| -> String {
+        let out = tmp.join(format!("trace{}.md", extra.len()));
+        let mut argv = vec!["solve", "examples/features/11_expect_ambiguity.ein", "-F"];
+        let out_s = out.to_string_lossy().into_owned();
+        argv.extend(["--trace", out_s.as_str()]);
+        argv.extend(extra);
+        let r = ein(&argv);
+        assert_eq!(r.code, 0, "{argv:?}: {}", r.err);
+        std::fs::read_to_string(&out).expect("the trace is written")
+    };
+    let (canonical, fold) = (trace(&[]), trace(&["--fold"]));
+    let seat = |md: &str| {
+        md.lines()
+            .any(|l| l.contains(" -> ") && (l.contains("label=\"seat")))
+    };
+    assert!(!seat(&canonical), "the trace folds by default");
+    assert!(seat(&fold), "--fold folds nothing in the trace");
+    // A step's own drawing: a fact a firing reads or derives, folded, is an
+    // arrow through the point the firing's arrows meet.
+    let packing = |extra: &[&str]| -> String {
+        let out = tmp.join(format!("packing{}.md", extra.len()));
+        let out_s = out.to_string_lossy().into_owned();
+        let mut argv = vec![
+            "solve",
+            "examples/beliefs/02_packing.ein",
+            "--trace",
+            out_s.as_str(),
+        ];
+        argv.extend(extra);
+        let r = ein(&argv);
+        assert_eq!(r.code, 0, "{argv:?}: {}", r.err);
+        std::fs::read_to_string(&out).expect("the trace is written")
+    };
+    assert!(
+        !packing(&[]).contains("arrowhead=none"),
+        "a slice folds by default"
+    );
+    assert!(
+        packing(&["--fold"]).contains("shape=point"),
+        "--fold folds nothing in a slice"
     );
 }
 

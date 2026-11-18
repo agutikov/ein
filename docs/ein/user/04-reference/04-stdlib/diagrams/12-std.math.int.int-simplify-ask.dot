@@ -2,22 +2,32 @@ digraph rule_int_simplify_ask_lhs_rhs {
   rankdir=TB;
   label="int-simplify-ask"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-simplify_L" [label="int-simplify", shape=box];
     "?x_L" [label="?x", shape=diamond];
-    "h1_int-simplify_L" [shape=octagon, label="int-simplify", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-simplify_L" -> "?x_L" [label="1", color="#2ca02c"];
+    "h1_int-simplify_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_int-simplify_L" -> "int-simplify_L" [xlabel="1", color="#2ca02c"];
+    "h1_int-simplify_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand_R" [label="operand", shape=box];
+    "int-only_R" [label="int-only", shape=box];
+    "int-simplify_R" [label="int-simplify", shape=box];
     "?x_R" [label="?x", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="int-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-simplify ?x)_R" [shape=octagon, label="int-simplify", color="#2ca02c", fontcolor="#2ca02c"];
+      "(int-simplify ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     subgraph cluster_ctx_R_1 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-only (int-simplify ?x))_R" [shape=octagon, label="int-only", color="#9467bd", fontcolor="#9467bd"];
+      "(int-only (int-simplify ?x))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(int-only (int-simplify ?x))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(int-only (int-simplify ?x))_R" -> "(int-simplify ?x)_R" [label="1", color="#9467bd", style=dashed];
-    "(int-simplify ?x)_R" -> "?x_R" [label="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "(int-only (int-simplify ?x))_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(int-only (int-simplify ?x))_R" -> "int-only_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(int-only (int-simplify ?x))_R" -> "(int-simplify ?x)_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(int-simplify ?x)_R" -> "int-simplify_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(int-simplify ?x)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

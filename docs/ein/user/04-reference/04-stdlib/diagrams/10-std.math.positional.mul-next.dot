@@ -2,28 +2,36 @@ digraph rule_mul_next_lhs_rhs {
   rankdir=TB;
   label="mul-next"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?DONE_L" [label="?DONE", shape=diamond];
+    "?MUL-SUM_L" [label="?MUL-SUM", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?rest_L" [label="?rest", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?DONE ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?MUL-SUM ?k ?u ?rest)_L" [shape=octagon, label="?MUL-SUM", color="#9467bd", fontcolor="#9467bd"];
+      "(?MUL-SUM ?k ?u ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?s_L" [label="?DONE", color="#9467bd", fontcolor="#9467bd"];
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?k_L" [label="1", color="#9467bd"];
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?u_L" [label="2", color="#9467bd"];
-    "(?MUL-SUM ?k ?u ?rest)_L" -> "?rest_L" [label="3", color="#9467bd"];
+    "h1_DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_DONE_L" -> "?DONE_L" [xlabel="1", color="#9467bd"];
+    "h1_DONE_L" -> "(?MUL-SUM ?k ?u ?rest)_L" [xlabel="2", color="#9467bd"];
+    "h1_DONE_L" -> "?s_L" [xlabel="3", color="#9467bd"];
+    "(?MUL-SUM ?k ?u ?rest)_L" -> "?MUL-SUM_L" [xlabel="1", color="#9467bd"];
+    "(?MUL-SUM ?k ?u ?rest)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
+    "(?MUL-SUM ?k ?u ?rest)_L" -> "?u_L" [xlabel="3", color="#9467bd"];
+    "(?MUL-SUM ?k ?u ?rest)_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "?MUL-STEP_R" [label="?MUL-STEP", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
-    "h1_MUL-STEP_R" [shape=octagon, label="?MUL-STEP", color="#17becf", fontcolor="#17becf"];
-    "h1_MUL-STEP_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?u_R" [label="2", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?rest_R" [label="3", color="#17becf", style=dashed];
-    "h1_MUL-STEP_R" -> "?s_R" [label="4", color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" -> "?MUL-STEP_R" [xlabel="1", color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" -> "?u_R" [xlabel="3", color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" -> "?rest_R" [xlabel="4", color="#17becf", style=dashed];
+    "h2_MUL-STEP_R" -> "?s_R" [xlabel="5", color="#17becf", style=dashed];
   }
 }

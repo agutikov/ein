@@ -182,11 +182,18 @@ refuses is refused by every view as by every other command
 ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)), and no view changes
 an answer. What each view draws, and how, is [`12-rendering.md`](12-rendering.md).
 
+**Every view that draws facts takes `--fold`**, and so does `ein solve` for the drawings of its `--trace`: by
+default a fact is drawn as the graph has it, an octagon with no name in it whose arrow `1` is at its relation's atom
+and whose next arrows are at its arguments; under `--fold` a fact of three arrows that nothing drawn points at is one
+arrow from its first argument to its second, labelled with its relation
+([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)). It changes the
+drawing and nothing else.
+
 | view | what it draws or lists |
 |---|---|
-| `ein render program FILE` | the program as written: one digraph per group, rules, ontology, facts, the query |
+| `ein render program FILE` | the program as written, in three parts: its knowledge base as one digraph, drawn as `ein render kb` draws one; a digraph per rule, hrule and macro; the query ([Q-M1f.420](../../../decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md)) |
 | `ein render rules FILE`, `rule FILE --name R` | one digraph per rule, or one rule by name |
-| `ein render constraints FILE` | the scopes of the structural properties a program states |
+| `ein render constraints FILE` | the facts a program states, with no source, of the relations it does not declare |
 | `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE` that loads to its state, so a solution draws the way root does |
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
@@ -320,7 +327,7 @@ itself, is in R there, and every alive extension is a second state. That is what
 | Faster, the same answer | `-j N`, or `-j auto` |
 | What did the run visit? | the `work` row; `-t` for where the wall clock went; `--dump-lattice DIR` for every node; `ein render lattice F`, or `ein render region ORACLE_DIR --visited DIR` to draw them on the cube |
 | The whole lattice, drawn | `ein oracle F --dump D`, then `ein render region D` |
-| Why does a solution look like this? | `--trace FILE.md`: the derivation of each listed state from its commitment, and of each minimal dead set |
+| Why does a solution look like this? | `--trace FILE.md`: the derivation of each listed state from its commitment, and of each minimal dead set; `--fold` folds its drawings |
 | What could be guessed, and how do the guesses interact? | `ein show hyps F` for H; `ein render h-space F` for its structure |
 
 ---

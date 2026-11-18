@@ -2,20 +2,28 @@ digraph rule_let_digit_zero_lhs_rhs {
   rankdir=TB;
   label="let-digit-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "0_L" [label="0", shape=rectangle];
+    "?LET_L" [label="?LET", shape=diamond];
+    "0_L" [label="0", shape=box];
     "?v_L" [label="?v", shape=diamond];
-    "0_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "h1_LET_L" -> "0_L" [xlabel="2", color="#7f7f7f"];
+    "h1_LET_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "0_R" [label="0", shape=rectangle];
+    "?MALFORMED_R" [label="?MALFORMED", shape=diamond];
+    "?LET_R" [label="?LET", shape=diamond];
+    "0_R" [label="0", shape=box];
     "?v_R" [label="?v", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?MALFORMED ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?LET 0 ?v)_R" [shape=octagon, label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?LET 0 ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET 0 ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-    "(?LET 0 ?v)_R" -> "0_R" [label="1", color="#7f7f7f", style=dashed];
-    "(?LET 0 ?v)_R" -> "?v_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_MALFORMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "?MALFORMED_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "(?LET 0 ?v)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "(?LET 0 ?v)_R" -> "?LET_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(?LET 0 ?v)_R" -> "0_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(?LET 0 ?v)_R" -> "?v_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

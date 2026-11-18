@@ -2,29 +2,41 @@ digraph rule_bad_add_second_lhs_rhs {
   rankdir=TB;
   label="bad-add-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?BAD-OPERAND_L" [label="?BAD-OPERAND", shape=diamond];
+    "?ADD-SECOND_L" [label="?ADD-SECOND", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?BAD-OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?ADD-SECOND ?x ?y ?u)_L" [shape=octagon, label="?ADD-SECOND", color="#9467bd", fontcolor="#9467bd"];
+      "(?ADD-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?f_L" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf"];
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?x_L" [label="1", color="#9467bd"];
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?y_L" [label="2", color="#9467bd"];
-    "(?ADD-SECOND ?x ?y ?u)_L" -> "?u_L" [label="3", color="#9467bd"];
+    "h1_BAD-OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_BAD-OPERAND_L" -> "?BAD-OPERAND_L" [xlabel="1", color="#17becf"];
+    "h1_BAD-OPERAND_L" -> "(?ADD-SECOND ?x ?y ?u)_L" [xlabel="2", color="#17becf"];
+    "h1_BAD-OPERAND_L" -> "?f_L" [xlabel="3", color="#17becf"];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?ADD-SECOND_L" [xlabel="1", color="#9467bd"];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
+    "(?ADD-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "?BAD-REQUEST_R" [label="?BAD-REQUEST", shape=diamond];
+    "?ADD_R" [label="?ADD", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?BAD-REQUEST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?ADD ?x ?y)_R" [shape=octagon, label="?ADD", color="#2ca02c", fontcolor="#2ca02c"];
+      "(?ADD ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "(?ADD ?x ?y)_R" -> "?f_R" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728", style=dashed];
-    "(?ADD ?x ?y)_R" -> "?x_R" [label="1", color="#2ca02c", style=dashed];
-    "(?ADD ?x ?y)_R" -> "?y_R" [label="2", color="#2ca02c", style=dashed];
+    "h2_BAD-REQUEST_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_BAD-REQUEST_R" -> "?BAD-REQUEST_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_BAD-REQUEST_R" -> "(?ADD ?x ?y)_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_BAD-REQUEST_R" -> "?f_R" [xlabel="3", color="#d62728", style=dashed];
+    "(?ADD ?x ?y)_R" -> "?ADD_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(?ADD ?x ?y)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(?ADD ?x ?y)_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
   }
 }

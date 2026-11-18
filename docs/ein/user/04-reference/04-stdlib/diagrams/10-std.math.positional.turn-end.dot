@@ -2,19 +2,27 @@ digraph rule_turn_end_lhs_rhs {
   rankdir=TB;
   label="turn-end"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?TURN_L" [label="?TURN", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
-    "h1_TURN_L" [shape=octagon, label="?TURN", color="#9467bd", fontcolor="#9467bd"];
-    "h1_TURN_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_TURN_L" -> "z_L" [label="2", color="#9467bd"];
-    "h1_TURN_L" -> "?acc_L" [label="3", color="#9467bd"];
+    "h1_TURN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_TURN_L" -> "?TURN_L" [xlabel="1", color="#9467bd"];
+    "h1_TURN_L" -> "?k_L" [xlabel="2", color="#9467bd"];
+    "h1_TURN_L" -> "z_L" [xlabel="3", color="#9467bd"];
+    "h1_TURN_L" -> "?acc_L" [xlabel="4", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "?DONE_R" [label="?DONE", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?DONE", color="#9467bd", fontcolor="#9467bd", style=dashed];
-    "h2_VALID_R" [shape=octagon, label="?VALID", color="#17becf", fontcolor="#17becf"];
-    "h2_VALID_R" -> "?acc_R" [label="1", color="#17becf", style=dashed];
+    "?VALID_R" [label="?VALID", shape=diamond];
+    "h2_DONE_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?DONE_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?acc_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h3_VALID_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h3_VALID_R" -> "?VALID_R" [xlabel="1", color="#17becf", style=dashed];
+    "h3_VALID_R" -> "?acc_R" [xlabel="2", color="#17becf", style=dashed];
   }
 }

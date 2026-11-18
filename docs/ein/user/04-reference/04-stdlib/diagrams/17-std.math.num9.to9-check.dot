@@ -2,12 +2,18 @@ digraph rule_to9_check_lhs_rhs {
   rankdir=TB;
   label="to9-check"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "to9_L" [label="to9", shape=box];
     "?x_L" [label="?x", shape=diamond];
-    "h1_to9_L" [shape=octagon, label="to9", color="#9467bd", fontcolor="#9467bd"];
-    "h1_to9_L" -> "?x_L" [label="1", color="#9467bd"];
+    "h1_to9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_to9_L" -> "to9_L" [xlabel="1", color="#9467bd"];
+    "h1_to9_L" -> "?x_L" [xlabel="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "check_R" [label="check", shape=box];
     "?x_R" [label="?x", shape=diamond];
-    "?x_R" -> "?x_R" [label="check", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+    "h2_check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "check_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_check_R" -> "?x_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

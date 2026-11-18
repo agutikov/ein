@@ -2,30 +2,44 @@ digraph rule_rat_div_ask_lhs_rhs {
   rankdir=TB;
   label="rat-div-ask"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "rat-div_L" [label="rat-div", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="rat-div", color="#d62728", fontcolor="#d62728"];
+    "h1_rat-div_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_rat-div_L" -> "rat-div_L" [xlabel="1", color="#d62728"];
+    "h1_rat-div_L" -> "?x_L" [xlabel="2", color="#d62728"];
+    "h1_rat-div_L" -> "?y_L" [xlabel="3", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand_R" [label="operand", shape=box];
+    "rat-of_R" [label="rat-of", shape=box];
+    "rat-first_R" [label="rat-first", shape=box];
+    "rat-div_R" [label="rat-div", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     subgraph cluster_ctx_R_1 {
       label="rat-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-div ?x ?y)_R" [shape=octagon, label="rat-div", color="#d62728", fontcolor="#d62728"];
+      "(rat-div ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     subgraph cluster_ctx_R_2 {
       label="rat-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-first (rat-div ?x ?y) ?y)_R" [shape=octagon, label="rat-first", color="#bcbd22", fontcolor="#bcbd22"];
+      "(rat-first (rat-div ?x ?y) ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" -> "(rat-first (rat-div ?x ?y) ?y)_R" [label="1", color="#2ca02c", style=dashed];
-    "(rat-first (rat-div ?x ?y) ?y)_R" -> "(rat-div ?x ?y)_R" [label="1", color="#bcbd22", style=dashed];
-    "(rat-first (rat-div ?x ?y) ?y)_R" -> "?y_R" [label="2", color="#bcbd22", style=dashed];
-    "(rat-div ?x ?y)_R" -> "?x_R" [label="1", color="#d62728", style=dashed];
-    "(rat-div ?x ?y)_R" -> "?y_R" [label="2", color="#d62728", style=dashed];
+    "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(rat-of (rat-first (rat-div ?x ?y) ?y))_R" -> "(rat-first (rat-div ?x ?y) ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(rat-first (rat-div ?x ?y) ?y)_R" -> "rat-first_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(rat-first (rat-div ?x ?y) ?y)_R" -> "(rat-div ?x ?y)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(rat-first (rat-div ?x ?y) ?y)_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(rat-div ?x ?y)_R" -> "rat-div_R" [xlabel="1", color="#d62728", style=dashed];
+    "(rat-div ?x ?y)_R" -> "?x_R" [xlabel="2", color="#d62728", style=dashed];
+    "(rat-div ?x ?y)_R" -> "?y_R" [xlabel="3", color="#d62728", style=dashed];
   }
 }

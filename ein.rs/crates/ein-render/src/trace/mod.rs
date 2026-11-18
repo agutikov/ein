@@ -9,5 +9,5 @@ pub mod relevance;
 pub mod render;
 
 pub use ast::{FactRef, RefArg, TraceStep, fact_ref};
-pub use linearize::{steps_of, steps_of_with};
+pub use linearize::{Diagrams, steps_of, steps_of_with};
 pub use relevance::relevant_firings;

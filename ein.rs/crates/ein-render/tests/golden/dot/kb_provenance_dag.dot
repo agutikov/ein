@@ -1,8 +1,21 @@
 digraph derivation {
   rankdir=BT;
-  f_0b8a036bc4 [shape=box, label="(q a c)\n[rule: triangle]"];
-  f_69510aab53 [shape=ellipse, label="(p a b)\n[(1)]"];
-  f_b34b2c73fa [shape=ellipse, label="(p b c)\n[(2)]"];
-  f_69510aab53 -> f_0b8a036bc4;
-  f_b34b2c73fa -> f_0b8a036bc4;
+  ranksep=0.55;
+  node [shape=box];
+  f_0b8a036bc4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="by triangle"];
+  f_69510aab53 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="(1)"];
+  f_b34b2c73fa [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="(2)"];
+  f_0b8a036bc4 -> "q" [xlabel="1"];
+  f_0b8a036bc4 -> "a" [xlabel="2"];
+  f_0b8a036bc4 -> "c" [xlabel="3"];
+  f_69510aab53 -> "p" [xlabel="1"];
+  f_69510aab53 -> "a" [xlabel="2"];
+  f_69510aab53 -> "b" [xlabel="3"];
+  f_b34b2c73fa -> "p" [xlabel="1"];
+  f_b34b2c73fa -> "b" [xlabel="2"];
+  f_b34b2c73fa -> "c" [xlabel="3"];
+  j0 [shape=diamond, width=.2, height=.2, label=""];
+  f_69510aab53 -> j0 [style=bold];
+  f_b34b2c73fa -> j0 [style=bold];
+  j0 -> f_0b8a036bc4 [style=bold];
 }

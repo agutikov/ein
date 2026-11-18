@@ -2,26 +2,38 @@ digraph rule_numeral_prefix_zero_lhs_rhs {
   rankdir=TB;
   label="numeral-prefix-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "check_L" [label="check", shape=box];
     "?w_L" [label="?w", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
+    "n_L" [label="n", shape=box];
+    "0_L" [label="0", shape=box];
     "?a_L" [label="?a", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n 0 ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n 0 ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "?w_L" -> "(n 0 ?a)_L" [label="check", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "(n 0 ?a)_L" -> "0_L" [label="1", color="#9467bd"];
-    "(n 0 ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
+    "h1_check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_check_L" -> "check_L" [xlabel="1", color="#7f7f7f"];
+    "h1_check_L" -> "?w_L" [xlabel="2", color="#7f7f7f"];
+    "h1_check_L" -> "(n 0 ?a)_L" [xlabel="3", color="#7f7f7f"];
+    "(n 0 ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n 0 ?a)_L" -> "0_L" [xlabel="2", color="#9467bd"];
+    "(n 0 ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "0_R" [label="0", shape=rectangle];
+    "not-decimal_R" [label="not-decimal", shape=box];
+    "n_R" [label="n", shape=box];
+    "0_R" [label="0", shape=box];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-decimal ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n 0 ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n 0 ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(n 0 ?a)_R" -> "0_R" [label="not-decimal", color="#d62728", fontcolor="#d62728", style=dashed];
-    "(n 0 ?a)_R" -> "0_R" [label="1", color="#9467bd", style=dashed];
-    "(n 0 ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
+    "h2_not-decimal_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_not-decimal_R" -> "not-decimal_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_not-decimal_R" -> "(n 0 ?a)_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_not-decimal_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
+    "(n 0 ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n 0 ?a)_R" -> "0_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n 0 ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

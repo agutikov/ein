@@ -74,33 +74,31 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     Some("overlay") => RuleMode::Overlay,
                     _ => RuleMode::SideBySide,
                 };
+            let fold = |s: &clap::ArgMatches| s.get_flag("fold");
             match sm.subcommand() {
                 Some(("rules", a)) => {
-                    render::cmd_rules(&file(a), mode(a), &common::load_options(a))
+                    render::cmd_rules(&file(a), mode(a), fold(a), &common::load_options(a))
                 }
                 Some(("rule", a)) => render::cmd_rule(
                     &file(a),
                     a.get_one::<String>("name").expect("required"),
                     mode(a),
+                    fold(a),
                     &common::load_options(a),
                 ),
                 Some(("constraints", a)) => {
-                    render::cmd_constraints(&file(a), &common::load_options(a))
+                    render::cmd_constraints(&file(a), fold(a), &common::load_options(a))
                 }
-                Some(("program", a)) => render::cmd_program(
-                    &file(a),
-                    mode(a),
-                    a.get_flag("levi"),
-                    &common::load_options(a),
-                ),
+                Some(("program", a)) => {
+                    render::cmd_program(&file(a), mode(a), fold(a), &common::load_options(a))
+                }
                 Some(("kb", a)) => render::cmd_kb(
                     &file(a),
                     a.get_one::<String>("since").map(String::as_str),
                     a.get_one::<String>("colour-by")
                         .and_then(|c| ein_render::ColourBy::parse(c))
                         .unwrap_or(ein_render::ColourBy::Relation),
-                    !a.get_flag("no-types"),
-                    !a.get_flag("no-instances"),
+                    fold(a),
                     &common::load_options(a),
                 ),
                 Some(("region", a)) => render::cmd_region(

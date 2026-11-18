@@ -2,10 +2,16 @@ digraph rule_irreflexive_lhs_rhs {
   rankdir=TB;
   label="irreflexive"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?R_L" [label="?R", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
-    "?a_L" -> "?a_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "h1_R_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
+    "h1_R_L" -> "?a_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+    "false_R" [label="false", shape=box];
+    "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
   }
 }

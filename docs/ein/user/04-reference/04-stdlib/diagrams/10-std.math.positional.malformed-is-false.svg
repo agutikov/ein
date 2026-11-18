@@ -2,47 +2,71 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_malformed_is_false_lhs_rhs Pages: 1 -->
-<svg width="328pt" height="216pt"
- viewBox="0.00 0.00 328.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<svg width="538pt" height="184pt"
+ viewBox="0.00 0.00 538.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 180.1)">
 <title>rule_malformed_is_false_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 324,-211.75 324,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="160" y="-190.45" font-family="Times,serif" font-size="14.00">malformed&#45;is&#45;false</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-180.1 534,-180.1 534,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="265" y="-158.8" font-family="Times,serif" font-size="14.00">malformed&#45;is&#45;false</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
-<polygon fill="none" stroke="black" points="8,-8 8,-174.5 212,-174.5 212,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="110" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+<polygon fill="none" stroke="black" points="8,-8 8,-142.85 444,-142.85 444,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="226" y="-125.55" font-family="Times,serif" font-size="14.00">match</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="220,-97.25 220,-174.5 312,-174.5 312,-97.25 220,-97.25"/>
-<text xml:space="preserve" text-anchor="middle" x="266" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="452,-8 452,-142.85 522,-142.85 522,-8 452,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-125.55" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- ?MALFORMED_L -->
+<g id="node1" class="node">
+<title>?MALFORMED_L</title>
+<polygon fill="none" stroke="black" points="139,-52 15.99,-34 139,-16 262.01,-34 139,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="139" y="-29.32" font-family="Times,serif" font-size="14.00">?MALFORMED</text>
 </g>
 <!-- ?request_L -->
-<g id="node1" class="node">
+<g id="node2" class="node">
 <title>?request_L</title>
-<polygon fill="none" stroke="black" points="110,-52 32.37,-34 110,-16 187.63,-34 110,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="110" y="-29.32" font-family="Times,serif" font-size="14.00">?request</text>
+<polygon fill="none" stroke="black" points="358,-52 280.37,-34 358,-16 435.63,-34 358,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="358" y="-29.32" font-family="Times,serif" font-size="14.00">?request</text>
 </g>
 <!-- h1_MALFORMED_L -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>h1_MALFORMED_L</title>
-<polygon fill="none" stroke="#ff7f0e" points="204.15,-115.79 204.15,-130.71 149,-141.25 71,-141.25 15.85,-130.71 15.85,-115.79 71,-105.25 149,-105.25 204.15,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="110" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">?MALFORMED</text>
+<polygon fill="none" stroke="#ff7f0e" points="258.8,-94.33 258.8,-103.27 252.47,-109.6 243.53,-109.6 237.2,-103.27 237.2,-94.33 243.53,-88 252.47,-88 258.8,-94.33"/>
+</g>
+<!-- h1_MALFORMED_L&#45;&gt;?MALFORMED_L -->
+<g id="edge1" class="edge">
+<title>h1_MALFORMED_L&#45;&gt;?MALFORMED_L</title>
+<path fill="none" stroke="#ff7f0e" d="M238.71,-92.45C224.27,-84.13 195.72,-67.68 172.86,-54.51"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="174.88,-51.63 164.46,-49.67 171.38,-57.7 174.88,-51.63"/>
+<text xml:space="preserve" text-anchor="middle" x="196.57" y="-74.71" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- h1_MALFORMED_L&#45;&gt;?request_L -->
-<g id="edge1" class="edge">
+<g id="edge2" class="edge">
 <title>h1_MALFORMED_L&#45;&gt;?request_L</title>
-<path fill="none" stroke="#ff7f0e" d="M110,-105.01C110,-93.26 110,-77.41 110,-63.77"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="113.5,-64.01 110,-54.01 106.5,-64.01 113.5,-64.01"/>
-<text xml:space="preserve" text-anchor="middle" x="114.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#ff7f0e" d="M257.38,-92.45C272.49,-83.82 302.92,-66.44 326.38,-53.05"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="328,-56.16 334.95,-48.16 324.53,-50.08 328,-56.16"/>
+<text xml:space="preserve" text-anchor="middle" x="292.23" y="-73.93" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- false_R -->
+<g id="node4" class="node">
+<title>false_R</title>
+<polygon fill="none" stroke="black" points="514,-52 460,-52 460,-16 514,-16 514,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="487" y="-29.32" font-family="Times,serif" font-size="14.00">false</text>
 </g>
 <!-- h2_false_R -->
-<g id="node3" class="node">
+<g id="node5" class="node">
 <title>h2_false_R</title>
-<polygon fill="none" stroke="#2ca02c" points="303.77,-115.79 303.77,-130.71 281.65,-141.25 250.35,-141.25 228.23,-130.71 228.23,-115.79 250.35,-105.25 281.65,-105.25 303.77,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="266" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+<polygon fill="none" stroke="#2ca02c" stroke-dasharray="5,2" points="497.8,-94.33 497.8,-103.27 491.47,-109.6 482.53,-109.6 476.2,-103.27 476.2,-94.33 482.53,-88 491.47,-88 497.8,-94.33"/>
+</g>
+<!-- h2_false_R&#45;&gt;false_R -->
+<g id="edge3" class="edge">
+<title>h2_false_R&#45;&gt;false_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M487,-87.71C487,-81.13 487,-72.19 487,-63.54"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="490.5,-63.69 487,-53.69 483.5,-63.69 490.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="482.5" y="-73.99" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 3dbe47e434e186e04e6a2284d5709cd1e1370586e5b0124c1e2b2623afed4e58 -->
+<!-- source sha256: a4fd6b7433bdca6706015df7361e1f20e83f7d2cefc8c969a29e20721b586a74 -->

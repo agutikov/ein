@@ -2,40 +2,50 @@ digraph rule_rat_neg_start_lhs_rhs {
   rankdir=TB;
   label="rat-neg-start"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "rat-operand-is_L" [label="rat-operand-is", shape=box];
+    "rat-only_L" [label="rat-only", shape=box];
+    "rat-neg_L" [label="rat-neg", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="rat-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-neg ?x)_L" [shape=octagon, label="rat-neg", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-neg ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     subgraph cluster_ctx_L_1 {
       label="rat-operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-only (rat-neg ?x))_L" [shape=octagon, label="rat-only", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-only (rat-neg ?x))_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h1_rat-operand-is_L" [shape=octagon, label="rat-operand-is", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_rat-operand-is_L" -> "(rat-only (rat-neg ?x))_L" [label="1", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?p_L" [label="2", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?n_L" [label="3", color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "?d_L" [label="4", color="#1f77b4"];
-    "(rat-only (rat-neg ?x))_L" -> "(rat-neg ?x)_L" [label="1", color="#2ca02c"];
-    "(rat-neg ?x)_L" -> "?x_L" [label="1", color="#2ca02c"];
+    "h1_rat-operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "rat-operand-is_L" [xlabel="1", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "(rat-only (rat-neg ?x))_L" [xlabel="2", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?p_L" [xlabel="3", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?n_L" [xlabel="4", color="#1f77b4"];
+    "h1_rat-operand-is_L" -> "?d_L" [xlabel="5", color="#1f77b4"];
+    "(rat-only (rat-neg ?x))_L" -> "rat-only_L" [xlabel="1", color="#2ca02c"];
+    "(rat-only (rat-neg ?x))_L" -> "(rat-neg ?x)_L" [xlabel="2", color="#2ca02c"];
+    "(rat-neg ?x)_L" -> "rat-neg_L" [xlabel="1", color="#2ca02c"];
+    "(rat-neg ?x)_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
+    "rat-norm_R" [label="rat-norm", shape=box];
+    "rat-neg_R" [label="rat-neg", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="rat-norm ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-neg ?x)_R" [shape=octagon, label="rat-neg", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-neg ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h2_rat-norm_R" [shape=octagon, label="rat-norm", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_rat-norm_R" -> "(rat-neg ?x)_R" [label="1", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?n_R" [label="2", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?p_R" [label="3", color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "?d_R" [label="4", color="#bcbd22", style=dashed];
-    "(rat-neg ?x)_R" -> "?x_R" [label="1", color="#2ca02c", style=dashed];
+    "h2_rat-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_rat-norm_R" -> "rat-norm_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_rat-norm_R" -> "(rat-neg ?x)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_rat-norm_R" -> "?n_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_rat-norm_R" -> "?p_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_rat-norm_R" -> "?d_R" [xlabel="5", color="#bcbd22", style=dashed];
+    "(rat-neg ?x)_R" -> "rat-neg_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(rat-neg ?x)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

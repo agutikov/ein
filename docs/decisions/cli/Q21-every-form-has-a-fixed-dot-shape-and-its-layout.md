@@ -1,10 +1,11 @@
 # Q21 — Every form has a fixed DOT shape, and its layout is free
 
 Every form of the program and of the KB has a fixed DOT shape: a view's DOT fixes the graph's structure, and its
-layout (positions, ranks, the style choices the shape leaves open) is Graphviz's to choose. DOT has no hyperedge, so
-a fact of more than two arguments is drawn Levi-bipartite, the fact a node with an edge to each argument; a unary or
-binary fact is a labelled arrow, and `ein render program --levi` draws every fact the Levi way. `ein` writes DOT
-and never rasterises it.
+layout (positions, ranks, the style choices the shape leaves open) is Graphviz's to choose. A fact is a node of the
+graph and DOT has no hyperedge, so a fact of any count is drawn as its node, an octagon with an edge numbered `1` to
+its relation's atom and one to each argument; under `--fold`, a fact of three arrows that nothing drawn points at is
+one labelled arrow ([Q-M1f.419](Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)). `ein` writes DOT and
+never rasterises it.
 
 **Why.** A program is one structure with two surfaces, the text to write and the graph to look at, and the meaning is
 in the structure. Fixing the structure and not the layout makes a view comparable across runs and versions of

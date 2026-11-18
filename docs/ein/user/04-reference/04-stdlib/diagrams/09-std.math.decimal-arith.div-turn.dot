@@ -2,6 +2,8 @@ digraph rule_div_turn_lhs_rhs {
   rankdir=TB;
   label="div-turn"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "done_L" [label="done", shape=box];
+    "div-m9_L" [label="div-m9", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?m1_L" [label="?m1", shape=diamond];
@@ -15,22 +17,29 @@ digraph rule_div_turn_lhs_rhs {
     "?m9_L" [label="?m9", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [shape=octagon, label="div-m9", color="#d62728", fontcolor="#d62728"];
+      "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m9_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?k_L" [label="1", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?u_L" [label="2", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m1_L" [label="3", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m2_L" [label="4", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m3_L" [label="5", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m4_L" [label="6", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m5_L" [label="7", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m6_L" [label="8", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m7_L" [label="9", color="#d62728"];
-    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m8_L" [label="10", color="#d62728"];
+    "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "h1_done_L" -> "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" [xlabel="2", color="#e377c2"];
+    "h1_done_L" -> "?m9_L" [xlabel="3", color="#e377c2"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "div-m9_L" [xlabel="1", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?u_L" [xlabel="3", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m1_L" [xlabel="4", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m2_L" [xlabel="5", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m3_L" [xlabel="6", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m4_L" [xlabel="7", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m5_L" [xlabel="8", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m6_L" [xlabel="9", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m7_L" [xlabel="10", color="#d62728"];
+    "(div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8)_L" -> "?m8_L" [xlabel="11", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
+    "top-first_R" [label="top-first", shape=box];
+    "div-digits_R" [label="div-digits", shape=box];
     "?k_R" [label="?k", shape=diamond];
+    "multiples_R" [label="multiples", shape=box];
     "?m1_R" [label="?m1", shape=diamond];
     "?m2_R" [label="?m2", shape=diamond];
     "?m3_R" [label="?m3", shape=diamond];
@@ -41,29 +50,32 @@ digraph rule_div_turn_lhs_rhs {
     "?m8_R" [label="?m8", shape=diamond];
     "?m9_R" [label="?m9", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
+    "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
       label="div-digits ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [shape=octagon, label="multiples", color="#17becf", fontcolor="#17becf"];
+      "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     subgraph cluster_ctx_R_1 {
       label="top-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [shape=octagon, label="div-digits", color="#1f77b4", fontcolor="#1f77b4"];
+      "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_top-first_R" [shape=octagon, label="top-first", color="#9467bd", fontcolor="#9467bd"];
-    "h1_top-first_R" -> "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [label="1", color="#9467bd", style=dashed];
-    "h1_top-first_R" -> "?u_R" [label="2", color="#9467bd", style=dashed];
-    "h1_top-first_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
-    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [label="2", color="#1f77b4", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m1_R" [label="1", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m2_R" [label="2", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m3_R" [label="3", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m4_R" [label="4", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m5_R" [label="5", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m6_R" [label="6", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m7_R" [label="7", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m8_R" [label="8", color="#17becf", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m9_R" [label="9", color="#17becf", style=dashed];
+    "h2_top-first_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_top-first_R" -> "top-first_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_top-first_R" -> "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_top-first_R" -> "?u_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_top-first_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
+    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "div-digits_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9))_R" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "multiples_R" [xlabel="1", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m1_R" [xlabel="2", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m2_R" [xlabel="3", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m3_R" [xlabel="4", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m4_R" [xlabel="5", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m5_R" [xlabel="6", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m6_R" [xlabel="7", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m7_R" [xlabel="8", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m8_R" [xlabel="9", color="#17becf", style=dashed];
+    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m9_R" [xlabel="10", color="#17becf", style=dashed];
   }
 }

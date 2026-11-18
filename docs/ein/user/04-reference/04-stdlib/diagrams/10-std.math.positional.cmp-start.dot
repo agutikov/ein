@@ -2,35 +2,45 @@ digraph rule_cmp_start_lhs_rhs {
   rankdir=TB;
   label="cmp-start"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?OPERAND-IS_L" [label="?OPERAND-IS", shape=diamond];
+    "?CMP-SECOND_L" [label="?CMP-SECOND", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?OPERAND-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?CMP-SECOND ?x ?y ?u)_L" [shape=octagon, label="?CMP-SECOND", color="#8c564b", fontcolor="#8c564b"];
+      "(?CMP-SECOND ?x ?y ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?v_L" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22"];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?x_L" [label="1", color="#8c564b"];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?y_L" [label="2", color="#8c564b"];
-    "(?CMP-SECOND ?x ?y ?u)_L" -> "?u_L" [label="3", color="#8c564b"];
+    "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "h1_OPERAND-IS_L" -> "(?CMP-SECOND ?x ?y ?u)_L" [xlabel="2", color="#bcbd22"];
+    "h1_OPERAND-IS_L" -> "?v_L" [xlabel="3", color="#bcbd22"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?CMP-SECOND_L" [xlabel="1", color="#8c564b"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?x_L" [xlabel="2", color="#8c564b"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?y_L" [xlabel="3", color="#8c564b"];
+    "(?CMP-SECOND ?x ?y ?u)_L" -> "?u_L" [xlabel="4", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
+    "?CMP-WALK_R" [label="?CMP-WALK", shape=diamond];
+    "?ORDER_R" [label="?ORDER", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
-    "eq_R" [label="eq", shape=rectangle];
+    "eq_R" [label="eq", shape=box];
     subgraph cluster_ctx_R_0 {
       label="?CMP-WALK ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?ORDER ?x ?y)_R" [shape=octagon, label="?ORDER", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?ORDER ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_CMP-WALK_R" [shape=octagon, label="?CMP-WALK", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_CMP-WALK_R" -> "(?ORDER ?x ?y)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "?u_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "?v_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_CMP-WALK_R" -> "eq_R" [label="4", color="#7f7f7f", style=dashed];
-    "(?ORDER ?x ?y)_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "(?ORDER ?x ?y)_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
+    "h2_CMP-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_CMP-WALK_R" -> "?CMP-WALK_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_CMP-WALK_R" -> "(?ORDER ?x ?y)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_CMP-WALK_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_CMP-WALK_R" -> "?v_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_CMP-WALK_R" -> "eq_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "(?ORDER ?x ?y)_R" -> "?ORDER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(?ORDER ?x ?y)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(?ORDER ?x ?y)_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
   }
 }

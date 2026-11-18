@@ -22,7 +22,7 @@ the others at its arguments. An object is identified by its name or by its tuple
 fact of it, held or not, and what a knowledge base holds of it is the **held extent**. The definitions, drawn and
 stated, are [the knowledge base](reasoning/01-static-ir/01-knowledge-base.md), and they are decisions
 [Q-M1f.379](../decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md) to
-[Q-M1f.382](../decisions/language/Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md).
+[Q-M1f.382](../decisions/language/Q-M1f.382-a-labelled-arrow-is-a-fact-of-three-arrows.md).
 
 ## Beside them
 

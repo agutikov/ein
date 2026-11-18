@@ -22,3 +22,6 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.258](Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md) — `ein solve` and `ein test` take `--no-search`, and `ein oracle` refuses it
 - [Q-M1f.309](Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md) — `ein render h-space` shows the hypothesis space, and `ein show hyps` lists it
 - [Q-M1f.395](Q-M1f.395-ein-render-draws-every-object-once.md) — `ein render` draws every object once
+- [Q-M1f.419](Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md) — `ein render` draws a fact as the graph has it, and folds it on request
+- [Q-M1f.420](Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md) — `ein render program` draws the program's knowledge base, its rules and its query
+- [Q-M1f.421](Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md) — No view draws a relation otherwise than another

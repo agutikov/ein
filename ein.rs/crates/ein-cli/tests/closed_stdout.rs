@@ -174,8 +174,8 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("render constraints", vec!["render", "constraints", W]),
         ("render program", vec!["render", "program", W]),
         (
-            "render program --levi",
-            vec!["render", "program", "--levi", W],
+            "render program --fold",
+            vec!["render", "program", "--fold", W],
         ),
         ("render kb", vec!["render", "kb", W]),
         ("render lattice", vec!["render", "lattice", W]),

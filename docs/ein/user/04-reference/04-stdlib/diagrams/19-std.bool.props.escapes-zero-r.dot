@@ -2,18 +2,22 @@ digraph rule_escapes_zero_r_lhs_rhs {
   rankdir=TB;
   label="escapes-zero-r"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "gate2_L" [label="gate2", shape=box];
     "?f_L" [label="?f", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "h1_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
-    "h1_gate2_L" -> "0_L" [label="2", color="#7f7f7f"];
-    "h1_gate2_L" -> "0_L" [label="3", color="#7f7f7f"];
-    "h1_gate2_L" -> "1_L" [label="4", color="#7f7f7f"];
+    "0_L" [label="0", shape=box];
+    "1_L" [label="1", shape=box];
+    "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [xlabel="4", color="#7f7f7f"];
+    "h1_gate2_L" -> "1_L" [xlabel="5", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "escapes-zero_R" [label="escapes-zero", shape=box];
     "?f_R" [label="?f", shape=diamond];
-    "h2_escapes-zero_R" [shape=octagon, label="escapes-zero", color="#9467bd", fontcolor="#9467bd"];
-    "h2_escapes-zero_R" -> "?f_R" [label="1", color="#9467bd", style=dashed];
+    "h2_escapes-zero_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_escapes-zero_R" -> "escapes-zero_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_escapes-zero_R" -> "?f_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

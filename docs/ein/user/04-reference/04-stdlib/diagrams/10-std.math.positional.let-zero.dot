@@ -2,20 +2,28 @@ digraph rule_let_zero_lhs_rhs {
   rankdir=TB;
   label="let-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "z_L" [label="z", shape=rectangle];
+    "?LET_L" [label="?LET", shape=diamond];
+    "z_L" [label="z", shape=box];
     "?v_L" [label="?v", shape=diamond];
-    "z_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "h1_LET_L" -> "z_L" [xlabel="2", color="#7f7f7f"];
+    "h1_LET_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
-    "z_R" [label="z", shape=rectangle];
+    "?MALFORMED_R" [label="?MALFORMED", shape=diamond];
+    "?LET_R" [label="?LET", shape=diamond];
+    "z_R" [label="z", shape=box];
     "?v_R" [label="?v", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?MALFORMED ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?LET z ?v)_R" [shape=octagon, label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?LET z ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "(?LET z ?v)_R" [label="1", color="#ff7f0e", style=dashed];
-    "(?LET z ?v)_R" -> "z_R" [label="1", color="#7f7f7f", style=dashed];
-    "(?LET z ?v)_R" -> "?v_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_MALFORMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "?MALFORMED_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "(?LET z ?v)_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "(?LET z ?v)_R" -> "?LET_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(?LET z ?v)_R" -> "z_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(?LET z ?v)_R" -> "?v_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

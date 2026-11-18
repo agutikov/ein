@@ -401,7 +401,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   object ([Q-M1f.379](docs/decisions/language/Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md),
   [Q-M1f.380](docs/decisions/language/Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md),
   [Q-M1f.381](docs/decisions/language/Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md),
-  [Q-M1f.382](docs/decisions/language/Q-M1f.382-a-labelled-arrow-draws-a-fact-of-two-arguments.md);
+  [Q-M1f.382](docs/decisions/language/Q-M1f.382-a-labelled-arrow-is-a-fact-of-three-arrows.md);
   the page is [`01-knowledge-base.md`](docs/ein/reasoning/01-static-ir/01-knowledge-base.md)).
   *Value* is the code's word for an object (`ein_core::Value`), and *atom*
   never means an atomic formula: that is a fact.

@@ -1,38 +1,40 @@
-//! The per-form IR → DOT renderer.
+//! The per-form IR → DOT renderer: `ein render program`, the program as
+//! written, in three parts (Q-M1f.420).
 //!
-//! Implements `docs/ein/user/04-reference/12-rendering.md`. The default
-//! view is **compact**: a binary fact `(rel a b)` collapses to one labelled,
-//! relation-coloured arrow, and a unary fact to a labelled self-loop (the
-//! predicate-as-subset idiom). `levi = true` keeps the canonical
-//! Levi-bipartite octagon for both; every other arity renders bipartite in
-//! either mode, because DOT has no native hyperedge.
+//! - **`kb`**: every fact and declaration the program states, as written,
+//!   drawn as one graph by the KB view's code ([`crate::fact_graph`]), in
+//!   the canonical form or folded (Q-M1f.419). A program with no rule, no
+//!   import and no macro draws the same digraph as `ein render kb` of it,
+//!   but for what the loader adds. The knowledge base is not split.
+//! - **the rules**: a digraph per rule, hrule and macro, as `ein render rule`
+//!   draws it ([`crate::rules`]).
+//! - **`query`**: the queries, each its `:goal` drawn as a rule's match is,
+//!   and the clauses beside it in a note, and the `(solve …)` clause, a note.
 //!
-//! **A wrapper form is a slice, not a node.** A flat program is re-grouped
-//! as if each group were a wrapper form — `(facts …)` and its siblings —
-//! rendered recursively. Synthesising a node would mean a `&mut Ast` in a
-//! renderer, so the wrappers are *slices* instead: [`render_facts_forms`] and
-//! friends take the children directly and the public per-form entry points
-//! unwrap their argument into one. The emitted bytes are a wrapper form's,
-//! because a wrapper only ever contributes the digraph name.
+//! A written `(trace …)` is drawn after them, as its own digraph. It is
+//! drawn from the parsed forms, so imports are not resolved and a macro's
+//! call stands where it is written; an `(import …)` and a `(config …)` draw
+//! nothing.
 
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::builder::Builder;
-use crate::dot_util::{
-    EQUALITY_SHAPE, GROUND_SHAPE, HYPER_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, ctx_label,
-    multiline, quote, value_label,
-};
+use crate::dot_util::{POLYGON_RANKSEP, multiline, quote, value_label};
+use crate::fact_graph::{Fact, FactSet, Look, Under, fact_id};
+use crate::kb_dot::{kb_digraph_open, short_source};
 use crate::palette::hash_color;
-use crate::rules::{RuleMode, render_rule_form, render_rules_forms};
+use crate::rules::{RuleMode, goal_cluster, render_rule_form};
 
 /// The rendering options `to_dot` threads through every form.
 #[derive(Clone, Copy)]
 pub struct DotOpts {
     pub rule_mode: RuleMode,
     pub trace_view: TraceView,
-    pub levi: bool,
+    /// Fold a fact or a pattern of three arrows that nothing drawn points
+    /// at into one labelled arrow (Q-M1f.419).
+    pub fold: bool,
 }
 
 impl Default for DotOpts {
@@ -40,7 +42,7 @@ impl Default for DotOpts {
         DotOpts {
             rule_mode: RuleMode::SideBySide,
             trace_view: TraceView::PerStep,
-            levi: false,
+            fold: false,
         }
     }
 }
@@ -65,7 +67,12 @@ impl TraceView {
     }
 }
 
-// ── node ids and shapes ────────────────────────────────────────────
+/// The declarators: a top-level form headed by one of these is no fact.
+const DECLARATORS: [&str; 8] = [
+    "rule", "hrule", "macro", "query", "solve", "config", "import", "trace",
+];
+
+// ── node ids ───────────────────────────────────────────────────────
 
 /// A DOT-safe quoted identifier for an atom-like node.
 fn atom_id(ast: &Ast, id: NodeId) -> String {
@@ -75,38 +82,6 @@ fn atom_id(ast: &Ast, id: NodeId) -> String {
         // Every caller hands over an atom-like node, so anything else is
         // unreachable.
         _ => panic!("not an atom-like node"),
-    }
-}
-
-fn is_atom_like(ast: &Ast, id: NodeId) -> bool {
-    matches!(ast.node(id), Node::Atom(_) | Node::Var(_))
-}
-
-/// Shape attrs for an atom-like arg appearing in a fact or pattern.
-fn atom_arg_attrs(ast: &Ast, id: NodeId) -> String {
-    match ast.node(id) {
-        Node::Var(_) => format!("shape={VAR_SHAPE}"),
-        _ => format!("shape={GROUND_SHAPE}"),
-    }
-}
-
-/// Resolve an atom-like or `SForm` value to a DOT node id.
-fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
-    match ast.node(id) {
-        Node::Atom(_) | Node::Var(_) => atom_id(ast, id),
-        Node::SForm { .. } => quote(&value_label(ast, id)),
-        // A string is natural-language text, which is no value, so it has
-        // no node.
-        Node::Str(_) | Node::Keyword(_) | Node::KwPair { .. } => {
-            panic!("cannot use as DOT node id")
-        }
-    }
-}
-
-fn emit_atom(b: &mut Builder, ast: &Ast, id: NodeId) {
-    if is_atom_like(ast, id) {
-        let attrs = atom_arg_attrs(ast, id);
-        b.node(&atom_id(ast, id), Some(&attrs));
     }
 }
 
@@ -122,20 +97,6 @@ fn positional(ast: &Ast, form: NodeId) -> Vec<NodeId> {
 
 fn is_sform(ast: &Ast, id: NodeId) -> bool {
     matches!(ast.node(id), Node::SForm { .. })
-}
-
-/// The keyword names on a form, for [`render_group`].
-fn kw_names(ast: &Ast, form: NodeId) -> Vec<&str> {
-    ast.form_args(form)
-        .iter()
-        .filter_map(|a| match ast.node(*a) {
-            Node::KwPair { key, .. } => match ast.node(key) {
-                Node::Keyword(s) => Some(ast.sym(s)),
-                _ => None,
-            },
-            _ => None,
-        })
-        .collect()
 }
 
 /// The `{keyword: value}` map of a form, last-wins on a repeated key.
@@ -170,55 +131,18 @@ fn leading_symbol(ast: &Ast, form: NodeId) -> Option<&str> {
     })
 }
 
-// ── the facts of one digraph that stand under an arrow ─────────────
-
-/// What one digraph of facts draws under an arrow
-/// (Q-M1f.395): every fact that a drawn fact points at, in
-/// the order it is first met, with the relations of the facts that point at
-/// it. Each is drawn once, as its node, and a fact the digraph also states
-/// is that node and no arrow.
-///
-/// A fact is told by its text, which is what makes two written forms one
-/// object: the one printer's, [`value_label`].
-#[derive(Default)]
-struct Scene {
-    nested: Vec<(NodeId, BTreeSet<String>)>,
-    at: HashMap<String, usize>,
-    /// The texts of the facts the program states: a fact under an arrow
-    /// stands in no frame where it is one of them.
-    held: HashSet<String>,
-    /// The texts of the facts this digraph states.
-    stated: HashSet<String>,
-}
-
-impl Scene {
-    /// A fact that a drawn fact points at.
-    fn is_nested(&self, ast: &Ast, fact: NodeId) -> bool {
-        self.at.contains_key(&fact_text(ast, fact))
-    }
-
-    /// Everything `fact` points at, at any depth, is pointed at by a drawn
-    /// fact: `fact` is drawn, and so is each fact found under it.
-    fn walk(&mut self, ast: &Ast, fact: NodeId) {
-        let by = ast.head_name(fact).unwrap_or("").to_string();
-        for arg in positional(ast, fact) {
-            if !is_sform(ast, arg) {
-                continue;
-            }
-            let text = value_label(ast, arg);
-            let i = match self.at.get(&text) {
-                Some(&i) => i,
-                None => {
-                    let i = self.nested.len();
-                    self.at.insert(text, i);
-                    self.nested.push((arg, BTreeSet::new()));
-                    self.walk(ast, arg);
-                    i
-                }
-            };
-            self.nested[i].1.insert(by.clone());
-        }
-    }
+/// Is `form` a fact the program states: a top-level form no declarator
+/// heads? A written `(eq …)` or `(neq …)`, and `(not (eq …))`, which is
+/// `(neq …)`, are checks and never stored, so no fact (Q-M1f.33, Q-M1f.31).
+fn is_fact_form(ast: &Ast, form: NodeId) -> bool {
+    let check = |f: NodeId| ast.head_name(f).is_some_and(ein_core::is_predicate);
+    is_sform(ast, form)
+        && !ast
+            .head_name(form)
+            .is_some_and(|h| DECLARATORS.contains(&h))
+        && !check(form)
+        && !(ast.head_name(form) == Some("not")
+            && positional(ast, form).first().is_some_and(|g| check(*g)))
 }
 
 /// The text of a fact as an object: its relation and its arguments, the
@@ -238,314 +162,222 @@ fn fact_text(ast: &Ast, fact: NodeId) -> String {
     }
 }
 
-/// The fact a stored negation denies, through every `not` it is written
-/// under, where `fact` is a negation; the program view draws a negation as
-/// the fact denied, dashed.
-fn denied(ast: &Ast, fact: NodeId) -> Option<NodeId> {
-    let mut inner = fact;
-    let mut found = None;
-    while ast.head_name(inner) == Some("not") {
-        let pos = positional(ast, inner);
-        if pos.len() != 1 || !is_sform(ast, pos[0]) {
-            break;
-        }
-        inner = pos[0];
-        found = Some(inner);
-    }
-    found
-}
+// ── the knowledge base as written ──────────────────────────────────
 
-/// The scene of the facts `facts`, one digraph's. `held` is the texts of
-/// every fact the program states, which stand in no frame; a digraph drawn
-/// by itself passes none, and holds what it states.
-fn scene(ast: &Ast, facts: &[NodeId], held: &HashSet<String>) -> Scene {
-    let mut s = Scene {
-        held: held.clone(),
-        ..Scene::default()
-    };
-    let mut negations: Vec<NodeId> = Vec::new();
-    for &fact in facts {
-        if !is_sform(ast, fact) {
-            continue;
-        }
-        let text = fact_text(ast, fact);
-        s.held.insert(text.clone());
-        s.stated.insert(text);
-        // A negation is drawn as the fact it denies, which is then a drawn
-        // fact and points at what stands under its own arrows.
-        let drawn = denied(ast, fact).unwrap_or(fact);
-        if drawn != fact {
-            negations.push(drawn);
-        }
-        s.walk(ast, drawn);
-    }
-    // A denied fact that some other drawn fact points at is that fact's
-    // node, and the negation is then a node that points at it, read once
-    // every other arrow is known, so the reading does not depend on the
-    // order the facts are written in.
-    for inner in negations {
-        if let Some(&i) = s.at.get(&value_label(ast, inner)) {
-            s.nested[i].1.insert("not".to_string());
-        }
-    }
-    s
-}
-
-/// The nodes of the facts under an arrow, each with its numbered argument
-/// arrows: in the frame of the relations that point at it where the program
-/// does not state it, in a context only, and in no frame where it does.
-fn emit_nested(b: &mut Builder, ast: &Ast, scene: &Scene, derived: bool) {
-    for (fact, by) in &scene.nested {
-        let text = value_label(ast, *fact);
-        let head = ast.head_name(*fact).unwrap_or("");
-        let frame = (!scene.held.contains(&text)).then(|| ctx_label(by));
-        let id = quote(&text);
-        b.fact_node(
-            &id,
-            &format!("shape={HYPER_SHAPE}, label={}", quote(head)),
-            frame.as_deref(),
-        );
-        // A fact this digraph states among its derived ones is dashed, as
-        // its arrow would have been.
-        let style = if derived && scene.stated.contains(&text) {
-            ", style=dashed"
-        } else {
-            ""
-        };
-        for (i, arg) in positional(ast, *fact).iter().enumerate() {
-            emit_atom(b, ast, *arg);
-            let to = atom_id_for_value(ast, *arg);
-            b.edge(&id, &to, Some(&format!("label=\"{}\"{style}", i + 1)));
-        }
-    }
-}
-
-// ── one fact ───────────────────────────────────────────────────────
-
-fn emit_fact(b: &mut Builder, ast: &Ast, scene: &Scene, fact: NodeId, derived: bool, levi: bool) {
-    // A fact that a drawn fact points at is its node, drawn with the nodes
-    // of the scene, and nothing more.
-    if scene.is_nested(ast, fact) {
-        return;
-    }
+/// How a fact the program states is drawn: by its relation, dashed where
+/// it is written as derived (`:rule`), with the short text of its source or
+/// `by <rule>` beside it, as the KB view draws the fact the loader makes of
+/// it.
+fn stated_look(ast: &Ast, fact: NodeId) -> Look {
     let head = ast.head_name(fact).unwrap_or("");
-    let pos = positional(ast, fact);
-
-    // Equality fact → double-circle equality class.
-    if head == "=" && pos.len() == 2 {
-        let (a, c) = (pos[0], pos[1]);
-        let eq_id = quote(&format!(
-            "eq_{}_{}",
-            value_label(ast, a),
-            value_label(ast, c)
-        ));
-        b.node(
-            &eq_id,
-            Some(&format!("shape={EQUALITY_SHAPE}, label=\"=\"")),
-        );
-        emit_atom(b, ast, a);
-        emit_atom(b, ast, c);
-        let (ida, idc) = (atom_id_for_value(ast, a), atom_id_for_value(ast, c));
-        b.edge(&eq_id, &ida, None);
-        b.edge(&eq_id, &idc, None);
-        return;
+    let mut look = Look::plain(hash_color(head));
+    let source = kw_get(ast, fact, "source").and_then(|v| match ast.node(v) {
+        Node::Str(s) => Some(ast.sym(s).to_string()),
+        _ => None,
+    });
+    let rule = kw_get(ast, fact, "rule").map(|v| value_label(ast, v));
+    if rule.is_some() || kw_get(ast, fact, "using").is_some() {
+        look.dashed = true;
     }
+    look.note = match (source.filter(|s| !s.is_empty()), rule) {
+        (Some(s), _) => Some(short_source(&s)),
+        (None, Some(r)) => Some(format!("by {r}")),
+        (None, None) => None,
+    };
+    look
+}
 
-    // Membership fact → dashed is-a edge (UML-style). Presentation knowledge,
-    // not kernel reasoning: `is-a` is an ordinary relation the renderer
-    // happens to know how to draw.
-    if head == "is-a" && pos.len() == 2 {
-        let (ent, typ) = (pos[0], pos[1]);
-        if is_atom_like(ast, ent) {
-            b.node(&atom_id(ast, ent), Some(&format!("shape={INSTANCE_SHAPE}")));
+struct Written<'a> {
+    ast: &'a Ast,
+    set: FactSet,
+    at: HashMap<String, usize>,
+    stated: HashSet<String>,
+}
+
+impl Written<'_> {
+    fn add(&mut self, fact: NodeId) -> usize {
+        let text = fact_text(self.ast, fact);
+        if let Some(&i) = self.at.get(&text) {
+            return i;
         }
-        if is_atom_like(ast, typ) {
-            b.node(&atom_id(ast, typ), Some(&format!("shape={TYPE_SHAPE}")));
+        let ast = self.ast;
+        let head = ast.head_name(fact).unwrap_or("").to_string();
+        let mut texts: Vec<String> = Vec::new();
+        let mut under: Vec<Under> = Vec::new();
+        for a in positional(ast, fact) {
+            texts.push(value_label(ast, a));
+            under.push(if is_sform(ast, a) {
+                Under::Fact(self.add(a))
+            } else {
+                Under::Name(value_label(ast, a))
+            });
         }
-        let (ide, idt) = (atom_id_for_value(ast, ent), atom_id_for_value(ast, typ));
-        b.edge(
-            &ide,
-            &idt,
-            Some("style=dashed, arrowhead=empty, label=\"is-a\""),
-        );
-        return;
-    }
-
-    // Negative fact → recurse into the wrapped expression, mark dashed. One
-    // whose denied fact is a node of the scene is a node of its own, which
-    // points at it: the denied fact is drawn once.
-    if head == "not" && pos.len() == 1 && is_sform(ast, pos[0]) {
-        if scene.is_nested(ast, pos[0]) {
-            let h_id = b.fresh_h("not");
-            let to = atom_id_for_value(ast, pos[0]);
-            b.edge(&h_id, &to, Some("label=\"1\", style=dashed"));
-            return;
-        }
-        emit_fact(b, ast, scene, pos[0], true, levi);
-        return;
-    }
-
-    // Compact: a unary relation is a relation-coloured self-loop on its
-    // single argument — the degenerate case of the binary collapse, with
-    // source == target. `not` is excluded; its own encoding is above.
-    if !levi && pos.len() == 1 && head != "not" && is_atom_like(ast, pos[0]) {
-        let a = pos[0];
-        emit_atom(b, ast, a);
-        let colour = hash_color(head);
-        let style = if derived { "dashed" } else { "solid" };
-        let id = atom_id_for_value(ast, a);
-        b.edge(
-            &id,
-            &id,
-            Some(&format!(
-                "label=\"{head}\", color=\"{colour}\", fontcolor=\"{colour}\", style={style}"
-            )),
-        );
-        return;
-    }
-
-    // Compact: a binary relation is one relation-coloured arrow.
-    if !levi && pos.len() == 2 {
-        let (a, c) = (pos[0], pos[1]);
-        emit_atom(b, ast, a);
-        emit_atom(b, ast, c);
-        let colour = hash_color(head);
-        let style = if derived { "dashed" } else { "solid" };
-        let (ida, idc) = (atom_id_for_value(ast, a), atom_id_for_value(ast, c));
-        b.edge(
-            &ida,
-            &idc,
-            Some(&format!(
-                "label=\"{head}\", color=\"{colour}\", fontcolor=\"{colour}\", style={style}"
-            )),
-        );
-        return;
-    }
-
-    // Levi-bipartite octagon: every remaining arity, plus binary under
-    // `levi`. Provenance is implicit on the hyperedge node, not drawn.
-    let style = if derived { ", style=dashed" } else { "" };
-    let h_id = b.fresh_h(head);
-    for (i, arg) in pos.iter().enumerate() {
-        emit_atom(b, ast, *arg);
-        let id = atom_id_for_value(ast, *arg);
-        b.edge(&h_id, &id, Some(&format!("label=\"{}\"{style}", i + 1)));
+        let i = self.set.facts.len();
+        self.set.facts.push(Fact {
+            id: fact_id(&head, &texts),
+            look: Look::plain(hash_color(&head)),
+            relation: head,
+            args: under,
+            held: self.stated.contains(&text),
+        });
+        self.at.insert(text, i);
+        i
     }
 }
 
-// ── the form renderers ─────────────────────────────────────────────
-
-/// `(ontology …)` — the UML-ish type / instance / relation schema.
-///
-/// Type and relation declarations render identically in both modes (they are
-/// schema, already direct labelled edges); only implicit facts honour `levi`.
-pub fn render_ontology_forms(ast: &Ast, decls: &[NodeId], levi: bool) -> String {
-    ontology_digraph(ast, decls, levi, &HashSet::new())
-}
-
-/// The facts among a group's forms: every form but a declaration, which is
-/// drawn as schema and points at no fact.
-fn facts_of(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
-    forms
+/// The facts and declarations of `facts` as a [`FactSet`], in the order the
+/// loader reads them: the declarations, then the other facts, each in the
+/// order written. A fact written twice is one fact, drawn as written first.
+pub fn written_fact_set(ast: &Ast, facts: &[NodeId]) -> FactSet {
+    let facts: Vec<NodeId> = facts
         .iter()
         .copied()
-        .filter(|f| is_sform(ast, *f) && ast.head_name(*f) != Some("relation"))
-        .collect()
+        .filter(|f| is_fact_form(ast, *f))
+        .collect();
+    let declarations = facts
+        .iter()
+        .copied()
+        .filter(|f| ast.head_name(*f) == Some("relation"));
+    let others = facts
+        .iter()
+        .copied()
+        .filter(|f| ast.head_name(*f) != Some("relation"));
+    let drawn: Vec<NodeId> = declarations.chain(others).collect();
+    fact_set_of(ast, &facts, &drawn)
 }
 
-fn ontology_digraph(ast: &Ast, decls: &[NodeId], levi: bool, held: &HashSet<String>) -> String {
-    let mut b = Builder::new("ontology");
-    let scene = scene(ast, &facts_of(ast, decls), held);
-    for decl in decls {
-        if !is_sform(ast, *decl) {
-            continue;
-        }
-        let head = ast.head_name(*decl).unwrap_or("");
-        if head == "relation" {
-            // `(relation Name T1 T2 … [kw…])` — flat args post-R10.
-            let args = ast.form_args(*decl).to_vec();
-            let Some(&first) = args.first() else { continue };
-            if !matches!(ast.node(first), Node::Atom(_) | Node::Var(_)) {
-                continue;
-            }
-            let rel_name = value_label(ast, first);
-            let sig: Vec<NodeId> = args[1..]
-                .iter()
-                .copied()
-                .filter(|a| is_atom_like(ast, *a))
-                .collect();
-            if sig.len() >= 2 {
-                let (src, dst) = (sig[0], sig[1]);
-                b.node(&atom_id(ast, src), Some(&format!("shape={TYPE_SHAPE}")));
-                b.node(&atom_id(ast, dst), Some(&format!("shape={TYPE_SHAPE}")));
-                let (ids, idd) = (atom_id_for_value(ast, src), atom_id_for_value(ast, dst));
-                b.edge(
-                    &ids,
-                    &idd,
-                    Some(&format!("label=\"{rel_name}\", style=dashed")),
-                );
-            }
-        } else {
-            emit_fact(&mut b, ast, &scene, *decl, false, levi);
+/// The facts `drawn`, in their order, as a [`FactSet`], with every fact
+/// they point at: a fact is held where it is one of `stated`, the facts
+/// the program states, and stands in the frame of its context where not.
+pub(crate) fn fact_set_of(ast: &Ast, stated: &[NodeId], drawn: &[NodeId]) -> FactSet {
+    let mut w = Written {
+        ast,
+        set: FactSet::default(),
+        at: HashMap::new(),
+        stated: stated
+            .iter()
+            .filter(|f| is_fact_form(ast, **f))
+            .map(|f| fact_text(ast, *f))
+            .collect(),
+    };
+    let mut seen: HashSet<usize> = HashSet::new();
+    for &f in drawn {
+        let i = w.add(f);
+        if seen.insert(i) {
+            w.set.facts[i].look = stated_look(ast, f);
+            w.set.drawn.push(i);
         }
     }
-    emit_nested(&mut b, ast, &scene, false);
-    b.build()
+    w.set
 }
 
-/// `(facts …)` / `(reasoning …)` — the latter with `derived`, which dashes
-/// every edge.
-pub fn render_facts_forms(ast: &Ast, facts: &[NodeId], derived: bool, levi: bool) -> String {
-    facts_digraph(ast, facts, derived, levi, &HashSet::new())
-}
-
-fn facts_digraph(
-    ast: &Ast,
-    facts: &[NodeId],
-    derived: bool,
-    levi: bool,
-    held: &HashSet<String>,
-) -> String {
-    let name = if derived { "reasoning" } else { "facts" };
-    let mut b = Builder::new(name);
-    let scene = scene(ast, &facts_of(ast, facts), held);
-    for fact in facts {
-        if is_sform(ast, *fact) {
-            emit_fact(&mut b, ast, &scene, *fact, derived, levi);
-        }
+/// The digraph `kb`: the facts the program states, drawn by the KB view's
+/// code; `""` where it states none.
+pub fn render_kb(ast: &Ast, forms: &[NodeId], fold: bool) -> String {
+    let set = written_fact_set(ast, forms);
+    if set.drawn.is_empty() {
+        return String::new();
     }
-    emit_nested(&mut b, ast, &scene, derived);
-    b.build()
+    let mut lines = kb_digraph_open("kb");
+    lines.extend(set.body(fold));
+    lines.push("}".to_string());
+    lines.join("\n")
 }
 
-/// `(query …)` — the keyword args as one compact note node.
-pub fn render_query(ast: &Ast, form: NodeId) -> String {
-    render_note(ast, form, "query")
-}
+// ── the query ──────────────────────────────────────────────────────
 
-/// A keyword block — `(query …)` or `(solve …)` — as
-/// one note listing its keywords.
-fn render_note(ast: &Ast, form: NodeId, head: &str) -> String {
-    let mut b = Builder::new(head);
+/// The clauses of a `(query …)` or `(solve …)` as a note's lines: each
+/// keyword and its value as written, a flag alone.
+fn note_lines(ast: &Ast, form: NodeId, skip: &str) -> Vec<String> {
     let mut parts: Vec<String> = Vec::new();
     for a in ast.form_args(form) {
         if let Node::KwPair { key, value } = ast.node(*a)
             && let Node::Keyword(s) = ast.node(key)
         {
-            parts.push(format!(":{} {}", ast.sym(s), value_label(ast, value)));
+            let k = ast.sym(s);
+            if k == skip {
+                continue;
+            }
+            // A flag, `:no-search`, has no value: the parser gives it the
+            // empty form.
+            if ast.head_name(value) == Some("#empty") && positional(ast, value).is_empty() {
+                parts.push(format!(":{k}"));
+            } else {
+                parts.push(format!(":{k} {}", value_label(ast, value)));
+            }
         }
     }
-    // Each line escaped for DOT: a string value prints quoted, as the one
-    // printer prints it, and a quote inside a label must be escaped.
-    let label = if parts.is_empty() {
-        quote(head)
-    } else {
-        let parts: Vec<&str> = parts.iter().map(String::as_str).collect();
-        multiline(&parts)
-    };
-    b.node(&quote(head), Some(&format!("shape=note, label={label}")));
-    b.build()
+    parts
 }
+
+/// The digraph `query`: each `(query …)` a cluster, its `:goal` drawn as a
+/// rule's match is and its other clauses in a note, and the `(solve …)`
+/// clause a note; `""` where the program has neither.
+pub fn render_queries(ast: &Ast, forms: &[NodeId], fold: bool) -> String {
+    let mut lines: Vec<String> = Vec::new();
+    let mut n = 0;
+    for &f in forms {
+        match ast.head_name(f) {
+            Some("query") => {
+                n += 1;
+                let rest = note_lines(ast, f, "goal");
+                match kw_get(ast, f, "goal").filter(|g| is_sform(ast, *g)) {
+                    Some(goal) => {
+                        let mut cluster = goal_cluster(ast, goal, n, fold);
+                        // The note stands inside the query's cluster, before
+                        // its closing brace.
+                        let close = cluster.pop().expect("a cluster closes");
+                        if !rest.is_empty() {
+                            let parts: Vec<&str> = rest.iter().map(String::as_str).collect();
+                            cluster.push(format!(
+                                "    \"query_{n}\" [shape=note, label={}];",
+                                multiline(&parts)
+                            ));
+                        }
+                        cluster.push(close);
+                        lines.extend(cluster);
+                    }
+                    None => {
+                        let parts: Vec<&str> = rest.iter().map(String::as_str).collect();
+                        lines.push(format!(
+                            "  \"query_{n}\" [shape=note, label={}];",
+                            if parts.is_empty() {
+                                quote("query")
+                            } else {
+                                multiline(&parts)
+                            }
+                        ));
+                    }
+                }
+            }
+            Some("solve") => {
+                let rest = note_lines(ast, f, "");
+                let parts: Vec<&str> = rest.iter().map(String::as_str).collect();
+                let label = if parts.is_empty() {
+                    quote("solve")
+                } else {
+                    multiline(&parts)
+                };
+                lines.push(format!("  \"solve\" [shape=note, label={label}];"));
+            }
+            _ => {}
+        }
+    }
+    if lines.is_empty() {
+        return String::new();
+    }
+    let mut out = vec!["digraph query {".to_string(), "  rankdir=TB;".to_string()];
+    out.extend(lines);
+    out.push("}".to_string());
+    out.join("\n")
+}
+
+/// `(query …)` alone — the query digraph of one form.
+pub fn render_query(ast: &Ast, form: NodeId) -> String {
+    render_queries(ast, &[form], false)
+}
+
+// ── a written trace ────────────────────────────────────────────────
 
 /// Premise refs in a `:using` clause.
 ///
@@ -602,12 +434,31 @@ pub fn render_trace(ast: &Ast, form: NodeId, view: TraceView) -> String {
     b.build()
 }
 
-/// View (c) — derived-fact nodes linked back to their `:using` premises.
+/// View (c) — the derivation a written trace records: each step a node of
+/// its own, from its premises to the fact it derives, and each fact derived
+/// drawn as its node in the canonical form (Q-M1f.419), never a node
+/// labelled with its text. A premise that names an earlier step is the fact
+/// that step derived; any other is a name.
 fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
-    let mut b = Builder::new("trace");
-    // step name → its derived-fact node id, in first-seen order. Lookups
-    // only; the emission order is the `for ev` loop's.
+    let mut w = Written {
+        ast,
+        set: FactSet::default(),
+        at: HashMap::new(),
+        stated: HashSet::new(),
+    };
+    // What the trace derives is what it holds: a fact under an arrow of a
+    // derived fact is in a context only where no step derives it.
+    for ev in ast.form_args(form).to_vec() {
+        if let Some(d) = kw_get(ast, ev, "derives").filter(|v| is_sform(ast, *v)) {
+            w.stated.insert(fact_text(ast, d));
+        }
+    }
+    let mut steps: Vec<String> = Vec::new();
+    let mut edges: Vec<String> = Vec::new();
+    // step name → the node id of the fact it derives, in first-seen order.
     let mut derived_by_step: Vec<(String, String)> = Vec::new();
+    let mut names: Vec<String> = Vec::new();
+    let mut drawn: HashSet<usize> = HashSet::new();
     for ev in ast.form_args(form).to_vec() {
         if !is_sform(ast, ev) {
             continue;
@@ -616,156 +467,100 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
             continue;
         };
         let rule = kw_get(ast, ev, "rule").map(|v| value_label(ast, v));
-        let derives = kw_get(ast, ev, "derives").filter(|v| is_sform(ast, *v));
-        let using = kw_get(ast, ev, "using").filter(|v| is_sform(ast, *v));
-
-        let dnode = match derives {
-            Some(d) => {
-                let dlabel = value_label(ast, d);
-                let dnode = quote(&dlabel);
-                b.node(
-                    &dnode,
-                    Some(&format!("shape=box, style=bold, label={}", quote(&dlabel))),
-                );
-                dnode
-            }
-            None => {
-                let dnode = quote(&step_name);
-                b.node(
-                    &dnode,
-                    Some(&format!("shape=box, label={}", quote(&step_name))),
-                );
-                dnode
-            }
+        let step_id = quote(&format!("step {step_name}"));
+        let label = match &rule {
+            Some(r) => multiline(&[&step_name, r]),
+            None => quote(&step_name),
         };
-        match derived_by_step.iter_mut().find(|(k, _)| *k == step_name) {
-            Some(slot) => slot.1 = dnode.clone(),
-            None => derived_by_step.push((step_name.clone(), dnode.clone())),
-        }
-        let edge_attrs = rule.map(|r| format!("label=\"{r}\""));
-        if let Some(using) = using {
+        steps.push(format!(
+            "  {step_id} [shape=box, style=rounded, label={label}];"
+        ));
+        if let Some(using) = kw_get(ast, ev, "using").filter(|v| is_sform(ast, *v)) {
             for premise in trace_premises(ast, using) {
-                let pname = match ast.node(premise) {
-                    Node::Atom(s) => ast.sym(s).to_string(),
-                    _ => continue,
+                let Node::Atom(s) = ast.node(premise) else {
+                    continue;
                 };
-                let known = derived_by_step
-                    .iter()
-                    .find(|(k, _)| *k == pname)
-                    .map(|(_, v)| v.clone());
-                let pid = match &known {
-                    Some(v) => v.clone(),
+                let pname = ast.sym(s).to_string();
+                let pid = match derived_by_step.iter().find(|(k, _)| *k == pname) {
+                    Some((_, v)) => v.clone(),
                     None => {
-                        let id = atom_id(ast, premise);
-                        b.node(&id, Some("shape=rectangle"));
-                        id
+                        if !names.contains(&pname) {
+                            names.push(pname.clone());
+                        }
+                        atom_id(ast, premise)
                     }
                 };
-                b.edge(&pid, &dnode, edge_attrs.as_deref());
+                edges.push(format!("  {pid} -> {step_id};"));
+            }
+        }
+        if let Some(d) = kw_get(ast, ev, "derives").filter(|v| is_sform(ast, *v)) {
+            let i = w.add(d);
+            if drawn.insert(i) {
+                let head = ast.head_name(d).unwrap_or("");
+                w.set.facts[i].look = Look {
+                    penwidth: Some(2),
+                    ..Look::plain(hash_color(head))
+                };
+                w.set.drawn.push(i);
+            }
+            let did = w.set.facts[i].id.clone();
+            edges.push(format!("  {step_id} -> {did} [style=bold];"));
+            match derived_by_step.iter_mut().find(|(k, _)| *k == step_name) {
+                Some(slot) => slot.1 = did,
+                None => derived_by_step.push((step_name.clone(), did)),
             }
         }
     }
-    b.build()
+    let mut lines = vec![
+        "digraph trace {".to_string(),
+        format!("  {POLYGON_RANKSEP};"),
+        "  node [shape=box];".to_string(),
+    ];
+    lines.extend(w.set.body(false));
+    lines.push(String::new());
+    lines.push("  // steps".to_string());
+    lines.extend(steps);
+    lines.extend(edges);
+    lines.push("}".to_string());
+    lines.join("\n")
 }
 
 // ── top-level dispatch ─────────────────────────────────────────────
 
-/// Which DOT group a flat fact form belongs to, from its provenance
-/// kw-pairs: `:rule` / `:using` → reasoning, `:source` → fact, else ontology.
-///
-/// Render-bucket names, not knowledge layers: the grouping is there only
-/// because three sub-graphs read better than one.
-fn render_group(ast: &Ast, form: NodeId) -> &'static str {
-    let kw = kw_names(ast, form);
-    if kw.contains(&"rule") || kw.contains(&"using") {
-        "reasoning"
-    } else if kw.contains(&"source") {
-        "fact"
-    } else {
-        "ontology"
-    }
-}
-
-/// One top-level form → its digraph, or `""` for `(config …)`.
+/// One top-level form → its digraph, or `""` for one that draws nothing,
+/// `(config …)` and `(import …)`.
 pub fn to_dot_form(ast: &Ast, form: NodeId, opts: DotOpts) -> String {
-    let args = ast.form_args(form).to_vec();
     match ast.head_name(form).unwrap_or("") {
-        "ontology" => render_ontology_forms(ast, &args, opts.levi),
-        "facts" => render_facts_forms(ast, &args, false, opts.levi),
-        "reasoning" => render_facts_forms(ast, &args, true, opts.levi),
-        "rules" => render_rules_forms(ast, &args, opts.rule_mode),
-        "rule" | "hrule" => render_rule_form(ast, form, opts.rule_mode),
-        "query" => render_query(ast, form),
-        "solve" => render_note(ast, form, "solve"),
+        "rule" | "hrule" | "macro" => render_rule_form(ast, form, opts.rule_mode, opts.fold),
+        "query" | "solve" => render_queries(ast, &[form], opts.fold),
         "trace" => render_trace(ast, form, opts.trace_view),
-        // Solver knobs — no graph structure to render.
-        "config" => String::new(),
-        // A flat fact: render it through its group's view, as a singleton.
-        _ => match render_group(ast, form) {
-            "ontology" => render_ontology_forms(ast, &[form], opts.levi),
-            "fact" => render_facts_forms(ast, &[form], false, opts.levi),
-            _ => render_facts_forms(ast, &[form], true, opts.levi),
-        },
+        "config" | "import" => String::new(),
+        // A fact: the knowledge base of that one fact.
+        _ => render_kb(ast, &[form], opts.fold),
     }
 }
 
-/// A whole program → one `digraph` per rendered group, joined by blank lines.
-///
-/// A flat program is **re-grouped** by head and provenance kw-pairs back into
-/// the views the renderers draw: `rule` / `hrule` → a rule library;
-/// `relation` + un-annotated facts → the ontology; `:source`d → facts;
-/// `:rule`-derived → reasoning. The deprecated wrapper forms still render
-/// directly, in the order they appear, *after* the regrouped chunks.
+/// A whole program → its three parts, `kb`, a digraph per rule, hrule and
+/// macro, and `query`, then a written trace's digraph; those that draw
+/// nothing are left out, and the rest joined by blank lines.
 pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
     let forms: Vec<NodeId> = forms
         .iter()
         .copied()
         .filter(|f| is_sform(ast, *f))
         .collect();
-    let mut rules: Vec<NodeId> = Vec::new();
-    let mut ontology: Vec<NodeId> = Vec::new();
-    let mut facts: Vec<NodeId> = Vec::new();
-    let mut reasoning: Vec<NodeId> = Vec::new();
-    let mut chunks: Vec<String> = Vec::new();
-    for f in forms {
-        match ast.head_name(f).unwrap_or("") {
-            "ontology" | "facts" | "reasoning" | "rules" | "query" | "solve" | "trace"
-            | "config" => {
-                chunks.push(to_dot_form(ast, f, opts));
-            }
-            "rule" | "hrule" => rules.push(f),
-            "relation" => ontology.push(f),
-            _ => match render_group(ast, f) {
-                "ontology" => ontology.push(f),
-                "fact" => facts.push(f),
-                _ => reasoning.push(f),
-            },
+    let mut rendered: Vec<String> = vec![render_kb(ast, &forms, opts.fold)];
+    for &f in &forms {
+        if matches!(ast.head_name(f), Some("rule" | "hrule" | "macro")) {
+            rendered.push(render_rule_form(ast, f, opts.rule_mode, opts.fold));
         }
     }
-    // What the program states, whichever group draws it: a fact under an
-    // arrow stands in no frame where the program holds it, and the three
-    // groups are three digraphs of one program.
-    let held: HashSet<String> = ontology
-        .iter()
-        .chain(&facts)
-        .chain(&reasoning)
-        .filter(|f| ast.head_name(**f) != Some("relation"))
-        .map(|f| fact_text(ast, *f))
-        .collect();
-    let mut rendered: Vec<String> = Vec::new();
-    if !rules.is_empty() {
-        rendered.push(render_rules_forms(ast, &rules, opts.rule_mode));
+    rendered.push(render_queries(ast, &forms, opts.fold));
+    for &f in &forms {
+        if ast.head_name(f) == Some("trace") {
+            rendered.push(render_trace(ast, f, opts.trace_view));
+        }
     }
-    if !ontology.is_empty() {
-        rendered.push(ontology_digraph(ast, &ontology, opts.levi, &held));
-    }
-    if !facts.is_empty() {
-        rendered.push(facts_digraph(ast, &facts, false, opts.levi, &held));
-    }
-    if !reasoning.is_empty() {
-        rendered.push(facts_digraph(ast, &reasoning, true, opts.levi, &held));
-    }
-    rendered.extend(chunks);
     rendered.retain(|c| !c.is_empty());
     rendered.join("\n\n")
 }

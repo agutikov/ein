@@ -2,20 +2,30 @@ digraph rule_strip_zero_lhs_rhs {
   rankdir=TB;
   label="strip-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?STRIP_L" [label="?STRIP", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
+    "?B_L" [label="?B", shape=diamond];
+    "0_L" [label="0", shape=box];
     "?r_L" [label="?r", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?STRIP ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?B 0 ?r)_L" [shape=octagon, label="?B", color="#2ca02c", fontcolor="#2ca02c"];
+      "(?B 0 ?r)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "?k_L" -> "(?B 0 ?r)_L" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "(?B 0 ?r)_L" -> "0_L" [label="1", color="#2ca02c"];
-    "(?B 0 ?r)_L" -> "?r_L" [label="2", color="#2ca02c"];
+    "h1_STRIP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_STRIP_L" -> "?STRIP_L" [xlabel="1", color="#ff7f0e"];
+    "h1_STRIP_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
+    "h1_STRIP_L" -> "(?B 0 ?r)_L" [xlabel="3", color="#ff7f0e"];
+    "(?B 0 ?r)_L" -> "?B_L" [xlabel="1", color="#2ca02c"];
+    "(?B 0 ?r)_L" -> "0_L" [xlabel="2", color="#2ca02c"];
+    "(?B 0 ?r)_L" -> "?r_L" [xlabel="3", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
+    "?STRIP_R" [label="?STRIP", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
-    "?k_R" -> "?r_R" [label="?STRIP", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+    "h2_STRIP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_STRIP_R" -> "?STRIP_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_STRIP_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_STRIP_R" -> "?r_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }
 }

@@ -2,23 +2,28 @@ digraph rule_idempotent_r_lhs_rhs {
   rankdir=TB;
   label="idempotent-r"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "gate2_L" [label="gate2", shape=box];
     "?f_L" [label="?f", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "h1_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
-    "h1_gate2_L" -> "0_L" [label="2", color="#7f7f7f"];
-    "h1_gate2_L" -> "0_L" [label="3", color="#7f7f7f"];
-    "h1_gate2_L" -> "0_L" [label="4", color="#7f7f7f"];
-    "h2_gate2_L" [shape=octagon, label="gate2", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_gate2_L" -> "?f_L" [label="1", color="#7f7f7f"];
-    "h2_gate2_L" -> "1_L" [label="2", color="#7f7f7f"];
-    "h2_gate2_L" -> "1_L" [label="3", color="#7f7f7f"];
-    "h2_gate2_L" -> "1_L" [label="4", color="#7f7f7f"];
+    "0_L" [label="0", shape=box];
+    "1_L" [label="1", shape=box];
+    "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [xlabel="3", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [xlabel="4", color="#7f7f7f"];
+    "h1_gate2_L" -> "0_L" [xlabel="5", color="#7f7f7f"];
+    "h2_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h2_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "h2_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [xlabel="3", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [xlabel="4", color="#7f7f7f"];
+    "h2_gate2_L" -> "1_L" [xlabel="5", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "idempotent_R" [label="idempotent", shape=box];
     "?f_R" [label="?f", shape=diamond];
-    "h3_idempotent_R" [shape=octagon, label="idempotent", color="#2ca02c", fontcolor="#2ca02c"];
-    "h3_idempotent_R" -> "?f_R" [label="1", color="#2ca02c", style=dashed];
+    "h3_idempotent_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h3_idempotent_R" -> "idempotent_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h3_idempotent_R" -> "?f_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

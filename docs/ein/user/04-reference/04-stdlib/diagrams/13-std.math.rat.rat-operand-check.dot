@@ -2,45 +2,59 @@ digraph rule_rat_operand_check_lhs_rhs {
   rankdir=TB;
   label="rat-operand-check"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand-is_L" [label="operand-is", shape=box];
+    "rat-of_L" [label="rat-of", shape=box];
     "?k_L" [label="?k", shape=diamond];
+    "rat_L" [label="rat", shape=box];
+    "int_L" [label="int", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-of ?k)_L" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
-      "(rat (int ?p ?n) ?d)_L" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+      "(rat-of ?k)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "(rat (int ?p ?n) ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     subgraph cluster_ctx_L_1 {
       label="rat ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int ?p ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(rat-of ?k)_L" -> "(rat (int ?p ?n) ?d)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-    "(rat-of ?k)_L" -> "?k_L" [label="1", color="#2ca02c"];
-    "(rat (int ?p ?n) ?d)_L" -> "(int ?p ?n)_L" [label="1", color="#d62728"];
-    "(rat (int ?p ?n) ?d)_L" -> "?d_L" [label="2", color="#d62728"];
-    "(int ?p ?n)_L" -> "?p_L" [label="1", color="#17becf"];
-    "(int ?p ?n)_L" -> "?n_L" [label="2", color="#17becf"];
+    "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "h1_operand-is_L" -> "(rat-of ?k)_L" [xlabel="2", color="#17becf"];
+    "h1_operand-is_L" -> "(rat (int ?p ?n) ?d)_L" [xlabel="3", color="#17becf"];
+    "(rat-of ?k)_L" -> "rat-of_L" [xlabel="1", color="#2ca02c"];
+    "(rat-of ?k)_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
+    "(rat (int ?p ?n) ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "(rat (int ?p ?n) ?d)_L" -> "(int ?p ?n)_L" [xlabel="2", color="#d62728"];
+    "(rat (int ?p ?n) ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
+    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "cmp-walk_R" [label="cmp-walk", shape=box];
+    "rat-den_R" [label="rat-den", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "eq_R" [label="eq", shape=rectangle];
+    "z_R" [label="z", shape=box];
+    "eq_R" [label="eq", shape=box];
     subgraph cluster_ctx_R_0 {
       label="cmp-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-den ?k ?p ?n ?d)_R" [shape=octagon, label="rat-den", color="#1f77b4", fontcolor="#1f77b4"];
+      "(rat-den ?k ?p ?n ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_cmp-walk_R" [shape=octagon, label="cmp-walk", color="#9467bd", fontcolor="#9467bd"];
-    "h1_cmp-walk_R" -> "(rat-den ?k ?p ?n ?d)_R" [label="1", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "?d_R" [label="2", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "z_R" [label="3", color="#9467bd", style=dashed];
-    "h1_cmp-walk_R" -> "eq_R" [label="4", color="#9467bd", style=dashed];
-    "(rat-den ?k ?p ?n ?d)_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
-    "(rat-den ?k ?p ?n ?d)_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
-    "(rat-den ?k ?p ?n ?d)_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
-    "(rat-den ?k ?p ?n ?d)_R" -> "?d_R" [label="4", color="#1f77b4", style=dashed];
+    "h2_cmp-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_cmp-walk_R" -> "cmp-walk_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_cmp-walk_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_cmp-walk_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_cmp-walk_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
+    "h2_cmp-walk_R" -> "eq_R" [xlabel="5", color="#9467bd", style=dashed];
+    "(rat-den ?k ?p ?n ?d)_R" -> "rat-den_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(rat-den ?k ?p ?n ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(rat-den ?k ?p ?n ?d)_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "(rat-den ?k ?p ?n ?d)_R" -> "?n_R" [xlabel="4", color="#1f77b4", style=dashed];
+    "(rat-den ?k ?p ?n ?d)_R" -> "?d_R" [xlabel="5", color="#1f77b4", style=dashed];
   }
 }

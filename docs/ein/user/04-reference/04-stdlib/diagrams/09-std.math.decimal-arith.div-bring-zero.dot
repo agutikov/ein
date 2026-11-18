@@ -2,38 +2,44 @@ digraph rule_div_bring_zero_lhs_rhs {
   rankdir=TB;
   label="div-bring-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "div-step_L" [label="div-step", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?ms_L" [label="?ms", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
+    "b_L" [label="b", shape=box];
+    "0_L" [label="0", shape=box];
     "?rest_L" [label="?rest", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     "?w_L" [label="?w", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b 0 ?rest)_L" [shape=octagon, label="b", color="#1f77b4", fontcolor="#1f77b4"];
+      "(b 0 ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_div-step_L" [shape=octagon, label="div-step", color="#d62728", fontcolor="#d62728"];
-    "h1_div-step_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_div-step_L" -> "?ms_L" [label="2", color="#d62728"];
-    "h1_div-step_L" -> "(b 0 ?rest)_L" [label="3", color="#d62728"];
-    "h1_div-step_L" -> "z_L" [label="4", color="#d62728"];
-    "h1_div-step_L" -> "?w_L" [label="5", color="#d62728"];
-    "(b 0 ?rest)_L" -> "0_L" [label="1", color="#1f77b4"];
-    "(b 0 ?rest)_L" -> "?rest_L" [label="2", color="#1f77b4"];
+    "h1_div-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_div-step_L" -> "div-step_L" [xlabel="1", color="#d62728"];
+    "h1_div-step_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_div-step_L" -> "?ms_L" [xlabel="3", color="#d62728"];
+    "h1_div-step_L" -> "(b 0 ?rest)_L" [xlabel="4", color="#d62728"];
+    "h1_div-step_L" -> "z_L" [xlabel="5", color="#d62728"];
+    "h1_div-step_L" -> "?w_L" [xlabel="6", color="#d62728"];
+    "(b 0 ?rest)_L" -> "b_L" [xlabel="1", color="#1f77b4"];
+    "(b 0 ?rest)_L" -> "0_L" [xlabel="2", color="#1f77b4"];
+    "(b 0 ?rest)_L" -> "?rest_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
+    "div-digit_R" [label="div-digit", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?ms_R" [label="?ms", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "?w_R" [label="?w", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
-    "h2_div-digit_R" [shape=octagon, label="div-digit", color="#9467bd", fontcolor="#9467bd"];
-    "h2_div-digit_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?ms_R" [label="2", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?rest_R" [label="3", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "?w_R" [label="4", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "0_R" [label="5", color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "z_R" [label="6", color="#9467bd", style=dashed];
+    "0_R" [label="0", shape=box];
+    "z_R" [label="z", shape=box];
+    "h2_div-digit_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "div-digit_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "?ms_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "?rest_R" [xlabel="4", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "?w_R" [xlabel="5", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "0_R" [xlabel="6", color="#9467bd", style=dashed];
+    "h2_div-digit_R" -> "z_R" [xlabel="7", color="#9467bd", style=dashed];
   }
 }

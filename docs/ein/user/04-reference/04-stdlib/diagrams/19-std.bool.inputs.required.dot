@@ -2,14 +2,24 @@ digraph rule_required_lhs_rhs {
   rankdir=TB;
   label="required"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "require_L" [label="require", shape=box];
     "?w_L" [label="?w", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
+    "val_L" [label="val", shape=box];
     "?u_L" [label="?u", shape=diamond];
-    "?w_L" -> "?v_L" [label="require", color="#d62728", fontcolor="#d62728"];
-    "?w_L" -> "?u_L" [label="val", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_require_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_require_L" -> "require_L" [xlabel="1", color="#d62728"];
+    "h1_require_L" -> "?w_L" [xlabel="2", color="#d62728"];
+    "h1_require_L" -> "?v_L" [xlabel="3", color="#d62728"];
+    "h2_val_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h2_val_L" -> "val_L" [xlabel="1", color="#1f77b4"];
+    "h2_val_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
+    "h2_val_L" -> "?u_L" [xlabel="3", color="#1f77b4"];
     "?u_L" -> "?v_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
   }
   subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+    "false_R" [label="false", shape=box];
+    "h3_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h3_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
   }
 }

@@ -2,27 +2,39 @@ digraph rule_rat_simplify_ask_lhs_rhs {
   rankdir=TB;
   label="rat-simplify-ask"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "rat-simplify_L" [label="rat-simplify", shape=box];
     "?x_L" [label="?x", shape=diamond];
-    "h1_rat-simplify_L" [shape=octagon, label="rat-simplify", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_rat-simplify_L" -> "?x_L" [label="1", color="#7f7f7f"];
+    "h1_rat-simplify_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_rat-simplify_L" -> "rat-simplify_L" [xlabel="1", color="#7f7f7f"];
+    "h1_rat-simplify_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand_R" [label="operand", shape=box];
+    "rat-of_R" [label="rat-of", shape=box];
+    "rat-only_R" [label="rat-only", shape=box];
+    "rat-simplify_R" [label="rat-simplify", shape=box];
     "?x_R" [label="?x", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-of (rat-only (rat-simplify ?x)))_R" [shape=octagon, label="rat-of", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-of (rat-only (rat-simplify ?x)))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     subgraph cluster_ctx_R_1 {
       label="rat-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-only (rat-simplify ?x))_R" [shape=octagon, label="rat-only", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-only (rat-simplify ?x))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     subgraph cluster_ctx_R_2 {
       label="rat-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-simplify ?x)_R" [shape=octagon, label="rat-simplify", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(rat-simplify ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "(rat-only (rat-simplify ?x))_R" [label="1", color="#2ca02c", style=dashed];
-    "(rat-only (rat-simplify ?x))_R" -> "(rat-simplify ?x)_R" [label="1", color="#2ca02c", style=dashed];
-    "(rat-simplify ?x)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
+    "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "(rat-of (rat-only (rat-simplify ?x)))_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(rat-of (rat-only (rat-simplify ?x)))_R" -> "(rat-only (rat-simplify ?x))_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(rat-only (rat-simplify ?x))_R" -> "rat-only_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(rat-only (rat-simplify ?x))_R" -> "(rat-simplify ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(rat-simplify ?x)_R" -> "rat-simplify_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(rat-simplify ?x)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

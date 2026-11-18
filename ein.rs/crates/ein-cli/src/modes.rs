@@ -63,7 +63,7 @@ const UNSHOWN: [&str; 9] = [
 /// `-j`. `--no-require-why` decides whether the program loads, and a
 /// program loads to what it loads to with it, so a run that prints a header
 /// prints the same one (Q-M1f.62).
-const UNSHOWN_FLAGS: [&str; 13] = [
+const UNSHOWN_FLAGS: [&str; 14] = [
     "-y",
     "--lattice-sanity-check",
     "--no-require-why",
@@ -71,6 +71,7 @@ const UNSHOWN_FLAGS: [&str; 13] = [
     "-G",
     "--full-kb-snapshots",
     "-F",
+    "--fold",
     "--reorder",
     "-R",
     "--relevant",
@@ -399,6 +400,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             relevant: m.get_flag("relevant"),
             reorder: m.get_flag("reorder"),
             full_kb: m.get_flag("full-kb-snapshots"),
+            fold: m.get_flag("fold"),
         };
         let argv = header_argv("solve");
         let written = ein_render::trace::region::of_read_out(

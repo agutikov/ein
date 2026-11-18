@@ -2,24 +2,32 @@ digraph rule_cmp_answer_lhs_rhs {
   rankdir=TB;
   label="cmp-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?ORDER-IS_L" [label="?ORDER-IS", shape=diamond];
+    "?ORDER_L" [label="?ORDER", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?o_L" [label="?o", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?ORDER-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?ORDER ?x ?y)_L" [shape=octagon, label="?ORDER", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?ORDER ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "(?ORDER ?x ?y)_L" -> "?o_L" [label="?ORDER-IS", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "(?ORDER ?x ?y)_L" -> "?x_L" [label="1", color="#1f77b4"];
-    "(?ORDER ?x ?y)_L" -> "?y_L" [label="2", color="#1f77b4"];
+    "h1_ORDER-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_ORDER-IS_L" -> "?ORDER-IS_L" [xlabel="1", color="#ff7f0e"];
+    "h1_ORDER-IS_L" -> "(?ORDER ?x ?y)_L" [xlabel="2", color="#ff7f0e"];
+    "h1_ORDER-IS_L" -> "?o_L" [xlabel="3", color="#ff7f0e"];
+    "(?ORDER ?x ?y)_L" -> "?ORDER_L" [xlabel="1", color="#1f77b4"];
+    "(?ORDER ?x ?y)_L" -> "?x_L" [xlabel="2", color="#1f77b4"];
+    "(?ORDER ?x ?y)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
+    "?CMP-OF_R" [label="?CMP-OF", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?o_R" [label="?o", shape=diamond];
-    "h1_CMP-OF_R" [shape=octagon, label="?CMP-OF", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_CMP-OF_R" -> "?x_R" [label="1", color="#ff7f0e", style=dashed];
-    "h1_CMP-OF_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
-    "h1_CMP-OF_R" -> "?o_R" [label="3", color="#ff7f0e", style=dashed];
+    "h2_CMP-OF_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_CMP-OF_R" -> "?CMP-OF_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_CMP-OF_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_CMP-OF_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_CMP-OF_R" -> "?o_R" [xlabel="4", color="#ff7f0e", style=dashed];
   }
 }

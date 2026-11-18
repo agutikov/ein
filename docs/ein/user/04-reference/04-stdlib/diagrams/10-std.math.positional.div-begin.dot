@@ -2,27 +2,35 @@ digraph rule_div_begin_lhs_rhs {
   rankdir=TB;
   label="div-begin"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?TOP-FIRST-IS_L" [label="?TOP-FIRST-IS", shape=diamond];
+    "?DIV-DIGITS_L" [label="?DIV-DIGITS", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?ms_L" [label="?ms", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?TOP-FIRST-IS ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?DIV-DIGITS ?k ?ms)_L" [shape=octagon, label="?DIV-DIGITS", color="#17becf", fontcolor="#17becf"];
+      "(?DIV-DIGITS ?k ?ms)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(?DIV-DIGITS ?k ?ms)_L" -> "?t_L" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c"];
-    "(?DIV-DIGITS ?k ?ms)_L" -> "?k_L" [label="1", color="#17becf"];
-    "(?DIV-DIGITS ?k ?ms)_L" -> "?ms_L" [label="2", color="#17becf"];
+    "h1_TOP-FIRST-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_TOP-FIRST-IS_L" -> "?TOP-FIRST-IS_L" [xlabel="1", color="#2ca02c"];
+    "h1_TOP-FIRST-IS_L" -> "(?DIV-DIGITS ?k ?ms)_L" [xlabel="2", color="#2ca02c"];
+    "h1_TOP-FIRST-IS_L" -> "?t_L" [xlabel="3", color="#2ca02c"];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?DIV-DIGITS_L" [xlabel="1", color="#17becf"];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?k_L" [xlabel="2", color="#17becf"];
+    "(?DIV-DIGITS ?k ?ms)_L" -> "?ms_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "?DIV-STEP_R" [label="?DIV-STEP", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?ms_R" [label="?ms", shape=diamond];
     "?t_R" [label="?t", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "h1_DIV-STEP_R" [shape=octagon, label="?DIV-STEP", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_DIV-STEP_R" -> "?k_R" [label="1", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "?ms_R" [label="2", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "?t_R" [label="3", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "z_R" [label="4", color="#ff7f0e", style=dashed];
-    "h1_DIV-STEP_R" -> "z_R" [label="5", color="#ff7f0e", style=dashed];
+    "z_R" [label="z", shape=box];
+    "h2_DIV-STEP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "?DIV-STEP_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "?ms_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "?t_R" [xlabel="4", color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "z_R" [xlabel="5", color="#ff7f0e", style=dashed];
+    "h2_DIV-STEP_R" -> "z_R" [xlabel="6", color="#ff7f0e", style=dashed];
   }
 }

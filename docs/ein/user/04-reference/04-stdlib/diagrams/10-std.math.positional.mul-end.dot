@@ -2,19 +2,25 @@ digraph rule_mul_end_lhs_rhs {
   rankdir=TB;
   label="mul-end"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?MUL-STEP_L" [label="?MUL-STEP", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
-    "h1_MUL-STEP_L" [shape=octagon, label="?MUL-STEP", color="#17becf", fontcolor="#17becf"];
-    "h1_MUL-STEP_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_MUL-STEP_L" -> "?u_L" [label="2", color="#17becf"];
-    "h1_MUL-STEP_L" -> "z_L" [label="3", color="#17becf"];
-    "h1_MUL-STEP_L" -> "?acc_L" [label="4", color="#17becf"];
+    "h1_MUL-STEP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_MUL-STEP_L" -> "?MUL-STEP_L" [xlabel="1", color="#17becf"];
+    "h1_MUL-STEP_L" -> "?k_L" [xlabel="2", color="#17becf"];
+    "h1_MUL-STEP_L" -> "?u_L" [xlabel="3", color="#17becf"];
+    "h1_MUL-STEP_L" -> "z_L" [xlabel="4", color="#17becf"];
+    "h1_MUL-STEP_L" -> "?acc_L" [xlabel="5", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "?DONE_R" [label="?DONE", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?DONE", color="#9467bd", fontcolor="#9467bd", style=dashed];
+    "h2_DONE_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?DONE_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_DONE_R" -> "?acc_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

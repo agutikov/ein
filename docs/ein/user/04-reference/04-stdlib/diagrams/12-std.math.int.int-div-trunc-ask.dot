@@ -2,30 +2,44 @@ digraph rule_int_div_trunc_ask_lhs_rhs {
   rankdir=TB;
   label="int-div-trunc-ask"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-div-trunc_L" [label="int-div-trunc", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="int-div-trunc", color="#9467bd", fontcolor="#9467bd"];
+    "h1_int-div-trunc_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_int-div-trunc_L" -> "int-div-trunc_L" [xlabel="1", color="#9467bd"];
+    "h1_int-div-trunc_L" -> "?x_L" [xlabel="2", color="#9467bd"];
+    "h1_int-div-trunc_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand_R" [label="operand", shape=box];
+    "int-first_R" [label="int-first", shape=box];
+    "int-div-of_R" [label="int-div-of", shape=box];
+    "int-div-trunc_R" [label="int-div-trunc", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="int-div-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-div-trunc ?x ?y)_R" [shape=octagon, label="int-div-trunc", color="#9467bd", fontcolor="#9467bd"];
+      "(int-div-trunc ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_R_1 {
       label="int-first ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-div-of (int-div-trunc ?x ?y))_R" [shape=octagon, label="int-div-of", color="#9467bd", fontcolor="#9467bd"];
+      "(int-div-of (int-div-trunc ?x ?y))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_R_2 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [shape=octagon, label="int-first", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "?x_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "(int-div-of (int-div-trunc ?x ?y))_R" [label="1", color="#ff7f0e", style=dashed];
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "?y_R" [label="2", color="#ff7f0e", style=dashed];
-    "(int-div-of (int-div-trunc ?x ?y))_R" -> "(int-div-trunc ?x ?y)_R" [label="1", color="#9467bd", style=dashed];
-    "(int-div-trunc ?x ?y)_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
-    "(int-div-trunc ?x ?y)_R" -> "?y_R" [label="2", color="#9467bd", style=dashed];
+    "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "int-first_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "(int-div-of (int-div-trunc ?x ?y))_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "(int-div-of (int-div-trunc ?x ?y))_R" -> "int-div-of_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(int-div-of (int-div-trunc ?x ?y))_R" -> "(int-div-trunc ?x ?y)_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(int-div-trunc ?x ?y)_R" -> "int-div-trunc_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(int-div-trunc ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(int-div-trunc ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

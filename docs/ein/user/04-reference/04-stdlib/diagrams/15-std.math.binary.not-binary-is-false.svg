@@ -2,47 +2,84 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_not_binary_is_false_lhs_rhs Pages: 1 -->
-<svg width="262pt" height="216pt"
- viewBox="0.00 0.00 262.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<svg width="428pt" height="184pt"
+ viewBox="0.00 0.00 428.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 180.1)">
 <title>rule_not_binary_is_false_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 258,-211.75 258,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="127" y="-190.45" font-family="Times,serif" font-size="14.00">not&#45;binary&#45;is&#45;false</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-180.1 424,-180.1 424,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="210" y="-158.8" font-family="Times,serif" font-size="14.00">not&#45;binary&#45;is&#45;false</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
-<polygon fill="none" stroke="black" points="8,-8 8,-174.5 146,-174.5 146,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="77" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+<polygon fill="none" stroke="black" points="8,-8 8,-142.85 334,-142.85 334,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="171" y="-125.55" font-family="Times,serif" font-size="14.00">match</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="154,-97.25 154,-174.5 246,-174.5 246,-97.25 154,-97.25"/>
-<text xml:space="preserve" text-anchor="middle" x="200" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="342,-8 342,-142.85 412,-142.85 412,-8 342,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="377" y="-125.55" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- not&#45;binary_L -->
+<g id="node1" class="node">
+<title>not&#45;binary_L</title>
+<polygon fill="none" stroke="black" points="105.75,-52 16.25,-52 16.25,-16 105.75,-16 105.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="61" y="-29.32" font-family="Times,serif" font-size="14.00">not&#45;binary</text>
 </g>
 <!-- ?x_L -->
-<g id="node1" class="node">
+<g id="node2" class="node">
 <title>?x_L</title>
-<polygon fill="none" stroke="black" points="64,-141.25 32.5,-123.25 64,-105.25 95.5,-123.25 64,-141.25"/>
-<text xml:space="preserve" text-anchor="middle" x="64" y="-118.58" font-family="Times,serif" font-size="14.00">?x</text>
+<polygon fill="none" stroke="black" points="155,-52 123.5,-34 155,-16 186.5,-34 155,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="155" y="-29.32" font-family="Times,serif" font-size="14.00">?x</text>
 </g>
 <!-- ?thing_L -->
-<g id="node2" class="node">
-<title>?thing_L</title>
-<polygon fill="none" stroke="black" points="77,-52 16.49,-34 77,-16 137.51,-34 77,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="77" y="-29.32" font-family="Times,serif" font-size="14.00">?thing</text>
-</g>
-<!-- ?x_L&#45;&gt;?thing_L -->
-<g id="edge1" class="edge">
-<title>?x_L&#45;&gt;?thing_L</title>
-<path fill="none" stroke="#bcbd22" d="M66.38,-106.25C68.19,-94.1 70.73,-77.1 72.86,-62.76"/>
-<polygon fill="#bcbd22" stroke="#bcbd22" points="76.31,-63.4 74.32,-52.99 69.38,-62.37 76.31,-63.4"/>
-<text xml:space="preserve" text-anchor="middle" x="108.41" y="-73.95" font-family="Times,serif" font-size="14.00" fill="#bcbd22">not&#45;binary</text>
-</g>
-<!-- h1_false_R -->
 <g id="node3" class="node">
-<title>h1_false_R</title>
-<polygon fill="none" stroke="#2ca02c" points="237.77,-115.79 237.77,-130.71 215.65,-141.25 184.35,-141.25 162.23,-130.71 162.23,-115.79 184.35,-105.25 215.65,-105.25 237.77,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="200" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">false</text>
+<title>?thing_L</title>
+<polygon fill="none" stroke="black" points="265,-52 204.49,-34 265,-16 325.51,-34 265,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="265" y="-29.32" font-family="Times,serif" font-size="14.00">?thing</text>
+</g>
+<!-- h1_not&#45;binary_L -->
+<g id="node4" class="node">
+<title>h1_not&#45;binary_L</title>
+<polygon fill="none" stroke="#bcbd22" points="165.8,-94.33 165.8,-103.27 159.47,-109.6 150.53,-109.6 144.2,-103.27 144.2,-94.33 150.53,-88 159.47,-88 165.8,-94.33"/>
+</g>
+<!-- h1_not&#45;binary_L&#45;&gt;not&#45;binary_L -->
+<g id="edge1" class="edge">
+<title>h1_not&#45;binary_L&#45;&gt;not&#45;binary_L</title>
+<path fill="none" stroke="#bcbd22" d="M146.33,-92C134.95,-84.4 114.29,-70.6 96.16,-58.49"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="98.48,-55.83 88.22,-53.19 94.6,-61.65 98.48,-55.83"/>
+<text xml:space="preserve" text-anchor="middle" x="112.07" y="-76.08" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h1_not&#45;binary_L&#45;&gt;?x_L -->
+<g id="edge2" class="edge">
+<title>h1_not&#45;binary_L&#45;&gt;?x_L</title>
+<path fill="none" stroke="#bcbd22" d="M155,-87.71C155,-81.13 155,-72.19 155,-63.54"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="158.5,-63.69 155,-53.69 151.5,-63.69 158.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="150.5" y="-73.99" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_not&#45;binary_L&#45;&gt;?thing_L -->
+<g id="edge3" class="edge">
+<title>h1_not&#45;binary_L&#45;&gt;?thing_L</title>
+<path fill="none" stroke="#bcbd22" d="M164.38,-92.45C179.86,-83.61 211.39,-65.61 235.05,-52.1"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="236.7,-55.19 243.65,-47.19 233.23,-49.11 236.7,-55.19"/>
+<text xml:space="preserve" text-anchor="middle" x="200.03" y="-73.47" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- false_R -->
+<g id="node5" class="node">
+<title>false_R</title>
+<polygon fill="none" stroke="black" points="404,-52 350,-52 350,-16 404,-16 404,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="377" y="-29.32" font-family="Times,serif" font-size="14.00">false</text>
+</g>
+<!-- h2_false_R -->
+<g id="node6" class="node">
+<title>h2_false_R</title>
+<polygon fill="none" stroke="#2ca02c" stroke-dasharray="5,2" points="387.8,-94.33 387.8,-103.27 381.47,-109.6 372.53,-109.6 366.2,-103.27 366.2,-94.33 372.53,-88 381.47,-88 387.8,-94.33"/>
+</g>
+<!-- h2_false_R&#45;&gt;false_R -->
+<g id="edge4" class="edge">
+<title>h2_false_R&#45;&gt;false_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M377,-87.71C377,-81.13 377,-72.19 377,-63.54"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="380.5,-63.69 377,-53.69 373.5,-63.69 380.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="372.5" y="-73.99" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 5776c0c5ed74eadaa359c1ae6d8ef262887ef4d592c33d5de4181b8d1b1b8399 -->
+<!-- source sha256: fa77342751e6d2d4638665b335abe8a068a0cfd06c33a8963ca5d4bf85c73f09 -->

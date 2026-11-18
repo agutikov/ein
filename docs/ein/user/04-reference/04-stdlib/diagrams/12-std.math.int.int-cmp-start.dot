@@ -2,31 +2,43 @@ digraph rule_int_cmp_start_lhs_rhs {
   rankdir=TB;
   label="int-cmp-start"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand-is_L" [label="operand-is", shape=box];
+    "int-second_L" [label="int-second", shape=box];
+    "int-cmp_L" [label="int-cmp", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
+    "int_L" [label="int", shape=box];
     "?q_L" [label="?q", shape=diamond];
     "?m_L" [label="?m", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="int-second ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-cmp ?x ?y)_L" [shape=octagon, label="int-cmp", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(int-cmp ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     subgraph cluster_ctx_L_1 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-second (int-cmp ?x ?y) ?p ?n)_L" [shape=octagon, label="int-second", color="#bcbd22", fontcolor="#bcbd22"];
-      "(int ?q ?m)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int-second (int-cmp ?x ?y) ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+      "(int ?q ?m)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int ?q ?m)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int-cmp ?x ?y)_L" [label="1", color="#bcbd22"];
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?p_L" [label="2", color="#bcbd22"];
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?n_L" [label="3", color="#bcbd22"];
-    "(int-cmp ?x ?y)_L" -> "?x_L" [label="1", color="#7f7f7f"];
-    "(int-cmp ?x ?y)_L" -> "?y_L" [label="2", color="#7f7f7f"];
-    "(int ?q ?m)_L" -> "?q_L" [label="1", color="#17becf"];
-    "(int ?q ?m)_L" -> "?m_L" [label="2", color="#17becf"];
+    "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "h1_operand-is_L" -> "(int-second (int-cmp ?x ?y) ?p ?n)_L" [xlabel="2", color="#17becf"];
+    "h1_operand-is_L" -> "(int ?q ?m)_L" [xlabel="3", color="#17becf"];
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "int-second_L" [xlabel="1", color="#bcbd22"];
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int-cmp ?x ?y)_L" [xlabel="2", color="#bcbd22"];
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?p_L" [xlabel="3", color="#bcbd22"];
+    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?n_L" [xlabel="4", color="#bcbd22"];
+    "(int-cmp ?x ?y)_L" -> "int-cmp_L" [xlabel="1", color="#7f7f7f"];
+    "(int-cmp ?x ?y)_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
+    "(int-cmp ?x ?y)_L" -> "?y_L" [xlabel="3", color="#7f7f7f"];
+    "(int ?q ?m)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?q ?m)_L" -> "?q_L" [xlabel="2", color="#17becf"];
+    "(int ?q ?m)_L" -> "?m_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "int-cmp-call_R" [label="int-cmp-call", shape=box];
+    "int-cmp_R" [label="int-cmp", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
@@ -35,15 +47,17 @@ digraph rule_int_cmp_start_lhs_rhs {
     "?m_R" [label="?m", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="int-cmp-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-cmp ?x ?y)_R" [shape=octagon, label="int-cmp", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(int-cmp ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_int-cmp-call_R" [shape=octagon, label="int-cmp-call", color="#1f77b4", fontcolor="#1f77b4"];
-    "h1_int-cmp-call_R" -> "(int-cmp ?x ?y)_R" [label="1", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?p_R" [label="2", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?n_R" [label="3", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?q_R" [label="4", color="#1f77b4", style=dashed];
-    "h1_int-cmp-call_R" -> "?m_R" [label="5", color="#1f77b4", style=dashed];
-    "(int-cmp ?x ?y)_R" -> "?x_R" [label="1", color="#7f7f7f", style=dashed];
-    "(int-cmp ?x ?y)_R" -> "?y_R" [label="2", color="#7f7f7f", style=dashed];
+    "h2_int-cmp-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "int-cmp-call_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "(int-cmp ?x ?y)_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "?n_R" [xlabel="4", color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "?q_R" [xlabel="5", color="#1f77b4", style=dashed];
+    "h2_int-cmp-call_R" -> "?m_R" [xlabel="6", color="#1f77b4", style=dashed];
+    "(int-cmp ?x ?y)_R" -> "int-cmp_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "(int-cmp ?x ?y)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(int-cmp ?x ?y)_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

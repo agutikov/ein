@@ -2,11 +2,17 @@ digraph rule_not_rational_is_false_lhs_rhs {
   rankdir=TB;
   label="not-rational-is-false"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "not-rational_L" [label="not-rational", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?thing_L" [label="?thing", shape=diamond];
-    "?x_L" -> "?thing_L" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_not-rational_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_not-rational_L" -> "not-rational_L" [xlabel="1", color="#1f77b4"];
+    "h1_not-rational_L" -> "?x_L" [xlabel="2", color="#1f77b4"];
+    "h1_not-rational_L" -> "?thing_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+    "false_R" [label="false", shape=box];
+    "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
   }
 }

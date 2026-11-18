@@ -180,8 +180,6 @@ where a product does not fit: the shift loses a top digit, the row carries out, 
   :assert (mul9-at (num9 ?x8 ?x7 ?x6 ?x5 ?x4 ?x3 ?x2 ?x1 ?x0) ?y ?j (num9 ?y7 ?y6 ?y5 ?y4 ?y3 ?y2 ?y1 ?y0 0) (num9 ?s8 ?s7 ?s6 ?s5 ?s4 ?s3 ?s2 ?s1 ?s0))
   :why    "the multiplicand times the digit {?y8}, a column at a time, added to the sum so far shifted one place")
 ```
-
-![The rule mul9-step of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.mul9-step.svg)
 <!-- /rule -->
 
 #### `mul9-step-zero`
@@ -392,7 +390,7 @@ one rule a digit.
   :why    "bring down {?n8}: the number is less than the divisor, since taking the divisor from it borrows out of the top. The quotient's next digit is 0")
 ```
 
-![The rule div9-step-0 of std.math.num9, as the engine draws it](diagrams/17-std.math.num9.div9-step-0.svg)
+![The rule div9-step-0 of std.math.num9, as the engine draws it folded, each pattern of three arrows one labelled arrow](diagrams/17-std.math.num9.div9-step-0.svg)
 <!-- /rule -->
 
 #### `div9-step-1`

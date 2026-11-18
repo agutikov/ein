@@ -2,17 +2,23 @@ digraph rule_top_first_end_lhs_rhs {
   rankdir=TB;
   label="top-first-end"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?TOP-FIRST_L" [label="?TOP-FIRST", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
-    "h1_TOP-FIRST_L" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "z_L" [label="2", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?acc_L" [label="3", color="#e377c2"];
+    "h1_TOP-FIRST_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?TOP-FIRST_L" [xlabel="1", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "z_L" [xlabel="3", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?acc_L" [xlabel="4", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
+    "?TOP-FIRST-IS_R" [label="?TOP-FIRST-IS", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
-    "?k_R" -> "?acc_R" [label="?TOP-FIRST-IS", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "h2_TOP-FIRST-IS_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_TOP-FIRST-IS_R" -> "?TOP-FIRST-IS_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_TOP-FIRST-IS_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_TOP-FIRST-IS_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }
 }

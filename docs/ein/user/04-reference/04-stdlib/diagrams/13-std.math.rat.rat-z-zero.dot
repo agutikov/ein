@@ -2,26 +2,36 @@ digraph rule_rat_z_zero_lhs_rhs {
   rankdir=TB;
   label="rat-z-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "0_L" [label="0", shape=rectangle];
+    "rat-check_L" [label="rat-check", shape=box];
+    "rat_L" [label="rat", shape=box];
+    "0_L" [label="0", shape=box];
     "?d_L" [label="?d", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="rat-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat 0 ?d)_L" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+      "(rat 0 ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
-    "h1_rat-check_L" [shape=octagon, label="rat-check", color="#e377c2", fontcolor="#e377c2"];
-    "h1_rat-check_L" -> "(rat 0 ?d)_L" [label="1", color="#e377c2"];
-    "(rat 0 ?d)_L" -> "0_L" [label="1", color="#d62728"];
-    "(rat 0 ?d)_L" -> "?d_L" [label="2", color="#d62728"];
+    "h1_rat-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_rat-check_L" -> "rat-check_L" [xlabel="1", color="#e377c2"];
+    "h1_rat-check_L" -> "(rat 0 ?d)_L" [xlabel="2", color="#e377c2"];
+    "(rat 0 ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "(rat 0 ?d)_L" -> "0_L" [xlabel="2", color="#d62728"];
+    "(rat 0 ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
-    "0_R" [label="0", shape=rectangle];
+    "not-rational_R" [label="not-rational", shape=box];
+    "rat_R" [label="rat", shape=box];
+    "0_R" [label="0", shape=box];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-rational ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat 0 ?d)_R" [shape=octagon, label="rat", color="#d62728", fontcolor="#d62728"];
+      "(rat 0 ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
-    "(rat 0 ?d)_R" -> "0_R" [label="not-rational", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-    "(rat 0 ?d)_R" -> "0_R" [label="1", color="#d62728", style=dashed];
-    "(rat 0 ?d)_R" -> "?d_R" [label="2", color="#d62728", style=dashed];
+    "h2_not-rational_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
+    "h2_not-rational_R" -> "not-rational_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "h2_not-rational_R" -> "(rat 0 ?d)_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "h2_not-rational_R" -> "0_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "(rat 0 ?d)_R" -> "rat_R" [xlabel="1", color="#d62728", style=dashed];
+    "(rat 0 ?d)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
+    "(rat 0 ?d)_R" -> "?d_R" [xlabel="3", color="#d62728", style=dashed];
   }
 }

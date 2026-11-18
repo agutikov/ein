@@ -2,17 +2,31 @@ digraph rule_operand_name_lhs_rhs {
   rankdir=TB;
   label="operand-name"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?OPERAND_L" [label="?OPERAND", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
+    "?NAMED_L" [label="?NAMED", shape=diamond];
+    "?LET_L" [label="?LET", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
-    "?k_L" -> "?x_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-    "h1_NAMED_L" [shape=octagon, label="?NAMED", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_NAMED_L" -> "?x_L" [label="1", color="#bcbd22"];
-    "?x_L" -> "?v_L" [label="?LET", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_OPERAND_L" -> "?x_L" [xlabel="3", color="#d62728"];
+    "h2_NAMED_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h2_NAMED_L" -> "?NAMED_L" [xlabel="1", color="#bcbd22"];
+    "h2_NAMED_L" -> "?x_L" [xlabel="2", color="#bcbd22"];
+    "h3_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h3_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "h3_LET_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
+    "h3_LET_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "?OPERAND-IS_R" [label="?OPERAND-IS", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
-    "?k_R" -> "?v_R" [label="?OPERAND-IS", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+    "h4_OPERAND-IS_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h4_OPERAND-IS_R" -> "?OPERAND-IS_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h4_OPERAND-IS_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h4_OPERAND-IS_R" -> "?v_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

@@ -1,7 +1,7 @@
 # Q-M1f.398 — A fact in a context only is drawn in a frame named for the context's relation
 
-In a drawing of the graph, the ones the pages write by hand, a fact that an argument arrow of a fact points at is
-in a context ([Q-M1f.394](../language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)). It stands
+In a drawing of the graph, the ones the pages write by hand and every view `ein render` writes, a fact that an
+argument arrow of a fact points at is in a context ([Q-M1f.394](../language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)). It stands
 **inside a dashed, rounded frame** exactly when it is in a context only: pointed at, and not held. A held fact
 stands in no frame, whatever points at it, and no octagon is filled: *held* is *outside every frame*. Which
 contexts a fact is in is read off the arrows that enter it, framed or not.
@@ -24,4 +24,5 @@ the context of a fact, which states the convention and draws the three cases;
 [the rules](../../ein/reasoning/01-static-ir/02-rewriting-rules.md), § Packing and unpacking;
 [facts](../../ein/user/03-syntax-and-semantics/03-facts.md) and
 [rules](../../ein/user/03-syntax-and-semantics/05-rules.md), one drawing each. What `ein render` draws is
-[Q-M1f.395](../cli/Q-M1f.395-ein-render-draws-every-object-once.md)'s, which follows this one.
+[Q-M1f.395](../cli/Q-M1f.395-ein-render-draws-every-object-once.md)'s, which follows this one, every fact as
+the graph has it ([Q-M1f.419](../cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)).

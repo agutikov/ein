@@ -137,7 +137,7 @@ participant, a node for each hyperedge, and an arrow from a hyperedge's node to 
 base is that graph with one change, that a fact may point at a fact. `ein`'s `--levi` drawing is of it: one octagon
 per fact and an edge to each argument, numbered from the first argument, with the relation's name written in the
 octagon and no node drawn for the relation. See
-[`12-rendering.md` § Hyperedge encoding](12-rendering.md#hyperedge-encoding--levi-bipartite).
+[`12-rendering.md` § A fact as the graph has it](12-rendering.md#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold).
 
 ### Provenance
 Where a fact came from: **given** (`:source`), **derived** (`:rule`, `:using`), or **background** (neither), and a

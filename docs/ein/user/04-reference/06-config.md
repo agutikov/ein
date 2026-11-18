@@ -16,7 +16,7 @@ command does is [`05-cli.md`](05-cli.md); what a run prints is [`08-read-out.md`
 | surface | how many | where the list is |
 |---|---:|---|
 | `(config …)` flags | **2** | § [2](#2-config---the-two-solver-flags) |
-| CLI options | **92** | `ein <command> --help`, and § [3](#3-the-cli) |
+| CLI options | **95** | `ein <command> --help`, and § [3](#3-the-cli) |
 | `EIN_*` environment | **2** read by the shipped binary | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -176,24 +176,24 @@ not a lever: it decides whether a program loads, and a program loads to what it 
 **`ein <command> --help`.** Each option's long name, short key, metavar, arity, default, choices, group and help
 string is fixed, and the test suite holds the help of every command to a checked-in rendering of it; what is free
 is `clap`'s layout ([Q-M1a.13](../../../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md),
-[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **92** options across eighteen parsers, in the
+[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **95** options across eighteen parsers, in the
 default build (the `einb`, `parallel` and `snmalloc` features, which `ein --version` names).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 36 |
+| `ein solve` | 37 |
 | `ein oracle` | 11 |
 | `ein test` | 10 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
-| `ein render kb` | 5 |
+| `ein render kb` | 4 |
+| `ein render rule` | 4 |
 | `ein render lattice` | 3 |
 | `ein render region` | 3 |
-| `ein render rule` | 3 |
 | `ein render program` | 3 |
+| `ein render rules` | 3 |
 | `ein kb save` | 2 |
-| `ein render rules` | 2 |
-| `ein render constraints` | 1 |
+| `ein render constraints` | 2 |
 | `ein show hyps` | 1 |
 
 `ein`, `ein kb`, `ein render` and `ein show` take none: they dispatch. `ein kb save` exists only in a build with the
@@ -292,8 +292,9 @@ a program to answer about.
 - **Execution** — `-j`/`--jobs N`, or `--jobs auto`: the same read-out, byte for byte, at every job count
   ([Q-M1a.7](../../../decisions/engine/Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md)). The default is 1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `--models` (`list`,
-  `key`, `grid`, over the states the read-out showed), `--diff-models FILE`, `ein render program`'s and `ein render
-  kb`'s options, which draw a file and solve nothing, and `ein render region`'s three, which draw an `ein oracle
+  `key`, `grid`, over the states the read-out showed), `--diff-models FILE`, the options of the views that draw a
+  file and solve nothing, `ein render program`'s, `kb`'s, `rules`', `rule`'s and `constraints`', `--fold` among them
+  ([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)), and `ein render region`'s three, which draw an `ein oracle
   --dump` directory (`--view`) with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
   `--answer`) and load nothing. They change stdout and stderr only. Under `-v`, `-g N` logs every N-th node; `-g 0`
   logs none, and a negative is refused, exit 2
@@ -311,7 +312,7 @@ a program to answer about.
   does past its search budget, and exits 0 with the states listed above it. `--diff-models` past the bound pairs
   nothing near, says so in its block, and lists every unmatched model as missing or spurious.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary` (`ein-summary/2`), `--json-report`
-  (`ein-test-report/5`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
+  (`ein-test-report/5`), `--trace` with its five modifiers (`-F`, `-G`, `-l`, `-R`, `--fold`), `--dump-lattice`
   ([`docs/ein/ein.rs/06-lattice-dump.md`](../../ein.rs/06-lattice-dump.md)), `--dump-answer`
   ([`10-answer-dump.md`](10-answer-dump.md)), and `ein oracle`'s `--dump` with `--states`
   ([`11-region-dump.md`](11-region-dump.md)). The directories are made before the run. **Additive** in the strict sense:

@@ -2,40 +2,52 @@ digraph rule_lcm_start_lhs_rhs {
   rankdir=TB;
   label="lcm-start"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand-is_L" [label="operand-is", shape=box];
+    "gcd-second_L" [label="gcd-second", shape=box];
+    "lcm_L" [label="lcm", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="gcd-second ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(lcm ?x ?y)_L" [shape=octagon, label="lcm", color="#1f77b4", fontcolor="#1f77b4"];
+      "(lcm ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     subgraph cluster_ctx_L_1 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(gcd-second (lcm ?x ?y) ?u)_L" [shape=octagon, label="gcd-second", color="#1f77b4", fontcolor="#1f77b4"];
+      "(gcd-second (lcm ?x ?y) ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "(gcd-second (lcm ?x ?y) ?u)_L" -> "?v_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-    "(gcd-second (lcm ?x ?y) ?u)_L" -> "(lcm ?x ?y)_L" [label="1", color="#1f77b4"];
-    "(gcd-second (lcm ?x ?y) ?u)_L" -> "?u_L" [label="2", color="#1f77b4"];
-    "(lcm ?x ?y)_L" -> "?x_L" [label="1", color="#1f77b4"];
-    "(lcm ?x ?y)_L" -> "?y_L" [label="2", color="#1f77b4"];
+    "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "h1_operand-is_L" -> "(gcd-second (lcm ?x ?y) ?u)_L" [xlabel="2", color="#17becf"];
+    "h1_operand-is_L" -> "?v_L" [xlabel="3", color="#17becf"];
+    "(gcd-second (lcm ?x ?y) ?u)_L" -> "gcd-second_L" [xlabel="1", color="#1f77b4"];
+    "(gcd-second (lcm ?x ?y) ?u)_L" -> "(lcm ?x ?y)_L" [xlabel="2", color="#1f77b4"];
+    "(gcd-second (lcm ?x ?y) ?u)_L" -> "?u_L" [xlabel="3", color="#1f77b4"];
+    "(lcm ?x ?y)_L" -> "lcm_L" [xlabel="1", color="#1f77b4"];
+    "(lcm ?x ?y)_L" -> "?x_L" [xlabel="2", color="#1f77b4"];
+    "(lcm ?x ?y)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
+    "gcd-call_R" [label="gcd-call", shape=box];
+    "lcm-g_R" [label="lcm-g", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="gcd-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(lcm-g ?x ?y ?u ?v)_R" [shape=octagon, label="lcm-g", color="#1f77b4", fontcolor="#1f77b4"];
+      "(lcm-g ?x ?y ?u ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(lcm-g ?x ?y ?u ?v)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?u_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?v_R" [label="3", color="#2ca02c", style=dashed];
-    "(lcm-g ?x ?y ?u ?v)_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "(lcm-g ?x ?y ?u ?v)_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "(lcm-g ?x ?y ?u ?v)_R" -> "?u_R" [label="3", color="#1f77b4", style=dashed];
-    "(lcm-g ?x ?y ?u ?v)_R" -> "?v_R" [label="4", color="#1f77b4", style=dashed];
+    "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "gcd-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "(lcm-g ?x ?y ?u ?v)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "?u_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "?v_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "(lcm-g ?x ?y ?u ?v)_R" -> "lcm-g_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(lcm-g ?x ?y ?u ?v)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(lcm-g ?x ?y ?u ?v)_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "(lcm-g ?x ?y ?u ?v)_R" -> "?u_R" [xlabel="4", color="#1f77b4", style=dashed];
+    "(lcm-g ?x ?y ?u ?v)_R" -> "?v_R" [xlabel="5", color="#1f77b4", style=dashed];
   }
 }

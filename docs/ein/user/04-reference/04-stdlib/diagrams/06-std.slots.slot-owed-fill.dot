@@ -2,23 +2,40 @@ digraph rule_slot_owed_fill_lhs_rhs {
   rankdir=TB;
   label="slot-owed-fill"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?isa_L" [label="?isa", shape=diamond];
     "?i_L" [label="?i", shape=diamond];
     "?index_L" [label="?index", shape=diamond];
+    "?sub_L" [label="?sub", shape=diamond];
     "?Tv_L" [label="?Tv", shape=diamond];
     "?super_L" [label="?super", shape=diamond];
-    "?i_L" -> "?index_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    "?Tv_L" -> "?super_L" [label="?sub", color="#9467bd", fontcolor="#9467bd"];
+    "h1_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "h1_isa_L" -> "?i_L" [xlabel="2", color="#bcbd22"];
+    "h1_isa_L" -> "?index_L" [xlabel="3", color="#bcbd22"];
+    "h2_sub_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h2_sub_L" -> "?sub_L" [xlabel="1", color="#9467bd"];
+    "h2_sub_L" -> "?Tv_L" [xlabel="2", color="#9467bd"];
+    "h2_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
     "?Tv_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "?v_L" [label="?v", shape=diamond];
-      "?v_L" -> "?Tv_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?i_L" -> "?v_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+      "?R_L" [label="?R", shape=diamond];
+      "h3_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+      "h3_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+      "h3_isa_L" -> "?v_L" [xlabel="2", color="#bcbd22"];
+      "h3_isa_L" -> "?Tv_L" [xlabel="3", color="#bcbd22"];
+      "h4_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+      "h4_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+      "h4_R_L" -> "?i_L" [xlabel="2", color="#1f77b4"];
+      "h4_R_L" -> "?v_L" [xlabel="3", color="#1f77b4"];
     }
   }
   subgraph cluster_rhs { label="assert";
+    "open_R" [label="open", shape=box];
     "?R_R" [label="?R", shape=diamond];
-    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_open_R" -> "?R_R" [label="1", color="#2ca02c", style=dashed];
+    "h5_open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h5_open_R" -> "open_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h5_open_R" -> "?R_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

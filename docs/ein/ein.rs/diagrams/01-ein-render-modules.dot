@@ -19,6 +19,7 @@ digraph ein_render {
   dlat  [label="dump/region_lattice.rs"];
   dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];
   struc [label="structure.rs"];
+  facts [label="fact_graph.rs"];
   dot   [label="builder.rs, dot_util.rs,\npalette.rs"];
 
   o_dot  [shape=note, label="DOT"];
@@ -31,6 +32,7 @@ digraph ein_render {
 
   forms -> prog;  kb -> kbv;  firings -> trace;  ro -> trace;
   ro -> text;  ro -> dans;  visits -> dlat;  cube -> dreg;  hs -> struc;
+  prog -> facts;  kbv -> facts;  facts -> dot;
   prog -> dot;  kbv -> dot;  trace -> dot;  dlat -> dot;  dreg -> dot;  struc -> dot;
   dot -> o_dot;
   trace -> o_md;  text -> o_out;  dans -> o_ans;  dlat -> o_lat;  dreg -> o_reg;  struc -> o_hs;

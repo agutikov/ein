@@ -118,6 +118,7 @@ fn real_trace(rel: &str, flag: &str) -> String {
             relevant: false,
             reorder: false,
             full_kb: false,
+            fold: false,
         },
     )
     .expect("the trace renders");

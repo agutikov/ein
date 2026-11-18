@@ -2,43 +2,54 @@ digraph rule_to_bin_halve_lhs_rhs {
   rankdir=TB;
   label="to-bin-halve"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "to-bin-go_L" [label="to-bin-go", shape=box];
     "?x_L" [label="?x", shape=diamond];
+    "n_L" [label="n", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "?acc_L" [label="?acc", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="to-bin-go ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n ?p ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h1_to-bin-go_L" [shape=octagon, label="to-bin-go", color="#17becf", fontcolor="#17becf"];
-    "h1_to-bin-go_L" -> "?x_L" [label="1", color="#17becf"];
-    "h1_to-bin-go_L" -> "(n ?p ?a)_L" [label="2", color="#17becf"];
-    "h1_to-bin-go_L" -> "?acc_L" [label="3", color="#17becf"];
-    "(n ?p ?a)_L" -> "?p_L" [label="1", color="#9467bd"];
-    "(n ?p ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
+    "h1_to-bin-go_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_to-bin-go_L" -> "to-bin-go_L" [xlabel="1", color="#17becf"];
+    "h1_to-bin-go_L" -> "?x_L" [xlabel="2", color="#17becf"];
+    "h1_to-bin-go_L" -> "(n ?p ?a)_L" [xlabel="3", color="#17becf"];
+    "h1_to-bin-go_L" -> "?acc_L" [xlabel="4", color="#17becf"];
+    "(n ?p ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "div-call_R" [label="div-call", shape=box];
+    "halving_R" [label="halving", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
+    "n_R" [label="n", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "2_R" [label="2", shape=rectangle];
+    "z_R" [label="z", shape=box];
+    "2_R" [label="2", shape=box];
     subgraph cluster_ctx_R_0 {
       label="div-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(halving ?x ?acc)_R" [shape=octagon, label="halving", color="#bcbd22", fontcolor="#bcbd22"];
-      "(n ?p ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
-      "(n z 2)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(halving ?x ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+      "(n ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+      "(n z 2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h2_div-call_R" [shape=octagon, label="div-call", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_div-call_R" -> "(halving ?x ?acc)_R" [label="1", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n ?p ?a)_R" [label="2", color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "(n z 2)_R" [label="3", color="#bcbd22", style=dashed];
-    "(halving ?x ?acc)_R" -> "?x_R" [label="1", color="#bcbd22", style=dashed];
-    "(halving ?x ?acc)_R" -> "?acc_R" [label="2", color="#bcbd22", style=dashed];
-    "(n ?p ?a)_R" -> "?p_R" [label="1", color="#9467bd", style=dashed];
-    "(n ?p ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
-    "(n z 2)_R" -> "z_R" [label="1", color="#9467bd", style=dashed];
-    "(n z 2)_R" -> "2_R" [label="2", color="#9467bd", style=dashed];
+    "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "div-call_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "(halving ?x ?acc)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "(n ?p ?a)_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_div-call_R" -> "(n z 2)_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "(halving ?x ?acc)_R" -> "halving_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(halving ?x ?acc)_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(halving ?x ?acc)_R" -> "?acc_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(n ?p ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?p_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
+    "(n z 2)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n z 2)_R" -> "z_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n z 2)_R" -> "2_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

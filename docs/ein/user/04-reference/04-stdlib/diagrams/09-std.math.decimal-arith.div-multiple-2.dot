@@ -2,49 +2,63 @@ digraph rule_div_multiple_2_lhs_rhs {
   rankdir=TB;
   label="div-multiple-2"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "done_L" [label="done", shape=box];
+    "div-m1_L" [label="div-m1", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
+    "n_L" [label="n", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(div-m1 ?k ?u ?v)_L" [shape=octagon, label="div-m1", color="#e377c2", fontcolor="#e377c2"];
-      "(n ?p ?a)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(div-m1 ?k ?u ?v)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+      "(n ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(div-m1 ?k ?u ?v)_L" -> "(n ?p ?a)_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-    "(div-m1 ?k ?u ?v)_L" -> "?k_L" [label="1", color="#e377c2"];
-    "(div-m1 ?k ?u ?v)_L" -> "?u_L" [label="2", color="#e377c2"];
-    "(div-m1 ?k ?u ?v)_L" -> "?v_L" [label="3", color="#e377c2"];
-    "(n ?p ?a)_L" -> "?p_L" [label="1", color="#9467bd"];
-    "(n ?p ?a)_L" -> "?a_L" [label="2", color="#9467bd"];
+    "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "h1_done_L" -> "(div-m1 ?k ?u ?v)_L" [xlabel="2", color="#e377c2"];
+    "h1_done_L" -> "(n ?p ?a)_L" [xlabel="3", color="#e377c2"];
+    "(div-m1 ?k ?u ?v)_L" -> "div-m1_L" [xlabel="1", color="#e377c2"];
+    "(div-m1 ?k ?u ?v)_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "(div-m1 ?k ?u ?v)_L" -> "?u_L" [xlabel="3", color="#e377c2"];
+    "(div-m1 ?k ?u ?v)_L" -> "?v_L" [xlabel="4", color="#e377c2"];
+    "(n ?p ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
+    "(n ?p ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "mul-walk_R" [label="mul-walk", shape=box];
+    "div-m2_R" [label="div-m2", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
+    "n_R" [label="n", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
-    "2_R" [label="2", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
+    "2_R" [label="2", shape=box];
+    "0_R" [label="0", shape=box];
+    "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
       label="div-m2, mul-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n ?p ?a)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_R_1 {
       label="mul-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(div-m2 ?k ?u (n ?p ?a))_R" [shape=octagon, label="div-m2", color="#2ca02c", fontcolor="#2ca02c"];
+      "(div-m2 ?k ?u (n ?p ?a))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h1_mul-walk_R" [shape=octagon, label="mul-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_mul-walk_R" -> "(div-m2 ?k ?u (n ?p ?a))_R" [label="1", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "(n ?p ?a)_R" [label="2", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "2_R" [label="3", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h1_mul-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-    "(div-m2 ?k ?u (n ?p ?a))_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
-    "(div-m2 ?k ?u (n ?p ?a))_R" -> "?u_R" [label="2", color="#2ca02c", style=dashed];
-    "(div-m2 ?k ?u (n ?p ?a))_R" -> "(n ?p ?a)_R" [label="3", color="#2ca02c", style=dashed];
-    "(n ?p ?a)_R" -> "?p_R" [label="1", color="#9467bd", style=dashed];
-    "(n ?p ?a)_R" -> "?a_R" [label="2", color="#9467bd", style=dashed];
+    "h2_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "(div-m2 ?k ?u (n ?p ?a))_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "(n ?p ?a)_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "2_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_mul-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
+    "(div-m2 ?k ?u (n ?p ?a))_R" -> "div-m2_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(div-m2 ?k ?u (n ?p ?a))_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(div-m2 ?k ?u (n ?p ?a))_R" -> "?u_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(div-m2 ?k ?u (n ?p ?a))_R" -> "(n ?p ?a)_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "(n ?p ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?p_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n ?p ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

@@ -24,41 +24,43 @@ use crate::kb_dot::{ColourBy, KbDotOpts};
 use crate::rules::{RuleMode, render_rules_forms};
 
 /// The views that need only the parsed forms.
-pub const PARSE_VIEWS: [&str; 8] = [
+pub const PARSE_VIEWS: [&str; 10] = [
     "ir",
-    "ir-levi",
+    "ir-fold",
     "ir-overlay",
     "ir-trace-dag",
     "ir-forms",
     "rules",
+    "rules-fold",
     "rules-overlay",
     "constraints",
+    "constraints-fold",
 ];
 
 /// The views that need a loaded KB.
-pub const KB_VIEWS: [&str; 6] = [
-    "kb",
-    "kb-origin",
-    "kb-none",
-    "kb-no-types",
-    "kb-no-instances",
-    "kb-since",
-];
+pub const KB_VIEWS: [&str; 5] = ["kb", "kb-fold", "kb-origin", "kb-none", "kb-since"];
 
 pub fn all_views() -> Vec<&'static str> {
     PARSE_VIEWS.iter().chain(KB_VIEWS.iter()).copied().collect()
 }
 
 fn parse_view(ast: &Ast, forms: &[NodeId], view: &str) -> Result<String, String> {
-    let opts = |rule_mode, trace_view, levi| DotOpts {
+    let opts = |rule_mode, trace_view, fold| DotOpts {
         rule_mode,
         trace_view,
-        levi,
+        fold,
     };
     let default = DotOpts::default();
+    let rules_of = || -> Vec<NodeId> {
+        forms
+            .iter()
+            .copied()
+            .filter(|f| matches!(ast.head_name(*f), Some("rule" | "hrule")))
+            .collect()
+    };
     Ok(match view {
         "ir" => to_dot(ast, forms, default),
-        "ir-levi" => to_dot(
+        "ir-fold" => to_dot(
             ast,
             forms,
             opts(RuleMode::SideBySide, TraceView::PerStep, true),
@@ -84,20 +86,13 @@ fn parse_view(ast: &Ast, forms: &[NodeId], view: &str) -> Result<String, String>
             }
             out.join("\n")
         }
-        "rules" | "rules-overlay" => {
-            let mode = if view.ends_with("overlay") {
-                RuleMode::Overlay
-            } else {
-                RuleMode::SideBySide
-            };
-            let rules: Vec<NodeId> = forms
-                .iter()
-                .copied()
-                .filter(|f| matches!(ast.head_name(*f), Some("rule" | "hrule")))
-                .collect();
-            render_rules_forms(ast, &rules, mode)
+        "rules" => render_rules_forms(ast, &rules_of(), RuleMode::SideBySide, false),
+        "rules-fold" => render_rules_forms(ast, &rules_of(), RuleMode::SideBySide, true),
+        "rules-overlay" => render_rules_forms(ast, &rules_of(), RuleMode::Overlay, false),
+        "constraints" => crate::constraints::render_constraints(ast, forms, "constraints", false),
+        "constraints-fold" => {
+            crate::constraints::render_constraints(ast, forms, "constraints", true)
         }
-        "constraints" => crate::constraints::render_constraints(ast, forms, "constraints"),
         _ => return Err(format!("unknown dot view {view:?}")),
     })
 }
@@ -106,6 +101,7 @@ fn kb_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<Stri
     let d = KbDotOpts::default;
     Ok(match view {
         "kb" => crate::kb_dot::to_dot(kb, terms, &d()),
+        "kb-fold" => crate::kb_dot::to_dot(kb, terms, &KbDotOpts { fold: true, ..d() }),
         "kb-origin" => crate::kb_dot::to_dot(
             kb,
             terms,
@@ -120,22 +116,6 @@ fn kb_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<Stri
             &KbDotOpts {
                 colour_by: ColourBy::None,
                 name: "plain",
-                ..d()
-            },
-        ),
-        "kb-no-types" => crate::kb_dot::to_dot(
-            kb,
-            terms,
-            &KbDotOpts {
-                include_types: false,
-                ..d()
-            },
-        ),
-        "kb-no-instances" => crate::kb_dot::to_dot(
-            kb,
-            terms,
-            &KbDotOpts {
-                include_instances: false,
                 ..d()
             },
         ),

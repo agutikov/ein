@@ -621,6 +621,7 @@ fn region_op(
                     relevant: false,
                     reorder: false,
                     full_kb: false,
+                    fold: false,
                 },
             )
         }

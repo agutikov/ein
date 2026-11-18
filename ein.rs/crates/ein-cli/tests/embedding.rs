@@ -148,6 +148,7 @@ fn run(path: &Path) -> Result<String, String> {
             relevant: false,
             reorder: false,
             full_kb: false,
+            fold: false,
         },
     )?;
     let steps = md.lines().filter(|l| l.starts_with("### Step ")).count();

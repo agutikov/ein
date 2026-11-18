@@ -2,36 +2,50 @@ digraph rule_int_neg_start_lhs_rhs {
   rankdir=TB;
   label="int-neg-start"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand-is_L" [label="operand-is", shape=box];
+    "int-only_L" [label="int-only", shape=box];
+    "int-neg_L" [label="int-neg", shape=box];
     "?x_L" [label="?x", shape=diamond];
+    "int_L" [label="int", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="int-only ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-neg ?x)_L" [shape=octagon, label="int-neg", color="#9467bd", fontcolor="#9467bd"];
+      "(int-neg ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_L_1 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-only (int-neg ?x))_L" [shape=octagon, label="int-only", color="#9467bd", fontcolor="#9467bd"];
-      "(int ?p ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int-only (int-neg ?x))_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+      "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(int-only (int-neg ?x))_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-    "(int-only (int-neg ?x))_L" -> "(int-neg ?x)_L" [label="1", color="#9467bd"];
-    "(int-neg ?x)_L" -> "?x_L" [label="1", color="#9467bd"];
-    "(int ?p ?n)_L" -> "?p_L" [label="1", color="#17becf"];
-    "(int ?p ?n)_L" -> "?n_L" [label="2", color="#17becf"];
+    "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "h1_operand-is_L" -> "(int-only (int-neg ?x))_L" [xlabel="2", color="#17becf"];
+    "h1_operand-is_L" -> "(int ?p ?n)_L" [xlabel="3", color="#17becf"];
+    "(int-only (int-neg ?x))_L" -> "int-only_L" [xlabel="1", color="#9467bd"];
+    "(int-only (int-neg ?x))_L" -> "(int-neg ?x)_L" [xlabel="2", color="#9467bd"];
+    "(int-neg ?x)_L" -> "int-neg_L" [xlabel="1", color="#9467bd"];
+    "(int-neg ?x)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
+    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "int-norm_R" [label="int-norm", shape=box];
+    "int-neg_R" [label="int-neg", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="int-norm ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-neg ?x)_R" [shape=octagon, label="int-neg", color="#9467bd", fontcolor="#9467bd"];
+      "(int-neg ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h1_int-norm_R" [shape=octagon, label="int-norm", color="#e377c2", fontcolor="#e377c2"];
-    "h1_int-norm_R" -> "(int-neg ?x)_R" [label="1", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?n_R" [label="2", color="#e377c2", style=dashed];
-    "h1_int-norm_R" -> "?p_R" [label="3", color="#e377c2", style=dashed];
-    "(int-neg ?x)_R" -> "?x_R" [label="1", color="#9467bd", style=dashed];
+    "h2_int-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2_int-norm_R" -> "int-norm_R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2_int-norm_R" -> "(int-neg ?x)_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_int-norm_R" -> "?n_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_int-norm_R" -> "?p_R" [xlabel="4", color="#e377c2", style=dashed];
+    "(int-neg ?x)_R" -> "int-neg_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(int-neg ?x)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

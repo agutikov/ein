@@ -21,10 +21,13 @@ never by hand, as is the drawing's source, a file of the folder's `diagrams/`:
 
 The Ein is cut from the module's file under `stdlib/`, from `(rule NAME` to its
 closing parenthesis. The drawing's source is the digraph `ein render rules
-FILE` prints for the rule, byte for byte. A rule whose drawing has more than
-`MAX_NODES` nodes is shown as Ein alone and has no file: a closing rule names
-every relation and rule of its module, and its drawing is a few hundred
-octagons nobody reads.
+FILE` prints for the rule, byte for byte, in the canonical form, every pattern
+an octagon whose first arrow is at its relation. A rule whose canonical
+drawing has more than `MAX_NODES` nodes is drawn folded, the digraph `ein
+render rules --fold FILE` prints, where that one has no more, and the image's
+text says so; one whose folded drawing has more too is shown as Ein alone and
+has no file: a closing rule names every relation and rule of its module, and
+its drawing is a few hundred octagons nobody reads.
 
 **A source's name** is `NN-MODULE.RULE.dot`: `NN` the number of the page that
 shows the rule, `MODULE` the module's dotted name, `RULE` the rule's name as
@@ -118,11 +121,12 @@ def rules_of(text: str) -> dict[str, str]:
     return out
 
 
-def drawings_of(ein: str, path: Path) -> dict[str, str]:
-    """Rule name → the digraph `ein render rules` prints for it."""
-    r = subprocess.run([ein, "render", "rules", str(path)], capture_output=True, text=True)
+def drawings_of(ein: str, path: Path, fold: bool = False) -> dict[str, str]:
+    """Rule name → the digraph `ein render rules` prints for it, `--fold` where `fold`."""
+    argv = [ein, "render", "rules", *(["--fold"] if fold else []), str(path)]
+    r = subprocess.run(argv, capture_output=True, text=True)
     if r.returncode != 0:
-        sys.exit(f"gen_stdlib_rule_pages: `ein render rules {path}` exits {r.returncode}:\n{r.stderr}")
+        sys.exit(f"gen_stdlib_rule_pages: `{' '.join(argv[1:])}` exits {r.returncode}:\n{r.stderr}")
     out = {}
     for part in re.split(r"(?m)^(?=digraph )", r.stdout):
         if not part.strip():
@@ -142,15 +146,26 @@ def drawn(dot: str) -> bool:
     return nodes(dot) <= MAX_NODES
 
 
+def chosen(canonical: str, folded: str) -> tuple[str, bool]:
+    """The drawing a page shows of a rule, and whether it is the folded one: the
+    canonical where it is within the bound, else the folded one. A rule neither
+    is within it is shown as Ein alone, `drawn` false of the folded one."""
+    if drawn(canonical):
+        return canonical, False
+    return folded, True
+
+
 def stem(page: Path, module: str, rule: str) -> str:
     """The name, less its extension, of the source of `rule`'s drawing on `page`."""
     return f"{page.name[:2]}-{module}.{rule}"
 
 
-def region(source: str, dot: str, page: Path, module: str, rule: str) -> list[str]:
+def region(source: str, dot: str, folded: bool, page: Path, module: str, rule: str) -> list[str]:
     lines = ["```lisp", *source.splitlines(), "```"]
     if drawn(dot):
-        lines += ["", f"![The rule {rule} of {module}, as the engine draws it]"
+        how = "as the engine draws it folded, each pattern of three arrows one labelled arrow" if folded \
+            else "as the engine draws it"
+        lines += ["", f"![The rule {rule} of {module}, {how}]"
                       f"(diagrams/{stem(page, module, rule)}.svg)"]
     return lines
 
@@ -163,14 +178,15 @@ def main() -> int:
     args = ap.parse_args()
 
     mods = modules()
-    #: (module, rule) → the rule as written, and its digraph.
-    want: dict[tuple[str, str], tuple[str, str]] = {}
+    #: (module, rule) → the rule as written, its digraph, and whether it is folded.
+    want: dict[tuple[str, str], tuple[str, str, bool]] = {}
     for name, path in mods.items():
         rules = rules_of(path.read_text())
         if not rules:
             continue
         digraphs = drawings_of(args.bin, path)
-        if set(digraphs) != set(rules):
+        folded = drawings_of(args.bin, path, fold=True)
+        if set(digraphs) != set(rules) or set(folded) != set(rules):
             sys.exit(f"gen_stdlib_rule_pages: {name}: the rules read off the file and the digraphs "
                      f"`ein render rules` prints differ: {sorted(set(digraphs) ^ set(rules))}")
         if not MODULE.fullmatch(name):
@@ -179,7 +195,7 @@ def main() -> int:
             if not RULE.fullmatch(rule):
                 sys.exit(f"gen_stdlib_rule_pages: {name}: the rule's name `{rule}` cannot be part of "
                          "a file's name (letters, digits and `-`)")
-            want[(name, rule)] = (source, digraphs[rule])
+            want[(name, rule)] = (source, *chosen(digraphs[rule], folded[rule]))
 
     seen: dict[tuple[str, str], list[str]] = {}
     problems: list[str] = []
@@ -206,8 +222,8 @@ def main() -> int:
                 problems.append(f"{rel}:{i + 1}: no rule `{key[1]}` in {key[0]}")
                 out += lines[i : end + 1]
             else:
-                source, dot = want[key]
-                body = region(source, dot, page, *key)
+                source, dot, fold = want[key]
+                body = region(source, dot, fold, page, *key)
                 if drawn(dot):
                     sources[stem(page, *key) + ".dot"] = dot.rstrip("\n") + "\n"
                 if lines[i + 1 : end] != body:
@@ -267,7 +283,10 @@ def main() -> int:
         return 1
     verb = ("are as written" if args.check or not (stale or drew)
             else f"written ({stale} region(s) and {drew} source(s) changed)")
-    print(f"gen_stdlib_rule_pages: {len(want)} rules of {len(mods)} modules, their regions and the "
+    canonical = sum(1 for _, dot, fold in want.values() if drawn(dot) and not fold)
+    folds = sum(1 for _, dot, fold in want.values() if drawn(dot) and fold)
+    print(f"gen_stdlib_rule_pages: {len(want)} rules of {len(mods)} modules ({canonical} drawn canonical, "
+          f"{folds} folded, {len(want) - canonical - folds} as Ein only), their regions and the "
           f"{len(sources)} sources of their drawings {verb}", flush=True)
     if not args.check:
         # The pictures are drawn from the sources, by the script that draws every diagram.

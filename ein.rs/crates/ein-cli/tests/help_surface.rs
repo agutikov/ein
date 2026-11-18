@@ -38,10 +38,11 @@ const EXPECTED: [(&str, usize); 12] = [
     // ([`05-cli.md`](../../../../docs/ein/user/04-reference/05-cli.md)), `--monotone`,
     // `--count`, `--no-require-why`, as every command that loads a program
     // takes it, `--no-search`, root alone, R not searched, and
-    // `--describe-route`, describe's two routes, one R. The retired options
+    // `--describe-route`, describe's two routes, one R, and `--fold`, the
+    // trace's drawings folded (Q-M1f.419). The retired options
     // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
     // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
-    ("COMMAND ein solve\n", 36),
+    ("COMMAND ein solve\n", 37),
     // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
     // `--stats`; the five from `solve`, `-T`, `--json-summary`, `--models`,
     // `-p` and `-P`; and `--no-require-why`.
@@ -49,15 +50,16 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
     // The four views that draw a program as written take `--no-require-why`,
-    // since they read it through the loader first (Q-M1f.71).
-    ("COMMAND ein render rules\n", 2),
-    ("COMMAND ein render rule\n", 3),
-    ("COMMAND ein render constraints\n", 1),
+    // since they read it through the loader first (Q-M1f.71), and every view
+    // that draws facts takes `--fold` (Q-M1f.419).
+    ("COMMAND ein render rules\n", 3),
+    ("COMMAND ein render rule\n", 4),
+    ("COMMAND ein render constraints\n", 2),
     ("COMMAND ein render lattice\n", 3),
-    // The two doors: `--levi` and `--rule-mode`; `--since`,
-    // `--colour-by`, `--no-types`, `--no-instances`, and `--no-require-why`.
+    // The two doors: `--fold` and `--rule-mode`; `--since`,
+    // `--colour-by`, `--fold`, and `--no-require-why`.
     ("COMMAND ein render program\n", 3),
-    ("COMMAND ein render kb\n", 5),
+    ("COMMAND ein render kb\n", 4),
     // `--view` over a region dump; `--visited` and `--answer`, a region
     // run's two dumps drawn on it.
     ("COMMAND ein render region\n", 3),
@@ -107,9 +109,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        73 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        76 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "73 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "76 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s ten and `ein kb save`'s two"
     );
 }

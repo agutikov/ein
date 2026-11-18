@@ -2,18 +2,28 @@ digraph rule_bad_request_undeclared_lhs_rhs {
   rankdir=TB;
   label="bad-request-undeclared"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?BAD-REQUEST_L" [label="?BAD-REQUEST", shape=diamond];
     "?request_L" [label="?request", shape=diamond];
+    "?NO-LET_L" [label="?NO-LET", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?BAD-REQUEST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?NO-LET ?x)_L" [shape=octagon, label="?NO-LET", color="#8c564b", fontcolor="#8c564b"];
+      "(?NO-LET ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
-    "?request_L" -> "(?NO-LET ?x)_L" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728"];
-    "(?NO-LET ?x)_L" -> "?x_L" [label="1", color="#8c564b"];
+    "h1_BAD-REQUEST_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "?BAD-REQUEST_L" [xlabel="1", color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "?request_L" [xlabel="2", color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "(?NO-LET ?x)_L" [xlabel="3", color="#d62728"];
+    "(?NO-LET ?x)_L" -> "?NO-LET_L" [xlabel="1", color="#8c564b"];
+    "(?NO-LET ?x)_L" -> "?x_L" [xlabel="2", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
+    "?UNDECLARED_R" [label="?UNDECLARED", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "?request_R" [label="?request", shape=diamond];
-    "?x_R" -> "?request_R" [label="?UNDECLARED", color="#d62728", fontcolor="#d62728", style=dashed];
+    "h2_UNDECLARED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_UNDECLARED_R" -> "?UNDECLARED_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_UNDECLARED_R" -> "?x_R" [xlabel="2", color="#d62728", style=dashed];
+    "h2_UNDECLARED_R" -> "?request_R" [xlabel="3", color="#d62728", style=dashed];
   }
 }

@@ -2,30 +2,42 @@ digraph rule_bin_numeral_bit_lhs_rhs {
   rankdir=TB;
   label="bin-numeral-bit"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-check_L" [label="bin-check", shape=box];
     "?w_L" [label="?w", shape=diamond];
+    "b2_L" [label="b2", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
+    "0_L" [label="0", shape=box];
+    "1_L" [label="1", shape=box];
     subgraph cluster_ctx_L_0 {
       label="bin-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 ?p ?a)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "?w_L" -> "(b2 ?p ?a)_L" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
+    "h1_bin-check_L" -> "(b2 ?p ?a)_L" [xlabel="3", color="#1f77b4"];
     "?a_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "(b2 ?p ?a)_L" -> "?p_L" [label="1", color="#bcbd22"];
-    "(b2 ?p ?a)_L" -> "?a_L" [label="2", color="#bcbd22"];
+    "(b2 ?p ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "(b2 ?p ?a)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
+    "(b2 ?p ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "not-binary_R" [label="not-binary", shape=box];
+    "b2_R" [label="b2", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-binary ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 ?p ?a)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "(b2 ?p ?a)_R" -> "?a_R" [label="not-binary", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-    "(b2 ?p ?a)_R" -> "?p_R" [label="1", color="#bcbd22", style=dashed];
-    "(b2 ?p ?a)_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
+    "h2_not-binary_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_not-binary_R" -> "not-binary_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_not-binary_R" -> "(b2 ?p ?a)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_not-binary_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(b2 ?p ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(b2 ?p ?a)_R" -> "?p_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(b2 ?p ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

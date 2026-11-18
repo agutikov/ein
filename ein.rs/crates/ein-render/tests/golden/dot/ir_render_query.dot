@@ -1,3 +1,12 @@
 digraph query {
-  "query" [shape=note, label=":goal (drinks Water ?h)"];
+  rankdir=TB;
+  subgraph cluster_goal_1 { label="query";
+    "drinks_Q1" [label="drinks", shape=box];
+    "Water_Q1" [label="Water", shape=box];
+    "?h_Q1" [label="?h", shape=diamond];
+    "h1_drinks_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_drinks_Q1" -> "drinks_Q1" [xlabel="1", color="#e377c2"];
+    "h1_drinks_Q1" -> "Water_Q1" [xlabel="2", color="#e377c2"];
+    "h1_drinks_Q1" -> "?h_Q1" [xlabel="3", color="#e377c2"];
+  }
 }

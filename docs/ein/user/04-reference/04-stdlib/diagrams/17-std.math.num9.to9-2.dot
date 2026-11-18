@@ -2,51 +2,65 @@ digraph rule_to9_2_lhs_rhs {
   rankdir=TB;
   label="to9-2"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "z_L" [label="z", shape=rectangle];
+    "to9_L" [label="to9", shape=box];
+    "n_L" [label="n", shape=box];
+    "z_L" [label="z", shape=box];
     "?a2_L" [label="?a2", shape=diamond];
     "?a1_L" [label="?a1", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n z ?a2)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n z ?a2)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     subgraph cluster_ctx_L_1 {
       label="to9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n (n z ?a2) ?a1)_L" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n (n z ?a2) ?a1)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "h1_to9_L" [shape=octagon, label="to9", color="#9467bd", fontcolor="#9467bd"];
-    "h1_to9_L" -> "(n (n z ?a2) ?a1)_L" [label="1", color="#9467bd"];
-    "(n (n z ?a2) ?a1)_L" -> "(n z ?a2)_L" [label="1", color="#9467bd"];
-    "(n (n z ?a2) ?a1)_L" -> "?a1_L" [label="2", color="#9467bd"];
-    "(n z ?a2)_L" -> "z_L" [label="1", color="#9467bd"];
-    "(n z ?a2)_L" -> "?a2_L" [label="2", color="#9467bd"];
+    "h1_to9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_to9_L" -> "to9_L" [xlabel="1", color="#9467bd"];
+    "h1_to9_L" -> "(n (n z ?a2) ?a1)_L" [xlabel="2", color="#9467bd"];
+    "(n (n z ?a2) ?a1)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n (n z ?a2) ?a1)_L" -> "(n z ?a2)_L" [xlabel="2", color="#9467bd"];
+    "(n (n z ?a2) ?a1)_L" -> "?a1_L" [xlabel="3", color="#9467bd"];
+    "(n z ?a2)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "(n z ?a2)_L" -> "z_L" [xlabel="2", color="#9467bd"];
+    "(n z ?a2)_L" -> "?a2_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
-    "z_R" [label="z", shape=rectangle];
+    "as9_R" [label="as9", shape=box];
+    "n_R" [label="n", shape=box];
+    "z_R" [label="z", shape=box];
     "?a2_R" [label="?a2", shape=diamond];
     "?a1_R" [label="?a1", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
+    "num9_R" [label="num9", shape=box];
+    "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
       label="as9 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n (n z ?a2) ?a1)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
-      "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [shape=octagon, label="num9", color="#d62728", fontcolor="#d62728"];
+      "(n (n z ?a2) ?a1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+      "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     subgraph cluster_ctx_R_1 {
       label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(n z ?a2)_R" [shape=octagon, label="n", color="#9467bd", fontcolor="#9467bd"];
+      "(n z ?a2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(n (n z ?a2) ?a1)_R" -> "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [label="as9", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(n (n z ?a2) ?a1)_R" -> "(n z ?a2)_R" [label="1", color="#9467bd", style=dashed];
-    "(n (n z ?a2) ?a1)_R" -> "?a1_R" [label="2", color="#9467bd", style=dashed];
-    "(n z ?a2)_R" -> "z_R" [label="1", color="#9467bd", style=dashed];
-    "(n z ?a2)_R" -> "?a2_R" [label="2", color="#9467bd", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="1", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="2", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="3", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="4", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="5", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="6", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [label="7", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a2_R" [label="8", color="#d62728", style=dashed];
-    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a1_R" [label="9", color="#d62728", style=dashed];
+    "h2_as9_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_as9_R" -> "as9_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_as9_R" -> "(n (n z ?a2) ?a1)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_as9_R" -> "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(n (n z ?a2) ?a1)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n (n z ?a2) ?a1)_R" -> "(n z ?a2)_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n (n z ?a2) ?a1)_R" -> "?a1_R" [xlabel="3", color="#9467bd", style=dashed];
+    "(n z ?a2)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "(n z ?a2)_R" -> "z_R" [xlabel="2", color="#9467bd", style=dashed];
+    "(n z ?a2)_R" -> "?a2_R" [xlabel="3", color="#9467bd", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="4", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="5", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="6", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="7", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "0_R" [xlabel="8", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a2_R" [xlabel="9", color="#d62728", style=dashed];
+    "(num9 0 0 0 0 0 0 0 ?a2 ?a1)_R" -> "?a1_R" [xlabel="10", color="#d62728", style=dashed];
   }
 }

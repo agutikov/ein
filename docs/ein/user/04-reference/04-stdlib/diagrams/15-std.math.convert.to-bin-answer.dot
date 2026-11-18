@@ -2,18 +2,28 @@ digraph rule_to_bin_answer_lhs_rhs {
   rankdir=TB;
   label="to-bin-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-done_L" [label="bin-done", shape=box];
+    "bits_L" [label="bits", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?b_L" [label="?b", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="bin-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bits ?x)_L" [shape=octagon, label="bits", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(bits ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "(bits ?x)_L" -> "?b_L" [label="bin-done", color="#8c564b", fontcolor="#8c564b"];
-    "(bits ?x)_L" -> "?x_L" [label="1", color="#7f7f7f"];
+    "h1_bin-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+    "h1_bin-done_L" -> "bin-done_L" [xlabel="1", color="#8c564b"];
+    "h1_bin-done_L" -> "(bits ?x)_L" [xlabel="2", color="#8c564b"];
+    "h1_bin-done_L" -> "?b_L" [xlabel="3", color="#8c564b"];
+    "(bits ?x)_L" -> "bits_L" [xlabel="1", color="#7f7f7f"];
+    "(bits ?x)_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "bin-of_R" [label="bin-of", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?b_R" [label="?b", shape=diamond];
-    "?x_R" -> "?b_R" [label="bin-of", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+    "h2_bin-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_bin-of_R" -> "bin-of_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_bin-of_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_bin-of_R" -> "?b_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

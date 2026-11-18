@@ -1,6 +1,23 @@
 digraph constraints {
   rankdir=LR;
-  node [fontname="Inter"];
-  "co-located" [shape=rectangle, label="co-located\\n«symmetric»"];
-  "next-to" [shape=rectangle, label="next-to\\n«transitive»"];
+  node [fontname="Inter", shape=box];
+  ranksep=0.55;
+
+  // facts
+  f_5917a95ce4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_5917a95ce4 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_5917a95ce4 -> "co-located" [xlabel="2", color="#bcbd22", style=solid];
+  f_5917a95ce4 -> "Thing" [xlabel="3", color="#bcbd22", style=solid];
+  f_5917a95ce4 -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_4b44fea3d9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_4b44fea3d9 -> "symmetric" [xlabel="1", color="#7f7f7f", style=solid];
+  f_4b44fea3d9 -> "co-located" [xlabel="2", color="#7f7f7f", style=solid];
+  f_d39eca4f99 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d39eca4f99 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "next-to" [xlabel="2", color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "House" [xlabel="3", color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_5b7e9d776d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_5b7e9d776d -> "transitive" [xlabel="1", color="#7f7f7f", style=solid];
+  f_5b7e9d776d -> "next-to" [xlabel="2", color="#7f7f7f", style=solid];
 }

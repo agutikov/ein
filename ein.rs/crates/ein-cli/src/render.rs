@@ -35,7 +35,7 @@ fn refused(file: &str, load: &ein_ir::LoadOptions) -> bool {
     load_program(&mut ast, &mut terms, Path::new(file), load).is_none()
 }
 
-pub fn cmd_rules(file: &str, mode: RuleMode, load: &ein_ir::LoadOptions) -> i32 {
+pub fn cmd_rules(file: &str, mode: RuleMode, fold: bool, load: &ein_ir::LoadOptions) -> i32 {
     if refused(file, load) {
         return 1;
     }
@@ -48,11 +48,17 @@ pub fn cmd_rules(file: &str, mode: RuleMode, load: &ein_ir::LoadOptions) -> i32 
         eprintln!("no rule forms in {file}");
         return 1;
     }
-    emit(&render_rules_forms(&ast, &rules, mode));
+    emit(&render_rules_forms(&ast, &rules, mode, fold));
     0
 }
 
-pub fn cmd_rule(file: &str, name: &str, mode: RuleMode, load: &ein_ir::LoadOptions) -> i32 {
+pub fn cmd_rule(
+    file: &str,
+    name: &str,
+    mode: RuleMode,
+    fold: bool,
+    load: &ein_ir::LoadOptions,
+) -> i32 {
     if refused(file, load) {
         return 1;
     }
@@ -65,7 +71,7 @@ pub fn cmd_rule(file: &str, name: &str, mode: RuleMode, load: &ein_ir::LoadOptio
         // a `(rule "x" …)` is not addressable by `--name`.
         let first = ast.form_args(r).first().copied();
         if first.and_then(|a| ast.atom_name(a)) == Some(name) {
-            emit(&render_rule_form(&ast, r, mode));
+            emit(&render_rule_form(&ast, r, mode, fold));
             return 0;
         }
     }
@@ -73,7 +79,7 @@ pub fn cmd_rule(file: &str, name: &str, mode: RuleMode, load: &ein_ir::LoadOptio
     1
 }
 
-pub fn cmd_constraints(file: &str, load: &ein_ir::LoadOptions) -> i32 {
+pub fn cmd_constraints(file: &str, fold: bool, load: &ein_ir::LoadOptions) -> i32 {
     if refused(file, load) {
         return 1;
     }
@@ -81,7 +87,7 @@ pub fn cmd_constraints(file: &str, load: &ein_ir::LoadOptions) -> i32 {
     let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
     };
-    emit(&render_constraints(&ast, &forms, "constraints"));
+    emit(&render_constraints(&ast, &forms, "constraints", fold));
     0
 }
 
@@ -139,14 +145,15 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
 }
 
 /// `ein render program` — the program **as written**, by
-/// [`ein_render::ir_to_dot`] (Q-M1e.20).
+/// [`ein_render::ir_to_dot`] (Q-M1e.20), in three parts: its knowledge base,
+/// drawn as `ein render kb` draws one, its rules, and its query (Q-M1f.420).
 ///
 /// Read through the loader first (Q-M1f.71), so a program the loader
 /// refuses is refused, with its line, `examples/broken/load/`'s among them.
 /// What it draws
 /// is the parsed forms, so imports are not resolved: the stdlib's forms would
 /// drown the program's own.
-pub fn cmd_program(file: &str, mode: RuleMode, levi: bool, load: &ein_ir::LoadOptions) -> i32 {
+pub fn cmd_program(file: &str, mode: RuleMode, fold: bool, load: &ein_ir::LoadOptions) -> i32 {
     if refused(file, load) {
         return 1;
     }
@@ -156,7 +163,7 @@ pub fn cmd_program(file: &str, mode: RuleMode, levi: bool, load: &ein_ir::LoadOp
     };
     let opts = ein_render::DotOpts {
         rule_mode: mode,
-        levi,
+        fold,
         ..ein_render::DotOpts::default()
     };
     let dot = ein_render::ir_to_dot(&ast, &forms, opts);
@@ -182,8 +189,7 @@ pub fn cmd_kb(
     file: &str,
     since: Option<&str>,
     colour_by: ein_render::ColourBy,
-    include_types: bool,
-    include_instances: bool,
+    fold: bool,
     load: &ein_ir::LoadOptions,
 ) -> i32 {
     let mut ast = Ast::new();
@@ -202,8 +208,7 @@ pub fn cmd_kb(
     };
     let opts = ein_render::KbDotOpts {
         colour_by,
-        include_types,
-        include_instances,
+        fold,
         since: before.as_ref(),
         name: "kb",
     };

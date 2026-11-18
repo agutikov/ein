@@ -2,30 +2,44 @@ digraph rule_bin_numeral_prefix_named_lhs_rhs {
   rankdir=TB;
   label="bin-numeral-prefix-named"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-check_L" [label="bin-check", shape=box];
     "?w_L" [label="?w", shape=diamond];
+    "b2_L" [label="b2", shape=box];
     "?m_L" [label="?m", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
+    "bin-named_L" [label="bin-named", shape=box];
     subgraph cluster_ctx_L_0 {
       label="bin-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 ?m ?a)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 ?m ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "?w_L" -> "(b2 ?m ?a)_L" [label="bin-check", color="#1f77b4", fontcolor="#1f77b4"];
+    "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
+    "h1_bin-check_L" -> "(b2 ?m ?a)_L" [xlabel="3", color="#1f77b4"];
     "?m_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "h1_bin-named_L" [shape=octagon, label="bin-named", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_bin-named_L" -> "?m_L" [label="1", color="#bcbd22"];
-    "(b2 ?m ?a)_L" -> "?m_L" [label="1", color="#bcbd22"];
-    "(b2 ?m ?a)_L" -> "?a_L" [label="2", color="#bcbd22"];
+    "h2_bin-named_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h2_bin-named_L" -> "bin-named_L" [xlabel="1", color="#bcbd22"];
+    "h2_bin-named_L" -> "?m_L" [xlabel="2", color="#bcbd22"];
+    "(b2 ?m ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "(b2 ?m ?a)_L" -> "?m_L" [xlabel="2", color="#bcbd22"];
+    "(b2 ?m ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "not-binary_R" [label="not-binary", shape=box];
+    "b2_R" [label="b2", shape=box];
     "?m_R" [label="?m", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-binary ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 ?m ?a)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 ?m ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "(b2 ?m ?a)_R" -> "?m_R" [label="not-binary", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-    "(b2 ?m ?a)_R" -> "?m_R" [label="1", color="#bcbd22", style=dashed];
-    "(b2 ?m ?a)_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
+    "h3_not-binary_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h3_not-binary_R" -> "not-binary_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h3_not-binary_R" -> "(b2 ?m ?a)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h3_not-binary_R" -> "?m_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(b2 ?m ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(b2 ?m ?a)_R" -> "?m_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(b2 ?m ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

@@ -2,18 +2,28 @@ digraph rule_operand_digit_zero_lhs_rhs {
   rankdir=TB;
   label="operand-digit-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?OPERAND_L" [label="?OPERAND", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "?k_L" -> "0_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
+    "0_L" [label="0", shape=box];
+    "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_OPERAND_L" -> "0_L" [xlabel="3", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
+    "?BAD-OPERAND_R" [label="?BAD-OPERAND", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
+    "?NOT-A-NUMBER_R" [label="?NOT-A-NUMBER", shape=diamond];
+    "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
       label="?BAD-OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?NOT-A-NUMBER 0)_R" [shape=octagon, label="?NOT-A-NUMBER", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?NOT-A-NUMBER 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "?k_R" -> "(?NOT-A-NUMBER 0)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
-    "(?NOT-A-NUMBER 0)_R" -> "0_R" [label="1", color="#1f77b4", style=dashed];
+    "h2_BAD-OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h2_BAD-OPERAND_R" -> "?BAD-OPERAND_R" [xlabel="1", color="#17becf", style=dashed];
+    "h2_BAD-OPERAND_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "h2_BAD-OPERAND_R" -> "(?NOT-A-NUMBER 0)_R" [xlabel="3", color="#17becf", style=dashed];
+    "(?NOT-A-NUMBER 0)_R" -> "?NOT-A-NUMBER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(?NOT-A-NUMBER 0)_R" -> "0_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

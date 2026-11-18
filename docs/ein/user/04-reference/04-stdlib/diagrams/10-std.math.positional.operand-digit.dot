@@ -2,20 +2,32 @@ digraph rule_operand_digit_lhs_rhs {
   rankdir=TB;
   label="operand-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?OPERAND_L" [label="?OPERAND", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
-    "?k_L" -> "?x_L" [label="?OPERAND", color="#d62728", fontcolor="#d62728"];
-    "h1_NZ_L" [shape=octagon, label="?NZ", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_NZ_L" -> "?x_L" [label="1", color="#ff7f0e"];
+    "?NZ_L" [label="?NZ", shape=diamond];
+    "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_OPERAND_L" -> "?x_L" [xlabel="3", color="#d62728"];
+    "h2_NZ_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h2_NZ_L" -> "?NZ_L" [xlabel="1", color="#ff7f0e"];
+    "h2_NZ_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
+    "?BAD-OPERAND_R" [label="?BAD-OPERAND", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
+    "?NOT-A-NUMBER_R" [label="?NOT-A-NUMBER", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?BAD-OPERAND ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?NOT-A-NUMBER ?x)_R" [shape=octagon, label="?NOT-A-NUMBER", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?NOT-A-NUMBER ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "?k_R" -> "(?NOT-A-NUMBER ?x)_R" [label="?BAD-OPERAND", color="#17becf", fontcolor="#17becf", style=dashed];
-    "(?NOT-A-NUMBER ?x)_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
+    "h3_BAD-OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "h3_BAD-OPERAND_R" -> "?BAD-OPERAND_R" [xlabel="1", color="#17becf", style=dashed];
+    "h3_BAD-OPERAND_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "h3_BAD-OPERAND_R" -> "(?NOT-A-NUMBER ?x)_R" [xlabel="3", color="#17becf", style=dashed];
+    "(?NOT-A-NUMBER ?x)_R" -> "?NOT-A-NUMBER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(?NOT-A-NUMBER ?x)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

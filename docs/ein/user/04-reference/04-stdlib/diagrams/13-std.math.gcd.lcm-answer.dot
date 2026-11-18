@@ -2,28 +2,34 @@ digraph rule_lcm_answer_lhs_rhs {
   rankdir=TB;
   label="lcm-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "div-done_L" [label="div-done", shape=box];
+    "lcm-q_L" [label="lcm-q", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "?l_L" [label="?l", shape=diamond];
     "?r_L" [label="?r", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="div-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(lcm-q ?x ?y)_L" [shape=octagon, label="lcm-q", color="#bcbd22", fontcolor="#bcbd22"];
+      "(lcm-q ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "h1_div-done_L" [shape=octagon, label="div-done", color="#8c564b", fontcolor="#8c564b"];
-    "h1_div-done_L" -> "(lcm-q ?x ?y)_L" [label="1", color="#8c564b"];
-    "h1_div-done_L" -> "?l_L" [label="2", color="#8c564b"];
-    "h1_div-done_L" -> "?r_L" [label="3", color="#8c564b"];
-    "(lcm-q ?x ?y)_L" -> "?x_L" [label="1", color="#bcbd22"];
-    "(lcm-q ?x ?y)_L" -> "?y_L" [label="2", color="#bcbd22"];
+    "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "h1_div-done_L" -> "(lcm-q ?x ?y)_L" [xlabel="2", color="#8c564b"];
+    "h1_div-done_L" -> "?l_L" [xlabel="3", color="#8c564b"];
+    "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
+    "(lcm-q ?x ?y)_L" -> "lcm-q_L" [xlabel="1", color="#bcbd22"];
+    "(lcm-q ?x ?y)_L" -> "?x_L" [xlabel="2", color="#bcbd22"];
+    "(lcm-q ?x ?y)_L" -> "?y_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "lcm-of_R" [label="lcm-of", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "?l_R" [label="?l", shape=diamond];
-    "h2_lcm-of_R" [shape=octagon, label="lcm-of", color="#1f77b4", fontcolor="#1f77b4"];
-    "h2_lcm-of_R" -> "?x_R" [label="1", color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "?y_R" [label="2", color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "?l_R" [label="3", color="#1f77b4", style=dashed];
+    "h2_lcm-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
+    "h2_lcm-of_R" -> "lcm-of_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "h2_lcm-of_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "h2_lcm-of_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "h2_lcm-of_R" -> "?l_R" [xlabel="4", color="#1f77b4", style=dashed];
   }
 }

@@ -1,29 +1,40 @@
-//! **Every drawing of facts draws an object once**
-//! (Q-M1f.395).
+//! **Every view draws a fact in the canonical form, or folded on request, and
+//! every object once** (Q-M1f.419, Q-M1f.395).
 //!
-//! A fact that a drawn fact points at is its own node, an octagon with the
-//! relation's name in it and its argument arrows numbered: never a node
-//! labelled with the fact's text, and never an arrow beside its node. Where
-//! the knowledge base does not hold it, in a context only, it stands in a
-//! dashed frame named for the relations of the facts that point at it; a held
-//! one stands in no frame, whatever points at it, and no octagon is filled
-//! (Q-M1f.398). A held fact that nothing points at is drawn
-//! as it was.
+//! The canonical form is the graph as the reasoning pages define it: a fact
+//! is an octagon with no name in it, its first arrow, numbered `1`, at its
+//! relation's atom, a node, and its next arrows, `2`, `3`, …, at its
+//! arguments. Folded, a fact of three arrows that no drawn fact points at is
+//! one arrow from its first argument to its second, labelled with its
+//! relation's name. No view draws an octagon with a name in it, a node
+//! labelled with a fact's text, or any relation otherwise than another
+//! (Q-M1f.421): no box for what an `is-a` fact points at, no oval for what it
+//! starts from, no empty arrowhead, no class node for `=`.
 //!
-//! The four writers that draw facts are held to it here on one small
-//! knowledge base and one small rule, as claims a reader of the DOT would
-//! state: the KB view (`ein render kb`), the program view (`ein render
-//! program`), the rule view (`ein render rule`, both modes) and the
-//! constraint view. What the bytes of every corpus program's views are is
-//! `id_order_invariance.rs`'s, and that Graphviz takes them
-//! `dot_wellformed.rs`'s.
+//! A fact that a drawn fact points at is its own node, never an arrow beside
+//! it. Where the knowledge base does not hold it, in a context only, it
+//! stands in a dashed frame named for the relations of the facts that point
+//! at it; a held one stands in no frame, whatever points at it, and no
+//! octagon is filled (Q-M1f.398).
+//!
+//! Held here three ways: the writers on small fixtures, as claims a reader of
+//! the DOT would state; every view of every corpus program in both forms,
+//! by the rules any drawing keeps; and the program view's `kb` digraph
+//! against the KB view of the same program (Q-M1f.420). What the bytes of
+//! every corpus program's views are is `id_order_invariance.rs`'s, and that
+//! Graphviz takes them `dot_wellformed.rs`'s.
+
+use std::collections::HashSet;
 
 use ein_core::Terms;
+use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, NodeId, parse};
-use ein_render::ir_dot::{DotOpts, to_dot};
+use ein_render::fact_graph::fact_id;
+use ein_render::ir_dot::{DotOpts, render_kb, to_dot};
 use ein_render::kb_dot::{KbDotOpts, to_dot as kb_to_dot};
 use ein_render::render_constraints;
 use ein_render::rules::{RuleMode, render_rule_form};
+use ein_render::shape::{KB_VIEWS, all_views, dot_shape, kb_dot_shape};
 
 /// One fact, `(= 5 (+ 2 2))`, held and in the contexts of two relations;
 /// one, `(+ 2 2)`, in a context only, not held; one, `(= 4 (+ 2 2))`, held
@@ -41,11 +52,30 @@ fn parsed(text: &str) -> (Ast, Vec<NodeId>) {
     (ast, forms)
 }
 
-fn kb_view(text: &str) -> String {
+fn kb_view(text: &str, fold: bool) -> String {
     let (mut ast, forms) = parsed(text);
     let mut terms = Terms::new();
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
-    kb_to_dot(&kb, &terms, &KbDotOpts::default())
+    kb_to_dot(
+        &kb,
+        &terms,
+        &KbDotOpts {
+            fold,
+            ..KbDotOpts::default()
+        },
+    )
+}
+
+fn program_view(text: &str, fold: bool) -> String {
+    let (ast, forms) = parsed(text);
+    to_dot(
+        &ast,
+        &forms,
+        DotOpts {
+            fold,
+            ..DotOpts::default()
+        },
+    )
 }
 
 /// The lines of `dot` that declare a node: an id and its attributes, no
@@ -60,6 +90,15 @@ fn node_lines(dot: &str) -> Vec<&str> {
 /// The id a node line declares.
 fn id_of(line: &str) -> &str {
     line.split(" [").next().expect("an id")
+}
+
+/// The ids of the octagons a drawing declares.
+fn octagons(dot: &str) -> Vec<&str> {
+    node_lines(dot)
+        .into_iter()
+        .filter(|l| l.contains("shape=octagon"))
+        .map(id_of)
+        .collect()
 }
 
 /// The frame a node is declared in: the label of the `cluster_ctx_…`
@@ -84,90 +123,173 @@ fn frame_of(dot: &str, id: &str) -> Option<String> {
     None
 }
 
+/// The arrows of a drawing: `(from, to, label)`, the label an arrow's number
+/// or its `label`, `""` where it has neither.
+fn arrows(dot: &str) -> Vec<(&str, &str, &str)> {
+    dot.lines()
+        .map(str::trim)
+        .filter_map(|l| {
+            let (from, rest) = l.split_once(" -> ")?;
+            let (to, attrs) = match rest.split_once(" [") {
+                Some((to, attrs)) => (to, attrs),
+                None => (rest.trim_end_matches(';'), ""),
+            };
+            // An arrow's number is its `xlabel`; a folded arrow's relation,
+            // and a guard's glyph, its `label`.
+            let label = attrs
+                .strip_prefix("xlabel=\"")
+                .or_else(|| attrs.strip_prefix("label=\""))
+                .or_else(|| attrs.split_once(", label=\"").map(|(_, l)| l))
+                .and_then(|l| l.split_once('"'))
+                .map_or("", |(l, _)| l);
+            Some((from, to, label))
+        })
+        .collect()
+}
+
+/// **The rules a drawing of facts keeps**, in the form it is drawn in,
+/// read off its DOT: every octagon has no name in it and an arrow `1`, at
+/// its relation; no label is a fact's text, and no arrow is numbered with a
+/// `#`; no relation is drawn otherwise than another; and the arrows of the
+/// form: in the canonical form no labelled arrow but a numbered one or a
+/// guard's undirected link, and folded no octagon of three arrows that
+/// nothing points at.
+fn holds_the_rules(dot: &str, fold: bool) -> Result<(), String> {
+    let all = arrows(dot);
+    for line in node_lines(dot) {
+        if line.contains("shape=octagon") && !line.contains("label=\"\"") {
+            return Err(format!("an octagon with a name in it: {line}"));
+        }
+    }
+    for line in dot.lines() {
+        let mut rest = line;
+        while let Some(at) = rest.find("label=\"(") {
+            if !rest[..at].ends_with('x') {
+                return Err(format!("a label that is a fact's text: {line}"));
+            }
+            rest = &rest[at + 1..];
+        }
+        for mark in [
+            "doublecircle",
+            "shape=oval",
+            "arrowhead=empty",
+            "\\n«",
+            "label=\"#",
+        ] {
+            if line.contains(mark) {
+                return Err(format!("{mark} drawn: {line}"));
+            }
+        }
+    }
+    for id in octagons(dot) {
+        if !all.iter().any(|(f, _, l)| *f == id && *l == "1") {
+            return Err(format!("the octagon {id} has no arrow 1 at a relation"));
+        }
+    }
+    for line in dot.lines().map(str::trim).filter(|l| l.contains(" -> ")) {
+        let Some(&(from, to, label)) = arrows(line).first() else {
+            continue;
+        };
+        let numbered = !label.is_empty() && label.chars().all(|c| c.is_ascii_digit());
+        if !fold
+            && !label.is_empty()
+            && !numbered
+            && !line.contains("dir=none")
+            && label != "lifts to"
+        {
+            return Err(format!(
+                "a labelled arrow {from} -> {to} in the canonical form: {line}"
+            ));
+        }
+    }
+    if fold {
+        for id in octagons(dot) {
+            let mut out: Vec<&str> = all
+                .iter()
+                .filter(|(f, _, l)| *f == id && !l.is_empty())
+                .map(|(_, _, l)| *l)
+                .collect();
+            out.sort_unstable();
+            let pointed_at = all.iter().any(|(_, t, _)| *t == id);
+            if out == ["1", "2", "3"] && !pointed_at {
+                return Err(format!(
+                    "a fact of three arrows that nothing points at, not folded: {id}"
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 /// No node of the drawing is filled: *held* is *outside every frame*.
 fn nothing_is_filled(dot: &str) {
     assert!(!dot.contains("filled"), "a filled node:\n{dot}");
 }
 
-/// No node of the drawing is labelled with a fact's text.
-fn no_label_is_a_facts_text(dot: &str) {
-    for line in dot.lines() {
-        assert!(
-            !line.contains("label=\"("),
-            "a label that is a fact's text, or a parenthesised one a nested fact could be read \
-             as: {line}"
-        );
-    }
-}
-
 #[test]
 fn the_kb_view_draws_a_fact_in_two_contexts_once() {
-    let dot = kb_view(KB);
-    // The KB view writes a relation's name in an octagon in parentheses, so
-    // its labels are read by what stands after the opening one.
-    let nodes = node_lines(&dot);
-    let equalities: Vec<&&str> = nodes.iter().filter(|l| l.contains("label=\"(=)")).collect();
-    assert_eq!(
-        equalities.len(),
-        1,
-        "one node for the one fact of = that a fact points at:\n{dot}"
-    );
-    let e = id_of(equalities[0]);
-    // Held, and in the contexts of `says` and `think`: in no frame, and no
-    // octagon is filled.
-    assert_eq!(
-        frame_of(&dot, e),
-        None,
-        "a held fact is in no frame:\n{dot}"
-    );
-    nothing_is_filled(&dot);
-    // And no arrow of that fact: nothing leaves `5` under the label `=`.
-    assert!(
-        !dot.lines()
-            .any(|l| l.trim_start().starts_with("\"5\" -> ") && l.contains("label=\"=\"")),
-        "the fact is its node and no arrow:\n{dot}"
-    );
-    // Both facts that point at it point at the one node.
-    for from in ["\"Alice\"", "\"Bob\""] {
-        assert!(
-            dot.lines()
-                .any(|l| l.trim_start().starts_with(&format!("{from} -> {e} "))),
-            "{from} points at the node {e}:\n{dot}"
+    for fold in [false, true] {
+        let dot = kb_view(KB, fold);
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("fold={fold}: {e}\n{dot}"));
+        let e = fact_id("=", &["5".into(), "(+ 2 2)".into()]);
+        let sum = fact_id("+", &["2".into(), "2".into()]);
+        // One octagon for the one fact of = that facts point at, held and in
+        // the contexts of `says` and `think`: in no frame, its first arrow at
+        // the relation's atom, its next at the name and at the fact under it.
+        assert_eq!(
+            octagons(&dot).iter().filter(|id| **id == e).count(),
+            1,
+            "{dot}"
         );
-    }
-    // Its own arrows are numbered, to a name and to the fact under it.
-    let sum = id_of(
-        nodes
-            .iter()
-            .find(|l| l.contains("label=\"(+)"))
-            .expect("the node of (+ 2 2)"),
-    );
-    assert!(
-        dot.contains(&format!("{e} -> \"5\" [label=\"#1\"")),
-        "{dot}"
-    );
-    assert!(
-        dot.contains(&format!("{e} -> {sum} [label=\"#2\"")),
-        "{dot}"
-    );
-    // `(+ 2 2)` is in a context only, not held: one node, in the frame of
-    // the relation that points at it, and the one frame of the drawing.
-    let plus: Vec<&&str> = nodes.iter().filter(|l| l.contains("label=\"(+)")).collect();
-    assert_eq!(plus.len(), 1, "{dot}");
-    assert_eq!(frame_of(&dot, sum).as_deref(), Some("= ctx"), "{dot}");
-    assert_eq!(dot.matches("subgraph cluster_ctx_").count(), 1, "{dot}");
-    // `(= 4 (+ 2 2))` is held and nothing points at it: an arrow, as it was,
-    // to the node of the fact under its third arrow.
-    assert!(
-        dot.contains(&format!("\"4\" -> {sum} [label=\"=\"")),
-        "a held fact that nothing points at is an arrow:\n{dot}"
-    );
-    // No node is named or labelled by a fact's text.
-    for text in ["(= 5", "(= 4", "(+ 2"] {
-        assert!(
-            !dot.contains(text),
-            "the text {text} is in the drawing:\n{dot}"
+        assert_eq!(
+            frame_of(&dot, &e),
+            None,
+            "a held fact is in no frame:\n{dot}"
         );
+        for (i, to) in ["\"=\"", "\"5\"", &sum].iter().enumerate() {
+            assert!(
+                dot.contains(&format!("  {e} -> {to} [xlabel=\"{}\"", i + 1)),
+                "fold={fold}:\n{dot}"
+            );
+        }
+        nothing_is_filled(&dot);
+        // Both facts that point at it point at the one node: arrows from
+        // their octagons, or folded, from the name.
+        for (rel, who) in [("think", "Alice"), ("says", "Bob")] {
+            let f = fact_id(rel, &[who.into(), "(= 5 (+ 2 2))".into()]);
+            let arrow = if fold {
+                format!("  \"{who}\" -> {e} [xlabel=\"{rel}\"")
+            } else {
+                format!("  {f} -> {e} [xlabel=\"3\"")
+            };
+            assert!(dot.contains(&arrow), "fold={fold}: {arrow}\n{dot}");
+        }
+        // `(+ 2 2)` is in a context only, not held: one node, in the frame of
+        // the relation that points at it, and the one frame of the drawing.
+        assert_eq!(frame_of(&dot, &sum).as_deref(), Some("= ctx"), "{dot}");
+        assert_eq!(dot.matches("subgraph cluster_ctx_").count(), 1, "{dot}");
+        // `(= 4 (+ 2 2))` is held and nothing points at it: its octagon, or
+        // folded, one arrow labelled with its relation.
+        let four = fact_id("=", &["4".into(), "(+ 2 2)".into()]);
+        if fold {
+            assert!(
+                dot.contains(&format!("  \"4\" -> {sum} [xlabel=\"=\"")),
+                "{dot}"
+            );
+            assert!(!dot.contains(&four), "{dot}");
+        } else {
+            assert!(
+                dot.contains(&format!("  {four} -> \"=\" [xlabel=\"1\"")),
+                "{dot}"
+            );
+        }
+        // No node is named or labelled by a fact's text.
+        for text in ["(= 5", "(= 4", "(+ 2"] {
+            assert!(
+                !dot.contains(text),
+                "the text {text} is in the drawing:\n{dot}"
+            );
+        }
     }
 }
 
@@ -175,117 +297,149 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once() {
 fn a_knowledge_base_whose_facts_under_an_arrow_are_all_held_has_no_frame() {
     // `(owns Bob Dog)` is held, and Alice thinks it and Carol says it: one
     // octagon in no frame, and the drawing has none.
-    let dot =
-        kb_view("(owns Bob Dog)\n(think Alice (owns Bob Dog))\n(says Carol (owns Bob Dog))\n");
-    let owns: Vec<&str> = node_lines(&dot)
-        .into_iter()
-        .filter(|l| l.contains("label=\"(owns)"))
-        .collect();
-    assert_eq!(owns.len(), 1, "{dot}");
-    assert!(!dot.contains("cluster_ctx_"), "{dot}");
-    assert!(
-        !dot.contains("newrank"),
-        "a view with no frame ranks as it did:\n{dot}"
-    );
-    nothing_is_filled(&dot);
+    let owns = fact_id("owns", &["Bob".into(), "Dog".into()]);
+    for fold in [false, true] {
+        let dot = kb_view(
+            "(owns Bob Dog)\n(think Alice (owns Bob Dog))\n(says Carol (owns Bob Dog))\n",
+            fold,
+        );
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+        assert_eq!(
+            octagons(&dot).iter().filter(|id| **id == owns).count(),
+            1,
+            "{dot}"
+        );
+        assert!(!dot.contains("cluster_ctx_"), "{dot}");
+        assert!(
+            !dot.contains("newrank"),
+            "a view with no frame ranks as it did:\n{dot}"
+        );
+        nothing_is_filled(&dot);
+    }
     // Two facts of one relation: the one held stands outside, the one only
     // thought alone in `think ctx`.
     let dot = kb_view(
         "(owns Bob Dog)\n(think Alice (owns Bob Dog))\n(think Dan (owns Bob Dog))\n\
          (think Dan (owns Bob Cat))\n",
+        false,
     );
-    let owns: Vec<&str> = node_lines(&dot)
-        .into_iter()
-        .filter(|l| l.contains("label=\"(owns)"))
-        .collect();
-    assert_eq!(owns.len(), 2, "{dot}");
-    let framed: Vec<Option<String>> = owns.iter().map(|l| frame_of(&dot, id_of(l))).collect();
-    assert_eq!(framed, [None, Some("think ctx".to_string())], "{dot}");
+    let cat = fact_id("owns", &["Bob".into(), "Cat".into()]);
+    assert_eq!(frame_of(&dot, &owns), None, "{dot}");
+    assert_eq!(frame_of(&dot, &cat).as_deref(), Some("think ctx"), "{dot}");
     nothing_is_filled(&dot);
 }
 
 #[test]
 fn a_knowledge_base_with_no_fact_under_an_arrow_has_no_frame() {
-    let dot = kb_view("(lives-in Norwegian House-1)\n(owns Norwegian Dog)\n(triple a b c)\n");
-    assert!(!dot.contains("cluster_ctx_"), "{dot}");
-    assert!(!dot.contains("filled"), "{dot}");
-    assert!(!dot.contains("// facts in a context"), "{dot}");
-}
-
-#[test]
-fn the_program_view_draws_a_fact_under_an_arrow_as_its_node() {
-    let (ast, forms) = parsed(KB);
-    for levi in [false, true] {
-        let dot = to_dot(
-            &ast,
-            &forms,
-            DotOpts {
-                levi,
-                ..DotOpts::default()
-            },
+    for fold in [false, true] {
+        let dot = kb_view(
+            "(lives-in Norwegian House-1)\n(owns Norwegian Dog)\n(triple a b c)\n",
+            fold,
         );
-        no_label_is_a_facts_text(&dot);
-        nothing_is_filled(&dot);
-        // One node for the fact two facts point at, named for its relation,
-        // in no frame since the program states it.
-        let e = "\"(= 5 (+ 2 2))\"";
-        let declared: Vec<&str> = node_lines(&dot)
-            .into_iter()
-            .filter(|l| id_of(l) == e)
-            .collect();
-        assert_eq!(declared.len(), 1, "levi={levi}:\n{dot}");
-        assert!(declared[0].contains("shape=octagon, label=\"=\""), "{dot}");
-        assert_eq!(frame_of(&dot, e), None, "{dot}");
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+        assert!(!dot.contains("cluster_ctx_"), "{dot}");
+        assert!(!dot.contains("// facts in a context"), "{dot}");
+        // The fact of four arrows is an octagon in both forms; folded, the
+        // two of three arrows are arrows.
+        let triple = fact_id("triple", &["a".into(), "b".into(), "c".into()]);
         assert!(
-            dot.contains(&format!("{e} -> \"5\" [label=\"1\"]")),
+            dot.contains(&format!("  {triple} -> \"triple\" [xlabel=\"1\"")),
             "{dot}"
         );
-        assert!(
-            dot.contains(&format!("{e} -> \"(+ 2 2)\" [label=\"2\"]")),
-            "{dot}"
-        );
-        // The fact under it is in a context only, not stated.
-        let sum = node_lines(&dot)
-            .into_iter()
-            .find(|l| id_of(l) == "\"(+ 2 2)\"")
-            .expect("the node of (+ 2 2)");
-        assert!(sum.contains("label=\"+\""), "{dot}");
         assert_eq!(
-            frame_of(&dot, "\"(+ 2 2)\"").as_deref(),
-            Some("= ctx"),
+            dot.contains("  \"Norwegian\" -> \"Dog\" [xlabel=\"owns\""),
+            fold,
             "{dot}"
         );
     }
 }
 
+/// **No relation is drawn otherwise than another** (Q-M1f.421): `is-a` and
+/// `relation` are drawn as any relation, and every atom alike.
 #[test]
-fn a_negation_of_a_fact_that_is_a_node_points_at_the_node() {
-    let (ast, forms) = parsed("(think Alice (likes Bob Carol))\n(not (likes Bob Carol))\n");
-    let dot = to_dot(&ast, &forms, DotOpts::default());
-    let g = "\"(likes Bob Carol)\"";
-    // The denied fact is drawn once, as the node `think` points at, and the
-    // negation is a node that points at it too; no dashed arrow draws the
-    // fact a second time.
-    assert_eq!(
-        frame_of(&dot, g).as_deref(),
-        Some("not, think ctx"),
-        "{dot}"
-    );
-    assert!(
-        dot.lines()
-            .any(|l| l.contains("_not\" -> ") && l.contains(g)),
-        "{dot}"
-    );
-    assert!(
-        !dot.lines()
-            .any(|l| l.trim_start().starts_with("\"Bob\" -> \"Carol\"")),
-        "{dot}"
-    );
-    // Alone, a negation is drawn as it was: the denied fact, dashed.
-    let (ast, forms) = parsed("(not (likes Bob Carol))\n");
-    let alone = to_dot(&ast, &forms, DotOpts::default());
-    assert!(alone.contains("\"Bob\" -> \"Carol\""), "{alone}");
-    assert!(!alone.contains("cluster_ctx_"), "{alone}");
+fn is_a_and_relation_are_ordinary_relations() {
+    let text = "(relation owns Person Pet :why \"{?1} owns {?2}\")\n\
+                (is-a Bob Person)\n(is-a Dog Pet)\n(owns Bob Dog)\n";
+    for fold in [false, true] {
+        for dot in [kb_view(text, fold), program_view(text, fold)] {
+            holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+            assert!(!dot.contains("shape=oval"), "{dot}");
+            assert!(!dot.contains("// types"), "{dot}");
+            let decl = fact_id("relation", &["owns".into(), "Person".into(), "Pet".into()]);
+            assert!(
+                dot.contains(&format!("  {decl} -> \"relation\" [xlabel=\"1\"")),
+                "{dot}"
+            );
+            let bob = fact_id("is-a", &["Bob".into(), "Person".into()]);
+            if fold {
+                assert!(
+                    dot.contains("  \"Bob\" -> \"Person\" [xlabel=\"is-a\""),
+                    "{dot}"
+                );
+            } else {
+                assert!(
+                    dot.contains(&format!("  {bob} -> \"is-a\" [xlabel=\"1\"")),
+                    "{dot}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn the_program_view_draws_a_fact_under_an_arrow_as_its_node() {
+    for fold in [false, true] {
+        let dot = program_view(KB, fold);
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+        nothing_is_filled(&dot);
+        assert!(dot.starts_with("digraph kb {"), "{dot}");
+        assert!(!dot.contains("digraph ontology"), "{dot}");
+        assert!(!dot.contains("digraph facts"), "{dot}");
+        // One node for the fact two facts point at, in no frame since the
+        // program states it.
+        let e = fact_id("=", &["5".into(), "(+ 2 2)".into()]);
+        assert_eq!(
+            octagons(&dot).iter().filter(|id| **id == e).count(),
+            1,
+            "{dot}"
+        );
+        assert_eq!(frame_of(&dot, &e), None, "{dot}");
+        // The fact under it is in a context only, not stated.
+        let sum = fact_id("+", &["2".into(), "2".into()]);
+        assert_eq!(frame_of(&dot, &sum).as_deref(), Some("= ctx"), "{dot}");
+    }
+}
+
+#[test]
+fn a_negation_is_a_fact_of_not_that_points_at_the_fact_it_denies() {
+    let g = fact_id("likes", &["Bob".into(), "Carol".into()]);
+    let n = fact_id("not", &["(likes Bob Carol)".into()]);
+    for fold in [false, true] {
+        let dot = program_view(
+            "(think Alice (likes Bob Carol))\n(not (likes Bob Carol))\n",
+            fold,
+        );
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+        // The denied fact is drawn once, the node `think` and `not` point at.
+        assert_eq!(
+            frame_of(&dot, &g).as_deref(),
+            Some("not, think ctx"),
+            "{dot}"
+        );
+        assert!(
+            dot.contains(&format!("  {n} -> \"not\" [xlabel=\"1\"")),
+            "{dot}"
+        );
+        assert!(
+            dot.contains(&format!("  {n} -> {g} [xlabel=\"2\"")),
+            "{dot}"
+        );
+        assert!(!dot.contains("\"Bob\" -> \"Carol\""), "{dot}");
+    }
+    // Alone, too: a negation is a fact of `not`, and the fact it denies is in
+    // its context.
+    let alone = program_view("(not (likes Bob Carol))\n", false);
+    assert_eq!(frame_of(&alone, &g).as_deref(), Some("not ctx"), "{alone}");
 }
 
 const RULES: &str = "\
@@ -294,7 +448,7 @@ const RULES: &str = "\
   :assert (= ?a ?b)
   :why    \"{?p} is reliable\")
 (rule noted ()
-  :match  (and (think ?p (= ?a ?b)) (= ?a ?b))
+  :match  (and (think ?p (= ?a ?b)) (= ?a ?b) (absent (not (= ?b ?a))))
   :assert (right ?p)
   :why    \"{?p} is right\")
 ";
@@ -312,95 +466,336 @@ fn rule(ast: &Ast, forms: &[NodeId], name: &str) -> NodeId {
 }
 
 #[test]
-fn the_rule_view_draws_what_a_nested_pattern_binds() {
+fn the_rule_view_draws_a_pattern_as_a_fact() {
     let (ast, forms) = parsed(RULES);
-    let dot = render_rule_form(&ast, rule(&ast, &forms, "trust"), RuleMode::SideBySide);
-    no_label_is_a_facts_text(&dot);
-    nothing_is_filled(&dot);
-    // In the match panel the pattern under `think`'s arrow is a node named
-    // for its relation, in the frame `think ctx`, and its two variables are
-    // drawn, each under a numbered arrow.
+    for fold in [false, true] {
+        for mode in [RuleMode::SideBySide, RuleMode::Overlay] {
+            for name in ["trust", "noted"] {
+                let dot = render_rule_form(&ast, rule(&ast, &forms, name), mode, fold);
+                holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{name}: {e}\n{dot}"));
+                nothing_is_filled(&dot);
+            }
+        }
+    }
+    let dot = render_rule_form(
+        &ast,
+        rule(&ast, &forms, "trust"),
+        RuleMode::SideBySide,
+        false,
+    );
+    // In the match panel the pattern under `think`'s arrow is a node in the
+    // frame `think ctx`, its first arrow at the relation's box and the next
+    // two at its variables, so what it binds is drawn.
     let u = "\"(= ?a ?b)_L\"";
-    let declared: Vec<&str> = node_lines(&dot)
-        .into_iter()
-        .filter(|l| id_of(l) == u)
-        .collect();
-    assert_eq!(declared.len(), 1, "{dot}");
-    assert!(declared[0].contains("shape=octagon, label=\"=\""), "{dot}");
+    assert_eq!(
+        octagons(&dot).iter().filter(|id| **id == u).count(),
+        1,
+        "{dot}"
+    );
     assert_eq!(
         frame_of(&dot, u).as_deref(),
         Some("think ctx"),
         "no premise: {dot}"
     );
-    for (i, v) in ["\"?a_L\"", "\"?b_L\""].iter().enumerate() {
+    for (i, v) in ["\"=_L\"", "\"?a_L\"", "\"?b_L\""].iter().enumerate() {
         assert!(
-            node_lines(&dot).iter().any(|l| id_of(l) == *v),
-            "the variable {v} is drawn:\n{dot}"
-        );
-        assert!(
-            dot.contains(&format!("{u} -> {v} [label=\"{}\"", i + 1)),
+            dot.contains(&format!("{u} -> {v} [xlabel=\"{}\"", i + 1)),
             "{dot}"
         );
     }
-    assert!(
-        dot.contains(&format!("\"?p_L\" -> {u} [label=\"think\"")),
-        "{dot}"
+    assert!(dot.contains("\"=_L\" [label=\"=\", shape=box];"), "{dot}");
+    // Folded, the pattern of `think` that nothing points at is an arrow, and
+    // the conclusion too.
+    let folded = render_rule_form(
+        &ast,
+        rule(&ast, &forms, "trust"),
+        RuleMode::SideBySide,
+        true,
     );
-    // In the assert panel nothing points at the conclusion: an arrow.
-    assert!(dot.contains("\"?a_R\" -> \"?b_R\" [label=\"=\""), "{dot}");
+    assert!(
+        folded.contains(&format!("\"?p_L\" -> {u} [label=\"think\"")),
+        "{folded}"
+    );
+    assert!(
+        folded.contains("\"?a_R\" -> \"?b_R\" [label=\"=\""),
+        "{folded}"
+    );
 
     // The overlay is one drawing: the conclusion is the node the match
-    // points at, dashed, as what the conclusion adds, and in no frame, and no
-    // arrow draws it again.
-    let overlay = render_rule_form(&ast, rule(&ast, &forms, "trust"), RuleMode::Overlay);
-    nothing_is_filled(&overlay);
+    // points at, dashed, as what the conclusion adds, and in no frame.
+    let overlay = render_rule_form(&ast, rule(&ast, &forms, "trust"), RuleMode::Overlay, true);
     let node = node_lines(&overlay)
         .into_iter()
         .find(|l| id_of(l) == "\"(= ?a ?b)\"")
         .expect("the node");
     assert!(node.contains("style=dashed"), "{overlay}");
     assert_eq!(frame_of(&overlay, "\"(= ?a ?b)\""), None, "{overlay}");
-    assert!(!overlay.contains("cluster_ctx_"), "{overlay}");
     assert!(
         !overlay.contains("\"?a\" -> \"?b\" [label=\"=\""),
         "{overlay}"
     );
 
     // A pattern that is a premise and under an arrow of another is one node,
-    // in no frame, and no arrow.
-    let noted = render_rule_form(&ast, rule(&ast, &forms, "noted"), RuleMode::SideBySide);
-    nothing_is_filled(&noted);
-    let node = node_lines(&noted)
-        .into_iter()
-        .find(|l| id_of(l) == "\"(= ?a ?b)_L\"")
-        .expect("the node");
-    assert!(!node.contains("style="), "{noted}");
+    // in no frame; the negation under the absence is a red fact of `not`
+    // whose second arrow is at the pattern it denies.
+    let noted = render_rule_form(
+        &ast,
+        rule(&ast, &forms, "noted"),
+        RuleMode::SideBySide,
+        false,
+    );
     assert_eq!(frame_of(&noted, "\"(= ?a ?b)_L\""), None, "{noted}");
-    assert!(!noted.contains("cluster_ctx_"), "{noted}");
     assert!(
-        !noted.contains("\"?a_L\" -> \"?b_L\" [label=\"=\""),
+        noted
+            .lines()
+            .any(|l| l.contains("_not_L\" -> \"not_L\" [xlabel=\"1\", color=\"#d62728\"")),
+        "{noted}"
+    );
+    assert!(
+        noted
+            .lines()
+            .any(|l| l.contains("_not_L\" -> \"(= ?b ?a)_L\" [xlabel=\"2\"")),
         "{noted}"
     );
 }
 
 #[test]
-fn the_constraint_view_draws_a_fact_under_an_arrow_as_its_node() {
-    let (ast, forms) = parsed("(act (f a))\n(pair (f a) (g b c))\n(f a)\n");
-    let dot = render_constraints(&ast, &forms, "constraints");
-    let f = "\"(f a)\"";
-    let declared: Vec<&str> = node_lines(&dot)
-        .into_iter()
-        .filter(|l| id_of(l) == f)
+fn the_constraint_view_draws_a_property_as_a_fact() {
+    let (ast, forms) = parsed("(act (f a))\n(pair (f a) (g b c))\n(f a)\n(symmetric r)\n");
+    for fold in [false, true] {
+        let dot = render_constraints(&ast, &forms, "constraints", fold);
+        holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
+        nothing_is_filled(&dot);
+        // A property of a relation is a fact about it, never a word in its
+        // node: an octagon whose second arrow is at the relation.
+        let sym = fact_id("symmetric", &["r".into()]);
+        assert!(
+            dot.contains(&format!("  {sym} -> \"r\" [xlabel=\"2\"")),
+            "{dot}"
+        );
+        // A fact the program states is in no frame; one it does not, in the
+        // frame of what points at it.
+        let f = fact_id("f", &["a".into()]);
+        assert_eq!(frame_of(&dot, &f), None, "{dot}");
+        let g = fact_id("g", &["b".into(), "c".into()]);
+        assert_eq!(frame_of(&dot, &g).as_deref(), Some("pair ctx"), "{dot}");
+        assert!(
+            dot.contains(&format!("  {g} -> \"c\" [xlabel=\"3\"")),
+            "{dot}"
+        );
+    }
+}
+
+/// The program view's `kb` digraph, as the KB view's code draws it, less the
+/// facts the loader adds beside a declaration, `(relation r)`.
+fn kb_less_the_loaders(kb: &str, ast: &Ast, forms: &[NodeId]) -> String {
+    let added: HashSet<String> = forms
+        .iter()
+        .filter(|f| ast.head_name(**f) == Some("relation"))
+        .filter_map(|f| {
+            let args = ast.form_args(*f);
+            let labels = args
+                .iter()
+                .filter(|a| !matches!(ast.node(**a), ein_ir::Node::KwPair { .. }))
+                .count();
+            (labels > 1).then(|| fact_id("relation", &[ein_render::value_label(ast, args[0])]))
+        })
         .collect();
-    assert_eq!(declared.len(), 1, "{dot}");
-    // Named for its relation, its unary property a badge as on any node, in
-    // no frame since the program states it.
-    assert!(declared[0].contains("shape=octagon, label=\"f"), "{dot}");
-    assert_eq!(frame_of(&dot, f), None, "{dot}");
-    nothing_is_filled(&dot);
-    assert!(dot.contains(&format!("{f} -> \"a\" [label=\"1\"")), "{dot}");
-    // One the program does not state is in the frame of what points at it.
-    let g = "\"(g b c)\"";
-    assert_eq!(frame_of(&dot, g).as_deref(), Some("pair ctx"), "{dot}");
-    assert!(dot.contains(&format!("{g} -> \"c\" [label=\"2\"")), "{dot}");
+    kb.lines()
+        .filter(|l| {
+            let id = l.trim().split([' ', '[']).next().unwrap_or("");
+            !added.contains(id)
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// What `ein render kb` draws of a file: loaded, saturated. With it, the
+/// parsed program, and whether saturation derived a fact: by a rule of the
+/// kernel's, `__symmetric__`, or by the check of a written `(eq …)`.
+struct KbCommand {
+    dot: String,
+    ast: Ast,
+    forms: Vec<NodeId>,
+    derived: bool,
+}
+
+fn kb_command(text: &str, base: Option<&std::path::Path>, fold: bool) -> Option<KbCommand> {
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, text, None).ok()?;
+    let mut terms = Terms::new();
+    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, base).ok()?;
+    let loaded = kb.n_facts();
+    ein_infer::saturate_events(&ast, &mut terms, &mut kb).ok()?;
+    let dot = kb_to_dot(
+        &kb,
+        &terms,
+        &KbDotOpts {
+            fold,
+            ..KbDotOpts::default()
+        },
+    );
+    Some(KbCommand {
+        dot,
+        derived: kb.n_facts() != loaded,
+        ast,
+        forms,
+    })
+}
+
+/// **The program view's `kb` is the KB view of the program** (Q-M1f.420):
+/// for a program with no rule, no import and no macro, the digraph `kb`
+/// that `ein render program` draws is what `ein render kb` draws of it, but
+/// for what the loader adds, in both forms.
+#[test]
+fn the_program_views_kb_is_the_kb_views_drawing() {
+    let text = "\
+(relation owns Person Pet :why \"{?1} owns {?2}\")
+(relation lives Person :why \"{?1} lives\")
+(owns Bob Dog :source \"condition (3)\")
+(claims Carol (owns Bob Cat))
+(not (owns Ann Dog))
+(lives Ann :source \"x\")
+(owns Bob Dog)
+(empty)
+(ontology (relation r T T) (is-a a T))
+";
+    for fold in [false, true] {
+        let k = kb_command(text, None, fold).expect("loads");
+        assert!(!k.derived);
+        let program = render_kb(&k.ast, &k.forms, fold);
+        assert_eq!(
+            program,
+            kb_less_the_loaders(&k.dot, &k.ast, &k.forms),
+            "fold={fold}"
+        );
+    }
+}
+
+/// Every corpus program the claim is about: one with no rule, hrule, macro
+/// or import, that loads and saturates, and is no saved file.
+#[test]
+fn the_program_views_kb_is_the_kb_views_drawing_on_the_corpus() {
+    let root = repo_root();
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "every_object_once::kb",
+        &files,
+        |f| {
+            (
+                f.strip_prefix(&root).unwrap_or(f).display().to_string(),
+                "kb".to_string(),
+            )
+        },
+        |path| -> Option<Result<(), String>> {
+            let text = std::fs::read_to_string(path).ok()?;
+            if ein_ir::saved::split(&text, path.to_str()).ok()?.is_some() {
+                return None;
+            }
+            for fold in [false, true] {
+                let k = kb_command(&text, path.parent(), fold)?;
+                // A written check, `(eq …)`, `(neq …)` or `(not (eq …))`, is
+                // read by the loader as its verdict, `(false)` where it fails.
+                let check = |f: NodeId| {
+                    k.ast.head_name(f).is_some_and(ein_core::is_predicate)
+                        || (k.ast.head_name(f) == Some("not")
+                            && k.ast.form_args(f).first().is_some_and(|g| {
+                                k.ast.head_name(*g).is_some_and(ein_core::is_predicate)
+                            }))
+                };
+                if k.derived
+                    || k.forms.iter().any(|f| {
+                        check(*f)
+                            || matches!(
+                                k.ast.head_name(*f),
+                                Some("rule" | "hrule" | "macro" | "import")
+                            )
+                    })
+                {
+                    return None;
+                }
+                let program = render_kb(&k.ast, &k.forms, fold);
+                let kb = kb_less_the_loaders(&k.dot, &k.ast, &k.forms);
+                // A program that states no fact draws no `kb`, and its KB
+                // view draws none either.
+                let same = if program.is_empty() {
+                    !kb.contains(" -> ")
+                } else {
+                    program == kb
+                };
+                if !same {
+                    return Some(Err(format!("{} fold={fold}", path.display())));
+                }
+            }
+            Some(Ok(()))
+        },
+    );
+    let checked = found.iter().filter(|r| matches!(r, Some(Ok(())))).count();
+    let bad: Vec<String> = found
+        .into_iter()
+        .flatten()
+        .filter_map(Result::err)
+        .collect();
+    assert!(checked > 20, "only {checked} corpus programs read");
+    assert!(
+        bad.is_empty(),
+        "the program view's kb is not the KB view's:\n{}",
+        bad.join("\n")
+    );
+}
+
+/// **Every view of every corpus program** keeps the rules, in the form it is
+/// drawn in: the `-fold` views folded, every other one canonical.
+#[test]
+fn every_view_of_every_corpus_program_keeps_the_rules() {
+    let root = repo_root();
+    let files = corpus_files();
+    let views = all_views();
+    let found = ein_corpus::pool::map(
+        "every_object_once::views",
+        &files,
+        |f| {
+            (
+                f.strip_prefix(&root).unwrap_or(f).display().to_string(),
+                "views".to_string(),
+            )
+        },
+        |path| -> Vec<String> {
+            let Ok(text) = std::fs::read_to_string(path) else {
+                return Vec::new();
+            };
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let Ok(forms) = ein_ir::saved::parse_text(&mut ast, &text, path.to_str()) else {
+                return Vec::new();
+            };
+            let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent());
+            let mut bad = Vec::new();
+            for view in &views {
+                let drawn = if KB_VIEWS.contains(view) {
+                    match &kb {
+                        Ok(kb) => kb_dot_shape(&ast, &mut terms.clone(), &mut kb.clone(), view),
+                        Err(_) => continue,
+                    }
+                } else {
+                    let mut ast = Ast::new();
+                    let forms = ein_ir::saved::parse_text(&mut ast, &text, path.to_str())
+                        .expect("it parsed above");
+                    dot_shape(&mut ast, &mut Terms::new(), &forms, path.parent(), view)
+                };
+                let Ok(dot) = drawn else { continue };
+                if let Err(e) = holds_the_rules(&dot, view.ends_with("-fold")) {
+                    bad.push(format!("{} [{view}]: {e}", path.display()));
+                }
+            }
+            bad
+        },
+    );
+    let bad: Vec<String> = found.into_iter().flatten().collect();
+    assert!(
+        bad.is_empty(),
+        "{} views break the rules:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
 }

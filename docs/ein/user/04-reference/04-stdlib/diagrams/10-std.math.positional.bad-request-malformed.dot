@@ -2,18 +2,26 @@ digraph rule_bad_request_malformed_lhs_rhs {
   rankdir=TB;
   label="bad-request-malformed"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?BAD-REQUEST_L" [label="?BAD-REQUEST", shape=diamond];
     "?request_L" [label="?request", shape=diamond];
+    "?NOT-A-NUMBER_L" [label="?NOT-A-NUMBER", shape=diamond];
     "?thing_L" [label="?thing", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?BAD-REQUEST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?NOT-A-NUMBER ?thing)_L" [shape=octagon, label="?NOT-A-NUMBER", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?NOT-A-NUMBER ?thing)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "?request_L" -> "(?NOT-A-NUMBER ?thing)_L" [label="?BAD-REQUEST", color="#d62728", fontcolor="#d62728"];
-    "(?NOT-A-NUMBER ?thing)_L" -> "?thing_L" [label="1", color="#1f77b4"];
+    "h1_BAD-REQUEST_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "?BAD-REQUEST_L" [xlabel="1", color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "?request_L" [xlabel="2", color="#d62728"];
+    "h1_BAD-REQUEST_L" -> "(?NOT-A-NUMBER ?thing)_L" [xlabel="3", color="#d62728"];
+    "(?NOT-A-NUMBER ?thing)_L" -> "?NOT-A-NUMBER_L" [xlabel="1", color="#1f77b4"];
+    "(?NOT-A-NUMBER ?thing)_L" -> "?thing_L" [xlabel="2", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
+    "?MALFORMED_R" [label="?MALFORMED", shape=diamond];
     "?request_R" [label="?request", shape=diamond];
-    "h1_MALFORMED_R" [shape=octagon, label="?MALFORMED", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_MALFORMED_R" -> "?request_R" [label="1", color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "?MALFORMED_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h2_MALFORMED_R" -> "?request_R" [xlabel="2", color="#ff7f0e", style=dashed];
   }
 }

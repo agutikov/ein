@@ -2,65 +2,78 @@ digraph rule_bin_div_bring_lhs_rhs {
   rankdir=TB;
   label="bin-div-bring"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-div-step_L" [label="bin-div-step", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
+    "bin-b_L" [label="bin-b", shape=box];
     "?a_L" [label="?a", shape=diamond];
     "?rest_L" [label="?rest", shape=diamond];
+    "b2_L" [label="b2", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?c_L" [label="?c", shape=diamond];
     "?w_L" [label="?w", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="bin-div-step ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bin-b ?a ?rest)_L" [shape=octagon, label="bin-b", color="#7f7f7f", fontcolor="#7f7f7f"];
-      "(b2 ?p ?c)_L" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(bin-b ?a ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+      "(b2 ?p ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "h1_bin-div-step_L" [shape=octagon, label="bin-div-step", color="#9467bd", fontcolor="#9467bd"];
-    "h1_bin-div-step_L" -> "?k_L" [label="1", color="#9467bd"];
-    "h1_bin-div-step_L" -> "?d_L" [label="2", color="#9467bd"];
-    "h1_bin-div-step_L" -> "(bin-b ?a ?rest)_L" [label="3", color="#9467bd"];
-    "h1_bin-div-step_L" -> "(b2 ?p ?c)_L" [label="4", color="#9467bd"];
-    "h1_bin-div-step_L" -> "?w_L" [label="5", color="#9467bd"];
-    "(bin-b ?a ?rest)_L" -> "?a_L" [label="1", color="#7f7f7f"];
-    "(bin-b ?a ?rest)_L" -> "?rest_L" [label="2", color="#7f7f7f"];
-    "(b2 ?p ?c)_L" -> "?p_L" [label="1", color="#bcbd22"];
-    "(b2 ?p ?c)_L" -> "?c_L" [label="2", color="#bcbd22"];
+    "h1_bin-div-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h1_bin-div-step_L" -> "bin-div-step_L" [xlabel="1", color="#9467bd"];
+    "h1_bin-div-step_L" -> "?k_L" [xlabel="2", color="#9467bd"];
+    "h1_bin-div-step_L" -> "?d_L" [xlabel="3", color="#9467bd"];
+    "h1_bin-div-step_L" -> "(bin-b ?a ?rest)_L" [xlabel="4", color="#9467bd"];
+    "h1_bin-div-step_L" -> "(b2 ?p ?c)_L" [xlabel="5", color="#9467bd"];
+    "h1_bin-div-step_L" -> "?w_L" [xlabel="6", color="#9467bd"];
+    "(bin-b ?a ?rest)_L" -> "bin-b_L" [xlabel="1", color="#7f7f7f"];
+    "(bin-b ?a ?rest)_L" -> "?a_L" [xlabel="2", color="#7f7f7f"];
+    "(bin-b ?a ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
+    "(b2 ?p ?c)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "(b2 ?p ?c)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
+    "(b2 ?p ?c)_L" -> "?c_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "bin-sub-walk_R" [label="bin-sub-walk", shape=box];
+    "bin-div-trial_R" [label="bin-div-trial", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "?rest_R" [label="?rest", shape=diamond];
     "?w_R" [label="?w", shape=diamond];
+    "b2_R" [label="b2", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?c_R" [label="?c", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
-    "0_R" [label="0", shape=rectangle];
-    "z_R" [label="z", shape=rectangle];
+    "0_R" [label="0", shape=box];
+    "z_R" [label="z", shape=box];
     subgraph cluster_ctx_R_0 {
       label="b2 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 ?p ?c)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 ?p ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     subgraph cluster_ctx_R_1 {
       label="bin-div-trial, bin-sub-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(b2 (b2 ?p ?c) ?a)_R" [shape=octagon, label="b2", color="#bcbd22", fontcolor="#bcbd22"];
+      "(b2 (b2 ?p ?c) ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     subgraph cluster_ctx_R_2 {
       label="bin-sub-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [shape=octagon, label="bin-div-trial", color="#17becf", fontcolor="#17becf"];
+      "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h2_bin-sub-walk_R" [shape=octagon, label="bin-sub-walk", color="#9467bd", fontcolor="#9467bd"];
-    "h2_bin-sub-walk_R" -> "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [label="1", color="#9467bd", style=dashed];
-    "h2_bin-sub-walk_R" -> "(b2 (b2 ?p ?c) ?a)_R" [label="2", color="#9467bd", style=dashed];
-    "h2_bin-sub-walk_R" -> "?d_R" [label="3", color="#9467bd", style=dashed];
-    "h2_bin-sub-walk_R" -> "0_R" [label="4", color="#9467bd", style=dashed];
-    "h2_bin-sub-walk_R" -> "z_R" [label="5", color="#9467bd", style=dashed];
-    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?k_R" [label="1", color="#17becf", style=dashed];
-    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?d_R" [label="2", color="#17becf", style=dashed];
-    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?rest_R" [label="3", color="#17becf", style=dashed];
-    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?w_R" [label="4", color="#17becf", style=dashed];
-    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "(b2 (b2 ?p ?c) ?a)_R" [label="5", color="#17becf", style=dashed];
-    "(b2 (b2 ?p ?c) ?a)_R" -> "(b2 ?p ?c)_R" [label="1", color="#bcbd22", style=dashed];
-    "(b2 (b2 ?p ?c) ?a)_R" -> "?a_R" [label="2", color="#bcbd22", style=dashed];
-    "(b2 ?p ?c)_R" -> "?p_R" [label="1", color="#bcbd22", style=dashed];
-    "(b2 ?p ?c)_R" -> "?c_R" [label="2", color="#bcbd22", style=dashed];
+    "h2_bin-sub-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "bin-sub-walk_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "(b2 (b2 ?p ?c) ?a)_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "?d_R" [xlabel="4", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "0_R" [xlabel="5", color="#9467bd", style=dashed];
+    "h2_bin-sub-walk_R" -> "z_R" [xlabel="6", color="#9467bd", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "bin-div-trial_R" [xlabel="1", color="#17becf", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?d_R" [xlabel="3", color="#17becf", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?rest_R" [xlabel="4", color="#17becf", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "?w_R" [xlabel="5", color="#17becf", style=dashed];
+    "(bin-div-trial ?k ?d ?rest ?w (b2 (b2 ?p ?c) ?a))_R" -> "(b2 (b2 ?p ?c) ?a)_R" [xlabel="6", color="#17becf", style=dashed];
+    "(b2 (b2 ?p ?c) ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(b2 (b2 ?p ?c) ?a)_R" -> "(b2 ?p ?c)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(b2 (b2 ?p ?c) ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(b2 ?p ?c)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(b2 ?p ?c)_R" -> "?p_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(b2 ?p ?c)_R" -> "?c_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

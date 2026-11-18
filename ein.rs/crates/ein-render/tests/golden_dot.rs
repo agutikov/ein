@@ -123,19 +123,19 @@ fn the_rule_and_constraint_goldens_reproduce() {
     let (ast, forms) = parsed(RULE);
     check_dot(
         "render_rule",
-        &render_rule_form(&ast, forms[0], RuleMode::SideBySide),
+        &render_rule_form(&ast, forms[0], RuleMode::SideBySide, false),
     );
 
     let (ast, forms) = parsed(&format!("{RULE}\n{SYMM}"));
     check_dot(
         "render_rules",
-        &render_rules_forms(&ast, &forms, RuleMode::SideBySide),
+        &render_rules_forms(&ast, &forms, RuleMode::SideBySide, false),
     );
 
     let (ast, forms) = parsed(CONSTRAINTS);
     check_dot(
         "render_constraints",
-        &ein_render::render_constraints(&ast, &forms, "constraints"),
+        &ein_render::render_constraints(&ast, &forms, "constraints", false),
     );
 }
 
@@ -148,11 +148,11 @@ fn the_kb_goldens_reproduce() {
     );
     check_dot(
         "slice_render_state",
-        &render_state(&kb, &terms, None, "snap"),
+        &render_state(&kb, &terms, None, "snap", false),
     );
     check_dot(
         "slice_render_solution",
-        &render_solution(&kb, &terms, "solution"),
+        &render_solution(&kb, &terms, "solution", false),
     );
 }
 
@@ -233,6 +233,6 @@ fn the_slice_golden_reproduces() {
     ];
     check_dot(
         "slice_render_slice",
-        &render_slice(&terms, &[seed], &firings, None, "slice", None, None),
+        &render_slice(&terms, &[seed], &firings, None, "slice", None, None, false),
     );
 }

@@ -1,5 +1,21 @@
-digraph facts {
-  "Spaniard" [shape=rectangle];
-  "Coffee" [shape=rectangle];
-  "Spaniard" -> "Coffee" [label="co-located", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+  // facts
+  f_22dd7e27d1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(1)"];
+  f_22dd7e27d1 -> "not" [xlabel="1", color="#d62728", style=solid];
+  f_22dd7e27d1 -> f_4bdcc358c2 [xlabel="2", color="#d62728", style=solid];
+
+  // facts in a context
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_4bdcc358c2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  }
+  f_4bdcc358c2 -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  f_4bdcc358c2 -> "Spaniard" [xlabel="2", color="#bcbd22", style=solid];
+  f_4bdcc358c2 -> "Coffee" [xlabel="3", color="#bcbd22", style=solid];
 }

@@ -47,20 +47,17 @@ pub fn fact_key(relation_name: &str, args: &[String]) -> String {
 // ── The shape legend ───────────────────────────────────────────────
 //
 // `docs/ein/user/04-reference/12-rendering.md` § Node-shape legend. Named
-// constants rather than literals because the per-form IR renderer and the
-// rule renderer must agree, and a legend that lives in two string literals
-// drifts.
+// constants rather than literals because the views must agree, and a legend
+// that lives in two string literals drifts. No relation has a shape of its
+// own (Q-M1f.421): an atom is a box, whatever points at it.
 
-pub const TYPE_SHAPE: &str = "box";
-pub const INSTANCE_SHAPE: &str = "oval";
-pub const GROUND_SHAPE: &str = "rectangle";
+pub const GROUND_SHAPE: &str = "box";
 pub const HYPER_SHAPE: &str = "octagon";
-pub const EQUALITY_SHAPE: &str = "doublecircle";
 pub const VAR_SHAPE: &str = "diamond";
 
 /// The rank separation of a digraph whose diamonds and octagons stand outside
-/// any cluster: a rule's overlay, and a [`Builder`](crate::builder::Builder)
-/// digraph that holds a hyperedge node.
+/// any cluster: a rule's overlay, a knowledge base's digraph, the constraint
+/// view, a trace's slice, the derivation graph and a written trace's `dag`.
 ///
 /// An edge label makes `dot` halve the rank separation (`rank.c`,
 /// `edgelabel_ranks`), and the default 0.5 in becomes 18 pt, the half-height
@@ -71,28 +68,26 @@ pub const VAR_SHAPE: &str = "diamond";
 /// 0.55 in halves to 20 pt, and no corpus view gives the warning at it,
 /// where the default gives it on several at every `nodesep` from 0.20 to
 /// 0.40. The side-by-side rules draw theirs inside clusters and are not
-/// refused, nor are the KB and constraint views. `dot_wellformed.rs` keeps
-/// that true.
+/// refused. `dot_wellformed.rs` keeps that true.
 pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
 
 // ── A fact in a context ────────────────────────────────────────────
 //
 // Every drawing of facts draws an object once
 // (Q-M1f.395). A fact that a drawn fact points at is its own
-// node, an octagon with the relation's name in it and its argument arrows
-// numbered, never a node labelled with the fact's text and never also an
-// arrow. Where it is in a context only, pointed at and not held, it stands
-// in a dashed frame named for the relations of the facts that point at it;
-// a held fact stands in no frame, whatever points at it, and no octagon is
-// filled (Q-M1f.398). The frame's chrome is named here because four writers
-// draw it: the KB view, the program view, the rule view and the constraint
-// view.
+// node, an octagon with no name in it and its arrows numbered from the
+// first, at its relation (Q-M1f.419), never a node labelled with the fact's
+// text and never also an arrow. Where it is in a context only, pointed at
+// and not held, it stands in a dashed frame named for the relations of the
+// facts that point at it; a held fact stands in no frame, whatever points at
+// it, and no octagon is filled (Q-M1f.398). The frame's chrome is named here
+// because every writer that draws facts draws it.
 
 /// The grey of a frame's line and label, an absence's in a rule's drawing.
 pub const FRAME_COLOUR: &str = "#888888";
 
 /// The ranking of a digraph that holds a frame and whose arrows cross it:
-/// the KB view's, the program view's and the constraint view's.
+/// every drawing of [`crate::fact_graph`]'s.
 ///
 /// `dot` ranks a graph with clusters one cluster at a time unless told
 /// otherwise, and where arrows run both into a frame and out of it, between
@@ -260,8 +255,8 @@ mod tests {
         let mut ast = Ast::new();
         let forms = ein_ir::parse(&mut ast, src, None).expect("the fact parses");
         let program = crate::ir_to_dot(&ast, &forms, crate::DotOpts::default());
-        assert!(program.contains("(house N)"), "{program}");
-        let constraints = crate::render_constraints(&ast, &forms, "witness");
+        assert!(program.contains(" -> \"house\" [xlabel=\"1\""), "{program}");
+        let constraints = crate::render_constraints(&ast, &forms, "witness", false);
         assert!(constraints.starts_with("digraph"), "{constraints}");
         let labels: Vec<String> = ast
             .form_args(forms[0])

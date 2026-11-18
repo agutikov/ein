@@ -2,28 +2,40 @@ digraph rule_int_n_digit_lhs_rhs {
   rankdir=TB;
   label="int-n-digit"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-check_L" [label="int-check", shape=box];
+    "int_L" [label="int", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
+    "nz_L" [label="nz", shape=box];
     subgraph cluster_ctx_L_0 {
       label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int ?p ?x)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?p ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h1_int-check_L" [shape=octagon, label="int-check", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-check_L" -> "(int ?p ?x)_L" [label="1", color="#2ca02c"];
-    "h2_nz_L" [shape=octagon, label="nz", color="#2ca02c", fontcolor="#2ca02c"];
-    "h2_nz_L" -> "?x_L" [label="1", color="#2ca02c"];
-    "(int ?p ?x)_L" -> "?p_L" [label="1", color="#17becf"];
-    "(int ?p ?x)_L" -> "?x_L" [label="2", color="#17becf"];
+    "h1_int-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_int-check_L" -> "int-check_L" [xlabel="1", color="#2ca02c"];
+    "h1_int-check_L" -> "(int ?p ?x)_L" [xlabel="2", color="#2ca02c"];
+    "h2_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h2_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "h2_nz_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
+    "(int ?p ?x)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?x)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?x)_L" -> "?x_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "not-integer_R" [label="not-integer", shape=box];
+    "int_R" [label="int", shape=box];
     "?p_R" [label="?p", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-integer ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int ?p ?x)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int ?p ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(int ?p ?x)_R" -> "?x_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(int ?p ?x)_R" -> "?p_R" [label="1", color="#17becf", style=dashed];
-    "(int ?p ?x)_R" -> "?x_R" [label="2", color="#17becf", style=dashed];
+    "h3_not-integer_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h3_not-integer_R" -> "not-integer_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h3_not-integer_R" -> "(int ?p ?x)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h3_not-integer_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(int ?p ?x)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int ?p ?x)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int ?p ?x)_R" -> "?x_R" [xlabel="3", color="#17becf", style=dashed];
   }
 }

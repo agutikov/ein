@@ -2,26 +2,57 @@ digraph rule_no_room_left_lhs_rhs {
   rankdir=TB;
   label="no-room-left"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "functional_L" [label="functional", shape=box];
     "?R_L" [label="?R", shape=diamond];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
+    "0_L" [label="0", shape=box];
+    "1_L" [label="1", shape=box];
+    "total_L" [label="total", shape=box];
+    "?isa_L" [label="?isa", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "?OT_L" [label="?OT", shape=diamond];
-    "h1_functional_L" [shape=octagon, label="functional", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_functional_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_functional_L" -> "0_L" [label="2", color="#bcbd22"];
-    "h1_functional_L" -> "1_L" [label="3", color="#bcbd22"];
-    "?R_L" -> "0_L" [label="total", color="#1f77b4", fontcolor="#1f77b4"];
-    "?a_L" -> "?OT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?v_L" [label="?v", shape=diamond];
-      "?VT_L" [label="?VT", shape=diamond];
-      "?v_L" -> "?VT_L" [label="?isa", color="#bcbd22", fontcolor="#bcbd22"];
-      "?a_L" -> "?v_L" [label="¬?R", color="#d62728", fontcolor="#d62728"];
+    "forall_L" [label="forall", shape=box];
+    "?v_L" [label="?v", shape=diamond];
+    "?VT_L" [label="?VT", shape=diamond];
+    "not_L" [label="not", shape=box];
+    subgraph cluster_ctx_L_0 {
+      label="forall ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?isa ?v ?VT)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+      "(not (?R ?a ?v))_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
+    subgraph cluster_ctx_L_1 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R ?a ?v)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    }
+    "h1_functional_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_functional_L" -> "functional_L" [xlabel="1", color="#bcbd22"];
+    "h1_functional_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
+    "h1_functional_L" -> "0_L" [xlabel="3", color="#bcbd22"];
+    "h1_functional_L" -> "1_L" [xlabel="4", color="#bcbd22"];
+    "h2_total_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h2_total_L" -> "total_L" [xlabel="1", color="#1f77b4"];
+    "h2_total_L" -> "?R_L" [xlabel="2", color="#1f77b4"];
+    "h2_total_L" -> "0_L" [xlabel="3", color="#1f77b4"];
+    "h3_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h3_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "h3_isa_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
+    "h3_isa_L" -> "?OT_L" [xlabel="3", color="#bcbd22"];
+    "h4_forall_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h4_forall_L" -> "forall_L" [xlabel="1", color="#1f77b4"];
+    "h4_forall_L" -> "?v_L" [xlabel="2", color="#1f77b4"];
+    "h4_forall_L" -> "(?isa ?v ?VT)_L" [xlabel="3", color="#1f77b4"];
+    "h4_forall_L" -> "(not (?R ?a ?v))_L" [xlabel="4", color="#1f77b4"];
+    "(?isa ?v ?VT)_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "(?isa ?v ?VT)_L" -> "?v_L" [xlabel="2", color="#bcbd22"];
+    "(?isa ?v ?VT)_L" -> "?VT_L" [xlabel="3", color="#bcbd22"];
+    "(not (?R ?a ?v))_L" -> "not_L" [xlabel="1", color="#d62728"];
+    "(not (?R ?a ?v))_L" -> "(?R ?a ?v)_L" [xlabel="2", color="#d62728"];
+    "(?R ?a ?v)_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "(?R ?a ?v)_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
+    "(?R ?a ?v)_L" -> "?v_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
-    "h2_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+    "false_R" [label="false", shape=box];
+    "h5_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h5_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
   }
 }

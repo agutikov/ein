@@ -16,6 +16,7 @@ pub mod constraints;
 pub mod derivation;
 pub mod dot_util;
 pub mod dump;
+pub mod fact_graph;
 pub mod grid;
 pub mod ir_dot;
 pub mod kb_dot;

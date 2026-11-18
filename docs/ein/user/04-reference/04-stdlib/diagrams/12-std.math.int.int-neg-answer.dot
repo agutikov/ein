@@ -2,18 +2,28 @@ digraph rule_int_neg_answer_lhs_rhs {
   rankdir=TB;
   label="int-neg-answer"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-done_L" [label="int-done", shape=box];
+    "int-neg_L" [label="int-neg", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?s_L" [label="?s", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-neg ?x)_L" [shape=octagon, label="int-neg", color="#9467bd", fontcolor="#9467bd"];
+      "(int-neg ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
-    "(int-neg ?x)_L" -> "?s_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-    "(int-neg ?x)_L" -> "?x_L" [label="1", color="#9467bd"];
+    "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "h1_int-done_L" -> "(int-neg ?x)_L" [xlabel="2", color="#1f77b4"];
+    "h1_int-done_L" -> "?s_L" [xlabel="3", color="#1f77b4"];
+    "(int-neg ?x)_L" -> "int-neg_L" [xlabel="1", color="#9467bd"];
+    "(int-neg ?x)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "int-neg-of_R" [label="int-neg-of", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
-    "?x_R" -> "?s_R" [label="int-neg-of", color="#7f7f7f", fontcolor="#7f7f7f", style=dashed];
+    "h2_int-neg-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_int-neg-of_R" -> "int-neg-of_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_int-neg-of_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_int-neg-of_R" -> "?s_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }
 }

@@ -1,14 +1,18 @@
 //! The derivation DAG as a Graphviz `digraph`.
 //!
-//! Source and hypothesis facts are ellipses labelled with what they rest on;
-//! rule-derived facts are boxes labelled with the rule. An AND/OR graph — one
-//! where some fact has more than one recorded derivation — additionally draws
-//! a small diamond per justification, with the premises feeding *it* and it
-//! feeding the conclusion, so alternative derivations read as alternatives
-//! instead of as one big conjunction. A single-derivation DAG draws no
-//! diamond.
+//! **Each fact is drawn as its node** (Q-M1f.419): an octagon with no name in
+//! it, its first arrow at its relation's atom and the next at its
+//! arguments, never a node labelled with its text; beside it, what it rests
+//! on, its source's text, `by <rule>` or the hypothesis that put it there.
+//! **Each derivation is a node of its own**, a small diamond, with the
+//! premises feeding it and it feeding the conclusion, so that a fact with
+//! several recorded derivations shows them as alternatives rather than as
+//! one big conjunction.
 
-use crate::dot_util::{fact_key, hashed_id};
+use std::collections::HashSet;
+
+use crate::dot_util::{HYPER_SHAPE, POLYGON_RANKSEP, fact_key, hashed_id, quote};
+use crate::fact_graph::FACT_NODE;
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 
 /// Render `dag` — the bytes `ein-render/tests/golden/dot/kb_provenance_dag.dot`
@@ -17,36 +21,56 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
     let mut lines = vec![
         "digraph derivation {".to_string(),
         "  rankdir=BT;".to_string(),
+        format!("  {POLYGON_RANKSEP};"),
+        "  node [shape=box];".to_string(),
     ];
-    for &f in &dag.nodes {
+    let mut arrows: Vec<String> = Vec::new();
+    let mut drawn: HashSet<FactId> = HashSet::new();
+    let mut queue: Vec<FactId> = dag.nodes.clone();
+    // Each fact of the DAG, and each fact one of them points at, as its node.
+    let mut i = 0;
+    while i < queue.len() {
+        let f = queue[i];
+        i += 1;
+        if !drawn.insert(f) {
+            continue;
+        }
         let nid = fact_dot_id(terms, f);
-        let label = fact_dot_label(kb, terms, f);
-        let shape = if is_terminal_node(kb, terms, f) {
-            "ellipse"
-        } else {
-            "box"
-        };
-        lines.push(format!("  {nid} [shape={shape}, label=\"{label}\"];"));
+        let note = provenance_note(kb, terms, f)
+            .map_or(String::new(), |n| format!(", xlabel={}", quote(&n)));
+        lines.push(format!("  {nid} [shape={HYPER_SHAPE}, {FACT_NODE}{note}];"));
+        let (rel, args) = terms.fact(f);
+        arrows.push(format!(
+            "  {nid} -> {} [xlabel=\"1\"];",
+            quote(terms.sym(rel))
+        ));
+        for (j, a) in args.iter().enumerate() {
+            let to = match a.as_fact() {
+                Some(g) => {
+                    queue.push(g);
+                    fact_dot_id(terms, g)
+                }
+                None => quote(&terms.display(*a)),
+            };
+            arrows.push(format!("  {nid} -> {to} [xlabel=\"{}\"];", j + 2));
+        }
     }
-    if dag.is_or_graph() {
-        for (i, (conclusion, premises)) in dag.and_nodes.iter().enumerate() {
-            let jid = format!("j{i}");
+    lines.extend(arrows);
+    for (i, (conclusion, premises)) in dag.and_nodes.iter().enumerate() {
+        let jid = format!("j{i}");
+        lines.push(format!(
+            "  {jid} [shape=diamond, width=.2, height=.2, label=\"\"];"
+        ));
+        for &p in premises {
             lines.push(format!(
-                "  {jid} [shape=diamond, width=.2, height=.2, label=\"\"];"
-            ));
-            for &p in premises {
-                lines.push(format!("  {} -> {jid};", fact_dot_id(terms, p)));
-            }
-            lines.push(format!("  {jid} -> {};", fact_dot_id(terms, *conclusion)));
-        }
-    } else {
-        for &(premise, conclusion) in &dag.edges {
-            lines.push(format!(
-                "  {} -> {};",
-                fact_dot_id(terms, premise),
-                fact_dot_id(terms, conclusion)
+                "  {} -> {jid} [style=bold];",
+                fact_dot_id(terms, p)
             ));
         }
+        lines.push(format!(
+            "  {jid} -> {} [style=bold];",
+            fact_dot_id(terms, *conclusion)
+        ));
     }
     lines.push("}".to_string());
     lines.join("\n")
@@ -59,31 +83,11 @@ pub fn fact_dot_id(terms: &Terms, f: FactId) -> String {
     hashed_id("f_", &fact_key(terms.sym(rel), &args), false)
 }
 
-/// `(rel arg arg)` — with the trailing space a nullary fact gets, because the
-/// separator after the relation is written unconditionally.
-fn compact(terms: &Terms, f: FactId) -> String {
-    let (rel, args) = terms.fact(f);
-    let args: Vec<String> = args.iter().map(|a| terms.display(*a)).collect();
-    format!("({} {})", terms.sym(rel), args.join(" "))
-}
-
-fn is_terminal_node(kb: &Kb, terms: &Terms, f: FactId) -> bool {
-    match kb.primary(f) {
-        None => true,
-        Some(p) => matches!(
-            terms.provs.get(p).kind,
-            ProvKind::Source | ProvKind::Hypothesis
-        ),
-    }
-}
-
-fn fact_dot_label(kb: &Kb, terms: &Terms, f: FactId) -> String {
-    let compact = compact(terms, f);
-    let Some(p) = kb.primary(f) else {
-        return label_esc(&compact);
-    };
+/// What a fact rests on, beside its node: its source's text, `by <rule>`, or
+/// the hypothesis branch; none for a fact with no record.
+fn provenance_note(kb: &Kb, terms: &Terms, f: FactId) -> Option<String> {
+    let p = kb.primary(f)?;
     let prov = terms.provs.get(p);
-    // `\n` here is the two-character DOT line break, not a newline.
     match prov.kind {
         ProvKind::Source => {
             // An empty source falls through to the default just as an absent
@@ -93,27 +97,17 @@ fn fact_dot_label(kb: &Kb, terms: &Terms, f: FactId) -> String {
                 .map(|s| terms.sym(s))
                 .filter(|s| !s.is_empty())
                 .unwrap_or("ontology");
-            label_esc(&format!("{compact}\\n[{source}]"))
+            Some(source.to_string())
         }
-        ProvKind::Rule => {
-            let rule = prov
-                .rule
-                .map_or("None".to_string(), |r| terms.sym(r).to_string());
-            label_esc(&format!("{compact}\\n[rule: {rule}]"))
-        }
-        ProvKind::Hypothesis => {
-            let branch = prov.branch.map_or("None".to_string(), |b| b.to_string());
-            label_esc(&format!("{compact}\\n[hyp #{branch}]"))
-        }
-        ProvKind::Rejected => label_esc(&compact),
+        ProvKind::Rule => Some(format!(
+            "by {}",
+            prov.rule
+                .map_or("None".to_string(), |r| terms.sym(r).to_string())
+        )),
+        ProvKind::Hypothesis => Some(format!(
+            "hyp #{}",
+            prov.branch.map_or("None".to_string(), |b| b.to_string())
+        )),
+        ProvKind::Rejected => None,
     }
-}
-
-/// `provenance._esc` — the quote only.
-///
-/// Deliberately *not* [`crate::dot_util::esc`], which also escapes the
-/// backslash: this renderer builds its own `\n` line breaks, so escaping
-/// backslashes here would turn every one of them into a literal.
-fn label_esc(s: &str) -> String {
-    s.replace('"', "\\\"")
 }

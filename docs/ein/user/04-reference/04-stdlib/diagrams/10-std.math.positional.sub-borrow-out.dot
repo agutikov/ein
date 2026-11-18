@@ -2,20 +2,24 @@ digraph rule_sub_borrow_out_lhs_rhs {
   rankdir=TB;
   label="sub-borrow-out"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?SUB-WALK_L" [label="?SUB-WALK", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
+    "z_L" [label="z", shape=box];
+    "1_L" [label="1", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
-    "h1_SUB-WALK_L" [shape=octagon, label="?SUB-WALK", color="#d62728", fontcolor="#d62728"];
-    "h1_SUB-WALK_L" -> "?k_L" [label="1", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="2", color="#d62728"];
-    "h1_SUB-WALK_L" -> "z_L" [label="3", color="#d62728"];
-    "h1_SUB-WALK_L" -> "1_L" [label="4", color="#d62728"];
-    "h1_SUB-WALK_L" -> "?acc_L" [label="5", color="#d62728"];
+    "h1_SUB-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_SUB-WALK_L" -> "?SUB-WALK_L" [xlabel="1", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?k_L" [xlabel="2", color="#d62728"];
+    "h1_SUB-WALK_L" -> "z_L" [xlabel="3", color="#d62728"];
+    "h1_SUB-WALK_L" -> "z_L" [xlabel="4", color="#d62728"];
+    "h1_SUB-WALK_L" -> "1_L" [xlabel="5", color="#d62728"];
+    "h1_SUB-WALK_L" -> "?acc_L" [xlabel="6", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
+    "?SHORT_R" [label="?SHORT", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
-    "h2_SHORT_R" [shape=octagon, label="?SHORT", color="#9467bd", fontcolor="#9467bd"];
-    "h2_SHORT_R" -> "?k_R" [label="1", color="#9467bd", style=dashed];
+    "h2_SHORT_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h2_SHORT_R" -> "?SHORT_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h2_SHORT_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

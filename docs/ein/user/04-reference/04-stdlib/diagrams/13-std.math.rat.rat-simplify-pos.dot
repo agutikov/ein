@@ -2,37 +2,49 @@ digraph rule_rat_simplify_pos_lhs_rhs {
   rankdir=TB;
   label="rat-simplify-pos"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-done_L" [label="int-done", shape=box];
+    "rat-low_L" [label="rat-low", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
+    "int_L" [label="int", shape=box];
     "?a_L" [label="?a", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "z_L" [label="z", shape=box];
     subgraph cluster_ctx_L_0 {
       label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-low ?k ?d)_L" [shape=octagon, label="rat-low", color="#2ca02c", fontcolor="#2ca02c"];
-      "(int ?a z)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(rat-low ?k ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "(int ?a z)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(rat-low ?k ?d)_L" -> "(int ?a z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-    "(rat-low ?k ?d)_L" -> "?k_L" [label="1", color="#2ca02c"];
-    "(rat-low ?k ?d)_L" -> "?d_L" [label="2", color="#2ca02c"];
-    "(int ?a z)_L" -> "?a_L" [label="1", color="#17becf"];
-    "(int ?a z)_L" -> "z_L" [label="2", color="#17becf"];
+    "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "h1_int-done_L" -> "(rat-low ?k ?d)_L" [xlabel="2", color="#1f77b4"];
+    "h1_int-done_L" -> "(int ?a z)_L" [xlabel="3", color="#1f77b4"];
+    "(rat-low ?k ?d)_L" -> "rat-low_L" [xlabel="1", color="#2ca02c"];
+    "(rat-low ?k ?d)_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
+    "(rat-low ?k ?d)_L" -> "?d_L" [xlabel="3", color="#2ca02c"];
+    "(int ?a z)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?a z)_L" -> "?a_L" [xlabel="2", color="#17becf"];
+    "(int ?a z)_L" -> "z_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "gcd-call_R" [label="gcd-call", shape=box];
+    "rat-g_R" [label="rat-g", shape=box];
     "?k_R" [label="?k", shape=diamond];
-    "pos_R" [label="pos", shape=rectangle];
+    "pos_R" [label="pos", shape=box];
     "?a_R" [label="?a", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="gcd-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-g ?k pos ?a ?d)_R" [shape=octagon, label="rat-g", color="#1f77b4", fontcolor="#1f77b4"];
+      "(rat-g ?k pos ?a ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h1_gcd-call_R" [shape=octagon, label="gcd-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?a_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_gcd-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-    "(rat-g ?k pos ?a ?d)_R" -> "?k_R" [label="1", color="#1f77b4", style=dashed];
-    "(rat-g ?k pos ?a ?d)_R" -> "pos_R" [label="2", color="#1f77b4", style=dashed];
-    "(rat-g ?k pos ?a ?d)_R" -> "?a_R" [label="3", color="#1f77b4", style=dashed];
-    "(rat-g ?k pos ?a ?d)_R" -> "?d_R" [label="4", color="#1f77b4", style=dashed];
+    "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "gcd-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "?a_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_gcd-call_R" -> "?d_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "(rat-g ?k pos ?a ?d)_R" -> "rat-g_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(rat-g ?k pos ?a ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(rat-g ?k pos ?a ?d)_R" -> "pos_R" [xlabel="3", color="#1f77b4", style=dashed];
+    "(rat-g ?k pos ?a ?d)_R" -> "?a_R" [xlabel="4", color="#1f77b4", style=dashed];
+    "(rat-g ?k pos ?a ?d)_R" -> "?d_R" [xlabel="5", color="#1f77b4", style=dashed];
   }
 }

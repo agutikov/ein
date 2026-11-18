@@ -2,32 +2,38 @@ digraph rule_bin_div_multiples_lhs_rhs {
   rankdir=TB;
   label="bin-div-multiples"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-div-call_L" [label="bin-div-call", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
-    "h1_bin-div-call_L" [shape=octagon, label="bin-div-call", color="#17becf", fontcolor="#17becf"];
-    "h1_bin-div-call_L" -> "?k_L" [label="1", color="#17becf"];
-    "h1_bin-div-call_L" -> "?u_L" [label="2", color="#17becf"];
-    "h1_bin-div-call_L" -> "?v_L" [label="3", color="#17becf"];
+    "h1_bin-div-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_bin-div-call_L" -> "bin-div-call_L" [xlabel="1", color="#17becf"];
+    "h1_bin-div-call_L" -> "?k_L" [xlabel="2", color="#17becf"];
+    "h1_bin-div-call_L" -> "?u_L" [xlabel="3", color="#17becf"];
+    "h1_bin-div-call_L" -> "?v_L" [xlabel="4", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "bin-add-walk_R" [label="bin-add-walk", shape=box];
+    "bin-div-m1_R" [label="bin-div-m1", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?u_R" [label="?u", shape=diamond];
     "?v_R" [label="?v", shape=diamond];
-    "z_R" [label="z", shape=rectangle];
-    "0_R" [label="0", shape=rectangle];
+    "z_R" [label="z", shape=box];
+    "0_R" [label="0", shape=box];
     subgraph cluster_ctx_R_0 {
       label="bin-add-walk ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bin-div-m1 ?k ?u ?v)_R" [shape=octagon, label="bin-div-m1", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "(bin-div-m1 ?k ?u ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
-    "h2_bin-add-walk_R" [shape=octagon, label="bin-add-walk", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_bin-add-walk_R" -> "(bin-div-m1 ?k ?u ?v)_R" [label="1", color="#7f7f7f", style=dashed];
-    "h2_bin-add-walk_R" -> "z_R" [label="2", color="#7f7f7f", style=dashed];
-    "h2_bin-add-walk_R" -> "?v_R" [label="3", color="#7f7f7f", style=dashed];
-    "h2_bin-add-walk_R" -> "0_R" [label="4", color="#7f7f7f", style=dashed];
-    "h2_bin-add-walk_R" -> "z_R" [label="5", color="#7f7f7f", style=dashed];
-    "(bin-div-m1 ?k ?u ?v)_R" -> "?k_R" [label="1", color="#ff7f0e", style=dashed];
-    "(bin-div-m1 ?k ?u ?v)_R" -> "?u_R" [label="2", color="#ff7f0e", style=dashed];
-    "(bin-div-m1 ?k ?u ?v)_R" -> "?v_R" [label="3", color="#ff7f0e", style=dashed];
+    "h2_bin-add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "bin-add-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "(bin-div-m1 ?k ?u ?v)_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "z_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "?v_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h2_bin-add-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
+    "(bin-div-m1 ?k ?u ?v)_R" -> "bin-div-m1_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "(bin-div-m1 ?k ?u ?v)_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "(bin-div-m1 ?k ?u ?v)_R" -> "?u_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "(bin-div-m1 ?k ?u ?v)_R" -> "?v_R" [xlabel="4", color="#ff7f0e", style=dashed];
   }
 }

@@ -2,6 +2,8 @@ digraph rule_rat_cross_fourth_lhs_rhs {
   rankdir=TB;
   label="rat-cross-fourth"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "done_L" [label="done", shape=box];
+    "rat-x4_L" [label="rat-x4", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
     "?m_L" [label="?m", shape=diamond];
@@ -9,15 +11,21 @@ digraph rule_rat_cross_fourth_lhs_rhs {
     "?a_L" [label="?a", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-x4 ?k ?d ?m ?s)_L" [shape=octagon, label="rat-x4", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-x4 ?k ?d ?m ?s)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?a_L" [label="done", color="#e377c2", fontcolor="#e377c2"];
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?k_L" [label="1", color="#2ca02c"];
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?d_L" [label="2", color="#2ca02c"];
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?m_L" [label="3", color="#2ca02c"];
-    "(rat-x4 ?k ?d ?m ?s)_L" -> "?s_L" [label="4", color="#2ca02c"];
+    "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "h1_done_L" -> "(rat-x4 ?k ?d ?m ?s)_L" [xlabel="2", color="#e377c2"];
+    "h1_done_L" -> "?a_L" [xlabel="3", color="#e377c2"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "rat-x4_L" [xlabel="1", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?d_L" [xlabel="3", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?m_L" [xlabel="4", color="#2ca02c"];
+    "(rat-x4 ?k ?d ?m ?s)_L" -> "?s_L" [xlabel="5", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
+    "mul-call_R" [label="mul-call", shape=box];
+    "rat-x5_R" [label="rat-x5", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
@@ -25,14 +33,16 @@ digraph rule_rat_cross_fourth_lhs_rhs {
     "?d_R" [label="?d", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="mul-call ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-x5 ?k ?s ?a)_R" [shape=octagon, label="rat-x5", color="#2ca02c", fontcolor="#2ca02c"];
+      "(rat-x5 ?k ?s ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h1_mul-call_R" [shape=octagon, label="mul-call", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_mul-call_R" -> "(rat-x5 ?k ?s ?a)_R" [label="1", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?m_R" [label="2", color="#2ca02c", style=dashed];
-    "h1_mul-call_R" -> "?d_R" [label="3", color="#2ca02c", style=dashed];
-    "(rat-x5 ?k ?s ?a)_R" -> "?k_R" [label="1", color="#2ca02c", style=dashed];
-    "(rat-x5 ?k ?s ?a)_R" -> "?s_R" [label="2", color="#2ca02c", style=dashed];
-    "(rat-x5 ?k ?s ?a)_R" -> "?a_R" [label="3", color="#2ca02c", style=dashed];
+    "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_mul-call_R" -> "mul-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_mul-call_R" -> "(rat-x5 ?k ?s ?a)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_mul-call_R" -> "?m_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_mul-call_R" -> "?d_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "rat-x5_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?k_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?s_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(rat-x5 ?k ?s ?a)_R" -> "?a_R" [xlabel="4", color="#2ca02c", style=dashed];
   }
 }

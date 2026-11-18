@@ -2,29 +2,39 @@ digraph rule_rat_div_zero_lhs_rhs {
   rankdir=TB;
   label="rat-div-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "int-done_L" [label="int-done", shape=box];
+    "rat-div-by_L" [label="rat-div-by", shape=box];
     "?request_L" [label="?request", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
     "?e_L" [label="?e", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
+    "int_L" [label="int", shape=box];
+    "z_L" [label="z", shape=box];
     subgraph cluster_ctx_L_0 {
       label="int-done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(rat-div-by ?request ?p ?n ?d ?e)_L" [shape=octagon, label="rat-div-by", color="#9467bd", fontcolor="#9467bd"];
-      "(int z z)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(rat-div-by ?request ?p ?n ?d ?e)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+      "(int z z)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "(int z z)_L" [label="int-done", color="#1f77b4", fontcolor="#1f77b4"];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?request_L" [label="1", color="#9467bd"];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?p_L" [label="2", color="#9467bd"];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?n_L" [label="3", color="#9467bd"];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?d_L" [label="4", color="#9467bd"];
-    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?e_L" [label="5", color="#9467bd"];
-    "(int z z)_L" -> "z_L" [label="1", color="#17becf"];
-    "(int z z)_L" -> "z_L" [label="2", color="#17becf"];
+    "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "h1_int-done_L" -> "(rat-div-by ?request ?p ?n ?d ?e)_L" [xlabel="2", color="#1f77b4"];
+    "h1_int-done_L" -> "(int z z)_L" [xlabel="3", color="#1f77b4"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "rat-div-by_L" [xlabel="1", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?request_L" [xlabel="2", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?p_L" [xlabel="3", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?n_L" [xlabel="4", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?d_L" [xlabel="5", color="#9467bd"];
+    "(rat-div-by ?request ?p ?n ?d ?e)_L" -> "?e_L" [xlabel="6", color="#9467bd"];
+    "(int z z)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int z z)_L" -> "z_L" [xlabel="2", color="#17becf"];
+    "(int z z)_L" -> "z_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "division-by-zero_R" [label="division-by-zero", shape=box];
     "?request_R" [label="?request", shape=diamond];
-    "h1_division-by-zero_R" [shape=octagon, label="division-by-zero", color="#e377c2", fontcolor="#e377c2"];
-    "h1_division-by-zero_R" -> "?request_R" [label="1", color="#e377c2", style=dashed];
+    "h2_division-by-zero_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2_division-by-zero_R" -> "division-by-zero_R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2_division-by-zero_R" -> "?request_R" [xlabel="2", color="#e377c2", style=dashed];
   }
 }

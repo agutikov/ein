@@ -70,28 +70,47 @@ const TRACE_CHAIN: &str = "\
 ///
 /// This is what makes view (c) an explanation graph rather than a redrawn
 /// step list: the reader follows facts, and a step id is an internal label
-/// that should never become a node. The failure it guards is not a crash but
-/// a plausible-looking graph — `s1` as a fresh rectangle pointing at `s2`'s
-/// conclusion, which reads as "step s1 justifies this" instead of "the
-/// Norwegian being in House-1 justifies this".
+/// that should never become a premise. The failure it guards is not a crash
+/// but a plausible-looking graph — `s1` as a fresh box pointing at `s2`,
+/// which reads as "step s1 justifies this" instead of "the Norwegian being
+/// in House-1 justifies this". Each step is a node of its own, and each fact
+/// derived is its node in the canonical form, never a node labelled with its
+/// text (Q-M1f.419).
 #[test]
 fn the_dag_trace_view_chains_through_derived_facts() {
     let (ast, forms) = parsed(TRACE_CHAIN);
     let dag = render_trace(&ast, forms[0], TraceView::Dag);
+    let lives_in = ein_render::fact_graph::fact_id(
+        "lives-in",
+        &["Norwegian".to_string(), "House-1".to_string()],
+    );
     assert!(
-        dag.contains(
-            "\"(lives-in Norwegian House-1)\" -> \"(not (lives-in Norwegian House-2))\" \
-             [label=\"exclusivity\"];"
-        ),
-        "s2 does not hang off s1's derived fact, labelled by its rule:\n{dag}"
+        dag.contains(&format!("  {lives_in} -> \"step s2\";")),
+        "s2 does not hang off s1's derived fact:\n{dag}"
+    );
+    assert!(
+        dag.contains(&format!("  \"step s1\" -> {lives_in} [style=bold];")),
+        "{dag}"
+    );
+    assert!(
+        dag.contains("\"step s2\" [shape=box, style=rounded, label=\"s2\\nexclusivity\"];"),
+        "{dag}"
+    );
+    assert!(
+        dag.contains(&format!("  {lives_in} -> \"lives-in\" [xlabel=\"1\"")),
+        "the derived fact is its node, its first arrow at its relation:\n{dag}"
     );
     assert!(
         !dag.contains("\"s1\""),
-        "the step id leaked into the graph as a node:\n{dag}"
+        "the step id leaked into the graph as a premise:\n{dag}"
     );
-    // The premise that is *not* a prior step keeps its rectangle: `c10` is an
-    // input, and the dag has nowhere else to root the chain.
-    assert!(dag.contains("\"c10\" [shape=rectangle];"), "{dag}");
+    assert!(
+        !dag.contains("label=\"("),
+        "a node labelled with a fact's text:\n{dag}"
+    );
+    // The premise that is *not* a prior step is a name: `c10` is an input,
+    // and the dag has nowhere else to root the chain.
+    assert!(dag.contains("  \"c10\" -> \"step s1\";"), "{dag}");
     // The per-step view is the other picture, and the contrast is total: its
     // spine is the step ids and it never names a fact at all. `s2` is the step
     // box; `s1` is drawn where it is *referenced*, as `s2`'s premise rectangle,
@@ -158,34 +177,35 @@ fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
 
 // ── the per-form IR dispatch ───────────────────────────────────────
 
-/// **equality-fact-renders-as-an-equality-class.** `(= a b)` draws a class,
-/// not an arrow.
-///
-/// Every other binary fact collapses to `a -> b` labelled by its relation, and
-/// `=` deliberately does not: equality is symmetric and transitive, so an
-/// arrow would assert a direction the fact does not have. The double-circle
-/// node with an edge to each side is the class, and it is the one node shape
-/// no corpus file produces — which is exactly why the byte goldens do not
-/// cover it and this does.
+/// **An equality fact is a fact like any other.** `(= a b)` is a fact of an
+/// ordinary relation named `=` (no equality is a fact, so `=` is no
+/// predicate), and no relation is drawn otherwise than another
+/// (Q-M1f.421): its octagon's first arrow is at the atom `=`, and folded it
+/// is the arrow `a -> b` labelled `=`, as `(r a b)` is.
 #[test]
-fn an_equality_fact_draws_a_class_node_rather_than_an_arrow() {
+fn an_equality_fact_is_drawn_as_any_fact() {
     let (ast, forms) = parsed("(= a b :source \"(1)\")");
     let dot = to_dot(&ast, &forms, DotOpts::default());
-    assert!(
-        dot.contains("\"eq_a_b\" [shape=doublecircle, label=\"=\"];"),
-        "{dot}"
+    let id = ein_render::fact_graph::fact_id("=", &["a".to_string(), "b".to_string()]);
+    for (i, to) in ["=", "a", "b"].iter().enumerate() {
+        assert!(
+            dot.contains(&format!("  {id} -> \"{to}\" [xlabel=\"{}\"", i + 1)),
+            "{dot}"
+        );
+    }
+    assert!(!dot.contains("doublecircle"), "{dot}");
+    let folded = to_dot(
+        &ast,
+        &forms,
+        DotOpts {
+            fold: true,
+            ..DotOpts::default()
+        },
     );
-    assert!(dot.contains("\"eq_a_b\" -> \"a\";"), "{dot}");
-    assert!(dot.contains("\"eq_a_b\" -> \"b\";"), "{dot}");
     assert!(
-        !dot.contains("\"a\" -> \"b\""),
-        "equality drew a directed edge between the sides:\n{dot}"
+        folded.contains("  \"a\" -> \"b\" [xlabel=\"= (1)\""),
+        "{folded}"
     );
-    // The contrast: an ordinary binary fact *is* the collapsed arrow.
-    let (ast, forms) = parsed("(r a b :source \"(1)\")");
-    let plain = to_dot(&ast, &forms, DotOpts::default());
-    assert!(plain.contains("\"a\" -> \"b\""), "{plain}");
-    assert!(!plain.contains("doublecircle"), "{plain}");
 }
 
 /// **wildcard-and-var-heads-render-as-their-labels.** A pattern head that is
@@ -209,7 +229,19 @@ fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
     .expect_err("a bare `_` and a variable conclusion are refused");
     assert_eq!(refused.position(), (1, 20), "{refused}");
     let (ast, forms) = parsed("(rule v (?r) :match (?r ?a ?b) :assert (q ?a) :why \"v\")");
-    let var = render_rule_form(&ast, forms[0], RuleMode::Overlay);
+    // In the canonical form the relation is the variable's node, under the
+    // pattern's first arrow.
+    let var = render_rule_form(&ast, forms[0], RuleMode::Overlay, false);
+    assert!(
+        var.contains("\"h1_r\" -> \"?r\" [xlabel=\"1\""),
+        "the rule parameter is not the node under the first arrow:\n{var}"
+    );
+    assert!(
+        var.contains("\"?r\" [label=\"?r\", shape=diamond];"),
+        "{var}"
+    );
+    // Folded, it labels the arrow.
+    let var = render_rule_form(&ast, forms[0], RuleMode::Overlay, true);
     assert!(
         var.contains("\"?a\" -> \"?b\" [label=\"?r\""),
         "the rule parameter did not become the edge label:\n{var}"
@@ -244,6 +276,7 @@ fn mode_and_view_names_alias_and_an_unknown_one_is_refused() {
             &ast,
             rule,
             RuleMode::parse(name).unwrap_or_else(|| panic!("{name} is a rule mode")),
+            false,
         )
     };
     assert_eq!(render("sidebyside"), render("a"));
@@ -304,7 +337,7 @@ fn render_rules_is_a_static_view_of_the_forms_the_file_itself_holds() {
     let (ast, forms) = parsed(&text);
     let rules = rule_forms(&ast, &forms);
     assert!(rules.len() > 5, "zebra2 has a rule library to draw");
-    let dot = render_rules_forms(&ast, &rules, RuleMode::SideBySide);
+    let dot = render_rules_forms(&ast, &rules, RuleMode::SideBySide, false);
     assert_eq!(
         dot.matches("digraph ").count(),
         rules.len(),
@@ -332,7 +365,7 @@ fn render_rules_is_a_static_view_of_the_forms_the_file_itself_holds() {
         );
     }
 
-    let constraints = render_constraints(&ast, &forms, "constraints");
+    let constraints = render_constraints(&ast, &forms, "constraints", false);
     assert!(constraints.starts_with("digraph constraints {"));
 
     // The guard's condition: no rule forms → nothing to draw at all.
@@ -340,7 +373,7 @@ fn render_rules_is_a_static_view_of_the_forms_the_file_itself_holds() {
     let none = rule_forms(&empty_ast, &empty_forms);
     assert!(none.is_empty());
     assert_eq!(
-        render_rules_forms(&empty_ast, &none, RuleMode::SideBySide),
+        render_rules_forms(&empty_ast, &none, RuleMode::SideBySide, false),
         ""
     );
 }
@@ -361,7 +394,7 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
     let (ast, forms) = parsed(&text);
     let rule = rule_named(&ast, &forms, "co-located").expect("zebra2 defines co-located inline");
 
-    let side = render_rule_form(&ast, rule, RuleMode::SideBySide);
+    let side = render_rule_form(&ast, rule, RuleMode::SideBySide, false);
     assert!(
         side.starts_with("digraph rule_co_located_lhs_rhs {"),
         "{side}"
@@ -374,7 +407,7 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
     assert!(side.contains("subgraph cluster_lhs"), "{side}");
     assert!(side.contains("subgraph cluster_rhs"), "{side}");
 
-    let overlay = render_rule_form(&ast, rule, RuleMode::Overlay);
+    let overlay = render_rule_form(&ast, rule, RuleMode::Overlay, false);
     assert!(
         overlay.starts_with("digraph rule_co_located_overlay {"),
         "{overlay}"
@@ -429,43 +462,38 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
     .map(|(c, h)| fact(c, h))
     .collect();
 
-    let dot = render_slice(&terms, &[], &[], None, "reductio", Some((&core, &[])), None);
+    let dot = render_slice(
+        &terms,
+        &[],
+        &[],
+        None,
+        "reductio",
+        Some((&core, &[])),
+        None,
+        false,
+    );
 
-    // Read the order back off the graph: the node ids are content hashes, so
-    // the labels are what a reader sees.
-    let mut label_of: Vec<(String, String)> = Vec::new();
-    for line in dot.lines() {
-        let line = line.trim();
-        if let Some((id, rest)) = line.split_once(" [label=\"")
-            && let Some((label, _)) = rest.split_once('"')
-        {
-            label_of.push((id.to_string(), label.to_string()));
-        }
-    }
-    let got: Vec<&str> = dot
+    // Read the order back off the graph: the node ids are content hashes of
+    // the facts, which no label carries (Q-M1f.419).
+    let id_of =
+        |c: &str, h: &str| ein_render::hashed_id("f_", &format!("co-located|{c},{h}"), true);
+    let got: Vec<String> = dot
         .lines()
         .filter_map(|l| l.trim().strip_suffix("-> \"⊥\" [color=\"#d62728\"];"))
-        .map(|src| {
-            let src = src.trim();
-            label_of
-                .iter()
-                .find(|(id, _)| id == src)
-                .map(|(_, label)| label.as_str())
-                .expect("every edge source is a declared node")
-        })
+        .map(|src| src.trim().to_string())
         .collect();
-    assert_eq!(
-        got,
-        [
-            "co-located(Amber, H6)",
-            "co-located(Blue, H3)",
-            "co-located(Green, H2)",
-            "co-located(Ivory, H4)",
-            "co-located(Red, H1)",
-            "co-located(Yellow, H5)",
-        ],
-        "the ⊥ edges are not in repr order:\n{dot}"
-    );
+    let want: Vec<String> = [
+        ("Amber", "H6"),
+        ("Blue", "H3"),
+        ("Green", "H2"),
+        ("Ivory", "H4"),
+        ("Red", "H1"),
+        ("Yellow", "H5"),
+    ]
+    .iter()
+    .map(|(c, h)| id_of(c, h))
+    .collect();
+    assert_eq!(got, want, "the ⊥ edges are not in repr order:\n{dot}");
 }
 
 // ── the read-out's dead hole ───────────────────────────────────────

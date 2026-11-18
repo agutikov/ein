@@ -2,33 +2,47 @@ digraph rule_int_operand_second_lhs_rhs {
   rankdir=TB;
   label="int-operand-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "operand-is_L" [label="operand-is", shape=box];
+    "int-first_L" [label="int-first", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
+    "int_L" [label="int", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="operand-is ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-first ?k ?y)_L" [shape=octagon, label="int-first", color="#ff7f0e", fontcolor="#ff7f0e"];
-      "(int ?p ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int-first ?k ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+      "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(int-first ?k ?y)_L" -> "(int ?p ?n)_L" [label="operand-is", color="#17becf", fontcolor="#17becf"];
-    "(int-first ?k ?y)_L" -> "?k_L" [label="1", color="#ff7f0e"];
-    "(int-first ?k ?y)_L" -> "?y_L" [label="2", color="#ff7f0e"];
-    "(int ?p ?n)_L" -> "?p_L" [label="1", color="#17becf"];
-    "(int ?p ?n)_L" -> "?n_L" [label="2", color="#17becf"];
+    "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "h1_operand-is_L" -> "(int-first ?k ?y)_L" [xlabel="2", color="#17becf"];
+    "h1_operand-is_L" -> "(int ?p ?n)_L" [xlabel="3", color="#17becf"];
+    "(int-first ?k ?y)_L" -> "int-first_L" [xlabel="1", color="#ff7f0e"];
+    "(int-first ?k ?y)_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
+    "(int-first ?k ?y)_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
+    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
+    "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "operand_R" [label="operand", shape=box];
+    "int-second_R" [label="int-second", shape=box];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "?n_R" [label="?n", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-second ?k ?p ?n)_R" [shape=octagon, label="int-second", color="#bcbd22", fontcolor="#bcbd22"];
+      "(int-second ?k ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "(int-second ?k ?p ?n)_R" -> "?y_R" [label="operand", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(int-second ?k ?p ?n)_R" -> "?k_R" [label="1", color="#bcbd22", style=dashed];
-    "(int-second ?k ?p ?n)_R" -> "?p_R" [label="2", color="#bcbd22", style=dashed];
-    "(int-second ?k ?p ?n)_R" -> "?n_R" [label="3", color="#bcbd22", style=dashed];
+    "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "(int-second ?k ?p ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_operand_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(int-second ?k ?p ?n)_R" -> "int-second_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(int-second ?k ?p ?n)_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(int-second ?k ?p ?n)_R" -> "?p_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "(int-second ?k ?p ?n)_R" -> "?n_R" [xlabel="4", color="#bcbd22", style=dashed];
   }
 }

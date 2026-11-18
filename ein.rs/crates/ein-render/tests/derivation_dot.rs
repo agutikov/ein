@@ -100,11 +100,17 @@ fn an_or_graph_draws_a_diamond_per_justification() {
     assert!(dag.is_or_graph());
     let dot = derivation_dag_to_dot(&dag, &kb, &terms);
     assert_eq!(dot.matches("shape=diamond").count(), 2, "{dot}");
-    assert!(dot.contains(" -> j0;"), "{dot}");
+    assert!(dot.contains(" -> j0 [style=bold];"), "{dot}");
     assert!(dot.contains("j1 -> "), "{dot}");
 
-    // The primary-only view is unchanged by the alternative existing.
+    // The primary-only view is unchanged by the alternative existing: one
+    // derivation, one node of its own.
     let primary = build_derivation_dag(&kb, &terms, derived, Justifications::Primary);
     assert!(!primary.is_or_graph());
-    assert!(!derivation_dag_to_dot(&primary, &kb, &terms).contains("diamond"));
+    assert_eq!(
+        derivation_dag_to_dot(&primary, &kb, &terms)
+            .matches("shape=diamond")
+            .count(),
+        1
+    );
 }

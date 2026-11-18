@@ -2,73 +2,109 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_derive_reflexive_lhs_rhs Pages: 1 -->
-<svg width="534pt" height="216pt"
- viewBox="0.00 0.00 534.00 216.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 211.75)">
+<svg width="549pt" height="184pt"
+ viewBox="0.00 0.00 549.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 180.1)">
 <title>rule_derive_reflexive_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-211.75 530,-211.75 530,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="263" y="-190.45" font-family="Times,serif" font-size="14.00">derive&#45;reflexive</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-180.1 545,-180.1 545,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-158.8" font-family="Times,serif" font-size="14.00">derive&#45;reflexive</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
-<polygon fill="none" stroke="black" points="8,-8 8,-174.5 142,-174.5 142,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="75" y="-157.2" font-family="Times,serif" font-size="14.00">match</text>
+<polygon fill="none" stroke="black" points="8,-8 8,-142.85 187,-142.85 187,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="97.5" y="-125.55" font-family="Times,serif" font-size="14.00">match</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="150,-8 150,-174.5 518,-174.5 518,-8 150,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="334" y="-157.2" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="195,-8 195,-142.85 533,-142.85 533,-8 195,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="364" y="-125.55" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- reflexive_L -->
+<g id="node1" class="node">
+<title>reflexive_L</title>
+<polygon fill="none" stroke="black" points="93.75,-52 16.25,-52 16.25,-16 93.75,-16 93.75,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="55" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive</text>
 </g>
 <!-- ?R_L -->
-<g id="node1" class="node">
+<g id="node2" class="node">
 <title>?R_L</title>
-<polygon fill="none" stroke="black" points="75,-52 41.27,-34 75,-16 108.73,-34 75,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="75" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+<polygon fill="none" stroke="black" points="145,-52 111.27,-34 145,-16 178.73,-34 145,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="145" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
 </g>
 <!-- h1_reflexive_L -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>h1_reflexive_L</title>
-<polygon fill="none" stroke="#2ca02c" points="133.84,-115.79 133.84,-130.71 99.37,-141.25 50.63,-141.25 16.16,-130.71 16.16,-115.79 50.63,-105.25 99.37,-105.25 133.84,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="75" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">reflexive</text>
+<polygon fill="none" stroke="#2ca02c" points="110.8,-94.33 110.8,-103.27 104.47,-109.6 95.53,-109.6 89.2,-103.27 89.2,-94.33 95.53,-88 104.47,-88 110.8,-94.33"/>
+</g>
+<!-- h1_reflexive_L&#45;&gt;reflexive_L -->
+<g id="edge1" class="edge">
+<title>h1_reflexive_L&#45;&gt;reflexive_L</title>
+<path fill="none" stroke="#2ca02c" d="M93.93,-89.33C88.8,-82.18 81.17,-71.53 74.03,-61.55"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="76.97,-59.65 68.3,-53.56 71.28,-63.72 76.97,-59.65"/>
+<text xml:space="preserve" text-anchor="middle" x="75.94" y="-74.46" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- h1_reflexive_L&#45;&gt;?R_L -->
-<g id="edge1" class="edge">
+<g id="edge2" class="edge">
 <title>h1_reflexive_L&#45;&gt;?R_L</title>
-<path fill="none" stroke="#2ca02c" d="M75,-105.01C75,-93.26 75,-77.41 75,-63.77"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="78.5,-64.01 75,-54.01 71.5,-64.01 78.5,-64.01"/>
-<text xml:space="preserve" text-anchor="middle" x="79.5" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#2ca02c" d="M106.07,-89.33C112.01,-81.04 121.3,-68.07 129.32,-56.88"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="132.06,-59.07 135.04,-48.9 126.37,-54.99 132.06,-59.07"/>
+<text xml:space="preserve" text-anchor="middle" x="116.68" y="-72.2" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- reflexive&#45;dom_R -->
+<g id="node4" class="node">
+<title>reflexive&#45;dom_R</title>
+<polygon fill="none" stroke="black" points="315.38,-52 202.62,-52 202.62,-16 315.38,-16 315.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="259" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive&#45;dom</text>
 </g>
 <!-- ?R_R -->
-<g id="node3" class="node">
+<g id="node5" class="node">
 <title>?R_R</title>
-<polygon fill="none" stroke="black" points="298,-52 264.27,-34 298,-16 331.73,-34 298,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="298" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+<polygon fill="none" stroke="black" points="367,-52 333.27,-34 367,-16 400.73,-34 367,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="367" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- reflexive&#45;cod_R -->
+<g id="node6" class="node">
+<title>reflexive&#45;cod_R</title>
+<polygon fill="none" stroke="black" points="525.38,-52 418.62,-52 418.62,-16 525.38,-16 525.38,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="472" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive&#45;cod</text>
 </g>
 <!-- h2_reflexive&#45;dom_R -->
-<g id="node4" class="node">
+<g id="node7" class="node">
 <title>h2_reflexive&#45;dom_R</title>
-<polygon fill="none" stroke="#9467bd" points="329.61,-115.79 329.61,-130.71 279.46,-141.25 208.54,-141.25 158.39,-130.71 158.39,-115.79 208.54,-105.25 279.46,-105.25 329.61,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="244" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#9467bd">reflexive&#45;dom</text>
+<polygon fill="none" stroke="#9467bd" stroke-dasharray="5,2" points="323.8,-94.33 323.8,-103.27 317.47,-109.6 308.53,-109.6 302.2,-103.27 302.2,-94.33 308.53,-88 317.47,-88 323.8,-94.33"/>
+</g>
+<!-- h2_reflexive&#45;dom_R&#45;&gt;reflexive&#45;dom_R -->
+<g id="edge3" class="edge">
+<title>h2_reflexive&#45;dom_R&#45;&gt;reflexive&#45;dom_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M306.16,-89.85C299.86,-82.52 290.17,-71.25 281.2,-60.82"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="284.09,-58.81 274.92,-53.51 278.79,-63.38 284.09,-58.81"/>
+<text xml:space="preserve" text-anchor="middle" x="285.62" y="-75.14" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- h2_reflexive&#45;dom_R&#45;&gt;?R_R -->
-<g id="edge2" class="edge">
+<g id="edge4" class="edge">
 <title>h2_reflexive&#45;dom_R&#45;&gt;?R_R</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M254.67,-105.01C263.11,-91.37 274.96,-72.22 284.14,-57.4"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="286.9,-59.58 289.19,-49.23 280.95,-55.89 286.9,-59.58"/>
-<text xml:space="preserve" text-anchor="middle" x="280.34" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M319.84,-89.85C327.26,-81.22 339.39,-67.11 349.49,-55.36"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="351.86,-57.98 355.73,-48.11 346.55,-53.41 351.86,-57.98"/>
+<text xml:space="preserve" text-anchor="middle" x="333.63" y="-72.53" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- h3_reflexive&#45;cod_R -->
-<g id="node5" class="node">
+<g id="node8" class="node">
 <title>h3_reflexive&#45;cod_R</title>
-<polygon fill="none" stroke="#1f77b4" points="510.05,-115.79 510.05,-130.71 462.57,-141.25 395.43,-141.25 347.95,-130.71 347.95,-115.79 395.43,-105.25 462.57,-105.25 510.05,-115.79"/>
-<text xml:space="preserve" text-anchor="middle" x="429" y="-118.58" font-family="Times,serif" font-size="14.00" fill="#1f77b4">reflexive&#45;cod</text>
+<polygon fill="none" stroke="#1f77b4" stroke-dasharray="5,2" points="429.8,-94.33 429.8,-103.27 423.47,-109.6 414.53,-109.6 408.2,-103.27 408.2,-94.33 414.53,-88 423.47,-88 429.8,-94.33"/>
 </g>
 <!-- h3_reflexive&#45;cod_R&#45;&gt;?R_R -->
-<g id="edge3" class="edge">
+<g id="edge6" class="edge">
 <title>h3_reflexive&#45;cod_R&#45;&gt;?R_R</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M402.81,-104.8C379.13,-89.04 344.58,-66.03 321.71,-50.79"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="323.92,-48.06 313.66,-45.43 320.04,-53.88 323.92,-48.06"/>
-<text xml:space="preserve" text-anchor="middle" x="379.73" y="-73.95" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M412.41,-89.85C405.34,-81.3 393.81,-67.38 384.14,-55.7"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="386.95,-53.6 377.87,-48.13 381.55,-58.06 386.95,-53.6"/>
+<text xml:space="preserve" text-anchor="middle" x="390.26" y="-72.47" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h3_reflexive&#45;cod_R&#45;&gt;reflexive&#45;cod_R -->
+<g id="edge5" class="edge">
+<title>h3_reflexive&#45;cod_R&#45;&gt;reflexive&#45;cod_R</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M425.71,-89.85C431.83,-82.6 441.22,-71.47 449.95,-61.13"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="452.59,-63.42 456.37,-53.52 447.24,-58.91 452.59,-63.42"/>
+<text xml:space="preserve" text-anchor="middle" x="436.78" y="-75.35" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: a0da66be890a7f0b31541886408e340e8f6a422e25e3e879c85cd8b6988abd90 -->
+<!-- source sha256: b1016151506d13c508068fc96af8663a0a6e6f58288e184b6f35afdbec1e860d -->

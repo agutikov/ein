@@ -2,14 +2,26 @@ digraph rule_identity_lhs_rhs {
   rankdir=TB;
   label="identity"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "right-identity-of_L" [label="right-identity-of", shape=box];
     "?f_L" [label="?f", shape=diamond];
     "?e_L" [label="?e", shape=diamond];
-    "?f_L" -> "?e_L" [label="right-identity-of", color="#bcbd22", fontcolor="#bcbd22"];
-    "?f_L" -> "?e_L" [label="left-identity-of", color="#17becf", fontcolor="#17becf"];
+    "left-identity-of_L" [label="left-identity-of", shape=box];
+    "h1_right-identity-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_right-identity-of_L" -> "right-identity-of_L" [xlabel="1", color="#bcbd22"];
+    "h1_right-identity-of_L" -> "?f_L" [xlabel="2", color="#bcbd22"];
+    "h1_right-identity-of_L" -> "?e_L" [xlabel="3", color="#bcbd22"];
+    "h2_left-identity-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h2_left-identity-of_L" -> "left-identity-of_L" [xlabel="1", color="#17becf"];
+    "h2_left-identity-of_L" -> "?f_L" [xlabel="2", color="#17becf"];
+    "h2_left-identity-of_L" -> "?e_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
+    "identity-of_R" [label="identity-of", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "?e_R" [label="?e", shape=diamond];
-    "?f_R" -> "?e_R" [label="identity-of", color="#d62728", fontcolor="#d62728", style=dashed];
+    "h3_identity-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h3_identity-of_R" -> "identity-of_R" [xlabel="1", color="#d62728", style=dashed];
+    "h3_identity-of_R" -> "?f_R" [xlabel="2", color="#d62728", style=dashed];
+    "h3_identity-of_R" -> "?e_R" [xlabel="3", color="#d62728", style=dashed];
   }
 }

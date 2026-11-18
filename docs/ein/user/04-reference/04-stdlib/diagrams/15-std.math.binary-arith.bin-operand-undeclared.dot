@@ -2,31 +2,45 @@ digraph rule_bin_operand_undeclared_lhs_rhs {
   rankdir=TB;
   label="bin-operand-undeclared"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bin-operand_L" [label="bin-operand", shape=box];
     "?k_L" [label="?k", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
-    "z_L" [label="z", shape=rectangle];
-    "0_L" [label="0", shape=rectangle];
-    "1_L" [label="1", shape=rectangle];
-    "?k_L" -> "?x_L" [label="bin-operand", color="#e377c2", fontcolor="#e377c2"];
+    "z_L" [label="z", shape=box];
+    "0_L" [label="0", shape=box];
+    "1_L" [label="1", shape=box];
+    "h1_bin-operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_bin-operand_L" -> "bin-operand_L" [xlabel="1", color="#e377c2"];
+    "h1_bin-operand_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "h1_bin-operand_L" -> "?x_L" [xlabel="3", color="#e377c2"];
     "?v_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?v_L" -> "?x_L" [label="=", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?x_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?x_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "bin-let_L" [label="bin-let", shape=box];
       "?w_L" [label="?w", shape=diamond];
-      "?x_L" -> "?w_L" [label="bin-let", color="#8c564b", fontcolor="#8c564b"];
+      "h2_bin-let_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+      "h2_bin-let_L" -> "bin-let_L" [xlabel="1", color="#8c564b"];
+      "h2_bin-let_L" -> "?x_L" [xlabel="2", color="#8c564b"];
+      "h2_bin-let_L" -> "?w_L" [xlabel="3", color="#8c564b"];
     }
   }
   subgraph cluster_rhs { label="assert";
+    "bin-bad-operand_R" [label="bin-bad-operand", shape=box];
     "?k_R" [label="?k", shape=diamond];
+    "bin-no-let_R" [label="bin-no-let", shape=box];
     "?x_R" [label="?x", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="bin-bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(bin-no-let ?x)_R" [shape=octagon, label="bin-no-let", color="#ff7f0e", fontcolor="#ff7f0e"];
+      "(bin-no-let ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
-    "?k_R" -> "(bin-no-let ?x)_R" [label="bin-bad-operand", color="#9467bd", fontcolor="#9467bd", style=dashed];
-    "(bin-no-let ?x)_R" -> "?x_R" [label="1", color="#ff7f0e", style=dashed];
+    "h3_bin-bad-operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h3_bin-bad-operand_R" -> "bin-bad-operand_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h3_bin-bad-operand_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h3_bin-bad-operand_R" -> "(bin-no-let ?x)_R" [xlabel="3", color="#9467bd", style=dashed];
+    "(bin-no-let ?x)_R" -> "bin-no-let_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "(bin-no-let ?x)_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
   }
 }

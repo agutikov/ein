@@ -170,6 +170,7 @@ fn rules_in_trace(rel: &str) -> BTreeSet<String> {
             relevant: false,
             reorder: false,
             full_kb: false,
+            fold: false,
         },
     )
     .expect("the trace renders");

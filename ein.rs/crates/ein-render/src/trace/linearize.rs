@@ -52,6 +52,14 @@ fn source_of<'a>(kb: &Kb, terms: &'a Terms, f: FactId) -> Option<&'a str> {
     prov.source.map(|s| terms.sym(s)).filter(|s| !s.is_empty())
 }
 
+/// Whether a step carries its drawing, and in which form: the canonical, or
+/// folded (`--fold`, Q-M1f.419).
+#[derive(Clone, Copy, Debug)]
+pub struct Diagrams {
+    pub drawn: bool,
+    pub fold: bool,
+}
+
 #[allow(clippy::too_many_arguments)]
 fn step_from_firing(
     terms: &Terms,
@@ -59,7 +67,7 @@ fn step_from_firing(
     firing: &Firing,
     kb: Option<&Kb>,
     prov_kb: &Kb,
-    diagrams: bool,
+    diagrams: Diagrams,
     conditional: bool,
 ) -> TraceStep {
     // `firing.derived` is a tuple: the step is headed by its first
@@ -98,7 +106,7 @@ fn step_from_firing(
         .collect();
     step.section = target_entity(&step.derived);
     step.conditional = conditional;
-    if diagrams {
+    if diagrams.drawn {
         step.diagram = Some(render_slice(
             terms,
             &[],
@@ -107,6 +115,7 @@ fn step_from_firing(
             &format!("step{n}"),
             None,
             None,
+            diagrams.fold,
         ));
     }
     step
@@ -122,6 +131,10 @@ pub fn steps_of(
     diagrams: bool,
     commitment: &[FactId],
 ) -> Vec<TraceStep> {
+    let diagrams = Diagrams {
+        drawn: diagrams,
+        fold: false,
+    };
     steps_of_with(ast, terms, firings, kb, diagrams, commitment, false)
 }
 
@@ -132,7 +145,7 @@ pub fn steps_of_with(
     terms: &Terms,
     firings: &[Firing],
     kb: &Kb,
-    diagrams: bool,
+    diagrams: Diagrams,
     commitment: &[FactId],
     relevant: bool,
 ) -> Vec<TraceStep> {
@@ -155,7 +168,7 @@ fn build_steps(
     firings: &[Firing],
     kb: Option<&Kb>,
     prov_kb: &Kb,
-    diagrams: bool,
+    diagrams: Diagrams,
     relevant: bool,
     commitment: &[FactId],
 ) -> Vec<TraceStep> {

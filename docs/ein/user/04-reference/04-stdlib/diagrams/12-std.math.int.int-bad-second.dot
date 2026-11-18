@@ -2,22 +2,32 @@ digraph rule_int_bad_second_lhs_rhs {
   rankdir=TB;
   label="int-bad-second"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "bad-operand_L" [label="bad-operand", shape=box];
+    "int-second_L" [label="int-second", shape=box];
     "?request_L" [label="?request", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?n_L" [label="?n", shape=diamond];
     "?f_L" [label="?f", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="bad-operand ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int-second ?request ?p ?n)_L" [shape=octagon, label="int-second", color="#bcbd22", fontcolor="#bcbd22"];
+      "(int-second ?request ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
-    "(int-second ?request ?p ?n)_L" -> "?f_L" [label="bad-operand", color="#1f77b4", fontcolor="#1f77b4"];
-    "(int-second ?request ?p ?n)_L" -> "?request_L" [label="1", color="#bcbd22"];
-    "(int-second ?request ?p ?n)_L" -> "?p_L" [label="2", color="#bcbd22"];
-    "(int-second ?request ?p ?n)_L" -> "?n_L" [label="3", color="#bcbd22"];
+    "h1_bad-operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h1_bad-operand_L" -> "bad-operand_L" [xlabel="1", color="#1f77b4"];
+    "h1_bad-operand_L" -> "(int-second ?request ?p ?n)_L" [xlabel="2", color="#1f77b4"];
+    "h1_bad-operand_L" -> "?f_L" [xlabel="3", color="#1f77b4"];
+    "(int-second ?request ?p ?n)_L" -> "int-second_L" [xlabel="1", color="#bcbd22"];
+    "(int-second ?request ?p ?n)_L" -> "?request_L" [xlabel="2", color="#bcbd22"];
+    "(int-second ?request ?p ?n)_L" -> "?p_L" [xlabel="3", color="#bcbd22"];
+    "(int-second ?request ?p ?n)_L" -> "?n_L" [xlabel="4", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "bad-request_R" [label="bad-request", shape=box];
     "?request_R" [label="?request", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
-    "?request_R" -> "?f_R" [label="bad-request", color="#e377c2", fontcolor="#e377c2", style=dashed];
+    "h2_bad-request_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2_bad-request_R" -> "bad-request_R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2_bad-request_R" -> "?request_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_bad-request_R" -> "?f_R" [xlabel="3", color="#e377c2", style=dashed];
   }
 }

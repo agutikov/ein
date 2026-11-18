@@ -2,35 +2,43 @@ digraph rule_top_first_step_lhs_rhs {
   rankdir=TB;
   label="top-first-step"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?TOP-FIRST_L" [label="?TOP-FIRST", shape=diamond];
     "?k_L" [label="?k", shape=diamond];
+    "?N_L" [label="?N", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "?acc_L" [label="?acc", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="?TOP-FIRST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?N ?p ?a)_L" [shape=octagon, label="?N", color="#7f7f7f", fontcolor="#7f7f7f"];
+      "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
-    "h1_TOP-FIRST_L" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?k_L" [label="1", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "(?N ?p ?a)_L" [label="2", color="#e377c2"];
-    "h1_TOP-FIRST_L" -> "?acc_L" [label="3", color="#e377c2"];
-    "(?N ?p ?a)_L" -> "?p_L" [label="1", color="#7f7f7f"];
-    "(?N ?p ?a)_L" -> "?a_L" [label="2", color="#7f7f7f"];
+    "h1_TOP-FIRST_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?TOP-FIRST_L" [xlabel="1", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?k_L" [xlabel="2", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#e377c2"];
+    "h1_TOP-FIRST_L" -> "?acc_L" [xlabel="4", color="#e377c2"];
+    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "?TOP-FIRST_R" [label="?TOP-FIRST", shape=diamond];
     "?k_R" [label="?k", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
+    "?B_R" [label="?B", shape=diamond];
     "?a_R" [label="?a", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="?TOP-FIRST ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?B ?a ?acc)_R" [shape=octagon, label="?B", color="#2ca02c", fontcolor="#2ca02c"];
+      "(?B ?a ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
-    "h2_TOP-FIRST_R" [shape=octagon, label="?TOP-FIRST", color="#e377c2", fontcolor="#e377c2"];
-    "h2_TOP-FIRST_R" -> "?k_R" [label="1", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "?p_R" [label="2", color="#e377c2", style=dashed];
-    "h2_TOP-FIRST_R" -> "(?B ?a ?acc)_R" [label="3", color="#e377c2", style=dashed];
-    "(?B ?a ?acc)_R" -> "?a_R" [label="1", color="#2ca02c", style=dashed];
-    "(?B ?a ?acc)_R" -> "?acc_R" [label="2", color="#2ca02c", style=dashed];
+    "h2_TOP-FIRST_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "?TOP-FIRST_R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "?k_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "?p_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_TOP-FIRST_R" -> "(?B ?a ?acc)_R" [xlabel="4", color="#e377c2", style=dashed];
+    "(?B ?a ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "(?B ?a ?acc)_R" -> "?a_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(?B ?a ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }
 }

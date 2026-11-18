@@ -89,8 +89,9 @@ enum Verdict {
 /// is where that shows. `stdlib/math/digits.ein` is the
 /// calculator's 1 664 table rows over eleven shared names, and every view of
 /// it has some 7 900 edges, which neither `dot` nor `fdp`, the layout a KB
-/// view suggests, lays out in minutes. Outside the tables and the wide rule
-/// libraries [`SKIPPING`] names, no corpus view is past the bound.
+/// view suggests, lays out in minutes. Outside the tables, the wide rule
+/// libraries and the saturated knowledge bases [`SKIPPING`] names, no corpus
+/// view is past the bound.
 ///
 /// **The bound is under the smallest table**: the KB view of a program that
 /// imports `std.math.decimal-arith` holds `fa`'s 200 rows, some 1 200 edges.
@@ -118,23 +119,31 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// tables; `tests/stdlib/math/convert/` and `tests/stdlib/math/binary-arith/`,
 /// whose conversions and program of both bases hold decimal's; and
 /// `tests/stdlib/math/gcd/`; and `tests/saved/`, whose standard library's
-/// twin holds them. `cargo test -p ein-render --test dot_wellformed
+/// twin holds them. Every fact drawn as its octagon with an arrow to its
+/// relation and to each argument (Q-M1f.419), a saturated knowledge base of a
+/// few hundred facts is past the bound too: the `kb-since` view of the Zebra
+/// programs (`examples/`, `examples/ein-bugs/`) and of the programs of
+/// `std.math.binary` (`tests/stdlib/math/binary/`).
+/// `cargo test -p ein-render --test dot_wellformed
 /// -- --nocapture` prints how many views are skipped, of how many files. A
 /// view skipped anywhere else fails the sweep until its directory is named
 /// here, which is where a bound that starts to skip a view it checked is
 /// noticed. A run without `EIN_CORPUS_SLOW` reads no program under `tests/`,
 /// and holds the directories it reads to the entries outside it; a run with
 /// it, to every entry.
-const SKIPPING: [&str; 18] = [
+const SKIPPING: [&str; 21] = [
+    "examples",
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
     "examples/binary_logic",
+    "examples/ein-bugs",
     "examples/word_problems",
     "stdlib/bool",
     "stdlib/math",
     "tests/saved",
     "tests/stdlib/bool/props",
+    "tests/stdlib/math/binary",
     "tests/stdlib/math/binary-arith",
     "tests/stdlib/math/convert",
     "tests/stdlib/math/decimal",

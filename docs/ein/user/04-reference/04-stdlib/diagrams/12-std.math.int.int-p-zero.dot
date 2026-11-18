@@ -2,26 +2,36 @@ digraph rule_int_p_zero_lhs_rhs {
   rankdir=TB;
   label="int-p-zero"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "0_L" [label="0", shape=rectangle];
+    "int-check_L" [label="int-check", shape=box];
+    "int_L" [label="int", shape=box];
+    "0_L" [label="0", shape=box];
     "?n_L" [label="?n", shape=diamond];
     subgraph cluster_ctx_L_0 {
       label="int-check ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int 0 ?n)_L" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int 0 ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "h1_int-check_L" [shape=octagon, label="int-check", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_int-check_L" -> "(int 0 ?n)_L" [label="1", color="#2ca02c"];
-    "(int 0 ?n)_L" -> "0_L" [label="1", color="#17becf"];
-    "(int 0 ?n)_L" -> "?n_L" [label="2", color="#17becf"];
+    "h1_int-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "h1_int-check_L" -> "int-check_L" [xlabel="1", color="#2ca02c"];
+    "h1_int-check_L" -> "(int 0 ?n)_L" [xlabel="2", color="#2ca02c"];
+    "(int 0 ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "(int 0 ?n)_L" -> "0_L" [xlabel="2", color="#17becf"];
+    "(int 0 ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "0_R" [label="0", shape=rectangle];
+    "not-integer_R" [label="not-integer", shape=box];
+    "int_R" [label="int", shape=box];
+    "0_R" [label="0", shape=box];
     "?n_R" [label="?n", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="not-integer ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(int 0 ?n)_R" [shape=octagon, label="int", color="#17becf", fontcolor="#17becf"];
+      "(int 0 ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
-    "(int 0 ?n)_R" -> "0_R" [label="not-integer", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-    "(int 0 ?n)_R" -> "0_R" [label="1", color="#17becf", style=dashed];
-    "(int 0 ?n)_R" -> "?n_R" [label="2", color="#17becf", style=dashed];
+    "h2_not-integer_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h2_not-integer_R" -> "not-integer_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h2_not-integer_R" -> "(int 0 ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_not-integer_R" -> "0_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(int 0 ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "(int 0 ?n)_R" -> "0_R" [xlabel="2", color="#17becf", style=dashed];
+    "(int 0 ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
   }
 }
