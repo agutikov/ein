@@ -1,0 +1,24 @@
+;; S1f.23.5, task 1, program 1: the user's own example, `(relation owns Person Pet)`,
+;; written for this page. Each relation's :why is today's, a fact's sentence: {?1} is
+;; the fact's first argument. `owner-kind` reads the declaration `(relation owns …)`
+;; as a premise, so the trace prints that fact too.
+
+(relation owns      Person Pet  :why "{?1} owns a {?2}")
+(relation wants     Person Pet  :why "{?1} wants a {?2}")
+(relation counts-as Thing  Kind :why "{?1} counts as a {?2}")
+
+(rule wanting-is-owning ()
+  :match  (wants ?p ?x)
+  :assert (owns ?p ?x)
+  :why    "{?p} wants a {?x}, so {?p} owns one")
+
+(rule owner-kind ()
+  :match  (and (relation owns ?A ?B) (owns ?p ?x))
+  :assert (counts-as ?p ?A)
+  :why    "owns is declared between {?A} and {?B}, and {?p} owns {?x}, so {?p} counts as a {?A}")
+
+(wants Ann Dog :source "Ann wants a dog")
+(owns Bob Cat)
+
+(query :goal (owns ?who Dog) :goal-text "{?who} owns the dog")
+(solve :no-search)
