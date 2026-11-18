@@ -1,0 +1,889 @@
+path	status	calc	V	Ua	Ub	Uc	Uc_deep	nested_only	held	agree	agree_written
+examples/beliefs/01_common_belief.ein	ok	False	4	7	7	7	7	0	21	False	True
+examples/beliefs/02_packing.ein	ok	False	5	10	10	10	10	0	18	False	True
+examples/beliefs/03_liar_denial.ein	ok	False	2	4	4	4	4	0	7	False	True
+examples/beliefs/04_liar_denial_contradicted.ein	ok	False	3	4	4	4	4	0	8	False	False
+examples/beliefs/05_liar_denial_beside_the_fact.ein	ok	False	3	4	4	4	4	0	8	False	False
+examples/beliefs/06_double_negation.ein	ok	False	7	8	8	8	8	0	13	False	False
+examples/beliefs/07_three_cases.ein	ok	False	4	4	4	4	4	0	10	False	False
+examples/beliefs/08_global_and_wrapped.ein	ok	False	2	2	2	2	2	0	6	False	False
+examples/beliefs/09_false_in_a_context.ein	ok	False	9	13	13	13	13	0	25	False	True
+examples/beliefs/10_everybody_contradicts.ein	ok	False	9	13	13	13	13	0	29	False	True
+examples/beliefs/11_nothing_acts_in_a_context.ein	ok	False	5	5	5	5	7	2	14	False	False
+examples/branching/01_saturate_only.ein	ok	False	6	8	8	8	8	0	24	False	True
+examples/branching/02_one_dead_one_alive.ein	ok	False	6	8	8	8	8	0	22	False	True
+examples/branching/03_five_hyps_one_alive.ein	ok	False	6	8	8	8	8	0	70	False	True
+examples/branching/04_two_levels.ein	ok	False	6	8	8	8	8	0	32	False	True
+examples/branching/05_mini_zebra.ein	ok	False	6	8	8	8	8	0	35	False	True
+examples/branching/06_lookahead_on.ein	ok	False	6	8	8	8	8	0	70	False	True
+examples/branching/07_lookahead_off.ein	ok	False	6	8	8	8	8	0	70	False	True
+examples/branching/08_hypothesis_relation_whitelist.ein	ok	False	8	11	11	11	11	0	41	False	True
+examples/branching/09_hrule.ein	ok	False	6	8	8	8	8	0	34	False	True
+examples/branching/10_kill_cache_on.ein	ok	False	6	8	8	8	8	0	52	False	True
+examples/branching/11_kill_cache_off.ein	ok	False	6	8	8	8	8	0	52	False	True
+examples/branching/12_typed_blind_solve.ein	ok	False	11	15	15	15	15	0	28	False	True
+examples/branching/13_lookahead_naf_world.ein	ok	False	3	6	6	6	6	0	10	False	True
+examples/branching/15_lookahead_two_step_on.ein	ok	False	4	4	7	7	7	0	13	False	True
+examples/branching/16_lookahead_two_step_off.ein	ok	False	4	4	7	7	7	0	13	False	True
+examples/branching/14_lookahead_unjudgeable.ein	ok	False	4	4	8	8	8	0	10	False	True
+examples/domain_elim/ab.ein	ok	False	3	13	13	13	13	0	30	False	True
+examples/domain_elim/b_branch.ein	ok	False	3	9	9	9	9	0	19	False	True
+examples/domain_elim/b_only.ein	ok	False	3	11	11	11	11	0	27	False	True
+examples/ein-bugs/zebra2-bad.ein	ok	False	20	169	169	169	169	0	572	False	False
+examples/ein-bugs/zebra2-hints.ein	ok	False	18	125	125	125	125	0	314	False	False
+examples/features/01_not_and_absent.ein	ok	False	4	4	4	4	4	0	16	False	False
+examples/features/02_star_in_identifiers.ein	ok	False	4	6	6	6	6	0	20	False	True
+examples/features/03_forall.ein	ok	False	3	6	6	6	6	0	13	False	True
+examples/features/04_open.ein	ok	False	4	6	6	6	6	0	23	False	False
+examples/features/05_stdlib_domain_elim.ein	ok	False	12	12	12	12	12	0	24	False	False
+examples/features/07_unstratifiable.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/features/08_disjunct_guard_sets.ein	ok	False	5	0	0	0	0	0	7	False	False
+examples/features/09_adjacent_via_same_house.ein	ok	False	21	25	25	25	25	0	56	False	False
+examples/features/10_expect.ein	ok	False	4	7	7	7	7	0	16	False	False
+examples/features/11_expect_ambiguity.ein	ok	False	4	2	6	6	6	0	10	False	True
+examples/features/12_expect_false.ein	ok	False	7	8	8	8	8	0	26	False	False
+examples/features/13_mixed_solution_and_open.ein	ok	False	4	5	7	7	7	0	11	False	True
+examples/features/14_unicode_text.ein	ok	False	3	6	6	6	6	0	21	False	True
+examples/features/15_unicode_escapes.ein	ok	False	2	4	4	4	4	0	10	False	True
+examples/features/16_eq_neq_goal.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/features/17_eq_neq_premise.ein	ok	False	5	15	15	15	15	0	24	False	True
+examples/arith/add.ein	ok	True	4	139	350	450	494	6	2110	False	False
+examples/arith/rat.ein	ok	True	10	415	1862	1963	2621	161	4417	False	False
+examples/arith/sub.ein	ok	True	8	174	372	473	547	7	2168	False	False
+examples/arith/mul.ein	ok	True	5	184	456	556	833	25	2451	False	False
+examples/arith/div.ein	ok	True	2	231	593	693	1010	43	2622	False	False
+examples/arith/div_by_zero.ein	ok	True	4	166	347	447	466	5	2084	False	False
+examples/arith/factorial.ein	ok	True	3	212	884	1013	3498	75	5111	False	False
+examples/arith/gcd.ein	ok	True	8	280	1189	1289	1968	102	3609	False	False
+examples/arith/int.ein	ok	True	17	367	923	1023	1389	85	3112	False	False
+examples/arith/long_numbers.ein	ok	True	10	316	907	1008	3335	65	4955	False	False
+examples/arith/many_calculations.ein	ok	True	100	293	3742	3862	9294	277	10906	False	False
+examples/arith/num9.ein	ok	True	6	96	401	501	501	0	2206	False	False
+examples/arith/num9_both_ways.ein	ok	True	3	176	411	519	564	3	2228	False	False
+examples/arith/num9_overflow.ein	ok	True	5	72	404	504	504	0	2181	False	False
+examples/beyond_arith/casting_out_nines.ein	ok	True	20	194	5973	6118	8913	450	10525	False	False
+examples/beyond_arith/collatz.ein	ok	True	20	210	3476	3654	5290	273	6902	False	True
+examples/beyond_arith/column_lemma.ein	ok	True	14	40	43	143	143	0	2326	False	True
+examples/beyond_arith/cryptarithm.ein	ok	True	24	46	56	156	156	0	1741	False	True
+examples/beyond_arith/equation_by_search.ein	ok	True	15	37	43	143	143	0	1727	False	True
+examples/beyond_arith/equation_no_solution.ein	ok	True	15	37	43	143	143	0	1724	False	True
+examples/beyond_arith/equation_refuted.ein	ok	True	8	30	33	133	133	0	1707	False	True
+examples/beyond_arith/equation_two_unknowns.ein	ok	True	5	52	342	442	442	0	2067	False	True
+examples/beyond_arith/fibonacci.ein	ok	True	12	111	662	796	1237	21	2849	False	True
+examples/beyond_arith/gcd.ein	ok	True	6	245	2115	2215	3614	173	5247	False	False
+examples/beyond_arith/inverse_addition.ein	ok	True	12	39	39	139	139	0	1739	False	True
+examples/beyond_arith/laws.ein	ok	True	64	270	9854	10101	14922	970	16538	False	True
+examples/beyond_arith/perfect.ein	ok	True	20	197	4994	5214	7561	341	9173	False	True
+examples/beyond_arith/primes.ein	ok	True	18	194	4407	4580	6708	338	8320	False	True
+examples/beyond_arith/pythagorean.ein	ok	True	16	146	1381	1496	2656	40	4268	False	True
+examples/beyond_arith/send_more_money.ein	ok	True	24	43	56	156	156	0	1750	False	True
+examples/beyond_arith/send_more_money_written.ein	ok	True	24	43	56	156	156	0	1750	False	True
+examples/beyond_arith/tables_backwards.ein	ok	True	14	42	42	142	142	0	1796	False	True
+examples/binary_arithmetic/both_bases.ein	ok	True	2	238	629	733	783	5	2445	False	False
+examples/binary_arithmetic/conversions.ein	ok	True	12	275	1772	1876	2596	102	4271	False	False
+examples/binary_arithmetic/div_by_zero.ein	ok	True	2	142	300	304	340	6	392	False	False
+examples/binary_arithmetic/first.ein	ok	True	4	157	304	308	347	3	403	False	False
+examples/binary_arithmetic/five_operations.ein	ok	True	6	245	458	463	946	9	997	False	False
+examples/binary_logic/adder_against_table.ein	ok	True	11	181	187	191	191	0	396	False	True
+examples/binary_logic/equivalent.ein	ok	False	8	171	177	177	177	0	279	False	False
+examples/binary_logic/full_adder.ein	ok	False	5	157	160	160	160	0	252	False	True
+examples/binary_logic/knights.ein	ok	False	9	166	172	172	172	0	275	False	False
+examples/binary_logic/not_equivalent.ein	ok	False	6	169	175	175	175	0	277	False	False
+examples/binary_logic/post.ein	ok	False	10	637	637	637	637	0	776	False	False
+examples/binary_logic/satisfiable.ein	ok	False	5	167	173	173	173	0	276	False	False
+examples/binary_logic/simplify.ein	ok	False	12	635	635	635	635	0	764	False	False
+examples/binary_logic/simulation.ein	ok	False	3	160	160	160	160	0	260	False	False
+examples/binary_logic/synthesis.ein	ok	True	13	194	197	201	201	0	380	False	False
+examples/binary_logic/truth_table.ein	ok	False	5	164	176	176	176	0	277	False	False
+examples/binary_logic/unsatisfiable.ein	ok	False	6	167	173	173	173	0	277	False	False
+examples/lattice/01_subset_pruned.ein	ok	False	4	5	7	7	7	0	14	False	True
+examples/lattice/02_genuine_3set_death.ein	ok	False	4	2	8	8	8	0	10	False	True
+examples/lattice/03_state_hash_collision.ein	ok	False	4	2	8	8	8	0	10	False	True
+examples/lattice/04_obligation_trigger_hole.ein	ok	False	4	3	7	7	7	0	10	False	True
+examples/lattice/05_owed_seats_bounded.ein	ok	False	6	4	8	8	8	0	12	False	True
+examples/lattice/06_friends_tables.ein	ok	False	9	12	16	16	16	0	45	False	True
+examples/lattice/06_friends_tables_everyone_sits.ein	ok	False	10	13	17	17	17	0	46	False	True
+examples/lattice/07_two_pairs_two_tables.ein	ok	False	7	7	11	11	11	0	31	False	True
+examples/lattice/08_absent_witness_hole.ein	ok	False	5	3	9	9	9	0	13	False	True
+examples/lattice/09_activator_hole.ein	ok	False	3	2	6	6	6	0	9	False	True
+examples/lattice/10_fifo_gap.ein	ok	False	6	2	12	12	12	0	13	False	True
+examples/lattice/11_fifo_gap_static.ein	ok	False	6	6	12	12	12	0	15	False	True
+examples/lattice/12_activator_chain_hole.ein	ok	False	4	2	8	8	8	0	11	False	True
+examples/lattice/13_witness_of_two.ein	ok	False	6	3	11	11	11	0	15	False	True
+examples/lattice/14_seats_nothing_proposes.ein	ok	False	8	9	13	13	13	0	36	False	True
+examples/lattice/15_union_label_dead.ein	ok	False	6	2	12	12	12	0	14	False	True
+examples/lattice/16_pair_through_closure.ein	ok	False	4	2	8	8	8	0	10	False	True
+examples/lattice/synth/local_not_global.ein	ok	False	4	6	8	8	8	0	13	False	True
+examples/lattice/synth/maximal_not_top.ein	ok	False	4	6	8	8	8	0	14	False	True
+examples/lattice/synth/merged_states.ein	ok	False	4	6	8	8	8	0	16	False	True
+examples/lattice/synth/one_model_per_component.ein	ok	False	4	6	8	8	8	0	17	False	True
+examples/lattice/synth/three_components.ein	ok	False	4	6	8	8	8	0	19	False	True
+examples/lattice/synth/trigger_hole.ein	ok	False	4	6	8	8	8	0	16	False	True
+examples/lattice/synth/trivial_line.ein	ok	False	4	6	8	8	8	0	16	False	True
+examples/saturation/hypothesis-contradiction/coloc-disproved.ein	ok	False	3	2	2	2	2	0	5	False	False
+examples/saturation/hypothesis-contradiction/next-to-disproved.ein	ok	False	3	2	2	2	2	0	5	False	False
+examples/saturation/hypothesis-contradiction/right-of-disproved.ein	ok	False	3	2	2	2	2	0	5	False	False
+examples/saturation/implies/org-chart.ein	ok	False	3	5	5	5	5	0	7	False	True
+examples/saturation/implies/parent-to-ancestor.ein	ok	False	3	5	5	5	5	0	7	False	True
+examples/saturation/implies/right-then-next.ein	ok	False	3	5	5	5	5	0	7	False	True
+examples/saturation/square-bwd/floors.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-bwd/houses.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-bwd/meetings.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-fwd/floors.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-fwd/houses.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-fwd/meetings.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/square-unique/corner-house.ein	ok	False	4	7	7	7	7	0	15	False	True
+examples/saturation/square-unique/cul-de-sac.ein	ok	False	4	7	7	7	7	0	19	False	True
+examples/saturation/square-unique/terminus.ein	ok	False	4	7	7	7	7	0	22	False	True
+examples/saturation/symmetric/couple.ein	ok	False	2	3	3	3	3	0	5	False	True
+examples/saturation/symmetric/friends.ein	ok	False	2	3	3	3	3	0	5	False	True
+examples/saturation/symmetric/neighbours.ein	ok	False	2	3	3	3	3	0	5	False	True
+examples/saturation/transitive/colocation-chain.ein	ok	False	2	3	3	3	3	0	6	False	True
+examples/saturation/transitive/mealtimes.ein	ok	False	2	3	3	3	3	0	6	False	True
+examples/saturation/transitive/taxonomy.ein	ok	False	2	3	3	3	3	0	6	False	True
+examples/saturation/type-exclusivity/colors.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/type-exclusivity/nationalities.ein	ok	False	3	5	5	5	5	0	9	False	True
+examples/saturation/type-exclusivity/pets.ein	ok	False	3	5	5	5	5	0	14	False	True
+examples/zebra.ein	ok	False	11	46	46	46	46	0	506	False	True
+examples/zebra2-hints.ein	ok	False	18	167	167	167	167	0	408	False	False
+examples/zebra2-minus-15.ein	ok	False	20	160	160	160	160	0	341	False	False
+examples/zebra2-minus-15-obligations.ein	ok	False	20	160	160	160	160	0	341	False	False
+examples/zebra2-obligations.ein	ok	False	20	169	169	169	169	0	390	False	False
+examples/zebra2.ein	ok	False	20	169	169	169	169	0	390	False	False
+examples/ein-bugs/alive-empty-phase1.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/alive-empty-interlayer.ein	ok	False	3	2	6	6	6	0	9	False	True
+examples/ein-bugs/closed-and-owing.ein	refused										
+examples/ein-bugs/naf-upward-closure.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/alive-set-fresh-name.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/alive-set-fresh-name-declared.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/minimal-line-stated-obligation.ein	ok	False	3	5	5	5	5	0	8	False	True
+examples/ein-bugs/minimal-line-stated-obligation-control.ein	ok	False	2	4	4	4	4	0	7	False	True
+examples/ein-bugs/complete-records-stale.ein	ok	False	4	3	7	7	7	0	10	False	True
+examples/ein-bugs/alt-cap-core.ein	ok	False	7	14	14	14	14	0	150	False	True
+examples/ein-bugs/alt-cap-core-reordered.ein	ok	False	7	14	14	14	14	0	150	False	True
+examples/ein-bugs/unsat-core-id-space.ein	ok	False	2	2	2	2	2	0	4	False	False
+examples/ein-bugs/d3-unsat-core.ein	ok	False	4	4	6	6	6	0	10	False	False
+examples/ein-bugs/fork-delta-order.ein	ok	False	6	6	12	12	12	0	94	False	True
+examples/ein-bugs/mixed-type-hypothesis.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/nested-fact-hypothesis.ein	ok	False	2	0	0	0	0	0	2	False	False
+examples/ein-bugs/query-goal-free-head-unsat.ein	refused										
+examples/ein-bugs/query-goal-free-head.ein	refused										
+examples/ein-bugs/unbound-assert-var.ein	refused										
+examples/ein-bugs/unbound-relation-head.ein	refused										
+examples/ein-bugs/int-goal-binding.ein	ok	False	3	0	0	0	0	0	3	False	False
+examples/ein-bugs/fact-goal-binding.ein	ok	False	2	0	0	0	0	0	2	False	False
+examples/broken/kwpair-below-the-filter.ein	refused										
+examples/ein-bugs/d3-goal-row-order.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/nested-core.ein	ok	False	3	4	4	4	4	0	7	False	False
+examples/ein-bugs/binding-key-int-only.ein	ok	False	4	7	7	7	7	0	13	False	True
+examples/ein-bugs/binding-key-nested-only.ein	ok	False	4	5	7	7	7	0	11	False	True
+examples/ein-bugs/binding-key-both.ein	ok	False	5	8	8	8	8	0	14	False	True
+examples/ein-bugs/binding-key-swapped.ein	ok	False	5	8	8	8	8	0	14	False	True
+examples/ein-bugs/activator-text-int-and-string.ein	refused										
+examples/ein-bugs/activator-text-string-then-int.ein	refused										
+examples/ein-bugs/activator-all-int.ein	ok	False	4	6	8	8	8	0	12	False	True
+examples/ein-bugs/activator-all-nested.ein	ok	False	4	6	8	8	8	0	12	False	True
+examples/ein-bugs/activator-all-symbol.ein	ok	False	4	6	8	8	8	0	12	False	True
+examples/ein-bugs/wrong-answers/forced-1.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/forced-1-two.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/forced-2.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/wrong-answers/forced-2-off.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/wrong-answers/forced-2-two.ein	ok	False	3	2	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/owed-two-step.ein	ok	False	4	3	7	7	7	0	10	False	True
+examples/ein-bugs/wrong-answers/tree-dead.ein	ok	False	3	3	5	5	5	0	8	False	True
+examples/ein-bugs/wrong-answers/fresh-name-default.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/naf-nowb.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/wrong-answers/owed-seats.ein	ok	False	4	4	6	6	6	0	10	False	True
+examples/ein-bugs/wrong-answers/owed-seats-renamed.ein	ok	False	4	4	6	6	6	0	10	False	True
+examples/ein-bugs/wrong-answers/uncovered.ein	ok	False	5	4	8	8	8	0	12	False	True
+examples/ein-bugs/wrong-answers/uncovered-knows.ein	ok	False	5	6	8	8	8	0	14	False	True
+examples/ein-bugs/wrong-answers/alt-cap-shared.ein	ok	False	5	10	10	10	10	0	48	False	True
+examples/ein-bugs/wrong-answers/arity3.ein	ok	False	3	2	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/stale-naf-fork.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/f07-fpoff.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/match-only.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/wrong-answers/match-only-declared.ein	ok	False	4	4	8	8	8	0	10	False	True
+examples/ein-bugs/wrong-answers/negative-only.ein	ok	False	3	4	4	4	4	0	6	False	False
+examples/ein-bugs/wrong-answers/negative-only-declared.ein	ok	False	4	6	6	6	6	0	9	False	False
+examples/ein-bugs/wrong-answers/oblig-fresh-name.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein	ok	False	3	4	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein	ok	False	3	4	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein	ok	False	3	4	6	6	6	0	10	False	True
+examples/ein-bugs/wrong-answers/oblig-derived-domain.ein	ok	False	4	6	8	8	8	0	11	False	True
+examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein	ok	False	4	6	8	8	8	0	12	False	True
+examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein	ok	False	3	3	5	5	5	0	7	False	True
+examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein	ok	False	3	3	5	5	5	0	8	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-1.ein	ok	False	5	2	10	10	10	0	11	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-2.ein	ok	False	6	2	12	12	12	0	13	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-0.ein	ok	False	4	2	8	8	8	0	9	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein	ok	False	5	2	10	10	10	0	11	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein	ok	False	5	2	10	10	10	0	11	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein	ok	False	5	2	10	10	10	0	11	False	True
+examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein	ok	False	5	2	10	10	10	0	11	False	True
+examples/ein-bugs/wrong-answers/str-in-match.ein	refused										
+examples/ein-bugs/wrong-answers/str-in-assert.ein	refused										
+examples/ein-bugs/wrong-answers/str-in-guard.ein	refused										
+examples/ein-bugs/wrong-answers/str-in-absent.ein	refused										
+examples/ein-bugs/wrong-answers/str-in-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/core-activator-committed.ein	ok	False	3	2	6	6	6	0	7	False	True
+examples/ein-bugs/wrong-answers/core-activator-guard-only.ein	ok	False	4	2	8	8	8	0	9	False	True
+examples/ein-bugs/wrong-answers/core-activator-given.ein	ok	False	4	4	8	8	8	0	10	False	True
+examples/ein-bugs/wrong-answers/core-activator-root-derived.ein	ok	False	5	6	10	10	10	0	13	False	True
+examples/ein-bugs/wrong-answers/wild-in-match.ein	refused										
+examples/ein-bugs/wrong-answers/wild-in-match-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/wild-in-head.ein	refused										
+examples/ein-bugs/wrong-answers/wild-in-head-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/range-in-match.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/wild-in-absent.ein	refused										
+examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/wild-in-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/pair-core-root-given.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/pair-core-root-derived.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/forall-core-false.ein	ok	False	4	4	8	8	8	0	11	False	True
+examples/ein-bugs/wrong-answers/forall-core-elim.ein	ok	False	5	6	8	8	8	0	13	False	False
+examples/ein-bugs/wrong-answers/pair-core-root-negative.ein	ok	False	4	4	6	6	6	0	8	False	False
+examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-assert-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-assert.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-assert-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-assert.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-match.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-match-twin.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-match.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-match-twin.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein	ok	False	3	6	6	6	6	0	9	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-fact-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-not-fact.ein	ok	False	2	3	3	3	3	0	5	False	True
+examples/ein-bugs/wrong-answers/kw-not-fact-twin.ein	ok	False	2	3	3	3	3	0	5	False	True
+examples/ein-bugs/wrong-answers/kw-relation-fact.ein	ok	False	2	4	4	4	4	0	7	False	True
+examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein	ok	False	2	4	4	4	4	0	7	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/kw-neq-in-goal-twin.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-hrule-twin.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein	ok	False	4	4	7	7	7	0	10	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-obligation-twin.ein	ok	False	4	4	7	7	7	0	10	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-expect.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-and-in-expect-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-solve.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/kw-or-in-solve-twin.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/core-search-cut.ein	ok	False	42	68	68	68	68	0	95	False	True
+examples/ein-bugs/wrong-answers/core-search-cut-control.ein	ok	False	42	52	68	68	68	0	87	False	True
+examples/ein-bugs/wrong-answers/core-search-cut-5.ein	ok	False	27	44	44	44	44	0	62	False	True
+examples/ein-bugs/wrong-answers/wild-in-guard.ein	refused										
+examples/ein-bugs/wrong-answers/bare-premise.ein	refused										
+examples/ein-bugs/wrong-answers/nested-unbound-head.ein	refused										
+examples/ein-bugs/wrong-answers/form-in-guard.ein	ok	False	5	10	10	10	10	0	19	False	True
+examples/ein-bugs/wrong-answers/guard-before-binder.ein	ok	False	5	10	10	10	10	0	19	False	True
+examples/ein-bugs/wrong-answers/kwpair-in-guard.ein	refused										
+examples/ein-bugs/wrong-answers/nested-fact-activator.ein	refused										
+examples/ein-bugs/wrong-answers/f07-rules-swapped.ein	ok	False	3	4	6	6	6	0	8	False	True
+examples/ein-bugs/wrong-answers/oblig-derived-activator.ein	ok	False	4	3	7	7	7	0	10	False	True
+examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein	ok	False	5	4	8	8	8	0	11	False	True
+examples/ein-bugs/wrong-answers/past-limit-lines.ein	ok	False	4	3	7	7	7	0	40	False	True
+examples/ein-bugs/wrong-answers/claim-int-name.ein	refused										
+examples/ein-bugs/wrong-answers/claim-int-name-solve.ein	refused										
+examples/ein-bugs/wrong-answers/classes-int-name.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-fact-arg.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-activator-arg.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-goal-arg.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein	refused										
+examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein	ok	False	7	14	14	14	14	0	23	False	True
+examples/ein-bugs/wrong-answers/assert-neq-w-x.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/ein-bugs/wrong-answers/assert-neq-x-x.ein	ok	False	1	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/assert-eq-x-w.ein	ok	False	1	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/empty-match-false.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/empty-match-fact.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/empty-match-activator.ein	ok	False	4	4	6	6	6	0	9	False	False
+examples/ein-bugs/wrong-answers/empty-match-hrule.ein	ok	False	2	2	4	4	4	0	5	False	True
+examples/ein-bugs/wrong-answers/where-in-and.ein	refused										
+examples/ein-bugs/wrong-answers/where-in-pattern.ein	refused										
+examples/ein-bugs/wrong-answers/where-on-rule.ein	refused										
+examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein	refused										
+examples/ein-bugs/wrong-answers/kwpair-in-assert.ein	refused										
+examples/ein-bugs/wrong-answers/kwpair-in-goal.ein	refused										
+examples/ein-bugs/wrong-answers/kwpair-in-macro.ein	refused										
+examples/ein-bugs/wrong-answers/activator-nested-value.ein	ok	False	3	4	4	4	4	0	9	False	False
+examples/ein-bugs/wrong-answers/assert-empty.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/ein-bugs/wrong-answers/absent-empty.ein	refused										
+examples/ein-bugs/wrong-answers/template-var-star.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/escape-past-unicode.ein	refused										
+examples/ein-bugs/wrong-answers/or-one-key.ein	ok	False	8	16	16	16	16	0	25	False	True
+examples/ein-bugs/wrong-answers/or-one-key-twin.ein	ok	False	8	16	16	16	16	0	25	False	True
+examples/ein-bugs/wrong-answers/einb-every-command.ein	ok	False	2	4	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/saturate-import.ein	ok	False	2	4	4	4	4	0	6	False	False
+examples/ein-bugs/wrong-answers/saturate-import-mod.ein	ok	False	1	0	2	2	2	0	2	False	True
+examples/ein-bugs/wrong-answers/h-long-relation.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/einb-dump-answer.ein	ok	False	2	2	4	4	4	0	6	False	True
+examples/ein-bugs/wrong-answers/fact-eq-false.ein	ok	False	2	2	2	2	2	0	4	False	False
+examples/ein-bugs/wrong-answers/not-eq-premise.ein	ok	False	2	4	4	4	4	0	8	False	True
+examples/ein-bugs/wrong-answers/not-eq-fact.ein	ok	False	2	2	2	2	2	0	4	False	False
+examples/ein-bugs/wrong-answers/not-eq-assert.ein	ok	False	1	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/relvar-eq-premise.ein	ok	False	3	4	4	5	5	0	9	False	True
+examples/ein-bugs/wrong-answers/relvar-eq-assert.ein	ok	False	2	2	2	3	3	0	5	False	True
+examples/ein-bugs/wrong-answers/hrule-eq.ein	ok	False	1	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/goal-nested-var.ein	ok	False	3	2	2	2	2	0	4	False	False
+examples/ein-bugs/wrong-answers/goal-neq-free.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/ein-bugs/wrong-answers/goal-absent.ein	ok	False	2	4	4	4	4	0	7	False	True
+examples/ein-bugs/wrong-answers/assert-var-stops.ein	refused										
+examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/hrule-assert-var.ein	refused										
+examples/ein-bugs/wrong-answers/assert-var-never-fires.ein	refused										
+examples/ein-bugs/wrong-answers/parameter-nested-assert.ein	ok	False	3	4	4	4	4	0	7	False	False
+examples/ein-bugs/wrong-answers/derived-activator.ein	refused										
+examples/ein-bugs/wrong-answers/derived-activator-never.ein	refused										
+examples/ein-bugs/wrong-answers/eq-arity-premise.ein	refused										
+examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/eq-arity-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein	refused										
+examples/ein-bugs/wrong-answers/fact-eq-arity.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-stops.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-goal.ein	refused										
+examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein	refused										
+examples/ein-bugs/wrong-answers/wide-match-stops.ein	refused										
+examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein	refused										
+examples/ein-bugs/wrong-answers/wide-goal.ein	refused										
+examples/ein-bugs/wrong-answers/macro-eq-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/macro-absent-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/macro-eq-obligation.ein	refused										
+examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein	refused										
+examples/ein-bugs/wrong-answers/macro-not-conjunction.ein	refused										
+examples/ein-bugs/wrong-answers/macro-neq-connective.ein	refused										
+examples/ein-bugs/wrong-answers/macro-neq-connective-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/macro-not-conjunction-obligation.ein	refused										
+examples/ein-bugs/wrong-answers/macro-eq-conclusion.ein	refused										
+examples/ein-bugs/wrong-answers/macro-false-argument.ein	refused										
+examples/ein-bugs/wrong-answers/macro-or-conclusion.ein	refused										
+examples/ein-bugs/wrong-answers/macro-not-name-conclusion.ein	refused										
+examples/ein-bugs/wrong-answers/macro-connective-value.ein	refused										
+examples/ein-bugs/wrong-answers/macro-eq-candidate.ein	refused										
+examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/open-fact-head.ein	refused										
+examples/ein-bugs/wrong-answers/open-nested-fact-head.ein	refused										
+examples/ein-bugs/wrong-answers/open-negation-head.ein	refused										
+examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein	refused										
+examples/ein-bugs/wrong-answers/open-claim-fact-head.ein	refused										
+examples/ein-bugs/wrong-answers/open-relation-parameter.ein	refused										
+examples/ein-bugs/wrong-answers/open-obligation-parameter.ein	refused										
+examples/ein-bugs/wrong-answers/open-fact-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-is-a-object.ein	refused										
+examples/ein-bugs/wrong-answers/open-signature-type.ein	refused										
+examples/ein-bugs/wrong-answers/open-premise-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-eq-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-conclusion-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-hrule-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-derived-activator.ein	refused										
+examples/ein-bugs/wrong-answers/open-goal-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-claim-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-macro-argument.ein	refused										
+examples/ein-bugs/wrong-answers/open-fact-clause.ein	refused										
+examples/ein-bugs/wrong-answers/open-solve-list.ein	refused										
+examples/ein-bugs/wrong-answers/open-trace-step.ein	refused										
+examples/ein-bugs/wrong-answers/open-macro-verdict.ein	refused										
+examples/ein-bugs/wrong-answers/open-macro-value.ein	refused										
+examples/ein-bugs/wrong-answers/open-macro-unused.ein	refused										
+examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein	refused										
+examples/ein-bugs/wrong-answers/unicode-space-in-a-name.ein	refused										
+examples/ein-bugs/wrong-answers/unicode-space-ideographic.ein	refused										
+examples/ein-bugs/wrong-answers/unicode-space-line-separator.ein	refused										
+examples/ein-bugs/wrong-answers/unicode-space-next-line.ein	refused										
+examples/ein-bugs/wrong-answers/import-module-directory.ein	refused										
+examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein	refused										
+examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein	refused										
+examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein	refused										
+examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein	refused										
+examples/ein-bugs/wrong-answers/goal-macro-unknown.ein	ok	False	3	2	2	2	2	0	5	False	False
+examples/ein-bugs/wrong-answers/goal-macro-expect-model.ein	ok	False	3	2	2	2	2	0	5	False	False
+examples/ein-bugs/wrong-answers/goal-macro-unimported.ein	refused										
+examples/ein-bugs/wrong-answers/goal-macro-arity.ein	refused										
+examples/ein-bugs/wrong-answers/goal-no-such-relation.ein	refused										
+examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein	refused										
+examples/ein-bugs/wrong-answers/claim-derived-relation.ein	ok	False	3	2	2	2	2	0	6	False	False
+examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein	ok	False	3	2	2	2	2	0	6	False	False
+examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein	refused										
+examples/ein-bugs/wrong-answers/goal-absent-nested-relation-variable.ein	refused										
+examples/ein-bugs/wrong-answers/absent-fact-for-not.ein	refused										
+examples/ein-bugs/wrong-answers/absent-fact-name.ein	refused										
+examples/ein-bugs/wrong-answers/absent-fact-nested.ein	refused										
+examples/ein-bugs/wrong-answers/absent-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/false-fact-argument.ein	refused										
+examples/ein-bugs/wrong-answers/false-fact-nested.ein	refused										
+examples/ein-bugs/wrong-answers/false-fact-negated.ein	refused										
+examples/ein-bugs/wrong-answers/false-premise-argument.ein	refused										
+examples/ein-bugs/wrong-answers/false-goal-argument.ein	refused										
+examples/ein-bugs/wrong-answers/eq-value-fact.ein	refused										
+examples/ein-bugs/wrong-answers/eq-value-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/eq-value-matched-by-shape.ein	refused										
+examples/ein-bugs/wrong-answers/eq-value-negation-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/pattern-argument-and.ein	refused										
+examples/ein-bugs/wrong-answers/pattern-argument-and-under-absent.ein	refused										
+examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein	refused										
+examples/ein-bugs/wrong-answers/pattern-argument-goal.ein	refused										
+examples/ein-bugs/wrong-answers/pattern-argument-macro.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-parameter.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-macro.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-guard.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-derived.ein	refused										
+examples/ein-bugs/wrong-answers/not-name-under-commitment.ein	refused										
+examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein	ok	False	4	2	2	2	2	0	5	False	False
+examples/ein-bugs/wrong-answers/hrule-reads-not.ein	ok	False	5	2	4	4	4	0	7	False	False
+examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein	ok	False	4	2	2	2	2	0	5	False	False
+examples/ein-bugs/wrong-answers/macro-call-fact.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-in-claim.ein	refused										
+examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein	refused										
+examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein	refused										
+examples/ein-bugs/wrong-answers/import-facts-library.ein	ok	False	4	2	4	4	4	0	10	False	False
+examples/ein-bugs/wrong-answers/import-facts-flat.ein	ok	False	0	2	4	4	4	0	10	False	True
+examples/ein-bugs/wrong-answers/import-facts-rule.ein	ok	False	0	2	4	4	4	0	10	False	True
+examples/ein-bugs/wrong-answers/import-facts-undeclared.ein	ok	False	0	2	4	4	4	0	10	False	True
+examples/ein-bugs/wrong-answers/import-facts-table-module.ein	ok	False	4	2	8	8	8	0	10	False	True
+examples/ein-bugs/wrong-answers/arity-top-level-fact.ein	refused										
+examples/ein-bugs/wrong-answers/arity-nested-fact.ein	refused										
+examples/ein-bugs/wrong-answers/arity-request.ein	refused										
+examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein	refused										
+examples/ein-bugs/wrong-answers/arity-in-match.ein	refused										
+examples/ein-bugs/wrong-answers/arity-in-assert.ein	refused										
+examples/ein-bugs/wrong-answers/arity-in-goal.ein	refused										
+examples/ein-bugs/wrong-answers/import-facts-table.ein	ok	False	1	8	8	8	8	0	12	False	False
+examples/ein-bugs/wrong-answers/count-past-2-64.ein	ok	False	65	0	2	2	2	0	66	False	False
+examples/ein-bugs/wrong-answers/count-past-2-128.ein	ok	False	131	0	2	2	2	0	132	False	False
+examples/ein-bugs/wrong-answers/dump-selection-library.ein	ok	False	1	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein	ok	False	5	13	13	13	13	0	16	False	True
+examples/ein-bugs/wrong-answers/dump-selection.ein	ok	False	0	2	2	2	2	0	4	False	True
+examples/ein-bugs/wrong-answers/import-directives-module.ein	ok	False	1	2	2	2	2	0	3	False	True
+examples/ein-bugs/wrong-answers/import-directives-as.ein	ok	False	2	3	5	5	5	0	6	False	True
+examples/ein-bugs/wrong-answers/import-directives-twice.ein	ok	False	3	3	5	5	5	0	6	False	False
+examples/ein-bugs/wrong-answers/and-in-and.ein	ok	False	6	9	9	9	9	0	12	False	True
+examples/ein-bugs/wrong-answers/and-in-and-macro.ein	ok	False	6	9	9	9	9	0	12	False	True
+examples/ein-bugs/wrong-answers/hrule-and.ein	refused										
+examples/ein-bugs/wrong-answers/hrule-and-in-and.ein	refused										
+examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein	ok	False	2	3	5	5	5	0	15	False	True
+examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein	ok	False	3	3	5	5	5	0	15	False	True
+examples/ein-bugs/wrong-answers/dunder-object-arith.ein	ok	True	1	3	9	9	9	0	10	False	True
+examples/ein-bugs/wrong-answers/dunder-object-as-value.ein	ok	False	4	5	6	7	7	0	8	False	True
+examples/ein-bugs/wrong-answers/rung-unactivated.ein	ok	False	5	2	4	4	4	0	8	False	False
+examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein	ok	False	5	2	4	4	4	0	8	False	False
+examples/ein-bugs/wrong-answers/rung-discharged.ein	ok	False	6	3	5	5	5	0	9	False	False
+examples/ein-bugs/wrong-answers/rung-symmetric-import.ein	ok	False	5	0	7	7	7	0	9	False	False
+examples/ein-bugs/wrong-answers/rung-symmetric-written.ein	ok	False	5	0	5	5	5	0	7	False	False
+examples/ein-bugs/wrong-answers/rung-connex-import.ein	ok	False	5	3	3	3	3	0	9	False	False
+examples/broken/compile/activator_arity.ein	ok	False	2	0	3	3	3	0	3	False	True
+examples/broken/bare_top_level_atom.ein	refused										
+examples/broken/keyword_as_value.ein	refused										
+examples/broken/rule_missing_params.ein	refused										
+examples/broken/unclosed_paren.ein	refused										
+examples/broken/eq_arity_low.ein	refused										
+examples/broken/eq_arity_high.ein	refused										
+examples/broken/absent_arity_zero.ein	refused										
+examples/broken/absent_arity_high.ein	refused										
+examples/broken/config_bad_value.ein	refused										
+examples/broken/expect_unknown_keyword.ein	refused										
+examples/broken/query_lattice_keyword.ein	refused										
+examples/broken/region_top_level.ein	refused										
+examples/broken/solve_unknown_keyword.ein	refused										
+examples/broken/expect_is_a_pattern.ein	refused										
+examples/broken/config_unknown_flag.ein	refused										
+examples/broken/config_retired_flag.ein	refused										
+examples/broken/open_in_match.ein	refused										
+examples/broken/open_arity.ein	refused										
+examples/broken/open_mixed_assert.ein	refused										
+examples/broken/hrule_reserved_name.ein	refused										
+examples/broken/import_alias_not_a_name.ein	refused										
+examples/broken/import_symbols_empty.ein	refused										
+examples/broken/import_symbols_not_a_list.ein	refused										
+examples/broken/macro_reserved_name.ein	refused										
+examples/broken/relation_malformed.ein	refused										
+examples/broken/relation_needs_a_name.ein	refused										
+examples/broken/empty_absent.ein	refused										
+examples/broken/relation_reserved_name.ein	refused										
+examples/broken/rule_reserved_name.ein	refused										
+examples/broken/load/region_owing_with_states.ein	refused										
+examples/broken/load/region_merged_unlisted.ein	refused										
+examples/broken/load/solve_twice.ein	refused										
+examples/broken/load/expect_unknown_relation.ein	refused										
+examples/broken/load/expect_omits_the_goal.ein	refused										
+examples/broken/load/query_over_unknown.ein	refused										
+examples/broken/load/query_class_twice.ein	refused										
+examples/broken/load/derivation_cycle.ein	refused										
+examples/broken/load/hrule_duplicate_name.ein	refused										
+examples/broken/load/open_compound_witness.ein	refused										
+examples/broken/load/import_as_and_symbols.ein	refused										
+examples/broken/load/import_bare_std.ein	refused										
+examples/broken/load/import_conflicting_definitions.ein	refused										
+examples/broken/load/import_cycle.ein	refused										
+examples/broken/load/import_cycle_b.ein	refused										
+examples/broken/load/import_module_not_found.ein	refused										
+examples/broken/load/import_relative_not_found.ein	refused										
+examples/broken/load/import_symbols_not_provided.ein	refused										
+examples/broken/load/macro_arity_mismatch.ein	refused										
+examples/broken/load/macro_duplicate.ein	refused										
+examples/broken/load/reserved_open_direct.ein	refused										
+examples/broken/load/reserved_open_symbols.ein	refused										
+examples/broken/load/reserved_open_qualified.ein	refused										
+examples/broken/load/reserved_open_aliased.ein	refused										
+examples/broken/load/relation_duplicate.ein	refused										
+examples/broken/load/derived_activator.ein	refused										
+examples/broken/load/derived_activator_never.ein	refused										
+examples/broken/load/unbound_head.ein	refused										
+examples/broken/load/eq_in_a_macro_body.ein	refused										
+examples/broken/load/nested_or.ein	refused										
+examples/broken/load/rule_duplicate_name.ein	refused										
+examples/broken/load/rule_half_declarators.ein	refused										
+examples/broken/load/rule_missing_assert.ein	refused										
+examples/broken/load/rule_missing_match.ein	refused										
+examples/broken/load/unimported_std_macro.ein	refused										
+stdlib/algebra.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/math/arith.ein	ok	True	3	3	7	7	7	0	8	False	True
+stdlib/math/binary-arith.ein	ok	True	57	39	287	291	291	0	342	False	True
+stdlib/math/binary.ein	ok	True	6	21	38	42	42	0	77	False	True
+stdlib/math/bits.ein	ok	True	8	12	12	16	16	0	41	False	False
+stdlib/math/convert.ein	ok	True	11	87	648	752	752	0	2427	False	True
+stdlib/math/decimal.ein	ok	True	6	30	47	147	147	0	1721	False	True
+stdlib/math/decimal-arith.ein	ok	True	70	48	335	435	435	0	2047	False	True
+stdlib/bijection.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/bool/circuit.ein	ok	False	3	149	155	155	155	0	247	False	True
+stdlib/bool/gates.ein	ok	False	22	146	146	146	146	0	234	False	False
+stdlib/bool/inputs.ein	ok	False	6	156	168	168	168	0	266	False	True
+stdlib/bool/props.ein	ok	False	32	608	608	608	608	0	729	False	True
+stdlib/closure.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/math/digits.ein	ok	True	14	21	21	121	121	0	1685	False	False
+stdlib/math/gcd.ein	ok	True	16	51	383	483	483	0	2116	False	True
+stdlib/elim.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/math/int.ein	ok	True	49	51	482	582	582	0	2281	False	True
+stdlib/macro.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/math/num9.ein	ok	True	22	51	401	501	501	0	2162	False	True
+stdlib/math/positional.ein	ok	True	0	3	7	7	7	0	8	False	True
+stdlib/math/rat.ein	ok	True	48	57	675	775	775	0	2566	False	True
+stdlib/slots.ein	ok	False	0	0	0	0	0	0	0	True	True
+stdlib/typing.ein	ok	False	0	0	0	0	0	0	0	True	True
+tests/stdlib/algebra/01_copiers.ein	ok	False	14	24	24	24	24	0	34	False	True
+tests/stdlib/algebra/02_compose.ein	ok	False	6	10	10	10	10	0	20	False	True
+tests/stdlib/algebra/03_boolean.ein	ok	False	8	15	15	15	15	0	24	False	True
+tests/stdlib/algebra/04_extensive.ein	ok	False	8	13	13	13	13	0	25	False	True
+tests/stdlib/algebra/05_tag_lemmas.ein	ok	False	7	16	16	16	16	0	22	False	True
+tests/stdlib/algebra/06_equational.ein	ok	False	14	32	32	32	32	0	42	False	True
+tests/stdlib/algebra/07_schroder.ein	ok	False	8	10	10	10	10	0	17	False	False
+tests/stdlib/algebra/08_checks_satisfied.ein	ok	False	13	15	18	18	18	0	27	False	True
+tests/stdlib/algebra/09_irreflexive_violated.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/stdlib/algebra/10_antisymmetric_violated.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/stdlib/algebra/11_asymmetric_violated.ein	ok	False	2	3	3	3	3	0	5	False	True
+tests/stdlib/algebra/12_connex_violated.ein	ok	False	3	5	5	5	5	0	11	False	True
+tests/stdlib/algebra/13_empty_violated.ein	ok	False	2	3	3	3	3	0	5	False	True
+tests/stdlib/algebra/14_functional_violated.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/stdlib/algebra/15_injective_violated.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/stdlib/algebra/16_converse_illtyped_dom.ein	ok	False	6	0	10	10	10	0	11	False	True
+tests/stdlib/algebra/17_converse_illtyped_ran.ein	ok	False	6	0	10	10	10	0	11	False	True
+tests/stdlib/algebra/18_totality_open_world.ein	ok	False	6	8	8	8	8	0	15	False	False
+tests/stdlib/algebra/19_total_violated.ein	ok	False	5	5	5	5	5	0	13	False	False
+tests/stdlib/algebra/20_surjective_violated.ein	ok	False	6	6	6	6	6	0	13	False	False
+tests/stdlib/algebra/21_transitive.ein	ok	False	6	9	9	9	9	0	18	False	True
+tests/stdlib/algebra/22_symmetric_negative.ein	ok	False	4	7	7	7	7	0	12	False	False
+tests/stdlib/algebra/23_total_owed.ein	ok	False	3	5	5	5	5	0	10	False	True
+tests/stdlib/algebra/24_total_owed_satisfied.ein	ok	False	3	5	5	5	5	0	11	False	True
+tests/stdlib/algebra/25_surjective_owed.ein	ok	False	3	5	5	5	5	0	10	False	True
+tests/stdlib/algebra/26_surjective_owed_satisfied.ein	ok	False	3	5	5	5	5	0	11	False	True
+tests/stdlib/algebra/27_converse_welltyped_either_way.ein	ok	False	11	18	18	18	18	0	23	False	True
+tests/stdlib/math/binary/01_well_formed_everywhere.ein	ok	True	4	132	301	305	327	2	379	False	False
+tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein	ok	True	2	117	294	298	317	2	369	False	False
+tests/stdlib/math/binary/03_ends_in_a_bit.ein	ok	True	2	117	295	299	315	3	371	False	False
+tests/stdlib/math/binary/04_ends_in_zero.ein	ok	True	2	117	295	299	315	2	371	False	False
+tests/stdlib/math/binary/05_ends_in_a_name.ein	ok	True	3	129	295	299	316	3	373	False	False
+tests/stdlib/math/binary/06_what_stays_silent.ein	ok	True	8	129	303	307	337	2	398	False	False
+tests/stdlib/math/binary/07_a_programs_own_named_z.ein	ok	True	4	122	296	300	312	2	363	False	False
+tests/stdlib/math/binary-arith/01_add.ein	ok	True	2	118	303	307	397	3	448	False	False
+tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein	ok	True	7	118	349	353	439	13	490	False	False
+tests/stdlib/math/binary-arith/03_named.ein	ok	True	5	130	305	309	352	3	409	False	False
+tests/stdlib/math/binary-arith/04_sub.ein	ok	True	5	125	349	353	508	3	559	False	False
+tests/stdlib/math/binary-arith/05_cmp.ein	ok	True	6	98	314	326	387	7	438	False	False
+tests/stdlib/math/binary-arith/06_mul.ein	ok	True	6	140	397	401	601	14	652	False	False
+tests/stdlib/math/binary-arith/07_div.ein	ok	True	8	154	535	539	896	29	947	False	False
+tests/stdlib/math/binary-arith/08_div_by_zero.ein	ok	True	2	142	300	304	336	3	388	False	False
+tests/stdlib/math/binary-arith/09_div_call_by_zero.ein	ok	True	1	82	295	299	300	2	352	False	False
+tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein	ok	True	10	149	288	292	355	1	407	False	False
+tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein	ok	True	1	98	287	291	296	1	348	False	False
+tests/stdlib/math/binary-arith/12_undeclared_name.ein	ok	True	3	119	288	292	303	1	364	False	False
+tests/stdlib/math/binary-arith/13_declared_name.ein	ok	True	5	130	300	304	336	2	394	False	False
+tests/stdlib/math/binary-arith/14_let_twice.ein	ok	True	3	131	292	296	311	2	364	False	False
+tests/stdlib/math/binary-arith/15_let_zero.ein	ok	True	2	131	294	298	310	2	362	False	False
+tests/stdlib/math/binary-arith/16_let_bit.ein	ok	True	2	131	292	296	309	2	362	False	False
+tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein	ok	True	2	131	292	296	309	2	362	False	False
+tests/stdlib/math/binary-arith/18_let_to_a_name.ein	ok	True	3	131	292	296	308	2	364	False	False
+tests/stdlib/math/binary-arith/19_let_to_a_bit.ein	ok	True	2	131	292	296	307	2	362	False	False
+tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein	ok	True	2	131	292	296	307	2	362	False	False
+tests/stdlib/math/binary-arith/21_both_bases.ein	ok	True	4	323	666	770	926	11	2588	False	False
+tests/stdlib/math/binary-arith/22_what_stays_silent.ein	ok	True	7	159	336	440	462	4	2088	False	False
+tests/stdlib/math/bits/01_tables.ein	ok	True	0	12	12	16	16	0	41	False	True
+tests/stdlib/math/convert/01_to_binary.ein	ok	True	5	243	1606	1710	2211	95	3886	False	False
+tests/stdlib/math/convert/02_to_decimal.ein	ok	True	7	163	822	926	1170	28	2845	False	False
+tests/stdlib/math/convert/03_round_trip.ein	ok	True	3	275	1960	2064	2812	119	4487	False	False
+tests/stdlib/math/decimal-arith/01_add.ein	ok	True	1	127	343	443	472	3	2084	False	False
+tests/stdlib/math/decimal-arith/02_carry_out.ein	ok	True	2	123	354	454	494	4	2106	False	False
+tests/stdlib/math/decimal-arith/03_lengths.ein	ok	True	4	127	363	463	517	6	2129	False	False
+tests/stdlib/math/decimal-arith/04_zero.ein	ok	True	3	127	361	461	471	11	2083	False	True
+tests/stdlib/math/decimal-arith/05_high_zeros.ein	ok	True	3	127	359	459	513	5	2125	False	False
+tests/stdlib/math/decimal-arith/06_named.ein	ok	True	5	139	354	454	497	5	2113	False	False
+tests/stdlib/math/decimal-arith/07_only_what_is_asked.ein	ok	True	4	144	346	446	462	8	2076	False	False
+tests/stdlib/math/decimal-arith/08_sub.ein	ok	True	2	134	359	459	510	4	2122	False	False
+tests/stdlib/math/decimal-arith/09_sub_borrow_and_zeros.ein	ok	True	8	134	431	531	622	23	2234	False	False
+tests/stdlib/math/decimal-arith/10_sub_named.ein	ok	True	8	149	366	466	519	5	2139	False	False
+tests/stdlib/math/decimal-arith/11_cmp.ein	ok	True	4	107	343	452	495	3	2107	False	False
+tests/stdlib/math/decimal-arith/12_cmp_lengths_and_names.ein	ok	True	10	119	370	481	552	11	2170	False	False
+tests/stdlib/math/decimal-arith/13_mul.ein	ok	True	2	155	390	490	599	17	2211	False	False
+tests/stdlib/math/decimal-arith/14_mul_zeros_and_carries.ein	ok	True	8	155	503	603	848	39	2460	False	False
+tests/stdlib/math/decimal-arith/15_mul_long_and_named.ein	ok	True	5	167	432	532	763	18	2379	False	False
+tests/stdlib/math/decimal-arith/16_div.ein	ok	True	1	196	448	548	680	24	2292	False	False
+tests/stdlib/math/decimal-arith/17_div_every_digit.ein	ok	True	2	196	673	773	1259	39	2871	False	False
+tests/stdlib/math/decimal-arith/18_div_small_and_zeros.ein	ok	True	8	196	1001	1101	1668	86	3280	False	False
+tests/stdlib/math/decimal-arith/19_div_named_and_chained.ein	ok	True	5	243	520	620	786	37	2405	False	False
+tests/stdlib/math/decimal-arith/20_div_by_zero.ein	ok	True	2	154	348	448	465	8	2078	False	False
+tests/stdlib/math/decimal-arith/21_div_by_zero_spelt_and_named.ein	ok	True	2	143	341	441	458	3	2072	False	False
+tests/stdlib/math/decimal-arith/22_malformed_digit.ein	ok	True	2	130	343	443	464	6	2077	False	False
+tests/stdlib/math/decimal-arith/23_malformed_fact_as_digit.ein	ok	True	2	130	342	442	462	6	2075	False	False
+tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein	ok	True	2	151	347	447	465	6	2082	False	False
+tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein	ok	True	2	151	347	447	465	6	2082	False	False
+tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein	ok	True	3	161	343	444	463	4	2081	False	False
+tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein	ok	True	2	164	341	441	461	4	2074	False	False
+tests/stdlib/math/decimal-arith/28_malformed_zero_digit_as_number.ein	ok	True	2	161	340	440	456	4	2069	False	False
+tests/stdlib/math/decimal-arith/29_undeclared_name.ein	ok	True	3	171	342	442	461	3	2079	False	False
+tests/stdlib/math/decimal-arith/30_declared_name.ein	ok	True	4	181	351	451	482	8	2098	False	False
+tests/stdlib/math/decimal-arith/31_malformed_through_a_name.ein	ok	True	4	209	380	480	532	17	2147	False	False
+tests/stdlib/math/decimal-arith/32_malformed_name_for_a_name.ein	ok	True	4	168	343	443	466	5	2083	False	False
+tests/stdlib/math/decimal-arith/33_let_twice.ein	ok	True	3	144	346	446	472	7	2086	False	False
+tests/stdlib/math/decimal-arith/34_let_twice_the_same.ein	ok	True	2	139	341	441	455	4	2068	False	False
+tests/stdlib/math/decimal-arith/35_let_zero.ein	ok	True	1	73	337	437	438	1	2051	False	True
+tests/stdlib/math/decimal-arith/36_let_digit.ein	ok	True	2	144	340	440	453	4	2067	False	False
+tests/stdlib/math/decimal-arith/37_let_zero_digit.ein	ok	True	2	144	340	440	453	4	2067	False	False
+tests/stdlib/math/decimal-arith/38_what_stays_silent.ein	ok	True	8	133	354	454	485	8	2102	False	False
+tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein	ok	True	6	166	422	522	569	23	2182	False	False
+tests/stdlib/math/decimal-arith/40_div_call_by_zero_spelt.ein	ok	True	6	96	348	448	454	3	2067	False	True
+tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein	ok	True	6	163	514	614	714	39	2326	False	False
+tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein	ok	True	1	66	335	435	435	0	2051	False	False
+tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein	ok	True	1	66	335	435	435	0	2051	False	False
+tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein	ok	True	1	107	335	435	440	1	2053	False	False
+tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein	ok	True	1	121	336	436	445	1	2058	False	False
+tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein	ok	True	1	107	335	435	440	1	2053	False	False
+tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein	ok	True	1	121	336	436	445	1	2058	False	False
+tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein	ok	True	1	107	335	435	440	1	2053	False	False
+tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein	ok	True	1	108	335	435	440	1	2053	False	False
+tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein	ok	True	1	122	336	436	445	1	2058	False	False
+tests/stdlib/math/decimal/01_well_formed_everywhere.ein	ok	True	4	160	690	790	811	6	2603	False	False
+tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein	ok	True	2	139	341	441	455	5	2068	False	False
+tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein	ok	True	3	130	344	444	457	4	2070	False	False
+tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein	ok	True	3	127	344	444	457	4	2069	False	False
+tests/stdlib/math/decimal/05_what_stays_silent.ein	ok	True	6	142	349	449	474	7	2092	False	False
+tests/stdlib/math/decimal/06_a_programs_own_named_z.ein	ok	True	4	135	345	445	459	4	2071	False	False
+tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein	ok	True	2	133	346	446	465	4	2078	False	False
+tests/stdlib/bijection/01_setup_and_negatives.ein	ok	False	5	21	21	21	21	0	32	False	True
+tests/stdlib/bijection/02_domain_elimination.ein	ok	False	7	20	20	20	20	0	32	False	False
+tests/stdlib/bijection/03_range_elimination.ein	ok	False	7	20	20	20	20	0	32	False	False
+tests/stdlib/bijection/04_typecheck_arg0_violated.ein	ok	False	4	6	6	6	6	0	10	False	True
+tests/stdlib/bijection/05_typecheck_arg1_violated.ein	ok	False	4	6	6	6	6	0	10	False	True
+tests/stdlib/bijection/06_blind_enumeration.ein	ok	False	8	26	26	26	26	0	40	False	True
+tests/stdlib/bool/circuit/01_propagate.ein	ok	False	6	159	159	159	159	0	256	False	False
+tests/stdlib/bool/circuit/02_one_value.ein	ok	False	4	156	156	156	156	0	253	False	False
+tests/stdlib/bool/gates/01_a_relation_a_function.ein	ok	False	0	146	146	146	146	0	234	False	True
+tests/stdlib/bool/inputs/01_in_drives.ein	ok	False	3	160	169	169	169	0	269	False	False
+tests/stdlib/bool/inputs/02_required.ein	ok	False	6	164	170	170	170	0	272	False	False
+tests/stdlib/bool/props/01_column.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/02_between_two.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/03_commutative_associative_idempotent.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/04_reads_and_ignores.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/05_identity_and_absorbing.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/06_post_inside.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/bool/props/07_post_outside.ein	ok	False	0	608	608	608	608	0	729	False	True
+tests/stdlib/closure/01_infer_closure.ein	ok	False	7	10	10	10	10	0	21	False	True
+tests/stdlib/closure/02_closed_and_satisfied.ein	ok	False	6	11	11	11	11	0	15	False	True
+tests/stdlib/math/digits/01_tables.ein	ok	True	0	21	21	121	121	0	1685	False	True
+tests/stdlib/math/digits/02_a_core_names_its_rows.ein	ok	True	1	23	23	123	123	0	1690	False	True
+tests/stdlib/math/gcd/01_gcd.ein	ok	True	7	215	1839	1939	3168	148	4801	False	False
+tests/stdlib/math/gcd/02_gcd_zero.ein	ok	True	5	199	534	634	745	48	2378	False	False
+tests/stdlib/math/gcd/03_high_zeros.ein	ok	True	3	215	752	852	1144	47	2777	False	False
+tests/stdlib/math/gcd/04_named.ein	ok	True	7	257	1512	1612	2723	134	4365	False	False
+tests/stdlib/math/gcd/05_lcm.ein	ok	True	6	239	2081	2181	3432	160	5065	False	False
+tests/stdlib/math/gcd/06_lcm_zero.ein	ok	True	4	220	577	677	766	53	2399	False	False
+tests/stdlib/math/gcd/07_gcd_call.ein	ok	True	3	188	1130	1230	1786	81	3419	False	False
+tests/stdlib/math/gcd/08_undeclared_first_operand.ein	ok	True	1	105	383	483	488	1	2122	False	False
+tests/stdlib/math/gcd/09_undeclared_second_operand.ein	ok	True	1	119	384	484	493	1	2127	False	False
+tests/stdlib/math/gcd/10_digit_as_an_operand.ein	ok	True	1	110	383	483	488	1	2122	False	False
+tests/stdlib/math/gcd/11_digit_zero_as_the_second_operand.ein	ok	True	1	124	384	484	493	1	2127	False	False
+tests/stdlib/math/gcd/12_what_stays_silent.ein	ok	True	2	224	706	806	920	22	2640	False	False
+tests/stdlib/elim/01_domain_elimination.ein	ok	False	9	10	10	10	10	0	20	False	False
+tests/stdlib/elim/02_no_room_left.ein	ok	False	8	7	7	7	7	0	17	False	False
+tests/stdlib/elim/03_typecheck_arg0_violated.ein	ok	False	3	5	5	5	5	0	9	False	True
+tests/stdlib/elim/04_typecheck_arg1_violated.ein	ok	False	3	5	5	5	5	0	9	False	True
+tests/stdlib/math/int/01_simplify.ein	ok	True	9	144	565	665	795	20	2494	False	False
+tests/stdlib/math/int/02_neg.ein	ok	True	7	144	540	640	721	20	2420	False	False
+tests/stdlib/math/int/03_add.ein	ok	True	11	159	687	787	986	54	2685	False	False
+tests/stdlib/math/int/04_sub.ein	ok	True	10	159	656	756	936	56	2635	False	False
+tests/stdlib/math/int/05_mul.ein	ok	True	10	199	1028	1128	1496	155	3195	False	False
+tests/stdlib/math/int/06_cmp.ein	ok	True	12	148	625	740	920	55	2619	False	False
+tests/stdlib/math/int/07_unsimplified.ein	ok	True	8	240	660	761	907	45	2606	False	False
+tests/stdlib/math/int/08_named_and_chained.ein	ok	True	9	261	604	704	807	38	2522	False	False
+tests/stdlib/math/int/09_div_euclid.ein	ok	True	18	236	1919	2019	2980	161	4679	False	False
+tests/stdlib/math/int/10_div_trunc.ein	ok	True	18	227	1854	1954	2899	162	4598	False	False
+tests/stdlib/math/int/11_div_floor.ein	ok	True	18	236	1916	2016	3000	160	4699	False	False
+tests/stdlib/math/int/12_div_euclid_by_zero.ein	ok	True	2	174	515	615	652	17	2352	False	False
+tests/stdlib/math/int/13_div_trunc_by_zero.ein	ok	True	2	174	517	617	658	17	2358	False	False
+tests/stdlib/math/int/14_div_floor_by_zero.ein	ok	True	3	186	520	620	668	18	2369	False	False
+tests/stdlib/math/int/15_letter_in_a_part.ein	ok	True	1	114	486	586	597	6	2297	False	False
+tests/stdlib/math/int/16_letter_in_a_negative_part.ein	ok	True	1	140	491	591	605	7	2305	False	False
+tests/stdlib/math/int/17_letter_in_the_second_operand.ein	ok	True	1	141	489	589	602	8	2302	False	False
+tests/stdlib/math/int/18_part_ends_in_a_digit.ein	ok	True	1	118	487	587	596	6	2299	False	False
+tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein	ok	True	2	130	487	587	597	7	2301	False	False
+tests/stdlib/math/int/20_undeclared_first_operand.ein	ok	True	1	108	482	582	587	2	2287	False	False
+tests/stdlib/math/int/21_undeclared_second_operand.ein	ok	True	1	125	484	584	594	3	2294	False	False
+tests/stdlib/math/int/22_digit_as_an_operand.ein	ok	True	1	113	482	582	587	2	2287	False	False
+tests/stdlib/math/int/23_digit_as_a_part.ein	ok	True	1	114	486	586	596	5	2297	False	False
+tests/stdlib/math/int/24_letter_through_a_name.ein	ok	True	2	126	486	586	598	6	2299	False	False
+tests/stdlib/math/int/25_let_twice.ein	ok	True	3	176	515	615	647	13	2348	False	False
+tests/stdlib/math/int/26_let_zero.ein	ok	True	1	79	484	584	585	2	2285	False	True
+tests/stdlib/math/int/27_let_digit.ein	ok	True	1	79	482	582	584	2	2285	False	False
+tests/stdlib/math/int/28_natural_where_an_integer_goes.ein	ok	True	2	159	500	600	622	10	2321	False	False
+tests/stdlib/math/int/29_named_constant_as_a_part.ein	ok	True	2	126	486	586	597	6	2299	False	False
+tests/stdlib/math/int/30_letter_in_a_division.ein	ok	True	1	123	487	587	598	6	2298	False	False
+tests/stdlib/math/int/31_digit_as_the_negative_part.ein	ok	True	1	140	490	590	602	6	2303	False	False
+tests/stdlib/math/int/32_digit_zero_as_a_part.ein	ok	True	1	114	486	586	596	5	2297	False	False
+tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein	ok	True	1	140	490	590	603	5	2304	False	False
+tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein	ok	True	2	152	490	590	603	7	2305	False	False
+tests/stdlib/math/int/35_undeclared_divisor.ein	ok	True	1	111	482	582	589	2	2289	False	False
+tests/stdlib/math/int/36_undeclared_only_operand.ein	ok	True	1	99	482	582	582	0	2287	False	False
+tests/stdlib/macro/01_forall.ein	ok	False	5	10	10	10	10	0	21	False	True
+tests/stdlib/macro/02_unknown.ein	ok	False	5	7	7	7	7	0	15	False	False
+tests/stdlib/math/num9/01_add.ein	ok	True	2	60	401	501	501	0	2166	False	False
+tests/stdlib/math/num9/02_add_overflow.ein	ok	True	2	63	401	501	501	0	2166	False	False
+tests/stdlib/math/num9/03_sub.ein	ok	True	3	60	401	501	501	0	2168	False	False
+tests/stdlib/math/num9/04_cmp.ein	ok	True	4	60	401	502	502	0	2170	False	False
+tests/stdlib/math/num9/05_mul.ein	ok	True	3	63	401	501	501	0	2198	False	False
+tests/stdlib/math/num9/06_mul_overflow.ein	ok	True	4	66	401	501	501	0	2206	False	False
+tests/stdlib/math/num9/07_div.ein	ok	True	1	69	401	501	501	0	2174	False	False
+tests/stdlib/math/num9/08_div_every_digit.ein	ok	True	2	69	401	501	501	0	2186	False	False
+tests/stdlib/math/num9/09_div_by_zero.ein	ok	True	2	75	401	501	501	0	2168	False	False
+tests/stdlib/math/num9/10_to9.ein	ok	True	12	73	415	515	606	4	2267	False	False
+tests/stdlib/math/num9/11_from9.ein	ok	True	11	67	402	502	522	3	2194	False	False
+tests/stdlib/math/num9/12_both_modules.ein	ok	True	3	176	411	519	564	3	2228	False	False
+tests/stdlib/math/num9/13_chain.ein	ok	True	1	78	401	501	501	0	2186	False	False
+tests/stdlib/math/rat/01_simplify.ein	ok	True	11	274	3627	3727	5438	274	7229	False	False
+tests/stdlib/math/rat/02_neg.ein	ok	True	5	188	754	854	936	22	2727	False	False
+tests/stdlib/math/rat/03_add.ein	ok	True	8	249	1291	1391	1789	164	3580	False	False
+tests/stdlib/math/rat/04_sub.ein	ok	True	7	246	1175	1275	1583	135	3374	False	False
+tests/stdlib/math/rat/05_mul.ein	ok	True	7	240	1119	1219	1490	135	3281	False	False
+tests/stdlib/math/rat/06_div.ein	ok	True	6	240	1076	1176	1400	121	3191	False	False
+tests/stdlib/math/rat/07_cmp.ein	ok	True	10	215	1230	1344	1684	167	3475	False	False
+tests/stdlib/math/rat/08_unsimplified.ein	ok	True	10	397	3659	3759	5412	330	7203	False	False
+tests/stdlib/math/rat/09_named_and_chained.ein	ok	True	4	306	879	980	1110	61	2906	False	False
+tests/stdlib/math/rat/10_div_by_zero_rational.ein	ok	True	2	255	763	863	924	34	2716	False	False
+tests/stdlib/math/rat/11_zero_denominator_first.ein	ok	True	2	252	749	850	902	31	2694	False	False
+tests/stdlib/math/rat/12_zero_denominator_second.ein	ok	True	3	267	756	857	919	33	2712	False	False
+tests/stdlib/math/rat/13_zero_denominator_one_operand.ein	ok	True	2	258	750	851	904	29	2696	False	False
+tests/stdlib/math/rat/14_letter_in_the_numerator.ein	ok	True	1	173	689	789	808	11	2600	False	False
+tests/stdlib/math/rat/15_letter_in_the_denominator.ein	ok	True	1	122	678	778	787	5	2579	False	False
+tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein	ok	True	1	122	679	779	786	4	2581	False	False
+tests/stdlib/math/rat/17_undeclared_first_operand.ein	ok	True	1	120	675	775	780	3	2572	False	False
+tests/stdlib/math/rat/18_undeclared_second_operand.ein	ok	True	1	154	681	781	795	5	2587	False	False
+tests/stdlib/math/rat/19_digit_as_an_operand.ein	ok	True	1	125	675	775	780	3	2572	False	False
+tests/stdlib/math/rat/20_letter_through_a_name.ein	ok	True	2	185	689	789	809	11	2602	False	False
+tests/stdlib/math/rat/21_let_twice.ein	ok	True	3	263	817	917	999	46	2792	False	False
+tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein	ok	True	2	246	747	847	891	24	2682	False	False
+tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein	ok	True	2	246	748	848	894	25	2685	False	False
+tests/stdlib/math/rat/24_digit_as_the_numerator.ein	ok	True	1	115	676	776	783	3	2576	False	False
+tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein	ok	True	1	115	676	776	783	3	2576	False	False
+tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein	ok	True	2	127	676	776	784	3	2578	False	False
+tests/stdlib/math/rat/27_digit_as_the_denominator.ein	ok	True	1	122	678	778	786	4	2579	False	False
+tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein	ok	True	1	122	678	778	786	4	2579	False	False
+tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein	ok	True	2	134	678	778	787	4	2581	False	False
+tests/stdlib/math/rat/30_undeclared_only_operand.ein	ok	True	1	108	675	775	775	0	2572	False	False
+tests/stdlib/math/rat/31_equal_values_two_facts.ein	ok	True	6	403	1655	1765	2338	149	4130	False	False
+tests/stdlib/slots/01_partition.ein	ok	False	6	22	22	22	22	0	61	False	True
+tests/stdlib/slots/02_negative.ein	ok	False	6	22	22	22	22	0	76	False	True
+tests/stdlib/slots/03_fill.ein	ok	False	8	22	22	22	22	0	64	False	False
+tests/stdlib/slots/04_elimination.ein	ok	False	8	22	22	22	22	0	64	False	False
+tests/stdlib/slots/05_no_room.ein	ok	False	10	13	13	13	13	0	34	False	False
+tests/stdlib/slots/06_no_fill.ein	ok	False	11	13	13	13	13	0	51	False	False
+tests/stdlib/slots/07_spatial_prune.ein	ok	False	7	31	31	31	31	0	121	False	True
+tests/stdlib/slots/08_spatial_adjacent.ein	ok	False	9	31	31	31	31	0	102	False	False
+tests/stdlib/slots/09_owed_room.ein	ok	False	4	7	7	7	7	0	18	False	True
+tests/stdlib/slots/10_owed_room_satisfied.ein	ok	False	4	7	7	7	7	0	21	False	True
+tests/stdlib/slots/11_owed_fill.ein	ok	False	4	7	7	7	7	0	18	False	True
+tests/stdlib/slots/12_owed_fill_satisfied.ein	ok	False	4	7	7	7	7	0	21	False	True
+tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein	ok	False	9	33	33	33	33	0	98	False	False
+tests/stdlib/typing/01_reflexive.ein	ok	False	2	5	5	5	5	0	8	False	True
+tests/stdlib/typing/02_type_hierarchy_converse.ein	ok	False	5	0	13	13	13	0	14	False	True
+tests/stdlib/typing/03_type_hierarchy_welltyped.ein	ok	False	5	13	13	13	13	0	16	False	True
+tests/text/01_unicode.ein	ok	False	2	4	4	4	4	0	8	False	True
+tests/imports/lower.ein	ok	False	4	6	12	12	12	0	15	False	True
+tests/imports/upper.ein	ok	False	3	9	21	21	21	0	27	False	True
+tests/imports/upper_without_entry.ein	ok	False	3	9	21	21	21	0	26	False	True
+tests/imports/01_nested_import_whole.ein	ok	False	1	21	21	21	21	0	31	False	False
+tests/imports/02_nested_import_left_behind.ein	ok	False	1	21	21	21	21	0	30	False	False
+tests/region/01_states.ein	ok	False	4	2	8	8	8	0	10	False	True
+tests/region/02_merged_single.ein	ok	False	4	6	8	8	8	0	16	False	True
+tests/region/03_merged_or.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/region/04_owing.ein	ok	False	3	5	5	5	5	0	10	False	True
+tests/region/05_empty.ein	ok	False	3	5	5	5	5	0	10	False	True
+tests/region/06_false.ein	ok	False	2	3	3	3	3	0	6	False	True
+tests/region/07_cube.ein	ok	False	4	3	7	7	7	0	10	False	True
+tests/region/08_query_classes.ein	ok	False	4	2	8	8	8	0	10	False	True
+tests/region/09_query_over_maximal.ein	ok	False	4	2	6	6	6	0	10	False	True
+tests/region/10_denied_extensions.ein	ok	False	3	3	5	5	5	0	11	False	True
+tests/saved/01_a_rule_builds_a_fact.ein	ok	False	3	6	6	6	6	0	8	False	True
+tests/saved/02_a_choice_with_a_fact_inside_it.ein	ok	False	4	2	8	8	8	0	9	False	True
+tests/saved/03_the_standard_library.ein	ok	True	3	131	345	445	459	5	2072	False	False
+tests/saved/04_a_saved_node.ein	ok	False	4	8	8	8	8	0	11	False	True
+examples/syntax/arg-kinds.ein	ok	False	1	2	2	2	2	0	7	False	True
+examples/syntax/config.ein	ok	False	0	0	0	0	0	0	0	True	True
+examples/syntax/constraint-scopes.ein	ok	False	7	0	9	9	9	0	9	False	True
+examples/syntax/equality.ein	ok	False	3	0	2	2	2	0	4	False	False
+examples/syntax/is-a-shapes.ein	ok	False	2	0	0	0	0	0	2	False	False
+examples/syntax/negation.ein	ok	False	3	0	0	0	0	0	3	False	False
+examples/syntax/nullary.ein	ok	False	1	1	1	1	1	0	2	True	True
+examples/syntax/query-full.ein	ok	False	0	0	0	0	0	0	0	True	True
+examples/syntax/relation-decls.ein	ok	False	1	0	0	0	0	0	1	False	False
+examples/syntax/rule-forall-and-not.ein	ok	False	1	0	2	2	2	0	2	False	True
+examples/syntax/rule-guards.ein	ok	False	2	0	4	4	4	0	4	False	True
+examples/syntax/rule-nary-and-or.ein	ok	False	0	0	0	0	0	0	0	True	True
+examples/syntax/rule-shared-guard-var.ein	ok	False	1	0	2	2	2	0	2	False	True
+examples/syntax/trace-empty.ein	ok	False	0	0	0	0	0	0	0	True	True
+examples/syntax/trace-steps.ein	ok	False	0	0	0	0	0	0	0	True	True
+examples/syntax/unary-and-nary.ein	ok	False	2	2	2	2	2	0	4	False	False
+examples/syntax/wrappers.ein	ok	False	3	0	0	0	1	1	3	False	False
+examples/word_problems/before.ein	ok	True	0	87	427	527	529	2	2191	False	True
+examples/word_problems/bob1.ein	ok	True	0	163	421	521	538	5	2193	False	True
+examples/word_problems/boxes12.ein	ok	True	0	260	511	611	684	25	2352	False	True
+examples/word_problems/boxes13.ein	ok	True	0	263	509	609	688	25	2356	False	True
+examples/word_problems/bystander.ein	ok	True	0	84	412	512	517	3	2172	False	True
+examples/word_problems/contra.ein	ok	True	0	166	421	521	538	5	2194	False	True
+examples/word_problems/gap.ein	ok	True	0	178	436	536	553	5	2229	False	True
+examples/word_problems/gap_assume.ein	ok	True	0	198	452	552	584	10	2258	False	False
+examples/word_problems/gap_fact.ein	ok	True	0	186	432	532	575	10	2238	False	True
+examples/word_problems/gaps.ein	ok	False	5	59	427	527	527	0	2185	False	True
+examples/word_problems/kinds.ein	ok	True	0	96	427	527	530	2	2198	False	True
+examples/word_problems/kinds_assume.ein	ok	True	0	168	439	539	549	6	2215	False	False
+examples/word_problems/kinds_full.ein	ok	True	0	156	418	518	538	6	2195	False	True
+examples/word_problems/kinds_listed.ein	ok	True	0	175	447	547	557	6	2225	False	True
+examples/word_problems/listed_is_all.ein	ok	True	2	62	419	519	519	0	2172	False	False
+examples/word_problems/more.ein	ok	True	0	191	425	526	553	5	2211	False	True
+examples/word_problems/pencils.ein	ok	True	0	301	560	660	854	34	2521	False	True
+examples/word_problems/readings.ein	ok	True	5	62	426	526	526	0	2184	False	False
+examples/word_problems/unused.ein	ok	True	0	166	421	521	541	7	2196	False	True
+examples/word_problems/words.ein	ok	True	26	56	412	512	512	0	2163	False	True

@@ -1,0 +1,45 @@
+solve · plans/m1f_hypothesis_and_documentation/p1f.23_review_processing/s1f.23.7_examples/04-about.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  (region
+    ;; state 1 of 1 — ∅, root itself · minimal and maximal
+    (model))
+
+  query 1 of 4      (in-slice-1 ?f ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?f = symmetric · ?r = next-to
+  as :expect        (model (in-slice-1 symmetric next-to))
+
+  query 2 of 4      (in-slice-2 ?f ?x ?y)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?f = includes · ?x = right-of · ?y = next-to
+  as :expect        (model (in-slice-2 includes right-of next-to))
+
+  query 3 of 4      (in-slice-4 ?f ?a ?b ?c ?d)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = lives · ?b = Ann · ?c = lives · ?d = Bob · ?f = co-located
+  as :expect        (model (in-slice-4 co-located lives Ann lives Bob))
+
+  query 4 of 4      (about-1 ?f)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?f = symmetric
+  as :expect        (model (about-1 symmetric))

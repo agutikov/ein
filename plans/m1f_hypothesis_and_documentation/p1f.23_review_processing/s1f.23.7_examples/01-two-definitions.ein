@@ -1,0 +1,58 @@
+;;; S1f.23.7 task 1 — where the constraint view's selection and the user's slice differ.
+;;;
+;;; V, the view: every fact the file writes with no :source, :rule or :using,
+;;; of a relation the file does not declare. U, the user's slice: every fact
+;;; root holds with a relation of the program under one of its argument arrows.
+;;; Each group below is one kind of difference, named in its comment.
+
+(relation lives    Person House  :why "{?3} lives in {?4}")
+(relation next-to  House House   :why "{?3} is next to {?4}")
+(relation right-of House House   :why "{?3} is right of {?4}")
+(relation includes Rel Rel       :why "every {?3} fact is a {?4} fact")
+(relation spare    Thing         :why "a {?3} nobody uses")
+(relation n        Number Digit  :why "ten times {?3} plus {?4}")
+(relation z                      :why "zero")
+
+;; both: an undeclared relation's fact about a relation, written bare
+(symmetric next-to)
+
+(rule symmetric (?R)
+  :match  (?R ?a ?b)
+  :assert (?R ?b ?a)
+  :why    "{?R} is symmetric: {?a} and {?b} the other way round")
+
+;; U only: a declared relation's fact about relations
+(includes right-of next-to)
+
+(rule includes-fires ()
+  :match  (and (includes ?r ?s) (right-of ?a ?b))
+  :assert (next-to ?a ?b)
+  :why    "every {?r} fact is a {?s} fact")
+
+;; U only: a fact about relations given with a :source
+(co-located lives Ann lives Bob :source "condition (2)")
+
+;; U only: derived at root, a fact about a relation
+(rule swap-closed ()
+  :match  (symmetric ?r)
+  :assert (closed-under-swap ?r)
+  :why    "{?r} is closed under swapping its arguments")
+
+;; V only: an undeclared table of plain objects
+(digit-succ 0 1)
+(digit-succ 1 2)
+
+;; V only: a stored negation the file writes
+(not (lives Ann H2))
+
+;; V only: a relation only inside a fact under an arrow
+(claims Bob (symmetric lives))
+
+;; U only, and a reading's choice: z is a declared relation of no argument,
+;; and a numeral writes the same atom as an object
+(n z 4)
+
+;; the readings of "a relation": spare is declared and has no fact
+(lives Ann H1) (right-of H2 H1)
+
+(solve :no-search)

@@ -1,0 +1,24 @@
+zebra2: the goal selects 4 facts; the slice draws 4 facts and 9 atoms of the state's 546 octagons; the constraint view draws 20 facts
+  (drink-loc Water House-1)
+  (nation-loc Japanese House-5)
+  (nation-loc Norwegian House-1)
+  (pet-loc Zebra House-5)
+zebra2-bijective: the goal selects 10 facts; the slice draws 10 facts and 13 atoms of the state's 546 octagons; the constraint view draws 20 facts
+  (bijective color-loc)
+  (bijective drink-loc)
+  (bijective nation-loc)
+  (bijective pet-loc)
+  (bijective smoke-loc)
+  (relation color-loc Color House)
+  (relation drink-loc Drink House)
+  (relation nation-loc Nationality House)
+  (relation pet-loc Pet House)
+  (relation smoke-loc Cigarette House)
+beliefs: the goal selects 5 facts; the slice draws 7 facts and 8 atoms of the state's 24 octagons; the constraint view draws 4 facts
+  (believes Ann (likes Dan Soup))
+  (believes Ann (likes Dan Tea))
+  (believes Bob (likes Dan Soup))
+  (believes Bob (likes Dan Tea))
+  (believes Cid (likes Dan Soup))
+add: the goal selects 1 facts; the slice draws 3 facts and 6 atoms of the state's 2142 octagons; the constraint view draws 16 facts
+  (sum-of apples pears (n (n z 2) 2))

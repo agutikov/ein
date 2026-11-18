@@ -1,0 +1,27 @@
+digraph slice {
+  label="MOCK, not built: the slice of (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))\ncut from ein render kb, the state of R (546 facts drawn)";
+  labelloc=t; fontname="Inter";
+  // suggested layout: fdp
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+
+  // facts the goal selects, and what they point at
+  f_481b793602 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(10)"];
+  f_481b793602 -> "nation-loc" [xlabel="1", color="#d62728", style=solid];
+  f_481b793602 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
+  f_481b793602 -> "House-1" [xlabel="3", color="#d62728", style=solid];
+  f_03fe0e09c2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", fontcolor="#e377c2", style=dashed, xlabel="by std.bijection.range-elimination"];
+  f_03fe0e09c2 -> "drink-loc" [xlabel="1", color="#e377c2", style=dashed];
+  f_03fe0e09c2 -> "Water" [xlabel="2", color="#e377c2", style=dashed];
+  f_03fe0e09c2 -> "House-1" [xlabel="3", color="#e377c2", style=dashed];
+  f_30d9336b56 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.domain-elimination"];
+  f_30d9336b56 -> "nation-loc" [xlabel="1", color="#d62728", style=dashed];
+  f_30d9336b56 -> "Japanese" [xlabel="2", color="#d62728", style=dashed];
+  f_30d9336b56 -> "House-5" [xlabel="3", color="#d62728", style=dashed];
+  f_fd6f18c857 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=dashed, xlabel="by std.bijection.domain-elimination"];
+  f_fd6f18c857 -> "pet-loc" [xlabel="1", color="#ff7f0e", style=dashed];
+  f_fd6f18c857 -> "Zebra" [xlabel="2", color="#ff7f0e", style=dashed];
+  f_fd6f18c857 -> "House-5" [xlabel="3", color="#ff7f0e", style=dashed];
+}

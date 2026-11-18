@@ -1,0 +1,62 @@
+=  SATURATED KB DUMP
+======================================================================
+
+;; Relations — declared (7)
+(relation lives Person House)
+(relation next-to House House)
+(relation right-of House House)
+(relation includes Rel Rel)
+(relation spare Thing)
+(relation n Number Digit)
+(relation z)
+
+;; Relations — auto-vivified (5)
+;;   symmetric
+;;   co-located
+;;   digit-succ
+;;   not
+;;   claims
+
+;; Rules (3)
+;;   symmetric  :params (?R)  stratum 0
+;;   includes-fires  :params ()  stratum 0
+;;   swap-closed  :params ()  stratum 0
+
+;; Strata — stratified, 1 stratum
+
+;; ── BACKGROUND (22 facts) ──
+  (claims Bob (symmetric lives))
+;;   digit-succ (2)
+  (digit-succ 0 1)
+  (digit-succ 1 2)
+  (includes right-of next-to)
+  (lives Ann H1)
+  (n z 4)
+  (not (lives Ann H2))
+;;   relation (13)
+  (relation lives Person House)
+  (relation lives)
+  (relation next-to House House)
+  (relation next-to)
+  (relation right-of House House)
+  (relation right-of)
+  (relation includes Rel Rel)
+  (relation includes)
+  (relation spare Thing)
+  (relation spare)
+  (relation n Number Digit)
+  (relation n)
+  (relation z)
+  (right-of H2 H1)
+  (symmetric next-to)
+
+;; ── GIVEN (1 facts) ──
+  (co-located lives Ann lives Bob :source "condition (2)")
+
+;; ── DERIVED (3 facts) ──
+  (closed-under-swap next-to :rule swap-closed)
+;;   next-to (2)
+  (next-to H2 H1 :rule includes-fires)
+  (next-to H1 H2 :rule symmetric)
+
+======================================================================

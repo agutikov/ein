@@ -1,0 +1,100 @@
+;; examples/zebra2.ein with, appended:
+;;   (query :goal (or (symmetric ?r) (bijective ?r) (transitive ?r)))
+  query 2 of 2      (or (symmetric ?r) (bijective ?r) (transitive ?r))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r = color-loc
+                      ?r = drink-loc
+                      ?r = is-a*
+                      ?r = nation-loc
+                      ?r = next-to
+                      ?r = pet-loc
+                      ?r = smoke-loc
+  as :expect        (model (or (symmetric color-loc) (bijective color-loc) (transitive color-loc))
+                           (or (symmetric drink-loc) (bijective drink-loc) (transitive drink-loc))
+                           (or (symmetric is-a*) (bijective is-a*) (transitive is-a*))
+                           (or (symmetric nation-loc) (bijective nation-loc) (transitive nation-loc))
+                           (or (symmetric next-to) (bijective next-to) (transitive next-to))
+                           (or (symmetric pet-loc) (bijective pet-loc) (transitive pet-loc))
+                           (or (symmetric smoke-loc) (bijective smoke-loc) (transitive smoke-loc)))
+
+;; examples/zebra2.ein with, appended:
+;;   (query :goal (co-located ?r1 ?v1 ?r2 ?v2))
+  query 2 of 2      (co-located ?r1 ?v1 ?r2 ?v2)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?r1 = color-loc · ?r2 = drink-loc · ?v1 = Green · ?v2 = Coffee
+                      ?r1 = color-loc · ?r2 = nation-loc · ?v1 = Red · ?v2 = Englishman
+                      ?r1 = color-loc · ?r2 = smoke-loc · ?v1 = Yellow · ?v2 = Kools
+                      ?r1 = drink-loc · ?r2 = color-loc · ?v1 = Coffee · ?v2 = Green
+                      ?r1 = drink-loc · ?r2 = nation-loc · ?v1 = Tea · ?v2 = Ukrainian
+                      ?r1 = drink-loc · ?r2 = smoke-loc · ?v1 = Juice · ?v2 = Lucky_Strike
+                      ?r1 = nation-loc · ?r2 = color-loc · ?v1 = Englishman · ?v2 = Red
+                      ?r1 = nation-loc · ?r2 = drink-loc · ?v1 = Ukrainian · ?v2 = Tea
+                      ?r1 = nation-loc · ?r2 = pet-loc · ?v1 = Spaniard · ?v2 = Dog
+                      ?r1 = nation-loc · ?r2 = smoke-loc · ?v1 = Japanese · ?v2 = Parliament
+                      ?r1 = pet-loc · ?r2 = nation-loc · ?v1 = Dog · ?v2 = Spaniard
+                      ?r1 = pet-loc · ?r2 = smoke-loc · ?v1 = Snail · ?v2 = Old_Gold
+                      ?r1 = smoke-loc · ?r2 = color-loc · ?v1 = Kools · ?v2 = Yellow
+                      ?r1 = smoke-loc · ?r2 = drink-loc · ?v1 = Lucky_Strike · ?v2 = Juice
+                      ?r1 = smoke-loc · ?r2 = nation-loc · ?v1 = Parliament · ?v2 = Japanese
+                      ?r1 = smoke-loc · ?r2 = pet-loc · ?v1 = Old_Gold · ?v2 = Snail
+  as :expect        (model (co-located color-loc Green drink-loc Coffee)
+                           (co-located color-loc Red nation-loc Englishman)
+                           (co-located color-loc Yellow smoke-loc Kools)
+                           (co-located drink-loc Coffee color-loc Green)
+                           (co-located drink-loc Juice smoke-loc Lucky_Strike)
+                           (co-located drink-loc Tea nation-loc Ukrainian)
+                           (co-located nation-loc Englishman color-loc Red)
+                           (co-located nation-loc Japanese smoke-loc Parliament)
+                           (co-located nation-loc Spaniard pet-loc Dog)
+                           (co-located nation-loc Ukrainian drink-loc Tea)
+                           (co-located pet-loc Dog nation-loc Spaniard)
+                           (co-located pet-loc Snail smoke-loc Old_Gold)
+                           (co-located smoke-loc Kools color-loc Yellow)
+                           (co-located smoke-loc Lucky_Strike drink-loc Juice)
+                           (co-located smoke-loc Old_Gold pet-loc Snail)
+                           (co-located smoke-loc Parliament nation-loc Japanese))
+
+;; examples/zebra2.ein with, appended:
+;;   (rule about-1 (?F) :match (and (?F ?r) (relation ?r)) :assert (in-slice-1 ?F ?r) :why "{?F} says something of {?r}")
+;;   (about-1 bijective)
+;;   (query :goal (in-slice-1 ?f ?r))
+  query 2 of 2      (in-slice-1 ?f ?r)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?f = bijective · ?r = color-loc
+                      ?f = bijective · ?r = drink-loc
+                      ?f = bijective · ?r = nation-loc
+                      ?f = bijective · ?r = pet-loc
+                      ?f = bijective · ?r = smoke-loc
+  as :expect        (model (in-slice-1 bijective color-loc)
+                           (in-slice-1 bijective drink-loc)
+                           (in-slice-1 bijective nation-loc)
+                           (in-slice-1 bijective pet-loc)
+                           (in-slice-1 bijective smoke-loc))
+
+;; examples/zebra2.ein with, appended:
+;;   (rule about-1 (?F) :match (and (?F ?r) (relation ?r)) :assert (in-slice-1 ?F ?r) :why "{?F} says something of {?r}")
+;;   (about-1 symmetric)
+;;   (query :goal (in-slice-1 ?f ?r))
+kb load error: rule 'std.algebra.imply1': its :assert writes (?R2 ?a), whose ?a is rule 'symmetric''s parameter ?rel, which names a relation, and (?R1 ?a) can bind ?a to a fact, as an argument of the relation ?R1 names — a relation is named by a symbol, not a fact
+
+;; examples/zebra2.ein with, appended:
+;;   (rule about-1 (?F) :match (and (?F ?r) (relation ?r)) :assert (in-slice (?F ?r)) :why "{?F} says something of {?r}")
+;;   (about-1 bijective)
+;;   (query :goal (in-slice ?f))
+  query 2 of 2      (in-slice ?f)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?f = (bijective color-loc)
+                      ?f = (bijective drink-loc)
+                      ?f = (bijective nation-loc)
+                      ?f = (bijective pet-loc)
+                      ?f = (bijective smoke-loc)
+  as :expect        (model (in-slice (bijective color-loc))
+                           (in-slice (bijective drink-loc))
+                           (in-slice (bijective nation-loc))
+                           (in-slice (bijective pet-loc))
+                           (in-slice (bijective smoke-loc)))
+

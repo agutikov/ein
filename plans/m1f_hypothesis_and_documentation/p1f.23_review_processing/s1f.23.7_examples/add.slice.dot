@@ -1,0 +1,31 @@
+digraph slice {
+  label="MOCK, not built: the slice of (sum-of apples pears ?fruit)\ncut from ein render kb, the state of R (2142 facts drawn)";
+  labelloc=t; fontname="Inter";
+  // suggested layout: fdp
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+
+  // facts the goal selects, and what they point at
+  newrank=true;
+  f_a15e19373d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.math.positional.add-answer"];
+  f_a15e19373d -> "sum-of" [xlabel="1", color="#d62728", style=dashed];
+  f_a15e19373d -> "apples" [xlabel="2", color="#d62728", style=dashed];
+  f_a15e19373d -> "pears" [xlabel="3", color="#d62728", style=dashed];
+  f_a15e19373d -> f_08c6f49855 [xlabel="4", color="#d62728", style=dashed];
+  f_721209ac60 -> "n" [xlabel="1", color="#9467bd", style=solid];
+  f_721209ac60 -> "z" [xlabel="2", color="#9467bd", style=solid];
+  f_721209ac60 -> "2" [xlabel="3", color="#9467bd", style=solid];
+  f_08c6f49855 -> "n" [xlabel="1", color="#9467bd", style=solid];
+  f_08c6f49855 -> f_721209ac60 [xlabel="2", color="#9467bd", style=solid];
+  f_08c6f49855 -> "2" [xlabel="3", color="#9467bd", style=solid];
+  subgraph cluster_ctx_0 {
+    label="n ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_721209ac60 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
+  }
+  subgraph cluster_ctx_1 {
+    label="sum-of ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_08c6f49855 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
+  }
+}

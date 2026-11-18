@@ -1,0 +1,2 @@
+  query 2 of 2      (and (drink-loc Water ?h) (nation-loc ?who ?h))
+  over              all of R — --no-search read root alone, and root owes 36 instances, so ∅ is not in R: no state to answer from, and R was not searched

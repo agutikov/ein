@@ -1,0 +1,1 @@
+kb load error: rule 'about-a-relation': its :match writes (?f ?r) with ?f as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds; query: its :goal writes (?f ?r) with ?f as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator

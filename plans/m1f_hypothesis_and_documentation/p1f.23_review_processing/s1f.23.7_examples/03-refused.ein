@@ -1,0 +1,17 @@
+;;; S1f.23.7 task 1 — the slice written with its relation a variable: refused at load, goal and rule alike.
+
+(relation lives   Person House :why "{?3} lives in {?4}")
+(relation next-to House House  :why "{?3} is next to {?4}")
+(symmetric next-to)
+(lives Ann H1)
+
+;; every fact of one argument whose argument is a declared relation
+(query :goal (and (relation ?r) (?f ?r)))
+
+;; the same as a rule: ?f is bound by the match, and no parameter binds it
+(rule about-a-relation ()
+  :match  (and (relation ?r) (?f ?r))
+  :assert (in-slice ?f ?r)
+  :why    "{?f} says something of the relation {?r}")
+
+(solve :no-search)
