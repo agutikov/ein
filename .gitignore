@@ -40,3 +40,4 @@ ein.rs/target-*
 !/plans/*/review/**/
 !/plans/*/review/**/README.md
 !/plans/*/review/**/programs/*.ein
+!/plans/*/review/*/ANSWERS.md

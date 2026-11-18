@@ -17,6 +17,10 @@ under *Found while building*.
 
 ## The topics
 
+**Your answers go in each topic's `ANSWERS.md`**: one entry an item, its options and default, and a blank for
+your answer; a re-render never touches it.
+
+
 | topic | items | what they are about |
 |---|---|---|
 | [01-save-and-load](01-save-and-load/README.md) | 8 | the saved file: what it prints, what reads it, what went with the state files (a fact's English) |
