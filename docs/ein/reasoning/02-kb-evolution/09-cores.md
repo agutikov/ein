@@ -201,11 +201,12 @@ $$
 
 A contradiction's facts are explained together, a pair's two sides $\lbrace f, \lnot f \rbrace$ as one AND-node.
 
-![The derivation of the saturation page with its terminals double-bordered and the core's three drawn red](diagrams/09-core-in-derivation.svg)
+![The derivation of the saturation page with its terminals double-bordered, the core's three drawn red, and the two facts its derivations added heavy](diagrams/09-core-in-derivation.svg)
 
-The derivation of [saturation](02-saturation.md), with its terminals double-bordered. The core is the three
-terminals drawn red; the two givens of $\operatorname{is-a}$, which no derivation of $\bot$ reads, are outside it,
-and the derived fact between them is no terminal:
+The derivation of [saturation](02-saturation.md), with its terminals double-bordered and the facts a derivation added
+heavy, as in the proof graph above. The core is the three terminals drawn red; the two givens of
+$\operatorname{is-a}$, which no derivation of $\bot$ reads, are outside it, and the derived fact between them is no
+terminal:
 
 $$
 \begin{aligned}

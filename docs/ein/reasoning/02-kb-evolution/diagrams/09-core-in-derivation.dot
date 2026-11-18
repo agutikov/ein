@@ -2,13 +2,13 @@ digraph core_in_derivation {
   rankdir=LR;
   node [fontname="Inter", shape=box];
   ranksep=0.55;
-  "f_ba78d8e6bc" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728", penwidth=2];
-  "f_203bb25e0e" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728", penwidth=2];
-  "f_e42df9f04f" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728", penwidth=2];
+  "f_ba78d8e6bc" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728"];
+  "f_203bb25e0e" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728"];
+  "f_e42df9f04f" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2, color="#d62728"];
   "g1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2];
   "g2" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2];
-  "f_cb1915def2" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
-  "f_a1f94f5b63" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  "f_cb1915def2" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
+  "f_a1f94f5b63" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
   "fire0_neighbour" [shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2", label="neighbour"];
   "fire0_fox-keeps-away" [shape=box, style="rounded,bold", color="#17becf", fontcolor="#17becf", label="fox-keeps-away"];
   "f_ba78d8e6bc" -> "lives-in" [xlabel="1"];

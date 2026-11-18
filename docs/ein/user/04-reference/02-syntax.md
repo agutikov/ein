@@ -675,8 +675,9 @@ command:
 - **A goal asks about relations of the program**
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)). The relation of
   every pattern it writes, at any depth, under `(absent …)` and `(not …)` too, is one the program declares, states a
-  fact of, writes as the relation of a fact that is an argument, writes in a rule or an hrule, or one a `(solve :hrules …)` activator has its hrule propose; `is-a`, `eq`,
-  `neq` and `relation` are every program's. A goal over any other name, `(payed ?g)` for `paid`, is refused at the
+  fact of, writes as the relation of a fact that is an argument, writes in a rule or an hrule, or one a `(solve :hrules …)` activator has its hrule propose; `eq`, `neq` and
+  `relation` are every program's, and no theory's relation is: `is-a` is one where the program writes it
+  ([Q-M1f.436](../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)). A goal over any other name, `(payed ?g)` for `paid`, is refused at the
   pattern: no state holds a fact of it, so the goal would have no row, and under `(absent …)` would hold of everything.
   A claim's relations are held to the same list, so a claim may list a fact only a rule's `:assert` derives.
 - **A goal names its relations.** A relation written as a variable is a rule's, bound by its activator; a query has
