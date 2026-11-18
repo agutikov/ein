@@ -2,15 +2,27 @@ digraph rule_inherit_left_lhs_rhs {
   rankdir=TB;
   label="inherit-left"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?r_L" [label="?r", shape=diamond];
     "?t_L" [label="?t", shape=diamond];
     "?other_L" [label="?other", shape=diamond];
+    "is-a_L" [label="is-a", shape=box];
     "?inst_L" [label="?inst", shape=diamond];
-    "?t_L" -> "?other_L" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?inst_L" -> "?t_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "h1_r_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_r_L" -> "?r_L" [xlabel="1", color="#ff7f0e"];
+    "h1_r_L" -> "?t_L" [xlabel="2", color="#ff7f0e"];
+    "h1_r_L" -> "?other_L" [xlabel="3", color="#ff7f0e"];
+    "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h2_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "h2_is-a_L" -> "?inst_L" [xlabel="2", color="#7f7f7f"];
+    "h2_is-a_L" -> "?t_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "?r_R" [label="?r", shape=diamond];
     "?inst_R" [label="?inst", shape=diamond];
     "?other_R" [label="?other", shape=diamond];
-    "?inst_R" -> "?other_R" [label="?r", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+    "h3_r_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h3_r_R" -> "?r_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h3_r_R" -> "?inst_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h3_r_R" -> "?other_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }
 }

@@ -2,13 +2,21 @@ digraph rule_co_located_lhs_rhs {
   rankdir=TB;
   label="co-located"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
     "?V1_L" [label="?V1", shape=diamond];
     "?h_L" [label="?h", shape=diamond];
-    "?V1_L" -> "?h_L" [label="?R1", color="#bcbd22", fontcolor="#bcbd22"];
+    "h1_R1_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_R1_L" -> "?R1_L" [xlabel="1", color="#bcbd22"];
+    "h1_R1_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "h1_R1_L" -> "?h_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "?R2_R" [label="?R2", shape=diamond];
     "?V2_R" [label="?V2", shape=diamond];
     "?h_R" [label="?h", shape=diamond];
-    "?V2_R" -> "?h_R" [label="?R2", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+    "h2_R2_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h2_R2_R" -> "?R2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h2_R2_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_R2_R" -> "?h_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

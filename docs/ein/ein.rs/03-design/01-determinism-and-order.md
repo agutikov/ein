@@ -171,8 +171,8 @@ core of a dead node.
 - **The explanation**: `explain` ranks the facts of a justification graph by the `repr` of their `(relation_name,
   args)` tuple, and `recorded_fallback` keys a candidate core on its size and its facts' sorted `repr`s.
 - **DOT**: `Builder` emits nodes in first-declaration order and keeps a node's position when its attributes are
-  refined; the KB view sorts the names it draws as a type and as an instance, the two ends of an `is-a` fact; node
-  ids and colours are digests ([§ 8](#8-hashes-that-reach-the-output)).
+  refined; the KB view declares no atom on a line of its own, and names a fact's frame by the relations that point
+  at it as a sorted set (`fact_graph.rs`); node ids and colours are digests ([§ 8](#8-hashes-that-reach-the-output)).
 - **`--dump-config`** prints `SolverConfig`'s fields in `config::FIELDS` order, a fixed array in declaration order
   (`config::rendered_fields`).
 - **`ein --version`**'s feature line is sorted and deduplicated.

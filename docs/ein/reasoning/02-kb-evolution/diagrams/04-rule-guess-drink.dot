@@ -3,9 +3,9 @@ digraph rule_guess_drink_lhs_rhs {
   label="guess-drink"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?g_L" [label="?g", shape=diamond];
-    "Guest_L" [label="Guest", shape=rectangle];
+    "Guest_L" [label="Guest", shape=box];
     "?d_L" [label="?d", shape=diamond];
-    "Drink_L" [label="Drink", shape=rectangle];
+    "Drink_L" [label="Drink", shape=box];
     "?g_L" -> "Guest_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
     "?d_L" -> "Drink_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
   }

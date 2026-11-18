@@ -189,15 +189,16 @@ $$
 
 for a fact $f$. The two differ on every open fact, where the second holds and the first does not.
 
-A pattern with an absence, drawn with labelled arrows
-([the knowledge base](01-knowledge-base.md#drawn-with-labelled-arrows)): the third rule of the three-house example,
+A pattern with an absence, drawn as a pattern graph in two panels: the third rule of the three-house example,
 $\operatorname{is-a}(h, \mathsf{House}) \land \operatorname{absent}(\operatorname{lives-in}(p, h))$, with its
-conclusion $\operatorname{vacant}(h)$ in the lower panel.
+conclusion $\operatorname{vacant}(h)$ in the lower panel. Each premise and each fact of the conclusion is an
+octagon whose first arrow is at its relation's atom, a box, and whose next arrows are at its arguments; a diamond
+is a variable.
 
-![The rule nobody-home, with its absence in a dashed box](diagrams/02-absence-nobody-home.svg)
+![The rule nobody-home: the premise of is-a, the absence of lives-in in a dashed box, and the conclusion vacant dashed below](diagrams/02-absence-nobody-home.svg)
 
 The dashed box is the absence: the variable $p$ is its own, and the match counts where no object in its place
-makes the arrow in the box a held fact.
+makes the octagon in the box a held fact.
 
 ## A conclusion, and the result of rewriting
 
@@ -264,11 +265,11 @@ c &= \operatorname{pet-at}(x, h)\,\theta = \operatorname{pet-at}(\mathsf{Dog}, \
 \end{aligned}
 $$
 
-The same pattern and conclusion drawn with labelled arrows, the pattern in the upper panel and the conclusion in
-the lower. A diamond is a variable, a solid arrow a premise with three arrows, a dashed arrow a fact the
-conclusion adds:
+The same pattern and conclusion drawn in two panels, the pattern in the upper and the conclusion in the lower.
+Each panel draws its own nodes: a diamond is a variable, a box an atom, a solid octagon a premise and the dashed
+octagon the fact the conclusion adds, each with its first arrow at its relation:
 
-![The rule pet-follows-owner drawn with labelled arrows](diagrams/02-pet-follows-owner.svg)
+![The rule pet-follows-owner: its two premises above, the fact its conclusion adds dashed below](diagrams/02-pet-follows-owner.svg)
 
 ### As a span
 
@@ -311,8 +312,7 @@ square:
 - **an absence is a negative application condition**: a match counts only where it does not extend to a match
   of the absent pattern.
 
-The pattern and the conclusion above drawn as one graph with labelled arrows, $L$ solid and what $L^{+}$ adds
-dashed:
+The pattern and the conclusion above drawn as one graph, $L$ solid and what $L^{+}$ adds dashed:
 
 ![The rule pet-follows-owner as one graph, the conclusion dashed](diagrams/02-pet-follows-owner-overlay.svg)
 
@@ -717,15 +717,17 @@ $$
 \end{aligned}
 $$
 
-Drawn with labelled arrows:
+Drawn as a pattern graph:
 
-![The rule domain-elimination drawn with labelled arrows](diagrams/02-domain-elimination.svg)
+![The rule domain-elimination: five premises, the universal one a fact of forall pointing at its condition and at a negation, each in a dashed frame, and the conclusion dashed below](diagrams/02-domain-elimination.svg)
 
-The dashed box is the universal premise: the variable inside it is its own, the red arrow is a stored negation,
-and the box reads *every other member of the second label is denied*. The octagon with three numbered arrows is
-the premise that reads the declaration, with the name of $\mathsf{relation}$ written in it and its arrows
-numbered by argument. The arrows labelled by a
-variable are premises whose relation is a parameter. The statement is in the pattern language, not beneath it.
+The universal premise is a fact pattern of $\mathsf{forall}$, drawn as it is written: its second arrow is at its
+own variable $b'$, its third at its condition, a fact of $\mathsf{and}$ over $m(b', B)$ and $b' \ne b$, and its
+fourth at $\lnot R(a, b')$, the red fact of $\mathsf{not}$, which reads *every other member of the second label is
+denied*. What it points at is no premise of its own, so it stands in the dashed frame of the facts that point at
+it. The octagon with four numbered arrows, the first at $\mathsf{relation}$, is the premise that reads the
+declaration. A premise whose first arrow is at a diamond, $R$ or $m$, is one whose relation is a parameter. The
+statement is in the pattern language, not beneath it.
 
 ## The four levels a knowledge base describes itself in
 

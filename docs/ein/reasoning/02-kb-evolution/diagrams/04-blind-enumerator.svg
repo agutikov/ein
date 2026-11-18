@@ -11,26 +11,26 @@
 <!-- Ann -->
 <g id="node1" class="node">
 <title>Ann</title>
-<ellipse fill="none" stroke="black" cx="123.5" cy="-18.12" rx="27" ry="18"/>
+<polygon fill="none" stroke="black" points="150.5,-36.12 96.5,-36.12 96.5,-0.12 150.5,-0.12 150.5,-36.12"/>
 <text xml:space="preserve" text-anchor="middle" x="123.5" y="-15" font-family="Helvetica,sans-Serif" font-size="10.00">Ann</text>
 </g>
 <!-- Bob -->
 <g id="node2" class="node">
 <title>Bob</title>
-<ellipse fill="none" stroke="black" cx="254.75" cy="-63.12" rx="27" ry="18"/>
+<polygon fill="none" stroke="black" points="281.75,-81.12 227.75,-81.12 227.75,-45.12 281.75,-45.12 281.75,-81.12"/>
 <text xml:space="preserve" text-anchor="middle" x="254.75" y="-60" font-family="Helvetica,sans-Serif" font-size="10.00">Bob</text>
 </g>
 <!-- Ann&#45;&gt;Bob -->
 <g id="edge1" class="edge">
 <title>Ann&#45;&gt;Bob</title>
-<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M143.72,-30.55C154.92,-37.27 169.55,-45.19 183.5,-50.12 195.31,-54.3 208.74,-57.21 220.68,-59.19"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="220.14,-61.23 226.39,-60.08 220.78,-57.08 220.14,-61.23"/>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M150.99,-34.79C160.88,-40.39 172.4,-46.2 183.5,-50.12 195.22,-54.27 208.52,-57.16 220.38,-59.14"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="219.8,-61.18 226.06,-60.03 220.45,-57.03 219.8,-61.18"/>
 <text xml:space="preserve" text-anchor="middle" x="189.12" y="-56.29" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
 </g>
 <!-- C1 -->
 <g id="node3" class="node">
 <title>C1</title>
-<ellipse fill="none" stroke="black" cx="386" cy="-18.12" rx="27" ry="18"/>
+<polygon fill="none" stroke="black" points="413,-36.12 359,-36.12 359,-0.12 413,-0.12 413,-36.12"/>
 <text xml:space="preserve" text-anchor="middle" x="386" y="-15" font-family="Helvetica,sans-Serif" font-size="10.00">C1</text>
 </g>
 <!-- Ann&#45;&gt;C1 -->
@@ -43,31 +43,31 @@
 <!-- Bob&#45;&gt;Ann -->
 <g id="edge2" class="edge">
 <title>Bob&#45;&gt;Ann</title>
-<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M232.23,-52.56C221.19,-47.4 207.43,-41.35 194.75,-36.87 182.53,-32.55 168.81,-28.68 156.76,-25.59"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="157.3,-23.56 150.97,-24.14 156.28,-27.64 157.3,-23.56"/>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M227.38,-50.32C217.31,-45.72 205.64,-40.72 194.75,-36.87 182.92,-32.69 169.69,-28.93 157.93,-25.89"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="158.62,-23.9 152.29,-24.47 157.59,-27.98 158.62,-23.9"/>
 <text xml:space="preserve" text-anchor="middle" x="189.12" y="-39.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
 </g>
 <!-- Bob&#45;&gt;C1 -->
 <g id="edge5" class="edge">
 <title>Bob&#45;&gt;C1</title>
-<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M281.62,-60.31C295.11,-58.36 311.73,-55.17 326,-50.12 337.44,-46.07 349.35,-40.02 359.44,-34.26"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="360.36,-36.16 364.48,-31.31 358.24,-32.53 360.36,-36.16"/>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M281.95,-60.26C295.38,-58.3 311.85,-55.13 326,-50.12 334.84,-46.99 343.96,-42.67 352.3,-38.21"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="352.94,-40.26 357.18,-35.52 350.91,-36.58 352.94,-40.26"/>
 <text xml:space="preserve" text-anchor="middle" x="320.38" y="-56.29" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
 </g>
 <!-- C1&#45;&gt;Ann -->
 <g id="edge4" class="edge">
 <title>C1&#45;&gt;Ann</title>
-<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M359.67,-13C338.85,-9.07 308.52,-3.97 281.75,-1.87 257.82,0 251.68,0 227.75,-1.87 203.9,-3.74 177.24,-7.99 156.98,-11.68"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="156.83,-9.57 151.32,-12.73 157.6,-13.7 156.83,-9.57"/>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M358.82,-12.84C338.03,-8.93 308.16,-3.94 281.75,-1.87 257.82,0 251.68,0 227.75,-1.87 204.23,-3.71 177.96,-7.87 157.81,-11.53"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="157.68,-9.41 152.17,-12.57 158.45,-13.54 157.68,-9.41"/>
 <text xml:space="preserve" text-anchor="middle" x="254.75" y="-4.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
 </g>
 <!-- C1&#45;&gt;Bob -->
 <g id="edge6" class="edge">
 <title>C1&#45;&gt;Bob</title>
-<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M360,-23.78C346.45,-27.09 329.51,-31.66 314.75,-36.87 304.54,-40.48 293.64,-45.1 284.02,-49.46"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="283.22,-47.51 278.65,-51.93 284.98,-51.33 283.22,-47.51"/>
+<path fill="none" stroke="#e377c2" stroke-dasharray="1,5" d="M358.68,-24.1C345.36,-27.39 329.03,-31.82 314.75,-36.87 306.24,-39.88 297.26,-43.59 288.93,-47.26"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="288.11,-45.33 283.5,-49.7 289.83,-49.16 288.11,-45.33"/>
 <text xml:space="preserve" text-anchor="middle" x="320.38" y="-39.57" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#e377c2">r ?</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 1d4bc3c7a944503ec5ee77b46d2385ecfec7b67e4a215908437905b5b5b04699 -->
+<!-- source sha256: e0bc6d1f2791bd3c2230411b5f9ed7b0167baad1707af4b4f757e812e42e7efe -->

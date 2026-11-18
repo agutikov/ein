@@ -106,26 +106,30 @@ and the trace below shows both.
 
 ## As a graph
 
-`ein render kb jack.ein` draws the saturated knowledge base as one graph: an atom an `is-a` arrow points at as a box
-and an atom one starts from as an oval (the drawing's comments call them *types* and *instances*, its convention for a
-relation named `is-a`), an `is-a` fact as a dashed arrow with an open head, any other fact of two arguments as an
-arrow labelled by its relation, a derived one dashed and labelled with the rule that derived it. Leaving out the
-`(relation …)` declarations it also draws, it is:
+`ein render kb jack.ein` draws the saturated knowledge base as one graph, the graph itself
+([objects](../03-syntax-and-semantics/01-objects.md#as-a-graph)): every fact is a node of its own, an octagon joined
+to its relation by the arrow numbered `1` and to each argument by the arrows numbered `2` and `3`, and each relation
+is one box, which all its facts point at. `is-a` is drawn as any relation is, and every atom is a box. A stated fact
+is solid, its source beside it; a derived one is dashed, with the rule that derived it beside it. Cut to the facts of
+`is-a`, `can-drink` and `drinks`, leaving out the facts of the declarations and the two that turn the rules on, it
+is:
 
-![Jack drinks coffee in the compact view: one stated can-drink arrow and three derived](diagrams/05-jack-compact.svg)
+![Jack drinks coffee as the graph: seven octagons, the stated facts solid and the three derived can-drink facts dashed, each pointing at its relation's one box](diagrams/05-jack-canonical.svg)
+
+It makes visible what a drawing with labelled arrows hides: `(can-drink Human Drink)` and `(can-drink Jack Coffee)`
+are distinct facts, of different argument tuples, of one relation, whose first arrows meet at the one box
+`can-drink`.
+
+`ein render kb --fold jack.ein` draws the same facts compactly: each fact of three arrows, a relation and two
+arguments, is folded into one arrow from its first argument to its second, labelled with its relation:
+
+![Jack drinks coffee folded: one stated can-drink arrow, three derived, the is-a and drinks facts as labelled arrows](diagrams/05-jack-folded.svg)
 
 The three dashed `can-drink` arrows are the *inheritance closure* of the stated fact `(can-drink Human Drink)` across
 the `is-a` arrows: every pair of $\lbrace \mathsf{Human}, \mathsf{Jack} \rbrace \times \lbrace \mathsf{Drink},
-\mathsf{Coffee} \rbrace$ but the one it starts from. The compact view puts facts of *two* relations,
-`can-drink` and `drinks`, on the same pair, from Jack to Coffee; only the names on the arrows tell them apart.
-
-The **detailed** view, drawn by hand, is the graph itself
-([objects](../03-syntax-and-semantics/01-objects.md#as-a-graph)): every fact is a node of its own, joined to its
-relation by a dashed arrow and to each argument by a numbered one, and each relation is one node, which all its
-facts point at. It makes visible what the compact view hides: `(can-drink Human Drink)` and `(can-drink Jack
-Coffee)` are distinct facts, of different argument tuples, of one relation.
-
-![The same facts in the detailed view, every fact a node of its own](diagrams/05-jack-levi.svg)
+\mathsf{Coffee} \rbrace$ but the one it starts from. Folded, facts of *two* relations, `can-drink` and `drinks`, run
+over the same pair, from Jack to Coffee, and only the names on the arrows tell them apart, where the graph has two
+octagons whose first arrows point at two boxes.
 
 ## In mathematics
 
@@ -187,7 +191,8 @@ Each claim is one fact, and the fact's origin is visible in the knowledge base:
 
 `inherit-rel-lhs` and `inherit-rel-rhs` are **relation-polymorphic** rules: `?r` ranges over the relations a fact
 activates them for ([rules](../03-syntax-and-semantics/05-rules.md)). The shape of each, a fact with a name in one slot
-and an `is-a` arrow into that name, concluding the same fact with the arrow's source in that slot, is the
+and an `is-a` fact whose second argument is that name, concluding the same fact with the `is-a` fact's first
+argument in that slot, is the
 **inheritance pattern**: the same shape as `transitive`, applied along `is-a` instead of along the relation itself. `ein solve
 jack.ein --trace out.md` writes the derivation step by step, each step's `:why` filled in:
 

@@ -1,43 +1,250 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Title: step12 Pages: 1 -->
-<svg width="1564pt" height="51pt"
- viewBox="0.00 0.00 1564.00 51.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 46.5)">
-<title>step12</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-46.5 1559.5,-46.5 1559.5,4 -4,4"/>
+<!-- Title: step15 Pages: 1 -->
+<svg width="1567pt" height="361pt"
+ viewBox="0.00 0.00 1567.00 361.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 356.85)">
+<title>step15</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-356.85 1562.85,-356.85 1562.85,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_ctx_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M953.85,-206.85C953.85,-206.85 1452.85,-206.85 1452.85,-206.85 1458.85,-206.85 1464.85,-212.85 1464.85,-218.85 1464.85,-218.85 1464.85,-257.85 1464.85,-257.85 1464.85,-263.85 1458.85,-269.85 1452.85,-269.85 1452.85,-269.85 953.85,-269.85 953.85,-269.85 947.85,-269.85 941.85,-263.85 941.85,-257.85 941.85,-257.85 941.85,-218.85 941.85,-218.85 941.85,-212.85 947.85,-206.85 953.85,-206.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1203.35" y="-252.55" font-family="Times,serif" font-size="14.00" fill="#888888">div, std.math.decimal&#45;arith.div&#45;m1, std.math.decimal&#45;arith.quotient ctx</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_ctx_1</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M655.6,-245.85C655.6,-245.85 889.85,-245.85 889.85,-245.85 895.85,-245.85 901.85,-251.85 901.85,-257.85 901.85,-257.85 901.85,-296.85 901.85,-296.85 901.85,-302.85 895.85,-308.85 889.85,-308.85 889.85,-308.85 655.6,-308.85 655.6,-308.85 649.6,-308.85 643.6,-302.85 643.6,-296.85 643.6,-296.85 643.6,-257.85 643.6,-257.85 643.6,-251.85 649.6,-245.85 655.6,-245.85"/>
+<text xml:space="preserve" text-anchor="middle" x="772.72" y="-291.55" font-family="Times,serif" font-size="14.00" fill="#888888">std.math.decimal&#45;arith.div&#45;m1 ctx</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_ctx_2</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M379.6,-206.85C379.6,-206.85 599.6,-206.85 599.6,-206.85 605.6,-206.85 611.6,-212.85 611.6,-218.85 611.6,-218.85 611.6,-257.85 611.6,-257.85 611.6,-263.85 605.6,-269.85 599.6,-269.85 599.6,-269.85 379.6,-269.85 379.6,-269.85 373.6,-269.85 367.6,-263.85 367.6,-257.85 367.6,-257.85 367.6,-218.85 367.6,-218.85 367.6,-212.85 373.6,-206.85 379.6,-206.85"/>
+<text xml:space="preserve" text-anchor="middle" x="489.6" y="-252.55" font-family="Times,serif" font-size="14.00" fill="#888888">std.math.decimal&#45;arith.done ctx</text>
+</g>
 <!-- f_9934285045 -->
 <g id="node1" class="node">
 <title>f_9934285045</title>
-<path fill="none" stroke="black" d="M829,-39.25C829,-39.25 12,-39.25 12,-39.25 6,-39.25 0,-33.25 0,-27.25 0,-27.25 0,-15.25 0,-15.25 0,-9.25 6,-3.25 12,-3.25 12,-3.25 829,-3.25 829,-3.25 835,-3.25 841,-9.25 841,-15.25 841,-15.25 841,-27.25 841,-27.25 841,-33.25 835,-39.25 829,-39.25"/>
-<text xml:space="preserve" text-anchor="middle" x="420.5" y="-16.57" font-family="Times,serif" font-size="14.00">std.math.decimal&#45;arith.done(std.math.decimal&#45;arith.div&#45;m1(std.math.decimal&#45;arith.quotient(n(z, 7), z), n(z, 7), z), z)</text>
+<polygon fill="none" stroke="black" points="21.6,-124.38 21.6,-133.33 15.27,-139.65 6.33,-139.65 0,-133.33 0,-124.38 6.33,-118.05 15.27,-118.05 21.6,-124.38"/>
+</g>
+<!-- f_0996b70fe8 -->
+<g id="node6" class="node">
+<title>f_0996b70fe8</title>
+<polygon fill="none" stroke="black" points="499.9,-221.38 499.9,-230.33 493.57,-236.65 484.63,-236.65 478.3,-230.33 478.3,-221.38 484.63,-215.05 493.57,-215.05 499.9,-221.38"/>
+</g>
+<!-- f_9934285045&#45;&gt;f_0996b70fe8 -->
+<g id="edge2" class="edge">
+<title>f_9934285045&#45;&gt;f_0996b70fe8</title>
+<path fill="none" stroke="black" d="M16.51,-139.09C23.84,-153.68 39.47,-180.03 61.6,-191.85 200.41,-266.02 401.6,-240.71 466.83,-229.78"/>
+<polygon fill="black" stroke="black" points="467.27,-233.26 476.51,-228.08 466.06,-226.36 467.27,-233.26"/>
+<text xml:space="preserve" text-anchor="middle" x="237.88" y="-226.84" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- fire0_std.math.positional.div&#45;by&#45;zero -->
-<g id="node3" class="node">
+<g id="node7" class="node">
 <title>fire0_std.math.positional.div&#45;by&#45;zero</title>
-<path fill="none" stroke="#2ca02c" stroke-width="2" d="M1167.5,-42.5C1167.5,-42.5 889,-42.5 889,-42.5 883,-42.5 877,-36.5 877,-30.5 877,-30.5 877,-12 877,-12 877,-6 883,0 889,0 889,0 1167.5,0 1167.5,0 1173.5,0 1179.5,-6 1179.5,-12 1179.5,-12 1179.5,-30.5 1179.5,-30.5 1179.5,-36.5 1173.5,-42.5 1167.5,-42.5"/>
-<text xml:space="preserve" text-anchor="middle" x="1028.25" y="-25.2" font-family="Times,serif" font-size="14.00" fill="#2ca02c">std.math.positional.div&#45;by&#45;zero</text>
-<text xml:space="preserve" text-anchor="middle" x="1028.25" y="-7.95" font-family="Times,serif" font-size="14.00" fill="#2ca02c">the divisor of (n z 7) divided by z is zero</text>
+<path fill="none" stroke="#2ca02c" stroke-width="2" d="M323.6,-182.35C323.6,-182.35 73.6,-182.35 73.6,-182.35 67.6,-182.35 61.6,-176.35 61.6,-170.35 61.6,-170.35 61.6,-147.35 61.6,-147.35 61.6,-141.35 67.6,-135.35 73.6,-135.35 73.6,-135.35 323.6,-135.35 323.6,-135.35 329.6,-135.35 335.6,-141.35 335.6,-147.35 335.6,-147.35 335.6,-170.35 335.6,-170.35 335.6,-176.35 329.6,-182.35 323.6,-182.35"/>
+<text xml:space="preserve" text-anchor="middle" x="198.6" y="-165.05" font-family="Inter" font-size="14.00" fill="#2ca02c">std.math.positional.div&#45;by&#45;zero</text>
+<text xml:space="preserve" text-anchor="middle" x="198.6" y="-145.55" font-family="Inter" font-size="14.00" fill="#2ca02c">the divisor of (n z 7) divided by z is zero</text>
 </g>
 <!-- f_9934285045&#45;&gt;fire0_std.math.positional.div&#45;by&#45;zero -->
-<g id="edge1" class="edge">
+<g id="edge19" class="edge">
 <title>f_9934285045&#45;&gt;fire0_std.math.positional.div&#45;by&#45;zero</title>
-<path fill="none" stroke="#2ca02c" d="M841.39,-21.25C849.49,-21.25 857.46,-21.25 865.27,-21.25"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="865.08,-24.75 875.08,-21.25 865.08,-17.75 865.08,-24.75"/>
+<path fill="none" stroke="#2ca02c" d="M22.05,-130.51C28.87,-131.61 38.67,-133.19 50.21,-135.05"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="49.33,-138.46 59.76,-136.6 50.45,-131.55 49.33,-138.46"/>
+</g>
+<!-- std.math.decimal&#45;arith.done -->
+<g id="node8" class="node">
+<title>std.math.decimal&#45;arith.done</title>
+<polygon fill="none" stroke="black" points="299.97,-116.85 97.22,-116.85 97.22,-80.85 299.97,-80.85 299.97,-116.85"/>
+<text xml:space="preserve" text-anchor="middle" x="198.6" y="-95.3" font-family="Inter" font-size="14.00">std.math.decimal&#45;arith.done</text>
+</g>
+<!-- f_9934285045&#45;&gt;std.math.decimal&#45;arith.done -->
+<g id="edge1" class="edge">
+<title>f_9934285045&#45;&gt;std.math.decimal&#45;arith.done</title>
+<path fill="none" stroke="black" d="M22.05,-127.2C35.23,-125.07 59.57,-121.14 86.01,-116.87"/>
+<polygon fill="black" stroke="black" points="86.23,-120.38 95.55,-115.33 85.11,-113.47 86.23,-120.38"/>
+<text xml:space="preserve" text-anchor="middle" x="54.79" y="-107.88" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- z -->
+<g id="node9" class="node">
+<title>z</title>
+<polygon fill="none" stroke="black" points="1558.85,-189.85 1504.85,-189.85 1504.85,-153.85 1558.85,-153.85 1558.85,-189.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1531.85" y="-168.3" font-family="Inter" font-size="14.00">z</text>
+</g>
+<!-- f_9934285045&#45;&gt;z -->
+<g id="edge3" class="edge">
+<title>f_9934285045&#45;&gt;z</title>
+<path fill="none" stroke="black" d="M16.73,-119.48C24.33,-106.12 40.29,-82.11 61.6,-71.85 232.57,10.44 298.36,-52.85 488.1,-52.85 488.1,-52.85 488.1,-52.85 773.22,-52.85 1080.73,-52.85 1196.09,77.58 1464.85,-71.85 1492.32,-87.12 1510.35,-119.2 1520.52,-142.92"/>
+<polygon fill="black" stroke="black" points="1517.22,-144.09 1524.2,-152.06 1523.71,-141.48 1517.22,-144.09"/>
+<text xml:space="preserve" text-anchor="middle" x="768.78" y="-39.55" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 <!-- f_eab79754f0 -->
 <g id="node2" class="node">
 <title>f_eab79754f0</title>
-<path fill="none" stroke="black" stroke-width="2" d="M1543.5,-39.25C1543.5,-39.25 1227.5,-39.25 1227.5,-39.25 1221.5,-39.25 1215.5,-33.25 1215.5,-27.25 1215.5,-27.25 1215.5,-15.25 1215.5,-15.25 1215.5,-9.25 1221.5,-3.25 1227.5,-3.25 1227.5,-3.25 1543.5,-3.25 1543.5,-3.25 1549.5,-3.25 1555.5,-9.25 1555.5,-15.25 1555.5,-15.25 1555.5,-27.25 1555.5,-27.25 1555.5,-33.25 1549.5,-39.25 1543.5,-39.25"/>
-<text xml:space="preserve" text-anchor="middle" x="1385.5" y="-16.57" font-family="Times,serif" font-size="14.00">std.math.arith.division&#45;by&#45;zero(div(n(z, 7), z))</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="499.9,-137.38 499.9,-146.33 493.57,-152.65 484.63,-152.65 478.3,-146.33 478.3,-137.38 484.63,-131.05 493.57,-131.05 499.9,-137.38"/>
+</g>
+<!-- f_31efc4325b -->
+<g id="node3" class="node">
+<title>f_31efc4325b</title>
+<polygon fill="none" stroke="black" points="783.02,-90.38 783.02,-99.33 776.7,-105.65 767.75,-105.65 761.42,-99.33 761.42,-90.38 767.75,-84.05 776.7,-84.05 783.02,-90.38"/>
+</g>
+<!-- f_eab79754f0&#45;&gt;f_31efc4325b -->
+<g id="edge5" class="edge">
+<title>f_eab79754f0&#45;&gt;f_31efc4325b</title>
+<path fill="none" stroke="black" stroke-width="2" d="M500.88,-139.88C525.92,-135.33 589.95,-123.77 643.6,-114.85 680.2,-108.77 722.8,-102.19 748.36,-98.3"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="748.6,-101.81 757.96,-96.85 747.55,-94.89 748.6,-101.81"/>
+<text xml:space="preserve" text-anchor="middle" x="639.11" y="-101.55" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- std.math.arith.division&#45;by&#45;zero -->
+<g id="node10" class="node">
+<title>std.math.arith.division&#45;by&#45;zero</title>
+<polygon fill="none" stroke="black" points="880.72,-159.85 663.72,-159.85 663.72,-123.85 880.72,-123.85 880.72,-159.85"/>
+<text xml:space="preserve" text-anchor="middle" x="772.22" y="-138.3" font-family="Inter" font-size="14.00">std.math.arith.division&#45;by&#45;zero</text>
+</g>
+<!-- f_eab79754f0&#45;&gt;std.math.arith.division&#45;by&#45;zero -->
+<g id="edge4" class="edge">
+<title>f_eab79754f0&#45;&gt;std.math.arith.division&#45;by&#45;zero</title>
+<path fill="none" stroke="black" stroke-width="2" d="M500.78,-141.85C525.82,-141.85 590.78,-141.85 650.76,-141.85"/>
+<polygon fill="black" stroke="black" stroke-width="2" points="650.43,-145.35 660.43,-141.85 650.43,-138.35 650.43,-145.35"/>
+<text xml:space="preserve" text-anchor="middle" x="577.71" y="-128.55" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- f_0cb3773012 -->
+<g id="node4" class="node">
+<title>f_0cb3773012</title>
+<polygon fill="none" stroke="black" points="1213.65,-221.38 1213.65,-230.33 1207.32,-236.65 1198.38,-236.65 1192.05,-230.33 1192.05,-221.38 1198.38,-215.05 1207.32,-215.05 1213.65,-221.38"/>
+</g>
+<!-- f_31efc4325b&#45;&gt;f_0cb3773012 -->
+<g id="edge11" class="edge">
+<title>f_31efc4325b&#45;&gt;f_0cb3773012</title>
+<path fill="none" stroke="black" d="M783.32,-94.17C806.03,-93.08 862.29,-93 901.85,-114.85 925.57,-127.95 918.75,-146.69 941.85,-160.85 1020.53,-209.09 1133.37,-221.6 1180.2,-224.79"/>
+<polygon fill="black" stroke="black" points="1179.88,-228.27 1190.07,-225.37 1180.29,-221.29 1179.88,-228.27"/>
+<text xml:space="preserve" text-anchor="middle" x="973.81" y="-166.53" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- f_31efc4325b&#45;&gt;z -->
+<g id="edge12" class="edge">
+<title>f_31efc4325b&#45;&gt;z</title>
+<path fill="none" stroke="black" d="M783.3,-96.02C805.08,-98.64 858.1,-105.47 901.85,-114.85 919.88,-118.72 923.69,-122.68 941.85,-125.85 1147.77,-161.87 1399.15,-169.69 1493.08,-171.39"/>
+<polygon fill="black" stroke="black" points="1492.93,-174.89 1502.99,-171.55 1493.05,-167.89 1492.93,-174.89"/>
+<text xml:space="preserve" text-anchor="middle" x="1137.84" y="-138.76" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- div -->
+<g id="node12" class="node">
+<title>div</title>
+<polygon fill="none" stroke="black" points="1229.85,-116.85 1175.85,-116.85 1175.85,-80.85 1229.85,-80.85 1229.85,-116.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1202.85" y="-95.3" font-family="Inter" font-size="14.00">div</text>
+</g>
+<!-- f_31efc4325b&#45;&gt;div -->
+<g id="edge10" class="edge">
+<title>f_31efc4325b&#45;&gt;div</title>
+<path fill="none" stroke="black" d="M783.4,-94.95C835.26,-95.43 1071.36,-97.63 1164.2,-98.5"/>
+<polygon fill="black" stroke="black" points="1164.01,-102 1174.04,-98.59 1164.08,-95 1164.01,-102"/>
+<text xml:space="preserve" text-anchor="middle" x="974.81" y="-83.48" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- f_0cb3773012&#45;&gt;z -->
+<g id="edge17" class="edge">
+<title>f_0cb3773012&#45;&gt;z</title>
+<path fill="none" stroke="black" d="M1214.01,-226.03C1249.31,-226.39 1369.7,-225.63 1464.85,-200.85 1474.71,-198.29 1484.96,-194.42 1494.37,-190.34"/>
+<polygon fill="black" stroke="black" points="1495.54,-193.66 1503.19,-186.33 1492.64,-187.29 1495.54,-193.66"/>
+<text xml:space="preserve" text-anchor="middle" x="1356.01" y="-205.71" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- n -->
+<g id="node14" class="node">
+<title>n</title>
+<polygon fill="none" stroke="black" points="1558.85,-297.85 1504.85,-297.85 1504.85,-261.85 1558.85,-261.85 1558.85,-297.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1531.85" y="-276.3" font-family="Inter" font-size="14.00">n</text>
+</g>
+<!-- f_0cb3773012&#45;&gt;n -->
+<g id="edge16" class="edge">
+<title>f_0cb3773012&#45;&gt;n</title>
+<path fill="none" stroke="black" d="M1214,-227.53C1256.15,-234.49 1418.77,-261.34 1493.23,-273.64"/>
+<polygon fill="black" stroke="black" points="1492.46,-277.06 1502.9,-275.24 1493.6,-270.15 1492.46,-277.06"/>
+<text xml:space="preserve" text-anchor="middle" x="1354.58" y="-238.19" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- 7 -->
+<g id="node15" class="node">
+<title>7</title>
+<polygon fill="none" stroke="black" points="1558.85,-243.85 1504.85,-243.85 1504.85,-207.85 1558.85,-207.85 1558.85,-243.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1531.85" y="-222.3" font-family="Inter" font-size="14.00">7</text>
+</g>
+<!-- f_0cb3773012&#45;&gt;7 -->
+<g id="edge18" class="edge">
+<title>f_0cb3773012&#45;&gt;7</title>
+<path fill="none" stroke="black" d="M1214,-225.85C1256.15,-225.85 1418.77,-225.85 1493.23,-225.85"/>
+<polygon fill="black" stroke="black" points="1492.88,-229.35 1502.88,-225.85 1492.88,-222.35 1492.88,-229.35"/>
+<text xml:space="preserve" text-anchor="middle" x="1363.58" y="-229.8" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- f_6c93b95ea5 -->
+<g id="node5" class="node">
+<title>f_6c93b95ea5</title>
+<polygon fill="none" stroke="black" points="783.02,-260.38 783.02,-269.33 776.7,-275.65 767.75,-275.65 761.42,-269.33 761.42,-260.38 767.75,-254.05 776.7,-254.05 783.02,-260.38"/>
+</g>
+<!-- f_6c93b95ea5&#45;&gt;f_0cb3773012 -->
+<g id="edge14" class="edge">
+<title>f_6c93b95ea5&#45;&gt;f_0cb3773012</title>
+<path fill="none" stroke="black" d="M783.4,-263.93C838.64,-258.9 1102.94,-234.85 1180.44,-227.8"/>
+<polygon fill="black" stroke="black" points="1180.43,-231.32 1190.08,-226.92 1179.8,-224.34 1180.43,-231.32"/>
+<text xml:space="preserve" text-anchor="middle" x="983.14" y="-232.04" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- f_6c93b95ea5&#45;&gt;z -->
+<g id="edge15" class="edge">
+<title>f_6c93b95ea5&#45;&gt;z</title>
+<path fill="none" stroke="black" d="M783.49,-266.42C860.14,-277.89 1343.6,-346.6 1464.85,-273.85 1494.59,-256.01 1484.73,-233.48 1505.58,-199.52"/>
+<polygon fill="black" stroke="black" points="1508.38,-201.63 1511.11,-191.39 1502.59,-197.7 1508.38,-201.63"/>
+<text xml:space="preserve" text-anchor="middle" x="1139.26" y="-290.56" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- std.math.decimal&#45;arith.quotient -->
+<g id="node13" class="node">
+<title>std.math.decimal&#45;arith.quotient</title>
+<polygon fill="none" stroke="black" points="1315.85,-351.85 1089.85,-351.85 1089.85,-315.85 1315.85,-315.85 1315.85,-351.85"/>
+<text xml:space="preserve" text-anchor="middle" x="1202.85" y="-330.3" font-family="Inter" font-size="14.00">std.math.decimal&#45;arith.quotient</text>
+</g>
+<!-- f_6c93b95ea5&#45;&gt;std.math.decimal&#45;arith.quotient -->
+<g id="edge13" class="edge">
+<title>f_6c93b95ea5&#45;&gt;std.math.decimal&#45;arith.quotient</title>
+<path fill="none" stroke="black" d="M783.42,-267.44C809.59,-274 881.29,-291.5 941.85,-301.85 986.18,-309.43 1035.06,-315.93 1078.36,-321.05"/>
+<polygon fill="black" stroke="black" points="1077.69,-324.49 1088.03,-322.18 1078.51,-317.54 1077.69,-324.49"/>
+<text xml:space="preserve" text-anchor="middle" x="937.38" y="-288.56" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- f_0996b70fe8&#45;&gt;f_0cb3773012 -->
+<g id="edge8" class="edge">
+<title>f_0996b70fe8&#45;&gt;f_0cb3773012</title>
+<path fill="none" stroke="black" d="M500.16,-225.85C576.96,-225.85 1070.39,-225.85 1180.21,-225.85"/>
+<polygon fill="black" stroke="black" points="1180.13,-229.35 1190.13,-225.85 1180.13,-222.35 1180.13,-229.35"/>
+<text xml:space="preserve" text-anchor="middle" x="841.37" y="-212.55" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- f_0996b70fe8&#45;&gt;f_6c93b95ea5 -->
+<g id="edge7" class="edge">
+<title>f_0996b70fe8&#45;&gt;f_6c93b95ea5</title>
+<path fill="none" stroke="black" d="M500.11,-227.24C540.66,-232.87 693.34,-254.05 749.94,-261.9"/>
+<polygon fill="black" stroke="black" points="749.16,-265.32 759.55,-263.23 750.12,-258.39 749.16,-265.32"/>
+<text xml:space="preserve" text-anchor="middle" x="625.73" y="-231.99" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- f_0996b70fe8&#45;&gt;z -->
+<g id="edge9" class="edge">
+<title>f_0996b70fe8&#45;&gt;z</title>
+<path fill="none" stroke="black" d="M500.07,-225.34C593.66,-220.48 1318.77,-182.86 1493.2,-173.81"/>
+<polygon fill="black" stroke="black" points="1493.25,-177.31 1503.06,-173.29 1492.89,-170.32 1493.25,-177.31"/>
+<text xml:space="preserve" text-anchor="middle" x="997.76" y="-185.98" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- std.math.decimal&#45;arith.div&#45;m1 -->
+<g id="node11" class="node">
+<title>std.math.decimal&#45;arith.div&#45;m1</title>
+<polygon fill="none" stroke="black" points="878.85,-352.85 665.6,-352.85 665.6,-316.85 878.85,-316.85 878.85,-352.85"/>
+<text xml:space="preserve" text-anchor="middle" x="772.22" y="-331.3" font-family="Inter" font-size="14.00">std.math.decimal&#45;arith.div&#45;m1</text>
+</g>
+<!-- f_0996b70fe8&#45;&gt;std.math.decimal&#45;arith.div&#45;m1 -->
+<g id="edge6" class="edge">
+<title>f_0996b70fe8&#45;&gt;std.math.decimal&#45;arith.div&#45;m1</title>
+<path fill="none" stroke="black" d="M498.58,-232.08C520.99,-248.22 584.18,-291.62 643.6,-312.85 647.09,-314.1 650.67,-315.28 654.3,-316.39"/>
+<polygon fill="black" stroke="black" points="653.29,-319.74 663.87,-319.12 655.21,-313.01 653.29,-319.74"/>
+<text xml:space="preserve" text-anchor="middle" x="573.67" y="-286.53" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- fire0_std.math.positional.div&#45;by&#45;zero&#45;&gt;f_eab79754f0 -->
-<g id="edge2" class="edge">
+<g id="edge20" class="edge">
 <title>fire0_std.math.positional.div&#45;by&#45;zero&#45;&gt;f_eab79754f0</title>
-<path fill="none" stroke="#2ca02c" stroke-width="2" d="M1179.91,-21.25C1187.66,-21.25 1195.48,-21.25 1203.31,-21.25"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" stroke-width="2" points="1201.75,-24.75 1211.75,-21.25 1201.75,-17.75 1201.75,-24.75"/>
+<path fill="none" stroke="#2ca02c" stroke-width="2" d="M335.82,-150.83C386.18,-147.86 437.84,-144.81 466.17,-143.14"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" stroke-width="2" points="464.65,-146.74 474.43,-142.66 464.24,-139.75 464.65,-146.74"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: 100df6aeb7361e55cc7db0eef268f17f96efd6324b18ac3e4cfae9e67d910c5f -->
+<!-- source sha256: 0b0082898c1f9986bfee38896157aeb8bba652316c03732d91dc2e5c40b2106a -->

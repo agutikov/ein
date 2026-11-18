@@ -72,16 +72,16 @@ match proposes, dashed.
 
 ![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/09-rule-guess.svg)
 
-The drawing is the same as a rule's, and the difference is in what the dashed arrow means: a rule's is added to
+The drawing is the same as a rule's, and the difference is in what the dashed fact means: a rule's is added to
 the state the rule fires in, an hrule's is a candidate, added in the states that commit to it and in no other.
 
 The program's two restrictions are what the guesses are judged by ([constraints](06-constraints.md)). Each is a
-picture of what a state may not hold, two `seat` arrows out of one person or into one chair, with `(false)` on the
+picture of what a state may not hold, two facts of `seat` from one person or to one chair, with `(false)` on the
 other side:
 
-![The rule one-chair-each: two seat arrows out of one person, and (false)](diagrams/09-rule-one-chair-each.svg)
+![The rule one-chair-each: two patterns of seat from one person to two chairs, and (false)](diagrams/09-rule-one-chair-each.svg)
 
-![The rule one-person-a-chair: two seat arrows into one chair, and (false)](diagrams/09-rule-one-person-a-chair.svg)
+![The rule one-person-a-chair: two patterns of seat from two people to one chair, and (false)](diagrams/09-rule-one-person-a-chair.svg)
 
 `ein render h-space FILE --view exclusion` draws H itself as an undirected graph: a candidate a node, and an edge
 between two that exclude each other, solid where the theory alone excludes them. For the chairs program:

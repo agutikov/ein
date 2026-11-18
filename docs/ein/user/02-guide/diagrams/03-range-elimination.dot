@@ -1,7 +1,41 @@
-digraph { rankdir=LR; node [shape=box];
-  Green  -> "House-1" [label="¬color-loc", style=dotted];
-  Blue   -> "House-1" [label="¬color-loc", style=dotted];
-  Ivory  -> "House-1" [label="¬color-loc", style=dotted];
-  Red    -> "House-1" [label="¬color-loc", style=dotted];
-  Yellow -> "House-1" [label="color-loc by range-elimination", style=dashed];
+digraph kb {
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_2ead296350 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by co-located-negative"];
+  f_2ead296350 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_2ead296350 -> f_65909e78a6 [xlabel="2", color="#d62728", style=dashed];
+  f_24c4d48dc3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.functional-negative"];
+  f_24c4d48dc3 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_24c4d48dc3 -> f_78a5ae1544 [xlabel="2", color="#d62728", style=dashed];
+  f_01f7072e42 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by adjacent-via-endpoint-bwd"];
+  f_01f7072e42 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_01f7072e42 -> f_4165af95ef [xlabel="2", color="#d62728", style=dashed];
+  f_9dda0bf33f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by adjacent-via-fwd-negative"];
+  f_9dda0bf33f -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_9dda0bf33f -> f_0469eb9213 [xlabel="2", color="#d62728", style=dashed];
+  f_921117f58b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=dashed, xlabel="by std.bijection.range-elimination"];
+  f_921117f58b -> "color-loc" [xlabel="1", color="#8c564b", style=dashed];
+  f_921117f58b -> "Yellow" [xlabel="2", color="#8c564b", style=dashed];
+  f_921117f58b -> "House-1" [xlabel="3", color="#8c564b", style=dashed];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_65909e78a6 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_78a5ae1544 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_4165af95ef [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_0469eb9213 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  }
+  f_65909e78a6 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  f_65909e78a6 -> "Red" [xlabel="2", color="#8c564b", style=solid];
+  f_65909e78a6 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
+  f_78a5ae1544 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  f_78a5ae1544 -> "Blue" [xlabel="2", color="#8c564b", style=solid];
+  f_78a5ae1544 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
+  f_4165af95ef -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  f_4165af95ef -> "Green" [xlabel="2", color="#8c564b", style=solid];
+  f_4165af95ef -> "House-1" [xlabel="3", color="#8c564b", style=solid];
+  f_0469eb9213 -> "color-loc" [xlabel="1", color="#8c564b", style=solid];
+  f_0469eb9213 -> "Ivory" [xlabel="2", color="#8c564b", style=solid];
+  f_0469eb9213 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
 }

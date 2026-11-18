@@ -71,8 +71,8 @@ conclusion is present inserts nothing and is recorded as an alternative derivati
 
 ### 1.4 The drawings of the page
 
-The rule and the two knowledge bases of the reasoning page are the engine's drawings of this program, the
-second knowledge base with the rule and the first without it:
+The rule and the two knowledge bases of the reasoning page are the engine's drawings of this program, folded,
+the second knowledge base with the rule and the first without it:
 
 ```lisp
 (relation is-a T T :why "{?1} is a {?2}")
@@ -92,12 +92,13 @@ second knowledge base with the rule and the first without it:
 ```
 
 ```sh
-ein render rule --name neighbour FILE     # the rule, its match and its conclusion
-ein render kb FILE                        # the knowledge base, saturated
+ein render rule --fold --name neighbour FILE     # the rule, its match and its conclusion
+ein render kb --fold FILE                        # the knowledge base, saturated
 ```
 
-The page shows `ein render kb`'s graph without the four declarations' own facts, which the view draws as
-`(relation)` octagons.
+The page shows `ein render kb --fold`'s graph without the four declarations' own facts, two for each, as
+`(relation lives-in Person House)` and `(relation lives-in)` for `lives-in`, which the view draws as octagons whose
+arrow `1` is at the box `relation`.
 
 ---
 
@@ -160,8 +161,9 @@ ein solve FILE --trace OUT.md     # the region trace: root's derivation step by 
 ein solve FILE --events OUT.jsonl # every firing, park, admit and retire, one JSON object a line
 ```
 
-The derivation drawn on the reasoning page is the two steps `ein solve --trace` draws for this program, joined
-at the fact they share and with each firing labelled by its rule alone; the cores page marks its terminals:
+The derivation drawn on the reasoning page is the two steps `ein solve --trace` draws for this program, each fact
+an octagon with its arrows at its relation and its arguments, joined at the fact they share and with each firing
+labelled by its rule alone; the cores page adds the two facts of `is-a` and marks the terminals:
 
 ```lisp
 (relation is-a T T :why "{?1} is a {?2}")
@@ -192,7 +194,8 @@ Its read-out names the three stated facts as the core and `fox-keeps-away` as wh
 **The activator example.** The page's rule `note` with its two activators is
 [`examples/ein-bugs/binding-key-both.ein`](../../../../examples/ein-bugs/binding-key-both.ein); `binding-key-swapped.ein`
 writes the two activators in the other order, and there is one file for each activator alone. The rule's drawing
-is `ein render rules`' of the file and the state's `ein render kb`'s, without the `relation` facts.
+is `ein render rules --fold`' of the file and the state's `ein render kb --fold`'s, without the declarations' facts,
+the activators and the fact `(src Y)` the second activator points at.
 
 ```sh
 ein saturate examples/ein-bugs/binding-key-both.ein --dump
@@ -271,7 +274,8 @@ The reasoning page's worked examples are the programs `naf_semantics.rs` writes 
 ### 3.4 Commands and drawings
 
 The rule with its `absent` cluster and the saturated knowledge base of the reasoning page are
-`ein render rule --name soup-unless-allergic FILE` and `ein render kb FILE` on:
+`ein render rule --fold --name soup-unless-allergic FILE` and `ein render kb --fold FILE` on, the knowledge base
+without its declarations' facts:
 
 ```lisp
 (relation is-a     T T         :why "{?1} is a {?2}")
@@ -417,7 +421,7 @@ its last line carries the source's hash, so a source that changes without its pi
 **The two cubes in the page's § 6** are `ein oracle FILE --dump DIR` and `ein render region DIR` with no run
 overlaid, shown without the legend, the tooltips and the file's path. The non-monotone one is
 `examples/lattice/04_obligation_trigger_hole.ein`. The monotone one is this program, whose two rules the
-satisfiability page draws with `ein render rule`:
+satisfiability page draws with `ein render rule --fold`:
 
 ```lisp
 (relation is-a   T T         :why "{?1} is a {?2}")

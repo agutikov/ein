@@ -57,28 +57,30 @@ program has no fact is under no first arrow.
 
 ## As a graph
 
-`ein render program FILE` draws the program as written: each declaration of two labels or more as a dashed edge
-between its first two, and the facts by their count of arguments, a fact of two as an arrow with the relation's
-name on it, a fact of one as a loop with the name on it, and the others as octagons with the name in them and an
-edge to each argument, numbered from the first argument:
+`ein render program FILE` draws the program as written: its digraph `kb` holds every fact and declaration the
+program states, each an octagon with no name in it, its arrow `1` at its relation's box and its next arrows at its
+arguments ([rendering](../04-reference/12-rendering.md#the-program-as-written--ein-render-program)). A declaration
+is drawn as the fact it is, an octagon whose arrow `1` is at the box `relation`:
 
-![The program as written: declarations as dashed edges, facts by arity](diagrams/02-program-as-written.svg)
+![The program as written: every declaration and fact an octagon, each declaration's arrow 1 at the box relation](diagrams/02-program-as-written.svg)
 
-The two labels a dashed edge joins are drawn as boxes where no fact names them; that is the view's way of setting
-the declarations apart from the facts, and says nothing of what `Person` is. `ein render kb FILE` draws the loaded
-program, the declarations as the facts they are stored as, so a relation is visibly a node that facts are about:
+`(relation lives-in Person House)` is an octagon with its arrow `1` at `relation`, its arrow `2` at `lives-in` and
+its arrows `3` and `4` at the two labels; `(relation adult Person)` is one of three arrows, and `(relation solved)`
+one of two. The facts are drawn by the same rule: `(keeps Norwegian House-1 Zebra)` an octagon of four arrows,
+`(lives-in Norwegian House-1)` of three, `(adult Norwegian)` of two and `(solved)` of one. A declaration is drawn
+as a fact because it is one, and nothing in the drawing sets it apart but the box its first arrow points at.
 
-![The loaded program: each declaration as the fact it is stored as](diagrams/02-program-kb.svg)
+`ein render kb FILE` draws the loaded program, the declarations as the facts they are stored as, and so draws
+beside each declaration of one label or more the fact `(relation lives-in)` the loader adds, that the name is
+declared:
 
-`(relation lives-in Person House)` is an octagon with an edge to `lives-in` and one to each label; `(relation adult
-Person)`, a fact of two arguments, is an arrow from `adult` to `Person`; and `(relation solved)` is a loop on
-`solved`. The same shapes draw `(keeps Norwegian House-1 Zebra)`, `(lives-in Norwegian House-1)` and `(adult
-Norwegian)`: a declaration is drawn as a fact because it is one.
+![The loaded program: the same octagons, and beside each declaration with labels a fact of two arrows that the name is declared](diagrams/02-program-kb.svg)
 
-Both drawings write a fact's relation as a word, on the arrow or in the octagon, and draw no node for it: the
-atom `lives-in` is a node of the second drawing because its declaration has it as an argument, and the word
-`lives-in` on the arrow from `Norwegian` is the same atom. In the graph itself a fact's first arrow points at
-that one node ([objects](01-objects.md#as-a-graph) has the graph beside the engine's drawings).
+In both drawings a relation is one node: `lives-in` is the box under the first arrow of `(lives-in Norwegian
+House-1)` and under the second arrow of its declarations, and that one box is what makes them a fact of the
+relation and facts about it. Under `--fold` each fact of three arrows that nothing points at, `(lives-in Norwegian
+House-1)` and `(relation adult Person)` here, is one arrow labelled with its relation's name, and the relation is
+then no node for that fact ([objects](01-objects.md#as-a-graph) has the graph beside both drawings).
 
 ## In words
 

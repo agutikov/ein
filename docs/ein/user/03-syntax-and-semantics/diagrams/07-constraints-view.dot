@@ -1,6 +1,24 @@
 digraph constraints {
   rankdir=LR;
-  "std.algebra" [shape=rectangle, label="std.algebra\\n«import»"];
-  "knows" [shape=rectangle, label="knows\\n«symmetric, transitive»"];
-  "above" [shape=rectangle, label="above\\n«asymmetric»"];
+  node [fontname="Inter", shape=box];
+  ranksep=0.55;
+  f_ecefbc34bf [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_ecefbc34bf -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "knows" [xlabel="2", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "Person" [xlabel="3", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "Person" [xlabel="4", color="#bcbd22", style=solid];
+  f_bff1f00bd5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_bff1f00bd5 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_bff1f00bd5 -> "above" [xlabel="2", color="#bcbd22", style=solid];
+  f_bff1f00bd5 -> "Box" [xlabel="3", color="#bcbd22", style=solid];
+  f_bff1f00bd5 -> "Box" [xlabel="4", color="#bcbd22", style=solid];
+  f_ede3ba861c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_ede3ba861c -> "symmetric" [xlabel="1", color="#7f7f7f", style=solid];
+  f_ede3ba861c -> "knows" [xlabel="2", color="#7f7f7f", style=solid];
+  f_e45906203b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_e45906203b -> "transitive" [xlabel="1", color="#7f7f7f", style=solid];
+  f_e45906203b -> "knows" [xlabel="2", color="#7f7f7f", style=solid];
+  f_52b898a1d3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_52b898a1d3 -> "asymmetric" [xlabel="1", color="#bcbd22", style=solid];
+  f_52b898a1d3 -> "above" [xlabel="2", color="#bcbd22", style=solid];
 }

@@ -53,32 +53,39 @@ neither fact is written.
 
 ## As a graph
 
-`ein render constraints FILE` draws each relation with the properties the program states of it:
+`ein render constraints FILE` draws the facts the program states of the relations it does not declare, each as a
+fact, an octagon whose arrow `1` is at its relation, the property, and whose arrow `2` is at the relation it is
+about, beside the declarations, which are facts of `relation`
+([rendering](../04-reference/12-rendering.md#constraints--ein-render-constraints)):
 
-![Each relation with the properties the program states of it](diagrams/07-constraints-view.svg)
+![The constraint view: (symmetric knows), (transitive knows) and (asymmetric above), each an octagon whose arrow 1 is at the property and whose arrow 2 is at the relation, beside the two declarations](diagrams/07-constraints-view.svg)
 
-`ein render program FILE` draws each property fact as what it is, a fact of one argument about a relation: a loop
-on the relation's node with the property's name on it, beside the relation's own facts, which carry the relation's
-name on their arrows (the view trimmed to `knows`):
+`ein render program FILE` draws the same facts in its digraph `kb`, beside the relation's own facts: a property
+fact is a fact of two arrows, the property's box under its first and the relation's under its second, and the box
+`knows` is also under the first arrow of each fact of `knows`. One node is the relation the facts are of and the
+object the property is said of:
 
-![The property facts as self-loops on knows, beside its own facts](diagrams/07-property-facts.svg)
+![The program's kb: the property facts, each an octagon of two arrows whose arrow 2 is at the relation's box, beside the facts of knows and above, whose arrow 1 is at it](diagrams/07-property-facts.svg)
 
 The rules the three property facts activate are `std.algebra`'s. A view draws a program as it is written, its
 imports unresolved, so a library's rule is drawn from the module's own file: `ein render rule --name symmetric
 STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory `ein --version` names
-([install](../01-install.md)). Each is a rewrite over any relation, its
-parameter the arrows' label ([rules](05-rules.md)):
+([install](../01-install.md)). Each is a rewrite over any relation, each pattern's arrow `1` at the diamond of its
+parameter ([rules](05-rules.md)):
 
 ![The rule symmetric: what it matches and what it asserts](diagrams/07-rule-symmetric.svg)
 
 ![The rule transitive: what it matches and what it asserts](diagrams/07-rule-transitive.svg)
 
-![The rule asymmetric: what it matches and what it asserts](diagrams/07-rule-asymmetric.svg)
+![The rule asymmetric: two patterns over the parameter, and (false)](diagrams/07-rule-asymmetric.svg)
 
-What the two closures added to the program is `ein render kb FILE`, the declarations' and the property facts left
-out: three solid arrows written, four dashed ones derived, and `above` untouched, since a check adds nothing.
+What the two closures added to the program is `ein render kb FILE`: the three facts of `knows` and `above` written,
+solid, four of `knows` derived, dashed, each with its rule beside it, and `above` untouched, since a check adds
+nothing. The view draws every fact the knowledge base holds, so beside them stand the declarations, the three
+property facts, and two facts, dashed too, that `std.algebra`'s rules derive from `(symmetric knows)`, the
+activators of two more of its rules, `(std.algebra.converse knows knows)` and `(std.algebra.symmetric-negative knows)`:
 
-![What the two closures added: three arrows written, four derived](diagrams/07-closures-kb.svg)
+![What the two closures added: the facts written solid, four facts of knows derived, dashed, beside the declarations, the property facts and the library's derived activators](diagrams/07-closures-kb.svg)
 
 ## In words
 

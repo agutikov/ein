@@ -28,8 +28,8 @@ Which pages owe the four, and which do not:
 | [natural language](14-natural-language.md) | syntax: `:why`, `:source` and `:goal-text`, the built-in connection between a form and its English | Ein and words, and nothing else |
 
 Every block of output on these pages is the binary's, from the command named beside it, and every drawing is the
-DOT the named command wrote, less its comments and font settings, a region's tooltips, layer labels, legend and
-the line of its title that names the run, and the facts a page says it leaves out; a drawing made by hand says so.
+DOT the named command wrote, less its comment lines, a region's tooltips, layer labels, legend and the line of its
+title that names the run, and the facts a page says it leaves out; a drawing made by hand says so.
 A formula is TeX. After the four come the details, each refusal linked to the
 [diagnostics](../04-reference/07-diagnostics.md), and a list of related pages.
 
@@ -38,7 +38,8 @@ A formula is TeX. After the four come the details, each refusal linked to the
 **What the knowledge base holds**
 
 - [Objects](01-objects.md): the graph and its two sorts of node, the atom with its name and the fact with its
-  arrows; no types, and how a rule gives a label a meaning; the graph beside the compact and the detailed drawing.
+  arrows; no types, and how a rule gives a label a meaning; the graph beside what `ein render kb` draws, and the same
+  folded.
 - [Relations](02-relations.md): the atom under a fact's first arrow, its extent and a fact of it; a declaration,
   its labels and arity, and a relation as data.
 - [Facts](03-facts.md): a relation with its arguments, where each fact came from, and a fact as an argument of a

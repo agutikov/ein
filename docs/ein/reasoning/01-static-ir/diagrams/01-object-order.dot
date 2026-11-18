@@ -1,13 +1,9 @@
 digraph object_order {
-  rankdir=TB;
+  rankdir=LR; nodesep=0.3; ranksep=0.45; forcelabels=true;
   node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
   edge [fontname="Helvetica", fontsize=10];
   n1 [label="10"]; n2 [label="2"]; n3 [label="a"];
-  f1 [label="adjacent(b, b)"];
-  f2 [label="co-located(a)"];
-  f3 [label="co-located(a, a)"];
-  f4 [label="co-located(a, b)"];
-  f5 [label="co-located(a, p(a))"];
-  f6 [label="co-located(b)"];
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  f1 [xlabel="f1"]; f2 [xlabel="f2"]; f3 [xlabel="f3"]; f4 [xlabel="f4"]; f5 [xlabel="f5"]; f6 [xlabel="f6"];
   n1 -> n2 -> n3 -> f1 -> f2 -> f3 -> f4 -> f5 -> f6 [label="≺"];
 }

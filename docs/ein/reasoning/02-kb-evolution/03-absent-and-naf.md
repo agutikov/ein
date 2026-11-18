@@ -90,7 +90,10 @@ $$
 ![The rule soup-unless-allergic: its absence a dashed cluster](diagrams/03-rule-soup-unless-allergic.svg)
 
 and in the saturated world below, where two guests are seated and one is allergic, it has fired for one of them.
-A fact of one argument is a loop on its argument; the dashed arrow is the fact the rule derived.
+Both drawings fold each fact of three arrows into a labelled arrow
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)); a fact of one argument,
+$\operatorname{allergic}(\mathsf{Bob})$, is an octagon whose first arrow is at its relation, and the world is
+drawn without its declarations' facts. The dashed arrow is the fact the rule derived.
 
 ![The saturated world: two guests seated, one allergic, the other given the soup](diagrams/03-soup-saturated.svg)
 

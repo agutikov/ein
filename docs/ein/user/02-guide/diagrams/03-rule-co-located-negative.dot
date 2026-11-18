@@ -2,13 +2,35 @@ digraph rule_co_located_negative_lhs_rhs {
   rankdir=TB;
   label="co-located-negative"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "not_L" [label="not", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
     "?V1_L" [label="?V1", shape=diamond];
     "?h_L" [label="?h", shape=diamond];
-    "?V1_L" -> "?h_L" [label="¬?R1", color="#d62728", fontcolor="#d62728"];
+    subgraph cluster_ctx_L_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "h1_not_L" -> "not_L" [xlabel="1", color="#d62728"];
+    "h1_not_L" -> "(?R1 ?V1 ?h)_L" [xlabel="2", color="#d62728"];
+    "(?R1 ?V1 ?h)_L" -> "?R1_L" [xlabel="1", color="#bcbd22"];
+    "(?R1 ?V1 ?h)_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "(?R1 ?V1 ?h)_L" -> "?h_L" [xlabel="3", color="#bcbd22"];
   }
   subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
     "?V2_R" [label="?V2", shape=diamond];
     "?h_R" [label="?h", shape=diamond];
-    "?V2_R" -> "?h_R" [label="¬?R2", color="#d62728", fontcolor="#d62728", style=dashed];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h2_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h2_not_R" -> "not_R" [xlabel="1", color="#d62728", style=dashed];
+    "h2_not_R" -> "(?R2 ?V2 ?h)_R" [xlabel="2", color="#d62728", style=dashed];
+    "(?R2 ?V2 ?h)_R" -> "?R2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h)_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h)_R" -> "?h_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
 }

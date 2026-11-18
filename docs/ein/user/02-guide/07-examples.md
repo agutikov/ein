@@ -14,9 +14,12 @@ puzzles are under [`examples/`](../../../../examples/) (its [catalogue](../../..
 The shortest meaningful program: one fact, whose `:source` makes it a **given**, a statement of the problem, rather
 than background ([facts](../03-syntax-and-semantics/03-facts.md)). `lives-in` is not declared, which a program may leave
 it; a declared relation carries a `:why` and a label for each of its slots. `ein render kb` draws the program as the
-one arrow it is, labelled with the relation and the clue's number:
+one fact it is, an octagon whose arrow `1` is at `lives-in` and whose arrows `2` and `3` are at `Norwegian` and
+`House-1`, the clue's number beside it:
 
-![The four-token Zebra sentence as the one arrow it is](diagrams/07-four-token-sentence.svg)
+![The four-token Zebra sentence as the one fact it is: an octagon pointing at lives-in, Norwegian and House-1, (10) beside it](diagrams/07-four-token-sentence.svg)
+
+`ein render kb --fold` draws the same fact as one arrow from `Norwegian` to `House-1`, labelled `lives-in (10)`.
 
 ## A larger Zebra fragment
 
@@ -54,11 +57,14 @@ premise `(neq ?a ?c)`, an ordinary conjunct of the `:match`. `(transitive co-loc
 `?house = Red · ?nationality = Englishman`. The whole puzzle, fifteen conditions and the rule families that solve it,
 is [`examples/zebra.ein`](../../../../examples/zebra.ein).
 
-As a graph, from `ein render kb`: the three declarations, each an octagon with an arrow to the relation's name and
-one to each slot's label, the `is-a` facts as dashed arrows with an open head, and the three clues as solid arrows.
-`transitive` adds nothing here, since no two `co-located` facts chain, so no arrow is dashed as derived.
+As a graph, from `ein render kb --fold`, which folds each fact of three arrows, a relation and two arguments, into
+one arrow from its first argument to its second, labelled with its relation: the `is-a` facts and the three clues
+are such arrows, the clues with their numbers. Every other fact stays an octagon: each declaration is two, one whose
+arrow `1` is at `relation`, `2` at the relation it declares and `3`, `4` at its slots' labels, and one with only
+those first two arrows; and `(transitive co-located)`, of two arrows, is an octagon too. `transitive` adds nothing
+here, since no two `co-located` facts chain, so nothing is dashed as derived.
 
-![A larger Zebra fragment: three declarations, the is-a facts and three clues](diagrams/07-zebra-fragment.svg)
+![A larger Zebra fragment, folded: the declarations and the fact of transitive as octagons, the is-a facts and the three clues as labelled arrows](diagrams/07-zebra-fragment.svg)
 
 ## Two ontologies for one puzzle
 
@@ -200,7 +206,9 @@ property fact ([rules](../03-syntax-and-semantics/05-rules.md)):
 
 As graphs, from `ein render rule --name symmetric stdlib/algebra.ein` and
 `ein render rule --name slot-exclusive stdlib/slots.ein`: what each matches above what it asserts, a variable a
-diamond, a guard a dotted `≠` link, the asserted fact dashed and a stored negation labelled `¬`.
+diamond, each pattern an octagon whose arrow `1` is at its relation, here a variable, a guard a dotted `≠` link, the
+asserted fact dashed, and a stored negation a red fact of `not` whose arrow `2` is at the fact it denies, in the frame
+`not ctx`.
 
 ![The rule symmetric: what it matches and what it asserts](diagrams/07-rule-symmetric.svg)
 

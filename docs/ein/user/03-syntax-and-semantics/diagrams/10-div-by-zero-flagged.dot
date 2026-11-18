@@ -1,8 +1,42 @@
-digraph step12 {
+digraph step15 {
   rankdir=LR;
-  "f_9934285045" [label="std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.decimal-arith.quotient(n(z, 7), z), n(z, 7), z), z)", shape=box, style=rounded];
-  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded, penwidth=2];
+  node [fontname="Inter", shape=box];
+  ranksep=0.55;
+  "f_9934285045" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  "f_eab79754f0" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
+  "f_31efc4325b" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="div, std.math.decimal-arith.div-m1, std.math.decimal-arith.quotient ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "f_0cb3773012" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  }
+  subgraph cluster_ctx_1 {
+    label="std.math.decimal-arith.div-m1 ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "f_6c93b95ea5" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  }
+  subgraph cluster_ctx_2 {
+    label="std.math.decimal-arith.done ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "f_0996b70fe8" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  }
   "fire0_std.math.positional.div-by-zero" [shape=box, style="rounded,bold", color="#2ca02c", fontcolor="#2ca02c", label="std.math.positional.div-by-zero\nthe divisor of (n z 7) divided by z is zero"];
+  "f_9934285045" -> "std.math.decimal-arith.done" [xlabel="1"];
+  "f_9934285045" -> "f_0996b70fe8" [xlabel="2"];
+  "f_9934285045" -> "z" [xlabel="3"];
+  "f_eab79754f0" -> "std.math.arith.division-by-zero" [xlabel="1", penwidth=2];
+  "f_eab79754f0" -> "f_31efc4325b" [xlabel="2", penwidth=2];
+  "f_0996b70fe8" -> "std.math.decimal-arith.div-m1" [xlabel="1"];
+  "f_0996b70fe8" -> "f_6c93b95ea5" [xlabel="2"];
+  "f_0996b70fe8" -> "f_0cb3773012" [xlabel="3"];
+  "f_0996b70fe8" -> "z" [xlabel="4"];
+  "f_31efc4325b" -> "div" [xlabel="1"];
+  "f_31efc4325b" -> "f_0cb3773012" [xlabel="2"];
+  "f_31efc4325b" -> "z" [xlabel="3"];
+  "f_6c93b95ea5" -> "std.math.decimal-arith.quotient" [xlabel="1"];
+  "f_6c93b95ea5" -> "f_0cb3773012" [xlabel="2"];
+  "f_6c93b95ea5" -> "z" [xlabel="3"];
+  "f_0cb3773012" -> "n" [xlabel="1"];
+  "f_0cb3773012" -> "z" [xlabel="2"];
+  "f_0cb3773012" -> "7" [xlabel="3"];
   "f_9934285045" -> "fire0_std.math.positional.div-by-zero" [color="#2ca02c"];
   "fire0_std.math.positional.div-by-zero" -> "f_eab79754f0" [color="#2ca02c", style=bold];
 }

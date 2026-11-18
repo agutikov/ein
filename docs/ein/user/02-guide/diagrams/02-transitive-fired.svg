@@ -2,50 +2,116 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: kb Pages: 1 -->
-<svg width="142pt" height="223pt"
- viewBox="0.00 0.00 142.00 223.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 218.5)">
+<svg width="306pt" height="125pt"
+ viewBox="0.00 0.00 306.00 125.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 121.1)">
 <title>kb</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-218.5 137.71,-218.5 137.71,4 -4,4"/>
-<!-- Animal -->
+<polygon fill="white" stroke="none" points="-4,4 -4,-121.1 301.5,-121.1 301.5,4 -4,4"/>
+<!-- f_076d37da67 -->
 <g id="node1" class="node">
-<title>Animal</title>
-<polygon fill="none" stroke="black" points="73.34,-214.5 7.84,-214.5 7.84,-178.5 73.34,-178.5 73.34,-214.5"/>
-<text xml:space="preserve" text-anchor="middle" x="40.59" y="-191.82" font-family="Times,serif" font-size="14.00">Animal</text>
+<title>f_076d37da67</title>
+<polygon fill="none" stroke="#7f7f7f" points="147.3,-25.83 147.3,-34.77 140.97,-41.1 132.03,-41.1 125.7,-34.77 125.7,-25.83 132.03,-19.5 140.97,-19.5 147.3,-25.83"/>
+<text xml:space="preserve" text-anchor="middle" x="92.7" y="-6.2" font-family="Inter" font-size="14.00" fill="#7f7f7f">taxonomy</text>
 </g>
-<!-- Mammal -->
+<!-- is&#45;a -->
 <g id="node2" class="node">
-<title>Mammal</title>
-<polygon fill="none" stroke="black" points="133.71,-125.25 55.46,-125.25 55.46,-89.25 133.71,-89.25 133.71,-125.25"/>
-<text xml:space="preserve" text-anchor="middle" x="94.59" y="-102.58" font-family="Times,serif" font-size="14.00">Mammal</text>
+<title>is&#45;a</title>
+<polygon fill="none" stroke="black" points="145.5,-117.1 91.5,-117.1 91.5,-81.1 145.5,-81.1 145.5,-117.1"/>
+<text xml:space="preserve" text-anchor="middle" x="118.5" y="-95.55" font-family="Inter" font-size="14.00">is&#45;a</text>
 </g>
-<!-- Mammal&#45;&gt;Animal -->
-<g id="edge2" class="edge">
-<title>Mammal&#45;&gt;Animal</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M83.92,-125.49C76.3,-137.8 65.9,-154.59 57.2,-168.65"/>
-<polygon fill="none" stroke="black" points="54.31,-166.67 52.03,-177.01 60.27,-170.35 54.31,-166.67"/>
-<text xml:space="preserve" text-anchor="middle" x="84.8" y="-147.2" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+<!-- f_076d37da67&#45;&gt;is&#45;a -->
+<g id="edge1" class="edge">
+<title>f_076d37da67&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#7f7f7f" d="M133.77,-41.45C131.72,-49.03 128.82,-59.79 126.1,-69.9"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="122.77,-68.8 123.55,-79.37 129.53,-70.62 122.77,-68.8"/>
+<text xml:space="preserve" text-anchor="middle" x="123.92" y="-48" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 <!-- Cat -->
 <g id="node3" class="node">
 <title>Cat</title>
-<ellipse fill="none" stroke="black" cx="28.59" cy="-18" rx="28.59" ry="18"/>
-<text xml:space="preserve" text-anchor="middle" x="28.59" y="-13.32" font-family="Times,serif" font-size="14.00">Cat</text>
+<polygon fill="none" stroke="black" points="297.5,-117.1 243.5,-117.1 243.5,-81.1 297.5,-81.1 297.5,-117.1"/>
+<text xml:space="preserve" text-anchor="middle" x="270.5" y="-95.55" font-family="Inter" font-size="14.00">Cat</text>
 </g>
-<!-- Cat&#45;&gt;Animal -->
+<!-- f_076d37da67&#45;&gt;Cat -->
+<g id="edge2" class="edge">
+<title>f_076d37da67&#45;&gt;Cat</title>
+<path fill="none" stroke="#7f7f7f" d="M146.14,-36.1C164.07,-45.04 203.42,-64.66 233.09,-79.45"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="231.26,-82.45 241.77,-83.78 234.38,-76.18 231.26,-82.45"/>
+<text xml:space="preserve" text-anchor="middle" x="190.1" y="-46.96" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- Mammal -->
+<g id="node4" class="node">
+<title>Mammal</title>
+<polygon fill="none" stroke="black" points="73,-117.1 0,-117.1 0,-81.1 73,-81.1 73,-117.1"/>
+<text xml:space="preserve" text-anchor="middle" x="36.5" y="-95.55" font-family="Inter" font-size="14.00">Mammal</text>
+</g>
+<!-- f_076d37da67&#45;&gt;Mammal -->
 <g id="edge3" class="edge">
-<title>Cat&#45;&gt;Animal</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M25.43,-36.37C22.07,-57.46 17.75,-94.1 21.84,-125.25 23.68,-139.34 27.53,-154.61 31.26,-167.31"/>
-<polygon fill="none" stroke="black" points="27.86,-168.17 34.15,-176.7 34.55,-166.11 27.86,-168.17"/>
-<text xml:space="preserve" text-anchor="middle" x="34.21" y="-102.58" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+<title>f_076d37da67&#45;&gt;Mammal</title>
+<path fill="none" stroke="#7f7f7f" d="M127.63,-37.23C115.22,-45.52 91.98,-61.04 72.07,-74.34"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="70.26,-71.34 63.89,-79.81 74.15,-77.16 70.26,-71.34"/>
+<text xml:space="preserve" text-anchor="middle" x="90.86" y="-45.48" font-family="Times,serif" font-size="14.00">3</text>
 </g>
-<!-- Cat&#45;&gt;Mammal -->
-<g id="edge1" class="edge">
-<title>Cat&#45;&gt;Mammal</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M40.38,-34.6C49.87,-47.14 63.42,-65.05 74.6,-79.82"/>
-<polygon fill="none" stroke="black" points="71.79,-81.92 80.62,-87.79 77.38,-77.7 71.79,-81.92"/>
-<text xml:space="preserve" text-anchor="middle" x="79.87" y="-57.95" font-family="Times,serif" font-size="14.00">is&#45;a</text>
+<!-- f_cb25df6f56 -->
+<g id="node5" class="node">
+<title>f_cb25df6f56</title>
+<polygon fill="none" stroke="#7f7f7f" points="107.3,-25.83 107.3,-34.77 100.97,-41.1 92.03,-41.1 85.7,-34.77 85.7,-25.83 92.03,-19.5 100.97,-19.5 107.3,-25.83"/>
+<text xml:space="preserve" text-anchor="middle" x="52.7" y="-27.8" font-family="Inter" font-size="14.00" fill="#7f7f7f">taxonomy</text>
+</g>
+<!-- f_cb25df6f56&#45;&gt;is&#45;a -->
+<g id="edge4" class="edge">
+<title>f_cb25df6f56&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#7f7f7f" d="M99.84,-41.45C102.34,-49.03 105.88,-59.79 109.21,-69.9"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="105.89,-70.99 112.34,-79.39 112.54,-68.8 105.89,-70.99"/>
+<text xml:space="preserve" text-anchor="middle" x="101.88" y="-48" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- f_cb25df6f56&#45;&gt;Mammal -->
+<g id="edge5" class="edge">
+<title>f_cb25df6f56&#45;&gt;Mammal</title>
+<path fill="none" stroke="#7f7f7f" d="M89.62,-38.96C82.29,-47.13 70.28,-60.49 59.54,-72.45"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="57.11,-69.92 53.03,-79.7 62.32,-74.59 57.11,-69.92"/>
+<text xml:space="preserve" text-anchor="middle" x="66.32" y="-46.59" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- Animal -->
+<g id="node6" class="node">
+<title>Animal</title>
+<polygon fill="none" stroke="black" points="225.38,-117.1 163.62,-117.1 163.62,-81.1 225.38,-81.1 225.38,-117.1"/>
+<text xml:space="preserve" text-anchor="middle" x="194.5" y="-95.55" font-family="Inter" font-size="14.00">Animal</text>
+</g>
+<!-- f_cb25df6f56&#45;&gt;Animal -->
+<g id="edge6" class="edge">
+<title>f_cb25df6f56&#45;&gt;Animal</title>
+<path fill="none" stroke="#7f7f7f" d="M105.2,-37.23C117.35,-45.52 140.13,-61.04 159.64,-74.34"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="157.41,-77.05 167.64,-79.79 161.35,-71.27 157.41,-77.05"/>
+<text xml:space="preserve" text-anchor="middle" x="141.31" y="-45.48" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- f_aea40ae2c2 -->
+<g id="node7" class="node">
+<title>f_aea40ae2c2</title>
+<polygon fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" points="205.3,-25.83 205.3,-34.77 198.97,-41.1 190.03,-41.1 183.7,-34.77 183.7,-25.83 190.03,-19.5 198.97,-19.5 205.3,-25.83"/>
+<text xml:space="preserve" text-anchor="middle" x="224.2" y="-6.2" font-family="Inter" font-size="14.00" fill="#7f7f7f">by transitive</text>
+</g>
+<!-- f_aea40ae2c2&#45;&gt;is&#45;a -->
+<g id="edge7" class="edge">
+<title>f_aea40ae2c2&#45;&gt;is&#45;a</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M186.65,-38.2C177.29,-46.42 161.12,-60.64 146.88,-73.15"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="144.68,-70.43 139.48,-79.66 149.3,-75.69 144.68,-70.43"/>
+<text xml:space="preserve" text-anchor="middle" x="158.08" y="-46.06" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- f_aea40ae2c2&#45;&gt;Cat -->
+<g id="edge8" class="edge">
+<title>f_aea40ae2c2&#45;&gt;Cat</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M202.35,-38.2C211.71,-46.42 227.88,-60.64 242.12,-73.15"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="239.7,-75.69 249.52,-79.66 244.32,-70.43 239.7,-75.69"/>
+<text xml:space="preserve" text-anchor="middle" x="221.92" y="-46.06" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- f_aea40ae2c2&#45;&gt;Animal -->
+<g id="edge9" class="edge">
+<title>f_aea40ae2c2&#45;&gt;Animal</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M194.5,-41.45C194.5,-48.95 194.5,-59.56 194.5,-69.57"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="191,-69.32 194.5,-79.32 198,-69.32 191,-69.32"/>
+<text xml:space="preserve" text-anchor="middle" x="190" y="-65.01" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: f97f4e9080f807a88116582ac6eaa4605a2a4164d836aed5bd0ac924dc13c868 -->
+<!-- source sha256: 4296eba3b44020f1d2a1445afc517673171a0b6ee0fd936074d05f5e41463f2e -->

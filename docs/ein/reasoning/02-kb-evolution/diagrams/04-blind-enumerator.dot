@@ -1,6 +1,6 @@
 digraph blind {
   graph [rankdir=LR, nodesep=0.3, ranksep=0.9, fontname="Helvetica", fontsize=10, label="guessable(P) = {Ann, Bob, C1}, one relation r of two arguments: every ordered pair of distinct atoms", labelloc=t];
-  node [fontname="Helvetica", fontsize=10, shape=oval];
+  node [fontname="Helvetica", fontsize=10, shape=box];
   edge [fontname="Helvetica", fontsize=9, style=dotted, color="#e377c2", fontcolor="#e377c2", arrowsize=0.6];
   Ann -> Bob [label="r ?"];
   Bob -> Ann [label="r ?"];

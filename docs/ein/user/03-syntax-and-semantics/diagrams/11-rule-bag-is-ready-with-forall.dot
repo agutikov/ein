@@ -2,20 +2,38 @@ digraph rule_bag_is_ready_lhs_rhs {
   rankdir=TB;
   label="bag-is-ready"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "is-a_L" [label="is-a", shape=box];
     "?bag_L" [label="?bag", shape=diamond];
-    "Bag_L" [label="Bag", shape=rectangle];
-    "?bag_L" -> "Bag_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-    subgraph cluster_forall_L_0 {
-      label="forall (∀)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "?i_L" [label="?i", shape=diamond];
-      "?i_L" -> "?bag_L" [label="goes-in", color="#17becf", fontcolor="#17becf"];
-      "h1_packed_L" [shape=octagon, label="packed", color="#8c564b", fontcolor="#8c564b"];
-      "h1_packed_L" -> "?i_L" [label="1", color="#8c564b"];
+    "Bag_L" [label="Bag", shape=box];
+    "forall_L" [label="forall", shape=box];
+    "?i_L" [label="?i", shape=diamond];
+    "goes-in_L" [label="goes-in", shape=box];
+    "packed_L" [label="packed", shape=box];
+    subgraph cluster_ctx_L_0 {
+      label="forall ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(goes-in ?i ?bag)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+      "(packed ?i)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
+    "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "h1_is-a_L" -> "?bag_L" [xlabel="2", color="#7f7f7f"];
+    "h1_is-a_L" -> "Bag_L" [xlabel="3", color="#7f7f7f"];
+    "h2_forall_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h2_forall_L" -> "forall_L" [xlabel="1", color="#1f77b4"];
+    "h2_forall_L" -> "?i_L" [xlabel="2", color="#1f77b4"];
+    "h2_forall_L" -> "(goes-in ?i ?bag)_L" [xlabel="3", color="#1f77b4"];
+    "h2_forall_L" -> "(packed ?i)_L" [xlabel="4", color="#1f77b4"];
+    "(goes-in ?i ?bag)_L" -> "goes-in_L" [xlabel="1", color="#17becf"];
+    "(goes-in ?i ?bag)_L" -> "?i_L" [xlabel="2", color="#17becf"];
+    "(goes-in ?i ?bag)_L" -> "?bag_L" [xlabel="3", color="#17becf"];
+    "(packed ?i)_L" -> "packed_L" [xlabel="1", color="#8c564b"];
+    "(packed ?i)_L" -> "?i_L" [xlabel="2", color="#8c564b"];
   }
   subgraph cluster_rhs { label="assert";
+    "ready_R" [label="ready", shape=box];
     "?bag_R" [label="?bag", shape=diamond];
-    "h2_ready_R" [shape=octagon, label="ready", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h2_ready_R" -> "?bag_R" [label="1", color="#7f7f7f", style=dashed];
+    "h3_ready_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h3_ready_R" -> "ready_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h3_ready_R" -> "?bag_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

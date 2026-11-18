@@ -3,7 +3,7 @@ digraph rule_guest_owes_seat_lhs_rhs {
   label="guest-owes-seat"; labelloc=t;
   subgraph cluster_lhs { label="match";
     "?g_L" [label="?g", shape=diamond];
-    "Guest_L" [label="Guest", shape=rectangle];
+    "Guest_L" [label="Guest", shape=box];
     "?g_L" -> "Guest_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
@@ -12,8 +12,10 @@ digraph rule_guest_owes_seat_lhs_rhs {
     }
   }
   subgraph cluster_rhs { label="assert";
-    "seats_R" [label="seats", shape=rectangle];
-    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_open_R" -> "seats_R" [label="1", color="#2ca02c", style=dashed];
+    "open_R" [label="open", shape=box];
+    "seats_R" [label="seats", shape=box];
+    "h1_open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h1_open_R" -> "open_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h1_open_R" -> "seats_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

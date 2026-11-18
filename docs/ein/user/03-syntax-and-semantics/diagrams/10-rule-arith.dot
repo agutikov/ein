@@ -2,17 +2,20 @@ digraph rule_arith_lhs_rhs {
   rankdir=TB;
   label="arith"; labelloc=t;
   subgraph cluster_lhs { label="match";
-    "h1_#empty_L" [shape=octagon, label="#empty", color="#17becf", fontcolor="#17becf"];
   }
   subgraph cluster_rhs { label="assert";
-    "division-by-zero_R" [label="division-by-zero", shape=rectangle];
-    "arith-module-rule_R" [label="arith-module-rule", shape=rectangle];
-    "division-by-zero-is-false_R" [label="division-by-zero-is-false", shape=rectangle];
-    "h2___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h2___closed___R" -> "division-by-zero_R" [label="1", color="#e377c2", style=dashed];
-    "h3___closed___R" [shape=octagon, label="__closed__", color="#e377c2", fontcolor="#e377c2"];
-    "h3___closed___R" -> "arith-module-rule_R" [label="1", color="#e377c2", style=dashed];
-    "h4_arith-module-rule_R" [shape=octagon, label="arith-module-rule", color="#d62728", fontcolor="#d62728"];
-    "h4_arith-module-rule_R" -> "division-by-zero-is-false_R" [label="1", color="#d62728", style=dashed];
+    "__closed___R" [label="__closed__", shape=box];
+    "division-by-zero_R" [label="division-by-zero", shape=box];
+    "arith-module-rule_R" [label="arith-module-rule", shape=box];
+    "division-by-zero-is-false_R" [label="division-by-zero-is-false", shape=box];
+    "h1___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h1___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "h1___closed___R" -> "division-by-zero_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "h2___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "h2___closed___R" -> "arith-module-rule_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h3_arith-module-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "h3_arith-module-rule_R" -> "arith-module-rule_R" [xlabel="1", color="#d62728", style=dashed];
+    "h3_arith-module-rule_R" -> "division-by-zero-is-false_R" [xlabel="2", color="#d62728", style=dashed];
   }
 }

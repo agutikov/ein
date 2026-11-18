@@ -142,10 +142,12 @@ What the partition produces, rule by rule:
   as :expect        (model (co-loc Green H3))
 ```
 
-The state as `ein render kb` draws it, the declarations and the facts of more than two arguments left out. The solid `right-of` arrows are the row and the
-clue; each dashed `co-loc` arrow is a placement a rule derived, labelled with the rule.
+The state as `ein render kb --fold` draws it, each fact of three arrows one labelled arrow, and of it the facts of
+`type`, `instance`, `right-of` and `co-loc` alone: the declarations' facts, the facts that apply a rule and the
+stored negations are left out. The solid `right-of` arrows are the row and the clue; each dashed `co-loc` arrow is a
+placement a rule derived, labelled with the rule.
 
-![A row: the right-of arrows, and the placements a rule derived, dashed](diagrams/05-row-state.svg)
+![A row, folded: the right-of arrows, and the placements a rule derived, dashed](diagrams/05-row-state.svg)
 
 Blue is in house 1, so red is not; green is just to the right of red, and house 1 has nothing to its left, so
 green is not there either. Red in house 3 would put green off the row. So red is in house 2 and green in house 3.

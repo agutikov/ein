@@ -2,18 +2,27 @@ digraph rule_no_child_lhs_rhs {
   rankdir=TB;
   label="no-child"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "parent_L" [label="parent", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
-    "?x_L" -> "?y_L" [label="parent", color="#17becf", fontcolor="#17becf"];
+    "h1_parent_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "h1_parent_L" -> "parent_L" [xlabel="1", color="#17becf"];
+    "h1_parent_L" -> "?x_L" [xlabel="2", color="#17becf"];
+    "h1_parent_L" -> "?y_L" [xlabel="3", color="#17becf"];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "?z_L" [label="?z", shape=diamond];
-      "?y_L" -> "?z_L" [label="parent", color="#17becf", fontcolor="#17becf"];
+      "h2_parent_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+      "h2_parent_L" -> "parent_L" [xlabel="1", color="#17becf"];
+      "h2_parent_L" -> "?y_L" [xlabel="2", color="#17becf"];
+      "h2_parent_L" -> "?z_L" [xlabel="3", color="#17becf"];
     }
   }
   subgraph cluster_rhs { label="assert";
+    "childless_R" [label="childless", shape=box];
     "?y_R" [label="?y", shape=diamond];
-    "h1_childless_R" [shape=octagon, label="childless", color="#7f7f7f", fontcolor="#7f7f7f"];
-    "h1_childless_R" -> "?y_R" [label="1", color="#7f7f7f", style=dashed];
+    "h3_childless_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "h3_childless_R" -> "childless_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "h3_childless_R" -> "?y_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

@@ -134,13 +134,15 @@ up, and is changed in one place.
 ### How it is drawn, and how it reads
 
 `ein render rule --name chores FILE` draws a program as it is written, before the loader expands anything, so in
-the program with the macro the call is drawn as if `housemates` were a relation, one arrow:
+the program with the macro the call is drawn as if `housemates` were a relation, one pattern, an octagon whose arrow
+`1` is at the box `housemates`:
 
-![The rule chores-with-macro: the macro's call drawn as one arrow](diagrams/11-rule-chores-with-macro.svg)
+![The rule chores-with-macro: the macro's call drawn as one pattern, its arrow 1 at the box housemates](diagrams/11-rule-chores-with-macro.svg)
 
-and the same command on the program written out draws what the engine matches, the pattern the arrow stood for:
+and the same command on the program written out draws what the engine matches, the patterns the call stood for:
+two facts of `lives-in` that share the house, and the guard between the two people:
 
-![The rule chores-written-out: the pattern the arrow stood for](diagrams/11-rule-chores-written-out.svg)
+![The rule chores-written-out: two patterns of lives-in over one house and a dotted ≠ between the people, the pattern the call stood for](diagrams/11-rule-chores-written-out.svg)
 
 A macro's `:why` documents the pattern for a reader of the program, *Ann and Bob are two people who live in one
 house*, and is printed nowhere: a call is gone by the time anything runs, so what a derivation reads as is the
@@ -208,20 +210,24 @@ The program with the call replaced by its expansion, and the import dropped, sat
 
 ### As a graph
 
-`ein render rule --name bag-is-ready FILE` knows this macro, and draws its call as a dashed cluster marked `∀`:
-the quantified variable, the guard and the body inside it, the variable the rest of the rule shares, `?bag`,
-outside.
+`ein render rule --name bag-is-ready FILE` draws the call as it is written, as a pattern, and reads no macro's name
+([Q-M1f.436](../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)): an octagon whose arrow `1`
+is at the box `forall`, its arrow `2` at the quantified variable `?i`, and its arrows `3` and `4` at the guard and
+the body, two patterns the call points at and no premise of the rule, so they stand in the frame `forall ctx`.
+`?bag`, the variable the rest of the rule shares, is under the guard's arrow `3`.
 
-![The rule bag-is-ready-with-forall: the call of forall a dashed cluster](diagrams/11-rule-bag-is-ready-with-forall.svg)
+![The rule bag-is-ready-with-forall: the call of forall a pattern whose arrows 3 and 4 are at the guard and the body, in the frame forall ctx](diagrams/11-rule-bag-is-ready-with-forall.svg)
 
 The same command on the program with the expansion written out draws what the engine matches: an `absent (∄)`
 cluster around the guard and the body's absence.
 
-![The rule bag-is-ready-written-out: an absence around the guard and the body's absence](diagrams/11-rule-bag-is-ready-written-out.svg)
+![The rule bag-is-ready-written-out: an absence around the guard and the body's absence, the body drawn red](diagrams/11-rule-bag-is-ready-written-out.svg)
 
 The two pictures are one statement read two ways: *for every item in the bag, packed*, and *there is no item in
-the bag that is not packed*. The inner `(absent (packed ?i))` is drawn red with a `¬`, the mark the view also gives a
-stored negation `(not (packed ?i))`: the drawing does not tell the two apart, and the rule's text does.
+the bag that is not packed*. The first is the call as written, and what it means is the macro's text; the second is
+what the engine matches. The inner `(absent (packed ?i))` is its pattern drawn red; a stored negation
+`(not (packed ?i))` in its place would be drawn as a fact of `not`, red, whose arrow `2` is at the pattern, which
+would stand in the frame `not ctx`.
 
 ### In words
 

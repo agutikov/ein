@@ -52,15 +52,15 @@ sets, with the facts its death rests on and the rule that refuted it.
 ## As a graph
 
 A constraint is a rule, and is drawn as one ([rules](05-rules.md)): `ein render rules FILE`. The picture on the left
-of `one-box-per-pet` is what may not be found in a state, one pet with an arrow into each of two different boxes,
-and on its right is `(false)`, an octagon with no argument:
+of `one-box-per-pet` is what may not be found in a state, two facts of `in` from one pet to two different boxes,
+and on its right is `(false)`, an octagon with one arrow, at the box `false`, and no argument:
 
-![The rule one-box-per-pet: one pet in two different boxes, and (false)](diagrams/06-rule-one-box-per-pet.svg)
+![The rule one-box-per-pet: two patterns of in over one pet and two boxes, a dotted ≠ between the boxes, and (false)](diagrams/06-rule-one-box-per-pet.svg)
 
-A stored negation is drawn red, its label prefixed `¬`. The empty `:match` of `cat-not-in-b2` is the octagon
-`#empty`, the loader's name for it:
+A stored negation is a fact of `not`, drawn red, whose arrow `2` is at the fact it denies; that fact is pointed at
+and not asserted, so it stands in the frame `not ctx`. The empty `:match` of `cat-not-in-b2` draws nothing:
 
-![The rule cat-not-in-b2: an empty match, and the stored negation it asserts](diagrams/06-rule-cat-not-in-b2.svg)
+![The rule cat-not-in-b2: an empty match, and the stored negation it asserts, a fact of not whose arrow 2 is at (in Cat B2) in the frame not ctx](diagrams/06-rule-cat-not-in-b2.svg)
 
 The hrule the two constraints cut down is drawn the same way, its conclusion the guess:
 
@@ -74,7 +74,8 @@ candidate, green in R and red dead (the layer labels, the tooltips and the legen
 
 `(in Dog B2)` is dead alone, by `one-box-per-pet` against root's `(in Dog B1)`, and everything above it is dead
 with it. `(in Cat B2)` is no node at all: root holds its negation, so it was never a candidate. `ein render kb FILE`
-leaves stored negations out: it draws what holds.
+draws the stored negation root holds as the rule draws it, a fact of `not` whose arrow `2` is at `(in Cat B2)`,
+which stands in the frame `not ctx`, since nothing holds it.
 
 ## In words
 

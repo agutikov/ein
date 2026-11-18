@@ -72,9 +72,12 @@ binary's, but nothing compares them, because an exact comparison cannot express 
 
 **A drawing is an image**, which Graphviz drew from the `.dot` file of the same name under
 [`diagrams/`](diagrams/). Where a page says a drawing is `ein render`'s and names the command, that file is what the
-command writes, less its two lines that are no part of the drawing, a layout hint and a font, and where a page says
-so, cut to the arrows the section is about. A drawing a page does not attribute is a schematic drawn for the page,
-in the same shapes ([rendering](../04-reference/12-rendering.md)).
+command writes, less its comment lines, a layout hint among them, and its blank lines, and where a page says so, cut
+to the facts the section is about, with every fact they point at. A drawing is of the graph, each fact an octagon
+whose arrow `1` is at its relation, unless its page says it is folded, by `--fold`
+([rendering](../04-reference/12-rendering.md#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold)). A drawing a
+page does not attribute is a schematic drawn for the page, in the same shapes
+([rendering](../04-reference/12-rendering.md)).
 
 A generated block is never edited by hand: change the command in its marker, and the block is written again from a
 run.

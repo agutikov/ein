@@ -30,8 +30,9 @@ A node with outgoing arrows, in order: the first points at its [relation](#relat
 **arguments**, each an [object](#object), an atom or a fact
 ([Q40](../../../decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)). A fact has no name and is
 identified by that list. It is the unit of statement in a knowledge base, which **holds** some facts and only
-points at others, the arguments of the facts it holds. `ein` draws a fact as an octagon with its relation's name in
-it, or, for a fact of two arguments in the compact view, as one arrow with the relation's name on it. See
+points at others, the arguments of the facts it holds. `ein` draws a fact as the graph has it, an octagon with no
+name in it whose arrow `1` is at its relation and whose arrows `2`, `3`, … are at its arguments, or, under `--fold`, a
+fact of two arguments that nothing points at as one arrow with the relation's name on it. See
 [`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
 
 ### Held, global context, context
@@ -76,9 +77,9 @@ lists, about which the blind enumerator proposes nothing. See
 word is a program's, for an atom it groups other atoms under, `Nationality`, `House`, `Color`: the atom its
 membership facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such an
 atom is a node like any other and takes part in facts as any atom does, and it means what the rules that read those
-facts make it mean. `ein render kb` draws the atom an `is-a` fact points at as a box, a convention of the drawing
-keyed on that relation's name, and `ein` prints the word in a few places, `--no-types` among them, for such an
-atom or for a label. See
+facts make it mean. No drawing gives it a shape of its own: every atom is a box
+([Q-M1f.421](../../../decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). `ein` prints
+the word in a few places, a load diagnostic among them, for such an atom or for a label. See
 [`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
 
 ### Value
@@ -130,13 +131,14 @@ A pattern alias, `(macro N (?p…) BODY :why "…")`: a call in a rule's clause 
 body at load. `forall` and `unknown` are the standard library's. See
 [`../03-syntax-and-semantics/11-macros.md`](../03-syntax-and-semantics/11-macros.md).
 
-### Hyperedge, Levi-bipartite
+### Hyperedge, Levi graph
 A hyperedge is an edge with any number of participants, and a fact is one, over the objects under its arrows. The
 graph that says the same as a hypergraph is its **Levi graph**, after Friedrich Wilhelm Levi: a node for each
 participant, a node for each hyperedge, and an arrow from a hyperedge's node to each participant. The knowledge
-base is that graph with one change, that a fact may point at a fact. `ein`'s `--levi` drawing is of it: one octagon
-per fact and an edge to each argument, numbered from the first argument, with the relation's name written in the
-octagon and no node drawn for the relation. See
+base is that graph with one change, that a fact may point at a fact, so it is not bipartite. `ein` draws facts as
+that graph: one octagon per fact, with no name in it, an arrow numbered `1` to its relation, one node under the first
+arrow of every fact of it, and an arrow numbered `2`, `3`, … to each argument; `--fold` draws a fact of three arrows
+that nothing points at as one labelled arrow instead. See
 [`12-rendering.md` § A fact as the graph has it](12-rendering.md#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold).
 
 ### Provenance

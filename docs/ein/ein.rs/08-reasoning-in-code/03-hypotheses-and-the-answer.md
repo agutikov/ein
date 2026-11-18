@@ -90,8 +90,8 @@ rung writes one `rung` event with its `mode`, its `reason` and its counts
     later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)
 ```
 
-**The two rules the reasoning draws** are `ein render rule`'s: the obligation is `std.algebra`'s `total-owed`,
-`ein render rule --name total-owed stdlib/algebra.ein`, whose `:match` is
+**The two rules the reasoning draws** are `ein render rule --fold`'s: the obligation is `std.algebra`'s `total-owed`,
+`ein render rule --fold --name total-owed stdlib/algebra.ein`, whose `:match` is
 `(and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b))))` and whose `:assert` is `(open ?R)`;
 the hypothesis rule is an `(hrule …)` with no parameter, drawn the same way by its name.
 

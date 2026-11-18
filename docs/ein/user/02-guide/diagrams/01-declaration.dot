@@ -1,8 +1,13 @@
 digraph kb {
   rankdir=BT;
-  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
-  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_4405c3d64e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_4405c3d64e -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [xlabel="3", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_c3d57f8713 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_c3d57f8713 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_c3d57f8713 -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
 }

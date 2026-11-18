@@ -150,8 +150,8 @@ written as themselves: the carry and the borrow in and out, the high zero, the d
 zero, and `eq`, a comparison's start.
 
 Each rule below is activated by the fact of its name the macro states, so in a drawing a parameter is a diamond
-like any variable, and a premise headed by one is an octagon labelled with the parameter. A rule's `:why` says
-what one firing does, in the words a trace prints.
+like any variable, and a premise headed by one is an octagon whose arrow `1` is at the parameter's diamond. A
+rule's `:why` says what one firing does, in the words a trace prints.
 
 The module keeps the calculator's rule: no rule joins two facts on a number. Each has one premise that holds
 numbers, and its others are rows of a table.

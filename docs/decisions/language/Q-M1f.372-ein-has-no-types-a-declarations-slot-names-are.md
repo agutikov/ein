@@ -33,11 +33,11 @@ names less those some declaration writes as a label
 engine itself reads which names are labels, and it reads them as names not to guess about, never as a kind an object
 has. A fact of `relation` that a rule concludes is a fact and declares nothing.
 
-Where a drawing shows a box, it is a drawing convention: `ein render kb` draws the second argument of a fact of a
-relation spelt `is-a` as a box and a name that is only a first argument as an oval, and `ein render program` draws
-the first two labels of a declaration as boxes where no fact names them. Where the engine's own words say *type*,
-the option `--no-types` and a refusal's *as many arguments as its declaration has types*, they mean a label, or a
-name on the right of an `is-a` fact. No answer depends on either.
+No drawing marks a label or a name on the right of an `is-a` fact: every atom is a box, and a declaration is drawn
+as the fact it is stored as
+([Q-M1f.421](../cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). Where the engine's own words say
+*type*, as a refusal's *as many arguments as its declaration has types* does, they mean a label. No answer depends on
+either.
 
 **Why.** Membership is a relation and what a thing is classified under is a name, so a rule reads, derives and
 explains *what a thing is* as it does any fact, and a program chooses what its labels mean: nothing, a check, a

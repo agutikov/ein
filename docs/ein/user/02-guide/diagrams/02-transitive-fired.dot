@@ -1,13 +1,17 @@
 digraph kb {
   rankdir=BT;
-  // types
-  "Animal" [shape=box, label="Animal"];
-  "Mammal" [shape=box, label="Mammal"];
-  // instances
-  "Cat" [shape=oval, label="Cat"];
-
-  // facts
-  "Cat" -> "Mammal" [style=dashed, arrowhead=empty, label="is-a"];
-  "Mammal" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cat" -> "Animal" [style=dashed, arrowhead=empty, label="is-a"];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_076d37da67 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="taxonomy"];
+  f_076d37da67 -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  f_076d37da67 -> "Cat" [xlabel="2", color="#7f7f7f", style=solid];
+  f_076d37da67 -> "Mammal" [xlabel="3", color="#7f7f7f", style=solid];
+  f_cb25df6f56 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="taxonomy"];
+  f_cb25df6f56 -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  f_cb25df6f56 -> "Mammal" [xlabel="2", color="#7f7f7f", style=solid];
+  f_cb25df6f56 -> "Animal" [xlabel="3", color="#7f7f7f", style=solid];
+  f_aea40ae2c2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=dashed, xlabel="by transitive"];
+  f_aea40ae2c2 -> "is-a" [xlabel="1", color="#7f7f7f", style=dashed];
+  f_aea40ae2c2 -> "Cat" [xlabel="2", color="#7f7f7f", style=dashed];
+  f_aea40ae2c2 -> "Animal" [xlabel="3", color="#7f7f7f", style=dashed];
 }

@@ -925,10 +925,11 @@ interchangeable and are not:
   (and (p ?a ?b) (= ?a ?b))` does **not** fire on `(p x x)`; it fires once `(= x x)` is stated.
 - **`(eq ?a ?b)`** is the computed relation. It holds of `(p x x)` with no stored fact at all.
 
-A stored `(= a b)` licenses no substitution and joins no congruence closure. What `=` *does* have is a drawing: a fact
-of `=` with two arguments draws as an equality node, a `doublecircle`, with an edge to each side
-([`12-rendering.md`](12-rendering.md#node-shape-legend)), which [`examples/syntax/equality.ein`](../../../../examples/syntax/equality.ein)
-shows.
+A stored `(= a b)` licenses no substitution and joins no congruence closure, and has no drawing of its own either: a
+fact of `=` is drawn as any fact is, an octagon whose arrow `1` is at the atom `=`
+([`12-rendering.md`](12-rendering.md#node-shape-legend);
+[Q-M1f.421](../../../decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)), as
+[`examples/syntax/equality.ein`](../../../../examples/syntax/equality.ein) shows.
 
 ### What is not in the pattern language
 

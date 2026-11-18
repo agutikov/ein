@@ -2,28 +2,41 @@ digraph rule_first_argument_fits_lhs_rhs {
   rankdir=TB;
   label="first-argument-fits"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "relation_L" [label="relation", shape=box];
     "?R_L" [label="?R", shape=diamond];
     "?T1_L" [label="?T1", shape=diamond];
     "?T2_L" [label="?T2", shape=diamond];
     "?x1_L" [label="?x1", shape=diamond];
     "?x2_L" [label="?x2", shape=diamond];
-    "h1_relation_L" [shape=octagon, label="relation", color="#bcbd22", fontcolor="#bcbd22"];
-    "h1_relation_L" -> "?R_L" [label="1", color="#bcbd22"];
-    "h1_relation_L" -> "?T1_L" [label="2", color="#bcbd22"];
-    "h1_relation_L" -> "?T2_L" [label="3", color="#bcbd22"];
-    "?x1_L" -> "?x2_L" [label="?R", color="#1f77b4", fontcolor="#1f77b4"];
-    "?x1_L" -> "?T1_L" [label="is-instance", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "is-instance_L" [label="is-instance", shape=box];
+    "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "h1_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
+    "h1_relation_L" -> "?T1_L" [xlabel="3", color="#bcbd22"];
+    "h1_relation_L" -> "?T2_L" [xlabel="4", color="#bcbd22"];
+    "h2_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "h2_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "h2_R_L" -> "?x1_L" [xlabel="2", color="#1f77b4"];
+    "h2_R_L" -> "?x2_L" [xlabel="3", color="#1f77b4"];
+    "h3_is-instance_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h3_is-instance_L" -> "is-instance_L" [xlabel="1", color="#7f7f7f"];
+    "h3_is-instance_L" -> "?x1_L" [xlabel="2", color="#7f7f7f"];
+    "h3_is-instance_L" -> "?T1_L" [xlabel="3", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "fits_R" [label="fits", shape=box];
+    "?R_R" [label="?R", shape=diamond];
     "?x1_R" [label="?x1", shape=diamond];
     "?x2_R" [label="?x2", shape=diamond];
     subgraph cluster_ctx_R_0 {
       label="fits ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "(?R ?x1 ?x2)_R" [shape=octagon, label="?R", color="#1f77b4", fontcolor="#1f77b4"];
+      "(?R ?x1 ?x2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
-    "h2_fits_R" [shape=octagon, label="fits", color="#bcbd22", fontcolor="#bcbd22"];
-    "h2_fits_R" -> "(?R ?x1 ?x2)_R" [label="1", color="#bcbd22", style=dashed];
-    "(?R ?x1 ?x2)_R" -> "?x1_R" [label="1", color="#1f77b4", style=dashed];
-    "(?R ?x1 ?x2)_R" -> "?x2_R" [label="2", color="#1f77b4", style=dashed];
+    "h4_fits_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "h4_fits_R" -> "fits_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "h4_fits_R" -> "(?R ?x1 ?x2)_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R ?x1 ?x2)_R" -> "?R_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "(?R ?x1 ?x2)_R" -> "?x1_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(?R ?x1 ?x2)_R" -> "?x2_R" [xlabel="3", color="#1f77b4", style=dashed];
   }
 }

@@ -57,15 +57,18 @@ representation.
 
 ## As a graph
 
-`ein render kb FILE`, the declarations' facts left out:
+`ein render kb FILE`, every fact of the saturated program an octagon with its arrow `1` at its relation's box:
 
-![The saturated program: the one fact written, solid, and the three derived, dashed](diagrams/04-program-kb.svg)
+![The saturated program: the one fact of can-drink written, solid, the three derived, dashed, beside the two facts of is-a, the declarations and the rules' activator facts](diagrams/04-program-kb.svg)
 
-The solid arrow is the fact the program wrote, and the three dashed ones what the rules derived from it. The two
-dashed arrows out of `Jack` and `Human` each lift one end of the solid one, and the third lifts both. The boxes and
-ovals are the view's reading of the facts of a relation spelt `is-a`: the second argument of one is drawn as a box,
-an atom that is only ever a first argument as an oval. It is a drawing convention and decides nothing, and each
-arrow of the drawing is a fact, with its relation's name written on it ([objects](01-objects.md#as-a-graph)).
+The solid octagon whose arrow `1` is at `can-drink` is the fact the program wrote, and the three dashed ones what
+the rules derived from it, each with the rule beside it. `(can-drink Jack Drink)` and `(can-drink Human Coffee)`
+each lift one argument of the written one, and `(can-drink Jack Coffee)` lifts both. `is-a` is drawn as any
+relation is, its two facts octagons whose arrow `1` is at the box `is-a`, and every atom is a box, whatever points
+at it
+([Q-M1f.421](../../../decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)): the view gives
+no relation a reading of its own. The facts `(inherit-left can-drink)` and `(inherit-right can-drink)`, which
+activate the two rules, are facts like the others, each an octagon whose arrow `1` is at the rule's name.
 
 The two rules, as `ein render rules FILE` draws them. Each matches a fact of the relation it is activated on and an
 `is-a` fact whose second argument is one of that fact's arguments, and asserts the fact with the `is-a` fact's
@@ -164,15 +167,16 @@ program can say something of each of them, with the relation it says things of `
 (solve :no-search)
 ```
 
-It loads, and the seven are facts of one relation, each drawn by `ein render program FILE` as an arrow from its
-first argument to its second:
+It loads, and the seven are facts of one relation, each drawn by `ein render program FILE`, in its digraph `kb`,
+as an octagon whose arrow `1` is at the box `is-a`:
 
-![Seven is-a facts: about an instance, a kind, two relations, a rule, a fact and a label](diagrams/04-facts-about-anything.svg)
+![Seven is-a facts, each an octagon whose arrow 1 is at the box is-a: about an instance, a kind, two relations, a rule, a fact and a label, beside the two declarations](diagrams/04-facts-about-anything.svg)
 
 `Kind`, `Relation`, `Rule`, `Fact` and `Label` are atoms this program made up, and mean what its rules make of
-them, which here is nothing. The arrow from `is-a` to `Relation` is the fixed point: the relation that says what a
-thing is can be said to be something, by a fact of itself. In the graph that fact has two arrows to one atom: its
-first, to its relation, and its second, to its first argument. Nothing in the language is exempt from being data, which
+them, which here is nothing. `(is-a is-a Relation)` is the fixed point: the relation that says what a thing is can
+be said to be something, by a fact of itself. Its octagon has two arrows to the one box `is-a`: its arrow `1`, to
+its relation, and its arrow `2`, to its first argument. `(is-a Jack Human)`, which the fact about a fact points
+at, is drawn once, its octagon under that fact's arrow `2`, and in no frame, since the program states it. Nothing in the language is exempt from being data, which
 is why a rule can match a relation's declaration, a property of a relation, or a fact about a fact, with the same
 patterns it matches anything with.
 

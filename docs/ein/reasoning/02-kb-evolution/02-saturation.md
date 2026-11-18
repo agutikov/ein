@@ -85,10 +85,11 @@ is a node, a firing is a node, an arrow leads from each premise into the firing 
 adds. Two firings below take three stated facts to a contradiction; the first adds
 $\operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2})$ and the second reads it.
 
-![A derivation as a graph: two firings take three stated facts to a contradiction](diagrams/02-derivation.svg)
+![A derivation as a graph: two firings take three stated facts, each an octagon with its arrows at its relation and arguments, to a contradiction](diagrams/02-derivation.svg)
 
-A thin box is a fact, a heavy box a fact a firing added, a coloured box a firing. The facts with no arrow in are
-$K$; each column further right is one more application of $T_P$:
+An octagon is a fact, its first arrow at its relation and its next ones at its arguments; a heavy octagon is a
+fact a firing added, $\bot$ the one whose only arrow is at $\mathsf{false}$; a coloured box is a firing. The
+octagons no firing points at are $K$; each firing to the right of another is one more application of $T_P$:
 
 $$
 \begin{aligned}
@@ -236,8 +237,11 @@ $$
 
 ![The rule note: its pattern above its conclusion](diagrams/02-rule-note.svg)
 
-The upper panel is the pattern and the lower the conclusion; a diamond is a variable, and the arrow labelled by
-the variable in a relation's place stands for a fact of whichever relation the activator names. The program
+The upper panel is the pattern and the lower the conclusion; a diamond is a variable. The drawing folds each fact
+pattern of three arrows into a labelled arrow
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): the arrow labelled by
+the variable in a relation's place stands for a fact of whichever relation the activator names. The premise
+$\operatorname{holds}(f)$, of two arrows, is an octagon whose first arrow is at $\mathsf{holds}$. The program
 states four facts and two activators:
 
 $$
@@ -259,8 +263,10 @@ is the same:
 
 ![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
 
-The two dashed arrows labelled with the rule are the two conclusions. The activators and the declarations' facts
-are left out of the drawing, and so is $\operatorname{src}(\mathsf{Y})$: nothing drawn points at it, and nothing
+It folds each fact of three arrows as the rule's drawing does; a fact of $\operatorname{holds}$ is an octagon.
+The two dashed arrows labelled with the rule are the two conclusions, $\operatorname{noted}(\mathsf{1},
+\mathsf{1})$ an arrow from $\mathsf{1}$ to itself. The activators and the declarations' facts are left out of the
+drawing, and so is $\operatorname{src}(\mathsf{Y})$: nothing drawn points at it, and nothing
 holds it.
 
 So on such a program every question and every claim answers alike under the agenda and under the written order
@@ -345,10 +351,12 @@ properties stated of a relation, each property a fact about it
 ([properties and operators](../../user/03-syntax-and-semantics/07-properties-and-operators.md)), so a puzzle
 writes one property per constraint and saturation fans it out.
 
-![Negative completion: the stored negations saturation derives from one fact](diagrams/02-negative-completion.svg)
+![Negative completion: from one fact of r, saturation derives two stored negations, red and dashed, each pointing at a fact of r in the frame not ctx](diagrams/02-negative-completion.svg)
 
-A solid arrow is a fact, a red dashed arrow a stored negation saturation derived. Elimination is the same
-picture read backwards: when every arrow out of $a$ but one is red, the last one is drawn solid. On the Zebra
+A solid octagon is a fact; a red dashed octagon is a stored negation saturation derived, a fact of
+$\mathsf{not}$ whose second arrow is at the fact it denies, which stands in the frame *not ctx* because the
+knowledge base does not hold it. Elimination is the same picture read backwards: when every fact
+$r(a, y)$ but one is denied, the last one is derived. On the Zebra
 puzzle this closes at depth zero every step of the human walkthrough: each *therefore* is reached from the clues
 and the ontology with $C = \emptyset$.
 

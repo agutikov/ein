@@ -1,8 +1,25 @@
-digraph step13 {
+digraph step16 {
   rankdir=LR;
-  "f_eab79754f0" [label="std.math.arith.division-by-zero(div(n(z, 7), z))", shape=box, style=rounded];
-  "f_a1f94f5b63" [label="false", shape=box, style=rounded, penwidth=2];
+  node [fontname="Inter", shape=box];
+  ranksep=0.55;
+  "f_eab79754f0" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  "f_a1f94f5b63" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
+  "f_31efc4325b" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="div ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    "f_0cb3773012" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  }
   "fire0_std.math.arith.division-by-zero-is-false" [shape=box, style="rounded,bold", color="#bcbd22", fontcolor="#bcbd22", label="std.math.arith.division-by-zero-is-false\n(div (n z 7) z) divides by zero: no number is the answer"];
+  "f_eab79754f0" -> "std.math.arith.division-by-zero" [xlabel="1"];
+  "f_eab79754f0" -> "f_31efc4325b" [xlabel="2"];
+  "f_a1f94f5b63" -> "false" [xlabel="1", penwidth=2];
+  "f_31efc4325b" -> "div" [xlabel="1"];
+  "f_31efc4325b" -> "f_0cb3773012" [xlabel="2"];
+  "f_31efc4325b" -> "z" [xlabel="3"];
+  "f_0cb3773012" -> "n" [xlabel="1"];
+  "f_0cb3773012" -> "z" [xlabel="2"];
+  "f_0cb3773012" -> "7" [xlabel="3"];
   "f_eab79754f0" -> "fire0_std.math.arith.division-by-zero-is-false" [color="#bcbd22"];
   "fire0_std.math.arith.division-by-zero-is-false" -> "f_a1f94f5b63" [color="#bcbd22", style=bold];
 }

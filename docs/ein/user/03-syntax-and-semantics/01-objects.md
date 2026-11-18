@@ -80,50 +80,35 @@ two facts of one relation, and under the second arrow of `d1` and of `d2`, which
 relation. [The knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md) defines this graph and
 everything said of it.
 
-**What `ein` draws** is that graph in fewer nodes. No command draws a node for the relation of a fact: the engine
-writes the relation's name in the fact's node, or on an arrow, and so folds the first arrow and the atom under it
-into a word. `ein render kb FILE` draws the program loaded and saturated:
+**What `ein` draws** is that graph. `ein render kb FILE` draws the program loaded and saturated, each fact an
+octagon with no name in it, its arrow `1` at its relation's box and its arrows `2`, `3`, … at its arguments, the
+given fact with its source's short tag, `(10)`, beside it
+([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)):
 
-![The program loaded and saturated, as ein render kb draws it](diagrams/01-program-kb.svg)
+![The program loaded and saturated, as ein render kb draws it: seven octagons, each with its arrow 1 at its relation's box](diagrams/01-program-kb.svg)
 
-That is the **compact** view, the graph
-[drawn with labelled arrows](../../reasoning/01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows). A fact
-of two arguments is one arrow from its first argument to its second, with the relation's name written on it (the
-`lives-in` one with its source's short tag, `(10)`); a fact of one argument is a loop with the relation's name on
-it; and a fact of three arguments or more is an octagon with the relation's name in it, `(relation)`, and an edge
-to each argument. So `m1`, `m2` and `f` of the graph are three arrows here, `d2` and `d4` two loops, and `d1` and
-`d3` the two octagons. The shapes are the [rendering reference](../04-reference/12-rendering.md)'s legend.
+It is the graph above, node for node: its seven octagons are `d1` to `d4`, `m1`, `m2` and `f`, and `is-instance` is
+one box, under the first arrows of `m1` and `m2` and the second arrows of `d1` and `d2`. The view writes an arrow's
+number beside it and colours a fact's arrows by its relation; the shapes are the
+[rendering reference](../04-reference/12-rendering.md)'s legend.
 
-The **detailed** view draws every fact as a node of its own, an octagon, so a fact of any count of arguments has
-the same shape. `ein render program --levi FILE` draws the program's stated fact so:
+**Folded**, `ein render kb --fold FILE`, each fact of three arrows that nothing points at, a relation and two
+arguments, is one arrow from its first argument to its second with the relation's name on it: the graph
+[drawn with labelled arrows](../../reasoning/01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows).
 
-![The program's stated fact in the detailed view: an octagon with a numbered edge to each argument](diagrams/01-fact-levi.svg)
+![The same program under --fold: m1, m2 and f as three labelled arrows, the four declarations as octagons](diagrams/01-program-kb-fold.svg)
 
-How the two drawings stand to the graph:
+So `m1`, `m2` and `f` are three arrows here, `f` with its `(10)` after the relation's name, and the four
+declarations, of four arrows and of two, stay octagons: a fact of two arrows is never folded, nor is one that a
+drawn fact points at. Folded, a relation is a word written on as many arrows as it has facts, and no node of its
+own: `is-instance` is a box here only because its declarations point at it. The folded drawing is not the knowledge
+base: it stands for the graph by that rule, and what the engine reasons over is the graph.
 
-| in the graph | compact, `ein render kb` | detailed, `--levi` |
-|---|---|---|
-| an atom | a node with its name in it, where a drawn fact has the atom as an argument | the same |
-| a fact | an arrow for a fact of two arguments, a loop for a fact of one, an octagon for any other count | an octagon |
-| a fact's first arrow, and the relation under it | the relation's name, written on the arrow or in the octagon | the relation's name, written in the octagon |
-| a fact's later arrows | the two ends of the arrow, or the octagon's edges, `#1` to the first argument | the octagon's edges, `1` to the first argument |
-
-Two things follow. **The numbers differ by one**: the engine numbers the arguments of a fact, so its `1` is the
-graph's second arrow. And **a relation is a node of a drawing only where some drawn fact has it as an argument**.
-In the compact drawing above `is-instance` is a node, which its declaration points at, and also a word on two
-arrows; in the graph those are one atom, and the two facts point at it. The detailed drawing has no node for
-`lives-in` at all. Neither drawing is the knowledge base: each stands for the graph by the table above, and what
-the engine reasons over is the graph.
-
-**Boxes and ovals are a drawing convention.** Where a program names its membership relation `is-a`, `ein render
-kb` draws the second argument of each `is-a` fact as a box, the first as an oval, and the fact as a dashed arrow
-with an empty head. The same program with `is-instance` spelt `is-a`, the declarations' facts left out:
-
-![The same program with is-instance spelt is-a: boxes, ovals and dashed arrows](diagrams/01-is-a-convention.svg)
-
-The drawing is keyed on the spelling `is-a` and on nothing else: the two programs hold the same facts under two
-names, and answer alike. The option that leaves the boxes out, and keeps every arrow, is spelt `--no-types`:
-*type* is the engine's word there for an atom it draws as a box, and such an atom is an atom like any other.
+**No relation is drawn otherwise than another**
+([Q-M1f.421](../../../decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). A program that
+spells its membership relation `is-a` is drawn as this one is, with `is-a` written where `is-instance` is: every
+atom is a box, whatever points at it, and a fact of `is-a` is an octagon, or a labelled arrow under `--fold`, as a
+fact of any relation is. The two programs hold the same facts under two names, and answer alike.
 
 ## In words
 
@@ -287,14 +272,15 @@ its activator binds*. `ein solve FILE`:
 ```
 
 `(lives-in House-1 Norwegian)` holds as before, and does not fit: nothing says `House-1` is an instance of
-`Person`. The rule, as `ein render rule --name first-argument-fits FILE` draws it, the declaration an octagon over
-the relation and its two labels, the fact an arrow labelled with the relation's variable, and, in the conclusion,
-the same pattern under the arrow of `fits`, an octagon in the frame `fits ctx`:
+`Person`. The rule, as `ein render rule --name first-argument-fits FILE` draws it: each premise an octagon, the
+declaration's arrow `1` at the box `relation` and its next three at the variables `?R`, `?T1` and `?T2`, the fact's
+arrow `1` at the diamond `?R`, the relation's variable; and, in the conclusion, the same pattern under the second
+arrow of `fits`, an octagon in the frame `fits ctx`:
 
 ![The rule first-argument-fits: a declaration, a fact and a membership, and the fact it asserts](diagrams/01-rule-first-argument-fits.svg)
 
 The second rule, `ein render rule --name every-declared-pair FILE`, matches a declaration alone and asserts the
-first rule's activator, a fact about the relation:
+first rule's activator, a fact whose arrow `1` is at the rule's name and whose arrow `2` is at the relation:
 
 ![The rule every-declared-pair: a declaration alone, and the activator it asserts](diagrams/01-rule-every-declared-pair.svg)
 
@@ -326,7 +312,7 @@ to the same object
 and a fact `(= a b)` is an ordinary fact of a relation named `=`: it licenses no substitution and makes `a` and `b`
 no more one atom than any other fact does
 ([Q1](../../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)). The rendering draws a fact of
-`=` with two arguments as a `doublecircle` node with an edge to each side, and that is all `=` means.
+`=` as a fact of any relation is drawn, an octagon whose arrow `1` is at the box `=`, and that is all `=` means.
 
 **Names an import brings.** Every name a module declares has a full name, its module's name and its own,
 `std.algebra.symmetric`; a file writes it short when it lists it in its import, `(import std.algebra :symbols

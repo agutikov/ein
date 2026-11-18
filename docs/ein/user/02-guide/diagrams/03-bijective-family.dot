@@ -1,6 +1,14 @@
-digraph { rankdir=LR; node [shape=box];
-  tag [label="(bijective color-loc)", shape=note];
-  tag -> "functional"; tag -> "injective";
-  tag -> "total"; tag -> "surjective";
-  tag -> "domain- and range-elimination"; tag -> "negative-completion";
+digraph bijective_family {
+  rankdir=LR; compound=true; nodesep=0.3; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  t [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  t -> "bijective" [label="1"];
+  t -> "color-loc" [label="2"];
+  subgraph cluster_family { label="the logic it switches on"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    node [style=rounded];
+    "functional"; "injective"; "total"; "surjective";
+    "domain- and range-elimination"; "negative-completion";
+  }
+  t -> "total" [lhead=cluster_family, style=dashed, color="#888888", arrowhead=vee];
 }

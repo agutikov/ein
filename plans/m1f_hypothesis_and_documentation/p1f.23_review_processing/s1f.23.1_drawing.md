@@ -240,3 +240,183 @@ syntax and semantics (`03-first-firing`, `05-firing`); and the drawings `ein ren
 (`reasoning/01-static-ir/diagrams/02-pet-follows-owner*.dot`), now canonical by default. The census is a `grep` of
 the sources (a labelled octagon, `arrowhead=empty`, `shape=oval`, `«`, `label="#…"`, a label that is a fact's text),
 and task 2's own reading decides each.
+
+### Task 2 — the hand-written drawings and the pages under `docs/` (2026-11-18)
+
+In the worktree `build/wt-s1f231t2`, branch `s1f.23.1-task2`, on `1418fba5`. Every machine drawing is of the binary
+`build/review-bin/ein-head-8edf546b` (task 1's commit). **97 diagram sources drawn again or added, 4 removed**, every
+picture drawn by `utils/render_diagrams.py`; 44 pages, a decision and a design page reworded. Nothing under
+`ein.rs/`, `examples/`, `tests/` or `stdlib/` changed, so no answer and no shape-golden line moves.
+
+**How each drawing was drawn again** (the readings below say why):
+
+- **a copy of a command's output** (`rule_*_lhs_rhs`, `kb`, the old `ontology`/`facts` digraphs, `constraints`,
+  a trace's `stepN`): drawn again by the binary from the page's own program, the command as the page writes it,
+  `//` comment lines and blank lines dropped and nothing else changed. Each program was checked first: the old
+  drawing equals `--fold`'s output today but for what the rulings changed (a labelled octagon, `rectangle`/`oval`
+  atoms, the empty-headed `is-a` arrow, `#n`, `¬rel`, the `#empty` octagon), so the program taken is the one drawn.
+- **a hand drawing of facts**: in the reasoning pages' vocabulary (`01-canonical-graph.dot`): every atom a box, a
+  fact an octagon with `label=""`, its arrow `1` at its relation and `2`, `3`, … at its arguments; folded only where
+  a fact has three arrows, nothing points at it and the page says the drawing folds; no fact of two arrows a loop.
+- **a derivation** (a firing, a proof graph): as the trace's slice draws one, each fact its octagon, each firing a
+  node of its own from its premises to what it concludes, `(false)` an octagon at the box `false`.
+
+**By folder** (sources; the pictures with them):
+
+| folder | drawn again | how |
+|---|---|---|
+| `reasoning/01-static-ir/` | 6 | `01-relation-extent` (L-107, below) and `01-object-order` by hand; `02-absence-nobody-home`, `02-pet-follows-owner`, `02-pet-follows-owner-overlay`, `02-domain-elimination` byte for byte `ein render rule[s]` of the three-house example (`ein.rs/08-reasoning-in-code/01-static-ir.md`'s source) and of `stdlib/bijection.ein`, canonical |
+| `reasoning/02-kb-evolution/` | 17 | the rule drawings (`02-rule-note`, `03-rule-soup-unless-allergic`, `04-rule-total-owed`, `04-rule-guess-drink`, `10-rule-guest-owes-seat`, `10-rule-one-seat`) byte for byte `ein render rule --fold`; the KB drawings (`01-before-firing`, `01-after-firing`, `02-note-fixpoint`, `03-soup-saturated`) `ein render kb --fold`, cut; `02-negative-completion`, `04-root-and-payments`, `04-blind-enumerator` by hand, folded; `02-derivation`, `09-proof-graph`, `09-cyclic`, `09-core-in-derivation` as slices, each fact its octagon. `01-rule-neighbour` was already `--fold`'s output byte for byte |
+| `reasoning/03-rule-evolution/` | 1 | `01-instance-of-instance`, the whole of `ein render kb --fold` |
+| `user/02-guide/` | 25 | the rule drawings (`02-rule-*`, `03-rule-*`, `04-rule-guess`, `07-rule-*`, `08-rule-gave-means-less`) `ein render rule`, canonical; the KB drawings `ein render kb`, whole or cut, `--fold` for `07-zebra-fragment` and `05-jack-folded`; chapter 1's fact both ways, `ein render program` and `--fold`; `01-is-a-facts` and `03-bijective-family` by hand. Renamed with `git mv`: `01-fact-levi` → `01-fact-canonical`, `01-fact-compact` → `01-fact-folded`, `05-jack-levi` → `05-jack-canonical`, `05-jack-compact` → `05-jack-folded` |
+| `user/03-syntax-and-semantics/` | 40, 2 added, 4 removed | every drawing a page presents as a command's output, byte for byte the binary's from that page's program, canonical: ~30 rule drawings, the `kb` drawings, the program view's `kb` (`02-program-as-written`, `04-facts-about-anything`, `07-property-facts`), the constraint view (`07-constraints-view`, no `«badge»`), the slices `03-first-firing`, `05-firing`, `10-div-by-zero-flagged` and `10-div-by-zero-refuted`; added `01-program-kb-fold` (`ein render kb --fold`, the page's point) and `12-query-view` (the program view's digraph `query`); removed `01-fact-levi`, `01-is-a-convention`, `12-solve-form`, `12-query-form` |
+| `user/04-reference/04-stdlib/` | 6 | `01-rule-complete-via-macro`, `01-rule-complete-via-expansion`, `01-rule-third-state` byte for byte `ein render rule` of `tests/stdlib/macro/01_forall.ein` and `02_unknown.ein`, canonical (`forall` and `unknown` patterns as called, their arguments framed); `02-operators-state`, `04-elimination-state`, `05-row-state` `ein render kb --fold`, cut to the relations the page is about |
+
+**L-107** (`reasoning/01-static-ir/diagrams/01-relation-extent.dot`), as ruled: no frame; the first arrows of
+$f_3$, $f_4$ and $g$ coloured (`#1f77b4`, `penwidth=2`); $g$ an octagon, grey, its argument arrows grey. The
+page's sentence now reads *the first arrows of $f_3$, $f_4$ and $g$, drawn coloured, meet at the atom left-of: they
+are the part of the extent drawn*.
+
+**Pages reworded**, to what is drawn (no relation's name in an octagon, no loop for a fact of two arrows, no text
+node, no `is-a` convention, no `--levi`, `--no-types`, `ontology`/`facts` digraphs, `«badge»`, `#1`, `=`
+`doublecircle`; a page whose drawing folds says so):
+
+- reasoning: `README.md` (how the pages draw); `01-knowledge-base.md` (L-107's sentence; § Drawn with labelled
+  arrows: the loop row and the labelled-octagon rows gone, the closing paragraph says the later drawings are of the
+  graph and one that folds says so, no oval or box for `is-a`; § the order's facts in TeX); `02-rewriting-rules.md`
+  (the four engine drawings described canonical, `forall` a pattern); `01-firing.md`, `02-saturation.md`,
+  `03-absent-and-naf.md`, `04-hypothesis-generation.md`, `10-satisfiability.md` (each says its drawings fold, and
+  what a cut leaves out); `09-cores.md` (the proof graph's facts as octagons, the core red rather than filled);
+  `03-rule-evolution/01-rules-as-data.md`;
+- `ein.rs/08-reasoning-in-code/`: `02-saturation-and-negation.md` (§ 1.4, § 2.4, § 3.4, § 4.5: `--fold` in the
+  commands, the `(relation)` octagons gone, what each drawing leaves out), `03-hypotheses-and-the-answer.md` § 1.2
+  and `04-rule-evolution.md` (`--fold` in the commands);
+- the guide: `README.md` (a command's drawing is its output, maybe cut, canonical unless `--fold`), `01` (the fact
+  both ways, canonical first; the declaration; every atom a box), `02`, `03`, `04`, `05` (§ As a graph), `07`, `08`;
+  no `lisp` or transcript block changed;
+- syntax and semantics: `README.md`, `01-objects.md` (§ As a graph rewritten: the KB view, then `--fold`; the
+  `--levi` table, the box and oval and the `doublecircle` gone), `02-relations.md`, `03-facts.md`, `04-ontology.md`,
+  `05-rules.md`, `06-constraints.md`, `07-properties-and-operators.md`, `08-obligations.md`, `09-hypotheses.md`,
+  `10-theory.md` (its trace excerpt renumbered, steps 15 and 16, finding 5), `11-macros.md`, `12-query.md`; no `lisp`
+  block changed, `14-natural-language.md` untouched;
+- the reference: `02-syntax.md` (a fact of `=` drawn as any fact), `13-glossary.md` (§ Fact; § Type, no
+  `--no-types`; § *Hyperedge, Levi graph*, renamed from *Levi-bipartite*, the drawing as the graph);
+  `04-stdlib/README.md` (§ How a rule is shown: a pattern an octagon, the folded fallback, Ein alone),
+  `01-macros.md` (`forall`, `unknown` and the expansion as drawn), `02-relation-algebra.md`, `04-bijections.md`,
+  `05-slots.md` (the state drawings, folded, and what each leaves out), `10-positional-rules.md` (a premise headed by
+  a parameter: its arrow `1` at the diamond), `17-nine-digit-numbers-rules.md` (`mul9-step` as Ein alone,
+  `div9-step-0` folded);
+- `ein.rs/03-design/01-determinism-and-order.md` (the KB view no longer sorts names as types and instances);
+  [Q-M1f.372](../../../docs/decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) (no
+  drawing marks a label; `--no-types` gone).
+
+**The readings task 2 took** (defaults, for the main session to file):
+
+1. **A copy of a command's output is the binary's**, as the page writes the command, canonical by default. Folded
+   where the drawing's point is the compact view, and the page writes `--fold` (outside `reasoning/`) or says the
+   drawing folds (in it): the guide's and syntax pages' fact shown both ways, `07-zebra-fragment`, every rule and KB
+   drawing of `reasoning/02-kb-evolution/` and `03-rule-evolution/` (folded before, now `--fold`'s output byte for
+   byte), the standard library's three states. `reasoning/01-static-ir/`'s four engine drawings canonical.
+2. **A KB drawing may be a cut of the view**: the facts of the relations the section is about, every fact they point
+   at with them, a fact in a frame kept only with a fact that points at it; the page says what is left out (the
+   declarations' facts, the facts that apply a rule, the stored negations). Q-M1f.368's *a drawing of the engine's
+   is kept as the file the command wrote* is read as: a whole view is kept as written; a cut is stated on its page.
+   Whole where it reads (`01-instance-of-instance`, `07-zebra-fragment`, the syntax pages' `kb` drawings).
+3. **A derivation's terminal is double-bordered and its core red**, where it was filled (Q-M1f.398: no octagon
+   filled); a fact's text is never its label nor its `xlabel`.
+4. **Left as they are** (Q-M1f.430's reading, extended to every drawing that is not of facts): the region,
+   lattice, cube and h-space drawings (`06-*`, `07-*`, `08-cube-*`, the seven `08-region-*`, `09-upset`,
+   `10-branch`, `03-dead-not-upward-closed`, `05-cover`, `05-exclusion-graph`, the syntax pages' four `*-region-*`
+   and `09-exclusion-chairs`, `ein.rs/08`'s `03-single-run-on-owed-seats`); the states and constructions
+   (`01-two-layers`, `02-two-phases`, `02-resume`, `03-boundary`, `08-constructions`, `08-fifo-gap`,
+   `08-state-and-status`, `08-path-tree-and-cube`, `10-rule-and-claim`); the dependency graphs (`03-strata`,
+   `08-reads`, `02-dependency`, `02-parity`, `10-theory-dependencies`); the schematics and flowcharts
+   (`02-four-levels`, `02-gluing-square`, `01-main-steps`, `04-ladder`, `03-reading`, `01-the-line`, the guide's
+   `04-zebra2-pieces`); `ein.rs/`'s design diagrams. Task 1's list named `01-two-layers`, `02-resume`, `04-ladder`,
+   `07-leaves`, `08-constructions`, `02-gluing-square` and `04-zebra2-pieces` as text nodes: each labels a state, a
+   graph or a form, not a fact, and is left by this reading.
+5. **`01-object-order`** draws its six facts as unlabelled octagons named $f_1$ to $f_6$ in the chain $\prec$, their
+   arrows left out, and the page gives each fact in TeX.
+6. **Renamed or merged**: a drawing named for a form that is gone takes the form's new name (`levi` → `canonical`,
+   `compact` → `folded`); `01-is-a-convention` is dropped with its paragraph rewritten (drawn again it would repeat
+   `01-program-kb`); the two `12-*-form` drawings are one, `12-query-view`, since the program view writes both forms
+   in its digraph `query`.
+7. **Two programs reconstructed**, since no file holds them: `guess-drink`'s (the `is-a` and `drinks` declarations
+   and the hrule; its `--fold` output equals the old drawing but for two atoms' look) and the written-out
+   `bag-is-ready` (the page's program with `forall`'s expansion, as the page describes; it loads and answers
+   `(model (ready Red))`).
+8. **A hand schematic may carry one arrow that is no arrow of the graph**, where its page says so
+   (`03-bijective-family`: the fact `(bijective color-loc)` an octagon, and a dashed arrow to the logic it switches
+   on).
+
+**Findings** (not fixed):
+
+1. **`forall`'s arguments in a rule's drawing.** With `forall` drawn as a pattern read by no name (Q-M1f.427), its
+   guard is drawn as nested facts: `std.bijection`'s `domain-elimination` shows `(and (?isa …) (neq ?b_other ?b))`
+   as octagons of `and` and `neq` in frames, where a `neq` of a match is a dotted `≠` link and the language says
+   `and` and `neq` are never a nested head. The user's call, with Q-M1f.427.
+2. **Corpus comments describe the old drawing**: `examples/syntax/equality.ein` (*an arity-2 `=` draws a
+   `doublecircle`*), `examples/syntax/unary-and-nary.ein` (*the renderers' unary special case*), and
+   `examples/syntax/is-a-shapes.ein` calls `is-a` *the kernel `is-a` head* (Q-M1f.436). Outside `docs/`, left.
+3. **`ein-render/src/rules.rs`' module comment** still says *negation in red with a `¬` prefix*; the `¬` went with
+   the labelled octagon.
+4. **A KB view laid out by `dot` is a wide strip of two ranks with its arrows' numbers crowded** where facts share
+   atoms (`03-syntax-and-semantics/diagrams/05-program-kb`, `12-kb-view`, `02-guide/diagrams/05-jack-canonical`):
+   the binary suggests `fdp` in a comment, which a source drops and `render_diagrams.py` does not read.
+5. **`10-theory.md`'s trace excerpt had drifted before this stage**: it numbered the steps 12 and 13, where the
+   binary of `b5fb8d70` already wrote 15 and 16; renumbered with the slices.
+6. **No file holds `guess-drink`'s program**; `ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md` § 1.2
+   says only that it is drawn the same way by its name.
+7. **Two hand drawings of the syntax pages, `03-facts-in-contexts` and `05-rule-in-a-context`, are not said to be
+   by hand**, which the folder's README asks of a drawing no command makes.
+8. `reasoning/02-kb-evolution/diagrams/10-key.dot` (`--models key`) is S1f.23.2's and untouched.
+
+**The census**, by `gvpr` over every `.dot` under `docs/` but `docs/lib/` and the generated rule drawings
+(`04-stdlib/diagrams/NN-std.*`, which `utils/check_generated.py` holds): a labelled octagon, a node labelled with a
+fact's text, an `oval`/`ellipse`/`rectangle`/`doublecircle` node, an empty arrowhead, an arrow numbered `#n`, a `«`:
+
+```sh
+rev=HEAD   # or WORKTREE for the files on disk
+list() { if [ "$rev" = WORKTREE ]; then git ls-files -co --exclude-standard 'docs/*.dot'; else git ls-tree -r --name-only "$rev" docs | grep '\.dot$'; fi; }
+src() { if [ "$rev" = WORKTREE ]; then cat "$1"; else git show "$rev:$1"; fi; }
+list | grep -v '^docs/lib/' | grep -v -E '/04-stdlib/diagrams/[0-9]{2}-std\.' | while read -r f; do
+  [ -e "$f" ] || [ "$rev" != WORKTREE ] || continue
+  src "$f" | gvpr 'N{printf("N\t%s\t%s\n",$.shape,$.label)} E{printf("E\t%s\t%s\t%s\n",$.arrowhead,$.label,$.xlabel)}' 2>/dev/null | sed "s|^|$f\t|"
+  src "$f" | grep -q '«' && printf '%s\tB\n' "$f"
+done | awk -F'\t' '
+  $2=="N" && $3=="octagon" && $4!="" { print $1 "\tlabelled-octagon" }
+  $2=="N" && ($4 ~ /^[?A-Za-z][^ ()]*\([^()]*(\([^()]*\))?[^()]*\)$/ || $4 ~ /^\([^ ()]+( [^ ()]+)+\)$/) { print $1 "\tfact-text" }
+  $2=="N" && ($3=="oval" || $3=="ellipse" || $3=="doublecircle" || $3=="rectangle") { print $1 "\t" $3 }
+  $2=="E" && $3=="empty" { print $1 "\tempty-head" }
+  $2=="E" && ($4 ~ /^#[0-9]/ || $5 ~ /^#[0-9]/) { print $1 "\thash-number" }
+  $2=="B" { print $1 "\tbadge" }' | sort -u
+```
+
+| | files | labelled octagon | fact's text | `oval` | `rectangle` | `ellipse` | empty head | `#n` | `«` |
+|---|---|---|---|---|---|---|---|---|---|
+| before (`1418fba5`) | 108 | 48 | 19 | 17 | 21 | 27 | 14 | 8 | 1 |
+| after (this branch) | 43 | 9 | 10 | 0 | 2 | 27 | 0 | 0 | 0 |
+
+(a column counts files.) **Every one of the 43 left is a drawing of reading 4**: the 9 labelled octagons are the
+region views' reported states, the 10 *fact's text* labels are states, candidates or the design diagrams'
+module and step names, the 27 `ellipse` files are the lattices', cubes', flowcharts' and design diagrams' default
+node shape, and the 2 `rectangle` files are `02-dependency` and `02-parity`. **No drawing of facts is flagged.**
+Graphviz gives an unset shape as `ellipse`, so that column counts drawings whose nodes have no shape set; no atom of
+a drawing of facts is one.
+
+**Checks**, in the worktree: `python3 utils/render_diagrams.py --check` (749 diagrams, every picture drawn from its
+source as it stands); `python3 utils/check_doc_blocks.py` (rules 1 to 5 hold); `python3 utils/check_release_voice.py`
+(ok); `EIN_BIN=build/review-bin/ein-head-8edf546b python3 utils/check_generated.py` (9 generators, every file as
+written); `python3 utils/doc_audit.py --links --check --tracked`: 2 574 findings, every one under
+`plans/…/review/`, whose ignored outputs a worktree lacks (the same count on `1418fba5` here), none elsewhere, and 0
+decision-id findings.
+
+**The tests that read a changed page**, alone in the worktree: `cargo test --manifest-path ein.rs/Cargo.toml
+--profile gate -p ein-cli --test guide_programs --test guide_transcripts --test show_hyps --test h_space_view`, 23
+passed (the guide's programs and its marked transcripts; `03-hypotheses-and-the-answer.md`'s generated blocks). No
+other test reads a page this task changed: the others that name one name it in a comment or an anchor.
+
+**Commits**: `1d858bb1` (the drawings and the pages), and this Record. **Likely to meet master's merge of S1f.23.2
+and S1f.23.3**: `docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md` (§ 1.4, § 2.4, § 3.4, § 4.5's
+commands and sentences) and `docs/ein/user/04-reference/13-glossary.md` (§ Fact, § Type, § Hyperedge); `06-config.md`
+and `AGENTS.md` are untouched.

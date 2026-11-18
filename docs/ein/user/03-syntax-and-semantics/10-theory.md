@@ -66,21 +66,23 @@ flag from the division's own facts, and `std.math.arith`'s rule concludes `(fals
 
 `ein render rules STDLIB/math/arith.ein` draws the module's two rules, with `STDLIB` a standard library on disk, the
 directory `ein --version` names ([install](../01-install.md)). The refutation matches the flag, of any request, and
-asserts `(false)`:
+asserts `(false)`, an octagon whose one arrow is at the box `false`:
 
-![The rule division-by-zero-is-false: the flag, and (false)](diagrams/10-rule-division-by-zero-is-false.svg)
+![The rule division-by-zero-is-false: the flag, a fact of division-by-zero over the variable ?request, and (false)](diagrams/10-rule-division-by-zero-is-false.svg)
 
-and the closing rule matches nothing, the `#empty` octagon, and asserts three facts about the module's own names:
+and the closing rule matches nothing, an empty panel, and asserts three facts about the module's own names, two of
+`__closed__` and one of `arith-module-rule`:
 
 ![The rule arith: an empty match, and three facts about the module's own names](diagrams/10-rule-arith.svg)
 
 What makes the rules a theory is how they connect: one rule's conclusion is another's premise. `ein solve FILE
---trace OUT.md` draws each firing, and two consecutive drawings of the division by zero share a node, the flag,
-concluded by a rule of one module and read by a rule of another:
+--trace OUT.md` draws each firing, each fact its octagon over its relation and its arguments, and two consecutive
+drawings of the division by zero share a node, the flag, concluded by a rule of one module and read by a rule of
+another:
 
-![The firing that concludes the division by zero's flag](diagrams/10-div-by-zero-flagged.svg)
+![The firing that concludes the division by zero's flag: the finished division a premise, the flag in bold, each fact an octagon](diagrams/10-div-by-zero-flagged.svg)
 
-![The next firing, which reads the flag and concludes (false)](diagrams/10-div-by-zero-refuted.svg)
+![The next firing, which reads the flag and concludes (false), an octagon whose arrow 1 is at false](diagrams/10-div-by-zero-refuted.svg)
 
 The same connection, over relations and rules and not over one run's facts, is a graph no `ein render` view draws
 as a whole. Drawn by hand for the division above, a relation a box and a rule a hexagon:
@@ -95,7 +97,7 @@ where what a theory concludes may depend on the order its rules are admitted in 
 A theory explains itself through its rules' reasons, chained. The two steps drawn above, as the trace writes them:
 
 ```text
-### Step 12 — `std.math.positional.div-by-zero`
+### Step 15 — `std.math.positional.div-by-zero`
 
 > the divisor of (n z 7) divided by z is zero
 
@@ -103,7 +105,7 @@ Premises: `std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.de
 
 Derives `std.math.arith.division-by-zero(div(n(z, 7), z))` — (div (n z 7) z) divides by zero
 
-### Step 13 — `std.math.arith.division-by-zero-is-false`
+### Step 16 — `std.math.arith.division-by-zero-is-false`
 
 > (div (n z 7) z) divides by zero: no number is the answer
 

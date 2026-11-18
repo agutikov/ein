@@ -221,7 +221,7 @@ matches a fact of $r$. Which of the three a statement is about is read off where
 That one fact can speak of a whole relation is what the atom being one node makes possible. Part of the graph
 of the three-house example:
 
-![The relation left-of, three facts of its extent of which two are held and one, grey, is not, and two facts about it](diagrams/01-relation-extent.svg)
+![The relation left-of: the coloured first arrows of three facts of its extent, two held and one, grey, not; and two facts about it](diagrams/01-relation-extent.svg)
 
 $$
 \begin{aligned}
@@ -235,10 +235,10 @@ d_1 &= \operatorname{relation}(\operatorname{left-of}, \mathsf{House}, \mathsf{H
 \end{aligned}
 $$
 
-The first arrows of $f_3$, $f_4$ and $g$ meet at the atom $\mathsf{left\text{-}of}$, and the dashed frame around
-the three is the part of the extent drawn: every other fact of $\operatorname{left-of}$ is in it too. $f_3$ and
-$f_4$ are held, and are the held extent; $g$, drawn grey, is a fact of the relation that the knowledge base does
-not hold, and that no held fact points at. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one fact
+The first arrows of $f_3$, $f_4$ and $g$, drawn coloured, meet at the atom $\mathsf{left\text{-}of}$: they are
+the part of the extent drawn, and every other fact of $\operatorname{left-of}$ has its first arrow there too.
+$f_3$ and $f_4$ are held, and are the held extent; $g$, drawn grey, is a fact of the relation that the knowledge
+base does not hold, and that no held fact points at. $p$ and the declaration $d_1$ point at the same atom with their second arrows: each is one fact
 about the relation, and neither is in its extent. The third and fourth arrows of $d_1$ point at one atom,
 since the declaration writes the label $\mathsf{House}$ twice.
 
@@ -443,20 +443,23 @@ a reader, and never the representation: what it draws stands for the graph, by t
 | in the graph | drawn |
 |---|---|
 | a held fact with three arrows that no fact points at: its node, its arrows, and its relation's atom as far as this fact goes | **one arrow** from the object under the second arrow to the object under the third, labelled with the relation's name |
-| a held fact with two arrows that no fact points at | one arrow from its argument to itself, a loop, labelled with the relation's name |
-| a held fact with any other count of arrows that no fact points at | its node, an octagon, with **the relation's name written in it**: the first arrow and the atom under it are folded into that label. The arrows that stay are numbered by argument, $1$ on the arrow to the first argument |
-| a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, with the relation's name in it and its argument arrows numbered. It stands in the dashed frame of its context where the knowledge base does not hold it, and in no frame where it does, as in the graph ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow, and no node carries a fact's text |
+| a held fact with any other count of arrows, two or four or more, that no fact points at | **its node**, an octagon, as in the graph: its first arrow at its relation's atom and the others at its arguments, numbered from the first. A fact of two arrows is no loop |
+| a fact that a fact points at, held or not, whatever its count | **its node, once**: that octagon, as in the graph. It stands in the dashed frame of its context where the knowledge base does not hold it, and in no frame where it does ([the global context, and the context of a fact](#the-global-context-and-the-context-of-a-fact)). It is never an arrow |
 
-So every object is drawn once in this form too, and what is drawn outside a frame is held
+Nothing but a fact of three arrows is folded, and in neither form is a relation's name written in a fact's node,
+or a fact's text in any node
+([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)). So every object
+is drawn once in this form too, and what is drawn outside a frame is held
 ([Q-M1f.395](../../../decisions/cli/Q-M1f.395-ein-render-draws-every-object-once.md)).
 
 The four facts of the first drawing are then five nodes and four arrows, where the graph has twelve nodes and
-twelve arrows. The drawings of the pages after this one are of this form, and add to it only what each says: an
-oval and a box for the two ends of a fact of a relation spelt $\operatorname{is-a}$, a colour for the arrows of
-one relation, a dashed arrow for a fact that a rule added
+twelve arrows. The drawings of the pages after this one are of the graph, and add to it only what each says: a
+colour for the arrows of one relation, a dashed octagon and dashed arrows for a fact that a rule added
 ([rendering](../../user/04-reference/12-rendering.md) is the legend). Those are conventions of drawing and mark
-no sort of object. On these two pages a drawing is of the graph unless it says that it is drawn with labelled
-arrows.
+no sort of object, and no relation is drawn otherwise than another, $\operatorname{is-a}$ and
+$\operatorname{relation}$ among them
+([Q-M1f.421](../../../decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). A drawing
+that folds facts of three arrows into labelled arrows says so beside it.
 
 ## The knowledge base of a program
 
@@ -598,9 +601,21 @@ over a total order is total. Two facts that neither precedes the other have equa
 facts. $\square$
 
 A chain of nine objects in the order, three atoms and six facts. The drawing is of the order and not of a
-knowledge base: each box is one object, written as a term.
+knowledge base: a box is an atom, labelled with its name, and an octagon a fact, with the letter the text calls it
+beside it; the arrows under each fact are left out, and are these:
 
-![Nine objects in the order, three atoms then six facts](diagrams/01-object-order.svg)
+$$
+\begin{aligned}
+f_1 &= \operatorname{adjacent}(\mathsf{b}, \mathsf{b}) \\
+f_2 &= \operatorname{co-located}(\mathsf{a}) \\
+f_3 &= \operatorname{co-located}(\mathsf{a}, \mathsf{a}) \\
+f_4 &= \operatorname{co-located}(\mathsf{a}, \mathsf{b}) \\
+f_5 &= \operatorname{co-located}(\mathsf{a}, \operatorname{p}(\mathsf{a})) \\
+f_6 &= \operatorname{co-located}(\mathsf{b})
+\end{aligned}
+$$
+
+![Nine objects in the order: the atoms 10, 2 and a, then the facts f1 to f6, each an octagon](diagrams/01-object-order.svg)
 
 Each arrow reads *comes before*. The third is an atom before a fact; the fourth is decided at the first arrow,
 by the relation's name; the fifth by the count, a prefix first; the seventh by an atom before a fact under the

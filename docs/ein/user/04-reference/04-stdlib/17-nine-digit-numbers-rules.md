@@ -136,7 +136,8 @@ Nine rows of `cl`, from the units: a higher column overrules the order below.
 
 The school method from the multiplier's top digit. A step shifts the sum so far one place, multiplies the
 multiplicand by the digit through nine rows of `md`, and adds the row through nine rows of `fa`. Three rules say
-where a product does not fit: the shift loses a top digit, the row carries out, or the addition does.
+where a product does not fit: the shift loses a top digit, the row carries out, or the addition does. `mul9-step`
+is shown as Ein alone: its drawing, folded or not, has more nodes than a page can show.
 
 #### `mul9-start`
 
@@ -285,7 +286,8 @@ where a product does not fit: the shift loses a top digit, the row carries out, 
 School long division. `div9-start` computes the divisor's multiples by one to nine once, and is
 shown as Ein alone: its drawing has more nodes than a page can show. A step brings a digit down and finds the
 quotient's digit as the one multiple that goes into the number with no borrow and leaves less than the divisor,
-one rule a digit.
+one rule a digit. `div9-step-0` is drawn folded, each pattern of three arrows one labelled arrow: its canonical
+drawing has more nodes than a page can show, and its folded one does not.
 
 #### `div9-start`
 

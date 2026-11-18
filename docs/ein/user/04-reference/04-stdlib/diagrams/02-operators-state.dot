@@ -1,25 +1,19 @@
 digraph kb {
   rankdir=BT;
-  node [fontname="Inter"];
-  // types
-  "Person" [shape=box, label="Person"];
-  // instances
-  "Ann" [shape=oval, label="Ann"];
-  "Bob" [shape=oval, label="Bob"];
-  "Cid" [shape=oval, label="Cid"];
-  // facts
-  "Ann" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Bob" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cid" -> "Person" [style=dashed, arrowhead=empty, label="is-a"];
-  "Ann" -> "Bob" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Cid" [label="parent", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Ann" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  "Cid" -> "Bob" [label="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
-  "Ann" -> "Cid" [label="grandparent by compose", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Ann" -> "Ann" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Bob" -> "Bob" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Cid" -> "Cid" [label="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "Ann" -> "Bob" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Bob" -> "Cid" [label="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
-  "Ann" -> "Cid" [label="ancestor by compose", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  "Ann" -> "Person" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Bob" -> "Person" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Cid" -> "Person" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Ann" -> "Bob" [xlabel="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Cid" [xlabel="parent", color="#17becf", fontcolor="#17becf", style=solid];
+  "Bob" -> "Ann" [xlabel="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  "Cid" -> "Bob" [xlabel="child by converse", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+  "Ann" -> "Cid" [xlabel="grandparent by compose", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Ann" -> "Ann" [xlabel="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Bob" -> "Bob" [xlabel="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Cid" -> "Cid" [xlabel="same by identity", color="#9467bd", fontcolor="#9467bd", style=dashed];
+  "Ann" -> "Bob" [xlabel="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Bob" -> "Cid" [xlabel="ancestor by includes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  "Ann" -> "Cid" [xlabel="ancestor by compose", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
 }
