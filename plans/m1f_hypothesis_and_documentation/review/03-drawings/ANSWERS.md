@@ -18,7 +18,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   at on the band's top rank.
 - **(b) The arrows alone**: no layers written; `dot` ranks by the arrows, and nested facts break the sandwich.
 
-**Your answer:** 
+**Your answer:**  Perfect! (a) But large diagrams still look messy. Does Graphviz have circular/concentric layout? Objects will be outside, then facts, then relations and types opbejcts, then relations definitions and properties facts and in the center `relation` `symmetric` and other, is it possible?
 
 **Notes:** 
 
@@ -34,7 +34,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   drawing puts them.
 - **(b) Ranked as any arrow**: its second argument a layer below its first (the stage's first build).
 
-**Your answer:** 
+**Your answer:** (a) All good, but still, for large diagrams concentric layout maybe can improve visibility.
 
 **Notes:** 
 
@@ -51,7 +51,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) A stored negation is never folded.**
 - **(c) A closing rule stays Ein only.**
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -68,7 +68,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) One colour for every derivation.**
 - **(c) Width on the derivation's arrows only**, a derived fact at the default width.
 
-**Your answer:** 
+**Your answer:** Yes, but don't use black color for highlighting. use both color and thickness, derived fact also colored. same color as derivation but more bright. The added fact is the brightest, then derivation explanation, and then all the rest with default black and default thickness.
 
 **Notes:** 
 
@@ -85,6 +85,6 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b) No per-commit check**: the corpus probe a script to run by hand.
 - **(c) Every trace's slices checked**, per commit or nightly.
 
-**Your answer:** 
+**Your answer:**  (a)
 
 **Notes:** 
