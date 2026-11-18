@@ -33,3 +33,7 @@ On Q-M1f.426, what the constraint view draws (the answers' file, `e4c0eaf6`), ve
 ## Record
 
 - Task 1 done, `ef2010ce`, waiting for the user's look: [`s1f.23.7_examples.md`](s1f.23.7_examples.md), its programs, scripts and outputs in [`s1f.23.7_examples/`](s1f.23.7_examples/).
+- Its three findings outside the stage, filed in [the phase's findings](findings.md) as R-39 to R-41, each open: an
+  `(or …)` goal's class prints the `or` form (open point 10); the constraint view draws a written check, `(eq a w)`, as a
+  fact (open point 9); a rule taking a fact's relation as its parameter is refused when activated with `symmetric`
+  (Q-M1f.1, § 4.5).

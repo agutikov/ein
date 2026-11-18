@@ -5,8 +5,8 @@
 - I answered, act on them"*), in a worktree beside the phase's final checks on master; stopped, and continued on the
 user's word (*"continue"*); **built** in the worktree `build/wt-s1f236` on the branch `s1f.23.6-answers`: the first
 build `ad20a5e0`, then the folded arrows within a layer `29792a38` and this Record; waiting for the merge, after which one gate,
-`utils/ci_container.sh` (the stage changes DOT writers) and one nightly hold it. Its readings are the Record's, for
-the main session to file; the user's look is the re-created `review/03-drawings/`, items 56 to 60.
+`utils/ci_container.sh` (the stage changes DOT writers) and one nightly hold it. Its readings are the Record's, filed
+as Q-M1f.487 to .498; the user's look is the re-created `review/03-drawings/`, items 56 to 60.
 **The answers:** the user's file as written, commit `e4c0eaf6`
 (`git show e4c0eaf6:plans/m1f_hypothesis_and_documentation/review/03-drawings/ANSWERS.md`); the topic left the bundle
 with every item answered (`ff130d1b`).
@@ -347,48 +347,48 @@ stages' worktrees running their tests beside it:
   P1f.21's `review/`, whose ignored outputs a worktree lacks; none under `03-drawings/`, whose outputs this worktree
   holds, and none elsewhere; 0 decision-id findings.
 
-### Readings (defaults taken where the answers are silent; for the main session to file)
+### Readings (defaults taken where the answers are silent; filed as Q-M1f.487 to .498)
 
 Each is built as its default and, where the user should see it, shown by an item of the re-created
 `review/03-drawings/` (56 to 60).
 
-1. **The layers are written, from the arrows alone**: a first arrow drawn back, `rankdir=TB`, and in a view of a
+1. (Q-M1f.487) **The layers are written, from the arrows alone**: a first arrow drawn back, `rankdir=TB`, and in a view of a
    knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest, on the user's note
    (the words followed: *"global-only facts"* read as the held facts nothing points at, and *"nested"* as a fact
    under another's arrow, held as well or not); no name read; groups ordered by invisible anchors; no groups where the
    arrows go round; none in a rule's panel, a slice or the derivation graph. A relation under no argument arrow stands
    just above its highest fact, and a flat fact of it just above its names. *Default: as built*; the option, no
    groups and `dot` ranking by the arrows alone, which breaks the sandwich where facts nest. Item 56.
-2. **A folded arrow runs within a layer**, as the continuing brief states: it ranks nothing (`constraint=false`) and
+2. (Q-M1f.488) **A folded arrow runs within a layer**, as the continuing brief states: it ranks nothing (`constraint=false`) and
    its fact places its names as its octagon would, so the folded drawing keeps the canonical one's layers of objects;
    a drawing every fact of which folds is one row. This reverses the first build's reading (a folded arrow ranked as
    any arrow, which keeps chains as chains). *Default: within a layer*; the option, ranked. § 1, item 57.
-3. **A rule's panel and a slice keep a folded arrow's `label`** and its ranking (Q-M1f.435 (a)); `constraint=false`
+3. (Q-M1f.489) **A rule's panel and a slice keep a folded arrow's `label`** and its ranking (Q-M1f.435 (a)); `constraint=false`
    with a `label` is what Graphviz could not route (R-31). *Default: as built.*
-4. **A stored negation `(not g)` is a fact of two arrows** and folds into a loop on `g`'s octagon, in the KB views and,
+4. (Q-M1f.490) **A stored negation `(not g)` is a fact of two arrows** and folds into a loop on `g`'s octagon, in the KB views and,
    `(not P)`, in a rule's panel; no name is read. *Default: it folds*; the option, a negation never folded, which
    reads the name `not`. Item 58.
-5. **The closing rules drawn folded**: with the loop they fall within `MAX_NODES` (unchanged, L-97), so five are drawn
+5. (Q-M1f.491) **The closing rules drawn folded**: with the loop they fall within `MAX_NODES` (unchanged, L-97), so five are drawn
    where they were Ein only. *Default: drawn folded*; the option, a closing rule left Ein only. Item 58.
-6. **The derivation's palette**: eight dark colours by the rule's name; the derivation graph in the first; a step's
+6. (Q-M1f.492) **The derivation's palette**: eight dark colours by the rule's name; the derivation graph in the first; a step's
    border `penwidth=2` in place of `style=bold`; a redundant firing dashed at the same width. *Default: as built*;
    the option, one colour for every derivation. Item 59.
-7. **A derived fact stays bold** (`penwidth=2`, its octagon and its arrows), the width of the derivation's arrows,
+7. (Q-M1f.493) **A derived fact stays bold** (`penwidth=2`, its octagon and its arrows), the width of the derivation's arrows,
    told from them by colour. *Default: bold*; the option, the width the derivation's alone. Item 59.
-8. **A step's slice under `--fold` is the canonical one**: every fact in it is touched by the step's arrows; `--fold`
+8. (Q-M1f.494) **A step's slice under `--fold` is the canonical one**: every fact in it is touched by the step's arrows; `--fold`
    folds the `-F` snapshots. No page says otherwise; across the corpus every trace's folded blocks are its canonical
    ones (§ 5). *Default: as built.* Item 59.
-9. **The copies of commands' outputs on the pages were rewritten by a validated transformer**, not by re-running
+9. (Q-M1f.495) **The copies of commands' outputs on the pages were rewritten by a validated transformer**, not by re-running
    each page's command, so that a cut stays the cut it was (Q-M1f.468); the hand derivations `09-cyclic` and
    `09-proof-graph` restyled by hand to the derivation's palette and width; `reasoning/01-static-ir/`'s hand graphs
    left. *Default: as done.*
-10. **The `fdp` provisioning is left as it is** (the CI's `libgvplugin-neato-layout8`, `run_tests.sh`'s exit 127 where
+10. (Q-M1f.496) **The `fdp` provisioning is left as it is** (the CI's `libgvplugin-neato-layout8`, `run_tests.sh`'s exit 127 where
     `fdp` lays out nothing, and the comments in `AGENTS.md`, the two workflows, `run_tests.sh`,
     `utils/ci_container.sh`, `utils/review_bundle.py` and `utils/review/util.py` that say every KB view suggests
     `fdp`): no view suggests it now, so the plugin guards no drawing the gate makes (`render_examples.sh` alone still
     picks `fdp`, for files named `*ontology*` or `*constraints*`). *Default: left*; what CI installs, and the
     comments, which are wrong from this branch on, are the main session's call.
-11. **R-33's check belongs in `dot_wellformed`, per commit and bounded** (§ 5). *Default: as built*, two witnesses;
+11. (Q-M1f.497) **R-33's check belongs in `dot_wellformed`, per commit and bounded** (§ 5). *Default: as built*, two witnesses;
     the options, no check (the probe a script to run by hand) or every trace's blocks. Item 60.
-12. **No page's `rank` pinning**: the rendering page says the layers are a preference no test holds, and the
+12. (Q-M1f.498) **No page's `rank` pinning**: the rendering page says the layers are a preference no test holds, and the
     decision Q21 carries the user's rule that a test holds structure and never layout. *Default: as written.*

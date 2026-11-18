@@ -159,33 +159,36 @@ as it was.
 
 ### Readings, each with its default
 
-- **What is checked is told by the relation it is written in.** A call and the walk behind it are two relations;
+Filed in `open_questions.md` as Q-M1f.513 to .521, each defaulted, the user's to revise, the id before each; the last
+is a note and is not filed.
+
+- (Q-M1f.513) **What is checked is told by the relation it is written in.** A call and the walk behind it are two relations;
   the calculator writes the walks, anything outside it the calls. *Default: as built.* The other way within the
   laws, one relation and every start asking the check (Q-M1f.405's (e)), walks again every number the calculator
   hands itself, which the ruling excludes.
-- **The interface keeps its names**: the calls stay `add-walk` … `gcd-call` (Q-M1f.189, Q-M1f.228, a program's text
+- (Q-M1f.514) **The interface keeps its names**: the calls stay `add-walk` … `gcd-call` (Q-M1f.189, Q-M1f.228, a program's text
   unchanged) and the walks are the new names. *Default: as built.* The other way renames every call a program
   writes.
-- **The public division is a call** (above), the other requests' starts writing the walk. *Default: as built*,
+- (Q-M1f.515) **The public division is a call** (above), the other requests' starts writing the walk. *Default: as built*,
   Q-M1f.211's *why* kept true; the cost is the division's +3 firings. The other way: `div-start` writes `div-run`,
   and the call's flag names a `(div-call …)` no state holds.
-- **The division-by-zero flag names the call**, `(division-by-zero (div-call …))`, whatever made the division; the
+- (Q-M1f.516) **The division-by-zero flag names the call**, `(division-by-zero (div-call …))`, whatever made the division; the
   calculator's own divide by nothing that is zero. *Default: as built*, every flag's text as before.
-- **An integer's or a rational's call is checked as an operand of its kind**, `(int-check (int P N))` and
+- (Q-M1f.517) **An integer's or a rational's call is checked as an operand of its kind**, `(int-check (int P N))` and
   `(rat-check (rat (int P N) D))`, so a digit or a name a call is handed as a part is the shape rules' flag
   (`not-integer`, `not-rational`), where it was silent. *Default: as built.* The other way, a rule a part asking
   `std.math.decimal`'s check only, is fourteen rules for `std.math.int` and fifteen for `std.math.rat` and leaves a
   digit silent.
-- **The calculator's own constants are not checked**: `(n z 1)` in `std.math.int`'s adjustments, `(n z 2)` in
+- (Q-M1f.518) **The calculator's own constants are not checked**: `(n z 1)` in `std.math.int`'s adjustments, `(n z 2)` in
   `std.math.convert`'s halving, written by its own rules into its own walks. *Default: not checked.*
-- **The decisions**: Q-M1f.404's file states the rulings on Q-M1f.405 to .411 and L-101, and Q-M1f.163, .210,
+- (Q-M1f.519) **The decisions**: Q-M1f.404's file states the rulings on Q-M1f.405 to .411 and L-101, and Q-M1f.163, .210,
   .228, .276 and .277 are brought to them; no decision file of their own, the code citing Q-M1f.404. *Default: as
   built.* The other way: a file each for Q-M1f.405, .408, .409.
-- **The walk's words are the base's**: `numeral-step`'s `:why` says *the digit {?a} is one* in binary too, as
+- (Q-M1f.520) **The walk's words are the base's**: `numeral-step`'s `:why` says *the digit {?a} is one* in binary too, as
   `std.math.positional`'s other rules do. *Default: as built.*
-- **The tagged-call test holds the walks** (`arith_theory.rs`' `RUNS`): each walk declared with its call's types, and
+- (Q-M1f.521) **The tagged-call test holds the walks** (`arith_theory.rs`' `RUNS`): each walk declared with its call's types, and
   a caller that starts one writes the call's start values; the walks started somewhere are now `add-run`,
   `sub-run`, `cmp-run`, `bin-add-run`, `bin-sub-run`, and `add-walk` and `cmp-walk` from `examples/beyond_arith/`.
   *Default: as built.*
-- **`AGENTS.md` and the phase's README are not edited here**: the calculator's lines of `AGENTS.md` stay true
+- (a note, not filed; `AGENTS.md` and the phase's row brought along in `557ad664`) **`AGENTS.md` and the phase's README are not edited here**: the calculator's lines of `AGENTS.md` stay true
   (*a numeral … flagged where an operation takes it*), and the phase's row is the main session's on the merge.

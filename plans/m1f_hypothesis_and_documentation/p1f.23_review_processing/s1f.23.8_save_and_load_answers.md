@@ -106,50 +106,53 @@ bundle with every item answered (`eaabeada`).
 
 ### Readings, each with a default
 
-- **A 2.0 reader opens a node's container as its program's root.** It skips `COMMIT` as any unknown kind, and so
+Filed in `open_questions.md` as Q-M1f.499 to .512, each defaulted, the user's to revise, the id before each; the last,
+what was not run, is a note and is not filed.
+
+- (Q-M1f.499) **A 2.0 reader opens a node's container as its program's root.** It skips `COMMIT` as any unknown kind, and so
   answers the program's R where the container is a node: a binary built before this stage, handed a node's container
   this one wrote. No 2.0 writer wrote a node's container (`kb save` refused one), so a root's container is read right
   both ways. **Default: the minor, as the page's rule says.** The other way is 3.0: every 2.x container refused with
   the version line, a cache to save again, and no older binary ever opens a node. The user's, if the gap matters.
-- **"A root's container is unchanged"** read as: the same sections, byte for byte, and no `COMMIT`; its header's
+- (Q-M1f.500) **"A root's container is unchanged"** read as: the same sections, byte for byte, and no `COMMIT`; its header's
   minor reads 1. **Default.**
-- **The container keeps the saved file's words.** The review's mock of (c) wrote *container* for *saved file* in the
+- (Q-M1f.501) **The container keeps the saved file's words.** The review's mock of (c) wrote *container* for *saved file* in the
   `commit` row and the NOT CHECKED lines; the container's contract is its file's output byte for byte but the path
   (Q-M1a.22), so the words are the saved file's. **Default.**
-- **A load note's position in a container is the stored program's** (Q-M1f.15; F23's D-18), so `by_its_container`
+- (Q-M1f.502) **A load note's position in a container is the stored program's** (Q-M1f.15; F23's D-18), so `by_its_container`
   compares a position as `<position>`; one corpus node printed one, `features/13_mixed_solution_and_open.ein`'s
   mechanism note. The pages say it beside the byte-for-byte promise. **Default.**
-- **A saved file's container still records the environment's stdlib digest**, as every container does, so a later run
+- (Q-M1f.503) **A saved file's container still records the environment's stdlib digest**, as every container does, so a later run
   under another library warns `… was written under different inputs (StaleStdlib)`, which the saved file, comparing
   nothing since D-24, does not; the answer is the same (a loaded container drops nothing). The review's 17-Q-M1f.413
   § 7 found it. **Default: as is**, the container's freshness being the cache's own and a root's container left
   unchanged; the other way is a saved file's container recording no digest, compared with nothing. The user's.
-- **`ein kb save` checks no commitment against H**: it saturates nothing, so a node whose choice is no candidate is
+- (Q-M1f.504) **`ein kb save` checks no commitment against H**: it saturates nothing, so a node whose choice is no candidate is
   stored, and refused by every command that reads the node, as the file is. **Default: as is.**
-- **`kb save --saturate` of a node banks root's fixpoint and the commitment**, not the node's state; the run commits
+- (Q-M1f.505) **`kb save --saturate` of a node banks root's fixpoint and the commitment**, not the node's state; the run commits
   the node on open, as for the file. **Default: as is.**
-- **`ein test` refuses no bad commitment now.** With no run, H is never built, so a `(commit …)` naming no
+- (Q-M1f.506) **`ein test` refuses no bad commitment now.** With no run, H is never built, so a `(commit …)` naming no
   candidate, or one twice, is NOT CHECKED with exit 0 under `ein test` (it was an ERROR, exit 2, under (a));
   `solve`, `oracle`, `saturate` and `render kb` still refuse it, and `07-diagnostics.md` § 2.30 says `ein test`
   refuses neither. **Default: as built**, the ruling being *no run at all*.
-- **`--json-summary` and `--events` under `ein test` of a node write nothing**, as for a file that states no claim:
+- (Q-M1f.507) **`--json-summary` and `--events` under `ein test` of a node write nothing**, as for a file that states no claim:
   the option (b) left them unsaid. **Default.**
-- **The `-v` header names no question** (the mock's *(a saved file's node: not run)* not taken): the parenthesis
+- (Q-M1f.508) **The `-v` header names no question** (the mock's *(a saved file's node: not run)* not taken): the parenthesis
   names the question an outcome was read off, and the report row the header is rebuilt from has no field to tell a
   node's row from a goal-less query's. **Default.**
-- **The report: `outside` `null`, not the mock's `[]`**, and a solve row with no `region` key, not `region: null`:
+- (Q-M1f.509) **The report: `outside` `null`, not the mock's `[]`**, and a solve row with no `region` key, not `region: null`:
   both are the shape of a row no run checked today (`[]` would say H leaves nothing out, which only a run knows), so
   no key moves and the id stays `ein-test-report/6`, as Q-M1f.259 keeps an id. `06-config.md` is unchanged.
   **Default.**
-- **`claim::check`, the library's, keeps its saved-file branch**: `ein test` does not call it, and a library caller
+- (Q-M1f.510) **`claim::check`, the library's, keeps its saved-file branch**: `ein test` does not call it, and a library caller
   checking a node's claim gets NOT CHECKED as `ein solve` does. **Default: unchanged.**
-- **No decision file for Q-M1f.415, .416, .417, .418**: .416's answer is Q-M1f.403's file, .415's and .417's row
+- (Q-M1f.511) **No decision file for Q-M1f.415, .416, .417, .418**: .416's answer is Q-M1f.403's file, .415's and .417's row
   Q-M1f.402's, .418's Q-M1f.185's; .413 has its own (engine/). **Default.**
-- **`answer_round_trip`'s cost**: one `kb save` and two `ein solve`s per program on its last node. Not measured
+- (Q-M1f.512) **`answer_round_trip`'s cost**: one `kb save` and two `ein solve`s per program on its last node. Not measured
   against the nightly's five minutes (L-106's (a) is today's shards); here, under the other worktree's load (about
   35), the per-commit run took 99 s for eight shards against 83 s for a run that failed early. **Default: kept in
   `answer_round_trip`**, beside the dump it reads; the merged tree's nightly re-takes the shards.
-- **Not run**: `EIN_CORPUS_SLOW=1 answer_round_trip` (the nightly's), so the heavy and slow programs' last nodes are
+- (a note, not filed) **Not run**: `EIN_CORPUS_SLOW=1 answer_round_trip` (the nightly's), so the heavy and slow programs' last nodes are
   not yet held by their containers; the merged tree's nightly runs it.
 
 ### Checks

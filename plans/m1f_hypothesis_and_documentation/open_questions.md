@@ -415,6 +415,41 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.484](#q-m1f484--a-traces-slice-that-graphviz-refuses) | A trace's slice that Graphviz refuses | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), left as it is and its refusals filed (the phase's R-33), since what routes them, `rankdir=TB`, changes how a slice is laid out (Q-M1f.428, Q-M1f.429) |
 | [Q-M1f.485](#q-m1f485--what-09-core-in-derivation-draws-heavy) | What `09-core-in-derivation` draws heavy | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), the facts the derivations added, *heavy* being *a derivation added it* as on the page and in `09-proof-graph`; the core red and double-bordered, not heavy |
 | [Q-M1f.486](#q-m1f486--long_numbersein-and-the-pools-long-lane) | `long_numbers.ein` and the pool's long lane | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), not on `ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds |
+| [Q-M1f.487](#q-m1f487--how-the-layers-of-a-knowledge-bases-drawing-are-written) | How the layers of a knowledge base's drawing are written | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), from the arrows alone, no name read: `rankdir=TB`, a first arrow drawn back, and in a view of a knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest, ordered by invisible anchors; none where the arrows go round, nor in a panel, a slice or the derivation graph |
+| [Q-M1f.488](#q-m1f488--a-folded-arrow-within-a-layer-or-ranked) | A folded arrow: within a layer, or ranked | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), within a layer, `constraint=false`, its fact placing its names as its octagon would, so a folded drawing keeps the canonical one's layers of objects; the first build's ranking reversed |
+| [Q-M1f.489](#q-m1f489--a-folded-arrow-in-a-rules-panel-and-in-a-slice) | A folded arrow in a rule's panel and in a slice | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), its `label` and its ranking kept (Q-M1f.435 (a)), since `constraint=false` beside a `label` is what Graphviz could not route (R-31) |
+| [Q-M1f.490](#q-m1f490--a-stored-negation-under---fold) | A stored negation under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), `(not g)` folds into a loop on `g`'s octagon, as any fact of two arrows; no name read |
+| [Q-M1f.491](#q-m1f491--the-closing-rules-drawings-under---fold) | The closing rules' drawings under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), the five closing rules drawn folded, within `MAX_NODES` (L-97), where they were Ein only |
+| [Q-M1f.492](#q-m1f492--the-derivations-palette) | The derivation's palette | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), eight dark colours by the rule's name, the derivation graph in the first, a step's border `penwidth=2`, a redundant firing dashed at that width |
+| [Q-M1f.493](#q-m1f493--how-a-derived-fact-is-marked-beside-a-derivation) | How a derived fact is marked beside a derivation | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), bold, `penwidth=2`, the derivation's width, told from its arrows by colour |
+| [Q-M1f.494](#q-m1f494--a-steps-slice-under---fold) | A step's slice under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), the canonical one, every fact of it touched by the step's arrows (Q-M1f.429); `--fold` folds a trace's `-F` snapshots |
+| [Q-M1f.495](#q-m1f495--how-the-pages-copies-of-commands-outputs-were-drawn-again) | How the pages' copies of commands' outputs were drawn again | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), by a transformer validated against the binary, so that a cut stays its cut (Q-M1f.468); two hand derivations restyled by hand, `reasoning/01-static-ir/`'s hand graphs left |
+| [Q-M1f.496](#q-m1f496--the-fdp-provisioning-now-that-no-view-suggests-fdp) | The `fdp` provisioning, now that no view suggests `fdp` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), left: the CI's layout plugin, `run_tests.sh`'s exit 127 and the comments that say every KB view suggests `fdp`, wrong from the stage on; the main session's call |
+| [Q-M1f.497](#q-m1f497--where-r-33s-check-lives-and-what-it-reads) | Where R-33's check lives, and what it reads | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), `dot_wellformed`, per commit, every slice of two witnesses' traces (611 slices) |
+| [Q-M1f.498](#q-m1f498--whether-a-page-pins-the-layers) | Whether a page pins the layers | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), no page pins a `rank`: the layers a preference no test holds (Q21) |
+| [Q-M1f.499](#q-m1f499--what-a-reader-of-einb20-makes-of-a-nodes-container) | What a reader of `einb/2.0` makes of a node's container | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the minor moves, `einb/2.1`, as the format page's rule says, so a 2.0 reader opens a node's container as its program's root |
+| [Q-M1f.500](#q-m1f500--what-a-roots-container-is-unchanged-means) | What *a root's container is unchanged* means | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the same sections byte for byte and no `COMMIT`, its header's minor 1 |
+| [Q-M1f.501](#q-m1f501--the-words-a-nodes-container-prints) | The words a node's container prints | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the saved file's, not the mock's *container*: the container's output is its file's but the path (Q-M1a.22) |
+| [Q-M1f.502](#q-m1f502--a-load-notes-position-in-a-nodes-container) | A load note's position in a node's container | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the stored program's (Q-M1f.15), compared as `<position>` by `by_its_container`, and the pages say so |
+| [Q-M1f.503](#q-m1f503--a-nodes-container-and-the-standard-librarys-digest) | A node's container and the standard library's digest | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: the container records the digest and warns `StaleStdlib` under another library where the saved file says nothing; the answer the same |
+| [Q-M1f.504](#q-m1f504--ein-kb-save-of-a-node-whose-choice-is-no-candidate) | `ein kb save` of a node whose choice is no candidate | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: stored, and refused by every command that reads the node |
+| [Q-M1f.505](#q-m1f505--ein-kb-save---saturate-of-a-node) | `ein kb save --saturate` of a node | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), as is: root's fixpoint and the commitment banked, not the node's state |
+| [Q-M1f.506](#q-m1f506--a-bad-commitment-under-ein-test) | A bad commitment under `ein test` | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), NOT CHECKED, exit 0, since no run builds H; the other commands still refuse it |
+| [Q-M1f.507](#q-m1f507----json-summary-and---events-under-ein-test-of-a-node) | `--json-summary` and `--events` under `ein test` of a node | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), nothing written, as for a file that states no claim |
+| [Q-M1f.508](#q-m1f508--the--v-header-of-a-saved-nodes-claims) | The `-v` header of a saved node's claims | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), no question named, the mock's *(a saved file's node: not run)* not taken |
+| [Q-M1f.509](#q-m1f509--the-reports-row-of-a-claim-no-run-checked) | The report's row of a claim no run checked | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), `outside` `null` and no `region` key, not the mock's `[]` and `region: null`; the id stays `ein-test-report/6` |
+| [Q-M1f.510](#q-m1f510--claimchecks-saved-file-branch) | `claim::check`'s saved-file branch | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), unchanged |
+| [Q-M1f.511](#q-m1f511--decision-files-for-q-m1f415-to-418) | Decision files for Q-M1f.415 to .418 | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), none: each answer is a file it already has (Q-M1f.403's, .402's, .185's) |
+| [Q-M1f.512](#q-m1f512--where-a-nodes-container-is-held-to-its-saved-file-and-its-cost) | Where a node's container is held to its saved file, and its cost | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), `answer_round_trip`'s `by_its_container`, beside the dump it reads; its cost against the nightly's five minutes left to the merged tree's nightly |
+| [Q-M1f.513](#q-m1f513--what-tells-a-numeral-to-check-from-one-an-operation-made) | What tells a numeral to check from one an operation made | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the relation it is written in: a tagged call, which asks the check and hands itself on to a walk of its own, which the calculator alone writes and which checks nothing |
+| [Q-M1f.514](#q-m1f514--the-names-of-the-calls-and-of-the-walks) | The names of the calls and of the walks | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the calls keep theirs (Q-M1f.189, Q-M1f.228), the walks are new, `add-run` … `gcd-run` |
+| [Q-M1f.515](#q-m1f515--the-public-division-a-call-or-a-walk) | The public division: a call or a walk | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), a call, so that its division-by-zero flag names a fact the state holds (Q-M1f.211); +3 firings a division |
+| [Q-M1f.516](#q-m1f516--what-the-division-by-zero-flag-names) | What the division-by-zero flag names | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the call, `(div-call …)`, whatever made the division; every flag's text as before |
+| [Q-M1f.517](#q-m1f517--what-an-integers-or-a-rationals-call-is-checked-as) | What an integer's or a rational's call is checked as | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), an operand of its kind, `int-check` and `rat-check`, so a digit handed as a part is flagged `not-integer` or `not-rational`, where it was silent |
+| [Q-M1f.518](#q-m1f518--the-calculators-own-constants) | The calculator's own constants | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), not checked: `(n z 1)` and `(n z 2)`, written by its own rules into its own walks |
+| [Q-M1f.519](#q-m1f519--the-decisions-the-numerals-rulings-live-in) | The decisions the numerals' rulings live in | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), Q-M1f.404's file, no new decision id |
+| [Q-M1f.520](#q-m1f520--the-walks-words-in-binary) | The walk's words in binary | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the base's: `numeral-step`'s `:why` says *digit* in binary too |
+| [Q-M1f.521](#q-m1f521--what-the-tagged-call-test-holds) | What the tagged-call test holds | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the walks as well as the calls, by `arith_theory.rs`' table `RUNS` |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -9261,3 +9296,420 @@ the pool, 261.2 s on the runner's four threads, the work bounding it, not one fi
 - **(b)** added, so its seven views start first.
 
 **Default taken: (a).** Built: `82e8097b`, which leaves `LONG` as it was.
+
+### Q-M1f.487 — How the layers of a knowledge base's drawing are written
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 1. **Put, not ruled.** L-100 and R-18 were ruled the layered
+layout, objects → facts → objects, and the user's note during the stage (verbatim in
+[S1f.23.6](p1f.23_review_processing/s1f.23.6_the_drawings_answers.md#the-answers-item-by-item)) asked for a band of
+facts several ranks deep where facts nest; how the layers are had was left to the build.
+
+- **(a)** written, from the arrows alone: a fact's first arrow drawn back from its relation, `rankdir=TB`, and in a
+  view of a knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest (the
+  note's *"global-only facts"* read as the held facts nothing points at, on a band's top rank, and *"nested"* as a
+  fact under another's arrow, held or not, a rank below it); no name read; the groups ordered by a chain of
+  invisible anchors; no groups where the arrows go round, nor in a rule's panel, a slice or the derivation graph; a
+  relation under no argument arrow stands just above its highest fact, and a flat fact of it just above its names.
+  **Default.**
+- **(b)** no groups, `dot` ranking by the arrows alone, which breaks the sandwich where facts nest.
+
+**Default taken: (a).** Built: `ad20a5e0` (`ein_render::fact_graph::layers`), merged by `547afea5`; the review's
+`03-drawings/`, item 56, shows it beside the drawing by the arrows alone.
+
+### Q-M1f.488 — A folded arrow: within a layer, or ranked
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 2. **Put, not ruled.** The stage's continuing brief stated the
+target, *folded arrows within a layer*; the first build had ranked them.
+
+- **(a)** within a layer: a folded arrow ranks nothing (`constraint=false`) and its fact places its names as its
+  octagon would, so the folded drawing keeps the canonical one's layers of objects; a drawing every fact of which
+  folds is one row (`05-row-state`). It reverses the first build's reading. **Default.**
+- **(b)** ranked as any arrow, which keeps chains as chains (the first build: zebra2's folded program `kb` six
+  layers, the houses a chain by `right-of`).
+
+**Default taken: (a).** Built: `29792a38`, merged by `547afea5`; item 57 puts the two side by side.
+
+### Q-M1f.489 — A folded arrow in a rule's panel and in a slice
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 3. **Put, not ruled.** R-31: `constraint=false` beside a `label`
+is what Graphviz could not route.
+
+- **(a)** a rule's panel and a slice keep a folded arrow's `label` and its ranking (Q-M1f.435 (a)); only a drawing of
+  a knowledge base writes a folded arrow within a layer ([Q-M1f.488](#q-m1f488--a-folded-arrow-within-a-layer-or-ranked)).
+  **Default.**
+- **(b)** within a layer there too, `constraint=false`, its relation an `xlabel`.
+
+**Default taken: (a).** Built: `29792a38`, which leaves the panels and the slices as `ad20a5e0` draws them.
+
+### Q-M1f.490 — A stored negation under `--fold`
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 4. **Put, not ruled.** Q-M1f.425 (b) folds a fact of two arrows
+into a loop on its argument.
+
+- **(a)** it folds: `(not g)` is a fact of two arrows and folds into a loop on `g`'s octagon, in the views of a
+  knowledge base and, `(not P)`, in a rule's panel; no name is read. **Default.**
+- **(b)** a negation never folded, which reads the name `not`.
+
+**Default taken: (a).** Built: `ad20a5e0`; item 58.
+
+### Q-M1f.491 — The closing rules' drawings under `--fold`
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 5. **Put, not ruled.** With the loop, five closing rules
+(`decimal-arith`, `rat-arith`, `binary-arith`, `arith9`, `props`) fall within the drawing bound, `MAX_NODES`,
+unchanged (L-97).
+
+- **(a)** drawn folded on the standard library's rule pages, where they were Ein only (493 canonical, 6 folded, 12
+  Ein only). **Default.**
+- **(b)** a closing rule left Ein only.
+
+**Default taken: (a).** Built: `ad20a5e0`; item 58.
+
+### Q-M1f.492 — The derivation's palette
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 6. **Put, not ruled.** Q-M1f.428 was ruled with *"more contrast
+colors and 2x thicker lines"*; which colours, and how many, was left to the build.
+
+- **(a)** eight dark colours by the rule's name (`slice.rs`' `DERIVATION_PALETTE`); the derivation graph, which
+  records no rule, in the first; a step's border `penwidth=2` in place of `style=bold`; a redundant firing dashed at
+  the same width. **Default.**
+- **(b)** one colour for every derivation.
+
+**Default taken: (a).** Built: `ad20a5e0`; item 59.
+
+### Q-M1f.493 — How a derived fact is marked beside a derivation
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 7. **Put, not ruled.** A derived fact was drawn bold; the
+derivation's arrows are now as wide.
+
+- **(a)** it stays bold, `penwidth=2`, its octagon and its arrows, the derivation's width, told from the
+  derivation's arrows by colour. **Default.**
+- **(b)** the width the derivation's alone.
+
+**Default taken: (a).** Built: `ad20a5e0`; item 59.
+
+### Q-M1f.494 — A step's slice under `--fold`
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 8. **Put, not ruled.** Q-M1f.429: a fact a derivation's arrow
+touches is never folded.
+
+- **(a)** a step's slice under `--fold` is the canonical one: a step's slice has one firing and no commitment, so
+  every fact in it is touched by the step's arrows; `--fold` folds a trace's `-F` snapshots. No page says otherwise,
+  and across the corpus every trace's folded blocks are its canonical ones. **Default.**
+- **(b)** none named by the stage: under Q-M1f.429 a step's slice could fold a fact only by drawing more than its
+  step.
+
+**Default taken: (a).** Built: `ad20a5e0`, held by `render_doors.rs` on `02_packing.ein`; item 59.
+
+### Q-M1f.495 — How the pages' copies of commands' outputs were drawn again
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 9. **Put, not ruled.** Q-M1f.468: a page's drawing of a knowledge
+base may be a cut.
+
+- **(a)** by a transformer validated against the binary over every corpus program (`review/03-drawings/tools/`'s
+  `relayer.py`, then `refold.py`), not by re-running each page's command, so that a cut stays the cut it was; the
+  four folded rule drawings with a pattern of two arrows, which it refuses, by the binary from their pages'
+  programs; the hand derivations `09-cyclic` and `09-proof-graph` restyled by hand to the derivation's palette and
+  width; `reasoning/01-static-ir/`'s hand graphs left. **Default.**
+- **(b)** each page's command run again, and a cut cut again from its output.
+
+**Default taken: (a).** Built: `ad20a5e0` and `29792a38`, merged by `547afea5`.
+
+### Q-M1f.496 — The `fdp` provisioning, now that no view suggests `fdp`
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 10. **Put, not ruled.** The layered layout dropped the KB view's
+`// suggested layout: fdp`, so the layout plugin guards no drawing the gate makes; `render_examples.sh` alone still
+picks `fdp`, for files named `*ontology*` or `*constraints*`.
+
+- **(a)** left as it is: the CI's `libgvplugin-neato-layout8`, `run_tests.sh`'s exit 127 where `fdp` lays out
+  nothing, and the comments in `AGENTS.md`, the two workflows, `run_tests.sh`, `utils/ci_container.sh`,
+  `utils/review_bundle.py` and `utils/review/util.py` that say every KB view suggests `fdp`, which are wrong from the
+  stage on. **Default.**
+- **(b)** the comments brought to the layered layout, and what CI installs and `run_tests.sh`'s check taken again.
+
+**Default taken: (a).** Nothing built: what CI installs, and the comments, the stage left to the main session.
+
+### Q-M1f.497 — Where R-33's check lives, and what it reads
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 11. **Put, not ruled.** The phase's
+[R-33](p1f.23_review_processing/findings.md): no test put a trace's drawing to Graphviz, and the probe over every
+trace laid out 154 062 distinct blocks, past any per-commit budget.
+
+- **(a)** in `dot_wellformed`, per commit and bounded: `graphviz_accepts_every_slice_of_the_witnesses_traces` puts
+  every slice of two witnesses' traces to `dot`, `examples/arith/div.ein` and
+  `examples/binary_arithmetic/first.ein`, the smallest programs a canonical and a folded slice of which were
+  refused, 611 slices; the test is the authority the DOT views have on being well-formed, and the user's rule leaves
+  out the layout only. **Default.**
+- **(b)** no check, the probe a script run by hand.
+- **(c)** every trace's blocks.
+
+**Default taken: (a).** Built: `ad20a5e0`; item 60.
+
+### Q-M1f.498 — Whether a page pins the layers
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 12. **Put, not ruled.** L-100 was ruled with *"No tests required
+here!"*, the layered layout the user's preference.
+
+- **(a)** no page pins a `rank`: the rendering page says the layers are a preference no test holds, and the decision
+  Q21 carries the user's rule that a test holds structure and never layout. **Default.**
+- **(b)** the rendering page states the layers as what a drawing is held to.
+
+**Default taken: (a).** Built: `ad20a5e0` (`12-rendering.md` § Layers, Q21 amended).
+
+### Q-M1f.499 — What a reader of `einb/2.0` makes of a node's container
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 1. **Put, not ruled.** Q-M1f.413 (c) adds the section `COMMIT`,
+kind 13; by `09-binary-format.md` § 4.1 and Q-M1f.10's *why*, a section kind added moves the minor, and a reader of
+the same major skips a kind it does not know.
+
+- **(a)** the minor, `einb/2.1`, as the page's rule says: a 2.0 reader, a binary built before the stage, skips
+  `COMMIT` and opens a node's container as its program's root, answering the program's R; no 2.0 writer wrote a
+  node's container (`kb save` refused one), so a root's container is read right both ways. **Default.**
+- **(b)** the major, 3.0: every 2.x container refused with the version line, a cache to save again, and no older
+  binary ever opens a node.
+
+**Default taken: (a).** Built: `86d46410` (`FORMAT_MINOR = 1`), merged by `aad59286`. The stage leaves it to the user
+if the gap matters.
+
+### Q-M1f.500 — What *a root's container is unchanged* means
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 2. **Put, not ruled.** The stage's brief: *a root's container
+stays as it is*.
+
+- **(a)** the same sections, byte for byte, and no `COMMIT`; its header's minor reads 1. **Default.**
+- **(b)** its header too: a root's container written at 2.0, the minor moved only where a `COMMIT` is written.
+
+**Default taken: (a).** Built: `86d46410`, held by `einb_cli.rs`' `a_nodes_container_opens_as_the_node`.
+
+### Q-M1f.501 — The words a node's container prints
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 3. **Put, not ruled.** The review's mock of Q-M1f.413 (c) wrote
+*container* for *saved file* in the `commit` row and the NOT CHECKED lines.
+
+- **(a)** the saved file's words: the container's contract is its file's output byte for byte but the path
+  (Q-M1a.22). **Default.**
+- **(b)** the mock's, *container*.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.502 — A load note's position in a node's container
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 4. **Put, not ruled.** A position in a container names its stored
+program (Q-M1f.15; F23's D-18).
+
+- **(a)** the stored program's, as for every container: `answer_round_trip`'s `by_its_container` compares a
+  position as `<position>`, and the pages say so beside the byte-for-byte promise; one corpus node printed one,
+  `features/13_mixed_solution_and_open.ein`'s mechanism note. **Default.**
+- **(b)** the saved file's own position, which a container does not store (Q-M1f.15: a format change).
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.503 — A node's container and the standard library's digest
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 5. **Put, not ruled.** Found by the review's item 17-Q-M1f.413,
+§ 7: a saved file's container records the environment's stdlib digest, as every container does, so a later run under
+another library warns `… was written under different inputs (StaleStdlib)`, which the saved file, comparing nothing
+since D-24, does not; the answer is the same (a loaded container drops nothing).
+
+- **(a)** as is: the container's freshness is the cache's own, and a root's container is left unchanged.
+  **Default.**
+- **(b)** a saved file's container records no digest, and is compared with nothing.
+
+**Default taken: (a).** Nothing built. The stage marks it the user's.
+
+### Q-M1f.504 — `ein kb save` of a node whose choice is no candidate
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 6. **Put, not ruled.**
+
+- **(a)** as is: `ein kb save` saturates nothing and checks no commitment against H, so a node whose choice is no
+  candidate is stored, and refused by every command that reads the node, as the saved file is. **Default.**
+- **(b)** `ein kb save` builds H and refuses such a node itself.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.505 — `ein kb save --saturate` of a node
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 7. **Put, not ruled.**
+
+- **(a)** as is: it banks root's fixpoint and the commitment, not the node's state; the run commits the node on
+  open, as for the saved file. **Default.**
+- **(b)** it banks the node's state.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.506 — A bad commitment under `ein test`
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 8. **Put, not ruled.** Q-M1f.416 (b): no run at all.
+
+- **(a)** as built: with no run H is never built, so a `(commit …)` naming no candidate, or one twice, is NOT CHECKED
+  with exit 0 under `ein test`, where it was an ERROR, exit 2, under (a); `solve`, `oracle`, `saturate` and `render
+  kb` still refuse it, and `07-diagnostics.md` § 2.30 says `ein test` refuses neither. **Default.**
+- **(b)** `ein test` builds H to check the commitment, refuses a bad one, exit 2, and otherwise runs nothing.
+
+**Default taken: (a).** Built: `86d46410` (`test.rs`' `NotRun`).
+
+### Q-M1f.507 — `--json-summary` and `--events` under `ein test` of a node
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 9. **Put, not ruled.** The ruling's (b) left them unsaid.
+
+- **(a)** they write nothing, as for a file that states no claim. **Default.**
+- **(b)** each writes a record that names the node and no run.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.508 — The `-v` header of a saved node's claims
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 10. **Put, not ruled.**
+
+- **(a)** it names no question: the parenthesis names the question an outcome was read off, and the report row the
+  header is rebuilt from has no field to tell a node's row from a goal-less query's. **Default.**
+- **(b)** the review's mock, *(a saved file's node: not run)*.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.509 — The report's row of a claim no run checked
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 11. **Put, not ruled.** The review's mock wrote `outside` `[]` and
+`region: null`.
+
+- **(a)** `outside` `null`, and a solve row with no `region` key: both the shape of a row no run checked today (`[]`
+  would say H leaves nothing out, which only a run knows), so no key moves and the id stays `ein-test-report/6`, as
+  Q-M1f.259 keeps an id; `06-config.md` unchanged. **Default.**
+- **(b)** the mock's, `outside` `[]` and `region: null`.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.510 — `claim::check`'s saved-file branch
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 12. **Put, not ruled.**
+
+- **(a)** unchanged: `ein test` does not call it, and a library caller checking a node's claim gets NOT CHECKED as
+  `ein solve` does. **Default.**
+- **(b)** taken out, no command calling it for a saved file.
+
+**Default taken: (a).** Nothing built.
+
+### Q-M1f.511 — Decision files for Q-M1f.415 to .418
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 13. **Put, not ruled.**
+
+- **(a)** none of their own: .416's answer is Q-M1f.403's file, .415's and .417's Q-M1f.402's, .418's Q-M1f.185's;
+  .413 has its own (`engine/`). **Default.**
+- **(b)** a file each.
+
+**Default taken: (a).** Built: `86d46410` and the ledger `d07eb5bb`.
+
+### Q-M1f.512 — Where a node's container is held to its saved file, and its cost
+
+**Raised** 2026-11-18 by S1f.23.8's build, reading 14. **Put, not ruled.** `answer_round_trip`'s `by_its_container`
+costs one `kb save` and two `ein solve`s a program, on its last node, 164 nodes per commit; it was not measured
+against the nightly's five minutes, L-106's (a) being today's shards.
+
+- **(a)** kept in `answer_round_trip`, beside the dump it reads; the merged tree's nightly re-takes the shards.
+  **Default.**
+- **(b)** a test of its own.
+
+**Default taken: (a).** Built: `86d46410`.
+
+### Q-M1f.513 — What tells a numeral to check from one an operation made
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 1. **Put, not ruled.** Q-M1f.405 was ruled with the user's
+distinction: a numeral an operation makes from valid numerals is valid as made, every other one is checked. The
+calculator cannot tell the two by reading a number: only its label does, and a rule that read the label beside the
+number would join two facts on a number.
+
+- **(a)** the relation it is written in: each tagged call has a walk of its own behind it; the calculator writes the
+  walks, anything outside it the calls; a call asks the check of what it is handed and hands itself on to its walk,
+  which checks nothing. **Default.**
+- **(b)** one relation, every start asking the check (Q-M1f.405's (e)), which walks again every number the
+  calculator hands itself, as the ruling excludes.
+
+**Default taken: (a).** Built: `90e88122` (`std.math.positional`'s fifteen rules, three a call; `std.math.int`'s,
+`std.math.rat`'s and `std.math.gcd`'s calls), merged by `04433406`.
+
+### Q-M1f.514 — The names of the calls and of the walks
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 2. **Put, not ruled.**
+
+- **(a)** the interface keeps its names: the calls stay `add-walk` … `gcd-call` (Q-M1f.189, Q-M1f.228), a program's
+  text unchanged, and the walks take the new names, `add-run` … `gcd-run`. **Default.**
+- **(b)** the walks keep the old names, and every call a program writes is renamed.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.515 — The public division: a call or a walk
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 3. **Put, not ruled.** Every other request's start writes its walk.
+
+- **(a)** a call: `div-start` writes `(?DIV-CALL (?QUOTIENT X Y) U V)`, which is handed on, so the call's
+  division-by-zero flag, `(division-by-zero (div-call (quotient X Y) U V))`, names a fact the state holds, as
+  Q-M1f.211's *why* says; its two asks find their facts held; the cost is the division's +3 firings a request.
+  **Default.**
+- **(b)** `div-start` writes `div-run`, and the call's flag names a `(div-call …)` no state holds.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.516 — What the division-by-zero flag names
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 4. **Put, not ruled.**
+
+- **(a)** the call, `(division-by-zero (div-call …))`, whatever made the division; the calculator's own divisions
+  divide by nothing that is zero; every flag's text as before. **Default.**
+- **(b)** the walk the division runs in, `(div-run …)`.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.517 — What an integer's or a rational's call is checked as
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 5. **Put, not ruled.**
+
+- **(a)** as an operand of its kind, `(int-check (int P N))` and `(rat-check (rat (int P N) D))`, so a digit or a name
+  a call is handed as a part is the shape rules' flag (`not-integer`, `not-rational`), where it was silent.
+  **Default.**
+- **(b)** a rule a part asking `std.math.decimal`'s check only: fourteen rules for `std.math.int` and fifteen for
+  `std.math.rat`, and a digit left silent.
+
+**Default taken: (a).** Built: `90e88122` (`int-norm-runs` and its siblings).
+
+### Q-M1f.518 — The calculator's own constants
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 6. **Put, not ruled.**
+
+- **(a)** not checked: `(n z 1)` in `std.math.int`'s adjustments and `(n z 2)` in `std.math.convert`'s halving are
+  written by the calculator's own rules into its own walks. **Default.**
+- **(b)** checked as any numeral no operation made.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.519 — The decisions the numerals' rulings live in
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 7. **Put, not ruled.**
+
+- **(a)** Q-M1f.404's file states the rulings on Q-M1f.405 to .411 and L-101, and Q-M1f.163, .210, .228, .276 and
+  .277 are brought to them; no decision file of their own, the code citing Q-M1f.404. **Default.**
+- **(b)** a file each for Q-M1f.405, .408 and .409.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.520 — The walk's words in binary
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 8. **Put, not ruled.** The walk moved into
+`std.math.positional` (Q-M1f.408 (b)).
+
+- **(a)** the base's words: `numeral-step`'s `:why` says *the digit {?a} is one* in binary too, as
+  `std.math.positional`'s other rules do. **Default.**
+- **(b)** a word each base passes, binary's *bit*.
+
+**Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.521 — What the tagged-call test holds
+
+**Raised** 2026-11-19 by S1f.23.9's build, reading 9. **Put, not ruled.** `arith_theory.rs`'
+`the_tagged_calls_keep_their_shapes` held the tagged calls (Q-M1f.189).
+
+- **(a)** the walks the calls are handed on to as well, by a table `RUNS`, a call and its walk a row: each walk
+  declared with its call's types, and a caller that starts one writing the call's start values; what is started
+  somewhere is now `add-run`, `sub-run`, `cmp-run`, `bin-add-run` and `bin-sub-run`, and the calls `add-walk` and
+  `cmp-walk` from `examples/beyond_arith/`. **Default.**
+- **(b)** the calls alone, as before the walks were split off.
+
+**Default taken: (a).** Built: `90e88122`.
