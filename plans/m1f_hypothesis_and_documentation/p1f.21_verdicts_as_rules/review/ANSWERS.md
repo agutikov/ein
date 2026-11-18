@@ -1,6 +1,6 @@
 # Your answers — The kernel's verdicts as rules (P1f.21)
 
-[← the topic](README.md) · [← the bundle](../README.md)
+[← the topic](README.md) · [← the phase](../README.md)
 
 One entry an item, in the topic's order: its options as the item's page puts them, the default that stands
 until you answer, and a blank. Write your answer after **Your answer:** — a letter, *default*, or your own

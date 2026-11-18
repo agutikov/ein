@@ -23,6 +23,8 @@ on the user's word; it resumes when this phase is done.
 
 ---
 
+**Review material:** [`review/`](review/README.md), moved here from the milestone's review bundle on the user's word (2026-11-18): Q-M1f.390 and Q-M1f.399, each with runs on real programs, mocks of each option, and `review/ANSWERS.md` for the user's answers.
+
 ## The instruction
 
 The user, 2026-11-17, verbatim:

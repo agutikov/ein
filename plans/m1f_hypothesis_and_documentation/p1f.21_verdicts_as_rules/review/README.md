@@ -1,6 +1,10 @@
 # The kernel's verdicts as rules (P1f.21)
 
-[← the bundle](../README.md)
+**Moved** 2026-11-18 from the milestone's review bundle (`review/05-verdicts-as-rules/`) into this phase, on the user's
+word (*"plans/m1f_hypothesis_and_documentation/review/05-verdicts-as-rules - move to p1f.21"*): the two questions
+are this phase's. Pages and programs committed, outputs ignored, as in the bundle.
+
+[← the phase](../README.md)
 
 P1f.21's two questions, **neither ruled**; the phase is not started. The material is
 `../../p1f.21_verdicts_as_rules/` (`design.md`, `open_facts.md` with the user's second and third instructions).

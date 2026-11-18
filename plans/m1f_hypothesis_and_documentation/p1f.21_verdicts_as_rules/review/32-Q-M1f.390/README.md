@@ -295,7 +295,7 @@ and S1f.21.4 is to put it again on programs.
 From the repo root, with `E=build/review-bin/ein-head-17085b27` (the scripts name it by its absolute path):
 
 ```sh
-bash plans/m1f_hypothesis_and_documentation/review/05-verdicts-as-rules/32-Q-M1f.390/tools/run.sh
+bash plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/32-Q-M1f.390/tools/run.sh
 ```
 
 It runs, from the item's folder, every command below and then the three scripts and Graphviz. The engine commands, for each program `P`:

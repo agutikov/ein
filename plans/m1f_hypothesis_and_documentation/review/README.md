@@ -27,7 +27,6 @@ your answer; a re-render never touches it.
 | [02-numerals](02-numerals/README.md) | 8 | the calculator's check of a numeral after `written` was erased |
 | [03-drawings](03-drawings/README.md) | 24 | `ein render`'s views and the pages' drawings, as S1f.23.1 drew them: **the user's second look** |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
-| [05-verdicts-as-rules](05-verdicts-as-rules/README.md) | 2 | P1f.21's two questions: what an obligation emits; the names `false` and `open` |
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -93,8 +92,6 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 | 29 | [L-101](02-numerals/29-L-101/README.md) | `int-check-parts` / `rat-check-parts` ask non-numerals | as they are |
 | 30 | [L-104](01-save-and-load/30-L-104/README.md) | `saturate --dump` prints `:hypothesis 0` for every choice | as is |
 | 31 | [F23 D-24](01-save-and-load/31-F23-D-24/README.md) | the carried-module note when `$EIN_STDLIB` points nowhere | as is |
-| 32 | [Q-M1f.390](05-verdicts-as-rules/32-Q-M1f.390/README.md) | what an obligation emits | **not ruled**; recommended (b) |
-| 33 | [Q-M1f.399](05-verdicts-as-rules/33-Q-M1f.399/README.md) | the names `false` and `open` | **not ruled**; leaning `(ein.kill)` |
 | 34 | [Q-M1f.423](03-drawings/34-Q-M1f.423/README.md) | how a fact's arrows are numbered | (a) `1` at the relation, `2`, `3`, … at the arguments |
 | 35 | [Q-M1f.424](03-drawings/35-Q-M1f.424/README.md) | where what a fact rests on is drawn | (a) beside its octagon, an `xlabel` |
 | 36 | [Q-M1f.425](03-drawings/36-Q-M1f.425/README.md) | the fold's option, and what it folds | (a) `--fold`; a fact of three arrows nothing points at |

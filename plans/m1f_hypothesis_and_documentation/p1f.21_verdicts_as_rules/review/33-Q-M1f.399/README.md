@@ -268,7 +268,7 @@ are left (§ 9, items 1 and 6).
 From the repo root (the scripts name the binary by its absolute path, `build/review-bin/ein-head-17085b27`):
 
 ```sh
-bash plans/m1f_hypothesis_and_documentation/review/05-verdicts-as-rules/33-Q-M1f.399/tools/run.sh
+bash plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/33-Q-M1f.399/tools/run.sh
 ```
 
 The engine commands it runs, from the item's folder, `E=build/review-bin/ein-head-17085b27`:
