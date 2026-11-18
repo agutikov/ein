@@ -415,17 +415,17 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.484](#q-m1f484--a-traces-slice-that-graphviz-refuses) | A trace's slice that Graphviz refuses | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), left as it is and its refusals filed (the phase's R-33), since what routes them, `rankdir=TB`, changes how a slice is laid out (Q-M1f.428, Q-M1f.429) |
 | [Q-M1f.485](#q-m1f485--what-09-core-in-derivation-draws-heavy) | What `09-core-in-derivation` draws heavy | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), the facts the derivations added, *heavy* being *a derivation added it* as on the page and in `09-proof-graph`; the core red and double-bordered, not heavy |
 | [Q-M1f.486](#q-m1f486--long_numbersein-and-the-pools-long-lane) | `long_numbers.ein` and the pool's long lane | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), not on `ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds |
-| [Q-M1f.487](#q-m1f487--how-the-layers-of-a-knowledge-bases-drawing-are-written) | How the layers of a knowledge base's drawing are written | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), from the arrows alone, no name read: `rankdir=TB`, a first arrow drawn back, and in a view of a knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest, ordered by invisible anchors; none where the arrows go round, nor in a panel, a slice or the derivation graph |
-| [Q-M1f.488](#q-m1f488--a-folded-arrow-within-a-layer-or-ranked) | A folded arrow: within a layer, or ranked | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), within a layer, `constraint=false`, its fact placing its names as its octagon would, so a folded drawing keeps the canonical one's layers of objects; the first build's ranking reversed |
+| [Q-M1f.487](#q-m1f487--how-the-layers-of-a-knowledge-bases-drawing-are-written) | How the layers of a knowledge base's drawing are written | **ruled 2026-11-19** by the user (item 56): (a) as built; the concentric layout the user asks about is put as examples by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2; before, defaulted (S1f.23.6): (a), from the arrows alone, no name read: `rankdir=TB`, a first arrow drawn back, and in a view of a knowledge base `rank=same` groups, objects and facts in turn, a band as deep as its facts nest, ordered by invisible anchors; none where the arrows go round, nor in a panel, a slice or the derivation graph |
+| [Q-M1f.488](#q-m1f488--a-folded-arrow-within-a-layer-or-ranked) | A folded arrow: within a layer, or ranked | **ruled 2026-11-19** by the user (item 57): (a) as built; the concentric layout, [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2; before, defaulted (S1f.23.6): (a), within a layer, `constraint=false`, its fact placing its names as its octagon would, so a folded drawing keeps the canonical one's layers of objects; the first build's ranking reversed |
 | [Q-M1f.489](#q-m1f489--a-folded-arrow-in-a-rules-panel-and-in-a-slice) | A folded arrow in a rule's panel and in a slice | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), its `label` and its ranking kept (Q-M1f.435 (a)), since `constraint=false` beside a `label` is what Graphviz could not route (R-31) |
-| [Q-M1f.490](#q-m1f490--a-stored-negation-under---fold) | A stored negation under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), `(not g)` folds into a loop on `g`'s octagon, as any fact of two arrows; no name read |
-| [Q-M1f.491](#q-m1f491--the-closing-rules-drawings-under---fold) | The closing rules' drawings under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), the five closing rules drawn folded, within `MAX_NODES` (L-97), where they were Ein only |
-| [Q-M1f.492](#q-m1f492--the-derivations-palette) | The derivation's palette | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), eight dark colours by the rule's name, the derivation graph in the first, a step's border `penwidth=2`, a redundant firing dashed at that width |
-| [Q-M1f.493](#q-m1f493--how-a-derived-fact-is-marked-beside-a-derivation) | How a derived fact is marked beside a derivation | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), bold, `penwidth=2`, the derivation's width, told from its arrows by colour |
-| [Q-M1f.494](#q-m1f494--a-steps-slice-under---fold) | A step's slice under `--fold` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), the canonical one, every fact of it touched by the step's arrows (Q-M1f.429); `--fold` folds a trace's `-F` snapshots |
+| [Q-M1f.490](#q-m1f490--a-stored-negation-under---fold) | A stored negation under `--fold` | **ruled 2026-11-19** by the user (item 58): (a) as built; before, defaulted (S1f.23.6): (a), `(not g)` folds into a loop on `g`'s octagon, as any fact of two arrows; no name read |
+| [Q-M1f.491](#q-m1f491--the-closing-rules-drawings-under---fold) | The closing rules' drawings under `--fold` | **ruled 2026-11-19** by the user (item 58): (a) as built; before, defaulted (S1f.23.6): (a), the five closing rules drawn folded, within `MAX_NODES` (L-97), where they were Ein only |
+| [Q-M1f.492](#q-m1f492--the-derivations-palette) | The derivation's palette | **ruled 2026-11-19** by the user (item 59): (a) amended: no colour near black; each rule's hue in two shades, the brighter the derived fact's; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1; before, defaulted (S1f.23.6): (a), eight dark colours by the rule's name, the derivation graph in the first, a step's border `penwidth=2`, a redundant firing dashed at that width |
+| [Q-M1f.493](#q-m1f493--how-a-derived-fact-is-marked-beside-a-derivation) | How a derived fact is marked beside a derivation | **ruled 2026-11-19** by the user (item 59): amended: a derived fact is drawn in its derivation's hue, the brightest shade, and thick; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1; before, defaulted (S1f.23.6): (a), bold, `penwidth=2`, the derivation's width, told from its arrows by colour |
+| [Q-M1f.494](#q-m1f494--a-steps-slice-under---fold) | A step's slice under `--fold` | **ruled 2026-11-19** by the user (item 59): (a) as built: a step's slice the same under `--fold`; before, defaulted (S1f.23.6): (a), the canonical one, every fact of it touched by the step's arrows (Q-M1f.429); `--fold` folds a trace's `-F` snapshots |
 | [Q-M1f.495](#q-m1f495--how-the-pages-copies-of-commands-outputs-were-drawn-again) | How the pages' copies of commands' outputs were drawn again | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), by a transformer validated against the binary, so that a cut stays its cut (Q-M1f.468); two hand derivations restyled by hand, `reasoning/01-static-ir/`'s hand graphs left |
 | [Q-M1f.496](#q-m1f496--the-fdp-provisioning-now-that-no-view-suggests-fdp) | The `fdp` provisioning, now that no view suggests `fdp` | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), left: the CI's layout plugin, `run_tests.sh`'s exit 127 and the comments that say every KB view suggests `fdp`, wrong from the stage on; the main session's call |
-| [Q-M1f.497](#q-m1f497--where-r-33s-check-lives-and-what-it-reads) | Where R-33's check lives, and what it reads | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), `dot_wellformed`, per commit, every slice of two witnesses' traces (611 slices) |
+| [Q-M1f.497](#q-m1f497--where-r-33s-check-lives-and-what-it-reads) | Where R-33's check lives, and what it reads | **ruled 2026-11-19** by the user (item 60): (a) as built; before, defaulted (S1f.23.6): (a), `dot_wellformed`, per commit, every slice of two witnesses' traces (611 slices) |
 | [Q-M1f.498](#q-m1f498--whether-a-page-pins-the-layers) | Whether a page pins the layers | **defaulted 2026-11-18 (S1f.23.6), the user's to revise**: (a), no page pins a `rank`: the layers a preference no test holds (Q21) |
 | [Q-M1f.499](#q-m1f499--what-a-reader-of-einb20-makes-of-a-nodes-container) | What a reader of `einb/2.0` makes of a node's container | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the minor moves, `einb/2.1`, as the format page's rule says, so a 2.0 reader opens a node's container as its program's root |
 | [Q-M1f.500](#q-m1f500--what-a-roots-container-is-unchanged-means) | What *a root's container is unchanged* means | **defaulted 2026-11-18 (S1f.23.8), the user's to revise**: (a), the same sections byte for byte and no `COMMIT`, its header's minor 1 |
@@ -9335,6 +9335,8 @@ facts several ranks deep where facts nest; how the layers are had was left to th
 **Default taken: (a).** Built: `ad20a5e0` (`ein_render::fact_graph::layers`), merged by `547afea5`; the review's
 `03-drawings/`, item 56, shows it beside the drawing by the arrows alone.
 
+**Ruled 2026-11-19** by the user, in the review bundle (item 56 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"Perfect! (a) But large diagrams still look messy. Does Graphviz have circular/concentric layout? Objects will be outside, then facts, then relations and types opbejcts, then relations definitions and properties facts and in the center `relation` `symmetric` and other, is it possible?"* So: (a) as built; the concentric layout the user asks about is put as examples by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2.
+
 ### Q-M1f.488 — A folded arrow: within a layer, or ranked
 
 **Raised** 2026-11-18 by S1f.23.6's build, reading 2. **Put, not ruled.** The stage's continuing brief stated the
@@ -9347,6 +9349,8 @@ target, *folded arrows within a layer*; the first build had ranked them.
   layers, the houses a chain by `right-of`).
 
 **Default taken: (a).** Built: `29792a38`, merged by `547afea5`; item 57 puts the two side by side.
+
+**Ruled 2026-11-19** by the user, in the review bundle (item 57 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"(a) All good, but still, for large diagrams concentric layout maybe can improve visibility."* So: (a) as built; the concentric layout, [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 2.
 
 ### Q-M1f.489 — A folded arrow in a rule's panel and in a slice
 
@@ -9371,6 +9375,8 @@ into a loop on its argument.
 
 **Default taken: (a).** Built: `ad20a5e0`; item 58.
 
+**Ruled 2026-11-19** by the user, in the review bundle (item 58 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"(a)"* So: (a) as built.
+
 ### Q-M1f.491 — The closing rules' drawings under `--fold`
 
 **Raised** 2026-11-18 by S1f.23.6's build, reading 5. **Put, not ruled.** With the loop, five closing rules
@@ -9382,6 +9388,8 @@ unchanged (L-97).
 - **(b)** a closing rule left Ein only.
 
 **Default taken: (a).** Built: `ad20a5e0`; item 58.
+
+**Ruled 2026-11-19** by the user, in the review bundle (item 58 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"(a)"* So: (a) as built.
 
 ### Q-M1f.492 — The derivation's palette
 
@@ -9395,6 +9403,8 @@ colors and 2x thicker lines"*; which colours, and how many, was left to the buil
 
 **Default taken: (a).** Built: `ad20a5e0`; item 59.
 
+**Ruled 2026-11-19** by the user, in the review bundle (item 59 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"Yes, but don't use black color for highlighting. use both color and thickness, derived fact also colored. same color as derivation but more bright. The added fact is the brightest, then derivation explanation, and then all the rest with default black and default thickness."* So: (a) amended: no colour near black; each rule's hue in two shades, the brighter the derived fact's; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1.
+
 ### Q-M1f.493 — How a derived fact is marked beside a derivation
 
 **Raised** 2026-11-18 by S1f.23.6's build, reading 7. **Put, not ruled.** A derived fact was drawn bold; the
@@ -9405,6 +9415,8 @@ derivation's arrows are now as wide.
 - **(b)** the width the derivation's alone.
 
 **Default taken: (a).** Built: `ad20a5e0`; item 59.
+
+**Ruled 2026-11-19** by the user, in the review bundle (item 59 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"Yes, but don't use black color for highlighting. use both color and thickness, derived fact also colored. same color as derivation but more bright. The added fact is the brightest, then derivation explanation, and then all the rest with default black and default thickness."* So: amended: a derived fact is drawn in its derivation's hue, the brightest shade, and thick; to be built by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1.
 
 ### Q-M1f.494 — A step's slice under `--fold`
 
@@ -9418,6 +9430,8 @@ touches is never folded.
   step.
 
 **Default taken: (a).** Built: `ad20a5e0`, held by `render_doors.rs` on `02_packing.ein`; item 59.
+
+**Ruled 2026-11-19** by the user, in the review bundle (item 59 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"Yes, but don't use black color for highlighting. use both color and thickness, derived fact also colored. same color as derivation but more bright. The added fact is the brightest, then derivation explanation, and then all the rest with default black and default thickness."* So: (a) as built: a step's slice the same under `--fold`.
 
 ### Q-M1f.495 — How the pages' copies of commands' outputs were drawn again
 
@@ -9462,6 +9476,8 @@ trace laid out 154 062 distinct blocks, past any per-commit budget.
 - **(c)** every trace's blocks.
 
 **Default taken: (a).** Built: `ad20a5e0`; item 60.
+
+**Ruled 2026-11-19** by the user, in the review bundle (item 60 of `03-drawings/`, the answers file at `d124e63b`), verbatim: *"(a)"* So: (a) as built.
 
 ### Q-M1f.498 — Whether a page pins the layers
 

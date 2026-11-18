@@ -4,7 +4,7 @@ Every item that waits for the user's call, one folder each, built so that each c
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
 and the readings later stages took. The first drawings' items (34 to 55), the save-and-load items
 (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on 2026-11-18 and left the
-bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` now holds what S1f.23.6 built of those answers (56 to 60); the verdicts' two
+bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` held what S1f.23.6 built of those answers (56 to 60), answered on 2026-11-19 and gone with them; the verdicts' two
 (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
@@ -25,9 +25,8 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
-| [03-drawings](03-drawings/README.md) | 5 | the drawings after S1f.23.6 built the user's answers: the layered layout, the fold of a fact of two arrows, a derivation's drawing, R-33 |
 
-The drawings' topic holds again the five items S1f.23.6 put after building the answers on it (56 to 60).
+No topic is open: the drawings' five items S1f.23.6 put (56 to 60) were answered by the user on 2026-11-19 and left the bundle; S1f.23.11 builds the answers and puts its own items here.
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -70,8 +69,3 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
-| 56 | [the layers](03-drawings/56-layers/README.md) | the layered layout as built, nested facts in bands | (a) layers and bands written |
-| 57 | [a folded arrow's rank](03-drawings/57-folded-ranks/README.md) | under `--fold`, a folded arrow within a layer, or ranked as any arrow | (a) within a layer |
-| 58 | [the two-arrow fold](03-drawings/58-two-arrow-fold/README.md) | a stored negation folds into a loop; five closing rules drawn folded | (a) as built |
-| 59 | [a derivation's drawing](03-drawings/59-derivation/README.md) | the palette, the widths, the layers, `--fold` changing no step's slice | (a) as built |
-| 60 | [R-33](03-drawings/60-R-33/README.md) | the slices Graphviz refused: refused no more; a per-commit check of two traces | (a) as built |

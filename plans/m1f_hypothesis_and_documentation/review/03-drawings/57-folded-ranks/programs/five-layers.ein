@@ -1,9 +1,0 @@
-; The simple case of the layered layout: two declarations, a property of a relation, four facts about names.
-; Written for the review; the program of 12-rendering.md's drawing 12-layers.
-(relation owns Person Pet :why "{?3} owns {?4}")
-(relation lives-in Person House :why "{?3} lives in {?4}")
-(symmetric owns)
-(owns Alice Dog)
-(owns Bob Cat)
-(lives-in Alice House-1)
-(lives-in Bob House-2)
