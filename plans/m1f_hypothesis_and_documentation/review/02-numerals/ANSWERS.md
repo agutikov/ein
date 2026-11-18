@@ -20,7 +20,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(e)** as (a), and every tagged call checks its numbers — `e_tagged_call_malformed` dead again; every intermediate
   walked again.
 
-**Your answer:** 
+**Your answer:** (a) the difference is between numerals produced by operation from valid numerals, and all other numerals from any source
 
 **Notes:** 
 
@@ -37,7 +37,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(c)** shapes unchecked, only the numerals — `(int 7 z)` answered by silence.
 - **(d)** as (a), and a rational's natural numerator checked as a numeral — the moved case dead again.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -55,7 +55,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   `rat`.
 - **(c)** as (a), `z` labelled only where a walk makes it or a check reaches it.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -71,7 +71,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** not checked; the three programs deleted.
 - **(c)** a `let`'s value checked as the `let` is read — `02` dead again, `03` and `04` alive.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -88,7 +88,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** the walk in `std.math.positional`, the representation keeping the flags.
 - **(c)** each operation checks its own operands; the representation keeps nothing.
 
-**Your answer:** 
+**Your answer:** (b)
 
 **Notes:** 
 
@@ -104,7 +104,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(b)** the operations wait for the label (a probe) — and still walk it again.
 - **(c)** every prefix labelled as numbers are made — no second walk; a fact a digit more for every number made.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -119,7 +119,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** one flag, at the first place at fault from the units — **the default, as built**.
 - **(b)** every place at fault flagged — a second walk relation or a fault bit.
 
-**Your answer:** 
+**Your answer:** (a)
 
 **Notes:** 
 
@@ -135,6 +135,6 @@ re-render of the bundle rewrites the READMEs and never this file.
   moves.
 - **As they are** — what runs today; a few facts no rule reads. The ledger takes no default.
 
-**Your answer:** 
+**Your answer:** integer built from invalid decimal is invalid, rational built from invalid integers is invalid, if you want to build rational from something else it has to provide verification, the same way as addition, multiplication, comparison etc.
 
 **Notes:** 
