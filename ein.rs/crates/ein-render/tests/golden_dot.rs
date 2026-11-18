@@ -67,9 +67,12 @@ const TRACE: &str = concat!(
     ":derives (color-loc Blue House-2)))",
 );
 
+/// Facts about relations, a fact about none, and a fact about one that
+/// points at a fact the knowledge base does not hold, in its frame.
 const CONSTRAINTS: &str = concat!(
-    "(relation co-located Thing House)\n(symmetric co-located)\n",
-    "(relation next-to House House)\n(transitive next-to)\n",
+    "(relation co-located Thing House :why \"{?3} is in {?4}\")\n(symmetric co-located)\n",
+    "(relation next-to House House :why \"{?3} is next to {?4}\")\n(transitive next-to)\n",
+    "(co-located a h1)\n(says Bob co-located (next-to h1 h2))\n",
 );
 
 const RULE: &str = "(rule t () :match (r ?a ?b) :assert (r ?b ?a) :why \"t\")";
@@ -132,10 +135,10 @@ fn the_rule_and_constraint_goldens_reproduce() {
         &render_rules_forms(&ast, &forms, RuleMode::SideBySide, false),
     );
 
-    let (ast, forms) = parsed(CONSTRAINTS);
+    let (_ast, terms, kb) = loaded(CONSTRAINTS);
     check_dot(
         "render_constraints",
-        &ein_render::render_constraints(&ast, &forms, "constraints", false),
+        &ein_render::render_constraints(&kb, &terms, "constraints", false),
     );
 }
 

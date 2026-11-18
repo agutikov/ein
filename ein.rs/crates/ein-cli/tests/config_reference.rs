@@ -573,8 +573,9 @@ const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?3} is q\")\
                       (solve :expect (region (model (p a) (q a))))\n";
 
 /// The commands that load a program: every one takes `--no-require-why`.
-/// Thirteen, among them the four views that draw a program as written,
-/// which read it through the loader first (Q-M1f.71), `ein render h-space`,
+/// Thirteen, among them the three views that draw a program as written,
+/// which read it through the loader first (Q-M1f.71), `ein render
+/// constraints`, which draws root's facts about relations, `ein render h-space`,
 /// which reads the loaded program's lattice, and `ein show hyps`, which lists
 /// its hypothesis set. `render
 /// rule` names the rule it draws, `--name r1`, which comes after the

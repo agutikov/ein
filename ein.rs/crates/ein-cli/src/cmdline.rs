@@ -182,9 +182,9 @@ fn fold() -> Arg {
 /// option, the CLI's spelling of a negative (`--no-search`, `--no-diagrams`),
 /// loads a program without them (Q-M1f.62). It sets
 /// [`ein_ir::LoadOptions::require_why`] false and nothing else, so it decides
-/// whether a program loads and never what a loaded one answers. The four
-/// views that draw a program as written take it, since they read the program
-/// through the loader first (Q-M1f.71). One builder, as
+/// whether a program loads and never what a loaded one answers. Every view
+/// that loads a program takes it, the three that draw a program as written
+/// since they read it through the loader first (Q-M1f.71). One builder, as
 /// [`rule_mode`] and [`event_args`] are, so the eleven commands cannot
 /// describe it differently.
 fn no_require_why() -> Arg {
@@ -283,7 +283,11 @@ fn render_command() -> Command {
         )
         .subcommand(
             Command::new("constraints")
-                .about("constraint-scope DOT (structural properties)")
+                .about(
+                    "the facts about relations: every fact root holds, at its fixpoint, \
+                     with a relation of the program directly under an argument arrow, \
+                     drawn as `render kb` draws a fact, with what it points at",
+                )
                 .arg(Arg::new("file").required(true))
                 .arg(fold())
                 .arg(no_require_why()),
@@ -308,7 +312,8 @@ fn render_command() -> Command {
                 .about(
                     "a KB as one DOT digraph, entities fused across forms: FILE \
                      loaded and saturated. A --dump-answer state file is a FILE, \
-                     so a model draws the same way root does",
+                     so a model draws the same way root does. --goal or --query \
+                     draws a goal's slice of it",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(Arg::new("since").long("since").value_name("FILE").help(
@@ -323,6 +328,29 @@ fn render_command() -> Command {
                         .value_parser(PossibleValuesParser::new(["relation", "origin", "none"]))
                         .default_value("relation")
                         .help("edge colour: per relation (default), per origin, or none"),
+                )
+                .arg(
+                    Arg::new("goal")
+                        .long("goal")
+                        .value_name("GOAL")
+                        .conflicts_with("query")
+                        .help(
+                            "draw the goal's slice: the facts of the KB drawn that answer \
+                             GOAL, written as a (query :goal …) writes it, with what they \
+                             point at. Held to what a query's :goal is held to, and \
+                             refused as one would be",
+                        ),
+                )
+                .arg(
+                    Arg::new("query")
+                        .long("query")
+                        .value_name("N")
+                        .value_parser(clap::value_parser!(u64).range(1..))
+                        .help(
+                            "draw the slice of the goal of the program's N-th (query …), \
+                             from 1: the facts of the KB drawn that answer it, with what \
+                             they point at; its :over and :expect are not read",
+                        ),
                 )
                 .arg(fold())
                 .arg(no_require_why()),

@@ -31,7 +31,7 @@ use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
 use crate::explore::{self, Answer, Ask, Verdict, Which};
 use crate::region::Nodes;
-use crate::verdict::{goal_bindings, goal_written, query_value, solve_value};
+use crate::verdict::{goal_matches, goal_written, query_value, solve_value};
 use ein_ir::expect::Over;
 
 /// One binding row: `(variable, value)`, sorted by variable.
@@ -307,8 +307,8 @@ pub fn of_answer(
             }
         }
     }
-    // Per goal, per state, its rows.
-    let mut rows: Vec<Vec<Vec<Row>>> = vec![Vec::new(); goals.len()];
+    // Per goal, per state, its rows and the facts that answer it.
+    let mut rows: Vec<Vec<Answered>> = vec![Vec::new(); goals.len()];
     let mut owing_states: Vec<OwingState> = Vec::new();
     // The detector's spot check: on a flagged program the parent paths of
     // each printed state of two commitments or more, at most `SPOT_PARENTS`
@@ -332,9 +332,9 @@ pub fn of_answer(
             let spot = paths.is_some() && s.listed && s.rep.len() >= 2;
             let (model, per_goal, key) = nodes.with_fixpoint(&facts(&s.rep), |kb, terms| {
                 let model = model_of(kb, terms, &named);
-                let per_goal: Vec<Vec<Row>> = goals
+                let per_goal: Vec<Answered> = goals
                     .iter()
-                    .map(|g| bindings(ast, terms, kb, g.goal))
+                    .map(|g| answered(ast, terms, kb, g.goal))
                     .collect();
                 (model, per_goal, spot.then(|| crate::canon::state_key(kb)))
             })?;
@@ -481,12 +481,12 @@ pub fn of_answer(
                     (listed, asked, exact)
                 }
             };
-            let picked: Vec<(usize, Vec<Row>)> = per_state
+            let picked: Vec<(usize, Answered)> = per_state
                 .into_iter()
                 .enumerate()
                 .filter(|(i, _)| over.contains(i))
                 .collect();
-            let classes = classes(ast, g.goal, g.text.as_deref(), picked);
+            let classes = classes(g.text.as_deref(), picked);
             let claim = g.expect.map(|node| {
                 if saved {
                     return saved_not_checked();
@@ -1149,35 +1149,47 @@ fn model_of(kb: &Kb, terms: &Terms, named: &[String]) -> Vec<String> {
     v
 }
 
-/// The goal's binding rows in `kb`, each sorted by variable, sorted.
-fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Vec<Row> {
-    let mut rows: Vec<Row> = goal_bindings(ast, terms, kb, Some(goal))
-        .into_iter()
-        .map(|r| {
-            let mut r: Vec<(String, String)> = r
-                .iter()
-                .map(|(k, v)| {
-                    (
-                        terms.sym(*k).to_string(),
-                        crate::events::sexpr_value(terms, *v),
-                    )
-                })
-                .collect();
-            r.sort();
-            r
-        })
-        .collect();
-    rows.sort();
-    rows.dedup();
-    rows
+/// A goal in one state: its binding rows, each sorted by variable, sorted,
+/// and the facts that answer it, sorted, the class's key.
+#[derive(Clone, Debug, Default)]
+struct Answered {
+    rows: Vec<Row>,
+    facts: Vec<String>,
 }
 
-/// The goal's atoms, an `(and …)` flattened at every depth, as the loader
-/// reads them for a claim (`ein_ir::expect::goal_atoms`), so a goal holding
-/// an `(and …)` inside one, which a macro's expansion writes (`unknown`), has
-/// no class listing `(and …)`, which no claim can write.
-fn conjuncts(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
-    ein_ir::expect::goal_atoms(ast, goal)
+/// The goal in `kb`: every match's row, and every match's atoms grounded by
+/// its row ([`ground`]): the goal's atoms, an `(and …)` flattened at every
+/// depth, as the loader reads them for a claim (`ein_ir::expect::goal_atoms`),
+/// so a goal holding an `(and …)` inside one, which a macro's expansion writes
+/// (`unknown`), has no class listing `(and …)`, which no claim can write. Of
+/// an `(or …)` goal, the atoms of the disjunct each match holds by, and no
+/// other's (Q-M1f.532): a class lists the facts of the disjuncts that hold,
+/// never the `(or …)`, so its `as :expect` is a claim the query can state.
+fn answered(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Answered {
+    let disjuncts = ein_ir::expect::goal_disjuncts(ast, goal);
+    let mut rows: Vec<Row> = Vec::new();
+    let mut facts: Vec<String> = Vec::new();
+    for m in goal_matches(ast, terms, kb, Some(goal)) {
+        let mut row: Row = m
+            .row
+            .iter()
+            .map(|(k, v)| {
+                (
+                    terms.sym(*k).to_string(),
+                    crate::events::sexpr_value(terms, *v),
+                )
+            })
+            .collect();
+        row.sort();
+        let atoms = disjuncts.get(m.disjunct).map_or(&[][..], Vec::as_slice);
+        facts.extend(atoms.iter().filter_map(|c| ground(ast, *c, &row)));
+        rows.push(row);
+    }
+    rows.sort();
+    rows.dedup();
+    facts.sort();
+    facts.dedup();
+    Answered { rows, facts }
 }
 
 /// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x
@@ -1212,22 +1224,11 @@ fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
     Some(term(ast, conj, b))
 }
 
-/// The projection classes of `per_state`, one goal's rows per state.
-fn classes(
-    ast: &Ast,
-    goal: NodeId,
-    text: Option<&str>,
-    per_state: Vec<(usize, Vec<Row>)>,
-) -> Vec<Class> {
-    let conj = conjuncts(ast, goal);
+/// The projection classes of `per_state`, one goal's rows and facts per
+/// state.
+fn classes(text: Option<&str>, per_state: Vec<(usize, Answered)>) -> Vec<Class> {
     let mut by_key: BTreeMap<Vec<String>, Class> = BTreeMap::new();
-    for (i, rows) in per_state {
-        let mut facts: Vec<String> = rows
-            .iter()
-            .flat_map(|b| conj.iter().filter_map(|c| ground(ast, *c, b)))
-            .collect();
-        facts.sort();
-        facts.dedup();
+    for (i, Answered { rows, facts }) in per_state {
         by_key
             .entry(facts.clone())
             .or_insert_with(|| Class {

@@ -313,7 +313,8 @@ fn draw_file(path: &std::path::Path, views: &[&'static str]) -> FileViews {
         return file;
     };
     // A file that does not parse has no view, one that does not load has
-    // no KB view, and one whose root does not saturate has no `kb-since`:
+    // no KB view, and one whose root does not saturate has no `kb-since` and
+    // no constraint view, each drawn of root's fixpoint:
     // the corpus's load- and compile-error fixtures. The file is loaded once
     // and every KB view drawn from a copy of the load, as
     // `id_order_invariance` digests them.
@@ -354,7 +355,10 @@ fn draw_file(path: &std::path::Path, views: &[&'static str]) -> FileViews {
                 file.drawn.push((view, Drawn::Nothing));
                 continue;
             }
-            Err(_) if !saturates && *view == "kb-since" => {
+            Err(_)
+                if !saturates
+                    && matches!(*view, "kb-since" | "constraints" | "constraints-fold") =>
+            {
                 file.drawn.push((view, Drawn::Nothing));
                 continue;
             }

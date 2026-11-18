@@ -135,6 +135,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `downset.rs`, `states.rs`, `tree.rs`, `tree_classes.rs`, `order.rs`, `known_dead.rs`, `transversal.rs`, `unheld.rs` | route 1, the state route, the obligation tree, the tree and the classes, the tree's order, the known-dead memory, transversals, licence L9 |
 | `described.rs`, `count.rs`, `read_out.rs`, `verdict.rs`, `claim.rs`, `expect.rs` | `R` described once; exact counts; the read-out's data; a query projected over a state; claims checked against `R` |
 | `canon.rs`, `explain.rs` | a state's identity; the minimal explanation search |
+| `slice.rs` | a slice of a knowledge base: the facts about relations, and the facts that answer a goal, which `ein render constraints` and `ein render kb --goal` draw |
 | `structure.rs`, `structure/` | the structure of H, read from the program's rules |
 | `events.rs`, `error.rs`, `build.rs`, `mt19937.rs` | the `--events` writer; why a question was not answered; what the build compiled in; the seeded generator tests draw from (no command takes a seed) |
 

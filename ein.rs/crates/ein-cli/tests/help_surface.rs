@@ -49,9 +49,9 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein oracle\n", 10),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
-    // The four views that draw a program as written take `--no-require-why`,
-    // since they read it through the loader first (Q-M1f.71), and every view
-    // that draws facts takes `--fold` (Q-M1f.419).
+    // Every view that loads a program takes `--no-require-why`, the three that
+    // draw it as written since they read it through the loader first
+    // (Q-M1f.71), and every view that draws facts takes `--fold` (Q-M1f.419).
     ("COMMAND ein render rules\n", 3),
     ("COMMAND ein render rule\n", 4),
     ("COMMAND ein render constraints\n", 2),
@@ -59,7 +59,7 @@ const EXPECTED: [(&str, usize); 12] = [
     // The two doors: `--fold` and `--rule-mode`; `--since`,
     // `--colour-by`, `--fold`, and `--no-require-why`.
     ("COMMAND ein render program\n", 3),
-    ("COMMAND ein render kb\n", 4),
+    ("COMMAND ein render kb\n", 6),
     // `--view` over a region dump; `--visited` and `--answer`, a region
     // run's two dumps drawn on it.
     ("COMMAND ein render region\n", 3),
@@ -110,9 +110,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        73 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        75 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "73 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "75 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s eleven and `ein kb save`'s two"
     );
 }

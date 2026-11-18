@@ -76,6 +76,15 @@ pub struct Program {
     /// root's fixpoint (Q-M1f.400). `None` for a program and for a saved
     /// root.
     pub commit: Option<Box<[String]>>,
+    /// **The relations of the program** (Q-M1f.522, Q-M1f.119): what a goal
+    /// and a claim may name, every atom the program writes first in a tuple,
+    /// the kernel's words it writes among them, `eq` and `neq`, and each
+    /// relation a `(solve :hrules …)` activator gives its hrule, in the order
+    /// of their text. The loader's, and empty where it refused the program.
+    /// What a goal given beside the program is held to
+    /// (`ein_ir::from_ir::read_goal`), and what the slice of a knowledge base
+    /// reads a relation by (`ein_infer::slice`, Q-M1f.523).
+    pub relations_of: Box<[Symbol]>,
 }
 
 /// A program's text and its modules' texts, each as it was read: what

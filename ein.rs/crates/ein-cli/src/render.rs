@@ -3,10 +3,11 @@
 //! Every body is the same three steps: load, call one renderer, write it with
 //! a trailing newline. **Every view reads the program through the loader**
 //! (Q-M1f.71), so a program the loader refuses is refused here with its
-//! line, exit 1, as every other command refuses it; the four that draw a
-//! program as written (`rules`, `rule`, `constraints`, `program`) draw it
-//! from its parsed forms after that, its imports unresolved, and so never
-//! draw a program every other command refuses. The renderers themselves are `ein-render`'s
+//! line, exit 1, as every other command refuses it; the three that draw a
+//! program as written (`rules`, `rule`, `program`) draw it from its parsed
+//! forms after that, its imports unresolved, and so never draw a program
+//! every other command refuses. `kb` and `constraints` draw a knowledge base
+//! the program loads and saturates to. The renderers themselves are `ein-render`'s
 //! ([01-architecture.md § 3.4](../../../../docs/ein/ein.rs/01-architecture.md#34-ein-einb-ein-render-ein-cli));
 //! what this adds is the surface around them.
 
@@ -14,6 +15,7 @@ use std::path::Path;
 
 use ein_core::Terms;
 use ein_ir::Ast;
+use ein_ir::NodeId;
 use ein_render::{RuleMode, render_constraints, render_rule_form, render_rules_forms};
 
 use crate::common::{load_program, parse_program, rule_forms};
@@ -79,15 +81,23 @@ pub fn cmd_rule(
     1
 }
 
+/// `ein render constraints` — **the facts about relations** of the program's
+/// root at its fixpoint (Q-M1f.530): every fact root holds with a relation of
+/// the program directly under an argument arrow
+/// ([`ein_infer::slice::about_relations`], Q-M1f.523), drawn by the KB view's
+/// code with what each points at ([`render_constraints`]). A saved file's
+/// root is its program's, the choices it states not committed.
 pub fn cmd_constraints(file: &str, fold: bool, load: &ein_ir::LoadOptions) -> i32 {
-    if refused(file, load) {
-        return 1;
-    }
     let mut ast = Ast::new();
-    let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
+    let mut terms = Terms::new();
+    let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(file), load) else {
         return 1;
     };
-    emit(&render_constraints(&ast, &forms, "constraints", fold));
+    if let Err(e) = ein_infer::saturate_events(&ast, &mut terms, &mut kb) {
+        eprintln!("{}", crate::common::saturate_error_line(&e));
+        return 1;
+    }
+    emit(&render_constraints(&kb, &terms, "constraints", fold));
     0
 }
 
@@ -175,8 +185,31 @@ pub fn cmd_program(file: &str, mode: RuleMode, fold: bool, load: &ein_ir::LoadOp
     0
 }
 
+/// What `ein render kb` was asked.
+pub struct KbArgs<'a> {
+    pub file: &'a str,
+    /// `--since FILE`.
+    pub since: Option<&'a str>,
+    pub colour_by: ein_render::ColourBy,
+    pub fold: bool,
+    /// `--goal '(…)'`: a goal given beside the program, whose slice is drawn.
+    pub goal: Option<&'a str>,
+    /// `--query N`: the program's `N`-th query, from 1, whose goal's slice is
+    /// drawn.
+    pub query: Option<usize>,
+}
+
 /// `ein render kb` — one KB as one digraph, by [`ein_render::kb_to_dot`]:
 /// `file` loaded and saturated (Q-M1e.20).
+///
+/// **A goal's slice** (Q-M1f.529): under `--goal` or `--query N`, the facts
+/// of the knowledge base that answer the goal
+/// ([`ein_infer::slice::answering`]), drawn with what they point at. `--goal`
+/// is read as the `:goal` of one more `(query …)` of the program and refused
+/// as that query's would be ([`ein_ir::read_goal`]); `--query N` is the goal
+/// of the program's `N`-th query, as loaded, its `:over` and `:expect` not
+/// read. Either is matched against the knowledge base drawn, root's fixpoint
+/// or a saved file's state, never against R.
 ///
 /// **A model is a file**, not a `--state model:N` here. `ein solve
 /// --dump-answer` saves each recorded state as its program and the choices
@@ -185,17 +218,35 @@ pub fn cmd_program(file: &str, mode: RuleMode, fold: bool, load: &ein_ir::LoadOp
 /// holds beyond model 1 in bold — from the one solve whose answer the
 /// directory holds, rather than from a second solve this command would have
 /// to be handed the same flags for.
-pub fn cmd_kb(
-    file: &str,
-    since: Option<&str>,
-    colour_by: ein_render::ColourBy,
-    fold: bool,
-    load: &ein_ir::LoadOptions,
-) -> i32 {
+pub fn cmd_kb(a: &KbArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
+    let KbArgs {
+        file,
+        since,
+        colour_by,
+        fold,
+        ..
+    } = *a;
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Some(kb) = loaded_and_saturated(&mut ast, &mut terms, file, load) else {
         return 1;
+    };
+    let goal = match goal_of(&mut ast, &terms, &kb, a) {
+        Ok(goal) => goal,
+        Err(line) => {
+            eprintln!("{line}");
+            return 1;
+        }
+    };
+    let only = match goal {
+        Some(goal) => match ein_infer::slice::answering(&ast, &mut terms, &kb, goal) {
+            Ok(facts) => Some(facts),
+            Err(e) => {
+                eprintln!("{e}");
+                return 1;
+            }
+        },
+        None => None,
     };
     // One `Terms` for both, so a fact is the same `FactId` in each and the
     // renderer's `since` comparison is by identity.
@@ -210,10 +261,45 @@ pub fn cmd_kb(
         colour_by,
         fold,
         since: before.as_ref(),
-        name: "kb",
+        only: only.as_deref(),
+        name: if only.is_some() { "goal" } else { "kb" },
     };
     emit(&ein_render::kb_to_dot(&kb, &terms, &opts));
     0
+}
+
+/// The goal `ein render kb` was given, read against the program `kb` is of:
+/// `--goal`'s, held to what a query's `:goal` is held to, or the `--query
+/// N`'s goal; `None` for neither. `Err` is the line the command prints before
+/// it exits 1.
+fn goal_of(
+    ast: &mut Ast,
+    terms: &Terms,
+    kb: &ein_core::Kb,
+    a: &KbArgs<'_>,
+) -> Result<Option<NodeId>, String> {
+    if let Some(text) = a.goal {
+        let query = ein_ir::read_goal(ast, terms, kb, text, "--goal").map_err(|e| e.to_string())?;
+        return Ok(ein_infer::verdict::query_value(ast, &query, "goal"));
+    }
+    let Some(n) = a.query else {
+        return Ok(None);
+    };
+    let queries = &kb.program().queries;
+    let query = n
+        .checked_sub(1)
+        .and_then(|i| queries.get(i))
+        .ok_or_else(|| {
+            format!(
+                "--query {n}: {} has {} (query …) form{}",
+                a.file,
+                queries.len(),
+                if queries.len() == 1 { "" } else { "s" }
+            )
+        })?;
+    ein_infer::verdict::query_value(ast, query, "goal")
+        .map(Some)
+        .ok_or_else(|| format!("--query {n}: the query has no :goal"))
 }
 
 fn loaded_and_saturated(

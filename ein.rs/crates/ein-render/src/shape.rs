@@ -24,7 +24,7 @@ use crate::kb_dot::{ColourBy, KbDotOpts};
 use crate::rules::{RuleMode, render_rules_forms};
 
 /// The views that need only the parsed forms.
-pub const PARSE_VIEWS: [&str; 10] = [
+pub const PARSE_VIEWS: [&str; 8] = [
     "ir",
     "ir-fold",
     "ir-overlay",
@@ -33,12 +33,19 @@ pub const PARSE_VIEWS: [&str; 10] = [
     "rules",
     "rules-fold",
     "rules-overlay",
+];
+
+/// The views that need a loaded KB. The constraint view draws root at its
+/// fixpoint, as `ein render constraints` does.
+pub const KB_VIEWS: [&str; 7] = [
+    "kb",
+    "kb-fold",
+    "kb-origin",
+    "kb-none",
+    "kb-since",
     "constraints",
     "constraints-fold",
 ];
-
-/// The views that need a loaded KB.
-pub const KB_VIEWS: [&str; 5] = ["kb", "kb-fold", "kb-origin", "kb-none", "kb-since"];
 
 pub fn all_views() -> Vec<&'static str> {
     PARSE_VIEWS.iter().chain(KB_VIEWS.iter()).copied().collect()
@@ -89,10 +96,6 @@ fn parse_view(ast: &Ast, forms: &[NodeId], view: &str) -> Result<String, String>
         "rules" => render_rules_forms(ast, &rules_of(), RuleMode::SideBySide, false),
         "rules-fold" => render_rules_forms(ast, &rules_of(), RuleMode::SideBySide, true),
         "rules-overlay" => render_rules_forms(ast, &rules_of(), RuleMode::Overlay, false),
-        "constraints" => crate::constraints::render_constraints(ast, forms, "constraints", false),
-        "constraints-fold" => {
-            crate::constraints::render_constraints(ast, forms, "constraints", true)
-        }
         _ => return Err(format!("unknown dot view {view:?}")),
     })
 }
@@ -130,6 +133,15 @@ fn kb_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<Stri
                     name: "state",
                     ..d()
                 },
+            )
+        }
+        "constraints" | "constraints-fold" => {
+            saturate(ast, terms, kb)?;
+            crate::constraints::render_constraints(
+                kb,
+                terms,
+                "constraints",
+                view == "constraints-fold",
             )
         }
         _ => return Err(format!("unknown dot view {view:?}")),

@@ -42,12 +42,12 @@ fn ein_in(dir: &Path, args: &[&str]) -> Run {
 /// Every command that loads a program, as the argv before and after the
 /// path; `{out}` is a fresh file in the scratch directory.
 ///
-/// The four views that parse and never load (`render rules`, `rule`,
-/// `constraints` and `program`) are not here: on a file each draws the
+/// The three views that parse and never load (`render rules`, `rule` and
+/// `program`) are not here: on a file each draws the
 /// program as written, its imports unresolved, and on a container the
 /// resolved program it stores (Q-M1f.17), so an import of any kind is not the
 /// forms written in place there, and no fact is drawn by the first two.
-const COMMANDS: [(&[&str], &[&str]); 12] = [
+const COMMANDS: [(&[&str], &[&str]); 13] = [
     (&["saturate"], &[]),
     (&["saturate"], &["--dump"]),
     (&["solve"], &[]),
@@ -59,6 +59,7 @@ const COMMANDS: [(&[&str], &[&str]); 12] = [
     (&["test"], &[]),
     (&["render", "lattice"], &[]),
     (&["render", "kb"], &[]),
+    (&["render", "constraints"], &[]),
     (&["kb", "save"], &["{out}"]),
 ];
 

@@ -52,6 +52,11 @@ pub struct KbDotOpts<'a> {
     /// A prior KB to diff against: facts present here but absent from it are
     /// drawn at `penwidth=3` — the transition highlight, "this step added E".
     pub since: Option<&'a Kb>,
+    /// **A slice** (Q-M1f.527): the held facts drawn, in the knowledge
+    /// base's order, in place of every fact it holds, each with what it
+    /// points at, at any depth; `ein_infer::slice`'s selections. `None`
+    /// draws every fact.
+    pub only: Option<&'a [FactId]>,
     pub name: &'a str,
 }
 
@@ -61,6 +66,7 @@ impl Default for KbDotOpts<'_> {
             colour_by: ColourBy::Relation,
             fold: false,
             since: None,
+            only: None,
             name: "kb",
         }
     }
@@ -162,13 +168,18 @@ fn look(
     }
 }
 
-/// The knowledge base's facts as a [`FactSet`]: every fact it holds, drawn,
-/// in its order, and every fact one of them points at, at any depth.
+/// The knowledge base's facts as a [`FactSet`]: every fact it holds, or the
+/// slice [`KbDotOpts::only`] keeps, drawn, in its order, and every fact one
+/// of them points at, at any depth.
 fn fact_set(kb: &Kb, terms: &Terms, opts: &KbDotOpts) -> FactSet {
     let since: Option<HashSet<FactId>> = opts.since.map(|s| s.facts().collect());
     let mut set = FactSet::default();
     let mut at: HashMap<FactId, usize> = HashMap::new();
-    for f in kb.facts() {
+    let drawn: Box<dyn Iterator<Item = FactId>> = match opts.only {
+        Some(only) => Box::new(only.iter().copied()),
+        None => Box::new(kb.facts()),
+    };
+    for f in drawn {
         let i = add(kb, terms, opts, since.as_ref(), &mut set, &mut at, f);
         set.drawn.push(i);
     }
@@ -225,8 +236,14 @@ pub fn kb_digraph_open(name: &str) -> Vec<String> {
 // ── the entry point ────────────────────────────────────────────────
 
 /// Render a knowledge base as a unified Graphviz digraph.
+///
+/// A slice that keeps no fact ([`KbDotOpts::only`]) is a digraph with no node,
+/// which says so.
 pub fn to_dot(kb: &Kb, terms: &Terms, opts: &KbDotOpts) -> String {
     let mut lines = kb_digraph_open(opts.name);
+    if opts.only.is_some_and(<[FactId]>::is_empty) {
+        lines.push("  // the slice keeps no fact".to_string());
+    }
     lines.extend(fact_set(kb, terms, opts).body(opts.fold));
     lines.push("}".to_string());
     lines.join("\n")

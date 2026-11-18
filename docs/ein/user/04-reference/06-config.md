@@ -16,7 +16,7 @@ command does is [`05-cli.md`](05-cli.md); what a run prints is [`08-read-out.md`
 | surface | how many | where the list is |
 |---|---:|---|
 | `(config …)` flags | **2** | § [2](#2-config---the-two-solver-flags) |
-| CLI options | **93** | `ein <command> --help`, and § [3](#3-the-cli) |
+| CLI options | **95** | `ein <command> --help`, and § [3](#3-the-cli) |
 | `EIN_*` environment | **2** read by the shipped binary | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -175,7 +175,7 @@ not a lever: it decides whether a program loads, and a program loads to what it 
 **`ein <command> --help`.** Each option's long name, short key, metavar, arity, default, choices, group and help
 string is fixed, and the test suite holds the help of every command to a checked-in rendering of it; what is free
 is `clap`'s layout ([Q-M1a.13](../../../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md),
-[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **93** options across eighteen parsers, in the
+[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **95** options across eighteen parsers, in the
 default build (the `einb`, `parallel` and `snmalloc` features, which `ein --version` names).
 
 | parser | options |
@@ -185,7 +185,7 @@ default build (the `einb`, `parallel` and `snmalloc` features, which `ein --vers
 | `ein oracle` | 10 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
-| `ein render kb` | 4 |
+| `ein render kb` | 6 |
 | `ein render rule` | 4 |
 | `ein render lattice` | 3 |
 | `ein render region` | 3 |
@@ -293,7 +293,10 @@ a program to answer about.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `ein test`'s `-v`,
   `-q` and `--diff`, the options of the views that draw a file and solve nothing, `ein render program`'s, `kb`'s,
   `rules`', `rule`'s and `constraints`', `--fold` among them
-  ([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)), and `ein render region`'s three, which draw an `ein oracle
+  ([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)), and `kb`'s
+  `--goal` and `--query`, which draw the slice of a goal, the facts of the knowledge base drawn that answer it, and
+  match it against that knowledge base and never against R
+  ([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md)), and `ein render region`'s three, which draw an `ein oracle
   --dump` directory (`--view`) with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
   `--answer`) and load nothing. They change stdout and stderr only, and `--diff` the `diff` of `--json-report`'s
   rows. Under `-v`, `-g N` logs every N-th node; `-g 0`

@@ -57,6 +57,7 @@ pub mod region;
 pub mod saturator;
 pub mod scope;
 pub mod shape;
+pub mod slice;
 pub mod states;
 pub mod strata;
 pub mod structure;

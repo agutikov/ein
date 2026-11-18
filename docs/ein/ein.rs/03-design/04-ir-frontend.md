@@ -403,6 +403,9 @@ grammar refuses, the arm is an `expect` or an `unreachable!` naming the producti
 
 What it builds, into `ein_core::Program`: the registries of relations, rules, hrules, obligations and macros; every
 `(query …)`, in source order, `active_query` choosing the one a run asks; the one `(solve …)` a program may state;
+the relations a goal and a claim may name, `relations_of`, which `read_goal` holds a goal given beside the loaded
+program to, as the query it is read as would be held
+([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md));
 and its last `(config …)`, taken whole into an `ein_core::config::SolverConfig` (`config_from_kw_pairs`; the flags
 are `ein_core::config::FLAGS`, which `ein.y`'s `ConfigClause` shapes). A rule's `:match` and `:assert` stay as parsed
 syntax, an `ein_core::entities::ExprRef` naming the node, until the compiler lowers them.

@@ -6,7 +6,7 @@
 //! [`crate::explore::Verdict`], read off `R`.
 
 use ein_core::entities::{ExprRef, Pattern, Query, Rule};
-use ein_core::{Kb, Symbol, Terms, Value};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 
 // ── The query's goal, projected ────────────────────────────────────
@@ -54,20 +54,44 @@ fn kw_value(ast: &Ast, kw_pairs: &[ein_core::ExprRef], kw_name: &str) -> Option<
 /// rows come back so a caller can project an answer, which is what the CLI's
 /// solution table and `:goal-text` do. `goal` defaults to the KB's own
 /// `(query :goal …)`; pass one explicitly to project a different question over
-/// a solved model.
-///
-/// There is no free-standing pattern compiler —
-/// [`compile_rule`](crate::compile_rule) is the entry point — so the goal is
-/// wrapped in a parameter-less synthetic rule named `#query`
-/// ([`ein_core::terms::QUERY_RULE`]), which compiles
-/// to the pattern's own steps: no activator to bind, no `:assert` templates,
-/// no `:why`.
+/// a solved model. The rows of [`goal_matches`], one a match.
 pub fn goal_bindings(
     ast: &Ast,
     terms: &mut Terms,
     kb: &Kb,
     goal: Option<NodeId>,
 ) -> Vec<Vec<(Symbol, Value)>> {
+    goal_matches(ast, terms, kb, goal)
+        .into_iter()
+        .map(|m| m.row)
+        .collect()
+}
+
+/// One way a goal holds in a knowledge base: a match of its plan whose
+/// lifted `(absent …)` guards hold.
+#[derive(Clone, Debug)]
+pub struct GoalMatch {
+    /// The bindings, in first-bind order; the last binding of a repeated
+    /// name wins.
+    pub row: Vec<(Symbol, Value)>,
+    /// Which disjunct of an `(or …)` goal it holds by, in the order written
+    /// (`ein_ir::expect::goal_disjuncts`); 0 for any other goal.
+    pub disjunct: usize,
+    /// The facts its patterns matched, in the plan's step order: held facts
+    /// of the knowledge base, a stored negation among them where the goal
+    /// writes one. No check is among them, `eq`, `neq` or `absent`.
+    pub premises: Vec<FactId>,
+}
+
+/// Every match of a goal in `kb`, in the matcher's order.
+///
+/// There is no free-standing pattern compiler —
+/// [`compile_rule`](crate::compile_rule) is the entry point — so the goal is
+/// wrapped in a parameter-less synthetic rule named `#query`
+/// ([`ein_core::terms::QUERY_RULE`]), which compiles
+/// to the pattern's own steps: no activator to bind, no `:assert` templates,
+/// no `:why`. `goal` defaults to the KB's own `(query :goal …)`.
+pub fn goal_matches(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: Option<NodeId>) -> Vec<GoalMatch> {
     let goal = match goal {
         Some(g) => g,
         None => {
@@ -101,7 +125,7 @@ pub fn goal_bindings(
         // this one keeps its infallible signature.
         Err(_) => return Vec::new(),
     };
-    let mut rows: Vec<Vec<(Symbol, Value)>> = Vec::new();
+    let mut out: Vec<GoalMatch> = Vec::new();
     let mut matcher = crate::match_::Matcher::new();
     let mut judge = crate::match_::Matcher::new();
     matcher.run(kb, terms, ast, &plan, &mut |m| {
@@ -125,10 +149,14 @@ pub fn goal_bindings(
                 None => row.push((name, value)),
             }
         }
-        rows.push(row);
+        out.push(GoalMatch {
+            row,
+            disjunct: m.disjunct,
+            premises: m.premises().to_vec(),
+        });
         std::ops::ControlFlow::Continue(())
     });
-    rows
+    out
 }
 
 /// The error compiling this query goal fails with.

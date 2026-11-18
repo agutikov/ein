@@ -24,7 +24,7 @@ COMMAND ein oracle
 COMMAND ein render
   ABOUT DOT for rules / constraints
 COMMAND ein render constraints
-  ABOUT constraint-scope DOT (structural properties)
+  ABOUT the facts about relations: every fact root holds, at its fixpoint, with a relation of the program directly under an argument arrow, drawn as `render kb` draws a fact, with what it points at
   OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   POSITIONAL file required=True help=
@@ -38,10 +38,12 @@ COMMAND ein render h-space
   OPTION --view -- metavar=VIEW arity=1 default='summary' choices=summary|exclusion|cover|coupling|one-step|json group=- required=False help=what stdout holds: 'summary' (default) a row an object, what it cost and whatever was stopped, cut or left unread; a graph as DOT, 'exclusion' the pairs that exclude, the theory's and the puzzle's in two strokes, 'cover' the groups and grids, 'coupling' the questions' hypergraph, 'one-step' its edges read one application back; or 'json', the whole document, which --dump writes as h-space.json
   POSITIONAL file required=True help=
 COMMAND ein render kb
-  ABOUT a KB as one DOT digraph, entities fused across forms: FILE loaded and saturated. A --dump-answer state file is a FILE, so a model draws the same way root does
+  ABOUT a KB as one DOT digraph, entities fused across forms: FILE loaded and saturated. A --dump-answer state file is a FILE, so a model draws the same way root does. --goal or --query draws a goal's slice of it
   OPTION --colour-by -- metavar=COLOUR_BY arity=1 default='relation' choices=relation|origin|none group=- required=False help=edge colour: per relation (default), per origin, or none
   OPTION --fold -- metavar=- arity=0 default=False choices=- group=- required=False help=draw a fact of three arrows (a relation and two arguments) that nothing drawn points at as one arrow from its first argument to its second, and a fact of two arrows as a loop on its argument, labelled with the relation. By default every fact is an octagon with no name in it, its arrow 1 at the relation's atom and 2, 3, … at its arguments
+  OPTION --goal -- metavar=GOAL arity=1 default=None choices=- group=- required=False help=draw the goal's slice: the facts of the KB drawn that answer GOAL, written as a (query :goal …) writes it, with what they point at. Held to what a query's :goal is held to, and refused as one would be
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
+  OPTION --query -- metavar=N arity=1 default=None choices=- group=- required=False help=draw the slice of the goal of the program's N-th (query …), from 1: the facts of the KB drawn that answer it, with what they point at; its :over and :expect are not read
   OPTION --since -- metavar=FILE arity=1 default=None choices=- group=- required=False help=load and saturate FILE too, and draw at penwidth 3 every fact it lacks — a model against its root.ein is what the commitment added
   POSITIONAL file required=True help=
 COMMAND ein render lattice

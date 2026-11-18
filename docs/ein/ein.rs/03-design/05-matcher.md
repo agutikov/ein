@@ -54,7 +54,8 @@ whose argument count is not the rule's parameter count.
 fact included, each binding its parameter. It is what the `enqueue`, `fire` and `owe` events print and what every
 analysis keys a plan on ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)).
 `Plan::activator` is the activator fact itself, which every firing records. A query's goal is compiled the same way,
-as a rule with no parameters named `#query` (`ein_core::terms::QUERY_RULE`; `verdict::goal_bindings`).
+as a rule with no parameters named `#query` (`ein_core::terms::QUERY_RULE`; `verdict::goal_matches`, whose rows
+`verdict::goal_bindings` returns).
 
 ### 2.2 The plan's layout
 
@@ -193,7 +194,7 @@ slots past the reported ones, which is why `Disjunct::n_slots` sizes the array a
 
 | entry | what it enumerates | used by |
 |---|---|---|
-| `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_bindings`), hrules, the obligation reports and the obligation rung |
+| `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_matches`: each match's row, its disjunct and the facts it matched, which a read-out's class and a goal's slice read), hrules, the obligation reports and the obligation rung |
 | `run_one` | every match of one disjunct | the saturator's full pass over its plans (`Saturator::full_match`) |
 | `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(and (R ?a ?b) (R ?b ?c))`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise |
 | `holds` | whether a lifted guard's sub-plan has one match, in its own space, seeded from the parent's registers through `scope_of` | the NAF boundary, a goal's guards, the detector, the obligation reports |
@@ -203,7 +204,7 @@ slots past the reported ones, which is why `Disjunct::n_slots` sizes the array a
 `run_guarded` and `run_seeded_guarded` behave exactly as `run` and `run_seeded`, and name the caller's contract that
 it reads `Match::guards`, the lifted guards of the disjunct a match came from. A match whose disjunct carries guards
 is not fired at once: the saturator parks it until the boundary judges its guards against a fixpoint
-([06-saturation.md](06-saturation.md)). A goal has no boundary, so `goal_bindings` judges a match's guards right there with
+([06-saturation.md](06-saturation.md)). A goal has no boundary, so `goal_matches` judges a match's guards right there with
 `holds`.
 
 ## 4. Predicates and guards
@@ -338,7 +339,7 @@ facts that activate a rule being the walk's only source of new pairs; a debug bu
 walk (`would_not_grow`). `compile_for` builds the key once, probes the engine's own map, and only on a miss locks the
 memo, handing it the key (`PlanMemo::intern_keyed`), which compiles only on a memo miss. The read path, `Engine::plan`
 and `Engine::plan_arc`, takes no lock. The `compile` event fires on an engine miss, not on a memo miss
-([05-events.md](../05-events.md)). A query's goal is compiled outside the cache, on each call of `goal_bindings`.
+([05-events.md](../05-events.md)). A query's goal is compiled outside the cache, on each call of `goal_matches`.
 
 In a debug build `Engine::check_layout` asserts that two plans sharing a rule and an activator id share one register
 layout, the property a binding key that compares register contents rests on. `compile`'s unit test

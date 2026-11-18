@@ -34,7 +34,6 @@
 use ein_core::{FactId, Terms, Value};
 use ein_ir::{Ast, NodeId, parse};
 use ein_render::ir_dot::{DotOpts, TraceView, render_trace, to_dot};
-use ein_render::render_constraints;
 use ein_render::rules::{RuleMode, render_rule_form, render_rules_forms};
 use ein_render::slice::render_slice;
 use std::path::PathBuf;
@@ -311,7 +310,7 @@ fn mode_and_view_names_alias_and_an_unknown_one_is_refused() {
     assert!(TraceView::parse("nope").is_none());
 }
 
-// ── the static file views (`ein render rules` / `rule` / `constraints`) ──
+// ── the static file views (`ein render rules` / `rule`) ──
 
 /// The `(rule …)` / `(hrule …)` forms of a parsed file, in file order — the
 /// `rule_forms` the `render` subcommands filter on.
@@ -373,9 +372,6 @@ fn render_rules_is_a_static_view_of_the_forms_the_file_itself_holds() {
             "{imported} was resolved through the import — this is a static view"
         );
     }
-
-    let constraints = render_constraints(&ast, &forms, "constraints", false);
-    assert!(constraints.starts_with("digraph constraints {"));
 
     // The guard's condition: no rule forms → nothing to draw at all.
     let (empty_ast, empty_forms) = parsed("(relation r A B)\n(r a b :source \"(1)\")");

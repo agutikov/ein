@@ -126,6 +126,14 @@ $$
 \end{aligned}
 $$
 
+A goal written as an `(or …)` of disjuncts $d_1, \dots, d_k$, each made of its own patterns, projects each disjunct
+under the bindings under which it holds, so a class lists the facts of the disjuncts that hold and never the `(or …)`
+([Q-M1f.532](../../../decisions/read-out/Q-M1f.532-an-or-goals-class-lists-the-facts.md)):
+
+$$
+\pi_{d_1 \lor \dots \lor d_k}(S) = \pi_{d_1}(S) \cup \dots \cup \pi_{d_k}(S)
+$$
+
 A state where the goal has no binding gives $\pi_g(S) = \emptyset$, the class a claim writes `(model)`. For the
 query above,
 

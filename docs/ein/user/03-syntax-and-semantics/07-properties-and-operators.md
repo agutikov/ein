@@ -53,12 +53,13 @@ neither fact is written.
 
 ## As a graph
 
-`ein render constraints FILE` draws the facts the program states of the relations it does not declare, each as a
-fact, an octagon whose arrow `1` is at its relation, the property, and whose arrow `2` is at the relation it is
-about, beside the declarations, which are facts of `relation`
-([rendering](../04-reference/12-rendering.md#constraints--ein-render-constraints)):
+`ein render constraints FILE` draws the **facts about relations** of root at its fixpoint, every fact with a relation
+of the program under an argument arrow, each as a fact, an octagon whose arrow `1` is at its relation, the property,
+and whose arrow `2` is at the relation it is about, beside the declarations and the facts `(relation knows)` the
+loader adds, which are facts of `relation`, and the facts `std.algebra`'s rules derive of `knows`,
+`(std.algebra.converse knows knows)` among them ([rendering](../04-reference/12-rendering.md#constraints--ein-render-constraints)):
 
-![The constraint view: (symmetric knows), (transitive knows) and (asymmetric above), each an octagon whose arrow 1 is at the property and whose arrow 2 is at the relation, beside the two declarations](diagrams/07-constraints-view.svg)
+![The constraint view: (symmetric knows), (transitive knows) and (asymmetric above), each an octagon whose arrow 1 is at the property and whose arrow 2 is at the relation, beside the two declarations, the two facts (relation knows) and (relation above), and two facts std.algebra derives, (std.algebra.converse knows knows) and (std.algebra.symmetric-negative knows), dashed](diagrams/07-constraints-view.svg)
 
 `ein render program FILE` draws the same facts in its digraph `kb`, beside the relation's own facts: a property
 fact is a fact of two arrows, the property's box under its first and the relation's under its second, and the box
