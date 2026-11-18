@@ -2,8 +2,8 @@
 
 Every item that waits for the user's call, one folder each, built so that each call can be made by reading the
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
-and the readings later stages took. The drawings' items (`03-drawings/`) were answered by the user on 2026-11-18 and
-left the bundle, and the verdicts' two (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
+and the readings later stages took. The drawings' items (`03-drawings/`) and the save-and-load items (`01-save-and-load/`) were answered by the user on
+2026-11-18 and left the bundle, and the verdicts' two (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
 `README.md` and `programs/*.ein` are kept, everything else, outputs, dumps, drawings, logs, re-run scripts, is
@@ -23,7 +23,6 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
-| [01-save-and-load](01-save-and-load/README.md) | 8 | the saved file: what it prints, what reads it, what went with the state files (a fact's English) |
 | [02-numerals](02-numerals/README.md) | 8 | the calculator's check of a numeral after `written` was erased |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
 
@@ -69,7 +68,6 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 |---|---|---|---|
 | 04 | [Q-M1f.405](02-numerals/04-Q-M1f.405/README.md) | which numerals are taken from the program, and *once* | (a) |
 | 05 | [Q-M1f.409](02-numerals/05-Q-M1f.409/README.md) | an integer's and a rational's check and label | (a) |
-| 07 | [L-106](01-save-and-load/07-L-106/README.md) | the round trip's nightly shards near five minutes | as it is |
 | 08 | [V-7](04-language-and-decisions/08-V-7/README.md) | a relation only an activator names is not counted | as is (leaning: the registry takes it) |
 | 09 | [F21 N-15](04-language-and-decisions/09-F21-N-15/README.md) | *everybody's thoughts are false* with `absent` is dead: twin of `W8/fifo-gap-root`? | none; nothing filed |
 | 11 | [Q-M1f.406](02-numerals/11-Q-M1f.406/README.md) | the label, and where a made number gets it | (a) |
@@ -78,14 +76,7 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 | 14 | [Q-M1f.410](02-numerals/14-Q-M1f.410/README.md) | no join on a number; a made number handed on is walked again | (a) |
 | 15 | [Q-M1f.411](02-numerals/15-Q-M1f.411/README.md) | a numeral with two faults has one flag | (a) |
 | 16 | [Q-M1f.412](04-language-and-decisions/16-Q-M1f.412/README.md) | the `is-a` row dropped: does a schema id move? | (a) no id moves for it (the report is `/6` for the diff) |
-| 17 | [Q-M1f.413](01-save-and-load/17-Q-M1f.413/README.md) | `ein kb save` of a saved file | (a) a root's is stored, a node's refused |
-| 18 | [Q-M1f.415](01-save-and-load/18-Q-M1f.415/README.md) | `ein show hyps` / `ein render h-space` of a saved file | (a) the program's H |
-| 19 | [Q-M1f.416](01-save-and-load/19-Q-M1f.416/README.md) | what `ein test` asks of a saved node | (a) root alone, NOT CHECKED, exit 0 |
-| 20 | [Q-M1f.417](01-save-and-load/20-Q-M1f.417/README.md) | the `commit` row, `root.commit`, `ein-answer/3` | (a) |
-| 21 | [Q-M1f.418](01-save-and-load/21-Q-M1f.418/README.md) | the nesting limit and a saved file's wrappers | (a) one level more |
 | 22 | [L-92](04-language-and-decisions/22-L-92/README.md) | Q-M1f.362's sentence on the index | kept |
 | 23 | [L-93](04-language-and-decisions/23-L-93/README.md) | two stale sentences of the pages (a third found) | left |
 | 24 | [L-94](04-language-and-decisions/24-L-94/README.md) | Q-M1f.119 misses a fact's argument | kept |
 | 29 | [L-101](02-numerals/29-L-101/README.md) | `int-check-parts` / `rat-check-parts` ask non-numerals | as they are |
-| 30 | [L-104](01-save-and-load/30-L-104/README.md) | `saturate --dump` prints `:hypothesis 0` for every choice | as is |
-| 31 | [F23 D-24](01-save-and-load/31-F23-D-24/README.md) | the carried-module note when `$EIN_STDLIB` points nowhere | as is |
