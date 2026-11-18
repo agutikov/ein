@@ -122,8 +122,9 @@ plans/m12_rules_as_data/rule_census.md` rewrites the page's tables.
 
 **Not defined but for one.** The user said *"No specific goals right now, want to see analyze results"*: what
 M12 builds, in what order, and which of the sources above it takes up is the user's to say once the results
-are read. The one later phase the user has named is [P12.2](#p122--the-theories-drawn-as-graphs-of-rules), by
-the note of 2026-11-15; nothing else is planned here ahead of that.
+are read. The later phases the user has named are [P12.2](#p122--the-theories-drawn-as-graphs-of-rules), by
+the note of 2026-11-15, and [P12.3](#p123--the-structural-rules-of-a-pattern-enumerated), by the note of
+2026-11-18; nothing else is planned here ahead of them.
 
 ### P12.2 — The theories drawn as graphs of rules
 
@@ -144,6 +145,59 @@ the largest group by far, and the calculator has added rules since. The phase re
   cycles and longest paths), and draws the graph only at the level of modules.
 - **The engine's own dependency graph:** `ein_infer::strata`, over the plans a run compiled, printed as the
   `;; Strata` line of `ein saturate --dump`.
+
+### P12.3 — The structural rules of a pattern, enumerated
+
+**Status:** named by the user's note of 2026-11-18; not planned in stages, not started. The user, verbatim:
+
+> plans/m12_rules_as_data - add one more goal - enumerate all possible rules for some subset of match patterns,
+> e.g. :match (?R ?a ?b) -> can be either symmetric,asymmetric,antisymmetric, what else? review this way only pure
+> structural rules, without constnats, becuase with constants there could be infinite number of rules with
+> different constants
+
+**What it asks.** For a small set of `:match` patterns, every rule that can be written over them **with no constant**:
+every name a variable, the relation too, so the rule is about the shape of a relation and holds of any. With no
+constant the space is finite: a conclusion may use only the variables the match binds (Ein's rule), so for a fixed
+match there are finitely many literals to conclude, finitely many guards (`eq`, `neq` between its variables) and
+`(false)`. Each rule is then classified: the same rule up to renaming its variables; a tautology (it concludes what
+it matched) or a contradiction (it kills every relation that has a fact); **a property with a name** (the
+standard library's `std.algebra`, and the literature's list of properties of relations); or one with no name; and
+**which rules are equivalent or imply one another**, which a brute force decides, each rule run on every relation
+over a small domain.
+
+**The first pattern, `:match (?R ?a ?b)`, worked by hand** (the phase computes it, and every count):
+
+| conclusion | guard | the property | note |
+|---|---|---|---|
+| `(?R ?b ?a)` | — | **symmetric** | |
+| `(not (?R ?b ?a))` | — | **asymmetric** | implies irreflexive |
+| `(not (?R ?b ?a))` | `(neq ?a ?b)` | **antisymmetric** | one premise and a guard; the two-premise form `(?R ?a ?b) (?R ?b ?a) (neq ?a ?b)` ⟹ `(false)` is the same rule |
+| `(false)` | `(eq ?a ?b)` | **irreflexive** | |
+| `(false)` | `(neq ?a ?b)` | **coreflexive**, R ⊆ identity | |
+| `(?R ?a ?a)` | — | **left quasi-reflexive**: reflexive on R's domain | |
+| `(?R ?b ?b)` | — | **right quasi-reflexive**: reflexive on R's range | |
+| both of the two above | — | **quasi-reflexive**: reflexive on R's field | a conjunction is two rules |
+| `(not (?R ?a ?a))` | — | irreflexive again | an equivalence the brute force finds: its instance at `a = b` kills every loop |
+| `(?R ?b ?a)` | `(neq ?a ?b)` | symmetric again | the diagonal is its own converse |
+| `(false)`, or `(not (?R ?a ?b))` | — | **empty**: no fact of R | |
+| `(?R ?a ?b)` | — | nothing: a tautology | |
+
+**Two premises** give the rest of the usual list: `(?R ?a ?b) (?R ?b ?c)` ⟹ `(?R ?a ?c)` **transitive**, ⟹
+`(not (?R ?a ?c))` **antitransitive**; `(?R ?a ?b) (?R ?a ?c)` ⟹ `(?R ?b ?c)` **right Euclidean**, with
+`(neq ?b ?c)` ⟹ `(false)` **functional**; `(?R ?a ?c) (?R ?b ?c) (neq ?a ?b)` ⟹ `(false)` **injective**;
+`(?R ?a ?b) (?R ?c ?b)` ⟹ `(?R ?a ?c)` left Euclidean; and with a second relation variable `?S`, inclusion, the
+converse, composition. **What no such rule states** is a property with *every* or *some* in it: **reflexive**
+(every object, which needs the objects), **total** or **connex** (*R a b or R b a*, a disjunction), **serial** and
+**dense** (*some* b): those are an obligation's (`total-owed`) or a hypothesis's, and the census says so of each.
+
+**What the phase would do**: fix the patterns (one premise of one relation, two premises, two relations; the
+counts first, to keep it small), generate every rule up to renaming, run each on every relation over a domain of
+two, three and four objects, group the rules by what they do there (kill, derive), name each group by
+`std.algebra`'s rule or the literature's property, and list the groups with no name. Then: which of
+`std.algebra`'s rules is a group of this list, and which group the library lacks. **It reads with**
+[F4](../followups/f4_cross_cutting.md)'s Q34 (the cartesian product of relation properties),
+[F7](../followups/f7_rule_induction.md)'s taxonomy by shape, [F8](../followups/f8_FCA_RCA_odis_tptp/ideas.md)'s
+measure C(n), and [idea 06](../ideas/06-inference-rules-completeness.md) (*are these rules enough?*).
 
 ## Handed over by M1f, 2026-11-15
 
