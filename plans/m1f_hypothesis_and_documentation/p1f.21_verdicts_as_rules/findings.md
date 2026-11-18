@@ -263,8 +263,8 @@ easily can use `(rel-arg-types <relation_name> Type Type)`, `(rel-arg-types <rel
 stdlib modules. That is it."* Read as the first option, whole: every atom first in a tuple the program writes, at
 any depth, is a relation of the program, a nested fact's head and a rule's conclusion's, constant or bound by an
 activator, among them; a declaration is an optional fact, a convention. Filed as
-[Q-M1f.522](../open_questions.md#q-m1f522--a-relation-is-any-atom-first-in-a-tuple); **to be built by
-[S1f.23.10](../p1f.23_review_processing/s1f.23.10_language_answers.md), task 2**: one notion of the program's
+[Q-M1f.522](../open_questions.md#q-m1f522--a-relation-is-any-atom-first-in-a-tuple); **built by
+S1f.23.10, task 2** (`fdbb71ae`, merged by `cbb9635b`): one notion of the program's
 relations for the registry, the invariant's baseline, the goal's list and the saturation page, R moving where the
 blind rung guessed about such a name. *"not arguments count"* touches the argument-count check, which stays open
 ([Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)) and is not decided by it.

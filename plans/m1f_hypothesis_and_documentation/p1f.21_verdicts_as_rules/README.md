@@ -112,7 +112,7 @@ conventions, not the kernel's, and so is `false`.** **`eq` and `neq` stay the ke
 declarations, is **an open question of this phase**, put in `open_questions.md` as [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) (the user will think about it here).
 What reads any of the three today, and what each reader becomes, is S1f.21.4's
 ([§ 9](open_facts.md#9-what-s1f214-answers), item 6). The same day, on P1f.23's review, the user ruled that the
-kernel reads no theory's name and dropped the built-in symmetry (`__symmetric__`); P1f.23's S1f.23.4 builds that.
+kernel reads no theory's name and dropped the built-in symmetry (`__symmetric__`); P1f.23's S1f.23.4 built that.
 
 ## What it is
 

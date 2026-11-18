@@ -22,8 +22,8 @@ phase's finding is [V-5](../../../p1f.21_verdicts_as_rules/findings.md#v-5--the-
 What `open` would hold is item [32](../32-Q-M1f.390/README.md).
 
 Every run is today's binary, `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged
-([`runs/ein-version.txt`](runs/ein-version.txt)), the census on the tree at `fd8da416`, whose code is the binary's;
-[`tools/run.sh`](tools/run.sh) makes every file.
+(`runs/ein-version.txt`), the census on the tree at `fd8da416`, whose code is the binary's;
+`tools/run.sh` makes every file.
 
 ## 2. What is so today
 
@@ -34,9 +34,9 @@ guess (an hrule). A locked door's alarm is on (`alarm-when-locked`), every alarm
 front door's alarm is never on (`front-alarm-broken` concludes `(false)`), and `dead-from-false` reads a held
 `(false)`. `alarm-logged` is written before `front-alarm-broken`.
 
-`ein solve` ([`kill.solve.txt`](runs/kill.solve.txt)): R is ∅ and {(locks k1 back)}; `N  1 minimal dead set`. Its
-events, the node {(locks k1 front)} ([`kill.events.md`](runs/kill.events.md), side by side in
-[`kill.front-node.vs-falsum.emu.md`](runs/kill.front-node.vs-falsum.emu.md)):
+`ein solve` (`runs/kill.solve.txt`): R is ∅ and {(locks k1 back)}; `N  1 minimal dead set`. Its
+events, the node {(locks k1 front)} (`runs/kill.events.md`, side by side in
+`runs/kill.front-node.vs-falsum.emu.md`):
 
 <!-- output -->
 ```text
@@ -57,10 +57,10 @@ Three things, each in that stream:
   from the node, and the node above it, {(locks k1 back), (locks k1 front)}, is never built (layer 2 visited 0;
   licence L1).
 
-Drawn: [`renders/kill.region.svg`](renders/kill.region.svg), the cube with the run's visits (the top node an ellipse,
-*above a dead node*, not visited); [`renders/kill.lattice.svg`](renders/kill.lattice.svg), the three nodes visited;
-the visit order [`kill.dump-lattice/nodes.md`](runs/kill.dump-lattice/nodes.md). The region trace
-([`kill.trace.md`](runs/kill.trace.md)) narrates the states of R and gives the dead one as N, its core and the rule
+Drawn: `renders/kill.region.svg`, the cube with the run's visits (the top node an ellipse,
+*above a dead node*, not visited); `renders/kill.lattice.svg`, the three nodes visited;
+the visit order `runs/kill.dump-lattice/nodes.md`. The region trace
+(`runs/kill.trace.md`) narrates the states of R and gives the dead one as N, its core and the rule
 that refuted it:
 
 <!-- output -->
@@ -71,15 +71,15 @@ Refuted by `front-alarm-broken`.
 ```
 
 **Where nothing stops the saturation**, the same node holds everything: `ein oracle --dump --states` runs every
-node to quiescence ([`kill.oracle.txt`](runs/kill.oracle.txt), [`kill.oracle/region.json`](runs/kill.oracle/region.json)),
+node to quiescence (`runs/kill.oracle.txt`, `runs/kill.oracle/region.json`),
 and {(locks k1 front)} holds `(alarmed front)`, `(dead)`, `(false)`, `(locks k1 front)`, `(logged front)`; the top
 node is saturated too, and dead. Root's own saturation is not stopped either:
 [`programs/kill-root.ein`](programs/kill-root.ein) writes `(locks k1 front)`, and its trace
-([`kill-root.trace.md`](runs/kill-root.trace.md), the steps drawn as
-[`step1`](renders/kill-root.trace.step1.svg), [`step2`](renders/kill-root.trace.step2.svg),
-[`step3`](renders/kill-root.trace.step3.svg), [`step4`](renders/kill-root.trace.step4.svg)) narrates root dying in four
+(`runs/kill-root.trace.md`, the steps drawn as
+`renders/kill-root.trace.step1.svg`, `renders/kill-root.trace.step2.svg`,
+`renders/kill-root.trace.step3.svg`, `renders/kill-root.trace.step4.svg`) narrates root dying in four
 steps: `alarm-when-locked`, `front-alarm-broken` (*Derives `false`*), then `alarm-logged` and `dead-from-false`. The
-read-out ([`kill-root.solve.txt`](runs/kill-root.solve.txt)):
+read-out (`runs/kill-root.solve.txt`):
 
 <!-- output -->
 ```text
@@ -90,22 +90,22 @@ read-out ([`kill-root.solve.txt`](runs/kill-root.solve.txt)):
 ```
 
 and the KB, `(false)` a held fact, an octagon whose arrow `1` is at the box `false`, dashed with `by
-front-alarm-broken` beside it, as `(dead)` is with `by dead-from-false`: [`renders/kill-root.kb.svg`](renders/kill-root.kb.svg)
-([`kill-root.saturate-dump.txt`](runs/kill-root.saturate-dump.txt): `DERIVED (4 facts)`).
+front-alarm-broken` beside it, as `(dead)` is with `by dead-from-false`: `renders/kill-root.kb.svg`
+(`runs/kill-root.saturate-dump.txt`: `DERIVED (4 facts)`).
 
 **Under an arrow, `(false)` controls nothing.** [`programs/ctx-false.ein`](programs/ctx-false.ein) (open_facts.md
 § 10.4's `x1.ein`): Ann thinks `(= 5 (+ 2 2))` and its negation, a rule concludes `(think Ann (false))`, and root is
-alive, ∅ in R, the fact held as any other ([`ctx-false.solve.txt`](runs/ctx-false.solve.txt);
-[`renders/ctx-false.kb.svg`](renders/ctx-false.kb.svg): `(false)` an octagon in the frame `think ctx`, held by
+alive, ∅ in R, the fact held as any other (`runs/ctx-false.solve.txt`;
+`renders/ctx-false.kb.svg`: `(false)` an octagon in the frame `think ctx`, held by
 nothing). A name for the search's act (`dead`, `abort`, `refute`)
 would read there as a command where a proposition stands.
 
 ### 2.2 The census: the kernel's names, and the code that reads each
 
-[`runs/kernel-census.md`](runs/kernel-census.md), taken by [`tools/census.py`](tools/census.py) as open_facts.md § 8
+`runs/kernel-census.md`, taken by `tools/census.py` as open_facts.md § 8
 says: the names are `ein-core/src/terms.rs`' `Kernel`; a reader is a line of `ein.rs/crates/*/src` that reads the
 field (`kernel.NAME`, or `k.NAME` with `k` bound to `&terms.kernel`), each listed with **file:line** and its function
-in the census's second table ([raw](runs/kernel-census.field-readers.txt)). The column *becomes* is § 8.2's
+in the census's second table (raw: `runs/kernel-census.field-readers.txt`). The column *becomes* is § 8.2's
 (**read, not run**: nothing is built).
 
 | name | becomes, by § 8.2 | code that reads it through the struct (files) |
@@ -129,12 +129,12 @@ at the first look spelt as a string in `from_ir.rs:717`, `kb_dot.rs:112,346`, `i
 today **spelt nowhere** outside the tests, the ruling that the kernel reads no theory's name having taken out
 `program_relations`' `is-a`, the drawings' and `--models grid` with `grid.rs`, Q-M1f.436), and **`ein.kill`**,
 spelt nowhere. The census's third table lists every file that spells
-each name as a string, outside the tests ([raw](runs/kernel-census.literal-readers.txt)).
+each name as a string, outside the tests (raw: `runs/kernel-census.literal-readers.txt`).
 
 **What § 8.3 says is left for the kernel to read**, read, not run: one verb in a saturation, `ein.kill`; `absent`'s
 boundary; `eq` and `neq`; a rule's activator; its open facts, which it writes and moves; the split in the search.
 
-**The names in programs** ([`name-counts.txt`](runs/name-counts.txt), § 8's command from the repo root): `eq` 146
+**The names in programs** (`runs/name-counts.txt`, § 8's command from the repo root): `eq` 146
 in 40 files (30 under `examples/ein-bugs/wrong-answers/`), `neq` 345 in 119, `__closed__` 685 in 91, as § 8.2 has
 them; `__symmetric__` 0 (§ 8.2: 12 in 5; the six programs that wrote it were retired with the mirror, Q-M1f.438);
 `hrule` 143 in 117 (§ 8.2: 141 in 115); `(false)` 674 lines in 278 files by § 10.7's `grep -c` (§ 8.2 and § 10.7:
@@ -143,7 +143,7 @@ them; `__symmetric__` 0 (§ 8.2: 12 in 5; the six programs that wrote it were re
 ### 2.3 `eq` and `neq` on nested facts (open_facts.md § 8.4), re-taken
 
 [`programs/eqn.ein`](programs/eqn.ein), as § 8.4 writes it; `ein saturate --dump`
-([`eqn.saturate-dump.txt`](runs/eqn.saturate-dump.txt)), the `hit` facts by case in [`eqn.hits.md`](runs/eqn.hits.md):
+(`runs/eqn.saturate-dump.txt`), the `hit` facts by case in `runs/eqn.hits.md`:
 
 | case | what | § 8.4 says | today |
 |---|---|---|---|
@@ -152,19 +152,19 @@ them; `__symmetric__` 0 (§ 8.2: 12 in 5; the six programs that wrote it were re
 | c3 | a fact a rule built against the same one written | `(hit c3-derived-eq (f a) (f a))` | **the same** |
 | c4 | a free side bound to a written fact | `(hit c4-bind (g (f a)) (g (f a)))` | **the same** |
 | c6 | `neq` with a free side | 18 hits, each an atom, no fact | **16** hits, each an atom (`C X Y a b f g hit p q r` and the five case names), no fact |
-| c7 | `eq` as a conclusion, true | no `(false)`, ∅ in R | **the same** ([`eqn.solve.txt`](runs/eqn.solve.txt)) |
+| c7 | `eq` as a conclusion, true | no `(false)`, ∅ in R | **the same** (`runs/eqn.solve.txt`) |
 
 - [`programs/eqn8.ein`](programs/eqn8.ein): a false `eq` concluded on two nested facts kills;
-  [`eqn8.solve.txt`](runs/eqn8.solve.txt): *every node is dead*, `unsat core (p (f a))`, `(q (f b))`, `refuted by c8`
-  (its events [`eqn8.events.md`](runs/eqn8.events.md), trace [`eqn8.trace.md`](runs/eqn8.trace.md)).
+  `runs/eqn8.solve.txt`: *every node is dead*, `unsat core (p (f a))`, `(q (f b))`, `refuted by c8`
+  (its events `runs/eqn8.events.md`, trace `runs/eqn8.trace.md`).
 - [`programs/eqn9.ein`](programs/eqn9.ein): `(eq ?x (f ?w))` refused at load, exit 1
-  ([`eqn9.solve.txt`](runs/eqn9.solve.txt): *a guard compares two values, each a variable, a name, or a fact that
+  (`runs/eqn9.solve.txt`: *a guard compares two values, each a variable, a name, or a fact that
   holds no variable*).
 - The corpus's case, [`programs/form-in-guard.ein`](programs/form-in-guard.ein)
   (`examples/ein-bugs/wrong-answers/form-in-guard.ein`): root holds `(hit-eq (f a))` and `(hit-neq 1)`, `a`, `b`
-  ([`form-in-guard.no-search.txt`](runs/form-in-guard.no-search.txt)), as its row in `corpus/regressions.toml` says
-  ([`form-in-guard.regressions-row.txt`](runs/form-in-guard.regressions-row.txt)).
-- The KB of `eqn.ein`, the nested facts drawn: [`renders/eqn.kb.svg`](renders/eqn.kb.svg).
+  (`runs/form-in-guard.no-search.txt`), as its row in `corpus/regressions.toml` says
+  (`runs/form-in-guard.regressions-row.txt`).
+- The KB of `eqn.ein`, the nested facts drawn: `renders/eqn.kb.svg`.
 
 ## 3. The options
 
@@ -183,37 +183,37 @@ three ways:
 
 **The program as you would write it with `(ein.kill)` in place of `(false)`** —
 [`programs/kill.ein-kill.MOCK.ein`](programs/kill.ein-kill.MOCK.ein), a mock beside the real
-[`kill.ein`](programs/kill.ein), the diff [`kill.ein-kill.MOCK.diff`](runs/kill.ein-kill.MOCK.diff):
+[`kill.ein`](programs/kill.ein), the diff `runs/kill.ein-kill.MOCK.diff`:
 `front-alarm-broken` concludes `(ein.kill)`; `dead-from-false` has nothing left to read, since a rule may not read
 the kernel's verb. Today's binary loads it, and `(ein.kill)` is an ordinary fact of an undeclared relation: nothing
-dies, R is all 4 states ([`kill.ein-kill.MOCK.solve.txt`](runs/kill.ein-kill.MOCK.solve.txt)). Under the direction a
+dies, R is all 4 states (`runs/kill.ein-kill.MOCK.solve.txt`). Under the direction a
 program need not write it at all: `(false)` ⟹ `(ein.kill)` is a rule of a module every program gets, mocked as
 [`programs/ein.core.MOCK.ein`](programs/ein.core.MOCK.ein) (`kill`, the contradiction rules `clash-0`…`clash-2` of
 design.md A.1, and `dne-2`, the double negation's elimination); it loads today as rules
-([`ein.core.MOCK.saturate-dump.txt`](runs/ein.core.MOCK.saturate-dump.txt): `;; Rules (9)`).
+(`runs/ein.core.MOCK.saturate-dump.txt`: `;; Rules (9)`).
 
 **The direction emulated on today's engine** — [`programs/kill-falsum.emu.ein`](programs/kill-falsum.emu.ein):
 the program concludes `(falsum)`, an ordinary fact standing in for the proposition `(false)`, and a rule `kill`
 concludes today's `(false)`, standing in for `(ein.kill)`. The answer is the same R
-([`kill.solve.vs-falsum.emu.diff`](runs/kill.solve.vs-falsum.emu.diff): 2 more facts beyond root, nothing else), and
+(`runs/kill.solve.vs-falsum.emu.diff`: 2 more facts beyond root, nothing else), and
 two things move:
 - **the saturation's order**: `front-alarm-broken` no longer jumps the queue, since it concludes no `(false)`, so
   `alarm-logged` fires first and only `kill` jumps
-  ([`kill.front-node.vs-falsum.emu.md`](runs/kill.front-node.vs-falsum.emu.md)). The agenda (Q-M1f.313) reads
+  (`runs/kill.front-node.vs-falsum.emu.md`). The agenda (Q-M1f.313) reads
   `(false)` by its name; under the direction it would have to follow the rules that lead to `ein.kill`;
 - **the explanation**: `refuted by` names `kill`, the module's rule, and not the program's
-  ([`kill-root.solve.vs-falsum.emu.diff`](runs/kill-root.solve.vs-falsum.emu.diff); the trace's N too,
-  [`kill-falsum.emu.trace.md`](runs/kill-falsum.emu.trace.md)).
+  (`runs/kill-root.solve.vs-falsum.emu.diff`; the trace's N too,
+  `runs/kill-falsum.emu.trace.md`).
 
 **The hypothesis as an open fact, `(open (R a b))`** — [`programs/kill.open.MOCK.ein`](programs/kill.open.MOCK.ein),
-the diff [`kill.open.MOCK.diff`](runs/kill.open.MOCK.diff): the hrule `guess` becomes a rule that concludes
+the diff `runs/kill.open.MOCK.diff`: the hrule `guess` becomes a rule that concludes
 `(open (locks ?k ?d))`, and a rule over open facts concludes another open fact (a report, open_facts.md § 6). Today's
-parse refuses it ([`kill.open.MOCK.solve.txt`](runs/kill.open.MOCK.solve.txt): *open is reserved: it is the verdict a
+parse refuses it (`runs/kill.open.MOCK.solve.txt`: *open is reserved: it is the verdict a
 rule's :assert states … and nowhere else*). Emulated with a stand-in, [`programs/kill-question.emu.ein`](programs/kill-question.emu.ein):
 a rule concludes `(question (locks ?k ?d))` and the hrule supposes what is asked. H is the same 2 candidates
-([`kill.show-hyps.vs-question.emu.diff`](runs/kill.show-hyps.vs-question.emu.diff)), R the same; what the stand-in
+(`runs/kill.show-hyps.vs-question.emu.diff`), R the same; what the stand-in
 cannot do is the move: both questions stay held in the state that answered one
-([`kill.solve-p.vs-question.emu.diff`](runs/kill.solve-p.vs-question.emu.diff)).
+(`runs/kill.solve-p.vs-question.emu.diff`).
 
 ## 4. The default
 
@@ -240,28 +240,28 @@ are left (§ 9, items 1 and 6).
 - [`form-in-guard.ein`](programs/form-in-guard.ein) — copy of `examples/ein-bugs/wrong-answers/form-in-guard.ein`.
 
 **`runs/`** (`.txt` is stdout and stderr with `[exit N]` last; `.md` a table rendered from the file it names)
-- [`ein-version.txt`](runs/ein-version.txt) — the binary.
-- kill: [`solve`](runs/kill.solve.txt), [`solve -p`](runs/kill.solve-p.txt), [`show-hyps`](runs/kill.show-hyps.txt), [`events.jsonl`](runs/kill.events.jsonl) / [`.md`](runs/kill.events.md), [`summary.json`](runs/kill.summary.json), [`trace.md`](runs/kill.trace.md), [`dump-lattice/`](runs/kill.dump-lattice/nodes.md) (`nodes.json`, `nodes.md`), [`oracle.txt`](runs/kill.oracle.txt) and [`oracle/`](runs/kill.oracle/region.md) (`region.json`, `region.md`), [`saturate-dump`](runs/kill.saturate-dump.txt), [`render-rules`](runs/kill.render-rules.txt).
-- kill-root: [`solve`](runs/kill-root.solve.txt), [`events.jsonl`](runs/kill-root.events.jsonl) / [`.md`](runs/kill-root.events.md), [`summary.json`](runs/kill-root.summary.json), [`trace.md`](runs/kill-root.trace.md), [`saturate-dump`](runs/kill-root.saturate-dump.txt).
-- the direction emulated: [`kill-falsum.emu.solve`](runs/kill-falsum.emu.solve.txt), [`events.jsonl`](runs/kill-falsum.emu.events.jsonl) / [`.md`](runs/kill-falsum.emu.events.md), [`trace.md`](runs/kill-falsum.emu.trace.md), [`oracle.txt`](runs/kill-falsum.emu.oracle.txt) and [`oracle/`](runs/kill-falsum.emu.oracle/region.md) (`region.json`, `region.md`), [`kill.solve.vs-falsum.emu.diff`](runs/kill.solve.vs-falsum.emu.diff), [`kill-root-falsum.emu.solve`](runs/kill-root-falsum.emu.solve.txt), [`kill-root.solve.vs-falsum.emu.diff`](runs/kill-root.solve.vs-falsum.emu.diff), [`kill.front-node.vs-falsum.emu.md`](runs/kill.front-node.vs-falsum.emu.md).
-- the hypothesis as a fact, emulated: [`kill-question.emu.solve`](runs/kill-question.emu.solve.txt) (`-p`), [`show-hyps`](runs/kill-question.emu.show-hyps.txt), [`events.jsonl`](runs/kill-question.emu.events.jsonl) / [`.md`](runs/kill-question.emu.events.md), [`kill.solve-p.vs-question.emu.diff`](runs/kill.solve-p.vs-question.emu.diff), [`kill.show-hyps.vs-question.emu.diff`](runs/kill.show-hyps.vs-question.emu.diff).
-- the mocks through today's binary: [`kill.ein-kill.MOCK.diff`](runs/kill.ein-kill.MOCK.diff), [`kill.ein-kill.MOCK.solve`](runs/kill.ein-kill.MOCK.solve.txt), [`kill.open.MOCK.diff`](runs/kill.open.MOCK.diff), [`kill.open.MOCK.solve`](runs/kill.open.MOCK.solve.txt), [`ein.core.MOCK.saturate-dump`](runs/ein.core.MOCK.saturate-dump.txt).
-- ctx-false: [`solve -p`](runs/ctx-false.solve.txt), [`saturate-dump`](runs/ctx-false.saturate-dump.txt).
-- eq and neq: [`eqn.saturate-dump`](runs/eqn.saturate-dump.txt), [`eqn.solve -p`](runs/eqn.solve.txt), [`eqn.hits.md`](runs/eqn.hits.md), [`eqn8.solve`](runs/eqn8.solve.txt), [`eqn8.events.jsonl`](runs/eqn8.events.jsonl) / [`.md`](runs/eqn8.events.md), [`eqn8.trace.md`](runs/eqn8.trace.md), [`eqn9.solve`](runs/eqn9.solve.txt), [`form-in-guard.no-search`](runs/form-in-guard.no-search.txt), [`form-in-guard.regressions-row`](runs/form-in-guard.regressions-row.txt).
-- the census: [`kernel-census.md`](runs/kernel-census.md), [`kernel-census.field-readers.txt`](runs/kernel-census.field-readers.txt), [`kernel-census.literal-readers.txt`](runs/kernel-census.literal-readers.txt), [`name-counts.txt`](runs/name-counts.txt).
+- `runs/ein-version.txt` — the binary.
+- kill: `runs/kill.solve.txt`, `runs/kill.solve-p.txt` (`solve -p`), `runs/kill.show-hyps.txt`, `runs/kill.events.jsonl` / `runs/kill.events.md`, `runs/kill.summary.json`, `runs/kill.trace.md`, `runs/kill.dump-lattice/nodes.md` (`nodes.json`, `nodes.md`), `runs/kill.oracle.txt` and `runs/kill.oracle/region.md` (`region.json`, `region.md`), `runs/kill.saturate-dump.txt`, `runs/kill.render-rules.txt`.
+- kill-root: `runs/kill-root.solve.txt`, `runs/kill-root.events.jsonl` / `runs/kill-root.events.md`, `runs/kill-root.summary.json`, `runs/kill-root.trace.md`, `runs/kill-root.saturate-dump.txt`.
+- the direction emulated: `runs/kill-falsum.emu.solve.txt`, `runs/kill-falsum.emu.events.jsonl` / `runs/kill-falsum.emu.events.md`, `runs/kill-falsum.emu.trace.md`, `runs/kill-falsum.emu.oracle.txt` and `runs/kill-falsum.emu.oracle/region.md` (`region.json`, `region.md`), `runs/kill.solve.vs-falsum.emu.diff`, `runs/kill-root-falsum.emu.solve.txt`, `runs/kill-root.solve.vs-falsum.emu.diff`, `runs/kill.front-node.vs-falsum.emu.md`.
+- the hypothesis as a fact, emulated: `runs/kill-question.emu.solve.txt` (`-p`), `runs/kill-question.emu.show-hyps.txt`, `runs/kill-question.emu.events.jsonl` / `runs/kill-question.emu.events.md`, `runs/kill.solve-p.vs-question.emu.diff`, `runs/kill.show-hyps.vs-question.emu.diff`.
+- the mocks through today's binary: `runs/kill.ein-kill.MOCK.diff`, `runs/kill.ein-kill.MOCK.solve.txt`, `runs/kill.open.MOCK.diff`, `runs/kill.open.MOCK.solve.txt`, `runs/ein.core.MOCK.saturate-dump.txt`.
+- ctx-false: `runs/ctx-false.solve.txt` (`solve -p`), `runs/ctx-false.saturate-dump.txt`.
+- eq and neq: `runs/eqn.saturate-dump.txt`, `runs/eqn.solve.txt` (`eqn.solve -p`), `runs/eqn.hits.md`, `runs/eqn8.solve.txt`, `runs/eqn8.events.jsonl` / `runs/eqn8.events.md`, `runs/eqn8.trace.md`, `runs/eqn9.solve.txt`, `runs/form-in-guard.no-search.txt`, `runs/form-in-guard.regressions-row.txt`.
+- the census: `runs/kernel-census.md`, `runs/kernel-census.field-readers.txt`, `runs/kernel-census.literal-readers.txt`, `runs/name-counts.txt`.
 
 **`renders/`** (each `.dot` the engine's, drawn as the `.svg` beside it; KB views by `fdp`, the rest by `dot`)
-- [`kill.region`](renders/kill.region.svg) ([dot](renders/kill.region.dot)) — the cube, the run's visits marked.
-- [`kill.lattice`](renders/kill.lattice.svg) ([dot](renders/kill.lattice.dot)) — the nodes the run visited.
-- `kill.rule.*` — `ein render rules`, one graph a rule, split from [`kill.render-rules.txt`](runs/kill.render-rules.txt): [`alarm-when-locked`](renders/kill.rule.rule_alarm_when_locked_lhs_rhs.svg) ([dot](renders/kill.rule.rule_alarm_when_locked_lhs_rhs.dot)), [`alarm-logged`](renders/kill.rule.rule_alarm_logged_lhs_rhs.svg) ([dot](renders/kill.rule.rule_alarm_logged_lhs_rhs.dot)), [`front-alarm-broken`](renders/kill.rule.rule_front_alarm_broken_lhs_rhs.svg) ([dot](renders/kill.rule.rule_front_alarm_broken_lhs_rhs.dot)), [`dead-from-false`](renders/kill.rule.rule_dead_from_false_lhs_rhs.svg) ([dot](renders/kill.rule.rule_dead_from_false_lhs_rhs.dot)), [`guess`](renders/kill.rule.rule_guess_lhs_rhs.svg) ([dot](renders/kill.rule.rule_guess_lhs_rhs.dot)).
-- `kill.trace.step*` — the trace's inline drawings, state {(locks k1 back)}: [`step1`](renders/kill.trace.step1.svg) ([dot](renders/kill.trace.step1.dot)), [`step2`](renders/kill.trace.step2.svg) ([dot](renders/kill.trace.step2.dot)).
-- `kill-root.trace.step*` — root dying: [`step1`](renders/kill-root.trace.step1.svg) ([dot](renders/kill-root.trace.step1.dot)), [`step2`](renders/kill-root.trace.step2.svg) ([dot](renders/kill-root.trace.step2.dot)), [`step3`](renders/kill-root.trace.step3.svg) ([dot](renders/kill-root.trace.step3.dot)), [`step4`](renders/kill-root.trace.step4.svg) ([dot](renders/kill-root.trace.step4.dot)).
-- `kill-falsum.emu.trace.step*` — the emulation's trace: [`step1`](renders/kill-falsum.emu.trace.step1.svg) ([dot](renders/kill-falsum.emu.trace.step1.dot)), [`step2`](renders/kill-falsum.emu.trace.step2.svg) ([dot](renders/kill-falsum.emu.trace.step2.dot)).
-- [`kill-root.kb`](renders/kill-root.kb.svg) ([dot](renders/kill-root.kb.dot)) — the dead root's KB, `(false)` held.
-- [`ctx-false.kb`](renders/ctx-false.kb.svg) ([dot](renders/ctx-false.kb.dot)) — `(false)` under an arrow.
-- [`eqn.kb`](renders/eqn.kb.svg) ([dot](renders/eqn.kb.dot)) — eqn.ein's nested facts.
+- `renders/kill.region.svg` (`renders/kill.region.dot`) — the cube, the run's visits marked.
+- `renders/kill.lattice.svg` (`renders/kill.lattice.dot`) — the nodes the run visited.
+- `kill.rule.*` — `ein render rules`, one graph a rule, split from `runs/kill.render-rules.txt`: `renders/kill.rule.rule_alarm_when_locked_lhs_rhs.svg` (`renders/kill.rule.rule_alarm_when_locked_lhs_rhs.dot`), `renders/kill.rule.rule_alarm_logged_lhs_rhs.svg` (`renders/kill.rule.rule_alarm_logged_lhs_rhs.dot`), `renders/kill.rule.rule_front_alarm_broken_lhs_rhs.svg` (`renders/kill.rule.rule_front_alarm_broken_lhs_rhs.dot`), `renders/kill.rule.rule_dead_from_false_lhs_rhs.svg` (`renders/kill.rule.rule_dead_from_false_lhs_rhs.dot`), `renders/kill.rule.rule_guess_lhs_rhs.svg` (`renders/kill.rule.rule_guess_lhs_rhs.dot`).
+- `kill.trace.step*` — the trace's inline drawings, state {(locks k1 back)}: `renders/kill.trace.step1.svg` (`renders/kill.trace.step1.dot`), `renders/kill.trace.step2.svg` (`renders/kill.trace.step2.dot`).
+- `kill-root.trace.step*` — root dying: `renders/kill-root.trace.step1.svg` (`renders/kill-root.trace.step1.dot`), `renders/kill-root.trace.step2.svg` (`renders/kill-root.trace.step2.dot`), `renders/kill-root.trace.step3.svg` (`renders/kill-root.trace.step3.dot`), `renders/kill-root.trace.step4.svg` (`renders/kill-root.trace.step4.dot`).
+- `kill-falsum.emu.trace.step*` — the emulation's trace: `renders/kill-falsum.emu.trace.step1.svg` (`renders/kill-falsum.emu.trace.step1.dot`), `renders/kill-falsum.emu.trace.step2.svg` (`renders/kill-falsum.emu.trace.step2.dot`).
+- `renders/kill-root.kb.svg` (`renders/kill-root.kb.dot`) — the dead root's KB, `(false)` held.
+- `renders/ctx-false.kb.svg` (`renders/ctx-false.kb.dot`) — `(false)` under an arrow.
+- `renders/eqn.kb.svg` (`renders/eqn.kb.dot`) — eqn.ein's nested facts.
 
-**`tools/`** — [`run.sh`](tools/run.sh) (every command), [`census.py`](tools/census.py) (the census), [`tables.py`](tools/tables.py) (the tables, the dot blocks split out).
+**`tools/`** — `tools/run.sh` (every command), `tools/census.py` (the census), `tools/tables.py` (the tables, the dot blocks split out).
 
 ## 6. Re-run
 
@@ -303,19 +303,19 @@ python3 tools/census.py runs                                 # from the repo roo
 
 - **§ 8.4's c6 gives 16 hits, not 18.** `eqn.ein` as § 8.4 writes it, with today's binary and with
   `build/review-bin/ein-a8d595eb` (a build after the commit that wrote § 8.4) and `ein-0a4a97a3`: 16 `(hit
-  c6-free-neq …)` facts, each an atom, no fact ([`eqn.hits.md`](runs/eqn.hits.md)). The claim stands (a free `neq`
+  c6-free-neq …)` facts, each an atom, no fact (`runs/eqn.hits.md`). The claim stands (a free `neq`
   ranges over the program's names, never a fact); the count does not. The program as written has no case c5, so
   the run behind 18 may have had one more case.
 - **The counts of names in programs moved**: `(false)` 658 lines in 278 programs → 676 in 280 (§ 10.7's command);
   `hrule` 141 in 115 → 143 in 117. § 8's own command counts `false` 760 times in 284 files (it counts occurrences,
   and `(false ` too), so § 8.2's "658 in 278" is § 10.7's line count, not § 8's command
-  ([`name-counts.txt`](runs/name-counts.txt)).
+  (`runs/name-counts.txt`).
 - **The agenda and the explanation read `(false)` by its name**, and the direction moves both, on an emulation
   with the same R: the refuting rule loses its place at the head of the queue, and `refuted by` names the module's
   `kill` instead of the program's rule (§ 3 above). Neither is in open_facts.md § 3's list of surfaces (the read-out's
   *derives (false)*, `:expect (false)`, the events' `kind: dead`).
 - **Nothing reserves `ein.` today**: `(ein.kill)` loads as a fact of an undeclared relation and kills nothing
-  ([`kill.ein-kill.MOCK.solve.txt`](runs/kill.ein-kill.MOCK.solve.txt)).
+  (`runs/kill.ein-kill.MOCK.solve.txt`).
 - The census finds readers beyond § 8.1's *where* column, none that changes its account: `(false)` is also read
   by `detector.rs`, `firing.rs`, `hypgen.rs` (left out of the guessable objects) and `unheld.rs`; `open` also by
   `unheld.rs`; `__closed__` also by `unheld.rs` and `hypgen.rs`.

@@ -26,18 +26,18 @@ agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-r
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
-**Phases left** (2026-11-18): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
+**Phase left** (2026-11-19): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
 2026-11-17 on the user's instruction: its survey is done, its question put (Q-M1f.390) and its next stage, S1f.21.4,
-planned on the user's two further instructions of 2026-11-18; **it is not started without the user's word**. **And
-[P1f.23](p1f.23_review_processing/README.md)**, the review's rulings, built, opened 2026-11-18 on the user's
-instruction: the user reviews [`review/`](review/README.md), the bundle of every item that waited at P1f.22's close,
-and each batch of rulings is a stage, run on the user's word; its first, S1f.23.1, the drawing, is started. P1f.30, the inverse of `ein render`, created the same day, **moved to M1k as P1k.10** on the user's word (*"M1k: p1f.30 -> p1k.10"*), [`../m1k_notations_as_facts/`](../m1k_notations_as_facts/README.md).
-**P1f.22, nested facts, is closed** (2026-11-18, run to its end on the user's word, *"continue till the end of
-phase"*) and its folder deleted. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go
-ahead to close p1f.20"*) and its folder deleted. What the two found and left is [`findings.md`](findings.md). The
-user accepted the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop
-after M1f; the close of the milestone was started, then paused on the user's word, and resumes when P1f.21 and
-P1f.23 are done.
+planned on the user's two further instructions of 2026-11-18; **it is not started without the user's word**.
+P1f.30, the inverse of `ein render`, created 2026-11-18, **moved to M1k as P1k.10** on the user's word (*"M1k: p1f.30 -> p1k.10"*), [`../m1k_notations_as_facts/`](../m1k_notations_as_facts/README.md).
+**P1f.23, the review's rulings, built, is closed** (2026-11-19, run to its end on the user's word, *"Go with all
+defaults to the end of this phase p1f.23 and stop"*) and its folder deleted, with the review bundle, every item of
+which was ruled. **P1f.22, nested facts, is closed** (2026-11-18, run to its end on the user's word, *"continue till
+the end of phase"*) and its folder deleted. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's
+word, *"go ahead to close p1f.20"*) and its folder deleted. What the three found and left is
+[`findings.md`](findings.md). The user accepted the tree on 2026-11-17 and asked for M1f's plans to be deleted on
+completion and for the work to stop after M1f; the close of the milestone was started, then paused on the user's
+word, and resumes when P1f.21 is done.
 
 ---
 
@@ -58,7 +58,7 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | P1f.20 | `docs/ein/`: the tree a released system would have — **closed 2026-11-17** | 10, every one done; the user reviewed the tree, and its last stage carried out the review's rulings | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
 | [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 5 planned; the first, the survey and the design, done; S1f.21.4, open facts and `(ein.kill)` on programs, planned 2026-11-18 and next | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390, with the user's further instructions on `(ein.kill)`, open facts and the reserved names. **Not started further without the user's word** |
 | P1f.22 | Nested facts — **closed 2026-11-18** | 8, every one done, the last run on the user's word | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .398; and what the rulings on the way asked for: `(not (not g))` a fact, every object drawn once with a frame around what is in a context only, `written` erased, and a saved state saved and loaded as itself |
-| [P1f.23](p1f.23_review_processing/README.md) | The review's rulings, built | a stage per batch of the user's rulings on the review bundle; S1f.23.1, the drawing, started 2026-11-18 on the user's word | — | every item of [`review/`](review/README.md) the user rules, built, and the bundle drawn again for the user's next look; the first batch: every view draws a fact in the canonical form, folds a fact of three arrows on request, and draws no labelled octagon and no text node (Q-M1f.419); the program view its knowledge base, its rules and its query (Q-M1f.420) |
+| P1f.23 | The review's rulings, built — **closed 2026-11-19** | 11, a stage per batch of the user's rulings on the review bundle, every one done and merged, each run on the user's word | — | every item of the review bundle the user ruled, built, and the bundle drawn again for each next look until no item was left: every view draws a fact in the canonical form, folds a fact on request and draws no labelled octagon and no text node (Q-M1f.419); the program view its knowledge base, its rules and its query (Q-M1f.420); the layered layout; a derivation at three levels of emphasis; `--models` and `--diff-models` gone, `ein test --diff`; the kernel reading no theory's name; a `:why` reading its own form; save and load's answers; the numerals' check; a relation any atom first in a tuple; the slice of a knowledge base |
 
 **P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 are finished, and their folders were deleted by
 P1f.20's history sweep, S1f.20.9**: their records are in git
@@ -113,6 +113,38 @@ Q-M1f.405 to .411 and .413 to .418; Q-M1f.399, the names of `(false)` and `(open
 of its N-1 to N-50 is [`findings.md`](findings.md)'s L-91 to L-108 but four, which are F21's (N-15), F23's D-23 and
 D-24 (N-20's message, N-39) and P1f.21's V-7 (N-22); and what P1f.21 reads of its page on the user's notes is
 [P1f.21's `open_facts.md` § 10](p1f.21_verdicts_as_rules/open_facts.md#10-what-p1f22-worked-out-that-this-phase-reads).
+
+**P1f.23 is closed** (2026-11-19, on the user's word), and its folder is deleted
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.23_review_processing`), with the review
+bundle it built from (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/review`). What it delivered,
+each on the user's rulings of the bundle's items:
+
+- **`ein render` draws a fact in the canonical form**, an octagon with no name in it, its first arrow at the
+  relation's atom, and folds a fact of three arrows into an arrow and one of two into a loop under `--fold`; no
+  labelled octagon and no text node is drawn, by any command or on any page; the program view is its knowledge base
+  as one graph, its rules and its query; a knowledge base is laid out in layers; a derivation is drawn at three
+  levels of emphasis, nothing emphasised black (Q-M1f.419, .420, .425, .428, .492, .493; Q21 amended).
+- **`--models key` and `--models grid` removed, and `--diff-models` with them**; `ein test --diff` diffs a claim's
+  models against what its run found (Q-M1f.448 to .466).
+- **The kernel reads no theory's name**, and the built-in symmetry is `std.algebra`'s rule (Q-M1f.436).
+- **A `:why` reads the form it is written on**, `{?n}` its n-th arrow, and a fact reads by its source, its rule or
+  as written (Q-M1f.58, Q-M1f.475 to .482).
+- **Save and load's answers**: a node's container opens as the node, and `ein test` runs nothing for a saved node
+  (Q-M1f.413, .416).
+- **The numerals' check**: every numeral not made by an operation from valid ones is checked, by a walk in
+  `std.math.positional`, and validity composes from decimal to integer to rational (Q-M1f.405, .408, .409).
+- **A relation of the program is any atom it writes first in a tuple** (Q-M1f.522, P1f.21's V-7).
+- **The slice of a knowledge base**: `ein render kb --goal` and `--query`, and `ein render constraints` as root's
+  facts about relations (Q-M1f.523 to .532).
+
+What it owned went to its owners: its rulings are decisions under `docs/decisions/`, and its rulings and the
+readings its stages put are the ledger's Q-M1f.419 to .548, every one ruled but Q-M1f.447, which is P1f.21's; every
+open finding of its R-1 to R-45 is [`findings.md`](findings.md)'s L-109 to L-121, R-43 resolved by S1f.23.7's build
+and R-5 by the close; the defaults S1f.23.7's build took that no question carries are
+[`findings.md` § Defaults the review's rulings took](findings.md#defaults-the-reviews-rulings-took). The verdicts'
+two items of the bundle are P1f.21's [`review/`](p1f.21_verdicts_as_rules/review/README.md), whose pages write the
+path of each output a re-run takes, as code, so that a clean checkout's link check passes. The stage records, their
+examples and scripts, and the bundle's pages go with the folders.
 
 The numbering is deliberate and the gaps are real: **1–4, 9 and 11–19 are
 unassigned** (8 too until 2026-11-11, when P1f.8 took it; since 2026-11-13, when the user split P1f.8 and moved it to M1g as P1g.10 and P1g.11, 8 is **used and vacated**, not free, and is not reassigned), and the phases here keep the positions they were given rather
