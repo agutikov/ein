@@ -51,6 +51,59 @@ deferred are taken, each on the user's word.
 - [`08-monotonicity.md`](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md): the documentation of what
   holds today, each claim labelled by its standing; § 7 the analysis, § 8 what is open, § 9 the causes.
 
+## The user's ideas
+
+**1. Optimistic saturation** (2026-11-19, in the answer on N-15, verbatim): *"what about optimistic saturation - at
+first step skip non-monotone rules and get a fixedpoint without them, and then check. But again, this belongs to
+non-monotone programs followup. Not decide and not investigate here."*
+
+**2. The rules' dependency graph, and a saturation strategy by kind of program** (2026-11-19, verbatim): *"build the
+rules dependency graph, analyze it's properties, like loops, indirect absent->false inference, maybe something else?
+try different strategy for saturation for monotone and non-monotone saturations: fail fast for monotone, postpone
+inferring false after fixpoint for non-monotone"*.
+
+What exists today, which the idea starts from:
+
+- **The graph** is built: `ein-infer/src/strata.rs`. It has an edge from each relation a compiled plan reads to each
+  one it writes, negative under an odd number of `absent`s, and one from an activator's relation to what its plans
+  write. It is built over the compile cache, so a rule whose relation is a parameter has edges only per activation.
+  It has strata (the longest path into a relation counting negative edges) and negative cycles, where no
+  stratification exists. `ein saturate --dump` prints each rule's stratum. The detector's cycle check reads the same
+  graph restricted to what a commitment can change (`detector.rs`). `naf_deps.rs` classifies each `absent` by what it
+  watches: a relation a rule derives, one only declared, or one a commitment can extend. The reasoning page is
+  [`02-analysis-of-rules.md`](../../docs/ein/reasoning/03-rule-evolution/02-analysis-of-rules.md) (the graph, strata,
+  negative cycles and their parity, what the graph decides and what it does not).
+- **The agenda** is one order for every program: it fires first what leads to `(false)`, the fail-fast order
+  ([Q-M1f.313](../../docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), and on a monotone
+  program that order decides no answer (`ein-infer/tests/agenda.rs`). On a program where an `absent` reads what
+  another rule waiting on an `absent` derives, the order decides the answer: the FIFO gap at root and N-15's
+  *everybody's thoughts are false*, where the fail-fast order admits the rule concluding `(false)` first and root
+  dies on a stale `(false)`.
+
+What the idea adds:
+
+- **Properties of the graph, read off the rules before any saturation.**
+  - **Loops**: positive cycles (recursion; whether a cycle can make new objects, and so need not terminate);
+    negative cycles (no stratification); cycles through an activator.
+  - **Indirect `absent` → `(false)`**: every path from a negative edge to `(false)` through other rules. That is a
+    refutation that rests on an absence, the shape of N-15 and of *forbid*'s `via`.
+  - *Proposed, for the user to keep or drop* (the user's *"maybe something else?"*):
+    - **the race at root**: two rules at one boundary, each waiting on an `absent`, where one's `absent` reads
+      what the other derives (the FIFO gap's call 2);
+    - **an `absent` over what a commitment can extend** (*forbid*'s and the detector's);
+    - **rules that can never fire**: a premise's relation that nothing writes and no fact holds;
+    - **conclusions nothing reads**;
+    - **an hrule or an obligation that reads what a commitment changes** (H6-1, H6-3).
+  - Each property a row of the program's analysis, beside the stratum `ein saturate --dump` prints today.
+- **A saturation strategy chosen by the kind of program.**
+  - **Fail fast for a monotone program**: today's agenda, where the order is speed alone.
+  - **For a non-monotone program, postpone inferring `(false)` until after the fixpoint**: derive what can be
+    derived, then conclude `(false)` from what holds at the fixpoint. A `(false)` concluded by a rule whose
+    `absent` is read before the fixpoint is then not stale. This is the same family as idea 1, and as D2's
+    stratum-order admission.
+  - The strategy follows from the program, never from a flag, so no option changes R (AGENTS.md § The answer).
+    For a non-monotone program it changes what the answer is, which is D2's question and the user's.
+
 ## The phases
 
 Drafted from F21's decisions and the calls handed to it; none is planned in stages, and none starts without the
@@ -58,10 +111,10 @@ user's word.
 
 | phase | what | from |
 |---|---|---|
-| P1n.1 | **Detection, complete.** Every way a program is non-monotone is flagged, and only those: the race at root between two rules each waiting on an `absent` (the FIFO gap's call 2, N-15's question *"Does ein detect non-monotone program here???"*, answered *no* on 2026-11-19), an hrule that reads what a commitment can change (H6-1), the mechanisms check reading root's activators (H6-3, H6-4); the detector's verdicts against the oracle on the corpus | F21 § Handed over; the user's standing rule |
+| P1n.1 | **Detection, complete, from the rules' dependency graph** (the user's idea 2): the graph's properties read off the rules (loops, indirect `absent` → `(false)`, the rest above), and every way a program is non-monotone flagged, and only those: the race at root between two rules each waiting on an `absent` (the FIFO gap's call 2, N-15's question *"Does ein detect non-monotone program here???"*, answered *no* on 2026-11-19), an hrule that reads what a commitment can change (H6-1), the mechanisms check reading root's activators (H6-3, H6-4); the detector's verdicts against the oracle on the corpus | F21 § Handed over; the user's standing rule |
 | P1n.2 | **What a node's state is, and the wrong answers it decides.** D2 (Q-M1e2.2: a fork of root, a state with its guards as premises, stratum-order admission) and D3 (path dependence as a constraint on incremental search); the register's five `W8` rows, S1n.2.1 their owner; N-15's twin-or-row call; the three statements that say more than holds (the FIFO gap's call 3) | F21 D2, D3; the register |
 | P1n.3 | **What a flagged program's answer is.** D1 (*forbid* extended to every `absent` site), D4 (what is reported when R has holes), D5 (refuse, qualify, or search differently), D7 (the search past the oracle's limit) | F21 D1, D4, D5, D7 |
-| P1n.4 | **Other ways to compute.** The user's *optimistic saturation* (*"at first step skip non-monotone rules and get a fixedpoint without them, and then check"*, 2026-11-19, recorded and not investigated); stratified evaluation; the well-founded and the stable-model semantics; truth maintenance; rewriting a non-monotone program into a monotone one (F21 § Handed over 2026-11-16) — each shown on the corpus's flagged programs before anything is built | the user's idea; F21's prior art |
+| P1n.4 | **Other ways to compute.** A saturation strategy by kind of program (the user's idea 2: fail fast for a monotone program, `(false)` postponed past the fixpoint for a non-monotone one); the user's *optimistic saturation* (idea 1); stratified evaluation; the well-founded and the stable-model semantics; truth maintenance; rewriting a non-monotone program into a monotone one (F21 § Handed over 2026-11-16) — each shown on the corpus's flagged programs before anything is built | the user's idea; F21's prior art |
 
 D6, learning from a refutation that rests on an `absent`, is closed (2026-11-04, F21 § D6).
 
