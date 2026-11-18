@@ -406,7 +406,7 @@ and no declaration takes its name ([the reserved names](../../user/04-reference/
 Those the graph itself has a part for are $\mathsf{relation}$, $\mathsf{not}$ and $\mathsf{false}$, above, and
 one marker, of closure, which a program may write as a relation or as an argument and which is read where a
 knowledge base grows
-([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). No name of a
+([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). No name of a
 theory is reserved: a relation's symmetry, a type and a bijection are rules a library states over names the
 program chooses. A subset
 $W_{\!c} \subset W$ is the relation of no fact at all: the words that join and test the parts of a pattern,

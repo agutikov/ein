@@ -42,7 +42,7 @@ which `Terms::new` interns before a program arrives, the words of the grammar, a
 (`ein_ir::expect::Over::NAMES`). A theory's names, `is-a`, `T`,
 `symmetric`, `bijective`, `slot-partition`, are the standard library's or a program's, and mean what the rules that
 read them make them mean; a relation's symmetry is `std.algebra`'s rule `symmetric`, and the kernel mirrors no
-relation ([Q-M1f.7](../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)).
+relation ([Q-M1f.436](../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
 `__symmetric__` is such a name: a program may bind it, and a fact of it derives nothing
 (`ein-infer/tests/stdlib_semantics.rs`' `the_kernel_mirrors_no_relation_and_symmetric_is_a_rule`). A goal or a claim
 over `is-a` is held to the program's relations as one over any relation is: a program that writes no `is-a` has no
@@ -51,8 +51,8 @@ such relation, and the load refuses it.
 [`ein-render/tests/renaming_invariance.rs`](../../../ein.rs/crates/ein-render/tests/renaming_invariance.rs) holds it:
 every corpus program, with every name that is not the kernel's renamed by an order-preserving bijection, in its
 text and in every module its load reads, answers alike, its claims' verdicts among the answer, and is drawn alike,
-apart from the names. A drawing that still reads a theory's name is listed in the test's `READS`, with the name, and
-a listed drawing that no longer moves on any program fails it.
+apart from the names. No drawing reads one: the test's `READS`, where a drawing that read a theory's name would be
+listed with the name, is empty, and a listed drawing that no longer moved on any program would fail it.
 
 ## Bookkeeping carrier heads
 

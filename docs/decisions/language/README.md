@@ -28,7 +28,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1e2.36](Q-M1e2.36-an-empty-match-is-true-and-fires-once.md) — An empty `:match` is true and fires once
 - [Q-M1e2.37](Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md) — A conclusion's variable is bound by every way of satisfying the `:match`
 - [Q-M1f.1](Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md) — A rule that could derive an activator binding a relation parameter to a fact is refused at load
-- [Q-M1f.7](Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md) — The dunder is never bound, and the writeback names never written
+- [Q-M1f.7](Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md) — The dunder is never bound, and the writeback names never written
 - [Q-M1f.11](Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md) — A template may not refer to a variable whose name holds `}`
 - [Q-M1f.30](Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md) — A guard argument holds no variable inside a fact
 - [Q-M1f.31](Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md) — `(not (eq x y))` is `(neq x y)` in every place

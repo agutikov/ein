@@ -560,7 +560,7 @@ this (b). Every core and `refuted by` the removal moves is named in its commit a
 
 ### Q-M1f.7 — Where may a program write the kernel's dunders?
 
-**Decision file:** [`docs/decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md`](../../docs/decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md`](../../docs/decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)
 
 **Raised** 2026-11-08 by S1f.5.5's T11
 (§ T11 record), before any edit. The user

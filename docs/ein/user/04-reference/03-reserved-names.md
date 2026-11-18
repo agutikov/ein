@@ -75,7 +75,7 @@ malformed form is a parse error too.
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
 vocabulary is the structural primitives `absent` and `false`, the verdict `open`, the computed relations `eq` and
 `neq`, `relation`, and the dunder `__closed__`, which a program uses and never binds
-([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
+([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
 `<forced-positive>`, `<monotonic-unconditional>` and `<lookahead-dies-immediately>`, are refused wherever a program
 writes them. The guard is about *binding* a name: a fact may still carry a reserved head, a stored `(not X)`.
 `unknown` and `forall` are deliberately *not* reserved: they are macros of the `std.macro` module.

@@ -13,7 +13,8 @@ which a program may bind.
 dunder another meaning; an argument that names the trigger is how a rule reaches it. The writeback names are the
 engine's provenance for a conclusion no rule drew, with no meaning a program can write. The kernel expects the
 minimal shape of a program, its rules and relations, and no theory's name: a relation's symmetry is the rule
-`std.algebra` states, which a program imports, and the kernel mirrors no relation of its own.
+`std.algebra` states, which a program imports, and the kernel mirrors no relation of its own
+([Q-M1f.436](../engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
 
 **Held by.** `ein-ir/tests/engine_names.rs`: `a_dunder_is_refused_wherever_a_program_binds_it`,
 `a_dunder_is_legal_wherever_a_program_uses_it`, `a_name_the_kernel_does_not_read_binds_as_any_name_does`,

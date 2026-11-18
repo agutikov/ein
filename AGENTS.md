@@ -435,7 +435,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `symmetric` or `__symmetric__` mean only what a rule makes them mean; the
   kernel mirrors no relation (a symmetric one is `std.algebra`'s rule).
   `ein-render/tests/renaming_invariance.rs` holds every corpus program to
-  its answer with every other name renamed.
+  its answer with every other name renamed
+  ([Q-M1f.436](docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.
