@@ -265,14 +265,14 @@ fn a_saved_file_reads_no_other_file() {
     std::fs::create_dir_all(&dir).expect("a directory");
     std::fs::write(
         dir.join("shelf.ein"),
-        "(relation on-shelf Thing :why \"{?1} is on the shelf\")\n(on-shelf book)\n",
+        "(relation on-shelf Thing :why \"{?3} is on the shelf\")\n(on-shelf book)\n",
     )
     .expect("the module");
     let p = dir.join("p.ein");
     std::fs::write(
         &p,
         "(import shelf :symbols (on-shelf))\n\
-         (relation read Thing :why \"{?1} is read\")\n\
+         (relation read Thing :why \"{?3} is read\")\n\
          (rule reads () :match (on-shelf ?x) :assert (read ?x) :why \"{?x} on the shelf is read\")\n",
     )
     .expect("the program");

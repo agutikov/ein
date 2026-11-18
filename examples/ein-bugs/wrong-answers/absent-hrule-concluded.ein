@@ -18,7 +18,7 @@
 ;;; The engine now refuses it at the parse, on every command.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (hrule guess () :match (is-a ?g Guest) :assert (absent (paid ?g)) :why "suppose {?g} has not paid")
 (query :goal (paid ?g))

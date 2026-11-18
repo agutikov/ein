@@ -16,10 +16,10 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.26](Q-M1f.26-every-member-of-n-carries-its-core.md) — Every member of N carries its core, and a renderer refuses one without
 - [Q-M1f.29](Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md) — A question that prints no core writes a dead root's core `null`
 - [Q-M1f.48](Q-M1f.48-a-text-surface-writes-the-empty-core.md) — A text surface writes the empty core `∅`
-- [Q-M1f.58](Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) — A fact reads in English in the trace, from its first recorded justification
+- [Q-M1f.58](Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) — A fact reads in English in the trace, from its first recorded justification; a `:why` reads the form it is written on
 - [Q-M1f.59](Q-M1f.59-a-macros-why-documents-the-pattern-and-is.md) — A macro's `:why` documents the pattern and is rendered nowhere
 - [Q-M1f.60](Q-M1f.60-a-fact-of-a-relation-nobody-declares-has-no.md) — A fact of a relation nobody declares has no statement
-- [Q-M1f.61](Q-M1f.61-a-query-has-one-goal-text-and-each-conjunct.md) — A query has one `:goal-text`, and each conjunct reads by its relation's `:why`
+- [Q-M1f.61](Q-M1f.61-a-query-has-one-goal-text-and-each-conjunct.md) — A query has one `:goal-text`, and each conjunct reads as written
 - [Q-M1f.108](Q-M1f.108-route-1s-stop-at-a-layer-is-the-librarys-and-no.md) — Route 1's stop at a layer is the library's, and no `ein` run prints it
 - [Q-M1f.109](Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md) — A text's line break in the trace is a markdown hard break
 - [Q-M1f.214](Q-M1f.214-a-firings-derives-line-names-every-conclusion.md) — A firing's *Derives* line names every conclusion, in the rule's order

@@ -27,7 +27,7 @@
 (import std.math.binary :symbols (b2 bin-named))
 (import std.math.arith :symbols (z))
 
-(relation price Item Amount :why "{?1} costs {?2}")
+(relation price Item Amount :why "{?3} costs {?4}")
 (__closed__ price)
 (price apple (b2 z 1))
 (bin-named z)

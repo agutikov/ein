@@ -23,8 +23,8 @@
 ;;;
 ;;;
 
-(relation p Node :why "{?1} is a node")
-(relation hit Node Node :why "{?1} and {?2} are two nodes")
+(relation p Node :why "{?3} is a node")
+(relation hit Node Node :why "{?3} and {?4} are two nodes")
 (p a)
 (p b)
 (rule r ()

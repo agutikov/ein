@@ -73,25 +73,25 @@
 (import std.math.binary-arith :symbols (binary-arith bin-b bin-strip bin-done bin-top-first bin-top-first-is))
 
 (relation to-bin Number
-  :why "asked: {?1} written in binary")
+  :why "asked: {?3} written in binary")
 (relation bin-of Number Binary
-  :why "{?1} is {?2} in binary")
+  :why "{?3} is {?4} in binary")
 (relation to-dec Binary
-  :why "asked: {?1} written in decimal")
+  :why "asked: {?3} written in decimal")
 (relation dec-of Binary Number
-  :why "{?1} in binary is {?2}")
+  :why "{?3} in binary is {?4}")
 (relation to-bin-go Number Number Bits
-  :why "converting {?1}: {?2} is still to halve, and the bits so far are {?3}")
+  :why "converting {?3}: {?4} is still to halve, and the bits so far are {?5}")
 (relation to-dec-go Binary Bits Number
-  :why "converting {?1}: the bits {?2} are still to come, and the number so far is {?3}")
+  :why "converting {?3}: the bits {?4} are still to come, and the number so far is {?5}")
 (relation halving Number Bits
-  :why "a halving for {?1}, the bits so far being {?2}")
+  :why "a halving for {?3}, the bits so far being {?4}")
 (relation bits Number
-  :why "the bits of {?1}")
+  :why "the bits of {?3}")
 (relation dec-bits Binary
-  :why "the bits of {?1}, the top one first")
+  :why "the bits of {?3}, the top one first")
 (relation doubling Binary Bits
-  :why "a doubling for {?1}, the bits {?2} still to come")
+  :why "a doubling for {?3}, the bits {?4} still to come")
 
 ;; ── Decimal to binary: halve until nothing is left ──────────────────────────
 ;; Each remainder is a bit, the units first, put in front of the bits so far.
@@ -156,7 +156,7 @@
 ;; A conversion is computed and never guessed: every relation of the module is
 ;; closed, every rule named, and the entries of the two theories below.
 (relation convert-rule Rule
-  :why "{?1} is a rule of std.math.convert")
+  :why "{?3} is a rule of std.math.convert")
 
 (rule convert ()
   :match  ()

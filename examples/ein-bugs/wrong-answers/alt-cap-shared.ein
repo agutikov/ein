@@ -41,11 +41,11 @@
 ;;;
 ;;;
 
-(relation c T :why "{?1} has c")
-(relation a T :why "{?1} has a")
-(relation b T :why "{?1} has b")
-(relation x T :why "{?1} is x")
-(relation z T :why "{?1} is z")
+(relation c T :why "{?3} has c")
+(relation a T :why "{?3} has a")
+(relation b T :why "{?3} has b")
+(relation x T :why "{?3} is x")
+(relation z T :why "{?3} is z")
 
 (c C01) (c C02) (c C03) (c C04) (c C05) (c C06) (c C07) (c C08) (c C09) (c C10) (c C11)
 (c C12) (c C13) (c C14) (c C15) (c C16) (c C17) (c C18) (c C19) (c C20) (c C21) (c C22)

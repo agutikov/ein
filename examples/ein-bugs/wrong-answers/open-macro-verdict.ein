@@ -23,12 +23,12 @@
 ;;; command.
 ;;; The engine refuses it at the parse.
 
-(relation a Thing :why "{?1} is an a")
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation a Thing :why "{?3} is an a")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (is-a k Thing)
 (a k)
-(relation likes Thing Thing :why "{?1} likes {?2}")
+(relation likes Thing Thing :why "{?3} likes {?4}")
 (macro owe (?R) (open ?R) :why "one {?R} is owed")
 (rule r ()
   :match  (and (a ?x) (absent (likes ?x ?y)))

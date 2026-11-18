@@ -36,12 +36,12 @@
 ;;; The g and h facts are written in descending order so that the order they
 ;;; are matched in, the index's, is not their rank's.
 
-(relation sw T :why "sw holds of {?1}")
-(relation on T :why "{?1} is on")
-(relation g T :why "g holds of {?1}")
-(relation h T :why "h holds of {?1}")
-(relation p T :why "p holds of {?1}")
-(relation q T :why "q holds of {?1}")
+(relation sw T :why "sw holds of {?3}")
+(relation on T :why "{?3} is on")
+(relation g T :why "g holds of {?3}")
+(relation h T :why "h holds of {?3}")
+(relation p T :why "p holds of {?3}")
+(relation q T :why "q holds of {?3}")
 
 (sw A) (sw B)
 (g G40) (g G39) (g G38) (g G37) (g G36) (g G35) (g G34) (g G33) (g G32) (g G31) (g G30) (g G29) (g G28) (g G27) (g G26) (g G25) (g G24) (g G23) (g G22) (g G21) (g G20) (g G19) (g G18) (g G17) (g G16) (g G15) (g G14) (g G13) (g G12) (g G11) (g G10) (g G09) (g G08) (g G07) (g G06) (g G05) (g G04) (g G03) (g G02) (g G01)

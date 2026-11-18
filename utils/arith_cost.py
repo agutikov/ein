@@ -200,7 +200,7 @@ def batch(op: str, n: int, seed: int) -> str:
 def section_split(best: int) -> None:
     print("## What a program pays before its first request\n")
     progs = [
-        ("no import: one relation", '(relation thing Thing :why "{?1} is a thing")\n'),
+        ("no import: one relation", '(relation thing Thing :why "{?3} is a thing")\n'),
         ("`std.math.digits` alone, the seven tables", "(import std.math.digits :symbols (fa fs md cl nz mid adj))\n"),
         ("`std.math.decimal-arith`, the theory and the tables", gen.import_line("")),
         ("`std.math.decimal-arith` and 17 + 5",

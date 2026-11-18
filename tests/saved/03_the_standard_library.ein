@@ -20,8 +20,8 @@
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation digit-read Thing :why "the digit read is {?1}")
-(relation reading Thing :why "the reading is {?1}")
+(relation digit-read Thing :why "the digit read is {?3}")
+(relation reading Thing :why "the reading is {?3}")
 
 (digit-read x)
 (add (n z 4) (n z 3))

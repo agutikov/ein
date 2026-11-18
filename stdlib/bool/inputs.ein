@@ -60,11 +60,11 @@
 (import std.algebra :symbols (total-owed functional))
 
 (relation is-a Thing Type
-  :why "{?1} is a {?2}")
+  :why "{?3} is a {?4}")
 (relation in Input Bit
-  :why "the input {?1} is set to {?2}")
+  :why "the input {?3} is set to {?4}")
 (relation require Wire Bit
-  :why "{?1} is required to carry {?2}")
+  :why "{?3} is required to carry {?4}")
 
 (is-a 0 Bit) (is-a 1 Bit)
 (total-owed in is-a)     ; every input owes a value: a state with an input unset is not an answer
@@ -81,7 +81,7 @@
 
 ;; ── The closing rule, the module's entry ────────────────────────────────────
 (relation inputs-rule Rule
-  :why "{?1} is a rule of the inputs theory")
+  :why "{?3} is a rule of the inputs theory")
 (inputs-rule inputs)
 (rule inputs ()
   :match  ()

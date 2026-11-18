@@ -20,7 +20,7 @@
 ;;; over a relation `settled`, and the goal has no row, exit 0 on every command.
 ;;; Now refused at load.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (macro settled (?g) (paid ?g) :why "{?g} has settled")
 (is-a Ann Guest) (is-a Bob Guest)
 (paid Ann)

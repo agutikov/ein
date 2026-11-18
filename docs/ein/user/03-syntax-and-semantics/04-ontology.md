@@ -10,8 +10,8 @@ read relations, labels and rules as ordinary data.
 ## In Ein
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation can-drink T T :why "{?1} can drink {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation can-drink T T :why "{?3} can drink {?4}")
 
 (rule inherit-left (?r)
   :match  (and (?r ?t ?other) (is-a ?inst ?t))
@@ -87,7 +87,7 @@ first argument in that place:
 
 Premises: `can-drink(Human, Drink)`, `is-a(Jack, Human)`
 
-Derives `can-drink(Jack, Drink)` — Jack can drink Drink
+Derives `can-drink(Jack, Drink)`.
 
 ### Step 2 — `inherit-right`
 
@@ -95,7 +95,7 @@ Derives `can-drink(Jack, Drink)` — Jack can drink Drink
 
 Premises: `can-drink(Human, Drink)`, `is-a(Coffee, Drink)`
 
-Derives `can-drink(Human, Coffee)` — Human can drink Coffee
+Derives `can-drink(Human, Coffee)`.
 
 ### Step 3 — `inherit-right`
 
@@ -103,12 +103,12 @@ Derives `can-drink(Human, Coffee)` — Human can drink Coffee
 
 Premises: `can-drink(Jack, Drink)`, `is-a(Coffee, Drink)`
 
-Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
+Derives `can-drink(Jack, Coffee)`.
 ```
 
-Root's steps in `ein solve FILE --trace OUT.md`: each rule's reason, the facts it read, and what it derives with its
-statement. The activator facts, `(inherit-left can-drink)`, have no statement: they are facts about a rule, and no
-declaration carries a sentence for them.
+Root's steps in `ein solve FILE --trace OUT.md`: each rule's reason, the facts it read, and what it derives, as
+written, since a fact has no text of its own ([natural language](14-natural-language.md)). The activator facts,
+`(inherit-left can-drink)`, read as written too: they are facts about a rule, stated with no `:source`.
 
 ## In mathematics
 
@@ -148,8 +148,8 @@ A fact's argument is an object, an atom or a fact, and a relation, a rule's name
 program can say something of each of them, with the relation it says things of `Jack` with:
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation can-drink T T :why "{?1} can drink {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation can-drink T T :why "{?3} can drink {?4}")
 
 (rule inherit-left (?r)
   :match  (and (?r ?t ?other) (is-a ?inst ?t))

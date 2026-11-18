@@ -27,7 +27,7 @@
 (import std.math.arith :symbols (z))
 
 (relation adopted Assumption Relation
-  :why "ASSUMED, and not a sentence of the problem: {?1} is adopted for {?2}")
+  :why "ASSUMED, and not a sentence of the problem: {?3} is adopted for {?4}")
 (adopted listed-is-all has
   :source "ASSUMPTION, not in the problem: the problem lists everything each has, so what it does not list of a kind, they have none of")
 
@@ -39,7 +39,7 @@
   :why    "the problem lists what {?p} has at {?t}, and lists {?k}, and does not list any {?k} for {?p}: what is listed is all, so {?p} has none")
 
 (relation listed-is-all-rule Rule
-  :why "{?1} is a rule of listed_is_all")
+  :why "{?3} is a rule of listed_is_all")
 (listed-is-all-rule listed-is-all)
 (rule listed-is-all ()
   :match  ()

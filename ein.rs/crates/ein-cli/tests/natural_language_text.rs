@@ -12,7 +12,7 @@
 //! | surface | which text | as |
 //! |---|---|---|
 //! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
-//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and the derived fact's relation's `:why`, filled | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (Q-M1f.109) |
+//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and a declaration's `:why`, read on its own arrows, where a rule reads the declaration; a fact of a relation reads by none of its declaration's | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (Q-M1f.109) |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
 //! | a `--dump-answer` state file | all three, in the program it carries | as the program writes them, byte for byte, and it reads back to the same texts |
 //! | `ein render program` | `:goal-text` | quoted, inside a DOT label |
@@ -31,8 +31,8 @@ use ein_ir::{Ast, Node};
 const PROGRAM: &str = "tests/text/01_unicode.ein";
 
 /// The texts the program writes, as the parser reads them.
-const RELATION_WHY: &str = "Жилец {?1} живёт в доме {?2} — «日本語», 🦓";
-const HOUSED_WHY: &str = "{?1} 有房子 ✅";
+const RELATION_WHY: &str = "Жилец {?3} живёт в доме {?4} — «日本語», 🦓";
+const HOUSED_WHY: &str = "{?3} 有房子 ✅";
 const SOURCE_ANN: &str = "Условие (1): Анна живёт в первом доме 🏠\n二行目\tタブ\r\"引用\" \\ 🦓";
 const SOURCE_BOB: &str = "条件 (2): ボブは二番目の家に住んでいる\n— сырая новая строка";
 const RULE_WHY: &str = "{?p} 有房子, потому что живёт в {?h} 🦓\nвторая\tстрока\r\"цитата\" \\ Жук";
@@ -145,7 +145,8 @@ fn markdown(text: &str, lead: &str) -> String {
 /// `--trace` prints the rule's `:why` filled at each firing, as a quote, and
 /// each premise's `:source` beside it, each line of each a line of the
 /// rendered page: a line break written as it stands would be a soft break
-/// to markdown.
+/// to markdown. The derived fact reads by nothing more: `housed`'s `:why`
+/// reads its declaration, never a fact of it (Q-M1f.58).
 #[test]
 fn the_trace_prints_the_rules_why_and_the_premises_source() {
     let scratch = Scratch::new("ein-nl-text-trace");
@@ -161,9 +162,70 @@ fn the_trace_prints_the_rules_why_and_the_premises_source() {
         assert!(page.contains(&why), "the trace: no {why:?}");
         let source = markdown(source, "");
         assert!(page.contains(&source), "the trace: no {source:?}");
-        // What the derived fact says, its relation's `:why`.
-        let derives = format!("Derives `housed({p})` — {}", HOUSED_WHY.replace("{?1}", p));
+        // The derived fact, and no text after it: a fact has no `:why`.
+        let derives = format!("\nDerives `housed({p})`.\n");
         assert!(page.contains(&derives), "the trace: no {derives:?}");
+    }
+    assert!(
+        !page.contains("有房子 ✅"),
+        "the trace reads a fact by its relation's `:why`:\n{page}"
+    );
+}
+
+/// **A declaration's `:why` reads the form it is written on** (Q-M1f.58):
+/// `{?n}` is the declaration's n-th arrow, `{?1}` the atom `relation`, `{?2}`
+/// the relation's name, `{?k+2}` its k-th label, and a reference past them is
+/// printed as written. The trace prints the reading where a rule reads the
+/// declaration, after it on the premises line; a fact of the relation reads
+/// by none of it; the companion `(relation owns)` the loader stores is no form
+/// the program wrote and reads by nothing; an untyped declaration is its own
+/// form.
+#[test]
+fn a_declaration_reads_its_own_arrows_and_a_fact_none() {
+    let scratch = Scratch::new("ein-nl-text-declaration");
+    let program = scratch.path().join("owns.ein");
+    std::fs::write(
+        &program,
+        "(relation owns Person Pet :why \"a {?3} {?2} a {?4} 🐕\")\n\
+         (relation wants Person Pet :why \"{?3} wants a {?4}\")\n\
+         (relation counts-as Thing Kind :why \"{?2} is a {?1} of {?3} and {?4}; {?5} is past its arrows\")\n\
+         (relation done :why \"{?2}: the kinds are read\")\n\
+         (rule wanting-is-owning () :match (wants ?p ?x) :assert (owns ?p ?x)\n\
+           :why \"{?p} wants a {?x}, so {?p} owns one\")\n\
+         (rule owner-kind () :match (and (relation owns ?A ?B) (owns ?p ?x)) :assert (counts-as ?p ?A)\n\
+           :why \"owns is declared between {?A} and {?B}, and {?p} owns {?x}, so {?p} counts as a {?A}\")\n\
+         (rule kinds () :match (and (relation counts-as ?T ?K) (counts-as ?p ?k)) :assert (done)\n\
+           :why \"{?p} counts as a {?k}, so the kinds are read\")\n\
+         (rule declared () :match (and (relation ?r) (wants ?p ?x)) :assert (known ?r)\n\
+           :why \"{?r} is declared, and {?p} wants a {?x}\")\n\
+         (wants Ann Dog :source \"Ann wants a dog\")\n\
+         (solve :no-search)\n",
+    )
+    .expect("the program is written");
+    let trace = scratch.path().join("trace.md");
+    let r = ein(&[
+        "solve",
+        &program.to_string_lossy(),
+        "--trace",
+        &trace.to_string_lossy(),
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let page = std::fs::read_to_string(&trace).expect("the trace");
+    let lines: Vec<&str> = page.lines().collect();
+    for line in [
+        "Derives `owns(Ann, Dog)`.",
+        "Premises: `relation(owns, Person, Pet)` — a Person owns a Pet 🐕, `owns(Ann, Dog)`",
+        "Derives `counts-as(Ann, Person)`.",
+        "Premises: `relation(counts-as, Thing, Kind)` — counts-as is a relation of Thing and Kind; \
+         {?5} is past its arrows, `counts-as(Ann, Person)`",
+        "Derives `done`.",
+        "Premises: `relation(owns)`, `wants(Ann, Dog)` — from Ann wants a dog",
+        "Premises: `relation(done)` — done: the kinds are read, `wants(Ann, Dog)` — from Ann wants a dog",
+    ] {
+        assert!(
+            lines.contains(&line),
+            "the trace: no line {line:?}:\n{page}"
+        );
     }
 }
 

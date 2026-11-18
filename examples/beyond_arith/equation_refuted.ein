@@ -12,10 +12,10 @@
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 
-(relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
-(relation one-answer Digit :why "by {?1}, a column has exactly one answer")
-(relation um-walk Tag Number Digit Digits :why "for {?1}: {?2} still to read, carry {?3}, x's digits so far {?4}")
-(relation factor-digits Digit Number Digits :why "x times {?1} = {?2} for the digits x = {?3}, top first")
+(relation unmul Digit Number :why "asked: which x makes x times {?3} = {?4}?")
+(relation one-answer Digit :why "by {?3}, a column has exactly one answer")
+(relation um-walk Tag Number Digit Digits :why "for {?3}: {?4} still to read, carry {?5}, x's digits so far {?6}")
+(relation factor-digits Digit Number Digits :why "x times {?3} = {?4} for the digits x = {?5}, top first")
 (__closed__ unmul) (__closed__ one-answer) (__closed__ um-walk) (__closed__ factor-digits)
 
 ;; The multipliers that share no factor with ten: their rows of `md` are a

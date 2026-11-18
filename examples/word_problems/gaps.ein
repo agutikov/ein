@@ -9,14 +9,14 @@
 (import words :symbols (asked wanted needs value assumed))
 
 (relation not-stated Quantity
-  :why "the problem does not state [{?1}]")
+  :why "the problem does not state [{?3}]")
 (relation depends Quantity Quantity
-  :why "[{?1}] rests on [{?2}]")
+  :why "[{?3}] rests on [{?4}]")
 (relation unanswered Quantity Quantity
-  :why "the question [{?1}] has no answer: the problem does not state [{?2}]")
+  :why "the question [{?3}] has no answer: the problem does not state [{?4}]")
 
 (relation rests-on Quantity Quantity Number
-  :why "the answer to [{?1}] rests on an assumption: [{?2}] is {?3}")
+  :why "the answer to [{?3}] rests on an assumption: [{?4}] is {?5}")
 
 (rule answer-rests-on-assumption ()
   :match  (and (asked ?q) (depends ?q ?g) (assumed ?g ?v))
@@ -49,7 +49,7 @@
   :why    "the question asks for [{?q}], which the problem does not state")
 
 (relation gaps-rule Rule
-  :why "{?1} is a rule of gaps")
+  :why "{?3} is a rule of gaps")
 (gaps-rule gaps)
 (rule gaps ()
   :match  ()

@@ -22,9 +22,9 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a  T T         :why "{?1} is a {?2}")
-(relation seats Guest Chair :why "{?1} is seated at {?2}")
-(relation meal  Diner Food  :why "{?1} is served {?2}")
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation seats Guest Chair :why "{?3} is seated at {?4}")
+(relation meal  Diner Food  :why "{?3} is served {?4}")
 
 (is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food)
 

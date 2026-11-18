@@ -90,13 +90,13 @@
 ;;;
 ;;;
 
-(relation p1 T :why "{?1} has p1")
-(relation p2 T :why "{?1} has p2")
-(relation p3 T :why "{?1} has p3")
-(relation q  T :why "{?1} is a witness")
-(relation w1 T :why "{?1} has w1")
-(relation w2 T :why "{?1} has w2")
-(relation w3 T :why "{?1} has w3")
+(relation p1 T :why "{?3} has p1")
+(relation p2 T :why "{?3} has p2")
+(relation p3 T :why "{?3} has p3")
+(relation q  T :why "{?3} is a witness")
+(relation w1 T :why "{?3} has w1")
+(relation w2 T :why "{?3} has w2")
+(relation w3 T :why "{?3} has w3")
 
 ;; 33 witnesses, each three givens deep.
 (p1 Y01) (p2 Y01) (p3 Y01) (p1 Y02) (p2 Y02) (p3 Y02) (p1 Y03) (p2 Y03) (p3 Y03)

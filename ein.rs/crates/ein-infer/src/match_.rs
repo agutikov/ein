@@ -1101,7 +1101,7 @@ mod tests {
     /// the argument that a single fixed order cannot test.
     #[test]
     fn narrowing_never_changes_the_match_sequence() {
-        let decls = "(relation likes T T :why \"{?1} likes {?2}\")\n(relation pal T T :why \"{?1} is a pal of {?2}\")\n\
+        let decls = "(relation likes T T :why \"{?3} likes {?4}\")\n(relation pal T T :why \"{?3} is a pal of {?4}\")\n\
                      (rule r ()\n  \
                      :match (and (pal ?a ?b) (not (likes ?b ?c)))\n  \
                      :assert (likes ?a ?c) :why \"{?a} is a pal of {?b} and {?b} does not like {?c}, so {?a} likes {?c}\")\n\
@@ -1187,7 +1187,7 @@ mod tests {
     #[test]
     fn a_lifted_guard_keeps_asking_its_own_question() {
         let facts = "(a free)\n(a taken)\n(block taken)\n";
-        let decls = "(relation a Thing :why \"a holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n";
+        let decls = "(relation a Thing :why \"a holds of {?3}\")\n(relation block Thing :why \"there is a block for {?3}\")\n";
         assert_eq!(
             passing(&format!(
                 "{decls}(rule r ()\n  :match (and (a ?x) (absent (block ?x)))\n  \
@@ -1215,7 +1215,7 @@ mod tests {
     #[test]
     fn two_free_guard_arguments_range_over_the_programs_names() {
         let (ast, terms, kb, plan) = setup(
-            "(relation a Thing :why \"a holds of {?1}\")\n\
+            "(relation a Thing :why \"a holds of {?3}\")\n\
              (rule r (?p ?q)\n  :match (and (a ?x) (neq ?p ?q))\n  :assert (a ?x) :why \"a holds of {?x} and {?p} differs from {?q}, so a holds of {?x}\")\n\
              (a one)\n",
         );
@@ -1252,7 +1252,7 @@ mod tests {
     /// contract `rel_ordinal` exists for.
     #[test]
     fn a_seeded_match_reports_the_same_premise_order() {
-        let src = "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n(relation path A B :why \"there is a path from {?1} to {?2}\")\n\
+        let src = "(relation edge A B :why \"there is an edge from {?3} to {?4}\")\n(relation path A B :why \"there is a path from {?3} to {?4}\")\n\
                    (rule walk ()\n  :match (and (edge ?a ?b) (edge ?b ?c))\n  \
                    :assert (path ?a ?c) :why \"there are edges from {?a} to {?b} and from {?b} to {?c}, so there is a path from {?a} to {?c}\")\n\
                    (edge n1 n2)\n(edge n2 n3)\n";

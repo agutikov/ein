@@ -910,7 +910,7 @@ mod tests {
     #[test]
     fn candidate_objects_drop_signature_atoms_and_primitives() {
         let (ast, terms, kb) = kb_of(
-            "(relation r T :why \"r holds of {?1}\")\n(r A)\n(not (r B))\n(relation s T :why \"s holds of {?1}\")\n(s B)",
+            "(relation r T :why \"r holds of {?3}\")\n(r A)\n(not (r B))\n(relation s T :why \"s holds of {?3}\")\n(s B)",
         );
         let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
             .iter()
@@ -927,7 +927,7 @@ mod tests {
     #[test]
     fn candidate_objects_never_hold_a_kernel_dunder() {
         let (ast, terms, kb) = kb_of(
-            "(relation thing T :why \"{?1} is a thing\")\n(thing a)\n\
+            "(relation thing T :why \"{?3} is a thing\")\n(thing a)\n\
              (rule lift (?P ?Q) :match (?P ?r) :assert (?Q ?r) :why \"{?r} is {?P}, so it is {?Q}\")\n\
              (lift complete __closed__)\n(complete thing)\n(marker __symmetric__)",
         );
@@ -958,7 +958,7 @@ mod tests {
     #[test]
     fn candidate_objects_seed_the_constants_a_rule_asserts() {
         let (ast, terms, kb) = kb_of(
-            "(relation q T T :why \"q holds of {?1} and {?2}\")\n(q A B)\n\
+            "(relation q T T :why \"q holds of {?3} and {?4}\")\n(q A B)\n\
              (rule spawn () :match (q ?a ?b) :assert (and (q ?b Z) (q A ?a)) :why \"q holds of {?a} and {?b}, so q holds of {?b} and Z, and of A and {?a}\")",
         );
         let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
@@ -978,7 +978,7 @@ mod tests {
     #[test]
     fn candidate_objects_hold_every_name_the_program_writes() {
         let (ast, terms, kb) = kb_of(
-            "(relation q T T :why \"q holds of {?1} and {?2}\")\n(q A B)\n(not (q N A))\n\
+            "(relation q T T :why \"q holds of {?3} and {?4}\")\n(q A B)\n(not (q N A))\n\
              (rule reach () :match (q ?a M) :assert (q ?a B) :why \"q holds of {?a} and M, so q holds of {?a} and B\")\n\
              (query :goal (q Q ?x))",
         );

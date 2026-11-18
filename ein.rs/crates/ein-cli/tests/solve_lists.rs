@@ -42,7 +42,7 @@ fn ein(args: &[&str]) -> Run {
 /// A program with one hrule, `guess (?R ?T1 ?T2)`, whose `?R` names the
 /// relation it proposes facts of; `at` is declared, `near` is named only by
 /// being passed to `functional`, and `glad` only by a rule's `:assert`.
-const HEAD: &str = "(relation at Color House :why \"{?1} is at {?2}\")\n\
+const HEAD: &str = "(relation at Color House :why \"{?3} is at {?4}\")\n\
      (rule functional (?R)\n  :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))\n  :assert (false)\n  \
      :why \"{?R} is not functional: {?a} has both {?b} and {?c}\")\n\
      (rule glad ()\n  :match (at ?c ?h)\n  :assert (glad ?c)\n  \
@@ -321,7 +321,7 @@ fn a_list_naming_what_the_program_has_loads() {
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional))\n\
-         (relation r A B :why \"{?1} r {?2}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
+         (relation r A B :why \"{?3} r {?4}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
          (solve :no-hypothesis (functional is-a))\n"
             .to_string(),
     ));

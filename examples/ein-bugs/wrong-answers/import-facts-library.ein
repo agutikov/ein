@@ -7,8 +7,8 @@
 ;;; declare; and holds one rule that reads its `is-a` facts. `unused` is a
 ;;; relation nothing mentions.
 
-(relation is-a Thing Type :why "{?1} is a {?2}")
-(relation unused Thing :why "{?1} is never mentioned")
+(relation is-a Thing Type :why "{?3} is a {?4}")
+(relation unused Thing :why "{?3} is never mentioned")
 
 (is-a Tea Drink)
 (is-a Milk Drink :source "the ontology")

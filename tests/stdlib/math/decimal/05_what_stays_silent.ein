@@ -21,7 +21,7 @@
 (import std.math.decimal :symbols (n not-decimal valid))
 (import std.math.arith :symbols (z))
 
-(relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(relation pair Thing Thing :why "the pair of {?3} and {?4}")
 (__closed__ pair)
 
 (let far (n end 1))

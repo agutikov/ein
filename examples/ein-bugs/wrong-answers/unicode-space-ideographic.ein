@@ -22,8 +22,8 @@
 ;;; At `724c11e8`, release: the program loads, the ideographic space a
 ;;; separator, `(p j)` stored, R four states, exit 0 on every command.
 
-(relation a Thing :why "{?1} is an a")
-(relation p Thing :why "{?1} is a p")
+(relation a Thing :why "{?3} is an a")
+(relation p Thing :why "{?3} is a p")
 (is-a k Thing)
 (is-a j Thing)
 (a k)

@@ -19,9 +19,9 @@
 ;;; debug assertions stopped where `ein solve` took H, exit 101, on the same
 ;;; assertion. Now one answer from both builds.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation owes Guest :why "{?1} owes")
+(relation owes Guest :why "{?3} owes")
 (not (paid Bob))
 (hrule suppose ()
   :match  (and (is-a ?g Guest) (not (paid ?g)))

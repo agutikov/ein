@@ -4,6 +4,6 @@
 ;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and
 ;;; debug).
 
-(relation p Node :why "p holds of {?1}") (relation box Node :why "{?1} is in a box")
+(relation p Node :why "p holds of {?3}") (relation box Node :why "{?3} is in a box")
 (p a)
 (box (nneqw a))

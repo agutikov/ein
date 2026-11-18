@@ -20,9 +20,9 @@
 ;;; solve` and `ein test` exit 1, every other command 0.
 ;;; The engine refuses it at load.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation says Claim :why "it is said that {?1}")
+(relation says Claim :why "it is said that {?3}")
 (macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
 (says (paid Ann))
 (solve :hypothesis-relations ())

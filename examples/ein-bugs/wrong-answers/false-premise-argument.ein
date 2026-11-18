@@ -19,9 +19,9 @@
 ;;; `(welcome Bob)`, exit 0 on every command. Now refused at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation welcome Guest :why "{?1} is welcome")
+(relation welcome Guest :why "{?3} is welcome")
 (rule greet () :match (and (is-a ?g Guest) (absent (false ?g))) :assert (welcome ?g) :why "{?g} is welcome: nothing is false of them")
 (solve :hypothesis-relations ())
 (query :goal (welcome ?g))

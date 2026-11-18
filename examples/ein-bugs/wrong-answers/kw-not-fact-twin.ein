@@ -4,5 +4,5 @@
 ;;; the name read back (`ein solve FILE` at `35186bc0`, release and debug).
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation nnotw :why "nnotw holds")
+(relation p Node :why "p holds of {?3}") (relation nnotw :why "nnotw holds")
 (p a) (nnotw)

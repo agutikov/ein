@@ -19,9 +19,9 @@
 ;;; The engine refuses it at the parse.
 ;;;
 
-(relation a Thing :why "{?1} is an a")
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation a Thing :why "{?3} is an a")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (is-a k Thing)
 (a k)
 (query :goal (p open))

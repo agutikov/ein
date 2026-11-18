@@ -167,103 +167,103 @@
 
 ;; ── The integer ─────────────────────────────────────────────────────────────
 (relation int Number Number
-  :why "the integer {?1} less {?2}")
+  :why "the integer {?3} less {?4}")
 
 ;; ── The protocol ────────────────────────────────────────────────────────────
 (relation int-simplify Operand
-  :why "asked: {?1} in normal form")
+  :why "asked: {?3} in normal form")
 (relation int-simple-of Operand Integer
-  :why "{?1} is {?2}")
+  :why "{?3} is {?4}")
 (relation int-neg Operand
-  :why "asked: {?1} negated")
+  :why "asked: {?3} negated")
 (relation int-neg-of Operand Integer
-  :why "{?1} negated is {?2}")
+  :why "{?3} negated is {?4}")
 (relation int-add Operand Operand
-  :why "asked: {?1} + {?2}")
+  :why "asked: {?3} + {?4}")
 (relation int-sum-of Operand Operand Integer
-  :why "{?1} + {?2} = {?3}")
+  :why "{?3} + {?4} = {?5}")
 (relation int-sub Operand Operand
-  :why "asked: {?1} - {?2}")
+  :why "asked: {?3} - {?4}")
 (relation int-diff-of Operand Operand Integer
-  :why "{?1} - {?2} = {?3}")
+  :why "{?3} - {?4} = {?5}")
 (relation int-mul Operand Operand
-  :why "asked: {?1} x {?2}")
+  :why "asked: {?3} x {?4}")
 (relation int-product-of Operand Operand Integer
-  :why "{?1} x {?2} = {?3}")
+  :why "{?3} x {?4} = {?5}")
 (relation int-cmp Operand Operand
-  :why "asked: {?1} compared with {?2}")
+  :why "asked: {?3} compared with {?4}")
 (relation int-cmp-of Operand Operand Order
-  :why "{?1} against {?2}: {?3}")
+  :why "{?3} against {?4}: {?5}")
 (relation int-div-euclid Operand Operand
-  :why "asked: {?1} divided by {?2}, the remainder never negative")
+  :why "asked: {?3} divided by {?4}, the remainder never negative")
 (relation int-quot-euclid-of Operand Operand Integer Number
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}, the remainder never negative")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}, the remainder never negative")
 (relation int-div-trunc Operand Operand
-  :why "asked: {?1} divided by {?2}, rounded toward zero")
+  :why "asked: {?3} divided by {?4}, rounded toward zero")
 (relation int-quot-trunc-of Operand Operand Integer Integer
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}, rounded toward zero")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}, rounded toward zero")
 (relation int-div-floor Operand Operand
-  :why "asked: {?1} divided by {?2}, rounded down")
+  :why "asked: {?3} divided by {?4}, rounded down")
 (relation int-quot-floor-of Operand Operand Integer Integer
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}, rounded down")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}, rounded down")
 
 ;; ── The calls, and their hand-over ──────────────────────────────────────────
 (relation int-norm Tag Number Number
-  :why "wanted, for {?1}: {?2} less {?3}, as an integer in normal form")
+  :why "wanted, for {?3}: {?4} less {?5}, as an integer in normal form")
 (relation int-done Tag Integer
-  :why "the answer for {?1} is {?2}")
+  :why "the answer for {?3} is {?4}")
 (relation int-add-call Tag Number Number Number Number
-  :why "wanted, for {?1}: {?2} less {?3}, plus {?4} less {?5}")
+  :why "wanted, for {?3}: {?4} less {?5}, plus {?6} less {?7}")
 (relation int-mul-call Tag Number Number Number Number
-  :why "wanted, for {?1}: {?2} less {?3}, times {?4} less {?5}")
+  :why "wanted, for {?3}: {?4} less {?5}, times {?6} less {?7}")
 (relation int-cmp-call Tag Number Number Number Number
-  :why "wanted, for {?1}: {?2} less {?3}, compared with {?4} less {?5}")
+  :why "wanted, for {?3}: {?4} less {?5}, compared with {?6} less {?7}")
 (relation int-div-done Request Integer Remainder
-  :why "the answer for {?1}: {?2}, remainder {?3}")
+  :why "the answer for {?3}: {?4}, remainder {?5}")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation int-only Request
-  :why "the operand of {?1}")
+  :why "the operand of {?3}")
 (relation int-first Request Operand
-  :why "the first operand of {?1}, whose second is {?2}")
+  :why "the first operand of {?3}, whose second is {?4}")
 (relation int-second Request Number Number
-  :why "the second operand of {?1}, whose first is {?2} less {?3}")
+  :why "the second operand of {?3}, whose first is {?4} less {?5}")
 (relation int-plus Tag
-  :why "the positive part, for {?1}")
+  :why "the positive part, for {?3}")
 (relation int-minus Tag
-  :why "the negative part, for {?1}")
+  :why "the negative part, for {?3}")
 (relation int-add-p Tag Number Number
-  :why "the sum of the positive parts, for {?1}, the negative parts being {?2} and {?3}")
+  :why "the sum of the positive parts, for {?3}, the negative parts being {?4} and {?5}")
 (relation int-add-n Tag Number
-  :why "the sum of the negative parts, for {?1}, the positive parts' sum being {?2}")
+  :why "the sum of the negative parts, for {?3}, the positive parts' sum being {?4}")
 (relation int-mul-pp Tag Number Number Number Number
-  :why "the product of the positive parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+  :why "the product of the positive parts, for {?3}, which multiplies {?4} less {?5} by {?6} less {?7}")
 (relation int-mul-nn Tag Number Number Number Number Number
-  :why "the product of the negative parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}; the positive parts' product is {?6}")
+  :why "the product of the negative parts, for {?3}, which multiplies {?4} less {?5} by {?6} less {?7}; the positive parts' product is {?8}")
 (relation int-mul-pos Tag Number Number Number Number
-  :why "the positive part of the product, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+  :why "the positive part of the product, for {?3}, which multiplies {?4} less {?5} by {?6} less {?7}")
 (relation int-mul-pn Tag Number Number Number
-  :why "the first operand's positive part times the second's negative, for {?1}; still to multiply are {?2} and {?3}, and the positive part is {?4}")
+  :why "the first operand's positive part times the second's negative, for {?3}; still to multiply are {?4} and {?5}, and the positive part is {?6}")
 (relation int-mul-np Tag Number Number
-  :why "the first operand's negative part times the second's positive, for {?1}; the positive part is {?2}, and the other product {?3}")
+  :why "the first operand's negative part times the second's positive, for {?3}; the positive part is {?4}, and the other product {?5}")
 (relation int-mul-neg Tag Number
-  :why "the negative part of the product, for {?1}, whose positive part is {?2}")
+  :why "the negative part of the product, for {?3}, whose positive part is {?4}")
 (relation int-cmp-l Tag Number Number
-  :why "the left side of the comparison, for {?1}; still to add are {?2} and {?3}")
+  :why "the left side of the comparison, for {?3}; still to add are {?4} and {?5}")
 (relation int-cmp-r Tag Number
-  :why "the right side of the comparison, for {?1}, whose left side is {?2}")
+  :why "the right side of the comparison, for {?3}, whose left side is {?4}")
 (relation int-div-of Request
-  :why "the division {?1}")
+  :why "the division {?3}")
 (relation int-div-a Request Number Number
-  :why "the dividend simplified, for {?1}, whose divisor is {?2} less {?3}")
+  :why "the dividend simplified, for {?3}, whose divisor is {?4} less {?5}")
 (relation int-div-b Request Integer
-  :why "the divisor simplified, for {?1}, whose dividend is {?2}")
+  :why "the divisor simplified, for {?3}, whose dividend is {?4}")
 (relation int-div-m Request Sign Sign Number
-  :why "the sizes divided, for {?1}: the dividend is {?2}, the divisor {?3}, and its size {?4}")
+  :why "the sizes divided, for {?3}: the dividend is {?4}, the divisor {?5}, and its size {?6}")
 (relation int-div-q Request Sign Number Number
-  :why "one more in the quotient, for {?1}, toward {?2}; the divisor's size is {?3} and the sizes' remainder {?4}")
+  :why "one more in the quotient, for {?3}, toward {?4}; the divisor's size is {?5} and the sizes' remainder {?6}")
 (relation int-div-r Request Sign Number
-  :why "the divisor's size less the remainder, for {?1}, toward {?2}; the quotient's size is {?3}")
+  :why "the divisor's size less the remainder, for {?3}, toward {?4}; the quotient's size is {?5}")
 
 ;; ── The operands ────────────────────────────────────────────────────────────
 ;; An integer stands for itself, as a number does in `std.math.decimal-arith`; a name goes
@@ -714,9 +714,9 @@
 ;; names `z` with a `let` is flagged for the `let`, and an integer with a
 ;; part `z` is flagged beside it.
 (relation int-check Integer
-  :why "{?1} is taken by an operation: its shape and its parts are checked")
+  :why "{?3} is taken by an operation: its shape and its parts are checked")
 (relation not-integer Integer Thing
-  :why "{?1} is not an integer: {?2} stands where a natural number goes")
+  :why "{?3} is not an integer: {?4} stands where a natural number goes")
 
 (rule int-check-parts ()
   :match  (int-check (int ?p ?n))
@@ -768,7 +768,7 @@
 ;; same rules (Q-M1f.249).
 ;; `ein-infer/tests/int_theory.rs` holds that nothing is missing here.
 (relation int-rule Rule
-  :why "{?1} is a rule std.math.int brings")
+  :why "{?3} is a rule std.math.int brings")
 
 ;; The closing rule's own name, as a written fact, which an import brings
 ;; with the module (Q-M1f.247). A name an import lists is live, so nothing

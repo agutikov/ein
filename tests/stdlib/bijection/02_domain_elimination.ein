@@ -44,9 +44,9 @@
 (import std.bijection :symbols (bijective-setup functional-negative injective-negative
                                 domain-elimination range-elimination))
 
-(relation is-a      T T          :why "{?1} is a {?2}")
-(relation wears     Agent Colour :why "{?1} wears {?2}")
-(relation undecided Agent Colour :why "whether {?1} wears {?2} is still open")
+(relation is-a      T T          :why "{?3} is a {?4}")
+(relation wears     Agent Colour :why "{?3} wears {?4}")
+(relation undecided Agent Colour :why "whether {?3} wears {?4} is still open")
 
 (is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
 (is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)

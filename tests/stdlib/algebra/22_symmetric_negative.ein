@@ -41,8 +41,8 @@
 (import std.algebra :symbols (symmetric symmetric-negative-setup symmetric-negative))
 (import std.macro   :symbols (unknown))
 
-(relation sits-with Guest Guest :why "{?1} sits with {?2}")
-(relation undecided Guest Guest :why "whether {?1} sits with {?2} is still open")
+(relation sits-with Guest Guest :why "{?3} sits with {?4}")
+(relation undecided Guest Guest :why "whether {?3} sits with {?4} is still open")
 
 (symmetric sits-with)
 

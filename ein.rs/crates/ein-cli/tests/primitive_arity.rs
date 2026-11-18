@@ -78,7 +78,7 @@ impl Drop for Scratch {
 /// as a firing one. The deductive closure has no such second source.
 fn cell(scratch: &Scratch, n: usize, guard: &str) -> Cell {
     let src = format!(
-        "(relation p T :why \"p holds of {{?1}}\")\n(relation q T :why \"q holds of {{?1}}\")\n\
+        "(relation p T :why \"p holds of {{?3}}\")\n(relation q T :why \"q holds of {{?3}}\")\n\
          (rule r ()\n  :match (and (p ?x) {guard})\n  :assert (q ?x) :why \"p holds of {{?x}} and the guard beside it holds of {{?x}}, so q holds of {{?x}}\")\n(p A)\n"
     );
     let path = scratch.0.join(format!("cell{n}.ein"));

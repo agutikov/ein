@@ -444,7 +444,7 @@ fn the_tagged_call_answers_under_its_tag() {
         ("462", "1071", 21),
     ];
     let mut body =
-        String::from("(relation pair Thing :why \"the pair {?1}\")\n(__closed__ pair)\n");
+        String::from("(relation pair Thing :why \"the pair {?3}\")\n(__closed__ pair)\n");
     let mut want = BTreeSet::new();
     for (i, (x, y, g)) in pairs.iter().enumerate() {
         body.push_str(&format!(

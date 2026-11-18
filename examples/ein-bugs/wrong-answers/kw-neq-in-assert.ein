@@ -32,7 +32,7 @@
 ;;; program answers its twin's R.
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation neqw Node :why "neqw holds of {?1}")
+(relation p Node :why "p holds of {?3}") (relation neqw Node :why "neqw holds of {?3}")
 (p a)
 (rule r () :match (p ?x) :assert (neqw ?x) :why "p holds of {?x}, so neqw holds of {?x}")
 (query :goal (neqw ?y))

@@ -358,7 +358,7 @@ fn a_knowledge_base_with_no_fact_under_an_arrow_has_no_frame() {
 /// `relation` are drawn as any relation, and every atom alike.
 #[test]
 fn is_a_and_relation_are_ordinary_relations() {
-    let text = "(relation owns Person Pet :why \"{?1} owns {?2}\")\n\
+    let text = "(relation owns Person Pet :why \"{?3} owns {?4}\")\n\
                 (is-a Bob Person)\n(is-a Dog Pet)\n(owns Bob Dog)\n";
     for fold in [false, true] {
         for dot in [kb_view(text, fold), program_view(text, fold)] {
@@ -650,8 +650,8 @@ fn kb_command(text: &str, base: Option<&std::path::Path>, fold: bool) -> Option<
 #[test]
 fn the_program_views_kb_is_the_kb_views_drawing() {
     let text = "\
-(relation owns Person Pet :why \"{?1} owns {?2}\")
-(relation lives Person :why \"{?1} lives\")
+(relation owns Person Pet :why \"{?3} owns {?4}\")
+(relation lives Person :why \"{?3} lives\")
 (owns Bob Dog :source \"condition (3)\")
 (claims Carol (owns Bob Cat))
 (not (owns Ann Dog))

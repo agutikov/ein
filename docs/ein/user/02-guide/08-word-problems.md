@@ -88,14 +88,14 @@ Here is the whole program, the part of the theory this problem needs written bes
 (import std.math.arith :symbols (z))
 
 ;; What a sentence says.
-(relation has Who Kind Number Moment :why "{?1} has {?3} {?2} at {?4}")
+(relation has Who Kind Number Moment :why "{?3} has {?5} {?4} at {?6}")
 (relation gave Who Who Kind Number Moment Moment
-  :why "{?1} gave {?4} {?3} to {?2}, between {?5} and {?6}")
-(relation asked Quantity :why "the question: {?1}")
+  :why "{?3} gave {?6} {?5} to {?4}, between {?7} and {?8}")
+(relation asked Quantity :why "the question: {?3}")
 ;; A quantity, and what is known of it.
-(relation amount Who Kind Moment :why "how many {?2} {?1} has at {?3}")
-(relation wanted Quantity :why "wanted: {?1}")
-(relation value Quantity Number :why "{?1}: {?2}")
+(relation amount Who Kind Moment :why "how many {?4} {?3} has at {?5}")
+(relation wanted Quantity :why "wanted: {?3}")
+(relation value Quantity Number :why "{?3}: {?4}")
 
 ;; The plan: backwards from the question.
 (rule asked-is-wanted ()
@@ -618,10 +618,10 @@ How a *no* reads depends on how the question is asked.
 ;; backwards leaves one digit a column, and a carry is left over the top.
 (import std.math.digits :symbols (md nz __closed__))
 
-(relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
-(relation one-answer Digit :why "by {?1}, a column has exactly one answer")
-(relation um-walk Tag Number Digit Digits :why "for {?1}: {?2} still to read, carry {?3}, x's digits so far {?4}")
-(relation factor-digits Digit Number Digits :why "x times {?1} = {?2} for the digits x = {?3}, top first")
+(relation unmul Digit Number :why "asked: which x makes x times {?3} = {?4}?")
+(relation one-answer Digit :why "by {?3}, a column has exactly one answer")
+(relation um-walk Tag Number Digit Digits :why "for {?3}: {?4} still to read, carry {?5}, x's digits so far {?6}")
+(relation factor-digits Digit Number Digits :why "x times {?3} = {?4} for the digits x = {?5}, top first")
 (__closed__ unmul) (__closed__ one-answer) (__closed__ um-walk) (__closed__ factor-digits)
 
 ;; The multipliers that share no factor with ten: their rows of `md` are a

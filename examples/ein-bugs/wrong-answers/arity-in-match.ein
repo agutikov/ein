@@ -22,8 +22,8 @@
 ;;; The engine refuses it at load (Q-M1f.315), on every command.
 ;;;
 
-(relation likes Person Drink :why "{?1} likes {?2}")
-(relation fan Person :why "{?1} is a fan")
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation fan Person :why "{?3} is a fan")
 
 (likes Ann Tea)
 

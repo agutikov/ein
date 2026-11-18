@@ -32,8 +32,8 @@
 ;;;
 ;;;
 
-(relation p T :why "{?1} is picked")
-(relation seen T :why "{?1} is seen")
+(relation p T :why "{?3} is picked")
+(relation seen T :why "{?3} is seen")
 
 (seen a)
 (seen b)

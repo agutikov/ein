@@ -1,7 +1,7 @@
 ;;; case 6710 (seed 20260820) — a generated program, minimised
-(relation r0 T T :why "r0 holds of {?1} and {?2}")
-(relation r1 T T :why "r1 holds of {?1} and {?2}")
-(relation is-a T T :why "{?1} is a {?2}")
+(relation r0 T T :why "r0 holds of {?3} and {?4}")
+(relation r1 T T :why "r1 holds of {?3} and {?4}")
+(relation is-a T T :why "{?3} is a {?4}")
 (is-a o2 T)
 (is-a o3 T)
 (r0 o2 o3)

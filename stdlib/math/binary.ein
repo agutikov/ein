@@ -110,21 +110,21 @@
 
 ;; ── The numeral ─────────────────────────────────────────────────────────────
 (relation b2 Number Bit
-  :why "the number written {?1}, then the bit {?2}")
+  :why "the number written {?3}, then the bit {?4}")
 
 ;; ── A named constant, which the module that declares `bin-let` writes ───────
 (relation bin-named Name
-  :why "{?1} is a named constant")
+  :why "{?3} is a named constant")
 
 ;; ── The check, which an operation asks for, and its label ───────────────────
 ;; `(bin-check N N)` asks whether N is a binary number; `(bin-check N REST)`
 ;; is the walk, REST what is still to check.
 (relation bin-check Number Number
-  :why "checking {?1}: {?2} is still to check")
+  :why "checking {?3}: {?4} is still to check")
 (relation bin-valid Number
-  :why "{?1} is a binary number")
+  :why "{?3} is a binary number")
 (relation not-binary Number Thing
-  :why "{?1} is not a binary number: {?2} stands where a bit or a number goes")
+  :why "{?3} is not a binary number: {?4} stands where a bit or a number goes")
 
 ;; A place whose bit is one of the two: the walk goes on to the prefix.
 (rule bin-numeral-step ()
@@ -179,7 +179,7 @@
 ;; is named, and `arith`, the entry of the module below. `ein-infer/tests/
 ;; arith_theory.rs` holds that nothing is missing here.
 (relation binary-rule Rule
-  :why "{?1} is a rule of std.math.binary")
+  :why "{?3} is a rule of std.math.binary")
 
 (rule binary ()
   :match  ()

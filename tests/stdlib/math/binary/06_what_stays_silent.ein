@@ -23,7 +23,7 @@
 (import std.math.binary :symbols (b2 not-binary bin-valid))
 (import std.math.arith :symbols (z))
 
-(relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(relation pair Thing Thing :why "the pair of {?3} and {?4}")
 (__closed__ pair)
 
 (bin-let far (b2 end 1))

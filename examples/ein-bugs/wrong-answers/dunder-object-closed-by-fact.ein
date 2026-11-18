@@ -8,9 +8,9 @@
 ;;; 1 024 states, which is the witness's right answer, and the witness's
 ;;; answer too. One closure stated two ways is one closure.
 
-(relation digit Digit :why "{?1} is a digit")
+(relation digit Digit :why "{?3} is a digit")
 (digit 0) (digit 1) (digit 2) (digit 3) (digit 4)
 (digit 5) (digit 6) (digit 7) (digit 8) (digit 9)
 (__closed__ digit)
-(relation total Number :why "the total is {?1}")
+(relation total Number :why "the total is {?3}")
 (query :goal (total ?x))

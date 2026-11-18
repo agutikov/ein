@@ -1,16 +1,17 @@
 //! The texts a trace step reads
 //! ([`docs/ein/user/03-syntax-and-semantics/14-natural-language.md`](../../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)).
 //!
-//! **Two texts, from two places.** A fact's *statement* is what the fact
-//! says, its relation's `:why` with the fact's arguments in its positional
-//! references (`{?1}`, `{?2}`, …), [`statement`]. A firing's *reason* is why
-//! its conclusions hold, the rule's `:why` filled with the firing's bindings,
-//! [`rule_sentence`], which the trace's step and the DOT slice both fill
-//! through, so a rule's `:why` is filled one way.
+//! **A `:why` reads the form it is written on** (Q-M1f.58). A rule's, filled
+//! with a firing's bindings, is the firing's *reason*, why its conclusions
+//! hold, [`rule_sentence`], which the trace's step and the DOT slice both
+//! fill through, so a rule's `:why` is filled one way. A declaration's is
+//! what the declaration says, its *statement*, `{?n}` its n-th arrow,
+//! [`statement`]. A fact of a relation has no `:why` of its own and takes
+//! none from the declaration: it reads by its `:source`, its rule's reason,
+//! or as the trace prints it, `R(a, b)`.
 //!
-//! **No invented prose.** A fact whose relation carries no `:why` has no
-//! statement, and a rule with none gives no reason; where both are missing
-//! the fact reads as the trace prints it, `R(a, b)`.
+//! **No invented prose.** Where no form the program wrote carries a text,
+//! nothing is said beyond the fact itself.
 
 use ein_core::{FactId, Program, Symbol, Terms, Value, render_why};
 
@@ -37,18 +38,40 @@ pub fn rule_sentence(
     Some(render_why(template, &named))
 }
 
-/// A fact's statement: its relation's `:why`, with `{?1}` its first argument,
-/// `{?2}` its second, …; `None` where the relation carries none.
+/// What a declaration says: its `:why`, read on the form it is written on.
+///
+/// `(relation owns Person Pet :why "a {?3} {?2} a {?4}")` is the fact
+/// `(relation owns Person Pet)`, and `{?n}` is its n-th arrow: `{?1}` the
+/// atom `relation`, `{?2}` the relation's name, `{?k+2}` its k-th label; it
+/// reads *a Person owns a Pet*. Only that fact reads by the text, however a
+/// run reaches it: a fact of the relation, `(owns Ann Dog)`, has no `:why` of
+/// its own and gets none from the declaration, and the companion the loader
+/// stores beside a typed declaration, `(relation owns)`, is no form the
+/// program wrote. `None` for every other fact, and where the declaration
+/// carries no `:why`, or an empty one.
 pub fn statement(program: &Program, terms: &Terms, f: FactId) -> Option<String> {
     let (rel, args) = terms.fact(f);
-    let template = terms.sym(program.relations.get(rel)?.why?);
+    if rel != terms.kernel.relation {
+        return None;
+    }
+    let declared = program.relations.get(args.first()?.as_sym()?)?;
+    let written = declared.declared
+        && args.len() == declared.signature.len() + 1
+        && args[1..]
+            .iter()
+            .zip(declared.signature.iter())
+            .all(|(a, &label)| a.as_sym() == Some(label));
+    if !written {
+        return None;
+    }
+    let template = terms.sym(declared.why?);
     if template.is_empty() {
         return None;
     }
-    let positional: Vec<(String, String)> = args
-        .iter()
+    let arrows: Vec<(String, String)> = std::iter::once(Value::sym(rel))
+        .chain(args.iter().copied())
         .enumerate()
-        .map(|(i, a)| ((i + 1).to_string(), terms.display(*a)))
+        .map(|(i, a)| ((i + 1).to_string(), terms.display(a)))
         .collect();
-    Some(render_why(template, &positional))
+    Some(render_why(template, &arrows))
 }

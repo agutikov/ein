@@ -32,8 +32,8 @@
 ;;; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered it.
 ;;;
 
-(relation p T :why "{?1} is a p")
-(relation q T :why "{?1} is a q")
+(relation p T :why "{?3} is a p")
+(relation q T :why "{?3} is a q")
 
 (p a)
 

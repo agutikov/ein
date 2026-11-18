@@ -172,7 +172,7 @@ A `.ein` file is a **flat** sequence of S-expression forms, each classified by i
 
 | head | role |
 |---|---|
-| `relation` | declare a relation, a label for each of its arguments, and the `:why` template that renders its facts |
+| `relation` | declare a relation, a label for each of its arguments, and the `:why` that reads the declaration |
 | `rule` / `hrule` | a saturation rule / a hypothesis rule: `:match` → `:assert`, with a `:why` |
 | `query` | a question about the answer: a `:goal`, a `:goal-text` template, and with `:expect` what the answer should be |
 | `solve` | the problem's lattice, stated once (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`, `:no-search`), and the expected region |

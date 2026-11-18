@@ -3,9 +3,9 @@
 ;;; application's identity is its activator's every argument (Q-M1e.16).
 ;;; Regression `binding-key-both/binding-key-layout` (`corpus/regressions.toml`); the
 ;;; note is `binding-key-layout.md`. Root: `(noted 1 1)` and `(noted 2 1)`.
-(relation edge  Node Node :why "there is an edge from {?1} to {?2}")
-(relation holds Node      :why "{?1} holds")
-(relation noted Node Node :why "{?1} is noted with {?2}")
+(relation edge  Node Node :why "there is an edge from {?3} to {?4}")
+(relation holds Node      :why "{?3} holds")
+(relation noted Node Node :why "{?3} is noted with {?4}")
 
 (rule note (?R ?f)
   :match  (and (?R ?a ?b) (holds ?f))

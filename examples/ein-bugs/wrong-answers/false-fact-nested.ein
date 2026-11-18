@@ -16,9 +16,9 @@
 ;;; Bob))`, and the goal answers `?c = (false Bob)`, exit 0 on every command.
 ;;; Now refused at load.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation says Guest Claim :why "{?1} says {?2}")
+(relation says Guest Claim :why "{?3} says {?4}")
 (says Ann (false Bob))
 (solve :hypothesis-relations ())
 (query :goal (says ?g ?c))

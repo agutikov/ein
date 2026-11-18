@@ -23,10 +23,10 @@
 ;;; compiler's line. The engine refuses it at load.
 ;;;
 
-(relation a Thing :why "{?1} is an a")
-(relation s Thing :why "{?1} is an s")
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation a Thing :why "{?3} is an a")
+(relation s Thing :why "{?3} is an s")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (is-a k Thing)
 (a k)
 (rule mk () :match (s ?x) :assert (r a) :why "{?x} is an s, so r is activated over a")

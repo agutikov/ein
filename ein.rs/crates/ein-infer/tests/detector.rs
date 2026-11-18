@@ -24,7 +24,7 @@ use ein_ir::{Ast, load, parse};
 /// stratified (r < q < p), `derive-p` written first, so root holds a stale
 /// `(p one)` beside `(q one)` from scratch, and swapping the two rules' text
 /// changes the universe.
-const STRATIFIED_STALE: &str = "(relation thing T :why \"{?1} is a thing\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\")
+const STRATIFIED_STALE: &str = "(relation thing T :why \"{?3} is a thing\") (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\")
      (thing one)
      (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :why \"{?x} is a thing and q does not hold of it, so p holds of {?x}\")
      (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :why \"{?x} is a thing and r does not hold of it, so q holds of {?x}\")
@@ -32,8 +32,8 @@ const STRATIFIED_STALE: &str = "(relation thing T :why \"{?1} is a thing\") (rel
 
 /// `lattice/10_fifo_gap.ein`'s program, written here with its own `:why`s:
 /// `r2` written first, and its race is the written order's, as the file's is.
-const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?1} is a thing\") (relation a T :why \"a holds of {?1}\") (relation b T :why \"b holds of {?1}\")
-     (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation z T :why \"z holds of {?1}\")
+const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?3} is a thing\") (relation a T :why \"a holds of {?3}\") (relation b T :why \"b holds of {?3}\")
+     (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation z T :why \"z holds of {?3}\")
      (thing one)
      (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of {?x}, a thing\")
      (hrule guess-b () :match (thing ?x) :assert (b ?x) :why \"guess that b holds of {?x}, a thing\")
@@ -44,7 +44,7 @@ const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?1} is a thing\") (rel
 /// A flagged program whose root is dead, over 17 candidates: an obligation's
 /// trigger is its site, and `dead` fires at root.
 const ROOT_DEAD_PAST_THE_LIMIT: &str = "
-     (relation thing T :why \"{?1} is a thing\") (relation h T :why \"h holds of {?1}\") (relation need T T :why \"h holding of {?2} pays debt {?1}\")
+     (relation thing T :why \"{?3} is a thing\") (relation h T :why \"h holds of {?3}\") (relation need T T :why \"h holding of {?4} pays debt {?3}\")
      (thing A) (thing B) (thing C) (thing D) (thing E) (thing F) (thing G) (thing H)
      (thing I) (thing J) (thing K) (thing L) (thing M) (thing N) (thing O) (thing P)
      (thing Q)

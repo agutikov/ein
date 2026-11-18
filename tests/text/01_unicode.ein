@@ -19,8 +19,8 @@
 ;;; R is {∅}: root derives `(housed Ann)` and `(housed Bob)`, and the solve form
 ;;; leaves nothing to guess.
 
-(relation lives T T :why "Жилец {?1} живёт в доме {?2} — «日本語», 🦓")
-(relation housed T :why "{?1} 有房子 ✅")
+(relation lives T T :why "Жилец {?3} живёт в доме {?4} — «日本語», 🦓")
+(relation housed T :why "{?3} 有房子 ✅")
 
 (lives Ann H1 :source "Условие (1): Анна живёт в первом доме 🏠\n二行目\tタブ\r\"引用\" \\ \u{1F993}")
 (lives Bob H2 :source "条件 (2): ボブは二番目の家に住んでいる

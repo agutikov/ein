@@ -11,7 +11,7 @@
 
 (import std.algebra :symbols (irreflexive))
 
-(relation loops Node Node :why "{?1} points at {?2}")
+(relation loops Node Node :why "{?3} points at {?4}")
 
 (irreflexive loops)
 

@@ -33,9 +33,9 @@
 
 (import std.macro :symbols (forall))
 
-(relation person   Person       :why "{?1} is a person")
-(relation likes    Person Food  :why "{?1} likes {?2}")
-(relation believes Person Claim :why "{?1} believes that {?2}")
+(relation person   Person       :why "{?3} is a person")
+(relation likes    Person Food  :why "{?3} likes {?4}")
+(relation believes Person Claim :why "{?3} believes that {?4}")
 
 (person Ann)
 (person Bob)

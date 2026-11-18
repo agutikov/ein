@@ -122,51 +122,51 @@
 
 ;; ── The number: 2 digits, the most significant first ──
 (relation num2 Digit Digit
-  :why "the number written {?1}{?2}")
+  :why "the number written {?3}{?4}")
 
 ;; ── The protocol: a request fact, answered by a result fact or by a flag ──
 (relation add2 Number Number
-  :why "asked: {?1} + {?2}")
+  :why "asked: {?3} + {?4}")
 (relation sum2-of Number Number Number
-  :why "{?1} + {?2} = {?3}")
+  :why "{?3} + {?4} = {?5}")
 (relation sub2 Number Number
-  :why "asked: {?1} - {?2}")
+  :why "asked: {?3} - {?4}")
 (relation diff2-of Number Number Number Number
-  :why "{?1} - {?2} = {?3}, short by {?4}")
+  :why "{?3} - {?4} = {?5}, short by {?6}")
 (relation cmp2 Number Number
-  :why "asked: {?1} compared with {?2}")
+  :why "asked: {?3} compared with {?4}")
 (relation cmp2-of Number Number Order
-  :why "{?1} against {?2}: {?3}")
+  :why "{?3} against {?4}: {?5}")
 (relation mul2 Number Number
-  :why "asked: {?1} x {?2}")
+  :why "asked: {?3} x {?4}")
 (relation product2-of Number Number Number
-  :why "{?1} x {?2} = {?3}")
+  :why "{?3} x {?4} = {?5}")
 (relation div2 Number Number
-  :why "asked: {?1} divided by {?2}")
+  :why "asked: {?3} divided by {?4}")
 (relation quot2-of Number Number Number Number
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}")
 (relation overflow Request
-  :why "the answer to {?1} does not fit 2 digits")
+  :why "the answer to {?3} does not fit 2 digits")
 (relation to2 Nested
-  :why "asked: {?1} as a number of 2 digits")
+  :why "asked: {?3} as a number of 2 digits")
 (relation as2 Nested Number
-  :why "{?1} is {?2} in 2 digits")
+  :why "{?3} is {?4} in 2 digits")
 (relation big Nested
-  :why "{?1} is written with more than 2 digits")
+  :why "{?3} is written with more than 2 digits")
 (relation from2 Number
-  :why "asked: {?1} as a number of any length")
+  :why "asked: {?3} as a number of any length")
 (relation of2 Number Nested
-  :why "{?1} is {?2}")
+  :why "{?3} is {?4}")
 
 ;; ── The circuit's own facts: the states of a product and of a quotient ──
 (relation mul2-at Number Number Step Number Number
-  :why "multiplying {?1} by {?2}, {?3} digits to go: of the multiplier {?4} is left, and the sum so far is {?5}")
+  :why "multiplying {?3} by {?4}, {?5} digits to go: of the multiplier {?6} is left, and the sum so far is {?7}")
 (relation row2 Digit Digit Digit
-  :why "the multiple written {?1}{?2}{?3}")
+  :why "the multiple written {?3}{?4}{?5}")
 (relation multiples2 Row Row Row Row Row Row Row Row Row
-  :why "the divisor's multiples: {?1}, {?2}, {?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9}")
+  :why "the divisor's multiples: {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}, {?10} and {?11}")
 (relation div2-at Number Number Multiples Step Number Number Number
-  :why "dividing {?1} by {?2}, {?4} digits to go: of the dividend {?5} is left, {?6} is left over, and the quotient so far is {?7}")
+  :why "dividing {?3} by {?4}, {?6} digits to go: of the dividend {?7} is left, {?8} is left over, and the quotient so far is {?9}")
 
 ;; ── Addition: one rule, a premise a column ──
 (rule add2-fits ()
@@ -454,7 +454,7 @@
 ;; read; an import brings the whole theory whether or not a program lists the
 ;; entry (Q-M1f.240).
 (relation num2-rule Rule
-  :why "{?1} is a rule of std.math.num2")
+  :why "{?3} is a rule of std.math.num2")
 
 ;; The closing rule's own name, as a written fact. It is not what keeps
 ;; `arith2` in a program inlined and tree-shaken, as the program a

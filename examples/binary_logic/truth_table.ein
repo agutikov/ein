@@ -32,7 +32,7 @@
 (is-a a Input) (is-a b Input) (is-a cin Input)
 
 (relation row Bit Bit Bit Bit Bit
-  :why "{?1} + {?2} + {?3}: digit {?4}, carry {?5}")
+  :why "{?3} + {?4} + {?5}: digit {?6}, carry {?7}")
 (__closed__ row)
 (rule row-of ()
   :match  (and (in a ?a) (in b ?b) (in cin ?c) (val sum ?s) (val cout ?k))

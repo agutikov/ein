@@ -1,4 +1,4 @@
-(relation r1 T T :why "r1 holds of {?1} and {?2}")
+(relation r1 T T :why "r1 holds of {?3} and {?4}")
 (is-a o1 T)
 (r1 o4 o5)
 (rule fire-2 ()

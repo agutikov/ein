@@ -5,7 +5,7 @@
 ;;; witness's `_` was read as meaning, where the witness itself is refused
 ;;; at the parse (Q-M1e2.22).
 
-(relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
+(relation holds Node :why "{?3} holds") (relation hit Node :why "{?3} is hit")
 (holds a)
 (rule z () :match (absent (holds ?any)) :assert (hit z) :why "nothing holds, so z is hit")
 (solve :no-hypothesis (holds))

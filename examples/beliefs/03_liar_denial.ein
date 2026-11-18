@@ -21,8 +21,8 @@
 ;;; `04_liar_denial_contradicted.ein` and `05_liar_denial_beside_the_fact.ein`
 ;;; are this program with one more fact each.
 
-(relation liar  Person       :why "{?1} lies")
-(relation think Person Claim :why "{?1} thinks that {?2}")
+(relation liar  Person       :why "{?3} lies")
+(relation think Person Claim :why "{?3} thinks that {?4}")
 
 (think Alice (not (= 5 (+ 2 2))))
 (liar Alice)

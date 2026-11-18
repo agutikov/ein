@@ -17,7 +17,7 @@
 (import std.math.decimal :symbols (n not-decimal))
 (import std.math.arith :symbols (z))
 
-(relation price Item Amount :why "{?1} costs {?2}")
+(relation price Item Amount :why "{?3} costs {?4}")
 (__closed__ price)
 (price apple (n 1 2))
 (add (n z 4) (n z 3))

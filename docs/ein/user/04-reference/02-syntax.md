@@ -180,7 +180,7 @@ of two labels. Every declaration therefore also stores `(relation R)`, the patte
 at any count:
 
 ```lisp
-(relation likes Person Drink :why "{?1} likes {?2}")
+(relation likes Person Drink :why "{?3} likes {?4}")
 ;; stores (relation likes Person Drink), the mirror,
 ;;    and (relation likes), the membership fact
 ```
@@ -190,17 +190,20 @@ For a bare declaration the two coincide, so one fact is stored. A relation no fo
 :assert (relation ?x) …)` over `(p a)` derives `(relation a :rule r)`, a fact like any other, with no declaration
 behind it. So `(relation ?R)` matches every declared relation and every object a rule has concluded it of.
 
-**The `:why` template** turns a fact of the relation into natural-language text, its *statement*, written after each
-fact of the relation `--trace` derives. It refers to the fact's
-argument **slots by position**: `{?1}` is the first argument, `{?2}` the second; a rule's and a goal's template refer
-to variables by name
-([Q31](../../../decisions/language/Q31-a-why-template-refers-to-a-variable-as-var.md)). Every text a program writes,
-where each is printed and what a fact reads as where it has none, is
+**The `:why` template** reads the form it is written on, the declaration, as natural-language text, its
+*statement*, which `--trace` prints after the declaration where a rule reads it. It refers to the declaration's
+**arrows by number**: `{?1}` is the atom `relation`, `{?2}` the relation's name, `{?3}` its first label; a rule's
+and a goal's template refer to variables by name
+([Q31](../../../decisions/language/Q31-a-why-template-refers-to-a-variable-as-var.md)). A fact of the relation takes
+no text from it, and carries none of its own
+([Q-M1f.58](../../../decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md)). Every text a program
+writes, where each is printed and what a fact reads as where it has none, is
 [`../03-syntax-and-semantics/14-natural-language.md`](../03-syntax-and-semantics/14-natural-language.md).
 
 ```lisp
-(relation drink-loc Drink House :why "{?1} is drunk in {?2}")
-;; (drink-loc Water House-1)  →  "Water is drunk in House-1"
+(relation drink-loc Drink House :why "{?3} is drunk in {?4}")
+;; (relation drink-loc Drink House)  →  "Drink is drunk in House"
+;; (drink-loc Water House-1)         →  drink-loc(Water, House-1), as written
 ```
 
 A schema and its implicit assumptions, all flat forms; the property tags and the enumerations carry no annotation,
@@ -208,7 +211,7 @@ so they read as background:
 
 ```lisp
 (is-a House Attribute) (is-a Color Attribute)
-(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
 (is-a Norwegian Nationality)
 (is-a House-1 House)
 (symmetric  co-located)
@@ -227,9 +230,9 @@ means what that rule does with it. Here `first-slot` reads the label of a relati
 put there an atom with no `is-a` fact into it:
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation likes Person Drink :why "{?1} likes {?2}")
-(relation misplaced Thing Label :why "{?1} is written where a {?2} goes, and is none")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation misplaced Thing Label :why "{?3} is written where a {?4} goes, and is none")
 
 ;; A rule that reads a declaration: ?A is the label of ?R's first slot.
 (rule first-slot (?R)
@@ -262,7 +265,7 @@ signature holds atoms it does not read into.
 | **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)) |
 
 So a label is not inert where the blind enumerator builds the candidates. `ein show hyps` on the two lines
-`(relation likes Person Drink :why "{?1} likes {?2}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;
+`(relation likes Person Drink :why "{?3} likes {?4}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;
 with the first label written `Ann` in place of `Person` it lists none, `Ann` being a label and so not guessable. Where an
 hrule proposes, the labels are not read: the same two lines with an hrule that proposes `(likes ?b ?a)` from
 `(likes ?a ?b)` list `(likes Tea Ann)` under either label.
@@ -729,8 +732,8 @@ string; strings are not concatenated.
 ;;  →  "The Norwegian drinks water in House-1; the Japanese owns zebra in House-5"
 ```
 
-A relation's `:why` renders one *fact*; a query's `:goal-text` renders the *headline* from the goal's bindings, one
-class's sentence on the read-out.
+A relation's `:why` renders its *declaration*; a query's `:goal-text` renders the *headline* from the goal's
+bindings, one class's sentence on the read-out.
 
 ### Import
 

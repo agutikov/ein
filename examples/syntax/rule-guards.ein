@@ -9,8 +9,8 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation r T T :why "r holds of {?1} and {?2}")
-(relation s T T :why "s holds of {?1} and {?2}")
+(relation r T T :why "r holds of {?3} and {?4}")
+(relation s T T :why "s holds of {?3} and {?4}")
 (rule g ()
   :match  (and (r ?a ?b) (absent (and (s ?a ?c) (r ?c ?b))) (neq ?a ?b))
   :assert (s ?a ?b)

@@ -25,8 +25,8 @@
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation likes Who Whom :why "{?1} likes {?2}")
-     (relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(relation likes Who Whom :why "{?3} likes {?4}")
+     (relation pair Thing Thing :why "the pair of {?3} and {?4}")
      (rule the-program-guesses-nothing ()
        :match  ()
        :assert (and (__closed__ likes) (__closed__ pair))

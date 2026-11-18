@@ -7071,7 +7071,7 @@ verdict   = "Solution"
 k         = 1
 exhausted = true
 printed   = [
-  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?3} is a colour\")" },
   { file = "models/01.ein", label = "(module dump-selection-library", line = "(module dump-selection-library" },
   { file = "models/01.ein", label = "(rule palette", line = "(rule palette ()" },
 ]
@@ -7086,7 +7086,7 @@ models    = [
   [],
 ]
 printed   = [
-  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?3} is a colour\")" },
   { file = "models/01.ein", label = "(module dump-selection-library", line = "(module dump-selection-library" },
   { file = "models/01.ein", label = "(rule palette", line = "(rule palette ()" },
 ]

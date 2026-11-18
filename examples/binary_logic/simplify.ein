@@ -25,17 +25,17 @@
 (import std.bool.gates :symbols (And Or Xor Andn))
 
 (relation gate Instance Function Wire Wire Wire
-  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+  :why "{?3} is a {?4} gate from {?5} and {?6} to {?7}")
 (relation const Wire Bit
-  :why "the wire {?1} is the constant {?2}")
+  :why "the wire {?3} is the constant {?4}")
 (relation same-wire Wire Wire
-  :why "{?1} always carries what {?2} carries")
+  :why "{?3} always carries what {?4} carries")
 (relation before Wire Wire
-  :why "{?1} is written before {?2}")
+  :why "{?3} is written before {?4}")
 (relation normal Instance Function Wire Wire Wire
-  :why "{?1}, its inputs in order: a {?2} gate from {?3} and {?4} to {?5}")
+  :why "{?3}, its inputs in order: a {?4} gate from {?5} and {?6} to {?7}")
 (relation same-gate Instance Instance
-  :why "{?1} and {?2} compute the same thing")
+  :why "{?3} and {?4} compute the same thing")
 
 (const one 1)
 (gate g1 And x one p)          ; x and 1

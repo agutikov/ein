@@ -161,7 +161,7 @@ fn refused(text: &str) -> ein_ir::ParseError {
 #[test]
 fn a_where_guard_written_as_a_positional_premise_compiles() {
     let mut l = load_text(
-        r#"(relation r T T :why "r holds of {?1} and {?2}")
+        r#"(relation r T T :why "r holds of {?3} and {?4}")
 (rule old-where (?r)
   :match (and (?r ?a ?b) (neq ?a ?b))
   :assert (?r ?b ?a)
@@ -186,7 +186,7 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
     let program = |q: &str| {
         let s = |text: &str| format!("{q}{text}{q}");
         format!(
-            r#"(relation holds Node :why "{{?1}} holds") (relation wrap Node :why "wrap holds of {{?1}}") (relation hit Node :why "hit holds of {{?1}}") (relation tag Node Node :why "{{?1}} is tagged {{?2}}")
+            r#"(relation holds Node :why "{{?3}} holds") (relation wrap Node :why "wrap holds of {{?3}}") (relation hit Node :why "hit holds of {{?3}}") (relation tag Node Node :why "{{?3}} is tagged {{?4}}")
 (holds {one}) (holds 1) (holds {b}) (wrap (box {one}))
 (rule top    () :match (holds {one})              :assert (hit top) :why "1 holds, so hit holds of top")
 (rule nested () :match (wrap (box {one}))         :assert (hit nested) :why "wrap holds of (box 1), so hit holds of nested")
@@ -251,7 +251,7 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
             }
         };
         format!(
-            "(relation holds T :why \"{{?1}} holds\") (relation pair T T :why \"{{?1}} and {{?2}} are a pair\") (relation wrap T :why \"wrap holds of {{?1}}\") (relation hit T :why \"hit holds of {{?1}}\")
+            "(relation holds T :why \"{{?3}} holds\") (relation pair T T :why \"{{?3}} and {{?4}} are a pair\") (relation wrap T :why \"wrap holds of {{?3}}\") (relation hit T :why \"hit holds of {{?3}}\")
 (holds a) (pair a b) (wrap (box a)) (not (pair b a))
 (rule top    () :match (holds {})                 :assert (hit top) :why \"some value holds, so hit holds of top\")
 (rule nested () :match (wrap (box {}))            :assert (hit nested) :why \"wrap holds of some (box …), so hit holds of nested\")
@@ -378,7 +378,7 @@ fn every_compile_error_says_what_its_expected_file_says() {
 /// invariant.
 #[test]
 fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
-    let decls = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n";
+    let decls = "(relation a T :why \"a holds of {?3}\") (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation out T :why \"out holds of {?3}\")\n";
     for (site, match_) in [
         ("positive premise", "(and (a ?x) (or (p ?x) (q ?x)))"),
         (
@@ -432,7 +432,7 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
 #[test]
 fn the_lines_a_macro_body_reaches_are_the_loaders() {
     let err = load_error(
-        "(macro two (?a ?b) (absent ?a ?b) :why \"an absent of both {?a} and {?b}, two premises where it takes one\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
+        "(macro two (?a ?b) (absent ?a ?b) :why \"an absent of both {?a} and {?b}, two premises where it takes one\")\n(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p a)\n\
          (rule r () :match (and (p ?x) (two (p ?x) (p ?x))) :assert (hit ?x) :why \"p holds of {?x} and two's absent holds, so hit holds of {?x}\")\n",
     );
     // In Ein's words, at load: the place in the macro's body, the rule, the
@@ -444,7 +444,7 @@ fn the_lines_a_macro_body_reaches_are_the_loaders() {
          in an (and …)"
     );
     let err = load_error(
-        "(macro three (?a ?b ?c) (eq ?a ?b ?c) :why \"{?a}, {?b} and {?c} are equal, three arguments where eq takes two\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
+        "(macro three (?a ?b ?c) (eq ?a ?b ?c) :why \"{?a}, {?b} and {?c} are equal, three arguments where eq takes two\")\n(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p a)\n\
          (rule r () :match (and (p ?x) (three ?x ?x ?x)) :assert (hit ?x) :why \"p holds of {?x}, which three calls equal to itself, so hit holds of {?x}\")\n",
     );
     assert_eq!(
@@ -453,7 +453,7 @@ fn the_lines_a_macro_body_reaches_are_the_loaders() {
          arguments, not 3 — it compares two values, so write one guard per pair"
     );
     let err = load_error(
-        "(macro id (?x) ?x :why \"{?x} itself, unchanged\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
+        "(macro id (?x) ?x :why \"{?x} itself, unchanged\")\n(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p a)\n\
          (rule r () :match (p ?y) :assert (id ?y) :why \"p holds of {?y}, so the conclusion is {?y} itself\")\n",
     );
     assert_eq!(
@@ -462,7 +462,7 @@ fn the_lines_a_macro_body_reaches_are_the_loaders() {
          is a fact (relation argument …), or an (and …) of facts"
     );
     let unbound = load_error(
-        "(relation a T :why \"a holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n\
+        "(relation a T :why \"a holds of {?3}\") (relation out T :why \"out holds of {?3}\")\n\
          (rule free-head ()\n  :match (and (a ?x) (absent (?R ?x)))\n  :assert (out ?x) :why \"a holds of {?x} and no relation holds of {?x}, so out holds of {?x}\")\n",
     );
     assert!(
@@ -526,7 +526,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     // Digits are a name: `3` is the relation `mirror` matches, which holds
     // `(3 A B)`, so the rule concludes `(3 B A)`.
     let mut digits = load_text(&format!(
-        "(relation q T T :why \"q holds of {{?1}} and {{?2}}\")\n(q A B)\n(3 A B)\n(num 3)\n\
+        "(relation q T T :why \"q holds of {{?3}} and {{?4}}\")\n(q A B)\n(3 A B)\n(num 3)\n\
          (rule make () :match (num ?n) :assert (mirror ?n) :why \"num holds of {{?n}}, so mirror runs over the relation {{?n}}\")\n{MIRROR}"
     ));
     digits.saturate();
@@ -542,7 +542,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
             "(rule mirror (?R) :match {pattern} :assert (hit a) :why \"a fact of {{?R}} matches the pattern, so hit holds of a\")"
         );
         let err = load_error(&format!(
-            "(relation q T T :why \"q holds of {{?1}} and {{?2}}\") (relation hit T :why \"hit holds of {{?1}}\") (relation box T :why \"box holds of {{?1}}\")\n(q A B) (src (q A B))\n\
+            "(relation q T T :why \"q holds of {{?3}} and {{?4}}\") (relation hit T :why \"hit holds of {{?3}}\") (relation box T :why \"box holds of {{?3}}\")\n(q A B) (src (q A B))\n\
              (rule make () :match (src ?f) :assert (mirror ?f) :why \"src holds of {{?f}}, so mirror runs over the relation {{?f}}\")\n{rule}"
         ));
         assert_eq!(
@@ -557,7 +557,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     // it such an activator: no program the loader accepts reaches it.
     for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
         let mut l = load_text(&format!(
-            "(relation q T T :why \"q holds of {{?1}} and {{?2}}\") (relation hit T :why \"hit holds of {{?1}}\") (relation box T :why \"box holds of {{?1}}\")\n(q A B)\n\
+            "(relation q T T :why \"q holds of {{?3}} and {{?4}}\") (relation hit T :why \"hit holds of {{?3}}\") (relation box T :why \"box holds of {{?3}}\")\n(q A B)\n\
              (rule mirror (?R) :match {pattern} :assert (hit a) :why \"a fact of {{?R}} matches the pattern, so hit holds of a\")"
         ));
         let rule =
@@ -592,7 +592,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
 
     // A name is what the parameter is for.
     let mut ok = load_text(&format!(
-        "(relation q T T :why \"q holds of {{?1}} and {{?2}}\")\n(q A B)\n(mirror q)\n{MIRROR}"
+        "(relation q T T :why \"q holds of {{?3}} and {{?4}}\")\n(q A B)\n(mirror q)\n{MIRROR}"
     ));
     ok.saturate();
     assert_eq!(ok.facts_under("q"), ["(q A B)", "(q B A)"]);
@@ -611,7 +611,7 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
 fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     // Written down, read by the premise: `activator-nested-value.ein`'s shape.
     let mut matched = load_text(
-        "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a) (p b) (p (f a))\n\
+        "(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p a) (p b) (p (f a))\n\
          (rule act (?y) :match (p ?y) :assert (hit ?y) :why \"act names {?y} and p holds of it, so hit holds of {?y}\")\n(act (f a))\n",
     );
     matched.saturate();
@@ -620,7 +620,7 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     // Written down, read by the conclusion alone:
     // `parameter-nested-assert.ein`'s shape.
     let mut concluded = load_text(
-        "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
+        "(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p a)\n\
          (rule act (?y) :match (p ?x) :assert (hit ?y) :why \"act names {?y} and p holds of {?x}, so hit holds of {?y}\")\n(act (f a))\n",
     );
     concluded.saturate();
@@ -629,7 +629,7 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     // Derived by a rule through a variable, and read by both clauses: the
     // activator `mk` derives binds `?y` to the fact `src` holds.
     let mut derived = load_text(
-        "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation src T :why \"src holds of {?1}\")\n\
+        "(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\") (relation src T :why \"src holds of {?3}\")\n\
          (p a) (p b) (p (f a)) (src (f a))\n\
          (rule mk () :match (src ?s) :assert (act ?s) :why \"src holds of {?s}, so act runs for {?s}\")\n\
          (rule act (?y) :match (p ?y) :assert (and (hit ?y) (hit (got ?y))) :why \"act names {?y} and p holds of it, so hit holds of {?y} and of (got {?y})\")\n",
@@ -643,7 +643,7 @@ fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
     // Two activators that differ only in a nested fact bind two values, and
     // each plan matches its own.
     let mut two = load_text(
-        "(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p (f a)) (p (f b)) (p c)\n\
+        "(relation p T :why \"p holds of {?3}\") (relation hit T :why \"hit holds of {?3}\")\n(p (f a)) (p (f b)) (p c)\n\
          (rule act (?y) :match (p ?y) :assert (hit ?y) :why \"act names {?y} and p holds of it, so hit holds of {?y}\")\n(act (f a)) (act (f b))\n",
     );
     two.saturate();
@@ -678,9 +678,9 @@ fn bool_flags_coerce_from_their_ir_shapes() {
 
 // ── The arity-1 membership channel ────────────────────────────────
 
-const DECLS: &str = "(relation adult Person :why \"{?1} is an adult\")\n\
-                     (relation likes Person Drink :why \"{?1} likes {?2}\")\n\
-                     (relation between Person Person Person :why \"{?1} is between {?2} and {?3}\")\n";
+const DECLS: &str = "(relation adult Person :why \"{?3} is an adult\")\n\
+                     (relation likes Person Drink :why \"{?3} likes {?4}\")\n\
+                     (relation between Person Person Person :why \"{?3} is between {?4} and {?5}\")\n";
 
 /// `:match (relation ?R)` sees every declaration whatever its arity, and the
 /// arity-coupled patterns still see exactly what they saw before.
@@ -732,7 +732,7 @@ fn the_membership_channel_is_arity_independent_and_the_old_ones_are_unchanged() 
 #[test]
 fn only_declared_relations_get_a_membership_fact() {
     let mut l = load_text(
-        "(relation likes Person Drink :why \"{?1} likes {?2}\")\n\
+        "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
          (symmetric likes)\n\
          (rule sees-any () :match (relation ?R) :assert (is-rel ?R) :why \"{?R} is a declared relation, so is-rel holds of it\")\n",
     );
@@ -820,7 +820,7 @@ fn guessed_relations(text: &str) -> BTreeSet<String> {
 fn an_empty_signature_is_not_a_hypothesis_target() {
     let guessed = guessed_relations(
         "(relation opaque :why \"opaque holds\")\n\
-         (relation likes Person Drink :why \"{?1} likes {?2}\")\n\
+         (relation likes Person Drink :why \"{?3} likes {?4}\")\n\
          (is-a Jack Person) (is-a Jill Person)\n",
     );
     assert_eq!(
@@ -843,8 +843,8 @@ fn an_empty_signature_is_not_a_hypothesis_target() {
 #[test]
 fn arity_three_is_unenumerated() {
     let guessed = guessed_relations(
-        "(relation between Person Person Person :why \"{?1} is between {?2} and {?3}\")\n\
-         (relation likes Person Drink :why \"{?1} likes {?2}\")\n\
+        "(relation between Person Person Person :why \"{?3} is between {?4} and {?5}\")\n\
+         (relation likes Person Drink :why \"{?3} likes {?4}\")\n\
          (is-a Jack Person) (is-a Jill Person)\n",
     );
     assert_eq!(

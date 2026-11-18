@@ -35,8 +35,8 @@
 ;;; above is the record of the answer it replaced.
 ;;;
 
-(relation p Node :why "{?1} is a p")
-(relation hit Node :why "{?1} is hit")
+(relation p Node :why "{?3} is a p")
+(relation hit Node :why "{?3} is hit")
 (hit z)
 (mark eq)
 (rule r (?R)

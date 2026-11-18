@@ -30,7 +30,7 @@
 ;;;
 ;;;
 ;;;
-(relation q T :why "{?1} is a q")
+(relation q T :why "{?3} is a q")
 
 (q a :source "the witness's one fact")
 

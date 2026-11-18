@@ -19,7 +19,7 @@
 ;;; `kb save` answered, exit 0; `ein solve` (every mode) and `oracle` stopped,
 ;;; exit 1. Today the query is refused at load.
 
-(relation p Thing :why "{?1} is a p")
+(relation p Thing :why "{?3} is a p")
 (p k)
 (query :goal (and (p ?v0) (p ?v1) (p ?v2) (p ?v3) (p ?v4) (p ?v5) (p ?v6) (p ?v7)
          (p ?v8) (p ?v9) (p ?v10) (p ?v11) (p ?v12) (p ?v13) (p ?v14) (p ?v15)

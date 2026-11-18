@@ -36,7 +36,7 @@
 ;;;
 
 ;; An empty conclusion, which adds nothing.
-(relation q Node :why "q holds of {?1}")
+(relation q Node :why "q holds of {?3}")
 (q a)
 (rule r () :match (q ?x) :assert () :why "q holds of {?x}, and the empty conclusion asserts nothing")
 (query :goal (q ?x))

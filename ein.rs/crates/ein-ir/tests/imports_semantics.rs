@@ -273,13 +273,13 @@ fn declaration(decl: &str, name: &str) -> String {
             )
         }
         "relation" => format!(
-            "(relation {name} T :why \"the relation this module declares holds of {{?1}}\")"
+            "(relation {name} T :why \"the relation this module declares holds of {{?3}}\")"
         ),
         "macro" => format!("(macro {name} (?x) (p ?x) :why \"p holds of {{?x}}\")"),
         other => unreachable!("{other}"),
     };
     format!(
-        "(relation p T :why \"p holds of {{?1}}\")\n(relation q T :why \"q holds of {{?1}}\")\n{body}\n"
+        "(relation p T :why \"p holds of {{?3}}\")\n(relation q T :why \"q holds of {{?3}}\")\n{body}\n"
     )
 }
 
@@ -604,8 +604,8 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
 /// resolve against.
 #[test]
 fn an_import_brings_its_module_whole_and_the_inlined_program_is_it() {
-    let lib = "(relation color Thing :why \"{?1} is a colour\")\n\
-         (relation shade Thing :why \"{?1} is a shade\")\n\
+    let lib = "(relation color Thing :why \"{?3} is a colour\")\n\
+         (relation shade Thing :why \"{?3} is a shade\")\n\
          (rule palette () :match () :assert (and (color Red) (color Green)) :why \"colours\")\n\
          (rule shades () :match (color ?x) :assert (shade ?x) :why \"{?x} has a shade\")\n\
          (macro both (?a ?b) (and ?a ?b) :why \"{?a} and {?b}\")\n";
@@ -681,8 +681,8 @@ fn an_import_brings_its_module_whole_and_the_inlined_program_is_it() {
 /// facts, one carrying a `:source`; a relation nothing mentions; a fact and a
 /// stored negation of a relation the module does not declare; two rules over
 /// `is-a`; a macro; and the three forms that are neither declaration nor fact.
-const ONTO: &str = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
-     (relation unused Thing :why \"{?1} is never mentioned\")\n\
+const ONTO: &str = "(relation is-a Thing Type :why \"{?3} is a {?4}\")\n\
+     (relation unused Thing :why \"{?3} is never mentioned\")\n\
      (is-a Tea Drink)\n\
      (is-a Milk Drink :source \"the ontology\")\n\
      (likes Tea Milk)\n\
@@ -807,7 +807,7 @@ fn what_each_import_form_brings_of_a_module() {
 /// `(trace …)` form is the fourth such form and stays behind the same way.
 #[test]
 fn no_import_brings_a_modules_query_solve_or_config() {
-    let m = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
+    let m = "(relation is-a Thing Type :why \"{?3} is a {?4}\")\n\
          (is-a Tea Drink)\n\
          (query :goal (is-a ?x Drink))\n\
          (solve :hypothesis-relations ())\n\
@@ -881,8 +881,8 @@ fn no_import_brings_a_modules_query_solve_or_config() {
 /// `cat` of `(owns Ann cat)`, is read under its full name as the relation is.
 #[test]
 fn a_selection_names_and_the_module_comes_whole() {
-    let m = "(relation owns Person Thing :why \"{?1} owns {?2}\")\n\
-         (relation cat Thing :why \"{?1} is a cat\")\n\
+    let m = "(relation owns Person Thing :why \"{?3} owns {?4}\")\n\
+         (relation cat Thing :why \"{?3} is a cat\")\n\
          (owns Ann cat)\n\
          (cat Tom)\n\
          (__closed__ owns)\n\

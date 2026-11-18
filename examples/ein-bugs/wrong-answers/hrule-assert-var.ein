@@ -25,8 +25,8 @@
 ;;; solve FILE` and `ein oracle FILE` at `2eb483e0`, release and debug
 ;;; alike).
 
-(relation p Node :why "{?1} is a node")
-(relation q Node :why "{?1} is a q")
+(relation p Node :why "{?3} is a node")
+(relation q Node :why "{?3} is a q")
 (p a)
 (hrule h ()
   :match (p ?x)

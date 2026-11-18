@@ -5152,7 +5152,7 @@ mod tests {
     /// `rules` stays empty while `obligations` gets it.
     #[test]
     fn an_open_assert_routes_the_rule_out_of_the_saturation_agenda() {
-        let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n\
+        let src = "(relation is-a T T :why \"{?3} is a {?4}\")\n(relation r A B :why \"r holds of {?3} and {?4}\")\n\
                    (rule total-owed (?R ?isa)\n  \
                      :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
                                  (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
@@ -5170,7 +5170,7 @@ mod tests {
 
         // The bare degenerate is the same object with nothing to project.
         let (terms, kb) = ok(
-            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(rule owes () :match (absent (r a b)) :assert (open) :why \"r does not hold of a and b yet — that fact is still owed\")\n",
+            "(relation r A B :why \"r holds of {?3} and {?4}\")\n(rule owes () :match (absent (r a b)) :assert (open) :why \"r does not hold of a and b yet — that fact is still owed\")\n",
         );
         assert!(
             kb.program()
@@ -5181,7 +5181,7 @@ mod tests {
 
         // An ordinary rule is untouched by any of it.
         let (terms, kb) = ok(
-            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(rule copy () :match (r ?a ?b) :assert (r ?b ?a) :why \"r holds of {?a} and {?b}, so r holds of {?b} and {?a}\")\n",
+            "(relation r A B :why \"r holds of {?3} and {?4}\")\n(rule copy () :match (r ?a ?b) :assert (r ?b ?a) :why \"r holds of {?a} and {?b}, so r holds of {?b} and {?a}\")\n",
         );
         assert!(
             kb.program()
@@ -5199,7 +5199,7 @@ mod tests {
     /// grammar's table (`ein-ir/tests/grammar_pages.rs`), not a case here.
     #[test]
     fn a_variable_used_once_loads_where_a_wildcard_was_written() {
-        let pre = "(relation n T :why \"n holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") (relation tag T T :why \"tag holds of {?1} and {?2}\")\n(n 2)\n";
+        let pre = "(relation n T :why \"n holds of {?3}\") (relation hit T :why \"hit holds of {?3}\") (relation box T :why \"box holds of {?3}\") (relation tag T T :why \"tag holds of {?3} and {?4}\")\n(n 2)\n";
         ok(&format!(
             "{pre}(rule r () :match (and (n ?u) (box (tag ?v ?w))) :assert (hit r) :why \"n holds of {{?u}} and box holds of (tag {{?v}} {{?w}}), so hit holds of r\")"
         ));
@@ -5233,8 +5233,8 @@ mod tests {
                              that holds no variable";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
-        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") (relation tag T T :why \"tag holds of {?1} and {?2}\")\n\
-                   (relation item T :why \"{?1} is an item\") (relation lbl T :why \"lbl holds of {?1}\")\n(p a) (q a) (box (p a))\n";
+        let pre = "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation hit T :why \"hit holds of {?3}\") (relation box T :why \"box holds of {?3}\") (relation tag T T :why \"tag holds of {?3} and {?4}\")\n\
+                   (relation item T :why \"{?3} is an item\") (relation lbl T :why \"lbl holds of {?3}\")\n(p a) (q a) (box (p a))\n";
         // At load: what a context-free grammar does not see.
         for (rule, want) in [
             (
@@ -5334,8 +5334,8 @@ mod tests {
     /// named, and a macro's `(or …)` called as a whole `:match`.
     #[test]
     fn the_compilers_refusals_a_program_reached_are_refused_at_load() {
-        let pre = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") \
-                   (relation q T :why \"q holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n(a k)\n";
+        let pre = "(relation a T :why \"a holds of {?3}\") (relation p T :why \"p holds of {?3}\") \
+                   (relation q T :why \"q holds of {?3}\") (relation out T :why \"out holds of {?3}\")\n(a k)\n";
         let nested = |who: &str, clause: &str, within: &str, or: &str, split: &str| {
             format!(
                 "{who}: its {clause} writes {or} as a premise of {within} — an (or …) is a \
@@ -5457,8 +5457,8 @@ mod tests {
     /// written rule the grammar accepts.
     #[test]
     fn a_macros_expansion_is_held_to_the_grammars_shapes() {
-        let pre = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") \
-                   (relation q T :why \"q holds of {?1}\")\n(a k)\n";
+        let pre = "(relation a T :why \"a holds of {?3}\") (relation p T :why \"p holds of {?3}\") \
+                   (relation q T :why \"q holds of {?3}\")\n(a k)\n";
         let m = [
             "(macro one (?a) (eq ?a) :why \"one\")",
             "(macro app (?R ?a) (?R ?a) :why \"app\")",
@@ -5691,7 +5691,7 @@ mod tests {
     #[test]
     fn a_conclusion_negating_a_name_is_refused_at_load() {
         let pre =
-            "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\")\n";
+            "(relation a T :why \"a holds of {?3}\") (relation p T :why \"p holds of {?3}\")\n";
         let not = "(rule r () :match (a ?x) :assert (not ?x) :why \"r\")";
         let not_m = "(rule r () :match (m ?x) :assert (not ?x) :why \"r\")";
         for (text, want) in [
@@ -5846,8 +5846,8 @@ mod tests {
                  (eq ?{var} ?{var})"
             )
         };
-        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") \
-                   (relation tag T T :why \"tag holds of {?1} and {?2}\")\n(p a) (q b)\n";
+        let pre = "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation hit T :why \"hit holds of {?3}\") (relation box T :why \"box holds of {?3}\") \
+                   (relation tag T T :why \"tag holds of {?3} and {?4}\")\n(p a) (q b)\n";
         for (rule, want) in [
             // A free variable.
             (
@@ -5934,7 +5934,7 @@ mod tests {
         const NAMED: &str = "a relation is named by a symbol, not a fact";
         let r = "(rule r (?R) :match (box (?R b)) :assert (hit z) :why \"box holds of ({?R} b), so hit holds of z\")";
         let r_param = "rule 'r''s parameter ?R, which names a relation";
-        let pre = "(relation box Node :why \"box holds of {?1}\") (relation hit Node :why \"hit holds of {?1}\") (relation item Node :why \"{?1} is an item\") (relation q T T :why \"q holds of {?1} and {?2}\")\n";
+        let pre = "(relation box Node :why \"box holds of {?3}\") (relation hit Node :why \"hit holds of {?3}\") (relation item Node :why \"{?3} is an item\") (relation q T T :why \"q holds of {?3} and {?4}\")\n";
         for (src, want) in [
             // A variable from a declared relation's argument: `g14`'s two
             // programs, with the fact and without it.
@@ -6091,7 +6091,7 @@ mod tests {
     fn eq_at_another_arity_is_refused_at_load() {
         const TAIL: &str =
             "— eq is the relation of equality, which holds between exactly two values";
-        let pre = "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"hit holds of {?1}\") (relation q Node Node :why \"q holds of {?1} and {?2}\")\n(p a)\n";
+        let pre = "(relation p Node :why \"p holds of {?3}\") (relation hit Node :why \"hit holds of {?3}\") (relation q Node Node :why \"q holds of {?3} and {?4}\")\n(p a)\n";
         let r = "(rule r (?R) :match (?R ?x) :assert (hit ?x) :why \"{?R} holds of {?x}, so hit holds of {?x}\")";
         let line = |form: &str, n: usize, binds: &str| {
             format!(
@@ -6234,7 +6234,7 @@ mod tests {
     /// the `(open …)` is written.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
-        let pre = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n";
+        let pre = "(relation is-a T T :why \"{?3} is a {?4}\")\n(relation r A B :why \"r holds of {?3} and {?4}\")\n";
         // Nested rather than concluded, `(not (open ?R))`, is refused at the
         // parse: the grammar writes `open` only as a rule's whole `:assert`
         // (`grammar_pages`' table).
@@ -6308,7 +6308,7 @@ mod tests {
     /// saying *unfinished* where they say *dead*.
     #[test]
     fn the_stdlib_obligations_shapes_resolve_their_projection() {
-        let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
+        let src = "(relation is-a T T :why \"{?3} is a {?4}\")\n\
              (rule total-owed (?R ?isa)\n  \
                :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
                            (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
@@ -6350,7 +6350,7 @@ mod tests {
     #[test]
     fn a_declaration_stores_itself_as_facts_so_rules_can_read_signatures() {
         let (terms, kb) = ok(
-            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(relation bare :why \"bare holds\")",
+            "(relation r A B :why \"r holds of {?3} and {?4}\")\n(relation bare :why \"bare holds\")",
         );
         assert_eq!(
             facts(&terms, &kb),
@@ -6420,7 +6420,7 @@ mod tests {
             ["2:24: unexpected `p`: a name"]
         );
         let (terms, kb) = ok(
-            "(relation r T T :why \"r holds of {?1} and {?2}\")\n(r a b :source \"(1)\")\n(r c d)\n\
+            "(relation r T T :why \"r holds of {?3} and {?4}\")\n(r a b :source \"(1)\")\n(r c d)\n\
              (r e f :rule x :using ((r a b)))",
         );
         let kinds: Vec<(&str, usize)> = kb
@@ -6461,7 +6461,7 @@ mod tests {
             "2:16: unexpected `sentence`: a name"
         );
         let (terms, kb) =
-            ok("(relation r T T :why \"r holds of {?1} and {?2}\")\n(r a b :source \"sentence\")");
+            ok("(relation r T T :why \"r holds of {?3} and {?4}\")\n(r a b :source \"sentence\")");
         let fact = kb.facts().last().expect("a fact");
         let prov = terms.provs.get(kb.primary(fact).expect("recorded"));
         assert_eq!(prov.kind, ProvKind::Source);
@@ -6512,7 +6512,7 @@ mod tests {
     #[test]
     fn an_expect_naming_a_relation_the_program_does_not_have_is_a_load_error() {
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n\
              (query :goal (p A ?h) :expect (model (p A H) (nosuch A)))",
         );
         assert!(e.contains("nosuch"), "{e}");
@@ -6520,7 +6520,7 @@ mod tests {
         // A relation only a rule's `:assert` derives is the program's:
         // a claim may list a fact of it.
         ok(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n\
              (rule r () :match (p ?a ?h) :assert (won ?a) :why \"{?a} won\")\n\
              (query :goal (won ?a) :expect (model (won A)))",
         );
@@ -6533,7 +6533,7 @@ mod tests {
     #[test]
     fn a_query_claim_lists_only_facts_its_goal_matches() {
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(relation q T P :why \"q holds of {?1} and {?2}\")\n(p A H)\n(q A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(relation q T P :why \"q holds of {?3} and {?4}\")\n(p A H)\n(q A H)\n\
              (query :goal (p A ?h) :expect (model (q A H)))",
         );
         assert!(
@@ -6544,19 +6544,19 @@ mod tests {
         // …in every disjunct, so one good class beside one bad one is still
         // refused.
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(relation q T P :why \"q holds of {?1} and {?2}\")\n(p A H)\n(q A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(relation q T P :why \"q holds of {?3} and {?4}\")\n(p A H)\n(q A H)\n\
              (query :goal (p A ?h) \
               :expect (or (model (p A H)) (model (q A H))))",
         );
         assert!(e.contains("(q A H), which no atom"), "{e}");
         // A goal's constant must match, and a variable bind one value.
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(p B H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n(p B H)\n\
              (query :goal (p A ?h) :expect (model (p B H)))",
         );
         assert!(e.contains("(p B H), which no atom"), "{e}");
         let (_terms, _kb) = ok(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n\
              (query :goal (and (p ?x ?h) (p ?x H)) :expect (model (p A H)))",
         );
     }
@@ -6565,12 +6565,12 @@ mod tests {
     #[test]
     fn a_class_twice_and_an_unknown_over_are_load_errors() {
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n\
              (query :goal (p A ?h) :expect (or (model (p A H)) (model (p A H))))",
         );
         assert!(e.contains("lists the class (model (p A H)) twice"), "{e}");
         let e = err(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(query :goal (p A ?h) :over best)",
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n(query :goal (p A ?h) :over best)",
         );
         assert!(
             e.contains(":over best — one of all, minimal, maximal"),
@@ -6578,7 +6578,7 @@ mod tests {
         );
         for over in ["all", "minimal", "maximal"] {
             ok(&format!(
-                "(relation p T P :why \"p holds of {{?1}} and {{?2}}\")\n(p A H)\n(query :goal (p A ?h) :over {over})"
+                "(relation p T P :why \"p holds of {{?3}} and {{?4}}\")\n(p A H)\n(query :goal (p A ?h) :over {over})"
             ));
         }
     }
@@ -6588,7 +6588,7 @@ mod tests {
     #[test]
     fn a_query_without_expect_is_unaffected() {
         let (_terms, kb) = ok(
-            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(query :goal (p A ?h))",
+            "(relation p T P :why \"p holds of {?3} and {?4}\")\n(p A H)\n(query :goal (p A ?h))",
         );
         assert_eq!(kb.program().queries.len(), 1);
     }
@@ -6612,7 +6612,7 @@ mod tests {
     #[test]
     fn a_rules_pattern_view_records_variables_and_relation_heads() {
         let (terms, kb) = ok(
-            "(relation r T T :why \"r holds of {?1} and {?2}\")\n(relation s T T :why \"s holds of {?1} and {?2}\")\n\
+            "(relation r T T :why \"r holds of {?3} and {?4}\")\n(relation s T T :why \"s holds of {?3} and {?4}\")\n\
              (rule j (?p) :match (and (r ?a ?b) (not (s ?b ?c))) \
               :assert (r ?a ?c) :why \"r holds of {?a} and {?b} and s is denied of {?b} and {?c}, so r holds of {?a} and {?c}\")",
         );
@@ -6652,7 +6652,7 @@ mod tests {
     /// as a value is a name.
     #[test]
     fn a_macros_call_written_as_a_fact_is_refused_at_load() {
-        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\")\n\
+        let pre = "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\")\n\
                    (macro pp (?a) (p ?a) :why \"pp of {?a}\")\n";
         let tail = "a macro is called in a :match, an :assert or a :goal, where its call is \
                     replaced by its body; a fact is not expanded, and no fact is of a macro: write \
@@ -6680,7 +6680,7 @@ mod tests {
                     .to_string(),
             ),
             (
-                "(relation pp T :why \"pp holds of {?1}\")",
+                "(relation pp T :why \"pp holds of {?3}\")",
                 "relation 'pp': pp is a macro too, (macro pp (?a) (p ?a))".to_string(),
             ),
             (

@@ -23,8 +23,8 @@
 ;;; states and nothing concludes: each stands only in the context of an
 ;;; equality, so the last question has no answer.
 
-(relation think  Person Claim :why "{?1} thinks that {?2}")
-(relation stated Number       :why "what {?1} is, is stated")
+(relation think  Person Claim :why "{?3} thinks that {?4}")
+(relation stated Number       :why "what {?3} is, is stated")
 
 (= 4 (+ 2 2))
 (think Alice (= 5 (+ 2 2)))

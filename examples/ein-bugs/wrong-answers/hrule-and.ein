@@ -14,6 +14,6 @@
 ;;; conjunct, give H `{(p a), (q a)}` and R four states.
 ;;;
 ;;;
-(relation p Thing :why "p {?1}")
-(relation q Thing :why "q {?1}")
+(relation p Thing :why "p {?3}")
+(relation q Thing :why "q {?3}")
 (hrule h () :match () :assert (and (p a) (q a)) :why "propose p and q of a")

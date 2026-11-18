@@ -44,8 +44,8 @@ The page: [rules as data](../../reasoning/03-rule-evolution/01-rules-as-data.md)
 
 ```lisp
 (import std.algebra :symbols (includes transitive))
-(relation is-a T T :why "{?1} is a {?2}")
-(relation is-a* T T :why "{?1} is, at some remove, a {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation is-a* T T :why "{?3} is, at some remove, a {?4}")
 (is-a Object   T)
 (is-a Relation Object)     ;; a relation is an object
 (is-a Fact     Object)     ;; a fact is an object
@@ -133,10 +133,10 @@ run that has saturated root.
 **The page's example.** Save it as `strata.ein`:
 
 ```lisp
-(relation p T :why "{?1} is p")
-(relation q T :why "{?1} is q")
-(relation r T :why "{?1} is r")
-(relation s T :why "{?1} is s")
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(relation r T :why "{?3} is r")
+(relation s T :why "{?3} is s")
 (p a)
 (rule one () :match (p ?x) :assert (s ?x) :why "{?x} is p, so it is s")
 (rule g ()   :match (and (s ?x) (absent (q ?x))) :assert (r ?x) :why "{?x} is s and not known q, so it is r")

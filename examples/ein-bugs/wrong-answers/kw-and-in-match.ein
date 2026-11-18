@@ -29,6 +29,6 @@
 ;;; `01-grammar.md` § 1 states (Q-M1e2.17), and the program answers its twin's R.
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation andz Node :why "andz holds of {?1}") (relation hit Node :why "{?1} is a hit")
+(relation p Node :why "p holds of {?3}") (relation andz Node :why "andz holds of {?3}") (relation hit Node :why "{?3} is a hit")
 (p a) (andz b)
 (rule r () :match (andz ?x) :assert (hit ?x) :why "andz holds of {?x}, so {?x} is a hit")

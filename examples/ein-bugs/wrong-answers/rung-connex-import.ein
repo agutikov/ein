@@ -30,7 +30,7 @@
 ;;; whose remedy is to say what it means, `(solve :no-hypothesis (lt))`.
 
 (import std.algebra :symbols (connex))
-(relation lt Node Node :why "{?1} is less than {?2}")
+(relation lt Node Node :why "{?3} is less than {?4}")
 (instance A Node) (instance B Node) (instance C Node)
 (connex lt instance Node)
 (lt A B) (lt B C)

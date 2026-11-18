@@ -10,7 +10,7 @@
 ; Without either guard the mismatch would leave every parameter-headed
 ; premise with an unbound head var, and a rule compiled off the empty plan
 ; that is left would fire unconditionally.
-(relation r A B :why "r holds of {?1} and {?2}")
+(relation r A B :why "r holds of {?3} and {?4}")
 
 (rule pairwise (?R ?T)
   :match  (?R ?a ?b)

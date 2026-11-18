@@ -22,7 +22,7 @@
 ;;; `debug_assert!`), on every solve question, `ein oracle` and `ein test`. Now
 ;;; one answer from both builds.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (not (paid Bob))
 (hrule suppose ()

@@ -28,7 +28,7 @@
 
 (import saturate-import-mod :symbols (q))
 
-(relation r T :why "{?1} is an r")
+(relation r T :why "{?3} is an r")
 
 (q m)
 

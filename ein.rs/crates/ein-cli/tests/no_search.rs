@@ -250,7 +250,7 @@ fn test_decides_what_root_decides_and_a_claim_not_checked_exits_0() {
     let file = scratch.path().join("refuted.ein");
     std::fs::write(
         &file,
-        "(relation at Color House :why \"{?1} is at {?2}\")\n\
+        "(relation at Color House :why \"{?3} is at {?4}\")\n\
          (is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)\n\
          (query :goal (at ?c ?h) :expect (model (at Red H1)))\n",
     )
@@ -275,7 +275,7 @@ fn test_decides_what_root_decides_and_a_claim_not_checked_exits_0() {
 #[test]
 fn no_commitment_binds_a_name_under_the_keyword() {
     let scratch = Scratch::new("ein-no-search-commitments");
-    let program = "(relation r T :why \"{?1} is r\")\n\
+    let program = "(relation r T :why \"{?3} is r\")\n\
                    (rule neg () :match (r ?x) :assert (not ?x) :why \"not {?x}\")\n";
     let without = scratch.path().join("without.ein");
     let with = scratch.path().join("with.ein");

@@ -2,10 +2,10 @@
 ;;; detector's sweep. Generated, not edited by hand: an edit is lost the next
 ;;; time the file is written. Each program begins at a line `;;; program NAME`.
 ;;; program random_0
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -41,10 +41,10 @@
 
 (query :goal (h ?x))
 ;;; program random_1
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -78,10 +78,10 @@
 
 (query :goal (h ?x))
 ;;; program random_2
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -95,10 +95,10 @@
 
 (query :goal (h ?x))
 ;;; program random_3
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -124,10 +124,10 @@
 
 (query :goal (h ?x))
 ;;; program random_4
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -143,10 +143,10 @@
 
 (query :goal (h ?x))
 ;;; program random_5
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -167,10 +167,10 @@
 
 (query :goal (h ?x))
 ;;; program random_6
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -186,10 +186,10 @@
 
 (query :goal (h ?x))
 ;;; program random_7
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -205,10 +205,10 @@
 
 (query :goal (h ?x))
 ;;; program random_8
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -239,10 +239,10 @@
 
 (query :goal (h ?x))
 ;;; program random_9
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -273,10 +273,10 @@
 
 (query :goal (h ?x))
 ;;; program random_10
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -317,10 +317,10 @@
 
 (query :goal (h ?x))
 ;;; program random_11
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -346,10 +346,10 @@
 
 (query :goal (h ?x))
 ;;; program random_12
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -385,10 +385,10 @@
 
 (query :goal (h ?x))
 ;;; program random_13
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -419,10 +419,10 @@
 
 (query :goal (h ?x))
 ;;; program random_14
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -458,10 +458,10 @@
 
 (query :goal (h ?x))
 ;;; program random_15
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -487,10 +487,10 @@
 
 (query :goal (h ?x))
 ;;; program random_16
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -521,10 +521,10 @@
 
 (query :goal (h ?x))
 ;;; program random_17
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -550,10 +550,10 @@
 
 (query :goal (h ?x))
 ;;; program random_18
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -567,10 +567,10 @@
 
 (query :goal (h ?x))
 ;;; program random_19
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -596,10 +596,10 @@
 
 (query :goal (h ?x))
 ;;; program random_20
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -620,10 +620,10 @@
 
 (query :goal (h ?x))
 ;;; program random_21
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -639,10 +639,10 @@
 
 (query :goal (h ?x))
 ;;; program random_22
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -673,10 +673,10 @@
 
 (query :goal (h ?x))
 ;;; program random_23
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -697,10 +697,10 @@
 
 (query :goal (h ?x))
 ;;; program random_24
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -726,10 +726,10 @@
 
 (query :goal (h ?x))
 ;;; program random_25
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -755,10 +755,10 @@
 
 (query :goal (h ?x))
 ;;; program random_26
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -814,10 +814,10 @@
 
 (query :goal (h ?x))
 ;;; program random_27
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -838,10 +838,10 @@
 
 (query :goal (h ?x))
 ;;; program random_28
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -882,10 +882,10 @@
 
 (query :goal (h ?x))
 ;;; program random_29
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -921,10 +921,10 @@
 
 (query :goal (h ?x))
 ;;; program random_30
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -940,10 +940,10 @@
 
 (query :goal (h ?x))
 ;;; program random_31
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -957,10 +957,10 @@
 
 (query :goal (h ?x))
 ;;; program random_32
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -996,10 +996,10 @@
 
 (query :goal (h ?x))
 ;;; program random_33
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1030,10 +1030,10 @@
 
 (query :goal (h ?x))
 ;;; program random_34
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1069,10 +1069,10 @@
 
 (query :goal (h ?x))
 ;;; program random_35
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1093,10 +1093,10 @@
 
 (query :goal (h ?x))
 ;;; program random_36
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -1127,10 +1127,10 @@
 
 (query :goal (h ?x))
 ;;; program random_37
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -1161,10 +1161,10 @@
 
 (query :goal (h ?x))
 ;;; program random_38
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1220,10 +1220,10 @@
 
 (query :goal (h ?x))
 ;;; program random_39
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -1239,10 +1239,10 @@
 
 (query :goal (h ?x))
 ;;; program random_40
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -1258,10 +1258,10 @@
 
 (query :goal (h ?x))
 ;;; program random_41
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -1277,10 +1277,10 @@
 
 (query :goal (h ?x))
 ;;; program random_42
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1311,10 +1311,10 @@
 
 (query :goal (h ?x))
 ;;; program random_43
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1340,10 +1340,10 @@
 
 (query :goal (h ?x))
 ;;; program random_44
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1379,10 +1379,10 @@
 
 (query :goal (h ?x))
 ;;; program random_45
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -1401,10 +1401,10 @@
 
 (query :goal (h ?x))
 ;;; program random_46
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -1435,10 +1435,10 @@
 
 (query :goal (h ?x))
 ;;; program random_47
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1469,10 +1469,10 @@
 
 (query :goal (h ?x))
 ;;; program random_48
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -1488,10 +1488,10 @@
 
 (query :goal (h ?x))
 ;;; program random_49
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -1527,10 +1527,10 @@
 
 (query :goal (h ?x))
 ;;; program random_50
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1566,10 +1566,10 @@
 
 (query :goal (h ?x))
 ;;; program random_51
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1595,10 +1595,10 @@
 
 (query :goal (h ?x))
 ;;; program random_52
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1639,10 +1639,10 @@
 
 (query :goal (h ?x))
 ;;; program random_53
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1661,10 +1661,10 @@
 
 (query :goal (h ?x))
 ;;; program random_54
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -1690,10 +1690,10 @@
 
 (query :goal (h ?x))
 ;;; program random_55
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -1724,10 +1724,10 @@
 
 (query :goal (h ?x))
 ;;; program random_56
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -1763,10 +1763,10 @@
 
 (query :goal (h ?x))
 ;;; program random_57
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -1792,10 +1792,10 @@
 
 (query :goal (h ?x))
 ;;; program random_58
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -1831,10 +1831,10 @@
 
 (query :goal (h ?x))
 ;;; program random_59
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -1860,10 +1860,10 @@
 
 (query :goal (h ?x))
 ;;; program random_60
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -1909,10 +1909,10 @@
 
 (query :goal (h ?x))
 ;;; program random_61
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1953,10 +1953,10 @@
 
 (query :goal (h ?x))
 ;;; program random_62
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -1982,10 +1982,10 @@
 
 (query :goal (h ?x))
 ;;; program random_63
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2021,10 +2021,10 @@
 
 (query :goal (h ?x))
 ;;; program random_64
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2065,10 +2065,10 @@
 
 (query :goal (h ?x))
 ;;; program random_65
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2077,10 +2077,10 @@
 
 (query :goal (h ?x))
 ;;; program random_66
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2126,10 +2126,10 @@
 
 (query :goal (h ?x))
 ;;; program random_67
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2165,10 +2165,10 @@
 
 (query :goal (h ?x))
 ;;; program random_68
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2204,10 +2204,10 @@
 
 (query :goal (h ?x))
 ;;; program random_69
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2223,10 +2223,10 @@
 
 (query :goal (h ?x))
 ;;; program random_70
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -2252,10 +2252,10 @@
 
 (query :goal (h ?x))
 ;;; program random_71
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2301,10 +2301,10 @@
 
 (query :goal (h ?x))
 ;;; program random_72
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2330,10 +2330,10 @@
 
 (query :goal (h ?x))
 ;;; program random_73
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2359,10 +2359,10 @@
 
 (query :goal (h ?x))
 ;;; program random_74
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2383,10 +2383,10 @@
 
 (query :goal (h ?x))
 ;;; program random_75
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2395,10 +2395,10 @@
 
 (query :goal (h ?x))
 ;;; program random_76
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2424,10 +2424,10 @@
 
 (query :goal (h ?x))
 ;;; program random_77
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -2463,10 +2463,10 @@
 
 (query :goal (h ?x))
 ;;; program random_78
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2497,10 +2497,10 @@
 
 (query :goal (h ?x))
 ;;; program random_79
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2526,10 +2526,10 @@
 
 (query :goal (h ?x))
 ;;; program random_80
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2543,10 +2543,10 @@
 
 (query :goal (h ?x))
 ;;; program random_81
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2582,10 +2582,10 @@
 
 (query :goal (h ?x))
 ;;; program random_82
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2601,10 +2601,10 @@
 
 (query :goal (h ?x))
 ;;; program random_83
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2613,10 +2613,10 @@
 
 (query :goal (h ?x))
 ;;; program random_84
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -2637,10 +2637,10 @@
 
 (query :goal (h ?x))
 ;;; program random_85
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2671,10 +2671,10 @@
 
 (query :goal (h ?x))
 ;;; program random_86
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2710,10 +2710,10 @@
 
 (query :goal (h ?x))
 ;;; program random_87
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2729,10 +2729,10 @@
 
 (query :goal (h ?x))
 ;;; program random_88
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2763,10 +2763,10 @@
 
 (query :goal (h ?x))
 ;;; program random_89
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -2802,10 +2802,10 @@
 
 (query :goal (h ?x))
 ;;; program random_90
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -2846,10 +2846,10 @@
 
 (query :goal (h ?x))
 ;;; program random_91
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2870,10 +2870,10 @@
 
 (query :goal (h ?x))
 ;;; program random_92
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -2889,10 +2889,10 @@
 
 (query :goal (h ?x))
 ;;; program random_93
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -2918,10 +2918,10 @@
 
 (query :goal (h ?x))
 ;;; program random_94
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -2947,10 +2947,10 @@
 
 (query :goal (h ?x))
 ;;; program random_95
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -2986,10 +2986,10 @@
 
 (query :goal (h ?x))
 ;;; program random_96
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -3010,10 +3010,10 @@
 
 (query :goal (h ?x))
 ;;; program random_97
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -3044,10 +3044,10 @@
 
 (query :goal (h ?x))
 ;;; program random_98
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -3061,10 +3061,10 @@
 
 (query :goal (h ?x))
 ;;; program random_99
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -3090,10 +3090,10 @@
 
 (query :goal (h ?x))
 ;;; program random_100
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3144,10 +3144,10 @@
 
 (query :goal (h ?x))
 ;;; program random_101
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -3168,10 +3168,10 @@
 
 (query :goal (h ?x))
 ;;; program random_102
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -3192,10 +3192,10 @@
 
 (query :goal (h ?x))
 ;;; program random_103
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -3214,10 +3214,10 @@
 
 (query :goal (h ?x))
 ;;; program random_104
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3258,10 +3258,10 @@
 
 (query :goal (h ?x))
 ;;; program random_105
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -3287,10 +3287,10 @@
 
 (query :goal (h ?x))
 ;;; program random_106
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3331,10 +3331,10 @@
 
 (query :goal (h ?x))
 ;;; program random_107
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -3355,10 +3355,10 @@
 
 (query :goal (h ?x))
 ;;; program random_108
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3389,10 +3389,10 @@
 
 (query :goal (h ?x))
 ;;; program random_109
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -3418,10 +3418,10 @@
 
 (query :goal (h ?x))
 ;;; program random_110
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -3437,10 +3437,10 @@
 
 (query :goal (h ?x))
 ;;; program random_111
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3476,10 +3476,10 @@
 
 (query :goal (h ?x))
 ;;; program random_112
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -3500,10 +3500,10 @@
 
 (query :goal (h ?x))
 ;;; program random_113
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3539,10 +3539,10 @@
 
 (query :goal (h ?x))
 ;;; program random_114
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -3558,10 +3558,10 @@
 
 (query :goal (h ?x))
 ;;; program random_115
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3617,10 +3617,10 @@
 
 (query :goal (h ?x))
 ;;; program random_116
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3666,10 +3666,10 @@
 
 (query :goal (h ?x))
 ;;; program random_117
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -3710,10 +3710,10 @@
 
 (query :goal (h ?x))
 ;;; program random_118
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -3732,10 +3732,10 @@
 
 (query :goal (h ?x))
 ;;; program random_119
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -3771,10 +3771,10 @@
 
 (query :goal (h ?x))
 ;;; program random_120
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -3788,10 +3788,10 @@
 
 (query :goal (h ?x))
 ;;; program random_121
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3837,10 +3837,10 @@
 
 (query :goal (h ?x))
 ;;; program random_122
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -3876,10 +3876,10 @@
 
 (query :goal (h ?x))
 ;;; program random_123
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3920,10 +3920,10 @@
 
 (query :goal (h ?x))
 ;;; program random_124
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -3964,10 +3964,10 @@
 
 (query :goal (h ?x))
 ;;; program random_125
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -3993,10 +3993,10 @@
 
 (query :goal (h ?x))
 ;;; program random_126
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -4032,10 +4032,10 @@
 
 (query :goal (h ?x))
 ;;; program random_127
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4061,10 +4061,10 @@
 
 (query :goal (h ?x))
 ;;; program random_128
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -4085,10 +4085,10 @@
 
 (query :goal (h ?x))
 ;;; program random_129
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4139,10 +4139,10 @@
 
 (query :goal (h ?x))
 ;;; program random_130
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -4163,10 +4163,10 @@
 
 (query :goal (h ?x))
 ;;; program random_131
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -4197,10 +4197,10 @@
 
 (query :goal (h ?x))
 ;;; program random_132
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -4226,10 +4226,10 @@
 
 (query :goal (h ?x))
 ;;; program random_133
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4260,10 +4260,10 @@
 
 (query :goal (h ?x))
 ;;; program random_134
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -4279,10 +4279,10 @@
 
 (query :goal (h ?x))
 ;;; program random_135
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4318,10 +4318,10 @@
 
 (query :goal (h ?x))
 ;;; program random_136
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -4342,10 +4342,10 @@
 
 (query :goal (h ?x))
 ;;; program random_137
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4391,10 +4391,10 @@
 
 (query :goal (h ?x))
 ;;; program random_138
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4435,10 +4435,10 @@
 
 (query :goal (h ?x))
 ;;; program random_139
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -4464,10 +4464,10 @@
 
 (query :goal (h ?x))
 ;;; program random_140
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4493,10 +4493,10 @@
 
 (query :goal (h ?x))
 ;;; program random_141
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -4510,10 +4510,10 @@
 
 (query :goal (h ?x))
 ;;; program random_142
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -4522,10 +4522,10 @@
 
 (query :goal (h ?x))
 ;;; program random_143
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -4544,10 +4544,10 @@
 
 (query :goal (h ?x))
 ;;; program random_144
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -4568,10 +4568,10 @@
 
 (query :goal (h ?x))
 ;;; program random_145
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -4602,10 +4602,10 @@
 
 (query :goal (h ?x))
 ;;; program random_146
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -4626,10 +4626,10 @@
 
 (query :goal (h ?x))
 ;;; program random_147
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -4643,10 +4643,10 @@
 
 (query :goal (h ?x))
 ;;; program random_148
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4660,10 +4660,10 @@
 
 (query :goal (h ?x))
 ;;; program random_149
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -4684,10 +4684,10 @@
 
 (query :goal (h ?x))
 ;;; program random_150
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4723,10 +4723,10 @@
 
 (query :goal (h ?x))
 ;;; program random_151
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -4747,10 +4747,10 @@
 
 (query :goal (h ?x))
 ;;; program random_152
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4781,10 +4781,10 @@
 
 (query :goal (h ?x))
 ;;; program random_153
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -4820,10 +4820,10 @@
 
 (query :goal (h ?x))
 ;;; program random_154
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -4864,10 +4864,10 @@
 
 (query :goal (h ?x))
 ;;; program random_155
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4903,10 +4903,10 @@
 
 (query :goal (h ?x))
 ;;; program random_156
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -4947,10 +4947,10 @@
 
 (query :goal (h ?x))
 ;;; program random_157
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -4976,10 +4976,10 @@
 
 (query :goal (h ?x))
 ;;; program random_158
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -5000,10 +5000,10 @@
 
 (query :goal (h ?x))
 ;;; program random_159
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -5034,10 +5034,10 @@
 
 (query :goal (h ?x))
 ;;; program random_160
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5093,10 +5093,10 @@
 
 (query :goal (h ?x))
 ;;; program random_161
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5117,10 +5117,10 @@
 
 (query :goal (h ?x))
 ;;; program random_162
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5156,10 +5156,10 @@
 
 (query :goal (h ?x))
 ;;; program random_163
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -5185,10 +5185,10 @@
 
 (query :goal (h ?x))
 ;;; program random_164
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -5224,10 +5224,10 @@
 
 (query :goal (h ?x))
 ;;; program random_165
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5243,10 +5243,10 @@
 
 (query :goal (h ?x))
 ;;; program random_166
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -5272,10 +5272,10 @@
 
 (query :goal (h ?x))
 ;;; program random_167
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -5301,10 +5301,10 @@
 
 (query :goal (h ?x))
 ;;; program random_168
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -5335,10 +5335,10 @@
 
 (query :goal (h ?x))
 ;;; program random_169
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5374,10 +5374,10 @@
 
 (query :goal (h ?x))
 ;;; program random_170
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5418,10 +5418,10 @@
 
 (query :goal (h ?x))
 ;;; program random_171
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5442,10 +5442,10 @@
 
 (query :goal (h ?x))
 ;;; program random_172
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -5486,10 +5486,10 @@
 
 (query :goal (h ?x))
 ;;; program random_173
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5535,10 +5535,10 @@
 
 (query :goal (h ?x))
 ;;; program random_174
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5554,10 +5554,10 @@
 
 (query :goal (h ?x))
 ;;; program random_175
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -5588,10 +5588,10 @@
 
 (query :goal (h ?x))
 ;;; program random_176
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5607,10 +5607,10 @@
 
 (query :goal (h ?x))
 ;;; program random_177
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -5646,10 +5646,10 @@
 
 (query :goal (h ?x))
 ;;; program random_178
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5685,10 +5685,10 @@
 
 (query :goal (h ?x))
 ;;; program random_179
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5709,10 +5709,10 @@
 
 (query :goal (h ?x))
 ;;; program random_180
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -5758,10 +5758,10 @@
 
 (query :goal (h ?x))
 ;;; program random_181
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5777,10 +5777,10 @@
 
 (query :goal (h ?x))
 ;;; program random_182
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5801,10 +5801,10 @@
 
 (query :goal (h ?x))
 ;;; program random_183
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5813,10 +5813,10 @@
 
 (query :goal (h ?x))
 ;;; program random_184
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5837,10 +5837,10 @@
 
 (query :goal (h ?x))
 ;;; program random_185
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5861,10 +5861,10 @@
 
 (query :goal (h ?x))
 ;;; program random_186
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5880,10 +5880,10 @@
 
 (query :goal (h ?x))
 ;;; program random_187
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A)
@@ -5904,10 +5904,10 @@
 
 (query :goal (h ?x))
 ;;; program random_188
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -5948,10 +5948,10 @@
 
 (query :goal (h ?x))
 ;;; program random_189
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -5977,10 +5977,10 @@
 
 (query :goal (h ?x))
 ;;; program random_190
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -6006,10 +6006,10 @@
 
 (query :goal (h ?x))
 ;;; program random_191
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -6035,10 +6035,10 @@
 
 (query :goal (h ?x))
 ;;; program random_192
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -6084,10 +6084,10 @@
 
 (query :goal (h ?x))
 ;;; program random_193
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)
@@ -6118,10 +6118,10 @@
 
 (query :goal (h ?x))
 ;;; program random_194
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
@@ -6147,10 +6147,10 @@
 
 (query :goal (h ?x))
 ;;; program random_195
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B)
@@ -6171,10 +6171,10 @@
 
 (query :goal (h ?x))
 ;;; program random_196
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -6215,10 +6215,10 @@
 
 (query :goal (h ?x))
 ;;; program random_197
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C)
@@ -6239,10 +6239,10 @@
 
 (query :goal (h ?x))
 ;;; program random_198
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F)
@@ -6283,10 +6283,10 @@
 
 (query :goal (h ?x))
 ;;; program random_199
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)

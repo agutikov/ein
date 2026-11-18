@@ -20,7 +20,7 @@
 ;;; Today a claim's relation is a relation of the program: the claim loads and
 ;;; holds.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (rule welcome ()
   :match  (paid ?g)
   :assert (admitted ?g)

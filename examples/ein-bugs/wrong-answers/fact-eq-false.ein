@@ -26,6 +26,6 @@
 ;;; and `{(p w)}`, exit 0 (`ein solve FILE` and `ein oracle FILE` at
 ;;; `dc4c0bdc`, release and debug alike).
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (eq a w)

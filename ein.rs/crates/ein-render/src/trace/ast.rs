@@ -91,14 +91,19 @@ pub struct TraceStep {
     /// each name.
     pub bindings: Vec<(String, String)>,
     pub why: String,
-    /// What the derived fact says: its relation's `:why`, positional. `None`
-    /// where the relation carries none.
+    /// What the derived fact says, where it is a declaration the program
+    /// wrote: the declaration's `:why`, read on its own arrows
+    /// ([`crate::sentence::statement`]). `None` for every other fact, which
+    /// has no `:why` of its own.
     pub statement: Option<String>,
     /// The firing's other conclusions, in the order the rule writes them,
     /// each with its statement: a firing stores every conclusion of its
     /// rule, and a step names each (Q-M1f.214). Empty for a rule of one
     /// conclusion.
     pub more: Vec<(FactRef, Option<String>)>,
+    /// Each premise's statement, in [`Self::premises`]' order: what a
+    /// declaration a rule reads says, `None` for every other premise.
+    pub premise_statements: Vec<Option<String>>,
     /// The inline DOT slice — render-time, not serialised.
     pub diagram: Option<String>,
     /// The clustering key (target entity) — render-time, not serialised.
@@ -120,6 +125,7 @@ impl TraceStep {
             why: String::new(),
             statement: None,
             more: Vec::new(),
+            premise_statements: Vec::new(),
             diagram: None,
             section: None,
             sources: Vec::new(),

@@ -19,10 +19,10 @@
 ;;; region-spec: {"name":"trivial_line","about":"Obligations and nothing else (Q-M1e2.7). Root owes one of A, B; past that\nnothing is refuted, so the maximal line is the whole candidate set, n facts\ndown — the line the user called trivial — and the minimal line is {A}, {B}.","candidates":"ABCDE","R":[["A","ABCDE"],["B","ABCDE"]],"owing":[["","CDE"]]}
 ;;; region-status: oRRRoRRRoRRRoRRRoRRRoRRRoRRRoRRR
 
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot, a candidate for h")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h holding of {?2} pays debt {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)

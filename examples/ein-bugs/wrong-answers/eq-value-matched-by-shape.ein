@@ -20,10 +20,10 @@
 ;;; The engine now refuses it at the parse, on every command.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation says Guest Claim :why "{?1} says {?2}")
-(relation same Guest Guest :why "{?1} and {?2} are the same guest")
+(relation says Guest Claim :why "{?3} says {?4}")
+(relation same Guest Guest :why "{?3} and {?4} are the same guest")
 (says Ann (eq Ann Bob))
 (says Bob (eq Bob Bob))
 (rule believe () :match (says ?g (eq ?a ?b)) :assert (same ?a ?b) :why "{?a} is {?b}: {?g} says so")

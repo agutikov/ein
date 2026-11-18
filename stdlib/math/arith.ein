@@ -45,7 +45,7 @@
 
 ;; ── Division by zero ────────────────────────────────────────────────────────
 (relation division-by-zero Request
-  :why "{?1} divides by zero")
+  :why "{?3} divides by zero")
 
 (rule division-by-zero-is-false ()
   :match  (division-by-zero ?request)
@@ -59,7 +59,7 @@
 ;; calculator does. `ein-infer/tests/arith_theory.rs` holds that nothing is
 ;; missing here.
 (relation arith-module-rule Rule
-  :why "{?1} is a rule of std.math.arith")
+  :why "{?3} is a rule of std.math.arith")
 
 (rule arith ()
   :match  ()

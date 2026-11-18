@@ -425,7 +425,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   the corpus's monotone programs. Of a flagged program the engine claims no
   answer.
 - **`:why` is required** on every relation, rule, hrule and macro;
-  `--no-require-why` loads a program without.
+  `--no-require-why` loads a program without. **A `:why` reads the form it
+  is written on**: a declaration's, `{?n}` its n-th arrow (`{?1}` the atom
+  `relation`, `{?2}` the relation's name, `{?3}` its first label), printed
+  after the declaration where a rule reads it; a rule's, its variables. A
+  fact of a relation takes no text from the declaration and carries none of
+  its own: it reads by its `:source`, its rule's `:why`, or as written
+  (Q-M1f.58).
 - `__closed__` is reserved and never bound, and never an atom the blind
   enumerator guesses about, whether a rule derives a fact of it or a
   program writes it as an argument, which stays legal

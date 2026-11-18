@@ -31,7 +31,7 @@
 ;;; to the names that make it hold, and a claim that names `eq` or `neq`
 ;;; loads as one that names any relation.
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 
 (query :goal (neq w ?y)

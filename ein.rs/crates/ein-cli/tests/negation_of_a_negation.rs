@@ -348,7 +348,7 @@ const REFUSED: [(&str, &str, &str); 9] = [
     ),
     (
         "of-another-count",
-        "(relation p A B :why \"{?1} p {?2}\")\n(not (not (p a)))",
+        "(relation p A B :why \"{?3} p {?4}\")\n(not (not (p a)))",
         "the fact (not (not (p a))) holds (p a), which gives p 1 argument",
     ),
 ];

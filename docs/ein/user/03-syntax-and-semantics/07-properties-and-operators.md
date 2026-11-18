@@ -12,8 +12,8 @@ writes, and states the facts; the rules derive what the property implies, or ref
 ```lisp
 (import std.algebra :symbols (symmetric transitive asymmetric))
 
-(relation knows Person Person :why "{?1} knows {?2}")
-(relation above Box Box :why "box {?1} is above box {?2}")
+(relation knows Person Person :why "{?3} knows {?4}")
+(relation above Box Box :why "box {?3} is above box {?4}")
 
 (symmetric knows)
 (transitive knows)
@@ -99,7 +99,7 @@ on the program above:
 
 Premises: `knows(Alice, Bob)`
 
-Derives `knows(Bob, Alice)` — Bob knows Alice
+Derives `knows(Bob, Alice)`.
 
 ### Step 5 — `transitive`
 
@@ -107,12 +107,12 @@ Derives `knows(Bob, Alice)` — Bob knows Alice
 
 Premises: `knows(Alice, Bob)`, `knows(Bob, Carol)`
 
-Derives `knows(Alice, Carol)` — Alice knows Carol
+Derives `knows(Alice, Carol)`.
 ```
 
 A check's reason says what was violated, *(asymmetric above) violated: both above(B1,B2) and above(B2,B1).*, and is
-what a dead state's `refuted by` row names. A property fact itself has no statement: it is a fact about a rule's
-activation, and no declaration carries a sentence for it.
+what a dead state's `refuted by` row names. A property fact itself reads as written: it is a fact about a rule's
+activation, stated with no `:source`.
 
 ## In mathematics
 
@@ -260,8 +260,8 @@ are wanted, a second relation has the closure as its facts, fed by `includes`:
 ```lisp
 (import std.algebra :symbols (includes transitive))
 
-(relation is-a T T :why "{?1} is a {?2}")
-(relation is-a* T T :why "{?1} is a {?2}, directly or not")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation is-a* T T :why "{?3} is a {?4}, directly or not")
 (includes is-a is-a*)
 (transitive is-a*)
 

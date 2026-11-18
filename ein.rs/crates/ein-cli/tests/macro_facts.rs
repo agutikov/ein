@@ -43,9 +43,9 @@ fn ein(args: &[&str]) -> Run {
 
 /// Two guests, a relation `paid`, one that holds a fact, `says`, and the
 /// macro `settled`, whose body is `(paid ?g)`.
-const HEAD: &str = "(relation paid Guest :why \"{?1} has paid\")\n\
-     (relation says Claim :why \"it is said that {?1}\")\n\
-     (relation welcome Guest :why \"{?1} is welcome\")\n\
+const HEAD: &str = "(relation paid Guest :why \"{?3} has paid\")\n\
+     (relation says Claim :why \"it is said that {?3}\")\n\
+     (relation welcome Guest :why \"{?3} is welcome\")\n\
      (is-a Ann Guest) (is-a Bob Guest)\n\
      (macro settled (?g) (paid ?g) :why \"{?g} has settled: they have paid\")\n";
 
@@ -147,7 +147,7 @@ fn refused() -> Vec<(&'static str, String, String)> {
         ),
         (
             "a-relation-of-a-macros-name",
-            format!("{HEAD}(relation settled Guest :why \"{{?1}} has settled\")\n"),
+            format!("{HEAD}(relation settled Guest :why \"{{?3}} has settled\")\n"),
             "relation 'settled': settled is a macro too, (macro settled (?g) (paid ?g)) — a \
              premise (settled …) is the macro's call, replaced by its body, and a fact (settled …) \
              is refused, so nothing could be of the relation; give one of the two another name"
@@ -376,7 +376,7 @@ fn a_macro_called_where_it_is_expanded_loads() {
         ),
         (
             "the-name-as-a-value",
-            "(relation word Name :why \"{?1} is a word\")\n(word settled)\n".to_string(),
+            "(relation word Name :why \"{?3} is a word\")\n(word settled)\n".to_string(),
             "(word settled)",
         ),
         (

@@ -87,15 +87,15 @@
 
 ;; ── The tables ──────────────────────────────────────────────────────────────
 (relation gate2 Function Bit Bit Bit
-  :why "{?1} of {?2} and {?3} is {?4}")
+  :why "{?3} of {?4} and {?5} is {?6}")
 (relation column-name Function Column
-  :why "{?1} is the function whose outputs at 00, 01, 10 and 11 spell {?2}")
+  :why "{?3} is the function whose outputs at 00, 01, 10 and 11 spell {?4}")
 (relation inv Bit Bit
-  :why "not {?1} is {?2}")
+  :why "not {?3} is {?4}")
 (relation le Bit Bit
-  :why "{?1} is at most {?2}")
+  :why "{?3} is at most {?4}")
 (relation bit Bit
-  :why "{?1} is a bit")
+  :why "{?3} is a bit")
 
 ;; BEGIN GENERATED: an edit by hand is lost when the rows are written again
 (bit 0) (bit 1)
@@ -121,37 +121,37 @@
 
 ;; ── A relation a function: the second layout ────────────────────────────────
 (relation Zero Bit Bit Bit
-  :why "the constant 0 of {?1} and {?2} is {?3}")
+  :why "the constant 0 of {?3} and {?4} is {?5}")
 (relation And Bit Bit Bit
-  :why "{?1} and {?2} is {?3}")
+  :why "{?3} and {?4} is {?5}")
 (relation Andn Bit Bit Bit
-  :why "{?1} and not {?2} is {?3}")
+  :why "{?3} and not {?4} is {?5}")
 (relation Fst Bit Bit Bit
-  :why "the first of {?1} and {?2} is {?3}")
+  :why "the first of {?3} and {?4} is {?5}")
 (relation Randn Bit Bit Bit
-  :why "not {?1} and {?2} is {?3}")
+  :why "not {?3} and {?4} is {?5}")
 (relation Snd Bit Bit Bit
-  :why "the second of {?1} and {?2} is {?3}")
+  :why "the second of {?3} and {?4} is {?5}")
 (relation Xor Bit Bit Bit
-  :why "{?1} xor {?2} is {?3}")
+  :why "{?3} xor {?4} is {?5}")
 (relation Or Bit Bit Bit
-  :why "{?1} or {?2} is {?3}")
+  :why "{?3} or {?4} is {?5}")
 (relation Nor Bit Bit Bit
-  :why "neither {?1} nor {?2} is {?3}")
+  :why "neither {?3} nor {?4} is {?5}")
 (relation Xnor Bit Bit Bit
-  :why "{?1} xnor {?2} is {?3}")
+  :why "{?3} xnor {?4} is {?5}")
 (relation Nsnd Bit Bit Bit
-  :why "the negation of the second of {?1} and {?2} is {?3}")
+  :why "the negation of the second of {?3} and {?4} is {?5}")
 (relation Orn Bit Bit Bit
-  :why "{?1} or not {?2} is {?3}")
+  :why "{?3} or not {?4} is {?5}")
 (relation Nfst Bit Bit Bit
-  :why "the negation of the first of {?1} and {?2} is {?3}")
+  :why "the negation of the first of {?3} and {?4} is {?5}")
 (relation Rorn Bit Bit Bit
-  :why "not {?1} or {?2} is {?3}")
+  :why "not {?3} or {?4} is {?5}")
 (relation Nand Bit Bit Bit
-  :why "{?1} nand {?2} is {?3}")
+  :why "{?3} nand {?4} is {?5}")
 (relation One Bit Bit Bit
-  :why "the constant 1 of {?1} and {?2} is {?3}")
+  :why "the constant 1 of {?3} and {?4} is {?5}")
 
 (rule Zero-rows ()
   :match  (gate2 Zero ?a ?b ?o)
@@ -220,7 +220,7 @@
 
 ;; ── The closing rule, the module's entry ────────────────────────────────────
 (relation gates-rule Rule
-  :why "{?1} is a rule of the gates module")
+  :why "{?3} is a rule of the gates module")
 (gates-rule gates)
 (rule gates ()
   :match  ()

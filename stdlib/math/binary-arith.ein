@@ -162,112 +162,112 @@
 
 ;; ── The accumulator: the number is `std.math.binary`'s ──────────────────────
 (relation bin-b Bit Bits
-  :why "the bit {?1} in front of the bits {?2}")
+  :why "the bit {?3} in front of the bits {?4}")
 
 ;; ── The protocol ────────────────────────────────────────────────────────────
 (relation bin-let Name Number
-  :why "{?1} names the number {?2}")
+  :why "{?3} names the number {?4}")
 (relation bin-add Operand Operand
-  :why "asked: {?1} + {?2}")
+  :why "asked: {?3} + {?4}")
 (relation bin-sum-of Operand Operand Number
-  :why "{?1} + {?2} = {?3}")
+  :why "{?3} + {?4} = {?5}")
 (relation bin-sub Operand Operand
-  :why "asked: {?1} - {?2}")
+  :why "asked: {?3} - {?4}")
 (relation bin-diff-of Operand Operand Number Number
-  :why "{?1} - {?2} = {?3}, short by {?4}")
+  :why "{?3} - {?4} = {?5}, short by {?6}")
 (relation bin-cmp Operand Operand
-  :why "asked: {?1} compared with {?2}")
+  :why "asked: {?3} compared with {?4}")
 (relation bin-cmp-of Operand Operand Order
-  :why "{?1} against {?2}: {?3}")
+  :why "{?3} against {?4}: {?5}")
 (relation bin-mul Operand Operand
-  :why "asked: {?1} x {?2}")
+  :why "asked: {?3} x {?4}")
 (relation bin-product-of Operand Operand Number
-  :why "{?1} x {?2} = {?3}")
+  :why "{?3} x {?4} = {?5}")
 (relation bin-div Operand Operand
-  :why "asked: {?1} divided by {?2}")
+  :why "asked: {?3} divided by {?4}")
 (relation bin-quot-of Operand Operand Number Number
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}")
 
 ;; ── The circuit's own facts: each is one step of a computation, and carries
 ;;    the whole of its state ──────────────────────────────────────────────────
 (relation bin-operand Tag Operand
-  :why "wanted, for {?1}: the number {?2} stands for")
+  :why "wanted, for {?3}: the number {?4} stands for")
 (relation bin-operand-is Tag Number
-  :why "found, for {?1}: the number {?2}")
+  :why "found, for {?3}: the number {?4}")
 (relation bin-add-walk Tag Number Number Bit Bits
-  :why "adding, for {?1}: {?2} and {?3} are still to add, the carry is {?4}, and the bits so far are {?5}")
+  :why "adding, for {?3}: {?4} and {?5} are still to add, the carry is {?6}, and the bits so far are {?7}")
 (relation bin-strip Tag Bits
-  :why "for {?1}: the bits {?2}, high zeros not yet dropped")
+  :why "for {?3}: the bits {?4}, high zeros not yet dropped")
 (relation bin-turn Tag Bits Number
-  :why "for {?1}: the bits {?2} are still to turn round, and {?3} is turned")
+  :why "for {?3}: the bits {?4} are still to turn round, and {?5} is turned")
 (relation bin-done Tag Number
-  :why "the answer for {?1} is {?2}")
+  :why "the answer for {?3} is {?4}")
 (relation bin-sub-walk Tag Number Number Bit Bits
-  :why "subtracting, for {?1}: {?3} is still to take from {?2}, the borrow is {?4}, and the bits so far are {?5}")
+  :why "subtracting, for {?3}: {?5} is still to take from {?4}, the borrow is {?6}, and the bits so far are {?7}")
 (relation bin-short Tag
-  :why "{?1} has no answer: the number taken from is the smaller")
+  :why "{?3} has no answer: the number taken from is the smaller")
 (relation bin-cmp-walk Tag Number Number Order
-  :why "comparing, for {?1}: {?2} and {?3} are still to compare, and the order of the bits below is {?4}")
+  :why "comparing, for {?3}: {?4} and {?5} are still to compare, and the order of the bits below is {?6}")
 (relation bin-order-is Tag Order
-  :why "the answer for {?1} is {?2}")
+  :why "the answer for {?3} is {?4}")
 (relation bin-top-first Tag Number Bits
-  :why "for {?1}: {?2} is still to turn round, and the bits turned are {?3}")
+  :why "for {?3}: {?4} is still to turn round, and the bits turned are {?5}")
 (relation bin-top-first-is Tag Bits
-  :why "for {?1}: the bits, the top one first, are {?2}")
+  :why "for {?3}: the bits, the top one first, are {?4}")
 (relation bin-mul-call Tag Number Number
-  :why "wanted, for {?1}: {?2} x {?3}")
+  :why "wanted, for {?3}: {?4} x {?5}")
 (relation bin-mul-step Tag Number Bits Number
-  :why "multiplying, for {?1}: {?2} by the bits {?3} still to come, and the sum so far is {?4}")
+  :why "multiplying, for {?3}: {?4} by the bits {?5} still to come, and the sum so far is {?6}")
 (relation bin-div-call Tag Number Number
-  :why "wanted, for {?1}: {?2} divided by {?3}")
+  :why "wanted, for {?3}: {?4} divided by {?5}")
 (relation bin-div-done Tag Number Number
-  :why "the answer for {?1} is {?2}, remainder {?3}")
+  :why "the answer for {?3} is {?4}, remainder {?5}")
 (relation bin-div-step Tag Number Bits Number Number
-  :why "dividing, for {?1}, by {?2}: the bits {?3} are still to bring down, {?4} is left over, and the quotient so far is {?5}")
+  :why "dividing, for {?3}, by {?4}: the bits {?5} are still to bring down, {?6} is left over, and the quotient so far is {?7}")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation bin-sum Operand Operand
-  :why "the sum of {?1} and {?2}")
+  :why "the sum of {?3} and {?4}")
 (relation bin-add-first Operand Operand
-  :why "the first operand of {?1} + {?2}")
+  :why "the first operand of {?3} + {?4}")
 (relation bin-add-second Operand Operand Number
-  :why "the second operand of {?1} + {?2}, whose first is {?3}")
+  :why "the second operand of {?3} + {?4}, whose first is {?5}")
 (relation bin-difference Operand Operand
-  :why "{?1} - {?2}")
+  :why "{?3} - {?4}")
 (relation bin-shortfall Operand Operand
-  :why "what {?1} is short of {?2} by")
+  :why "what {?3} is short of {?4} by")
 (relation bin-sub-first Operand Operand
-  :why "the first operand of {?1} - {?2}")
+  :why "the first operand of {?3} - {?4}")
 (relation bin-sub-second Operand Operand Number
-  :why "the second operand of {?1} - {?2}, whose first is {?3}")
+  :why "the second operand of {?3} - {?4}, whose first is {?5}")
 (relation bin-order Operand Operand
-  :why "the order of {?1} and {?2}")
+  :why "the order of {?3} and {?4}")
 (relation bin-cmp-first Operand Operand
-  :why "the first operand of {?1} compared with {?2}")
+  :why "the first operand of {?3} compared with {?4}")
 (relation bin-cmp-second Operand Operand Number
-  :why "the second operand of {?1} compared with {?2}, whose first is {?3}")
+  :why "the second operand of {?3} compared with {?4}, whose first is {?5}")
 (relation bin-product Operand Operand
-  :why "the product of {?1} and {?2}")
+  :why "the product of {?3} and {?4}")
 (relation bin-mul-first Operand Operand
-  :why "the first operand of {?1} x {?2}")
+  :why "the first operand of {?3} x {?4}")
 (relation bin-mul-second Operand Operand Number
-  :why "the second operand of {?1} x {?2}, whose first is {?3}")
+  :why "the second operand of {?3} x {?4}, whose first is {?5}")
 (relation bin-mul-digits Tag Number
-  :why "the bits of the multiplier, for {?1}, which multiplies {?2}")
+  :why "the bits of the multiplier, for {?3}, which multiplies {?4}")
 (relation bin-mul-sum Tag Number Bits
-  :why "the sum so far, for {?1}, which multiplies {?2}, with the bits {?3} still to come")
+  :why "the sum so far, for {?3}, which multiplies {?4}, with the bits {?5} still to come")
 (relation bin-quotient Operand Operand
-  :why "{?1} divided by {?2}")
+  :why "{?3} divided by {?4}")
 (relation bin-div-first Operand Operand
-  :why "the first operand of {?1} divided by {?2}")
+  :why "the first operand of {?3} divided by {?4}")
 (relation bin-div-second Operand Operand Number
-  :why "the second operand of {?1} divided by {?2}, whose first is {?3}")
+  :why "the second operand of {?3} divided by {?4}, whose first is {?5}")
 (relation bin-div-m1 Tag Number Number
-  :why "the divisor in normal form, for {?1}, which divides {?2} by {?3} as the call wrote it")
+  :why "the divisor in normal form, for {?3}, which divides {?4} by {?5} as the call wrote it")
 (relation bin-div-digits Tag Number
-  :why "the bits of the dividend, for {?1}, which is divided by {?2}")
+  :why "the bits of the dividend, for {?3}, which is divided by {?4}")
 (relation bin-div-trial Tag Number Bits Number Number
-  :why "a trial, for {?1}: the divisor {?2} taken from {?5}")
+  :why "a trial, for {?3}: the divisor {?4} taken from {?7}")
 
 ;; ── The flags, and the faults behind them ───────────────────────────────────
 ;; `(bin-malformed REQUEST)`: an operand of the request holds something that
@@ -276,17 +276,17 @@
 ;; the request names an operand that no `bin-let` states. The rules are
 ;; `std.math.positional`'s but for `bin-operand-undeclared`, below.
 (relation bin-malformed Request
-  :why "{?1} holds something that is not a number")
+  :why "{?3} holds something that is not a number")
 (relation bin-undeclared Name Request
-  :why "{?2} uses the name {?1}, which no let states")
+  :why "{?4} uses the name {?3}, which no let states")
 (relation bin-bad-operand Tag Fault
-  :why "the operand looked up for {?1} is at fault: {?2}")
+  :why "the operand looked up for {?3} is at fault: {?4}")
 (relation bin-bad-request Request Fault
-  :why "{?1} is at fault: {?2}")
+  :why "{?3} is at fault: {?4}")
 (relation bin-not-a-number Thing
-  :why "{?1} stands where a bit or a number goes, and is none")
+  :why "{?3} stands where a bit or a number goes, and is none")
 (relation bin-no-let Name
-  :why "no let states the name {?1}")
+  :why "no let states the name {?3}")
 
 ;; ── Multiplication: a row is nothing or the multiplicand ────────────────────
 ;; `(bin-mul-step TAG X BITS SUM)`, `std.math.positional`'s: the multiplier's
@@ -399,7 +399,7 @@
 ;; relation and no rule of this file is missing here, and that the call is the
 ;; macro's whole order.
 (relation bin-arith-rule Rule
-  :why "{?1} is a rule std.math.binary-arith brings")
+  :why "{?3} is a rule std.math.binary-arith brings")
 
 (rule binary-arith ()
   :match  ()

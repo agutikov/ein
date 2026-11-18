@@ -21,9 +21,9 @@
 ;;; The engine refuses it at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation seen Guest :why "{?1} was seen")
+(relation seen Guest :why "{?3} was seen")
 (rule deny () :match (seen ?g) :assert (not ?g) :why "not {?g}: they were seen")
 (solve :hypothesis-relations (seen))
 (query :goal (seen ?g))

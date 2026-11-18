@@ -367,7 +367,7 @@ def factorial_body(last: int, expect: bool = True) -> str:
             if expect else ")\n")
     return f"""\
 (relation factorial Number Number
-  :why "{{?1}}! = {{?2}}")
+  :why "{{?3}}! = {{?4}}")
 (__closed__ factorial)
 
 (let last {enc(last)})

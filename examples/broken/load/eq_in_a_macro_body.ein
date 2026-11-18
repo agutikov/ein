@@ -19,7 +19,7 @@
 ; and `macro-absent-never-compiled` are its regressions, the shape refused where only the compiler met it.
 ;
 ;
-(relation q T :why "q holds of {?1}")
+(relation q T :why "q holds of {?3}")
 (macro one (?a) (eq ?a) :why "{?a} equals")
 (rule r () :match (and (q ?x) (one ?x)) :assert (q ?x) :why "{?x} is a q that equals, so a q")
 (q a)

@@ -29,8 +29,8 @@
 ;;;
 ;;;
 
-(relation p Node :why "{?1} is a node")
-(relation hit Node :why "{?1} is hit")
+(relation p Node :why "{?3} is a node")
+(relation hit Node :why "{?3} is hit")
 (p a)
 (rule act (?y)
   :match (p ?x)

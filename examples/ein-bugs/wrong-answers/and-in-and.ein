@@ -14,9 +14,9 @@
 ;;; FAILED, exit 1. The engine reads a conclusion flat at any depth, as a
 ;;; premise is read.
 ;;;
-(relation p Thing :why "p {?1}")
-(relation q Thing :why "q {?1}")
-(relation r Thing :why "r {?1}")
+(relation p Thing :why "p {?3}")
+(relation q Thing :why "q {?3}")
+(relation r Thing :why "r {?3}")
 (rule nested () :match () :assert (and (r a) (and (p a) (q a))) :why "r, and p and q, of a")
 (__closed__ p) (__closed__ q) (__closed__ r)
 (query :goal (p ?x) :expect (model (p a)))

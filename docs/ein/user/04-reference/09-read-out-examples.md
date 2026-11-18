@@ -583,7 +583,7 @@ A goal that hides the seat needs a relation that does not carry it: a projection
 under its bindings. The program below is 07 with one relation and one rule added, and it is **not an example file**:
 
 ```lisp
-(relation pair-at Group Table :why "pair {?1} sits at table {?2}")
+(relation pair-at Group Table :why "pair {?3} sits at table {?4}")
 
 (rule pair-at ()
   :match  (and (member ?a ?g) (sits ?a ?s) (at ?s ?t))

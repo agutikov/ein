@@ -105,9 +105,9 @@
 (import std.algebra :symbols (functional total total-owed))
 (import std.closure :symbols (infer-closure))
 
-(relation is-a        T T :why "{?1} is a {?2}")
-(relation r           A B :why "{?1} is assigned {?2}")
-(relation closed-here T   :why "{?1}'s extension was closed by infer-closure")
+(relation is-a        T T :why "{?3} is a {?4}")
+(relation r           A B :why "{?3} is assigned {?4}")
+(relation closed-here T   :why "{?3}'s extension was closed by infer-closure")
 
 (is-a a1 A)
 (is-a b1 B) (is-a b2 B)

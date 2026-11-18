@@ -24,7 +24,7 @@
 ;;; eight subsets, exit 0 on every command.
 ;;; Today it is refused at load, at the activator, on every command.
 
-(relation at Color House :why "{?1} is at {?2}")
+(relation at Color House :why "{?3} is at {?4}")
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)

@@ -37,7 +37,7 @@
 
 (import std.typing :symbols (derive-reflexive reflexive-dom reflexive-cod))
 
-(relation r Node Node :why "{?1} relates to {?2}")
+(relation r Node Node :why "{?3} relates to {?4}")
 
 (reflexive r)
 

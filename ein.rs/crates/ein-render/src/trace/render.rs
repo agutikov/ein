@@ -36,10 +36,23 @@ pub(crate) fn md_text(text: &str, lead: &str) -> String {
         .join(&format!("  \n{lead}"))
 }
 
+/// The premises line: each premise as the trace prints a fact, followed by
+/// what it says where it is a declaration with a `:why`
+/// (`relation(owns, Person, Pet)` — *a Person owns a Pet*), then the
+/// premises' `:source`s, after `— from`.
 pub(crate) fn premises_line(step: &TraceStep) -> String {
     let labels = step.premise_labels();
     if !labels.is_empty() {
-        let quoted: Vec<String> = labels.iter().map(|p| format!("`{p}`")).collect();
+        let quoted: Vec<String> = labels
+            .iter()
+            .enumerate()
+            .map(
+                |(i, p)| match step.premise_statements.get(i).and_then(Option::as_ref) {
+                    Some(says) => format!("`{p}` — {}", md_text(says, "")),
+                    None => format!("`{p}`"),
+                },
+            )
+            .collect();
         let mut base = format!("Premises: {}", quoted.join(", "));
         if !step.sources.is_empty() {
             base.push_str(&format!(" — from {}", sources(step)));

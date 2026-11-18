@@ -21,8 +21,8 @@
 ;;; …*, `ein saturate` behind `ein.inference.compile.CompileError:`; the views
 ;;; and `kb save` answered. Today `wide` is refused at load.
 
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (p k)
 (rule wide ()
   :match (and (p ?v0) (p ?v1) (p ?v2) (p ?v3) (p ?v4) (p ?v5) (p ?v6) (p ?v7)

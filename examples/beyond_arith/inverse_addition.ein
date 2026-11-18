@@ -16,12 +16,12 @@
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (fa nz __closed__))
 
-(relation unadd Number Number :why "asked: which x makes x + {?1} = {?2}?")
-(relation un-walk Tag Number Number Digit Digits :why "for {?1}: {?2} and {?3} still to read, carry {?4}, x's digits so far {?5}")
-(relation un-strip Tag Digits :why "for {?1}: x's digits, top first, are {?2}")
-(relation un-turn Tag Digits Number :why "for {?1}: {?2} still to turn, {?3} turned")
-(relation addend-of Number Number Number :why "x + {?1} = {?2} for x = {?3}")
-(relation no-addend Number Number :why "no natural x makes x + {?1} = {?2}")
+(relation unadd Number Number :why "asked: which x makes x + {?3} = {?4}?")
+(relation un-walk Tag Number Number Digit Digits :why "for {?3}: {?4} and {?5} still to read, carry {?6}, x's digits so far {?7}")
+(relation un-strip Tag Digits :why "for {?3}: x's digits, top first, are {?4}")
+(relation un-turn Tag Digits Number :why "for {?3}: {?4} still to turn, {?5} turned")
+(relation addend-of Number Number Number :why "x + {?3} = {?4} for x = {?5}")
+(relation no-addend Number Number :why "no natural x makes x + {?3} = {?4}")
 (__closed__ unadd) (__closed__ un-walk) (__closed__ un-strip) (__closed__ un-turn)
 (__closed__ addend-of) (__closed__ no-addend)
 

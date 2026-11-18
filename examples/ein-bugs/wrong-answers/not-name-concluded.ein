@@ -23,7 +23,7 @@
 ;;; The engine refuses it at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (paid Ann)
 (rule deny () :match (paid ?g) :assert (not ?g) :why "not {?g}: they have paid")

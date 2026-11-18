@@ -30,8 +30,8 @@
 ;;; in either build. The regression's `now` is that refusal; the section above
 ;;; is the record of the answer it replaced.
 
-(relation p Node :why "{?1} is a p")
-(relation q Node :why "{?1} is a q")
+(relation p Node :why "{?3} is a p")
+(relation q Node :why "{?3} is a q")
 (p a)
 (hrule h (?R)
   :match (?R ?x)

@@ -25,8 +25,8 @@
 (import std.math.decimal :symbols (n not-decimal valid))
 (import std.math.arith :symbols (z))
 
-(relation price Item Amount :why "{?1} costs {?2}")
-(relation seed Thing :why "{?1} is a seed")
+(relation price Item Amount :why "{?3} costs {?4}")
+(relation seed Thing :why "{?3} is a seed")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (and (__closed__ price) (__closed__ seed))

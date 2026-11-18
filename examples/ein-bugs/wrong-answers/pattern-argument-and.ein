@@ -21,10 +21,10 @@
 ;;; the goal has no row, exit 0 on every command.
 ;;; Today it is refused at load, at the pattern, on every command.
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation says Claim :why "it is said that {?1}")
-(relation welcome Guest :why "{?1} is welcome")
+(relation says Claim :why "it is said that {?3}")
+(relation welcome Guest :why "{?3} is welcome")
 (paid Ann)
 (says (paid Ann))
 (rule greet () :match (and (is-a ?g Guest) (says (and (paid ?g)))) :assert (welcome ?g) :why "{?g} is welcome: it is said they paid")

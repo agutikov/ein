@@ -10,9 +10,9 @@
 
 (import lower :symbols (lower ask double-of))
 
-(relation wanted Thing :why "{?1}'s double is wanted")
-(relation got Thing Thing :why "{?1}'s double is {?2}")
-(relation upper-rule Rule :why "{?1} is a rule the upper theory brings")
+(relation wanted Thing :why "{?3}'s double is wanted")
+(relation got Thing Thing :why "{?3}'s double is {?4}")
+(relation upper-rule Rule :why "{?3} is a rule the upper theory brings")
 
 (rule want ()
   :match  (wanted ?x)

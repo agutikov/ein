@@ -23,8 +23,8 @@
 (import std.math.binary :symbols (b2 not-binary bin-valid))
 (import std.math.arith :symbols (z))
 
-(relation mask Item Bits :why "{?1} is masked by {?2}")
-(relation seed Thing :why "{?1} is a seed")
+(relation mask Item Bits :why "{?3} is masked by {?4}")
+(relation seed Thing :why "{?3} is a seed")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (and (__closed__ mask) (__closed__ seed))

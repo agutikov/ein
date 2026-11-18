@@ -37,13 +37,13 @@
 ;;; reads the tables closes the ones it reads in its own closing rule too, as
 ;;; `std.math.decimal-arith` does.
 
-(relation fa Digit Digit Digit Digit Digit :why "{?1} + {?2} + carry {?3} is digit {?4}, carry {?5}")
-(relation fs Digit Digit Digit Digit Digit :why "{?1} - {?2} - borrow {?3} is digit {?4}, borrow {?5}")
-(relation md Digit Digit Digit Digit Digit :why "{?1} x {?2} + carry {?3} is digit {?4}, carry {?5}")
-(relation cl Order Digit Digit Order :why "the order below is {?1}; {?2} against {?3} above it makes it {?4}")
-(relation nz Digit :why "{?1} is not zero")
-(relation mid Bound Bound Digit :why "between {?1} and {?2}, try {?3}")
-(relation adj Bound Bound :why "nothing lies between {?1} and {?2}")
+(relation fa Digit Digit Digit Digit Digit :why "{?3} + {?4} + carry {?5} is digit {?6}, carry {?7}")
+(relation fs Digit Digit Digit Digit Digit :why "{?3} - {?4} - borrow {?5} is digit {?6}, borrow {?7}")
+(relation md Digit Digit Digit Digit Digit :why "{?3} x {?4} + carry {?5} is digit {?6}, carry {?7}")
+(relation cl Order Digit Digit Order :why "the order below is {?3}; {?4} against {?5} above it makes it {?6}")
+(relation nz Digit :why "{?3} is not zero")
+(relation mid Bound Bound Digit :why "between {?3} and {?4}, try {?5}")
+(relation adj Bound Bound :why "nothing lies between {?3} and {?4}")
 
 ;; Every table is complete: no row is ever a hypothesis.
 (__closed__ fa) (__closed__ fs) (__closed__ md) (__closed__ cl) (__closed__ nz) (__closed__ mid) (__closed__ adj)

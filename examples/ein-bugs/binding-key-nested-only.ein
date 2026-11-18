@@ -47,9 +47,9 @@
 ;;;
 ;;;
 
-(relation edge  Node Node :why "there is an edge from {?1} to {?2}")
-(relation holds Node :why "{?1} holds")
-(relation noted Node Node :why "{?1} is noted with {?2}")
+(relation edge  Node Node :why "there is an edge from {?3} to {?4}")
+(relation holds Node :why "{?3} holds")
+(relation noted Node Node :why "{?3} is noted with {?4}")
 
 (rule note (?R ?f)
   :match  (and (?R ?a ?b) (holds ?f))

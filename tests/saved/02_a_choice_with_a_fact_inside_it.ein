@@ -15,10 +15,10 @@
 ;;; committed after root's fixpoint as the run committed it, and `(flagged a)`
 ;;; derived again by `flag` (Q-M1f.392, Q-M1f.400).
 
-(relation item Thing :why "{?1} is an item")
-(relation bad Thing :why "{?1} is bad")
-(relation note Fact :why "a note says {?1}")
-(relation flagged Thing :why "{?1} is flagged")
+(relation item Thing :why "{?3} is an item")
+(relation bad Thing :why "{?3} is bad")
+(relation note Fact :why "a note says {?3}")
+(relation flagged Thing :why "{?3} is flagged")
 
 (item a)
 

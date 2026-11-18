@@ -797,9 +797,9 @@ fn the_clock_and_the_cube_group_their_counts() {
     let file = tmp.path().join("groups.ein");
     std::fs::write(
         &file,
-        "(relation slot T :why \"{?1} is a slot\")\n\
-         (relation h T :why \"h holds of {?1}\")\n\
-         (relation need T T :why \"h holding of {?2} pays debt {?1}\")\n\
+        "(relation slot T :why \"{?3} is a slot\")\n\
+         (relation h T :why \"h holds of {?3}\")\n\
+         (relation need T T :why \"h holding of {?4} pays debt {?3}\")\n\
          (slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G) (slot H) (slot I) (slot J) (slot K)\n\
          (need K1 Z)\n\
          (hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of {?x}\")\n\
@@ -851,9 +851,9 @@ fn route_1_never_stops_on_an_ein_run() {
     let file = tmp.path().join("dead-root.ein");
     std::fs::write(
         &file,
-        "(relation thing Thing :why \"{?1} is a thing\")\n\
-         (relation p Thing :why \"{?1} is p\")\n\
-         (relation q Thing :why \"{?1} is q\")\n\
+        "(relation thing Thing :why \"{?3} is a thing\")\n\
+         (relation p Thing :why \"{?3} is p\")\n\
+         (relation q Thing :why \"{?3} is q\")\n\
          (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) \
          :why \"no q for {?x}, so p\")\n\
          (rule derive-q () :match (and (thing ?x) (absent (p ?x))) :assert (q ?x) \

@@ -15,8 +15,8 @@
 ;;;
 ;;;
 
-(relation p T :why "p holds of {?1}")
-(relation q T :why "q holds of {?1}")
+(relation p T :why "p holds of {?3}")
+(relation q T :why "q holds of {?3}")
 (not (p A))
 (q A)
 (rule boom () :match (and (not (p ?x)) (q ?x)) :assert (false) :why "p is false of {?x} and q holds of {?x}, which cannot both be")

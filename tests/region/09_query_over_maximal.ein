@@ -8,8 +8,8 @@
 ;;; `:over all` is false, and under `ein solve --minimal` it is not checked:
 ;;; the run did not ask for the maximal line.
 
-(relation instance Thing Type :why "{?1} is a {?2}")
-(relation seat     Person Slot :why "{?1} sits in {?2}")
+(relation instance Thing Type :why "{?3} is a {?4}")
+(relation seat     Person Slot :why "{?3} sits in {?4}")
 
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)

@@ -66,7 +66,7 @@
 (import std.math.arith :symbols (z))
 
 (relation short-of Name Rational
-  :why "there is not enough {?1}: {?2} is needed")
+  :why "there is not enough {?3}: {?4} is needed")
 (__closed__ short-of)
 
 (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))

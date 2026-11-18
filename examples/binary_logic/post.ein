@@ -38,15 +38,15 @@
 (import std.macro :symbols (forall))
 
 (relation member Set Function
-  :why "{?2} is in {?1}")
+  :why "{?4} is in {?3}")
 (relation set Set
-  :why "{?1} is a set of functions")
+  :why "{?3} is a set of functions")
 (relation complete Set
-  :why "every function can be built from {?1}")
+  :why "every function can be built from {?3}")
 (relation inside Set Class
-  :why "every member of {?1} is in the class {?2}")
+  :why "every member of {?3} is in the class {?4}")
 (relation incomplete Set
-  :why "{?1} cannot build every function")
+  :why "{?3} cannot build every function")
 
 (member and-or And) (member and-or Or)
 (member and-or-not And) (member and-or-not Or) (member and-or-not Nfst)

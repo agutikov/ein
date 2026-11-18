@@ -47,8 +47,8 @@ fn ein_in(dir: &Path, args: &[&str]) -> Run {
 /// One rule and one fact, so that `saturate` fires, `render rules` and
 /// `render rule --name step` draw, and `ein test` has a claim to check.
 const PROGRAM: &str = "\
-(relation p T :why \"{?1} is a p\")
-(relation q T :why \"{?1} is a q\")
+(relation p T :why \"{?3} is a p\")
+(relation q T :why \"{?3} is a q\")
 (p a)
 (rule step () :match (p ?x) :assert (q ?x) :why \"{?x} is a p, so a q\")
 (query :goal (q ?x) :expect (model (q a)))
@@ -131,13 +131,13 @@ fn programs(dir: &Path) {
     std::fs::create_dir_all(dir.join("sub")).expect("a directory");
     std::fs::write(
         dir.join("sub/mod.ein"),
-        "(relation q T :why \"{?1} is a q\")\n",
+        "(relation q T :why \"{?3} is a q\")\n",
     )
     .expect("written");
     std::fs::write(
         dir.join("sub/main.ein"),
         "(import mod :symbols (q))\n\
-         (relation p T :why \"{?1} is a p\")\n\
+         (relation p T :why \"{?3} is a p\")\n\
          (p a)\n\
          (rule step () :match (p ?x) :assert (q ?x) :why \"{?x} is a p, so a q\")\n\
          (query :goal (q ?x) :expect (model (q a)))\n",
@@ -246,7 +246,7 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 fn a_containers_positions_name_its_stored_program() {
     let scratch = Scratch::new("ein-program-read");
     let dir = scratch.path();
-    let text = "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"{?1} is hit\")\n\
+    let text = "(relation p Node :why \"p holds of {?3}\") (relation hit Node :why \"{?3} is hit\")\n\
                 (p a)\n\
                 (macro one (?a) (eq ?a) :why \"the equality (eq {?a}), written with one argument\")\n\
                 (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x) :why \"p holds of {?x} and the pattern one holds of {?x}, so {?x} is hit\")\n\
@@ -275,7 +275,7 @@ fn a_containers_positions_name_its_stored_program() {
     let forms = ein_ir::parse(&mut ast, text, Some("g.ein")).expect("it parses");
     let held = ein_ir::parse(
         &mut ast,
-        "(relation p Node :why \"p holds of {?1}\") (p a)",
+        "(relation p Node :why \"p holds of {?3}\") (p a)",
         Some("k.ein"),
     )
     .expect("it parses");

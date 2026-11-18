@@ -37,9 +37,9 @@
 ;;; `oblig-fresh-name` is fixed.
 ;;;
 
-(relation person T :why "{?1} is a person")
-(relation food   T :why "{?1} is a food")
-(relation likes  T T :why "{?1} likes {?2}")
+(relation person T :why "{?3} is a person")
+(relation food   T :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
 
 (person Ann)
 (food Soup)

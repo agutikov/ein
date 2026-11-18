@@ -23,5 +23,5 @@
 ;;; kernel's dunder out by name now, and the answer is the one above.
 
 (import std.math.arith)
-(relation total Number :why "the total is {?1}")
+(relation total Number :why "the total is {?3}")
 (query :goal (total ?x))

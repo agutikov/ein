@@ -89,10 +89,11 @@ fn include_slow() -> bool {
 
 /// **The witnesses whose `answer.txt` prints an unfilled template
 /// reference**, each a known wrong answer, named rather than checked. Empty:
-/// a fact written with fewer arguments than its relation declares,
-/// `(likes Bob)` beside `(relation likes Person Drink :why "{?1} likes
-/// {?2}")`, whose English would be *Bob likes {?2}*, is refused at load, so
-/// no state holds such a fact.
+/// the texts `answer.txt` fills are a query's `:goal-text` and an obligation
+/// rule's `:why`, each by the variables its form binds, and a relation's
+/// `:why` reads its declaration alone, never a fact of it (Q-M1f.58), so no
+/// fact with fewer arguments than its declaration's labels leaves one
+/// unfilled.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
 /// What the invariances held, summed over files.
@@ -819,9 +820,9 @@ fn the_witnesses_are_saved_and_loaded_as_their_states() {
     std::fs::write(
         &digits,
         ";; A run of digits is a name: `7`, `07`, `-7` and `1..5` are four.\n\
-         (relation seen Thing :why \"{?1} is seen\")\n\
-         (relation pick Thing :why \"{?1} is picked\")\n\
-         (relation pair Thing Thing :why \"{?1} pairs with {?2}\")\n\
+         (relation seen Thing :why \"{?3} is seen\")\n\
+         (relation pick Thing :why \"{?3} is picked\")\n\
+         (relation pair Thing Thing :why \"{?3} pairs with {?4}\")\n\
          (seen 7) (seen 07) (seen -7) (seen 1..5)\n\
          (rule pairs () :match (and (pick ?x) (seen ?y) (neq ?x ?y)) :assert (pair ?x ?y)\n\
            :why \"{?x}, picked, pairs with {?y}\")\n\
@@ -832,9 +833,9 @@ fn the_witnesses_are_saved_and_loaded_as_their_states() {
     std::fs::write(
         &decorated,
         ";; The name rule's decorators and brackets, bare and in a nested fact.\n\
-         (relation has Thing Thing :why \"{?1} has {?2}\")\n\
-         (relation tag Thing :why \"{?1} is tagged\")\n\
-         (relation kept Thing :why \"{?1} is kept\")\n\
+         (relation has Thing Thing :why \"{?3} has {?4}\")\n\
+         (relation tag Thing :why \"{?3} is tagged\")\n\
+         (relation kept Thing :why \"{?3} is kept\")\n\
          (has $x [a]) (has a/b {b}) (has it's f') (has <= (box !x @x ~))\n\
          (has a^b%=+& a.b-c_d*)\n\
          (hrule tags () :match (has ?x ?y) :assert (tag ?x) :why \"{?x} may be tagged\")\n\

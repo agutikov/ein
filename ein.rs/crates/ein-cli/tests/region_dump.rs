@@ -126,8 +126,8 @@ fn over_the_limit_the_oracle_refuses_and_says_why() {
 /// `n` candidates and no rule: every subset is in R.
 fn wide_program(dir: &Path, n: usize) -> PathBuf {
     let mut s = String::from(
-        "(relation is-a T T :why \"{?1} is a {?2}\")\n\
-         (relation cand T :why \"{?1} is a candidate\")\n(relation p T :why \"p holds of {?1}\")\n",
+        "(relation is-a T T :why \"{?3} is a {?4}\")\n\
+         (relation cand T :why \"{?3} is a candidate\")\n(relation p T :why \"p holds of {?3}\")\n",
     );
     for i in 0..n {
         s.push_str(&format!("(is-a x{i} T) (cand x{i})\n"));
@@ -383,9 +383,9 @@ fn every_monotonicity_field_is_defined_on_the_page() {
     let dead = tmp.join("dead-root.ein");
     std::fs::write(
         &dead,
-        "(relation thing Thing :why \"{?1} is a thing\")\n\
-         (relation p Thing :why \"{?1} is p\")\n\
-         (relation q Thing :why \"{?1} is q\")\n\
+        "(relation thing Thing :why \"{?3} is a thing\")\n\
+         (relation p Thing :why \"{?3} is p\")\n\
+         (relation q Thing :why \"{?3} is q\")\n\
          (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) \
          :why \"no q for {?x}, so p\")\n\
          (rule derive-q () :match (and (thing ?x) (absent (p ?x))) :assert (q ?x) \

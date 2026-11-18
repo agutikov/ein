@@ -40,9 +40,9 @@ use ein_ir::{Ast, load, parse};
 /// owes her a Food of; `drinks`, which nothing at root owes.
 const HEAD: &str = "\
 (import std.algebra :symbols (total-owed))
-(relation is-a   T T :why \"{?1} is a {?2}\")
-(relation likes  Person Food :why \"{?1} likes {?2}\")
-(relation drinks Person Drink :why \"{?1} drinks {?2}\")
+(relation is-a   T T :why \"{?3} is a {?4}\")
+(relation likes  Person Food :why \"{?3} likes {?4}\")
+(relation drinks Person Drink :why \"{?3} drinks {?4}\")
 ";
 
 /// The regression's witness, `oblig-derived-activator`: `arm` concludes the
@@ -90,7 +90,7 @@ const OVER: &str = "\
 /// the reading finds none: H is root's, the node that likes Soup owes a
 /// drink nothing pays, and R is empty.
 const UNDER: &str = "\
-(relation wanted T :why \"a debt over {?1} is wanted\")
+(relation wanted T :why \"a debt over {?3} is wanted\")
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
 (wanted drinks)
 (total-owed likes is-a)
@@ -102,7 +102,7 @@ const UNDER: &str = "\
 /// over `eats`: the reading's second pass, since `drinks` is a relation a
 /// commitment can change only once the first pass has proposed a fact of it.
 const TWO_STEPS: &str = "\
-(relation eats   Person Dish :why \"{?1} eats {?2}\")
+(relation eats   Person Dish :why \"{?3} eats {?4}\")
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink) (is-a Pie Dish)
 (total-owed likes is-a)
 (rule arm   () :match (likes ?p ?f)  :assert (total-owed drinks is-a) :why \"{?p} likes {?f}, which switches on the debt that every Person drinks a Drink\")
@@ -115,7 +115,7 @@ const TWO_STEPS: &str = "\
 /// obligation's. The relations a commitment can change have to be followed
 /// through the rule root never compiled, as *forbid* follows them.
 const CHAIN: &str = "\
-(relation serves Kitchen :why \"kitchen {?1} serves\")
+(relation serves Kitchen :why \"kitchen {?3} serves\")
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink) (is-a K1 Kitchen)
 (total-owed likes is-a)
 (rule opens () :match (likes ?p ?f) :assert (serves K1) :why \"{?p} likes {?f}, so kitchen K1 serves\")
@@ -128,7 +128,7 @@ const CHAIN: &str = "\
 /// rung holds a later plan to its own decline, so the call declines and the
 /// blind enumerator builds H.
 const FLIP: &str = "\
-(relation kind   T T :why \"{?1} is of kind {?2}\")
+(relation kind   T T :why \"{?3} is of kind {?4}\")
 (is-a Ann Person) (is-a Soup Food)
 (kind Ann Person) (kind Tea Drink)
 (total-owed likes is-a)

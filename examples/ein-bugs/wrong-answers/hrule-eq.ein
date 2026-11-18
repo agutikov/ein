@@ -26,7 +26,7 @@
 ;;; `(neq …)` being a parse error; this witness is the `eq` one so that its
 ;;; state files load (`answer_round_trip.rs`).
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (p b)
 (hrule h ()

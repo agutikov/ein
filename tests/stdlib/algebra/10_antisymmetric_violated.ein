@@ -11,7 +11,7 @@
 
 (import std.algebra :symbols (antisymmetric))
 
-(relation before Node Node :why "{?1} comes before {?2}")
+(relation before Node Node :why "{?3} comes before {?4}")
 
 (antisymmetric before)
 

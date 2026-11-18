@@ -21,6 +21,6 @@
 ;;; The engine reads it as `(neq a a)`: R is empty.
 ;;;
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (not (eq a a))

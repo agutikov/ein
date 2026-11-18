@@ -80,6 +80,11 @@ fn step_from_firing(
         .iter()
         .map(|p| fact_ref(terms, *p))
         .collect();
+    step.premise_statements = firing
+        .premises
+        .iter()
+        .map(|p| kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, *p)))
+        .collect();
     step.bindings = firing
         .bindings
         .iter()

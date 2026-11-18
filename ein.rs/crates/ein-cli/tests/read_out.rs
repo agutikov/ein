@@ -220,10 +220,10 @@ fn the_read_out_names_what_root_owes() {
     std::fs::write(
         &file,
         format!(
-            "(relation thing T :why \"{{?1}} is a thing\")\n\
+            "(relation thing T :why \"{{?3}} is a thing\")\n\
              (relation go :why \"every thing is marked\")\n\
-             (relation ink T :why \"{{?1}} is an ink\")\n\
-             (relation mark T T :why \"{{?1}} is marked in {{?2}}\")\n\
+             (relation ink T :why \"{{?3}} is an ink\")\n\
+             (relation mark T T :why \"{{?3}} is marked in {{?4}}\")\n\
              {}\n(ink red)\n\
              (hrule guess () :match () :assert (go) :why \"suppose every thing is marked\")\n\
              (rule mark-all () :match (and (go) (thing ?x)) :assert (mark ?x red) \
@@ -859,8 +859,8 @@ fn is_a_reads_as_any_other_relation_on_every_surface() {
     let pets =
         std::fs::read_to_string(repo_root().join("examples/saturation/type-exclusivity/pets.ein"))
             .expect("pets.ein");
-    let likes = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
-                 (relation likes T T :why \"{?1} likes {?2}\")\n(__closed__ is-a)\n\
+    let likes = "(relation is-a T T :why \"{?3} is a {?4}\")\n\
+                 (relation likes T T :why \"{?3} likes {?4}\")\n(__closed__ is-a)\n\
                  (is-a Ann Person)\n\
                  (query :goal (likes Ann ?x) :over maximal\n\
                  \x20 :expect (model (likes Ann Person)))\n";

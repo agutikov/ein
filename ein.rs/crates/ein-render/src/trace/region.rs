@@ -63,9 +63,9 @@ pub struct RegionTrace {
     pub reorder: bool,
 }
 
-/// `Derives `(f)`.`, and what the fact says where its relation carries a
-/// `:why`: `Derives `(f)` — <statement>`, the
-/// statement as its template writes it.
+/// `Derives `(f)`.`: a fact has no `:why` of its own, so a conclusion is
+/// printed alone, but for a declaration the program wrote, which reads by its
+/// own `:why`: `Derives `(f)` — <statement>`.
 ///
 /// **Every conclusion the firing stored, in the order the rule writes
 /// them**, each with its statement, `; ` between two: `Derives `(f)` —

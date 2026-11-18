@@ -11,8 +11,8 @@
 ;;;
 ;;; A bare `ein solve` answers the same seven states, renamed, in both files.
 (import std.algebra :symbols (total-owed surjective-owed))
-(relation is-a   T T :why "{?1} is a {?2}")
-(relation seats  Guest Chair :why "{?1} sits on {?2}")
+(relation is-a   T T :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} sits on {?4}")
 (is-a Zed Guest) (is-a Bob Guest)
 (is-a C1 Chair)  (is-a C2 Chair)
 (total-owed      seats is-a)

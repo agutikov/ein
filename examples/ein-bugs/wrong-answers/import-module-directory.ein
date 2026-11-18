@@ -27,7 +27,7 @@
 
 (import import-module-directory-module :symbols (q))
 
-(relation a Thing :why "{?1} is an a")
+(relation a Thing :why "{?3} is an a")
 (is-a k Thing)
 (a k)
 (rule r () :match (a ?x) :assert (q ?x) :why "{?x} is an a, so a q")

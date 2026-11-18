@@ -34,9 +34,9 @@
 ;;;
 ;;;
 ;;;
-(relation is-a T T :why "{?1} is a {?2}")
-(relation r3 T T T :why "r3 holds of {?1}, {?2} and {?3}")
-(relation r2 T T :why "r2 holds of {?1} and {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation r3 T T T :why "r3 holds of {?3}, {?4} and {?5}")
+(relation r2 T T :why "r2 holds of {?3} and {?4}")
 (is-a A T) (is-a B T)
 (solve :no-hypothesis (is-a))
 (query :goal (r3 ?x ?y ?z))

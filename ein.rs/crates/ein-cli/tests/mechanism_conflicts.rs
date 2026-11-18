@@ -38,7 +38,7 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// `at` declared, two colours and two houses, `near` stated and undeclared.
-const DECL: &str = "(relation at Color House :why \"{?1} is at {?2}\")\n\
+const DECL: &str = "(relation at Color House :why \"{?3} is at {?4}\")\n\
      (is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)\n\
      (near H1 H2)\n";
 /// The hrule `solve_lists.rs` uses, whose `?R` names the relation it proposes.

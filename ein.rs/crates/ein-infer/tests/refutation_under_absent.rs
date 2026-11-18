@@ -356,7 +356,7 @@ fn beside_an_obligation_the_remedy_names_the_obligation() {
             ("", "")
         };
         format!(
-            "{import}(relation likes Person Food :why \"{{?1}} likes {{?2}}\")\n\
+            "{import}(relation likes Person Food :why \"{{?3}} likes {{?4}}\")\n\
              (is-a Ann Person) (is-a Soup Food) (is-a Stew Food)\n{activator}\
              (rule hungry () :match (and (is-a ?p Person) (absent (likes ?p Soup))) \
              :assert (false) :why \"{{?p}} does not like Soup\")\n\

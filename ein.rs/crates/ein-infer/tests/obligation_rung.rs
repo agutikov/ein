@@ -117,8 +117,8 @@ fn stuck_program() -> (Scratch, String) {
     std::fs::write(
         &path,
         "(import std.algebra :symbols (total-owed))\n\
-         (relation is-a  T T :why \"{?1} is a {?2}\")\n\
-         (relation likes Person Food :why \"{?1} likes {?2}\")\n\
+         (relation is-a  T T :why \"{?3} is a {?4}\")\n\
+         (relation likes Person Food :why \"{?3} likes {?4}\")\n\
          (is-a Ann Person) (is-a Bob Person)\n\
          (is-a Soup Food)  (is-a Stew Food)\n\
          (total-owed likes is-a)\n\
@@ -139,8 +139,8 @@ fn discharged_program() -> (Scratch, String) {
     std::fs::write(
         &path,
         "(import std.algebra :symbols (total-owed))\n\
-         (relation is-a  T T :why \"{?1} is a {?2}\")\n\
-         (relation likes Person Food :why \"{?1} likes {?2}\")\n\
+         (relation is-a  T T :why \"{?3} is a {?4}\")\n\
+         (relation likes Person Food :why \"{?3} likes {?4}\")\n\
          (is-a Ann Person) (is-a Bob Person)\n\
          (is-a Soup Food)  (is-a Stew Food)\n\
          (total-owed likes is-a)\n\

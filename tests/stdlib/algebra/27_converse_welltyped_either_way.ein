@@ -31,11 +31,11 @@
 
 (import std.algebra :symbols (converse converse-illtyped-dom converse-illtyped-ran))
 
-(relation is-a*    T T             :why "{?1} is a subtype of {?2}")
-(relation owns     Person Animal   :why "{?1} owns {?2}")
-(relation owned-by Pet    Person   :why "{?1} is owned by {?2}")
-(relation kept-by  Animal Person   :why "{?1} is kept by {?2}")
-(relation keeps    Person Pet      :why "{?1} keeps {?2}")
+(relation is-a*    T T             :why "{?3} is a subtype of {?4}")
+(relation owns     Person Animal   :why "{?3} owns {?4}")
+(relation owned-by Pet    Person   :why "{?3} is owned by {?4}")
+(relation kept-by  Animal Person   :why "{?3} is kept by {?4}")
+(relation keeps    Person Pet      :why "{?3} keeps {?4}")
 
 (is-a* Pet Animal)
 

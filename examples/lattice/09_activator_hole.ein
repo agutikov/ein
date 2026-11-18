@@ -23,9 +23,9 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a  T T        :why "{?1} is a {?2}")
-(relation opens Kitchen    :why "kitchen {?1} is open")
-(relation meal  Guest Food :why "{?1} is served {?2}")
+(relation is-a  T T        :why "{?3} is a {?4}")
+(relation opens Kitchen    :why "kitchen {?3} is open")
+(relation meal  Guest Food :why "{?3} is served {?4}")
 
 (is-a Ann Guest) (is-a K1 Kitchen) (is-a Soup Food)
 

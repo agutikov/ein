@@ -28,8 +28,8 @@
 ;;; `--trace T` the rule's `:why` at each firing. The claim on `(query …)`
 ;;; holds (`ein test`, exit 0).
 
-(relation speaks Person Language :why "{?1} speaks {?2}")
-(relation greets Person Language :why "{?1} greets in {?2}")
+(relation speaks Person Language :why "{?3} speaks {?4}")
+(relation greets Person Language :why "{?3} greets in {?4}")
 
 (speaks Ana Spanish :source "Ana: «¡Hola!» — \"hola\" is Spanish for hello")
 (speaks Kenji Japanese :source "Kenji: 「こんにちは」\tkonnichiwa")

@@ -43,8 +43,8 @@ use ein_ir::{Ast, dump_canonical, parse};
 /// at size 2 — union 3 — but sharing `{A, B}` across **both** derivations
 /// costs 2. The numbers are the point.
 const SHARED_OPTIMUM: &str = r#"
-(relation A T :why "A holds of {?1}") (relation B T :why "B holds of {?1}") (relation C T :why "C holds of {?1}") (relation D T :why "D holds of {?1}") (relation E T :why "E holds of {?1}")
-(relation X T :why "X holds of {?1}") (relation Z T :why "Z holds of {?1}")
+(relation A T :why "A holds of {?3}") (relation B T :why "B holds of {?3}") (relation C T :why "C holds of {?3}") (relation D T :why "D holds of {?3}") (relation E T :why "E holds of {?3}")
+(relation X T :why "X holds of {?3}") (relation Z T :why "Z holds of {?3}")
 (rule x-join () :match (and (A ?o) (B ?o)) :assert (X ?o) :why "A and B hold of {?o}, so X holds of {?o}")
 (rule x-chain () :match (C ?o) :assert (X ?o) :why "C holds of {?o}, so X holds of {?o}")
 (rule z-join () :match (and (A ?o) (B ?o)) :assert (Z ?o) :why "A and B hold of {?o}, so Z holds of {?o}")
@@ -59,7 +59,7 @@ const SHARED_OPTIMUM: &str = r#"
 /// justification graph. A `:source` fact would not cycle: givens are frontier
 /// terminals and take no alternatives.
 const CYCLIC: &str = r#"
-(relation S T T :why "S holds of {?1} and {?2}") (relation P T T :why "P holds of {?1} and {?2}") (relation Q T :why "Q holds of {?1}")
+(relation S T T :why "S holds of {?3} and {?4}") (relation P T T :why "P holds of {?3} and {?4}") (relation Q T :why "Q holds of {?3}")
 (rule seed () :match (S ?a ?b) :assert (P ?a ?b) :why "S holds of {?a} and {?b}, so P holds of {?a} and {?b}")
 (rule mirror () :match (P ?a ?b) :assert (P ?b ?a) :why "P holds of {?a} and {?b}, so P holds of {?b} and {?a}")
 (rule clash () :match (and (P y x) (Q x)) :assert (false) :why "P holds of y and x while Q holds of x, which cannot be")
@@ -67,13 +67,13 @@ const CYCLIC: &str = r#"
 "#;
 
 const CONSISTENT: &str =
-    "(relation R T T :why \"R holds of {?1} and {?2}\")\n(R x One :source \"(1)\")\n";
+    "(relation R T T :why \"R holds of {?3} and {?4}\")\n(R x One :source \"(1)\")\n";
 
 /// One symmetric activator over one edge — the smallest program with a
 /// fixpoint worth reaching.
 const MIRRORED_EDGE: &str = r#"
 (rule sym (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "{?rel} is symmetric: it holds of {?a} and {?b}, so it holds of {?b} and {?a}")
-(relation r T T :why "r holds of {?1} and {?2}") (sym r)
+(relation r T T :why "r holds of {?3} and {?4}") (sym r)
 (r A B :source "(1)")
 "#;
 
@@ -82,11 +82,11 @@ const MIRRORED_EDGE: &str = r#"
 /// candidates park, get re-judged and are never retired, so it is the shape
 /// that makes the NAF boundary's own state observable.
 const FORALL: &str = r#"
-(relation row T :why "{?1} is a row")
-(relation cell T T :why "{?2} is a cell of row {?1}")
-(relation blocked T :why "{?1} is blocked")
-(relation full T :why "{?1} is full")
-(relation done T :why "{?1} is done")
+(relation row T :why "{?3} is a row")
+(relation cell T T :why "{?4} is a cell of row {?3}")
+(relation blocked T :why "{?3} is blocked")
+(relation full T :why "{?3} is full")
+(relation done T :why "{?3} is done")
 (rule all-blocked ()
   :match  (and (row ?r) (absent (and (cell ?r ?c) (absent (blocked ?c)))))
   :assert (full ?r) :why "every cell of {?r} is blocked")
@@ -828,7 +828,7 @@ fn a_rebuild_preserves_the_alternative_justifications() {
 /// Does `r` carry `(__closed__ r)` after saturation?
 fn closes(props: &str, imported: bool) -> bool {
     let src = format!(
-        "{}(relation r A B :why \"r holds of {{?1}} and {{?2}}\")\n{props}\n",
+        "{}(relation r A B :why \"r holds of {{?3}} and {{?4}}\")\n{props}\n",
         if imported { IMPORT_CLOSURE } else { "" }
     );
     let mut f = load_text(&src);
@@ -891,7 +891,7 @@ fn hypotheses(f: &mut Fixture) -> (Vec<FactId>, HypGenStats) {
 /// *without* the import produces the candidates this one suppresses.
 #[test]
 fn a_derived_closure_marker_silences_hypgen() {
-    let objects = "(relation r Thing Thing :why \"r holds of {?1} and {?2}\")\n(functional r) (total r)\n\
+    let objects = "(relation r Thing Thing :why \"r holds of {?3} and {?4}\")\n(functional r) (total r)\n\
                    (is-a a Thing :source \"(1)\") (is-a b Thing :source \"(2)\")\n";
 
     let mut open = load_text(objects);
@@ -985,7 +985,7 @@ fn a_files_own_declaration_is_its_own() {
     // Declared and not listed: the file's own, beside the module's.
     let mut f = load_text(&format!(
         "(import std.closure)\n(import std.algebra :symbols (functional total))\n{verbatim}\
-         (relation r A B :why \"r holds of {{?1}} and {{?2}}\")\n(functional r) (total r)\n"
+         (relation r A B :why \"r holds of {{?3}} and {{?4}}\")\n(functional r) (total r)\n"
     ));
     for name in ["infer-closure", "std.closure.infer-closure"] {
         let name = f.sym(name);
@@ -1084,7 +1084,7 @@ fn is_stalled_reopens_after_a_write_outside_step() {
 fn an_activator_with_an_empty_extent_saturates_to_nothing() {
     let mut f = load_text(
         "(rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why \"{?rel} is symmetric: it holds of {?a} and {?b}, so it holds of {?b} and {?a}\")\n\
-         (relation r T T :why \"r holds of {?1} and {?2}\") (s r)\n",
+         (relation r T T :why \"r holds of {?3} and {?4}\") (s r)\n",
     );
     let run = f.saturate();
     assert!(run.firings.is_empty(), "an empty extent produced firings");
@@ -1117,7 +1117,7 @@ fn an_activator_with_an_empty_extent_saturates_to_nothing() {
 fn the_agenda_is_fifo_in_the_written_order() {
     let rules = |priority: &str, other: &str| {
         format!(
-            "(relation a T :why \"a holds of {{?1}}\") (relation b T :why \"b holds of {{?1}}\") (relation c T :why \"c holds of {{?1}}\") (relation d T :why \"d holds of {{?1}}\") (relation e T :why \"e holds of {{?1}}\")\n\
+            "(relation a T :why \"a holds of {{?3}}\") (relation b T :why \"b holds of {{?3}}\") (relation c T :why \"c holds of {{?3}}\") (relation d T :why \"d holds of {{?3}}\") (relation e T :why \"e holds of {{?3}}\")\n\
              (a X)\n\
              (rule unbanded () :match (a ?x) :assert (d ?x) :why \"a holds of {{?x}}, so d holds of {{?x}}\")\n\
              (rule hi () :match (a ?x) :assert (e ?x) :why \"a holds of {{?x}}, so e holds of {{?x}}\"{priority})\n\
@@ -1265,7 +1265,7 @@ fn a_runtime_derived_activator_gets_a_plan_on_a_fork() {
          \x20 :assert (done ?y)\n\
          \x20 :why    \"{?y} is a trigger, so {?y} is done\"\n\
          \x20)\n\
-         (relation trigger T :why \"{?1} is a trigger\")\n(relation done T :why \"{?1} is done\")\n(relation target T :why \"rule target is switched on for {?1}\")\n\
+         (relation trigger T :why \"{?3} is a trigger\")\n(relation done T :why \"{?3} is done\")\n(relation target T :why \"rule target is switched on for {?3}\")\n\
          (trigger X :source \"(1)\")\n",
     );
     let mut forked = f.kb.fork();
@@ -1301,7 +1301,7 @@ fn a_runtime_derived_activator_gets_a_plan_on_a_fork() {
 #[test]
 fn a_why_reference_name_may_carry_hyphens_and_underscores() {
     let mut f = load_text(
-        "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
+        "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
          (rule r () :match (p ?some-var) :assert (q ?some-var)\n\
          \x20 :why \"{?some-var} and {?some_var2}\")\n\
          (p A :source \"(1)\")\n",

@@ -72,11 +72,11 @@
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
 (import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
 
-(relation type     T T :why "{?1} is a subtype of {?2}")
-(relation instance T T :why "{?1} is an instance of {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
-(relation right-of Attribute Attribute :why "{?1}'s seat is immediately right of {?2}'s")
-(relation excluded Attribute Attribute :why "{?1} was ruled out of {?2}")
+(relation type     T T :why "{?3} is a subtype of {?4}")
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+(relation right-of Attribute Attribute :why "{?3}'s seat is immediately right of {?4}'s")
+(relation excluded Attribute Attribute :why "{?3} was ruled out of {?4}")
 
 (symmetric co-loc)
 (slot-partition co-loc instance type Attribute Seat)

@@ -62,9 +62,9 @@
 ;; flag changes R, so the one program has one answer, the `:expect`
 ;; below.
 
-(relation is-a T T :why "{?1} is a {?2}")
-(relation cand T   :why "{?1} may be given p")
-(relation p    T   :why "{?1} has p")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation cand T   :why "{?3} may be given p")
+(relation p    T   :why "{?3} has p")
 (relation clash    :why "an (A, C) pairing was proposed")
 
 (is-a A T) (is-a B T) (is-a C T)

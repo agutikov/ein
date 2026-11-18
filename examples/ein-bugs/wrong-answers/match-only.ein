@@ -35,9 +35,9 @@
 ;;;
 ;;;
 
-(relation p T T :why "p holds of {?1} and {?2}")
-(relation q T T :why "q holds of {?1} and {?2}")
-(relation good T :why "{?1} is good")
+(relation p T T :why "p holds of {?3} and {?4}")
+(relation q T T :why "q holds of {?3} and {?4}")
+(relation good T :why "{?3} is good")
 
 (p A B)
 

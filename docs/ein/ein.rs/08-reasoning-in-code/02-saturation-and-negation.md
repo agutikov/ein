@@ -75,10 +75,10 @@ The rule and the two knowledge bases of the reasoning page are the engine's draw
 the second knowledge base with the rule and the first without it:
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation lives-in Person House :why "{?1} lives in {?2}")
-(relation next-to House House :why "{?1} is next to {?2}")
-(relation near Person House :why "{?1} lives near {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation next-to House House :why "{?3} is next to {?4}")
+(relation near Person House :why "{?3} lives near {?4}")
 
 (is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House)
 
@@ -166,11 +166,11 @@ an octagon with its arrows at its relation and its arguments, joined at the fact
 labelled by its rule alone; the cores page adds the two facts of `is-a` and marks the terminals:
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation lives-in Person House :why "{?1} lives in {?2}")
-(relation next-to House House :why "{?1} is next to {?2}")
-(relation near Person House :why "{?1} lives near {?2}")
-(relation owns Person Pet :why "{?1} owns {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation next-to House House :why "{?3} is next to {?4}")
+(relation near Person House :why "{?3} lives near {?4}")
+(relation owns Person Pet :why "{?3} owns {?4}")
 
 (is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House) (is-a Fox Pet)
 
@@ -278,10 +278,10 @@ The rule with its `absent` cluster and the saturated knowledge base of the reaso
 without its declarations' facts:
 
 ```lisp
-(relation is-a     T T         :why "{?1} is a {?2}")
-(relation seats    Guest Chair :why "{?1} is seated at {?2}")
-(relation allergic Guest       :why "{?1} is allergic")
-(relation meal     Guest Food  :why "{?1} is served {?2}")
+(relation is-a     T T         :why "{?3} is a {?4}")
+(relation seats    Guest Chair :why "{?3} is seated at {?4}")
+(relation allergic Guest       :why "{?3} is allergic")
+(relation meal     Guest Food  :why "{?3} is served {?4}")
 
 (is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair) (is-a Soup Food)
 
@@ -424,8 +424,8 @@ overlaid, shown without the legend, the tooltips and the file's path. The non-mo
 satisfiability page draws with `ein render rule --fold`:
 
 ```lisp
-(relation is-a   T T         :why "{?1} is a {?2}")
-(relation seats  Guest Chair :why "{?1} is seated at {?2}")
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
 
 (is-a Ann Guest)
 (is-a C1 Chair)  (is-a C2 Chair)

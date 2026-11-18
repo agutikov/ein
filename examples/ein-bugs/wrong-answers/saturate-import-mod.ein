@@ -2,4 +2,4 @@
 ;;; name — regression `saturate-import` (`corpus/regressions.toml`). A program of its own as
 ;;; well: one relation, and no fact.
 
-(relation q T :why "{?1} is a q")
+(relation q T :why "{?3} is a q")

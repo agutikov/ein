@@ -9,12 +9,12 @@ anything more. That fixpoint is what a program means.
 ## In Ein
 
 ```lisp
-(relation parent Person Person :why "{?1} is a parent of {?2}")
-(relation ancestor Person Person :why "{?1} is an ancestor of {?2}")
-(relation has-cat Person :why "{?1} has a cat")
-(relation has-dog Person :why "{?1} has a dog")
-(relation pet-owner Person :why "{?1} owns a pet")
-(relation childless Person :why "{?1} has no child")
+(relation parent Person Person :why "{?3} is a parent of {?4}")
+(relation ancestor Person Person :why "{?3} is an ancestor of {?4}")
+(relation has-cat Person :why "{?3} has a cat")
+(relation has-dog Person :why "{?3} has a dog")
+(relation pet-owner Person :why "{?3} owns a pet")
+(relation childless Person :why "{?3} has no child")
 
 (rule parent-is-ancestor ()
   :match  (parent ?a ?b)
@@ -114,7 +114,7 @@ positive premise binds. `ein solve FILE --trace OUT.md` writes root's derivation
 
 Premises: `ancestor(Ann, Bea)`, `ancestor(Bea, Cid)`
 
-Derives `ancestor(Ann, Cid)` — Ann is an ancestor of Cid
+Derives `ancestor(Ann, Cid)`.
 ```
 
 and under it the firing drawn, the premises it read on the left, the rule with its reason in the middle, the fact
@@ -122,9 +122,9 @@ it added on the right, in bold, each fact its octagon with its arrows at its rel
 
 ![One firing drawn: the two premises it read, each an octagon over ancestor and its arguments, the rule with its reason, and the fact it added, in bold](diagrams/05-firing.svg)
 
-The quote is the rule's reason, and the line after *Derives* is the conclusion's statement, its relation's `:why`.
-A good reason says what the rule concludes and from what; a refutation's says what cannot be
-([natural language](14-natural-language.md)).
+The quote is the rule's reason, and the line after *Derives* is the conclusion as written: a fact has no text of
+its own, and reads by its rule's. A good reason says what the rule concludes and from what; a refutation's says what
+cannot be ([natural language](14-natural-language.md)).
 
 ## In mathematics
 
@@ -238,8 +238,8 @@ a rule over `(knows ?a ?b)` reads what is held, and the same rule for what someb
 each written inside the claim:
 
 ```lisp
-(relation knows  Person Person :why "{?1} knows {?2}")
-(relation claims Person Claim  :why "{?1} claims that {?2}")
+(relation knows  Person Person :why "{?3} knows {?4}")
+(relation claims Person Claim  :why "{?3} claims that {?4}")
 
 (rule knows-back ()
   :match  (knows ?a ?b)
@@ -309,9 +309,9 @@ rule says otherwise:
 
 ```lisp
 (import std.macro :symbols (forall))
-(relation knows   Person Person :why "{?1} knows {?2}")
-(relation claims  Person Claim  :why "{?1} claims that {?2}")
-(relation witness Person        :why "{?1} is a witness")
+(relation knows   Person Person :why "{?3} knows {?4}")
+(relation claims  Person Claim  :why "{?3} claims that {?4}")
+(relation witness Person        :why "{?3} is a witness")
 
 (rule contradicts-itself (?C ?R)
   :match  (and (?C ?w (?R ?a ?b)) (?C ?w (not (?R ?a ?b))))

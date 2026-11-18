@@ -42,10 +42,10 @@
 ;;
 ;;
 
-(relation is-a T T :why "{?1} is a {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
 (relation marker :why "the marker is present")
-(relation p T :why "p holds of {?1}")
-(relation q T :why "q holds of {?1}")
+(relation p T :why "p holds of {?3}")
+(relation q T :why "q holds of {?3}")
 
 (marker)
 (is-a A T) (is-a B T)

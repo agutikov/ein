@@ -10,9 +10,9 @@
 ;;;
 ;;;
 
-(relation p T T :why "p holds of {?1} and {?2}")
-(relation q T T :why "q holds of {?1} and {?2}")
-(relation seen T :why "{?1} is seen")
+(relation p T T :why "p holds of {?3} and {?4}")
+(relation q T T :why "q holds of {?3} and {?4}")
+(relation seen T :why "{?3} is seen")
 
 (p A B)
 (not (q Z A))

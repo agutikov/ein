@@ -13,9 +13,9 @@
 ; the `:match`, or split the rule. The regressions `nested-or-*` hold the
 ; shape refused where only the compiler met it.
 ;
-(relation a Thing :why "a holds of {?1}")
-(relation p Thing :why "p holds of {?1}")
-(relation q Thing :why "q holds of {?1}")
+(relation a Thing :why "a holds of {?3}")
+(relation p Thing :why "p holds of {?3}")
+(relation q Thing :why "q holds of {?3}")
 
 (rule nested-disjunction ()
   :match  (and (a ?x) (or (p ?x) (q ?x)))

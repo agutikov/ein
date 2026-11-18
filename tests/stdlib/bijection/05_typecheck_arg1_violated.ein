@@ -9,8 +9,8 @@
 
 (import std.bijection :symbols (typecheck-arg-0 typecheck-arg-1))
 
-(relation is-a  T T           :why "{?1} is a {?2}")
-(relation wears Agent Colour  :why "{?1} wears {?2}")
+(relation is-a  T T           :why "{?3} is a {?4}")
+(relation wears Agent Colour  :why "{?3} wears {?4}")
 
 (is-a Ann Agent)
 (is-a Red Colour)

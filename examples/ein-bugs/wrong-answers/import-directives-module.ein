@@ -4,7 +4,7 @@
 ;;; well: no candidate, R {∅}, and its query has one row, *Tea is a drink*.
 ;;;
 
-(relation is-a Thing Type :why "{?1} is a {?2}")
+(relation is-a Thing Type :why "{?3} is a {?4}")
 
 (is-a Tea Drink)
 

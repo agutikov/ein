@@ -20,10 +20,10 @@ program names the pattern once and calls it three times:
 
 ```lisp
 ;; Who lives with whom, and what follows from it.
-(relation lives-in Person House       :why "{?1} lives in {?2}")
-(relation owns-bike Person            :why "{?1} owns a bicycle")
-(relation may-borrow Person Person    :why "{?1} may borrow {?2}'s bicycle")
-(relation shares-chores Person Person :why "{?1} shares the chores with {?2}")
+(relation lives-in Person House       :why "{?3} lives in {?4}")
+(relation owns-bike Person            :why "{?3} owns a bicycle")
+(relation may-borrow Person Person    :why "{?3} may borrow {?4}'s bicycle")
+(relation shares-chores Person Person :why "{?3} shares the chores with {?4}")
 
 (macro housemates (?a ?b)
   (and (lives-in ?a ?h) (lives-in ?b ?h) (neq ?a ?b))
@@ -69,10 +69,10 @@ so the program the engine runs is this one, in which no macro is left:
 
 ```lisp
 ;; Who lives with whom, and what follows from it: no macro, each pattern written out.
-(relation lives-in Person House       :why "{?1} lives in {?2}")
-(relation owns-bike Person            :why "{?1} owns a bicycle")
-(relation may-borrow Person Person    :why "{?1} may borrow {?2}'s bicycle")
-(relation shares-chores Person Person :why "{?1} shares the chores with {?2}")
+(relation lives-in Person House       :why "{?3} lives in {?4}")
+(relation owns-bike Person            :why "{?3} owns a bicycle")
+(relation may-borrow Person Person    :why "{?3} may borrow {?4}'s bicycle")
+(relation shares-chores Person Person :why "{?3} shares the chores with {?4}")
 
 (rule borrow ()
   :match  (and (and (lives-in ?a ?h) (lives-in ?b ?h) (neq ?a ?b)) (owns-bike ?b))
@@ -170,10 +170,10 @@ variable and two premises, which is all a macro's argument has to be: whatever t
 ;; Which bag is ready to go: one whose every item is packed.
 (import std.macro :symbols (forall))
 
-(relation is-a T T         :why "{?1} is a {?2}")
-(relation goes-in Item Bag :why "{?1} goes in {?2}")
-(relation packed Item      :why "{?1} is packed")
-(relation ready Bag        :why "{?1} is ready to go")
+(relation is-a T T         :why "{?3} is a {?4}")
+(relation goes-in Item Bag :why "{?3} goes in {?4}")
+(relation packed Item      :why "{?3} is packed")
+(relation ready Bag        :why "{?3} is ready to go")
 
 (rule bag-is-ready ()
   :match  (and (is-a ?bag Bag)
@@ -240,7 +240,7 @@ The rule's `:why` says what the quantifier says, of the bag it fired for. `ein s
 
 Premises: `is-a(Red, Bag)`
 
-Derives `ready(Red)` — Red is ready to go
+Derives `ready(Red)`.
 ```
 
 The premises a firing lists are the facts it read; what had to be missing is not a fact, and is not among them.
@@ -325,7 +325,7 @@ A module of the program's own is a file found from the program's directory, a do
 (import seating.rules :symbols (one-chair-each))
 (import seating.rules :as s)
 
-(relation seat Person Chair :why "{?1} sits on {?2}")
+(relation seat Person Chair :why "{?3} sits on {?4}")
 
 (one-chair-each seat)
 (s.one-person-a-chair seat)

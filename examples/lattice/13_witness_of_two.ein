@@ -20,11 +20,11 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a   T T        :why "{?1} is a {?2}")
-(relation fed    Guest Dish :why "{?1} is fed {?2}")
-(relation orders Guest      :why "{?1} orders a takeaway")
-(relation cooks  Cook       :why "{?1} cooks")
-(relation shops  Shopper    :why "{?1} does the shopping")
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation fed    Guest Dish :why "{?3} is fed {?4}")
+(relation orders Guest      :why "{?3} orders a takeaway")
+(relation cooks  Cook       :why "{?3} cooks")
+(relation shops  Shopper    :why "{?3} does the shopping")
 
 (is-a Ann Guest)
 (is-a Soup Dish)

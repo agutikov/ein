@@ -31,9 +31,9 @@
 (import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 (import std.typing  :symbols (type-hierarchy-converse))
 
-(relation is-a*    T T          :why "{?1} is a subtype of {?2}")
-(relation owns     Person Pet   :why "{?1} owns {?2}")
-(relation owned-by Place  Person :why "{?1} is owned by {?2}")
+(relation is-a*    T T          :why "{?3} is a subtype of {?4}")
+(relation owns     Person Pet   :why "{?3} owns {?4}")
+(relation owned-by Place  Person :why "{?3} is owned by {?4}")
 
 (converse owns owned-by)
 (type-hierarchy is-a*)         ; the only wiring there is

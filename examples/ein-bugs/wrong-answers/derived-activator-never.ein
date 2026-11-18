@@ -35,9 +35,9 @@
 ;;;
 ;;;
 
-(relation box Node :why "{?1} is in the box")
-(relation hit Node :why "{?1} is hit")
-(relation item Node :why "{?1} is an item")
+(relation box Node :why "{?3} is in the box")
+(relation hit Node :why "{?3} is hit")
+(relation item Node :why "{?3} is an item")
 (box (a b))
 (rule r (?R)
   :match (box (?R b))

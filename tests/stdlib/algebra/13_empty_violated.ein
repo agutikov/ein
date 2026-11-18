@@ -11,7 +11,7 @@
 
 (import std.algebra :symbols (empty))
 
-(relation forbidden Node Node :why "{?1} is forbidden to {?2}")
+(relation forbidden Node Node :why "{?3} is forbidden to {?4}")
 
 (empty forbidden)
 

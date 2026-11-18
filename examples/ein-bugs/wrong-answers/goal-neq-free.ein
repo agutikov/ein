@@ -26,7 +26,7 @@
 ;;; comparing `w` with an unbound `?y` as with a null, and the read-out says
 ;;; *the goal holds: it has no variable*, suggesting `(model (neq w ?y))`.
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (query :goal (neq w ?y)
   :expect (model (neq w Node) (neq w a) (neq w p)))

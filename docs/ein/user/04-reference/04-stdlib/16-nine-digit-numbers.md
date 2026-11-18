@@ -122,7 +122,7 @@ Root stays alive, the other requests are answered, and a rule may match the flag
 ```lisp
 (import std.math.num9 :symbols (num9 add9 sum9-of overflow))
 
-(relation meter Number  :why "the meter reads {?1}")
+(relation meter Number  :why "the meter reads {?3}")
 (relation rolled-over   :why "the meter rolled over")
 
 (meter (num9 9 9 9 9 9 9 9 9 9))

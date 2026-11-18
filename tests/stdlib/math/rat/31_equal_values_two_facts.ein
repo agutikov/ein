@@ -33,9 +33,9 @@
 (import std.math.arith :symbols (z))
 
 (relation whole Rational
-  :why "{?1} is a whole one")
+  :why "{?3} is a whole one")
 (relation answer Rational
-  :why "{?1} is an answer")
+  :why "{?3} is an answer")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (and (__closed__ whole) (__closed__ answer))

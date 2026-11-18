@@ -21,10 +21,10 @@
 ;;; The engine refuses it at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation settled Guest :why "{?1} has settled")
-(relation welcome Guest :why "{?1} is welcome")
+(relation settled Guest :why "{?3} has settled")
+(relation welcome Guest :why "{?3} is welcome")
 (macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
 (settled Ann)
 (rule greet () :match (settled ?g) :assert (welcome ?g) :why "{?g} is welcome: they have settled")
