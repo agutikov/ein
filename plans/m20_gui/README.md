@@ -193,7 +193,7 @@ events, [§ GUI API](#gui-api--commands-and-events)):
 | **rules** | each rule as its match and its conclusion | `ein render rules`, `ein render rule --name` (canonical or folded) | a rule's firings and the facts it concluded, from its drawing |
 | **saturation dependency graph** | which rule's conclusion another rule reads, and the strata | `ein_infer::strata`, `ein saturate --dump`'s `;; Strata` line, the monotonicity check (`--json-summary`) | **no command draws the graph's edges** (M1f's L-95); M12's P12.2 (the theories drawn as graphs of rules) asks for the same picture |
 | **hypotheses structure** | H, its groups, what decides what | `ein show hyps`, `ein render h-space` (`--view`, `h-space.json`) | M1h's P1h.6 reads H as questions (an open fact with one argument taken out) |
-| **rule firing during saturation** | the derivation step by step | `--events` (`fire`, `enqueue`, `owe`), `ein solve --trace` with its slices; the derivation graph, which no command reaches (M1f's R-23) | stepping through a node's saturation in the KB view, from the event stream |
+| **rule firing during saturation** | the derivation step by step | `--events` (`fire`, `enqueue`, `owe`), `ein solve --trace` with its slices; the derivation graph, which no command reaches (M1f's L-111) | stepping through a node's saturation in the KB view, from the event stream |
 | **an arbitrary query on a KB state** | a goal asked of one state | a `(query :goal …)` written in the program, answered over R by `ein solve` | **asking a state a goal it does not carry**, interactively: a command of the GUI API (`query(state, goal)`), the goal held to what a rule's `:match` is held to |
 
 ### The 2026-05 sketch
