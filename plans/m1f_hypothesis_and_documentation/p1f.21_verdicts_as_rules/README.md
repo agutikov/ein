@@ -88,6 +88,19 @@ Then, the same day:
   program's atoms, never over a fact, and `eq` does not take a fact apart: a side with a variable inside is refused
   at load.
 
+## The fourth instruction
+
+The user, 2026-11-18, verbatim:
+
+> p1f.21: `not` and `relation` became an stdlib convention, not kernel
+
+It rules § 8.2's two rows of [`open_facts.md`](open_facts.md#82-each-name-under-this-phases-direction) that the
+third instruction left as a direction (*"relation - is not actually, it's just a convention already now"*, *"not -
+will become a convention also with contradiction rule"*): **`not` and `relation` are the standard library's
+conventions, not the kernel's.** What reads either today, and what each reader becomes, is S1f.21.4's
+([§ 9](open_facts.md#9-what-s1f214-answers), item 6). The same day, on P1f.23's review, the user ruled that the
+kernel reads no theory's name and dropped the built-in symmetry (`__symmetric__`); P1f.23's S1f.23.4 builds that.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
