@@ -50,11 +50,14 @@ In `s1f.23.5_examples.md` beside this file, with the programs it runs:
 
 ## Task 2 — the build
 
-Planned from task 1 and the user's look; not started without the user's word.
+Ruled 2026-11-18: every open point of task 1 as its default; runs after the phase's other stages are merged.
 
 ## Record
 
 - Task 1 done, `11a113cf`, waiting for the user's look: [`s1f.23.5_examples.md`](s1f.23.5_examples.md).
 - **2026-11-18, the user on facts**, asked whether a fact must carry a `:why` or a `:source` (it need not, today): *"leave
   facts as they are"*. So a fact carries no `:why`, and `:source` stays optional: the examples' open point 2 is
-  ruled as its default, (a). The other open points wait for the user's look.
+  ruled as its default, (a).
+- **2026-11-18, the user**: *"S1f.23.5: defaults for the rest, build after merges"*. Every open point of
+  [`s1f.23.5_examples.md`](s1f.23.5_examples.md) is ruled as its default; **task 2, the build, runs on that word once
+  the phase's other stages are merged** into master (S1f.23.1, S1f.23.2 with S1f.23.3, S1f.23.4).
