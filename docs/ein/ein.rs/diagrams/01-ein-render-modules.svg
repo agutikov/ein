@@ -86,15 +86,15 @@
 <!-- text -->
 <g id="node11" class="node">
 <title>text</title>
-<polygon fill="none" stroke="black" points="345.5,-486.06 232.75,-486.06 232.75,-450.06 345.5,-450.06 345.5,-486.06"/>
-<text xml:space="preserve" text-anchor="middle" x="289.12" y="-471.11" font-family="Helvetica,sans-Serif" font-size="11.00">read_out.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="289.12" y="-457.61" font-family="Helvetica,sans-Serif" font-size="11.00">grid.rs, models.rs</text>
+<polygon fill="none" stroke="black" points="330.12,-486.06 248.12,-486.06 248.12,-450.06 330.12,-450.06 330.12,-486.06"/>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-471.11" font-family="Helvetica,sans-Serif" font-size="11.00">read_out.rs,</text>
+<text xml:space="preserve" text-anchor="middle" x="289.12" y="-457.61" font-family="Helvetica,sans-Serif" font-size="11.00">models.rs</text>
 </g>
 <!-- ro&#45;&gt;text -->
 <g id="edge5" class="edge">
 <title>ro&#45;&gt;text</title>
-<path fill="none" stroke="black" d="M143.18,-434.59C167.96,-440.31 196.43,-446.89 221.55,-452.69"/>
-<polygon fill="black" stroke="black" points="220.45,-456.03 230.98,-454.87 222.03,-449.21 220.45,-456.03"/>
+<path fill="none" stroke="black" d="M143.18,-434.59C173.14,-441.51 208.52,-449.68 236.82,-456.22"/>
+<polygon fill="black" stroke="black" points="235.68,-459.54 246.21,-458.38 237.26,-452.72 235.68,-459.54"/>
 </g>
 <!-- dans -->
 <g id="node12" class="node">
@@ -220,8 +220,8 @@
 <!-- text&#45;&gt;o_out -->
 <g id="edge18" class="edge">
 <title>text&#45;&gt;o_out</title>
-<path fill="none" stroke="black" d="M345.95,-468.06C368.22,-468.06 394.12,-468.06 417.7,-468.06"/>
-<polygon fill="black" stroke="black" points="417.55,-471.56 427.55,-468.06 417.55,-464.56 417.55,-471.56"/>
+<path fill="none" stroke="black" d="M330.29,-468.06C355.4,-468.06 388.43,-468.06 417.82,-468.06"/>
+<polygon fill="black" stroke="black" points="417.79,-471.56 427.79,-468.06 417.79,-464.56 417.79,-471.56"/>
 </g>
 <!-- o_ans -->
 <g id="node20" class="node">
@@ -316,4 +316,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 02b0fe39fc94afa7419580f0ba0f9a28a4b707f5e9d128b3d02df1926cc188e4 -->
+<!-- source sha256: 279addb95e42271f8440cb127fd473c4ad445a397428c5d96358a406a07272d8 -->

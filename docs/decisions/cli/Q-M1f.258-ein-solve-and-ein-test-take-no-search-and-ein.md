@@ -3,7 +3,7 @@
 `--no-search` saturates root, reports it, and does not search R. Two commands take it:
 
 - `ein solve`, beside every artefact and form flag (`--json-summary`, `--dump-answer`, `--dump-lattice`, `--trace`,
-  `--events`, `--models`, …), each of which then reads root; beside a question about R or about the program (`-n`,
+  `--events`, `-p`, …), each of which then reads root; beside a question about R or about the program (`-n`,
   `--single`, `--minimal`, `--maximal`, `--count`, `--monotone`) or `--describe-route`, it is a usage error, exit 2;
 - `ein test`, which then decides only what root decides
   ([Q-M1f.257](Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)).

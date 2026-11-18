@@ -12,8 +12,8 @@ without decoding anything: every graph an SVG, every JSON a table.
 
 A run is several invocations. `main` carries every flag that can share a solve
 (`--trace --full-kb-snapshots`, `--dump-answer`, `--dump-lattice`,
-`--events`, `--json-summary` and the stdout diagnostics), `grid` / `key` the
-two model forms, `diff` the comparison with the register's right answer, and
+`--events`, `--json-summary` and the stdout diagnostics), `diff` the
+comparison with the register's right answer, and
 `oracle` R by brute force: `ein oracle --dump`, whose directory
 `ein render region` draws into `pages/region/` with this run on it (its
 `--dump-lattice` and `--dump-answer`, S1e2.1a.7), and whose answer the run is
@@ -63,8 +63,8 @@ REGION_ROWS_PAGED = 1 << 16
 # reads: the page says how many nodes there are and links the DOT, and the
 # step pages list every node.
 DAG_NODES_DRAWN = 1_000
-# State files given a section of their own — a grid, a drawing and their
-# facts — on the answer page. `--dump-answer` writes every state the run
+# State files given a section of their own — a drawing and their facts — on
+# the answer page. `--dump-answer` writes every state the run
 # reached, and a describe of `saturation/square-bwd/houses` reaches 10 077:
 # one `ein render kb` and one Graphviz layout each is an hour and 1.8 GB. Past
 # this the rest are rows of a paged table, each linking its loadable file.
@@ -211,12 +211,6 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     # Since S1e2.3.3 a form shares stdout's 100 lines with the read-out, and
     # `--dump-answer` writes it uncut under `forms/`: each form run writes its
     # own answer directory, and the pages read the uncut file (`form_text`).
-    invs.append(run("grid", solve + ["--models", "grid",
-                                     "--json-summary", str(raw / "summary.grid.json"),
-                                     "--dump-answer", str(raw / FORM_DIRS["grid"])], spec.env))
-    invs.append(run("key", solve + ["--models", "key",
-                                    "--json-summary", str(raw / "summary.key.json"),
-                                    "--dump-answer", str(raw / FORM_DIRS["key"])], spec.env))
     if spec.diff_models:
         invs.append(run("diff", solve + ["--diff-models", str(spec.diff_models),
                                          "--json-summary", str(raw / "summary.diff.json"),
@@ -409,7 +403,7 @@ def call_to_fact(text: str) -> list[str]:
 
 def verdict_block(stdout: str) -> str:
     """The read-out, verbatim: from `solve ·` (or `oracle ·`) to the first
-    diagnostic block after it — `H`, a state's facts, the timing, the key."""
+    diagnostic block after it — `H`, a state's facts, the timing."""
     lines = stdout.splitlines()
     try:
         start = next(i for i, l in enumerate(lines) if l.startswith(("solve ·", "oracle ·")))
@@ -418,7 +412,7 @@ def verdict_block(stdout: str) -> str:
     end = len(lines)
     for i in range(start + 1, len(lines)):
         if re.match(r"^(H — the universe|── state|timing$|stats$|final-state facts|the states listed against|"
-                    r"determining key|grid —|work$)", lines[i]):
+                    r"work$)", lines[i]):
             end = i
             break
     return "\n".join(lines[start:end]).rstrip()
@@ -825,7 +819,7 @@ def overlay_head(table_md: str) -> list[str]:
 
 # The answer directory each invocation writes. `main`'s holds `-p` and `-H`
 # under `forms/`, and each form run's holds its form (S1e2.3.3).
-FORM_DIRS = {"main": "answer", "grid": "answer.grid", "key": "answer.key", "diff": "answer.diff"}
+FORM_DIRS = {"main": "answer", "diff": "answer.diff"}
 
 
 def form_text(run_out: Path, inv: str, form: str, stdout: str = "") -> str:
@@ -842,22 +836,6 @@ def form_files(run_out: Path) -> list[Path]:
     return sorted(f for d in FORM_DIRS.values() for f in (run_out / "raw" / d / "forms").glob("*.txt"))
 
 
-def grids_from(stdout: str) -> list[str]:
-    """`--models grid`'s per-state grid blocks, in order, verbatim."""
-    out, cur = [], None
-    for line in stdout.splitlines():
-        if line.strip().startswith("grid —"):
-            # A blank line between the licence and the table, so a markdown
-            # viewer starts a table rather than continuing the paragraph.
-            cur = [line.strip(), ""]
-            out.append(cur)
-        elif cur is not None and line.strip().startswith(("|", "(no ")):
-            cur.append(line.strip())
-        else:
-            cur = None
-    return ["\n".join(g) for g in out]
-
-
 def answer_pages(p: Pages, s: dict | None) -> None:
     raw = p.raw / "answer"
     page = p.dir / "answer.md"
@@ -868,23 +846,14 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                ("06-solution-semantics.md § 2",
                 "docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r")]
     listed = [x for x in states if x.get("listed")]
-    lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
-                   "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "
+    lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: graph, "
+                   "commitment, its `(model …)`", "`--dump-answer DIR`, "
                    "`ein render kb … --since FILE`", defined,
-                   [raw / "index.json", raw / "answer.json", raw / "answer.txt", p.raw / "grid.stdout.txt",
-                    p.raw / "key.stdout.txt", *form_files(p.out)], page,
+                   [raw / "index.json", raw / "answer.json", raw / "answer.txt", *form_files(p.out)], page,
                    f"asked **{asked_text(s)}** · {len(listed)} state(s) listed of {len(states)} reached · "
                    f"exhausted = {yes(region.get('exhausted'))}"
                    + (f" · R empty: **{region['empty']}**" if region.get("empty") else ""))
     lines += details("`answer.txt` — the read-out, uncut", ["```text", read(raw / "answer.txt").rstrip(), "```"])
-    key = p.inv.get("key")
-    key_text = form_text(p.out, "key", "key", key.stdout) if key else ""
-    if "determining key" in key_text:
-        lines += ["## The determining key (`--models key`)", "", "```text"]
-        lines += key_text.split("determining key", 1)[1].splitlines()[:200]
-        lines += ["```", ""]
-    grids = grids_from(form_text(p.out, "grid", "grid", p.inv["grid"].stdout)) if "grid" in p.inv else []
-    gi = 0
     files = state_files(raw)
     for f in files[:STATES_DRAWN]:
         stem = f["stem"]
@@ -900,9 +869,6 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                                                    or "—"),
                   f"- **commitments reaching it:** {st.get('commitments') if st.get('commitments') is not None else '— (not counted by this question)'}",
                   f"- **file:** [`{f['path']}`]({rel(raw / f['path'], page)})", ""]
-        if f["kind"] == "models" and f.get("listed", True) and gi < len(grids):
-            lines += ["**Grid** (`--models grid`, verbatim):", "", grids[gi], ""]
-            gi += 1
         inv = p.inv.get(f"render-{stem.replace('/', '-')}")
         if inv and inv.code == 0:
             for name, svg in p.dot_stream(inv.stdout, stem):
@@ -932,7 +898,7 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                                                 f"{note} · [the answer]({rel(page, path)})"),
                       ["state", "kind", "lines", "listed", "from", "facts", "file"], [row(f) for f in rest])
         lines += [f"## The other {len(rest)} states", "",
-                  f"Past the first {STATES_DRAWN} a state is a row, not a section: no grid and no drawing, and its "
+                  f"Past the first {STATES_DRAWN} a state is a row, not a section: no drawing, and its "
                   "file is one link away — " + ", ".join(f"[page {i + 1}]({rel(x, page)})" for i, x in enumerate(pages)),
                   ""]
     frontier = region.get("frontier") or []
@@ -1154,7 +1120,7 @@ def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict])
         return x
     # 1 — the invocations agree.
     base = strip(s) if s else None
-    for other in ("summary.grid.json", "summary.key.json", "summary.diff.json"):
+    for other in ("summary.diff.json",):
         o = load_json(p.raw / other)
         if o is None:
             if other == "summary.diff.json" and not p.spec.diff_models:

@@ -22,7 +22,7 @@ out/
   models/NN.ein   one state saved: the program, its modules and the choices made, one per state the run reached
   owing/NN.ein    one owing node saved, the same form, on an empty R of the owing kind
   nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it
-  forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
+  forms/F.txt     each form asked for, uncut: -H, -p, -P, -f, --diff-models
 ```
 
 - **`NN` is stdout's numbering.** `models/02.ein` is *state 2 of k* in the `(region …)` block, two or more digits, so
@@ -65,8 +65,8 @@ out/
     first contradiction ([`07-finding-r.md` § 1](../../reasoning/02-kb-evolution/07-finding-r.md#1-a-node)); a member's core is
     still taken over its fixpoint, the saturation going on from the stop, as `ein oracle --dump` takes it.
 - **`forms/`** holds each form the run was asked for, uncut and drawn from every listed state, the states
-  `answer.txt` lists: `hyp-stats.txt` (`-H`), `key.txt` or `grid.txt` (`--models`), `print-final-state.txt`,
-  `print-final-positive.txt` and `print-final-hfacts.txt` (`-p`, `-P`, `-f`) and `diff-models.txt` (`--diff-models`).
+  `answer.txt` lists: `hyp-stats.txt` (`-H`), `print-final-state.txt`, `print-final-positive.txt` and
+  `print-final-hfacts.txt` (`-p`, `-P`, `-f`) and `diff-models.txt` (`--diff-models`).
   Stdout prints what fits of each in what the read-out left of its 100 lines, drawn from the states it showed, and its
   last line names the file. A file is what the form prints with nothing cut: where nothing is cut it is stdout's form
   byte for byte. `index.json`'s **`forms`** lists each as `{form, path}`, in the order stdout prints them, and is `[]`

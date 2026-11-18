@@ -117,14 +117,6 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("solve -s", vec!["solve", W, "-s"]),
         ("solve -y", vec!["solve", W, "-y"]),
         (
-            "solve --models key",
-            vec!["solve", W, "--maximal", "--models", "key"],
-        ),
-        (
-            "solve --models grid",
-            vec!["solve", W, "--maximal", "--models", "grid"],
-        ),
-        (
             "solve --diff-models",
             vec!["solve", W, "--maximal", "--diff-models", &m],
         ),
@@ -142,11 +134,6 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("solve --trace", vec!["solve", W, "--trace", "/dev/stdout"]),
         ("oracle", vec!["oracle", W]),
         ("oracle -s", vec!["oracle", W, "-s"]),
-        ("oracle --models key", vec!["oracle", W, "--models", "key"]),
-        (
-            "oracle --models grid",
-            vec!["oracle", W, "--models", "grid"],
-        ),
         ("oracle -p", vec!["oracle", W, "-p"]),
         ("oracle -P", vec!["oracle", W, "-P"]),
         (

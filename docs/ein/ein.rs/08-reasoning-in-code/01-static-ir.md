@@ -235,11 +235,6 @@ relation, which no parameter binds*.
 **The one place a label is read by name** is the blind enumerator's, and the two programs that show it are
 with it ([hypotheses and the answer § 1.4](03-hypotheses-and-the-answer.md#14-a-program-for-each-case)).
 
-**The two orders.** Where a run tabulates the facts its listed states differ in, `ein solve FILE --maximal
---models key` or `--models grid`, the facts are in the order of the objects. `ein show hyps FILE` lists H by
-text, which is another order
-([hypotheses and the answer](03-hypotheses-and-the-answer.md#3-solution-semantics)).
-
 ## The rules
 
 The page: [the rules](../../reasoning/01-static-ir/02-rewriting-rules.md).

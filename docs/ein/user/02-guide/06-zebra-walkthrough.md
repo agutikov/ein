@@ -125,20 +125,20 @@ negatives before anything is guessed. Ein reaches the fifth the same way:
 | root | not Juice at `H_1` | `co-located-negative` (13) | Kools@`H_1`, so Lucky Strike is not in `H_1`, so `(not (drink-loc Juice House-1))` |
 | root | **Water at `H_1`** | `range-elimination` | Tea, Coffee, Milk, Juice excluded at `H_1`, so `(drink-loc Water House-1)` |
 
-The table at the end of the step is root, and `ein solve examples/zebra2.ein --no-search --models grid` ends with it:
-a row a house, a column a relation, `—` where root places nothing yet.
+What the step has placed is root, and `ein solve examples/zebra2.ein --no-search -f` ends with it: root's facts of
+the five relations a guess is made of, one for each value placed so far.
 
 <!-- output -->
 ```text
-  ── root — not in R, owes 36 ──
-  grid — rows: House — given one value each by 5 relations (injective color-loc, injective nation-loc, injective drink-loc, injective smoke-loc, injective pet-loc)
-  | House | color-loc | nation-loc | drink-loc | smoke-loc | pet-loc |
-  |---|---|---|---|---|---|
-  | House-1 | Yellow | Norwegian | Water | Kools | — |
-  | House-2 | Blue | — | — | — | Horse |
-  | House-3 | — | — | Milk | — | — |
-  | House-4 | — | — | — | — | — |
-  | House-5 | — | — | — | — | — |
+── root — not in R, owes 36 ──
+final-state facts (of the candidates' relations, given ones too: color-loc drink-loc nation-loc pet-loc smoke-loc; 7 facts):
+  (color-loc Blue House-2)
+  (color-loc Yellow House-1)
+  (drink-loc Milk House-3)
+  (drink-loc Water House-1)
+  (nation-loc Norwegian House-1)
+  (pet-loc Horse House-2)
+  (smoke-loc Kools House-1)
 ```
 
 ---
@@ -284,20 +284,38 @@ Ein derives the rest from Old Gold in `H_3`, in its own order:
 | the state | **Zebra@`H_5`** | `domain-elimination` | the fox, horse, snail and dog hold `H_1` to `H_4`, so `(pet-loc Zebra House-5)` |
 | the state | **the query** | — | `(drink-loc Water House-1)` and `(pet-loc Zebra House-5)` hold, with the Norwegian in `H_1` and the Japanese in `H_5` |
 
-The final table is the one state of the answer, and `ein solve examples/zebra2.ein --maximal --models grid` ends
-with it:
+The one state of the answer places every value, and `ein solve examples/zebra2.ein --maximal -f` ends with its facts
+of the five relations:
 
 <!-- output -->
 ```text
-  ── state 1 of 1 ──
-  grid — rows: House — given one value each by 5 relations (injective color-loc, injective nation-loc, injective drink-loc, injective smoke-loc, injective pet-loc)
-  | House | color-loc | nation-loc | drink-loc | smoke-loc | pet-loc |
-  |---|---|---|---|---|---|
-  | House-1 | Yellow | Norwegian | Water | Kools | Fox |
-  | House-2 | Blue | Ukrainian | Tea | Chesterfields | Horse |
-  | House-3 | Red | Englishman | Milk | Old_Gold | Snail |
-  | House-4 | Ivory | Spaniard | Juice | Lucky_Strike | Dog |
-  | House-5 | Green | Japanese | Coffee | Parliament | Zebra |
+── state 1 of 1 ──
+final-state facts (of the candidates' relations, given ones too: color-loc drink-loc nation-loc pet-loc smoke-loc; 25 facts):
+  (color-loc Blue House-2)
+  (color-loc Green House-5)
+  (color-loc Ivory House-4)
+  (color-loc Red House-3)
+  (color-loc Yellow House-1)
+  (drink-loc Coffee House-5)
+  (drink-loc Juice House-4)
+  (drink-loc Milk House-3)
+  (drink-loc Tea House-2)
+  (drink-loc Water House-1)
+  (nation-loc Englishman House-3)
+  (nation-loc Japanese House-5)
+  (nation-loc Norwegian House-1)
+  (nation-loc Spaniard House-4)
+  (nation-loc Ukrainian House-2)
+  (pet-loc Dog House-4)
+  (pet-loc Fox House-1)
+  (pet-loc Horse House-2)
+  (pet-loc Snail House-3)
+  (pet-loc Zebra House-5)
+  (smoke-loc Chesterfields House-2)
+  (smoke-loc Kools House-1)
+  (smoke-loc Lucky_Strike House-4)
+  (smoke-loc Old_Gold House-3)
+  (smoke-loc Parliament House-5)
 ```
 
 `ein solve examples/zebra2.ein --single` prints the same state as the `(model …)` of chapter 4, and reads the query's
@@ -333,8 +351,8 @@ Both run through the same `ein solve`, and what the answer is decides which ques
 
 - [`zebra2-minus-15.ein`](../../../../examples/zebra2-minus-15.ein) drops condition (15), the only fact that pins Blue
   at `H_2`, and leaves the colours under-determined. `ein solve examples/zebra2-minus-15.ein --single` answers
-  `Ambiguity — R holds two states or more`; `--count` counts R's states, and `--maximal --models key` prints them as
-  their **determining key**, the few varying slots whose values fix a whole state, instead of as one block a state.
+  `Ambiguity — R holds two states or more`; `--count` counts R's states, and `--maximal` lists them, each as the
+  `(model …)` its commitment reaches.
 - [`ein-bugs/zebra2-bad.ein`](../../../../examples/ein-bugs/zebra2-bad.ein) adds `(color-loc Green House-1)`, which
   collides with condition (6): green is right of ivory, so it cannot be in the leftmost house. `ein solve` answers
   that R is empty, `every node is dead — root's own fixpoint derives (false)`, with the unsat core. It lives under

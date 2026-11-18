@@ -69,11 +69,11 @@ ein-cli/tests/acceptance_cli.rs
 ein-cli/tests/answer_dump.rs
 ein-cli/tests/cli_semantics.rs
 ein-cli/tests/corpus_cli.rs
+ein-cli/tests/diff_models.rs
 ein-cli/tests/einb_cli.rs
 ein-cli/tests/embedding.rs
 ein-cli/tests/h_space_view.rs
 ein-cli/tests/lever_invariance.rs
-ein-cli/tests/models_grid.rs
 ein-cli/tests/region_dump.rs
 ein-cli/tests/render_doors.rs
 ein-cli/tests/show_hyps.rs

@@ -14,7 +14,7 @@ digraph ein_render {
   prog  [label="rules.rs, constraints.rs,\nir_dot.rs"];
   kbv   [label="kb_dot.rs, derivation.rs"];
   trace [label="trace/, slice.rs,\nsentence.rs"];
-  text  [label="read_out.rs\ngrid.rs, models.rs"];
+  text  [label="read_out.rs,\nmodels.rs"];
   dans  [label="dump/region_answer.rs,\ndump/json.rs, dump/serialise.rs"];
   dlat  [label="dump/region_lattice.rs"];
   dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];

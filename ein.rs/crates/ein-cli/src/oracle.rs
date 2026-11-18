@@ -191,9 +191,9 @@ pub fn run(m: &ArgMatches) -> i32 {
             (false, _) => flagged_close.unwrap_or_default(),
         }
     );
-    // `--models key|grid`, `-p` and `-P`, after the whole read-out, in what
-    // it left of stdout's 100 lines. `ein oracle` writes no answer
-    // directory, so their cut names `ein solve`'s.
+    // `-p` and `-P`, after the whole read-out, in what it left of stdout's
+    // 100 lines. `ein oracle` writes no answer directory, so their cut names
+    // `ein solve`'s.
     if let Err(e) = crate::modes::extras(
         &crate::modes::Shown::of(m),
         &ro,

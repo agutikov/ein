@@ -11,7 +11,7 @@ answer from the inside, in its rules, and where that stops:
 - such a sentence is a claim, stated at the meta level and checked against $R$ (§ 3);
 - an obligation's alternatives are jointly exhaustive, which is what lets a search branch on one debt (§ 4);
 - a state of $R$ is a model of the program as $H$ scopes it, and the answer says where that scope ends (§ 5);
-- a set of models has a compact exact form, and every count says what it guarantees (§ 6).
+- every count of a set of models says what it guarantees (§ 6).
 
 The symbols are those of [firing a rule](01-firing.md); $S$ is a state, $\mathcal{S}(R) = \lbrace
 \operatorname{st}(C) : C \in R \rbrace$ the states of $R$.
@@ -299,37 +299,6 @@ $$
 
 The state is what is judged; the model is a projection of it, and decides nothing
 ([Q-M1e.7](../../../decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)).
-
-**What models differ in.** A set of states $\mathcal{S}$ varies in facts, and a compact description of it is
-about variables, so facts are read as variables by two rules:
-
-1. every positive fact that is in some listed state and not in another is a **Boolean** variable,
-   $x_f(S) = [\, f \in S \,]$;
-2. where the program states that a relation $r$ is functional (or bijective, which implies it), the facts
-   $r(a, \cdot)$ exclude one another, so for each $a$ they are **one** variable whose values are the ones it
-   takes, $x_{r,a}(S) = b \iff r(a, b) \in S$.
-
-The properties are read from the states' own facts, so a program that states the bijection, one that states the
-function and one that derives the property by a rule are read alike. A stored negation is no variable: where
-the program stores $\lnot r(a, b)$ beside every excluded value, it mirrors the positive facts exactly.
-
-**The determining key** is a smallest set of those variables, $X$, whose values tell every listed state apart,
-with the table of the combinations that occur, one row per state:
-
-$$
-\operatorname{key}(\mathcal{S}) \in \operatorname*{arg\,min}_{Y \subseteq X} \lbrace\, \lvert Y \rvert \;:\; \forall S \neq S' \in \mathcal{S}.\;\; \exists x \in Y.\;\; x(S) \neq x(S') \,\rbrace
-$$
-
-![States as nodes, and on each edge the variables two states differ in](diagrams/10-key.svg)
-
-A node is a state and an edge a pair of states, labelled with the variables the two differ in. A key is a set
-of variables that meets every edge's label: here $\lbrace x \rbrace$ is the smallest, and $\lbrace y, z \rbrace$
-is another. By construction a row's values pick out its state among those listed, and each row is read off a
-state that exists, so a state that was not found could add a row but never contradict one. Finding a smallest
-such set is a minimum hitting set over the pairs of states, which is NP-hard, so the key is offered within a
-bound and, where it is unaffordable, declined with the reason, leaving the listing as the form. It is a form
-asked for after the answer and never a second answer: no count, state or claim moves with it
-([Q-M1d.5](../../../decisions/read-out/Q-M1d.5-the-read-out-lists-the-states-each-count.md)).
 
 **Every count says what it guarantees.** An answer in which all of what was asked was classified reports *the*
 states, of $R$ or of the line asked; one that a budget stopped reports the states *found*, a part, complete up

@@ -4,7 +4,7 @@ Under `--no-search` the read-out is root's: `asked` (*root alone*), `∅` and it
 an `R` row, *not searched — --no-search builds no node past root*, the static check's rows, `universe` (H built,
 *none visited*), `route` (*none*) and `work` (one saturation); a dead root's core; the queries, read at ∅ where ∅ is
 in R; and the claims, each decided where root decides it and not checked otherwise. The `R` row reads the same on a
-dead root. Root's facts are drawn by the forms (`-p`, `-P`, `-f`, `--models`, `--diff-models`) and written as
+dead root. Root's facts are drawn by the forms (`-p`, `-P`, `-f`, `--diff-models`) and written as
 `root.ein` by `--dump-answer`; stdout does not list them.
 
 **Why.** The flag declines to discover R; it does not report another one, so every row that counts or lists R gives

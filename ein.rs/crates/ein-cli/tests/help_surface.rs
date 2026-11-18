@@ -32,7 +32,7 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein\n", 0),
     // Among them `--jobs`
     // ([03-design/08-parallelism.md § 2](../../../../docs/ein/ein.rs/03-design/08-parallelism.md#2-what-runs-in-parallel)),
-    // `--models`, `--layer-progress`, `--dump-answer`, `--dump-lattice`,
+    // `--layer-progress`, `--dump-answer`, `--dump-lattice`,
     // `--diff-models`, `--region-limit`, the four region flags
     // `--minimal`, `--maximal`, `--single` and `--region-budget`
     // ([`05-cli.md`](../../../../docs/ein/user/04-reference/05-cli.md)), `--monotone`,
@@ -41,11 +41,11 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--describe-route`, describe's two routes, one R. The retired options
     // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
     // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
-    ("COMMAND ein solve\n", 36),
+    ("COMMAND ein solve\n", 35),
     // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
-    // `--stats`; the five from `solve`, `-T`, `--json-summary`, `--models`,
-    // `-p` and `-P`; and `--no-require-why`.
-    ("COMMAND ein oracle\n", 11),
+    // `--stats`; the four from `solve`, `-T`, `--json-summary`, `-p` and
+    // `-P`; and `--no-require-why`.
+    ("COMMAND ein oracle\n", 10),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
     // The four views that draw a program as written take `--no-require-why`,
@@ -107,9 +107,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        73 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        71 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "73 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "71 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s ten and `ein kb save`'s two"
     );
 }

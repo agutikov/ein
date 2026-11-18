@@ -537,7 +537,7 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 | a goal's rows over a state | [`ein-infer/src/verdict.rs`](../../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | the branch on an owed instance | [`ein-infer/src/tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs), the obligation tree, under the licences of [`07-search.md` § 3](../03-design/07-search.md#3-the-licences) |
 | what the universe leaves out | [`ein-infer/src/scope.rs`](../../../../ein.rs/crates/ein-infer/src/scope.rs) |
-| the determining key | [`ein-render/src/models.rs`](../../../../ein.rs/crates/ein-render/src/models.rs) |
+| a state's model, compared with a file's | [`ein-render/src/models.rs`](../../../../ein.rs/crates/ein-render/src/models.rs): `comparable_facts`, and `diff_model_sets`, `--diff-models`' pairing |
 
 ### 6.2 The algorithm
 
@@ -552,8 +552,7 @@ run: **held**, **FAILED**, or **NOT CHECKED**. A failed claim exits 1, and so do
 ([`05-cli.md`](../../user/04-reference/05-cli.md)). A claim is written `:expect`, on a `(query …)` or on the
 `(solve …)` form.
 
-The key is a minimum hitting set over the pairs of listed states, searched within a budget on the pair table
-and declined with the reason past it. The count of what a listed state leaves open is the leftover probe,
+The count of what a listed state leaves open is the leftover probe,
 `EIN_LEFTOVER=1`, read on a copy of the state ([`06-config.md`](../../user/04-reference/06-config.md)).
 
 The program of the reasoning page's § 5 is
@@ -579,12 +578,12 @@ its § 2.3 are in the catalogue:
 | on the zebra family, branching on what the obligations owe finds what the hrule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
 | every question names a relation H holds no fact of, in one sentence | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | what the blind enumerator would still propose at a listed state is a read, off unless asked | `ein-cli/tests/leftover_probe.rs`: `the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says` |
-| an exhausted run reports the states, an unexhausted one the states found; the key changes stdout and nothing recorded, names its size and one row per state, and an unaffordable key says why | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found`, `the_key_form_changes_stdout_and_nothing_recorded`, `the_key_table_names_its_size_its_alternatives_and_one_row_per_state`, `an_unaffordable_key_says_why` |
+| an exhausted run reports the states, an unexhausted one the states found | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found` |
 
 ### 6.4 Commands
 
 ```sh
 ein test FILE                        # every claim the file states: held, FAILED or NOT CHECKED
-ein solve FILE --maximal --models key  # the determining key of the states listed
+ein solve FILE --maximal -n 5        # at most five states of the line, and whether that is all of it
 ein render rule --name NAME FILE     # an obligation or a restriction as its match and its conclusion
 ```

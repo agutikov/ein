@@ -322,7 +322,7 @@ fn the_oracle_refuses_past_its_limit() {
     assert!(r.err.contains("over --region-limit 2"), "{}", r.err);
 }
 
-/// `--models key|grid`, `-p/-P/-f` and `--diff-models` over the listed states
+/// `-p/-P/-f` and `--diff-models` over the listed states
 /// (`08-read-out.md` § 8). Each block
 /// follows the read-out, which it leaves as it was, and names its set.
 #[test]
@@ -335,7 +335,7 @@ fn the_listed_states_print_as_asked() {
     let check = |extra: &[&str], want: &[&str]| {
         let mode: Vec<&str> = extra
             .iter()
-            .take_while(|a| !["--models", "-P", "-p", "-f", "--diff-models"].contains(a))
+            .take_while(|a| !["-P", "-p", "-f", "--diff-models"].contains(a))
             .copied()
             .collect();
         let (bare, r) = (run(&mode), run(extra));
@@ -354,17 +354,6 @@ fn the_listed_states_print_as_asked() {
             assert!(r.out.contains(w), "{extra:?}: no `{w}` in\n{}", r.out);
         }
     };
-    check(
-        &["--region-budget", "524288", "--models", "key"],
-        &[
-            "models — the determining key of every state of R",
-            "7 rows, one per state. Not every state is maximal",
-        ],
-    );
-    check(
-        &["--maximal", "--models", "key"],
-        &["its R is that\n    state alone"],
-    );
     check(
         &["--maximal", "-P"],
         &[
@@ -395,26 +384,6 @@ fn the_listed_states_print_as_asked() {
         r.out.is_empty() && r.err.starts_with("error: --diff-models"),
         "{}",
         r.err
-    );
-    // `--models grid` per state, here with the reason a program without a
-    // row type gets; the cells themselves are `models_grid.rs`'s.
-    let g = ein(&[
-        "solve",
-        "examples/branching/04_two_levels.ein",
-        "--maximal",
-        "--models",
-        "grid",
-    ]);
-    assert_eq!(g.code, 0, "{}", g.err);
-    assert!(
-        g.out.contains("models — the states listed, each as a grid"),
-        "{}",
-        g.out
-    );
-    assert!(
-        g.out.contains("── state 2 of 2 ──") && g.out.contains("grid — none:"),
-        "{}",
-        g.out
     );
 }
 
@@ -857,7 +826,7 @@ fn a_count_past_the_cap_is_an_answer_on_every_surface() {
     );
 }
 
-/// `ein oracle`'s five options from `ein solve`
+/// `ein oracle`'s four options from `ein solve`
 /// ([`05-cli.md` § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 #[test]
 fn the_oracle_takes_the_read_outs_options() {
@@ -871,16 +840,10 @@ fn the_oracle_takes_the_read_outs_options() {
         serde_json::from_str(&std::fs::read_to_string(&p).unwrap()).unwrap();
     assert_eq!(doc["schema"], "ein-summary/2");
     assert_eq!(doc["region"]["k_s"], 7);
-    let k = ein(&["oracle", THREE, "--models", "key"]);
+    let pp = ein(&["oracle", THREE, "-P"]);
     // Below the header, which names the flag, the read-out is the same.
     let body = |s: &str| s[s.find('\n').unwrap()..].to_string();
-    assert!(
-        body(&k.out).starts_with(&body(&bare.out))
-            && k.out.contains("models — the determining key of"),
-        "{}",
-        k.out
-    );
-    let pp = ein(&["oracle", THREE, "-P"]);
+    assert!(body(&pp.out).starts_with(&body(&bare.out)), "{}", pp.out);
     assert_eq!(pp.out.matches("── state ").count(), 7, "{}", pp.out);
     let t = ein(&[
         "oracle",
@@ -1085,8 +1048,6 @@ fn the_count_question_is_describes_counts() {
         ("-n 2", "`ein solve FILE -n N`"),
         ("--single", "`ein solve FILE --single`"),
         ("--monotone", "`ein solve FILE --monotone`"),
-        ("--models key", "`ein solve FILE --models FORM`"),
-        ("--models list", "`ein solve FILE --models FORM`"),
         ("--diff-models x", "`ein solve FILE --diff-models FILE`"),
         ("-p", "`ein solve FILE -p`"),
         ("-P", "`ein solve FILE -P`"),

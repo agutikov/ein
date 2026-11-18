@@ -102,7 +102,7 @@ The options beside the two axes — the budgets, the presentation forms, the art
 
 ```text
 ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECONDS]
-                 [-s] [--json-summary FILE] [--models FORM] [-p] [-P]
+                 [-s] [--json-summary FILE] [-p] [-P]
 ```
 
 - **What it does:** saturates every subset of H, the program's candidates, with no licence and no pruning. It
@@ -298,7 +298,6 @@ itself, is in R there, and every alive extension is a second state. That is what
 | Every complete solution | `ein solve F --maximal` | the maximal line |
 | Every minimal one | `ein solve F --minimal` | the minimal line |
 | Everything | `ein solve F` | R in full: both counts, both lines, components, maximal sub-cubes and their dimensions, the merged classes, `N` |
-| Which facts tell the complete solutions apart | `ein solve F --maximal --models key` | the determining key: the smallest set of slots that tells the states apart, and the combinations that occur |
 | Every state as a file I can load | `ein solve F … --dump-answer DIR` | one loadable file per listed state, with the commitment that reached it ([`10-answer-dump.md`](10-answer-dump.md)) |
 | What a query's goal takes across the solutions | `(query :goal … :expect …)` in F | the goal's classes ([`12-query.md`](../03-syntax-and-semantics/12-query.md)) |
 
@@ -339,8 +338,7 @@ of that structure, so a lost or renamed option fails on its own line.
 stopped never says R is empty ([Q-M1d.1](../../../decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md)).
 `Contradiction` is said only where no node is alive
 ([Q-M1d.6](../../../decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)), and an unsat core
-explains why there is no solution, which a stopped run has not shown. `--models list|key|grid` draws the states a
-run lists, and `key` has nothing to tell apart below two.
+explains why there is no solution, which a stopped run has not shown.
 
 **`-n 0` is refused**, exit 2, and so is every negative, in both spellings; a non-integer keeps its own message:
 

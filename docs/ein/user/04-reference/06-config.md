@@ -16,7 +16,7 @@ command does is [`05-cli.md`](05-cli.md); what a run prints is [`08-read-out.md`
 | surface | how many | where the list is |
 |---|---:|---|
 | `(config …)` flags | **2** | § [2](#2-config---the-two-solver-flags) |
-| CLI options | **92** | `ein <command> --help`, and § [3](#3-the-cli) |
+| CLI options | **90** | `ein <command> --help`, and § [3](#3-the-cli) |
 | `EIN_*` environment | **2** read by the shipped binary | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -176,13 +176,13 @@ not a lever: it decides whether a program loads, and a program loads to what it 
 **`ein <command> --help`.** Each option's long name, short key, metavar, arity, default, choices, group and help
 string is fixed, and the test suite holds the help of every command to a checked-in rendering of it; what is free
 is `clap`'s layout ([Q-M1a.13](../../../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md),
-[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **92** options across eighteen parsers, in the
+[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **90** options across eighteen parsers, in the
 default build (the `einb`, `parallel` and `snmalloc` features, which `ein --version` names).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 36 |
-| `ein oracle` | 11 |
+| `ein solve` | 35 |
+| `ein oracle` | 10 |
 | `ein test` | 10 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
@@ -291,8 +291,8 @@ a program to answer about.
   mismatch is an engine error, exit 2; never a different answer.
 - **Execution** — `-j`/`--jobs N`, or `--jobs auto`: the same read-out, byte for byte, at every job count
   ([Q-M1a.7](../../../decisions/engine/Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md)). The default is 1.
-- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `--models` (`list`,
-  `key`, `grid`, over the states the read-out showed), `--diff-models FILE`, `ein render program`'s and `ein render
+- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `--diff-models FILE`,
+  `ein render program`'s and `ein render
   kb`'s options, which draw a file and solve nothing, and `ein render region`'s three, which draw an `ein oracle
   --dump` directory (`--view`) with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
   `--answer`) and load nothing. They change stdout and stderr only. Under `-v`, `-g N` logs every N-th node; `-g 0`
@@ -301,15 +301,13 @@ a program to answer about.
   `--diff-models` file is a line `closes R …` and `model` lines, with `;` comments, and its facts are read by the
   parser and compared as facts and not as text, so a fact may span lines and carry a comment, and `(p  a)` matches `(p a)`; a file
   whose facts do not parse is a usage error, exit 2, before the run, with every error the parser reaches and its
-  line and column. **Six of them are forms printed after the read-out, and share its 100 lines**
-  ([Q-M1e2.34](../../../decisions/read-out/Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md)): `-H`,
-  `--models key|grid`, `-p`, `-P`, `-f` and `--diff-models` are drawn from the states stdout showed and print what
-  fits, at least one item, then a line naming the rest; that rest is `--dump-answer DIR`'s `forms/<form>.txt`,
-  uncut and drawn from every listed state ([`10-answer-dump.md`](10-answer-dump.md)). **Two of them compare the listed
-  states pairwise, and each prices its pair table before it allocates it**, against a fixed bound of 16 MiB that is
-  not an option. `--models key` past the bound prints *determining key — none within budget* and the numbers, as it
-  does past its search budget, and exits 0 with the states listed above it. `--diff-models` past the bound pairs
-  nothing near, says so in its block, and lists every unmatched model as missing or spurious.
+  line and column. **Five of them are forms printed after the read-out, and share its 100 lines**
+  ([Q-M1e2.34](../../../decisions/read-out/Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md)): `-H`, `-p`,
+  `-P`, `-f` and `--diff-models` are drawn from the states stdout showed and print what fits, at least one item, then
+  a line naming the rest; that rest is `--dump-answer DIR`'s `forms/<form>.txt`, uncut and drawn from every listed
+  state ([`10-answer-dump.md`](10-answer-dump.md)). **`--diff-models` pairs the models it did not match pairwise, and
+  prices that table before it allocates it**, against a fixed bound of 16 MiB that is not an option: past the bound
+  it pairs nothing near, says so in its block, and lists every unmatched model as missing or spurious.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary` (`ein-summary/2`), `--json-report`
   (`ein-test-report/5`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
   ([`docs/ein/ein.rs/06-lattice-dump.md`](../../ein.rs/06-lattice-dump.md)), `--dump-answer`
@@ -368,7 +366,8 @@ its own.
 - **`--jobs`.** A flag would let a *program* set a thread count, a `.ein` that reads differently on an eight-core
   machine than on a four-core one. A job count is how a run is executed; a flag is what the program means. It moves
   nothing a run prints either way ([Q-M1a.7](../../../decisions/engine/Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md)).
-- **`--models`**, and every other presentation option: how the answer is drawn is not part of the program.
+- **The presentation options**, `-p`, `-H` and the others of § [3.3](#33-what-an-option-can-do-to-the-answer): how the
+  answer is drawn is not part of the program.
 - **`--no-require-why`** (§ 3.4). A flag would let a program turn its own requirement off; it is a question about
   loading, and the program is its subject.
 

@@ -114,7 +114,7 @@ pub fn header_argv(command: &str) -> String {
 /// (Q-M1f.218), so an option that asks for a line, a listed state, a
 /// claim or another question is a usage error, exit 2, as a retired option
 /// is (`crate::solve::RETIRED`).
-const COUNT_REFUSES: [(&str, &str); 12] = [
+const COUNT_REFUSES: [(&str, &str); 11] = [
     (
         "minimal",
         "--count is over all of R only, and --minimal asks about its minimal line: a bare \
@@ -140,11 +140,6 @@ const COUNT_REFUSES: [(&str, &str); 12] = [
         "monotone",
         "--count and --monotone are two questions: `ein solve FILE --monotone` asks whether the \
          program is monotone, and builds no node",
-    ),
-    (
-        "models",
-        "--count lists no state, and --models draws the states listed: a bare `ein solve FILE \
-         --models FORM` draws R's",
     ),
     (
         "diff-models",
@@ -611,8 +606,8 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
 }
 
 /// What a region run prints after its read-out when asked — `08-read-out.md`
-/// § 8: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
-/// each its own form, then `--diff-models FILE`.
+/// § 8: `-H`, then `-p`, `-P` and `-f`, each its own form, then
+/// `--diff-models FILE`.
 ///
 /// **They share stdout's 100 lines with the read-out** (Q-M1e2.34). Each is
 /// drawn from the states stdout
@@ -624,19 +619,17 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
 /// What [`extras`] is asked to print — read off `solve`'s flags, or
 /// `oracle`'s, which has fewer of them.
 pub(crate) struct Shown {
-    form: Option<String>,
     dumps: Vec<crate::factdump::Mode>,
     universe: bool,
 }
 
 impl Shown {
-    /// From the flags of a command that has them: each of `--models`, `-p`,
-    /// `-P`, `-f` and `-H` it does not define is off.
+    /// From the flags of a command that has them: each of `-p`, `-P`, `-f`
+    /// and `-H` it does not define is off.
     pub(crate) fn of(m: &ArgMatches) -> Shown {
         use crate::factdump::Mode as Dump;
         let has = |id: &str| m.try_get_one::<bool>(id).ok().flatten().copied() == Some(true);
         Shown {
-            form: m.try_get_one::<String>("models").ok().flatten().cloned(),
             dumps: [
                 ("print-final-state", Dump::All),
                 ("print-final-positive", Dump::Positive),
@@ -668,7 +661,7 @@ struct Form {
     /// Items the uncut form holds and this one does not draw: the listed
     /// states stdout did not show.
     beyond: usize,
-    /// What the uncut form says that no cut of these items holds: a key or a
+    /// What the uncut form says that no cut of these items holds: the
     /// comparison of every listed state, where stdout drew a part of them.
     also: Option<String>,
 }
@@ -787,9 +780,8 @@ pub(crate) fn extras(
             uncut.push((h.name, h.text()));
         }
     }
-    let form = shown.form.as_deref();
     let dumps = &shown.dumps;
-    if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
+    if dumps.is_empty() && want.is_none() {
         return Ok(uncut);
     }
     let a = &r.answer;
@@ -881,8 +873,6 @@ pub(crate) fn extras(
             targets.push(rel);
         }
     }
-    let exhausted = a.exhausted;
-    let maximal = listed.iter().all(|(_, s)| s.maximal);
     let n_states = r.states.len();
     let mut nodes =
         ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
@@ -917,76 +907,6 @@ pub(crate) fn extras(
                     (!whole).then(|| format!("{what} of all {} listed", group(all as u64)))
                 };
                 let mut out: Vec<Form> = Vec::new();
-                match form {
-                    // A key tells states apart, so one state or none has no
-                    // key, and the flag is inert there.
-                    Some("key") if all < 2 => {}
-                    Some("key") => {
-                        let mut head = vec![
-                            String::new(),
-                            format!("models — the determining key of {what}"),
-                        ];
-                        let mut rows: Vec<Vec<String>> = Vec::new();
-                        let mut tail: Vec<String> = Vec::new();
-                        if c < 2 {
-                            head.push(
-                                "  one state shown: a key tells states apart, and needs two"
-                                    .to_string(),
-                            );
-                        } else {
-                            let refs: Vec<&ein_core::Kb> = kbs[..c].iter().collect();
-                            let of = if whole {
-                                ein_render::models::KeyOf::States { maximal }
-                            } else {
-                                ein_render::models::KeyOf::Shown { listed: all }
-                            };
-                            match ein_render::models::key_parts_of(
-                                terms, &refs, exhausted, "  ", of,
-                            ) {
-                                Ok(p) => {
-                                    head.extend(p.head);
-                                    rows = p.rows.into_iter().map(|l| vec![l]).collect();
-                                    tail = p.tail;
-                                }
-                                Err(why) => {
-                                    head.push("  determining key — none within budget".to_string());
-                                    head.extend(ein_render::models::wrap(
-                                        &format!("{why}."),
-                                        "    ",
-                                    ));
-                                }
-                            }
-                        }
-                        out.push(Form {
-                            name: "key",
-                            head,
-                            groups: Form::one_group(rows),
-                            tail,
-                            unit: ("more row", "more rows"),
-                            beyond: 0,
-                            also: also("the key"),
-                        });
-                    }
-                    Some("grid") => {
-                        let items = (0..c)
-                            .map(|i| {
-                                let mut b = vec![String::new(), format!("  ── {} ──", label(i))];
-                                b.extend(ein_render::grid::grid_or_reason(terms, &kbs[i], "  "));
-                                b
-                            })
-                            .collect();
-                        out.push(Form {
-                            name: "grid",
-                            head: vec![String::new(), format!("models — {what}, each as a grid")],
-                            groups: Form::one_group(items),
-                            tail: Vec::new(),
-                            unit,
-                            beyond,
-                            also: None,
-                        });
-                    }
-                    _ => {}
-                }
                 for d in dumps {
                     let items = (0..c)
                         .map(|i| {

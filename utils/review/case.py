@@ -38,7 +38,7 @@ from pathlib import Path
 from review.command import (CommandRun, command_case, first_line, is_command, plan_argv, recorded_answer,
                             recorded_kind, recorded_what, save_container, shown)
 from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, dump_link,
-                        form_text, grids_from, node_links, overlay_head, set_text, state_files, state_href,
+                        node_links, overlay_head, set_text, state_files, state_href,
                         verdict_block, yes)
 from review.util import REPO, details, doc, load_json, read, rel, run, table, warning_words, write
 
@@ -781,16 +781,12 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
             continue
         st = listed(c.result)
         lines += [f"### {c.label} — {len(st)} listed state(s), {asked_text(c.result.summary)}", ""]
-        grid = next((i for i in c.result.invocations if i.name == "grid"), None)
-        grids = grids_from(form_text(c.result.out, "grid", "grid", grid.stdout)) if grid else []
         files = {f.get("state"): f for f in state_files(c.result.out / "raw" / "answer") if f["kind"] == "models"}
         for i, s in enumerate(st):
             facts = project(s.get("facts", []), closes)
             f, href = files.get(i + 1), state_href(c.result.out, i + 1, page)
             label = f"[{f['stem']}]({href})" if f and href else f"state {i + 1}"
             lines += [f"- {label}: " + (" ".join(f"`{x}`" for x in facts) or "*(no facts)*")]
-            if i < len(grids) and not grids[i].startswith("grid — none"):
-                lines += ["", "  " + grids[i].replace("\n", "\n  "), ""]
         if not st:
             frontier = region.get("frontier") or []
             lines += ["_no state listed_" + (f" — R is empty ({region['empty']})" if region.get("empty") else "")]

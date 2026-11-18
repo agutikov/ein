@@ -629,7 +629,6 @@ fn solve_command() -> Command {
                     "trace",
                     "dump-lattice",
                     "diff-models",
-                    "models",
                     "print-final-state",
                     "print-final-positive",
                     "print-final-hfacts",
@@ -779,18 +778,6 @@ fn solve_command() -> Command {
         ))
         // ── the listed states' projection ──
         .arg(
-            Arg::new("models")
-                .long("models")
-                .value_name("FORM")
-                .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
-                .default_value("list")
-                .help(models_help(
-                    "each as a table, the anchor type's objects down the side, \
-                     where the program's declarations license one",
-                    "--dump-answer DIR",
-                )),
-        )
-        .arg(
             Arg::new("diff-models")
                 .long("diff-models")
                 .value_name("FILE")
@@ -838,7 +825,7 @@ fn solve_command() -> Command {
                      uncut), answer.json (= --json-summary), index.json, one \
                      saved file per state (its program and the choices made, \
                      which load to it), the owing frontier, N, and each \
-                     form asked for (-H, --models, -p, -P, -f, --diff-models) \
+                     form asked for (-H, -p, -P, -f, --diff-models) \
                      uncut under forms/ (docs/ein/user/04-reference/10-answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \
                      the exit code are unchanged.",
@@ -1109,7 +1096,7 @@ fn oracle_command() -> Command {
             "stats",
             "print the work: saturations and the wall clock of each phase",
         ))
-        // The five `ein solve` takes for the read-out.
+        // The four `ein solve` takes for the read-out.
         .arg(
             Arg::new("max-time")
                 .short('T')
@@ -1131,17 +1118,6 @@ fn oracle_command() -> Command {
                      does. Additive: stdout, stderr and the exit code are unchanged",
                 ),
         )
-        .arg(
-            Arg::new("models")
-                .long("models")
-                .value_name("FORM")
-                .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
-                .default_value("list")
-                .help(models_help(
-                    "each as a table, where the program's declarations license one",
-                    "`ein solve FILE --dump-answer DIR`",
-                )),
-        )
         .arg(flag(
             'p',
             "print-final-state",
@@ -1157,23 +1133,6 @@ fn oracle_command() -> Command {
             "like --print-final-state but drops the (not …) facts; \
              DIR/forms/print-final-positive.txt",
         ))
-}
-
-/// `--models`' help, `grid`'s gloss and where the rest is aside. The key's
-/// decline is said with the bound it is priced against, read from the
-/// constant, so the help cannot state a bound the renderer does not apply.
-/// Where the rest is: stdout's listings share 100 lines, and a dump holds
-/// the whole (Q-M1e2.34).
-fn models_help(grid: &str, dump: &str) -> String {
-    format!(
-        "after the read-out, the states it showed: 'key' (the smallest set of \
-         slots that tells them apart, and the table of combinations that occur; \
-         declined, with the reason, past a {} MiB pair table or its search \
-         budget) or 'grid' ({grid}), in what the read-out left of stdout's 100 \
-         lines. {dump} writes the form uncut, over every listed state, as \
-         DIR/forms/key.txt or grid.txt. 'list', the default, adds nothing",
-        ein_render::models::PAIR_TABLE_BOUND >> 20
-    )
 }
 
 /// `ein saturate`'s **own** parser, with its own `prog`.
