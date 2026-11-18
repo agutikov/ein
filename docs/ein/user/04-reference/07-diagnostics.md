@@ -1088,14 +1088,17 @@ at the command's load-error exit:
 | an import the file carries no module for | `kb load error: (import m) — F carries no module m, and a saved file reads no other file (None)` |
 | a choice that is no candidate of the program's H | ``(commit …) names (note (bad b)), which is no candidate of its program's H — a saved file's choices are candidates of H, which `ein show hyps` lists (Q-M1f.400)`` |
 | a choice named twice | `(commit …) names (note (bad a)) twice — a commitment is a set of candidates of H, each named once (Q-M1f.400)` |
-| a file with a `(commit …)` given to `ein kb save` | `kb save error: F is a saved file with a (commit …), a node of its program's lattice, and a .einb holds a program's root — save the program, or the saved file of its root` |
 
 The two refusals of a choice read H, which is built at root's fixpoint, so they are made by the commands that read
-the node, `ein solve` in every mode, `oracle`, `saturate`, `test` and `render kb`, as § 2.7's is by the commands
-that take the universe; `ein show hyps` and `ein render h-space` read the program's H and refuse neither. What is
-**not** refused: a carried module of the standard library that is not the one the binary would read, which is
-loaded as carried, with `note: F: the std.math.arith it carries is not this binary's standard library's; the text it
-carries is loaded`.
+the node, `ein solve` in every mode, `oracle`, `saturate` and `render kb`, as § 2.7's is by the commands that take
+the universe; `ein show hyps` and `ein render h-space` read the program's H and refuse neither, `ein test` asks a
+node nothing and refuses neither
+([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)), and `ein kb save`
+stores the choices as the file states them, its container refused by those commands as the file is
+([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)). What is **not** refused,
+and draws no line: a carried module of the standard library that is not the one the binary would read, or one
+carried where the binary has no standard library to read, which is loaded as carried; a saved file compares nothing
+([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
 
 ## See also
 

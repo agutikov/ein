@@ -35,7 +35,10 @@
 //!
 //! **It runs only what the expectations need.** A file whose queries state
 //! nothing, and that has no region claim, is never solved — the one load that
-//! finds this out is the whole of its cost.
+//! finds this out is the whole of its cost. Nor is a saved file's node: its
+//! claims are its program's, about the program's R, which no question about
+//! the node decides, so each is `NOT CHECKED` with no run, moving no exit code
+//! (Q-M1f.403).
 //!
 //! **A failure names what differs.** The solve claim's report says which
 //! state is missing or extra; a query's, which projection class. Under
@@ -203,8 +206,9 @@ struct Tally {
     /// to check, so it moves no exit code.
     no_search: bool,
     /// The claims a saved file's node holds, each NOT CHECKED (Q-M1f.403):
-    /// a claim is its program's, about the program's R, so a node's run
-    /// checks none, which is no failure to check and moves no exit code.
+    /// a claim is its program's, about the program's R, so none is asked
+    /// of the node ([`NotRun`]), which is no failure to check and moves no
+    /// exit code.
     saved: usize,
 }
 
@@ -790,17 +794,24 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         }
         return;
     }
+    // A saved file's node (Q-M1f.403): its claims are its program's, about
+    // the program's R, and no question about the node decides one, so none
+    // is asked.
+    if kb.program().commit.is_some() {
+        let claims = NotRun {
+            solve: solve_row.zip(solve_claim.as_ref()),
+            queries: &overs,
+            first_row,
+            n_queries,
+        };
+        return claims.say(path, tally, rows);
+    }
 
     // The question the claims are, and the describing one it falls back to
     // (the module header). One deadline for the file, whatever is asked.
     // Under `--no-search` one question, root alone, and no
     // fallback: what root does not decide stays NOT CHECKED.
-    // A saved file's node (Q-M1f.403): its claims are its program's, about
-    // the program's R, and no question about the node decides one, so the
-    // least it is asked is root alone, the node, and each claim is NOT
-    // CHECKED with the reason, moving no exit code.
-    let saved = kb.program().commit.is_some();
-    let no_search = m.get_flag("no-search") || saved;
+    let no_search = m.get_flag("no-search");
     let (least, describing) = if no_search {
         let root = Mode {
             which: explore::Which::All,
@@ -921,9 +932,6 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         }
         Outcome::NotChecked => {
             tally.not_checked += 1;
-            if saved {
-                tally.saved += 1;
-            }
             Came::NotChecked
         }
     };
@@ -1006,26 +1014,14 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         });
         rows[i].scope = Some(beside.scope.clone());
         rows[i].route = Some(solve_run.flags());
-        let shape = match claim {
-            ein_ir::claim::Claim::False => "(false)",
-            ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => {
-                "(region)"
-            }
-            ein_ir::claim::Claim::Region(_) => "(region …)",
-        };
+        let shape = solve_shape(claim);
         let diffed = solve_diff.is_some() && volume != Volume::Quiet;
         if volume == Volume::Verbose || came != Came::Held || diffed {
             lines.push(match volume {
-                // `--no-search` counts no state of R, and a saved file's
-                // node asks root alone (Q-M1f.403).
+                // `--no-search` counts no state of R.
                 Volume::Verbose if r.answer.route == explore::Route::Root => format!(
-                    "  solve · :expect {shape} — {} ({}: root alone)",
-                    came.verb(),
-                    if saved {
-                        "a saved file's node"
-                    } else {
-                        "--no-search"
-                    }
+                    "  solve · :expect {shape} — {} (--no-search: root alone)",
+                    came.verb()
                 ),
                 Volume::Verbose => format!(
                     "  solve · :expect {shape} — {} ({route}, k_s = {k_s}, k_c = {})",
@@ -1083,12 +1079,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         };
         let diffed = diff.is_some() && volume != Volume::Quiet;
         if volume == Volume::Verbose || came != Came::Held || diffed {
-            let goal = row.goal.clone().unwrap_or_else(|| "?".to_string());
-            let where_ = if n_queries == 1 {
-                format!(":goal {goal}")
-            } else {
-                format!("query {} of {n_queries} · :goal {goal}", qi + 1)
-            };
+            let where_ = where_of(row.goal.as_deref(), qi, n_queries);
             lines.push(match (volume, at) {
                 (Volume::Verbose, Some(q)) => format!(
                     "  {where_} — {} ({}{}: {}, {} over {} states)",
@@ -1122,6 +1113,78 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
 
     if volume != Volume::Quiet || worst != Came::Held {
         println!("{}", status(worst.label(), path));
+        for l in lines {
+            println!("{l}");
+        }
+    }
+}
+
+/// A `(solve … :expect …)` claim's shape, as its header prints it.
+fn solve_shape(claim: &ein_ir::claim::Claim) -> &'static str {
+    match claim {
+        ein_ir::claim::Claim::False => "(false)",
+        ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => "(region)",
+        ein_ir::claim::Claim::Region(_) => "(region …)",
+    }
+}
+
+/// Where a query's claim is, as its header prints it: its `:goal`, and its
+/// place among the file's queries where there are several.
+fn where_of(goal: Option<&str>, qi: usize, n_queries: usize) -> String {
+    let goal = goal.unwrap_or("?");
+    if n_queries == 1 {
+        format!(":goal {goal}")
+    } else {
+        format!("query {} of {n_queries} · :goal {goal}", qi + 1)
+    }
+}
+
+/// **A saved file's node, asked nothing** (Q-M1f.403): its
+/// claims are its program's, about the program's R, and no question about
+/// the node decides one, so no run is made, not root's either. Each claim is
+/// NOT CHECKED with the reason, moving no exit code; its header names no
+/// question, since none was asked; and its row carries no run's data:
+/// `answer`, `outside`, `route`, `fell_back_from` and `diff` are `null`,
+/// and a solve row has no `region`, as on a row no run checked. Nothing
+/// saturates, so `--json-summary` and `--events` write nothing for the file,
+/// as for a file that states no claim.
+struct NotRun<'a> {
+    /// The solve claim's row and the claim, where the file states one.
+    solve: Option<(usize, &'a ein_ir::claim::Claim)>,
+    /// The queries that state a claim, each by its index.
+    queries: &'a [(usize, Over)],
+    /// The file's first query row.
+    first_row: usize,
+    n_queries: usize,
+}
+
+impl NotRun<'_> {
+    fn say(&self, path: &Path, tally: &mut Tally, rows: &mut [Row]) {
+        let why = format!("    {}", read_out::SAVED_CHECKS_NO_CLAIM);
+        let mut lines: Vec<String> = Vec::new();
+        let mut not_checked = |row: &mut Row, header: String| {
+            tally.not_checked += 1;
+            tally.saved += 1;
+            row.outcome = Came::NotChecked.key();
+            lines.push(header);
+            lines.push(why.clone());
+        };
+        let verb = Came::NotChecked.verb();
+        if let Some((i, claim)) = self.solve {
+            let header = format!("  solve · :expect {} — {verb}", solve_shape(claim));
+            not_checked(&mut rows[i], header);
+        }
+        for &(qi, _) in self.queries {
+            let row = &mut rows[self.first_row + qi];
+            let header = format!(
+                "  {} — {verb}",
+                where_of(row.goal.as_deref(), qi, self.n_queries)
+            );
+            not_checked(row, header);
+        }
+        // Printed at every volume, as every file whose worst outcome is not
+        // `ok` is.
+        println!("{}", status(Came::NotChecked.label(), path));
         for l in lines {
             println!("{l}");
         }
@@ -1224,7 +1287,7 @@ fn ask(
     }
     opts.deadline = deadline;
     opts.refute = true;
-    opts.no_search = m.get_flag("no-search") || kb.program().commit.is_some();
+    opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints
     // it, at each node visited. `ein test` prints no `N`.
     opts.cores = ein_infer::region::Cores {

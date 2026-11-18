@@ -204,6 +204,16 @@ question a file is asked, and a claim no question decided within it is `NOT CHEC
 `--json-summary` name one run, so they are refused over a selection of more than one file; where a file was asked
 two questions, they hold the last. `--json-report` is § [5](#5-what-is-fixed-about-the-command-line)'s.
 
+**A saved file with a `(commit …)` is asked nothing.** Its claims are its program's, about the program's R, and the
+file is a node of that R's lattice, which no question about the node decides
+([`10-answer-dump.md`](10-answer-dump.md#a-saved-file-is-a-node-of-its-programs-lattice)): nothing is run, not root
+either, each claim is `NOT CHECKED` with the line *the claim is the program's, about the program's R, and this saved
+file is a node of its lattice: the program checks it*, and none moves the exit code. Its `-v` header names no
+question, its `--json-report` row carries no run's data, and `--events` and `--json-summary` write nothing for it, as
+for a file that states no claim
+([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)). A node's container
+is asked nothing the same way.
+
 ### 2.4 `ein saturate`
 
 `ein saturate FILE` loads the program and saturates it: root, the node $\emptyset$, the program's least fixpoint with no
@@ -250,6 +260,12 @@ its program as text and loads it again when opened, so it is refused wherever it
 private cache format, never an interchange one**: what crosses from one tool to another is `.ein` text, or the JSON
 of `--json-summary`, `--json-report` and `--events`. `ein kb` exists in a build with the `einb` feature, which the
 release binary has.
+
+A **saved file** is stored as the program it carries, its imports read from the modules it carries, and a node's
+`(commit …)` in a section of the container, so **a node's container opens as that node**: `ein solve x.einb` prints
+what `ein solve` of the saved file prints, byte for byte but the path, and every other command reads it as it reads
+the file ([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)). A root's file has
+no `(commit …)`, and its container is a program's.
 
 ### 2.7 What every command reads
 
@@ -451,9 +467,9 @@ and a reader of the same version marker on both would be right to expect the sam
 | `goal`, `goal_relations` | the query's goal as written and the relations it names, whose facts a claim's class lists whole; `null` and `[]` on a solve row |
 | `outcome` | `held`, `failed`, `not-checked`, `no-expect` or `error` |
 | `expect` | the claim's shape (`model`, `or`, `false` for a query; `region` or `false` for a solve claim), how many models it lists, its facts and negated facts, the relations it names, and what part of R it is over; a solve claim adds `merged` and `owing`. `null` where the query states no claim |
-| `answer` | what a query's classes are over, whether that is exact, and how many classes and states |
-| `region` | on a solve row, the R it was checked against: the `route`, `monotone`, `k_s`, `k_c` and the time it took |
-| `outside` | what the universe leaves out beside a claim a run checked |
+| `answer` | what a query's classes are over, whether that is exact, and how many classes and states; `null` where no run answered the query |
+| `region` | on a solve row a run checked, the R it was checked against: the `route`, `monotone`, `k_s`, `k_c` and the time it took; absent on a row no run checked, a saved file's node's |
+| `outside` | what the universe leaves out beside a claim a run checked; `null` on a row no run checked |
 | `route`, `fell_back_from` | the question the outcome was read off, spelled as `ein solve`'s flags (`--single`, `-n 4`, `--maximal -n 3`) or `describe`; and the question asked first where it left the claim undecided. Both `null` on a row no run checked |
 | `diff` | under `--diff`, the claim's diff: what it was `against` (`states`, `owing` or `classes`), whether the found ones are `exact`, all of what the claim is about, the relations it is compared `over` and the negatives read for their `presence`, how many `models` and `found`, how many `match`, are `near`, `missing` and `extra`, `near_off`, how many near at each number of facts off, `unpaired`, why nothing was paired near where the pairing was past its bound, and under `full` its `items`, each a `kind` (`match`, `near`, `missing`, `extra`), the `model` and the `found` one by their numbers as printed, how many facts `off`, and the facts it `lacks` and `has`, `null` where it has none; `items` is `null` under `stats`, and `diff` is `null` without the option, on a claim no run decided and on the region's `(false)` |
 

@@ -236,16 +236,6 @@ impl Resolver {
         out
     }
 
-    /// The text of `std.x.y` as this resolver's standard library holds it,
-    /// the one a program's import of it reads: `None` where it has none.
-    pub fn stdlib_text(&self, module: &str) -> Option<String> {
-        let segments: Vec<&str> = module.split(MODULE_SEP).collect();
-        if segments.len() < 2 || segments[0] != STDLIB_ALIAS || self.stdlib.problem().is_some() {
-            return None;
-        }
-        self.read(&self.stdlib_root(), &segments[1..]).1.ok()
-    }
-
     fn stdlib_root(&self) -> Root {
         match &self.stdlib {
             stdlib::Source::Override(p) | stdlib::Source::Checkout(p) => Root::Dir(p.clone()),

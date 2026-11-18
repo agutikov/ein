@@ -200,13 +200,11 @@ fn carried_text(ast: &Ast, form: NodeId) -> &str {
     }
 }
 
-/// A file's text loaded: its program's KB, the program's forms as written,
-/// and what the load noticed and did not refuse, each a line a command
-/// prints after `note: `.
+/// A file's text loaded: its program's KB and the program's forms as
+/// written.
 pub struct Loaded {
     pub kb: Kb,
     pub forms: Vec<NodeId>,
-    pub notes: Vec<String>,
     /// What the parse took, a saved file's two parses together; the rest of
     /// the call is the load's.
     pub parse: std::time::Duration,
@@ -218,9 +216,9 @@ pub struct Loaded {
 /// the load read, and a saved file's [`ein_core::Program::commit`] its
 /// choices.
 ///
-/// A module of the standard library a saved file carries that differs from
-/// the one this binary reads is loaded as carried, and a note names it
-/// (Q-M1f.401).
+/// A saved file is loaded from what it carries and compares nothing: a
+/// module of the standard library it carries is loaded as carried, whatever
+/// this binary's library holds or whether it has one (Q-M1f.401).
 pub fn load_text(
     ast: &mut Ast,
     terms: &mut Terms,
@@ -244,7 +242,6 @@ pub fn load_text(
         return Ok(Loaded {
             kb,
             forms,
-            notes: Vec::new(),
             parse: parse_time,
         });
     };
@@ -258,8 +255,7 @@ pub fn load_text(
 /// A saved file's forms, parsed, loaded as [`load_text`] loads its text: what
 /// a load handed a file's forms rather than its text reads
 /// (`crate::from_ir::load_query_by`, where the first form is a `(program …)`),
-/// so every load of a saved file is the node it names. Its notes are not
-/// said: a command reads a file's text.
+/// so every load of a saved file is the node it names.
 pub(crate) fn load_forms(
     ast: &mut Ast,
     terms: &mut Terms,
@@ -283,6 +279,8 @@ pub(crate) fn load_forms(
 
 /// The program a saved file carries, parsed under its own name and loaded
 /// against the modules the file carries, with its sources and its choices.
+/// Nothing is compared with this binary's standard library: the file is
+/// self-contained, and what it carries is what it loads (Q-M1f.401).
 fn load_saved(
     ast: &mut Ast,
     terms: &mut Terms,
@@ -300,19 +298,6 @@ fn load_saved(
     let mut kb =
         load_query_by(&resolver, ast, terms, &forms, None, query, opts).map_err(TextError::Load)?;
     let modules = resolver.modules_read();
-    let ours = Resolver::new();
-    let notes = modules
-        .iter()
-        .filter(|(m, text)| {
-            m.starts_with("std.") && ours.stdlib_text(m).as_deref() != Some(text.as_str())
-        })
-        .map(|(m, _)| {
-            format!(
-                "{file}: the {m} it carries is not this binary's standard library's; the text it \
-                 carries is loaded"
-            )
-        })
-        .collect();
     let p = kb.program_mut();
     p.sources = Some(Arc::new(Sources {
         program: saved.program,
@@ -322,7 +307,6 @@ fn load_saved(
     Ok(Loaded {
         kb,
         forms,
-        notes,
         parse: parse_time,
     })
 }

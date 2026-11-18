@@ -11,6 +11,7 @@ endif
 :PROGRAM's file names;
 :PROV: push the file's derivation records;
 :parse and load the stored program:\nthe registries, and the loader's own records after the file's;
+:COMMIT, where the file has one:\nthe stored program's commitment, a saved file's node;
 if (the file holds derived state,\nand it is not Fresh?) then (yes)
   :return the loader's Kb;\nderived_dropped is true;
   stop

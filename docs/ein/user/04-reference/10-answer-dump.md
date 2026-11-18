@@ -124,8 +124,9 @@ the rule that derived it, with the origin it had, and **it reads no other file**
 - **`(module NAME …)`**, one for each module the load read, each once, its bytes the same way, sorted by name: `std.x.y`,
   or a path from the program's directory, a dot a directory, a module's own imports among them. Each import of the
   program and of a module is read from these and **never from the disk**; a module of the standard library is the one
-  the load read, from `$EIN_STDLIB`, the checkout or the binary's embedded copy, and one that is not what the binary
-  loading the file would read is loaded as carried, with a `note:` naming it
+  the load read, from `$EIN_STDLIB`, the checkout or the binary's embedded copy. A load reads the file alone and
+  compares nothing: a carried module is loaded as carried, whatever the standard library of the binary loading it
+  holds, or whether it has one, and nothing is said
   ([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
 - **`(commit F …)`**, the choices made: the candidates of H the state was read from, each as the read-out prints it,
   in H's order. A load commits them after root's fixpoint, as a node of the search commits its commitment, each an
@@ -173,11 +174,16 @@ A saved file is its program with one commitment of the program's H, and every co
 - **`ein show hyps F` and `ein render h-space F`** read the program's H, the node aside, its choices among H.
 - **The program's claims are not checked** on a file with a `(commit …)`: they are about the program's R, and the
   read-out names each NOT CHECKED, *the claim is the program's, about the program's R, and this saved file is a node
-  of its lattice*, and exits 0; `ein test` asks it root alone, the node, and counts each claim not checked with no
-  exit code. Root's file loads to the program's root and checks them as the program does
+  of its lattice*, and exits 0. `ein test` asks it nothing, not root either: each claim is NOT CHECKED with that line
+  and counted not checked with no exit code, and its `--json-report` row carries no run's data. Root's file loads to
+  the program's root and checks them as the program does
   ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)).
-- **`ein kb save`** stores a root's file as the program it carries, its imports read from the modules it carries, and
-  refuses a file with a `(commit …)`: a container holds a program's root.
+- **`ein kb save F X.einb`** stores the program the file carries, its imports read from the modules it carries, and
+  the `(commit …)` of a node in a section of the container, so that **a node's container opens as that node**: every
+  command reads `X.einb` as it reads `F`, and `ein solve X.einb` prints what `ein solve F` prints, byte for byte but
+  the path it echoes. A root's file has no `(commit …)`, and its container is a program's
+  ([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md);
+  [`09-binary-format.md`](../../ein.rs/03-design/09-binary-format.md#23-the-sections)).
 
 ## The contract
 

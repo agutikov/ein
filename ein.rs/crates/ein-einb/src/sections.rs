@@ -745,6 +745,43 @@ pub fn load_program(
     Ok((kb, forms))
 }
 
+// ── COMMIT ─────────────────────────────────────────────────────────
+
+/// **A saved file's node** (Q-M1f.413): the `(commit …)` of the program a
+/// container stores, each candidate of H as the file writes it, in its order
+/// ([`ein_core::Program::commit`]), so that a node's container opens as that
+/// node, as its saved file loads. Empty where the program has none, a root's,
+/// and then not written: a root's container is the one a program's is.
+///
+/// Text, as the file writes it, and not facts: a choice is a candidate of H
+/// by its text (Q-M1f.400), which the run reads against H after root's
+/// fixpoint, and a fact a choice names need not be one the loaded program
+/// holds, so it has no id the `FACTS` table could give it.
+pub fn write_commit(kb: &Kb) -> Vec<u8> {
+    let Some(commit) = kb.program().commit.as_deref() else {
+        return Vec::new();
+    };
+    let mut w = Writer::new();
+    w.u32(commit.len() as u32);
+    for f in commit {
+        w.str(f);
+    }
+    w.align(crate::header::ALIGN);
+    w.into_vec()
+}
+
+/// [`write_commit`]'s section, read: the choices, in the file's order.
+pub fn read_commit(body: &[u8]) -> Result<Box<[String]>> {
+    let mut r = Reader::new(body);
+    // A string's length, four bytes, is the floor for one choice.
+    let n = r.count(4)?;
+    let mut out = Vec::with_capacity(n);
+    for _ in 0..n {
+        out.push(r.str()?.to_string());
+    }
+    Ok(out.into_boxed_slice())
+}
+
 // ── UNIVERSAL ──────────────────────────────────────────────────────
 
 /// The facts each derivation record's universals read

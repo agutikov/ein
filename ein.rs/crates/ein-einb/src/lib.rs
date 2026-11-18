@@ -18,12 +18,13 @@
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
 //! and optionally `SOLUTIONS`, `CLOSURE` (each derived fact's closure and
-//! smallest-closure arrival, which a full alternatives list keeps beside it)
-//! and `UNIVERSAL` (the facts each derivation's universals read, which a core
-//! follows). The format is **2.0**: no time in `META`, so a save is a
-//! function of what was saved ([`Meta`], Q-M1f.110), and no integer table
-//! (below). This reader opens 2.x alone, and refuses another major with the
-//! version line.
+//! smallest-closure arrival, which a full alternatives list keeps beside it),
+//! `UNIVERSAL` (the facts each derivation's universals read, which a core
+//! follows) and `COMMIT` (a saved file's node, so that the container of a
+//! node opens as that node, Q-M1f.413). The format is **2.1**: no time in
+//! `META`, so a save is a function of what was saved ([`Meta`], Q-M1f.110),
+//! no integer table (below), and `COMMIT` the kind 2.1 adds. This reader
+//! opens 2.x alone, and refuses another major with the version line.
 //!
 //! **No integer table, and a value with the tag bits `0b01` is refused**
 //! (Q-M1f.10). Ein has no integers — a run of digits is a name — so there is
@@ -251,6 +252,11 @@ pub fn save_to_vec(
     if !closure.is_empty() {
         bodies.push((Kind::Closure, closure));
     }
+    // A saved file's node, which a root has none of (Q-M1f.413).
+    let commit = sections::write_commit(kb);
+    if !commit.is_empty() {
+        bodies.push((Kind::Commit, commit));
+    }
 
     // The table's size is known from the section count, so offsets can be laid
     // out before a byte of it is written.
@@ -414,7 +420,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         entries.push(Entry::read(&mut r)?);
     }
 
-    let mut found: [Option<&[u8]>; 13] = [None; 13];
+    let mut found: [Option<&[u8]>; 14] = [None; 14];
     for e in &entries {
         if e.flags != 0 || e.len != e.raw_len {
             return Err(EinbError::Compressed);
@@ -453,8 +459,15 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         &mut maps,
     )?;
     let name = program_name(opts.name.as_deref());
-    let (loaded, forms) =
+    let (mut loaded, forms) =
         sections::load_program(&program, &mut ast, terms, opts.query, &opts.load, &name)?;
+    // A node's container is its saved file's node (Q-M1f.413): the choices
+    // are the program's, as a saved file's load sets them, so the KB the
+    // file's facts are read into and the loader's alike carry them, and
+    // every command reads the node, as it reads the saved file.
+    if let Some(body) = found[Kind::Commit as usize] {
+        loaded.program_mut().commit = Some(sections::read_commit(body)?);
+    }
 
     if meta.state.is_derived() && !freshness.keeps_derived() {
         return Ok(Opened {

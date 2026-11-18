@@ -15,12 +15,16 @@
 //!   from beside it, and `$EIN_STDLIB` pointing nowhere;
 //! - its run is the part of its program's R above it, its universe H less
 //!   the choices, with a `commit` row, and the program's claims NOT CHECKED,
-//!   exit 0 under `ein solve` and `ein test` (Q-M1f.403); `ein show hyps`
-//!   lists the program's H;
+//!   exit 0, under `ein solve`, and under `ein test` with no run at all
+//!   (Q-M1f.403); `ein show hyps` lists the program's H;
 //! - the refusals: a choice that is no candidate of H, one named twice, a
 //!   wrapper in a program, a saved file of another shape, an import it does
-//!   not carry, and `ein kb save` of a node; and the note on a carried module
-//!   of the standard library that is not the binary's.
+//!   not carry; and a carried module of the standard library that is not the
+//!   binary's, loaded as carried with nothing said, since a saved file
+//!   compares nothing (Q-M1f.401).
+//!
+//! A node's container, which opens as the node (Q-M1f.413), is
+//! `einb_cli.rs`'.
 //!
 //! Every corpus program's every state file is held to the invariances by
 //! `answer_round_trip.rs`, and every mode on a saved file to the oracle by
@@ -162,7 +166,9 @@ fn a_rule_built_fact_is_saved_and_loaded_as_one_solution() {
 /// hypothesis, and `flag` derives `(flagged a)` from it: the run is the
 /// part of the program's R above the node, one state, ∅ of its lattice, over
 /// H less the choice, with the `commit` row, and the program's claims NOT
-/// CHECKED, exit 0.
+/// CHECKED, exit 0. `ein test` asks the node nothing (Q-M1f.403): each
+/// claim NOT CHECKED with the reason and no question named, no line of a
+/// run beside it, and its row no run's data.
 #[test]
 fn a_choice_is_saved_as_a_commitment_and_loaded_as_the_node() {
     let scratch = Scratch::new("ein-saved-02");
@@ -189,13 +195,46 @@ fn a_choice_is_saved_as_a_commitment_and_loaded_as_the_node() {
         "{}",
         r.out
     );
-    let t = ein!("test", files[1].as_os_str());
+    let report = scratch.join("report.json");
+    let t = ein!(
+        "test",
+        "-v",
+        files[1].as_os_str(),
+        "--json-report",
+        report.as_os_str()
+    );
     assert_eq!(
         t.code, 0,
         "a node's claims are not checked, exit 0:\n{}",
         t.out
     );
     assert!(t.out.contains("0 FAILED, 2 not checked"), "{}", t.out);
+    let why = "    the claim is the program's, about the program's R, and this saved file is a \
+               node of its lattice: the program checks it";
+    let lines: Vec<&str> = t.out.lines().skip(1).collect();
+    assert_eq!(
+        lines,
+        [
+            "  solve · :expect (region …) — NOT CHECKED",
+            why,
+            "  :goal (flagged ?x) — NOT CHECKED",
+            why,
+            lines.last().copied().unwrap_or_default(),
+        ],
+        "no question named and no run's line:\n{}",
+        t.out
+    );
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&report).expect("a report")).expect("JSON");
+    let rows = doc["rows"].as_array().expect("rows");
+    assert_eq!(rows.len(), 2, "{doc}");
+    for row in rows {
+        assert_eq!(row["outcome"], "not-checked", "{row}");
+        for key in ["answer", "outside", "route", "fell_back_from", "diff"] {
+            assert!(row[key].is_null(), "{key}: no run's data: {row}");
+        }
+        assert!(row.get("region").is_none(), "no run's R: {row}");
+    }
     // H is the program's: the node's choice among it.
     let h = ein!("show", "hyps", files[1].as_os_str());
     assert_eq!(
@@ -301,9 +340,10 @@ fn with_commit(scratch: &Path, name: &str, commit: &str) -> PathBuf {
 /// **What is refused**, each at the command's load-error exit: a choice that
 /// is no candidate of the program's H, or one named twice, on every command
 /// that reads the node; a wrapper in a program; a saved file of another
-/// shape; an import the file does not carry; `ein kb save` of a node. And a
-/// carried module of the standard library that is not the binary's is
-/// loaded as carried, with a `note:`.
+/// shape; an import the file does not carry. And what is not: a carried
+/// module of the standard library that is not the binary's, or with no
+/// standard library to read, is loaded as carried and nothing is said, since
+/// a saved file compares nothing (Q-M1f.401).
 #[test]
 fn what_a_saved_file_is_refused_for() {
     let scratch = Scratch::new("ein-saved-refused");
@@ -385,17 +425,6 @@ fn what_a_saved_file_is_refused_for() {
         "{}",
         r.err
     );
-    let r = ein!(
-        "kb",
-        "save",
-        twice.as_os_str(),
-        scratch.join("x.einb").as_os_str()
-    );
-    assert!(
-        r.code == 1 && r.err.starts_with("kb save error: ") && r.err.contains("a node of"),
-        "{}",
-        r.err
-    );
     // A carried module of the standard library that is not the binary's.
     let files = saved(
         "tests/saved/03_the_standard_library.ein",
@@ -409,16 +438,25 @@ fn what_a_saved_file_is_refused_for() {
             "(module std.math.arith\n;; moved\n",
         ),
     );
-    let r = ein!("solve", moved.as_os_str());
-    assert_eq!(r.code, 0, "{}", r.err);
-    assert_eq!(
-        r.err.trim_end(),
-        format!(
-            "note: {}: the std.math.arith it carries is not this binary's standard library's; \
-             the text it carries is loaded",
-            moved.display()
-        )
-    );
+    let nowhere = scratch.join("no-stdlib");
+    let nowhere = nowhere.to_str().expect("utf-8");
+    for (file, env) in [
+        (&moved, None),
+        (&files[0], None),
+        (&files[0], Some(("EIN_STDLIB", nowhere))),
+    ] {
+        for args in [vec!["solve"], vec!["saturate"], vec!["test"]] {
+            let mut argv: Vec<&std::ffi::OsStr> = args.iter().map(|a| a.as_ref()).collect();
+            argv.push(file.as_os_str());
+            let r = ein_with(&argv, env.as_slice());
+            assert_eq!(
+                (r.code, r.err.as_str()),
+                (0, ""),
+                "{args:?} {} under {env:?}: nothing compared, nothing said",
+                file.display()
+            );
+        }
+    }
 }
 
 /// **`tests/saved/04_a_saved_node.ein` is `02`'s state saved**, byte for

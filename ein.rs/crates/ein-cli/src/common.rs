@@ -130,7 +130,6 @@ pub fn load_held(
             )
             .map_err(|e| e.to_string())?;
             let (parse, loading) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
-            say_notes(&loaded.notes);
             judge_mechanisms(ast, terms, &loaded.kb, |ast, terms| {
                 ein_ir::saved::load_text(
                     ast,
@@ -166,11 +165,10 @@ pub fn load_held(
 /// **What the load noticed and did not refuse**, said once: each line on
 /// stderr as `note: <line>`, on every command, since every command that
 /// loads a program loads it through [`load_held`]: the hypothesis
-/// mechanisms' notes (Q-M1f.242), and a saved file's module of the standard
-/// library that is not this binary's (Q-M1f.401). A command may load one file several times, once a
-/// query and once a question, and each line carries its file and position,
-/// so a line is printed the first time the process meets it and never again.
-/// No answer and no exit code moves.
+/// mechanisms' notes (Q-M1f.242). A command may load one file several
+/// times, once a query and once a question, and each line carries its file
+/// and position, so a line is printed the first time the process meets it
+/// and never again. No answer and no exit code moves.
 fn say_notes(notes: &[String]) {
     static SAID: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
     let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());

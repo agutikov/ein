@@ -329,9 +329,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17**, in two looks at the trial's figures: *"I would like to see frame around facts in contexts rather than around global facts"*, then *"label contexts `<relation name> cts` instead of `in context`"*. So: a fact is **filled** where held, and **inside a dashed frame labelled with the context's relation**, `think ctx`, where it is in a context; a fact that facts of two relations point at is in one frame that names both; frames stand side by side; S1f.22.2 drew so. **Re-ruled 2026-11-18**: *"let's draw a frame around objects that are in context only"*, and *"drop the filling"*: a frame around what is in a context only, a held object in no frame, no octagon filled; **built** by S1f.22.7 (`58b91dc3`) |
 | [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **put 2026-11-17, not ruled; P1f.21's**, entered there as its V-5, with **the user's direction** of the same day: `(false)` stays a fact that rules infer, in a context or globally, and a state is dead only where a rule infers `(ein.contradiction)` from the global `(false)` or from whatever a theory chooses; *"both (false) renaming and (open) facts belongs to p1f.21"*. Nothing is renamed or built in P1f.22 |
 | [Q-M1f.400](#q-m1f400--how-a-saved-file-states-the-choices-made) | how a saved file states the choices made: no form does today, and a choice typed as a fact reads as given and is `written` | **ruled 2026-11-18: (a)** (*"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*): a form of its own, `(commit F …)`, committed after root's fixpoint as a node commits it; its three points as defaulted. **Built** by S1f.22.5 |
-| [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **ruled 2026-11-18: (a)**: `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file; its four points as defaulted. **Built** by S1f.22.5 |
+| [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **ruled 2026-11-18: (a)**: `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file; its four points as defaulted. **Built** by S1f.22.5. Point 2 amended the same day by the user's ruling on F23's D-24: no note, nothing compared; built by S1f.23.8 |
 | [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **ruled 2026-11-18: (C)** for a save of a loaded file, a saved file a node of its program's lattice; the defaults for the rest: no new command, the dump `ein saturate --dump`'s KB section, one fixed first line. **Built** by S1f.22.5 |
-| [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **ruled 2026-11-18: (a)**: a file with a commitment checks no claim, names each NOT CHECKED, and exits 0. **Built** by S1f.22.5 |
+| [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **ruled 2026-11-18: (a)**: a file with a commitment checks no claim, names each NOT CHECKED, and exits 0. **Built** by S1f.22.5; `ein test` of one asks nothing since Q-M1f.416 (b), S1f.23.8 |
 | [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it) | `written` is erased; a numeral is checked by the operation that takes it | **ruled 2026-11-18** by the user (*"revert this decision, completely erase this `written` crutch …"*): Q-M1f.272, .275, .279 and .280 reverted whole, and the half of .210 and .276 that flagged a numeral where it is written. **Built** by S1f.22.6 (`bf9693dc`); its readings are Q-M1f.405 to .411 |
 | [Q-M1f.405](#q-m1f405--which-numerals-are-taken-from-the-input-program-and-what-once-is) | which numerals are *taken from the input program*, and what *once* is | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a numeral an operation takes, whoever wrote the request, checked once as a fact of the numeral; built so. Under it a malformed numeral handed straight to a tagged call, dead on master, is alive, outside the corpus ((e) would flag it) |
 | [Q-M1f.406](#q-m1f406--the-label-and-where-a-number-an-operation-makes-gets-it) | the label, and where a number an operation makes gets it | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), `(valid N)` and `(bin-valid N)`, a fact of the numeral, concluded where a walk ends and where the arithmetic makes a number |
@@ -341,12 +341,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a made number handed to a second request is walked again |
 | [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the first place at fault from the units |
 | [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
-| [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a root's saved file is stored as the program it carries, one with a `(commit …)` refused |
+| [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **ruled 2026-11-18: (c)** (*"(c)"*: give the container a section for the commitment, so a node's container opens as that node); **built** by P1f.23's S1f.23.8 (`86d46410`): the section `COMMIT`, kind 13, the format `einb/2.1`, the decision [Q-M1f.413](../../docs/decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md). Before: defaulted (a), a node refused |
 | [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build (`fbe2ba66`, `3047bbae`, merged by `79dd213b`). Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
-| [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), both read the program's H, the node aside |
-| [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), root alone, the node; each claim NOT CHECKED, no exit code |
-| [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
-| [Q-M1f.418](#q-m1f418--the-nesting-limit-and-a-saved-files-wrappers) | the nesting limit, and a saved file's wrappers | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a saved file parsed with one level more, each text it carries under the limit; Q-M1f.185 rewritten |
+| [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **ruled 2026-11-18: (a)** (*"(a)"*), the default as built: both read the program's H, the node aside |
+| [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **ruled 2026-11-18: (b)** (*"(b)"*: no run at all, each claim NOT CHECKED, no run's data in `--json-report`); **built** by P1f.23's S1f.23.8 (`86d46410`), the report's id kept, `ein-test-report/6`. Before: defaulted (a), root alone |
+| [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **ruled 2026-11-18: (a)** (*"(a)"*), the default as built: the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
+| [Q-M1f.418](#q-m1f418--the-nesting-limit-and-a-saved-files-wrappers) | the nesting limit, and a saved file's wrappers | **ruled 2026-11-18: (a)** (*"(a)"*), the default as built: a saved file parsed with one level more, each text it carries under the limit; Q-M1f.185 rewritten |
 | [Q-M1f.419](#q-m1f419--how-ein-render-draws-a-fact) | how `ein render` draws a fact | **ruled 2026-11-18 by the user**: the canonical form by default, a fact of three arrows folded into a labelled arrow on request, no labelled octagon and no text node produced or drawn on a page; built by P1f.23's S1f.23.1 |
 | [Q-M1f.420](#q-m1f420--what-ein-render-program-draws) | what `ein render program` draws | **ruled 2026-11-18 by the user**: the program's knowledge base as one graph, as the KB view draws one, its rules, its query; no split into ontology and facts; built by S1f.23.1 |
 | [Q-M1f.421](#q-m1f421--is-a-and-relation-in-a-drawing) | `is-a` and `relation` in a drawing | **ruled 2026-11-18 by the user**: ordinary relations, nothing special in any drawing; `--no-types` and `--no-instances` go; built by S1f.23.1 |
@@ -7886,6 +7886,13 @@ a saved file reads no other file. The four points under it take their defaults: 
 binary's is loaded with a `note:`; every module the load reads, once, sorted by name in the file and read in the
 order the imports reach them. Built by S1f.22.5's tasks 2 to 4.
 
+**Point 2 amended 2026-11-18** by the user's ruling on [F23](../followups/f23_diagnostics_in_eins_words.md)'s D-24,
+in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"Drop the note entirely, since the
+file is self-contained and comparing libraries isn't the loader's business"*. A carried module is loaded as carried
+and nothing is compared or said; the note, its code (`ein_ir::saved`'s comparison, `Resolver::stdlib_text`), its test
+and its pages went in P1f.23's S1f.23.8 (`86d46410`), and the decision
+[Q-M1f.401](../../docs/decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md) says so.
+
 ### Q-M1f.402 — What save and load are as commands, the dump they are held to, and a file's first lines
 
 **Raised** 2026-11-18 by S1f.22.5's first task, on
@@ -8136,6 +8143,19 @@ from the disk, as the container's writer did, would read other files than the sa
 `ein-cli/tests/saved_files.rs`' `what_a_saved_file_is_refused_for`; the page `10-answer-dump.md` and
 `07-diagnostics.md` § 2.30.
 
+**Ruled 2026-11-18: (c).** The user, in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"(c)"*, the option
+*give the container a section for the commitment, so a node's container opens as that node*. **Built** by P1f.23's
+[S1f.23.8](p1f.23_review_processing/s1f.23.8_save_and_load_answers.md) (`86d46410`): `ein kb save` of a saved file
+stores the program it carries, its imports from the modules it carries, and a node's `(commit …)` in the section
+`COMMIT`, kind 13, which an open sets as the stored program's commitment; `ein solve x.einb` of a node's container
+prints what `ein solve` of the saved file prints, byte for byte but the path, held by `einb_cli.rs`'
+`a_nodes_container_opens_as_the_node` and, over every corpus program's last saved node, `answer_round_trip.rs`'
+`by_its_container`. A root's container holds no `COMMIT`. **The format is 2.1**: a section kind added moves the
+minor (`09-binary-format.md` § 4.1, Q-M1f.10's *why*, `corruption.rs`' `an_unknown_section_kind_is_ignored_rather_than_refused`);
+the phase's R-30, a container 24 bytes shorter at `einb/2.0`, is what `SYMBOLS` holds and not its layout, and moves
+nothing. The decision [Q-M1f.413](../../docs/decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md);
+the readings, each with its default, are the stage's Record.
+
 ### Q-M1f.414 — A fact's English, which a state file wrote in a comment
 
 **Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.** A
@@ -8172,6 +8192,10 @@ Q-M1f.402 (C): *H is the program's*; a run of a saved file is over H less the no
 **Default taken: (a).** Built: `ein-cli/src/common.rs`' `program_of_saved`; held by `saved_files.rs`'
 `a_choice_is_saved_as_a_commitment_and_loaded_as_the_node`.
 
+**Ruled 2026-11-18: (a).** The user, in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"(a)"*, the default
+as built; [Q-M1f.402](../../docs/decisions/answer/Q-M1f.402-a-saved-file-is-a-node-of-its-programs-lattice.md)
+states it. A node's container reads the same, its commitment set aside by the same function (S1f.23.8).
+
 ### Q-M1f.416 — What `ein test` asks of a saved file's node, and how its claims exit
 
 **Raised** 2026-11-18 by S1f.22.5's build, on Q-M1f.403 (a)
@@ -8185,6 +8209,18 @@ decides its claims, and a claim not checked exits 1 there but under `--no-search
 
 **Default taken: (a).** Built: `ein-cli/src/test.rs`; held by `saved_files.rs` and `test_cli.rs`'
 `the_verbose_header_and_the_report_row_agree_field_for_field` on `tests/saved/04_a_saved_node.ein`.
+
+**Ruled 2026-11-18: (b).** The user, in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"(b)"*, the option
+*no run at all: each claim NOT CHECKED, no run's data in `--json-report`*. **Built** by P1f.23's
+[S1f.23.8](p1f.23_review_processing/s1f.23.8_save_and_load_answers.md) (`86d46410`): `ein test` of a file with a
+`(commit …)`, or of a node's container, runs nothing, not root's saturation either (`ein-cli/src/test.rs`' `NotRun`);
+each claim is NOT CHECKED with Q-M1f.403's line and counted not checked with no exit code; the `-v` header names no
+question; the report's row has `answer`, `outside`, `route`, `fell_back_from` and `diff` `null` and a solve row no
+`region`, as on any row no run checked, so no key moves and the id stays `ein-test-report/6`; `--events` and
+`--json-summary` write nothing for the file, as for a file that states no claim. Held by `saved_files.rs`'
+`a_choice_is_saved_as_a_commitment_and_loaded_as_the_node` and `test_cli.rs`' header and scope tests. The decision
+[Q-M1f.403](../../docs/decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md) says it; the
+readings are the stage's Record.
 
 ### Q-M1f.417 — What a run of a saved file says of its node, and the directory's schema
 
@@ -8203,6 +8239,9 @@ above a node, has to say which node.
 `ein-render/src/dump/region_answer.rs`; the pages `08-read-out.md` § 5.3 and its example X21, and
 `10-answer-dump.md`.
 
+**Ruled 2026-11-18: (a).** The user, in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"(a)"*, the default
+as built. A node's container prints the same row, its read-out the saved file's (S1f.23.8).
+
 ### Q-M1f.418 — The nesting limit, and a saved file's wrappers
 
 **Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.**
@@ -8217,6 +8256,9 @@ above a node, has to say which node.
 `a_saved_file_carries_a_program_at_the_limit`; the decision
 [Q-M1f.185](../../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md), rewritten: a state
 deeper than the limit is answered, saved and loaded again.
+
+**Ruled 2026-11-18: (a).** The user, in the review bundle's `01-save-and-load/ANSWERS.md`, as written (`35719115`): *"(a)"*, the default
+as built; Q-M1f.185's file states it.
 
 ### Q-M1f.419 — How `ein render` draws a fact
 

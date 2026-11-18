@@ -18,9 +18,9 @@ use crate::common::{How, load_held, read_program};
 /// `ein kb save <file> <out.einb> [--saturate]`.
 ///
 /// `file` is read as every command reads a program: a `.ein` is parsed and
-/// loaded against its own directory, and a `.einb` is opened and saved
-/// again, its sources and its state carried over, not refused as text that
-/// is not UTF-8.
+/// loaded against its own directory, a saved file read as the node it names,
+/// and a `.einb` is opened and saved again, its sources, its state and its
+/// node carried over, not refused as text that is not UTF-8.
 pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOptions) -> i32 {
     let path = PathBuf::from(file);
     let mut ast = Ast::new();
@@ -40,17 +40,10 @@ pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOption
     };
     let (mut kb, forms) = (loaded.kb, loaded.forms);
     // A saved file (Q-M1f.401): its program is stored, its imports resolved
-    // against the modules it carries. One with a `(commit …)` is a node of
-    // its program's lattice, and a container holds a program's root, which
-    // would lose the choices: refused.
-    if kb.program().commit.is_some() {
-        eprintln!(
-            "kb save error: {file} is a saved file with a (commit …), a node of its program's \
-             lattice, and a .einb holds a program's root — save the program, or the saved file \
-             of its root"
-        );
-        return 1;
-    }
+    // against the modules it carries, and its `(commit …)`, where it has one,
+    // in a section of its own, so that the container of a node opens as that
+    // node (Q-M1f.413): `ein_einb::save` writes it from the program, as it
+    // keeps the one a container opened with.
     let carried = match kb.program().sources.as_deref() {
         Some(s) if saved => Some(ein_einb::sections::Carried {
             file: file.to_string(),

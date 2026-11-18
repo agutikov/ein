@@ -27,6 +27,12 @@
 //! then `cmp`, and `ein saturate --dump` of both, against the section read
 //! in the process.
 //!
+//! **And a node's container opens as the node** (Q-M1f.413): the last file
+//! of each program that is a node, one with a `(commit …)`, stored by `ein kb
+//! save` and solved, prints what `ein solve` of the file prints, stdout and
+//! stderr byte for byte but the path, with its exit code
+//! ([`by_its_container`]).
+//!
 //! **And every member of N is written with its core**: the same run's
 //! `nogoods.json` gives each member of N it met a core, its search's status
 //! beside it (`within-budget`, `cut-…`) and its rules, past `--region-limit`
@@ -107,6 +113,8 @@ struct Counts {
     dumps: usize,
     /// State files the binary was run on.
     cli: usize,
+    /// Nodes whose container answered as the file.
+    containers: usize,
 }
 
 impl Counts {
@@ -115,6 +123,7 @@ impl Counts {
         self.bytes += o.bytes;
         self.dumps += o.dumps;
         self.cli += o.cli;
+        self.containers += o.containers;
     }
 }
 
@@ -176,6 +185,123 @@ fn by_the_binary(file: &str, path: &Path, again: &Path, whole: &str, bad: &mut V
             ));
         }
     }
+}
+
+/// **A node's container opens as the node** (Q-M1f.413): `ein kb save F
+/// X.einb` of the saved file `path`, a node, then `ein solve` of each: the
+/// container's stdout and stderr are the file's, byte for byte, but for the
+/// path each echoes, and its exit code is the file's. A load's `note:` names
+/// a position in the text the load read, which in a container is the
+/// program it stores, resolved and import-flattened, so a note's position
+/// is compared as `<position>` (Q-M1f.15). Whether the container answered as
+/// the file; a failure goes to `bad`.
+#[cfg(feature = "einb")]
+fn by_its_container(file: &str, path: &Path, scratch: &Path, bad: &mut Vec<String>) -> bool {
+    let ein = |args: &[&std::ffi::OsStr]| {
+        Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs")
+    };
+    let name = path.file_name().unwrap_or_default().to_string_lossy();
+    let einb = scratch.join("node.einb");
+    let saved = ein(&[
+        "kb".as_ref(),
+        "save".as_ref(),
+        path.as_os_str(),
+        einb.as_os_str(),
+    ]);
+    let notes_only = String::from_utf8_lossy(&saved.stderr)
+        .lines()
+        .all(|l| l.starts_with("note: "));
+    if !saved.status.success() || !notes_only {
+        bad.push(format!(
+            "{file}: {name}: `ein kb save` of a node (exit {:?}): {}",
+            saved.status.code(),
+            String::from_utf8_lossy(&saved.stderr)
+        ));
+        return false;
+    }
+    let (from_file, from_container) = (
+        ein(&["solve".as_ref(), path.as_os_str()]),
+        ein(&["solve".as_ref(), einb.as_os_str()]),
+    );
+    let (container, saved) = (einb.display().to_string(), path.display().to_string());
+    let text = |b: &[u8]| positions(&String::from_utf8_lossy(b));
+    let read = |b: &[u8]| text(b).replace(&container, &saved);
+    let mut same = true;
+    for (what, want, got) in [
+        (
+            "stdout",
+            text(&from_file.stdout),
+            read(&from_container.stdout),
+        ),
+        (
+            "stderr",
+            text(&from_file.stderr),
+            read(&from_container.stderr),
+        ),
+    ] {
+        if want != got {
+            same = false;
+            bad.push(format!(
+                "{file}: {name}: `ein solve` of its container prints another {what} than of the \
+                 file:\n{}",
+                first_difference(&want, &got)
+            ));
+        }
+    }
+    if from_file.status.code() != from_container.status.code() {
+        same = false;
+        bad.push(format!(
+            "{file}: {name}: `ein solve` of its container exits {:?}, of the file {:?}",
+            from_container.status.code(),
+            from_file.status.code()
+        ));
+    }
+    let _ = std::fs::remove_file(&einb);
+    same
+}
+
+/// `text` with every position in a program a load read, `<program saved in
+/// F>:L:C` or `<program stored in X>:L:C`, written `<position>`.
+#[cfg(feature = "einb")]
+fn positions(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text;
+    while let Some(at) = rest.find("<program ") {
+        out.push_str(&rest[..at]);
+        let after = &rest[at..];
+        let Some(close) = after.find('>') else {
+            out.push_str(after);
+            return out;
+        };
+        let tail = &after[close + 1..];
+        // `:L:C`, two runs of digits.
+        let digits = |t: &str| t.find(|c: char| !c.is_ascii_digit()).unwrap_or(t.len());
+        let n = tail
+            .strip_prefix(':')
+            .map(|t| (digits(t), t))
+            .filter(|(d, _)| *d > 0)
+            .and_then(|(d, t)| {
+                let t2 = t[d..].strip_prefix(':')?;
+                let d2 = digits(t2);
+                (d2 > 0).then_some(1 + d + 1 + d2)
+            });
+        match n {
+            Some(n) => {
+                out.push_str("<position>");
+                rest = &tail[n..];
+            }
+            None => {
+                out.push_str(&after[..=close]);
+                rest = tail;
+            }
+        }
+    }
+    out.push_str(rest);
+    out
 }
 
 /// `ein solve FILE --dump-answer DIR`, then every state file it wrote held to
@@ -251,6 +377,8 @@ fn check(
     let again = dir.join("again");
     std::fs::create_dir_all(&again).expect("a scratch directory");
     let last = files.len().saturating_sub(1);
+    // The last file that is a node, for its container.
+    let mut node: Option<&str> = None;
     for (i, (path, set)) in files.iter().enumerate() {
         let saved = dir.join(path);
         // The run's own state, each fact with its origin.
@@ -279,6 +407,9 @@ fn check(
         }
         // Save → load → save.
         let text = std::fs::read_to_string(&saved).expect("the run wrote it");
+        if text.contains("\n(commit\n") {
+            node = Some(path.as_str());
+        }
         if second == text {
             counts.bytes += 1;
         } else {
@@ -306,6 +437,14 @@ fn check(
             counts.cli += 1;
         }
     }
+    #[cfg(feature = "einb")]
+    if let Some(path) = node
+        && by_its_container(file, &dir.join(path), &again, bad)
+    {
+        counts.containers += 1;
+    }
+    #[cfg(not(feature = "einb"))]
+    let _ = node;
     let _ = std::fs::remove_dir_all(&again);
     Some(files.len())
 }
@@ -741,10 +880,20 @@ fn shard(k: usize) {
     );
     eprintln!(
         "shard {k}: {programs} programs, {states} state files: {} loaded as the state saved, {} \
-         saved again byte for byte, {} loaded again to the same dump, {} through the binary; \
-         {eager} members of N held to their eager cores, {} dead nodes and holes each with a \
-         core and {} others each with none",
-        counts.states, counts.bytes, counts.dumps, counts.cli, held.dead, held.not_dead
+         saved again byte for byte, {} loaded again to the same dump, {} through the binary, {} \
+         nodes' containers answering as the node; {eager} members of N held to their eager \
+         cores, {} dead nodes and holes each with a core and {} others each with none",
+        counts.states,
+        counts.bytes,
+        counts.dumps,
+        counts.cli,
+        counts.containers,
+        held.dead,
+        held.not_dead
+    );
+    assert!(
+        !whole || !cfg!(feature = "einb") || counts.containers > 0,
+        "shard {k}: no node's container was held to its file"
     );
     assert!(
         counts.states == states && counts.bytes == states && counts.dumps == states,

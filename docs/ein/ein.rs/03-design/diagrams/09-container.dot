@@ -3,7 +3,7 @@ digraph einb {
   node [shape=record, fontname="Helvetica", fontsize=11];
   edge [fontname="Helvetica", fontsize=9];
 
-  file [label="a .einb file | <h> header\n64 bytes, at offset 0 | <t> section table\nn_sections x 32 bytes, at offset 64 | <b> sections\neach at a multiple of 8: META, SYMBOLS,\nFACTS, PRESENT, PROV, PROGRAM, then\nSOLUTIONS, UNIVERSAL, CLOSURE\nwhere they are written"];
+  file [label="a .einb file | <h> header\n64 bytes, at offset 0 | <t> section table\nn_sections x 32 bytes, at offset 64 | <b> sections\neach at a multiple of 8: META, SYMBOLS,\nFACTS, PRESENT, PROV, PROGRAM, then\nSOLUTIONS, UNIVERSAL, CLOSURE, COMMIT\nwhere they are written"];
 
   header [label="header (§ 2.1) | 0: magic  [u8; 8] | 8: major  u16 | 10: minor  u16 | 12: flags  u32 | 16: n_sections  u32 | 20: reserved  u32 | <d> 24: digest  [u8; 32] | 56: reserved  [u8; 8]"];
 
