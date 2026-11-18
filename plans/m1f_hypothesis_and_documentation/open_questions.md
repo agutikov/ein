@@ -7986,3 +7986,25 @@ flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first 
   re-worded so): the program is dead either way, and no corpus program writes such a numeral. **Default.**
 - **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
   fault bit carried, so that the label is not derived for a malformed numeral.
+
+### Q-M1f.412 — The read-out's `is-a` row
+
+**Raised** 2026-11-18 by the user, P1f.21's
+[V-6](p1f.21_verdicts_as_rules/findings.md#v-6--the-read-out-reads-is-a-by-its-name): *"is-a is just some random
+relation, or maybe not even a relation; what for is it read by kernel read-out?"* The read-out's `types` row named
+the atoms on the right of an `is-a` that the blind enumerator's candidates have as arguments, reading the relation
+by its spelling, and decided nothing.
+
+**Ruled 2026-11-18**, the user verbatim: *"V-6 (a), drop the is-a row"*. Built in `5a3f2979`: the row on every
+question, `region.md`'s line, the key `types_as_objects` in `region.json`, `--json-summary`'s `root.hypgen` and
+`ein test --json-report`'s rows, `ein test`'s line beside a claim, and `ein_infer::types_as_objects`. Q-M1e.12's
+second half goes with them: its file states the first half alone, *the blind enumerator is untyped*, and carries the
+ruling's reason in its **Why**, so this id has no decision file of its own.
+
+One reading taken with it, **put, not ruled**:
+
+- **(a)** **no schema id moves**: `ein-summary/2`, `ein-region/1` and `ein-test-report/5` lose the key and keep
+  their ids, as [Q-M1f.259](../../docs/decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md)
+  keeps an id where keys are added and no other key moves. **Default.**
+- **(b)** `ein-test-report/6`, as the report's id moved on each change of its row before; the summary and the
+  region dump keep theirs.
