@@ -420,3 +420,112 @@ other test reads a page this task changed: the others that name one name it in a
 and S1f.23.3**: `docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md` (§ 1.4, § 2.4, § 3.4, § 4.5's
 commands and sentences) and `docs/ein/user/04-reference/13-glossary.md` (§ Fact, § Type, § Hyperedge); `06-config.md`
 and `AGENTS.md` are untouched.
+
+### Task 4 — what the phase's checks and the review re-render found, fixed (2026-11-18)
+
+On master, after the checks recorded under [the phase's stages table](README.md#stages) and task 3's re-render.
+Five fixes in three commits, two with code and one of pages, and this Record; R-31 and R-32 are the nightly's, R-22,
+R-24 and R-28 the review's.
+
+**1. The nightly's refusal (R-31), `18bc66ac`.** `rules.rs`' `constraint_line` wrote a guard's sign as its dotted
+link's `label`, on a link with `constraint=false`; Graphviz 16.0.0 and the runner's 14.1.2 amd64v3 could not route
+the `≠` of `column-wrong` (`tests/stdlib/math/digits/02_a_core_names_its_rows.ein`), six views. The sign is now the
+link's `xlabel`, as an arrow's number is (Q-M1f.435's reading), and the rule routes. **The other `label`s on an
+arrow, each checked:**
+
+- **the region view's `sat` and `✗ alive`** (`region_dot.rs`), words on arrows with `constraint=false`: **the same
+  pattern, changed** to `xlabel`s, though none was refused (a probe: `ein oracle FILE --region-limit 10 --dump`, then
+  `ein render region` in `full`, `border` and `lines`, bare, with `--visited`, `--answer` and both, every corpus
+  program: 7 728 views of 644 programs, none refused, 244 with no cube); the two drawings under `docs/` that copy
+  the view, `06-class-of-two` and `08-region-merged-states`, drawn again with it;
+- **a folded arrow's relation in a rule's panel** (`relation_lines`), Q-M1f.435's exception: **left**. No
+  `constraint=false`, and `rules-fold`, `ir-fold` and the other folded views of every corpus program pass
+  `dot_wellformed` under `EIN_CORPUS_SLOW=1`;
+- **a trace's slice**: a folded fact's arrow through its point (`label=` the relation) and the no-good's `lifts to`.
+  **Left**: they have no `constraint=false`, and the slices' refusals are not theirs. A probe put every `dot` block
+  of `ein solve FILE --trace` and `--fold` to Graphviz, and found **169 canonical and 487 folded blocks refused, of
+  the calculator's 36 programs (R-33)**, where a canonical slice has no word on an arrow at all and writing the
+  folded ones' `label`s as `xlabel`s routes 25 of 60 sampled. What routes them is the slice's layout: without
+  `newrank` fewer are refused but some newly (tried and reverted), `rankdir=TB` every one sampled. That changes how a
+  slice is laid out, so it is filed, not done;
+- **the rest, left**: the region view's cube arrows carry `+N`, or a repair's `+fact`, as a `label`, with no
+  `constraint=false` and none refused in the probe above; the h-space graphs' strokes carry `label`s, and
+  `dot_wellformed` puts every one of them to Graphviz; the lattice dump's and the derivation graph's words are on
+  nodes; `fact_graph.rs`, `kb_dot.rs` and `constraints.rs` write no `label` on an arrow.
+
+**2. `dot_wellformed`'s time (R-32), `82e8097b`.** The sweep gave each of `available_parallelism` workers a whole
+file, so `examples/arith/long_numbers.ein`'s seven parse views (730 to 772 edges, 18 to 64 s each alone under `dot`)
+ran one after another in one worker. It is now on `ein_corpus::pool::map`, in two passes: each file's views drawn, a
+unit a file, the file loaded once as before; then each view put to Graphviz, a unit a (file, view). `EIN_TEST_JOBS`
+holds and no verdict depends on it: the results are folded in the files' and views' order, into the same report. No
+program or view is left out. **Measured**, the whole test binary, `utils/bench_env.sh --cores PT:4 env
+EIN_TEST_JOBS=4 EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed` (on AC, four
+threads of two P-cores): **343.1 s before** (task 1's sweep with fix 1, its four tests green; the phase's checks
+timed the one test alone on the same threads, 265.5 s, and the nightly's 264.9 s was the whole binary on every
+thread), **261.2 s after**. The after run's units (`EIN_TEST_UNITS`): drawing, 888
+units, 43.4 s in all, the longest 0.66 s (`stdlib/math/digits.ein`); Graphviz, 8 821 units, 827.0 s in all,
+`long_numbers.ein`'s seven 41.8 to 132.8 s each (four at once on two physical cores, each slower than alone); the
+structure's graphs, 169.1 s. The work is now what bounds it, not one file: **under five minutes, so not sharded**
+(Q-M1f.293), with some 40 s to spare on the runner's four threads. `long_numbers.ein` is not added to
+`ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds.
+
+**3. A nested `absent` (R-22), `18bc66ac`.** The rule view drew an `absent` under an `absent` as red patterns inside
+the outer cluster, so `(absent (and G (absent (not B))))` and `(absent (and G (not B)))` drew alike. Every `absent`
+is now its cluster wherever it stands (`absent_block`): one under an `absent` a cluster inside that one's, holding
+the nodes it alone names (a node's home is the innermost absence that holds every place it is drawn at,
+`absence_paths` and `node_homes`), and one in an arm of an `(or …)`, which was drawn red too, a cluster. A pattern
+under an absence is in its relation's colour; only a pattern of `not` is red. Ids: a top-level absence keeps
+`cluster_absent_<panel>_<i>`, a nested one adds its index, `cluster_absent_L_0_0`, so a rule with no nested absence
+draws the bytes it drew. **Test**: `presentation_semantics.rs`' `an_absent_under_an_absent_is_a_cluster_inside_it`,
+the two rules drawn differently, the inner cluster inside the outer holding `not` and its pattern, `?o` the outer's,
+`forall` written out with `marked` in the inner cluster and not red, an `(or …)` arm's absence a cluster; it fails
+on the drawing before. Pages: `12-rendering.md` (an `absent` a cluster at any depth; a guard's sign beside its
+link), `11-macros.md` and `04-stdlib/01-macros.md` (the written-out `forall`, as drawn now).
+
+**4. Q-M1f.119 and `02-syntax.md` § Query (R-24), `d5fceff9`.** Both said `is-a` is every program's relation. They
+now say `eq`, `neq` and `relation` are every program's and no theory's relation is, `is-a` one where the program
+writes it, citing Q-M1f.436; checked on the binary: a goal over `(is-a ?R ?x)` in a program that writes none is
+refused, over `(relation ?R ?x)` it loads.
+
+**5. `09-core-in-derivation` (R-28), `d5fceff9`.** The two facts its derivations added (`near`, `false`) are
+`penwidth=2` again; the core's three terminals stay red and double-bordered and are no longer `penwidth=2` too, so
+*heavy* means what `09-proof-graph` and the page say, *a derivation added it*. The picture's text and the page's
+sentence say so. Drawn again by `utils/render_diagrams.py`.
+
+**The shape golden**, re-banked (`EIN_BLESS=1 EIN_CORPUS_SLOW=1`, `id_order_invariance`, 29 027 lines before and
+after): **720 lines of 92 programs moved**, `dot[ir]`, `dot[ir-fold]`, `dot[ir-forms]`, `dot[ir-overlay]`,
+`dot[ir-trace-dag]` 92 each and `dot[rules]`, `dot[rules-fold]`, `dot[rules-overlay]` 86 each (the rule views draw
+no query or macro): 88 programs by a guard's sign, 3 by a nested absent (`stdlib/macro.ein`,
+`tests/stdlib/macro/01_forall.ein`, `examples/branching/14_lookahead_unjudgeable.ein`), 1 by an absent in an arm of
+an `(or …)` (`examples/features/08_disjunct_guard_sets.ein`). No line of another kind moved, `region-trace` among
+them (a slice draws no guard).
+
+**The drawings drawn again.** The standard library's (`utils/gen_stdlib_rule_pages.py`, this task's binary): 33
+sources changed, every one a guard's sign (none of its rules nests an absent); 511 rules, 493 canonical, 1 folded,
+17 as Ein only, as before. Under `docs/`: the 11 rule drawings with a `≠` link (10 the binary's output, the sign's
+attribute moved as the binary now writes it; `reasoning/01-static-ir/diagrams/02-transitive` by hand); the two of
+`forall` written out, `04-stdlib/diagrams/01-rule-complete-via-expansion` (`ein render rule --name
+complete-via-expansion tests/stdlib/macro/01_forall.ein`) and `03-syntax-and-semantics/diagrams/11-rule-bag-is-ready-written-out`
+(the page's program with the call replaced by its expansion, reconstructed as task 2 did; both differ from the old
+drawing in the nested cluster alone); the two region drawings; `09-core-in-derivation`. `render_diagrams.py` drew
+every picture. The review bundle's drawings are not drawn again here.
+
+**Checks**, on master after the commits (`b3ed198e`, the main session's plans commit on top), not run:
+`./run_tests.sh`, the nightly, `utils/ci_container.sh`. `cargo test --profile gate -p ein-render -p ein-cli`
+**exit 0**, 77 test binaries, 466 tests, 549 s (the tests this task touched among them: `presentation_semantics`,
+`every_object_once`, `id_order_invariance`, `dot_wellformed`, `region_render`); `EIN_CORPUS_SLOW=1` `dot_wellformed`
+**exit 0**, 8 821 views of 888 files accepted and **none refused**, 1 203 past the bound in the directories
+`SKIPPING` names, 796 of the structure's graphs, 123.5 s on every thread at the default sixteen workers, with
+S1f.23.5's workspace tests running in its worktree; `EIN_CORPUS_SLOW=1` `renaming_invariance` **exit 0**, 21.6 s;
+`cargo clippy -p ein-render --all-targets -- -D warnings` and `cargo fmt --check` clean;
+`utils/doc_audit.py --links --check --tracked` 0 findings and 0 decision-id findings (in the root tree, which holds
+the review's outputs); `utils/check_doc_blocks.py` rules 1 to 5 hold, 748 diagrams; `utils/check_generated.py` 9
+generators, every file as written; `utils/check_release_voice.py` ok; `utils/check_gate_steps.py` ok.
+
+**Readings this task took** (for the main session to file): **(i)** the region view's `sat` and `✗ alive` count as
+R-31's pattern and are changed, though none was refused; **(ii)** a trace's slice is left as it is, its refusals
+filed (R-33), since what routes them changes the slice's layout; **(iii)** in `09-core-in-derivation` the core is
+not drawn heavy, *heavy* being *derived* on the page; **(iv)** `long_numbers.ein` stays off `pool::LONG`.
+
+**Findings**: R-31, R-32 (fixed here) and R-33 (open) in [the phase's findings](findings.md); R-22, R-24 and R-28
+marked fixed.
