@@ -340,7 +340,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.409](#q-m1f409--an-integer-and-a-rational-their-check-and-their-label) | an integer and a rational: their check and their label | **ruled 2026-11-18: (a)**, and, asked how L-101's rule reads a rational whose part is a natural numeral, *"Verify the natural"*: the numerator is checked as a numeral, so `(rat (n z x) (n z 2))` is dead again (the (d) case). **Built** by [S1f.23.9](p1f.23_review_processing/s1f.23.9_numerals_answers.md), with L-101 |
 | [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **ruled 2026-11-18: (a)**, the default as built: a made number a program's rule hands to a second request is walked again, and, under Q-M1f.405's ruling, one it hands to a tagged call |
 | [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **ruled 2026-11-18: (a)**, the default as built: the first place at fault from the units |
-| [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
+| [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a); put to the user in the review bundle, who asked instead how deep `is-a` goes into the kernel (2026-11-19): nowhere, answered in the entry; the default stands |
 | [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **ruled 2026-11-18: (c)** (*"(c)"*: give the container a section for the commitment, so a node's container opens as that node); **built** by P1f.23's S1f.23.8 (`86d46410`): the section `COMMIT`, kind 13, the format `einb/2.1`, the decision [Q-M1f.413](../../docs/decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md). Before: defaulted (a), a node refused |
 | [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build (`fbe2ba66`, `3047bbae`, merged by `79dd213b`). Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
 | [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **ruled 2026-11-18: (a)** (*"(a)"*), the default as built: both read the program's H, the node aside |
@@ -450,6 +450,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.519](#q-m1f519--the-decisions-the-numerals-rulings-live-in) | The decisions the numerals' rulings live in | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), Q-M1f.404's file, no new decision id |
 | [Q-M1f.520](#q-m1f520--the-walks-words-in-binary) | The walk's words in binary | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the base's: `numeral-step`'s `:why` says *digit* in binary too |
 | [Q-M1f.521](#q-m1f521--what-the-tagged-call-test-holds) | What the tagged-call test holds | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the walks as well as the calls, by `arith_theory.rs`' table `RUNS` |
+| [Q-M1f.522](#q-m1f522--a-relation-is-any-atom-first-in-a-tuple) | a relation of the program: which atoms are, and what a declaration is | **ruled 2026-11-19** by the user (P1f.21's V-7, in the review bundle): *"Its enough to be the first item in the tuple to became a relation"*, at any depth; a declaration an optional fact, a convention. To be built by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8180,6 +8181,24 @@ One reading taken with it, **put, not ruled**:
 - **(b)** `ein-test-report/6`, as the report's id moved on each change of its row before; the summary and the
   region dump keep theirs.
 
+**Put to the user in the review bundle** (`04-language-and-decisions/16-Q-M1f.412/`), who answered with a
+question, 2026-11-19, verbatim (`b0e9c412`): *"How deep does this `is-a` go into the kernel? I repeat again and again
+THERE IS NO TYPES in ein. It's substrate, field, data plane is a pure labelled graph. Does graph nodes have types?
+NO! Graphs are about structure. If we want - we add types-like behaviour to the program on relations and rules
+level, usually (Usually! not always) following stdlib convention. If we don't need - no types."*
+
+**Answered** (the main session, 2026-11-19): nowhere. No code of the six shipping crates reads `is-a` by its
+spelling: of the 45 lines of their `src/` that write it, every one outside a comment is the text of a unit test's own
+program, which declares `is-a` as an ordinary relation (`scope.rs`, `relation_names.rs`, `oblgen.rs`, `from_ir.rs`
+under `#[cfg(test)]`), and the comments say it is not read (`hypgen.rs`: *"reaches for `is-a` here would be a type
+system in the kernel"*). `ein-render/tests/renaming_invariance.rs` holds every corpus program to its answer with
+every name but the kernel's renamed, `is-a` among them, and its `READS` is empty
+([Q-M1f.436](../../docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)). `is-a` is a convention of
+five stdlib modules (`std.typing`, `std.algebra`, `std.bijection`, `std.elim`, `std.bool.inputs`) and of the corpus's
+programs. One stale comment says otherwise, `from_ir.rs`' above `program_relations` (*"one it declares or states a
+fact of, `is-a`, …"*), and is re-worded by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 1. The reading's default, (a), stands: the user picked
+none.
+
 ### Q-M1f.413 — `ein kb save` of a saved file
 
 **Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.** A
@@ -9713,3 +9732,32 @@ number would join two facts on a number.
 - **(b)** the calls alone, as before the walks were split off.
 
 **Default taken: (a).** Built: `90e88122`.
+
+### Q-M1f.522 — A relation is any atom first in a tuple
+
+**Raised** as P1f.21's [V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count)
+(from P1f.22's N-22): a rule that takes a relation as a parameter, activated with a name that no declaration and no
+written fact heads, concludes facts of it, and the engine's four lists of the program's relations disagree on it
+(the registry, the alive-set invariant's baseline, the goal's list, the saturation page's $\operatorname{rels}(P)$).
+Put to the user in the review bundle (`04-language-and-decisions/08-V-7/`): (a) the registry takes it, (b) the
+loader refuses the activator, (c) a page says such a relation is declared.
+
+**Ruled 2026-11-19** by the user, verbatim (`b0e9c412`): *"What does mean "program does not count relation" ?
+relation is almost any atom if it is 1st in the tuple. Also for nested facts. Its enough to be the first item in the
+tuple to became a relation. (XXX) - is a relation fact with relation 'XXX'. Relation declaration `(relation =
+Formula Formula)` is optional fact that can be used to handle some random labels associated with the relation, even
+maybe not arguments types, not arguments count. It is just by convention is "relation declaration", that is used to
+reason about arguments domains. You easily can use `(rel-arg-types <relation_name> Type Type)`, `(rel-arg-types
+<relation_name> (list Type Type))`, `(defrel <relation_name> Type Type)` WHATEVER for the same purpose. But
+`relation` is already used by SOME OF stdlib modules. That is it."*
+
+**Read as (a), whole**: an atom is a relation of the program where it is the first item of a tuple the program
+writes, at any depth, a stated fact's, a nested fact's, a pattern's of a rule, an hrule or an obligation, a constant
+head or one an activator binds; a declaration is an optional fact, a convention some stdlib modules use, and no
+relation of the program depends on one. *"Almost"*: the forms the kernel reads as forms are not made relations by
+heading a tuple; the build lists them. *"not arguments count"* decides nothing of the argument-count check, which
+stays open ([Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)).
+
+**To be built** by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2: one notion for the four lists; R moves where the blind rung guessed about such
+a name as an object, each moved corpus program named.
+

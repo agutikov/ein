@@ -1,7 +1,0 @@
-;;; Written for this review: fact-argument-claim.ein with the fact's argument
-;;; spelt (own Bob Dog), and nothing else: the program then names no relation
-;;; owns, and the goal and the claim are refused.
-
-(claims Carol (own Bob Dog))
-(query :goal (owns ?a ?b)
-  :expect (model (owns Bob Dog)))

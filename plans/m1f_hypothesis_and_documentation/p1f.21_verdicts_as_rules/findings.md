@@ -251,3 +251,20 @@ such program run then.
 **The user's call**, none taken: the registry takes a relation an activator names for a parameter that heads a
 conclusion; or the loader refuses the activator; or a page says that such a relation is declared. Under the third
 instruction's reading of `relation`, *any head is a relation*, the first.
+
+**Ruled 2026-11-19** by the user, in the review bundle (`04-language-and-decisions/ANSWERS.md`, `b0e9c412`),
+verbatim: *"What does mean "program does not count relation" ? relation is almost any atom if it is 1st in the
+tuple. Also for nested facts. Its enough to be the first item in the tuple to became a relation. (XXX) - is a
+relation fact with relation 'XXX'. Relation declaration `(relation = Formula Formula)` is optional fact that can be
+used to handle some random labels associated with the relation, even maybe not arguments types, not arguments
+count. It is just by convention is "relation declaration", that is used to reason about arguments domains. You
+easily can use `(rel-arg-types <relation_name> Type Type)`, `(rel-arg-types <relation_name> (list Type Type))`,
+`(defrel <relation_name> Type Type)` WHATEVER for the same purpose. But `relation` is already used by SOME OF
+stdlib modules. That is it."* Read as the first option, whole: every atom first in a tuple the program writes, at
+any depth, is a relation of the program, a nested fact's head and a rule's conclusion's, constant or bound by an
+activator, among them; a declaration is an optional fact, a convention. Filed as
+[Q-M1f.522](../open_questions.md#q-m1f522--a-relation-is-any-atom-first-in-a-tuple); **to be built by
+[S1f.23.10](../p1f.23_review_processing/s1f.23.10_language_answers.md), task 2**: one notion of the program's
+relations for the registry, the invariant's baseline, the goal's list and the saturation page, R moving where the
+blind rung guessed about such a name. *"not arguments count"* touches the argument-count check, which stays open
+([Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)) and is not decided by it.

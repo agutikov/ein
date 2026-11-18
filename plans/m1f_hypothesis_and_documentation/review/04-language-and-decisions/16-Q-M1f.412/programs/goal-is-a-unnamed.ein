@@ -1,8 +1,0 @@
-;;; Written for this review: a goal over is-a in a program that names is-a
-;;; nowhere else. It loads: program_relations counts is-a as every program's.
-;;; goal-is-b-unnamed.ein asks the same of is-b, which is refused.
-
-(relation p T :why "p holds of {?1}")
-(p a)
-(solve :no-search)
-(query :goal (is-a ?x ?y))

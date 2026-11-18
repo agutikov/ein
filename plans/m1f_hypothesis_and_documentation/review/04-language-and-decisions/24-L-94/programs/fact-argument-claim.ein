@@ -1,7 +1,0 @@
-;;; Written for this review: fact-argument.ein with a claim that lists a fact of
-;;; `owns`. It loads (the claim's relation is held to the same list as a goal's),
-;;; and `ein test` checks it: FAILED, since Carol's claim is not held.
-
-(claims Carol (owns Bob Dog))
-(query :goal (owns ?a ?b)
-  :expect (model (owns Bob Dog)))

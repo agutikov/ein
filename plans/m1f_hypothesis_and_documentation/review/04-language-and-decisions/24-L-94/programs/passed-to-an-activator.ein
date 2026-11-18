@@ -1,9 +1,0 @@
-;;; Written for this review: `happy` is written only as an activator's
-;;; argument, passed to the parameter ?R that heads `tag`'s conclusion. A goal over
-;;; `happy` loads (Q-M1f.119's "passes where a relation's name is held"), and has
-;;; a row.
-
-(person Ann)
-(rule tag (?R) :match (person ?x) :assert (?R ?x) :why "every person is {?R}")
-(tag happy)
-(query :goal (happy ?x))

@@ -1,3 +1,0 @@
-;;; Written for this review: a nested pattern whose head is a variable in a rule's :match, `(r (?x a))`, ?x not a parameter.
-
-(rule t () :match (r (?x a)) :assert (s ?x) :why "t")

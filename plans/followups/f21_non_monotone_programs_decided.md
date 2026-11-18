@@ -896,6 +896,26 @@ P1f.22's close. With `(think Bob (false))` added, the `forall` form is dead, as 
 **The user's call**: whether it is a twin of `W8/fifo-gap-root`, read with that row's reading (D2's stratum-order
 admission, under which R is {∅}), or a row of its own; and with that row's first call, whether the reading stands.
 
+**The user's answer, 2026-11-19** (M1f's review bundle, `04-language-and-decisions/09-F21-N-15/`, the answers file at
+`b0e9c412`), verbatim: *"This is non-monotone saturation. false inferred from absent. See followups where it
+belongs. Btw, into followup: what about optimistic saturation - at first step skip non-monotone rules and get a
+fixedpoint without them, and then check. But again, this belongs to non-monotone programs followup. Not decide and
+not investigate here. Does ein detect non-monotone program here??? We already decided to detect those cases."*
+
+- **Where it belongs**: here. N-15 is this page's, a non-monotone saturation, `(false)` concluded from an `absent`
+  before the rule that derives what the `absent` reads; no register row is filed, and the twin-or-row call above
+  stays open with this page's other calls.
+- **An idea, recorded, not decided and not investigated** (the user's): *optimistic saturation*: saturate first
+  without the non-monotone rules, reach that fixpoint, then check them against it.
+- **The user's question, answered: no, Ein does not detect it.** `ein solve x2b.ein` prints *lattice monotone (the
+  static check) — R is convex: no hole*, and `--monotone` *monotone yes — no site*, on the binary of 2026-11-19, as on
+  `fifo-gap-root.ein`. The static check reads what a **commitment** can change and takes root as given
+  ([`08-monotonicity.md` § 3.4](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)); a race between two
+  rules that each wait on an `absent` at root's own boundary is none of its sites. Under the standing ruling (a
+  non-monotone program is detected and warned of, and the engine claims nothing of its answer) this is a **gap in
+  the detection**, the FIFO-gap section's call 2 above (*whether the static check should report an order finding at
+  root*), which is readable off the rules. Whether it is built now or stays here with this page is put to the user.
+
 ## Why it is parked
 
 - The user's direction, above.

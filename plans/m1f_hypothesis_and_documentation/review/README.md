@@ -4,7 +4,7 @@ Every item that waits for the user's call, one folder each, built so that each c
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
 and the readings later stages took. The first drawings' items (34 to 55), the save-and-load items
 (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on 2026-11-18 and left the
-bundle; `03-drawings/` now holds what S1f.23.6 built of those answers (56 to 60); the verdicts' two
+bundle, and the language and decisions' six (`04-language-and-decisions/`) on 2026-11-19; `03-drawings/` now holds what S1f.23.6 built of those answers (56 to 60); the verdicts' two
 (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
@@ -26,7 +26,6 @@ your answer; a re-render never touches it.
 | topic | items | what they are about |
 |---|---|---|
 | [03-drawings](03-drawings/README.md) | 5 | the drawings after S1f.23.6 built the user's answers: the layered layout, the fold of a fact of two arrows, a derivation's drawing, R-33 |
-| [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
 
 The drawings' topic holds again the five items S1f.23.6 put after building the answers on it (56 to 60).
 
@@ -71,12 +70,6 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 
 | # | item | the question | default |
 |---|---|---|---|
-| 08 | [V-7](04-language-and-decisions/08-V-7/README.md) | a relation only an activator names is not counted | as is (leaning: the registry takes it) |
-| 09 | [F21 N-15](04-language-and-decisions/09-F21-N-15/README.md) | *everybody's thoughts are false* with `absent` is dead: twin of `W8/fifo-gap-root`? | none; nothing filed |
-| 16 | [Q-M1f.412](04-language-and-decisions/16-Q-M1f.412/README.md) | the `is-a` row dropped: does a schema id move? | (a) no id moves for it (the report is `/6` for the diff) |
-| 22 | [L-92](04-language-and-decisions/22-L-92/README.md) | Q-M1f.362's sentence on the index | kept |
-| 23 | [L-93](04-language-and-decisions/23-L-93/README.md) | two stale sentences of the pages (a third found) | left |
-| 24 | [L-94](04-language-and-decisions/24-L-94/README.md) | Q-M1f.119 misses a fact's argument | kept |
 | 56 | [the layers](03-drawings/56-layers/README.md) | the layered layout as built, nested facts in bands | (a) layers and bands written |
 | 57 | [a folded arrow's rank](03-drawings/57-folded-ranks/README.md) | under `--fold`, a folded arrow within a layer, or ranked as any arrow | (a) within a layer |
 | 58 | [the two-arrow fold](03-drawings/58-two-arrow-fold/README.md) | a stored negation folds into a loop; five closing rules drawn folded | (a) as built |

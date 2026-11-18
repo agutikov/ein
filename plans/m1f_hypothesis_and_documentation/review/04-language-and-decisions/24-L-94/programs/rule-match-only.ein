@@ -1,6 +1,0 @@
-;;; Written for this review: `paid` is written only in a rule's :match (the
-;;; refusal's "writes in a rule"). A goal over it loads, and has no row.
-
-(guest Ann)
-(rule settled () :match (and (guest ?g) (paid ?g)) :assert (settled ?g) :why "{?g} paid")
-(query :goal (paid ?g))

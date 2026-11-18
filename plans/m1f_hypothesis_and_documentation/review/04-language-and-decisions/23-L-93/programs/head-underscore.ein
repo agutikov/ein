@@ -1,3 +1,0 @@
-;;; Written for this review: the page's example of #nested, `(r (_ a))`, as a fact.
-
-(r (_ a))
