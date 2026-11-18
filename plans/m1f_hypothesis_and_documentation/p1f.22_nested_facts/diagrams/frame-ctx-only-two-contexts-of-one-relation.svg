@@ -115,7 +115,7 @@
 <!-- f_5b3adbf9bf -->
 <g id="node8" class="node">
 <title>f_5b3adbf9bf</title>
-<polygon fill="#d9d9d9" stroke="#ff7f0e" points="586.35,-130.92 586.35,-148.36 559.34,-160.69 521.14,-160.69 494.13,-148.36 494.13,-130.92 521.14,-118.6 559.34,-118.6 586.35,-130.92"/>
+<polygon fill="none" stroke="#ff7f0e" points="586.35,-130.92 586.35,-148.36 559.34,-160.69 521.14,-160.69 494.13,-148.36 494.13,-130.92 521.14,-118.6 559.34,-118.6 586.35,-130.92"/>
 <text xml:space="preserve" text-anchor="middle" x="540.24" y="-136.09" font-family="Inter" font-size="14.00" fill="#ff7f0e">(owns)</text>
 </g>
 <!-- Alice&#45;&gt;f_5b3adbf9bf -->

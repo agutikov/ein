@@ -150,7 +150,7 @@
 <!-- f_5b3adbf9bf -->
 <g id="node10" class="node">
 <title>f_5b3adbf9bf</title>
-<polygon fill="#d9d9d9" stroke="#ff7f0e" points="766.35,-107.67 766.35,-125.11 739.34,-137.44 701.14,-137.44 674.13,-125.11 674.13,-107.67 701.14,-95.35 739.34,-95.35 766.35,-107.67"/>
+<polygon fill="none" stroke="#ff7f0e" points="766.35,-107.67 766.35,-125.11 739.34,-137.44 701.14,-137.44 674.13,-125.11 674.13,-107.67 701.14,-95.35 739.34,-95.35 766.35,-107.67"/>
 <text xml:space="preserve" text-anchor="middle" x="720.24" y="-112.84" font-family="Inter" font-size="14.00" fill="#ff7f0e">(owns)</text>
 </g>
 <!-- Alice&#45;&gt;f_5b3adbf9bf -->

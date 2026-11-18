@@ -23,7 +23,7 @@ digraph kb {
   "Carol" -> f_5b3adbf9bf [label="says", color="#8c564b", fontcolor="#8c564b", style=solid];
 
   // held facts that are also in a context: no frame
-  f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style="filled,solid", fillcolor="#d9d9d9"];
+  f_5b3adbf9bf [shape=octagon, label="(owns)", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
 
   // facts in a context
   newrank=true;

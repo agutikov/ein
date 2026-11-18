@@ -9,7 +9,7 @@ digraph kb {
   "4" -> f_0ae97bb518 [label="=", color="#2ca02c", fontcolor="#2ca02c", style=solid];
 
   // held facts that are also in a context: no frame
-  f_06748717d5 [shape=octagon, label="(=)", color="#2ca02c", fontcolor="#2ca02c", style="filled,solid", fillcolor="#d9d9d9"];
+  f_06748717d5 [shape=octagon, label="(=)", color="#2ca02c", fontcolor="#2ca02c", style=solid];
 
   // facts in a context
   newrank=true;

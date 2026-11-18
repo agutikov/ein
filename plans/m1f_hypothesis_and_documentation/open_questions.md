@@ -7651,15 +7651,14 @@ frame left empty dropped:
 - *two-contexts*: `(= 5 (+ 2 2))`, held and under `think` and `says`, is outside; `(+ 2 2)`, never held, is in
   `= ctx`.
 
-**A reading taken, with a default.** For a fact that is pointed at, *in no frame* and *held* are now one property.
-The filling stays, so a filled octagon is now exactly the case of the user's first line: a fact held and also in
-a context. An octagon outside every frame and not filled is a held fact nothing points at, `(relation …)` say. The
-other way is to drop the filling as a second mark of one property.
+**The filling, ruled 2026-11-18.** For a fact that is pointed at, *in no frame* and *held* are now one property, so
+the filling would be a second mark of it. The user: *"drop the filling"*. No octagon is filled; *held* is *outside
+every frame*. The trial figures are drawn so.
 
 **To build.** It is its own change on master, after the `is-a` row's change now on master. That one shares the
 main tree, and a gate builds the whole tree. It touches:
-- the KB view's and the program view's frames, and the rule view's, whose framed pattern is *also a premise* where
-  it is filled;
+- the KB view's and the program view's frames and filling, and the rule view's, whose pattern that is *also a
+  premise* (or a literal of the conclusion) leaves its frame and loses its filling;
 - `12-rendering.md`'s frame rule and its two context drawings;
 - Q-M1f.398's decision file;
 - the standard library's rule drawings, through their generator, and the shape golden.

@@ -1,7 +1,7 @@
 # P1f.22 — nested facts
 
 **Milestone:** [M1f](../README.md)
-**Status:** (2026-11-18: Q-M1f.398 re-ruled, *a frame around the objects that are in a context only*; tried as [`diagrams/frame-ctx-only-*`](diagrams/), built after the `is-a` row's change.) created 2026-11-17 on the user's instruction (below), and **started 2026-11-17 on the user's word**
+**Status:** (2026-11-18: Q-M1f.398 re-ruled, *a frame around the objects that are in a context only*, and no filling; tried as [`diagrams/frame-ctx-only-*`](diagrams/), built after the `is-a` row's change.) created 2026-11-17 on the user's instruction (below), and **started 2026-11-17 on the user's word**
 (*"start p1f.22"*). [S1f.22.1](s1f.22.1_what_we_have.md) is done: [`analysis.md`](analysis.md) is what the engine
 and the pages do, the explanation drafted, and the six points for the user (Q-M1f.391 to .396);
 [`findings.md`](findings.md) is what it found outside its scope. The user answered the six with notes, which
