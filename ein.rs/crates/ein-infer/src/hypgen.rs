@@ -35,10 +35,8 @@
 //!   type-blind and the puzzle's own rules do the pruning; Rust code that
 //!   reaches for `is-a` here would be a type system in the kernel. The
 //!   *signature* atoms are excluded, which is a different thing: a name a
-//!   puzzle declared as a type role, derived without naming `is-a`.
-//!   [`crate::types_as_objects`] reads `is-a` by name, after this pass and
-//!   outside it, to say where the enumerator bound a type as an object
-//!   (Q-M1e.12): it decides nothing, and no candidate moves.
+//!   puzzle declared as a type role, derived without naming `is-a`
+//!   (Q-M1e.12).
 //!
 //! ### What is free
 //!

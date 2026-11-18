@@ -33,4 +33,4 @@ what the rest of the documentation defines ([the knowledge base](../reasoning/01
 | `FactId` | a **fact**, identified by its relation and arguments, whether or not a KB holds it |
 | a relation's *extent* (`Kb::facts_of`, `n_by_rel`, the `scan_extent` counter) | the **held extent**, the facts of the relation that a KB holds ([Q-M1f.381](../../decisions/language/Q-M1f.381-a-relation-is-the-atom-under-a-facts-first-arrow.md)) |
 | `candidate_objects`, `NameCategory::Object`, the `--events` field `object` | the **guessable atoms**, what the blind enumerator guesses about |
-| `types_as_objects`, `Relation::signature` | an atom an `is-a` fact points at; a declaration's **labels**. Ein has no types ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)) |
+| `Relation::signature` | a declaration's **labels**. Ein has no types ([Q-M1f.372](../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)) |

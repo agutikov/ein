@@ -272,13 +272,13 @@ R is over H, so of a relation H has no candidate of, the answer holds only the f
 saturation derives. The read-out names such a relation under `universe`, where a rule concludes a fact of it or a
 goal asks about one and the program has not scoped it out itself: an `outside` row, *gives — no candidate: it has
 arity 3, and the blind enumerator proposes arity 1 and 2 only*
-([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). Two more rows
-name what the blind enumerator did: a row the read-out calls `types`, where a candidate is about an atom that is
-the second argument of an `is-a` fact
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)), and a
-`relation names` row where an argument of a candidate is a relation that only a rule's conclusion writes. None of
-the three changes R; a declaration that writes the name as a label, or that declares the relation, takes the atom
-out of the guessable ones.
+([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). One more row
+names what the blind enumerator did: a `relation names` row, where an argument of a candidate is a relation that
+only a rule's conclusion writes. Neither changes R; declaring the relation takes the atom out of the guessable ones.
+The blind enumerator is untyped, and a candidate about an atom the program's membership facts point at is a
+candidate like any other
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)): a
+declaration that writes the atom as a label takes it out of the guessable ones.
 
 ## Seeing H
 

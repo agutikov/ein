@@ -491,15 +491,14 @@ Three guessable atoms and one relation of two arguments give the six dotted arro
 whatever the labels the relation's declaration writes.
 
 **The enumerator holds no argument to a label**
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). No object has a
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)). No object has a
 type ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)), and the
 enumerator gives a label no meaning of its own: a candidate the program's labels would speak against is killed by the
 program's own rules, or stays in $R$ where none rejects it. An atom a declaration writes as a label is not guessable,
 so a program whose facts use an atom as a label and whose declarations write it nowhere is under-specified, and it is
 answered as written: beside $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and a relation
 $\operatorname{co-located}$ of two arguments with one label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$
-is a candidate. Where a candidate holds as an argument an atom that stands second in a membership fact of root, the
-answer names it, and nothing else moves. The program's way out is its declaration.
+is a candidate. The program's way out is its declaration.
 
 ## 6. Scoping, and the mechanisms judged together
 

@@ -168,12 +168,12 @@ this entry is § 6's row *ask* there. Worked out in [`open_facts.md`](open_facts
 
 **What.** The user, 2026-11-18: *"is-a is just some random relation, or maybe not even a relation; what for is it
 read by kernel read-out?"* It is read for one row, and decides nothing.
-[Q-M1e.12](../../../docs/decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md): the
+[Q-M1e.12](../../../docs/decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md): the
 blind enumerator is untyped and fills every place with every name no declaration writes as a label. So
 `(relation co-located T T)` beside `(is-a Color T)` makes `(co-located Blue Color)` a candidate. Where the blind rung
 built $H$, every candidate naming the second argument of an `is-a` fact is counted in a `types` row under
 `universe`, and in the summary's `root.hypgen.types_as_objects`. The row is meant to warn the author that a *type*
-was bound as an object. [`types_as_objects.rs`](../../../ein.rs/crates/ein-infer/src/types_as_objects.rs) reads the
+was bound as an object. `types_as_objects.rs` reads the
 relation `is-a` by its spelling, the only module of `ein-infer` that does. The reserved names page lists `is-a` as
 not reserved (*"nothing else is special"*), and two conventions coexist (`zebra.ein`'s `type` and `instance`). So the
 row speaks for one convention and not the other.

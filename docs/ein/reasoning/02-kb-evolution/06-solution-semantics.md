@@ -176,21 +176,19 @@ $$
 and the held extent of such a relation, in every state of $R$, is only what the program states and saturation
 derives. It is said at relation grain: the facts of a covered relation that the rung does not propose are not named.
 
-**What the universe guesses about, the answer names too**
-([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)). The blind
+**The universe is untyped**
+([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)). The blind
 enumerator holds no argument to its label: every guessable atom fills every argument place. Where a program states
 $\operatorname{is-a}(\mathsf{Red}, \mathsf{Color})$ and declares a relation $\operatorname{co-located}$ of two
 arguments with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf{Color})$ is a candidate and a state
 of $R$ may hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a
-label keeps it out of $H$. Where the blind enumerator built $H$ and a candidate has as an argument the second
-argument of a membership fact of root, every answer names that atom. It decides nothing: $H$, $R$ and every count
-are the same without the sentence.
+label keeps it out of $H$. A membership relation is a relation like any other.
 
-**A relation that is guessed about is named as well** (§ 1.2). Where a rule derives
+**A relation that is guessed about is named** (§ 1.2). Where a rule derives
 $\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and the blind enumerator fills a
 declared relation $\operatorname{tasty}$ of one argument, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and
 a state of $R$ may hold it. The candidate stays, and declaring $\operatorname{liquid}$ takes the atom out of the
-guessable atoms. It decides nothing either.
+guessable atoms. It decides nothing: $H$, $R$ and every count are the same without the sentence.
 
 ### 1.5 Commitment, node, state
 

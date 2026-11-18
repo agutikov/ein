@@ -13,8 +13,7 @@
 //!
 //! The candidate stays: the engine does what the program as written says, and
 //! declaring the relation is the program's way out, since a declared relation
-//! is no object. What this module does is **say so**, as
-//! [`crate::types_as_objects`] says where a type is bound as an object.
+//! is no object. What this module does is **say so**.
 //!
 //! **What is named.** When the blind enumerator built H (the rung took
 //! [`Mode::Blind`], or [`Mode::Declined`] and fell through to it), every

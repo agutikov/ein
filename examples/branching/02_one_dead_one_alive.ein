@@ -18,9 +18,8 @@
 ;;;
 ;;; The signature is `T T`, so the blind enumerator proposes type atoms
 ;;; as objects too, `(co-located Blue Color)` and the like, and nothing
-;;; refutes them: R is 20 states and its maximal line 4, and the read-out
-;;; names the atoms on its `types` row. A typed signature keeps them out
-;;; (`03_five_hyps_one_alive.ein`).
+;;; refutes them: R is 20 states and its maximal line 4. A typed signature
+;;; keeps them out (`03_five_hyps_one_alive.ein`).
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

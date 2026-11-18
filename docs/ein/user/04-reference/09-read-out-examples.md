@@ -1726,10 +1726,8 @@ Two colours, one rule that keeps them from co-locating, and no obligation: the u
 one. The region comes first and takes them: stdout lists states 1–37 outside a `(region …)`, since a cut wrapped
 in one would claim to be all of R, then says what it left out and that `--dump-answer DIR` writes the whole
 `(region …)` to `DIR/answer.txt`. The query still gets its `over` row, its one class and its one-line `as :expect`.
-The rows are never cut. Stdout is 126 lines, and `answer.txt` is 562. The state numbers are the
-same in both, so *state 37* on the screen is *state 37* in the file. The blind enumerator proposes facts about
-`Color`, the atom the program's `is-a` facts point at, and the `types` row says so: *type* and *object* are the
-row's words, for that atom and for an atom the enumerator proposes about.
+The rows are never cut. Stdout is 125 lines, and `answer.txt` is 561. The state numbers are the
+same in both, so *state 37* on the screen is *state 37* in the file.
 
 `ein solve examples/saturation/type-exclusivity/colors.ein`
 
@@ -1749,7 +1747,6 @@ solve · examples/saturation/type-exclusivity/colors.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          8 candidates, 0 dead alone
-    types           Color — on the right of an is-a, and 6 candidates of co-located, is-a name it as an object: the blind enumerator is untyped, and no signature names it
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
   work              169 saturations · 624 facts beyond root · 8 layers
 
@@ -1974,7 +1971,6 @@ solve · examples/features/01_not_and_absent.ein
     …               24 750 more: --dump-answer DIR writes them
     paths           not checked — the read-out prints no state of two commitments or more; its 64 655 members met would cost up to 386 524 saturations
   universe          35 candidates, dead alone not known: the run stopped before it visited each alone
-    types           Person — on the right of an is-a, and 13 candidates of is-a, likes name it as an object: the blind enumerator is untyped, and no signature names it
     relation names  explicitly-dislikes — a relation only a rule concludes, and 16 candidates of is-a, likes name it as an object: no file declares it or writes a fact of it
   route             2, the cube — no licence: the static check flags the program
   work              64 655 saturations · 294 793 facts beyond root

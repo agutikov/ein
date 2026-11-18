@@ -383,25 +383,6 @@ pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
     )
 }
 
-/// What the untyped rung bound as an object, as data (Q-M1e.12): the
-/// objects and relations [`ein_infer::types_as_objects`] names and the
-/// candidates' count, both lists `[]` and the count 0 when nothing.
-/// `--json-summary`'s `root.hypgen.types_as_objects` and `region.json`'s
-/// `types_as_objects`.
-pub fn types_json(t: &ein_infer::types_as_objects::TypesAsObjects) -> Json {
-    Json::obj(vec![
-        (
-            "objects",
-            Json::Array(t.objects.iter().map(Json::str).collect()),
-        ),
-        (
-            "relations",
-            Json::Array(t.relations.iter().map(Json::str).collect()),
-        ),
-        ("candidates", Json::int(t.candidates as i64)),
-    ])
-}
-
 /// The relations' names the blind enumerator bound as objects, as data: the
 /// names and the candidates' relations [`ein_infer::relation_names`] names,
 /// and the candidates' count. `--json-summary`'s
@@ -465,16 +446,6 @@ fn later_of(oracle: &Outcome) -> &[ein_infer::oblgen::LaterDebtText] {
     }
 }
 
-/// What the untyped rung bound as an object, whichever arm the cube took.
-fn types_of(oracle: &Outcome) -> &ein_infer::types_as_objects::TypesAsObjects {
-    match oracle {
-        Outcome::Region(r) => &r.root.types_as_objects,
-        Outcome::Refused {
-            types_as_objects, ..
-        } => types_as_objects,
-    }
-}
-
 /// The universe's scope, whichever arm the cube took.
 fn outside_of(oracle: &Outcome) -> &[ein_infer::scope::Outside] {
     match oracle {
@@ -524,10 +495,7 @@ pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Js
     if !later_of(oracle).is_empty() {
         head.push(("later_debts", later_json(later_of(oracle))));
     }
-    head.extend([
-        ("outside", outside_json(outside_of(oracle))),
-        ("types_as_objects", types_json(types_of(oracle))),
-    ]);
+    head.push(("outside", outside_json(outside_of(oracle))));
     // Only where the blind enumerator bound a relation's name as an object.
     if !relation_names_of(oracle).is_empty() {
         head.push((
@@ -780,9 +748,6 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
     }
     if let Some(t) = crate::read_out::outside_text(outside_of(oracle)) {
         out.push_str(&format!("**Outside it**: {t}.\n\n"));
-    }
-    if let Some(t) = crate::read_out::types_text(types_of(oracle)) {
-        out.push_str(&format!("**Types as objects**: {t}.\n\n"));
     }
     if let Some(t) = crate::read_out::relation_names_text(relation_names_of(oracle)) {
         out.push_str(&format!("**Relation names as objects**: {t}.\n\n"));

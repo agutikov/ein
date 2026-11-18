@@ -1130,11 +1130,10 @@ fn claim_blocks(out: &str) -> Vec<(String, Vec<String>)> {
     blocks
 }
 
-/// Every claim's scope lines against its row: `outside the universe: …`
+/// Every claim's scope line against its row: `outside the universe: …`
 /// where the row's `outside` names a relation, each of them named in the
-/// line, and `a type as an object: …` where its `types_as_objects` names an
-/// object, each named in the line; neither line where the row's list is
-/// empty. Rows in walk order, which is print order. The failures.
+/// line, and no such line where the row's list is empty. Rows in walk order,
+/// which is print order. The failures.
 fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
     let rows: Vec<&serde_json::Value> = doc["rows"]
         .as_array()
@@ -1166,19 +1165,13 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
                 .collect()
         };
         let outside = names(&row["outside"], Some("relation"));
-        let objects = names(&row["types_as_objects"]["objects"], None);
-        for (what, prefix, named) in [
-            ("outside", "outside the universe: ", &outside),
-            ("types_as_objects", "a type as an object: ", &objects),
-        ] {
-            match (line(prefix), named.is_empty()) {
-                (None, true) => {}
-                (Some(l), false) if named.iter().all(|n| l.contains(n.as_str())) => {}
-                (l, _) => bad.push(format!(
-                    "{header} ({}): the text prints {l:?}, the row's {what} is {named:?}",
-                    row["path"]
-                )),
-            }
+        match (line("outside the universe: "), outside.is_empty()) {
+            (None, true) => {}
+            (Some(l), false) if outside.iter().all(|n| l.contains(n.as_str())) => {}
+            (l, _) => bad.push(format!(
+                "{header} ({}): the text prints {l:?}, the row's outside is {outside:?}",
+                row["path"]
+            )),
         }
     }
     bad
@@ -1188,39 +1181,23 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
 /// prints it beside a claim**.
 ///
 /// Beside each claim it prints, `ein test` says what the universe leaves
-/// out (`outside the universe: …`, Q-M1e2.3) and what the untyped rung
-/// bound as an object (`a type as an object: …`, Q-M1e.12). Every row
-/// carries `outside` and `types_as_objects`, the summary's `root.hypgen`
-/// fields under its names and in its shapes, `null` where no run checked the
-/// row's claim: `tests/region/07_cube.ein` prints `outside the universe:
-/// is-a …`, and its row carries it. The second is printed beside no corpus
-/// claim (`ein test -v tests examples` shows which), so the second
-/// is held here on `branching/02`'s program with two claims added: a solve
-/// claim and a query's, each false, whose lines print without `-v` too.
+/// out (`outside the universe: …`, Q-M1e2.3), and every row carries
+/// `outside`, the summary's `root.hypgen` field under its name and in its
+/// shape, `null` where no run checked the row's claim:
+/// `tests/region/07_cube.ein` prints `outside the universe: is-a …`, and its
+/// row carries it.
 #[test]
 fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     let d = Dir::new("report-scope");
-    let program =
-        std::fs::read_to_string(repo_root().join("examples/branching/02_one_dead_one_alive.ein"))
-            .expect("branching/02 reads");
-    let typed = d.file(
-        "typed.ein",
-        &format!("{program}\n(solve :expect (false))\n(query :goal (co-located Red ?h) :expect (false))\n"),
-    );
     let out = d.0.join("r.json");
     let r = ein(&[
         "test",
         "tests/region/07_cube.ein",
-        &typed,
         "-v",
         "--json-report",
         &out.to_string_lossy(),
     ]);
-    assert_eq!(
-        r.code, 1,
-        "the typed program's claims are false: {}{}",
-        r.out, r.err
-    );
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
     assert_eq!(doc["schema"], "ein-test-report/5");
@@ -1228,25 +1205,17 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     assert!(bad.is_empty(), "{}\n{}", bad.join("\n"), r.out);
 
     let rows = doc["rows"].as_array().expect("rows");
-    let row = |path: &str, place: &str, query: u64| -> &serde_json::Value {
+    let row = |place: &str, query: u64| -> &serde_json::Value {
         rows.iter()
-            .find(|x| {
-                x["path"].as_str().unwrap().ends_with(path)
-                    && x["place"] == place
-                    && x["query"] == query
-            })
-            .unwrap_or_else(|| panic!("no {place} row {query} for {path}"))
+            .find(|x| x["place"] == place && x["query"] == query)
+            .unwrap_or_else(|| panic!("no {place} row {query}"))
     };
-    // `tests/region/07`: the witness.
-    let cube = row("07_cube.ein", "solve", 0);
+    // The witness.
+    let cube = row("solve", 0);
     assert_eq!(
         cube["outside"],
         serde_json::json!([{"relation": "is-a", "arity": 2, "why": "no-hrule"}]),
         "{cube}"
-    );
-    assert_eq!(
-        cube["types_as_objects"],
-        serde_json::json!({"objects": [], "relations": [], "candidates": 0})
     );
     assert!(
         r.out.contains("    outside the universe: is-a — "),
@@ -1254,28 +1223,9 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
         r.out
     );
     // Its query states no claim and no run checked it: `null`.
-    let silent = row("07_cube.ein", "query", 1);
+    let silent = row("query", 1);
     assert_eq!(silent["outcome"], "no-expect");
-    assert!(silent["outside"].is_null() && silent["types_as_objects"].is_null());
-    // The typed program, both claims: `Color, House` bound as objects.
-    for (place, query) in [("solve", 0), ("query", 2)] {
-        let t = row("typed.ein", place, query);
-        assert_eq!(t["outcome"], "failed", "{t}");
-        assert_eq!(
-            t["types_as_objects"]["objects"],
-            serde_json::json!(["Color", "House"]),
-            "{t}"
-        );
-        assert_eq!(t["outside"], serde_json::json!([]), "{t}");
-    }
-    assert_eq!(
-        r.out
-            .matches("    a type as an object: Color, House")
-            .count(),
-        2,
-        "{}",
-        r.out
-    );
+    assert!(silent["outside"].is_null(), "{silent}");
 }
 
 /// **The same over the corpus**: every claim `ein test -v` prints, its scope

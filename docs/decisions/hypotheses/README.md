@@ -6,7 +6,7 @@ Decisions on hypotheses: hrules, obligations, the generation ladder, the hypothe
 - [Q-M1d.2](Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md) — An obligation is a rule that concludes `(open ?R)`
 - [Q-M1d.3](Q-M1d.3-an-obligation-needs-no-closed-domain.md) — An obligation needs no closed domain
 - [Q-M1e.11](Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md) — H holds what a debt only a commitment brings would propose
-- [Q-M1e.12](Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md) — The blind enumerator is untyped, and an atom on the right of an `is-a` that it guesses about is named
+- [Q-M1e.12](Q-M1e.12-the-blind-enumerator-is-untyped.md) — The blind enumerator is untyped
 - [Q-M1e.21](Q-M1e.21-a-rule-brings-in-no-name.md) — A rule brings in no name
 - [Q-M1e2.10](Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md) — The obligations rung declines where its domain can grow
 - [Q-M1f.32](Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md) — An hrule's `eq` or `neq` instance is no hypothesis

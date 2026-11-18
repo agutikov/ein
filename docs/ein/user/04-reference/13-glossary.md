@@ -77,8 +77,8 @@ word is a program's, for an atom it groups other atoms under, `Nationality`, `Ho
 membership facts point at, `(is-a Norwegian Nationality)`, or a [label](#label-signature) of a declaration. Such an
 atom is a node like any other and takes part in facts as any atom does, and it means what the rules that read those
 facts make it mean. `ein render kb` draws the atom an `is-a` fact points at as a box, a convention of the drawing
-keyed on that relation's name, and `ein` prints the word in a few places, `--no-types` and the read-out's `types`
-row among them, for such an atom or for a label. See
+keyed on that relation's name, and `ein` prints the word in a few places, `--no-types` among them, for such an
+atom or for a label. See
 [`../03-syntax-and-semantics/04-ontology.md`](../03-syntax-and-semantics/04-ontology.md).
 
 ### Value

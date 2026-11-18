@@ -1029,8 +1029,8 @@ fn the_monotone_question_is_about_the_program() {
 /// clears what a describe's dump left; the levers, `-t`, `--events` and
 /// `--dump-lattice` are taken. What its counts are is held to describe's and
 /// the oracle's elsewhere (`read_out.rs`, `explore.rs`, `lever_invariance.rs`).
-/// The block carries `universe`'s `types` row: `pets.ein`'s blind enumerator
-/// binds `Pet`, a type, as an object (Q-M1e.12). Its `route` row names L8,
+/// `pets.ein`'s blind enumerator is untyped (Q-M1e.12), and its universe is
+/// fifteen candidates. Its `route` row names L8,
 /// and its `work` row counts no saturation of the extensions a state of
 /// `pets` denies.
 #[test]
@@ -1050,9 +1050,6 @@ fn the_count_question_is_describes_counts() {
              \x20 ∅                 in R — root is alive and owes nothing\n\
              \x20 lattice           monotone (the static check) — R is convex: no hole\n\
              \x20 universe          15 candidates, 0 dead alone\n\
-             \x20   types           Pet — on the right of an is-a, and 9 candidates of \
-             co-located, is-a name it as an object: the blind enumerator is untyped, and no \
-             signature names it\n\
              \x20 route             the state route, every alive state once — L1 dead is \
              upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · \
              L8 what a state denies is dead above it\n\

@@ -354,10 +354,6 @@ pub struct RootStats {
     /// relations the program can conclude or ask about, which it does not
     /// scope out itself, and of which the rung that built H proposes no fact.
     pub outside: Vec<crate::scope::Outside>,
-    /// What the untyped rung bound as an object ([`crate::types_as_objects`]):
-    /// the names on the right of an `is-a` that a candidate
-    /// of the blind enumerator's H names.
-    pub types_as_objects: crate::types_as_objects::TypesAsObjects,
     /// The relations' names the blind enumerator bound as objects
     /// ([`crate::relation_names`]): the names only a rule concludes a fact of
     /// that a candidate of its H names. Empty where it bound none, so a
@@ -421,9 +417,6 @@ pub enum Outcome {
         monotonicity: Monotonicity,
         /// What the universe leaves out, as [`RootStats::outside`].
         outside: Vec<crate::scope::Outside>,
-        /// What the untyped rung bound as an object, as
-        /// [`RootStats::types_as_objects`].
-        types_as_objects: crate::types_as_objects::TypesAsObjects,
         /// The relations' names bound as objects, as
         /// [`RootStats::relation_names`].
         relation_names: crate::relation_names::RelationNamesAsObjects,
@@ -506,7 +499,6 @@ pub(crate) fn compute_prepared(
             candidates,
             monotonicity,
             outside: root_stats.outside,
-            types_as_objects: root_stats.types_as_objects,
             relation_names: root_stats.relation_names,
             later: root_stats.later,
         });
@@ -847,9 +839,8 @@ pub(crate) fn prepare_with(
 /// [`prepare`] over a universe the caller names, in the order it names it,
 /// where the generator's list would be: root is saturated and the static
 /// check read as [`prepare`] reads them, *forbid* included, and the
-/// generator is not run, so [`RootStats::hypgen`], [`RootStats::outside`],
-/// [`RootStats::types_as_objects`] and [`RootStats::relation_names`] say
-/// nothing. For a reader that asks
+/// generator is not run, so [`RootStats::hypgen`], [`RootStats::outside`]
+/// and [`RootStats::relation_names`] say nothing. For a reader that asks
 /// what a program over fewer of its statements decides of the candidates
 /// another root proposed ([`crate::structure`]); no route calls it.
 pub(crate) fn prepare_over(
@@ -979,13 +970,9 @@ fn prepare_as(
             };
             crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans, &later)?
         };
-        // What the untyped rung bound as an object: read off
+        // A relation's name the blind enumerator bound as an object: read off
         // H and root's fixpoint, no event, and nothing it decides.
         let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
-        root_stats.types_as_objects =
-            crate::types_as_objects::of(root, terms, root_stats.hypgen.rung.mode, &facts);
-        // A relation's name the same rung bound as an object: read the same
-        // way, and nothing it decides either.
         root_stats.relation_names =
             crate::relation_names::of(root, terms, root_stats.hypgen.rung.mode, &facts);
     }

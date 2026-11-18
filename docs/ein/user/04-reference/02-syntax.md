@@ -259,7 +259,7 @@ signature holds atoms it does not read into.
 |---|---|
 | **not empty** | may guess the relation's facts: no fact of a relation declared with no label is ever guessed, so write `(relation R T)`, `T` any name, for a relation whose facts may be guessed and whose slot needs no label that says something |
 | **one or two labels long** | proposes one candidate per guessable atom for a relation of one argument, and one per pair of them for a relation of two; a relation of three arguments or more loads, its facts are stored and saturate, and none is ever guessed |
-| **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped-and-an-atom-on.md)) |
+| **its labels** | never proposes a fact *about* an atom a signature lists as a label: a label is no guessable atom ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)) |
 
 So a label is not inert where the blind enumerator builds the candidates. `ein show hyps` on the two lines
 `(relation likes Person Drink :why "{?1} likes {?2}")` and `(likes Ann Tea)` lists one candidate, `(likes Tea Ann)`;

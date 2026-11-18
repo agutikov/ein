@@ -62,9 +62,9 @@
 //! The runner's own output, machine-readable: **one row per `(query …)` of
 //! the whole selection**, whether or not it claims anything, and one per
 //! region claim, `ein-test-report/5`. A query row's `answer` says what its
-//! classes are over and how many. Every row carries `outside` and
-//! `types_as_objects`, what the universe leaves out beside a claim the run
-//! checked, as the summary's `root.hypgen` writes them; `route`, the question
+//! classes are over and how many. Every row carries `outside`, what the
+//! universe leaves out beside a claim the run checked, as the summary's
+//! `root.hypgen` writes it; `route`, the question
 //! its claim's outcome was read off, as `ein solve`'s flags spell it and
 //! `describe` for the bare run; and `fell_back_from`, the question asked
 //! first where it left the claim undecided; each `null` on a row no run
@@ -289,15 +289,12 @@ struct RegionRan {
 }
 
 /// What H leaves out, beside every claim a run checked, as the text surface
-/// prints it there (`outside the universe: …`, `a type as an object: …`) and
-/// `--json-summary` writes it in `root.hypgen`: `outside` (Q-M1e2.3) and
-/// `types_as_objects` (Q-M1e.12), under the
-/// summary's field names and in its shapes, `[]` and empty lists when H
-/// leaves nothing out.
+/// prints it there (`outside the universe: …`) and `--json-summary` writes it
+/// in `root.hypgen`: `outside` (Q-M1e2.3), under the summary's field name and
+/// in its shape, `[]` when H leaves nothing out.
 #[derive(Clone)]
 struct Scope {
     outside: Json,
-    types_as_objects: Json,
 }
 
 /// What a query's claim was checked against — `--json-report`'s
@@ -417,11 +414,11 @@ impl Row {
             }
         }
         // On every row, `null` where no run checked the row's claim.
-        let (outside, types) = self.scope.as_ref().map_or((Json::Null, Json::Null), |s| {
-            (s.outside.clone(), s.types_as_objects.clone())
-        });
+        let outside = self
+            .scope
+            .as_ref()
+            .map_or(Json::Null, |s| s.outside.clone());
         pairs.push(("outside", outside));
-        pairs.push(("types_as_objects", types));
         let word = |w: &Option<String>| w.as_deref().map_or(Json::Null, Json::str);
         pairs.push(("route", word(&self.route)));
         pairs.push(("fell_back_from", word(&self.fell_back_from)));
@@ -1175,10 +1172,7 @@ struct Beside {
     /// each claim printed as the warning is: a claim is checked over R, and R
     /// is over H.
     outside: Option<String>,
-    /// What the untyped rung bound as an object (Q-M1e.12), beside each
-    /// claim printed as the scope is.
-    types: Option<String>,
-    /// The same two, as data, on the row of every claim the run checked.
+    /// The same, as data, on the row of every claim the run checked.
     scope: Scope,
 }
 
@@ -1197,24 +1191,15 @@ impl Beside {
             }),
             outside: ein_render::read_out::outside_text(&r.answer.root.outside)
                 .map(|t| format!("    outside the universe: {t}")),
-            types: ein_render::read_out::types_text(&r.answer.root.types_as_objects)
-                .map(|t| format!("    a type as an object: {t}")),
             scope: Scope {
                 outside: ein_render::dump::region::outside_json(&r.answer.root.outside),
-                types_as_objects: ein_render::dump::region::types_json(
-                    &r.answer.root.types_as_objects,
-                ),
             },
         }
     }
 
     fn lines(&self) -> impl Iterator<Item = String> {
-        [
-            self.warning.clone(),
-            self.outside.clone(),
-            self.types.clone(),
-        ]
-        .into_iter()
-        .flatten()
+        [self.warning.clone(), self.outside.clone()]
+            .into_iter()
+            .flatten()
     }
 }
