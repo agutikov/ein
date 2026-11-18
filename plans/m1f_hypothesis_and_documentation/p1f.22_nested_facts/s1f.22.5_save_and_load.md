@@ -100,3 +100,62 @@ since every dumped state of every program is read again.
 file is a node of its program's lattice, so `ein solve F` describes the part of the program's R above it, H is the
 program's, and a state found above it is saved as the program with that state's commitment in one `(commit …)`.
 Tasks 2 to 4 start on it.
+
+**Tasks 2 to 4, the build, the tests and the pages** (2026-11-18). Done on the branch `s1f.22.5-save-load`, master
+merged into it before and after (N-35 ended). Of the work in progress (`db562a86`), the grammar's three forms,
+`ein_ir::saved`, the carried resolver, `Program::sources` and `commit`, the node read as a floor of the routes
+(`region::above`, `Floor`, `saved_node`) and the claims' NOT CHECKED were kept and finished; its `load_held` and
+`parse_held` through `saved::load_text` kept; nothing of it kept `written` away from a line, so nothing went with
+`written`.
+
+- **What was built.** `ein_ir::saved` writes and reads a saved file; `ein.y` takes `(program …)`, `(module NAME …)`
+  and `(commit F …)` at the top of a file (`Saved`, the grammar page's § 2.16, six rows of its table); the loader
+  refuses a wrapper in a program, and a load handed a saved file's forms reads it as its text is read
+  (`saved::load_forms`, from `load_query_by`). The resolver reads a saved file's imports from the modules it carries
+  and never the disk (`Resolver::carrying`), and records what a load read (`modules_read`), which
+  `ein_core::Program::sources` holds beside the `(commit …)`'s texts, `Program::commit`. The engine reads the
+  commitment as a node: `region::Floor` on the snapshot, written into every fork beside a node's own facts in H's
+  order, the run's universe H less it, root's standing the node's (`region::above`), the node's state for `ein
+  saturate` and `ein render kb` (`region::saved_node`), and a state found above it saved with the union
+  (`RootStats::commitment`). The answer directory's writer (`ein-answer/3`) writes each state as the program's text,
+  its modules' and the commitment, with no saturation, and `root.ein` the node again. The read-out's `commit` row,
+  the summary's `root.commit`, `index.json`'s `commit`; a saved file's claims NOT CHECKED under `ein solve` and
+  `ein test` (root alone, no exit code); `ein show hyps` and `ein render h-space` read the program's H; `ein kb save`
+  stores a root's file from its carried modules and refuses a node. The nesting limit takes a saved file's wrappers'
+  level (Q-M1f.185 rewritten). `dump_canonical` prints a wrapper as the file writes it.
+- **The format as built, against the ruled one.** As ruled: one fixed first line, `;;; ein-saved/1 — the program and
+  every module it imports, each as written, and the choices made: this file reads no other.`; `(program` a line
+  break, the program file's bytes, a line break `)`; `(module NAME` the same, every module the load read, once,
+  sorted by name; `(commit` then each candidate on a line of its own, two spaces in, the last closed `)`, in H's
+  order, absent at root. The commitment is the one the state was read from; a `.einb`'s state carries its stored
+  program and no module. What the run said of a state moved to `index.json` (`commit`, beside `region.states`'
+  `from`, `commitments`, `minimal_generators`). Differs from the format page's proposal in one line: the first line
+  is one, where the page's proposed files had two.
+- **The invariances, and their counts.** `ein-cli/tests/answer_round_trip.rs`, per commit, every corpus entry
+  neither `slow` nor `heavy_dump`: **631 programs, 28 319 state files**, each held three ways, and 639 of them through the
+binary. Each file's first load is the run's state, fact for fact and
+  origin for origin (`ein_cli::saturate::facts_section`); its root saved again is the file byte for byte; the two
+  loads' `ein saturate --dump` KB sections are one text; and the binary on each program's first and last file
+  (`ein solve F --no-search --dump-answer D`, `cmp`, `ein saturate --dump`). Under `EIN_CORPUS_SLOW=1`, every
+  entry, over its four nightly shards: **650 programs, 492 717 state files**, each held three ways, 673 through the
+binary, each shard 180, 194, 55 and 211 s on four P-core threads at four workers (N-41). No program is excluded: a program the loader refuses, or whose run writes no state, has no
+  file to hold. `ein-infer/tests/explore.rs`' `every_mode_is_the_oracle_above_a_saved_node`: a saved file at
+  362 nodes of corpus programs' cubes (245 states of R, 83 dead nodes, 34 owing; 47 on flagged programs, 315 on
+  monotone ones), 5 792 cells, each file's cube the program's above the node, node for node,
+  and every cell of `ein solve`'s two axes that cube. `ein-cli/tests/saved_files.rs` on `tests/saved/`: the
+  demo's twin (`01`, root), a choice with a fact inside it (`02`), the standard library's twin (`03`, five modules
+  carried, a load with `$EIN_STDLIB` pointing nowhere), a saved file in the corpus (`04`, `02`'s state, held to
+  be what `02`'s dump writes, and every corpus sweep reads it as the node it names), and every refusal.
+- **The questions defaulted**: Q-M1f.413 (`ein kb save` of a saved file), Q-M1f.414 (a fact's English, which a
+  state file's comments carried), Q-M1f.415 (`ein show hyps`, `ein render h-space` read the program's H),
+  Q-M1f.416 (what `ein test` asks a node), Q-M1f.417 (what a run of a saved file says of its node, `ein-answer/3`),
+  Q-M1f.418 (the nesting limit and the wrappers). Q-M1f.392 and Q-M1f.400 to .403 are decision files; Q-M1f.58 is
+  rewritten to the trace (`a-fact-reads-in-english-in-the-trace`), Q-M1f.185 to a state deeper than the limit, saved
+  and loaded again, and Q-M1f.27 to the program a container's state file carries.
+- **The checks, with exits.** On `339e592d` (master merged): `./run_tests.sh` exit 0 (20 min 13 s), and the first
+  `./run_tests.sh --nightly` exit 101 at the deep-corpus `dot_wellformed`, `tests/saved/` not among its `SKIPPING`
+  directories (`a5de14a1`); on `a5de14a1`, `./run_tests.sh --nightly` exit 0 (43 min 31 s). On the last code commit,
+  `88ba8cde` (master merged again): `./run_tests.sh` exit 0 (1 147 s), `./run_tests.sh --nightly` exit 0
+  (2 129 s). `utils/ci_container.sh` was not run: no DOT writer, the
+  review bundle or what CI installs was changed.
+- **Found outside the task**: N-36 to N-41 in [`findings.md`](findings.md).
