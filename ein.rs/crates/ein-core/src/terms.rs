@@ -243,6 +243,19 @@ pub fn is_reserved(name: &str) -> bool {
     RESERVED.contains(&name)
 }
 
+/// **Whether a name that heads a tuple is a relation of the program**
+/// (Q-M1f.522): every name is, wherever the program writes it first in a
+/// tuple, but the kernel's own words, [`RESERVED`], which the kernel reads as
+/// the forms of its language (the connectives `and` and `or`, `absent`, the
+/// computed `eq` and `neq`, the negation `not`, `false`, the verdict `open`,
+/// the declaration `relation` and the closure marker [`CLOSED`]), and the
+/// names the loader makes up for what a program writes no name for
+/// ([`crate::text::INTERNAL_NAMES`]). `=` is a name like any other: the
+/// grammar keeps it a name, and the kernel reads no form of it.
+pub fn heads_a_relation(name: &str) -> bool {
+    !is_reserved(name) && !crate::text::is_internal(name)
+}
+
 /// The engine's **own** names — the ones it writes into a KB rather than reads
 /// out of a program.
 ///

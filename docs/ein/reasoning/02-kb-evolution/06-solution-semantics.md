@@ -79,11 +79,11 @@ the program do not, which is the alive-set invariant of
 
 **The guessable atoms**, $\operatorname{guessable}(P)$, are what the blind enumerator fills the argument places of
 a fact with. [Hypothesis generation § 5](04-hypothesis-generation.md#5-the-blind-enumerator) defines them: the
-names of the program and the relations of root's facts, less four kinds of atom, each left out by its name. Ein has
-no types, and none decides this
-([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). One
-consequence is used below: a relation whose facts only a rule concludes is a guessable atom, so a candidate can
-have it as an argument, and the answer names that candidate (§ 1.4).
+names of the program less four kinds of atom, each left out by its name. Ein has no types, and none decides this
+([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). A
+relation is never one: an atom the program writes first in a tuple is a relation of the program, whichever way it
+is written, and no candidate has a relation as an argument
+([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)).
 
 ### 1.3 Root
 
@@ -184,11 +184,10 @@ arguments with the same label, $\operatorname{co-located}(\mathsf{Blue}, \mathsf
 of $R$ may hold it. $R$ is right for the program as written, and a declaration that writes $\mathsf{Color}$ as a
 label keeps it out of $H$. A membership relation is a relation like any other.
 
-**A relation that is guessed about is named** (§ 1.2). Where a rule derives
-$\operatorname{liquid}(\mathsf{Tea})$, nothing declares $\operatorname{liquid}$, and the blind enumerator fills a
-declared relation $\operatorname{tasty}$ of one argument, $\operatorname{tasty}(\mathsf{liquid})$ is a candidate and
-a state of $R$ may hold it. The candidate stays, and declaring $\operatorname{liquid}$ takes the atom out of the
-guessable atoms. It decides nothing: $H$, $R$ and every count are the same without the sentence.
+**No relation is guessed about** (§ 1.2). Where a rule derives $\operatorname{liquid}(\mathsf{Tea})$, nothing
+declares $\operatorname{liquid}$, and the blind enumerator fills a declared relation $\operatorname{tasty}$ of one
+argument, $\operatorname{tasty}(\mathsf{liquid})$ is no candidate: the rule writes $\operatorname{liquid}$ first in a
+tuple, so it is a relation of the program whether or not a declaration names it.
 
 ### 1.5 Commitment, node, state
 

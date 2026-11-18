@@ -409,8 +409,11 @@ and it has three clauses:
    \operatorname{names}(P)$. An atom only a query writes is not a name of the program: adding a query never
    changes $R$.
 2. **No new relations.** $\operatorname{rels}(\operatorname{st}(C)) \subseteq \operatorname{rels}(P)$, the
-   relations fixed when the program is read: the declared ones, the relations of the program's facts, and every
-   atom under the first arrow of a fact pattern a rule can conclude. No fact of any other relation is added
+   relations of the program, fixed when it is read: every atom it writes first in a tuple, at any depth, the
+   relation of each of its facts and of each fact inside one, of each pattern of a rule, a premise or a
+   conclusion, and the atom an activator gives a parameter that stands first in a pattern; and the declared ones
+   ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)). The
+   words of the rule language and the kernel's markers are none. No fact of any other relation is added
    while a saturation runs, and nothing adds a rule or a declaration: a conclusion is literals, so along every
    saturation $P$ and $\operatorname{names}(P)$ are constant and a knowledge base grows by facts alone.
 3. **Hypotheses connect names.** $h \in H \implies \operatorname{names}(h) \subseteq \operatorname{names}(P)$: a

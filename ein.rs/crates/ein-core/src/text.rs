@@ -134,9 +134,10 @@ pub fn symbol(s: &str) -> Cow<'_, str> {
 /// would load as one fact.
 pub const INTERNAL_MARK: char = '#';
 
-/// The relation name the loader gives a nested form whose head is not an atom
-/// (`(r (?x a))`, `(r (_ a))`): it is no name text can spell, and `_` in head
-/// position loads as it, so a nested fact with this head prints `(_ …)`.
+/// The relation name the loader gives a nested form whose head is not an atom.
+/// The parse refuses every such form, `(r (_ a))`, `(r (?x a))` and
+/// `(r ((f b) a))` among them, so no program reaches it; it is no name text
+/// can spell, and a nested fact with this head prints `(_ …)`.
 pub const NESTED_HEAD: &str = "#nested";
 
 /// The relation name the loader gives the empty form `()`, which prints as

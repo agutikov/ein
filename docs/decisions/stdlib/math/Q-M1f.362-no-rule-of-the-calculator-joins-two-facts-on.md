@@ -7,9 +7,11 @@ Two rules of `std.math.positional` join on a **name**, which the fact index keys
 each call carries in its tag what its caller needs next, and each walk keeps its accumulator in the state, so a
 rule reads one fact and a table.
 
-**Why.** The engine's fact index does not key on a nested fact, so a join of two facts on a number would scan a
-relation for every fact of the other, and a batch of requests would cost the square of its count. Written this way,
-a batch costs in proportion to its count.
+**Why.** The engine's fact index keys a name, and the names one level inside a nested fact, never a fact itself: a
+premise whose bound argument holds a fact walks the held extent of its relation. A number other than `z` is a fact, a
+numeral `(n …)` or `(b2 …)` nested to any depth, so a join of two facts on a number would scan a relation for every
+fact of the other, and a batch of requests would cost the square of its count. Written this way, a batch costs in
+proportion to its count.
 
 **Held by.** `ein-infer/tests/arith_theory.rs` and `num9_theory.rs`: `no_rule_joins_two_facts_on_a_number`, on each
 module's text and on the shared rules as each base activates them; `int_theory.rs`, `rat_theory.rs` and

@@ -135,7 +135,7 @@ add("""---
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
 | [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
 | [X14](#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) | `features/07_unstratifiable.ein` | 1 | every row of the warning, the strata, and `--monotone` on a flagged program |
-| [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 35 | the warning past four stale nodes |
+| [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 19 | the warning past four stale nodes |
 | [X16](#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) | `ein-bugs/zebra2-bad.ein`, `ein-bugs/wrong-answers/core-search-cut.ein` | 0 | why root is dead: its core, a fact's `:source`, and a core search cut at its budget |
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
@@ -396,10 +396,6 @@ add("""## X15 — `features/01_not_and_absent.ein`: the warning past four rows
 A flagged program past `--region-limit` whose nodes hold thousands of stale facts: stdout names four `stale` nodes,
 then one `…` row counts the rest and names what writes them, so the warning stays bounded on its own and takes none of
 the listings' 100 lines.
-
-Under `universe`, the `relation names` row: the rule `see-stored-neg` concludes `explicitly-dislikes` facts, no file
-declares the relation or writes a fact of it, so the relation is an atom the blind enumerator proposes about, the
-row's *object*, and a candidate can have it as an argument. The candidates stay in H, and the row counts them.
 """)
 add(block(["examples/features/01_not_and_absent.ein"]))
 

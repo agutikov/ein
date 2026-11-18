@@ -174,6 +174,15 @@ definitions, and neither includes the other: a declared relation of which the kn
 under no first arrow, and a relation that nothing declares is a relation all the same. The atom
 $\mathsf{relation}$ is itself a relation, by the declarations, and cannot be declared.
 
+**The relations of a program** are every atom it writes first in a tuple, at any depth, and every atom it declares:
+being first in a tuple is enough, and a declaration is an optional fact, a convention some modules of the standard
+library use to reason about a relation's arguments
+([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)). The few
+atoms the kernel reads as the forms of its language, $\mathsf{relation}$ and the words of the rule language among
+them, are relations of the graph that no program counts among its own
+([saturation](../02-kb-evolution/02-saturation.md#the-alive-set-invariant) writes the set
+$\operatorname{rels}(P)$).
+
 ### The definitions, in one diagram
 
 The diagram below is of the definitions themselves, not of a knowledge base: it says how the terms above stand

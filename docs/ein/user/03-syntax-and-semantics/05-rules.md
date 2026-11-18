@@ -228,7 +228,11 @@ A variable that stands for a relation, in the head position of a pattern or a co
 `(?r ?a ?b)` with `?r` bound by nothing else is refused at load. That is how one rule serves every relation it is
 activated on, and it is how the standard library's properties work: `(transitive knows)` is the activator of a
 `transitive` rule ([properties and operators](07-properties-and-operators.md)). A rule with parameters and no activator
-fact never fires; an activator may itself be derived by a rule, and then the rule starts firing once it is.
+fact never fires; an activator may itself be derived by a rule, and then the rule starts firing once it is. The
+relation an activator gives such a parameter is a relation of the program, declared or not, as every atom the
+program writes first in a tuple is, so `(tag happy)` beside `(rule tag (?R) :match (person ?x) :assert (?R ?x))`
+makes `happy` one, and the blind enumerator guesses about none of them
+([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)).
 
 ## Rules and contexts
 

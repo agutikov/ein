@@ -81,3 +81,4 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.391](Q-M1f.391-the-negation-of-a-negation-is-a-fact.md) — The negation of a negation is a fact
 - [Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) — A rule unpacks a fact by its count
 - [Q-M1f.394](Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md) — A fact is in the global context, in a fact's context, or in both
+- [Q-M1f.522](Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md) — A relation of the program is any atom it writes first in a tuple

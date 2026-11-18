@@ -51,7 +51,11 @@ the program's background facts:
 ```
 
 A relation needs no declaration: a fact or a rule that writes `(likes Bob Tea)` makes `likes` a relation of the
-program, the atom under that fact's first arrow, with no labels, no held count and no sentence. *Relation* and
+program, the atom under that fact's first arrow, with no labels, no held count and no sentence. So does a fact
+written inside another, `(claims Carol (likes Bob Tea))`, and an activator that gives a rule's parameter the name,
+`(tag happy)` for a rule `tag (?R)` that concludes `(?R ?x)`: every atom the program writes first in a tuple is a
+relation of the program, and none is an atom the blind enumerator guesses about
+([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)). *Relation* and
 *declared relation* are two things an atom can be, and neither needs the other: a declared relation of which the
 program has no fact is under no first arrow.
 

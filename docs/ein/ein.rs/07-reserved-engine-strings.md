@@ -89,7 +89,7 @@ opens a comment), so no program can spell one. `ein_core::text::INTERNAL_NAMES` 
 | name | names | printed as |
 |---|---|---|
 | `#empty` | the empty form `()`: an empty name list | `()` |
-| `#nested` | a nested form whose head is not a name, `(r (_ a))` | `(_ …)` |
+| `#nested` | a nested form whose head is not a name. The parse refuses every such form, `(r (_ a))`, `(r (?x a))` and `(r ((f b) a))` among them, so no program reaches it | `(_ …)` |
 | `#params` | a rule's or a macro's parameter list | the list, with no head |
 | `#list` | a fact's `:using` list, in the parse tree | the list, with no head |
 | `#query` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |

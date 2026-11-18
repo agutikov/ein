@@ -619,9 +619,13 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// reads that list); it is this set, the enumerator's, that leaves it out.
 /// `ein-infer/tests/dunder_objects.rs` holds both.
 ///
-/// A relation's name is an object only where the registry does not hold it:
-/// the head of a fact that only a rule concludes. Such a candidate stays, and
-/// [`crate::relation_names`] names it for the read-out.
+/// **A relation is never an object** (Q-M1f.522): an atom the program writes
+/// first in a tuple is a relation, which the registry holds
+/// ([`ein_core::Program::relations`]: a fact's, a nested fact's, a rule's
+/// `:assert`'s and the one an activator gives a parameter), and so is the
+/// relation of every fact root's fixpoint holds, which this reads off the
+/// names index too, so that a relation a rule concludes through a parameter
+/// bound where no text names it is no object either.
 ///
 /// Soundness does not depend on this set being tight, only tractability:
 /// type-wrong candidates that survive die downstream against the puzzle's own
@@ -665,6 +669,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
             && !reserved.contains(&n)
             && n != dunder
             && kb.category(terms, n) == NameCategory::Object
+            && kb.name_as_head(n).next().is_none()
     });
     // By name, which the rank table turns into a `u32` sort. `Kb::names` is
     // first-seen order, which is not a contract, so this sort is not a
@@ -990,6 +995,60 @@ mod tests {
             names,
             ["A", "B", "M", "N"],
             "M (a :match) and N (a nested fact) held, Q (a query) not"
+        );
+    }
+    /// **A relation is no object** (Q-M1f.522): an atom the program writes
+    /// first in a tuple is a relation however it is written, and the blind
+    /// enumerator guesses about none of them, though each is written as a
+    /// value too: `liquid`, a rule's `:assert` head; `happy`, the relation the
+    /// activator `(tag happy)` gives a parameter that heads a conclusion; `+`,
+    /// the relation of a fact inside another. `glad` reaches a relation's place
+    /// only through a guard, where no text names it so, and root's fixpoint
+    /// holds a fact of it: it is no object either.
+    #[test]
+    fn candidate_objects_hold_no_relation() {
+        let src = "(relation person P :why \"{?3} is a person\")\n(person Ann)\n\
+             (marker liquid) (marker happy) (marker +) (marker glad)\n\
+             (said Ann (+ Ann Ann))\n\
+             (rule liquids () :match (person ?x) :assert (liquid ?x) :why \"{?x} is liquid\")\n\
+             (rule tag (?R) :match (person ?x) :assert (?R ?x) :why \"every person is {?R}\")\n\
+             (tag happy)\n\
+             (rule pick () :match (eq ?y glad) :assert (tag ?y) :why \"{?y} tags\")";
+        let (ast, mut terms, mut kb) = kb_of(src);
+        let registered = |kb: &Kb, terms: &Terms, n: &str| {
+            terms
+                .syms
+                .get(n)
+                .is_some_and(|s| kb.program().relations.contains(s))
+        };
+        for n in ["liquid", "happy", "+", "said", "marker", "person"] {
+            assert!(
+                registered(&kb, &terms, n),
+                "{n} is a relation of the program"
+            );
+        }
+        assert!(
+            !registered(&kb, &terms, "glad"),
+            "no text writes glad first in a tuple"
+        );
+        let mut off = crate::events::Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut off,
+            memo: Default::default(),
+        };
+        let mut sat = crate::saturator::Saturator::new(&mut s).expect("compiles");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
+            .iter()
+            .map(|&s| terms.sym(s))
+            .collect();
+        assert_eq!(
+            names,
+            ["Ann"],
+            "every relation left out, glad by root's fact of it"
         );
     }
 }

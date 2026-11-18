@@ -82,7 +82,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 /// **Why the second level exists.** Keyed on the join-key types only, a
 /// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
 /// scans `not`'s whole extent to reject all but a handful
-/// ([03-design/03-data-model.md § 5](../../../../docs/ein/ein.rs/03-design/03-data-model.md#5-the-layered-kb)).
+/// ([03-design/03-data-model.md § 6.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#61-the-participation-key)).
 /// Keying one level in turns that scan into a bucket lookup. It is a
 /// *narrowing* — the matcher re-checks every slot regardless — so it changes
 /// which facts are offered and not which ones match, and buckets are appended
@@ -1155,9 +1155,11 @@ impl Kb {
                 self.top.by_rel_slot_val.entry(key).or_default().push(id);
                 self.top.bloom_add(&key);
             } else if let Some(nested) = value.as_fact() {
-                // …so key one level in instead. Only one level:
-                // the corpus's nesting is `(not (R …))` and a second would
-                // cost entries nothing asks for.
+                // …so key one level in instead. Only one level: it serves
+                // a premise over a stored negation, `(not (R ?a ?b))`, and
+                // one over a context whose fact holds names,
+                // `(says ?w (owns ?p ?x))`; what nests deeper, a numeral or a
+                // tag, is not keyed (03-design/03-data-model.md § 6.1).
                 for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
                     if deep.tag() != Tag::Fact {
                         let key = SlotKey {

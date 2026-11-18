@@ -355,12 +355,14 @@ is on [the calculator's page](07-calculator.md#no-rule-joins-two-facts-on-a-numb
 ### How long a number may be
 
 The theory has no width. A program can write a number of at most 999 digits, since a numeral nests a level a digit
-and the parser refuses a program nested past 1 000 parentheses ([diagnostics](../07-diagnostics.md)); a rule may
-derive a longer one. A step of a circuit holds its operands inside its tag, two levels deeper than the request for
-a sum, a difference and a comparison and three for a product and a quotient, so a state written by `--dump-answer`
-from operands near that length is refused when it is loaded again, though every answer is right and printed. A
-product's or a quotient's facts grow as the two lengths multiplied, each holding its numbers whole, so a long
-product is a query's to read rather than a state to write out.
+and the parser refuses a program nested past 1 000 parentheses
+([diagnostics](../07-diagnostics.md#17-a-text-nested-past-1-000-parentheses-is-refused-before-it-is-parsed)); a rule
+may derive a longer one. A step of a circuit holds its operands inside its tag, two levels deeper than the request for
+a sum, a difference and a comparison and three for a product and a quotient, so a state of operands near that length
+holds facts past the limit. It is answered and printed all the same, and the file `--dump-answer` saves for it loads
+again: a saved state is its program and the choices made, and the program is within the limit. A product's or a
+quotient's facts grow as the two lengths multiplied, each holding its numbers whole, so a long product is a query's
+to read rather than a state to write out.
 
 ## Using `std.math.decimal` — the decimal numeral
 

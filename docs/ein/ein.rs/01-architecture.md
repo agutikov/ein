@@ -128,7 +128,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `saturator.rs`, `firing.rs`, `contradiction.rs` | the two-phase loop and the agenda; a rule application; the contradiction check |
 | `obligations.rs` | the obligation pass over a quiescent KB |
 | `naf_deps.rs`, `strata.rs` | the static map of what reads an `absent` over what; the rule dependency graph and its strata |
-| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs`, `relation_names.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out; a relation's name among the atoms guessed about |
+| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out |
 | `monotone.rs`, `detector.rs`, `forbid.rs` | the static check, the detector, the refusal of a refutation resting on an extendable `absent` |
 | `region.rs` | the node function, the fan-out, the cube (route 2, the oracle) |
 | `explore.rs` | every question about `R` and its route; the licences |

@@ -142,6 +142,10 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `beliefs/01` to `11` write a belief's, a claim's or a thought's content
 ///   only as another fact's argument, or under a stored negation, so its
 ///   names are no top-level argument.
+/// - a name the program writes first in a tuple is a relation of the
+///   program, which the names index holds through the registry
+///   (Q-M1f.522), so it is no seed: `syntax/wrappers.ein`'s `r`, an argument
+///   of the nested `(relation r T T)` and the relation of `(r a b)`.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
@@ -434,7 +438,6 @@ const SEEDED: [(&str, &[&str]); 149] = [
             "`a`, in (ontology (relation r T T) (is-a a T))",
             "`b`, in (facts (r a b))",
             "`c`, in (reasoning (r b c))",
-            "`r`, in (ontology (relation r T T) (is-a a T))",
         ],
     ),
     (
