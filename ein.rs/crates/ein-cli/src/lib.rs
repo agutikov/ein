@@ -93,12 +93,17 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     render::cmd_program(&file(a), mode(a), fold(a), &common::load_options(a))
                 }
                 Some(("kb", a)) => render::cmd_kb(
-                    &file(a),
-                    a.get_one::<String>("since").map(String::as_str),
-                    a.get_one::<String>("colour-by")
-                        .and_then(|c| ein_render::ColourBy::parse(c))
-                        .unwrap_or(ein_render::ColourBy::Relation),
-                    fold(a),
+                    &render::KbArgs {
+                        file: &file(a),
+                        since: a.get_one::<String>("since").map(String::as_str),
+                        colour_by: a
+                            .get_one::<String>("colour-by")
+                            .and_then(|c| ein_render::ColourBy::parse(c))
+                            .unwrap_or(ein_render::ColourBy::Relation),
+                        fold: fold(a),
+                        goal: a.get_one::<String>("goal").map(String::as_str),
+                        query: a.get_one::<u64>("query").map(|&n| n as usize),
+                    },
                     &common::load_options(a),
                 ),
                 Some(("region", a)) => render::cmd_region(

@@ -1,17 +1,23 @@
 digraph constraints {
   rankdir=TB;
-  node [fontname="Inter", shape=box];
   ranksep=0.55;
+  node [fontname="Inter", shape=box];
   f_ecefbc34bf [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "relation" -> f_ecefbc34bf [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_ecefbc34bf -> "knows" [xlabel="2", color="#bcbd22", style=solid];
   f_ecefbc34bf -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_ecefbc34bf -> "Person" [xlabel="4", color="#bcbd22", style=solid];
+  f_fccc388ce9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_fccc388ce9 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_fccc388ce9 -> "knows" [xlabel="2", color="#bcbd22", style=solid];
   f_bff1f00bd5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "relation" -> f_bff1f00bd5 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_bff1f00bd5 -> "above" [xlabel="2", color="#bcbd22", style=solid];
   f_bff1f00bd5 -> "Box" [xlabel="3", color="#bcbd22", style=solid];
   f_bff1f00bd5 -> "Box" [xlabel="4", color="#bcbd22", style=solid];
+  f_c803b32d62 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_c803b32d62 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_c803b32d62 -> "above" [xlabel="2", color="#bcbd22", style=solid];
   f_ede3ba861c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
   "symmetric" -> f_ede3ba861c [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_ede3ba861c -> "knows" [xlabel="2", color="#7f7f7f", style=solid];
@@ -21,12 +27,19 @@ digraph constraints {
   f_52b898a1d3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
   "asymmetric" -> f_52b898a1d3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_52b898a1d3 -> "above" [xlabel="2", color="#bcbd22", style=solid];
+  f_f146176ad1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=dashed, xlabel="by std.algebra.symmetric-is-self-converse"];
+  "std.algebra.converse" -> f_f146176ad1 [xlabel="1", dir=back, color="#9467bd", style=dashed];
+  f_f146176ad1 -> "knows" [xlabel="2", color="#9467bd", style=dashed];
+  f_f146176ad1 -> "knows" [xlabel="3", color="#9467bd", style=dashed];
+  f_87582abd0f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", fontcolor="#e377c2", style=dashed, xlabel="by std.algebra.symmetric-negative-setup"];
+  "std.algebra.symmetric-negative" -> f_87582abd0f [xlabel="1", dir=back, color="#e377c2", style=dashed];
+  f_87582abd0f -> "knows" [xlabel="2", color="#e377c2", style=dashed];
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 0" -> "layer 1" [style=invis];
   "layer 1" -> "layer 2" [style=invis];
-  { rank=same; "layer 0"; "relation"; "symmetric"; "transitive"; "asymmetric"; }
-  { rank=same; "layer 1"; f_ecefbc34bf; f_bff1f00bd5; f_ede3ba861c; f_e45906203b; f_52b898a1d3; }
+  { rank=same; "layer 0"; "relation"; "symmetric"; "transitive"; "asymmetric"; "std.algebra.converse"; "std.algebra.symmetric-negative"; }
+  { rank=same; "layer 1"; f_ecefbc34bf; f_fccc388ce9; f_bff1f00bd5; f_c803b32d62; f_ede3ba861c; f_e45906203b; f_52b898a1d3; f_f146176ad1; f_87582abd0f; }
   { rank=same; "layer 2"; "knows"; "Person"; "above"; "Box"; }
 }

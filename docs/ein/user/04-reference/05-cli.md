@@ -242,8 +242,8 @@ changes the drawing and nothing else.
 |---|---|
 | `ein render program FILE` | the program as written, in three parts: its knowledge base as one digraph, drawn as `ein render kb` draws one; a digraph per rule, hrule and macro; the query ([Q-M1f.420](../../../decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md)) |
 | `ein render rules FILE`, `rule FILE --name R` | one digraph per rule, or one rule by name |
-| `ein render constraints FILE` | the facts a program states, with no source, of the relations it does not declare |
-| `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE` that loads to its state, so a solution draws the way root does |
+| `ein render constraints FILE` | the facts about relations: every fact root holds at its fixpoint with a relation of the program under an argument arrow, with what it points at ([Q-M1f.530](../../../decisions/cli/Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md)) |
+| `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE` that loads to its state, so a solution draws the way root does. `--goal GOAL`, or `--query N` for the program's `N`-th query, draws the slice of a goal instead: the facts of that knowledge base that answer it, with what they point at ([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md)) |
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
 | `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([what the structure is](../../reasoning/02-kb-evolution/05-hypothesis-space.md); [the command, its read-out and `h-space.json`](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command)) |

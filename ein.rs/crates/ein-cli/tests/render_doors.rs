@@ -6,6 +6,7 @@
 //! ```text
 //! ein render program FILE [--fold] [--rule-mode …]          the program as written
 //! ein render kb FILE [--since FILE] [--colour-by …] [--fold] a KB, one digraph
+//!   [--goal GOAL | --query N]                                or a goal's slice of it
 //! ein solve FILE --dump-lattice DIR …                        every node the run visited
 //! ein render lattice FILE [--view full]                      those nodes drawn
 //! ```
@@ -152,8 +153,9 @@ fn every_door_prints_dot_that_dot_draws() {
 ///
 /// A view that drew a program before loading it would give a refused program
 /// a picture, a view answering a program every other command refuses. The
-/// four views that draw a program as written read it through the loader
-/// first, and draw a program it accepts as written.
+/// three views that draw a program as written read it through the loader
+/// first, and draw a program it accepts as written; the constraint view draws
+/// what it loads.
 #[test]
 fn every_view_refuses_what_the_loader_refuses() {
     let file = "examples/broken/load/derivation_cycle.ein";
@@ -223,6 +225,160 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
         "the bold facts are not the commitment's:\n{}",
         bold.join("\n")
     );
+}
+
+/// The octagons a drawing declares, each a fact's node.
+fn octagons(dot: &str) -> usize {
+    dot.lines().filter(|l| l.contains("[shape=octagon")).count()
+}
+
+/// The facts of `relation` a drawing draws as octagons: the arrows `1` at its
+/// box.
+fn facts_of(dot: &str, relation: &str) -> usize {
+    let head = format!("  \"{relation}\" -> f_");
+    dot.lines()
+        .filter(|l| l.starts_with(&head) && l.contains("[xlabel=\"1\", dir=back"))
+        .count()
+}
+
+/// **A goal's slice is drawn by `render kb`** (Q-M1f.529): under `--goal` or
+/// `--query N`, the facts of the knowledge base drawn that answer the goal,
+/// with what they point at, a fact it does not hold in its frame; of root, or
+/// of a saved state, against which the goal is matched and never against R.
+#[test]
+fn render_kb_draws_a_goals_slice() {
+    // At root: the membership fact and the fact of `symmetric` the goal's one
+    // row names, of the 390 root holds.
+    let r = ein(&[
+        "render",
+        "kb",
+        "examples/zebra2.ein",
+        "--goal",
+        "(and (relation ?r) (symmetric ?r))",
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.starts_with("digraph goal {"), "{}", r.out);
+    assert_eq!(octagons(&r.out), 2, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "symmetric"), 1, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "relation"), 1, "{}", r.out);
+    dot_accepts("render kb --goal", &r.out);
+    // A fact under an arrow is drawn with the facts that point at it: held,
+    // in no frame; held nowhere, in the frame of what points at it.
+    let beliefs = [
+        "render",
+        "kb",
+        "examples/beliefs/01_common_belief.ein",
+        "--goal",
+        "(believes ?who (likes Dan ?food))",
+    ];
+    let r = ein(&beliefs);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert_eq!(facts_of(&r.out, "believes"), 5, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "likes"), 2, "{}", r.out);
+    assert_eq!(
+        r.out.matches("label=\"believes ctx\"").count(),
+        1,
+        "{}",
+        r.out
+    );
+    let mut folded = beliefs.to_vec();
+    folded.push("--fold");
+    let r = ein(&folded);
+    assert_eq!(r.code, 0, "{}", r.err);
+    dot_accepts("render kb --goal --fold", &r.out);
+    // The program's own query, of the state it answers from: zebra2's at root
+    // has nothing to answer, and of the saved solution its four facts.
+    let r = ein(&["render", "kb", "examples/zebra2.ein", "--query", "1"]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert_eq!(octagons(&r.out), 0, "{}", r.out);
+    assert!(r.out.contains("// the slice keeps no fact"), "{}", r.out);
+    let tmp = scratch("goal");
+    let dir = tmp.join("answer");
+    let solved = ein(&[
+        "solve",
+        "examples/zebra2.ein",
+        "--dump-answer",
+        &dir.to_string_lossy(),
+    ]);
+    assert_eq!(solved.code, 0, "{}", solved.err);
+    let state = dir.join("models/01.ein");
+    let r = ein(&["render", "kb", &state.to_string_lossy(), "--query", "1"]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert_eq!(octagons(&r.out), 4, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "nation-loc"), 2, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "drink-loc"), 1, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "pet-loc"), 1, "{}", r.out);
+    dot_accepts("render kb STATE --query 1", &r.out);
+}
+
+/// **A goal given beside the program is refused as a query's would be**
+/// (Q-M1f.529), with the query's line and the views' exit, 1, and nothing
+/// drawn; a query the program has not is refused the same way, and the two
+/// options together are a usage error, exit 2.
+#[test]
+fn render_kb_refuses_a_goal_a_query_could_not_ask() {
+    let file = "examples/zebra2.ein";
+    for (goal, first) in [
+        ("(payed ?x)", "kb load error: --goal:1:"),
+        (
+            "(?r Red ?h)",
+            "kb load error: query: its :goal writes (?r Red ?h)",
+        ),
+        ("(p ?x", "--goal:1:"),
+        ("(p ?x)) (q", "kb load error: --goal: "),
+        (
+            "(color-loc ?c ?h) :expect (model)",
+            "kb load error: --goal: ",
+        ),
+    ] {
+        let r = ein(&["render", "kb", file, "--goal", goal]);
+        assert_eq!(r.code, 1, "{goal}: {}", r.err);
+        assert!(r.err.starts_with(first), "{goal}: {}", r.err);
+        assert!(r.out.is_empty(), "{goal} drew:\n{}", r.out);
+    }
+    let r = ein(&["render", "kb", file, "--query", "2"]);
+    assert_eq!(r.code, 1, "{}", r.err);
+    assert_eq!(
+        r.err.lines().next(),
+        Some("--query 2: examples/zebra2.ein has 1 (query …) form")
+    );
+    let r = ein(&[
+        "render",
+        "kb",
+        file,
+        "--query",
+        "1",
+        "--goal",
+        "(color-loc ?c ?h)",
+    ]);
+    assert_eq!(r.code, 2, "{}", r.err);
+}
+
+/// **`render constraints` draws the facts about relations of root**
+/// (Q-M1f.530): of zebra2's root at its fixpoint, the declarations and the
+/// facts the loader adds beside them, and every fact of a property, given or
+/// derived, each an octagon with its relation under an argument arrow; and
+/// no written check, which no knowledge base holds (Q-M1f.531).
+#[test]
+fn render_constraints_draws_roots_facts_about_relations() {
+    let r = ein(&["render", "constraints", "examples/zebra2.ein"]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.starts_with("digraph constraints {"), "{}", r.out);
+    assert_eq!(facts_of(&r.out, "bijective"), 5, "{}", r.out);
+    assert_eq!(facts_of(&r.out, "symmetric"), 1, "{}", r.out);
+    assert!(facts_of(&r.out, "relation") >= 18, "{}", r.out);
+    // A fact of a relation the program states, about no relation, is not kept.
+    assert_eq!(facts_of(&r.out, "color-loc"), 0, "{}", r.out);
+    for file in [
+        "examples/ein-bugs/wrong-answers/fact-eq-false.ein",
+        "examples/ein-bugs/wrong-answers/not-eq-fact.ein",
+    ] {
+        let r = ein(&["render", "constraints", file]);
+        assert_eq!(r.code, 0, "{file}: {}", r.err);
+        assert_eq!(facts_of(&r.out, "eq"), 0, "{file}: {}", r.out);
+        assert_eq!(facts_of(&r.out, "not"), 0, "{file}: {}", r.out);
+        assert_eq!(facts_of(&r.out, "relation"), 2, "{file}: {}", r.out);
+    }
 }
 
 /// **One program in both forms, through every door that draws facts**

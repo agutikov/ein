@@ -567,11 +567,21 @@ fn the_rule_view_draws_a_pattern_as_a_fact() {
     );
 }
 
+/// **The constraint view keeps the facts about relations** (Q-M1f.523,
+/// Q-M1f.530): of root's knowledge base, every fact with a relation of the
+/// program directly under an argument arrow, each drawn as a fact, with what
+/// it points at. `r`, `f` and `g` are relations of the program, each written
+/// first in a tuple; `act`'s fact and `(f a)` hold none, and `(pair …)` one
+/// only under an arrow of a fact under its own.
 #[test]
 fn the_constraint_view_draws_a_property_as_a_fact() {
-    let (ast, forms) = parsed("(act (f a))\n(pair (f a) (g b c))\n(f a)\n(symmetric r)\n");
+    let text = "(r x y)\n(symmetric r)\n(f a)\n(act (f a))\n(pair (f a) (g b c))\n\
+                (about r (f a))\n(about g (g b c))\n(pair x (h r))\n";
+    let (mut ast, forms) = parsed(text);
+    let mut terms = Terms::new();
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
     for fold in [false, true] {
-        let dot = render_constraints(&ast, &forms, "constraints", fold);
+        let dot = render_constraints(&kb, &terms, "constraints", fold);
         holds_the_rules(&dot, fold).unwrap_or_else(|e| panic!("{e}\n{dot}"));
         nothing_is_filled(&dot);
         // A property of a relation is a fact about it, never a word in its
@@ -583,16 +593,46 @@ fn the_constraint_view_draws_a_property_as_a_fact() {
         } else {
             assert!(has_arrow(&dot, &sym, "\"r\"", "2"), "{dot}");
         }
-        // A fact the program states is in no frame; one it does not, in the
-        // frame of what points at it.
+        // A fact the knowledge base holds, pointed at, is in no frame; one it
+        // does not hold, in the frame of what points at it.
         let f = fact_id("f", &["a".into()]);
         assert_eq!(frame_of(&dot, &f), None, "{dot}");
         let g = fact_id("g", &["b".into(), "c".into()]);
-        assert_eq!(frame_of(&dot, &g).as_deref(), Some("pair ctx"), "{dot}");
+        assert_eq!(frame_of(&dot, &g).as_deref(), Some("about ctx"), "{dot}");
         assert!(
             dot.contains(&format!("  {g} -> \"c\" [xlabel=\"3\"")),
             "{dot}"
         );
+        // A fact about no relation is not kept, and neither is one whose
+        // relation stands only under an arrow of a fact under its arrows.
+        for (rel, args) in [
+            ("r", vec!["x", "y"]),
+            ("act", vec!["(f a)"]),
+            ("pair", vec!["(f a)", "(g b c)"]),
+            ("pair", vec!["x", "(h r)"]),
+        ] {
+            let args: Vec<String> = args.into_iter().map(str::to_string).collect();
+            let id = fact_id(rel, &args);
+            assert!(!dot.contains(&id), "({rel} …) is kept:\n{dot}");
+        }
+    }
+}
+
+/// **A written check is no fact the constraint view draws** (Q-M1f.531): a
+/// check the program writes as a fact, `(eq a w)` or `(not (eq a a))`, is no
+/// fact the knowledge base holds, and the view draws the knowledge base.
+#[test]
+fn the_constraint_view_draws_no_written_check() {
+    for check in ["(eq a w)", "(not (eq a a))"] {
+        let text = format!("(relation p Node :why \"{{?3}} is p\")\n(p a)\n{check}\n");
+        let (mut ast, forms) = parsed(&text);
+        let mut terms = Terms::new();
+        let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let dot = render_constraints(&kb, &terms, "constraints", false);
+        assert!(!dot.contains("\"eq\""), "{check} is drawn:\n{dot}");
+        assert!(!dot.contains("\"not\""), "{check} is drawn:\n{dot}");
+        let declared = fact_id("relation", &["p".into(), "Node".into()]);
+        assert!(dot.contains(&declared), "{dot}");
     }
 }
 

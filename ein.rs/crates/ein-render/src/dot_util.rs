@@ -260,8 +260,6 @@ mod tests {
             program.contains("  \"house\" -> f_") && program.contains("[xlabel=\"1\", dir=back"),
             "{program}"
         );
-        let constraints = crate::render_constraints(&ast, &forms, "witness", false);
-        assert!(constraints.starts_with("digraph"), "{constraints}");
         let labels: Vec<String> = ast
             .form_args(forms[0])
             .iter()

@@ -362,7 +362,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
 /// holds)`. A macro call in a goal means what it means in a rule's `:match`,
 /// the goal is printed as written, and a claim lists the expansion's
 /// instances.
-const ANSWERED: [(&str, &str, i32, &[&str]); 9] = [
+const ANSWERED: [(&str, &str, i32, &[&str]); 11] = [
     (
         "a-macro-of-the-programs",
         "(solve :hypothesis-relations ())\n(query :goal (settled ?g) :expect (model (paid Ann)))",
@@ -411,6 +411,29 @@ const ANSWERED: [(&str, &str, i32, &[&str]); 9] = [
          (query :goal (settled ?g) :goal-text \"{?g} has settled up\")",
         0,
         &["  query             (settled ?g)", "Ann has settled up"],
+    ),
+    // An `(or …)` goal's class lists the facts of the disjuncts that hold,
+    // never the `(or …)`, and its `as :expect` loads back as its claim
+    // (Q-M1f.532): `(seen ?g)` holds of no one, so no fact of it is listed.
+    (
+        "a-disjunctions-class",
+        "(solve :hypothesis-relations ())\n\
+         (query :goal (or (paid ?g) (admitted ?g) (seen ?g)))",
+        0,
+        &[
+            "  query             (or (paid ?g) (admitted ?g) (seen ?g))",
+            "?g = Ann",
+            "  as :expect        (model (admitted Ann) (paid Ann))",
+        ],
+    ),
+    (
+        "a-disjunctions-class-as-its-claim",
+        "(solve :hypothesis-relations ())\n\
+         (query :goal (or (and (relation ?r ?t) (paid ?g)) (says (paid ?g)))\n       \
+         :expect (model (paid Ann) (relation paid Guest) (relation says Guest) \
+         (says (paid Bob))))",
+        0,
+        &["?g = Ann", "?g = Bob", "  :expect           holds"],
     ),
     (
         "a-claim-over-a-rules-conclusion",

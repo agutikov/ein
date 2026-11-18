@@ -131,11 +131,29 @@ impl Over {
 }
 
 /// The goal's atoms: its conjuncts, `(and …)` flattened at any depth
-/// ([`Ast::conjuncts`], which a conclusion is read by too). A class is these
-/// atoms under its rows, so a query's `:expect`
-/// may list only facts one of them matches.
+/// ([`Ast::conjuncts`], which a conclusion is read by too), and of an `(or
+/// …)` goal every disjunct's ([`goal_disjuncts`]). A class is these atoms
+/// under its rows, an `(or …)` goal's the atoms of the disjuncts that hold
+/// (Q-M1f.532), so a query's `:expect` may list only facts one of them
+/// matches.
 pub fn goal_atoms(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
-    ast.conjuncts(goal)
+    goal_disjuncts(ast, goal).into_iter().flatten().collect()
+}
+
+/// The goal's disjuncts, each as its conjuncts: an `(or d1 … dm)` goal's
+/// `d1` to `dm`, in the order written, which is the order the compiler
+/// numbers them in; any other goal is one disjunct, its conjuncts. An `(or …)`
+/// is a whole goal or none (`refuse_nested_disjunctions`), so no disjunct
+/// holds another.
+pub fn goal_disjuncts(ast: &Ast, goal: NodeId) -> Vec<Vec<NodeId>> {
+    if matches!(ast.node(goal), Node::SForm { .. }) && ast.head_name(goal) == Some("or") {
+        return ast
+            .form_args(goal)
+            .iter()
+            .map(|&d| ast.conjuncts(d))
+            .collect();
+    }
+    vec![ast.conjuncts(goal)]
 }
 
 /// Whether the ground `fact` is an instance of the goal atom `pattern`: same

@@ -298,5 +298,6 @@ ein saturate three-houses.ein --dump                                # each rule 
 are L0; `(color-loc Red House-1)` is L1 and names both; `(relation color-loc Color House)` and
 `(bijective color-loc)` are L2; the rules `std.bijection` brings are L3, applied to `color-loc` through the
 activators its setup rule derives from `(bijective color-loc)`, and reading L1 `color-loc` facts.
-`ein render constraints examples/zebra2.ein` draws the L2 property facts, and `ein render kb` the L0 and L1 of the
-saturated root.
+`ein render constraints examples/zebra2.ein` draws the L2 facts of the saturated root, the facts about relations,
+every fact with a relation of the program under an argument arrow (`ein_infer::slice::about_relations`), and `ein
+render kb` the L0 and L1 with them.

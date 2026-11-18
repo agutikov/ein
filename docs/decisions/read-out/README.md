@@ -31,3 +31,4 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.340](Q-M1f.340-every-name-is-a-json-string.md) — Every name is a JSON string
 - [Q-M1f.400](Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md) — A saved file states the choices made in one `(commit …)`
 - [Q-M1f.401](Q-M1f.401-a-saved-file-carries-its-program-and-modules.md) — A saved file carries its program and modules as written, and reads no other file
+- [Q-M1f.532](Q-M1f.532-an-or-goals-class-lists-the-facts.md) — An `(or …)` goal's class lists the facts of the disjuncts that hold

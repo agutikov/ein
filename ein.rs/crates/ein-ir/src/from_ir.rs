@@ -386,6 +386,16 @@ pub fn load_query_by(
         all.extend(activator_relations(ast, &kb, &relation_places));
         all
     });
+    // Kept on the program: what a goal given beside it is held to
+    // ([`read_goal`]), and what the slice of a knowledge base reads a
+    // relation by (Q-M1f.523).
+    if let Some(all) = holdable.as_ref() {
+        let symbols = all
+            .iter()
+            .map(|name| terms.intern_text(name))
+            .collect::<Result<Vec<Symbol>, Overflow>>()?;
+        kb.program_mut().relations_of = symbols.into_boxed_slice();
+    }
     validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
     // A `(solve …)` list that names an hrule or a relation the program does
     // not have.
@@ -1023,28 +1033,7 @@ fn validate_queries(
             refuse_unreachable_references("query", ":goal-text", text, &vars, errors);
         }
         if let Some(goal) = query_keyword(ast, query, "goal") {
-            // A goal is a premise, held to what a rule's `:match` is held to:
-            // the one walk a rule's clauses get reads it, a guard over a form
-            // holding a variable (Q-M1f.30), a premise that is no form, which
-            // a macro's expansion can leave, and a relation written as a
-            // variable, at the top level and inside a pattern.
-            let n_refused = errors.len();
-            refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
-            // A goal is compiled as a rule's `:match` is, and refused where the
-            // compiler would refuse it.
-            refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
-            refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
-            // A kernel primitive in a shape only a macro's expansion writes,
-            // read by the same walk a rule's clauses get.
-            if errors.len() == n_refused {
-                refuse_malformed_primitives(ast, "query", ":goal", goal, errors);
-            }
-            // A relation the goal asks about is a relation of the program.
-            if errors.len() == n_refused
-                && let Some(known) = relations_of
-            {
-                refuse_goal_relations(ast, goal, known, unimported, errors);
-            }
+            refuse_goal(ast, goal, relations_of, unimported, errors);
         }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
@@ -1067,13 +1056,18 @@ fn validate_queries(
                 // facts are computed, so no declaration or fact makes them
                 // one, and the check below is the goal's. So is an
                 // `(absent …)` the goal writes, whose instance a class lists
-                // beside the rest.
+                // beside the rest. So is a fact of a kernel relation a goal
+                // reads, `(relation next-to)`, which the loader stores and
+                // a goal may ask about ([`refuse_goal_relations`]), so that
+                // a class's `as :expect` loads back under its query
+                // (Q-M1f.532).
                 //
                 // The rest is a relation of the program, [`program_relations`],
                 // not only one a declaration or a fact makes, so a
                 // claim may list a fact only a rule's `:assert` derives.
                 let known = is_predicate(fact.relation)
                     || fact.relation == "absent"
+                    || is_reserved(fact.relation)
                     || relations_of.is_none_or(|k| k.contains(fact.relation));
                 if !known {
                     errors.push(format!(
@@ -1144,6 +1138,134 @@ fn refuse_unreachable_references(
             "{what}: its {clause} writes {{?{v}}}, a reference to ?{v}, which no reference can \
              name — a reference reads a variable's name up to its first }}"
         ));
+    }
+}
+
+/// **A goal is a premise**, held to what a rule's `:match` is held to: the one
+/// walk a rule's clauses get reads it, a guard over a form holding a variable
+/// (Q-M1f.30), a premise that is no form, which a macro's expansion can leave,
+/// and a relation written as a variable, at the top level and inside a
+/// pattern; it is compiled as a `:match` is, and refused where the compiler
+/// would refuse it; and a relation it asks about is a relation of the
+/// program, `known`, where the program's relations are read. A query's goal
+/// and a goal given beside the program ([`read_goal`]) alike.
+fn refuse_goal(
+    ast: &Ast,
+    goal: NodeId,
+    known: Option<&BTreeSet<String>>,
+    unimported: &[String],
+    errors: &mut Vec<String>,
+) {
+    let n_refused = errors.len();
+    refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
+    refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
+    refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
+    // A kernel primitive in a shape only a macro's expansion writes, read by
+    // the same walk a rule's clauses get.
+    if errors.len() == n_refused {
+        refuse_malformed_primitives(ast, "query", ":goal", goal, errors);
+    }
+    if errors.len() == n_refused
+        && let Some(known) = known
+    {
+        refuse_goal_relations(ast, goal, known, unimported, errors);
+    }
+}
+
+/// **A goal given beside a loaded program** (Q-M1f.529): `text`, a goal as a
+/// `(query …)`'s `:goal` writes it, read as the `:goal` of one more query of
+/// the program and held to what that query's would be held to. It is parsed
+/// as `(query :goal TEXT)`, under the name `name`, into the program's own
+/// `ast`, so a line a refusal prints reads as a query's; its macro calls are
+/// expanded by the program's macros; it is refused by the walks a query's
+/// goal gets (`refuse_goal`), its relations held to the program's,
+/// [`ein_core::Program::relations_of`], and its patterns of a declared
+/// relation to the declared count. Any other keyword beside `:goal`, or a
+/// text that is not one goal, is refused: a text that does not parse as
+/// the parser refuses a program, and a goal the loader would refuse with
+/// the lines it would print, after `kb load error: `.
+///
+/// What it answers is the query it was read as, the goal expanded, which the
+/// caller matches against a knowledge base of the program
+/// (`ein_infer::slice::answering`); nothing is added to `kb`.
+pub fn read_goal(
+    ast: &mut Ast,
+    terms: &Terms,
+    kb: &Kb,
+    text: &str,
+    name: &str,
+) -> Result<Query, crate::saved::TextError> {
+    use crate::saved::TextError;
+    let wrapped = format!("(query :goal {text})");
+    let forms =
+        crate::parse(ast, &wrapped, Some(name)).map_err(|e| TextError::Parse(e.to_string()))?;
+    let one_goal = match forms.as_slice() {
+        [form] if ast.head_name(*form) == Some("query") => {
+            let args = ast.form_args(*form);
+            let only_goal = args.len() == 1
+                && matches!(ast.node(args[0]), Node::KwPair { key, .. }
+                    if matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "goal"));
+            only_goal.then_some(*form)
+        }
+        _ => None,
+    };
+    let Some(form) = one_goal else {
+        return Err(TextError::Load(KbLoadError(format!(
+            "{name}: {} is not one goal — it is read as (query :goal …)'s goal, and nothing \
+             stands beside it",
+            ein_core::repr::repr_str(text)
+        ))));
+    };
+    let program = kb.program();
+    let macros: BTreeMap<String, IrMacro> = program
+        .macros
+        .iter()
+        .map(|(_, m)| {
+            let name = terms.sym(m.name).to_string();
+            let body = NodeId(m.body.0);
+            let ir = IrMacro {
+                name: name.clone(),
+                params: m.params.iter().map(|p| terms.sym(*p).to_string()).collect(),
+                body,
+                why: None,
+                form: body,
+            };
+            (name, ir)
+        })
+        .collect();
+    let mut errors: Vec<String> = Vec::new();
+    let query = expand_goal(ast, form, &macros, &mut errors);
+    let goal = query_keyword(ast, &query, "goal").expect("read as (query :goal …)");
+    let known: BTreeSet<String> = program
+        .relations_of
+        .iter()
+        .map(|&r| terms.sym(r).to_string())
+        .collect();
+    if errors.is_empty() {
+        refuse_goal(ast, goal, Some(&known), &[], &mut errors);
+    }
+    let declared: Declared = program
+        .relations
+        .iter()
+        .filter(|(_, r)| r.declared)
+        .map(|(_, r)| {
+            let labels = r.signature.iter().map(|&s| terms.sym(s).to_string());
+            (terms.sym(r.name).to_string(), labels.collect())
+        })
+        .collect();
+    refuse_wrong_counts(
+        ast,
+        "query",
+        ":goal",
+        "writes",
+        goal,
+        &declared,
+        &mut errors,
+    );
+    if errors.is_empty() {
+        Ok(query)
+    } else {
+        Err(TextError::Load(KbLoadError(errors.join("; "))))
     }
 }
 

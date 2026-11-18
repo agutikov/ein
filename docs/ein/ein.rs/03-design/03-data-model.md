@@ -485,6 +485,7 @@ finishes and shared by every fork as `Arc<Program>`.
 | `solve` | `Option<Solve>` | the `(solve …)` block, at most one |
 | `config` | `Option<SolverConfig>` | the `(config …)` block, last one wins |
 | `domain` | `OnceLock<Box<[Value]>>` | the program's names sorted by text, what an unbound guard variable ranges over; computed once, cleared by `Kb::program_mut` |
+| `relations_of` | `Box<[Symbol]>` | the relations a goal and a claim may name, in the order of their text: every atom the program writes first in a tuple, the kernel's words it writes among them, `eq` and `neq`, and a relation a `(solve :hrules …)` activator gives its hrule ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)); what a goal given beside the program is held to (`ein_ir::read_goal`) and the facts about relations are read by (`ein_infer::slice`, [Q-M1f.523](../../../decisions/cli/Q-M1f.523-the-facts-about-relations-are-every-fact.md)) |
 
 `Registry<V>` is an insertion-ordered `Vec<(Symbol, V)>` with an `FxHashMap<Symbol, u32>` index, because its order is
 observable (the hypothesis generator and the plan compiler iterate it). `Registry::insert_new` keeps the first

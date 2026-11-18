@@ -15,8 +15,8 @@ renderer has a command that reaches it
 |---|---|---|
 | `ein render program FILE` | the program as written, in three parts: its knowledge base as one graph, a digraph per rule, its query | [§ The program as written](#the-program-as-written--ein-render-program) |
 | `ein render rules FILE`, `ein render rule --name N FILE` | each rule, or one, as its match and its conclusion | [§ Rules](#rules--ein-render-rules-and-ein-render-rule) |
-| `ein render constraints FILE` | the facts a program states of the relations it does not declare | [§ Constraints](#constraints--ein-render-constraints) |
-| `ein render kb FILE` | a KB, loaded and saturated, as one graph | [§ The KB](#the-kb--ein-render-kb) |
+| `ein render constraints FILE` | the facts about relations of root at its fixpoint: every fact with a relation of the program under an argument arrow | [§ Constraints](#constraints--ein-render-constraints) |
+| `ein render kb FILE` | a KB, loaded and saturated, as one graph, or the slice of a goal, `--goal GOAL` or `--query N` | [§ The KB](#the-kb--ein-render-kb) |
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits | [§ The lattice](#the-lattice--ein-render-lattice) |
 | `ein render region DIR` | the solution region as a Hasse diagram, from an `ein oracle --dump` directory | [§ The region](#the-region--ein-render-region) |
 | `ein render h-space FILE` | the structure of the hypothesis set | [§ The hypothesis space](#the-hypothesis-space--ein-render-h-space) |
@@ -265,17 +265,39 @@ its name. Variables are diamonds and atoms boxes.
 
 ## Constraints — `ein render constraints`
 
-`ein render constraints FILE [--fold]` draws a program's **structural constraints**: the facts it states, with no
-`:source` and no `:rule`, of a relation it does not declare, the context the program supplies, *co-located is
-symmetric*, *color-loc is a bijection*, as opposed to its stated conditions about its declared relations. No name is
-read for what it means: each is drawn as a fact, by the KB view's code, `(symmetric next-to)` an octagon whose
-arrow `1` is at `symmetric` and whose arrow `2` is at `next-to`; `(implies right-of next-to)` an octagon of three
-arrows, or under `--fold` an edge from `right-of` to `next-to` labelled `implies`. A declaration is a fact of
-`relation`, which no program declares, and is drawn among them; `(symmetric next-to)`, of two arrows, is a loop on
-`next-to` under `--fold`. A fact that such a fact has as an argument is drawn
-as in every view, an octagon, in its frame where the program does not state it
-([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)). The view is one slice of the knowledge base,
-the facts it keeps ([Q-M1f.426](../../../decisions/cli/Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md)).
+`ein render constraints FILE [--fold]` loads `FILE`, saturates its root, and draws **the facts about relations**:
+every fact root holds with a relation of the program directly under one of its argument arrows, `2`, `3`, …
+([Q-M1f.523](../../../decisions/cli/Q-M1f.523-the-facts-about-relations-are-every-fact.md),
+[Q-M1f.530](../../../decisions/cli/Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md)). It is a **slice**
+of the knowledge base, the facts a selection keeps, drawn by the KB view's code with what they point at
+([§ The KB](#the-kb--ein-render-kb)): *co-located is symmetric*, *color-loc is a bijection*, each declaration
+`(relation co-located Attribute Attribute)` and the fact `(relation co-located)` the loader stores beside it, a
+closure `(__closed__ person)`, and a fact a rule derives about a relation, given and derived, the program's and an
+imported module's alike.
+
+$$
+\operatorname{about}(K) = \lbrace\, f \in K \mid \exists\, i \ge 2:\ \operatorname{arg}_i(f) \in \operatorname{Rel}(P) \,\rbrace
+$$
+
+$K$ the facts root holds, $\operatorname{arg}_i(f)$ the object under the fact's arrow $i$, arrow $1$ being its
+relation, and $\operatorname{Rel}(P)$ **the relations of the program**, the list a goal and a claim are held to
+([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): every atom it
+writes first in a tuple, `eq` and `neq`, and a relation a `(solve :hrules …)` activator gives its hrule. So:
+
+- **an atom that is a relation is one wherever it stands**: a numeral's `(n z 4)` is kept, `z` being a relation of no
+  argument, and so is an order's `(cl eq 0 0 eq)`;
+- **directly**: `(claims Bob (symmetric lives))` is not kept, its relation of the program under an arrow of the fact
+  under its arrow `3`;
+- **a fact of the program about no relation is not kept**, a table of objects, `(digit-succ 0 1)`, or a stored
+  negation, `(not (lives Ann H2))`; nor is a written check, `(eq a w)`, which no knowledge base holds
+  ([Q-M1f.531](../../../decisions/cli/Q-M1f.531-the-constraint-view-draws-no-written-check.md)).
+
+No name is read for what it means: each is drawn as a fact, `(symmetric next-to)` an octagon whose arrow `1` is at
+`symmetric` and whose arrow `2` is at `next-to`; `(implies right-of next-to)` an octagon of three arrows, or under
+`--fold` an edge from `right-of` to `next-to` labelled `implies`
+([Q-M1f.426](../../../decisions/cli/Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md)). A saved file's root
+is its program's, the choices it states not committed; a knowledge base that holds no such fact is a digraph with no
+node, `// the slice keeps no fact`.
 
 ## The KB — `ein render kb`
 
@@ -316,6 +338,32 @@ A `--dump-answer` state file ([`10-answer-dump.md`](10-answer-dump.md)) is a `FI
 which load to the state, so a state is drawn the way root is. `--since FILE` loads a second file and draws at
 `penwidth=3` every fact it lacks, its octagon and its arrows: a state against the state of ∅ is what its commitment
 added.
+
+### The slice of a goal — `--goal` and `--query`
+
+`ein render kb FILE --goal GOAL` draws **the slice of a goal**, the digraph `goal`: the facts of the knowledge base
+drawn that answer `GOAL`, each fact a pattern of the goal matches under a binding that satisfies it, the matched
+disjunct's alone for an `(or …)`, and no check, with what they point at
+([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md)). A fact a kept fact points
+at is drawn as in every view, held in no frame and held nowhere in its frame, and the knowledge base's other facts are
+not drawn ([Q-M1f.527](../../../decisions/cli/Q-M1f.527-a-slice-is-drawn-with-what-its-facts-point-at.md)). `GOAL` is
+written as a query's `:goal` and read as one more `(query :goal GOAL)` of the program, held to what its goal is held
+to ([§ Queries](../03-syntax-and-semantics/12-query.md)): a relation the program does not have, a relation written as
+a variable, or a text that is not one goal is refused with the line the loader prints, exit 1, and nothing is drawn.
+`--query N` draws the slice of the goal of the program's `N`-th `(query …)`, from 1; its `:over` and `:expect` are not
+read. The goal is matched against the knowledge base drawn, root or a saved state, and never against R, so a state's
+slice is its saved file's:
+
+```sh
+ein render kb examples/zebra2.ein --goal '(and (relation ?r) (symmetric ?r))'   # root: (relation next-to), (symmetric next-to)
+ein render kb examples/beliefs/01_common_belief.ein --goal '(believes ?who (likes Dan ?food))'
+ein solve examples/zebra2.ein --dump-answer out/
+ein render kb out/models/01.ein --query 1     # the puzzle's answer: its four facts in the solution's state
+```
+
+The second draws five facts of `believes` and, under their arrows `3`, `(likes Dan Soup)`, which root holds, in no
+frame, and `(likes Dan Tea)`, held nowhere, in the frame `believes ctx`. At root `zebra2`'s own query has nothing to
+answer, and its slice is a digraph with no node, `// the slice keeps no fact`.
 
 ## The lattice — `ein render lattice`
 

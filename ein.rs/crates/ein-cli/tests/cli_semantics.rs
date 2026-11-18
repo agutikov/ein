@@ -3222,7 +3222,7 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 /// spelling on stderr, not a refusal made where a plan is compiled, printed
 /// several ways, while a command that never compiles the plan answers (a
 /// commitment's activator, an hrule, a goal, a rule no activator reaches,
-/// the four views and `kb save`).
+/// the views and `kb save`).
 ///
 /// `(eq ?x)` in a macro's body is the loader's refusal too (Q-M1f.80):
 /// one line on every command, its position the macro body's, the views and

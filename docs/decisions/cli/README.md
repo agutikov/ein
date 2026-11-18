@@ -33,3 +33,8 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.430](Q-M1f.430-the-canonical-form-draws-a-knowledge-base.md) — The canonical form draws a knowledge base, and the views of states draw states
 - [Q-M1f.433](Q-M1f.433-an-object-is-a-labelled-box-a-fact-an-unlabelled.md) — An object is a labelled box, a fact an unlabelled octagon, a variable a labelled diamond
 - [Q-M1f.435](Q-M1f.435-an-arrows-number-is-written-beside-it.md) — An arrow's number is written beside it
+- [Q-M1f.523](Q-M1f.523-the-facts-about-relations-are-every-fact.md) — The facts about relations are every fact a knowledge base holds with a relation of the program under an argument arrow
+- [Q-M1f.527](Q-M1f.527-a-slice-is-drawn-with-what-its-facts-point-at.md) — A slice is drawn with what its facts point at
+- [Q-M1f.529](Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md) — `ein render kb` draws the slice of a goal
+- [Q-M1f.530](Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md) — `ein render constraints` draws root's facts about relations
+- [Q-M1f.531](Q-M1f.531-the-constraint-view-draws-no-written-check.md) — The constraint view draws no written check
