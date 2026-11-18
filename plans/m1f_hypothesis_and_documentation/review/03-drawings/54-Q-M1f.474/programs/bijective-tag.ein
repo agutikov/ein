@@ -1,0 +1,15 @@
+;;; One tag, (bijective color-loc), and what the standard library derives from it: written for this review, to draw
+;;; with ein render kb what the guide's schematic 03-bijective-family shows as "the logic it switches on".
+
+(import std.bijection)
+
+(relation is-a T T :why "{?1} is a {?2}")
+(relation color-loc Color House :why "the {?1} house is {?2}")
+
+(is-a Red Color) (is-a Green Color)
+(is-a House-1 House) (is-a House-2 House)
+
+(bijective color-loc)
+(bijection-hierarchy is-a)
+
+(solve :no-search)

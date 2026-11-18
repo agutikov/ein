@@ -15,7 +15,7 @@ the decision that states it is Q-M1f.274 (re-worded by the build: [`runs/Q-M1f.2
 ## 2. What is so today
 
 Each program run under **before** = `build/review-bin/ein-0a4a97a3` with `EIN_STDLIB=build/wt-rev-0a4/stdlib` and
-**today** = `build/review-bin/ein-head-b5fb8d70`; both dead, `ein test` holds `(solve :expect (false))` under both.
+**today** = `build/review-bin/ein-head-17085b27`; both dead, `ein test` holds `(solve :expect (false))` under both.
 
 **The ledger's numeral** — [`programs/two_faults.ein`](programs/two_faults.ein), `(add (n (n (n z x) y) 5) (n z 1))`.
 The flags and the check's facts (`saturate --dump`, [before](runs/two_faults.before.saturate-facts.txt),
@@ -81,6 +81,11 @@ Per program and binary: *read-out* `ein solve`; *summary* `--json-summary`; *eve
 bin-valid not-decimal not-binary written add bin-add` and what they nest, drawn with `fdp` (`tools/kbsub.py`). Each
 text output ends with `[exit N]`.
 
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
+
 | program | binary | artefacts |
 |---|---|---|
 | [`two_faults`](programs/two_faults.ein) | before | [read-out](runs/two_faults.before.solve.txt) · [summary](runs/two_faults.before.summary.json) · [events](runs/two_faults.before.events.jsonl) · [events table](runs/two_faults.before.events.md) · [trace](runs/two_faults.before.trace.md) · [dump-answer](runs/two_faults.before.answer/) · [saturate --dump](runs/two_faults.before.saturate-dump.txt) · [its facts](runs/two_faults.before.saturate-facts.txt) · [ein test](runs/two_faults.before.test.txt) · [show hyps](runs/two_faults.before.show-hyps.txt) · [kb-cut.dot](renders/two_faults.before.kb-cut.dot) · [kb-cut.svg](renders/two_faults.before.kb-cut.svg) |
@@ -99,7 +104,7 @@ Also:
   `two_faults` [before](runs/two_faults.before.trace-check-steps.md) · [today](runs/two_faults.today.trace-check-steps.md);
   `bin_two_faults` [before](runs/bin_two_faults.before.trace-check-steps.md) · [today](runs/bin_two_faults.today.trace-check-steps.md);
   `two_kinds_of_fault` [before](runs/two_kinds_of_fault.before.trace-check-steps.md) · [today](runs/two_kinds_of_fault.today.trace-check-steps.md).
-- [`runs/Q-M1f.274.decision.diff`](runs/Q-M1f.274.decision.diff) — the decision's text, `git diff 0a4a97a3 b5fb8d70`.
+- [`runs/Q-M1f.274.decision.diff`](runs/Q-M1f.274.decision.diff) — the decision's text, `git diff 0a4a97a3 17085b27`.
 - The mocks: [`two_faults.option-b.MOCK.saturate-facts.txt`](runs/two_faults.option-b.MOCK.saturate-facts.txt),
   [`bin_two_faults.option-b.MOCK.saturate-facts.txt`](runs/bin_two_faults.option-b.MOCK.saturate-facts.txt).
 - [`tools/`](tools/) — the scripts that made `runs/` and `renders/`: `run_all.sh` (every artefact of one program
@@ -113,7 +118,7 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/15-Q-M1f.411
-build/review-bin/ein-head-b5fb8d70 saturate $D/programs/two_faults.ein --dump | grep -E 'not-decimal |decimal.check'
+build/review-bin/ein-head-17085b27 saturate $D/programs/two_faults.ein --dump | grep -E 'not-decimal |decimal.check'
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 saturate $D/programs/two_faults.ein --dump | grep -E 'not-decimal |written'
 # everything in runs/ and renders/ (the mocks are hand-made and are not re-made)
 for p in two_faults bin_two_faults two_kinds_of_fault; do for L in before today; do
@@ -129,6 +134,11 @@ $D/tools/diffs.sh $D two_faults bin_two_faults two_kinds_of_fault
   title, *a numeral with two faults has one flag*, holds for faults at two places only.
 - The decision Q-M1f.274 cites `arith_theory.rs`' `a_malformed_request_is_flagged_once_and_never_answered` as holding
   *each numeral's one flag*; not run here (no `cargo test` in this review).
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks and
+  today's KB cuts, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

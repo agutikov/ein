@@ -5,7 +5,7 @@
 `written` is erased (Q-M1f.404): a numeral an operation takes from the program is checked once and labelled
 `(valid N)` (`(bin-valid N)` in binary), and a number an operation makes is labelled as it is made. Q-M1f.405 to
 .411 are the readings that build took, each with its default (a); L-101 is what it left in `std.math.int` and
-`std.math.rat`. *Before* is `ein-0a4a97a3`, the calculator with `written`.
+`std.math.rat`. *Before* is `ein-0a4a97a3`, the calculator with `written`; *today* is `ein-head-17085b27`.
 
 | # | item | the question | default |
 |---|---|---|---|
@@ -24,6 +24,12 @@ alive today. Three corpus programs went from dead to R={∅} and were rewritten 
 
 ## Found while building
 
+- **Re-taken with `ein-head-17085b27`, nothing but the drawings moved.** The standard library and `tests/stdlib/` are
+  the same as at the first look (`b5fb8d70`); every read-out, summary, event stream, dump, `ein test` and
+  `ein show hyps` output of the eight items is the same, wall-clock aside, and so is every trace's text. What moved
+  is each trace's `dot` blocks, today's KB cuts, `11`'s whole KB view and the rule drawings of `13` and `29`, now drawn
+  as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's box. Every *before*
+  drawing stays the earlier binary's, labelled octagons.
 - **04**: the record's `states 1` holds only with `(__closed__ mine)`; without it the blind enumerator gives 32 768
   states. The new `tests/stdlib/math/decimal/07` is alive under the earlier binary: its `(false)` claim holds only
   under today's design.

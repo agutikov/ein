@@ -1,0 +1,12 @@
+;;; guess-drink, reconstructed by S1f.23.1's task 2 for the drawing reasoning/02-kb-evolution/diagrams/04-rule-guess-drink.dot:
+;;; no file of the project holds it. Its two declarations, its hrule and three facts for it to match; the page
+;;; (reasoning/02-kb-evolution/04-hypothesis-generation.md) states it in words, *guess, for each guest and each drink,
+;;; that the guest drinks it*.
+
+(relation is-a T T :why "{?1} is a {?2}")
+(relation drinks Guest Drink :why "{?1} drinks {?2}")
+(hrule guess-drink ()
+  :match  (and (is-a ?g Guest) (is-a ?d Drink))
+  :assert (drinks ?g ?d)
+  :why    "guess that {?g} drinks {?d}")
+(is-a Ann Guest) (is-a Tea Drink) (is-a Milk Drink)

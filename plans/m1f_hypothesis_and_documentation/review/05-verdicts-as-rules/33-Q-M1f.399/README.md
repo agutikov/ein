@@ -21,8 +21,9 @@ and [§ 3](../../../p1f.21_verdicts_as_rules/open_facts.md#3-who-kills-a-dead-no
 phase's finding is [V-5](../../../p1f.21_verdicts_as_rules/findings.md#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names).
 What `open` would hold is item [32](../32-Q-M1f.390/README.md).
 
-Every run is today's binary, `build/review-bin/ein-head-b5fb8d70` ([`runs/ein-version.txt`](runs/ein-version.txt)),
-the census on the tree at `05b30c1f`.
+Every run is today's binary, `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged
+([`runs/ein-version.txt`](runs/ein-version.txt)), the census on the tree at `fd8da416`, whose code is the binary's;
+[`tools/run.sh`](tools/run.sh) makes every file.
 
 ## 2. What is so today
 
@@ -88,13 +89,15 @@ read-out ([`kill-root.solve.txt`](runs/kill-root.solve.txt)):
   (false)
 ```
 
-and the KB, `(false)` a held node beside `(dead)`: [`renders/kill-root.kb.svg`](renders/kill-root.kb.svg)
+and the KB, `(false)` a held fact, an octagon whose arrow `1` is at the box `false`, dashed with `by
+front-alarm-broken` beside it, as `(dead)` is with `by dead-from-false`: [`renders/kill-root.kb.svg`](renders/kill-root.kb.svg)
 ([`kill-root.saturate-dump.txt`](runs/kill-root.saturate-dump.txt): `DERIVED (4 facts)`).
 
 **Under an arrow, `(false)` controls nothing.** [`programs/ctx-false.ein`](programs/ctx-false.ein) (open_facts.md
 § 10.4's `x1.ein`): Ann thinks `(= 5 (+ 2 2))` and its negation, a rule concludes `(think Ann (false))`, and root is
 alive, ∅ in R, the fact held as any other ([`ctx-false.solve.txt`](runs/ctx-false.solve.txt);
-[`renders/ctx-false.kb.svg`](renders/ctx-false.kb.svg)). A name for the search's act (`dead`, `abort`, `refute`)
+[`renders/ctx-false.kb.svg`](renders/ctx-false.kb.svg): `(false)` an octagon in the frame `think ctx`, held by
+nothing). A name for the search's act (`dead`, `abort`, `refute`)
 would read there as a command where a proposition stands.
 
 ### 2.2 The census: the kernel's names, and the code that reads each
@@ -108,31 +111,34 @@ in the census's second table ([raw](runs/kernel-census.field-readers.txt)). The 
 | name | becomes, by § 8.2 | code that reads it through the struct (files) |
 |---|---|---|
 | `false` | **goes** from the kernel: a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets | 15 lines in 9 files: `contradiction.rs` (`detect`, `has_contradiction`, `contradicts`), `saturator.rs` (`refresh_first`, the agenda), `forbid.rs` ×5, `monotone.rs`, `naf_deps.rs`, `detector.rs`, `firing.rs`, `hypgen.rs`, `unheld.rs` |
-| `not` | **a convention**: a relation whose meaning is two rules (the contradiction, the double negation's elimination) | 30 lines in 14 files, `kb.rs`, `contradiction.rs`, `forbid.rs`, `monotone.rs` (9) among them |
-| `open` | **stays, changed**: the open facts the kernel writes and moves, `(open F J)` | `obligations.rs:276` (`open_argument`), `unheld.rs:173` |
-| `relation` | **a convention**; the declaration keeps the count, the `:why`, the blind rung's guessing | `program.rs:159`, `structure.rs:1693`, `from_ir.rs:1296`, `dump/serialise.rs:66` |
-| `eq`, `neq` | **stay** (eq on your word) | `firing.rs:199,201`, `predicates.rs:43,44`, `hypgen.rs:641` |
-| `absent`, `and`, `or` | stay: syntax; `absent` the kernel's boundary | `hypgen.rs:641` (left out of the blind rung's objects); the rest is the grammar |
+| `not` | **a convention**: a relation whose meaning is two rules (the contradiction, the double negation's elimination) | 29 lines in 13 files, `kb.rs`, `contradiction.rs`, `forbid.rs`, `monotone.rs` (9) among them; the KB view's `kb_dot.rs` no longer, since it draws a stored negation as any fact (Q-M1f.432) |
+| `open` | **stays, changed**: the open facts the kernel writes and moves, `(open F J)` | `obligations.rs:276` (`open_argument`), `unheld.rs:167` |
+| `relation` | **a convention**; the declaration keeps the count, the `:why`, the blind rung's guessing | `program.rs:159`, `structure.rs:1693`, `from_ir.rs:1297`, `dump/serialise.rs:66` |
+| `eq`, `neq` | **stay** (eq on your word) | `firing.rs:199,201`, `predicates.rs:43,44`, `hypgen.rs:640` |
+| `absent`, `and`, `or` | stay: syntax; `absent` the kernel's boundary | `hypgen.rs:640` (left out of the blind rung's objects); the rest is the grammar |
 | `rule` | stays | `program.rs:159` |
 | `hrule` | **goes**: a rule that concludes `(open F)` | none through the struct: the grammar (`ein.l:55`, `ein.y`) and the loader's strings |
 | `macro`, `query`, `config`, `trace`, `import` | stay: declarators | none through the struct: the grammar |
-| `__closed__` | **goes** (derived once proposing is rules) or `ein.closed` | `hypgen.rs:644`, `mechanisms.rs:239,595`, `unheld.rs:173` |
-| `__symmetric__` (and the mirror's `a`, `b`) | **an economy** (`ein.symmetric`) or `std.algebra`'s rule alone | `saturator.rs:539,654,1852`, `hypgen.rs:644`, `unheld.rs:173,188,192` |
+| `__closed__` | **goes** (derived once proposing is rules) or `ein.closed` | `hypgen.rs:643`, `mechanisms.rs:239,595`, `unheld.rs:167` |
+| `__symmetric__` (and the mirror's `a`, `b`) | **gone** since the first look: the native mirror is removed and the name an ordinary one (Q-M1f.436); a symmetric relation is `std.algebra`'s rule | no field of the struct, no reader (24 fields where there were 27) |
 | `#query`, `<forced-positive>` and its two siblings | stay the engine's | `compile.rs:415`, `verdict.rs:85,153`; the three `<…>` none |
 | `=`, `#empty`, `#params` | not in § 8.2: a grammar terminal and the parser's two synthetic heads | none through the struct |
 
 Not in the struct, and in § 8.1: **a rule's activator** (no name reserved; `compile.rs`), **`is-a`** (no kernel name;
-spelt as a string in `from_ir.rs:717`, `kb_dot.rs:112,346`, `ir_dot.rs:357`, `grid.rs:317`, after V-6's build left
-the read-out's row out), and **`ein.kill`**, spelt nowhere. The census's third table lists every file that spells
+at the first look spelt as a string in `from_ir.rs:717`, `kb_dot.rs:112,346`, `ir_dot.rs:357` and `grid.rs:317`;
+today **spelt nowhere** outside the tests, the ruling that the kernel reads no theory's name having taken out
+`program_relations`' `is-a`, the drawings' and `--models grid` with `grid.rs`, Q-M1f.436), and **`ein.kill`**,
+spelt nowhere. The census's third table lists every file that spells
 each name as a string, outside the tests ([raw](runs/kernel-census.literal-readers.txt)).
 
 **What § 8.3 says is left for the kernel to read**, read, not run: one verb in a saturation, `ein.kill`; `absent`'s
 boundary; `eq` and `neq`; a rule's activator; its open facts, which it writes and moves; the split in the search.
 
 **The names in programs** ([`name-counts.txt`](runs/name-counts.txt), § 8's command from the repo root): `eq` 146
-in 40 files (30 under `examples/ein-bugs/wrong-answers/`), `neq` 345 in 119, `__closed__` 685 in 91,
-`__symmetric__` 12 in 5, as § 8.2 has them; `hrule` 143 in 117 (§ 8.2: 141 in 115); `(false)` 676 lines in 280
-files by § 10.7's `grep -c` (§ 8.2 and § 10.7: 658 in 278).
+in 40 files (30 under `examples/ein-bugs/wrong-answers/`), `neq` 345 in 119, `__closed__` 685 in 91, as § 8.2 has
+them; `__symmetric__` 0 (§ 8.2: 12 in 5; the six programs that wrote it were retired with the mirror, Q-M1f.438);
+`hrule` 143 in 117 (§ 8.2: 141 in 115); `(false)` 674 lines in 278 files by § 10.7's `grep -c` (§ 8.2 and § 10.7:
+658 in 278).
 
 ### 2.3 `eq` and `neq` on nested facts (open_facts.md § 8.4), re-taken
 
@@ -259,13 +265,13 @@ are left (§ 9, items 1 and 6).
 
 ## 6. Re-run
 
-From the repo root (the scripts name the binary by its absolute path, `build/review-bin/ein-head-b5fb8d70`):
+From the repo root (the scripts name the binary by its absolute path, `build/review-bin/ein-head-17085b27`):
 
 ```sh
 bash plans/m1f_hypothesis_and_documentation/review/05-verdicts-as-rules/33-Q-M1f.399/tools/run.sh
 ```
 
-The engine commands it runs, from the item's folder, `E=build/review-bin/ein-head-b5fb8d70`:
+The engine commands it runs, from the item's folder, `E=build/review-bin/ein-head-17085b27`:
 
 ```sh
 $E solve programs/kill.ein [-p]
@@ -288,6 +294,13 @@ python3 tools/census.py runs                                 # from the repo roo
 
 ## 7. Found while building
 
+- **Re-taken with `ein-head-17085b27`** against the first look's `ein-head-b5fb8d70`: no run moved (read-outs,
+  oracles, events, traces' text, show hyps, dumps, timings aside). What moved is the census, by S1f.23.4: the
+  struct lost `__symmetric__` and the mirror's `a` and `b`, `is-a` is spelt nowhere outside the tests, and `not`
+  lost the KB view's reader; the programs lost every `__symmetric__` (and two `(false)` lines with the six retired
+  programs). The drawings are in the canonical form; the census's link to `open_facts.md` is one level deeper, as
+  `runs/` is.
+
 - **§ 8.4's c6 gives 16 hits, not 18.** `eqn.ein` as § 8.4 writes it, with today's binary and with
   `build/review-bin/ein-a8d595eb` (a build after the commit that wrote § 8.4) and `ein-0a4a97a3`: 16 `(hit
   c6-free-neq …)` facts, each an atom, no fact ([`eqn.hits.md`](runs/eqn.hits.md)). The claim stands (a free `neq`
@@ -305,7 +318,7 @@ python3 tools/census.py runs                                 # from the repo roo
   ([`kill.ein-kill.MOCK.solve.txt`](runs/kill.ein-kill.MOCK.solve.txt)).
 - The census finds readers beyond § 8.1's *where* column, none that changes its account: `(false)` is also read
   by `detector.rs`, `firing.rs`, `hypgen.rs` (left out of the guessable objects) and `unheld.rs`; `open` also by
-  `unheld.rs`; `__closed__` and `__symmetric__` also by `unheld.rs` and `hypgen.rs`.
+  `unheld.rs`; `__closed__` also by `unheld.rs` and `hypgen.rs`.
 
 ## 8. Your call
 

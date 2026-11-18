@@ -18,7 +18,7 @@ its reading in [F21 § Handed over by M1f, 2026-11-17: the FIFO gap at root](../
 
 ## 2. What is so today
 
-All runs use `build/review-bin/ein-head-b5fb8d70`. Both ledger statements reproduce: `x2b.ein` prints
+All runs use `build/review-bin/ein-head-17085b27`, today's binary, every P1f.23 stage merged; [`rerun.sh`](rerun.sh) makes every file below. Both ledger statements reproduce: `x2b.ein` prints
 `states (k_s) 0`, *lattice monotone (the static check) — R is convex: no hole*, *unsat core ∅, the empty set: the
 refutation rests on no fact*, *refuted by all-confused*; `x3b.ein`, the `forall` form, prints `states (k_s) 1`,
 *∅ in R — root is alive and owes nothing*.
@@ -40,7 +40,7 @@ refutation rests on no fact*, *refuted by all-confused*; `x3b.ein`, the `forall`
 | the answer in stratum order (D2's reading) | {∅}, no `p`, the query has no row | {∅}, no `(false)` |
 | moves with the written order of the two rules | **yes**: [`fifo-gap-root-r1-first.ein`](programs/fifo-gap-root-r1-first.ein) has no `p` | **no**: [`x2b-a-first.ein`](programs/x2b-a-first.ein) is dead too, since the first half wins over written order |
 | moves with a conclusion nothing reads (a stored negation, which puts its rule in the first half) | **yes**: [`fifo-gap-root-negation.ein`](programs/fifo-gap-root-negation.ein) has no `p` | **yes**: [`x2b-negation.ein`](programs/x2b-negation.ein), `someone-sane` also concluding `(not (insane ?p))`, is **alive, R = {∅}** |
-| the KB view of root | [`renders/fifo-gap-root.kb.svg`](renders/fifo-gap-root.kb.svg) | [`renders/x2b.kb.svg`](renders/x2b.kb.svg) |
+| the KB view of root | [`renders/fifo-gap-root.kb.svg`](renders/fifo-gap-root.kb.svg) | [`renders/x2b.kb.svg`](renders/x2b.kb.svg): the stale `(false)`, dashed, `by all-confused`, beside `(some-sane)`, `by someone-sane`; `(think Ann (false))`'s arrow `3` enters that same octagon, one object held and thought |
 | the trace's steps | [`runs/fifo-gap-root.trace.md`](runs/fifo-gap-root.trace.md): r2, then r1 | [`runs/x2b.trace.md`](runs/x2b.trace.md): confused, all-confused, someone-sane |
 
 ### 2.2 The one program between them
@@ -109,7 +109,7 @@ Programs:
 Runs, for each of `fifo-gap-root`, `fifo-gap-root-r1-first`, `fifo-gap-root-negation`, `x2b`, `x2b-a-first`,
 `x2b-negation`, `x2b-fact`, `x2b-fact-a-first`, `x3b` (`runs/PROGRAM.KIND`):
 - `solve.txt` — `ein solve`, with its exit code; `oracle.txt` — `ein oracle`; `monotone.txt` — `ein solve --monotone`;
-- `trace.md` — `ein solve --trace` (its drawings are drawn under `renders/PROGRAM.trace-K-stepK.svg`);
+- `trace.md` — `ein solve --trace` (its drawings are drawn under `renders/PROGRAM.trace-K.svg`, K the drawing's place in the trace);
 - `events.jsonl` — `ein solve --events`, and `events.md`, the same as a table, one row an event;
 - `summary.json` — `--json-summary` (`monotonicity` and `root.saturator`);
 - `saturate-dump.txt` — `ein saturate --dump`, root's facts by origin.
@@ -122,35 +122,42 @@ eight for [`fifo-gap-root`](runs/fifo-gap-root.solve.txt) and each other program
 Also: [`runs/09_false_in_a_context.test.txt`](runs/09_false_in_a_context.test.txt), [`runs/09_false_in_a_context.solve.txt`](runs/09_false_in_a_context.solve.txt), [`runs/10_everybody_contradicts.test.txt`](runs/10_everybody_contradicts.test.txt), [`runs/10_everybody_contradicts.solve.txt`](runs/10_everybody_contradicts.solve.txt);
 [`runs/kbview-rule-named-like-its-relation.saturate-dump.txt`](runs/kbview-rule-named-like-its-relation.saturate-dump.txt), [`runs/kbview-rule-named-apart.saturate-dump.txt`](runs/kbview-rule-named-apart.saturate-dump.txt), [`runs/kbview.like-vs-apart.kb.dot.diff`](runs/kbview.like-vs-apart.kb.dot.diff).
 
-Renders: `renders/PROGRAM.kb.dot` and `.svg`, `ein render kb` of root, drawn with `fdp`, for each program above
+Renders: `renders/PROGRAM.kb.dot` and `.svg`, `ein render kb` of root, drawn with `fdp` as the DOT suggests, for each program above
 ([`x2b`](renders/x2b.kb.svg), [`fifo-gap-root`](renders/fifo-gap-root.kb.svg), [`x2b-fact-a-first`](renders/x2b-fact-a-first.kb.svg),
-[`x2b-negation`](renders/x2b-negation.kb.svg), [`x3b`](renders/x3b.kb.svg), …); `renders/PROGRAM.trace-K-stepK.dot`
-and `.svg`, each step of the trace ([`x2b` step 2, all-confused](renders/x2b.trace-2-step2.svg),
-[`fifo-gap-root` step 1, r2](renders/fifo-gap-root.trace-1-step1.svg), …);
+[`x2b-negation`](renders/x2b-negation.kb.svg), [`x3b`](renders/x3b.kb.svg), …); `renders/PROGRAM.trace-K.dot`
+and `.svg`, each step of the trace, each fact its octagon ([`x2b` step 2, all-confused](renders/x2b.trace-2.svg),
+[`fifo-gap-root` step 1, r2](renders/fifo-gap-root.trace-1.svg), …);
 [`renders/kbview-rule-named-like-its-relation.kb.svg`](renders/kbview-rule-named-like-its-relation.kb.svg),
-[`renders/kbview-rule-named-apart.kb.svg`](renders/kbview-rule-named-apart.kb.svg).
+[`renders/kbview-rule-named-apart.kb.svg`](renders/kbview-rule-named-apart.kb.svg); [`runs/draw-times.tsv`](runs/draw-times.tsv), each drawing's layout and seconds.
+[`rerun.sh`](rerun.sh) makes every file; [`tools/events_table.py`](tools/events_table.py) writes the events' tables.
 
 ## 6. Re-run
 
 ```sh
-B=build/review-bin/ein-head-b5fb8d70; D=plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/09-F21-N-15
-for p in fifo-gap-root fifo-gap-root-r1-first fifo-gap-root-negation x2b x2b-a-first x2b-negation x2b-fact x2b-fact-a-first x3b; do
-  $B solve $D/programs/$p.ein; $B oracle $D/programs/$p.ein; $B solve $D/programs/$p.ein --monotone
-  $B solve $D/programs/$p.ein --trace /tmp/$p.trace.md --events /tmp/$p.events.jsonl --json-summary /tmp/$p.json
-  $B saturate --dump $D/programs/$p.ein; $B render kb $D/programs/$p.ein > /tmp/$p.kb.dot
-done
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/09-F21-N-15/rerun.sh
 ```
+
+It runs, with `build/review-bin/ein-head-17085b27`, for each of the nine programs `ein solve`, `ein oracle`,
+`ein solve --monotone`, one `ein solve` with `--trace`, `--events` and `--json-summary`, `ein saturate --dump` and
+`ein render kb`; `ein test -v` and `ein solve` of the two corpus programs; the KB views of the two `kbview-*`
+programs and their diff; then it draws every `.dot` with
+[`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh).
 
 ## 7. Found while building
 
-- **`ein render kb` of `x2b.ein`'s root draws no `(confused Ann)`**, though root holds it. The program (the ledger's)
-  names the rule `confused` like the relation it concludes, so `(confused Ann)` is headed by a rule's name and the KB
-  view draws it as an activator, which it leaves out. Shown on a two-line pair:
-  [`kbview-rule-named-like-its-relation.ein`](programs/kbview-rule-named-like-its-relation.ein) against
-  [`kbview-rule-named-apart.ein`](programs/kbview-rule-named-apart.ein), the rule renamed `c`; the views differ by the one
-  edge `confused by c` ([`runs/kbview.like-vs-apart.kb.dot.diff`](runs/kbview.like-vs-apart.kb.dot.diff)), and both
-  dumps hold the fact. No answer moves; a fact of a relation that shares a rule's name loads and is an activator of
-  that rule in the store's index.
+- **Re-taken with `ein-head-17085b27`** against the first look's `ein-head-b5fb8d70`: no answer moved, in any
+  read-out, oracle, static check, summary or event (only the `run` event's argv, which lists every option of the one
+  run that now writes the trace, the events and the summary together). The drawings moved, to the canonical form.
+- **The KB view's gap the first look found is gone.** At the first look `ein render kb` of `x2b.ein`'s root drew no
+  `(confused Ann)`, though root holds it: the rule is named `confused` like the relation it concludes, so the view
+  took the fact for an activator and left it out. Today the KB view draws every fact the knowledge base holds
+  (Q-M1f.432), so both [`kbview-rule-named-like-its-relation.ein`](programs/kbview-rule-named-like-its-relation.ein)
+  and [`kbview-rule-named-apart.ein`](programs/kbview-rule-named-apart.ein) (the rule renamed `c`) draw `(confused Ann)`,
+  an octagon whose arrow `1` is at the box `confused`; the two views differ only in the note beside it, `by confused`
+  against `by c` ([`runs/kbview.like-vs-apart.kb.dot.diff`](runs/kbview.like-vs-apart.kb.dot.diff)). In
+  `x2b.ein`'s view it is the dashed octagon `by confused` ([`renders/x2b.kb.svg`](renders/x2b.kb.svg)).
+
+  ![ein render kb of x2b.ein's root: (confused Ann) drawn, the stale (false) held beside (some-sane)](renders/x2b.kb.svg)
 - `x2b`'s twin by written order does **not** move (§ 2.1), unlike the witness's: the ledger's *"Both rules wait on an
   `absent` at one boundary and the agenda admits the one that concludes `(false)` first"* is exactly right, and it is
   why the written-order twin cannot be the test of twinship here; the negation twin is.

@@ -15,7 +15,8 @@ and F23's row **D-23**.
 
 ## 2. What is so today
 
-All runs use `build/review-bin/ein-head-b5fb8d70` (`ein solve --no-require-why`, as D-23's witness was run). The sentences and the code, with their commands, are
+All runs use `build/review-bin/ein-head-17085b27`, today's binary, every P1f.23 stage merged (`ein solve
+--no-require-why`, as D-23's witness was run); [`rerun.sh`](rerun.sh) makes every file. The sentences and the code, with their commands, are
 [`runs/sentences-and-code.txt`](runs/sentences-and-code.txt).
 
 ### 2.1 The witness
@@ -44,7 +45,8 @@ So the fact's argument is what makes `owns` the program's.
 | as the relation of a fact that is an argument | [`fact-argument.ein`](programs/fact-argument.ein) | loads ([run](runs/fact-argument.solve.txt)) | **no** | **no** | yes |
 | passed where a relation's name is held, `(tag happy)` with `tag (?R)` heading its conclusion | [`passed-to-an-activator.ein`](programs/passed-to-an-activator.ein) | loads, `?x = Ann` ([run](runs/passed-to-an-activator.solve.txt)) | yes | **no** | **no** |
 | in a rule's `:match` | [`rule-match-only.ein`](programs/rule-match-only.ein) | loads ([run](runs/rule-match-only.solve.txt)) | yes | yes (*writes in a rule*) | yes |
-| nowhere: `is-a`, `eq`, `neq` | [`every-programs.ein`](programs/every-programs.ein) | loads ([run](runs/every-programs.solve.txt)) | yes | **no** | yes |
+| nowhere: `eq`, `neq` | [`eq-neq.ein`](programs/eq-neq.ein) | loads ([run](runs/eq-neq.solve.txt)) | yes | **no** | yes |
+| nowhere: `is-a` | [`every-programs.ein`](programs/every-programs.ein) | **refused since Q-M1f.436**, as `payed` is ([run](runs/every-programs.solve.txt)); it loaded at the first look | **yes, still**: *"`is-a`, `eq`, `neq` … are every program's"* | no | `12-query.md` and `07-diagnostics.md`: refused, *`is-a` is one where the program writes it*; **`02-syntax.md`: every program's, still** |
 | nowhere: `payed` | [`named-nowhere.ein`](programs/named-nowhere.ein) | **refused** ([run](runs/named-nowhere.solve.txt)) | — | — | — |
 
 The refusal (D-23's witness, `(p a)` and `(query :goal (payed ?g))`), exit 1:
@@ -75,8 +77,8 @@ that is an argument"*), [`02-syntax.md` § Query](../../../../../docs/ein/user/0
 
 `ein-ir/src/from_ir.rs` (lines in [`runs/sentences-and-code.txt`](runs/sentences-and-code.txt), read, not run):
 
-- `program_relations` (line 707) starts from the names passed where a relation's name is held, adds `is-a`, `eq`,
-  `neq`, the registry, the heads in every rule's, hrule's and obligation's `:match` and `:assert`, and **every head of
+- `program_relations` (line 707) starts from the names passed where a relation's name is held, adds `eq` and
+  `neq` (no longer `is-a`, Q-M1f.436), the registry, the heads in every rule's, hrule's and obligation's `:match` and `:assert`, and **every head of
   every fact at any depth** (`relation_heads`, line 677, recurses into a fact's arguments). That recursion is the way
   Q-M1f.119 leaves out.
 - `CLAIM_RELATION` (line 693), the refusal's list: *"a relation of the program is one it declares, states a fact of,
@@ -95,10 +97,11 @@ Every relation a query's `:goal` asks about, at any depth and under `(absent …
 relation a claim lists a fact of, is a relation of the program: one it declares, states a fact of, writes as the
 relation of a fact that is an argument, or writes in a rule's, an hrule's or an obligation's `:match` or `:assert`,
 at any depth, or passes where a relation's name is held; or one a `(solve :hrules …)` activator has its hrule
-propose. `is-a`, `eq`, `neq` and the declarations, `(relation ?R ?T)`, are every program's.
+propose. `eq`, `neq` and the declarations, `(relation ?R ?T)`, are every program's.
 ```
 
-and its **Why** gains nothing: *"One notion of a relation of the program serves the `(solve …)` lists (Q-M1f.114), a
+(the last sentence also brought to today's loader: `is-a` is no longer every program's, § 7), and its **Why** gains
+nothing: *"One notion of a relation of the program serves the `(solve …)` lists (Q-M1f.114), a
 goal and a claim"* is then true of the two texts.
 
 **(b) Keep it**, reading *"states a fact of"* as covering a fact inside a fact. Q-M1f.114 and the pages say the
@@ -107,7 +110,8 @@ argument explicitly, so the two decisions would read differently.
 ### 3.2 The line (D-23, F23's)
 
 Today's: *"a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule"*. It
-leaves out the fact's argument, the name passed where a relation's name is held, and the three every program has.
+leaves out the fact's argument, the name passed where a relation's name is held, and the two every program has,
+`eq` and `neq`.
 Proposed (`CLAIM_RELATION`, and the two expected lines of `goal_premises.rs` with it):
 
 ```text
@@ -123,7 +127,7 @@ kb load error: …/named-nowhere.ein:6:15: query: its :goal writes (payed ?g), a
 
 (a **mock**: [`runs/named-nowhere.solve.MOCK.line-reworded.txt`](runs/named-nowhere.solve.MOCK.line-reworded.txt),
 today's output with the clause after the dash edited and nothing else). The solve lists' line (*"… or writes in a
-rule, an hrule or a goal"*) has the same gap. `is-a`, `eq` and `neq` need no mention there, since a goal over them is
+rule, an hrule or a goal"*) has the same gap. `eq` and `neq` need no mention there, since a goal over them is
 never refused.
 
 ### 3.3 The user pages (found while building)
@@ -141,24 +145,35 @@ Q-M1f.119 names and the loader takes (§ 2.2, row 2). Proposed for both lists, a
 - [`programs/fact-argument.ein`](programs/fact-argument.ein) — the witness; [`runs/fact-argument.solve.txt`](runs/fact-argument.solve.txt).
 - [`programs/fact-argument-claim.ein`](programs/fact-argument-claim.ein) — with a claim; [`runs/fact-argument-claim.test.txt`](runs/fact-argument-claim.test.txt).
 - [`programs/fact-argument-misspelt.ein`](programs/fact-argument-misspelt.ein) — the argument misspelt, refused; [`runs/fact-argument-misspelt.test.txt`](runs/fact-argument-misspelt.test.txt).
-- [`programs/passed-to-an-activator.ein`](programs/passed-to-an-activator.ein), [`programs/rule-match-only.ein`](programs/rule-match-only.ein), [`programs/every-programs.ein`](programs/every-programs.ein) — the other ways, each loading; their `runs/*.solve.txt`.
+- [`programs/passed-to-an-activator.ein`](programs/passed-to-an-activator.ein), [`programs/rule-match-only.ein`](programs/rule-match-only.ein), [`programs/eq-neq.ein`](programs/eq-neq.ein) — the other ways, each loading; their `runs/*.solve.txt`.
+- [`programs/every-programs.ein`](programs/every-programs.ein) — goals over `is-a` and `neq` in a program that writes neither: refused today at the `is-a` goal; [`runs/every-programs.solve.txt`](runs/every-programs.solve.txt).
+- [`rerun.sh`](rerun.sh) — every run and the sentences file.
 - [`programs/named-nowhere.ein`](programs/named-nowhere.ein) — D-23's witness; [`runs/named-nowhere.solve.txt`](runs/named-nowhere.solve.txt) and the mock [`runs/named-nowhere.solve.MOCK.line-reworded.txt`](runs/named-nowhere.solve.MOCK.line-reworded.txt).
 - [`runs/sentences-and-code.txt`](runs/sentences-and-code.txt) — both decisions' sentences, the four pages' sentences and the code, each with its command.
 
 ## 6. Re-run
 
 ```sh
-B=build/review-bin/ein-head-b5fb8d70; D=plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/24-L-94
-for p in fact-argument passed-to-an-activator rule-match-only every-programs named-nowhere; do $B solve --no-require-why $D/programs/$p.ein; echo "exit $?"; done
-$B test -v $D/programs/fact-argument-claim.ein; $B test -v $D/programs/fact-argument-misspelt.ein
-sed -n 3,6p docs/decisions/language/Q-M1f.119-*.md
-grep -n "fact that is an argument\|in a fact's argument" docs/ein/user/03-syntax-and-semantics/12-query.md docs/ein/user/04-reference/02-syntax.md docs/ein/user/04-reference/07-diagnostics.md docs/decisions/language/Q-M1f.114-*.md
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/24-L-94/rerun.sh
 ```
+
+It runs `build/review-bin/ein-head-17085b27 solve --no-require-why` on the six programs and `test -v` on the two
+claim programs (exit code appended), and writes [`runs/sentences-and-code.txt`](runs/sentences-and-code.txt): the two
+decisions' sentences, the three pages', and the code, each with its command and line numbers.
 
 ## 7. Found while building
 
+- **Re-taken with `ein-head-17085b27`**: the fact's argument (L-94) and the two ways the refusal's line leaves out
+  are as at the first look; the line itself is the same. **What moved is `is-a`**: since Q-M1f.436 (S1f.23.4) a goal
+  over it in a program that writes none is refused, `every-programs.ein` exit 1 where it loaded at the first look.
+  Q-M1f.114, `12-query.md` and `07-diagnostics.md` § 2.20 and § 2.21 were brought to it; **Q-M1f.119 and
+  `02-syntax.md` § Query were not**: the decision still says *"`is-a`, `eq`, `neq` and the declarations … are every
+  program's"* and the reference page *"`is-a`, `eq`, `neq` and `relation` are every program's"*
+  ([`runs/sentences-and-code.txt`](runs/sentences-and-code.txt)). So Q-M1f.119 now misses one way and names one too
+  many; the proposed re-wording (§ 3.1) drops `is-a`.
+
 - **The refusal's line misses three ways, not one**: the fact's argument (D-23), a name passed by an activator
-  (`passed-to-an-activator.ein` loads), and `is-a`/`eq`/`neq` (every program's). The last needs no words in a line
+  (`passed-to-an-activator.ein` loads), and `eq`/`neq` (every program's; `is-a` was among them at the first look). The last needs no words in a line
   that is only printed when the goal is refused, but the other two do.
 - **The user pages miss the activator's way** that Q-M1f.119 names: `12-query.md` and `02-syntax.md` list *declared,
   stated, written as the relation of a fact that is an argument, written in a rule or an hrule, or proposed by an
@@ -168,6 +183,7 @@ grep -n "fact that is an argument\|in a fact's argument" docs/ein/user/03-syntax
 ## 8. Your call
 
 - **L-94**: (a) re-word Q-M1f.119 to add *"writes as the relation of a fact that is an argument"* (§ 3.1); (b) keep it.
+  Either way its `is-a` clause is stale since Q-M1f.436, as is `02-syntax.md`'s (§ 7).
 - **D-23** (F23's, shown here): the line re-worded (§ 3.2), or as it is.
 - The pages' missing activator clause (§ 3.3), with either.
 - **Default**: none taken.

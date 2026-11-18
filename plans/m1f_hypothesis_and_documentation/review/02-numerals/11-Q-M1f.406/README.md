@@ -17,7 +17,7 @@ the build is S1f.22.6 (`bf9693dc`), whose record is read from git
 
 ## 2. What is so today
 
-Runs under **today** = `build/review-bin/ein-head-b5fb8d70`, and, where the program names no `valid`, under
+Runs under **today** = `build/review-bin/ein-head-17085b27`, and, where the program names no `valid`, under
 **before** = `build/review-bin/ein-0a4a97a3` with `EIN_STDLIB=build/wt-rev-0a4/stdlib`, which had no label (the
 diffs show where the labels appeared and the `written` facts went).
 
@@ -53,12 +53,17 @@ no difference).
 `valid` and queries its extent): `(valid z)`, `(valid (n z 3))`, `(valid (n z 4))`, `(valid (n z 7))`
 ([read-out](runs/small_add.today.solve.txt), `query 2 of 2`). Its KB view, `ein render kb`, drawn whole with `fdp`:
 [`renders/small_add.today.kb.dot`](renders/small_add.today.kb.dot) →
-[`renders/small_add.today.kb.svg`](renders/small_add.today.kb.svg) (4.8 MB: the view is mostly the digit tables the
-import brings, about 10 000 lines of DOT, and `fdp` takes about three minutes on it). The same view cut to the
-check's and the label's facts and what they nest (`tools/kbsub.py`, each line the binary's own):
-[`renders/small_add.today.kb-cut.svg`](renders/small_add.today.kb-cut.svg). In the view a label of a numeral is an
-octagon `(valid)` with its `:rule` (`by std.math.decimal.numeral-valid` for 3 and 4, `by std.math.positional.turn-end`
-for 7), and `(valid z)` a labelled loop on `z`, `valid by std.math.decimal.decimal`.
+[`renders/small_add.today.kb.svg`](renders/small_add.today.kb.svg) (5.8 MB: the view is mostly the digit tables the
+import brings, 12 917 lines of DOT and 10 818 arrows, and `fdp` took 425 s on it, on a machine another run was
+loading). The same view cut to the check's and the label's facts and what they nest (`tools/kbsub.py`, each line the
+binary's own): [`renders/small_add.today.kb-cut.svg`](renders/small_add.today.kb-cut.svg). In the view a label of a
+numeral is a fact of `valid` drawn as the graph has it: an octagon with no name in it, its arrow `1` at the box
+`valid` and its arrow `2` at the numeral's octagon, its `:rule` beside it (`by std.math.decimal.numeral-valid` for 3
+and 4, `by std.math.positional.turn-end` for 7). `(valid z)` is drawn the same way, its arrow `2` at the box `z`,
+`by std.math.decimal.decimal` beside it; the first look's binary drew it as a loop on `z`. The numerals, facts the
+knowledge base does not hold, stand in frames named for the relations whose facts point at them.
+
+![small_add's KB cut today: the four facts of valid, octagons whose arrow 1 is at the box valid, three with arrow 2 into a numeral's octagon in a frame and one at the box z; the add request and the walk's facts around them](renders/small_add.today.kb-cut.svg)
 
 **A tagged call's hand-over** — [`programs/tagged_call.ein`](programs/tagged_call.ein), `(add-walk (mine a) (n z 4)
 (n z 3) 0 z)`: today `(done (mine a) (n z 7) :rule turn-end)` and `(valid (n z 7) :rule turn-end)`, the hand-over
@@ -110,6 +115,11 @@ cut to the facts of `check valid bin-check bin-valid written add sum-of div quot
 bin-sum-of div-done` and what they nest, drawn with `fdp` (`tools/kbsub.py`); for `small_add` also *kb.dot* and
 *kb.svg*, the whole view. Each text output ends with `[exit N]`.
 
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
+
 | program | binary | artefacts |
 |---|---|---|
 | [`small_add`](programs/small_add.ein) | today | [read-out](runs/small_add.today.solve.txt) · [summary](runs/small_add.today.summary.json) · [events](runs/small_add.today.events.jsonl) · [events table](runs/small_add.today.events.md) · [trace](runs/small_add.today.trace.md) · [dump-answer](runs/small_add.today.answer/) · [saturate --dump](runs/small_add.today.saturate-dump.txt) · [its facts](runs/small_add.today.saturate-facts.txt) · [ein test](runs/small_add.today.test.txt) · [show hyps](runs/small_add.today.show-hyps.txt) · [kb-cut.dot](renders/small_add.today.kb-cut.dot) · [kb-cut.svg](renders/small_add.today.kb-cut.svg) · [kb.dot](renders/small_add.today.kb.dot) · [kb.svg](renders/small_add.today.kb.svg) |
@@ -144,9 +154,9 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/11-Q-M1f.406
-build/review-bin/ein-head-b5fb8d70 saturate $D/programs/add_and_div.ein --dump | grep 'decimal.valid'
-build/review-bin/ein-head-b5fb8d70 render kb $D/programs/small_add.ein > $D/renders/small_add.today.kb.dot
-fdp -Tsvg $D/renders/small_add.today.kb.dot -o $D/renders/small_add.today.kb.svg      # about three minutes
+build/review-bin/ein-head-17085b27 saturate $D/programs/add_and_div.ein --dump | grep 'decimal.valid'
+build/review-bin/ein-head-17085b27 render kb $D/programs/small_add.ein > $D/renders/small_add.today.kb.dot
+fdp -Tsvg $D/renders/small_add.today.kb.dot -o $D/renders/small_add.today.kb.svg      # 425 s here, the machine shared
 # everything in runs/ and renders/ (the mocks are hand-made and are not re-made)
 K="check valid bin-check bin-valid written add sum-of div quot-of sub diff-of add-walk done bin-add bin-sum-of div-done"
 for p in add_and_div tagged_call zero binary_add; do for L in before today; do
@@ -167,6 +177,13 @@ python3 -I $D/tools/trace_excerpt.py $D/runs/add_and_div.today.trace.md $D/runs/
 - In `add_and_div` the remainder 2 was made by a subtraction walk before `div-end` and labelled there: the dump shows
   `(valid (n z 2) :rule std.math.positional.turn-end)`, and `div-end`'s label of it (trace step 148) is a second
   derivation of a held fact.
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks, today's
+  KB cuts and `small_add`'s whole KB view, now in the canonical form (that view has 10 818 arrows against the first
+  look's 8 464, an arrow `1` a fact and the facts that apply a rule among them; `fdp` took 425 s on it, on a machine
+  another run was loading, where the first look's page says about three minutes). The before binary's outputs re-run the same.
 
 ## 8. Your call
 

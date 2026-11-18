@@ -1,0 +1,14 @@
+;;; std.bijection's domain-elimination with std.macro's forall written out by hand, as the macro expands:
+;;; (forall ?b G B) is (absent (and G (absent B))). A copy for the drawing only.
+
+(rule domain-elimination-written-out (?R ?isa)
+  :match  (and (functional ?R) (total ?R)
+               (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (?isa ?b ?B)
+               (absent (and (and (?isa ?b_other ?B) (neq ?b_other ?b))
+                            (absent (not (?R ?a ?b_other))))))
+  :assert (?R ?a ?b)
+  :why    "every {?B} except {?b} excluded for {?a}, so ({?R} {?a} {?b}).")
+
+(solve :no-search)

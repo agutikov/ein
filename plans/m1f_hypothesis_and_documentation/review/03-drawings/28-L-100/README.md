@@ -6,44 +6,61 @@
 and its picture: `01_common_belief.kb.dot` / `.kb.svg` and `02_packing.kb.dot` / `.kb.svg`. They are drawn by a
 command line written in `examples/README.md`, by hand, each time the renderer changes. Nothing compares them with
 the binary: not a test, not a generator's `--check`. During the nested-facts work the renderer moved twice and the
-drawings were found behind it once. Should they be held to `ein render kb` by a test, be put on `AGENTS.md`'s list
-of generated files with a generator, or stay as they are?
+drawings were found behind it once; since the first look the renderer moved a third time (the canonical form,
+Q-M1f.419) and the drawings were drawn again by hand, because the stage's own list named them. Should they be held to
+`ein render kb` by a test, be put on `AGENTS.md`'s list of generated files with a generator, or stay as they are?
 
 Recorded: [`../../findings.md`](../../../findings.md#examples), row **L-100** (P1f.22's N-33).
 
 ## 2. What is so today
 
-Today's binary, `build/review-bin/ein-head-b5fb8d70`; Graphviz 16.0.0.
+Today's binary, `build/review-bin/ein-head-17085b27`; Graphviz 16.0.0.
 
 **They match the binary today.** `ein render kb examples/beliefs/NN.ein` against the checked-in `NN.kb.dot`:
 
 | program | diff | file |
 |---|---|---|
-| `01_common_belief` | no difference (exit 0) | [`runs/01_common_belief.kb.tracked-vs-today.diff`](runs/01_common_belief.kb.tracked-vs-today.diff) (empty) |
-| `02_packing` | no difference (exit 0) | [`runs/02_packing.kb.tracked-vs-today.diff`](runs/02_packing.kb.tracked-vs-today.diff) (empty) |
+| `01_common_belief` | no difference (exit 0) | [`runs/01_common_belief.kb.tracked-vs-today.diff`](runs/01_common_belief.kb.tracked-vs-today.diff) |
+| `02_packing` | no difference (exit 0) | [`runs/02_packing.kb.tracked-vs-today.diff`](runs/02_packing.kb.tracked-vs-today.diff) |
 
 and the checked-in `.kb.svg` of each is byte for byte `dot -Tsvg` of today's output on this machine's Graphviz
-(`cmp`, no difference). So the row's *"They match it at the close"* holds on master's binary too.
+([`runs/svg-is-dot-of-today.txt`](runs/svg-is-dot-of-today.txt)). The two programs here are the corpus files
+([`runs/programs-are-the-corpus.txt`](runs/programs-are-the-corpus.txt)).
 
-The drawings (the checked-in pictures, copied):
+**They are drawn in the canonical form now**: every fact an octagon with no name in it, its arrow `1` at its
+relation's box and `2`, `3`, … at its arguments; `01_common_belief` 24 octagons and 66 arrows, `02_packing` 19 and
+53. The held facts a rule derived, `(likes Dan Soup)` and `(not (likes Dan Fish))` in the first, are dashed, with
+`by common-belief-likes` and `by common-belief-not-likes` beside them; the facts believed and not held stand in the
+frames `believes ctx` and `not ctx`. The checked-in pictures are `dot`'s, a wide strip, where the view's own DOT
+says `// suggested layout: fdp` (R-18, item [55](../55-R-18/README.md)):
 
-- [`renders/01_common_belief.kb.tracked.svg`](renders/01_common_belief.kb.tracked.svg)
-  ([dot](renders/01_common_belief.kb.tracked.dot)) — `(likes Dan Soup)` and `(not (likes Dan Fish))` held (derived by
-  the two common-belief rules, dashed, in no frame), `(likes Dan Tea)`, `(likes Eve Fish)` in the frame
-  `believes ctx`, `(likes Dan Fish)` in `not ctx`.
+![01_common_belief as checked in: dot's layout of ein render kb, a strip two ranks high, the facts' octagons in a row under the boxes of the atoms, numbers crowded where arrows meet](renders/01_common_belief.kb.tracked.svg)
 
-  ![01_common_belief: the saturated KB, two held beliefs outside every frame, two in believes ctx, one in not ctx](renders/01_common_belief.kb.tracked.svg)
+![01_common_belief, today's output laid out by fdp, the layout the DOT suggests: the facts of believes around the box believes, the declarations around relation, the frames believes ctx and not ctx](renders/01_common_belief.kb.today.fdp-layout.svg)
 
-- [`renders/02_packing.kb.tracked.svg`](renders/02_packing.kb.tracked.svg)
-  ([dot](renders/02_packing.kb.tracked.dot)) — `(likes Dan Soup)` packed by `witnessed` and confirmed, held;
-  `(likes Dan Tea)` in `claims ctx`.
+- [`renders/01_common_belief.kb.tracked.svg`](renders/01_common_belief.kb.tracked.svg) ([dot](renders/01_common_belief.kb.tracked.dot)),
+  [`renders/02_packing.kb.tracked.svg`](renders/02_packing.kb.tracked.svg) ([dot](renders/02_packing.kb.tracked.dot)):
+  the checked-in drawings, copied (1 135 × 243 pt, 1 075 × 201 pt).
+- [`renders/01_common_belief.kb.today.fdp-layout.svg`](renders/01_common_belief.kb.today.fdp-layout.svg),
+  [`renders/02_packing.kb.today.fdp-layout.svg`](renders/02_packing.kb.today.fdp-layout.svg): today's output by
+  `fdp` (855 × 757 pt, 685 × 789 pt); [`…dot-layout.svg`](renders/01_common_belief.kb.today.dot-layout.svg) by `dot`,
+  the checked-in picture again.
+- [`renders/01_common_belief.kb.today.fold.svg`](renders/01_common_belief.kb.today.fold.svg),
+  [`renders/02_packing.kb.today.fold.svg`](renders/02_packing.kb.today.fold.svg): `ein render kb --fold`, which the
+  regeneration line does not ask (14 and 13 octagons left: the facts something points at, the declarations, the
+  facts of two arrows).
 
-  ![02_packing: the saturated KB, the packed fact held and confirmed, Bob's other claim in claims ctx](renders/02_packing.kb.tracked.svg)
-
-The view's own DOT says `// suggested layout: fdp`, but the regeneration line draws with `dot`; the `fdp` pictures,
-for comparison: [`renders/01_common_belief.kb.today.fdp-layout.svg`](renders/01_common_belief.kb.today.fdp-layout.svg),
-[`renders/02_packing.kb.today.fdp-layout.svg`](renders/02_packing.kb.today.fdp-layout.svg). (Both drawings also carry
-L-96's literal `\n`: `(confirmed)\nby confirm`, `(likes)\nby common-belief-likes`.)
+**They were drawn again by hand since the first look.** Their history
+([`runs/drawings-history.txt`](runs/drawings-history.txt)) is a commit of each program's, then three commits of the
+renderer that each named them: `bf9693dc` (after being found behind), `58b91dc3` (the frame) and `8edf546b`
+(S1f.23.1, the canonical form). What the last one changed:
+[`runs/01_common_belief.kb.tracked-b5fb8d70-vs-today.diff`](runs/01_common_belief.kb.tracked-b5fb8d70-vs-today.diff),
+[`runs/02_packing.kb.tracked-b5fb8d70-vs-today.diff`](runs/02_packing.kb.tracked-b5fb8d70-vs-today.diff) — at the
+first look a fact of four arrows or more was a labelled octagon, `(relation)` for `(relation likes Person Food)`, a
+fact of three arrows a labelled arrow, `"person" -> "Person" [label="relation"]`, and a fact of two a loop,
+`"likes" -> "likes" [label="relation"]`; the first look's pictures:
+[`renders/01_common_belief.kb.tracked-at-b5fb8d70.svg`](renders/01_common_belief.kb.tracked-at-b5fb8d70.svg),
+[`renders/02_packing.kb.tracked-at-b5fb8d70.svg`](renders/02_packing.kb.tracked-at-b5fb8d70.svg).
 
 **The regeneration line**, `examples/README.md`, the `beliefs/` row (quoted):
 
@@ -51,24 +68,29 @@ L-96's literal `\n`: `(confirmed)\nby confirm`, `(likes)\nby common-belief-likes
 > `ein render kb examples/beliefs/NN_….ein > NN_….kb.dot && dot -Tsvg NN_….kb.dot -o NN_….kb.svg`).
 
 and `corpus/corpus.toml`'s note on `02_packing` ends *"Its KB drawn beside it, `02_packing.kb.dot` and `.svg`
-(`ein render kb`)."* No other file names them (`grep` of the `.md`, `.rs`, `.py`, `.toml`, `.ein` files).
+(`ein render kb`)."*
 
-**They were behind once.** At `0a4a97a3` (after every object was drawn once, `811846ce`, and before they were drawn
-again in `bf9693dc`), that commit's binary against that commit's checked-in DOTs
+**They were behind once.** At `0a4a97a3`, that commit's binary against that commit's checked-in DOTs
 (`build/review-bin/ein-0a4a97a3`, `EIN_STDLIB` its tree's): both differ —
 [`runs/01_common_belief.kb.at-0a4a97a3.tracked-vs-that-binary.diff`](runs/01_common_belief.kb.at-0a4a97a3.tracked-vs-that-binary.diff),
 [`runs/02_packing.kb.at-0a4a97a3.tracked-vs-that-binary.diff`](runs/02_packing.kb.at-0a4a97a3.tracked-vs-that-binary.diff).
 The checked-in drawing still had nodes labelled with a fact's text, `"(likes Dan Soup)"`, where the binary already
-drew the octagon `f_b10ac10970`. The pictures then:
+drew an octagon. The pictures then:
 [`renders/01_common_belief.kb.tracked-at-0a4a97a3.svg`](renders/01_common_belief.kb.tracked-at-0a4a97a3.svg),
 [`renders/02_packing.kb.tracked-at-0a4a97a3.svg`](renders/02_packing.kb.tracked-at-0a4a97a3.svg).
 
-**The shape golden does not hold them either.** `corpus_shapes.md5` has a `dot[kb]` line for each program, but its
-digest is not `ein render kb`'s output: `01_common_belief` `bc835a09ec1c521e 55L` against the binary's
-`f316b39f53c1a54e…` 55 lines; `02_packing` `489082959760603c 42L` against `532fb84514a4b9ab…` 48 lines
-([`runs/shape-golden-vs-render-kb.txt`](runs/shape-golden-vs-render-kb.txt)). Read from `ein-render/src/shape.rs`:
-the golden's plain KB views draw the KB as loaded, before saturation (only `kb-since` saturates), while
-`ein render kb` and these drawings are of the saturated KB.
+**The shape golden still does not hold them** ([`runs/shape-golden-vs-render-kb.txt`](runs/shape-golden-vs-render-kb.txt)):
+
+| line of `corpus_shapes.md5` | golden | `ein render kb` today |
+|---|---|---|
+| `01_common_belief.ein::dot[kb]` | `a910f6551b0eadb3`, 107 lines | `d131ae491815f1c4…`, 107 lines |
+| `01_common_belief.ein::dot[kb-fold]` | `a929c0d8b76af710`, 77 lines | `f080da002c649046…`, 77 lines |
+| `02_packing.ein::dot[kb]` | `202ee107868fa126`, 75 lines | `f3607fe41bc6f157…`, 86 lines |
+| `02_packing.ein::dot[kb-fold]` | `5a3d383423d5b0a3`, 60 lines | `bcfe1b564583201a…`, 68 lines |
+
+The golden's plain KB views draw the KB as loaded, before saturation (read from `ein-render/src/shape.rs`: only
+`kb-since` saturates), while `ein render kb` and these drawings are of the saturated KB; for `01_common_belief` the
+line counts happen to agree and the digests do not.
 
 ## 3. The options
 
@@ -91,12 +113,12 @@ A script under `utils/` writes both files (`ein render kb`, then Graphviz) and h
 *generated, never edited by hand*, and `utils/README.md` names the script. That is the process holding a project
 file, the way the zebra2 variants and the `04-stdlib/` rule drawings are held. One cost: *"a generated project file
 says it is generated"*, so the `.kb.dot` would carry a line saying so, and would no longer be byte for byte
-`ein render kb`'s output.
+`ein render kb`'s output. Either of the first two could draw the picture with the layout the DOT suggests, `fdp`.
 
 ### As they are
 
-The line in `examples/README.md` regenerates them; nothing catches drift, as `0a4a97a3` shows. Their use is to be
-looked at beside the program, and nothing reads them.
+The line in `examples/README.md` regenerates them; nothing catches drift, as `0a4a97a3` shows, and a stage that
+moves the renderer has to know to name them, as S1f.23.1 did.
 
 ## 4. The default
 
@@ -108,42 +130,41 @@ The row names no default: **the user's call**, *"a test that holds them to `ein 
 | file | what it is |
 |---|---|
 | [`README.md`](README.md) | this page |
+| [`rerun.sh`](rerun.sh) | every run and drawing below, from the repo root |
 | [`programs/01_common_belief.ein`](programs/01_common_belief.ein), [`programs/02_packing.ein`](programs/02_packing.ein) | copies of `examples/beliefs/` |
 | [`renders/01_common_belief.kb.tracked.dot`](renders/01_common_belief.kb.tracked.dot) / [`.svg`](renders/01_common_belief.kb.tracked.svg) | the checked-in drawing, copied |
 | [`renders/02_packing.kb.tracked.dot`](renders/02_packing.kb.tracked.dot) / [`.svg`](renders/02_packing.kb.tracked.svg) | the same for `02_packing` |
 | [`renders/01_common_belief.kb.today.dot`](renders/01_common_belief.kb.today.dot), [`renders/02_packing.kb.today.dot`](renders/02_packing.kb.today.dot) | `ein render kb` today |
 | [`renders/01_common_belief.kb.today.fdp-layout.svg`](renders/01_common_belief.kb.today.fdp-layout.svg), [`renders/02_packing.kb.today.fdp-layout.svg`](renders/02_packing.kb.today.fdp-layout.svg) | today's output drawn with `fdp`, the view's suggested layout |
-| [`renders/01_common_belief.kb.tracked-at-0a4a97a3.dot`](renders/01_common_belief.kb.tracked-at-0a4a97a3.dot) / [`.svg`](renders/01_common_belief.kb.tracked-at-0a4a97a3.svg) | the checked-in drawing at `0a4a97a3`, behind its binary |
-| [`renders/02_packing.kb.tracked-at-0a4a97a3.dot`](renders/02_packing.kb.tracked-at-0a4a97a3.dot) / [`.svg`](renders/02_packing.kb.tracked-at-0a4a97a3.svg) | the same for `02_packing` |
-| [`runs/01_common_belief.kb.tracked-vs-today.diff`](runs/01_common_belief.kb.tracked-vs-today.diff), [`runs/02_packing.kb.tracked-vs-today.diff`](runs/02_packing.kb.tracked-vs-today.diff) | `diff -u` checked-in against today: empty |
+| [`renders/01_common_belief.kb.today.dot-layout.svg`](renders/01_common_belief.kb.today.dot-layout.svg), [`renders/02_packing.kb.today.dot-layout.svg`](renders/02_packing.kb.today.dot-layout.svg) | the same with `dot`, as the regeneration line draws it |
+| [`renders/01_common_belief.kb.today.fold.dot`](renders/01_common_belief.kb.today.fold.dot) / [`.svg`](renders/01_common_belief.kb.today.fold.svg), [`renders/02_packing.kb.today.fold.dot`](renders/02_packing.kb.today.fold.dot) / [`.svg`](renders/02_packing.kb.today.fold.svg) | `ein render kb --fold`, by `fdp` |
+| [`renders/01_common_belief.kb.tracked-at-b5fb8d70.dot`](renders/01_common_belief.kb.tracked-at-b5fb8d70.dot) / [`.svg`](renders/01_common_belief.kb.tracked-at-b5fb8d70.svg), [`renders/02_packing.kb.tracked-at-b5fb8d70.dot`](renders/02_packing.kb.tracked-at-b5fb8d70.dot) / [`.svg`](renders/02_packing.kb.tracked-at-b5fb8d70.svg) | the checked-in drawings at the first look |
+| [`renders/01_common_belief.kb.tracked-at-0a4a97a3.dot`](renders/01_common_belief.kb.tracked-at-0a4a97a3.dot) / [`.svg`](renders/01_common_belief.kb.tracked-at-0a4a97a3.svg), [`renders/02_packing.kb.tracked-at-0a4a97a3.dot`](renders/02_packing.kb.tracked-at-0a4a97a3.dot) / [`.svg`](renders/02_packing.kb.tracked-at-0a4a97a3.svg) | the checked-in drawings at `0a4a97a3`, behind their binary |
+| [`runs/01_common_belief.kb.tracked-vs-today.diff`](runs/01_common_belief.kb.tracked-vs-today.diff), [`runs/02_packing.kb.tracked-vs-today.diff`](runs/02_packing.kb.tracked-vs-today.diff) | `diff -u` checked-in against today: empty, exit 0 |
+| [`runs/01_common_belief.kb.tracked-b5fb8d70-vs-today.diff`](runs/01_common_belief.kb.tracked-b5fb8d70-vs-today.diff), [`runs/02_packing.kb.tracked-b5fb8d70-vs-today.diff`](runs/02_packing.kb.tracked-b5fb8d70-vs-today.diff) | what S1f.23.1 changed in the checked-in drawings |
 | [`runs/01_common_belief.kb.at-0a4a97a3.tracked-vs-that-binary.diff`](runs/01_common_belief.kb.at-0a4a97a3.tracked-vs-that-binary.diff), [`runs/02_packing.kb.at-0a4a97a3.tracked-vs-that-binary.diff`](runs/02_packing.kb.at-0a4a97a3.tracked-vs-that-binary.diff) | the same at `0a4a97a3`: behind |
-| [`runs/shape-golden-vs-render-kb.txt`](runs/shape-golden-vs-render-kb.txt) | the golden's `dot[kb]` digests against `ein render kb`'s |
+| [`runs/drawings-history.txt`](runs/drawings-history.txt) | the commits that changed the two drawings |
+| [`runs/shape-golden-vs-render-kb.txt`](runs/shape-golden-vs-render-kb.txt) | the golden's `dot[kb]` and `dot[kb-fold]` digests against `ein render kb`'s |
+| [`runs/svg-is-dot-of-today.txt`](runs/svg-is-dot-of-today.txt), [`runs/programs-are-the-corpus.txt`](runs/programs-are-the-corpus.txt) | the two `cmp` checks |
+| [`runs/draw-times.tsv`](runs/draw-times.tsv) | Graphviz's layout and seconds, each drawing |
 
 ## 6. Re-run
 
-From the repo root, `E=build/review-bin/ein-head-b5fb8d70`, `D=plans/m1f_hypothesis_and_documentation/review/03-drawings/28-L-100`:
-
-```sh
-for n in 01_common_belief 02_packing; do
-  $E render kb examples/beliefs/$n.ein > $D/renders/$n.kb.today.dot
-  diff -u examples/beliefs/$n.kb.dot $D/renders/$n.kb.today.dot > $D/runs/$n.kb.tracked-vs-today.diff; echo "$n $?"
-  dot -Tsvg $D/renders/$n.kb.today.dot | cmp - examples/beliefs/$n.kb.svg && echo "$n svg same"
-  fdp -Tsvg $D/renders/$n.kb.today.dot -o $D/renders/$n.kb.today.fdp-layout.svg
-  # behind at 0a4a97a3: that commit's binary on that commit's tree
-  EIN_STDLIB=$PWD/build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 render kb build/wt-rev-0a4/examples/beliefs/$n.ein \
-    | diff -u build/wt-rev-0a4/examples/beliefs/$n.kb.dot - > $D/runs/$n.kb.at-0a4a97a3.tracked-vs-that-binary.diff
-done
-grep -E 'beliefs/0[12]_[a-z_]+\.ein::dot\[kb\]' ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5
-```
+From the repo root: `bash plans/m1f_hypothesis_and_documentation/review/03-drawings/28-L-100/rerun.sh`. It needs
+the worktree `build/wt-rev-0a4/` for the `0a4a97a3` comparison.
 
 ## 7. Found while building
 
-- The row reproduces: no difference on master's binary.
-- **The shape golden does not cover them**: its `dot[kb]` digests the KB as loaded, not saturated, so even a
-  per-commit golden line for each program is not a check of `ein render kb`'s output or of these files. (This also
-  bears on L-96's count of moved golden lines.)
-- The regeneration line draws with `dot`, while the view suggests `fdp`; the checked-in pictures are `dot`'s
-  (byte-identical here).
+- The row reproduces on today's binary: no difference, DOT and picture.
+- **The drawings had to be drawn again by hand a third time** (S1f.23.1 named them in its list); nothing would have
+  failed had it not.
+- **The shape golden still does not cover them**: its `dot[kb]` and its new `dot[kb-fold]` digest the KB as loaded,
+  not saturated.
+- The regeneration line draws with `dot`, while the view suggests `fdp`: the checked-in pictures are a strip two ranks
+  high whose arrow numbers crowd where arrows meet; `fdp` lays them out in a square with room for the numbers (R-18,
+  item [55](../55-R-18/README.md)).
+- Since the first look (b5fb8d70): the checked-in drawings went from labelled octagons and labelled arrows to the
+  canonical form, with the binary; still no difference between them and the binary.
 
 ## 8. Your call
 

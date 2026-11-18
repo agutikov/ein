@@ -18,8 +18,8 @@ the build that took the default is S1f.22.6, whose record is read from git
 ## 2. What is so today
 
 Every program below was run under two binaries: **before** = `build/review-bin/ein-0a4a97a3` with
-`EIN_STDLIB=build/wt-rev-0a4/stdlib` (the calculator with `written`), **today** = `build/review-bin/ein-head-b5fb8d70`
-(master's code). Each run's every artefact is in `runs/`, and `*.diff` is `diff -u` before → today.
+`EIN_STDLIB=build/wt-rev-0a4/stdlib` (the calculator with `written`), **today** = `build/review-bin/ein-head-17085b27`
+(master's code, the drawing's stages merged). Each run's every artefact is in `runs/`, and `*.diff` is `diff -u` before → today.
 
 **The case that moved** — [`programs/e_tagged_call_malformed.ein`](programs/e_tagged_call_malformed.ein), rebuilt
 from the record: `(add-walk (mine a) (n z x) (n z 1) 0 z)`, `x` where a digit goes, handed straight to the tagged
@@ -48,6 +48,12 @@ call. Its claims are today's answer.
   fire at root; today: neither), [ein test](runs/e_tagged_call_malformed.test.diff) (before 3 FAILED, exit 1; today
   3 held, exit 0). The KB views cut to the check's relations:
   [before](renders/e_tagged_call_malformed.before.kb-cut.svg), [today](renders/e_tagged_call_malformed.today.kb-cut.svg).
+  Today's is drawn as the graph has it: the call an octagon with no name in it, its arrow 1 at the box `add-walk`
+  and its arrows 2 to 4 at `(mine a)`, `(n z x)` and `(n z 1)`, three octagons in the frame `add-walk ctx`; and
+  `(valid z)` an octagon whose arrow 1 is at `std.math.decimal.valid` and arrow 2 at `z`, dashed, with
+  `by std.math.decimal.decimal` beside it. Before's is the earlier binary's drawing: labelled octagons,
+  `(add-walk)`, a `(written)` over each of the three, and the flag an arrow labelled `not-decimal` from `(n z x)` to
+  `x`.
 
 **"Once", as built** — [`programs/a_once.ein`](programs/a_once.ein): 12 is named by three requests (as an operand,
 as `price`'s value, and in a request the program's rule `ask` derives). The trace excerpt
@@ -118,14 +124,15 @@ so the stage's stop condition, a corpus answer moving, did not hold.
 Programs: `e_tagged_call_malformed`, `a_once` and `e_cost_product` are written for this review (each claims today's
 answer); `b_rule_writes_the_request` is a copy of `tests/stdlib/math/decimal/07_in_a_rules_conclusion_that_fires.ein`
 and `c_fact_of_the_programs_own` of `tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein`, both as at
-`b5fb8d70`.
+`17085b27`.
 
 Per program and binary: *read-out* `ein solve`; *summary* `--json-summary`; *events* `--events` (JSONL) and its
 *events table* (markdown, by `tools/jsonl2md.py`); *trace* `--trace`; *dump-answer* `--dump-answer DIR`; *saturate
 --dump* the whole dump and *its facts* (the facts that bear on the check: no digit table, declaration, closure, rule
 list or macro activation; `tools/facts.py`); `ein test`; `ein show hyps`; *kb-cut* `ein render kb` cut to the facts
 of `check valid not-decimal written add let sum-of add-walk done price mul mul-call product-of` and what they nest
-(`tools/kbsub.py`, every line kept the binary's own), drawn with `fdp`. The whole KB view is not kept: it is
+(`tools/kbsub.py`, every line kept the binary's own; it reads both binaries' forms, a fact's relation the box under
+its arrow 1 today and an octagon's label before), drawn with `fdp`. The whole KB view is not kept: it is
 mostly the digit tables, some 10 000 lines, and `fdp` takes minutes to draw it. Each text output ends with the
 command's exit code, `[exit N]`, added by `tools/run_all.sh`.
 
@@ -173,9 +180,9 @@ From the repo root:
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/04-Q-M1f.405
 # one program, by hand, under each binary
-build/review-bin/ein-head-b5fb8d70 solve $D/programs/e_tagged_call_malformed.ein
+build/review-bin/ein-head-17085b27 solve $D/programs/e_tagged_call_malformed.ein
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 solve $D/programs/e_tagged_call_malformed.ein
-build/review-bin/ein-head-b5fb8d70 saturate $D/programs/e_tagged_call_malformed.ein --dump
+build/review-bin/ein-head-17085b27 saturate $D/programs/e_tagged_call_malformed.ein --dump
 # everything in runs/ and renders/ (the mocks are hand-made and are not re-made)
 for p in e_tagged_call_malformed a_once b_rule_writes_the_request c_fact_of_the_programs_own e_cost_product; do
   for L in before today; do
@@ -197,6 +204,11 @@ python3 -I $D/tools/trace_excerpt.py $D/runs/a_once.today.trace.md $D/runs/a_onc
   **alive** by the before binary: its `(false)` claim holds only under today's design. The record's "no other
   program's R moved" is about the programs that existed before, so this is no contradiction, but it shows (a)
   flags something the `written` design never did — a numeral a rule assembles with a variable.
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks and
+  today's KB cuts, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

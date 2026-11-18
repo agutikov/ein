@@ -16,7 +16,7 @@ the build is S1f.22.6 (`bf9693dc`), whose record shows it on `decimal-arith/19` 
 ## 2. What is so today
 
 Both programs run under **before** = `build/review-bin/ein-0a4a97a3` with `EIN_STDLIB=build/wt-rev-0a4/stdlib` (no
-check at all: nothing walked, nothing labelled) and **today** = `build/review-bin/ein-head-b5fb8d70`. Answers are
+check at all: nothing walked, nothing labelled) and **today** = `build/review-bin/ein-head-17085b27`. Answers are
 equal under both ([`sum_handed_on.solve.diff`](runs/sum_handed_on.solve.diff),
 [`div_named_and_chained.solve.diff`](runs/div_named_and_chained.solve.diff): no difference).
 
@@ -72,13 +72,18 @@ wrote, and only a negation or a join could.
 ## 5. Files
 
 Programs: `sum_handed_on`, written for this review (claims the answer under both binaries); `div_named_and_chained`, a
-copy of `tests/stdlib/math/decimal-arith/19_div_named_and_chained.ein` as at `b5fb8d70`.
+copy of `tests/stdlib/math/decimal-arith/19_div_named_and_chained.ein` as at `17085b27`.
 
 Per program and binary: *read-out* `ein solve`; *summary* `--json-summary`; *events* `--events` (JSONL) and its
 *events table*; *trace* `--trace`; *dump-answer* `--dump-answer DIR`; *saturate --dump* whole and *its facts*
 (`tools/facts.py`); `ein test`; `ein show hyps`; *kb-cut* `ein render kb` cut to the facts of `check valid written
 add sum-of mul div product-of quot-of let` and what they nest, drawn with `fdp` (`tools/kbsub.py`). Each text output
 ends with `[exit N]`.
+
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
 
 | program | binary | artefacts |
 |---|---|---|
@@ -115,7 +120,7 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/14-Q-M1f.410
-build/review-bin/ein-head-b5fb8d70 solve $D/programs/sum_handed_on.ein --trace $D/runs/sum_handed_on.today.trace.md
+build/review-bin/ein-head-17085b27 solve $D/programs/sum_handed_on.ein --trace $D/runs/sum_handed_on.today.trace.md
 python3 -I $D/tools/steps_of.py $D/runs/sum_handed_on.today.trace.md 'n(z, 7)' again
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 solve $D/programs/sum_handed_on.ein \
   --trace $D/runs/sum_handed_on.before.trace.md
@@ -132,8 +137,13 @@ done
 
 ## 7. Found while building
 
-Nothing that differs from the ledger: the record's five `check` facts of 1500 and its re-derived label reproduce, at
-steps 118–134 of today's trace.
+- Nothing that differs from the ledger: the record's five `check` facts of 1500 and its re-derived label reproduce,
+  at steps 118–134 of today's trace.
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks and
+  today's KB cuts, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

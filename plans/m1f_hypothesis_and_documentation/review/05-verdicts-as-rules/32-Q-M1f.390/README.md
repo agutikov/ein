@@ -19,8 +19,8 @@ Recorded in [`open_questions.md` § Q-M1f.390](../../../open_questions.md#q-m1f3
 your form is [`open_facts.md` § 4](../../../p1f.21_verdicts_as_rules/open_facts.md#4-open-f-the-hypothesis-itself) and
 [§ 5](../../../p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not).
 
-Every run below is today's binary, `build/review-bin/ein-head-b5fb8d70` (master `b5fb8d70`,
-[`runs/ein-version.txt`](runs/ein-version.txt)).
+Every run below is today's binary, `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged
+([`runs/ein-version.txt`](runs/ein-version.txt)); [`tools/run.sh`](tools/run.sh) makes every file.
 
 ## 2. What is so today
 
@@ -148,7 +148,9 @@ The KB, drawn by `ein render kb` (`fdp`): [`renders/seats-AnnC1.saved.kb.svg`](r
 (the commitment dashed), against root with `--since`
 ([`renders/seats-AnnC1.saved.kb.since-root.svg`](renders/seats-AnnC1.saved.kb.since-root.svg)); seats1's, the
 commitment solid ([`renders/seats1.kb.svg`](renders/seats1.kb.svg)); root's ([`renders/seats.kb.svg`](renders/seats.kb.svg)).
-No debt has a node in any of them.
+Each fact is drawn in the canonical form, an octagon with no name in it, its arrow `1` at its relation's box, and the
+facts that apply the module's rules, `(total-owed seats is-a)`, `(functional seats)`, …, are drawn among them
+(Q-M1f.432). No debt has a node in any of them.
 
 ## 3. The options
 
@@ -224,8 +226,11 @@ stand-in relation `open-fact` ([`programs/seats1-open-F-J.standin.ein`](programs
 [`renders/seats1-open-F-J.standin.kb.svg`](renders/seats1-open-F-J.standin.kb.svg); it loads and answers as seats1,
 [`seats1-open-F-J.standin.no-search.solve.txt`](runs/seats1-open-F-J.standin.no-search.solve.txt)), then renamed by
 hand: **[`renders/seats-AnnC1.kb.user-open-F-J.MOCK.svg`](renders/seats-AnnC1.kb.user-open-F-J.MOCK.svg)**. The
-four `open` arrows (red, bold) go from each candidate to the debt it would pay, both nested facts in the `open`
-context; `(seats Bob C2)` has two. The counts: 8 at seats' root, 112 at zebra2's (and 68 payments denied, which
+four facts of `open` (red, bold) are octagons, each with its arrow `1` at the box `open`, its arrow `2` at the
+candidate and its arrow `3` at the debt it would pay, both nested facts in the frame `open ctx`; `(seats Bob C2)` has
+two.
+
+![the mock: four red octagons of open, each pointing at a candidate and a debt in the frame open ctx](renders/seats-AnnC1.kb.user-open-F-J.MOCK.svg) The counts: 8 at seats' root, 112 at zebra2's (and 68 payments denied, which
 have none), 72 at z1. The candidates and the debts are as many only by chance: 4 and 4 at seats' root, 56 and 36
 at zebra2's, 3 and 2 at {(seats Ann C1)}; a debt is a disjunction of open facts, not one of them.
 
@@ -287,7 +292,7 @@ and S1f.21.4 is to put it again on programs.
 
 ## 6. Re-run
 
-From the repo root, with `E=build/review-bin/ein-head-b5fb8d70` (the scripts name it by its absolute path):
+From the repo root, with `E=build/review-bin/ein-head-17085b27` (the scripts name it by its absolute path):
 
 ```sh
 bash plans/m1f_hypothesis_and_documentation/review/05-verdicts-as-rules/32-Q-M1f.390/tools/run.sh
@@ -318,6 +323,12 @@ fdp -Tsvg renders/X.kb.dot -o renders/X.kb.svg                              # do
 ```
 
 ## 7. Found while building
+
+- **Re-taken with `ein-head-17085b27`** against the first look's `ein-head-b5fb8d70`: no run moved (every read-out,
+  `show hyps`, event stream, summary, dump, oracle and table the same, timings aside; zebra2's 186 247 events
+  too). The drawings moved, to the canonical form, and the KB views now draw the facts that apply a rule; the two
+  KB mocks were made again in that form (the stand-in's box renamed `open`, its two declarations dropped, its facts
+  red and bold, the instances' relation the rule's name).
 
 - **`design.md` § 4.4 and § 4.5 read a state file that lists facts; today's does not.** Their (d) column says *a
   dumped owing state then holds `(open R j)` lines, and a file that writes a debt writes a stale one: the loader

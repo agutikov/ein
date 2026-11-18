@@ -1,0 +1,18 @@
+;;; Two states and what one holds beyond the other, for `ein render kb --since`: the hrule asks whether Bob
+;;; owns the dog, and the rule makes an owner a pet owner.
+
+(relation owns      Person Pet :why "{?1} owns {?2}")
+(relation pet-owner Person     :why "{?1} owns a pet")
+
+(rule pet-owner ()
+  :match  (owns ?p ?x)
+  :assert (pet-owner ?p)
+  :why    "{?p} owns {?x}, so {?p} owns a pet.")
+
+(hrule guess ()
+  :match  (and (person ?p) (pet ?x))
+  :assert (owns ?p ?x)
+  :why    "guess: does {?p} own {?x}?")
+
+(person Bob) (pet Dog)
+(owns Carol Cat :source "clue (1)")

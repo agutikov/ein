@@ -21,12 +21,21 @@ went with the old state files: each fact written with its English in a comment.
 
 What the ledger does not say, each on its item's page under *Found while building*.
 
+**Re-taken with `ein-head-17085b27`**, the phase's merged work (the canonical drawing and the program view in three
+parts, `--models` and `--diff-models` removed, `ein test --diff`, the kernel reading no theory's name): every item is
+still open, and **no answer, read-out, refusal, note or exit moved in any of the eight**. What moved: 17's drawings
+(the canonical form; the program view four graphs, `kb`, the hrule, the rule and `query`, where it was five) and
+every `.einb` today's binary writes, 24 bytes shorter; 19's report, `ein-test-report/6` with `diff: null` on every
+row, its mock made again; 07's wall clocks, taken under another agent's gate and nightly, the dumps byte for byte the
+same. 30 and 31 have a `rerun.sh` now.
+
 - **07**: shard 4 holds three heavy programs side by side, so spreading a program's files over workers alone does not
   move it; dealing the heavy programs one to a shard does (about 98 to 139 s a shard). The third heaviest is
   `cul-de-sac` (208 s), not `04_open`.
 - **17**: a container stored under `EIN_STDLIB=/nonexistent` records that library's digest, so later runs warn
   `StaleStdlib`; a carried module that differs from the binary's is noted at `kb save` only, and the container is
-  read silently afterwards.
+  read silently afterwards. The KB view draws the node's committed `(note (bad a))` dashed, as a derived fact, with
+  nothing beside it to say it is the node's choice.
 - **18**: no surface marks which candidate is the node's own choice: `show hyps` lists 3, `solve -H` 2, for one file.
 - **19**: on a node, the query claim's verbose header reads `(--no-search: all of R, …)` with no `--no-search` given,
   and that row says `over: all`, `exact: false`, over the node alone.

@@ -1,0 +1,24 @@
+;;; bag-is-ready with forall's expansion written out, reconstructed by S1f.23.1's task 2 for the drawing
+;;; user/03-syntax-and-semantics/diagrams/11-rule-bag-is-ready-written-out.dot: no file of the project holds it. The page
+;;; (11-macros.md) gives the program with the call and the expansion, (absent (and (goes-in ?i ?bag) (absent (packed ?i)))),
+;;; and says the program with the call replaced by it, the import dropped, saturates to the same facts.
+
+;; Which bag is ready to go: one whose every item is packed.
+
+(relation is-a T T         :why "{?1} is a {?2}")
+(relation goes-in Item Bag :why "{?1} goes in {?2}")
+(relation packed Item      :why "{?1} is packed")
+(relation ready Bag        :why "{?1} is ready to go")
+
+(rule bag-is-ready ()
+  :match  (and (is-a ?bag Bag)
+               (absent (and (goes-in ?i ?bag) (absent (packed ?i)))))
+  :assert (ready ?bag)
+  :why    "every item that goes in {?bag} is packed")
+
+(is-a Red Bag) (is-a Blue Bag)
+(goes-in Socks Red) (goes-in Map Red) (goes-in Tent Blue)
+(packed Socks) (packed Map)
+
+(query :goal (ready ?bag) :goal-text "{?bag} is ready to go")
+(solve :no-search)

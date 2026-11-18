@@ -1,0 +1,15 @@
+;;; A rule named like the relation it concludes: the rule confused derives (confused Ann). Before the KB view drew
+;;; every fact, it took a fact whose relation is a rule's name for one that applies the rule, and left it out.
+
+(relation contradicts Person :why "{?1} contradicts themself")
+(relation confused    Person :why "{?1} is confused")
+
+(rule confused ()
+  :match  (contradicts ?p)
+  :assert (confused ?p)
+  :why    "{?p} contradicts themself, so {?p} is confused")
+
+(contradicts Ann)
+
+(query :goal (confused ?p) :expect (model (confused Ann)))
+(solve :no-search)

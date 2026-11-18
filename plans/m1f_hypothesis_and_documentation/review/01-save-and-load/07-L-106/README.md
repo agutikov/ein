@@ -36,17 +36,17 @@ the one heavy program's unit, and the other workers sit idle for most of it. **S
 heavy programs**, which ran side by side on three of its four workers: its wall clock is its heaviest unit and also
 its work divided by four.
 
-**The five heavy programs**, today's binary, `ein solve FILE --dump-answer DIR`
+**The five heavy programs**, today's binary (`ein-head-17085b27`), `ein solve FILE --dump-answer DIR`
 ([`tools/heavy-dumps.sh`](tools/heavy-dumps.sh); one file each, `runs/heavy.NAME.dump-answer.count.txt`, with the
 read-out and stderr beside it):
 
-| program | shard | unit in the test (s) | state files | ms a file in the test | the dump (bytes) | of which `models/` | one state file (bytes) | the dump alone, wall (s) |
+| program | shard | unit in the test (s) | state files | ms a file in the test | the dump (bytes) | of which `models/` | one state file (bytes) | the dump alone, wall (s), under load |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| `features/01_not_and_absent` | 4/4 | 211.2 | 64 655 | 3.27 | 354 577 878 | 189 677 693 | 2 817 to 2 976 | 2.2 |
-| `square-unique/corner-house` | 4/4 | 210.4 | 65 214 | 3.23 | 286 187 689 | 135 235 865 | 1 984 to 2 099 | 2.0 |
-| `square-unique/cul-de-sac` | 4/4 | 208.1 | 64 817 | 3.21 | 290 955 813 | 134 715 837 | 2 001 to 2 091 | 2.1 |
-| `features/04_open` | 2/4 | 193.6 | 64 761 | 2.99 | 525 882 278 | 334 033 596 | 5 070 to 5 175 | 2.5 |
-| `square-unique/terminus` | 1/4 | 172.8 | 64 514 | 2.68 | 349 017 219 | 156 814 505 | 2 337 to 2 455 | 2.4 |
+| `features/01_not_and_absent` | 4/4 | 211.2 | 64 655 | 3.27 | 354 577 878 | 189 677 693 | 2 817 to 2 976 | 4.2 |
+| `square-unique/corner-house` | 4/4 | 210.4 | 65 214 | 3.23 | 286 187 689 | 135 235 865 | 1 984 to 2 099 | 2.5 |
+| `square-unique/cul-de-sac` | 4/4 | 208.1 | 64 817 | 3.21 | 290 955 813 | 134 715 837 | 2 001 to 2 091 | 3.1 |
+| `features/04_open` | 2/4 | 193.6 | 64 761 | 2.99 | 525 882 278 | 334 033 596 | 5 070 to 5 175 | 4.4 |
+| `square-unique/terminus` | 1/4 | 172.8 | 64 514 | 2.68 | 349 017 219 | 156 814 505 | 2 337 to 2 455 | 4.9 |
 
 The unit is the test's at `a5de14a1`; the file count is today's binary's (the logs count files per test function,
 not per program), so *ms a file* divides one by the other.
@@ -54,16 +54,19 @@ The three heaviest by the test's time are `01_not_and_absent`, `corner-house` an
 `terminus` are added because the ledger names `04_open` and the set is five. Each run is a partial answer: the program
 is not monotone and the question needs the whole cube, past `--region-limit 16`, so each lists the 64 514 to 65 214
 members it met (`exhausted no`, a `note: … partial` on stderr). A saved file is the whole program text and its
-`(commit …)`, so its size is the program's. Writing the dump takes about two seconds of the 170 to 211; the rest is
-the round trip of 64 to 65 thousand files, 2.7 to 3.3 ms of a worker each. (The `.count.txt` files' wall clock is
-written with a decimal comma, the shell's locale.)
+`(commit …)`, so its size is the program's. Writing the dump takes a few seconds of the 170 to 211; the rest is the
+round trip of 64 to 65 thousand files, 2.7 to 3.3 ms of a worker each. **The last column was taken under load**:
+another agent was running the gate and the nightly on this machine (load average 10 to 14), and the dumps were
+written to disk, not to a `tmpfs` as at the first look, where they took 2.0 to 2.5 s; it is no measurement of the
+binary. (The `.count.txt` files' wall clock is written with a decimal comma, the shell's locale.)
 
 **One such file through the CLI**, for scale, on one pinned P-core thread
 ([`runs/one-state-file-through-the-cli.txt`](runs/one-state-file-through-the-cli.txt),
 [`tools/one-state-file-through-the-cli.sh`](tools/one-state-file-through-the-cli.sh), every 200th file of
-`01_not_and_absent`'s dump): `ein --version` 1.2 ms, `ein saturate --dump FILE` 3.2 ms, `ein solve FILE --no-search
---dump-answer D` 3.4 ms; so one load of such a file is about 2 ms beyond the process's start. The test's three checks
-run in process, with no process start; how a file's 3.3 ms splits among them is not measured here.
+`01_not_and_absent`'s dump): `ein --version` 1.2 ms, `ein saturate --dump FILE` 3.6 ms, `ein solve FILE --no-search
+--dump-answer D` 3.9 ms, on the same loaded machine (load average 14; 3.2 and 3.4 ms at the first look); so one load
+of such a file is some 2 ms beyond the process's start. The test's three checks run in process, with no process
+start; how a file's 3.3 ms splits among them is not measured here.
 
 **Inside each shard**, the test's eight functions `_0` to `_7` take the programs whose index is their number modulo 8,
 all on one pool ([`runs/shard-tables.md` § The eight tests](runs/shard-tables.md#the-eight-tests-inside-each-shard)):
@@ -165,6 +168,13 @@ utils/bench_env.sh --core 2 bash $D/tools/one-state-file-through-the-cli.sh /tmp
   not name. The row's numbers otherwise reproduce from the units and logs: 180, 194, 55, 211 s; 211 and 210 s.
 - **All five heavy dumps are partial runs** at `--region-limit 16`, each listing 64 to 65 thousand members met; the
   number of files the round trip reads is set by that limit, not by the program.
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): the five dumps are the same, file
+  for file and byte for byte (the counts, `du -sb`, each state file's size, the read-outs and their `note: …
+  partial`); only the wall clocks moved, taken under another agent's gate and nightly. The shard logs and units are
+  the measurement of `a5de14a1` and were not re-taken (no `cargo test`). The six programs the phase retired with the
+  native symmetry were units of 30 to 50 ms in these logs ([`runs/units1.tsv`](runs/units1.tsv) to
+  [`units4.tsv`](runs/units4.tsv)); the dealing follows the pool's start order, heavy first and then by cost, so the
+  five heavy programs keep their shards (read, not run: `ein_corpus::shard::assign`, `pool::start_order`).
 
 ## 8. Your call
 

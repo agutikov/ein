@@ -17,7 +17,7 @@ the build is S1f.22.6, whose record is read from git
 ## 2. What is so today
 
 Every program was run under **before** = `build/review-bin/ein-0a4a97a3` with `EIN_STDLIB=build/wt-rev-0a4/stdlib`
-and **today** = `build/review-bin/ein-head-b5fb8d70`; `*.diff` is `diff -u` before → today.
+and **today** = `build/review-bin/ein-head-17085b27`; `*.diff` is `diff -u` before → today.
 
 **The case that moved** — [`programs/d_rat_natural_numerator_malformed.ein`](programs/d_rat_natural_numerator_malformed.ein),
 rebuilt from the record: `(rat-add (rat (n z x) (n z 2)) (rat (int (n z 1) z) (n z 2)))`. Its claims are today's
@@ -130,6 +130,11 @@ not-rational int-add rat-add int-sum-of rat-sum-of` and what they nest (`tools/k
 binary's own), drawn with `fdp`. The whole KB view is not kept (mostly the digit tables, some 10 000 lines). Each
 text output ends with the command's exit code, `[exit N]`.
 
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
+
 | program | binary | artefacts |
 |---|---|---|
 | [`d_rat_natural_numerator_malformed`](programs/d_rat_natural_numerator_malformed.ein) | before | [read-out](runs/d_rat_natural_numerator_malformed.before.solve.txt) · [summary](runs/d_rat_natural_numerator_malformed.before.summary.json) · [events](runs/d_rat_natural_numerator_malformed.before.events.jsonl) · [events table](runs/d_rat_natural_numerator_malformed.before.events.md) · [trace](runs/d_rat_natural_numerator_malformed.before.trace.md) · [dump-answer](runs/d_rat_natural_numerator_malformed.before.answer/) · [saturate --dump](runs/d_rat_natural_numerator_malformed.before.saturate-dump.txt) · [its facts](runs/d_rat_natural_numerator_malformed.before.saturate-facts.txt) · [ein test](runs/d_rat_natural_numerator_malformed.before.test.txt) · [show hyps](runs/d_rat_natural_numerator_malformed.before.show-hyps.txt) · [kb-cut.dot](renders/d_rat_natural_numerator_malformed.before.kb-cut.dot) · [kb-cut.svg](renders/d_rat_natural_numerator_malformed.before.kb-cut.svg) |
@@ -168,9 +173,9 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/05-Q-M1f.409
-build/review-bin/ein-head-b5fb8d70 solve $D/programs/d_rat_natural_numerator_malformed.ein
+build/review-bin/ein-head-17085b27 solve $D/programs/d_rat_natural_numerator_malformed.ein
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 solve $D/programs/d_rat_natural_numerator_malformed.ein
-build/review-bin/ein-head-b5fb8d70 saturate $D/programs/d_rat_natural_numerator_malformed.ein --dump
+build/review-bin/ein-head-17085b27 saturate $D/programs/d_rat_natural_numerator_malformed.ein --dump
 # everything in runs/ and renders/ (the mocks are hand-made and are not re-made)
 P="d_rat_natural_numerator_malformed d_int_natural_malformed a_int_and_rat_well_formed c_int_digit_as_a_part"
 for p in $P; do for L in before today; do
@@ -191,6 +196,11 @@ python3 -I $D/tools/trace_excerpt.py $D/runs/d_rat_natural_numerator_malformed.t
   third point of finding L-101 (`../29-L-101/`), seen here on the very program the default moved.
 - Only the first operand's rational is checked in the moved case: the second, `(rat (int (n z 1) z) (n z 2))`, is
   never looked up, since the look-up of the second operand waits on the first being an integer over a number.
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks and
+  today's KB cuts, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

@@ -113,6 +113,7 @@ None: the row is **the user's call** (*a note naming why there is nothing to com
 
 ## 5. Files
 
+- [`rerun.sh`](rerun.sh) — every run of this page and the table.
 - [`programs/03_the_standard_library.ein`](programs/03_the_standard_library.ein) — copied from `tests/saved/`.
 - [`runs/03.solve-dump-answer.stdout.txt`](runs/03.solve-dump-answer.stdout.txt) / [`.stderr.txt`](runs/03.solve-dump-answer.stderr.txt) — `ein solve --dump-answer` of it, `$EIN_STDLIB` unset.
 - [`runs/03.dump-answer/`](runs/03.dump-answer/) — the dump; `models/01.ein` is the saved file every run below reads.
@@ -125,11 +126,15 @@ None: the row is **the user's call** (*a note naming why there is nothing to com
 
 ## 6. Re-run
 
-From the repo root:
+From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/31-F23-D-24/rerun.sh
+[SCRATCH_DIR]`: the dump, the saved file under each setting and command (stdout, stderr, exit), the program refused,
+`--version` under each setting, the modules' diffs, the table [`runs/stderr-by-setting.md`](runs/stderr-by-setting.md)
+and the mocks' diffs. `SCRATCH_DIR` (a fresh `mktemp -d` by default) holds the binary copied outside the checkout
+and the directory with no `MANIFEST.sha256`. The core commands:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/01-save-and-load/31-F23-D-24
-H=build/review-bin/ein-head-b5fb8d70
+H=build/review-bin/ein-head-17085b27
 F=$D/runs/03.dump-answer/models/01.ein
 env -u EIN_STDLIB $H solve tests/saved/03_the_standard_library.ein --dump-answer $D/runs/03.dump-answer
 for c in solve saturate test; do x=; [ $c = saturate ] && x=--dump
@@ -150,6 +155,10 @@ cp $H /some/dir/outside/the/checkout/ein && env -u EIN_STDLIB /some/dir/outside/
   `std.math.digits` and `std.math.positional` too, which the three import, as Q-M1f.401 says (*every module it
   imports*). So the witness's *five `note:` lines* are five modules, not three imports and two of something else.
 - The witness reproduces as the ledger states it (five notes, exit 0), under `saturate` and `test` as well.
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): nothing moved. The five notes under
+  `/nonexistent` and under a directory with no manifest, none where the library is readable, one and three under the
+  older trees, every exit 0 and every stdout the same; the binary's `stdlib` digest is the same,
+  `sha256:2ae8fe21…` ([`runs/version.by-setting.txt`](runs/version.by-setting.txt)).
 
 ## 8. Your call
 

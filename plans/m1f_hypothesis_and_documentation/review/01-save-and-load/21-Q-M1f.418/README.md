@@ -28,7 +28,7 @@ Programs, all written for this review, all `(solve :no-search)` so R is root alo
 | [`below_limit_deeper_state.ein`](programs/below_limit_deeper_state.ein) | 999 | a rule wraps it twice: a fact 1001 deep |
 | [`with_deep_module.ein`](programs/with_deep_module.ein) + [`deep_module.ein`](programs/deep_module.ein) | 1000 in the module | the module's fact |
 
-Binary: `build/review-bin/ein-head-b5fb8d70`; exits in [`00-exit-codes.txt`](runs/00-exit-codes.txt).
+Binary: `build/review-bin/ein-head-17085b27`; exits in [`00-exit-codes.txt`](runs/00-exit-codes.txt).
 
 **The limit on a program.** `at_limit.ein` loads and is answered ([`at_limit.solve.txt`](runs/at_limit.solve.txt));
 `past_limit.ein` is refused, exit 1 ([`past_limit.solve.stderr.txt`](runs/past_limit.solve.stderr.txt)):
@@ -161,7 +161,7 @@ Built in `ein_ir::grammar`'s parse (`NESTING_LIMIT + 1` when the text opens as a
 From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/21-Q-M1f.418/rerun.sh`. The core commands:
 
 ```sh
-B=/home/user/work/ein/build/review-bin/ein-head-b5fb8d70
+B=/home/user/work/ein/build/review-bin/ein-head-17085b27
 A=/home/user/work/ein/build/review-bin/ein-a8d595eb; AS=/home/user/work/ein/build/wt-rev-a8d/stdlib
 cd plans/m1f_hypothesis_and_documentation/review/01-save-and-load/21-Q-M1f.418
 $B solve programs/past_limit.ein                                                   # exit 1
@@ -189,6 +189,8 @@ The calculator's case, which Q-M1f.185 names (a request whose operands are near 
   text is parsed alone. The message still names *the limit of 1000*.
 - The ledger's statements reproduce: a program at the limit is saved and loads; one past it, saved by hand, is refused;
   the rewritten Q-M1f.185 holds (a state 1001 deep is answered, saved and loaded again).
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): nothing moved. Every exit, refusal
+  and its position is as it was, timings aside.
 
 ## 8. Your call
 

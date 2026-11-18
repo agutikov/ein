@@ -22,7 +22,7 @@ Programs: [`programs/02_a_choice_with_a_fact_inside_it.ein`](programs/02_a_choic
 [`programs/04_a_saved_node.ein`](programs/04_a_saved_node.ein) (copy of `tests/saved/04_a_saved_node.ein`, the state
 `{(note (bad a))}` saved; byte for byte what `ein solve 02 --dump-answer` writes as `models/02.ein`,
 [`check.node-is-the-programs-save.txt`](runs/check.node-is-the-programs-save.txt)). Binary:
-`build/review-bin/ein-head-b5fb8d70`. Exit codes: [`00-exit-codes.txt`](runs/00-exit-codes.txt).
+`build/review-bin/ein-head-17085b27`. Exit codes: [`00-exit-codes.txt`](runs/00-exit-codes.txt).
 
 **The program: both claims hold, exit 0** ([`program.test-v.txt`](runs/program.test-v.txt); an excerpt, `…` marks the *outside the universe* lines left out):
 
@@ -51,7 +51,8 @@ NOT CHECKED  programs/04_a_saved_node.ein
 1 file, 2 expectations: 0 held, 0 FAILED, 2 not checked, 0 errors  (0.00 s)
 ```
 
-**What is run is root alone, the node, one saturation.** The report's rows say `region.route` `"root alone"` and
+**What is run is root alone, the node, one saturation.** The report, `ein-test-report/6`, carries on every row the
+key `diff`, `null` without `ein test --diff` (Q-M1f.462), which this question does not read. Its rows say `region.route` `"root alone"` and
 `route` `"--no-search"` ([`node.test.report.json`](runs/node.test.report.json)); the summary says
 `asked.ask` `"no-search"` and `region` `null` ([`node.test.summary.json`](runs/node.test.summary.json), against the
 program's in [`diff.summary.program-vs-node.diff`](runs/diff.summary.program-vs-node.diff)); the events are one
@@ -152,7 +153,7 @@ on `tests/saved/04_a_saved_node.ein`.
 From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/19-Q-M1f.416/rerun.sh`. The core commands:
 
 ```sh
-B=/home/user/work/ein/build/review-bin/ein-head-b5fb8d70
+B=/home/user/work/ein/build/review-bin/ein-head-17085b27
 cd plans/m1f_hypothesis_and_documentation/review/01-save-and-load/19-Q-M1f.416
 $B test -v programs/02_a_choice_with_a_fact_inside_it.ein --json-report runs/program.test.report.json
 $B test -v programs/04_a_saved_node.ein --json-report runs/node.test.report.json \
@@ -176,6 +177,10 @@ EIN_STDLIB=/home/user/work/ein/build/wt-rev-a8d/stdlib /home/user/work/ein/build
   `{"over": "all", "exact": false, "classes": 1, "states": 1}`: the node's one state, labelled all of R, `exact`
   false ([`node.test.report.json`](runs/node.test.report.json)). It is the `--no-search` row's shape on a program
   ([`program.test-no-search.report.json`](runs/program.test-no-search.report.json)).
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): every read-out, `ein test` line,
+  summary, event and exit is as it was. What moved is the report's schema, `ein-test-report/5` to `/6`, with the
+  key `diff`, `null`, on every row ([`node.test.report.json`](runs/node.test.report.json)); the report's mock (b) is
+  made again from today's report with the same four keys edited.
 
 ## 8. Your call
 

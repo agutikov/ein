@@ -1,0 +1,18 @@
+;;; The program the reasoning page's soup drawings are drawn from: docs/ein/ein.rs/08-reasoning-in-code/
+;;; 02-saturation-and-negation.md § 3.4, copied (the page writes it without (solve …)).
+
+(relation is-a     T T         :why "{?1} is a {?2}")
+(relation seats    Guest Chair :why "{?1} is seated at {?2}")
+(relation allergic Guest       :why "{?1} is allergic")
+(relation meal     Guest Food  :why "{?1} is served {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair) (is-a Soup Food)
+
+(rule soup-unless-allergic ()
+  :match  (and (seats ?g ?c) (absent (allergic ?g)))
+  :assert (meal ?g Soup)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup")
+
+(seats Ann C1)
+(seats Bob C2)
+(allergic Bob)

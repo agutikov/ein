@@ -23,7 +23,7 @@ Program: [`programs/02_genuine_3set_death.ein`](programs/02_genuine_3set_death.e
 `examples/lattice/02_genuine_3set_death.ein`: H is `(a-prop X)`, `(b-prop X)`, `(c-prop X)`, all three together die,
 R is seven states. A smaller second program, [`programs/02_a_choice_with_a_fact_inside_it.ein`](programs/02_a_choice_with_a_fact_inside_it.ein)
 (copy of `tests/saved/02_…`), is used for the schema runs and once for the row. Binaries:
-`build/review-bin/ein-head-b5fb8d70` (today) and `build/review-bin/ein-a8d595eb` with its own standard library
+`build/review-bin/ein-head-17085b27` (today) and `build/review-bin/ein-a8d595eb` with its own standard library
 (before save/load). Every exit is 0 ([`00-exit-codes.txt`](runs/00-exit-codes.txt)).
 
 **The program, both binaries.** The read-out is the same byte for byte
@@ -162,7 +162,7 @@ and `10-answer-dump.md`.
 From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/20-Q-M1f.417/rerun.sh`. The core commands:
 
 ```sh
-B=/home/user/work/ein/build/review-bin/ein-head-b5fb8d70
+B=/home/user/work/ein/build/review-bin/ein-head-17085b27
 A=/home/user/work/ein/build/review-bin/ein-a8d595eb; AS=/home/user/work/ein/build/wt-rev-a8d/stdlib
 cd plans/m1f_hypothesis_and_documentation/review/01-save-and-load/20-Q-M1f.417
 $B solve programs/02_genuine_3set_death.ein --dump-answer runs/today.dump --json-summary runs/today.summary.json
@@ -187,6 +187,8 @@ EIN_STDLIB=$AS $A solve runs/a8d.dump/models/02.ein
   writer's rule (it clears only a schema it knows); noted only because it is one direction of the bump.
 - The ledger's statements reproduce: the row, `root.commit` (`[]` on a program), `root.facts` the program root's,
   `index.json`'s `commit` beside `from`, `ein-answer/3`, and the clearing of an `/2` directory.
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): nothing moved. The read-outs,
+  summaries, `index.json`, events and the `9 facts beyond root` are as they were, timings aside.
 
 ## 8. Your call
 

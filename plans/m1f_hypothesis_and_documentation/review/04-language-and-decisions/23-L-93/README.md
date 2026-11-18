@@ -14,8 +14,8 @@ The question is whether either is worth a stage; each is a sentence. Recorded at
 
 ## 2. What is so today
 
-All runs use `build/review-bin/ein-head-b5fb8d70`; the greps and the sections they find are
-[`runs/greps.txt`](runs/greps.txt).
+All runs use `build/review-bin/ein-head-17085b27`, today's binary, every P1f.23 stage merged; the greps and the
+sections they find are [`runs/greps.txt`](runs/greps.txt); [`rerun.sh`](rerun.sh) makes every file.
 
 ### 2.1 The parser's limit
 
@@ -55,7 +55,7 @@ nested form whose head is not a name is refused before the loader:
 | [`head-variable-in-rule.ein`](programs/head-variable-in-rule.ein), `(r (?x a))` in a `:match`, `?x` no parameter | `kb load error: rule 't': its :match writes (?x a) with ?x as its relation, which no parameter binds — …` | 1 ([run](runs/head-variable-in-rule.solve.txt)) |
 
 The loader's own unit test says so: *"no fact reaches the loader with a nested head that is not a name, and the
-`#nested` rename such a head collapses to is reached by no program"* (`from_ir.rs:6381`, in
+`#nested` rename such a head collapses to is reached by no program"* (`from_ir.rs:6384`, in
 [`runs/greps.txt`](runs/greps.txt)). The name is still `ein_core::text::NESTED_HEAD`, one of `INTERNAL_NAMES`.
 
 ## 3. The options, with the proposed re-wordings
@@ -129,6 +129,7 @@ link resolves.
 
 ## 5. Files
 
+- [`rerun.sh`](rerun.sh) — every file under `runs/`; `--before` re-takes the earlier binary's three too.
 - [`runs/greps.txt`](runs/greps.txt) — the ledger's greps and wider ones, re-taken, with the sections they find and
   the code's own words (`text.rs`, the loader's unit test).
 - [`programs/nested-1000.ein`](programs/nested-1000.ein), [`programs/nested-1001.ein`](programs/nested-1001.ein) and
@@ -142,7 +143,8 @@ link resolves.
 - [`programs/sum-999-digits.ein`](programs/sum-999-digits.ein) — a sum of two 999-digit numerals (§ 7);
   [`runs/sum-999-digits.solve.txt`](runs/sum-999-digits.solve.txt), its saved answer
   [`runs/sum-999-digits.dump-answer/`](runs/sum-999-digits.dump-answer/) and the saved file read again,
-  [`runs/sum-999-digits.reload.solve.txt`](runs/sum-999-digits.reload.solve.txt) (exit 0); the same under the earlier
+  [`runs/sum-999-digits.reload.solve.txt`](runs/sum-999-digits.reload.solve.txt) (exit 0), its size
+  [`runs/sum-999-digits.state-file-size.txt`](runs/sum-999-digits.state-file-size.txt); the same under the earlier
   binary `ein-0a4a97a3`: [`solve`](runs/sum-999-digits.before-0a4a97a3.solve.txt),
   [`reload`](runs/sum-999-digits.before-0a4a97a3.reload.solve.txt) (exit 1), and the head of its 132 MB state file,
   [`runs/sum-999-digits.before-0a4a97a3.state-file-head.txt`](runs/sum-999-digits.before-0a4a97a3.state-file-head.txt)
@@ -151,16 +153,17 @@ link resolves.
 ## 6. Re-run
 
 ```sh
-B=build/review-bin/ein-head-b5fb8d70; D=plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/23-L-93
-grep -n -i 'nested past\|1 000 parenth' docs/ein/user/04-reference/07-diagnostics.md
-grep -n '(r (_ a))' docs/ein/ein.rs/07-reserved-engine-strings.md
-for p in nested-1000 nested-1001 numeral-999-digits numeral-1000-digits head-underscore head-variable head-form head-string head-variable-in-rule; do $B solve $D/programs/$p.ein; echo "exit $?"; done
-$B solve $D/programs/sum-999-digits.ein --dump-answer /tmp/s999 && $B solve /tmp/s999/models/01.ein; echo "exit $?"
-EIN_STDLIB=$PWD/build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 solve $D/programs/sum-999-digits.ein --dump-answer /tmp/o999
-EIN_STDLIB=$PWD/build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 solve /tmp/o999/models/01.ein; echo "exit $?"   # 132 MB file
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/23-L-93/rerun.sh            # today
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/23-L-93/rerun.sh --before   # and ein-0a4a97a3's three, a 132 MB state file on the way
 ```
 
+It writes the greps and sections into `runs/greps.txt`, runs `build/review-bin/ein-head-17085b27 solve` on each
+program (exit code appended), saves `sum-999-digits.ein`'s answer and solves the saved file again.
+
 ## 7. Found while building
+
+- **Re-taken with `ein-head-17085b27`**: every run reads as at the first look, `b5fb8d70`, and the pages and code say
+  what they said (the loader test's line moved from 6381 to 6384). The phase's merged work touched neither sentence.
 
 - **A third stale sentence in the same paragraph** of `08-natural-numbers.md`: *"so a state written by
   `--dump-answer` from operands near that length is refused when it is loaded again, though every answer is right and

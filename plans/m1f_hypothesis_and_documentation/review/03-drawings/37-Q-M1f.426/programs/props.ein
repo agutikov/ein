@@ -1,0 +1,22 @@
+;;; Properties of relations, for the constraint view: (symmetric next-to) and (implies right-of next-to),
+;;; each a fact of a relation the program does not declare and with no :source, beside two declarations
+;;; and a given fact.
+
+(relation right-of House House :why "{?1} is right of {?2}")
+(relation next-to  House House :why "{?1} is next to {?2}")
+
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} and {?b}.")
+
+(rule implies (?r ?s)
+  :match  (?r ?a ?b)
+  :assert (?s ?a ?b)
+  :why    "{?r} implies {?s}: {?a} and {?b}.")
+
+(symmetric next-to)
+(implies right-of next-to)
+(right-of H2 H1 :source "clue (1)")
+
+(solve :no-search)

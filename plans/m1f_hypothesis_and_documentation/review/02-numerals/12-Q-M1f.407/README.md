@@ -15,8 +15,8 @@ invariant's banked list and none of these programs).
 ## 2. What is so today
 
 The three programs, each in two texts — **v-before** as at `0a4a97a3` (claims `(false)`) and **v-today** as at
-`b5fb8d70` (claims R = {∅}) — each run under two binaries: **before** = `build/review-bin/ein-0a4a97a3` with
-`EIN_STDLIB=build/wt-rev-0a4/stdlib`, **today** = `build/review-bin/ein-head-b5fb8d70`. Plus `07`, the twin the build
+`17085b27` (claims R = {∅}) — each run under two binaries: **before** = `build/review-bin/ein-0a4a97a3` with
+`EIN_STDLIB=build/wt-rev-0a4/stdlib`, **today** = `build/review-bin/ein-head-17085b27`. Plus `07`, the twin the build
 added. `ein test`'s line for each:
 
 | program | text | before binary | today binary |
@@ -53,7 +53,7 @@ it is walked, labelled and answered. The other two:
 [02](runs/02_in_a_let_nobody_asks_about.corpus-before-to-today.saturate-facts.diff),
 [03](runs/03_in_a_fact_of_the_programs_own.corpus-before-to-today.saturate-facts.diff).
 
-**The `:expect` before and after**: the programs' own diffs, `git diff 0a4a97a3 b5fb8d70 -- FILE`:
+**The `:expect` before and after**: the programs' own diffs, `git diff 0a4a97a3 17085b27 -- FILE`:
 [02](runs/02_in_a_let_nobody_asks_about.program.diff) (`(solve :expect (false))` → `(solve :expect (region
 (model)))`, a sum added, and three queries: the sum, `not-decimal`'s empty extent, `valid`'s extent without the
 `let`'s numeral), [03](runs/03_in_a_fact_of_the_programs_own.program.diff) and
@@ -85,7 +85,7 @@ Binary has no such program: its malformed numerals are all in requests, and none
 ## 5. Files
 
 Programs: copies of `tests/stdlib/math/decimal/02_…`, `03_…` and `04_…` as at `0a4a97a3` (`*.v-before.ein`) and as at
-`b5fb8d70` (`*.v-today.ein`), and of `07_…` as at `b5fb8d70` (it did not exist before).
+`17085b27` (`*.v-today.ein`), and of `07_…` as at `17085b27` (it did not exist before).
 
 Per program text and binary: *read-out* `ein solve`; *summary* `--json-summary`; *events* `--events` (JSONL) and its
 *events table*; *trace* `--trace`; *dump-answer* `--dump-answer DIR`; *saturate --dump* whole and *its facts* (the
@@ -95,6 +95,11 @@ facts of `check valid not-decimal written let add sum-of price seed` and what th
 `[exit N]`. The diff row is the same text under the before binary against the today binary. The v-today text of
 `02` is refused by the before binary, so that run has a read-out, `ein test`, `saturate --dump`, `show hyps` and a
 `kb.err` and nothing else.
+
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
 
 | program | binary | artefacts |
 |---|---|---|
@@ -133,7 +138,7 @@ Also:
   [solve](runs/04_in_a_rules_conclusion.corpus-before-to-today.solve.diff)
   [facts](runs/04_in_a_rules_conclusion.corpus-before-to-today.saturate-facts.diff)
   [test](runs/04_in_a_rules_conclusion.corpus-before-to-today.test.diff).
-- `*.program.diff` — each program's text, `git diff 0a4a97a3 b5fb8d70`: [02](runs/02_in_a_let_nobody_asks_about.program.diff),
+- `*.program.diff` — each program's text, `git diff 0a4a97a3 17085b27`: [02](runs/02_in_a_let_nobody_asks_about.program.diff),
   [03](runs/03_in_a_fact_of_the_programs_own.program.diff), [04](runs/04_in_a_rules_conclusion.program.diff);
   [`corpus-notes.diff`](runs/corpus-notes.diff), the four entries' notes in `corpus/corpus.toml`.
 - The mocks: [`decimal-folder.option-b.MOCK.txt`](runs/decimal-folder.option-b.MOCK.txt),
@@ -151,10 +156,10 @@ From the repo root:
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/12-Q-M1f.407
 for f in 02_in_a_let_nobody_asks_about 03_in_a_fact_of_the_programs_own 04_in_a_rules_conclusion; do
   git show 0a4a97a3:tests/stdlib/math/decimal/$f.ein > $D/programs/$f.v-before.ein
-  git show b5fb8d70:tests/stdlib/math/decimal/$f.ein > $D/programs/$f.v-today.ein
-  git diff 0a4a97a3 b5fb8d70 -- tests/stdlib/math/decimal/$f.ein > $D/runs/$f.program.diff
+  git show 17085b27:tests/stdlib/math/decimal/$f.ein > $D/programs/$f.v-today.ein
+  git diff 0a4a97a3 17085b27 -- tests/stdlib/math/decimal/$f.ein > $D/runs/$f.program.diff
 done
-build/review-bin/ein-head-b5fb8d70 test $D/programs/02_in_a_let_nobody_asks_about.v-before.ein
+build/review-bin/ein-head-17085b27 test $D/programs/02_in_a_let_nobody_asks_about.v-before.ein
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 test $D/programs/02_in_a_let_nobody_asks_about.v-before.ein
 # everything in runs/ and renders/
 K="check valid not-decimal written let add sum-of price seed"
@@ -170,6 +175,11 @@ $D/tools/diffs.sh $D $(cd $D/programs && ls *.ein | sed 's/\.ein$//')
   case the new design flags and the old did not (also in `../04-Q-M1f.405/`).
 - The v-today texts of `03` and `04` load under the before binary and are dead there; `02`'s does not load (it lists
   `valid`).
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks and
+  today's KB cuts, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

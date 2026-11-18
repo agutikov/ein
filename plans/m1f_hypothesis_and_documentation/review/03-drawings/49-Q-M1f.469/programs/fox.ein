@@ -1,0 +1,24 @@
+;;; The program the reasoning pages' derivation and core drawings are of: docs/ein/ein.rs/08-reasoning-in-code/
+;;; 02-saturation-and-negation.md § 2.4, copied (its second lisp block).
+
+(relation is-a T T :why "{?1} is a {?2}")
+(relation lives-in Person House :why "{?1} lives in {?2}")
+(relation next-to House House :why "{?1} is next to {?2}")
+(relation near Person House :why "{?1} lives near {?2}")
+(relation owns Person Pet :why "{?1} owns {?2}")
+
+(is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House) (is-a Fox Pet)
+
+(rule neighbour ()
+  :match  (and (lives-in ?p ?h) (next-to ?h ?g))
+  :assert (near ?p ?g)
+  :why    "{?p} lives in {?h}, which is next to {?g}, so {?p} lives near {?g}")
+
+(rule fox-keeps-away ()
+  :match  (and (owns ?p Fox) (near ?p House-2))
+  :assert (false)
+  :why    "{?p} owns the fox and lives near the second house, which cannot be")
+
+(lives-in Norwegian House-1 :source "the Norwegian lives in the first house")
+(next-to House-1 House-2 :source "the first house is next to the second")
+(owns Norwegian Fox :source "the Norwegian owns the fox")

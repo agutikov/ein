@@ -1,0 +1,26 @@
+;;; The guide's larger Zebra fragment: docs/ein/user/02-guide/07-examples.md § A larger Zebra fragment, copied.
+
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive.")
+
+;; The schema: no :source, so it is background.
+(relation is-a       T T :why "{?1} is a {?2}")
+(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation right-of   Attribute Attribute :why "{?1}'s house is immediately right of {?2}'s")
+;; The attribute hierarchy and its members are ordinary `is-a` facts.
+(is-a House Attribute) (is-a Color Attribute) (is-a Nationality Attribute)
+(is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
+(is-a Red Color) (is-a Green Color) (is-a Ivory Color)
+(is-a Norwegian Nationality) (is-a Englishman Nationality)
+;; Turn the rule on for co-located.
+(transitive co-located)
+
+;; Puzzle conditions: each :source makes it a given.
+(co-located Englishman Red    :source "condition (2)")
+(right-of   Green Ivory       :source "condition (6)")
+(co-located Norwegian House-1 :source "condition (10)")
+
+(solve :no-search)
+(query :goal (co-located ?nationality ?house))

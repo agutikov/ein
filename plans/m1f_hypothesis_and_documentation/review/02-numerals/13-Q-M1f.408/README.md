@@ -43,7 +43,7 @@ std.math.rat            rat-check-ask              reads -                      
 std.math.rat            rat-check-parts            reads rat-check                    writes check,int-check
 ```
 
-**The modules' text** — `git diff 0a4a97a3 b5fb8d70 -- stdlib/math/MODULE.ein`:
+**The modules' text** — `git diff 0a4a97a3 17085b27 -- stdlib/math/MODULE.ein`:
 [`decimal.ein.diff`](runs/decimal.ein.diff) (`check` and `valid` declared; `numeral-step`, `numeral-step-zero`,
 `numeral-valid` added; each flag's `(written (n ?p ?a))` premise becomes `(check ?w (n ?p ?a))`; the closing rule
 labels `(valid z)`), [`binary.ein.diff`](runs/binary.ein.diff) (the same under `bin-`),
@@ -71,9 +71,15 @@ macro's list grows by `?CHECK` and `?VALID`), and the askers: [`convert.ein.diff
 | `std.math.positional.turn-end` | [dot](renders/positional.turn-end.today.rule.dot) · [svg](renders/positional.turn-end.today.rule.svg) | | |
 | `std.math.positional.div-end` | [dot](renders/positional.div-end.today.rule.dot) · [svg](renders/positional.div-end.today.rule.svg) | | |
 
-In `numeral-digit`'s drawing the match's context frame was `written ctx` with a red `written` octagon over `(n ?p ?a)`;
-today it is `check ctx`, an arrow `check` from `?w` to `(n ?p ?a)` ([diff](runs/decimal.numeral-digit.rule-dot.diff)).
-`operand-check` is drawn with its parameters as written, `?OPERAND-IS`, `?N`, `?CHECK`.
+In `numeral-digit`'s drawing, before, the match's frame was `written ctx`, a red labelled octagon `(written)` over
+`(n ?p ?a)`. Today the frame is `check ctx`, and the premise `(check ?w (n ?p ?a))` is drawn as a fact is: an octagon
+with no name in it, its arrow `1` at the box `check`, `2` at `?w` and `3` at the framed octagon of `(n ?p ?a)`, whose
+own arrows are at `n`, `?p` and `?a` ([diff](runs/decimal.numeral-digit.rule-dot.diff)). Every drawing of the table
+is in that form today, and every *before* in the earlier binary's, labelled octagons with `#n` arrows.
+`operand-check` is drawn with its parameters as written, `?OPERAND-IS`, `?N`, `?CHECK`: a premise headed by a
+parameter has its arrow `1` at the parameter's diamond.
+
+![numeral-digit today: the match's check premise an unlabelled octagon whose arrow 3 enters the octagon of (n ?p ?a) in the frame check ctx, ten dotted ≠ links from ?a to the digits; the assert's not-decimal fact an octagon whose arrow 2 enters (n ?p ?a) in the frame not-decimal ctx](renders/decimal.numeral-digit.today.rule.svg)
 
 **Where each rule fires** — [`programs/check_rules.ein`](programs/check_rules.ein): 10 + 5, and 1x5 + 5 (`x` one
 place in). The trace names each rule by its full name, so its module
@@ -119,6 +125,11 @@ Per program and binary: *read-out* `ein solve`; *summary* `--json-summary`; *eve
 bin-valid not-decimal not-binary written add bin-add` and what they nest, drawn with `fdp` (`tools/kbsub.py`). Each
 text output ends with `[exit N]`.
 
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
+
 | program | binary | artefacts |
 |---|---|---|
 | [`check_rules`](programs/check_rules.ein) | before | [read-out](runs/check_rules.before.solve.txt) · [summary](runs/check_rules.before.summary.json) · [events](runs/check_rules.before.events.jsonl) · [events table](runs/check_rules.before.events.md) · [trace](runs/check_rules.before.trace.md) · [dump-answer](runs/check_rules.before.answer/) · [saturate --dump](runs/check_rules.before.saturate-dump.txt) · [its facts](runs/check_rules.before.saturate-facts.txt) · [ein test](runs/check_rules.before.test.txt) · [show hyps](runs/check_rules.before.show-hyps.txt) · [kb-cut.dot](renders/check_rules.before.kb-cut.dot) · [kb-cut.svg](renders/check_rules.before.kb-cut.svg) |
@@ -149,7 +160,9 @@ Also:
 - [`tools/`](tools/) — the scripts that made `runs/` and `renders/`: `run_all.sh` (every artefact of one program
   under one binary), `diffs.sh` (before → today diffs), `facts.py` (the facts of a dump that bear on the check),
   `jsonl2md.py` (events as a table), `kbsub.py` (the KB view cut by relation), `trace_excerpt.py` (a trace's steps
-  of named rules), `steps_of.py` (a trace's steps that check or label one number), and `check_census.py` (the check's rules of every module of a tree).
+  of named rules), `steps_of.py` (a trace's steps that check or label one number), `check_census.py` (the check's rules of every
+  module of a tree) and `draw_rules.sh` (§ 2's rule drawings of today, with
+  [`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh)).
 
 ## 6. Re-run
 
@@ -157,9 +170,10 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/13-Q-M1f.408
-git diff 0a4a97a3 b5fb8d70 -- stdlib/math/decimal.ein stdlib/math/binary.ein
-build/review-bin/ein-head-b5fb8d70 render rule --name numeral-step stdlib/math/decimal.ein > $D/renders/decimal.numeral-step.today.rule.dot
+git diff 0a4a97a3 17085b27 -- stdlib/math/decimal.ein stdlib/math/binary.ein
+build/review-bin/ein-head-17085b27 render rule --name numeral-step stdlib/math/decimal.ein > $D/renders/decimal.numeral-step.today.rule.dot
 dot -Tsvg $D/renders/decimal.numeral-step.today.rule.dot -o $D/renders/decimal.numeral-step.today.rule.svg
+bash $D/tools/draw_rules.sh   # every rule drawing of § 2 today, drawn; the DOT and module diffs; render-rule-by-name
 EIN_STDLIB=build/wt-rev-0a4/stdlib build/review-bin/ein-0a4a97a3 render rule --name numeral-digit \
   build/wt-rev-0a4/stdlib/math/decimal.ein > $D/renders/decimal.numeral-digit.before.rule.dot
 python3 -I $D/tools/check_census.py stdlib > $D/runs/check-rules.today.census.txt
@@ -179,6 +193,11 @@ $D/tools/diffs.sh $D check_rules bin_check_rules
 - Q-M1f.408 (a)'s *the label at a walk's end is written by `std.math.positional`* means the arithmetic walk's end
   (`turn-end`, `div-end`); a numeral's check walk is labelled by `std.math.decimal`'s own `numeral-valid`, as the
   same answer's list says and the census shows (also in `../11-Q-M1f.406/`).
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks, today's
+  KB cuts and today's rule drawings, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

@@ -17,7 +17,7 @@ row for `relation` (*"any new head of tuple will be new relation atom"*, the use
 
 ## 2. What is so today
 
-All runs use `build/review-bin/ein-head-b5fb8d70` (master HEAD).
+All runs use `build/review-bin/ein-head-17085b27`, today's binary, every P1f.23 stage merged; [`rerun.sh`](rerun.sh) makes every file below.
 
 ### 2.1 The witness, as the ledger writes it
 
@@ -53,12 +53,17 @@ All runs use `build/review-bin/ein-head-b5fb8d70` (master HEAD).
   ([`runs/v7_unpack.summary.json`](runs/v7_unpack.summary.json)).
 - **`ein show hyps`**: no candidate, built by the rung `blind` ([`runs/v7_unpack.show-hyps.stderr.txt`](runs/v7_unpack.show-hyps.stderr.txt);
   stdout empty, [`runs/v7_unpack.show-hyps.txt`](runs/v7_unpack.show-hyps.txt)).
-- **`ein render program`** draws the rule with `?R` as the conclusion's arrow label and the activator as a loop
-  `= → =` labelled `unpack`: [`renders/v7_unpack.program.1-rule_unpack_lhs_rhs.svg`](renders/v7_unpack.program.1-rule_unpack_lhs_rhs.svg),
-  [`renders/v7_unpack.program.2-ontology.svg`](renders/v7_unpack.program.2-ontology.svg).
-  **`ein render kb`** draws root with the derived `(= 7 (+ 3 4))` as an octagon *"(=) by unpack"*:
-  [`renders/v7_unpack.kb.svg`](renders/v7_unpack.kb.svg). The trace's one step:
-  [`renders/v7_unpack.trace-1-step1.svg`](renders/v7_unpack.trace-1-step1.svg).
+- **The drawings** read `=` as one atom, the relation of the derived fact and the argument of the activator.
+  **`ein render kb`** draws root: the activator `(unpack =)` is an octagon whose arrow `1` is at the box `unpack` and
+  whose arrow `2` is at the box `=`, and the derived `(= 7 (+ 3 4))`, dashed with `by unpack` beside it, has its arrow
+  `1` at that same box; `(+ 3 4)`, under its arrow `3` and held by nothing, stands in the frame `= ctx`
+  ([`renders/v7_unpack.kb.svg`](renders/v7_unpack.kb.svg)). **`ein render program`** draws the program's `kb` (the
+  two written facts) and the rule, whose conclusion is an octagon with its arrow `1` at the diamond `?R`
+  ([`renders/v7_unpack.program.01-kb.svg`](renders/v7_unpack.program.01-kb.svg),
+  [`renders/v7_unpack.program.02-rule_unpack_lhs_rhs.svg`](renders/v7_unpack.program.02-rule_unpack_lhs_rhs.svg)).
+  The trace's one step, each fact its octagon: [`renders/v7_unpack.trace-1.svg`](renders/v7_unpack.trace-1.svg).
+
+  ![ein render kb of v7_unpack.ein: the activator's arrow 2 and the derived fact's arrow 1 meet at one box, =](renders/v7_unpack.kb.svg)
 - `--events` ([`runs/v7_unpack.events.md`](runs/v7_unpack.events.md)): the `load` event's `relation_names` is the
   registry, `["think","unpack"]`; the `fire` event derives `(= 7 (+ 3 4))`.
 
@@ -77,9 +82,9 @@ So the goal check counts `happy` (it reads a name *passed where a relation's nam
 
 | list | what it holds | `=` / `happy`? | read by |
 |---|---|---|---|
-| **the registry**, `ein_core::Program::relations`, filled by `from_ir.rs:5053` | declared relations, and the head of every fact a file states (*auto-vivified*) | no | `Program::categorise` (a registered name is a relation, any other an **object**), so the blind rung's objects; the `rule_apps_on_rel` and `rules_by_relation` indexes; `ein saturate`'s counts; the `load` event; a fact's English |
+| **the registry**, `ein_core::Program::relations`, filled by `from_ir.rs:5060` | declared relations, and the head of every fact a file states (*auto-vivified*) | no | `Program::categorise` (a registered name is a relation, any other an **object**), so the blind rung's objects; the `rule_apps_on_rel` and `rules_by_relation` indexes; `ein saturate`'s counts; the `load` event; a fact's English |
 | **the alive-set invariant's baseline**, `invariant.rs` `Universe::of_facts` | the registry, plus every **constant** head of a rule's `:assert` | no: `(?R …)` has no constant head | `ein-infer/tests/alive_invariant.rs`' `no_run_reaches_a_name_the_program_does_not_have`, which would report `new-relation: = in (= 7 (+ 3 4))` (read, not run; the ledger records the line for `06_double_negation.ein` as first written) |
-| **the goal's and claim's list**, `from_ir.rs` `program_relations` (line 707) | every head at any depth of a fact or a rule's text, every name passed where a relation's name is held, `is-a`, `eq`, `neq` | yes | the refusal of a goal, a claim and a `(solve …)` list over a relation the program does not name |
+| **the goal's and claim's list**, `from_ir.rs` `program_relations` (line 707) | every head at any depth of a fact or a rule's text, every name passed where a relation's name is held, `eq`, `neq` (no longer `is-a`: Q-M1f.436) | yes | the refusal of a goal, a claim and a `(solve …)` list over a relation the program does not name |
 | **the reasoning's** $\operatorname{rels}(P)$, [`02-saturation.md`](../../../../../docs/ein/reasoning/02-kb-evolution/02-saturation.md) clause 2 | *"the declared ones, the relations of the program's facts, and every atom under the first arrow of a fact pattern a rule can conclude"* | yes | the page's *no new relations* |
 
 ### 2.4 Where the registry changes an answer: the blind rung
@@ -107,7 +112,7 @@ the invariant's baseline.
 ### 2.5 How often, in the corpus
 
 [`runs/v7_census.md`](runs/v7_census.md), by [`runs/v7_census.py`](runs/v7_census.py) over `ein saturate --dump` of
-every corpus program (root only, 670 of 894 saturated; the 224 others are `examples/broken/` and `examples/ein-bugs/`
+every corpus program (root only, 664 of 888 saturated; the 224 others are `examples/broken/` and `examples/ein-bugs/`
 load refusals): **no program's root holds a fact of a relation that is outside the registry and written as no head
 anywhere** (0). 29 programs hold a fact of a relation only a rule concludes with a constant head (50 heads: `total`,
 `surjective`, `explicitly-dislikes`, `liquid`, …), the case of § 2.4's second program. The text test is a grep, a
@@ -196,6 +201,8 @@ any head is a relation, the first."*
 
 ## 5. Files
 
+- [`rerun.sh`](rerun.sh) — every run and drawing below; [`tools/`](tools/) its helpers.
+
 Programs:
 - [`programs/v7_unpack.ein`](programs/v7_unpack.ein) — the ledger's witness; `=` only inside a fact and in the activator.
 - [`programs/v7_unpack-declared.ein`](programs/v7_unpack-declared.ein) — the same with `=` declared (what (b) makes an author write).
@@ -221,32 +228,32 @@ Runs (each `PROGRAM.COMMAND`): `solve.txt` the read-out, `solve-p.txt` with root
 - [`runs/v7_blind-registered.solve.txt`](runs/v7_blind-registered.solve.txt), [`runs/v7_blind-registered.solve-p.txt`](runs/v7_blind-registered.solve-p.txt), [`runs/v7_blind-registered.summary.json`](runs/v7_blind-registered.summary.json), [`runs/v7_blind-registered.saturate-dump.txt`](runs/v7_blind-registered.saturate-dump.txt), [`runs/v7_blind-registered.show-hyps.txt`](runs/v7_blind-registered.show-hyps.txt), [`runs/v7_blind-registered.show-hyps.stderr.txt`](runs/v7_blind-registered.show-hyps.stderr.txt), [`runs/v7_blind-registered.h-space.txt`](runs/v7_blind-registered.h-space.txt); its diffs against `v7_blind`: [`solve`](runs/v7_blind.vs-registered.solve.diff), [`show-hyps`](runs/v7_blind.vs-registered.show-hyps.diff), [`saturate-dump`](runs/v7_blind.vs-registered.saturate-dump.diff), [`summary`](runs/v7_blind.vs-registered.summary.diff); [`runs/v7_blind.solve.MOCK.a-registry-takes-it.txt`](runs/v7_blind.solve.MOCK.a-registry-takes-it.txt) and [`.diff`](runs/v7_blind.solve.MOCK.a-registry-takes-it.diff) (the registered run under `v7_blind.ein`'s name).
 - [`runs/v7_blind-declared.solve.txt`](runs/v7_blind-declared.solve.txt), [`runs/v7_blind-declared.summary.json`](runs/v7_blind-declared.summary.json), [`runs/v7_blind-declared.saturate-dump.txt`](runs/v7_blind-declared.saturate-dump.txt), [`runs/v7_blind-declared.show-hyps.txt`](runs/v7_blind-declared.show-hyps.txt), [`runs/v7_blind-declared.show-hyps.stderr.txt`](runs/v7_blind-declared.show-hyps.stderr.txt).
 - [`runs/06_double_negation.solve.txt`](runs/06_double_negation.solve.txt), [`runs/06_double_negation.summary.json`](runs/06_double_negation.summary.json), [`runs/06_double_negation.saturate-dump.txt`](runs/06_double_negation.saturate-dump.txt), [`runs/06_double_negation.test.txt`](runs/06_double_negation.test.txt), and the `-undeclared` four ([`solve`](runs/06_double_negation-undeclared.solve.txt), [`summary`](runs/06_double_negation-undeclared.summary.json), [`saturate-dump`](runs/06_double_negation-undeclared.saturate-dump.txt), [`test`](runs/06_double_negation-undeclared.test.txt)); the three diffs [`test`](runs/06_double_negation.declared-vs-undeclared.test.diff), [`saturate-dump`](runs/06_double_negation.declared-vs-undeclared.saturate-dump.diff), [`summary`](runs/06_double_negation.declared-vs-undeclared.summary.diff).
-- [`runs/relation-lists-code.txt`](runs/relation-lists-code.txt) — the four lists' code and every reader of the registry, with line numbers.
+- [`runs/relation-lists-code.txt`](runs/relation-lists-code.txt) — the four lists' code and every reader of the registry, with line numbers, written by [`tools/relation_lists_code.sh`](tools/relation_lists_code.sh) from the checkout.
+- [`runs/v7_unpack.saturate-dump.MOCK.a-registry-takes-it.txt`](runs/v7_unpack.saturate-dump.MOCK.a-registry-takes-it.txt) is remade from each new dump by [`tools/saturate-dump.MOCK.a-registry-takes-it.patch`](tools/saturate-dump.MOCK.a-registry-takes-it.patch), the hand edit; [`tools/events_table.py`](tools/events_table.py) writes the events' table.
 - [`runs/v7_census.md`](runs/v7_census.md), [`runs/v7_census.py`](runs/v7_census.py) — the corpus census at root, and its script.
 
-Renders (`.dot` as the binary wrote it, `.svg` drawn by Graphviz; a program view's groups split one file each):
-- [`renders/v7_unpack.kb.svg`](renders/v7_unpack.kb.svg) ([dot](renders/v7_unpack.kb.dot)) — root, `fdp`.
-- [`renders/v7_unpack.program.1-rule_unpack_lhs_rhs.svg`](renders/v7_unpack.program.1-rule_unpack_lhs_rhs.svg), [`renders/v7_unpack.program.2-ontology.svg`](renders/v7_unpack.program.2-ontology.svg) (from [`v7_unpack.program.dot`](renders/v7_unpack.program.dot)).
-- [`renders/v7_unpack.trace-1-step1.svg`](renders/v7_unpack.trace-1-step1.svg) — the trace's inline drawing.
-- [`renders/v7_tag.kb.svg`](renders/v7_tag.kb.svg); `ein render program`'s four groups: [rule](renders/v7_tag.program.1-rule_tag_lhs_rhs.svg), [ontology](renders/v7_tag.program.2-ontology.svg), [solve](renders/v7_tag.program.3-solve.svg), [query](renders/v7_tag.program.4-query.svg).
-- [`renders/v7_blind.kb.svg`](renders/v7_blind.kb.svg), [`renders/v7_blind-registered.kb.svg`](renders/v7_blind-registered.kb.svg); [`renders/v7_blind.program.1-rule_tag_lhs_rhs.svg`](renders/v7_blind.program.1-rule_tag_lhs_rhs.svg), [`renders/v7_blind.program.2-ontology.svg`](renders/v7_blind.program.2-ontology.svg).
+Renders (`.dot` as the binary wrote it, `.svg` drawn by Graphviz with the layout the DOT suggests, `fdp` for a
+knowledge base, else `dot`; a program view's digraphs split one file each, `NN-name`;
+[`runs/draw-times.tsv`](runs/draw-times.tsv) the layout and seconds of each):
+- [`renders/v7_unpack.kb.svg`](renders/v7_unpack.kb.svg) ([dot](renders/v7_unpack.kb.dot)) — root.
+- [`renders/v7_unpack.program.01-kb.svg`](renders/v7_unpack.program.01-kb.svg), [`renders/v7_unpack.program.02-rule_unpack_lhs_rhs.svg`](renders/v7_unpack.program.02-rule_unpack_lhs_rhs.svg) (from [`v7_unpack.program.dot`](renders/v7_unpack.program.dot)).
+- [`renders/v7_unpack.trace-1.svg`](renders/v7_unpack.trace-1.svg) ([dot](renders/v7_unpack.trace-1.dot)) — the trace's inline drawing.
+- [`renders/v7_tag.kb.svg`](renders/v7_tag.kb.svg); `ein render program`'s three digraphs: [kb](renders/v7_tag.program.01-kb.svg), [rule](renders/v7_tag.program.02-rule_tag_lhs_rhs.svg), [query](renders/v7_tag.program.03-query.svg).
+- [`renders/v7_blind.kb.svg`](renders/v7_blind.kb.svg), [`renders/v7_blind-registered.kb.svg`](renders/v7_blind-registered.kb.svg); [`renders/v7_blind.program.01-kb.svg`](renders/v7_blind.program.01-kb.svg), [`renders/v7_blind.program.02-rule_tag_lhs_rhs.svg`](renders/v7_blind.program.02-rule_tag_lhs_rhs.svg), and `v7_blind-registered`'s two ([kb](renders/v7_blind-registered.program.01-kb.svg), [rule](renders/v7_blind-registered.program.02-rule_tag_lhs_rhs.svg)).
 
 ## 6. Re-run
 
 From the repo root:
 
 ```sh
-B=build/review-bin/ein-head-b5fb8d70; D=plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/08-V-7
-$B solve $D/programs/v7_unpack.ein; $B solve $D/programs/v7_unpack.ein -p
-$B solve $D/programs/v7_unpack.ein --json-summary /tmp/s.json
-$B saturate --dump $D/programs/v7_unpack.ein
-$B show hyps $D/programs/v7_unpack.ein
-$B render program $D/programs/v7_unpack.ein; $B render kb $D/programs/v7_unpack.ein
-$B test -v $D/programs/v7_tag.ein; $B solve $D/programs/v7_tag-typo.ein
-for p in v7_blind v7_blind-constant-head v7_blind-registered v7_blind-declared v7_unpack-declared; do $B solve $D/programs/$p.ein; $B show hyps $D/programs/$p.ein; done
-$B test -v $D/programs/06_double_negation-undeclared.ein
-python3 $D/runs/v7_census.py $B /tmp/v7_census.md     # the corpus census, about a minute
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/08-V-7/rerun.sh
 ```
+
+[`rerun.sh`](rerun.sh) runs every command above with `build/review-bin/ein-head-17085b27` (`solve`, `-p`,
+`--json-summary`, `--trace`, `--events`, `saturate --dump`, `show hyps`, `test -v`, `render h-space`, `render kb`,
+`render program`), writes the diffs, draws every `.dot` with
+[`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh), rewrites the code excerpts and runs the corpus
+census (`v7_census.py`, over every corpus program at root).
 
 ## 7. Found while building
 
@@ -261,6 +268,16 @@ python3 $D/runs/v7_census.py $B /tmp/v7_census.md     # the corpus census, about
   about the parameter alone; list 2 (the invariant's baseline) is the only one that tells the two apart.
 - The ledger's witness (`ein saturate --dump`: `(= 7 (+ 3 4) :rule unpack)` under `;; Relations — auto-vivified (2)`
   listing `think` and `unpack`) reproduces exactly.
+- **Re-taken with `ein-head-17085b27`** (every P1f.23 stage merged) against the first look's `ein-head-b5fb8d70`:
+  no answer moved, no read-out, summary, H, test line or event; only timings. What moved: the drawings, in the
+  canonical form (§ 2.1); `program_relations` no longer adds `is-a` (Q-M1f.436, S1f.23.4), which V-7 does not turn
+  on, so the four lists disagree as before; the census reads 888 corpus programs where it read 894 (six retired
+  with the native symmetry), with the same 0 and 29 (50 heads).
+- **The drawing shows the disagreement**: in the KB view the box `=` is one atom under the activator's arrow `2` and
+  the derived fact's arrow `1`, a relation by where the arrows meet it, whatever the registry says.
+- **Q-M1f.447**, the user's own question for P1f.21 (whether the loader keeps its argument-count check once
+  `relation` is a convention), bears on option (b): (b)'s fix is a declaration, which under P1f.21's fourth
+  instruction is a form of the standard library's and not the kernel's (read, not run).
 - The goal refusal's own line (*"a relation of the program is one it declares, states a fact of, or writes in a rule
   or an hrule"*) does not name the activator's case either, though `program_relations` takes it (§ 2.2): item
   `24-L-94` of this bundle shows it.

@@ -16,7 +16,7 @@ re-run here.
 
 ## 2. What is so today
 
-Runs under **today** = `build/review-bin/ein-head-b5fb8d70`, and for comparison **before** =
+Runs under **today** = `build/review-bin/ein-head-17085b27`, and for comparison **before** =
 `build/review-bin/ein-0a4a97a3` with `EIN_STDLIB=build/wt-rev-0a4/stdlib` (no check rules then; the shape rules read
 `written`).
 
@@ -35,7 +35,12 @@ Every rule that reads `int-check` matches `(int-check (int …))`: `int-check-pa
 `stdlib/math/int.ein`. Drawn with `ein render rule`: `int-check-parts`
 [dot](renders/int.int-check-parts.rule.dot) · [svg](renders/int.int-check-parts.rule.svg), `rat-check-parts`
 [dot](renders/rat.rat-check-parts.rule.dot) · [svg](renders/rat.rat-check-parts.rule.svg), and a shape rule beside them,
-`int-p-digit` [dot](renders/int.int-p-digit.rule.dot) · [svg](renders/int.int-p-digit.rule.svg).
+`int-p-digit` [dot](renders/int.int-p-digit.rule.dot) · [svg](renders/int.int-p-digit.rule.svg). Each is drawn as the
+graph has it: in `int-check-parts` the premise is an octagon whose arrow `1` is at the box `int-check` and arrow `2`
+at the octagon of `(int ?p ?n)`, in the frame `int-check ctx`; the conclusion is two dashed octagons of `check`, each
+with its arrows `2` and `3` at the same variable.
+
+![int-check-parts: the match's int-check fact an octagon whose arrow 2 enters (int ?p ?n) in the frame int-check ctx; the assert two dashed check facts, each with arrows 2 and 3 at one variable](renders/int.int-check-parts.rule.svg)
 
 **The witness, re-taken** — [`programs/witness_int_digit_part.ein`](programs/witness_int_digit_part.ein),
 `(int-add (int 7 z) (int (n z 1) z))`; `ein saturate --dump` ([whole](runs/witness_int_digit_part.today.saturate-dump.txt),
@@ -99,6 +104,11 @@ Per program and binary: *read-out* `ein solve`; *summary* `--json-summary`; *eve
 rat-check not-integer not-rational not-decimal written int-add rat-add` and what they nest, drawn with `fdp`
 (`tools/kbsub.py`). Each text output ends with `[exit N]`.
 
+*Today*'s kb-cut is drawn as the graph has it: a fact an octagon with no name in it, its arrow `1` at its relation's
+box and `2`, `3`, … at its arguments, what it rests on (`by RULE`) beside it, and a fact under a fact's arrow that the
+knowledge base does not hold in the frame of what points at it (`add ctx`); *before*'s is the earlier binary's
+drawing, labelled octagons and labelled arrows. `tools/kbsub.py` reads both forms.
+
 | program | binary | artefacts |
 |---|---|---|
 | [`witness_int_digit_part`](programs/witness_int_digit_part.ein) | before | [read-out](runs/witness_int_digit_part.before.solve.txt) · [summary](runs/witness_int_digit_part.before.summary.json) · [events](runs/witness_int_digit_part.before.events.jsonl) · [events table](runs/witness_int_digit_part.before.events.md) · [trace](runs/witness_int_digit_part.before.trace.md) · [dump-answer](runs/witness_int_digit_part.before.answer/) · [saturate --dump](runs/witness_int_digit_part.before.saturate-dump.txt) · [its facts](runs/witness_int_digit_part.before.saturate-facts.txt) · [ein test](runs/witness_int_digit_part.before.test.txt) · [show hyps](runs/witness_int_digit_part.before.show-hyps.txt) · [kb-cut.dot](renders/witness_int_digit_part.before.kb-cut.dot) · [kb-cut.svg](renders/witness_int_digit_part.before.kb-cut.svg) |
@@ -133,7 +143,8 @@ Also:
 - [`tools/`](tools/) — the scripts that made `runs/` and `renders/`: `run_all.sh` (every artefact of one program
   under one binary), `diffs.sh` (before → today diffs), `facts.py` (the facts of a dump that bear on the check),
   `jsonl2md.py` (events as a table), `kbsub.py` (the KB view cut by relation), `trace_excerpt.py` (a trace's steps
-  of named rules), `steps_of.py` (a trace's steps that check or label one number).
+  of named rules), `steps_of.py` (a trace's steps that check or label one number), `draw_rules.sh` (§ 2's three rule drawings, with
+  [`../../03-drawings/tools/draw.sh`](../../03-drawings/tools/draw.sh)).
 
 ## 6. Re-run
 
@@ -141,11 +152,12 @@ From the repo root:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/02-numerals/29-L-101
-build/review-bin/ein-head-b5fb8d70 saturate $D/programs/witness_int_digit_part.ein --dump | grep 'decimal.check 7 7'
+build/review-bin/ein-head-17085b27 saturate $D/programs/witness_int_digit_part.ein --dump | grep 'decimal.check 7 7'
 grep -n 'rule int-check-parts' -A3 stdlib/math/int.ein
 grep -n 'rule rat-check-parts' -A3 stdlib/math/rat.ein
-build/review-bin/ein-head-b5fb8d70 render rule --name int-check-parts stdlib/math/int.ein > $D/renders/int.int-check-parts.rule.dot
+build/review-bin/ein-head-17085b27 render rule --name int-check-parts stdlib/math/int.ein > $D/renders/int.int-check-parts.rule.dot
 dot -Tsvg $D/renders/int.int-check-parts.rule.dot -o $D/renders/int.int-check-parts.rule.svg
+bash $D/tools/draw_rules.sh   # the three rules of § 2 drawn today
 # everything in runs/ and renders/ (the mocks are hand-made and are not re-made)
 P="witness_int_digit_part named_part part_z rat_natural_numerator"
 for p in $P; do for L in before today; do
@@ -163,6 +175,11 @@ python3 -I $D/tools/steps_of.py $D/runs/part_z.today.trace.md z
   the second derivation is step 14 of `part_z`'s trace.
 - The ledger's *two rules more each*: the mock needs one rule more in each module (two rules where one was); if the
   ledger counts the rules of the option, each module has two, as here.
+- **Re-taken with `ein-head-17085b27`** (the first look ran `ein-head-b5fb8d70`; the standard library and
+  `tests/stdlib/` are the same in both trees, `git diff --stat b5fb8d70 17085b27 -- stdlib tests/stdlib` is empty):
+  every read-out, summary, event stream, dump, `ein test` and `ein show hyps` output is the same, wall-clock aside,
+  and so is every trace's text and every excerpt of it; what moved is the drawings, each trace's `dot` blocks, today's
+  KB cuts and the three rule drawings, now in the canonical form. The before binary's outputs re-run the same.
 
 ## 8. Your call
 

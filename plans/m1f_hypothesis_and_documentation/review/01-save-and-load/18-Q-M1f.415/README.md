@@ -22,7 +22,7 @@ Program: [`programs/02_genuine_3set_death.ein`](programs/02_genuine_3set_death.e
 kills a state that holds all three, so every pair is alive and R has seven states
 ([`program.solve.txt`](runs/program.solve.txt)). The saved node is state 2,
 [`runs/program.dump/models/02.ein`](runs/program.dump/models/02.ein), whose file ends `(commit (a-prop X))`. Binary:
-`build/review-bin/ein-head-b5fb8d70`; every exit is 0 ([`00-exit-codes.txt`](runs/00-exit-codes.txt)).
+`build/review-bin/ein-head-17085b27`; every exit is 0 ([`00-exit-codes.txt`](runs/00-exit-codes.txt)).
 
 **`ein show hyps`: the node file prints the program's H, all three, byte for byte**
 ([`node.show-hyps.txt`](runs/node.show-hyps.txt); the diff with the program's,
@@ -148,7 +148,7 @@ held by `saved_files.rs`' `a_choice_is_saved_as_a_commitment_and_loaded_as_the_n
 From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/18-Q-M1f.415/rerun.sh`. The core commands:
 
 ```sh
-B=/home/user/work/ein/build/review-bin/ein-head-b5fb8d70
+B=/home/user/work/ein/build/review-bin/ein-head-17085b27
 cd plans/m1f_hypothesis_and_documentation/review/01-save-and-load/18-Q-M1f.415
 $B solve programs/02_genuine_3set_death.ein --dump-answer runs/program.dump
 $B show hyps programs/02_genuine_3set_death.ein
@@ -169,6 +169,9 @@ $B render h-space programs/variant_a_prop_stated.ein          # the source of (b
   `commit` row: a reader of `show hyps` alone cannot tell the node's choice from the file's output.
 - The ledger's statements reproduce: both commands print, on the node, what they print on the program, but for the
   path.
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): nothing moved. Every output,
+  the h-space read-outs, documents and graphs among them, is as it was, timings aside, and the mocks' diffs are the
+  same edits.
 
 ## 8. Your call
 

@@ -1,0 +1,7 @@
+;;; Written for this review: `every-programs.ein` without its goal over `is-a`. `eq` and
+;;; `neq` are the kernel's computed relations and every program's, so a goal over one loads
+;;; in a program that names neither; `is-a` is a theory's name since Q-M1f.436, and a goal
+;;; over it is refused where the program writes none (every-programs.ein).
+
+(p a)
+(query :goal (neq w ?y))

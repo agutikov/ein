@@ -56,18 +56,20 @@ No other page or decision says what the index keys (the grep in the file finds Q
 ### 2.3 Both halves, measured
 
 Three programs of N facts a side, written by [`programs/gen_joins.py`](programs/gen_joins.py), timed by `ein
-saturate` ([`runs/timings.md`](runs/timings.md); on AC, pinned to a P-core thread, one run each — the ratio across
-N is the point):
+saturate` of today's binary, `build/review-bin/ein-head-17085b27` ([`runs/timings.md`](runs/timings.md); on AC,
+pinned to a P-core thread, the least of three runs, **on a machine another agent's test runs were loading**, load
+average 23 at the start, see the file: every time is some 2.5 times the first look's, and the ratio across N is the point):
 
 | N | [`join-on-a-name`](programs/join-on-a-name-2000.ein): `(p ?x) (q ?x ?y)`, `?x` a name | [`join-on-a-fact`](programs/join-on-a-fact-2000.ein): the same, `?x` the fact `(f aI)` | [`join-one-level-in`](programs/join-one-level-in-2000.ein): `(p (f ?x)) (q (f ?x) ?y)` |
 |---|---|---|---|
-| 2000 | 1.45 ms | 25.86 ms | 1.54 ms |
-| 4000 | 2.84 ms | 98.65 ms | 3.10 ms |
-| 8000 | 6.12 ms | 389.40 ms | 6.53 ms |
+| 2000 | 3.26 ms | 66.25 ms | 3.51 ms |
+| 4000 | 6.81 ms | 242.50 ms | 7.24 ms |
+| 8000 | 14.47 ms | 976.44 ms | 13.76 ms |
 
-A join on a fact is quadratic (×4 a doubling): Q-M1f.362's reason holds of a join **on** a nested fact. The same
+A join on a fact is quadratic (×3.7 and ×4 a doubling; at the first look, unloaded, 25.86, 98.65 and 389.40 ms): Q-M1f.362's reason holds of a join **on** a nested fact. The same
 facts joined on the name **inside** them are linear, like a join on a name: the pages' one level in. Each run's
-whole output is `runs/PROGRAM-N.saturate.txt` (2000 firings, 4000, 8000 each, the same derivations).
+whole output is `runs/PROGRAM-N.saturate.txt`, the least of three (`.1.txt` to `.3.txt`), 2000 firings, 4000, 8000
+each, the same derivations.
 
 (A join whose second premise has every slot bound, `(p ?x) (q ?x)`, is a ground lookup and linear for a fact too,
 [§ 5.1](../../../../../docs/ein/ein.rs/03-design/05-matcher.md#51-a-ground-premise-one-lookup); the programs give `q` a
@@ -99,7 +101,10 @@ free second slot so that the probe is what is measured.)
 - [`runs/sentence-pages-code.txt`](runs/sentence-pages-code.txt) — the decision's line, the pages' lines, the other
   statements, and the code that keys the index, each with its command.
 - [`runs/timings.md`](runs/timings.md) — the table above, with the machine state.
-- `runs/PROGRAM-N.saturate.txt`, nine files — `ein saturate` of each program at N = 2000, 4000, 8000:
+- [`rerun.sh`](rerun.sh) — writes everything under `runs/`: the code file, the 4000 and 8000 programs (in
+  `runs/gen/`) and the timings.
+- `runs/PROGRAM-N.saturate.txt`, nine files — `ein saturate` of each program at N = 2000, 4000, 8000, the least of
+  its three runs (each run beside it, `.K.txt`):
   [`join-on-a-name-2000`](runs/join-on-a-name-2000.saturate.txt), [`-4000`](runs/join-on-a-name-4000.saturate.txt), [`-8000`](runs/join-on-a-name-8000.saturate.txt);
   [`join-on-a-fact-2000`](runs/join-on-a-fact-2000.saturate.txt), [`-4000`](runs/join-on-a-fact-4000.saturate.txt), [`-8000`](runs/join-on-a-fact-8000.saturate.txt);
   [`join-one-level-in-2000`](runs/join-one-level-in-2000.saturate.txt), [`-4000`](runs/join-one-level-in-4000.saturate.txt), [`-8000`](runs/join-one-level-in-8000.saturate.txt).
@@ -107,16 +112,18 @@ free second slot so that the probe is what is measured.)
 ## 6. Re-run
 
 ```sh
-B=build/review-bin/ein-head-b5fb8d70; D=plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/22-L-92
-python3 $D/programs/gen_joins.py /tmp 2000 4000 8000
-for n in 2000 4000 8000; do for p in join-on-a-name join-on-a-fact join-one-level-in; do
-  taskset -c 0 $B saturate /tmp/$p-$n.ein | grep '^saturate:'; done; done
-grep -n 'does not key on a nested' docs/decisions/stdlib/math/Q-M1f.362-*.md
-sed -n '/^### 6.1/,/^### 6.2/p' docs/ein/ein.rs/03-design/03-data-model.md
-sed -n '/^### 5.2/,/^### 5.3/p' docs/ein/ein.rs/03-design/05-matcher.md
+bash plans/m1f_hypothesis_and_documentation/review/04-language-and-decisions/22-L-92/rerun.sh
 ```
 
+It writes [`runs/sentence-pages-code.txt`](runs/sentence-pages-code.txt) from the checkout (each `grep` and each
+excerpt with its line numbers), writes the 4000 and 8000 programs with `gen_joins.py`, and times
+`taskset -c 0 build/review-bin/ein-head-17085b27 saturate` three times on each of the nine programs.
+
 ## 7. Found while building
+
+- **Re-taken with `ein-head-17085b27`**: the sentence, the two pages and the code are as they were at the first look
+  (the code's line numbers too); the timings keep their ratios, the times some 2.5 times the first look's under
+  another agent's load. Nothing in the phase's merged work touched the index.
 
 - **`kb.rs`' comment in `Kb::index_fact` (line 1158) still carries the sentence the data-model page lost**: *"Only one
   level: the corpus's nesting is `(not (R …))` and a second would cost entries nothing asks for."* The page now says

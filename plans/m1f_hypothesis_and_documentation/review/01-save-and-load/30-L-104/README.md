@@ -99,9 +99,9 @@ and `docs/ein/user/04-reference/10-answer-dump.md` (line 158) quotes it (read, n
 
 ## 3. The options
 
-Each mock is today's dump of `models/07.ein`, {(busy Bob), (busy Carol)}, with the two `:hypothesis` lines hand-edited
-and nothing else; each has its diff. This state separates (b) from (c): Bob and Carol are H's second and third
-candidates, and the commit's first and second.
+Each mock is today's dump of `models/07.ein`, {(busy Bob), (busy Carol)}, with the two `:hypothesis` lines edited
+(by a `sed` in [`rerun.sh`](rerun.sh)) and nothing else; each has its diff. This state separates (b) from (c): Bob
+and Carol are H's second and third candidates, and the commit's first and second.
 
 **(a) As it is**: `:hypothesis 0` on every committed fact; the number names nothing.
 [`runs/busy.models-07.saturate-dump.today.txt`](runs/busy.models-07.saturate-dump.today.txt).
@@ -149,6 +149,7 @@ None: the row is **the user's call** (*what `:hypothesis N` names, or whether th
 
 ## 5. Files
 
+- [`rerun.sh`](rerun.sh) — every run of this page, the mocks made again from today's dump.
 - [`programs/04_a_saved_node.ein`](programs/04_a_saved_node.ein) — copied from `tests/saved/`.
 - [`programs/02_a_choice_with_a_fact_inside_it.ein`](programs/02_a_choice_with_a_fact_inside_it.ein) — copied from `tests/saved/`: the program `04` saves.
 - [`programs/busy.ein`](programs/busy.ein) — written for this review: states of two and three commitments.
@@ -170,11 +171,13 @@ None: the row is **the user's call** (*what `:hypothesis N` names, or whether th
 
 ## 6. Re-run
 
-From the repo root:
+From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/30-L-104/rerun.sh`: every
+command below, run from this folder, the greps, the code lines and the three mocks with their diffs. The core
+commands:
 
 ```sh
 D=plans/m1f_hypothesis_and_documentation/review/01-save-and-load/30-L-104
-H=build/review-bin/ein-head-b5fb8d70
+H=build/review-bin/ein-head-17085b27
 A=build/review-bin/ein-a8d595eb; EA=$PWD/build/wt-rev-a8d/stdlib
 $H saturate --dump $D/programs/04_a_saved_node.ein > $D/runs/04_a_saved_node.saturate-dump.today.txt
 $H solve $D/programs/busy.ein > $D/runs/busy.solve.today.txt
@@ -205,6 +208,9 @@ grep -rn 'Prov::from_hypothesis(' ein.rs/crates --include='*.rs'
   by relation, `(flagged a :rule flag)` before `(note (bad a) :hypothesis 0)`
   ([`runs/04_a_saved_node.saturate-dump.today.txt`](runs/04_a_saved_node.saturate-dump.today.txt);
   `saturate.rs`' `facts_section`, *"insertion order preserved inside each group"*).
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): nothing moved. Every dump,
+  `:hypothesis 0` line, show-hyps list, claim line and code line (`saturate.rs:429`, `region.rs:1744`, `:1846`,
+  `:2037`, `expect.rs:83`, `sentence.rs:123`) is as it was.
 
 ## 8. Your call
 

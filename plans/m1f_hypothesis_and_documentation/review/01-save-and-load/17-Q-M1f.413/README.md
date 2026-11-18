@@ -20,7 +20,7 @@ Programs: [`programs/02_a_choice_with_a_fact_inside_it.ein`](programs/02_a_choic
 `tests/saved/02_…`: one item `a`, an hrule that proposes `(note (bad a))`, a rule `flag`; R is two states, root and
 `{(note (bad a))}`) and [`programs/03_the_standard_library.ein`](programs/03_the_standard_library.ein) (copy of
 `tests/saved/03_…`: imports `std.math.decimal-arith`, five modules carried; R is root alone). Binary:
-`build/review-bin/ein-head-b5fb8d70`. Every exit code is in [`runs/00-exit-codes.txt`](runs/00-exit-codes.txt).
+`build/review-bin/ein-head-17085b27`. Every exit code is in [`runs/00-exit-codes.txt`](runs/00-exit-codes.txt).
 
 **The save.** `ein solve 02 --dump-answer runs/02.dump` writes root's file
 [`models/01.ein`](runs/02.dump/models/01.ein) (no `(commit …)`) and the node's file
@@ -73,12 +73,18 @@ A saved root file whose carried `std.math.arith` has a comment added
 ([`03.moved-module.kb-save.stderr.txt`](runs/03.moved-module.kb-save.stderr.txt)), and its container then answers
 with no note ([`03.moved-module-einb.solve.txt`](runs/03.moved-module-einb.solve.txt), no stderr file).
 
-**The drawings.** `ein render program` of the root container draws the program it stores, five graphs
-([`renders/02.root-einb.render-program.dot`](renders/02.root-einb.render-program.dot), drawn as
-`02.root-einb.render-program.1.svg` … `.5.svg`: the hrule, the rule, the ontology, the `(solve …)`, the
-`(query …)`). `ein render kb` of the root container draws root, `(item a)`
+**The drawings.** `ein render program` of the root container draws the program it stores in its three parts, four
+graphs ([`renders/02.root-einb.render-program.dot`](renders/02.root-einb.render-program.dot), drawn as
+`02.root-einb.render-program.1.svg` … `.4.svg`: the digraph `kb`, the four declarations and `(item a)`; the hrule
+`guess`; the rule `flag`; the digraph `query`, the `(query …)` a cluster and the `(solve …)` a note). `ein render kb`
+of the root container draws root: the four declarations, the four facts `(relation r)` the loader adds and
+`(item a)`, every fact an octagon with no name in it, its arrow `1` at its relation's box
 ([`renders/02.root-einb.render-kb.svg`](renders/02.root-einb.render-kb.svg)); of the saved node file, the node's
-state with the note and `(flagged a)` ([`renders/02.saved-node.render-kb.svg`](renders/02.saved-node.render-kb.svg)).
+state: root's facts, the committed `(note (bad a))`, dashed, whose arrow `2` is at `(bad a)` in the frame `note ctx`
+(not held), and `(flagged a)`, dashed, `by flag` beside it
+([`renders/02.saved-node.render-kb.svg`](renders/02.saved-node.render-kb.svg)):
+
+![ein render kb of the saved node file: every fact an octagon with no name in it; the committed note fact, dashed, points at the fact bad a in the frame note ctx; flagged a, dashed, by flag](renders/02.saved-node.render-kb.svg)
 
 **The earlier binary (`ein-a8d595eb`, before save/load was merged).** Its state file is the program reprinted and then
 every fact of the state, each with its English in a comment, `ein-answer/2`
@@ -167,18 +173,18 @@ would read other files than the saved one, so the carried modules are used. Buil
 - [`runs/02.node.kb-save.MOCK.option-c.txt`](runs/02.node.kb-save.MOCK.option-c.txt) — **mock**, option (c): the saved node file stored.
 - [`runs/02.node-einb.solve.MOCK.option-c.txt`](runs/02.node-einb.solve.MOCK.option-c.txt), [`.stderr.txt`](runs/02.node-einb.solve.MOCK.option-c.stderr.txt) — **mock**, option (c): its container read as the node.
 - [`runs/02.node-einb.solve.MOCK.option-c.edits.diff`](runs/02.node-einb.solve.MOCK.option-c.edits.diff) — the edits that made that mock from the real read-out.
-- [`renders/02.root-einb.render-program.dot`](renders/02.root-einb.render-program.dot) — `ein render program` of the root container, five graphs, drawn as [`.1.svg`](renders/02.root-einb.render-program.1.svg) (hrule `guess`), [`.2.svg`](renders/02.root-einb.render-program.2.svg) (rule `flag`), [`.3.svg`](renders/02.root-einb.render-program.3.svg) (ontology), [`.4.svg`](renders/02.root-einb.render-program.4.svg) (`(solve …)`), [`.5.svg`](renders/02.root-einb.render-program.5.svg) (`(query …)`).
-- [`renders/02.root-einb.render-kb.dot`](renders/02.root-einb.render-kb.dot), [`.svg`](renders/02.root-einb.render-kb.svg) — `ein render kb` of the root container (fdp).
+- [`renders/02.root-einb.render-program.dot`](renders/02.root-einb.render-program.dot) — `ein render program` of the root container, four graphs, drawn as [`.1.svg`](renders/02.root-einb.render-program.1.svg) (`kb`, fdp), [`.2.svg`](renders/02.root-einb.render-program.2.svg) (hrule `guess`), [`.3.svg`](renders/02.root-einb.render-program.3.svg) (rule `flag`), [`.4.svg`](renders/02.root-einb.render-program.4.svg) (`query`, with the `(solve …)` note).
+- [`renders/02.root-einb.render-kb.dot`](renders/02.root-einb.render-kb.dot), [`.svg`](renders/02.root-einb.render-kb.svg) — `ein render kb` of the root container (fdp, the layout the view suggests).
 - [`renders/02.saved-node.render-kb.dot`](renders/02.saved-node.render-kb.dot), [`.svg`](renders/02.saved-node.render-kb.svg) — `ein render kb` of the saved node file (fdp).
 
 ## 6. Re-run
 
 From the repo root, `bash plans/m1f_hypothesis_and_documentation/review/01-save-and-load/17-Q-M1f.413/rerun.sh`. The binaries are
-`build/review-bin/ein-head-b5fb8d70` (today) and `build/review-bin/ein-a8d595eb` with
+`build/review-bin/ein-head-17085b27` (today) and `build/review-bin/ein-a8d595eb` with
 `EIN_STDLIB=build/wt-rev-a8d/stdlib` (before save/load). The core commands:
 
 ```sh
-B=/home/user/work/ein/build/review-bin/ein-head-b5fb8d70
+B=/home/user/work/ein/build/review-bin/ein-head-17085b27
 cd plans/m1f_hypothesis_and_documentation/review/01-save-and-load/17-Q-M1f.413
 $B solve programs/02_a_choice_with_a_fact_inside_it.ein --dump-answer runs/02.dump
 $B kb save runs/02.dump/models/01.ein runs/02.root.einb          # exit 0
@@ -211,6 +217,16 @@ $A solve runs/a8d.02.state2.einb                                    # exit 1, cl
   the checkout's ([`03.carried-vs-checkout.txt`](runs/03.carried-vs-checkout.txt)); what is true is that no standard library was reachable to compare with.
 - The ledger's statements reproduce: the saved root file is stored, the node file refused with the line the ledger
   gives, exit 1.
+- **Re-taken with `ein-head-17085b27`** (the first look was `ein-head-b5fb8d70`): every read-out, summary, dump,
+  refusal, note and diff is as it was, timings aside. What moved is the drawings, now in the canonical form and the
+  program view in three parts (four graphs where there were five: the ontology and the `(solve …)` graph are gone,
+  the declarations in `kb` and the `(solve …)` a note of `query`), and every `.einb` today's binary writes is 24 bytes
+  shorter (`p.einb` 1 752 bytes, 1 776 at the first look; the container `einb/2.0` both), the two `p.einb` still
+  differing in the same 64 bytes.
+- **A committed fact is drawn as a derived one.** In `ein render kb` of the saved node, `(note (bad a))`, a choice of
+  H, is dashed like `(flagged a)`, and has nothing beside it where a derived fact has `by flag`
+  ([`renders/02.saved-node.render-kb.dot`](renders/02.saved-node.render-kb.dot)); the drawing does not say it is the
+  node's commitment. The drawings' question (Q-M1f.424), not this one's.
 
 ## 8. Your call
 
