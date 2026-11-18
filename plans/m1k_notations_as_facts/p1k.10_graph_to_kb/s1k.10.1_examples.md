@@ -1,7 +1,7 @@
-# S1f.30.1, its examples — drawings from the internet and drawn here, read as Ein knowledge bases
+# S1k.10.1, its examples — drawings from the internet and drawn here, read as Ein knowledge bases
 
-**Phase:** [P1f.30](README.md) · **Stage:** S1f.30.1, the examples part · **Status:** done 2026-11-18; the design
-part of S1f.30.1 is after it.
+**Phase:** [P1k.10](README.md) · **Stage:** S1k.10.1, the examples part · **Status:** done 2026-11-18; the design
+part of S1k.10.1 is after it.
 
 The user's task, 2026-11-18, verbatim:
 
@@ -27,12 +27,12 @@ for every unlabelled arrow** is what the evidence favours ([below](#unlabelled-a
 
 ## What was run
 
-- **The prototype**, [`s1f.30.1_examples/graph2ein.py`](s1f.30.1_examples/graph2ein.py), throwaway: `read1`, `read2`
+- **The prototype**, [`s1k.10.1_examples/graph2ein.py`](s1k.10.1_examples/graph2ein.py), throwaway: `read1`, `read2`
   and `survey`. Graphviz parses (`dot -Tjson0`); `gvpr`'s `ishtml` says which node labels are HTML, which the JSON
-  does not. `python3 s1f.30.1_examples/graph2ein.py survey` re-takes every number on this page from the downloads in
+  does not. `python3 s1k.10.1_examples/graph2ein.py survey` re-takes every number on this page from the downloads in
   `build/p1f30-external/` (gitignored, one directory a file, its URL in `SOURCE_URL` beside it) and the drawings in
-  [`s1f.30.1_examples/drawn/`](s1f.30.1_examples/drawn/). It writes
-  [`s1f.30.1_examples/results.json`](s1f.30.1_examples/results.json) (a downloaded drawing's counts, none of its text)
+  [`s1k.10.1_examples/drawn/`](s1k.10.1_examples/drawn/). It writes
+  [`s1k.10.1_examples/results.json`](s1k.10.1_examples/results.json) (a downloaded drawing's counts, none of its text)
   and the full record to `build/p1f30-external/results.json`.
 - **The binary**: `build/review-bin/ein-head-b5fb8d70`. Each generated program is **loaded and not saturated**
   (`ein solve FILE --no-search`, as ruled) and drawn back (`ein render kb FILE`). Only Ein's two original programs,
@@ -66,25 +66,25 @@ so the escape is reversible). A kernel word gets a trailing `_`. Two nodes that 
 *strict*: what the strict reading did (refused: the number of refusals). *(a)*, *(b)*: facts written, and relations.
 *Round trip*: of the program's two-argument facts, how many `ein render kb` draws as their arrow, and of the input
 drawing's arrows, how many come back with the same three labels. Programs of this repo's drawings are in
-[`s1f.30.1_examples/out/`](s1f.30.1_examples/out/); a downloaded drawing's stay in `build/p1f30-external/`.
+[`s1k.10.1_examples/out/`](s1k.10.1_examples/out/); a downloaded drawing's stay in `build/p1f30-external/`.
 
 | # | example | kind | source | nodes / arrows | strict | (a) facts, relations | (b) facts, relations | round trip (a) | what failed or was lost |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [turnstile-fsm](s1f.30.1_examples/drawn/turnstile-fsm.gv) | state machine | drawn here | 3 / 5 | **loaded as is** | 5, 3 | 5, 3 | 5/5; verbatim 5/5 | nothing: the clean case |
+| 1 | [turnstile-fsm](s1k.10.1_examples/drawn/turnstile-fsm.gv) | state machine | drawn here | 3 / 5 | **loaded as is** | 5, 3 | 5, 3 | 5/5; verbatim 5/5 | nothing: the clean case |
 | 2 | gallery-fsm | state machine (LR(0)) | https://graphviz.org/Gallery/directed/fsm.gv.txt | 9 / 14 | refused (14) | 14, 8 | 14, 8 | 14/14; verbatim 0/14 | every arrow label has parentheses: `SS(B)` → `SS-B` |
 | 3 | pressure-valve | state machine | https://danielk.developer.irf.se/phd-course-software-development/tutorials/diagrams/ (its third DOT block) | 5 / 5 | refused (7) | 5, 5 | 5, 5 | 5/5; verbatim 0/5 | labels with spaces (`Low flow`, `Request recived`); two point nodes of the empty label |
-| 4 | [euclid-flowchart](s1f.30.1_examples/drawn/euclid-flowchart.gv) | algorithm flowchart | drawn here | 8 / 9 | refused (11) | 9, 3 | 9, 7 | 9/9; verbatim 0/9 | statements as labels (`a := a - b` → `a-=-a-b`); 5 unlabelled steps |
+| 4 | [euclid-flowchart](s1k.10.1_examples/drawn/euclid-flowchart.gv) | algorithm flowchart | drawn here | 8 / 9 | refused (11) | 9, 3 | 9, 7 | 9/9; verbatim 0/9 | statements as labels (`a := a - b` → `a-=-a-b`); 5 unlabelled steps |
 | 5 | gallery-cluster | processes in frames | https://graphviz.org/Gallery/directed/cluster.gv.txt | 10 / 13 | refused (13) | 13, 1 | 13, 13 | 13/13; verbatim 0/13 | every arrow unlabelled; 2 frames lost (kept by `+clusters`: 21 facts) |
 | 6 | gallery-UML_Class_diagram | UML class diagram (HTML) | https://graphviz.org/Gallery/directed/UML_Class_diagram.gv.txt | 9 / 11 | refused (16) | 11, 6 | 11, 11 | 11/11; verbatim 0/11 | 7 HTML labels; 8 arrows unlabelled, 2 of them with an `xlabel`; `dir=back` on 8; 6 arrow ends at table cells (ports) |
-| 7 | [uml-classes](s1f.30.1_examples/drawn/uml-classes.gv) | UML class diagram (records) | drawn here | 5 / 5 | refused (7) | 5, 4 | 5, 5 | 5/5; verbatim 0/5 | record labels; inheritance unlabelled (its meaning is `arrowhead=empty`); multiplicities in `headlabel`/`taillabel` lost |
+| 7 | [uml-classes](s1k.10.1_examples/drawn/uml-classes.gv) | UML class diagram (records) | drawn here | 5 / 5 | refused (7) | 5, 4 | 5, 5 | 5/5; verbatim 0/5 | record labels; inheritance unlabelled (its meaning is `arrowhead=empty`); multiplicities in `headlabel`/`taillabel` lost |
 | 8 | gallery-datastruct | data structure | https://graphviz.org/Gallery/directed/datastruct.gv.txt | 13 / 17 | refused (30) | 17, 1 | 17, 17 | 17/17; verbatim 0/16 | record labels, 3 pairs of identical records; 34 arrow ends at record fields (kept by `+ports`: 42 facts) |
-| 9 | [c4-context](s1f.30.1_examples/drawn/c4-context.gv) | C4 system context | drawn here, after the C4 model's banking example | 4 / 4 | refused (8) | 4, 4 | 4, 4 | 4/4; verbatim 0/4 | name, `[type]` and description in one label; arrows are sentences; `+source` keeps the sentence and the round trip loses every arrow (0/4) |
+| 9 | [c4-context](s1k.10.1_examples/drawn/c4-context.gv) | C4 system context | drawn here, after the C4 model's banking example | 4 / 4 | refused (8) | 4, 4 | 4, 4 | 4/4; verbatim 0/4 | name, `[type]` and description in one label; arrows are sentences; `+source` keeps the sentence and the round trip loses every arrow (0/4) |
 | 10 | c4-container | C4 container | https://danielk.developer.irf.se/phd-course-software-development/tutorials/diagrams/ (its first DOT block) | 6 / 7 | refused (13) | 7, 7 | 7, 7 | 7/7; verbatim 0/7 | HTML tables as labels; sentences with `[SSH]`, `[JSON/HTTPS]` |
-| 11 | [ein-crates](s1f.30.1_examples/drawn/ein-crates.gv) | dependency graph | drawn here, from each crate's `Cargo.toml` | 8 / 14 | **loaded as is** | 16, 3 | 16, 3 | 14/14, 2 `(X)` as octagons; verbatim 14/14 | the two dev-only crates are no arrow's ends: `(ein-corpus)`; 2 frames lost |
+| 11 | [ein-crates](s1k.10.1_examples/drawn/ein-crates.gv) | dependency graph | drawn here, from each crate's `Cargo.toml` | 8 / 14 | **loaded as is** | 16, 3 | 16, 3 | 14/14, 2 `(X)` as octagons; verbatim 14/14 | the two dev-only crates are no arrow's ends: `(ein-corpus)`; 2 frames lost |
 | 12 | gallery-go-package | dependency graph | https://graphviz.org/Gallery/directed/go-package.gv.txt | 20 / 49 | refused (49) | 49, 1 | 49, 49 | 49/49; verbatim 0/49 | every arrow unlabelled; the labels `regexp/syntax`, `unicode/utf8` are names |
 | 13 | gallery-unix | version history | https://graphviz.org/Gallery/directed/unix.gv.txt | 41 / 49 | refused (80) | 49, 1 | 49, 49 | 49/49; verbatim 0/49 | 31 labels with a space (`5th Edition`); every arrow unlabelled |
 | 14 | gallery-pprof | call graph | https://graphviz.org/Gallery/directed/pprof.gv.txt | 21 / 28 | refused (49) | 29, 22 | 29, 22 | 28/28, 1 `(X)`; verbatim 0/28 | every arrow label a number (` 393`): 28 arrows, 21 relations; the legend is a node no arrow touches |
-| 15 | [family-tree](s1f.30.1_examples/drawn/family-tree.gv) | family tree | drawn here | 6 / 7 | refused (1) | 8, 4 | 8, 4 | 7/7, 1 `(X)`; verbatim 1/7 | `Zoë`; two people called John, one atom unless repaired |
+| 15 | [family-tree](s1k.10.1_examples/drawn/family-tree.gv) | family tree | drawn here | 6 / 7 | refused (1) | 8, 4 | 8, 4 | 7/7, 1 `(X)`; verbatim 1/7 | `Zoë`; two people called John, one atom unless repaired |
 | 16 | gallery-lion_share | pedigree | https://graphviz.org/Gallery/directed/lion_share.gv.txt | 47 / 51 | refused (68) | 51, 1 | 51, 51 | 51/51; verbatim 0/46 | 17 marriage nodes of the empty label; every arrow unlabelled and drawn `dir=none` |
 | 17 | gallery-kennedyanc | family tree | https://graphviz.org/Gallery/directed/kennedyanc.gv.txt | 14 / 22 | refused (36) | 44, 1 | 44, 22 | 44/44; verbatim 0/22 | undirected; the relation is the colour (parent, spouse); first lines collide: two `John Fitzgerald Kennedy` |
 | 18 | gallery-ER | ER diagram | https://graphviz.org/Gallery/neato/ER.gv.txt | 12 / 12 | refused (6) | 24, 4 | 24, 9 | 24/24; verbatim 6/12 | undirected; three attribute nodes all labelled `name`; cardinalities `1`, `n`, `m` as labels |
@@ -93,11 +93,11 @@ drawing's arrows, how many come back with the same three labels. Programs of thi
 | 21 | gallery-happiness | mind map | https://graphviz.org/Gallery/twopi/happiness.gv.txt | 78 / 77 | refused (78) | 155, 2 | 155, 78 | 154/154, 1 `(X)`; verbatim 0/77 | undirected, unlabelled; a credit line `© 2020-2022 …` as a node no arrow touches |
 | 22 | gallery-fdpclust | undirected, nested frames | https://graphviz.org/Gallery/undirected/fdpclust.gv.txt | 7 / 6 | refused (9) | 12, 1 | 12, 6 | 12/12; verbatim 0/6 | 2 arcs end at a frame (`e -- clusterB`), which no reading 1 node is |
 | 23 | gallery-git | concepts and commands | https://graphviz.org/Gallery/directed/git.gv.txt | 8 / 10 | refused (17) | 10, 7 | 10, 10 | 10/10; verbatim 0/10 | HTML labels; commands as arrow labels (`git commit`); ports |
-| 24 | [kernel-words](s1f.30.1_examples/drawn/kernel-words.gv) | Ein's kernel words | drawn here | 42 / 23 | refused (25) | 26, 22 | 26, 22 | 23/23, 3 `(X)`; verbatim 1/23 | every kernel word refused or changed ([below](#10-kernel-words-as-labels)) |
-| 25 | [edge-cases](s1f.30.1_examples/drawn/edge-cases.gv) | every case to decide | drawn here | 25 / 18 | refused (13) | 19, 19 | 19, 19 | 17/17, 2 `(X)`; verbatim 9/17 | one of each kind below |
-| 26 | [three-houses](s1f.30.1_examples/ein/three-houses.kb.dot) | Ein's drawing | [`three-houses.ein`](s1f.30.1_examples/ein/three-houses.ein), the running example | 21 / 35 | reading 1 refused (35) | reading 2: 25 facts | | KB 25 of 26 | `(transitive left-of)` is not drawn |
-| 27 | [common-belief](s1f.30.1_examples/ein/common-belief.kb.dot) | Ein's drawing | [`01_common_belief.ein`](../../../examples/beliefs/01_common_belief.ein) | 21 / 32 | reading 1 refused (26) | reading 2: 21 facts | | KB 21 of 21 | nothing; the rules and `:why` are no part of a KB |
-| 28 | [turnstile-kb](s1f.30.1_examples/ein/turnstile-kb.kb.dot) | Ein's drawing | row 1's program | 3 / 5 | reading 1: 0 refused | reading 2: 5 facts | | KB 3 of 5 | its two loops are facts of two arguments, which reading 2 takes for one |
+| 24 | [kernel-words](s1k.10.1_examples/drawn/kernel-words.gv) | Ein's kernel words | drawn here | 42 / 23 | refused (25) | 26, 22 | 26, 22 | 23/23, 3 `(X)`; verbatim 1/23 | every kernel word refused or changed ([below](#10-kernel-words-as-labels)) |
+| 25 | [edge-cases](s1k.10.1_examples/drawn/edge-cases.gv) | every case to decide | drawn here | 25 / 18 | refused (13) | 19, 19 | 19, 19 | 17/17, 2 `(X)`; verbatim 9/17 | one of each kind below |
+| 26 | [three-houses](s1k.10.1_examples/ein/three-houses.kb.dot) | Ein's drawing | [`three-houses.ein`](s1k.10.1_examples/ein/three-houses.ein), the running example | 21 / 35 | reading 1 refused (35) | reading 2: 25 facts | | KB 25 of 26 | `(transitive left-of)` is not drawn |
+| 27 | [common-belief](s1k.10.1_examples/ein/common-belief.kb.dot) | Ein's drawing | [`01_common_belief.ein`](../../../examples/beliefs/01_common_belief.ein) | 21 / 32 | reading 1 refused (26) | reading 2: 21 facts | | KB 21 of 21 | nothing; the rules and `:why` are no part of a KB |
+| 28 | [turnstile-kb](s1k.10.1_examples/ein/turnstile-kb.kb.dot) | Ein's drawing | row 1's program | 3 / 5 | reading 1: 0 refused | reading 2: 5 facts | | KB 3 of 5 | its two loops are facts of two arguments, which reading 2 takes for one |
 
 Every (a), (b) and variant program loads with its root alive. A drawing's verbatim count can be smaller than its
 arrows (datastruct 16 of 17, lion_share 46 of 51, the network map 421 of 425): arrows with the same three labels are
@@ -121,7 +121,7 @@ as drawn:
   `edge-cases.a+numbered` the two parallel `calls` arrows, written `(calls a b 1)` and `(calls a b 2)`, come back as
   two octagons, and its other 16 facts of two arguments as their arrows.
 - **A fact another fact points at is an octagon** too: written by hand,
-  [`c4-context.nested.ein`](s1f.30.1_examples/out/c4-context/c4-context.nested.ein) keeps C4's `[XML/HTTPS]` as
+  [`c4-context.nested.ein`](s1k.10.1_examples/out/c4-context/c4-context.nested.ein) keeps C4's `[XML/HTTPS]` as
   `(technology (Gets-account-information-from-and-makes-payments-using Internet-Banking-System
   Mainframe-Banking-System) XML/HTTPS)`, which Ein holds and the drawing cannot write (DOT has no arrow at an
   arrow), and `ein render kb` then draws the arrow's fact as an octagon, which only reading 2 reads.
@@ -133,7 +133,7 @@ as drawn:
 ## Unlabelled arrows: a single default, or all different
 
 16 of the 25 drawings have unlabelled arrows, 753 of them, and in 10 every arrow is unlabelled. Run both ways
-(`python3 s1f.30.1_examples/graph2ein.py survey`, the `same KB reversed` column; the rule below by hand):
+(`python3 s1k.10.1_examples/graph2ein.py survey`, the `same KB reversed` column; the rule below by hand):
 
 | | (a) one label, `edge` | (b) each its own, `e1`, `e2`, … |
 |---|---|---|

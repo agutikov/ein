@@ -1,10 +1,12 @@
-# P1f.30 — the inverse of `ein render`: a labelled graph read as a knowledge base
+# P1k.10 — the inverse of `ein render`: a labelled graph read as a knowledge base
 
-**Milestone:** [M1f](../README.md)
-**Status:** created 2026-11-18 on the user's instruction (below); **not started without the user's word**.
-**Depends on:** P1f.23's S1f.23.1, which makes the canonical form `ein render`'s default and the labelled arrow a fold
-on request (Q-M1f.419): the two drawings this phase reads back.
-**Blocks:** the close of M1f.
+**Milestone:** [M1k](../README.md)
+**Status:** created 2026-11-18 on the user's instruction (below) as M1f's P1f.30, and **moved the same day to M1k as
+P1k.10** on the user's word (*"M1k: p1f.30 -> p1k.10"*); the user's notes below say *p1f.30*, as written. S1k.10.1's
+examples are done; its design and the rest are **not started without the user's word**.
+**Depends on:** M1f's P1f.23, S1f.23.1, which makes the canonical form `ein render`'s default and the labelled arrow a
+fold on request (Q-M1f.419): the two drawings this phase reads back.
+**Blocks:** nothing.
 
 ## The instruction
 
@@ -21,7 +23,7 @@ and:
 
 > p1f.30: isolated node becomes a unary fact
 
-and, during S1f.30.1's examples:
+and, during S1k.10.1's examples:
 
 > p1f.30 - each generated ein is loaded, but no need to saturate it, because it has no rules; undirected arcs can be
 > replaced with 2 directed, main requirement are labels, but for experiment we can allow default labels - options
@@ -62,9 +64,9 @@ Two readings of a drawing, as the main session put them that day:
 
 | stage | what | state |
 |---|---|---|
-| S1f.30.1 | **The survey and the design**: the two readings on real drawings (corpus KB views in both forms, hand-made graphs with each case 1 cannot keep), what each command would print, the questions above with their defaults | **its examples started 2026-11-18 on the user's word** (*"Find some examples from internet or draw yourself, e.g. state machine, an algorithms, class diagram, C4 diagrams, https://graphviz.org/gallery/ ... whatever; and try convert them into Ein KB, record what succeded, what failed and why."*): [`s1f.30.1_examples.md`](s1f.30.1_examples.md); the design after it. **Record, 2026-11-18**: the examples are commit `795b5331`: 25 drawings read by reading 1 (17 downloaded, kept in `build/p1f30-external/`, and 8 drawn here) and 3 of `ein render kb`'s read by reading 2, with the prototype, [`s1f.30.1_examples/graph2ein.py`](s1f.30.1_examples/graph2ein.py). Strictly, reading 1 loads 2 of the 25; with the labels repaired and a default label for an unlabelled arrow, all 25 load and all 1,438 two-argument facts come back as their arrows; one default label is favoured over one each (the same facts, a KB independent of the order arrows are written in, a relation a rule can read). Reading 2 reads Ein's drawings back but for a rule's activator, a negation no fact points at, and a loop, which today's drawing draws alike for `(r x)` and `(r x x)`. The defaults the examples suggest for the questions above are the page's last two sections |
-| S1f.30.2 | **The build**, on the user's rulings | not started |
-| S1f.30.3 | **The close** | last |
+| S1k.10.1 | **The survey and the design**: the two readings on real drawings (corpus KB views in both forms, hand-made graphs with each case 1 cannot keep), what each command would print, the questions above with their defaults | **its examples started 2026-11-18 on the user's word** (*"Find some examples from internet or draw yourself, e.g. state machine, an algorithms, class diagram, C4 diagrams, https://graphviz.org/gallery/ ... whatever; and try convert them into Ein KB, record what succeded, what failed and why."*): [`s1k.10.1_examples.md`](s1k.10.1_examples.md); the design after it. **Record, 2026-11-18**: the examples are commit `795b5331`: 25 drawings read by reading 1 (17 downloaded, kept in `build/p1f30-external/`, and 8 drawn here) and 3 of `ein render kb`'s read by reading 2, with the prototype, [`s1k.10.1_examples/graph2ein.py`](s1k.10.1_examples/graph2ein.py). Strictly, reading 1 loads 2 of the 25; with the labels repaired and a default label for an unlabelled arrow, all 25 load and all 1,438 two-argument facts come back as their arrows; one default label is favoured over one each (the same facts, a KB independent of the order arrows are written in, a relation a rule can read). Reading 2 reads Ein's drawings back but for a rule's activator, a negation no fact points at, and a loop, which today's drawing draws alike for `(r x)` and `(r x x)`. The defaults the examples suggest for the questions above are the page's last two sections |
+| S1k.10.2 | **The build**, on the user's rulings | not started |
+| S1k.10.3 | **The close** | last |
 
 ## Rules of the phase
 

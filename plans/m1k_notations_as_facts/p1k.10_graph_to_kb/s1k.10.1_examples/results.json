@@ -8,7 +8,7 @@
    "name": "turnstile-fsm",
    "kind": "finite state machine",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/turnstile-fsm.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/turnstile-fsm.gv",
    "directed": true,
    "nodes": 3,
    "edges": 5,
@@ -23,7 +23,7 @@
      "notes": [],
      "facts": 5,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-fsm/turnstile-fsm.strict.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-fsm/turnstile-fsm.strict.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -60,7 +60,7 @@
      "notes": [],
      "facts": 5,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-fsm/turnstile-fsm.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-fsm/turnstile-fsm.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -97,7 +97,7 @@
      "notes": [],
      "facts": 5,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-fsm/turnstile-fsm.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-fsm/turnstile-fsm.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -387,7 +387,7 @@
    "name": "euclid-flowchart",
    "kind": "algorithm flowchart",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/euclid-flowchart.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/euclid-flowchart.gv",
    "directed": true,
    "nodes": 8,
    "edges": 9,
@@ -501,7 +501,7 @@
      "notes": [],
      "facts": 9,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/euclid-flowchart/euclid-flowchart.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/euclid-flowchart/euclid-flowchart.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -586,7 +586,7 @@
      "notes": [],
      "facts": 9,
      "relations": 7,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/euclid-flowchart/euclid-flowchart.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/euclid-flowchart/euclid-flowchart.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -1189,7 +1189,7 @@
    "name": "uml-classes",
    "kind": "UML class diagram (records)",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/uml-classes.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/uml-classes.gv",
    "directed": true,
    "nodes": 5,
    "edges": 5,
@@ -1416,7 +1416,7 @@
      "notes": [],
      "facts": 5,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/uml-classes/uml-classes.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/uml-classes/uml-classes.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -1557,7 +1557,7 @@
      "notes": [],
      "facts": 5,
      "relations": 5,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/uml-classes/uml-classes.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/uml-classes/uml-classes.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -1698,7 +1698,7 @@
      "notes": [],
      "facts": 6,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/uml-classes/uml-classes.a+dir.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/uml-classes/uml-classes.a+dir.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -1954,7 +1954,7 @@
    "name": "c4-context",
    "kind": "C4 system context",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/c4-context.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/c4-context.gv",
    "directed": true,
    "nodes": 4,
    "edges": 4,
@@ -2145,7 +2145,7 @@
      "notes": [],
      "facts": 4,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/c4-context/c4-context.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/c4-context/c4-context.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2266,7 +2266,7 @@
      "notes": [],
      "facts": 4,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/c4-context/c4-context.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/c4-context/c4-context.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2387,7 +2387,7 @@
      "notes": [],
      "facts": 7,
      "relations": 5,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/c4-context/c4-context.a+clusters.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/c4-context/c4-context.a+clusters.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2508,7 +2508,7 @@
      "notes": [],
      "facts": 4,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/c4-context/c4-context.a+source.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/c4-context/c4-context.a+source.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2770,7 +2770,7 @@
    "name": "ein-crates",
    "kind": "dependency graph",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/ein-crates.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/ein-crates.gv",
    "directed": true,
    "nodes": 8,
    "edges": 14,
@@ -2799,7 +2799,7 @@
      ],
      "facts": 16,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/ein-crates/ein-crates.strict.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/ein-crates/ein-crates.strict.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2850,7 +2850,7 @@
      ],
      "facts": 16,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/ein-crates/ein-crates.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/ein-crates/ein-crates.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2901,7 +2901,7 @@
      ],
      "facts": 16,
      "relations": 3,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/ein-crates/ein-crates.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/ein-crates/ein-crates.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -2952,7 +2952,7 @@
      ],
      "facts": 24,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/ein-crates/ein-crates.a+clusters.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/ein-crates/ein-crates.a+clusters.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -3523,7 +3523,7 @@
    "name": "family-tree",
    "kind": "family tree",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/family-tree.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/family-tree.gv",
    "directed": true,
    "nodes": 6,
    "edges": 7,
@@ -3652,7 +3652,7 @@
      ],
      "facts": 8,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/family-tree/family-tree.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/family-tree/family-tree.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -3742,7 +3742,7 @@
      ],
      "facts": 8,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/family-tree/family-tree.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/family-tree/family-tree.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -3832,7 +3832,7 @@
      ],
      "facts": 10,
      "relations": 4,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/family-tree/family-tree.a+dir.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/family-tree/family-tree.a+dir.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -5684,7 +5684,7 @@
    "name": "kernel-words",
    "kind": "Ein's kernel words as labels",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/kernel-words.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/kernel-words.gv",
    "directed": true,
    "nodes": 42,
    "edges": 23,
@@ -5805,7 +5805,7 @@
      ],
      "facts": 26,
      "relations": 22,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/kernel-words/kernel-words.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/kernel-words/kernel-words.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -5891,7 +5891,7 @@
      ],
      "facts": 26,
      "relations": 22,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/kernel-words/kernel-words.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/kernel-words/kernel-words.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -5977,7 +5977,7 @@
      ],
      "facts": 26,
      "relations": 22,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/kernel-words/kernel-words.a+rename.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/kernel-words/kernel-words.a+rename.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -6013,7 +6013,7 @@
    "name": "edge-cases",
    "kind": "every case reading 1 must decide",
    "source": "drawn here",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/drawn/edge-cases.gv",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/drawn/edge-cases.gv",
    "directed": true,
    "nodes": 25,
    "edges": 18,
@@ -6612,7 +6612,7 @@
      ],
      "facts": 19,
      "relations": 19,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/edge-cases/edge-cases.a.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/edge-cases/edge-cases.a.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -6935,7 +6935,7 @@
      ],
      "facts": 19,
      "relations": 19,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/edge-cases/edge-cases.b.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/edge-cases/edge-cases.b.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -7258,7 +7258,7 @@
      ],
      "facts": 21,
      "relations": 19,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/edge-cases/edge-cases.a+dir.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/edge-cases/edge-cases.a+dir.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -7580,7 +7580,7 @@
      ],
      "facts": 19,
      "relations": 19,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/edge-cases/edge-cases.a+rename.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/edge-cases/edge-cases.a+rename.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -7902,7 +7902,7 @@
      ],
      "facts": 20,
      "relations": 19,
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/edge-cases/edge-cases.a+numbered.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/edge-cases/edge-cases.a+numbered.ein",
      "load": {
       "loads": true,
       "root": "alive",
@@ -7937,8 +7937,8 @@
   {
    "name": "three-houses",
    "kind": "Ein's own drawing (declarations, is-a, rules)",
-   "source": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/ein/three-houses.ein",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/ein/three-houses.kb.dot",
+   "source": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/ein/three-houses.ein",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/ein/three-houses.kb.dot",
    "directed": true,
    "nodes": 21,
    "edges": 35,
@@ -8138,7 +8138,7 @@
       "root": "alive",
       "first": ""
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/three-houses/three-houses.r2-unary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/three-houses/three-houses.r2-unary.ein",
      "drawing_equal": true,
      "drawing_nodes": [
       21,
@@ -8174,7 +8174,7 @@
       "first": "kb load error: three-houses.r2-binary.ein:21:2: the fact (vacant House-2 House-2) gives vacant 2 arguments, and (relation vacant House) declares 1 — a form headed by a declared relation has as many arguments as its declaration has types; three-houses.r2-binary.ein:22:2: the fact (vacant House-3 Hous",
       "exit": 1
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/three-houses/three-houses.r2-binary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/three-houses/three-houses.r2-binary.ein",
      "failures": []
     }
    }
@@ -8183,7 +8183,7 @@
    "name": "common-belief",
    "kind": "Ein's own drawing (nested facts, negation)",
    "source": "examples/beliefs/01_common_belief.ein",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/ein/common-belief.kb.dot",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/ein/common-belief.kb.dot",
    "directed": true,
    "nodes": 21,
    "edges": 32,
@@ -8368,7 +8368,7 @@
       "root": "alive",
       "first": ""
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/common-belief/common-belief.r2-unary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/common-belief/common-belief.r2-unary.ein",
      "drawing_equal": true,
      "drawing_nodes": [
       21,
@@ -8402,7 +8402,7 @@
       "first": "kb load error: common-belief.r2-binary.ein:9:2: the fact (person Ann Ann) gives person 2 arguments, and (relation person Person) declares 1 — a form headed by a declared relation has as many arguments as its declaration has types; common-belief.r2-binary.ein:10:2: the fact (person Bob Bob) gives per",
       "exit": 1
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/common-belief/common-belief.r2-binary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/common-belief/common-belief.r2-binary.ein",
      "failures": []
     }
    }
@@ -8410,8 +8410,8 @@
   {
    "name": "turnstile-kb",
    "kind": "Ein's own drawing of reading 1's turnstile (loops of two arguments)",
-   "source": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-fsm/turnstile-fsm.a.ein",
-   "path": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/ein/turnstile-kb.kb.dot",
+   "source": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-fsm/turnstile-fsm.a.ein",
+   "path": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/ein/turnstile-kb.kb.dot",
    "directed": true,
    "nodes": 3,
    "edges": 5,
@@ -8461,7 +8461,7 @@
       "root": "alive",
       "first": ""
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-kb/turnstile-kb.r2-unary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-kb/turnstile-kb.r2-unary.ein",
      "drawing_equal": true,
      "drawing_nodes": [
       3,
@@ -8497,7 +8497,7 @@
       "root": "alive",
       "first": ""
      },
-     "program": "plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/s1f.30.1_examples/out/turnstile-kb/turnstile-kb.r2-binary.ein",
+     "program": "plans/m1f_hypothesis_and_documentation/p1k.10_graph_to_kb/s1k.10.1_examples/out/turnstile-kb/turnstile-kb.r2-binary.ein",
      "drawing_equal": true,
      "drawing_nodes": [
       3,

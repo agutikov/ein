@@ -334,7 +334,7 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  Three phases are left: **P1f.21, the kernel's verdicts as rules**
+  Two phases are left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   with its survey done, its question put (Q-M1f.390) and its next stage,
   S1f.21.4, planned, **not started without the user's word**; and
@@ -343,10 +343,7 @@ paragraph, no register count, no measurement (the user's rule).
   which builds what the user rules of the review bundle
   ([`review/`](plans/m1f_hypothesis_and_documentation/review/README.md), its
   pages and programs committed, its outputs ignored), a stage a batch, each
-  **run on the user's word**; and **P1f.30, the inverse of `ein render`**
-  ([its README](plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/README.md)),
-  a drawing read back as a knowledge base by `ein show`, its first survey
-  started on the user's word and the rest **not started without it**. The milestone's plans are deleted when all
+  **run on the user's word**. The milestone's plans are deleted when both
   are done, and **the work stops after M1f** (the user's rulings); the close
   of M1f was started and is paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
@@ -379,7 +376,10 @@ paragraph, no register count, no measurement (the user's rule).
   [M1h](plans/m1h_beyond_word_problems/README.md);
   [M12](plans/m12_rules_as_data/README.md), rules as data (its
   `rule_census.md` tables are written by `utils/rule_census.py --page`);
-  [M15](plans/m15_mcp_server/README.md).
+  [M15](plans/m15_mcp_server/README.md);
+  [M1k](plans/m1k_notations_as_facts/README.md), other notations read as Ein
+  facts: a labelled graph as a knowledge base (P1k.10, from M1f's P1f.30) and
+  S-expressions as facts (P1k.20), each phase **run only on the user's word**.
 
 ## Standing rules
 
