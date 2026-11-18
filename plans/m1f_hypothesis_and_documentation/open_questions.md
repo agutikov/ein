@@ -450,7 +450,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.519](#q-m1f519--the-decisions-the-numerals-rulings-live-in) | The decisions the numerals' rulings live in | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), Q-M1f.404's file, no new decision id |
 | [Q-M1f.520](#q-m1f520--the-walks-words-in-binary) | The walk's words in binary | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the base's: `numeral-step`'s `:why` says *digit* in binary too |
 | [Q-M1f.521](#q-m1f521--what-the-tagged-call-test-holds) | What the tagged-call test holds | **defaulted 2026-11-19 (S1f.23.9), the user's to revise**: (a), the walks as well as the calls, by `arith_theory.rs`' table `RUNS` |
-| [Q-M1f.522](#q-m1f522--a-relation-is-any-atom-first-in-a-tuple) | a relation of the program: which atoms are, and what a declaration is | **ruled 2026-11-19** by the user (P1f.21's V-7, in the review bundle): *"Its enough to be the first item in the tuple to became a relation"*, at any depth; a declaration an optional fact, a convention. To be built by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2 |
+| [Q-M1f.522](#q-m1f522--a-relation-is-any-atom-first-in-a-tuple) | a relation of the program: which atoms are, and what a declaration is | **ruled 2026-11-19** by the user (P1f.21's V-7, in the review bundle): *"Its enough to be the first item in the tuple to became a relation"*, at any depth; a declaration an optional fact, a convention. Built by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2 (`fdbb71ae`) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -9758,6 +9758,18 @@ relation of the program depends on one. *"Almost"*: the forms the kernel reads a
 heading a tuple; the build lists them. *"not arguments count"* decides nothing of the argument-count check, which
 stays open ([Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)).
 
-**To be built** by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2: one notion for the four lists; R moves where the blind rung guessed about such
-a name as an object, each moved corpus program named.
+**Built** by [S1f.23.10](p1f.23_review_processing/s1f.23.10_language_answers.md), task 2 (`fdbb71ae`), filed as
+[`docs/decisions/language/Q-M1f.522-…`](../../docs/decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md):
+`ein_ir::from_ir::relations_written` is the one computation, every atom the program writes first in a tuple outside
+its goals and `(solve …)` lists (a stated fact's, a nested fact's, a rule's, an hrule's or an obligation's pattern's
+at any depth, a declared relation, a name an activator gives a parameter that heads a form); the registry takes it
+less the kernel's words (`ein_core::terms::heads_a_relation`: `RESERVED` and the `#` names; `=` is a relation), the
+goal's and claim's list is it with `eq` and `neq`, as before, and the alive-set invariant's baseline is the registry
+with the kernel's words. The blind rung takes no registered relation and no relation of a fact root's fixpoint holds;
+the read-out's `relation names` row, its JSON keys and `ein_infer::relation_names` are gone, no schema id moving.
+**What moved**, by the stage's census of every corpus program's R and H: `examples/features/01_not_and_absent.ein`
+(H 35 → 19, its 16 candidates over `explicitly-dislikes` gone; flagged and past the limit, 64 655 states met → 65 299)
+and `examples/features/09_adjacent_via_same_house.ein` (H 82 → 38, R the same); nothing else, no refusal, and no
+`:expect` stated the old answer. The V-7 witness `v7_blind.ein`: 8 states → 1. The readings the stage took, each with
+its default, are in its Record.
 
