@@ -716,9 +716,9 @@ fn a_program_less_its_claims_keeps_everything_else() {
 /// question when its claims change, and no option is read.
 #[test]
 fn the_least_question_is_read_off_the_claims_shapes() {
-    const BODY: &str = "(relation p T :why \"{?1} is p\")\n(relation q T :why \"{?1} is q\")\n\
+    const BODY: &str = "(relation p T :why \"{?3} is p\")\n(relation q T :why \"{?3} is q\")\n\
                         (hrule guess (?R) :match (thing ?x) :assert (?R ?x) :why \"suppose {?x}\")\n\
-                        (relation thing T :why \"{?1} is a thing\")\n(thing a)\n(thing b)\n";
+                        (relation thing T :why \"{?3} is a thing\")\n(thing a)\n(thing b)\n";
     let solve = "(solve :hrules (guess (p)))\n";
     let mode = |which, ask| Mode { which, ask };
     let describe = mode(Which::All, Ask::Describe);

@@ -17,10 +17,10 @@
 ;;; What the engine does: R is the oracle's; no route reads the claim.
 ;;; `ein-infer/tests/no_edge.rs` holds the counterexample to the oracle.
 
-(relation is-a   T T :why "{?1} is a {?2}")
-(relation p-prop T   :why "p holds of {?1}")
-(relation q-prop T   :why "q holds of {?1}")
-(relation r-prop T   :why "r holds of {?1}")
+(relation is-a   T T :why "{?3} is a {?4}")
+(relation p-prop T   :why "p holds of {?3}")
+(relation q-prop T   :why "q holds of {?3}")
+(relation r-prop T   :why "r holds of {?3}")
 
 (rule q-from-p-and-r ()
   :match  (and (p-prop ?x) (r-prop ?x))

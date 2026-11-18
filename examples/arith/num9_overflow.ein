@@ -18,7 +18,7 @@
 (import std.math.num9 :symbols (arith9 add9 num9 mul9 overflow sum9-of product9-of))
 
 (relation too-big Request
-  :why "{?1} needs more than nine digits")
+  :why "{?3} needs more than nine digits")
 (__closed__ too-big)
 
 (add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1))

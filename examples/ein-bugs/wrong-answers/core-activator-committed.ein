@@ -32,7 +32,7 @@
 ;;;
 ;;;
 
-(relation seed T :why "{?1} is a seed") (relation r2 T :why "r2 holds of {?1}, which activates rule r2 for {?1}") (relation p2 T :why "p2 holds of {?1}")
+(relation seed T :why "{?3} is a seed") (relation r2 T :why "r2 holds of {?3}, which activates rule r2 for {?3}") (relation p2 T :why "p2 holds of {?3}")
 
 (seed a)
 

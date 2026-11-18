@@ -46,9 +46,9 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a   T T          :why "{?1} is a {?2}")
-(relation likes  Person Food  :why "{?1} likes {?2}")
-(relation choice Person       :why "{?1} was the one chosen")
+(relation is-a   T T          :why "{?3} is a {?4}")
+(relation likes  Person Food  :why "{?3} likes {?4}")
+(relation choice Person       :why "{?3} was the one chosen")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)

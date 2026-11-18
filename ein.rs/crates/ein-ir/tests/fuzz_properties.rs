@@ -289,7 +289,7 @@ fn seeds() -> Vec<String> {
     let root = repo_root();
     let mut out: Vec<String> = vec![
         "(rule r (?a) :match (p ?a) :assert (q ?a) :why \"w\")".into(),
-        "(relation co-located Person Person :why \"{?1} with {?2}\")".into(),
+        "(relation co-located Person Person :why \"{?3} with {?4}\")".into(),
         "(import std.macro :symbols (forall))".into(),
         "(macro forall (?g ?b) (absent (and ?g (absent ?b))))".into(),
         "(trace (step s1 :rule r :using (c1) :derives (p a)))".into(),

@@ -20,9 +20,9 @@
 ;;;
 ;;;
 
-(relation a Thing :why "{?1} is an a")
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation a Thing :why "{?3} is an a")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (a k)
 (p k)
 (rule no () :match (a ?x) :assert (false) :why "{?x} is an a, which no state may hold")

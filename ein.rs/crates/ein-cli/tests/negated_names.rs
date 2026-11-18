@@ -45,8 +45,8 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// Two guests, of whom Ann has paid.
-const HEAD: &str = "(relation paid Guest :why \"{?1} has paid\")\n\
-     (relation seen Guest :why \"{?1} was seen\")\n\
+const HEAD: &str = "(relation paid Guest :why \"{?3} has paid\")\n\
+     (relation seen Guest :why \"{?3} was seen\")\n\
      (is-a Ann Guest) (is-a Bob Guest)\n\
      (paid Ann)\n";
 
@@ -168,19 +168,19 @@ const ACCEPTED: [(&str, &str); 10] = [
     // A declared relation held out of the hypotheses holds what is written.
     (
         "a-declared-relation-held-out",
-        "(relation claim Claim :why \"{?1} is claimed\")\n(claim (paid Bob))\n\
+        "(relation claim Claim :why \"{?3} is claimed\")\n(claim (paid Bob))\n\
          (solve :no-hypothesis (claim))\n\
          (rule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),
     (
         "a-declared-relation-not-listed",
-        "(relation claim Claim :why \"{?1} is claimed\")\n(claim (paid Bob))\n\
+        "(relation claim Claim :why \"{?3} is claimed\")\n(claim (paid Bob))\n\
          (solve :hypothesis-relations (paid))\n\
          (rule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),
     (
         "a-declared-relation-beside-an-hrule",
-        "(relation claim Claim :why \"{?1} is claimed\")\n(claim (paid Bob))\n\
+        "(relation claim Claim :why \"{?3} is claimed\")\n(claim (paid Bob))\n\
          (hrule guess () :match (is-a ?g Guest) :assert (seen ?g) :why \"g\")\n\
          (rule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),

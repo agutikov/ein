@@ -31,7 +31,7 @@
 ;;; `(eq a)`. The regression's `now` is that refusal; the section above is the
 ;;; record of the answer it replaced.
 
-(relation p Node :why "{?1} is a p")
+(relation p Node :why "{?3} is a p")
 (p a)
 (hit z)
 (eq a)

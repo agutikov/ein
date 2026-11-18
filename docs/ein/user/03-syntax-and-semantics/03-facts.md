@@ -10,8 +10,8 @@ made of: why a fact holds, and which facts a contradiction rests on.
 ## In Ein
 
 ```lisp
-(relation knows Person Person :why "{?1} knows {?2}")
-(relation claims Person Claim :why "{?1} claims that {?2}")
+(relation knows Person Person :why "{?3} knows {?4}")
+(relation claims Person Claim :why "{?3} claims that {?4}")
 
 (rule knows-back ()
   :match  (knows ?a ?b)
@@ -86,20 +86,32 @@ this program:
 
 ## In words
 
-A fact has two texts. Its **statement**, what it says, is its relation's `:why` filled with its arguments. Its
-**reason**, why it holds, is read off the first way the engine recorded of reaching it. `ein solve FILE
---dump-answer DIR` writes both after each fact of a state:
+A fact has no text of its own: a `:why` reads the form it is written on, and a fact of a relation is no
+declaration. What a fact reads by is its **reason**, why it holds, read off the first way the engine recorded of
+reaching it: a given quotes its `:source`; a derived fact gives its rule's `:why`, filled with that firing's
+bindings; a background fact has none, and reads as written. `ein solve FILE --trace OUT.md` writes each firing with
+its reason quoted and each premise with its source:
 
 ```text
-(claims Carol (knows Carol Dan)) ; Carol claims that (knows Carol Dan)
-(knows Alice Bob) ; source "Alice says she knows Bob" — Alice knows Bob
-(knows Bob Alice) ; rule knows-back: Alice knows Bob, so Bob knows Alice — Bob knows Alice
-(knows Bob Carol) ; Bob knows Carol
-(knows Carol Bob) ; rule knows-back: Bob knows Carol, so Carol knows Bob — Carol knows Bob
+### Step 1 — `knows-back`
+
+> Alice knows Bob, so Bob knows Alice
+
+Premises: `knows(Alice, Bob)` — from Alice says she knows Bob
+
+Derives `knows(Bob, Alice)`.
+
+### Step 2 — `knows-back`
+
+> Bob knows Carol, so Carol knows Bob
+
+Premises: `knows(Bob, Carol)`
+
+Derives `knows(Carol, Bob)`.
 ```
 
-A given quotes its `:source`; a derived fact gives its rule's `:why`, filled with that firing's bindings; a
-background fact has no reason, only its statement. [Natural language](14-natural-language.md) has the whole ladder.
+`knows(Bob, Carol)`, a background fact, reads as written. [Natural language](14-natural-language.md) has the whole
+ladder.
 
 ## In mathematics
 
@@ -216,8 +228,8 @@ So a fact is held, or in a context, or both, and it is one fact in each case.
 **In Ein.**
 
 ```lisp
-(relation knows Person Person :why "{?1} knows {?2}")
-(relation claims Person Claim :why "{?1} claims that {?2}")
+(relation knows Person Person :why "{?3} knows {?4}")
+(relation claims Person Claim :why "{?3} claims that {?4}")
 
 (knows Bob Carol)
 (claims Carol (knows Carol Dan))
@@ -261,13 +273,15 @@ the two the same way, each an octagon with no name in it, its arrow `1` at the b
 in none, as [above](#as-a-graph); under `--fold` the facts that nothing points at are labelled arrows, and $g$ and
 $f$, which a claim points at, stay octagons.
 
-**In words.** A fact in a context is read inside the statement of the fact that speaks about it. `ein solve FILE
---dump-answer DIR` writes the state's three facts:
+**In words.** A fact in a context reads as written inside the fact that speaks about it: neither has a text of its
+own. `ein solve FILE` answers the second query with a row for each claim:
 
 ```text
-(claims Carol (knows Carol Dan)) ; Carol claims that (knows Carol Dan)
-(claims Dan (knows Bob Carol)) ; Dan claims that (knows Bob Carol)
-(knows Bob Carol) ; Bob knows Carol
+  query 2 of 2      (claims ?who (knows ?a ?b))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?a = Bob · ?b = Carol · ?who = Dan
+                      ?a = Carol · ?b = Dan · ?who = Carol
 ```
 
 **In mathematics.** With $K$ the facts held, the context of a fact $g$ is the held facts from which argument
@@ -331,6 +345,7 @@ come from is [hypotheses](09-hypotheses.md).
 - [Objects](01-objects.md): the graph, its two sorts of node, and how `ein` draws it.
 - [Rules](05-rules.md): how a derived fact is made, and what its record holds.
 - [Constraints](06-constraints.md): a stored negation, and the three states of a fact.
-- [Natural language](14-natural-language.md): the statement and the reason, everywhere they are printed.
+- [Natural language](14-natural-language.md): a fact's reason and a declaration's statement, everywhere they are
+  printed.
 - How a contradiction's core is read off the AND/OR graph:
   [the provenance section of the knowledge-base page](../../reasoning/02-kb-evolution/09-cores.md#a-derivation-record).

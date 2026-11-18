@@ -11,23 +11,23 @@
   :assert (?R ?a ?b)
   :why "guess: ({?R} {?a} {?b})?")
 
-(relation type T T :why "{?1} is a subtype of {?2}")
+(relation type T T :why "{?3} is a subtype of {?4}")
 
-(relation instance T T :why "{?1} is an instance of {?2}")
+(relation instance T T :why "{?3} is an instance of {?4}")
 
 (relation
   co-located
   Attribute
   Attribute
-  :why "{?1} and {?2} are in the same house")
+  :why "{?3} and {?4} are in the same house")
 
 (relation
   right-of
   Attribute
   Attribute
-  :why "{?1}'s house is immediately right of {?2}'s")
+  :why "{?3}'s house is immediately right of {?4}'s")
 
-(relation next-to Attribute Attribute :why "{?1}'s house is next to {?2}'s")
+(relation next-to Attribute Attribute :why "{?3}'s house is next to {?4}'s")
 
 (symmetric co-located)
 

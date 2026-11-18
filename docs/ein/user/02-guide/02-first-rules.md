@@ -31,7 +31,7 @@ decides nothing about the answer
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-(relation next-to T T :why "{?1} is next to {?2}")
+(relation next-to T T :why "{?3} is next to {?4}")
 (symmetric next-to)                       ; ← tag: "apply `symmetric` to next-to"
 (next-to House-1 House-2 :source "demo")
 (query :goal (next-to House-2 House-1))
@@ -85,7 +85,7 @@ is the saturated facts themselves.
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive.")
 
-(relation is-a T T :why "{?1} is a {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
 (transitive is-a)
 (is-a Cat Mammal :source "taxonomy")
 (is-a Mammal Animal :source "taxonomy")
@@ -135,7 +135,7 @@ the real puzzle.
 **ein-lang** (from [`examples/branching/05_mini_zebra.ein`](../../../../examples/branching/05_mini_zebra.ein), a 3-attribute mini Zebra):
 
 ```lisp
-(relation co-located T T :why "{?1} is co-located with {?2}")
+(relation co-located T T :why "{?3} is co-located with {?4}")
 (symmetric  co-located)        ; the two rules above, activated for co-located:
 (transitive co-located)        ; it forms equivalence classes across attributes
 (co-located Alice Tea :source "(1) Alice drinks Tea")

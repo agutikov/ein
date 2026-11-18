@@ -373,11 +373,11 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
         ("02-first-rules.md", "(relation unexplained T T)\n"),
         (
             "01-objects-and-relations.md",
-            "(relation located T T :why \"{?1} is in {?2}\" :priority 100)\n",
+            "(relation located T T :why \"{?3} is in {?4}\" :priority 100)\n",
         ),
         (
             "03-rule-families.md",
-            "(relation p T :why \"p holds of {?1}\")\n(p a)\n\
+            "(relation p T :why \"p holds of {?3}\")\n(p a)\n\
              (query :goal (p ?x) :expect (model (p b)))\n",
         ),
     ];

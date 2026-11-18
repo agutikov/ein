@@ -7,8 +7,12 @@
 //! `no_placeholder_reaches_an_output` and `corpus_cli.rs`' trace check, and
 //! this holds the cause. Per form:
 //!
-//! - a **relation**'s references are positional, `{?1}` to `{?n}` for an
-//!   `n`-place signature;
+//! - a **relation**'s name an arrow of the declaration it is written on
+//!   (Q-M1f.58): `{?2}`, the relation's name, to `{?n+2}`, its last label,
+//!   for an `n`-place signature. `{?1}` is the atom `relation`, which no
+//!   text needs, so a `{?1}` is a reference the renumbering missed, and is
+//!   refused here; a reference past the arrows prints as written, and is
+//!   refused too;
 //! - a **rule**'s and an **hrule**'s name a variable the firing binds: a
 //!   parameter, or a variable of a positive premise of its `:match` once the
 //!   macros are expanded — not one only an `(absent …)` reads, which binds
@@ -16,9 +20,9 @@
 //! - a **macro**'s name a parameter.
 //!
 //! And **no `{x}` is a reference with its `?` missing**: a bare `{x}` is a
-//! literal (`02-syntax.md` § `:why`), so `{1}` in a relation's `:why`, or
+//! literal (`02-syntax.md` § `:why`), so `{3}` in a relation's `:why`, or
 //! `{a}` in a rule's that binds `?a`, prints as written where a reference was
-//! meant: `"{1} is a {2}"` for `"{?1} is a {?2}"`, or `"{?1} knows {?2}, …"`
+//! meant: `"{3} is a {4}"` for `"{?3} is a {?4}"`, or `"{?3} knows {?4}, …"`
 //! in a rule that binds `?a` and `?b`, each of which would print as written.
 
 use std::collections::BTreeSet;
@@ -155,12 +159,16 @@ fn check_form(ast: &Ast, form: NodeId, file: &str, out: &mut Vec<String>) {
                 .skip(1)
                 .take_while(|&&a| !matches!(ast.node(a), Node::KwPair { .. }))
                 .count();
+            // The declaration's arrows: `relation`, its name, its labels.
+            let arrows = arity + 2;
             for r in &refs {
-                if !r
-                    .parse::<usize>()
-                    .is_ok_and(|n| n >= 1 && (arity == 0 || n <= arity))
-                {
-                    out.push(at(format!("{{?{r}}} is no position of its {arity}")));
+                match r.parse::<usize>() {
+                    Ok(1) => out.push(at(
+                        "{?1} is the atom `relation`: a reference the renumbering missed"
+                            .to_string(),
+                    )),
+                    Ok(n) if (2..=arrows).contains(&n) => {}
+                    _ => out.push(at(format!("{{?{r}}} is no arrow of its {arrows}"))),
                 }
             }
             for b in bare
@@ -251,7 +259,7 @@ fn the_reader_finds_what_it_is_for() {
     let mut ast = Ast::new();
     let forms = parse(
         &mut ast,
-        "(relation r T T :why \"{?1} {?3} {2}\")\n\
+        "(relation r T T :why \"{?1} {?3} {?5} {4}\")\n\
          (rule k (?p) :match (and (r ?a ?b) (absent (r ?b ?c))) :assert (r ?b ?a) :why \"{?p} {?a} {?c} {b}\")",
         Some("t.ein"),
     )
@@ -260,9 +268,10 @@ fn the_reader_finds_what_it_is_for() {
     for &f in &forms {
         check_form(&ast, f, "t.ein", &mut out);
     }
-    assert_eq!(out.len(), 4, "{out:#?}");
-    assert!(out[0].contains("{?3} is no position of its 2"));
-    assert!(out[1].contains("{2} is {?2} with its `?` missing"));
-    assert!(out[2].contains("{?c} names nothing it binds"));
-    assert!(out[3].contains("{b} is {?b} with its `?` missing"));
+    assert_eq!(out.len(), 5, "{out:#?}");
+    assert!(out[0].contains("{?1} is the atom `relation`"));
+    assert!(out[1].contains("{?5} is no arrow of its 4"));
+    assert!(out[2].contains("{4} is {?4} with its `?` missing"));
+    assert!(out[3].contains("{?c} names nothing it binds"));
+    assert!(out[4].contains("{b} is {?b} with its `?` missing"));
 }

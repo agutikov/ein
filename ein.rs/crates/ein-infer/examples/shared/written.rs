@@ -13,7 +13,7 @@
 /// `absent`, so the static check's one site is the activator, and a check
 /// that runs on root's plans cannot see the refutation.
 pub const ACTIVATOR_REFUTES: &str =
-    "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (relation watch T :why \"rule watch is switched on for relation {?1}\")
+    "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (relation watch T :why \"rule watch is switched on for relation {?3}\")
      (r A)
      (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
      (hrule g2 () :match (r ?x) :assert (q ?x) :why \"r holds of {?x}, so guess that q holds of {?x}\")
@@ -28,7 +28,7 @@ pub const ACTIVATOR_REFUTES: &str =
 /// premise, because a derivation does not record the activator its plan was
 /// compiled from. The `absent` the death rests on is the activator's.
 pub const ACTIVATOR_UNDER_ABSENT: &str =
-    "(relation thing T :why \"{?1} is a thing\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (relation watch T :why \"rule watch is switched on for relation {?1}\")
+    "(relation thing T :why \"{?3} is a thing\") (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (relation watch T :why \"rule watch is switched on for relation {?3}\")
      (thing A)
      (hrule g1 () :match (thing ?x) :assert (p ?x) :why \"{?x} is a thing, so guess that p holds of {?x}\")
      (hrule g2 () :match (thing ?x) :assert (q ?x) :why \"{?x} is a thing, so guess that q holds of {?x}\")

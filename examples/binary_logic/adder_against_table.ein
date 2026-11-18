@@ -30,15 +30,15 @@
 (import full_adder)
 
 (relation at Vector Wire Bit
-  :why "on test vector {?1}, {?2} carries {?3}")
+  :why "on test vector {?3}, {?4} carries {?5}")
 (relation vector Vector Bit Bit Bit
-  :why "test vector {?1}: a = {?2}, b = {?3}, carry in = {?4}")
+  :why "test vector {?3}: a = {?4}, b = {?5}, carry in = {?6}")
 (relation row Vector Bit Bit Bit Bit Bit
-  :why "on {?1}, {?2} + {?3} + {?4}: digit {?5}, carry {?6}")
+  :why "on {?3}, {?4} + {?5} + {?6}: digit {?7}, carry {?8}")
 (relation agrees Vector
-  :why "on {?1} the gates and the table agree")
+  :why "on {?3} the gates and the table agree")
 (relation differs Vector
-  :why "on {?1} the gates and the table differ")
+  :why "on {?3} the gates and the table differ")
 
 (vector v000 0 0 0) (vector v001 0 0 1) (vector v010 0 1 0) (vector v011 0 1 1)
 (vector v100 1 0 0) (vector v101 1 0 1) (vector v110 1 1 0) (vector v111 1 1 1)

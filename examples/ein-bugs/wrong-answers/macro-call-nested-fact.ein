@@ -21,10 +21,10 @@
 ;;; The engine refuses it at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
-(relation says Claim :why "it is said that {?1}")
-(relation trusted Guest :why "{?1} is trusted")
+(relation says Claim :why "it is said that {?3}")
+(relation trusted Guest :why "{?3} is trusted")
 (macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
 (says (settled Ann))
 (rule trust () :match (says (settled ?g)) :assert (trusted ?g) :why "{?g} is trusted: it is said that they settled")

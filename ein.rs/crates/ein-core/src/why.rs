@@ -4,10 +4,11 @@
 //! to the variable as it appears in `:match` / `:assert`. A bare `{x}` is a
 //! literal and is left alone, so an author can put braces in a message.
 //!
-//! `(relation …)` `:why` templates reference argument slots *positionally* —
-//! `{?1}` is the first argument, `{?2}` the second — which is why a reference
-//! may start with a digit. Unbound references keep their reference text; the
-//! trace renderer prefers a partial render over a hard failure.
+//! A `(relation …)` `:why` reads the declaration it is written on, and
+//! references its arrows *by number* — `{?1}` is the atom `relation`, `{?2}`
+//! the relation's name, `{?3}` its first label (Q-M1f.58) — which is why a
+//! reference may start with a digit. Unbound references keep their reference
+//! text; the trace renderer prefers a partial render over a hard failure.
 //!
 //! **A reference names every variable a program can write**: after
 //! `{?` it reads the name rule's characters ([`crate::text::is_name_char`])
@@ -112,13 +113,18 @@ mod tests {
     }
 
     #[test]
-    fn a_positional_slot_is_a_reference_and_a_bare_brace_is_not() {
+    fn a_numbered_arrow_is_a_reference_and_a_bare_brace_is_not() {
         assert_eq!(
             render_why(
-                "{?1} is drunk in {?2}",
-                &b(&[("1", "Water"), ("2", "House-1")])
+                "a {?3} {?2} a {?4}",
+                &b(&[
+                    ("1", "relation"),
+                    ("2", "owns"),
+                    ("3", "Person"),
+                    ("4", "Pet")
+                ])
             ),
-            "Water is drunk in House-1"
+            "a Person owns a Pet"
         );
         assert_eq!(
             render_why("{x} and {?} and {}", &b(&[("x", "no")])),

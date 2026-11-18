@@ -45,7 +45,7 @@ pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
 pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};
-pub use sentence::{FactSentence, Origin, fact_sentence, rule_sentence};
+pub use sentence::rule_sentence;
 pub use shape::dot_shape;
 pub use slice::{render_slice, render_solution, render_state};
 pub use trace::{TraceStep, steps_of, steps_of_with};

@@ -51,9 +51,9 @@ class. A puzzle whose clues never name an index would need `(transitive R)` and 
 (import std.algebra :symbols (symmetric))
 (import std.slots)
 
-(relation type     T T                 :why "{?1} is a kind of {?2}")
-(relation instance T T                 :why "{?1} is a {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation type     T T                 :why "{?3} is a kind of {?4}")
+(relation instance T T                 :why "{?3} is a {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
 
 (symmetric co-loc)
 (slot-partition co-loc instance type Attribute Seat)
@@ -106,10 +106,10 @@ What the partition produces, rule by rule:
 (import std.algebra :symbols (symmetric))
 (import std.slots)
 
-(relation type     T T                 :why "{?1} is a kind of {?2}")
-(relation instance T T                 :why "{?1} is a {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same house")
-(relation right-of Attribute Attribute :why "{?1} is just to the right of {?2}")
+(relation type     T T                 :why "{?3} is a kind of {?4}")
+(relation instance T T                 :why "{?3} is a {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation right-of Attribute Attribute :why "{?3} is just to the right of {?4}")
 
 (symmetric co-loc)
 (slot-partition co-loc instance type Attribute House)
@@ -171,10 +171,10 @@ tries the placements that pay:
 (import std.algebra :symbols (symmetric))
 (import std.slots)
 
-(relation type     T T                 :why "{?1} is a kind of {?2}")
-(relation instance T T                 :why "{?1} is a {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same house")
-(relation right-of Attribute Attribute :why "{?1} is just to the right of {?2}")
+(relation type     T T                 :why "{?3} is a kind of {?4}")
+(relation instance T T                 :why "{?3} is a {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation right-of Attribute Attribute :why "{?3} is just to the right of {?4}")
 
 (symmetric co-loc)
 (slot-partition co-loc instance type Attribute House)
@@ -226,9 +226,9 @@ A value excluded from every slot is a contradiction:
 (import std.algebra :symbols (symmetric))
 (import std.slots)
 
-(relation type     T T                 :why "{?1} is a kind of {?2}")
-(relation instance T T                 :why "{?1} is a {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation type     T T                 :why "{?3} is a kind of {?4}")
+(relation instance T T                 :why "{?3} is a {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
 
 (symmetric co-loc)
 (slot-partition co-loc instance type Attribute Seat)
@@ -263,9 +263,9 @@ The obligation is the same question asked before anything is excluded.
 ```lisp
 (import std.slots :symbols (slot-owed-room))
 
-(relation type     T T :why "{?1} is a subtype of {?2}")
-(relation instance T T :why "{?1} is an instance of {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation type     T T :why "{?3} is a subtype of {?4}")
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
 
 (slot-owed-room co-loc instance type Attribute Seat)
 

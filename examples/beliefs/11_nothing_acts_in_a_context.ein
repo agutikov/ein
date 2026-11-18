@@ -19,8 +19,8 @@
 ;;; `chain` does work where its activator is held: `(chain above)` is, and
 ;;; `(above a c)` is concluded.
 
-(relation think Person Claim :why "{?1} thinks that {?2}")
-(relation above Thing Thing  :why "{?1} is above {?2}")
+(relation think Person Claim :why "{?3} thinks that {?4}")
+(relation above Thing Thing  :why "{?3} is above {?4}")
 
 (think Alice (relation near Place))
 (think Alice (chain near))

@@ -27,6 +27,6 @@
 ;;; states (Q-M1e2.17), and the program answers its twin's R.
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation box Node :why "{?1} is in a box")
+(relation p Node :why "p holds of {?3}") (relation box Node :why "{?3} is in a box")
 (p a)
 (box (neqw a))

@@ -583,17 +583,18 @@ fn the_trace_takes_its_three_shaping_flags() {
 /// writes them (Q-M1f.214): the *Derives* line, and `--reorder`'s arrow,
 /// name every one, so a second conclusion, stored, held by the state and read
 /// by later steps, has a step that says where it came from. Each conclusion carries its own
-/// statement, its relation's `:why`; a rule of one conclusion prints the line
-/// it always did.
+/// statement where it has one, and a fact has none of its own: a relation's
+/// `:why` reads its declaration, never a fact of it (Q-M1f.58). A rule of one
+/// conclusion prints the line it always did.
 #[test]
 fn a_trace_step_names_every_conclusion_of_its_firing() {
     let dir = scratch("trace-conclusions");
     let file = dir.join("two.ein");
     std::fs::write(
         &file,
-        "(relation p Thing :why \"{?1} is p\")\n\
-         (relation q Thing :why \"{?1} is q\")\n\
-         (relation r Thing Thing :why \"{?1} is related to {?2}\")\n\
+        "(relation p Thing :why \"{?3} is p\")\n\
+         (relation q Thing :why \"{?3} is q\")\n\
+         (relation r Thing Thing :why \"{?3} is related to {?4}\")\n\
          (p a)\n\
          (rule many () :match (p ?x)\n\
            :assert (and (q ?x) (flag ?x) (not (r ?x b)) (r ?x ?x))\n\
@@ -613,9 +614,7 @@ fn a_trace_step_names_every_conclusion_of_its_firing() {
     };
     let plain = trace(&[]);
     assert!(
-        plain.contains(
-            "Derives `q(a)` — a is q; `flag(a)`; `not(r(a, b))`; `r(a, a)` — a is related to a\n"
-        ),
+        plain.contains("Derives `q(a)`; `flag(a)`; `not(r(a, b))`; `r(a, a)`.\n"),
         "{plain}"
     );
     // One conclusion: the line as it was, a full stop where no statement ends it.
@@ -632,7 +631,7 @@ fn a_trace_step_names_every_conclusion_of_its_firing() {
 /// item is chosen every item is*: with it two states, ∅ and ⊤, and 2ⁿ
 /// commitments; without it the whole cube, 2ⁿ states.
 fn items(n: usize, all: bool) -> String {
-    let mut s = String::from("(relation chosen Thing :why \"{?1} is chosen\")\n");
+    let mut s = String::from("(relation chosen Thing :why \"{?3} is chosen\")\n");
     if all {
         s.push_str(
             "(rule all () :match (and (chosen ?x) (item ?y)) :assert (chosen ?y)\n  \

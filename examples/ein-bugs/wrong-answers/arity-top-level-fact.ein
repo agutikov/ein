@@ -23,7 +23,7 @@
 ;;;
 ;;;
 
-(relation likes Person Drink :why "{?1} likes {?2}")
+(relation likes Person Drink :why "{?3} likes {?4}")
 
 (likes Ann Tea)
 (likes Bob)

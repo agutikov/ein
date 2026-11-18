@@ -866,11 +866,11 @@ fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
 #[test]
 fn a_range_is_the_name_it_spells() {
     let scratch = ein_corpus::Scratch::new("ein-range-is-a-name");
-    let pre = "(relation n Node :why \"n holds of {?1}\") (relation hit Node :why \"{?1} is hit\") (relation r Node Node :why \"r holds of {?1} and {?2}\")\n(n a)\n";
+    let pre = "(relation n Node :why \"n holds of {?3}\") (relation hit Node :why \"{?3} is hit\") (relation r Node Node :why \"r holds of {?3} and {?4}\")\n(n a)\n";
     let loads = [
         ("(r 1..5 a)", "  (r 1..5 a)\n"),
         (
-            "(relation q 1..* Node :why \"q holds of {?1} and {?2}\")",
+            "(relation q 1..* Node :why \"q holds of {?3} and {?4}\")",
             "(relation q 1..* Node)\n",
         ),
         (
@@ -945,7 +945,7 @@ fn a_string_is_natural_language_and_no_value() {
     let scratch = ein_corpus::Scratch::new("ein-strings-are-text");
     let note = "a string is natural-language text, written only after :why, :source or \
                 :goal-text: write a name bare";
-    let pre = "(relation p T :why \"{?1} is a p\")\n(relation r T)\n";
+    let pre = "(relation p T :why \"{?3} is a p\")\n(relation r T)\n";
     for (form, col, what, noted) in [
         ("(p \"1\")", 4, "unexpected `\"1\"`: a string", true),
         ("(p \"a\")", 4, "unexpected `\"a\"`: a string", true),
@@ -1111,7 +1111,7 @@ fn a_bare_underscore_names_nothing_in_every_place() {
     let main = scratch.path().join("main.ein");
     std::fs::write(
         &main,
-        "(import module)\n(relation q T :why \"q holds of {?1}\")\n(q a)\n",
+        "(import module)\n(relation q T :why \"q holds of {?3}\")\n(q a)\n",
     )
     .expect("the program is written");
     let (module, main) = (module.to_string_lossy(), main.to_string_lossy());
@@ -1157,9 +1157,9 @@ fn a_bare_underscore_names_nothing_in_every_place() {
 #[test]
 fn a_run_of_digits_is_a_name_in_every_place() {
     let scratch = ein_corpus::Scratch::new("ein-digits-are-names");
-    let program = "(relation p T :why \"p holds of {?1}\") (relation n T :why \"n holds of {?1}\") (relation q T T :why \"q holds of {?1} and {?2}\")\n\
-                   (relation 1 T :why \"1 holds of {?1}\") (relation 01 T :why \"01 holds of {?1}\")\n\
-                   (relation r 1 01 :why \"r holds of {?1} and {?2}\")\n\
+    let program = "(relation p T :why \"p holds of {?3}\") (relation n T :why \"n holds of {?3}\") (relation q T T :why \"q holds of {?3} and {?4}\")\n\
+                   (relation 1 T :why \"1 holds of {?3}\") (relation 01 T :why \"01 holds of {?3}\")\n\
+                   (relation r 1 01 :why \"r holds of {?3} and {?4}\")\n\
                    (p 1) (p 01) (p -7) (p 7)\n\
                    (1 a) (01 a)\n\
                    (p (q 1 01))\n\
@@ -1342,7 +1342,7 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         std::fs::write(
             &file,
             format!(
-                "(relation p Node :why \"p holds of {{?1}}\") (relation q Node :why \"q holds of {{?1}}\") (relation f Node :why \"f holds of {{?1}}\") (relation hit Node :why \"{{?1}} is hit\")\n\
+                "(relation p Node :why \"p holds of {{?3}}\") (relation q Node :why \"q holds of {{?3}}\") (relation f Node :why \"f holds of {{?3}}\") (relation hit Node :why \"{{?3}} is hit\")\n\
                  (p a) (q a)\n{src}\n"
             ),
         )
@@ -1396,7 +1396,7 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         std::fs::write(
             &file,
             format!(
-                "(relation holds Node :why \"{{?1}} holds\") (relation tag Node Node :why \"{{?1}} has the tag {{?2}}\")\n(holds a)\n\
+                "(relation holds Node :why \"{{?3}} holds\") (relation tag Node Node :why \"{{?3}} has the tag {{?4}}\")\n(holds a)\n\
                  (rule s () :match (holds ?x) :assert {assert} :why \"{{?x}} holds, so s concludes a fact that names {{?x}} as a relation\")\n"
             ),
         )
@@ -1504,7 +1504,7 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     let ok = scratch.path().join("ok.ein");
     std::fs::write(
         &ok,
-        "(relation p Node :why \"p holds of {?1}\") (relation q Node :why \"q holds of {?1}\") (relation is-a Node Node :why \"{?1} is a {?2}\")\n\
+        "(relation p Node :why \"p holds of {?3}\") (relation q Node :why \"q holds of {?3}\") (relation is-a Node Node :why \"{?3} is a {?4}\")\n\
          (p a) (is-a h1 House)\n\
          (rule typed () :match (and (p ?x) (is-a ?y House)) :assert (q ?y) :why \"p holds of {?x} and {?y} is a House, so q holds of {?y}\")\n\
          (rule every () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y) :why \"p holds of {?x} and {?y} is a name of the program, so q holds of {?y}\")\n\
@@ -2928,7 +2928,7 @@ fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
     let file = scratch.path().join("goal.ein");
     std::fs::write(
         &file,
-        "(relation p Node :why \"p holds of {?1}\") (relation q Node :why \"q holds of {?1}\")\n(p a)\n\
+        "(relation p Node :why \"p holds of {?3}\") (relation q Node :why \"q holds of {?3}\")\n(p a)\n\
          (query :goal (neq a b))\n\
          (query :goal (absent (q ?x)))\n\
          (query :goal (neq w ?y))\n",
@@ -3152,7 +3152,7 @@ fn eq_at_another_arity_is_refused_at_load() {
     let ok = scratch.path().join("ok.ein");
     std::fs::write(
         &ok,
-        "(relation p Node :why \"p holds of {?1}\") (relation q Node Node :why \"q holds of {?1} and {?2}\") (relation hit Node :why \"{?1} is hit\")\n\
+        "(relation p Node :why \"p holds of {?3}\") (relation q Node Node :why \"q holds of {?3} and {?4}\") (relation hit Node :why \"{?3} is hit\")\n\
          (p a) (q a b)\n\
          (rule two (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x) :why \"p holds of {?x} and {?R} holds of {?x} and {?x}, so {?x} is hit\")\n(two eq)\n\
          (rule one (?R) :match (?R ?x) :assert (hit ?x) :why \"{?R} holds of {?x}, so {?x} is hit\")\n(one q)\n",

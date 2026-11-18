@@ -26,8 +26,8 @@ use ein_ir::{Ast, Node};
 /// program: R is seven states — ∅, the four single seatings, the two full
 /// ones — and its maximal line the two full ones.
 const SEATS: &str = r#"
-(relation instance Thing Type :why "{?1} is an instance of {?2}")
-(relation seat Person Slot :why "{?1} sits in {?2}")
+(relation instance Thing Type :why "{?3} is an instance of {?4}")
+(relation seat Person Slot :why "{?3} sits in {?4}")
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)
 (rule one-per-person (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
@@ -41,7 +41,7 @@ const SEATS: &str = r#"
 
 /// A program whose root is dead: R is empty, every node dead.
 const DEAD: &str = r#"
-(relation p T :why "p holds of {?1}")
+(relation p T :why "p holds of {?3}")
 (rule no () :match (p A) :assert (false) :why "p holds of A, which cannot be")
 (p A)
 "#;
@@ -286,8 +286,8 @@ fn a_decided_single_decides_a_claim_over_all_of_r() {
     // One guest who must sit, one seat: ∅ owes, and R is the one seating.
     const ONE: &str = r#"
 (import std.algebra :symbols (total-owed))
-(relation is-a T T :why "{?1} is a {?2}")
-(relation seat Person Slot :why "{?1} sits in {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation seat Person Slot :why "{?3} sits in {?4}")
 (is-a Ann Person) (is-a S1 Slot)
 (total-owed seat is-a)
 (hrule guess (?p ?s) :match (is-a ?p Person) :assert (seat ?p ?s) :why "guess that {?p} sits in {?s}")
@@ -347,7 +347,7 @@ fn an_exhausted_find_decides_its_part() {
 /// person in the first place.
 #[test]
 fn rendering_agrees_with_the_fact_dump() {
-    let src = "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(relation q Thing :why \"q holds of {?1}\")\n\
+    let src = "(relation p Thing Place :why \"p holds of {?3} and {?4}\")\n(relation q Thing :why \"q holds of {?3}\")\n\
                (p A H1)\n(p A 42)\n(q B)\n(not (p A H2))\n";
     let mut ast = Ast::new();
     let mut terms = Terms::new();

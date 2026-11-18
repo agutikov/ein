@@ -34,8 +34,8 @@
 ;;;
 ;;;
 
-(relation p T T :why "p holds of {?1} and {?2}")
-(relation q T T :why "q holds of {?1} and {?2}")
+(relation p T T :why "p holds of {?3} and {?4}")
+(relation q T T :why "q holds of {?3} and {?4}")
 
 (p A B)
 

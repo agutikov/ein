@@ -117,8 +117,8 @@ fn every_hrule_reads_the_state_it_was_asked_about() {
     let file = scratch.path().join("two.ein");
     std::fs::write(
         &file,
-        "(relation paid Guest :why \"{?1} has paid\")\n\
-         (relation owes Guest :why \"{?1} owes\")\n\
+        "(relation paid Guest :why \"{?3} has paid\")\n\
+         (relation owes Guest :why \"{?3} owes\")\n\
          (is-a Ann Guest) (is-a Bob Guest)\n\
          (not (paid Bob))\n\
          (hrule suppose () :match (and (is-a ?g Guest) (absent (not (paid ?g)))) \

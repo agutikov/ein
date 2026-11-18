@@ -22,7 +22,7 @@
 ;;;
 ;;;
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (rule r ()
   :match (p ?x)

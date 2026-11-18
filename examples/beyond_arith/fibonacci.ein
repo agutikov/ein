@@ -6,12 +6,12 @@
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation fib-to Number :why "asked: the Fibonacci numbers up to F({?1})")
-(relation fb Number Number Number Number :why "on the way to F({?1}): F({?2}) is {?3}, and the next is {?4}")
-(relation fb-at Number Number Number Number :why "is {?2} below {?1}?")
-(relation fb-sum Number Number Number :why "the number after {?3}, at index {?2}")
-(relation fb-idx Number Number Number :why "the index after, for {?2} and {?3}")
-(relation fib-of Number Number :why "F({?1}) = {?2}")
+(relation fib-to Number :why "asked: the Fibonacci numbers up to F({?3})")
+(relation fb Number Number Number Number :why "on the way to F({?3}): F({?4}) is {?5}, and the next is {?6}")
+(relation fb-at Number Number Number Number :why "is {?4} below {?3}?")
+(relation fb-sum Number Number Number :why "the number after {?5}, at index {?4}")
+(relation fb-idx Number Number Number :why "the index after, for {?4} and {?5}")
+(relation fib-of Number Number :why "F({?3}) = {?4}")
 (__closed__ fib-to) (__closed__ fb) (__closed__ fb-at) (__closed__ fb-sum) (__closed__ fb-idx) (__closed__ fib-of)
 
 (fib-to (n (n z 3) 0))

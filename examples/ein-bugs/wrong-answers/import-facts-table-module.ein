@@ -7,10 +7,10 @@
 ;;; is a digit and a carry out. `add2` answers a request `(add …)` over
 ;;; two-digit numbers with a `(sum-of …)`, column by column.
 
-(relation fa Digit Digit Digit Digit Digit :why "{?1} + {?2} + carry {?3} is digit {?4}, carry {?5}")
-(relation num2 Digit Digit :why "the number {?1}{?2}")
-(relation add Number Number :why "asked: {?1} + {?2}")
-(relation sum-of Number Number Number :why "{?1} + {?2} = {?3}")
+(relation fa Digit Digit Digit Digit Digit :why "{?3} + {?4} + carry {?5} is digit {?6}, carry {?7}")
+(relation num2 Digit Digit :why "the number {?3}{?4}")
+(relation add Number Number :why "asked: {?3} + {?4}")
+(relation sum-of Number Number Number :why "{?3} + {?4} = {?5}")
 
 (fa 9 1 0 0 1)
 (fa 0 0 1 1 0)

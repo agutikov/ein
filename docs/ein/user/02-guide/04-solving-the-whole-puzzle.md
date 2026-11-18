@@ -13,11 +13,11 @@ pieces from this guide, in layers:
 (import std.algebra   :symbols (symmetric transitive includes))   ; the library logic
 (import std.bijection :symbols (bijective-setup typecheck-setup))
 
-(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the relations, their slots labelled
-(relation color-loc  Color       House :why "{?2} is painted {?1}")
-(relation drink-loc  Drink       House :why "{?1} is drunk in {?2}")
-(relation smoke-loc  Cigarette   House :why "{?1} is smoked in {?2}")
-(relation pet-loc    Pet         House :why "the {?1} is kept in {?2}")
+(relation nation-loc Nationality House :why "the {?3} lives in {?4}")   ; the relations, their slots labelled
+(relation color-loc  Color       House :why "{?4} is painted {?3}")
+(relation drink-loc  Drink       House :why "{?3} is drunk in {?4}")
+(relation smoke-loc  Cigarette   House :why "{?3} is smoked in {?4}")
+(relation pet-loc    Pet         House :why "the {?3} is kept in {?4}")
 ;; … right-of, next-to, is-a and is-a* likewise
 
 (symmetric next-to) (transitive is-a*)              ; activate the properties

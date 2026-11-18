@@ -22,10 +22,10 @@
 
 (import std.macro :symbols (forall))
 
-(relation person  Person       :why "{?1} is a person")
-(relation think   Person Claim :why "{?1} thinks that {?2}")
-(relation says    Person Claim :why "{?1} says that {?2}")
-(relation muddled Person       :why "{?1} contradicts themself")
+(relation person  Person       :why "{?3} is a person")
+(relation think   Person Claim :why "{?3} thinks that {?4}")
+(relation says    Person Claim :why "{?3} says that {?4}")
+(relation muddled Person       :why "{?3} contradicts themself")
 
 (person Ann)
 (person Bob)

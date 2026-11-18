@@ -87,10 +87,10 @@ the rule that derived it, with the origin it had, and **it reads no other file**
 ```lisp
 ;;; ein-saved/1 — the program and every module it imports, each as written, and the choices made: this file reads no other.
 (program
-(relation item Thing :why "{?1} is an item")
-(relation bad Thing :why "{?1} is bad")
-(relation note Fact :why "a note says {?1}")
-(relation flagged Thing :why "{?1} is flagged")
+(relation item Thing :why "{?3} is an item")
+(relation bad Thing :why "{?3} is bad")
+(relation note Fact :why "a note says {?3}")
+(relation flagged Thing :why "{?3} is flagged")
 
 (item a)
 

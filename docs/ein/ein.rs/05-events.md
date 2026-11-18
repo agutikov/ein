@@ -251,9 +251,9 @@ is, in order:
 A program with one rule, one hrule and two candidates, small enough to follow every line of:
 
 ```lisp
-(relation person Person      :why "{?1} is a person")
-(relation drink  Drink       :why "{?1} is a drink")
-(relation likes  Person Drink :why "{?1} likes {?2}")
+(relation person Person      :why "{?3} is a person")
+(relation drink  Drink       :why "{?3} is a drink")
+(relation likes  Person Drink :why "{?3} likes {?4}")
 
 (person Ann)
 (drink Tea) (drink Coffee)

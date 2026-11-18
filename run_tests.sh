@@ -798,7 +798,7 @@ if [[ "${CHECKS}" == 1 ]]; then
     python3 "${SCRIPT_DIR}/utils/check_gate_steps.py"
 
     # The process tools that copy a list of the engine's (the editor grammar,
-    # the natural-language census, the review driver) against the engine.
+    # the review driver) against the engine.
     step "utils/check_tool_mirrors.py"
     python3 "${SCRIPT_DIR}/utils/check_tool_mirrors.py"
 

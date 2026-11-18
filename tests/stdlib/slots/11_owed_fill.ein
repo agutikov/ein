@@ -34,9 +34,9 @@
 
 (import std.slots :symbols (slot-owed-fill))
 
-(relation type     T T :why "{?1} is a subtype of {?2}")
-(relation instance T T :why "{?1} is an instance of {?2}")
-(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation type     T T :why "{?3} is a subtype of {?4}")
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
 
 (slot-owed-fill co-loc instance type Attribute Seat)
 

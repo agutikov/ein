@@ -179,7 +179,7 @@ mod tests {
             let mut ast = Ast::new();
             let mut terms = Terms::new();
             let src = format!(
-                "(relation p T :why \"p holds of {{?1}}\") (relation q T :why \"q holds of {{?1}}\") (relation r T T :why \"r holds of {{?1}} and {{?2}}\")\n(p a) (p b) (q b) (r a a)\n\
+                "(relation p T :why \"p holds of {{?3}}\") (relation q T :why \"q holds of {{?3}}\") (relation r T T :why \"r holds of {{?3}} and {{?4}}\")\n(p a) (p b) (q b) (r a a)\n\
                  (query :goal {goal})\n"
             );
             let forms = parse(&mut ast, &src, Some("<test>")).expect("parses");

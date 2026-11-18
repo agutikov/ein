@@ -28,9 +28,9 @@
 ;;; beside the `:source` of the given facts it rests on. The claim on
 ;;; `(solve …)` holds (`ein test`, exit 0).
 
-(relation person Person :why "{?1} — жилец")
-(relation house House :why "{?1} — дом")
-(relation lives Person House :why "{?1} живёт в доме {?2}")
+(relation person Person :why "{?3} — жилец")
+(relation house House :why "{?3} — дом")
+(relation lives Person House :why "{?3} живёт в доме {?4}")
 
 (person Anna) (person Boris) (person Vera)
 (house H1) (house H2) (house H3)

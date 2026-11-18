@@ -57,7 +57,7 @@ fact, the sum by a rule that reads the product, and a third rule reads both:
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation total-is Number :why "the bill comes to {?1}")
+(relation total-is Number :why "the bill comes to {?3}")
 
 (mul (n (n z 1) 2) (n z 3))        ; 12 × 3
 
@@ -168,9 +168,9 @@ premise. The tag is a fact of the caller's own relation:
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation double  Number        :why "twice {?1} is wanted")
-(relation twice   Number        :why "the call that doubles {?1}")
-(relation doubled Number Number :why "twice {?1} is {?2}")
+(relation double  Number        :why "twice {?3} is wanted")
+(relation twice   Number        :why "the call that doubles {?3}")
+(relation doubled Number Number :why "twice {?3} is {?4}")
 
 (double (n (n z 2) 6))             ; 26
 

@@ -17,9 +17,9 @@
 (import std.math.arith :symbols (z))
 
 (relation reading-of Word Reading
-  :why "{?2} is a reading of the word {?1} that the theory holds")
+  :why "{?4} is a reading of the word {?3} that the theory holds")
 (relation reads-as Word Reading
-  :why "the word {?1} is read as {?2}")
+  :why "the word {?3} is read as {?4}")
 (relation whole-only
   :why "need, read as whole-only: count the containers that are filled, and leave the rest unpacked")
 (relation pack-all
@@ -63,7 +63,7 @@
   :why    "{?f} + (n z 1) = {?s}: {?s} {?c} hold everything, the last one part full, and no fewer do")
 
 (relation readings-rule Rule
-  :why "{?1} is a rule of readings")
+  :why "{?3} is a rule of readings")
 (readings-rule readings)
 (rule readings ()
   :match  ()

@@ -329,10 +329,10 @@ class Gen:
             f.append("(import std.algebra :symbols (symmetric transitive))")
         for rel in self.bins:
             self.r.random()  # the draw that decided a :why, kept for the stream
-            f.append(f'(relation {rel} T T :why "{rel} holds of {{?1}} and {{?2}}")')
+            f.append(f'(relation {rel} T T :why "{rel} holds of {{?3}} and {{?4}}")')
         for uni in self.unis:
-            f.append(f'(relation {uni} T :why "{uni} holds of {{?1}}")')
-        f.append('(relation is-a T T :why "{?1} is a {?2}")')
+            f.append(f'(relation {uni} T :why "{uni} holds of {{?3}}")')
+        f.append('(relation is-a T T :why "{?3} is a {?4}")')
         for o in self.objs:
             f.append(f"(is-a {o} T)")
         for i in range(self.r.randint(2, 6)):

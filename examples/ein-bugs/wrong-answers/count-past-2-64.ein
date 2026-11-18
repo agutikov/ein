@@ -31,7 +31,7 @@
 ;;;
 ;;;
 
-(relation chosen Thing :why "{?1} is chosen")
+(relation chosen Thing :why "{?3} is chosen")
 
 (rule all ()
   :match  (and (chosen ?x) (item ?y))

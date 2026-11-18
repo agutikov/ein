@@ -56,9 +56,9 @@ The whole program; `ein solve` answers it as written:
   :assert (?r ?other ?inst)
   :why    "{?inst} is a {?t}, so {?inst} inherits {?r}'s right slot from {?t}.")
 
-(relation is-a      T     T     :why "{?1} is a {?2}")
-(relation can-drink Human Drink :why "{?1} can drink {?2}")
-(relation drinks    Human Drink :why "{?1} drinks {?2}")
+(relation is-a      T     T     :why "{?3} is a {?4}")
+(relation can-drink Human Drink :why "{?3} can drink {?4}")
+(relation drinks    Human Drink :why "{?3} drinks {?4}")
 
 (is-a Jack   Human)                      ; (3)
 (is-a Coffee Drink)                      ; (2)
@@ -200,16 +200,16 @@ jack.ein --trace out.md` writes the derivation step by step, each step's `:why` 
 ### Step 1 — `inherit-rel-lhs`
 > Jack is a Human, so Jack inherits can-drink's left slot from Human.
 Premises: `can-drink(Human, Drink)`, `is-a(Jack, Human)`
-Derives `can-drink(Jack, Drink)` — Jack can drink Drink
+Derives `can-drink(Jack, Drink)`.
 …
 ### Step 3 — `inherit-rel-rhs`
 > Coffee is a Drink, so Coffee inherits can-drink's right slot from Drink.
 Premises: `can-drink(Jack, Drink)`, `is-a(Coffee, Drink)`
-Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
+Derives `can-drink(Jack, Coffee)`.
 ### Step 4 — `inherit-rel-lhs`
 > Jack is a Human, so Jack inherits can-drink's left slot from Human.
 Premises: `can-drink(Human, Coffee)`, `is-a(Jack, Human)`
-Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
+Derives `can-drink(Jack, Coffee)`.
 ```
 
 ## What it leaves out
@@ -218,7 +218,7 @@ Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
   such name in one name, `T`, so that each has an `is-a` fact of its own:
 
   ```lisp
-  (relation is-a T T :why "{?1} is a {?2}")
+  (relation is-a T T :why "{?3} is a {?4}")
   (is-a Human  T)
   (is-a Drink  T)
   (is-a Jack   Human)

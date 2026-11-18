@@ -48,10 +48,10 @@
             symmetric-is-self-converse self-converse-is-symmetric
             converse-pair-symmetric))
 
-(relation n Node Node :why "{?1} and {?2} are n-linked")
-(relation m Node Node :why "{?1} and {?2} are m-linked")
-(relation p Node Node :why "{?1} is p-linked to {?2}")
-(relation q Node Node :why "{?1} is q-linked to {?2}")
+(relation n Node Node :why "{?3} and {?4} are n-linked")
+(relation m Node Node :why "{?3} and {?4} are m-linked")
+(relation p Node Node :why "{?3} is p-linked to {?4}")
+(relation q Node Node :why "{?3} is q-linked to {?4}")
 
 (symmetric n)          ; ⟹ (converse n n)
 (converse  m m)        ; ⟹ (symmetric m)

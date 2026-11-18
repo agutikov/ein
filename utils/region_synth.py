@@ -303,10 +303,10 @@ def program(spec: dict) -> str:
             "",
             # Every declaration carries a `:why` since M1f S1f.5.14's
             # T1f.5.14.7, when the loader began to require one (Q-M1f.63).
-            '(relation h T :why "h holds of {?1}")',
-            '(relation slot T :why "{?1} is a slot, a candidate for h")',
-            '(relation world T :why "{?1} is the world")',
-            '(relation need T T :why "h holding of {?2} pays debt {?1}")',
+            '(relation h T :why "h holds of {?3}")',
+            '(relation slot T :why "{?3} is a slot, a candidate for h")',
+            '(relation world T :why "{?3} is the world")',
+            '(relation need T T :why "h holding of {?4} pays debt {?3}")',
             "",
             "(world W)",
             "(" + ") (".join(f"slot {c}" for c in cands) + ")",

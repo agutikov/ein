@@ -48,8 +48,8 @@ fn ein(args: &[&str]) -> Run {
 /// only by being passed to
 /// `functional`, and `(says (paid Bob))` holds a statement. No candidate
 /// unless a program's `(solve …)` says otherwise.
-const HEAD: &str = "(relation paid Guest :why \"{?1} has paid\")\n\
-     (relation says Guest :why \"{?1} is said\")\n\
+const HEAD: &str = "(relation paid Guest :why \"{?3} has paid\")\n\
+     (relation says Guest :why \"{?3} is said\")\n\
      (macro settled (?g) (paid ?g) :why \"{?g} has settled\")\n\
      (macro itself (?x) ?x :why \"{?x} itself\")\n\
      (macro lone (?x) (eq ?x) :why \"{?x} alone\")\n\
@@ -282,7 +282,7 @@ fn a_goal_over_is_a_in_a_program_that_writes_none_is_refused() {
     let file = scratch.path().join("no-is-a.ein");
     std::fs::write(
         &file,
-        "(relation paid Guest :why \"{?1} has paid\")\n(paid Ann)\n\
+        "(relation paid Guest :why \"{?3} has paid\")\n(paid Ann)\n\
          (query :goal (is-a ?g Guest))\n",
     )
     .expect("written");
@@ -301,7 +301,7 @@ fn a_goals_relation_is_refused_at_its_pattern() {
     let file = scratch.path().join("placed.ein");
     std::fs::write(
         &file,
-        "(relation paid Guest :why \"{?1} has paid\")\n(paid Ann)\n\
+        "(relation paid Guest :why \"{?3} has paid\")\n(paid Ann)\n\
          (query :goal (and (paid ?g)\n                  (absent (payed ?g))))\n",
     )
     .expect("written");
@@ -520,7 +520,7 @@ fn a_goal_over_a_relation_of_the_program_loads() {
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional injective))\n\
-         (relation r A B :why \"{?1} r {?2}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
+         (relation r A B :why \"{?3} r {?4}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
          (query :goal (injective ?R))\n"
             .to_string(),
     ));

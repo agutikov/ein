@@ -32,9 +32,9 @@
   :assert (undefeated ?p)
   :why    "{?p} beats every other player ⇒ undefeated")
 
-(relation player T :why "{?1} is a player")
-(relation beats  T T :why "{?1} beats {?2}")
-(relation undefeated T :why "{?1} is undefeated")
+(relation player T :why "{?3} is a player")
+(relation beats  T T :why "{?3} beats {?4}")
+(relation undefeated T :why "{?3} is undefeated")
 
 (player Alice)
 (player Bob)

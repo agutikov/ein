@@ -26,7 +26,7 @@
 
 (import std.math.digits :symbols (fa __closed__))
 
-(relation column Digit Digit Digit :why "a column claims that {?1} + {?2} is the digit {?3}")
+(relation column Digit Digit Digit :why "a column claims that {?3} + {?4} is the digit {?5}")
 
 (column 7 5 2)   ; agrees with the table: the rule is silent on it
 (column 7 5 3)   ; does not

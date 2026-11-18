@@ -26,11 +26,11 @@
 ;;; object. The dunder is still a name of the program; the enumerator leaves
 ;;; the kernel's dunder out by name now, and the answer is the one above.
 
-(relation thing Thing :why "{?1} is a thing")
+(relation thing Thing :why "{?3} is a thing")
 (thing a)
 (rule lift (?P ?Q) :match (?P ?r) :assert (?Q ?r)
   :why "{?r} is {?P}, so it is {?Q}")
 (lift complete __closed__)
 (complete thing)
-(relation total Number :why "the total is {?1}")
+(relation total Number :why "the total is {?3}")
 (query :goal (total ?x))

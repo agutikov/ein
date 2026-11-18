@@ -44,9 +44,9 @@
 (import std.algebra :symbols (total surjective))
 (import std.macro   :symbols (forall unknown))
 
-(relation is-a      T T          :why "{?1} is a {?2}")
-(relation likes     Person Food  :why "{?1} likes {?2}")
-(relation undecided Person Food  :why "whether {?1} likes {?2} is still open")
+(relation is-a      T T          :why "{?3} is a {?4}")
+(relation likes     Person Food  :why "{?3} likes {?4}")
+(relation undecided Person Food  :why "whether {?3} likes {?4} is still open")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)  (is-a Stew Food)

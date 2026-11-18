@@ -56,35 +56,35 @@ def tables() -> list[tuple[str, str, str, str, list[list[tuple]]]]:
     adj = [[(k, k + 1) for k in range(10)]]
     return [
         ("fa", "Digit Digit Digit Digit Digit",
-         "{?1} + {?2} + carry {?3} is digit {?4}, carry {?5}",
+         "{?3} + {?4} + carry {?5} is digit {?6}, carry {?7}",
          "The full adder. a + b + carry in (0 or 1) = 10 x carry out + digit.",
          fa),
         ("fs", "Digit Digit Digit Digit Digit",
-         "{?1} - {?2} - borrow {?3} is digit {?4}, borrow {?5}",
+         "{?3} - {?4} - borrow {?5} is digit {?6}, borrow {?7}",
          "The full subtractor. a - b - borrow in (0 or 1) = digit - 10 x borrow out.",
          fs),
         ("md", "Digit Digit Digit Digit Digit",
-         "{?1} x {?2} + carry {?3} is digit {?4}, carry {?5}",
+         "{?3} x {?4} + carry {?5} is digit {?6}, carry {?7}",
          "The digit multiplier. a x b + carry in (0 to 8) = 10 x carry out + digit;\n"
          ";; the carry out is at most 8, since 9 x 9 + 8 = 89.",
          md),
         ("cl", "Order Digit Digit Order",
-         "the order below is {?1}; {?2} against {?3} above it makes it {?4}",
+         "the order below is {?3}; {?4} against {?5} above it makes it {?6}",
          "The digit comparator. Two numbers are compared from the units up: the order\n"
          ";; of the digits below, then one digit of each; a differing digit overrules\n"
          ";; the order below it, equal digits keep it.",
          cl),
         ("nz", "Digit",
-         "{?1} is not zero",
+         "{?3} is not zero",
          "The digits that are not zero.",
          nz),
         ("mid", "Bound Bound Digit",
-         "between {?1} and {?2}, try {?3}",
+         "between {?3} and {?4}, try {?5}",
          "The bisection of 0 to 10. For two bounds at least two apart, the digit to\n"
          ";; try between them, (lo + hi) / 2 rounded down.",
          mid),
         ("adj", "Bound Bound",
-         "nothing lies between {?1} and {?2}",
+         "nothing lies between {?3} and {?4}",
          "The bounds with nothing between them: the bisection has ended.",
          adj),
     ]
@@ -143,20 +143,20 @@ def bits_tables() -> list[tuple[str, str, str, str, list[list[tuple]]]]:
     nz = [[(1,)]]
     return [
         ("bin-fa", "Bit Bit Bit Bit Bit",
-         "{?1} + {?2} + carry {?3} is bit {?4}, carry {?5}",
+         "{?3} + {?4} + carry {?5} is bit {?6}, carry {?7}",
          "The full adder. a + b + carry in = 2 x carry out + bit.",
          fa),
         ("bin-fs", "Bit Bit Bit Bit Bit",
-         "{?1} - {?2} - borrow {?3} is bit {?4}, borrow {?5}",
+         "{?3} - {?4} - borrow {?5} is bit {?6}, borrow {?7}",
          "The full subtractor. a - b - borrow in = bit - 2 x borrow out.",
          fs),
         ("bin-cl", "Order Bit Bit Order",
-         "the order below is {?1}; {?2} against {?3} above it makes it {?4}",
+         "the order below is {?3}; {?4} against {?5} above it makes it {?6}",
          "The bit comparator, a column at a time from the units: a differing bit\n"
          ";; overrules the order below it, equal bits keep it.",
          cl),
         ("bin-nz", "Bit",
-         "{?1} is not zero",
+         "{?3} is not zero",
          "The bit that is not zero.",
          nz),
     ]

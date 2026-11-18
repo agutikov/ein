@@ -25,10 +25,10 @@
 ;;; no registry, so the blind enumerator took it for an object. It leaves the
 ;;; kernel's dunder out by name now, and the answer is the one above.
 
-(relation digit Digit :why "{?1} is a digit")
+(relation digit Digit :why "{?3} is a digit")
 (digit 0) (digit 1) (digit 2) (digit 3) (digit 4)
 (digit 5) (digit 6) (digit 7) (digit 8) (digit 9)
 (rule digits-closed () :match () :assert (__closed__ digit)
   :why "the digits are all written: none is ever guessed")
-(relation total Number :why "the total is {?1}")
+(relation total Number :why "the total is {?3}")
 (query :goal (total ?x))

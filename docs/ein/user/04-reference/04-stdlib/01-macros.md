@@ -33,11 +33,11 @@ two must agree.
 ```lisp
 (import std.macro :symbols (forall))
 
-(relation group        Group       :why "{?1} is a group")
-(relation member       Thing Group :why "{?1} is in {?2}")
-(relation marked       Thing       :why "{?1} is marked")
-(relation complete     Group       :why "every member of {?1} is marked")
-(relation complete-raw Group       :why "every member of {?1} is marked (by the written-out expansion)")
+(relation group        Group       :why "{?3} is a group")
+(relation member       Thing Group :why "{?3} is in {?4}")
+(relation marked       Thing       :why "{?3} is marked")
+(relation complete     Group       :why "every member of {?3} is marked")
+(relation complete-raw Group       :why "every member of {?3} is marked (by the written-out expansion)")
 
 (group Team) (group Crew)
 (member Ann Team) (member Bob Team)
@@ -111,9 +111,9 @@ likes soup and is known not to like stew; nothing is said of Bob.
 ```lisp
 (import std.macro :symbols (unknown))
 
-(relation is-a       T T          :why "{?1} is a {?2}")
-(relation likes      Person Food  :why "{?1} likes {?2}")
-(relation state-open Person Food  :why "whether {?1} likes {?2} is undecided")
+(relation is-a       T T          :why "{?3} is a {?4}")
+(relation likes      Person Food  :why "{?3} likes {?4}")
+(relation state-open Person Food  :why "whether {?3} likes {?4} is undecided")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)  (is-a Stew Food)

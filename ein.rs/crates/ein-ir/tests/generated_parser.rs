@@ -494,7 +494,7 @@ fn a_saved_file_carries_a_program_at_the_limit() {
     let fact = |d: usize| format!("{}a{}", "(p ".repeat(d), ")".repeat(d));
     let at = fact(NESTING_LIMIT);
     let sources = ein_core::Sources {
-        program: format!("(relation p T :why \"{{?1}} is p\")\n{at}\n"),
+        program: format!("(relation p T :why \"{{?3}} is p\")\n{at}\n"),
         modules: Vec::new(),
     };
     let saved = ein_ir::saved::write(&sources, &[]);
@@ -515,7 +515,7 @@ fn a_saved_file_carries_a_program_at_the_limit() {
     );
     let sources = ein_core::Sources {
         program: format!(
-            "(relation p T :why \"{{?1}} is p\")\n{}\n",
+            "(relation p T :why \"{{?3}} is p\")\n{}\n",
             fact(NESTING_LIMIT + 1)
         ),
         modules: Vec::new(),

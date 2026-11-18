@@ -28,7 +28,7 @@
 ;;;
 ;;;
 
-(relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}") (relation hit Node :why "{?1} is a hit")
+(relation q Node :why "q holds of {?3}") (relation p Node :why "p holds of {?3}") (relation hit Node :why "{?3} is a hit")
 (q a)
 (rule r (?x) :match () :assert (hit ?x) :why "rule r is activated for {?x} and has no premise, so {?x} is a hit")
 (r a)

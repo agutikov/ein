@@ -9,7 +9,7 @@
 ;;; it is three conjuncts, and the right answer is `hrule-and.ein`'s: refused at
 ;;; load, an hrule's conclusion being one fact (Q-M1f.271).
 ;;;
-(relation p Thing :why "p {?1}")
-(relation q Thing :why "q {?1}")
-(relation r Thing :why "r {?1}")
+(relation p Thing :why "p {?3}")
+(relation q Thing :why "q {?3}")
+(relation r Thing :why "r {?3}")
 (hrule h () :match () :assert (and (and (p a) (q a)) (r a)) :why "propose p and q, and r, of a")

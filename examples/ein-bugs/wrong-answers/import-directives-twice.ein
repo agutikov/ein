@@ -24,6 +24,6 @@
 (import import-directives-module :as m)
 (import import-directives-module :as k)
 
-(relation chosen Thing :why "{?1} is chosen")
+(relation chosen Thing :why "{?3} is chosen")
 (__closed__ m.is-a)
 (__closed__ k.is-a)

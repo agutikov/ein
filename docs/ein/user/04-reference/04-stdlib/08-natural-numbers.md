@@ -246,8 +246,8 @@ A program that must not die compares its divisor with zero first, and derives it
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation share        Number Number :why "{?1} is shared among {?2}")
-(relation cannot-share Number        :why "{?1} cannot be shared among nobody")
+(relation share        Number Number :why "{?3} is shared among {?4}")
+(relation cannot-share Number        :why "{?3} cannot be shared among nobody")
 
 (share (n z 7) z)
 (share (n z 7) (n z 2))
@@ -398,7 +398,7 @@ A numeral a rule of the program's own hands to a request is checked as any opera
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation seed Thing :why "{?1} is a seed")
+(relation seed Thing :why "{?3} is a seed")
 (__closed__ seed)
 (seed z)
 (rule ask ()

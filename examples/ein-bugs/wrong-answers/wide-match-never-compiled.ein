@@ -19,8 +19,8 @@
 ;;; At `864b16ed`, release: every command answered, exit 0. Today `wide` is
 ;;; refused at load.
 
-(relation p Thing :why "{?1} is a p")
-(relation q Thing :why "{?1} is a q")
+(relation p Thing :why "{?3} is a p")
+(relation q Thing :why "{?3} is a q")
 (p k)
 (rule wide (?R)
   :match (and (?R ?v0) (?R ?v1) (?R ?v2) (?R ?v3) (?R ?v4) (?R ?v5) (?R ?v6) (?R ?v7)

@@ -20,11 +20,11 @@
 ;;;   builds an ever deeper term on each firing and its saturation does not
 ;;;   end; nothing refuses it today.
 
-(relation likes     Person Food  :why "{?1} likes {?2}")
-(relation witness   Person       :why "{?1} is a witness")
-(relation knows     Person Claim :why "{?1} knows that {?2}")
-(relation claims    Person Claim :why "{?1} claims that {?2}")
-(relation confirmed Claim        :why "that {?1} is confirmed")
+(relation likes     Person Food  :why "{?3} likes {?4}")
+(relation witness   Person       :why "{?3} is a witness")
+(relation knows     Person Claim :why "{?3} knows that {?4}")
+(relation claims    Person Claim :why "{?3} claims that {?4}")
+(relation confirmed Claim        :why "that {?3} is confirmed")
 
 (likes Dan Soup)
 (likes Eve Fish)

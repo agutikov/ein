@@ -44,7 +44,7 @@ Derives `functional-negative(color-loc)`.
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H1)).
 
-Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)`, `is-a(H1, House)` — from (1) Red is in house 2
+Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H1, House)` — from (1) Red is in house 2
 
 Derives `not(color-loc(Red, H1))`.
 
@@ -54,7 +54,7 @@ Derives `not(color-loc(Red, H1))`.
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H3)).
 
-Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)`, `is-a(H3, House)` — from (1) Red is in house 2
+Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H3, House)` — from (1) Red is in house 2
 
 Derives `not(color-loc(Red, H3))`.
 
@@ -64,7 +64,7 @@ Derives `not(color-loc(Red, H3))`.
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H1)).
 
-Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)`, `is-a(H1, House)` — from (2) Green is in house 3
+Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H1, House)` — from (2) Green is in house 3
 
 Derives `not(color-loc(Green, H1))`.
 
@@ -74,7 +74,7 @@ Derives `not(color-loc(Green, H1))`.
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H2)).
 
-Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)`, `is-a(H2, House)` — from (2) Green is in house 3
+Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H2, House)` — from (2) Green is in house 3
 
 Derives `not(color-loc(Green, H2))`.
 
@@ -104,7 +104,7 @@ Derives `injective-negative(color-loc)`.
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Green H2)).
 
-Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)`, `is-a(Green, Color)` — from (1) Red is in house 2
+Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Green, Color)` — from (1) Red is in house 2
 
 Derives `not(color-loc(Green, H2))`.
 
@@ -114,7 +114,7 @@ Derives `not(color-loc(Green, H2))`.
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Blue H2)).
 
-Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)`, `is-a(Blue, Color)` — from (1) Red is in house 2
+Premises: `color-loc(Red, H2)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Blue, Color)` — from (1) Red is in house 2
 
 Derives `not(color-loc(Blue, H2))`.
 
@@ -124,7 +124,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Red H3)).
 
-Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)`, `is-a(Red, Color)` — from (2) Green is in house 3
+Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Red, Color)` — from (2) Green is in house 3
 
 Derives `not(color-loc(Red, H3))`.
 
@@ -134,7 +134,7 @@ Derives `not(color-loc(Red, H3))`.
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Blue H3)).
 
-Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)`, `is-a(Blue, Color)` — from (2) Green is in house 3
+Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Blue, Color)` — from (2) Green is in house 3
 
 Derives `not(color-loc(Blue, H3))`.
 
@@ -154,9 +154,9 @@ Derives `range-elimination(color-loc)`.
 
 > every House except H2 excluded for Red → (color-loc Red H2).
 
-Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Red, Color)`, `is-a(H2, House)`
+Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Red, Color)`, `is-a(H2, House)`
 
-Derives `color-loc(Red, H2)` — H2 is painted Red
+Derives `color-loc(Red, H2)`.
 
 <dot>
 
@@ -164,9 +164,9 @@ Derives `color-loc(Red, H2)` — H2 is painted Red
 
 > every House except H3 excluded for Green → (color-loc Green H3).
 
-Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Green, Color)`, `is-a(H3, House)`
+Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Green, Color)`, `is-a(H3, House)`
 
-Derives `color-loc(Green, H3)` — H3 is painted Green
+Derives `color-loc(Green, H3)`.
 
 <dot>
 
@@ -174,9 +174,9 @@ Derives `color-loc(Green, H3)` — H3 is painted Green
 
 > every House except H1 excluded for Blue → (color-loc Blue H1).
 
-Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Blue, Color)`, `is-a(H1, House)`
+Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Blue, Color)`, `is-a(H1, House)`
 
-Derives `color-loc(Blue, H1)` — H1 is painted Blue
+Derives `color-loc(Blue, H1)`.
 
 <dot>
 
@@ -184,7 +184,7 @@ Derives `color-loc(Blue, H1)` — H1 is painted Blue
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H2)).
 
-Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)`, `is-a(H2, House)`
+Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H2, House)`
 
 Derives `not(color-loc(Blue, H2))`.
 
@@ -194,7 +194,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H3)).
 
-Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)`, `is-a(H3, House)`
+Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H3, House)`
 
 Derives `not(color-loc(Blue, H3))`.
 
@@ -204,7 +204,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Red H1)).
 
-Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)`, `is-a(Red, Color)`
+Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Red, Color)`
 
 Derives `not(color-loc(Red, H1))`.
 
@@ -214,7 +214,7 @@ Derives `not(color-loc(Red, H1))`.
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Green H1)).
 
-Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)`, `is-a(Green, Color)`
+Premises: `color-loc(Blue, H1)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(Green, Color)`
 
 Derives `not(color-loc(Green, H1))`.
 
@@ -224,9 +224,9 @@ Derives `not(color-loc(Green, H1))`.
 
 > every Color except Blue excluded for H1 → (color-loc Blue H1).
 
-Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H1, House)`, `is-a(Blue, Color)`
+Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H1, House)`, `is-a(Blue, Color)`
 
-Derives `color-loc(Blue, H1)` — H1 is painted Blue
+Derives `color-loc(Blue, H1)`.
 
 <dot>
 
@@ -234,9 +234,9 @@ Derives `color-loc(Blue, H1)` — H1 is painted Blue
 
 > every Color except Red excluded for H2 → (color-loc Red H2).
 
-Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H2, House)`, `is-a(Red, Color)`
+Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H2, House)`, `is-a(Red, Color)`
 
-Derives `color-loc(Red, H2)` — H2 is painted Red
+Derives `color-loc(Red, H2)`.
 
 <dot>
 
@@ -244,9 +244,9 @@ Derives `color-loc(Red, H2)` — H2 is painted Red
 
 > every Color except Green excluded for H3 → (color-loc Green H3).
 
-Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H3, House)`, `is-a(Green, Color)`
+Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)` — House is painted Color, `is-a(H3, House)`, `is-a(Green, Color)`
 
-Derives `color-loc(Green, H3)` — H3 is painted Green
+Derives `color-loc(Green, H3)`.
 
 <dot>
 

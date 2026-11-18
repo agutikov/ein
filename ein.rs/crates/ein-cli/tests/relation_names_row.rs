@@ -21,21 +21,21 @@ use ein_corpus::{Scratch, repo_root};
 /// or writes a fact of it, so it is an object, and `(tasty liquid)` a
 /// candidate beside `(tasty Drink)` and `(tasty Tea)`.
 const DERIVED: &str = "\
-(relation is-a Thing Type :why \"{?1} is a {?2}\")
+(relation is-a Thing Type :why \"{?3} is a {?4}\")
 (is-a Tea Drink)
 (rule liquids () :match (is-a ?x Drink) :assert (liquid ?x) :why \"{?x} is a drink, so a liquid\")
-(relation tasty Thing :why \"{?1} is tasty\")
+(relation tasty Thing :why \"{?3} is tasty\")
 (solve :no-hypothesis (is-a))
 ";
 
 /// The same program with `liquid` declared, and scoped out as `is-a` is: a
 /// declared relation is no object.
 const DECLARED: &str = "\
-(relation is-a Thing Type :why \"{?1} is a {?2}\")
+(relation is-a Thing Type :why \"{?3} is a {?4}\")
 (is-a Tea Drink)
-(relation liquid Thing :why \"{?1} is a liquid\")
+(relation liquid Thing :why \"{?3} is a liquid\")
 (rule liquids () :match (is-a ?x Drink) :assert (liquid ?x) :why \"{?x} is a drink, so a liquid\")
-(relation tasty Thing :why \"{?1} is tasty\")
+(relation tasty Thing :why \"{?3} is tasty\")
 (solve :no-hypothesis (is-a liquid))
 ";
 

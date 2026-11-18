@@ -10,7 +10,7 @@
 
 (import std.algebra :symbols (asymmetric))
 
-(relation strictly-under Node Node :why "{?1} is strictly under {?2}")
+(relation strictly-under Node Node :why "{?3} is strictly under {?4}")
 
 (asymmetric strictly-under)
 

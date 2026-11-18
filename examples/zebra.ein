@@ -64,8 +64,8 @@
 ;;;   `:rule`/`:using` — DERIVED facts the engine produces at runtime.
 ;;;                    None at authoring time.
 ;;;
-;;; Every rule carries a `:why` template; every relation that reads as a
-;;; sentence carries a positional `:why` render template. Together with
+;;; Every rule carries a `:why` template; every relation carries a `:why`
+;;; that reads its own declaration, `{?3}` its first label. Together with
 ;;; the query's `:goal-text` that makes this file the NL ⇄ IR
 ;;; round-trip target, not just a fixture. See
 ;;; docs/ein/user/02-guide/06-zebra-walkthrough.md.
@@ -205,19 +205,20 @@
 ;; `(type Sub Super)` = Sub's parent type is Super;
 ;; `(instance Thing Type)` = Thing is an instance of Type.
 ;;
-;; The `:why` strings are positional render templates ({?1} = arg 0,
-;; {?2} = arg 1) used to translate a fact into text in the `ein solve`
-;; table's "rendered query facts" column and in `--trace`.
-(relation type       T T :why "{?1} is a subtype of {?2}")
-(relation instance   T T :why "{?1} is an instance of {?2}")
+;; Each `:why` reads its own declaration: `{?3}` and `{?4}` are the
+;; declaration's two labels, and `--trace` prints the sentence after the
+;; declaration where a rule reads it. A fact of the relation takes no text
+;; from it (Q-M1f.58).
+(relation type       T T :why "{?3} is a subtype of {?4}")
+(relation instance   T T :why "{?3} is an instance of {?4}")
 ;; `co-located`'s template is the honest limit of one generic link: the
-;; relation is symmetric and untyped, so it cannot know which argument is
-;; the house and cannot render "*Water is drunk in* House-1" the way
-;; zebra2's `drink-loc` does. The typed encoding carries more NL structure
+;; relation is symmetric and untyped, so its declaration reads "Attribute
+;; and Attribute are in the same house", where zebra2's `drink-loc` reads
+;; "Drink is drunk in House". The typed encoding carries more NL structure
 ;; in its signatures; this one carries more of it in its rules' `:why`.
-(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
-(relation right-of   Attribute Attribute :why "{?1}'s house is immediately right of {?2}'s")
-(relation next-to    Attribute Attribute :why "{?1}'s house is next to {?2}'s")
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation right-of   Attribute Attribute :why "{?3}'s house is immediately right of {?4}'s")
+(relation next-to    Attribute Attribute :why "{?3}'s house is next to {?4}'s")
 
 ;; ──── Property-application facts ───────────────────────────────────
 ;; IMPLICIT: the puzzle text never says "co-located is symmetric" —

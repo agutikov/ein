@@ -26,7 +26,7 @@ Derives `functional-negative(color-of)`.
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Green)).
 
-Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(Green, Color)` — from (1) H1 is Red
+Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Green, Color)` — from (1) H1 is Red
 
 Derives `not(color-of(H1, Green))`.
 
@@ -36,7 +36,7 @@ Derives `not(color-of(H1, Green))`.
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Blue)).
 
-Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(Blue, Color)` — from (1) H1 is Red
+Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Blue, Color)` — from (1) H1 is Red
 
 Derives `not(color-of(H1, Blue))`.
 
@@ -56,7 +56,7 @@ Derives `injective-negative(color-of)`.
 
 > color-of injective: (color-of H1 Red) ⟹ (not (color-of H2 Red)).
 
-Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(H2, House)` — from (1) H1 is Red
+Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H2, House)` — from (1) H1 is Red
 
 Derives `not(color-of(H2, Red))`.
 
@@ -66,7 +66,7 @@ Derives `not(color-of(H2, Red))`.
 
 > color-of injective: (color-of H1 Red) ⟹ (not (color-of H3 Red)).
 
-Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(H3, House)` — from (1) H1 is Red
+Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H3, House)` — from (1) H1 is Red
 
 Derives `not(color-of(H3, Red))`.
 
@@ -78,7 +78,7 @@ Derives `not(color-of(H3, Red))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H1, House)`, `is-a(Red, Color)`
 
-Derives `color-of(H1, Red)` — the colour of H1 is Red
+Derives `color-of(H1, Red)`.
 
 <dot>
 
@@ -90,7 +90,7 @@ Assuming **(color-of H2 Blue), (color-of H3 Green)**.
 
 > color-of functional: (color-of H2 Blue) ⟹ (not (color-of H2 Red)).
 
-Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
+Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Red, Color)`
 
 Derives `not(color-of(H2, Red))`.
 
@@ -100,7 +100,7 @@ Derives `not(color-of(H2, Red))`.
 
 > color-of functional: (color-of H2 Blue) ⟹ (not (color-of H2 Green)).
 
-Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)`, `is-a(Green, Color)`
+Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Green, Color)`
 
 Derives `not(color-of(H2, Green))`.
 
@@ -110,7 +110,7 @@ Derives `not(color-of(H2, Green))`.
 
 > color-of injective: (color-of H2 Blue) ⟹ (not (color-of H1 Blue)).
 
-Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
+Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H1, House)`
 
 Derives `not(color-of(H1, Blue))`.
 
@@ -120,7 +120,7 @@ Derives `not(color-of(H1, Blue))`.
 
 > color-of injective: (color-of H2 Blue) ⟹ (not (color-of H3 Blue)).
 
-Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)`, `is-a(H3, House)`
+Premises: `color-of(H2, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H3, House)`
 
 Derives `not(color-of(H3, Blue))`.
 
@@ -130,7 +130,7 @@ Derives `not(color-of(H3, Blue))`.
 
 > color-of functional: (color-of H3 Green) ⟹ (not (color-of H3 Red)).
 
-Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
+Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Red, Color)`
 
 Derives `not(color-of(H3, Red))`.
 
@@ -140,7 +140,7 @@ Derives `not(color-of(H3, Red))`.
 
 > color-of functional: (color-of H3 Green) ⟹ (not (color-of H3 Blue)).
 
-Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)`, `is-a(Blue, Color)`
+Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Blue, Color)`
 
 Derives `not(color-of(H3, Blue))`.
 
@@ -150,7 +150,7 @@ Derives `not(color-of(H3, Blue))`.
 
 > color-of injective: (color-of H3 Green) ⟹ (not (color-of H1 Green)).
 
-Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
+Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H1, House)`
 
 Derives `not(color-of(H1, Green))`.
 
@@ -160,7 +160,7 @@ Derives `not(color-of(H1, Green))`.
 
 > color-of injective: (color-of H3 Green) ⟹ (not (color-of H2 Green)).
 
-Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)`, `is-a(H2, House)`
+Premises: `color-of(H3, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H2, House)`
 
 Derives `not(color-of(H2, Green))`.
 
@@ -172,7 +172,7 @@ Derives `not(color-of(H2, Green))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H2, House)`, `is-a(Blue, Color)`
 
-Derives `color-of(H2, Blue)` — the colour of H2 is Blue
+Derives `color-of(H2, Blue)`.
 
 <dot>
 
@@ -182,7 +182,7 @@ Derives `color-of(H2, Blue)` — the colour of H2 is Blue
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H3, House)`, `is-a(Green, Color)`
 
-Derives `color-of(H3, Green)` — the colour of H3 is Green
+Derives `color-of(H3, Green)`.
 
 <dot>
 
@@ -194,7 +194,7 @@ Assuming **(color-of H2 Green), (color-of H3 Blue)**.
 
 > color-of functional: (color-of H2 Green) ⟹ (not (color-of H2 Red)).
 
-Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
+Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Red, Color)`
 
 Derives `not(color-of(H2, Red))`.
 
@@ -204,7 +204,7 @@ Derives `not(color-of(H2, Red))`.
 
 > color-of functional: (color-of H2 Green) ⟹ (not (color-of H2 Blue)).
 
-Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(Blue, Color)`
+Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Blue, Color)`
 
 Derives `not(color-of(H2, Blue))`.
 
@@ -214,7 +214,7 @@ Derives `not(color-of(H2, Blue))`.
 
 > color-of injective: (color-of H2 Green) ⟹ (not (color-of H1 Green)).
 
-Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
+Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H1, House)`
 
 Derives `not(color-of(H1, Green))`.
 
@@ -224,7 +224,7 @@ Derives `not(color-of(H1, Green))`.
 
 > color-of injective: (color-of H2 Green) ⟹ (not (color-of H3 Green)).
 
-Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(H3, House)`
+Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H3, House)`
 
 Derives `not(color-of(H3, Green))`.
 
@@ -234,7 +234,7 @@ Derives `not(color-of(H3, Green))`.
 
 > color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Red)).
 
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Red, Color)`
 
 Derives `not(color-of(H3, Red))`.
 
@@ -244,7 +244,7 @@ Derives `not(color-of(H3, Red))`.
 
 > color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Green)).
 
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Green, Color)`
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(Green, Color)`
 
 Derives `not(color-of(H3, Green))`.
 
@@ -254,7 +254,7 @@ Derives `not(color-of(H3, Green))`.
 
 > color-of injective: (color-of H3 Blue) ⟹ (not (color-of H1 Blue)).
 
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H1, House)`
 
 Derives `not(color-of(H1, Blue))`.
 
@@ -264,7 +264,7 @@ Derives `not(color-of(H1, Blue))`.
 
 > color-of injective: (color-of H3 Blue) ⟹ (not (color-of H2 Blue)).
 
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H2, House)`
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)` — the colour of House is Color, `is-a(H2, House)`
 
 Derives `not(color-of(H2, Blue))`.
 
@@ -276,7 +276,7 @@ Derives `not(color-of(H2, Blue))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H2, House)`, `is-a(Green, Color)`
 
-Derives `color-of(H2, Green)` — the colour of H2 is Green
+Derives `color-of(H2, Green)`.
 
 <dot>
 
@@ -286,6 +286,6 @@ Derives `color-of(H2, Green)` — the colour of H2 is Green
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H3, House)`, `is-a(Blue, Color)`
 
-Derives `color-of(H3, Blue)` — the colour of H3 is Blue
+Derives `color-of(H3, Blue)`.
 
 <dot>

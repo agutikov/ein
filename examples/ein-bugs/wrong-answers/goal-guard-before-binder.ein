@@ -24,7 +24,7 @@
 ;;; the claim is FAILED, exit 1 (`ein solve FILE` at `dc4c0bdc`, release and
 ;;; debug alike).
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (query :goal (and (neq a ?y) (p ?y))
   :expect (model))

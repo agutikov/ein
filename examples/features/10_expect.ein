@@ -26,8 +26,8 @@
 
 (import std.algebra :symbols (symmetric))
 
-(relation instance Thing Type :why "{?1} is an instance of {?2}")
-(relation next-to  Seat Seat :why "{?1} is next to {?2}")
+(relation instance Thing Type :why "{?3} is an instance of {?4}")
+(relation next-to  Seat Seat :why "{?3} is next to {?4}")
 
 (instance A Seat) (instance B Seat) (instance C Seat)
 

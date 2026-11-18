@@ -122,40 +122,40 @@ def theory(w: int) -> Theory:
     D = "Digit"
     X, Y = num("x"), num("y")
     x, y = lo("x"), lo("y")
-    digits = "".join("{?%d}" % i for i in range(1, w + 1))
+    digits = "".join("{?%d}" % i for i in range(3, w + 3))
 
     # ── the number, the protocol ───────────────────────────────────────────
     t.section("The number: " + f"{w} digits, the most significant first")
     t.rel("num#", " ".join([D] * w), f"the number written {digits}")
 
     t.section("The protocol: a request fact, answered by a result fact or by a flag")
-    t.rel("add#", f"{N} {N}", "asked: {?1} + {?2}")
-    t.rel("sum#-of", f"{N} {N} {N}", "{?1} + {?2} = {?3}")
-    t.rel("sub#", f"{N} {N}", "asked: {?1} - {?2}")
-    t.rel("diff#-of", f"{N} {N} {N} {N}", "{?1} - {?2} = {?3}, short by {?4}")
-    t.rel("cmp#", f"{N} {N}", "asked: {?1} compared with {?2}")
-    t.rel("cmp#-of", f"{N} {N} Order", "{?1} against {?2}: {?3}")
-    t.rel("mul#", f"{N} {N}", "asked: {?1} x {?2}")
-    t.rel("product#-of", f"{N} {N} {N}", "{?1} x {?2} = {?3}")
-    t.rel("div#", f"{N} {N}", "asked: {?1} divided by {?2}")
-    t.rel("quot#-of", f"{N} {N} {N} {N}", "{?1} divided by {?2} = {?3}, remainder {?4}")
-    t.rel("overflow", "Request", f"the answer to {{?1}} does not fit {w} digits")
-    t.rel("to#", "Nested", f"asked: {{?1}} as a number of {w} digits")
-    t.rel("as#", f"Nested {N}", f"{{?1}} is {{?2}} in {w} digits")
-    t.rel("big", "Nested", f"{{?1}} is written with more than {w} digits")
-    t.rel("from#", N, "asked: {?1} as a number of any length")
-    t.rel("of#", f"{N} Nested", "{?1} is {?2}")
+    t.rel("add#", f"{N} {N}", "asked: {?3} + {?4}")
+    t.rel("sum#-of", f"{N} {N} {N}", "{?3} + {?4} = {?5}")
+    t.rel("sub#", f"{N} {N}", "asked: {?3} - {?4}")
+    t.rel("diff#-of", f"{N} {N} {N} {N}", "{?3} - {?4} = {?5}, short by {?6}")
+    t.rel("cmp#", f"{N} {N}", "asked: {?3} compared with {?4}")
+    t.rel("cmp#-of", f"{N} {N} Order", "{?3} against {?4}: {?5}")
+    t.rel("mul#", f"{N} {N}", "asked: {?3} x {?4}")
+    t.rel("product#-of", f"{N} {N} {N}", "{?3} x {?4} = {?5}")
+    t.rel("div#", f"{N} {N}", "asked: {?3} divided by {?4}")
+    t.rel("quot#-of", f"{N} {N} {N} {N}", "{?3} divided by {?4} = {?5}, remainder {?6}")
+    t.rel("overflow", "Request", f"the answer to {{?3}} does not fit {w} digits")
+    t.rel("to#", "Nested", f"asked: {{?3}} as a number of {w} digits")
+    t.rel("as#", f"Nested {N}", f"{{?3}} is {{?4}} in {w} digits")
+    t.rel("big", "Nested", f"{{?3}} is written with more than {w} digits")
+    t.rel("from#", N, "asked: {?3} as a number of any length")
+    t.rel("of#", f"{N} Nested", "{?3} is {?4}")
 
     t.section("The circuit's own facts: the states of a product and of a quotient")
     t.rel("mul#-at", f"{N} {N} Step {N} {N}",
-          "multiplying {?1} by {?2}, {?3} digits to go: of the multiplier {?4} is left, and the sum so far is {?5}")
+          "multiplying {?3} by {?4}, {?5} digits to go: of the multiplier {?6} is left, and the sum so far is {?7}")
     t.rel("row#", " ".join([D] * (w + 1)),
-          "the multiple written " + "".join("{?%d}" % i for i in range(1, w + 2)))
+          "the multiple written " + "".join("{?%d}" % i for i in range(3, w + 4)))
     t.rel("multiples#", " ".join(["Row"] * 9),
-          "the divisor's multiples: {?1}, {?2}, {?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9}")
+          "the divisor's multiples: {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}, {?10} and {?11}")
     t.rel("div#-at", f"{N} {N} Multiples Step {N} {N} {N}",
-          "dividing {?1} by {?2}, {?4} digits to go: of the dividend {?5} is left, {?6} is left over, "
-          "and the quotient so far is {?7}")
+          "dividing {?3} by {?4}, {?6} digits to go: of the dividend {?7} is left, {?8} is left over, "
+          "and the quotient so far is {?9}")
 
     # ── addition ───────────────────────────────────────────────────────────
     t.section("Addition: one rule, a premise a column")
@@ -501,7 +501,7 @@ def render(w: int) -> str:
 ;; read; an import brings the whole theory whether or not a program lists the
 ;; entry (Q-M1f.240).
 (relation {rule_rel} Rule
-  :why "{{?1}} is a rule of std.math.{nm('num#')}")
+  :why "{{?3}} is a rule of std.math.{nm('num#')}")
 
 ;; The closing rule's own name, as a written fact. It is not what keeps
 ;; `{entry}` in a program inlined and tree-shaken, as the program a

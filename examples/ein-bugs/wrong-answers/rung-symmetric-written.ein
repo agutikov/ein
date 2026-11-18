@@ -10,8 +10,8 @@
 ;;; program with that rule written out are one program: they take one rung,
 ;;; one H and one R (`ein-cli/tests/import_invariance.rs`).
 
-(relation near Thing Thing :why "{?1} is near {?2}")
-(relation likes Thing Thing :why "{?1} likes {?2}")
+(relation near Thing Thing :why "{?3} is near {?4}")
+(relation likes Thing Thing :why "{?3} likes {?4}")
 (thing A) (thing B)
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

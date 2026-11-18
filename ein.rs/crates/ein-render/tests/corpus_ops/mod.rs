@@ -25,6 +25,37 @@ use std::sync::{Arc, Mutex, OnceLock};
 mod searches;
 pub use searches::{SWEEP_BUDGET, SWEEP_LIMIT, searches};
 
+/// One fact of a state, as the `states` op digests it: the one printer's
+/// text ([`Terms::fact_text`]) and its first recorded origin, `; source
+/// "…"`, `; rule r` or `; hypothesis N`, nothing for a fact recorded with
+/// none. The digest's own form: no surface of the binary prints a state's
+/// facts with their origins.
+fn state_fact(kb: &ein_core::Kb, terms: &Terms, f: ein_core::FactId) -> String {
+    use ein_core::ProvKind;
+    let text = terms.fact_text(f);
+    let origin = kb
+        .primary(f)
+        .map(|p| terms.provs.get(p))
+        .and_then(|p| match p.kind {
+            ProvKind::Source => p
+                .source
+                .map(|s| terms.sym(s))
+                .filter(|s| !s.is_empty())
+                .map(|s| format!("source {}", ein_core::text::quote(s))),
+            ProvKind::Rule => p
+                .rule
+                .map(|r| terms.sym(r))
+                .filter(|r| !r.is_empty())
+                .map(|r| format!("rule {}", ein_core::text::symbol(r))),
+            ProvKind::Hypothesis => Some(format!("hypothesis {}", p.branch.unwrap_or(0))),
+            ProvKind::Rejected => None,
+        });
+    match origin {
+        Some(o) => format!("{text} ; {o}\n"),
+        None => format!("{text}\n"),
+    }
+}
+
 /// Every observable surface the engine has. One op is one `(surface, mode)`
 /// pair.
 ///
@@ -629,7 +660,8 @@ fn region_op(
             // The state files, from the call the binary makes: each is the
             // program as read and the commitment, of which the commitment is
             // compared; and the state it loads to, each fact with its origin
-            // as a comment, read through the node function every route uses.
+            // ([`state_fact`]), read through the node function every route
+            // uses.
             let r = ein_infer::read_out::run(kb, terms, ast, &opts).map_err(|e| e.to_string())?;
             let scratch = ein_corpus::Scratch::new("ein-corpus-ops-states");
             let inputs = ein_render::dump::region_answer::Inputs {
@@ -658,7 +690,10 @@ fn region_op(
                             .filter(|&f| terms.facts.get(f).0 != relation)
                             .collect();
                         state.sort_by_cached_key(|&f| ein_infer::events::sexpr(terms, f));
-                        ein_render::dump::serialise::facts_to_ein_text(kb, terms, &state)
+                        state
+                            .iter()
+                            .map(|&f| state_fact(kb, terms, f))
+                            .collect::<String>()
                     })
                     .map_err(|e| e.to_string())?;
                 out.push_str(&format!("--- {name}\n(commit\n{commit}{state}"));

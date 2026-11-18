@@ -24,7 +24,7 @@
 ;;; Today N's core is `(q a) (seed a)`, in either build.
 ;;;
 
-(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}")
+(relation seed T :why "{?3} is a seed") (relation p T :why "p holds of {?3}") (relation q T :why "q holds of {?3}")
 
 (seed a)
 

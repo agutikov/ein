@@ -79,12 +79,12 @@ Read these before importing a relation-algebra module: they decide whether a rul
 ```lisp
 (import std.algebra :symbols (converse compose includes identity))
 
-(relation is-a        T T           :why "{?1} is a {?2}")
-(relation parent      Person Person :why "{?1} is a parent of {?2}")
-(relation child       Person Person :why "{?1} is a child of {?2}")
-(relation grandparent Person Person :why "{?1} is a grandparent of {?2}")
-(relation ancestor    Person Person :why "{?1} is an ancestor of {?2}")
-(relation same        Person Person :why "{?1} is {?2}")
+(relation is-a        T T           :why "{?3} is a {?4}")
+(relation parent      Person Person :why "{?3} is a parent of {?4}")
+(relation child       Person Person :why "{?3} is a child of {?4}")
+(relation grandparent Person Person :why "{?3} is a grandparent of {?4}")
+(relation ancestor    Person Person :why "{?3} is an ancestor of {?4}")
+(relation same        Person Person :why "{?3} is {?4}")
 
 (is-a Ann Person) (is-a Bob Person) (is-a Cid Person)
 
@@ -151,11 +151,11 @@ another:
 ```lisp
 (import std.algebra :symbols (imply1 imply2-fwd imply2-reverse))
 
-(relation cat     Animal        :why "{?1} is a cat")
-(relation pet     Animal        :why "{?1} is a pet")
-(relation feeds   Person Animal :why "{?1} feeds {?2}")
-(relation cares   Person Animal :why "{?1} cares for {?2}")
-(relation fed-by  Animal Person :why "{?1} is fed by {?2}")
+(relation cat     Animal        :why "{?3} is a cat")
+(relation pet     Animal        :why "{?3} is a pet")
+(relation feeds   Person Animal :why "{?3} feeds {?4}")
+(relation cares   Person Animal :why "{?3} cares for {?4}")
+(relation fed-by  Animal Person :why "{?3} is fed by {?4}")
 
 (imply1 cat pet)
 (imply2-fwd feeds cares)
@@ -205,12 +205,12 @@ another:
 ```lisp
 (import std.algebra :symbols (symmetric transitive meet difference))
 
-(relation linked T T :why "{?1} is linked to {?2}")
-(relation owns   T T :why "{?1} owns {?2}")
-(relation rents  T T :why "{?1} rents {?2}")
-(relation either T T :why "{?1} owns or rents {?2}")
-(relation shares T T :why "{?1} owns and rents {?2}")
-(relation only-owns T T :why "{?1} owns {?2} and does not rent it")
+(relation linked T T :why "{?3} is linked to {?4}")
+(relation owns   T T :why "{?3} owns {?4}")
+(relation rents  T T :why "{?3} rents {?4}")
+(relation either T T :why "{?3} owns or rents {?4}")
+(relation shares T T :why "{?3} owns and rents {?4}")
+(relation only-owns T T :why "{?3} owns {?4} and does not rent it")
 
 (symmetric linked)
 (transitive linked)
@@ -268,11 +268,11 @@ over a label `Node` with two members:
 ```lisp
 (import std.algebra :symbols (identity top complement))
 
-(relation instance Thing Type :why "{?1} is a {?2}")
-(relation edge     Node Node :why "{?1} is joined to {?2}")
-(relation loop     Node Node :why "{?1} has a self-loop to {?2}")   ; 1' on Node
-(relation full     Node Node :why "{?1} and {?2} are a pair in the full Node×Node rectangle")   ; 1 on Node×Node
-(relation gap      Node Node :why "{?1} is not joined to {?2}")   ; ¬edge on Node×Node
+(relation instance Thing Type :why "{?3} is a {?4}")
+(relation edge     Node Node :why "{?3} is joined to {?4}")
+(relation loop     Node Node :why "{?3} has a self-loop to {?4}")   ; 1' on Node
+(relation full     Node Node :why "{?3} and {?4} are a pair in the full Node×Node rectangle")   ; 1 on Node×Node
+(relation gap      Node Node :why "{?3} is not joined to {?4}")   ; ¬edge on Node×Node
 
 (instance A Node) (instance B Node)
 
@@ -337,8 +337,8 @@ A sits with B and is known not to sit with C:
 (import std.algebra :symbols (symmetric symmetric-negative-setup symmetric-negative))
 (import std.macro   :symbols (unknown))
 
-(relation sits-with Guest Guest :why "{?1} sits with {?2}")
-(relation undecided Guest Guest :why "whether {?1} sits with {?2} is still open")
+(relation sits-with Guest Guest :why "{?3} sits with {?4}")
+(relation undecided Guest Guest :why "whether {?3} sits with {?4} is still open")
 
 (symmetric sits-with)
 
@@ -376,7 +376,7 @@ mirror invented nothing between B and C.
 ```lisp
 (import std.algebra :symbols (difunctional))
 
-(relation plays Person Game :why "{?1} plays {?2}")
+(relation plays Person Game :why "{?3} plays {?4}")
 
 (difunctional plays)
 
@@ -428,10 +428,10 @@ them:
 ```lisp
 (import std.algebra :symbols (irreflexive antisymmetric asymmetric injective empty))
 
-(relation taller  Person Person :why "{?1} is taller than {?2}")
-(relation manages Person Person :why "{?1} manages {?2}")
-(relation badge   Person Badge  :why "{?1} carries {?2}")
-(relation banned  Person Thing  :why "{?1} is banned from {?2}")
+(relation taller  Person Person :why "{?3} is taller than {?4}")
+(relation manages Person Person :why "{?3} manages {?4}")
+(relation badge   Person Badge  :why "{?3} carries {?4}")
+(relation banned  Person Thing  :why "{?3} is banned from {?4}")
 
 (irreflexive taller)
 (asymmetric  manages)
@@ -461,7 +461,7 @@ A violation kills root, and the read-out names the facts that collide and the ru
 ```lisp
 (import std.algebra :symbols (functional))
 
-(relation assigned Task Worker :why "{?1} is assigned to {?2}")
+(relation assigned Task Worker :why "{?3} is assigned to {?4}")
 
 (functional assigned)
 
@@ -499,8 +499,8 @@ that never played refute it.
 ```lisp
 (import std.algebra :symbols (connex))
 
-(relation is-a  T T           :why "{?1} is a {?2}")
-(relation beats Team Team     :why "{?1} beats {?2}")
+(relation is-a  T T           :why "{?3} is a {?4}")
+(relation beats Team Team     :why "{?3} beats {?4}")
 
 (is-a Reds Team) (is-a Blues Team) (is-a Greens Team)
 
@@ -538,7 +538,7 @@ nothing until they are given a membership relation, `(total R isa)`.
 ```lisp
 (import std.algebra :symbols (functional injective total surjective))
 
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (bijective wears)
 
@@ -601,8 +601,8 @@ alone. Bob likes stew; nothing is said of Ann:
 ```lisp
 (import std.algebra :symbols (total-owed))
 
-(relation is-a  T T         :why "{?1} is a {?2}")
-(relation likes Person Food :why "{?1} likes {?2}")
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)  (is-a Stew Food)
@@ -649,8 +649,8 @@ An obligation is also what proposes candidates: where root owes, the search trie
 ```lisp
 (import std.algebra :symbols (total-owed functional))
 
-(relation is-a  T T         :why "{?1} is a {?2}")
-(relation likes Person Food :why "{?1} likes {?2}")
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)  (is-a Stew Food)
@@ -703,9 +703,9 @@ In [`tests/stdlib/algebra/16_converse_illtyped_dom.ein`](../../../../../tests/st
 ```lisp
 (import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 
-(relation is-a*    T T :why "{?1} is a subtype of {?2}")
-(relation owns     Person Pet   :why "{?1} owns {?2}")
-(relation owned-by Place  Person :why "{?1} is owned by {?2}")
+(relation is-a*    T T :why "{?3} is a subtype of {?4}")
+(relation owns     Person Pet   :why "{?3} owns {?4}")
+(relation owned-by Place  Person :why "{?3} is owned by {?4}")
 
 (converse owns owned-by)
 (converse-illtyped-dom owns owned-by is-a*)
@@ -747,7 +747,7 @@ activate the rules above. Every derivation back is a fact already present, so th
 ```lisp
 (import std.algebra :symbols (symmetric converse))
 
-(relation next-to House House :why "{?1} is next to {?2}")
+(relation next-to House House :why "{?3} is next to {?4}")
 
 (symmetric next-to)
 
@@ -786,10 +786,10 @@ of each and probes that nothing more was excluded:
 (import std.algebra :symbols (compose-negative-s compose-negative-r))
 (import std.macro   :symbols (unknown))
 
-(relation r         Node Node :why "{?1} steps to {?2}")
-(relation s         Node Node :why "{?1} s-steps to {?2}")
-(relation t         Node Node :why "{?1} steps to some node that s-steps to {?2}")   ; = r;s, and closed — that is the obligation
-(relation undecided Node Node :why "{?1}→{?2} is neither asserted nor denied")
+(relation r         Node Node :why "{?3} steps to {?4}")
+(relation s         Node Node :why "{?3} s-steps to {?4}")
+(relation t         Node Node :why "{?3} steps to some node that s-steps to {?4}")   ; = r;s, and closed — that is the obligation
+(relation undecided Node Node :why "{?3}→{?4} is neither asserted nor denied")
 
 (compose-negative-s r s t)
 (compose-negative-r r s t)
@@ -836,9 +836,9 @@ name, so a program writes both unlisted.
 (import std.algebra :symbols (converse))
 (import std.typing)
 
-(relation is-a*    T T           :why "{?1} is a kind of {?2}")
-(relation owns     Person Pet    :why "{?1} owns {?2}")
-(relation owned-by Animal Person :why "{?1} is owned by {?2}")
+(relation is-a*    T T           :why "{?3} is a kind of {?4}")
+(relation owns     Person Pet    :why "{?3} owns {?4}")
+(relation owned-by Animal Person :why "{?3} is owned by {?4}")
 
 (is-a* Pet Animal)
 
@@ -878,7 +878,7 @@ The reflexive closure:
 ```lisp
 (import std.typing)
 
-(relation is-a* T T :why "{?1} is a kind of {?2}")
+(relation is-a* T T :why "{?3} is a kind of {?4}")
 
 (reflexive is-a*)
 (is-a* Cat Animal)
@@ -916,8 +916,8 @@ are the facts of `wears` it does not state:
 ```lisp
 (import std.algebra :symbols (functional total))
 
-(relation is-a  T T          :why "{?1} is a {?2}")
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (is-a Ann Agent)  (is-a Bob Agent)
 (is-a Red Colour) (is-a Green Colour)

@@ -162,9 +162,9 @@ fn naming_a_dunder(universe: &[String]) -> Vec<&String> {
 
 /// A closed table beside an open `total`.
 const DIGITS: &str = "\
-(relation digit Digit :why \"{?1} is a digit\")
+(relation digit Digit :why \"{?3} is a digit\")
 (digit 0) (digit 1) (digit 2)
-(relation total Number :why \"the total is {?1}\")
+(relation total Number :why \"the total is {?3}\")
 ";
 
 /// Each pair: one program whose rule derives the dunder's fact, and the same
@@ -232,7 +232,7 @@ fn the_shipped_closing_rule_leaves_no_dunder_to_propose() {
     ));
     let closed = answered(&inline(
         "std.math.arith, total closed",
-        "(import std.math.arith)\n(relation total Number :why \"the total is {?1}\")\n\
+        "(import std.math.arith)\n(relation total Number :why \"the total is {?3}\")\n\
          (__closed__ total)",
     ));
     assert_eq!(

@@ -5,8 +5,8 @@
 
 (import std.elim :symbols (typecheck-arg-1))
 
-(relation is-a  T T        :why "{?1} is a {?2}")
-(relation holds Slot Value :why "{?1} holds {?2}")
+(relation is-a  T T        :why "{?3} is a {?4}")
+(relation holds Slot Value :why "{?3} holds {?4}")
 
 (is-a S1 Slot)
 (is-a V1 Value)

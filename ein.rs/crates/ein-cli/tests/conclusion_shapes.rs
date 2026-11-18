@@ -31,9 +31,9 @@ use ein_corpus::{Scratch, repo_root};
 
 /// Every program's declarations: four relations, each closed, so nothing is
 /// guessed and R is root's alone.
-const DECLS: &str = "(relation p Thing :why \"p {?1}\")\n\
-                     (relation q Thing :why \"q {?1}\")\n\
-                     (relation r Thing :why \"r {?1}\")\n\
+const DECLS: &str = "(relation p Thing :why \"p {?3}\")\n\
+                     (relation q Thing :why \"q {?3}\")\n\
+                     (relation r Thing :why \"r {?3}\")\n\
                      (__closed__ p) (__closed__ q) (__closed__ r)\n";
 
 /// One query per relation, so the read-out prints what root holds.
@@ -204,8 +204,8 @@ fn every_shape_a_rule_concludes() {
 /// derives nothing, and a state that owes it is out of R.
 #[test]
 fn an_obligation_concludes_nothing() {
-    let text = "(relation item Node :why \"{?1} is an item\")\n\
-                (relation tag Node Node :why \"{?1} has the tag {?2}\")\n\
+    let text = "(relation item Node :why \"{?3} is an item\")\n\
+                (relation tag Node Node :why \"{?3} has the tag {?4}\")\n\
                 (item a)\n\
                 (rule owed (?R) :match (and (relation ?R ?A ?B) (item ?a) (absent (?R ?a ?b))) \
                  :assert (open ?R) :why \"{?a} has no {?R} yet\")\n\

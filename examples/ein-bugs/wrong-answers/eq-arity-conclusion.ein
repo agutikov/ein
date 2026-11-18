@@ -32,7 +32,7 @@
 ;;; the record of the answer it replaced.
 ;;;
 
-(relation p Node :why "{?1} is a p")
+(relation p Node :why "{?3} is a p")
 (p a)
 (hit z)
 (rule r (?R)

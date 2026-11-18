@@ -14,7 +14,7 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation u T :why "{?1} is u")
+(relation u T :why "{?3} is u")
 (u a)
 (u a :source "(1)")
 (quad a b c d)

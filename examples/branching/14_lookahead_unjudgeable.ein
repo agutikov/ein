@@ -61,10 +61,10 @@
 ;; The file sets no `(config …)`: every flag has its default.
 ;;
 
-(relation pending      T :why "{?1} is pending")
-(relation needs-review T :why "{?1} needs review")
-(relation waived       T :why "{?1} is waived")
-(relation signed       T :why "{?1} is signed")
+(relation pending      T :why "{?3} is pending")
+(relation needs-review T :why "{?3} needs review")
+(relation waived       T :why "{?3} is waived")
+(relation signed       T :why "{?3} is signed")
 
 (rule auto-sign ()
   :match  (and (pending ?y) (waived ?y))

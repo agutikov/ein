@@ -19,7 +19,7 @@
 ;;;
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest)
 (absent Bob)
 (query :goal (paid ?g))

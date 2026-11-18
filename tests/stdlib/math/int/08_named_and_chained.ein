@@ -31,7 +31,7 @@
 (import std.math.arith :symbols (z))
 
 (relation overdrawn Name Name Number
-  :why "{?1} does not cover {?2}: short by {?3}")
+  :why "{?3} does not cover {?4}: short by {?5}")
 (__closed__ overdrawn)
 
 (let balance (int (n (n z 4) 0) z))

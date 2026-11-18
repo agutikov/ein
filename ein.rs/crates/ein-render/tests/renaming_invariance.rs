@@ -586,7 +586,7 @@ fn every_program_answers_alike_with_every_name_the_kernel_does_not_own_renamed()
 #[test]
 fn a_name_read_by_name_is_caught() {
     let kernel = kernel_names();
-    let text = "(relation is-a T T :why \"{?1} is a {?2}\")\n(is-a Ann Person)\n";
+    let text = "(relation is-a T T :why \"{?3} is a {?4}\")\n(is-a Ann Person)\n";
     let renaming = Renaming::of(&kernel, &[text.to_string()], &[]);
     let renamed = renaming.text(text).expect("renames");
     assert!(renamed.contains("(is-a!~ Ann!~ Person!~)"), "{renamed}");

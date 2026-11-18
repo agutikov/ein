@@ -152,7 +152,7 @@ nothing is mirrored:
 ```lisp
 (import std.algebra)
 
-(relation next-to T T :why "{?1} is next to {?2}")
+(relation next-to T T :why "{?3} is next to {?4}")
 
 (symmetric next-to)
 (next-to a b)

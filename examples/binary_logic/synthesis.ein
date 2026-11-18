@@ -24,17 +24,17 @@
 (import std.algebra :symbols (total-owed functional))
 
 (relation is-a Thing Type
-  :why "{?1} is a {?2}")
+  :why "{?3} is a {?4}")
 (relation gate Instance Function Wire Wire Wire
-  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+  :why "{?3} is a {?4} gate from {?5} and {?6} to {?7}")
 (relation hole Hole Wire Wire Wire
-  :why "{?1} is a missing gate from {?2} and {?3} to {?4}")
+  :why "{?3} is a missing gate from {?4} and {?5} to {?6}")
 (relation kind Hole Function
-  :why "the missing gate {?1} is a {?2}")
+  :why "the missing gate {?3} is a {?4}")
 (relation at Vector Wire Bit
-  :why "on test vector {?1}, {?2} carries {?3}")
+  :why "on test vector {?3}, {?4} carries {?5}")
 (relation vector Vector Bit Bit Bit
-  :why "test vector {?1}: a = {?2}, b = {?3}, carry in = {?4}")
+  :why "test vector {?3}: a = {?4}, b = {?5}, carry in = {?6}")
 
 (gate x1 Xor a b ab) (gate x2 Xor ab cin sum) (gate a1 And a b g1) (gate a2 And ab cin g2)
 (hole o1 g1 g2 cout) (is-a o1 Hole)

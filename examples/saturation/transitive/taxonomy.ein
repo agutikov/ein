@@ -21,7 +21,7 @@
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive.")
 
-(relation is-a T T :why "{?1} is a {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
 (transitive is-a)
 
 (is-a Cat Mammal :source "taxonomy")

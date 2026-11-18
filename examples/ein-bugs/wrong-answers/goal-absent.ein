@@ -27,8 +27,8 @@
 ;;; a rule's is, and the goal's evaluation never judges it, so the read-out
 ;;; suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`.
 
-(relation p Node :why "{?1} is a node")
-(relation q Node :why "{?1} is marked")
+(relation p Node :why "{?3} is a node")
+(relation q Node :why "{?3} is marked")
 (p a) (p b) (q b)
 (solve :hypothesis-relations ())
 (query :goal (and (p ?y) (absent (q ?y)))

@@ -39,8 +39,8 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// Two declared relations, a fact of each, and a rule `r`.
-const HEAD: &str = "(relation likes Person Drink :why \"{?1} likes {?2}\")\n\
-     (relation fan Person :why \"{?1} is a fan\")\n\
+const HEAD: &str = "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
+     (relation fan Person :why \"{?3} is a fan\")\n\
      (relation flag :why \"the flag is up\")\n\
      (likes Ann Tea)\n(fan Ann)\n(flag)\n\
      (rule r ()\n  :match (likes ?a ?b)\n  :assert (seen ?a)\n  :why \"{?a} likes {?b}, so {?a} is seen\")\n";
@@ -436,7 +436,7 @@ fn an_imported_declaration_is_held_too() {
     let scratch = Scratch::new("ein-declared-counts-imports");
     std::fs::write(
         scratch.path().join("lib.ein"),
-        "(relation likes Person Drink :why \"{?1} likes {?2}\")\n",
+        "(relation likes Person Drink :why \"{?3} likes {?4}\")\n",
     )
     .expect("written");
     let cases: [(&str, &str, &str); 4] = [

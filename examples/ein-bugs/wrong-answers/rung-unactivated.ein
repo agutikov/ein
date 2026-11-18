@@ -28,8 +28,8 @@
 ;;; the one above.
 
 (import std.algebra :symbols (total-owed))
-(relation at Color House :why "{?1} is at {?2}")
-(relation near House House :why "{?1} is near {?2}")
+(relation at Color House :why "{?3} is at {?4}")
+(relation near House House :why "{?3} is near {?4}")
 (is-a Red Color) (is-a H1 House) (is-a H2 House)
 (at Red H1)
 (solve)

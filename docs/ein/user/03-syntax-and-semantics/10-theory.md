@@ -16,7 +16,7 @@ rules and declarations, the comments left out:
   :why "zero, the number with no digit")
 
 (relation division-by-zero Request
-  :why "{?1} divides by zero")
+  :why "{?3} divides by zero")
 
 (rule division-by-zero-is-false ()
   :match  (division-by-zero ?request)
@@ -24,7 +24,7 @@ rules and declarations, the comments left out:
   :why    "{?request} divides by zero: no number is the answer")
 
 (relation arith-module-rule Rule
-  :why "{?1} is a rule of std.math.arith")
+  :why "{?3} is a rule of std.math.arith")
 
 (rule arith ()
   :match  ()
@@ -103,7 +103,7 @@ A theory explains itself through its rules' reasons, chained. The two steps draw
 
 Premises: `std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.decimal-arith.quotient(n(z, 7), z), n(z, 7), z), z)`
 
-Derives `std.math.arith.division-by-zero(div(n(z, 7), z))` — (div (n z 7) z) divides by zero
+Derives `std.math.arith.division-by-zero(div(n(z, 7), z))`.
 
 ### Step 16 — `std.math.arith.division-by-zero-is-false`
 
@@ -189,7 +189,7 @@ that states both properties of one relation, and one pair of it, is dead at root
 ```lisp
 (import std.algebra :symbols (symmetric asymmetric))
 
-(relation above Box Box :why "box {?1} is above box {?2}")
+(relation above Box Box :why "box {?3} is above box {?4}")
 
 (asymmetric above)
 (symmetric above)

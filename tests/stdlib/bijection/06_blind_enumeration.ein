@@ -90,10 +90,10 @@
 (import std.algebra   :symbols (includes))
 (import std.bijection :symbols (bijective-setup typecheck-setup))
 
-(relation is-a  T T           :why "{?1} is a {?2}")
-(relation is-a* T T           :why "{?1} is a {?2} (transitively)")
-(relation seats Guest Chair   :why "{?1} sits on {?2}")
-(relation sort  T T           :why "{?1} is a declared sort of {?2}")
+(relation is-a  T T           :why "{?3} is a {?4}")
+(relation is-a* T T           :why "{?3} is a {?4} (transitively)")
+(relation seats Guest Chair   :why "{?3} sits on {?4}")
+(relation sort  T T           :why "{?3} is a declared sort of {?4}")
 
 (is-a Ann Guest) (is-a Bob Guest)
 (is-a C1 Chair)  (is-a C2 Chair)

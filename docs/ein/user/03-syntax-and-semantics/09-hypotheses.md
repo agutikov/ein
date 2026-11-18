@@ -16,8 +16,8 @@ An `hrule` is a rule whose conclusion is not derived but **proposed**: each matc
 
 ```lisp
 ;; Two people, two chairs: who sits where?
-(relation is-a T T          :why "{?1} is a {?2}")
-(relation seat Person Chair :why "{?1} sits on {?2}")
+(relation is-a T T          :why "{?3} is a {?4}")
+(relation seat Person Chair :why "{?3} sits on {?4}")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a C1 Chair)   (is-a C2 Chair)
@@ -95,8 +95,8 @@ commitments over these four candidates, each node coloured by what its state is,
 
 ## In words
 
-An hrule's `:why` says the guess it proposes: *suppose Ann sits on C1*. A candidate is a fact, and reads as one, by
-its relation's `:why`: *Ann sits on C1*. The read-out names the candidates of a state by its commitment, `from
+An hrule's `:why` says the guess it proposes: *suppose Ann sits on C1*. A candidate is a fact, and reads as one, as
+written: `(seat Ann C1)`. The read-out names the candidates of a state by its commitment, `from
 {(seat Ann C1), (seat Bob C2)}`, and a run's trace opens each state with *Assuming (seat Ann C1), (seat Bob C2)*.
 
 ## In mathematics

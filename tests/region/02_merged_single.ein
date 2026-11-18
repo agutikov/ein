@@ -8,10 +8,10 @@
 ;;; (merged …) listed, the claim pins k_c = 16 as well as k_s = 8.
 ;;; The program is examples/lattice/synth/merged_states.ein's.
 
-(relation h T :why "h holds of {?1}")
-(relation slot T :why "{?1} is a slot")
-(relation world T :why "{?1} is the world")
-(relation need T T :why "h of {?2} would meet the need {?1}")
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h of {?4} would meet the need {?3}")
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 (need K1 A) (need K1 C)

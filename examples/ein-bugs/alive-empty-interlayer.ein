@@ -43,9 +43,9 @@
 ;;
 ;;
 
-(relation is-a T T :why "{?1} is a {?2}")
-(relation p T :why "p holds of {?1}")
-(relation bad T :why "{?1} is bad")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation p T :why "p holds of {?3}")
+(relation bad T :why "{?3} is bad")
 
 (is-a A T) (is-a B T) (is-a Z T)
 

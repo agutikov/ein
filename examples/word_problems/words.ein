@@ -29,55 +29,55 @@
 
 ;; ── The problem's sentences ─────────────────────────────────────────────────
 (relation has Who Kind Number Moment
-  :why "{?1} has {?3} {?2} at {?4}")
+  :why "{?3} has {?5} {?4} at {?6}")
 (relation gave Who Who Kind Number Moment Moment
-  :why "{?1} gave {?4} {?3} to {?2}, between {?5} and {?6}")
+  :why "{?3} gave {?6} {?5} to {?4}, between {?7} and {?8}")
 (relation holds Container Kind Number
-  :why "one of the {?1} holds {?3} {?2}")
+  :why "one of the {?3} holds {?5} {?4}")
 (relation packed-in Who Kind Container Moment
-  :why "the {?2} of {?1} are all in {?3} at {?4}, each one full")
+  :why "the {?4} of {?3} are all in {?5} at {?6}, each one full")
 (relation there-are Kind Number
-  :why "there are {?2} {?1}")
+  :why "there are {?4} {?3}")
 (relation asked Quantity
-  :why "the question: {?1}")
+  :why "the question: {?3}")
 (relation assumed Quantity Number
-  :why "an assumption, not a sentence of the problem: [{?1}] is {?2}")
+  :why "an assumption, not a sentence of the problem: [{?3}] is {?4}")
 
 ;; ── Quantities ──────────────────────────────────────────────────────────────
 (relation amount Who Kind Moment
-  :why "how many {?2} {?1} has at {?3}")
+  :why "how many {?4} {?3} has at {?5}")
 (relation together Who Who Kind Moment
-  :why "how many {?3} {?1} and {?2} have together at {?4}")
+  :why "how many {?5} {?3} and {?4} have together at {?6}")
 (relation apart Who Who Kind Moment
-  :why "by how many {?3} {?1} and {?2} differ at {?4}")
+  :why "by how many {?5} {?3} and {?4} differ at {?6}")
 (relation capacity Container Kind
-  :why "how many {?2} one of the {?1} holds")
+  :why "how many {?4} one of the {?3} holds")
 (relation needed Container Kind Quantity
-  :why "how many {?1} are needed for [{?3}]")
+  :why "how many {?3} are needed for [{?5}]")
 (relation over Quantity
-  :why "how many are left unpacked, of [{?1}]")
+  :why "how many are left unpacked, of [{?3}]")
 (relation number-of Kind
-  :why "how many {?1} there are")
+  :why "how many {?3} there are")
 (relation each-of Quantity Kind
-  :why "how many each of the {?2} gets when [{?1}] is shared equally")
+  :why "how many each of the {?4} gets when [{?3}] is shared equally")
 (relation rest-of Quantity Kind
-  :why "how many are left when [{?1}] is shared equally among the {?2}")
+  :why "how many are left when [{?3}] is shared equally among the {?4}")
 
 ;; ── The plan and the values ─────────────────────────────────────────────────
 (relation wanted Quantity
-  :why "wanted: {?1}")
+  :why "wanted: {?3}")
 (relation needs Quantity Quantity
-  :why "to know [{?1}] one must know [{?2}]")
+  :why "to know [{?3}] one must know [{?4}]")
 (relation value Quantity Number
-  :why "{?1}: {?2}")
+  :why "{?3}: {?4}")
 (relation has-more Who Who Kind Moment
-  :why "{?1} has more {?3} than {?2} at {?4}")
+  :why "{?3} has more {?5} than {?4} at {?6}")
 (relation same-amount Who Who Kind Moment
-  :why "{?1} and {?2} have equally many {?3} at {?4}")
+  :why "{?3} and {?4} have equally many {?5} at {?6}")
 (relation left-over Quantity Number Number
-  :why "[{?1}]: {?2} are filled, and {?3} are left over")
+  :why "[{?3}]: {?4} are filled, and {?5} are left over")
 (relation gave-more-than-had Who Kind Number Number
-  :why "{?1} gave {?4} {?2} and had only {?3}")
+  :why "{?3} gave {?6} {?4} and had only {?5}")
 
 (rule asked-is-wanted ()
   :match  (asked ?q)
@@ -306,9 +306,9 @@
 
 ;; ── The theory's one entry: closes its relations and names its rules ────────
 (relation words-rule Rule
-  :why "{?1} is a rule of words")
+  :why "{?3} is a rule of words")
 (relation words-uses Theory
-  :why "words computes with the theory {?1}")
+  :why "words computes with the theory {?3}")
 (words-rule words)
 
 (rule words ()

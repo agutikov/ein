@@ -45,7 +45,7 @@ Norwegian House-1)`. You declare it once, with a name for each of its slots:
 
 - **ein-lang:**
   ```lisp
-  (relation nation-loc Nationality House :why "the {?1} lives in {?2}")
+  (relation nation-loc Nationality House :why "the {?3} lives in {?4}")
   ```
 - **graph:** the declaration is itself stored as a fact, `(relation nation-loc Nationality House)`, a node whose
   arrow `1` is at the relation `relation`, `2` at the relation it declares and `3`, `4` at each slot's label. This is
@@ -67,7 +67,7 @@ reads the labels in one place only, where a program leaves it to guess facts and
 proposes no fact *about* an atom that some declaration uses as a label
 ([what the signature means](../04-reference/02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)).
 
-`is-a` is declared the same way, `(relation is-a T T :why "{?1} is a {?2}")`, when a puzzle wants Ein to guess its
+`is-a` is declared the same way, `(relation is-a T T :why "{?3} is a {?4}")`, when a puzzle wants Ein to guess its
 facts ([reserved names](../04-reference/03-reserved-names.md)); `T` there is a label that says nothing in
 particular. Every relation carries its rendering text, a `:why`, which says what one of its facts reads as in
 English; the loader refuses a relation, rule or hrule without one (`--no-require-why` loads it anyway).
@@ -97,7 +97,10 @@ of knowledge:
   The shorthand loses the relation as a node: a hundred `nation-loc` facts are a hundred arrows with one word on
   them, where the graph has one `nation-loc` box that a hundred octagons point at.
 
-- **English:** "the Norwegian lives in House-1", which is the relation's `:why` with the fact's arguments in it.
+- **English:** a fact has no text of its own, and reads as written, `nation-loc(Norwegian, House-1)`, or by where it
+  came from: the `:source` below, or the `:why` of the rule that derived it. The relation's `:why` reads its
+  declaration: `(relation nation-loc Nationality House :why "the {?3} lives in {?4}")` is *the Nationality lives in
+  House*.
 
 A fact can record where it came from, which shows up in explanations:
 
@@ -121,7 +124,7 @@ contradict each other exactly as readily as two derivations do.
 That's the whole vocabulary. Put together, a tiny model reads:
 
 ```lisp
-(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; a relation, its two slots labelled
+(relation nation-loc Nationality House :why "the {?3} lives in {?4}")   ; a relation, its two slots labelled
 (is-a Norwegian Nationality)              ; two facts of the puzzle's grouping relation
 (is-a Englishman Nationality)
 (nation-loc Norwegian House-1 :source "condition (10)")   ; a clue

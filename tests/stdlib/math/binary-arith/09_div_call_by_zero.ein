@@ -19,7 +19,7 @@
 (import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
 
-(relation share Number Number :why "{?1} shared among {?2}")
+(relation share Number Number :why "{?3} shared among {?4}")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (__closed__ share)

@@ -21,7 +21,7 @@
 ;;;
 
 (import std.macro :symbols (unknown))
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (unknown (paid Bob))
 (solve :hypothesis-relations ())

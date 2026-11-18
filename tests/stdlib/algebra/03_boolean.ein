@@ -42,11 +42,11 @@
 
 (import std.algebra :symbols (meet difference derive-join join-l join-r))
 
-(relation owns      Person Thing :why "{?1} owns {?2}")
-(relation rents     Person Thing :why "{?1} rents {?2}")
-(relation shares    Person Thing :why "{?1} both owns and rents {?2}")   ; owns ∩ rents
-(relation owns-only Person Thing :why "{?1} owns {?2} and does not rent it")   ; owns ∖ rents
-(relation either    Person Thing :why "{?1} owns or rents {?2}")   ; owns ∪ rents
+(relation owns      Person Thing :why "{?3} owns {?4}")
+(relation rents     Person Thing :why "{?3} rents {?4}")
+(relation shares    Person Thing :why "{?3} both owns and rents {?4}")   ; owns ∩ rents
+(relation owns-only Person Thing :why "{?3} owns {?4} and does not rent it")   ; owns ∖ rents
+(relation either    Person Thing :why "{?3} owns or rents {?4}")   ; owns ∪ rents
 
 (meet       owns rents shares)
 (difference owns rents owns-only)

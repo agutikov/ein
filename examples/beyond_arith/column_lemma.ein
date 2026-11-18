@@ -24,13 +24,13 @@
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (fa __closed__))
 
-(relation digit Digit :why "{?1} is a digit")
-(relation next Digit Digit :why "after {?1} comes {?2}")
-(relation counted Digit Digit Digit Digit Digit :why "counting, {?1} + {?2} + {?3} is digit {?4} and {?5} tens")
-(relation agrees Digit Digit Digit :why "the row for {?1} + {?2} + carry {?3} is what counting gives")
-(relation disagrees Digit Digit Digit :why "the row for {?1} + {?2} + carry {?3} is NOT what counting gives")
-(relation agree-up-to Digit Digit Digit :why "with carry {?3}, every row up to {?1} + {?2} agrees")
-(relation every-row Verdict :why "every row of the full adder {?1}")
+(relation digit Digit :why "{?3} is a digit")
+(relation next Digit Digit :why "after {?3} comes {?4}")
+(relation counted Digit Digit Digit Digit Digit :why "counting, {?3} + {?4} + {?5} is digit {?6} and {?7} tens")
+(relation agrees Digit Digit Digit :why "the row for {?3} + {?4} + carry {?5} is what counting gives")
+(relation disagrees Digit Digit Digit :why "the row for {?3} + {?4} + carry {?5} is NOT what counting gives")
+(relation agree-up-to Digit Digit Digit :why "with carry {?5}, every row up to {?3} + {?4} agrees")
+(relation every-row Verdict :why "every row of the full adder {?3}")
 (__closed__ digit) (__closed__ next) (__closed__ counted) (__closed__ agrees) (__closed__ disagrees)
 (__closed__ agree-up-to) (__closed__ every-row)
 

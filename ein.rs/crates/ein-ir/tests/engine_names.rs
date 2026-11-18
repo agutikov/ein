@@ -124,10 +124,10 @@ fn a_writeback_name_is_refused_wherever_a_program_writes_it() {
 fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
     for name in WRITEBACKS {
         let text = format!(
-            "(relation p T :why \"{{?1}} is not {name}\")\n; {name}\n#| {name} |#\n(p a)\n"
+            "(relation p T :why \"{{?3}} is not {name}\")\n; {name}\n#| {name} |#\n(p a)\n"
         );
         load(&text).unwrap_or_else(|e| panic!("{name} in a string or a comment: {e}"));
-        let longer = format!("(relation p T :why \"p holds of {{?1}}\")\n(p {name}x)\n");
+        let longer = format!("(relation p T :why \"p holds of {{?3}}\")\n(p {name}x)\n");
         load(&longer).unwrap_or_else(|e| panic!("{name}x is a name: {e}"));
         assert!(!grammar::is_one_name(name), "{name} is a NAME of the lexer");
         assert!(grammar::is_one_name(&format!("{name}x")));
@@ -145,10 +145,10 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
 fn a_probe_is_refused_at_its_three_writeback_names() {
     let probe = ";; A probe: the engine's writeback rule names and the
 ;; kernel's dunder are names under the name rule. A program writes each.
-(relation p T :why \"{?1} is p\")
-(relation hit T :why \"{?1} is hit\")
-(relation <forced-positive> T :why \"{?1} forced\")
-(relation s T T :why \"{?1} s {?2}\")
+(relation p T :why \"{?3} is p\")
+(relation hit T :why \"{?3} is hit\")
+(relation <forced-positive> T :why \"{?3} forced\")
+(relation s T T :why \"{?3} s {?4}\")
 (rule <lookahead-dies-immediately> () :match (p ?x) :assert (hit ?x) :why \"a rule a program named after the kill-cache writeback\")
 (rule <monotonic-unconditional> () :match (hit ?x) :assert (<forced-positive> ?x) :why \"and one named after the singleton writeback\")
 (p a)
@@ -193,22 +193,22 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
     let positions = [
         (
             "relation",
-            "(relation D T :why \"D holds of {?1}\")",
+            "(relation D T :why \"D holds of {?3}\")",
             "relation 'D' shadows a reserved kernel name",
         ),
         (
             "rule",
-            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
+            "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
             "rule 'D' shadows a reserved kernel name",
         ),
         (
             "hrule",
-            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(hrule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
+            "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(hrule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
             "hrule 'D' shadows a reserved kernel name",
         ),
         (
             "macro",
-            "(relation p T :why \"p holds of {?1}\")\n(macro D (?x) (p ?x) :why \"p holds of {?x}\")",
+            "(relation p T :why \"p holds of {?3}\")\n(macro D (?x) (p ?x) :why \"p holds of {?x}\")",
             "macro 'D' shadows a reserved kernel name",
         ),
         (
@@ -237,10 +237,10 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
 fn a_name_the_kernel_does_not_read_binds_as_any_name_does() {
     let name = "__symmetric__";
     for (position, template) in [
-        ("relation", "(relation D T :why \"D holds of {?1}\")"),
+        ("relation", "(relation D T :why \"D holds of {?3}\")"),
         (
             "rule",
-            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
+            "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
         ),
         ("an import's `:as`", "(import std.macro :as D)"),
     ] {
@@ -256,11 +256,11 @@ fn a_name_the_kernel_does_not_read_binds_as_any_name_does() {
 #[test]
 fn a_dunder_is_legal_wherever_a_program_uses_it() {
     let text = "(import std.algebra :symbols (imply1))
-(relation p T T :why \"p holds of {?1} and {?2}\")
-(relation q T :why \"q holds of {?1}\")
-(relation knows T T :why \"{?1} knows {?2}\")
-(relation functional T :why \"{?1} is functional\")
-(relation foo T T :why \"foo holds of {?1} and {?2}\")
+(relation p T T :why \"p holds of {?3} and {?4}\")
+(relation q T :why \"q holds of {?3}\")
+(relation knows T T :why \"{?3} knows {?4}\")
+(relation functional T :why \"{?3} is functional\")
+(relation foo T T :why \"foo holds of {?3} and {?4}\")
 (p a b)
 (__closed__ p)
 (q (__closed__ p))

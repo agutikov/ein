@@ -11,8 +11,8 @@ computed once, and every query is a question about that one R. **`(config …)`*
 
 ```lisp
 ;; Two people, two chairs, no sharing: every way they can sit, and who sits where.
-(relation is-a T T          :why "{?1} is a {?2}")
-(relation seat Person Chair :why "{?1} sits on {?2}")
+(relation is-a T T          :why "{?3} is a {?4}")
+(relation seat Person Chair :why "{?3} sits on {?4}")
 
 (is-a Ann Person) (is-a Bob Person)
 (is-a C1 Chair)   (is-a C2 Chair)

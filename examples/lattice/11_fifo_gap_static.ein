@@ -31,12 +31,12 @@
 ;;;
 ;;; The node census prints both constructions of every node of the cube.
 
-(relation thing T :why "{?1} is a thing")
-(relation a T :why "a holds of {?1}")
-(relation b T :why "b holds of {?1}")
-(relation p T :why "p holds of {?1}")
-(relation q T :why "q holds of {?1}")
-(relation z T :why "z holds of {?1}")
+(relation thing T :why "{?3} is a thing")
+(relation a T :why "a holds of {?3}")
+(relation b T :why "b holds of {?3}")
+(relation p T :why "p holds of {?3}")
+(relation q T :why "q holds of {?3}")
+(relation z T :why "z holds of {?3}")
 
 (thing one)
 (a one)

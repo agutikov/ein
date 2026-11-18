@@ -122,39 +122,39 @@
 
 ;; ── The protocol ────────────────────────────────────────────────────────────
 (relation gcd Operand Operand
-  :why "asked: the greatest common divisor of {?1} and {?2}")
+  :why "asked: the greatest common divisor of {?3} and {?4}")
 (relation gcd-of Operand Operand Number
-  :why "the greatest common divisor of {?1} and {?2} is {?3}")
+  :why "the greatest common divisor of {?3} and {?4} is {?5}")
 (relation lcm Operand Operand
-  :why "asked: the least common multiple of {?1} and {?2}")
+  :why "asked: the least common multiple of {?3} and {?4}")
 (relation lcm-of Operand Operand Number
-  :why "the least common multiple of {?1} and {?2} is {?3}")
+  :why "the least common multiple of {?3} and {?4} is {?5}")
 
 ;; ── The call, and the circuit's own facts ───────────────────────────────────
 (relation gcd-call Tag Number Number
-  :why "wanted, for {?1}: the greatest common divisor of {?2} and {?3}")
+  :why "wanted, for {?3}: the greatest common divisor of {?4} and {?5}")
 (relation gcd-done Tag Number
-  :why "the greatest common divisor for {?1} is {?2}")
+  :why "the greatest common divisor for {?3} is {?4}")
 (relation gcd-chain Tag Number Number
-  :why "for {?1}: the greatest common divisor wanted is that of {?2} and {?3}")
+  :why "for {?3}: the greatest common divisor wanted is that of {?4} and {?5}")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation gcd-first Request Operand
-  :why "the first operand of {?1}, whose second is {?2}")
+  :why "the first operand of {?3}, whose second is {?4}")
 (relation gcd-second Request Number
-  :why "the second operand of {?1}, whose first is {?2}")
+  :why "the second operand of {?3}, whose first is {?4}")
 (relation gcd-norm Tag Number
-  :why "the first number of the call for {?1} in normal form; the second is {?2}")
+  :why "the first number of the call for {?3} in normal form; the second is {?4}")
 (relation gcd-norm-of Tag Number
-  :why "the second number of the call for {?1} in normal form; the first is {?2}")
+  :why "the second number of the call for {?3} in normal form; the first is {?4}")
 (relation gcd-rem Tag Number
-  :why "a step of Euclid's chain, for {?1}: the remainder of a division by {?2}")
+  :why "a step of Euclid's chain, for {?3}: the remainder of a division by {?4}")
 (relation lcm-g Operand Operand Number Number
-  :why "the greatest common divisor of {?3} and {?4}, for the least common multiple of {?1} and {?2}")
+  :why "the greatest common divisor of {?5} and {?6}, for the least common multiple of {?3} and {?4}")
 (relation lcm-p Operand Operand Number
-  :why "the product of the operands, for the least common multiple of {?1} and {?2}, to be divided by {?3}")
+  :why "the product of the operands, for the least common multiple of {?3} and {?4}, to be divided by {?5}")
 (relation lcm-q Operand Operand
-  :why "the product divided by the greatest common divisor, for the least common multiple of {?1} and {?2}")
+  :why "the product divided by the greatest common divisor, for the least common multiple of {?3} and {?4}")
 
 ;; ── The call: two numbers in normal form, then Euclid's chain ───────────────
 ;; `(gcd-call TAG X Y)`: X and Y as `n` and `z` build them, each put into normal
@@ -272,7 +272,7 @@
 ;; may share one. `ein-infer/tests/gcd_theory.rs` holds that nothing is
 ;; missing here.
 (relation gcd-rule Rule
-  :why "{?1} is a rule std.math.gcd brings")
+  :why "{?3} is a rule std.math.gcd brings")
 
 (rule gcd ()
   :match  ()

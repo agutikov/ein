@@ -47,10 +47,10 @@
 (import std.algebra :symbols (compose-negative-s compose-negative-r))
 (import std.macro   :symbols (unknown))
 
-(relation r         Node Node :why "{?1} steps to {?2}")
-(relation s         Node Node :why "{?1} s-steps to {?2}")
-(relation t         Node Node :why "{?1} steps to some node that s-steps to {?2}")   ; = r;s, and closed — that is the obligation
-(relation undecided Node Node :why "{?1}→{?2} is neither asserted nor denied")
+(relation r         Node Node :why "{?3} steps to {?4}")
+(relation s         Node Node :why "{?3} s-steps to {?4}")
+(relation t         Node Node :why "{?3} steps to some node that s-steps to {?4}")   ; = r;s, and closed — that is the obligation
+(relation undecided Node Node :why "{?3}→{?4} is neither asserted nor denied")
 
 (compose-negative-s r s t)
 (compose-negative-r r s t)

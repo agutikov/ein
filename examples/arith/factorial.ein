@@ -49,7 +49,7 @@
 (import std.math.arith :symbols (z))
 
 (relation factorial Number Number
-  :why "{?1}! = {?2}")
+  :why "{?3}! = {?4}")
 (__closed__ factorial)
 
 (let last (n (n z 2) 5))

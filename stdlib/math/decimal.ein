@@ -133,11 +133,11 @@
 
 ;; ── The numeral ─────────────────────────────────────────────────────────────
 (relation n Number Digit
-  :why "the number written {?1}, then the digit {?2}")
+  :why "the number written {?3}, then the digit {?4}")
 
 ;; ── A named constant, which the module that declares `let` writes ──────────
 (relation named Name
-  :why "{?1} is a named constant")
+  :why "{?3} is a named constant")
 
 ;; ── The check, which an operation asks for, and its label ───────────────────
 ;; `(check N N)` asks whether N is a decimal number; `(check N REST)` is the
@@ -145,11 +145,11 @@
 ;; the program writes the ask, and one that answers with a number writes the
 ;; label.
 (relation check Number Number
-  :why "checking {?1}: {?2} is still to check")
+  :why "checking {?3}: {?4} is still to check")
 (relation valid Number
-  :why "{?1} is a decimal number")
+  :why "{?3} is a decimal number")
 (relation not-decimal Number Thing
-  :why "{?1} is not a decimal number: {?2} stands where a digit or a number goes")
+  :why "{?3} is not a decimal number: {?4} stands where a digit or a number goes")
 
 ;; A place whose digit is one of the ten: the walk goes on to the prefix.
 (rule numeral-step ()
@@ -207,7 +207,7 @@
 ;; is named, and `arith`, the entry of the module below. `ein-infer/tests/
 ;; arith_theory.rs` holds that nothing is missing here.
 (relation decimal-rule Rule
-  :why "{?1} is a rule of std.math.decimal")
+  :why "{?3} is a rule of std.math.decimal")
 
 (rule decimal ()
   :match  ()

@@ -379,138 +379,138 @@
 
 ;; ── The accumulator: the number is `std.math.decimal`'s ─────────────────────
 (relation b Digit Digits
-  :why "the digit {?1} in front of the digits {?2}")
+  :why "the digit {?3} in front of the digits {?4}")
 
 ;; ── The protocol ────────────────────────────────────────────────────────────
 (relation let Name Number
-  :why "{?1} names the number {?2}")
+  :why "{?3} names the number {?4}")
 (relation add Operand Operand
-  :why "asked: {?1} + {?2}")
+  :why "asked: {?3} + {?4}")
 (relation sum-of Operand Operand Number
-  :why "{?1} + {?2} = {?3}")
+  :why "{?3} + {?4} = {?5}")
 (relation sub Operand Operand
-  :why "asked: {?1} - {?2}")
+  :why "asked: {?3} - {?4}")
 (relation diff-of Operand Operand Number Number
-  :why "{?1} - {?2} = {?3}, short by {?4}")
+  :why "{?3} - {?4} = {?5}, short by {?6}")
 (relation cmp Operand Operand
-  :why "asked: {?1} compared with {?2}")
+  :why "asked: {?3} compared with {?4}")
 (relation cmp-of Operand Operand Order
-  :why "{?1} against {?2}: {?3}")
+  :why "{?3} against {?4}: {?5}")
 (relation mul Operand Operand
-  :why "asked: {?1} x {?2}")
+  :why "asked: {?3} x {?4}")
 (relation product-of Operand Operand Number
-  :why "{?1} x {?2} = {?3}")
+  :why "{?3} x {?4} = {?5}")
 (relation div Operand Operand
-  :why "asked: {?1} divided by {?2}")
+  :why "asked: {?3} divided by {?4}")
 (relation quot-of Operand Operand Number Number
-  :why "{?1} divided by {?2} = {?3}, remainder {?4}")
+  :why "{?3} divided by {?4} = {?5}, remainder {?6}")
 
 ;; ── The circuit's own facts: each is one step of a computation, and carries
 ;;    the whole of its state ──────────────────────────────────────────────────
 (relation operand Tag Operand
-  :why "wanted, for {?1}: the number {?2} stands for")
+  :why "wanted, for {?3}: the number {?4} stands for")
 (relation operand-is Tag Number
-  :why "found, for {?1}: the number {?2}")
+  :why "found, for {?3}: the number {?4}")
 (relation add-walk Tag Number Number Digit Digits
-  :why "adding, for {?1}: {?2} and {?3} are still to add, the carry is {?4}, and the digits so far are {?5}")
+  :why "adding, for {?3}: {?4} and {?5} are still to add, the carry is {?6}, and the digits so far are {?7}")
 (relation strip Tag Digits
-  :why "for {?1}: the digits {?2}, high zeros not yet dropped")
+  :why "for {?3}: the digits {?4}, high zeros not yet dropped")
 (relation turn Tag Digits Number
-  :why "for {?1}: the digits {?2} are still to turn round, and {?3} is turned")
+  :why "for {?3}: the digits {?4} are still to turn round, and {?5} is turned")
 (relation done Tag Number
-  :why "the answer for {?1} is {?2}")
+  :why "the answer for {?3} is {?4}")
 (relation sub-walk Tag Number Number Digit Digits
-  :why "subtracting, for {?1}: {?3} is still to take from {?2}, the borrow is {?4}, and the digits so far are {?5}")
+  :why "subtracting, for {?3}: {?5} is still to take from {?4}, the borrow is {?6}, and the digits so far are {?7}")
 (relation short Tag
-  :why "{?1} has no answer: the number taken from is the smaller")
+  :why "{?3} has no answer: the number taken from is the smaller")
 (relation cmp-walk Tag Number Number Order
-  :why "comparing, for {?1}: {?2} and {?3} are still to compare, and the order of the digits below is {?4}")
+  :why "comparing, for {?3}: {?4} and {?5} are still to compare, and the order of the digits below is {?6}")
 (relation order-is Tag Order
-  :why "the answer for {?1} is {?2}")
+  :why "the answer for {?3} is {?4}")
 (relation top-first Tag Number Digits
-  :why "for {?1}: {?2} is still to turn round, and the digits turned are {?3}")
+  :why "for {?3}: {?4} is still to turn round, and the digits turned are {?5}")
 (relation top-first-is Tag Digits
-  :why "for {?1}: the digits, the top one first, are {?2}")
+  :why "for {?3}: the digits, the top one first, are {?4}")
 (relation mul-walk Tag Number Digit Digit Digits
-  :why "multiplying, for {?1}: {?2} is still to multiply by {?3}, the carry is {?4}, and the digits so far are {?5}")
+  :why "multiplying, for {?3}: {?4} is still to multiply by {?5}, the carry is {?6}, and the digits so far are {?7}")
 (relation mul-call Tag Number Number
-  :why "wanted, for {?1}: {?2} x {?3}")
+  :why "wanted, for {?3}: {?4} x {?5}")
 (relation mul-step Tag Number Digits Number
-  :why "multiplying, for {?1}: {?2} by the digits {?3} still to come, and the sum so far is {?4}")
+  :why "multiplying, for {?3}: {?4} by the digits {?5} still to come, and the sum so far is {?6}")
 (relation div-call Tag Number Number
-  :why "wanted, for {?1}: {?2} divided by {?3}")
+  :why "wanted, for {?3}: {?4} divided by {?5}")
 (relation div-done Tag Number Number
-  :why "the answer for {?1} is {?2}, remainder {?3}")
+  :why "the answer for {?3} is {?4}, remainder {?5}")
 (relation multiples Number Number Number Number Number Number Number Number Number
-  :why "the divisor's multiples: {?1}, {?2}, {?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9}")
+  :why "the divisor's multiples: {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}, {?10} and {?11}")
 (relation div-step Tag Multiples Digits Number Number
-  :why "dividing, for {?1}: the digits {?3} are still to bring down, {?4} is left over, and the quotient so far is {?5}")
+  :why "dividing, for {?3}: the digits {?5} are still to bring down, {?6} is left over, and the quotient so far is {?7}")
 (relation div-choose Tag Multiples Digits Number Number Bound Bound Number
-  :why "dividing, for {?1}: how often the divisor goes into {?5} is at least {?6} and less than {?7}; {?8} is left over at {?6} times")
+  :why "dividing, for {?3}: how often the divisor goes into {?7} is at least {?8} and less than {?9}; {?10} is left over at {?8} times")
 (relation div-digit Tag Multiples Digits Number Digit Number
-  :why "dividing, for {?1}: the next digit of the quotient is {?5}, and {?6} is left over")
+  :why "dividing, for {?3}: the next digit of the quotient is {?7}, and {?8} is left over")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation sum Operand Operand
-  :why "the sum of {?1} and {?2}")
+  :why "the sum of {?3} and {?4}")
 (relation add-first Operand Operand
-  :why "the first operand of {?1} + {?2}")
+  :why "the first operand of {?3} + {?4}")
 (relation add-second Operand Operand Number
-  :why "the second operand of {?1} + {?2}, whose first is {?3}")
+  :why "the second operand of {?3} + {?4}, whose first is {?5}")
 (relation difference Operand Operand
-  :why "{?1} - {?2}")
+  :why "{?3} - {?4}")
 (relation shortfall Operand Operand
-  :why "what {?1} is short of {?2} by")
+  :why "what {?3} is short of {?4} by")
 (relation sub-first Operand Operand
-  :why "the first operand of {?1} - {?2}")
+  :why "the first operand of {?3} - {?4}")
 (relation sub-second Operand Operand Number
-  :why "the second operand of {?1} - {?2}, whose first is {?3}")
+  :why "the second operand of {?3} - {?4}, whose first is {?5}")
 (relation order Operand Operand
-  :why "the order of {?1} and {?2}")
+  :why "the order of {?3} and {?4}")
 (relation cmp-first Operand Operand
-  :why "the first operand of {?1} compared with {?2}")
+  :why "the first operand of {?3} compared with {?4}")
 (relation cmp-second Operand Operand Number
-  :why "the second operand of {?1} compared with {?2}, whose first is {?3}")
+  :why "the second operand of {?3} compared with {?4}, whose first is {?5}")
 (relation product Operand Operand
-  :why "the product of {?1} and {?2}")
+  :why "the product of {?3} and {?4}")
 (relation mul-first Operand Operand
-  :why "the first operand of {?1} x {?2}")
+  :why "the first operand of {?3} x {?4}")
 (relation mul-second Operand Operand Number
-  :why "the second operand of {?1} x {?2}, whose first is {?3}")
+  :why "the second operand of {?3} x {?4}, whose first is {?5}")
 (relation mul-digits Tag Number
-  :why "the digits of the multiplier, for {?1}, which multiplies {?2}")
+  :why "the digits of the multiplier, for {?3}, which multiplies {?4}")
 (relation mul-row-of Tag Number Digits Number
-  :why "a row, for {?1}: {?2} times one digit, with the digits {?3} still to come and the sum so far {?4}")
+  :why "a row, for {?3}: {?4} times one digit, with the digits {?5} still to come and the sum so far {?6}")
 (relation mul-sum Tag Number Digits
-  :why "the sum so far, for {?1}, which multiplies {?2}, with the digits {?3} still to come")
+  :why "the sum so far, for {?3}, which multiplies {?4}, with the digits {?5} still to come")
 (relation quotient Operand Operand
-  :why "{?1} divided by {?2}")
+  :why "{?3} divided by {?4}")
 (relation div-first Operand Operand
-  :why "the first operand of {?1} divided by {?2}")
+  :why "the first operand of {?3} divided by {?4}")
 (relation div-second Operand Operand Number
-  :why "the second operand of {?1} divided by {?2}, whose first is {?3}")
+  :why "the second operand of {?3} divided by {?4}, whose first is {?5}")
 (relation div-m1 Tag Number Number
-  :why "1 times the divisor, for {?1}, which divides {?2} by {?3} as the call wrote it")
+  :why "1 times the divisor, for {?3}, which divides {?4} by {?5} as the call wrote it")
 (relation div-m2 Tag Number Number
-  :why "2 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}")
+  :why "2 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}")
 (relation div-m3 Tag Number Number Number
-  :why "3 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}")
+  :why "3 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}")
 (relation div-m4 Tag Number Number Number Number
-  :why "4 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}")
+  :why "4 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}")
 (relation div-m5 Tag Number Number Number Number Number
-  :why "5 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}")
+  :why "5 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}, {?8}")
 (relation div-m6 Tag Number Number Number Number Number Number
-  :why "6 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}")
+  :why "6 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}, {?8}, {?9}")
 (relation div-m7 Tag Number Number Number Number Number Number Number
-  :why "7 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}")
+  :why "7 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}, {?8}, {?9}, {?10}")
 (relation div-m8 Tag Number Number Number Number Number Number Number Number
-  :why "8 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}")
+  :why "8 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}, {?8}, {?9}, {?10}, {?11}")
 (relation div-m9 Tag Number Number Number Number Number Number Number Number Number
-  :why "9 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}, {?10}")
+  :why "9 times the divisor, for {?3}, which divides {?4}, the multiples known being {?5}, {?6}, {?7}, {?8}, {?9}, {?10}, {?11}, {?12}")
 (relation div-digits Tag Multiples
-  :why "the digits of the dividend, for {?1}")
+  :why "the digits of the dividend, for {?3}")
 (relation div-trial Tag Multiples Digits Number Number Bound Bound Number Digit
-  :why "a trial, for {?1}: {?9} times the divisor taken from {?5}")
+  :why "a trial, for {?3}: {?11} times the divisor taken from {?7}")
 
 ;; ── What is decimal's own: the rules `std.math.positional` does not hold ────
 ;; The operands, the walks of addition, subtraction and comparison, the normal
@@ -766,9 +766,9 @@
 ;; `let` cannot be read. `(undeclared NAME REQUEST)`: the request names an
 ;; operand that no `let` states.
 (relation malformed Request
-  :why "{?1} holds something that is not a number")
+  :why "{?3} holds something that is not a number")
 (relation undeclared Name Request
-  :why "{?2} uses the name {?1}, which no let states")
+  :why "{?4} uses the name {?3}, which no let states")
 
 ;; The circuit's own. `(bad-operand TAG FAULT)` and `(bad-request REQUEST
 ;; FAULT)`: what is wrong, first by the operand's tag and then by the request;
@@ -777,13 +777,13 @@
 ;; numeral: that is `std.math.decimal`'s check, which the look-up asks for
 ;; (Q-M1f.210).
 (relation bad-operand Tag Fault
-  :why "the operand looked up for {?1} is at fault: {?2}")
+  :why "the operand looked up for {?3} is at fault: {?4}")
 (relation bad-request Request Fault
-  :why "{?1} is at fault: {?2}")
+  :why "{?3} is at fault: {?4}")
 (relation not-a-number Thing
-  :why "{?1} stands where a digit or a number goes, and is none")
+  :why "{?3} stands where a digit or a number goes, and is none")
 (relation no-let Name
-  :why "no let states the name {?1}")
+  :why "no let states the name {?3}")
 
 ;; **The theory's one `absent`**, over `let`, which a program writes and no
 ;; rule derives, and which the theory closes: so nothing can add the fact
@@ -823,7 +823,7 @@
 ;; `ein-infer/tests/arith_theory.rs` holds that no relation and no rule of
 ;; this file is missing here, and that the call is the macro's whole order.
 (relation arith-rule Rule
-  :why "{?1} is a rule std.math.decimal-arith brings")
+  :why "{?3} is a rule std.math.decimal-arith brings")
 
 ;; The closing rule's own name, as a written fact.
 ;; An import brings it, as it brings every fact of the module (Q-M1f.247).

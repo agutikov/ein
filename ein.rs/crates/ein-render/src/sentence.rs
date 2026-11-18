@@ -1,32 +1,19 @@
-//! A fact in English: fact-level rendering from provenance
+//! The texts a trace step reads
 //! ([`docs/ein/user/03-syntax-and-semantics/14-natural-language.md`](../../../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)).
 //!
-//! **Two texts a fact can have, from two places.** Its *statement* is what the
-//! fact says, its relation's `:why` with the fact's arguments in its
-//! positional references (`{?1}`, `{?2}`, …). Its *reason* is why it holds, read
-//! off its **first recorded justification** ([`Kb::primary`]): the `:source`
-//! sentence of a given, or the deriving rule's `:why` filled with that
-//! firing's bindings. The trace's step sentence is the second, which
-//! [`rule_sentence`] lifts out of `trace/linearize.rs` so the trace, the DOT
-//! slice and a `--dump-answer` state file fill a rule's `:why` one way.
+//! **A `:why` reads the form it is written on** (Q-M1f.58). A rule's, filled
+//! with a firing's bindings, is the firing's *reason*, why its conclusions
+//! hold, [`rule_sentence`], which the trace's step and the DOT slice both
+//! fill through, so a rule's `:why` is filled one way. A declaration's is
+//! what the declaration says, its *statement*, `{?n}` its n-th arrow,
+//! [`statement`]. A fact of a relation has no `:why` of its own and takes
+//! none from the declaration: it reads by its `:source`, its rule's reason,
+//! or as the trace prints it, `R(a, b)`.
 //!
-//! **Which justification: the first recorded**, the one a fact's provenance
-//! names before its alternatives. A fact can carry up to
-//! `MAX_ALT_JUSTIFICATIONS` more, and which arrived first can move with rule
-//! order; a reason is an explanation, as a core is (Q-M1f.6), and neither is
-//! canonical. Recording order is deterministic in a run
-//! ([`01-determinism-and-order.md`](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md)),
-//! so the text is under the same invariance
-//! `id_order_invariance` and `jobs_invariance` hold the rest of the answer to.
-//!
-//! **No invented prose.** A fact whose relation carries no `:why` has no
-//! statement, and one whose justification has no text has no reason; where
-//! both are missing the fact reads as its s-expression. The engine adds the
-//! provenance's own words (`rule r`, `source
-//! "…"`, `hypothesis N`), which `07-reserved-engine-strings.md` owns, and nothing
-//! of the domain's.
+//! **No invented prose.** Where no form the program wrote carries a text,
+//! nothing is said beyond the fact itself.
 
-use ein_core::{FactId, Kb, Program, ProvKind, Symbol, Terms, Value, render_why};
+use ein_core::{FactId, Program, Symbol, Terms, Value, render_why};
 
 /// A rule's `:why`, filled with a firing's bindings; `None` where the rule
 /// (or hrule) carries none, or an empty one.
@@ -51,116 +38,40 @@ pub fn rule_sentence(
     Some(render_why(template, &named))
 }
 
-/// A fact's statement: its relation's `:why`, with `{?1}` its first argument,
-/// `{?2}` its second, …; `None` where the relation carries none.
+/// What a declaration says: its `:why`, read on the form it is written on.
+///
+/// `(relation owns Person Pet :why "a {?3} {?2} a {?4}")` is the fact
+/// `(relation owns Person Pet)`, and `{?n}` is its n-th arrow: `{?1}` the
+/// atom `relation`, `{?2}` the relation's name, `{?k+2}` its k-th label; it
+/// reads *a Person owns a Pet*. Only that fact reads by the text, however a
+/// run reaches it: a fact of the relation, `(owns Ann Dog)`, has no `:why` of
+/// its own and gets none from the declaration, and the companion the loader
+/// stores beside a typed declaration, `(relation owns)`, is no form the
+/// program wrote. `None` for every other fact, and where the declaration
+/// carries no `:why`, or an empty one.
 pub fn statement(program: &Program, terms: &Terms, f: FactId) -> Option<String> {
     let (rel, args) = terms.fact(f);
-    let template = terms.sym(program.relations.get(rel)?.why?);
+    if rel != terms.kernel.relation {
+        return None;
+    }
+    let declared = program.relations.get(args.first()?.as_sym()?)?;
+    let written = declared.declared
+        && args.len() == declared.signature.len() + 1
+        && args[1..]
+            .iter()
+            .zip(declared.signature.iter())
+            .all(|(a, &label)| a.as_sym() == Some(label));
+    if !written {
+        return None;
+    }
+    let template = terms.sym(declared.why?);
     if template.is_empty() {
         return None;
     }
-    let positional: Vec<(String, String)> = args
-        .iter()
+    let arrows: Vec<(String, String)> = std::iter::once(Value::sym(rel))
+        .chain(args.iter().copied())
         .enumerate()
-        .map(|(i, a)| ((i + 1).to_string(), terms.display(*a)))
+        .map(|(i, a)| ((i + 1).to_string(), terms.display(a)))
         .collect();
-    Some(render_why(template, &positional))
-}
-
-/// Where a fact came from, by its first recorded justification.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Origin {
-    /// Stated by the program with a `:source` sentence.
-    Source(String),
-    /// Derived by the named rule.
-    Rule(String),
-    /// The commitment's: a hypothesis, the branch's number.
-    Hypothesis(u32),
-    /// Stated by the program with no sentence, or recorded with no
-    /// provenance at all.
-    Given,
-}
-
-/// A fact for a reader: where it came from, why it holds, and what it says.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct FactSentence {
-    pub origin: Origin,
-    /// The deriving rule's `:why`, filled; `None` for every other origin.
-    pub reason: Option<String>,
-    pub statement: Option<String>,
-}
-
-impl FactSentence {
-    /// Does any text of the program's render this fact — a `:source`, a rule's
-    /// `:why`, or its relation's? Where this is false the fact reads as its
-    /// s-expression.
-    pub fn renders(&self) -> bool {
-        matches!(self.origin, Origin::Source(_))
-            || self.reason.is_some()
-            || self.statement.is_some()
-    }
-}
-
-/// `f` for a reader, from its first recorded justification in `kb` and the
-/// program's templates.
-pub fn fact_sentence(kb: &Kb, terms: &Terms, f: FactId) -> FactSentence {
-    let program = kb.program();
-    let prov = kb.primary(f).map(|p| terms.provs.get(p));
-    let (origin, reason) = match prov {
-        None => (Origin::Given, None),
-        Some(p) => match p.kind {
-            ProvKind::Source => match p.source.map(|s| terms.sym(s)).filter(|s| !s.is_empty()) {
-                Some(s) => (Origin::Source(s.to_string()), None),
-                None => (Origin::Given, None),
-            },
-            ProvKind::Rule => match p.rule.filter(|r| !terms.sym(*r).is_empty()) {
-                Some(r) => (
-                    Origin::Rule(terms.sym(r).to_string()),
-                    rule_sentence(program, terms, r, &p.bindings),
-                ),
-                None => (Origin::Given, None),
-            },
-            ProvKind::Hypothesis => (Origin::Hypothesis(p.branch.unwrap_or(0)), None),
-            // A rejected hypothesis is never a fact of a state; it reads as
-            // its statement alone where a caller meets one.
-            ProvKind::Rejected => (Origin::Given, None),
-        },
-    };
-    FactSentence {
-        origin,
-        reason,
-        statement: statement(program, terms, f),
-    }
-}
-
-/// A text as the rest of a `;` comment: each line break (`\n`, `\r`, or the
-/// pair) starts a new comment line, so the text is carried character for
-/// character and the file still reads as the facts it states.
-pub fn as_comment(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
-    let mut chars = text.chars().peekable();
-    while let Some(c) = chars.next() {
-        match c {
-            '\r' => {
-                if chars.peek() == Some(&'\n') {
-                    chars.next();
-                }
-                out.push_str("\n;   ");
-            }
-            '\n' => out.push_str("\n;   "),
-            _ => out.push(c),
-        }
-    }
-    out
-}
-
-#[cfg(test)]
-mod tests {
-    use super::as_comment;
-
-    #[test]
-    fn a_line_break_continues_the_comment() {
-        assert_eq!(as_comment("a\nb\rc\r\nd"), "a\n;   b\n;   c\n;   d");
-        assert_eq!(as_comment("plain"), "plain");
-    }
+    Some(render_why(template, &arrows))
 }

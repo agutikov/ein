@@ -78,9 +78,9 @@
 (import std.math.arith :symbols (z))
 
 (relation morning Name
-  :why "{?1} is a morning's temperature")
+  :why "{?3} is a morning's temperature")
 (relation frost Name
-  :why "it froze on the morning of {?1}")
+  :why "it froze on the morning of {?3}")
 (__closed__ morning)
 (__closed__ frost)
 

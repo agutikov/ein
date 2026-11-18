@@ -31,9 +31,9 @@
 ;;; answered `Solution` k = 1. Same logical content, opposite verdicts.
 ;;;
 ;;; Now both answer R = {∅}, root alone (`ein solve FILE`).
-(relation thing T :why "{?1} is a thing")
-(relation q T :why "q holds of {?1}")
-(relation bad T :why "{?1} is bad")
+(relation thing T :why "{?3} is a thing")
+(relation q T :why "q holds of {?3}")
+(relation bad T :why "{?3} is bad")
 (thing one) (thing two)
 (rule taint () :match (q ?x)   :assert (bad ?x) :why "q holds of {?x}, which taints it: {?x} is bad")
 (rule kill  () :match (bad ?x) :assert (false) :why "{?x} is bad, which cannot be")

@@ -34,6 +34,6 @@
 ;;;
 ;;;
 
-(relation box Node :why "{?1} is in a box") (relation hit Node :why "{?1} is hit") (relation a Node :why "a holds of {?1}")
+(relation box Node :why "{?3} is in a box") (relation hit Node :why "{?3} is hit") (relation a Node :why "a holds of {?3}")
 (box (a b))
 (rule r () :match (box (?r b)) :assert (hit z) :why "some fact about b is in a box, so z is hit")

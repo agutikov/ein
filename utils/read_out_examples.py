@@ -58,7 +58,7 @@ variant_dir.mkdir(parents=True, exist_ok=True)
 src = (ROOT / "examples/lattice/07_two_pairs_two_tables.ein").read_text()
 variant = src.replace(
     "(query :goal (sits ?p ?s))",
-    "(relation pair-at Group Table :why \"pair {?1} sits at table {?2}\")\n\n(rule pair-at ()\n  :match  (and (member ?a ?g) (sits ?a ?s) (at ?s ?t))\n  :assert (pair-at ?g ?t)\n  :why    \"{?a} of pair {?g} sits in {?s}, a seat at table {?t}\")\n\n(query :goal (pair-at ?g ?t))",
+    "(relation pair-at Group Table :why \"pair {?3} sits at table {?4}\")\n\n(rule pair-at ()\n  :match  (and (member ?a ?g) (sits ?a ?s) (at ?s ?t))\n  :assert (pair-at ?g ?t)\n  :why    \"{?a} of pair {?g} sits in {?s}, a seat at table {?t}\")\n\n(query :goal (pair-at ?g ?t))",
 )
 assert variant != src
 (variant_dir / "07_two_pairs_two_tables+pair-at.ein").write_text(variant)
@@ -216,7 +216,7 @@ add("""A goal that hides the seat needs a relation that does not carry it: a pro
 under its bindings. The program below is 07 with one relation and one rule added, and it is **not an example file**:
 
 ```lisp
-(relation pair-at Group Table :why "pair {?1} sits at table {?2}")
+(relation pair-at Group Table :why "pair {?3} sits at table {?4}")
 
 (rule pair-at ()
   :match  (and (member ?a ?g) (sits ?a ?s) (at ?s ?t))

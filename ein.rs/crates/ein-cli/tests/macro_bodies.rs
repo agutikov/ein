@@ -47,10 +47,10 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-const HEAD: &str = "(relation a Thing :why \"{?1} is an a\")\n\
-                    (relation s Thing :why \"{?1} is an s\")\n\
-                    (relation p Thing :why \"{?1} is a p\")\n\
-                    (relation q Thing :why \"{?1} is a q\")\n\
+const HEAD: &str = "(relation a Thing :why \"{?3} is an a\")\n\
+                    (relation s Thing :why \"{?3} is an s\")\n\
+                    (relation p Thing :why \"{?3} is a p\")\n\
+                    (relation q Thing :why \"{?3} is a q\")\n\
                     (is-a k Thing)\n\
                     (a k)\n";
 

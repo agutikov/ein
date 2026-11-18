@@ -9,6 +9,6 @@
 ;;;
 ;;;
 
-(relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
+(relation holds Node :why "{?3} holds") (relation hit Node :why "{?3} is hit")
 (holds a)
 (rule w () :match (or (holds a) (hit a)) :assert (hit w) :why "a holds or a is hit, so w is hit")

@@ -54,9 +54,9 @@ fn ein_in(dir: &Path, args: &[&str]) -> Run {
     }
 }
 
-const HEAD: &str = "(relation a Thing :why \"{?1} is an a\")\n\
-                    (relation p Thing :why \"{?1} is a p\")\n\
-                    (relation q Thing :why \"{?1} is a q\")\n\
+const HEAD: &str = "(relation a Thing :why \"{?3} is an a\")\n\
+                    (relation p Thing :why \"{?3} is a p\")\n\
+                    (relation q Thing :why \"{?3} is a q\")\n\
                     (is-a k Thing)\n\
                     (is-a j Thing)\n\
                     (a k)\n\
@@ -407,7 +407,8 @@ fn a_string_literal_and_a_comment_hold_any_character() {
     let dir = scratch.path();
     let mut jobs: Vec<(String, String, Option<String>)> = Vec::new();
     for (name, c, _) in CHARS {
-        let why = HEAD.replace("\"{?1} is a q\"", &format!("\"{{?1}} is a q {c}\""));
+        let why = HEAD.replace("\"{?3} is a q\"", &format!("\"{{?3}} is a q {c}\""));
+        assert_ne!(why, HEAD, "the character is written into a `:why`");
         let cases = [
             ("why", format!("{why}{CLAIM}"), None),
             (
@@ -500,7 +501,7 @@ fn every_command(dir: &Path, file: &str) -> Vec<(String, Run)> {
 fn an_imported_module_is_read_as_the_program_is() {
     let scratch = Scratch::new("ein-unicode-imports");
     let dir = scratch.path();
-    let module = "(relation q Thing :why \"{?1} is a q\")\n";
+    let module = "(relation q Thing :why \"{?3} is a q\")\n";
     std::fs::write(
         dir.join("m-bytes.ein"),
         [module.as_bytes(), b";; x\n(q \xffk)\n"].concat(),
@@ -554,7 +555,7 @@ fn an_imported_module_is_read_as_the_program_is() {
     }
     let main = format!(
         "(import {{M}} :symbols (q))\n{}{CLAIM}",
-        HEAD.replace("(relation q Thing :why \"{?1} is a q\")\n", "")
+        HEAD.replace("(relation q Thing :why \"{?3} is a q\")\n", "")
             .replace("(rule base ", "(rule r ")
     );
     let mut bad = Vec::new();

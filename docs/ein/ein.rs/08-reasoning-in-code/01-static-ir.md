@@ -21,12 +21,12 @@ The two pages return to one small program, the *three-house example*. They show 
 is its source. Save it as `three-houses.ein`:
 
 ```lisp
-(relation is-a Thing Kind :why "{?1} is a {?2}")
-(relation lives-in Person House :why "{?1} lives in {?2}")
-(relation owns Person Pet :why "{?1} owns {?2}")
-(relation pet-at Pet House :why "{?1} is kept at {?2}")
-(relation left-of House House :why "{?1} is left of {?2}")
-(relation vacant House :why "{?1} is vacant")
+(relation is-a Thing Kind :why "{?3} is a {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation owns Person Pet :why "{?3} owns {?4}")
+(relation pet-at Pet House :why "{?3} is kept at {?4}")
+(relation left-of House House :why "{?3} is left of {?4}")
+(relation vacant House :why "{?3} is vacant")
 
 (rule pet-follows-owner ()
   :match  (and (owns ?p ?x) (lives-in ?p ?h))
@@ -208,9 +208,9 @@ gives a label a meaning, as a program. A variable in a relation's place must be 
 `?R` and an activator names the relation:
 
 ```lisp
-(relation is-a Thing Kind :why "{?1} is a {?2}")
-(relation lives-in Person House :why "{?1} lives in {?2}")
-(relation fits Thing Kind :why "{?1} fills a first place labelled {?2}")
+(relation is-a Thing Kind :why "{?3} is a {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation fits Thing Kind :why "{?3} fills a first place labelled {?4}")
 
 (is-a Norwegian Person)
 (is-a House-1 House)

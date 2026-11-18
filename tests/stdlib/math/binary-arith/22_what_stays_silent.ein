@@ -19,7 +19,7 @@
 (import std.math.arith :symbols (z))
 (import std.math.decimal :symbols (n))
 
-(relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(relation pair Thing Thing :why "the pair of {?3} and {?4}")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (__closed__ pair)

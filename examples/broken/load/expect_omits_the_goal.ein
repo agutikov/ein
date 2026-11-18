@@ -5,8 +5,8 @@
 ;; …))`. The loader refuses the listing, naming the fact and the claim that
 ;; would state it.
 
-(relation p Thing Place :why "p holds of {?1} and {?2}")
-(relation q Thing Place :why "q holds of {?1} and {?2}")
+(relation p Thing Place :why "p holds of {?3} and {?4}")
+(relation q Thing Place :why "q holds of {?3} and {?4}")
 (p A H1)
 (q A H1)
 (query :goal (p A ?h) :expect (model (q A H1)))

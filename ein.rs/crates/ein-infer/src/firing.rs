@@ -450,7 +450,7 @@ mod tests {
     #[test]
     fn a_multi_assert_shares_one_provenance() {
         let (ast, mut terms, mut kb, plan) = setup(
-            "(relation a Thing :why \"a holds of {?1}\")\n(relation b Thing :why \"b holds of {?1}\")\n\
+            "(relation a Thing :why \"a holds of {?3}\")\n(relation b Thing :why \"b holds of {?3}\")\n\
              (rule r ()\n  :match (a ?x)\n  :assert (and (b ?x) (not (a ?x))) :why \"a holds of {?x}, so b holds of {?x} and a does not\")\n\
              (a thing1)\n",
         );
@@ -501,7 +501,7 @@ mod tests {
     /// a rule with parameters but from an activator.
     #[test]
     fn a_parameter_bound_to_a_nested_fact_is_concluded() {
-        let src = "(relation a Thing :why \"a holds of {?1}\")\n(relation b A B :why \"b holds of {?1} and {?2}\")\n\
+        let src = "(relation a Thing :why \"a holds of {?3}\")\n(relation b A B :why \"b holds of {?3} and {?4}\")\n\
                    (rule r (?then)\n  :match (a ?x)\n  :assert (b ?x ?then) :why \"a holds of {?x}, so b holds of {?x} and {?then}\")\n\
                    (a thing1)\n(r (f thing2))\n";
         let mut ast = ein_ir::Ast::new();
@@ -544,7 +544,7 @@ mod tests {
     #[test]
     fn a_binding_key_is_the_binding_set_by_another_name() {
         let (_ast, mut terms, _kb, plan) = setup(
-            "(relation a Thing :why \"a holds of {?1}\")\n(relation b A B :why \"b holds of {?1} and {?2}\")\n\
+            "(relation a Thing :why \"a holds of {?3}\")\n(relation b A B :why \"b holds of {?3} and {?4}\")\n\
              (rule r ()\n  :match (a ?x)\n  :assert (b ?x ?x) :why \"a holds of {?x}, so b holds of {?x} and {?x}\")\n",
         );
         let n = plan.n_regs as usize;

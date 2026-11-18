@@ -59,7 +59,7 @@ jobs:
       # gate-step
       - run: python3 utils/check_gate_steps.py
       # The process tools that copy a list of the engine's — the editor
-      # grammar, the natural-language census, the review driver — against it.
+      # grammar, the review driver — against it.
       # gate-step
       - run: python3 utils/check_tool_mirrors.py
 

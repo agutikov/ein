@@ -30,11 +30,11 @@
 (import std.math.arith :symbols (z))
 
 (relation pair Number Number
-  :why "is {?1} coprime with {?2}?")
+  :why "is {?3} coprime with {?4}?")
 (relation coprime-test Number Number
-  :why "the coprime test of {?1} and {?2}")
+  :why "the coprime test of {?3} and {?4}")
 (relation coprime Number Number
-  :why "{?1} and {?2} are coprime")
+  :why "{?3} and {?4} are coprime")
 
 (rule the-program-guesses-nothing ()
   :match  ()

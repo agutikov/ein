@@ -20,8 +20,8 @@
 ;;; holds* beside `(says (paid Bob))`, exit 0 on every command. Now refused at
 ;;; load.
 
-(relation says Guest :why "{?1} says something")
-(relation paid Guest :why "{?1} has paid")
+(relation says Guest :why "{?3} says something")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (says (paid Bob))
 (solve :hypothesis-relations ())

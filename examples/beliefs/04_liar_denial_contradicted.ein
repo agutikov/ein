@@ -7,8 +7,8 @@
 ;;; stored negation `(not (= 5 (+ 2 2)))`, and its negation is the negation of
 ;;; a negation. Root is dead and R is empty.
 
-(relation liar  Person       :why "{?1} lies")
-(relation think Person Claim :why "{?1} thinks that {?2}")
+(relation liar  Person       :why "{?3} lies")
+(relation think Person Claim :why "{?3} thinks that {?4}")
 
 (think Alice (not (= 5 (+ 2 2))))
 (liar Alice)

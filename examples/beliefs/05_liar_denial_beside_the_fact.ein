@@ -9,8 +9,8 @@
 ;;; The last claim writes the negation of a negation in the file, as the first
 ;;; states the one the rule concluded: one fact, written or derived.
 
-(relation liar  Person       :why "{?1} lies")
-(relation think Person Claim :why "{?1} thinks that {?2}")
+(relation liar  Person       :why "{?3} lies")
+(relation think Person Claim :why "{?3} thinks that {?4}")
 
 (think Alice (not (= 5 (+ 2 2))))
 (liar Alice)

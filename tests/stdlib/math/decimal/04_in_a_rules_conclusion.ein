@@ -18,7 +18,7 @@
 (import std.math.decimal :symbols (n not-decimal))
 (import std.math.arith :symbols (z))
 
-(relation seed Thing :why "{?1} is a seed")
+(relation seed Thing :why "{?3} is a seed")
 (__closed__ seed)
 (rule ask ()
   :match  (seed ?s)

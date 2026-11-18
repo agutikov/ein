@@ -755,9 +755,9 @@ fn the_full_adder_from_gates_is_the_bits_table() {
         "(import std.bool.gates :symbols (gate2 Xor And Or))\n\
          (import std.bool.circuit :symbols (gate))\n\
          (import std.math.bits :symbols (bin-fa))\n\
-         (relation at Vector Wire Bit :why \"on {?1}, {?2} carries {?3}\")\n\
-         (relation vector Vector Bit Bit Bit :why \"{?1}: a = {?2}, b = {?3}, carry in = {?4}\")\n\
-         (relation row Bit Bit Bit Bit Bit :why \"{?1} + {?2} + {?3}: bit {?4}, carry {?5}\")\n\
+         (relation at Vector Wire Bit :why \"on {?3}, {?4} carries {?5}\")\n\
+         (relation vector Vector Bit Bit Bit :why \"{?3}: a = {?4}, b = {?5}, carry in = {?6}\")\n\
+         (relation row Bit Bit Bit Bit Bit :why \"{?3} + {?4} + {?5}: bit {?6}, carry {?7}\")\n\
          (rule drive () :match (vector ?v ?x ?y ?c)\n\
            :assert (and (at ?v a ?x) (at ?v b ?y) (at ?v cin ?c)) :why \"the inputs of {?v}\")\n\
          (rule propagate-at ()\n\

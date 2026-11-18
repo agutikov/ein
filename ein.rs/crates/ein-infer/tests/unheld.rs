@@ -493,9 +493,9 @@ fn every_question_answers_alike_with_l9_and_without() {
 /// the rule writes from `(orders Ann)`.
 const WRITTEN_WITNESS: &str = r#"
 (import std.algebra :symbols (total-owed))
-(relation is-a   T T        :why "{?1} is a {?2}")
-(relation fed    Guest Dish :why "{?1} is fed {?2}")
-(relation orders Guest      :why "{?1} orders a takeaway")
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation fed    Guest Dish :why "{?3} is fed {?4}")
+(relation orders Guest      :why "{?3} orders a takeaway")
 (is-a Ann Guest) (is-a Soup Dish) (is-a Stew Dish)
 (total-owed fed is-a)
 (rule takeaway ()

@@ -95,7 +95,7 @@ const END: &str = "\n```\n<!-- /generated -->";
 /// A program with **no** `(config …)` head, so `--dump-config` resolves to the
 /// defaults and nothing else. Two facts, because a program with none has
 /// nothing for the loader to do and this way the run is a real solve.
-const NO_CONFIG: &str = "(relation p T :why \"p holds of {?1}\")\n(p A)\n";
+const NO_CONFIG: &str = "(relation p T :why \"p holds of {?3}\")\n(p A)\n";
 
 /// `--dump-config`'s block: the header line and the indented lines under it.
 fn dump_config_block() -> String {
@@ -567,7 +567,7 @@ fn the_retired_flags_are_refused_with_why() {
 
 /// A program whose relation `p`, rule `r1` and hrule `h1` carry no `:why`,
 /// and which states a claim, so that `ein test` has one to check.
-const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\n\
+const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?3} is q\")\n\
                       (rule r1 () :match (p ?x) :assert (q ?x))\n\
                       (hrule h1 () :match (q ?x) :assert (q ?x))\n(p a)\n\
                       (solve :expect (region (model (p a) (q a))))\n";

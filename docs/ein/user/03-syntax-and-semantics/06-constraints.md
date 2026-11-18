@@ -9,8 +9,8 @@ state still has to find.
 ## In Ein
 
 ```lisp
-(relation is-a T T :why "{?1} is a {?2}")
-(relation in Pet Box :why "the {?1} is in box {?2}")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation in Pet Box :why "the {?3} is in box {?4}")
 
 (hrule guess ()
   :match  (and (is-a ?p Pet) (is-a ?b Box))
@@ -180,7 +180,7 @@ a negation:
 
 ```lisp
 ;; Alice lies, and thinks that five is not two plus two.
-(relation = Thing Thing :why "{?1} is {?2}")
+(relation = Thing Thing :why "{?3} is {?4}")
 (think Alice (not (= 5 (+ 2 2))))
 (liar Alice)
 

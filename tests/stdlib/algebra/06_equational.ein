@@ -46,14 +46,14 @@
   :symbols (compose derive-join join-l join-r
  compose-contravariant join-converse converse))
 
-(relation r   Node Node :why "{?1} r-reaches {?2}")   ; declared and empty — every route runs backwards
-(relation s   Node Node :why "{?1} s-reaches {?2}")
-(relation t   Node Node :why "{?1} reaches {?2} by an r step then an s step")   ; = r;s
-(relation j   Node Node :why "{?1} reaches {?2} by an r step or an s step")   ; = r∪s
-(relation r-c Node Node :why "{?1} is r-reached from {?2}")
-(relation s-c Node Node :why "{?1} is s-reached from {?2}")
-(relation t-c Node Node :why "{?1} is reached from {?2} by an r step then an s step")
-(relation j-c Node Node :why "{?1} is reached from {?2} by an r step or an s step")
+(relation r   Node Node :why "{?3} r-reaches {?4}")   ; declared and empty — every route runs backwards
+(relation s   Node Node :why "{?3} s-reaches {?4}")
+(relation t   Node Node :why "{?3} reaches {?4} by an r step then an s step")   ; = r;s
+(relation j   Node Node :why "{?3} reaches {?4} by an r step or an s step")   ; = r∪s
+(relation r-c Node Node :why "{?3} is r-reached from {?4}")
+(relation s-c Node Node :why "{?3} is s-reached from {?4}")
+(relation t-c Node Node :why "{?3} is reached from {?4} by an r step then an s step")
+(relation j-c Node Node :why "{?3} is reached from {?4} by an r step or an s step")
 
 (converse r r-c) (converse s s-c) (converse t t-c) (converse j j-c)
 

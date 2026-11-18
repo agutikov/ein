@@ -46,9 +46,9 @@
 (import std.math.arith :symbols (z))
 
 (relation tile-side Number
-  :why "the largest square tile has a side of {?1}")
+  :why "the largest square tile has a side of {?3}")
 (relation together-after Number
-  :why "the two buses leave together again after {?1} minutes")
+  :why "the two buses leave together again after {?3} minutes")
 (rule the-program-guesses-nothing ()
   :match  ()
   :assert (and (__closed__ tile-side) (__closed__ together-after))

@@ -29,6 +29,6 @@
 ;;; program answers its twin's R.
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation neqw Node :why "neqw holds of {?1}") (relation hit Node :why "{?1} is hit")
+(relation p Node :why "p holds of {?3}") (relation neqw Node :why "neqw holds of {?3}") (relation hit Node :why "{?3} is hit")
 (p a) (neqw b)
 (rule r () :match (neqw ?x) :assert (hit ?x) :why "neqw holds of {?x}, so {?x} is hit")

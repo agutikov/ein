@@ -21,7 +21,7 @@
 ;;; The engine now refuses it at the parse, on every command.
 ;;;
 
-(relation h Claim :why "{?1} is supposed")
+(relation h Claim :why "{?3} is supposed")
 (h (eq k j)) (h (eq k k))
 (rule r () :match (h ?s) :assert (not ?s) :why "not {?s}: it was only supposed")
 (solve :hypothesis-relations ())

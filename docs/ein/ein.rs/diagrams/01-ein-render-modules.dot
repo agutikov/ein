@@ -17,7 +17,7 @@ digraph ein_render {
   trace [label="trace/, slice.rs,\nsentence.rs"];
   text  [label="read_out.rs"];
   cdiff [label="claim_diff.rs"];
-  dans  [label="dump/region_answer.rs,\ndump/json.rs, dump/serialise.rs"];
+  dans  [label="dump/region_answer.rs,\ndump/json.rs"];
   dlat  [label="dump/region_lattice.rs"];
   dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];
   struc [label="structure.rs"];

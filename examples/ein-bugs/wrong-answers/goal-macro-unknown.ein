@@ -26,7 +26,7 @@
 ;;; the claim loads and holds.
 
 (import std.macro :symbols (unknown))
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (paid Ann)
 (solve :hypothesis-relations ())

@@ -24,8 +24,8 @@
 ;;; held no `hit`, and R was four states, none holding `(hit a a)` or `(hit b
 ;;; b)`, exit 0 (`ein solve FILE`, `ein oracle FILE`).
 
-(relation p Node :why "{?1} is a node")
-(relation hit Node Node :why "{?1} and {?2} are two nodes")
+(relation p Node :why "{?3} is a node")
+(relation hit Node Node :why "{?3} and {?4} are two nodes")
 (p a)
 (p b)
 (rule r (?R)

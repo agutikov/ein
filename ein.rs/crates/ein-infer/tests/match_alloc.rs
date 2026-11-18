@@ -50,7 +50,7 @@ static ALLOCATOR: Counting = Counting;
 /// A chain `(edge n-1 n)` of `n` edges, and a self-joining rule over it.
 fn chain(n: usize) -> String {
     let mut s = String::from(
-        "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n(relation path A B :why \"there is a path from {?1} to {?2}\")\n",
+        "(relation edge A B :why \"there is an edge from {?3} to {?4}\")\n(relation path A B :why \"there is a path from {?3} to {?4}\")\n",
     );
     s.push_str(
         "(rule walk ()\n  :match (and (edge ?a ?b) (edge ?b ?c))\n  :assert (path ?a ?c) :why \"there are edges from {?a} to {?b} and from {?b} to {?c}, so there is a path from {?a} to {?c}\")\n",

@@ -1211,16 +1211,16 @@ fn the_structure_is_the_same_under_every_import_form() {
 
 /// A module that declares the relation a program proposes facts of, and
 /// the program: two relations' candidates, one written by an imported name.
-const PLACES: &str = r#"(relation at Thing Place :why "{?1} is at {?2}")
+const PLACES: &str = r#"(relation at Thing Place :why "{?3} is at {?4}")
 "#;
 const REORDERED: &str = r#"(import std.algebra :symbols (functional))
 (import places :symbols (at))
-(relation is-a  T T         :why "{?1} is a {?2}")
-(relation likes Thing Thing :why "{?1} likes {?2}")
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Thing Thing :why "{?3} likes {?4}")
 (is-a a Thing) (is-a b Thing) (is-a p Place) (is-a q Place)
 (functional at)
 (functional likes)
-(relation shy Thing :why "{?1} is shy")
+(relation shy Thing :why "{?3} is shy")
 (shy a)
 (rule shy-at-p ()
   :match  (and (shy ?x) (at ?x p) (likes ?x ?x))

@@ -333,8 +333,8 @@ fn missing(head: &str, name: &str) -> String {
 fn require_why_refuses_each_form_without_one() {
     // Every form carries its `:why`; each case takes one away.
     let whole = [
-        "(relation owns Person Thing :why \"{?1} owns {?2}\")",
-        "(relation has Person Thing :why \"{?1} has {?2}\")",
+        "(relation owns Person Thing :why \"{?3} owns {?4}\")",
+        "(relation has Person Thing :why \"{?3} has {?4}\")",
         "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x) :why \"{?p} keeps {?x}\")",
         "(hrule guess () :match (has ?p ?x) :assert (owns ?p ?x) :why \"suppose {?p} owns {?x}\")",
         "(owns Ann box)",

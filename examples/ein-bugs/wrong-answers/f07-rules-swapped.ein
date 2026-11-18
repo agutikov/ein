@@ -31,9 +31,9 @@
 ;;; scratch, both orders keep both stable models under different universes.
 ;;;
 
-(relation thing Thing :why "{?1} is a thing")
-(relation p Thing :why "{?1} is p")
-(relation q Thing :why "{?1} is q")
+(relation thing Thing :why "{?3} is a thing")
+(relation p Thing :why "{?3} is p")
+(relation q Thing :why "{?3} is q")
 
 (rule derive-q ()
   :match  (and (thing ?x) (absent (p ?x)))

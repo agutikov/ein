@@ -195,7 +195,7 @@ fn gate_program(gate_first: bool) -> String {
     };
     format!(
         "{first}{second}\
-         (relation seed T :why \"{{?1}} is a seed\")\n(relation t T :why \"t holds of {{?1}}\")\n(relation p T :why \"p holds of {{?1}}\")\n(relation q T :why \"q holds of {{?1}}\")\n\
+         (relation seed T :why \"{{?3}} is a seed\")\n(relation t T :why \"t holds of {{?3}}\")\n(relation p T :why \"p holds of {{?3}}\")\n(relation q T :why \"q holds of {{?3}}\")\n\
          (seed A :source \"(1)\")\n(t A :source \"(2)\")\n"
     )
 }
@@ -254,7 +254,7 @@ fn an_unstratifiable_loop_converges_to_a_supported_model() {
          :assert (p ?x)\n  :why \"{?x} is a seed and q does not hold of {?x}, so p holds of {?x}\")\n\
          (rule derive-q ()\n  :match (p ?x)\n  :assert (q ?x)\n  \
          :why \"p holds of {?x}, so q holds of {?x}\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
          (seed A :source \"(1)\")\n",
     );
     assert_eq!(run.extent("p"), ["(p A)"]);
@@ -280,7 +280,7 @@ fn a_guard_over_a_conjunction_is_a_negated_existential() {
     let run = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (and (g ?x ?y) (h ?y))))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and no g of {?x} leads to an h, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation g T T :why \"g holds of {?1} and {?2}\")\n(relation h T :why \"h holds of {?1}\")\n(relation ok T :why \"{?1} is ok\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation g T T :why \"g holds of {?3} and {?4}\")\n(relation h T :why \"h holds of {?3}\")\n(relation ok T :why \"{?3} is ok\")\n\
          (seed A :source \"(1)\")\n(seed B :source \"(2)\")\n\
          (g A W :source \"(3)\")\n(h W :source \"(4)\")\n",
     );
@@ -310,8 +310,8 @@ fn an_or_disjuncts_guard_is_judged_on_the_boundary() {
          :why \"t1 holds of {?x} and r1 does not, or t2 does and r2 does not, so {?x} is gated\")\n\
          (rule derive-r2 ()\n  :match (raw ?x)\n  :assert (r2 ?x)\n  \
          :why \"{?x} is raw, so r2 holds of {?x}\")\n\
-         (relation t1 T :why \"t1 holds of {?1}\")\n(relation t2 T :why \"t2 holds of {?1}\")\n(relation r1 T :why \"r1 holds of {?1}\")\n(relation r2 T :why \"r2 holds of {?1}\")\n\
-         (relation raw T :why \"{?1} is raw\")\n(relation gated T :why \"{?1} is gated\")\n\
+         (relation t1 T :why \"t1 holds of {?3}\")\n(relation t2 T :why \"t2 holds of {?3}\")\n(relation r1 T :why \"r1 holds of {?3}\")\n(relation r2 T :why \"r2 holds of {?3}\")\n\
+         (relation raw T :why \"{?3} is raw\")\n(relation gated T :why \"{?3} is gated\")\n\
          (t2 A :source \"(1)\")\n(raw A :source \"(2)\")\n",
     );
     assert_eq!(run.extent("r2"), ["(r2 A)"], "precondition: r2 was derived");
@@ -349,8 +349,8 @@ fn a_guard_sees_the_closed_extent_of_its_watched_relation() {
          :match (and (anchor ?h1) (other ?h_o) (neq ?h_o ?h1)\n              \
          (absent (next-to ?h_o ?h1)))\n  :assert (non-neighbour ?h_o ?h1)\n  \
          :why \"{?h_o} is not next to the anchor {?h1}, so {?h_o} is no neighbour of {?h1}\")\n\
-         (relation right-of T T :why \"{?1} is right of {?2}\")\n(relation next-to T T :why \"{?1} is next to {?2}\")\n(relation anchor T :why \"{?1} is an anchor\")\n\
-         (relation other T :why \"{?1} is one of the others\")\n(relation non-neighbour T T :why \"{?1} is not a neighbour of {?2}\")\n\
+         (relation right-of T T :why \"{?3} is right of {?4}\")\n(relation next-to T T :why \"{?3} is next to {?4}\")\n(relation anchor T :why \"{?3} is an anchor\")\n\
+         (relation other T :why \"{?3} is one of the others\")\n(relation non-neighbour T T :why \"{?3} is not a neighbour of {?4}\")\n\
          (symmetric next-to)\n(includes right-of next-to)\n\
          (right-of H2 H1 :source \"(1)\")\n(right-of H3 H2 :source \"(2)\")\n\
          (anchor H2 :source \"(3)\")\n\
@@ -392,7 +392,7 @@ fn a_boundary_admitted_firing_records_what_was_absent() {
     let guarded = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and r does not hold of {?x}, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation r T :why \"r holds of {?1}\")\n(relation ok T :why \"{?1} is ok\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation r T :why \"r holds of {?3}\")\n(relation ok T :why \"{?3} is ok\")\n\
          (seed A :source \"(1)\")\n",
     );
     assert_eq!(guarded.extent("ok"), ["(ok A)"]);
@@ -406,7 +406,7 @@ fn a_boundary_admitted_firing_records_what_was_absent() {
     let plain = saturate(
         "(rule chain ()\n  :match (seed ?x)\n  :assert (ok ?x)\n  \
          :why \"{?x} is a seed, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation ok T :why \"{?1} is ok\")\n(seed A :source \"(1)\")\n",
+         (relation seed T :why \"{?3} is a seed\")\n(relation ok T :why \"{?3} is ok\")\n(seed A :source \"(1)\")\n",
     );
     assert!(
         plain.absent_premises("ok", &["A"]).is_empty(),
@@ -429,7 +429,7 @@ fn a_free_position_in_a_negative_premise_is_recorded_as_free() {
     let run = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x ?y)))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and no fact of r has {?x} first, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation r T T :why \"r holds of {?1} and {?2}\")\n(relation ok T :why \"{?1} is ok\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation r T T :why \"r holds of {?3} and {?4}\")\n(relation ok T :why \"{?3} is ok\")\n\
          (seed A :source \"(1)\")\n",
     );
     assert_eq!(run.extent("ok"), ["(ok A)"]);
@@ -453,8 +453,8 @@ fn an_alternative_justification_carries_its_own_negative_premises() {
          :why \"{?x} is one of the others, so {?x} is a target\")\n\
          (rule r-naf ()\n  :match (and (seed ?x) (absent (block ?x)))\n  \
          :assert (target ?x)\n  :why \"{?x} is a seed with no block on it, so {?x} is a target\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation other T :why \"{?1} is one of the others\")\n(relation block T :why \"there is a block on {?1}\")\n\
-         (relation target T :why \"{?1} is a target\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation other T :why \"{?3} is one of the others\")\n(relation block T :why \"there is a block on {?3}\")\n\
+         (relation target T :why \"{?3} is a target\")\n\
          (seed A :source \"(1)\")\n(other A :source \"(2)\")\n",
     );
     let target = run.fact("target", &["A"]).expect("derived");
@@ -503,7 +503,7 @@ fn a_nested_guard_records_both_levels() {
          (rule undefeated ()\n  :match (and (player ?p)\n              \
          (forall ?q (and (player ?q) (neq ?p ?q)) (beats ?p ?q)))\n  \
          :assert (undefeated ?p)\n  :why \"{?p} is a player who beats every other player, so {?p} is undefeated\")\n\
-         (relation player T :why \"{?1} is a player\")\n(relation beats T T :why \"{?1} beats {?2}\")\n(relation undefeated T :why \"{?1} is undefeated\")\n\
+         (relation player T :why \"{?3} is a player\")\n(relation beats T T :why \"{?3} beats {?4}\")\n(relation undefeated T :why \"{?3} is undefeated\")\n\
          (player Alice :source \"(1)\")\n(player Bob :source \"(2)\")\n\
          (beats Alice Bob :source \"(3)\")\n",
     );
@@ -545,8 +545,8 @@ fn or_is_commutative_when_its_disjuncts_share_bindings() {
         format!(
             "(rule gate ()\n  :match (or {d1} {d2})\n  :assert (gated ?x)\n  \
              :why \"a holds of {{?x}}, and either there is no block on {{?x}} or {{?x}} is not one of the others, so {{?x}} is gated\")\n\
-             (relation a T :why \"a holds of {{?1}}\")\n(relation block T :why \"there is a block on {{?1}}\")\n(relation other T :why \"{{?1}} is one of the others\")\n\
-             (relation gated T :why \"{{?1}} is gated\")\n\
+             (relation a T :why \"a holds of {{?3}}\")\n(relation block T :why \"there is a block on {{?3}}\")\n(relation other T :why \"{{?3}} is one of the others\")\n\
+             (relation gated T :why \"{{?3}} is gated\")\n\
              (a X :source \"(1)\")\n(block X :source \"(2)\")\n"
         )
     };
@@ -577,7 +577,7 @@ fn the_boundary_decides_whether_a_saturator_is_stalled() {
     let (ast, mut terms, mut kb) = load_src(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and r does not hold of {?x}, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation r T :why \"r holds of {?1}\")\n(relation ok T :why \"{?1} is ok\")\n\
+         (relation seed T :why \"{?3} is a seed\")\n(relation r T :why \"r holds of {?3}\")\n(relation ok T :why \"{?3} is ok\")\n\
          (seed A :source \"(1)\")\n",
     );
     let mut ev = Events::off();
@@ -623,7 +623,7 @@ fn matching_does_not_resolve_equality_classes() {
          :why \"r holds of C and {?y}, so {?y} was found\")\n\
          (rule gate ()\n  :match (and (seed ?x) (absent (r C ?y)))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and no fact of r has C first, so {?x} is ok\")\n\
-         (relation r T T :why \"r holds of {?1} and {?2}\")\n(relation seed T :why \"{?1} is a seed\")\n(relation found T :why \"{?1} was found\")\n(relation ok T :why \"{?1} is ok\")\n\
+         (relation r T T :why \"r holds of {?3} and {?4}\")\n(relation seed T :why \"{?3} is a seed\")\n(relation found T :why \"{?3} was found\")\n(relation ok T :why \"{?3} is ok\")\n\
          (r A B :source \"(1)\")\n(seed S :source \"(2)\")\n",
         |kb, terms| {
             let a = terms.intern_text("A").expect("room");
@@ -666,7 +666,7 @@ fn a_guard_over_a_nested_pattern_watches_the_outer_relation_only() {
         format!(
             "(rule gate ()\n  :match (and (seed ?x) (absent (not (r ?x ?y))))\n  \
              :assert (ok ?x)\n  :why \"{{?x}} is a seed and no denial of r has {{?x}} first, so {{?x}} is ok\")\n\
-             (relation seed T :why \"{{?1}} is a seed\")\n(relation r T T :why \"r holds of {{?1}} and {{?2}}\")\n(relation ok T :why \"{{?1}} is ok\")\n\
+             (relation seed T :why \"{{?3}} is a seed\")\n(relation r T T :why \"r holds of {{?3}} and {{?4}}\")\n(relation ok T :why \"{{?3}} is ok\")\n\
              (seed X :source \"(1)\")\n(seed Y :source \"(2)\")\n\
              (not (r X B) :source \"(3)\")\n{extra}"
         )
@@ -708,8 +708,8 @@ fn a_rule_parameter_is_in_scope_for_its_guards() {
             "(rule gate (?P)\n  \
              :match (and (trigger ?a) (absent (and (r ?a ?y) (eq ?y ?P))))\n  \
              :assert (gated ?a)\n  :why \"{{?a}} is a trigger and r does not hold of {{?a}} and {{?P}}, so {{?a}} is gated\")\n\
-             (relation trigger T :why \"{{?1}} is a trigger\")\n(relation r T T :why \"r holds of {{?1}} and {{?2}}\")\n(relation gated T :why \"{{?1}} is gated\")\n\
-             (relation gate T :why \"rule gate is switched on for {{?1}}\")\n\
+             (relation trigger T :why \"{{?3}} is a trigger\")\n(relation r T T :why \"r holds of {{?3}} and {{?4}}\")\n(relation gated T :why \"{{?3}} is gated\")\n\
+             (relation gate T :why \"rule gate is switched on for {{?3}}\")\n\
              (gate BAD :source \"activator\")\n(trigger X :source \"(1)\")\n\
              (r X {stored} :source \"(2)\")\n"
         )
@@ -743,7 +743,7 @@ fn a_guard_free_rule_parks_nothing() {
     let plain = saturate(
         "(rule plain ()\n  :match (seed ?x)\n  :assert (ok ?x)\n  \
          :why \"{?x} is a seed, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation ok T :why \"{?1} is ok\")\n(seed A :source \"(1)\")\n",
+         (relation seed T :why \"{?3} is a seed\")\n(relation ok T :why \"{?3} is ok\")\n(seed A :source \"(1)\")\n",
     );
     assert_eq!(plain.extent("ok"), ["(ok A)"], "the rule still fires");
     assert_eq!(plain.naf_rounds, 0, "the boundary was consulted anyway");
@@ -754,7 +754,7 @@ fn a_guard_free_rule_parks_nothing() {
     let guarded = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
          :assert (ok ?x)\n  :why \"{?x} is a seed and r does not hold of {?x}, so {?x} is ok\")\n\
-         (relation seed T :why \"{?1} is a seed\")\n(relation r T :why \"r holds of {?1}\")\n(relation ok T :why \"{?1} is ok\")\n(seed A :source \"(1)\")\n",
+         (relation seed T :why \"{?3} is a seed\")\n(relation r T :why \"r holds of {?3}\")\n(relation ok T :why \"{?3} is ok\")\n(seed A :source \"(1)\")\n",
     );
     assert_eq!(guarded.extent("ok"), ["(ok A)"]);
     assert!(
@@ -785,7 +785,7 @@ fn unknown_admits_exactly_the_undecided_pairs() {
                 :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)\n              \
                 (unknown (likes ?a ?b)))\n  :assert (unknown-likes ?a ?b)\n  \
                 :why \"whether {?a} likes {?b} is neither stated nor denied\")\n\
-                (relation likes T T :why \"{?1} likes {?2}\")\n(relation unknown-likes T T :why \"whether {?1} likes {?2} is undecided\")\n\
+                (relation likes T T :why \"{?3} likes {?4}\")\n(relation unknown-likes T T :why \"whether {?3} likes {?4} is undecided\")\n\
                 (is-a Person T)\n";
 
     let three = saturate(&format!(
@@ -822,10 +822,10 @@ const DERIVED_NAF: &str = "\
 (rule mk-target ()
   :match  (src ?a ?b)
   :assert (target ?a ?b) :why \"src holds of {?a} and {?b}, so target holds of {?a} and {?b}\")
-(relation seed   T T :why \"seed holds of {?1} and {?2}\")
-(relation target T T :why \"target holds of {?1} and {?2}\")
-(relation out    T T :why \"out holds of {?1} and {?2}\")
-(relation src    T T :why \"src holds of {?1} and {?2}\")
+(relation seed   T T :why \"seed holds of {?3} and {?4}\")
+(relation target T T :why \"target holds of {?3} and {?4}\")
+(relation out    T T :why \"out holds of {?3} and {?4}\")
+(relation src    T T :why \"src holds of {?3} and {?4}\")
 (seed A B)
 (query :goal (out ?x ?y))
 ";
@@ -974,12 +974,12 @@ fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
 fn parked_with_chain(n: usize) -> String {
     let links = ["(link A B)", "(link B C)", "(link C D)", "(link D E)"];
     format!(
-        "(relation player Thing :why \"{{?1}} is a player\")\n\
-         (relation beats  Thing Thing :why \"{{?1}} beats {{?2}}\")\n\
-         (relation champ  Thing :why \"{{?1}} is a champ\")\n\
-         (relation link   Thing Thing :why \"there is a link from {{?1}} to {{?2}}\")\n\
-         (relation seen   Thing :why \"{{?1}} is seen\")\n\
-         (relation blocked Thing :why \"{{?1}} is blocked\")\n\
+        "(relation player Thing :why \"{{?3}} is a player\")\n\
+         (relation beats  Thing Thing :why \"{{?3}} beats {{?4}}\")\n\
+         (relation champ  Thing :why \"{{?3}} is a champ\")\n\
+         (relation link   Thing Thing :why \"there is a link from {{?3}} to {{?4}}\")\n\
+         (relation seen   Thing :why \"{{?3}} is seen\")\n\
+         (relation blocked Thing :why \"{{?3}} is blocked\")\n\
          (player P1) (player P2)\n\
          (beats P2 P1)\n\
          (rule undefeated ()\n\

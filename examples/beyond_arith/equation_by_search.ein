@@ -14,8 +14,8 @@
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 (import std.algebra :symbols (total-owed functional))
-(relation is-a Thing Type :why "{?1} is a {?2}")
-(relation dig Place Digit :why "the digit of x at {?1} is {?2}")
+(relation is-a Thing Type :why "{?3} is a {?4}")
+(relation dig Place Digit :why "the digit of x at {?3} is {?4}")
 (is-a 0 Digit) (is-a 1 Digit) (is-a 2 Digit) (is-a 3 Digit) (is-a 4 Digit)
 (is-a 5 Digit) (is-a 6 Digit) (is-a 7 Digit) (is-a 8 Digit) (is-a 9 Digit)
 (total-owed dig is-a)   ; every place owes a digit: a state with a place unset is no answer
@@ -28,11 +28,11 @@
 
 (solve :hrules (guess-digit))
 (is-a p0 Place) (is-a p1 Place) (is-a p2 Place)
-(relation above Place Place :why "{?2} is the place above {?1}")
-(relation want Place Digit :why "the product's digit at {?1} is {?2}")
-(relation times Digit :why "x is multiplied by {?1}")
-(relation top Place :why "{?1} is x's top place")
-(relation col Place Digit Digit :why "the column at {?1} gives digit {?2}, carry {?3}")
+(relation above Place Place :why "{?4} is the place above {?3}")
+(relation want Place Digit :why "the product's digit at {?3} is {?4}")
+(relation times Digit :why "x is multiplied by {?3}")
+(relation top Place :why "{?3} is x's top place")
+(relation col Place Digit Digit :why "the column at {?3} gives digit {?4}, carry {?5}")
 (__closed__ is-a) (__closed__ above) (__closed__ want) (__closed__ times) (__closed__ top) (__closed__ col)
 (above p0 p1) (above p1 p2)
 (top p2) (times 7)

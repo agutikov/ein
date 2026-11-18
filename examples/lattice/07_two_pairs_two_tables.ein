@@ -23,10 +23,10 @@
 
 (import std.algebra :symbols (functional injective total-owed))
 
-(relation is-a   T T          :why "{?1} is a {?2}")
-(relation member Friend Group :why "{?1} is a member of {?2}")
-(relation at     Seat Table   :why "seat {?1} is at table {?2}")
-(relation sits   Friend Seat  :why "{?1} sits in seat {?2}")
+(relation is-a   T T          :why "{?3} is a {?4}")
+(relation member Friend Group :why "{?3} is a member of {?4}")
+(relation at     Seat Table   :why "seat {?3} is at table {?4}")
+(relation sits   Friend Seat  :why "{?3} sits in seat {?4}")
 
 (is-a Ann Friend) (is-a Bob Friend) (is-a Cat Friend) (is-a Dan Friend)
 (is-a S1 Seat) (is-a S2 Seat) (is-a S3 Seat) (is-a S4 Seat)

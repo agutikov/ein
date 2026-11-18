@@ -5,6 +5,6 @@
 ;;; `35186bc0`, release and debug).
 ;;;
 
-(relation person Node :why "{?1} is a person") (relation rrelationship Node Node :why "{?1} has an rrelationship with {?2}")
+(relation person Node :why "{?3} is a person") (relation rrelationship Node Node :why "{?3} has an rrelationship with {?4}")
 (person alice) (person bob)
 (rrelationship alice bob)

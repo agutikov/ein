@@ -37,9 +37,9 @@
 (import std.bool.gates :symbols (gates gate2))
 
 (relation gate Instance Function Wire Wire Wire
-  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+  :why "{?3} is a {?4} gate from {?5} and {?6} to {?7}")
 (relation val Wire Bit
-  :why "{?1} carries {?2}")
+  :why "{?3} carries {?4}")
 
 (rule propagate ()
   :match  (and (gate ?g ?f ?a ?b ?o) (val ?a ?x) (val ?b ?y) (gate2 ?f ?x ?y ?z))
@@ -52,7 +52,7 @@
 
 ;; ── The closing rule, the module's entry ────────────────────────────────────
 (relation circuit-rule Rule
-  :why "{?1} is a rule of the circuit theory")
+  :why "{?3} is a rule of the circuit theory")
 (circuit-rule circuit)
 (rule circuit ()
   :match  ()

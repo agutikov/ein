@@ -79,13 +79,13 @@ fn the_calculator_by_the_names_a_program_writes() {
 #[test]
 fn a_programs_own_names_beside_the_calculator() {
     for own in [
-        "(relation done Task :why \"{?1} is done\")\n(__closed__ done)\n(done laundry)\n\
+        "(relation done Task :why \"{?3} is done\")\n(__closed__ done)\n(done laundry)\n\
          (query :goal (done ?t) :expect (model (done laundry)))\n",
-        "(relation b T :why \"{?1} is b\")\n(__closed__ b)\n(b one)\n\
+        "(relation b T :why \"{?3} is b\")\n(__closed__ b)\n(b one)\n\
          (query :goal (b ?x) :expect (model (b one)))\n",
         "(import std.math.digits :symbols (fa))\n\
-         (relation column Col Digit Digit :why \"column {?1} adds {?2} and {?3}\")\n\
-         (relation col Col Digit Digit :why \"column {?1} gives {?2}, carry {?3}\")\n\
+         (relation column Col Digit Digit :why \"column {?3} adds {?4} and {?5}\")\n\
+         (relation col Col Digit Digit :why \"column {?3} gives {?4}, carry {?5}\")\n\
          (__closed__ column) (__closed__ col)\n(column units 7 5)\n\
          (rule add-column () :match (and (column ?c ?a ?b) (fa ?a ?b 0 ?d ?k)) \
           :assert (col ?c ?d ?k) :why \"{?a} + {?b} is {?d}, carry {?k}\")\n\

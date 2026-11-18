@@ -10,9 +10,9 @@
 ;;; hold `(r a)` and `(and (p a) (q a))`, both goals with no row and both claims
 ;;; FAILED, exit 1; a macro's call in a closing rule's conclusion meets it.
 ;;;
-(relation p Thing :why "p {?1}")
-(relation q Thing :why "q {?1}")
-(relation r Thing :why "r {?1}")
+(relation p Thing :why "p {?3}")
+(relation q Thing :why "q {?3}")
+(relation r Thing :why "r {?3}")
 (macro both (?x) (and (p ?x) (q ?x)) :why "both p and q of {?x}")
 (rule nested () :match () :assert (and (r a) (both a)) :why "r of a, and both of a")
 (__closed__ p) (__closed__ q) (__closed__ r)

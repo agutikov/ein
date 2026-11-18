@@ -164,8 +164,8 @@ The Euclidean remainder is a natural number, `(n z 1)`; the other two are intege
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation overdrawn Account :why "{?1} is overdrawn")
-(relation balance Account Number Number :why "{?1} had {?2} and spent {?3}")
+(relation overdrawn Account :why "{?3} is overdrawn")
+(relation balance Account Number Number :why "{?3} had {?4} and spent {?5}")
 
 (balance Ann (int (n (n z 3) 0) z) (int (n (n z 4) 5) z))
 (balance Bob (int (n (n z 3) 0) z) (int (n (n z 1) 0) z))
@@ -606,9 +606,9 @@ The tagged call, under a tag of the program's own:
 (import std.math.decimal :symbols (n))
 (import std.math.arith :symbols (z))
 
-(relation tiles   Number Number :why "a floor of {?1} by {?2}")
-(relation square  Number Number :why "the largest square tile for a floor of {?1} by {?2}")
-(relation tile-is Number Number Number :why "a floor of {?1} by {?2} takes square tiles of side {?3}")
+(relation tiles   Number Number :why "a floor of {?3} by {?4}")
+(relation square  Number Number :why "the largest square tile for a floor of {?3} by {?4}")
+(relation tile-is Number Number Number :why "a floor of {?3} by {?4} takes square tiles of side {?5}")
 
 (tiles (n (n z 1) 8) (n (n z 1) 2))        ; 18 by 12
 

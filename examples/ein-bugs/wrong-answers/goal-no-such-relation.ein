@@ -21,7 +21,7 @@
 ;;; `paid` does in a state that holds no `paid` fact. Now refused at load.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (paid Ann)
 (solve :hypothesis-relations ())

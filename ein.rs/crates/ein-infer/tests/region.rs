@@ -355,7 +355,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // candidate, so `bad`'s absence can be filled.
     (
         "derived",
-        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation q T T :why \"q holds of {?1} and {?2}\") (relation r T :why \"r holds of {?1}\") (r A)
+        "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation q T T :why \"q holds of {?3} and {?4}\") (relation r T :why \"r holds of {?3}\") (r A)
          (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
          (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
          (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
@@ -367,7 +367,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // The same, reading `(q ?x Other)`, which nothing a commitment adds has.
     (
         "static",
-        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation q T T :why \"q holds of {?1} and {?2}\") (relation r T :why \"r holds of {?1}\") (r A)
+        "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation q T T :why \"q holds of {?3} and {?4}\") (relation r T :why \"r holds of {?3}\") (r A)
          (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
          (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
          (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
@@ -381,8 +381,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // `(absent (done W))` static, and the cube shows the hole it makes.
     (
         "even-depth",
-        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation done T :why \"{?1} is done\") (relation world T :why \"{?1} is a world\")
-         (relation slot T :why \"{?1} is a slot\") (world W) (s A) (slot A) (slot B)
+        "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation done T :why \"{?3} is done\") (relation world T :why \"{?3} is a world\")
+         (relation slot T :why \"{?3} is a slot\") (world W) (s A) (slot A) (slot B)
          (hrule g () :match (slot ?x) :assert (p ?x) :why \"{?x} is a slot, so guess that p holds of {?x}\")
          (rule all-p () :match (and (world ?w) (absent (and (s ?x) (absent (p ?x)))))
                         :assert (done ?w) :why \"p holds of everything s holds of, so world {?w} is done\")
@@ -394,7 +394,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // A stored negative a commitment derives fills the read.
     (
         "negative",
-        "(relation p T :why \"p holds of {?1}\") (relation t T :why \"t holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+        "(relation p T :why \"p holds of {?3}\") (relation t T :why \"t holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (r A)
          (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
          (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
          (rule neg () :match (p ?x) :assert (not (q ?x)) :why \"p holds of {?x}, so q does not hold of {?x}\")
@@ -407,7 +407,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // the closure says it cannot see the plan that would compile.
     (
         "activator",
-        "(relation p T :why \"p holds of {?1}\") (relation t T :why \"t holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+        "(relation p T :why \"p holds of {?3}\") (relation t T :why \"t holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (r A)
          (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
          (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
          (rule watch (?R) :match (and (t ?x) (absent (?R ?x))) :assert (false) :why \"t holds of {?x} and {?R} does not, which cannot be\")
@@ -420,7 +420,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // proposed, and the read asks for membership in a type.
     (
         "type-constant",
-        "(relation is-a T T :why \"{?1} is a {?2}\") (relation owns T T :why \"{?1} owns {?2}\")
+        "(relation is-a T T :why \"{?3} is a {?4}\") (relation owns T T :why \"{?3} owns {?4}\")
          (is-a A Thing) (is-a B Thing) (is-a C Box) (owns A C)
          (hrule g () :match (and (is-a ?x Thing) (is-a ?y Thing) (neq ?x ?y))
                      :assert (is-a ?x ?y) :why \"{?x} and {?y} are two different Things, so guess that {?x} is a {?y}\")
@@ -624,9 +624,9 @@ fn fact_grain_on_programs_written_to_test_it() {
 fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side() {
     const READING: &str = "(import std.math.decimal-arith :symbols (decimal-arith div quot-of))
          (import std.math.decimal :symbols (n)) (import std.math.arith :symbols (z))
-         (relation reading T :why \"{?1} is a reading\") (relation read-as T :why \"read as {?1}\")
-         (relation amount T T :why \"there are {?2} {?1}\") (relation answer T T :why \"the answer for {?1} is {?2}\")
-         (relation counted T :why \"{?1} is counted\")
+         (relation reading T :why \"{?3} is a reading\") (relation read-as T :why \"read as {?3}\")
+         (relation amount T T :why \"there are {?4} {?3}\") (relation answer T T :why \"the answer for {?3} is {?4}\")
+         (relation counted T :why \"{?3} is counted\")
          (reading one) (amount apples (n (n z 1) 3))
          (hrule suppose () :match (reading ?m) :assert (read-as ?m) :why \"suppose the reading {?m}\")
          (rule under () :match (and (read-as ?m) (amount ?k ?v)) :assert (answer ?k ?v) :why \"under {?m}, the answer for {?k} is {?v}\")
@@ -756,7 +756,7 @@ fn closure_operator_breaks(r: &Region) -> Vec<String> {
 /// A program the static check flags on which `cl` is **not** monotone, so the
 /// law below is the verdict's and not the oracle's: `{(p A)}` derives `(s A)`
 /// while `(q A)` is absent, and `{(p A), (q A)}` does not.
-const CL_NOT_MONOTONE: &str = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+const CL_NOT_MONOTONE: &str = "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation r T :why \"r holds of {?3}\") (r A)
      (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
      (hrule g2 () :match (r ?x) :assert (q ?x) :why \"r holds of {?x}, so guess that q holds of {?x}\")
      (hrule g3 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")

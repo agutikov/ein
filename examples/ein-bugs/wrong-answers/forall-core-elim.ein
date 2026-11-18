@@ -36,7 +36,7 @@
 
 (import std.macro :symbols (forall))
 
-(relation item T :why "{?1} is an item") (relation slot T :why "{?1} is a slot") (relation in T T :why "{?1} is in {?2}") (relation tag T :why "{?1} is tagged")
+(relation item T :why "{?3} is an item") (relation slot T :why "{?3} is a slot") (relation in T T :why "{?3} is in {?4}") (relation tag T :why "{?3} is tagged")
 
 (item a) (slot s1) (slot s2)
 (not (in a s2))

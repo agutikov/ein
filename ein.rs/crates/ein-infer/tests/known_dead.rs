@@ -677,8 +677,8 @@ fn the_fixture_pins_the_extensions_known_dead_by_a_denial() {
 /// memory nothing.
 #[test]
 fn a_flagged_program_spends_no_denial() {
-    let text = "(relation p T :why \"p holds of {?1}\")
-         (relation item T :why \"{?1} is an item\")
+    let text = "(relation p T :why \"p holds of {?3}\")
+         (relation item T :why \"{?3} is an item\")
          (item A) (item B)
          (rule deny ()
            :match (and (p A) (absent (p B)))

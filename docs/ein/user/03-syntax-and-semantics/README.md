@@ -14,7 +14,7 @@ page, and **the four are of one example**, so a reader can lay them side by side
 |---|---|---|
 | **In Ein** | a small program that loads and runs, and what `ein` prints for it. Ein is the main language of these pages: it is what a reader writes | what to type |
 | **As a graph** | that program as the engine draws it, an image whose source is a `.dot` file under [`diagrams/`](diagrams/), with the command that wrote it: `ein render kb` for what the knowledge base holds, `ein render rule` for a rule as a rewrite, `ein render region` for the lattice of commitments | the knowledge base is a graph, and every form has a fixed drawing |
-| **In words** | what the Ein says: the English the program carries in its `:why`, `:source` and `:goal-text`, and the sentences the engine prints from it | every statement a program makes can be read back as English |
+| **In words** | what the Ein says: the English the program carries in its `:why`, `:source` and `:goal-text`, and the sentences the engine prints from it | each form reads back as the English written on it, and a fact by where it came from, or as written |
 | **In mathematics** | what the notion is, as a formula: the set, the relation, the implication a rule is, the condition an obligation owes, what a hypothesis adds, what the answer is | what the concept is, independent of how it is written or drawn |
 
 Which pages owe the four, and which do not:

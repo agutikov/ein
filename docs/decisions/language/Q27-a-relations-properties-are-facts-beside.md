@@ -3,7 +3,7 @@
 A relation's algebraic properties are facts written beside its declaration, never inside it:
 
 ```lisp
-(relation next-to Attribute Attribute :why "{?1}'s house is next to {?2}'s")
+(relation next-to Attribute Attribute :why "{?3}'s house is next to {?4}'s")
 (symmetric next-to)
 (includes right-of next-to)
 ```

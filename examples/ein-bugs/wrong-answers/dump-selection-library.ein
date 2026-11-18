@@ -4,7 +4,7 @@
 ;;; fires once at root, so root holds `(color Red)` and `(color Green)`, and
 ;;; with no hypothesis R is {∅}.
 
-(relation color Thing :why "{?1} is a colour")
+(relation color Thing :why "{?3} is a colour")
 
 (rule palette ()
   :match  ()

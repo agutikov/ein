@@ -22,7 +22,7 @@
 ;;; held `(eq a w :rule r)` (`ein saturate FILE --dump`), and R was two
 ;;; states, ∅ and `{(p w)}`, exit 0 (`ein solve FILE`, `ein oracle FILE`).
 
-(relation p Node :why "{?1} is a node")
+(relation p Node :why "{?3} is a node")
 (p a)
 (rule r (?R)
   :match (p ?x)

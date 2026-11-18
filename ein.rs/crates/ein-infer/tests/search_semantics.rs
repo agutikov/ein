@@ -160,7 +160,7 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
 #[test]
 fn mutual_negation_is_detected_whatever_either_sides_origin() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(relation sits Person Seat :why \"{?1} sits in seat {?2}\")\n(relation is-a Thing Thing :why \"{?1} is a {?2}\")\n\
+        "(relation sits Person Seat :why \"{?3} sits in seat {?4}\")\n(relation is-a Thing Thing :why \"{?3} is a {?4}\")\n\
          (is-a A Person) (is-a B Person)\n\
          (rule one-per-seat ()\n\
          \x20 :match  (and (sits ?p1 ?s) (is-a ?p2 Person) (neq ?p1 ?p2))\n\
@@ -206,7 +206,7 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
 fn every_pair_is_reported_not_only_the_first() {
     let (terms, kb) = {
         let (_ast, terms, kb) = kb_of(
-            "(relation r T T :why \"r holds of {?1} and {?2}\")\n\
+            "(relation r T T :why \"r holds of {?3} and {?4}\")\n\
              (r A B) (not (r A B))\n(r C D) (not (r C D))\n(r E F) (not (r E F))\n",
         );
         (terms, kb)
@@ -233,7 +233,7 @@ fn every_pair_is_reported_not_only_the_first() {
 #[test]
 fn a_nested_positive_pairs_through_structural_identity() {
     let (_ast, terms, kb) = kb_of(
-        "(relation hypothesis T :why \"{?1} is hypothesised\")\n(relation co-located T T :why \"{?1} is co-located with {?2}\")\n\
+        "(relation hypothesis T :why \"{?3} is hypothesised\")\n(relation co-located T T :why \"{?3} is co-located with {?4}\")\n\
          (hypothesis (co-located Norwegian House-2))\n\
          (not (hypothesis (co-located Norwegian House-2)))\n",
     );
@@ -257,7 +257,7 @@ fn a_nested_positive_pairs_through_structural_identity() {
 #[test]
 fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     let (_ast, mut terms, mut kb) =
-        kb_of("(relation r T T :why \"r holds of {?1} and {?2}\")\n(r A B :source \"(1)\")\n");
+        kb_of("(relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n");
     let not = terms.kernel.not;
     // `5` is a name: no fact.
     let five = terms.value_text("5").expect("room");
@@ -282,7 +282,7 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
 #[test]
 fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
     let (_ast, terms, kb) = kb_of(
-        "(relation r T T :why \"r holds of {?1} and {?2}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
+        "(relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
          (false :source \"(3)\")\n",
     );
     let found = detect(&kb, &terms);
@@ -324,7 +324,7 @@ fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
     let (ast, mut terms, mut kb) = kb_of(
         "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 holds of {?x}, so x holds of {?x}\")\n\
          (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 holds of {?x}, so x does not\")\n\
-         (relation h1 T :why \"h1 holds of {?1}\") (relation h2 T :why \"h2 holds of {?1}\") (relation x T :why \"x holds of {?1}\")\n(is-a a T)\n(h1 a) (h2 a)\n",
+         (relation h1 T :why \"h1 holds of {?3}\") (relation h2 T :why \"h2 holds of {?3}\") (relation x T :why \"x holds of {?3}\")\n(is-a a T)\n(h1 a) (h2 a)\n",
     );
     let (first_incremental, first_scan) = in_session(&ast, &mut terms, &mut kb, |s| {
         let mut sat = Saturator::new(s).expect("compiles");
@@ -525,7 +525,7 @@ fn two_derivations(join_first: bool) -> String {
         (chain, join)
     };
     format!(
-        "(relation A T :why \"A holds of {{?1}}\")\n(relation B T :why \"B holds of {{?1}}\")\n(relation C T :why \"C holds of {{?1}}\")\n(relation X T :why \"X holds of {{?1}}\")\n(relation Y T :why \"Y holds of {{?1}}\")\n\
+        "(relation A T :why \"A holds of {{?3}}\")\n(relation B T :why \"B holds of {{?3}}\")\n(relation C T :why \"C holds of {{?3}}\")\n(relation X T :why \"X holds of {{?3}}\")\n(relation Y T :why \"Y holds of {{?3}}\")\n\
          {first}{second}\
          (rule clash ()\n  :match (and (X ?o) (Y ?o)) :assert (false)\n\
          \x20 :why \"X and Y both hold of {{?o}}, which cannot be\")\n\
@@ -541,7 +541,7 @@ const FUNCTIONAL: &str = "\
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
   :why    \"{?R} is functional, yet gives {?a} both {?b} and {?c}\")
-(relation R T T :why \"R holds of {?1} and {?2}\")
+(relation R T T :why \"R holds of {?3} and {?4}\")
 (functional R)
 (R x One :source \"(1)\")
 (R x Two :source \"(2)\")
@@ -718,7 +718,7 @@ fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
 
 /// Two declared relations over two objects — the blind enumerator proposes
 /// both unless a query keyword narrows it.
-const TWO_REL: &str = "(relation co-located T T :why \"{?1} is co-located with {?2}\")\n(relation likes T T :why \"{?1} likes {?2}\")\n\
+const TWO_REL: &str = "(relation co-located T T :why \"{?3} is co-located with {?4}\")\n(relation likes T T :why \"{?3} likes {?4}\")\n\
                        (is-a Thing T)\n(is-a A Thing) (is-a B Thing)\n";
 
 /// The candidates H's pass emits (`generate_config_free`), plus its stats.

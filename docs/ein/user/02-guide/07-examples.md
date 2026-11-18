@@ -30,9 +30,9 @@ one fact it is, an octagon whose arrow `1` is at `lives-in` and whose arrows `2`
   :why    "{?rel} is transitive.")
 
 ;; The schema: no :source, so it is background.
-(relation is-a       T T :why "{?1} is a {?2}")
-(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
-(relation right-of   Attribute Attribute :why "{?1}'s house is immediately right of {?2}'s")
+(relation is-a       T T :why "{?3} is a {?4}")
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation right-of   Attribute Attribute :why "{?3}'s house is immediately right of {?4}'s")
 ;; The attribute hierarchy and its members are ordinary `is-a` facts.
 (is-a House Attribute) (is-a Color Attribute) (is-a Nationality Attribute)
 (is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
@@ -77,9 +77,9 @@ from how one encoding happens to be written.
 It declares its own membership relations and links every attribute through a single generic `co-located`:
 
 ```lisp
-(relation type       T T :why "{?1} is a subtype of {?2}")
-(relation instance   T T :why "{?1} is an instance of {?2}")
-(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation type       T T :why "{?3} is a subtype of {?4}")
+(relation instance   T T :why "{?3} is an instance of {?4}")
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
 (type Nationality Attribute)
 (instance Norwegian Nationality)
 (instance Japanese  Nationality)
@@ -112,8 +112,8 @@ It uses one membership relation, `is-a`, and its transitive closure `is-a*`:
 ```lisp
 (import std.algebra   :symbols (symmetric transitive includes))
 (import std.bijection :symbols (bijective-setup typecheck-setup))
-(relation is-a  T T :why "{?1} is a {?2}")
-(relation is-a* T T :why "{?1} is a {?2} (transitively)")
+(relation is-a  T T :why "{?3} is a {?4}")
+(relation is-a* T T :why "{?3} is a {?4} (transitively)")
 (bijection-hierarchy is-a)
 (typecheck-hierarchy is-a*)
 (includes   is-a is-a*)

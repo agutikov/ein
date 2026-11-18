@@ -28,7 +28,7 @@
 ;;;
 ;;;
 
-(relation q Node :why "{?1} is a q")
+(relation q Node :why "{?3} is a q")
 (q a)
 (rule r ()
   :match ()

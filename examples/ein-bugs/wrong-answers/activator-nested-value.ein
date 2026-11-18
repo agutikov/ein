@@ -28,7 +28,7 @@
 ;;;
 
 ;; An activator binds a rule's parameter, used as an argument, to a nested fact.
-(relation p T :why "p holds of {?1}") (relation hit T :why "{?1} is a hit")
+(relation p T :why "p holds of {?3}") (relation hit T :why "{?3} is a hit")
 (p a) (p b) (p (f a))
 (rule act (?y) :match (p ?y) :assert (hit ?y) :why "act is activated for {?y} and p holds of it, so {?y} is a hit")
 (act (f a))

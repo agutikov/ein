@@ -45,16 +45,16 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-const HEAD: &str = "(relation a Thing :why \"{?1} is an a\")\n\
-                    (relation p Thing :why \"{?1} is a p\")\n\
-                    (relation q Thing :why \"{?1} is a q\")\n\
+const HEAD: &str = "(relation a Thing :why \"{?3} is an a\")\n\
+                    (relation p Thing :why \"{?3} is a p\")\n\
+                    (relation q Thing :why \"{?3} is a q\")\n\
                     (is-a k Thing)\n\
                     (a k)\n";
 
 /// A claim `ein test` checks, which holds of every program here that loads.
 const CLAIM: &str = "(query :goal (is-a ?x Thing) :expect (model (is-a k Thing)))\n";
 
-const LIKES: &str = "(relation likes Thing Thing :why \"{?1} likes {?2}\")\n";
+const LIKES: &str = "(relation likes Thing Thing :why \"{?3} likes {?4}\")\n";
 const COPY: &str = "(rule copy (?R) :match (?R ?x) :assert (q ?x) :why \"{?x} is in {?R}\")\n";
 const OWE: &str = "(macro owe (?R) (open ?R) :why \"one {?R} is owed\")\n";
 const PP: &str = "(macro pp (?v) (p ?v) :why \"{?v} is a p\")\n";
@@ -141,7 +141,7 @@ fn places() -> Vec<(&'static str, String)> {
         ("a nested fact's argument", "(q (p open))\n".into()),
         (
             "a declaration's type",
-            "(relation t open :why \"{?1} is a t\")\n".into(),
+            "(relation t open :why \"{?3} is a t\")\n".into(),
         ),
         ("an is-a's type", "(is-a j open)\n".into()),
         ("an is-a's object", "(is-a open Thing)\n".into()),
@@ -456,7 +456,7 @@ fn a_container_that_stores_open_as_a_name_is_refused() {
     let mut terms = ein_core::Terms::new();
     let held = ein_ir::parse(
         &mut ast,
-        "(relation p Thing :why \"{?1} is a p\") (is-a k Thing)",
+        "(relation p Thing :why \"{?3} is a p\") (is-a k Thing)",
         Some("k.ein"),
     )
     .expect("it parses");

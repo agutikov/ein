@@ -20,12 +20,12 @@
 ;;; and a flag, each its own state, the oracle's; no route reads the claim.
 ;;; `ein-infer/tests/no_edge.rs` holds the counterexample to the oracle.
 
-(relation is-a   T T :why "{?1} is a {?2}")
-(relation a-prop T   :why "a-prop holds of {?1}")
-(relation b-prop T   :why "b-prop holds of {?1}")
-(relation c-prop T   :why "c-prop holds of {?1}")
-(relation d-prop T   :why "d-prop holds of {?1}")
-(relation flag   T   :why "{?1} is flagged")
+(relation is-a   T T :why "{?3} is a {?4}")
+(relation a-prop T   :why "a-prop holds of {?3}")
+(relation b-prop T   :why "b-prop holds of {?3}")
+(relation c-prop T   :why "c-prop holds of {?3}")
+(relation d-prop T   :why "d-prop holds of {?3}")
+(relation flag   T   :why "{?3} is flagged")
 
 (rule flag-by-a ()
   :match  (a-prop ?x)

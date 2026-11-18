@@ -133,8 +133,8 @@ mod tests {
             .relation_names
     }
 
-    const DRINKS: &str = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n(is-a Tea Drink)\n\
-        (relation tasty Thing :why \"{?1} is tasty\")\n";
+    const DRINKS: &str = "(relation is-a Thing Type :why \"{?3} is a {?4}\")\n(is-a Tea Drink)\n\
+        (relation tasty Thing :why \"{?3} is tasty\")\n";
 
     /// The shape: `liquid` heads the fact a rule derives, no file declares it
     /// or writes a fact of it, and the blind enumerator proposes it.
@@ -156,7 +156,7 @@ mod tests {
     #[test]
     fn a_declared_relation_is_no_object() {
         let src = format!(
-            "{DRINKS}(relation liquid Thing :why \"{{?1}} is a liquid\")\n\
+            "{DRINKS}(relation liquid Thing :why \"{{?3}} is a liquid\")\n\
              (rule liquids () :match (is-a ?x Drink) :assert (liquid ?x) :why \"{{?x}} is a drink, so a liquid\")\n\
              (solve :no-hypothesis (is-a liquid))"
         );

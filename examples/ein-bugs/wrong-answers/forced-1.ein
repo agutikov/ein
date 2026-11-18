@@ -28,8 +28,8 @@
 ;;;
 ;;; Now R is {∅}, root alone (`ein solve FILE`). The twin with the death two
 ;;; firings deep is `forced-2.ein`, which was wrong at default flags.
-(relation thing T :why "{?1} is a thing")
-(relation q T :why "q holds of {?1}")
+(relation thing T :why "{?3} is a thing")
+(relation q T :why "q holds of {?3}")
 (thing one)
 (rule no-q () :match (q ?x) :assert (false) :why "q holds of {?x}, which cannot be")
 (query :goal (thing ?x))

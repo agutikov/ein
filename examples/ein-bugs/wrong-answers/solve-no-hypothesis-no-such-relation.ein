@@ -22,7 +22,7 @@
 ;;; states, exit 0 on every command.
 ;;; Today it is refused at load, at the `like`, on every command.
 
-(relation likes Person Color :why "{?1} likes {?2}")
+(relation likes Person Color :why "{?3} likes {?4}")
 (rule glad ()
   :match  (likes ?p ?c)
   :assert (glad ?p)

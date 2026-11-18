@@ -23,7 +23,7 @@
 ;;; among them: the claim now loads and holds.
 ;;;
 
-(relation paid Guest :why "{?1} has paid")
+(relation paid Guest :why "{?3} has paid")
 (rule welcome ()
   :match  (paid ?g)
   :assert (admitted ?g)

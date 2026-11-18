@@ -1782,7 +1782,7 @@ mod tests {
     /// guard was judged against.
     #[test]
     fn an_unstratifiable_program_derives_one_of_the_two() {
-        let src = "(relation p Thing :why \"p holds of {?1}\")\n(relation q Thing :why \"q holds of {?1}\")\n(relation thing Thing :why \"{?1} is a thing\")\n\
+        let src = "(relation p Thing :why \"p holds of {?3}\")\n(relation q Thing :why \"q holds of {?3}\")\n(relation thing Thing :why \"{?3} is a thing\")\n\
                    (rule derive-p ()\n  :match (and (thing ?x) (absent (q ?x)))\n  \
                    :assert (p ?x) :why \"{?x} is a thing and q does not hold of {?x}, so p holds of {?x}\")\n\
                    (rule derive-q ()\n  :match (and (thing ?x) (absent (p ?x)))\n  \
@@ -1807,7 +1807,7 @@ mod tests {
     /// difference is the whole point of resuming.
     #[test]
     fn a_resumed_saturation_reaches_the_same_fixpoint() {
-        let src = "(relation edge T T :why \"there is an edge from {?1} to {?2}\")\n(relation path T T :why \"there is a path from {?1} to {?2}\")\n                   (rule step ()\n  :match (edge ?a ?b)\n  :assert (path ?a ?b) :why \"there is an edge from {?a} to {?b}, so there is a path from {?a} to {?b}\")\n                   (rule trans ()\n  :match (and (path ?a ?b) (path ?b ?c))\n                     :assert (path ?a ?c) :why \"there are paths from {?a} to {?b} and from {?b} to {?c}, so there is one from {?a} to {?c}\")\n                   (rule tip ()\n  :match (and (path ?a ?b) (absent (edge ?b ?a)))\n                     :assert (path ?b ?b) :why \"there is a path from {?a} to {?b} and no edge from {?b} back to {?a}, so there is a path from {?b} to {?b}\")\n                   (edge A B)\n(edge B C)\n";
+        let src = "(relation edge T T :why \"there is an edge from {?3} to {?4}\")\n(relation path T T :why \"there is a path from {?3} to {?4}\")\n                   (rule step ()\n  :match (edge ?a ?b)\n  :assert (path ?a ?b) :why \"there is an edge from {?a} to {?b}, so there is a path from {?a} to {?b}\")\n                   (rule trans ()\n  :match (and (path ?a ?b) (path ?b ?c))\n                     :assert (path ?a ?c) :why \"there are paths from {?a} to {?b} and from {?b} to {?c}, so there is one from {?a} to {?c}\")\n                   (rule tip ()\n  :match (and (path ?a ?b) (absent (edge ?b ?a)))\n                     :assert (path ?b ?b) :why \"there is a path from {?a} to {?b} and no edge from {?b} back to {?a}, so there is a path from {?b} to {?b}\")\n                   (edge A B)\n(edge B C)\n";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
@@ -1893,7 +1893,7 @@ mod tests {
     /// facts here are interned one way round and written the other.
     #[test]
     fn a_resumed_forks_delta_is_in_the_order_it_was_written() {
-        let src = "(relation edge T T :why \"there is an edge from {?1} to {?2}\")\n(relation path T T :why \"there is a path from {?1} to {?2}\")\n\
+        let src = "(relation edge T T :why \"there is an edge from {?3} to {?4}\")\n(relation path T T :why \"there is a path from {?3} to {?4}\")\n\
                    (rule step () :match (edge ?a ?b) :assert (path ?a ?b) :why \"there is an edge from {?a} to {?b}, so there is a path from {?a} to {?b}\")\n\
                    (edge A B)\n";
         let mut ast = Ast::new();
@@ -1941,7 +1941,7 @@ mod tests {
     /// window between the verdict and the firing for it to go stale in.
     #[test]
     fn nothing_is_ever_dropped_for_a_stale_guard() {
-        let src = "(relation a Thing :why \"a holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n(relation seen Thing :why \"{?1} is seen\")\n\
+        let src = "(relation a Thing :why \"a holds of {?3}\")\n(relation block Thing :why \"there is a block for {?3}\")\n(relation seen Thing :why \"{?3} is seen\")\n\
                    (rule r ()\n  :match (and (a ?x) (absent (block ?x)))\n  \
                    :assert (seen ?x) :why \"a holds of {?x} and there is no block for {?x}, so {?x} is seen\")\n\
                    (a one)\n(a two)\n(block two)\n";
@@ -1969,7 +1969,7 @@ mod tests {
     /// candidate a caller is looking for.
     #[test]
     fn the_step_limit_quotes_the_last_firing() {
-        let src = "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n(relation path A B :why \"there is a path from {?1} to {?2}\")\n\
+        let src = "(relation edge A B :why \"there is an edge from {?3} to {?4}\")\n(relation path A B :why \"there is a path from {?3} to {?4}\")\n\
                    (rule walk ()\n  :match (and (edge ?a ?b) (edge ?b ?c))\n  \
                    :assert (edge ?a ?c) :why \"there are edges from {?a} to {?b} and from {?b} to {?c}, so there is one from {?a} to {?c}\")\n\
                    (edge n1 n2)\n(edge n2 n3)\n(edge n3 n4)\n(edge n4 n5)\n";
@@ -2003,8 +2003,8 @@ mod tests {
     /// order alone. Each switch holds only while it runs.
     #[test]
     fn a_fail_first_agenda_moves_the_order_and_not_the_fixpoint() {
-        let src = "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
-                   (relation r T :why \"r holds of {?1}\")\n(relation s T :why \"s holds of {?1}\")\n\
+        let src = "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
+                   (relation r T :why \"r holds of {?3}\")\n(relation s T :why \"s holds of {?3}\")\n\
                    (rule to-q ()\n  :match (p ?x)\n  :assert (q ?x) :why \"p holds of {?x}, so q does\")\n\
                    (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\
                    (rule not-s ()\n  :match (p ?x)\n  :assert (not (s ?x)) :why \"p holds of {?x}, so s does not\")\n\
@@ -2049,8 +2049,8 @@ mod tests {
     /// contradiction, and holds only while it runs.
     #[test]
     fn a_saturation_stopped_at_its_first_contradiction() {
-        let src = "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
-                   (relation r T :why \"r holds of {?1}\")\n\
+        let src = "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
+                   (relation r T :why \"r holds of {?3}\")\n\
                    (rule to-q ()\n  :match (p ?x)\n  :assert (q ?x) :why \"p holds of {?x}, so q does\")\n\
                    (rule not-q ()\n  :match (p ?x)\n  :assert (not (q ?x)) :why \"p holds of {?x}, so q does not\")\n\
                    (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\

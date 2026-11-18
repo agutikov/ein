@@ -20,7 +20,7 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation r T T :why "{?1} r {?2}")
+(relation r T T :why "{?3} r {?4}")
 (r 7 07)
 (r 1..5 1..*)
 (r $x a-b_c.d)

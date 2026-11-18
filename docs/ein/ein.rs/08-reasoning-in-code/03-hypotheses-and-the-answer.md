@@ -164,8 +164,8 @@ A relation whose facts have three arguments or more has no blind candidate and i
 declaration, `(relation lives-in Person House …)` against `(relation lives-in A B …)`, over the same four lines:
 
 ```lisp
-(relation is-instance Object Type :why "{?1} is an instance of {?2}")
-(relation lives-in Person House :why "{?1} lives in {?2}")
+(relation is-instance Object Type :why "{?3} is an instance of {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
 
 (is-instance Norwegian Person)
 (is-instance House-1 House)

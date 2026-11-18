@@ -23,6 +23,6 @@
 ;;;
 ;;;
 
-(relation p Node :why "p holds of {?1}")
+(relation p Node :why "p holds of {?3}")
 (p a)
 (rule r () :match (p ?x) :assert (neq ?x ?x) :why "p holds of {?x}, so {?x} differs from itself, which cannot be")

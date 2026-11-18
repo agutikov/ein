@@ -4,6 +4,6 @@
 ;;; FILE`): the answer the witness's `_` was read as meaning, where the
 ;;; witness itself is refused at the parse (Q-M1e2.22).
 
-(relation holds Node Node :why "{?1} holds {?2}") (relation tag Node :why "{?1} is tagged")
+(relation holds Node Node :why "{?3} holds {?4}") (relation tag Node :why "{?3} is tagged")
 (holds a b)
 (hrule h () :match (holds ?x ?any) :assert (tag ?x) :why "{?x} holds {?any}: guess that {?x} is tagged")

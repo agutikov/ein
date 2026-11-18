@@ -19,8 +19,8 @@ like `Norwegian`: labels, which mean what the program's rules make them mean, an
 ## In Ein
 
 ```lisp
-(relation is-instance Object Type :why "{?1} is an instance of {?2}")
-(relation lives-in Person House   :why "{?1} lives in {?2}")
+(relation is-instance Object Type :why "{?3} is an instance of {?4}")
+(relation lives-in Person House   :why "{?3} lives in {?4}")
 
 (is-instance Norwegian Person)
 (is-instance House-1 House)
@@ -113,13 +113,21 @@ fact of any relation is. The two programs hold the same facts under two names, a
 ## In words
 
 An atom reads as its name, as written: Ein has no vocabulary of its own for the things a problem is about. An atom
-takes part in sentences through the facts it is an argument of, each read by its relation's `:why`. `ein solve
-FILE --dump-answer DIR` writes each fact of the state with its sentence:
+takes part in sentences through the texts a program writes on the forms around it: a declaration's `:why`, which
+reads the declaration, `(relation lives-in Person House :why "{?3} lives in {?4}")` *Person lives in House*; a
+fact's `:source`, *condition (10)*; and a rule's `:why`, filled with the atoms a firing binds. A fact of a relation
+has no text of its own, and reads as written, `lives-in(Norwegian, House-1)`
+([natural language](14-natural-language.md)). `ein solve FILE --trace OUT.md` prints each text where a step reads
+its form; of the program [below](#giving-labels-a-meaning), whose rule reads the declaration:
 
 ```text
-(is-instance House-1 House) ; House-1 is an instance of House
-(is-instance Norwegian Person) ; Norwegian is an instance of Person
-(lives-in Norwegian House-1) ; source "condition (10)" — Norwegian lives in House-1
+### Step 3 — `first-argument-fits`
+
+> Norwegian is an instance of Person, the label lives-in declares for its first argument
+
+Premises: `relation(lives-in, Person, House)` — Person lives in House, `lives-in(Norwegian, House-1)`, `is-instance(Norwegian, Person)`
+
+Derives `fits(lives-in(Norwegian, House-1))`.
 ```
 
 A name a module declares prints as the main file writes it, and otherwise by its full name,
@@ -231,9 +239,9 @@ A rule reads a declaration as it reads any fact, so *the first argument of a fac
 relation's first label* is a sentence a program can write:
 
 ```lisp
-(relation is-instance Object Type :why "{?1} is an instance of {?2}")
-(relation lives-in Person House   :why "{?1} lives in {?2}")
-(relation fits Fact               :why "the first argument of {?1} is what its relation's first label says")
+(relation is-instance Object Type :why "{?3} is an instance of {?4}")
+(relation lives-in Person House   :why "{?3} lives in {?4}")
+(relation fits Fact               :why "the first argument of {?3} is what its relation's first label says")
 
 (rule first-argument-fits (?R)
   :match  (and (relation ?R ?T1 ?T2) (?R ?x1 ?x2) (is-instance ?x1 ?T1))

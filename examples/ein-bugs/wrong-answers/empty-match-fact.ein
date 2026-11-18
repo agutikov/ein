@@ -28,6 +28,6 @@
 ;;;
 ;;;
 
-(relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}")
+(relation q Node :why "q holds of {?3}") (relation p Node :why "p holds of {?3}")
 (q a)
 (rule r () :match () :assert (q b) :why "the rule has no premise, so q holds of b")

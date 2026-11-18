@@ -47,11 +47,11 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// Five relations, one fact, and a rule `mk` whose parameter names a relation.
-const HEAD: &str = "(relation p x :why \"{?1} is p\")\n\
-     (relation q x :why \"{?1} is q\")\n\
-     (relation h x :why \"{?1} is h\")\n\
-     (relation hit a b :why \"{?1} hits {?2}\")\n\
-     (relation won x :why \"{?1} won\")\n\
+const HEAD: &str = "(relation p x :why \"{?3} is p\")\n\
+     (relation q x :why \"{?3} is q\")\n\
+     (relation h x :why \"{?3} is h\")\n\
+     (relation hit a b :why \"{?3} hits {?4}\")\n\
+     (relation won x :why \"{?3} won\")\n\
      (p a)\n";
 
 const ABSENT_NOTE: &str = "note: absent is negation as failure";
@@ -719,9 +719,9 @@ fn the_meant_program_answers() {
     let file = scratch.path().join("meant.ein");
     std::fs::write(
         &file,
-        "(relation paid Guest :why \"{?1} has paid\")\n\
-         (relation says Claim :why \"it is said that {?1}\")\n\
-         (relation welcome Guest :why \"{?1} is welcome\")\n\
+        "(relation paid Guest :why \"{?3} has paid\")\n\
+         (relation says Claim :why \"it is said that {?3}\")\n\
+         (relation welcome Guest :why \"{?3} is welcome\")\n\
          (is-a Ann Guest) (is-a Bob Guest)\n(says (paid Ann))\n\
          (rule greet () :match (and (is-a ?g Guest) (absent (says (paid ?g)))) \
          :assert (welcome ?g) :why \"{?g} is welcome: nobody says they paid\")\n\

@@ -92,70 +92,70 @@
 
 ;; ── What is derived ─────────────────────────────────────────────────────────
 (relation column Function Bit Bit Bit Bit
-  :why "{?1} gives {?2}, {?3}, {?4} and {?5} at 00, 01, 10 and 11")
+  :why "{?3} gives {?4}, {?5}, {?6} and {?7} at 00, 01, 10 and 11")
 (relation swap-of Function Function
-  :why "{?2} is {?1} with its inputs exchanged")
+  :why "{?4} is {?3} with its inputs exchanged")
 (relation complement-of Function Function
-  :why "{?2} is {?1} with its output negated")
+  :why "{?4} is {?3} with its output negated")
 (relation dual-of Function Function
-  :why "{?2} is De Morgan's dual of {?1}")
+  :why "{?4} is De Morgan's dual of {?3}")
 (relation left-negated Function Function
-  :why "{?2} is {?1} with its first input negated")
+  :why "{?4} is {?3} with its first input negated")
 (relation right-negated Function Function
-  :why "{?2} is {?1} with its second input negated")
+  :why "{?4} is {?3} with its second input negated")
 (relation commutative Function
-  :why "{?1} is commutative")
+  :why "{?3} is commutative")
 (relation associative Function
-  :why "{?1} is associative")
+  :why "{?3} is associative")
 (relation idempotent Function
-  :why "{?1} of a bit and itself is that bit")
+  :why "{?3} of a bit and itself is that bit")
 (relation reads-first Function
-  :why "{?1} depends on its first input")
+  :why "{?3} depends on its first input")
 (relation reads-second Function
-  :why "{?1} depends on its second input")
+  :why "{?3} depends on its second input")
 (relation ignores-first Function
-  :why "{?1} does not depend on its first input")
+  :why "{?3} does not depend on its first input")
 (relation ignores-second Function
-  :why "{?1} does not depend on its second input")
+  :why "{?3} does not depend on its second input")
 (relation right-identity-of Function Bit
-  :why "{?2} as the second input of {?1} gives the first")
+  :why "{?4} as the second input of {?3} gives the first")
 (relation left-identity-of Function Bit
-  :why "{?2} as the first input of {?1} gives the second")
+  :why "{?4} as the first input of {?3} gives the second")
 (relation identity-of Function Bit
-  :why "{?2} is neutral for {?1}")
+  :why "{?4} is neutral for {?3}")
 (relation right-absorbing-of Function Bit
-  :why "{?2} as the second input of {?1} gives {?2}")
+  :why "{?4} as the second input of {?3} gives {?4}")
 (relation left-absorbing-of Function Bit
-  :why "{?2} as the first input of {?1} gives {?2}")
+  :why "{?4} as the first input of {?3} gives {?4}")
 (relation absorbing-of Function Bit
-  :why "{?2} decides {?1}")
+  :why "{?4} decides {?3}")
 (relation preserves-zero Function
-  :why "{?1} of 0 and 0 is 0")
+  :why "{?3} of 0 and 0 is 0")
 (relation preserves-one Function
-  :why "{?1} of 1 and 1 is 1")
+  :why "{?3} of 1 and 1 is 1")
 (relation monotone Function
-  :why "raising an input of {?1} never lowers its output")
+  :why "raising an input of {?3} never lowers its output")
 (relation affine Function
-  :why "{?1} is a sum modulo 2 of inputs and a constant")
+  :why "{?3} is a sum modulo 2 of inputs and a constant")
 (relation self-dual Function
-  :why "{?1} is its own dual")
+  :why "{?3} is its own dual")
 (relation escapes-zero Function
-  :why "{?1} of 0 and 0 is 1")
+  :why "{?3} of 0 and 0 is 1")
 (relation escapes-one Function
-  :why "{?1} of 1 and 1 is 0")
+  :why "{?3} of 1 and 1 is 0")
 (relation escapes-monotone Function
-  :why "{?1} is not monotone")
+  :why "{?3} is not monotone")
 (relation escapes-affine Function
-  :why "{?1} is not affine")
+  :why "{?3} is not affine")
 (relation escapes-self-dual Function
-  :why "{?1} is not its own dual")
+  :why "{?3} is not its own dual")
 (relation complete-alone Function
-  :why "every function can be built from {?1} alone")
+  :why "every function can be built from {?3} alone")
 ;; ── A step of the rules, and their names ────────────────────────────────────
 (relation assoc-at Function Bit Bit Bit
-  :why "{?1} associates at {?2}, {?3}, {?4}")
+  :why "{?3} associates at {?4}, {?5}, {?6}")
 (relation props-rule Rule
-  :why "{?1} is a rule that derives what is known of the sixteen")
+  :why "{?3} is a rule that derives what is known of the sixteen")
 (props-rule props)
 
 ;; ── The rules ───────────────────────────────────────────────────────────────

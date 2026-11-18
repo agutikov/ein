@@ -18,13 +18,13 @@
 ;;; this program, and what it shows.
 (import std.math.digits :symbols (fa md nz __closed__))
 
-(relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
-(relation halve Number :why "asked: which x makes x + x = {?1}?")
-(relation um-walk Tag Number Digit Digits :why "for {?1}: {?2} still to read, carry {?3}, x's digits so far {?4}")
-(relation um-strip Tag Digits :why "for {?1}: x's digits, top first, are {?2}")
-(relation um-turn Tag Digits Number :why "for {?1}: {?2} still to turn, {?3} turned")
-(relation factor-of Digit Number Number :why "x times {?1} = {?2} for x = {?3}")
-(relation half-of Number Number :why "x + x = {?1} for x = {?2}")
+(relation unmul Digit Number :why "asked: which x makes x times {?3} = {?4}?")
+(relation halve Number :why "asked: which x makes x + x = {?3}?")
+(relation um-walk Tag Number Digit Digits :why "for {?3}: {?4} still to read, carry {?5}, x's digits so far {?6}")
+(relation um-strip Tag Digits :why "for {?3}: x's digits, top first, are {?4}")
+(relation um-turn Tag Digits Number :why "for {?3}: {?4} still to turn, {?5} turned")
+(relation factor-of Digit Number Number :why "x times {?3} = {?4} for x = {?5}")
+(relation half-of Number Number :why "x + x = {?3} for x = {?4}")
 (__closed__ unmul) (__closed__ halve) (__closed__ um-walk) (__closed__ um-strip) (__closed__ um-turn)
 (__closed__ factor-of) (__closed__ half-of)
 

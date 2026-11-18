@@ -483,8 +483,8 @@ reference:
 |---|---|
 | a template that writes `{?a}b}` where `?a}b` is a variable of its form | `<rule\|hrule\|macro> '<name>': its :why writes {?a}b}, a reference to ?a}b, which no reference can name — a reference reads a variable's name up to its first }` (`query: its :goal-text writes …` for a query) |
 
-A reference to no variable of the form, `{?a}` there, stays text. A relation's `:why` names its slots by position,
-`{?1}`, and is not read ([`14-natural-language.md`](../03-syntax-and-semantics/14-natural-language.md)).
+A reference to no variable of the form, `{?a}` there, stays text. A relation's `:why` names its declaration's arrows
+by number, `{?3}`, and is not read ([`14-natural-language.md`](../03-syntax-and-semantics/14-natural-language.md)).
 
 ### 2.12 A string is natural-language text, and an escape names a character
 

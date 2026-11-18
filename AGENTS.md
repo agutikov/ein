@@ -425,7 +425,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   the corpus's monotone programs. Of a flagged program the engine claims no
   answer.
 - **`:why` is required** on every relation, rule, hrule and macro;
-  `--no-require-why` loads a program without.
+  `--no-require-why` loads a program without. **A `:why` reads the form it
+  is written on**: a declaration's, `{?n}` its n-th arrow (`{?1}` the atom
+  `relation`, `{?2}` the relation's name, `{?3}` its first label), printed
+  after the declaration where a rule reads it; a rule's, its variables. A
+  fact of a relation takes no text from the declaration and carries none of
+  its own: it reads by its `:source`, its rule's `:why`, or as written
+  (Q-M1f.58).
 - `__closed__` is reserved and never bound, and never an atom the blind
   enumerator guesses about, whether a rule derives a fact of it or a
   program writes it as an argument, which stays legal
@@ -724,8 +730,8 @@ alone is not the gate**: it checks none of the ten, and none of what the
 process holds itself to. **The tests read only the project**: what ties a
 process file to the project is a `utils/` check and a gate step, never a crate
 test — `check_gate_steps.py` (the step lists), `check_tool_mirrors.py` (the
-editor grammar, `nl_census.py` and the review driver against the engine's
-lists), `check_generated.py` (every generator's `--check`) and
+editor grammar and the review driver against the engine's lists),
+`check_generated.py` (every generator's `--check`) and
 `check_region_routes.py` (the oracle against `region.py` and
 `region_synth.py`). A local gate that is a subset of the remote one is a local
 gate that lies — keep the two lists the same; `utils/check_gate_steps.py`

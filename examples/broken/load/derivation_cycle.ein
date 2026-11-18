@@ -6,6 +6,6 @@
 ;; a head of its own, `:using (p (r c d))`, is refused at the parse, at the
 ;; head.
 
-(relation r T T :why "{?1} r {?2}")
+(relation r T T :why "{?3} r {?4}")
 (r a b :rule x :using ((r c d)))
 (r c d :rule x :using ((r a b)))

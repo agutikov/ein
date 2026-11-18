@@ -4,6 +4,6 @@
 ;;; one, the name read back (`ein solve FILE` at `35186bc0`, release and debug).
 ;;;
 
-(relation p Node :why "p holds of {?1}") (relation oorz Node :why "oorz holds of {?1}")
+(relation p Node :why "p holds of {?3}") (relation oorz Node :why "oorz holds of {?3}")
 (p a) (oorz a)
 (solve :expect (region (model (oorz a) (p a))))

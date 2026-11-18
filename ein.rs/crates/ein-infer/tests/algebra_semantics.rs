@@ -144,7 +144,7 @@ fn run(src: &str) -> Run {
 #[test]
 fn converse_mirrors_each_edge_into_the_paired_relation() {
     let r = run(&(algebra("converse")
-        + "(relation r1 T T :why \"r1 holds of {?1} and {?2}\") (relation r2 T T :why \"r2 holds of {?1} and {?2}\")
+        + "(relation r1 T T :why \"r1 holds of {?3} and {?4}\") (relation r2 T T :why \"r2 holds of {?3} and {?4}\")
                (converse r1 r2)
                (r1 A B :source \"(1)\")"));
     assert!(r.was_derived("(r2 B A)"), "the mirror: {:?}", r.derived);
@@ -162,7 +162,7 @@ fn converse_mirrors_each_edge_into_the_paired_relation() {
 #[test]
 fn imply1_lifts_a_property_marker_onto_a_kernel_trigger() {
     let r = run(&(algebra("imply1")
-        + "(relation foo T T :why \"foo holds of {?1} and {?2}\")
+        + "(relation foo T T :why \"foo holds of {?3} and {?4}\")
                (imply1 functional __closed__)
                (functional foo)"));
     assert!(
@@ -184,7 +184,7 @@ fn imply1_lifts_a_property_marker_onto_a_kernel_trigger() {
 #[test]
 fn the_two_arg_implications_copy_forward_and_swap() {
     let r = run(&(algebra("imply2-fwd imply2-reverse")
-        + "(relation r1 T T :why \"r1 holds of {?1} and {?2}\") (relation r2 T T :why \"r2 holds of {?1} and {?2}\") (relation r3 T T :why \"r3 holds of {?1} and {?2}\")
+        + "(relation r1 T T :why \"r1 holds of {?3} and {?4}\") (relation r2 T T :why \"r2 holds of {?3} and {?4}\") (relation r3 T T :why \"r3 holds of {?3} and {?4}\")
                (imply2-fwd r1 r2)
                (imply2-reverse r1 r3)
                (r1 A B :source \"(1)\")"));
@@ -212,7 +212,7 @@ const LEMMAS: &str = "converse symmetric-is-self-converse self-converse-is-symme
 #[test]
 fn symmetric_and_self_converse_are_interderivable_and_reflective() {
     let from_symmetric = run(&(algebra(LEMMAS)
-        + "(relation knows T T :why \"{?1} knows {?2}\")
+        + "(relation knows T T :why \"{?3} knows {?4}\")
                (symmetric knows)
                (knows A B :source \"(1)\")"));
     assert!(
@@ -226,7 +226,7 @@ fn symmetric_and_self_converse_are_interderivable_and_reflective() {
     );
 
     let from_converse = run(&(algebra(LEMMAS)
-        + "(relation knows T T :why \"{?1} knows {?2}\")
+        + "(relation knows T T :why \"{?3} knows {?4}\")
                (converse knows knows)
                (knows A B :source \"(1)\")"));
     assert!(
@@ -252,7 +252,7 @@ fn symmetric_and_self_converse_are_interderivable_and_reflective() {
 #[test]
 fn converse_is_symmetric_on_its_pair_and_the_back_edge_mirrors() {
     let r = run(&(algebra(LEMMAS)
-        + "(relation r1 T T :why \"r1 holds of {?1} and {?2}\") (relation r2 T T :why \"r2 holds of {?1} and {?2}\")
+        + "(relation r1 T T :why \"r1 holds of {?3} and {?4}\") (relation r2 T T :why \"r2 holds of {?3} and {?4}\")
                (converse r1 r2)
                (r1 A B :source \"(1)\") (r2 C D :source \"(2)\")"));
     assert!(
@@ -281,7 +281,7 @@ fn converse_is_symmetric_on_its_pair_and_the_back_edge_mirrors() {
 #[test]
 fn the_algebra_lemma_loop_terminates() {
     let src = algebra(LEMMAS)
-        + "(relation knows T T :why \"{?1} knows {?2}\")
+        + "(relation knows T T :why \"{?3} knows {?4}\")
            (symmetric knows)
            (knows A B :source \"(1)\")";
     let r = try_run(&src, 5000).unwrap_or_else(|e| panic!("the lemma loop ran away: {e}"));
@@ -308,8 +308,8 @@ const TYPECHECK: &str = "converse-illtyped-dom converse-illtyped-ran converse";
 #[test]
 fn converse_with_incompatible_signatures_derives_false() {
     let r = run(&(algebra(TYPECHECK)
-        + "(relation house-color House Color :why \"{?1} is coloured {?2}\")
-               (relation pet-dog Person Pet :why \"{?1} keeps the pet {?2}\")
+        + "(relation house-color House Color :why \"{?3} is coloured {?4}\")
+               (relation pet-dog Person Pet :why \"{?3} keeps the pet {?4}\")
                (converse house-color pet-dog)
                (converse-illtyped-dom house-color pet-dog is-a*)
                (converse-illtyped-ran house-color pet-dog is-a*)"));
@@ -328,8 +328,8 @@ fn converse_with_incompatible_signatures_derives_false() {
 #[test]
 fn converse_with_exactly_reversed_signatures_is_silent() {
     let r = run(&(algebra(TYPECHECK)
-        + "(relation right-of House House :why \"{?1} is right of {?2}\")
-               (relation left-of House House :why \"{?1} is left of {?2}\")
+        + "(relation right-of House House :why \"{?3} is right of {?4}\")
+               (relation left-of House House :why \"{?3} is left of {?4}\")
                (converse right-of left-of)
                (converse-illtyped-dom right-of left-of is-a*)
                (converse-illtyped-ran right-of left-of is-a*)"));
@@ -348,8 +348,8 @@ fn converse_with_exactly_reversed_signatures_is_silent() {
 fn the_hierarchy_relation_is_genuinely_consulted() {
     let program = |hierarchy: &str| {
         algebra(TYPECHECK)
-            + "(relation owns Person Pet :why \"{?1} owns {?2}\")
-               (relation owned-by Animal Person :why \"{?1} is owned by {?2}\")
+            + "(relation owns Person Pet :why \"{?3} owns {?4}\")
+               (relation owned-by Animal Person :why \"{?3} is owned by {?4}\")
                (converse owns owned-by)
                (converse-illtyped-dom owns owned-by is-a*)
                (converse-illtyped-ran owns owned-by is-a*)
@@ -381,8 +381,8 @@ fn the_hierarchy_relation_is_genuinely_consulted() {
 fn the_type_hierarchy_knob_derives_the_per_pair_activators() {
     let bad = run(&(algebra(TYPECHECK)
         + &typing("type-hierarchy-converse")
-        + "(relation house-color House Color :why \"{?1} is coloured {?2}\")
-               (relation pet-dog Person Pet :why \"{?1} keeps the pet {?2}\")
+        + "(relation house-color House Color :why \"{?3} is coloured {?4}\")
+               (relation pet-dog Person Pet :why \"{?3} keeps the pet {?4}\")
                (type-hierarchy is-a*)
                (converse house-color pet-dog)"));
     assert!(
@@ -397,8 +397,8 @@ fn the_type_hierarchy_knob_derives_the_per_pair_activators() {
 
     let good = run(&(algebra(TYPECHECK)
         + &typing("type-hierarchy-converse")
-        + "(relation right-of House House :why \"{?1} is right of {?2}\")
-               (relation left-of House House :why \"{?1} is left of {?2}\")
+        + "(relation right-of House House :why \"{?3} is right of {?4}\")
+               (relation left-of House House :why \"{?3} is left of {?4}\")
                (type-hierarchy is-a*)
                (converse right-of left-of)"));
     assert!(!good.is_false(), "a well-typed pair was rejected");
@@ -416,7 +416,7 @@ fn the_type_hierarchy_knob_derives_the_per_pair_activators() {
 #[test]
 fn reflexive_closes_both_argument_positions() {
     let r = run(&(typing("derive-reflexive reflexive-dom reflexive-cod")
-        + "(relation is-a* T T :why \"{?1} is a {?2} in the type hierarchy\")
+        + "(relation is-a* T T :why \"{?3} is a {?4} in the type hierarchy\")
                (reflexive is-a*)
                (is-a* House-1 House :source \"(e)\")"));
     assert_eq!(

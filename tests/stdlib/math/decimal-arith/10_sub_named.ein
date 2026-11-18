@@ -27,7 +27,7 @@
 (import std.math.arith :symbols (z))
 
 (relation overdrawn Name Number
-  :why "{?1} is overdrawn by {?2}")
+  :why "{?3} is overdrawn by {?4}")
 (__closed__ overdrawn)
 
 (rule short-of-money ()

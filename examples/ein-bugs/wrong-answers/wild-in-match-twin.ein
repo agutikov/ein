@@ -5,6 +5,6 @@
 ;;; was read as meaning, where the witness itself is refused at the parse
 ;;; (Q-M1e2.22).
 
-(relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
+(relation holds Node :why "{?3} holds") (relation hit Node :why "{?3} is hit")
 (holds a)
 (rule w () :match (holds ?any) :assert (hit w) :why "{?any} holds, so w is hit")

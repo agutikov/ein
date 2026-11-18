@@ -10,9 +10,9 @@ properties are facts about it, and rules read a relation's declaration as data.
 ## In Ein
 
 ```lisp
-(relation lives-in Person House :why "{?1} lives in {?2}")
-(relation adult Person :why "{?1} is an adult")
-(relation keeps Person House Pet :why "{?1}, in {?2}, keeps the {?3}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation adult Person :why "{?3} is an adult")
+(relation keeps Person House Pet :why "{?3}, in {?4}, keeps the {?5}")
 (relation solved :why "the puzzle is solved")
 
 (lives-in Norwegian House-1)
@@ -84,19 +84,19 @@ then no node for that fact ([objects](01-objects.md#as-a-graph) has the graph be
 
 ## In words
 
-A relation's `:why` is the **statement** of each of its facts, a template filled by position: `{?1}` is the fact's
-first argument, `{?2}` its second, and so on. `ein solve FILE --dump-answer DIR` writes each fact of a state with its
-statement after it:
+A relation's `:why` reads the declaration it is written on, its **statement**: `{?n}` is the declaration's n-th
+arrow, `{?1}` the atom `relation`, `{?2}` the relation's name and `{?3}` its first label, so `(relation keeps Person
+House Pet :why "{?3}, in {?4}, keeps the {?5}")` reads *Person, in House, keeps the Pet*, and `(relation solved :why
+"the puzzle is solved")`, which has no label, reads as written. A fact of the relation takes no text from it:
+`(keeps Norwegian House-1 Zebra)` reads by its `:source` where the program gives one, and otherwise as written
+([natural language](14-natural-language.md)). `ein solve FILE --trace OUT.md` prints a declaration's statement after
+it, where a rule reads the declaration; a step of `examples/zebra2.ein`:
 
 ```text
-(adult Norwegian) ; Norwegian is an adult
-(keeps Norwegian House-1 Zebra) ; Norwegian, in House-1, keeps the Zebra
-(lives-in Norwegian House-1) ; Norwegian lives in House-1
-(solved) ; the puzzle is solved
+Premises: `std.algebra.functional(nation-loc)`, `std.algebra.total(nation-loc)`, `relation(nation-loc, Nationality, House)` — the Nationality lives in House, `is-a(Norwegian, Nationality)`, `is-a(House-1, House)`
 ```
 
-A relation nobody declares has no statement, and its facts read as their s-expressions
-([natural language](14-natural-language.md)).
+A relation nobody declares has no declaration to read, and its facts read as every fact does.
 
 ## In mathematics
 
@@ -164,8 +164,8 @@ written beside it, as facts about it:
 ```lisp
 (import std.algebra :symbols (symmetric includes))
 
-(relation right-of House House :why "{?1} is right of {?2}")
-(relation next-to House House :why "{?1} is next to {?2}")
+(relation right-of House House :why "{?3} is right of {?4}")
+(relation next-to House House :why "{?3} is next to {?4}")
 (symmetric next-to)
 (includes right-of next-to)
 

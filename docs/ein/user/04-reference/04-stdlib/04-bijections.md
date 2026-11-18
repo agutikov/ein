@@ -43,8 +43,8 @@ with the dual of each on the other side. Totality and its obligations are `std.a
 ```lisp
 (import std.bijection)
 
-(relation is-a  T T          :why "{?1} is a {?2}")
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
 (is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
@@ -92,8 +92,8 @@ and `ein solve -p`, which prints what a state holds beyond the program:
 ```lisp
 (import std.bijection)
 
-(relation is-a  T T          :why "{?1} is a {?2}")
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (is-a Ann Agent)  (is-a Bob Agent)
 (is-a Red Colour) (is-a Green Colour)
@@ -138,8 +138,8 @@ pay ([Hypotheses](../../03-syntax-and-semantics/09-hypotheses.md)).
 ```lisp
 (import std.bijection)
 
-(relation is-a  T T          :why "{?1} is a {?2}")
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
 (is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
@@ -191,8 +191,8 @@ activators it wants, and lists them.
 (import std.algebra   :symbols (functional total))
 (import std.bijection :symbols (functional-negative domain-elimination))
 
-(relation is-a     T T        :why "{?1} is a {?2}")
-(relation lives-in Person Town :why "{?1} lives in {?2}")
+(relation is-a     T T        :why "{?3} is a {?4}")
+(relation lives-in Person Town :why "{?3} lives in {?4}")
 
 (is-a Ann Person) (is-a Bob Person) (is-a Cid Person)
 (is-a Oslo Town)  (is-a Rome Town)
@@ -235,8 +235,8 @@ derived: no rule here is an obligation, so root owes nothing.
 ```lisp
 (import std.bijection)
 
-(relation is-a  T T          :why "{?1} is a {?2}")
-(relation wears Agent Colour :why "{?1} wears {?2}")
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
 
 (is-a Ann Agent)
 (is-a Red Colour)
@@ -291,9 +291,9 @@ of three members of `VT` are excluded for the first member of `OT`, and nothing 
 (import std.macro :symbols (forall unknown))
 (import std.elim  :symbols (domain-elimination no-room-left))
 
-(relation is-a      T T        :why "{?1} is a {?2}")
-(relation holds     Slot Value :why "{?1} holds {?2}")
-(relation undecided Slot Value :why "whether {?1} holds {?2} is still open")
+(relation is-a      T T        :why "{?3} is a {?4}")
+(relation holds     Slot Value :why "{?3} holds {?4}")
+(relation undecided Slot Value :why "whether {?3} holds {?4} is still open")
 
 (is-a S1 Slot) (is-a S2 Slot) (is-a S3 Slot)
 (is-a V1 Value) (is-a V2 Value) (is-a V3 Value)

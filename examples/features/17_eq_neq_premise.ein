@@ -27,11 +27,11 @@
 ;;; `ein solve examples/features/17_eq_neq_premise.ein` prints R, root's one
 ;;; state, and each query's class; every claim holds, and `ein test` exits 0.
 
-(relation p Node :why "{?1} is a node")
-(relation hit-eq Node :why "{?1} is a")
-(relation hit-neq Node :why "{?1} is not a")
-(relation hit-form Node :why "{?1} is the fact (f a)")
-(relation sibling Node Node :why "{?1} is a name of the program other than {?2}")
+(relation p Node :why "{?3} is a node")
+(relation hit-eq Node :why "{?3} is a")
+(relation hit-neq Node :why "{?3} is not a")
+(relation hit-form Node :why "{?3} is the fact (f a)")
+(relation sibling Node Node :why "{?3} is a name of the program other than {?4}")
 
 (p a) (p b) (p (f a))
 

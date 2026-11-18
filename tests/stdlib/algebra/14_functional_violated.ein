@@ -22,7 +22,7 @@
 
 (import std.algebra :symbols (functional))
 
-(relation assigned Task Worker :why "{?1} is assigned to {?2}")
+(relation assigned Task Worker :why "{?3} is assigned to {?4}")
 
 (functional assigned)
 

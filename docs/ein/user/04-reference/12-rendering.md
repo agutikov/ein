@@ -141,8 +141,8 @@ one program:
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-(relation is-a T T :why "{?1} is a {?2}")
-(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation is-a T T :why "{?3} is a {?4}")
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
 (is-a Nationality Attribute) (is-a House Attribute)
 (is-a Norwegian Nationality) (is-a House-1 House)
 (symmetric co-located)
@@ -398,7 +398,8 @@ each stroke means and what the document `h-space.json` holds are
 `ein solve FILE --trace OUT.md` writes the **region trace**, a markdown narrative rather than a drawing: the
 read-out's rows, root's derivation, each listed state's from its first minimal commitment, and `N`, each minimal dead
 set with why, the owing nodes where R is empty of that kind. Each step is a section with the rule's name, its `:why`
-in English, its premises with their quoted `:source` sentences, and an inline `dot` block, the step's **derivation
+in English, its premises with their quoted `:source` sentences and, after a declaration it reads, the declaration's
+own `:why`, what it derives, as written, and an inline `dot` block, the step's **derivation
 slice**: the facts the step started from, its firings as rule nodes labelled with the rendered `:why`, and the facts
 derived, in bold. **Each fact is drawn as its node**, an octagon with no name in it, its arrow `1` at its relation
 and its next arrows at its arguments, and never as a node labelled with its text; a fact one of them points at is

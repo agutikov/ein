@@ -11,7 +11,7 @@
 ; that reads nothing, in silence). A relation is named by a name
 ; or by a parameter its activator binds.
 ;
-(relation p Thing :why "p holds of {?1}")
+(relation p Thing :why "p holds of {?3}")
 
 (rule uses-free-head (?S)
   :match  (?R ?x)

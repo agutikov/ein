@@ -7,10 +7,10 @@
 ;;; other rule, so `(import lower :symbols (lower))` brings the whole theory.
 ;;; Alone it has no request: R {∅}.
 
-(relation ask Thing :why "the double of {?1} is asked")
-(relation double-of Thing Thing :why "the double of {?1} is {?2}")
-(relation pair Thing Thing :why "{?2} is twice {?1}")
-(relation lower-rule Rule :why "{?1} is a rule of the lower theory")
+(relation ask Thing :why "the double of {?3} is asked")
+(relation double-of Thing Thing :why "the double of {?3} is {?4}")
+(relation pair Thing Thing :why "{?4} is twice {?3}")
+(relation lower-rule Rule :why "{?3} is a rule of the lower theory")
 
 (pair a aa)
 (pair b bb)

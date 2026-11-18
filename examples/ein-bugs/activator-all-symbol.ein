@@ -14,10 +14,10 @@
 ;;; answer the same, each naming its own activator.
 ;;;
 
-(relation item    T :why "{?1} is an item")
-(relation checked T :why "{?1} is checked")
-(relation watch   T :why "{?1} is under watch")
-(relation alarm   T :why "an alarm is raised for {?1}")
+(relation item    T :why "{?3} is an item")
+(relation checked T :why "{?3} is checked")
+(relation watch   T :why "{?3} is under watch")
+(relation alarm   T :why "an alarm is raised for {?3}")
 
 (hrule check () :match (item ?x) :assert (checked ?x) :why "guess that {?x} is checked")
 
