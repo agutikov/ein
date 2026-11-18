@@ -117,14 +117,15 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// second layout; `tests/stdlib/math/decimal/`, whose programs hold the
 /// tables; `tests/stdlib/math/convert/` and `tests/stdlib/math/binary-arith/`,
 /// whose conversions and program of both bases hold decimal's; and
-/// `tests/stdlib/math/gcd/`. `cargo test -p ein-render --test dot_wellformed
+/// `tests/stdlib/math/gcd/`; and `tests/saved/`, whose standard library's
+/// twin holds them. `cargo test -p ein-render --test dot_wellformed
 /// -- --nocapture` prints how many views are skipped, of how many files. A
 /// view skipped anywhere else fails the sweep until its directory is named
 /// here, which is where a bound that starts to skip a view it checked is
 /// noticed. A run without `EIN_CORPUS_SLOW` reads no program under `tests/`,
 /// and holds the directories it reads to the entries outside it; a run with
 /// it, to every entry.
-const SKIPPING: [&str; 17] = [
+const SKIPPING: [&str; 18] = [
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
@@ -132,6 +133,7 @@ const SKIPPING: [&str; 17] = [
     "examples/word_problems",
     "stdlib/bool",
     "stdlib/math",
+    "tests/saved",
     "tests/stdlib/bool/props",
     "tests/stdlib/math/binary-arith",
     "tests/stdlib/math/convert",
