@@ -598,6 +598,12 @@ fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
     let mut terms = Terms::new();
     let forms = parse(&mut ast, text, at.to_str()).ok()?;
     let mut kb = load(&mut ast, &mut terms, &forms, at.parent()).ok()?;
+    // A saved file's nodes are its program's above its node (Q-M1f.402),
+    // which a node from scratch, the program and a set written at once, does
+    // not start from: its program's sweep reads them.
+    if kb.program().commit.is_some() {
+        return None;
+    }
     let mut base = kb.fork();
     let opts = Options {
         limit: bound as u32,

@@ -206,6 +206,10 @@ pub struct SaveOptions {
     /// The `.ein` files this KB came from, hashed — [`Source::of`].
     pub sources: Vec<Source>,
     pub solutions: Option<Solutions>,
+    /// A saved file's modules, which its program's imports resolve against
+    /// in place of the disk (Q-M1f.401); `None` for a program, resolved
+    /// against `base_dir`.
+    pub carried: Option<sections::Carried>,
 }
 
 /// Serialise a KB, its interned tables and the program behind it.
@@ -222,7 +226,7 @@ pub fn save_to_vec(
     base_dir: Option<&Path>,
     opts: &SaveOptions,
 ) -> Result<Vec<u8>> {
-    let program = sections::program_section(ast, terms, forms, base_dir)?;
+    let program = sections::program_section(ast, terms, forms, base_dir, opts.carried.as_ref())?;
 
     let mut bodies: Vec<(Kind, Vec<u8>)> = Vec::new();
     bodies.push((Kind::Meta, {

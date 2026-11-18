@@ -141,6 +141,7 @@ add("""---
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 | [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
+| [X21](#x21--testssaved04_a_saved_nodeein-a-saved-file-a-node-of-its-programs-lattice) | `tests/saved/04_a_saved_node.ein` | 0 | a saved file: the `commit` row, the part of the program's R above the node, and the program's claims not checked |
 """)
 
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
@@ -470,6 +471,15 @@ for which activator, and R is the one state that pays both debts. The program is
 activator's relation being one a commitment can add a fact of, so the cube answers it.
 """)
 add(block(["examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"]))
+
+add("""## X21 — `tests/saved/04_a_saved_node.ein`: a saved file, a node of its program's lattice
+
+The state `{(note (bad a))}` of `tests/saved/02_a_choice_with_a_fact_inside_it.ein`, as `--dump-answer` saved it: the
+program as written and `(commit (note (bad a)))`. The run is the part of the program's R above that node: its universe
+is H less the choice, here no candidate, so R is {∅}, ∅ being the node, and the `commit` row under `universe` names
+it. The program's claims are about the program's R, so none is checked, and the run exits 0.
+""")
+add(block(["tests/saved/04_a_saved_node.ein"]))
 
 PAGE = re.sub("\x00(\\d+)\x00", lambda m: RUNS[int(m.group(1))].result(), "\n".join(S))
 POOL.shutdown()

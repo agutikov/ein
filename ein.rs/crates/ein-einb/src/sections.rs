@@ -622,14 +622,30 @@ fn read_naf_arg(r: &mut Reader<'_>, maps: &Maps, depth: u32) -> Result<NafArg> {
 /// the size, is that the reconstructed `Ast` is the parse of exactly these
 /// bytes, so every `ExprRef` the rebuilt registries hold indexes the AST that
 /// is there.
+/// A saved file's modules, which its program's imports resolve against
+/// (Q-M1f.401): the name the file is read under, and each module's name and
+/// text.
+pub struct Carried {
+    pub file: String,
+    pub modules: Vec<(String, String)>,
+}
+
 pub fn program_section(
     ast: &mut Ast,
     terms: &Terms,
     forms: &[NodeId],
     base_dir: Option<&Path>,
+    carried: Option<&Carried>,
 ) -> Result<Vec<u8>> {
-    let resolved =
-        ein_ir::resolve_imports(ast, forms, base_dir).map_err(|e| EinbError::Program(e.0))?;
+    let resolved = match carried {
+        // A saved file's program, against the modules it carries and never
+        // the disk (Q-M1f.401).
+        Some(c) => {
+            ein_ir::Resolver::carrying(&c.file, &c.modules).resolve_imports(ast, forms, None)
+        }
+        None => ein_ir::resolve_imports(ast, forms, base_dir),
+    }
+    .map_err(|e| EinbError::Program(e.0))?;
     let text = ein_ir::dump_canonical(ast, &resolved);
     // Only the file names provenance can name: the rebuilt registries' own
     // `Loc`s point into the canonical text and are not preserved.
@@ -717,8 +733,15 @@ pub fn load_program(
 ) -> Result<(Kb, Vec<NodeId>)> {
     let forms = ein_ir::parse(ast, section.text, Some(name))
         .map_err(|e| EinbError::Program(e.to_string()))?;
-    let kb = ein_ir::load_query_with(ast, terms, &forms, None, query, load)
+    let mut kb = ein_ir::load_query_with(ast, terms, &forms, None, query, load)
         .map_err(|e| EinbError::Program(e.0))?;
+    // What the load read: the stored program, resolved and import-flattened,
+    // and no module, which a state saved from the container carries
+    // (Q-M1f.401).
+    kb.program_mut().sources = Some(std::sync::Arc::new(ein_core::Sources {
+        program: section.text.to_string(),
+        modules: Vec::new(),
+    }));
     Ok((kb, forms))
 }
 

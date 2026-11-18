@@ -485,6 +485,62 @@ fn the_nesting_limit() {
     );
 }
 
+/// **A saved file carries a program at the limit** (Q-M1f.185): its
+/// wrappers stand one level above the program, which is parsed again alone,
+/// under the limit; a program past it is refused inside its wrapper as it is
+/// alone.
+#[test]
+fn a_saved_file_carries_a_program_at_the_limit() {
+    let fact = |d: usize| format!("{}a{}", "(p ".repeat(d), ")".repeat(d));
+    let at = fact(NESTING_LIMIT);
+    let sources = ein_core::Sources {
+        program: format!("(relation p T :why \"{{?1}} is p\")\n{at}\n"),
+        modules: Vec::new(),
+    };
+    let saved = ein_ir::saved::write(&sources, &[]);
+    let mut ast = Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let loaded = ein_ir::saved::load_text(
+        &mut ast,
+        &mut terms,
+        &saved,
+        Some("saved.ein"),
+        None,
+        0,
+        &ein_ir::LoadOptions::default(),
+    );
+    assert!(
+        loaded.is_ok(),
+        "a saved file of a program at the limit loads"
+    );
+    let sources = ein_core::Sources {
+        program: format!(
+            "(relation p T :why \"{{?1}} is p\")\n{}\n",
+            fact(NESTING_LIMIT + 1)
+        ),
+        modules: Vec::new(),
+    };
+    let saved = ein_ir::saved::write(&sources, &[]);
+    let r = ein_ir::saved::load_text(
+        &mut Ast::new(),
+        &mut ein_core::Terms::new(),
+        &saved,
+        Some("past.ein"),
+        None,
+        0,
+        &ein_ir::LoadOptions::default(),
+    );
+    let Err(e) = r else {
+        panic!("a saved file of a program past the limit loads");
+    };
+    assert!(
+        e.to_string().contains(&format!(
+            "nests deeper than the limit of {NESTING_LIMIT} parentheses"
+        )),
+        "{e}"
+    );
+}
+
 fn relative(p: &Path) -> String {
     p.strip_prefix(repo_root())
         .unwrap_or(p)

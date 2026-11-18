@@ -2920,7 +2920,7 @@ note   = "`converse-lemma-subtype`: `tests/stdlib/typing/03`'s well-typed pair w
 path   = "examples/ein-bugs/wrong-answers/dump-selection.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "`(import dump-selection-library :symbols (palette))`, R {∅}: a name a selection lists is live, and the `--dump-answer` state file is the program as loaded, where a wrong one would re-write a program with neither the rule nor the relation it names."
+note   = "`(import dump-selection-library :symbols (palette))`, R {∅}: a name a selection lists is live, and the `--dump-answer` state file carries the module the import read, as written, `(relation color …)` and `(rule palette …)` in it, where a wrong one would hold neither the rule nor the relation it names."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"
@@ -5161,6 +5161,30 @@ path   = "tests/region/10_denied_extensions.ein"
 group  = "positive"
 runs   = ["test", "saturate"]
 note   = "what a state denies is not saturated: three guests, three chairs, two rules that store what a seating excludes, and every guest owed a chair. R is the six seatings. `ein-infer/tests/known_dead.rs` pins how many extensions each question knew dead by a denial and the saturations that left it, against the same question asked from deaths alone."
+
+[[entry]]
+path   = "tests/saved/01_a_rule_builds_a_fact.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "a saved state loads as itself, root: a rule builds `(note (bad a))`, a fact whose argument no file writes. `(solve :no-search)`, R {∅}. `ein-cli/tests/saved_files.rs` saves it, loads it, and holds the load to one solution and the same facts with the same origins (Q-M1f.392)."
+
+[[entry]]
+path   = "tests/saved/02_a_choice_with_a_fact_inside_it.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "a saved state loads as itself, on a choice: an hrule proposes `(note (bad a))`, and the state that holds it is saved as the program and `(commit (note (bad a)))`. R is root and that state. `ein-cli/tests/saved_files.rs` saves each, loads each, and holds each load to its state (Q-M1f.392, Q-M1f.400)."
+
+[[entry]]
+path   = "tests/saved/03_the_standard_library.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "the standard library's twin of `01`: a rule assembles the numeral `(n z x)`, which no operation takes, beside a sum. `(solve :no-search)`, R {∅}. Its saved state carries the five modules its imports read, and `ein-cli/tests/saved_files.rs` holds its load to the state with no other file beside it (Q-M1f.392, Q-M1f.401)."
+
+[[entry]]
+path   = "tests/saved/04_a_saved_node.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "a saved file in the corpus: the state `{(note (bad a))}` of `02_a_choice_with_a_fact_inside_it.ein`, its program as written and `(commit (note (bad a)))`, byte for byte what that program's dump writes (`ein-cli/tests/saved_files.rs`). Every command reads it as the node: R is the part of the program's R above it, {∅}, and its claims, the program's, are NOT CHECKED (Q-M1f.402, Q-M1f.403)."
 
 [[entry]]
 path   = "examples/syntax/arg-kinds.ein"

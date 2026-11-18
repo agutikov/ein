@@ -263,7 +263,11 @@ fn parse_with(
     let file = filename.unwrap_or("<string>").to_string();
     let lexer = def.lexer(text);
     let lines = b::Lines::new(text);
-    if let Some(at) = past_the_nesting_limit(&lexer) {
+    // A saved file's wrappers stand one level above the texts they carry,
+    // each of which its load parses again alone, under the limit, as the file
+    // it was (`crate::saved`).
+    let limit = NESTING_LIMIT + usize::from(opens_saved_lexed(&lexer));
+    if let Some(at) = past_the_nesting_limit(&lexer, limit) {
         let (line, col) = lines.line_col(at);
         return Err(ParseError {
             file,
@@ -317,17 +321,18 @@ pub fn is_one_name(text: &str) -> bool {
 /// either is parsed: a saved file opens with its `(program …)`, and a program
 /// holds none.
 pub fn opens_saved(text: &str) -> bool {
-    LEXER.with(|def| {
-        let lexer = def.lexer(text);
-        let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
-        let mut tokens = lexer.iter();
-        match (tokens.next(), tokens.next()) {
-            (Some(Ok(open)), Some(Ok(head))) => {
-                lexer.span_str(open.span()) == "(" && rule_name(head.tok_id()) == Some("program")
-            }
-            _ => false,
+    LEXER.with(|def| opens_saved_lexed(&def.lexer(text)))
+}
+
+/// [`opens_saved`], of a text already lexed.
+fn opens_saved_lexed(lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>) -> bool {
+    let mut tokens = lexer.iter();
+    match (tokens.next(), tokens.next()) {
+        (Some(Ok(open)), Some(Ok(head))) => {
+            lexer.span_str(open.span()) == "(" && rule_name(head.tok_id()) == Some("program")
         }
-    })
+        _ => false,
+    }
 }
 
 /// The byte offset of the first `(` that opens one level past
@@ -335,13 +340,14 @@ pub fn opens_saved(text: &str) -> bool {
 /// parse reports it.
 fn past_the_nesting_limit(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    limit: usize,
 ) -> Option<usize> {
     let mut depth = 0usize;
     for l in lexer.iter().flatten() {
         match lexer.span_str(l.span()) {
             "(" => {
                 depth += 1;
-                if depth > NESTING_LIMIT {
+                if depth > limit {
                     return Some(l.span().start());
                 }
             }

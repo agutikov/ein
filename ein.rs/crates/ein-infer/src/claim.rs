@@ -109,6 +109,20 @@ pub fn check(
         }
     };
     let k_s = lattice.states.len() as u64;
+    // A saved file's node checks none of its program's claims, which are
+    // about the program's R (Q-M1f.403), as the read-out says.
+    if root.program().commit.is_some() {
+        return Ok(Checked {
+            report: Report {
+                outcome: Outcome::NotChecked,
+                lines: vec![crate::read_out::SAVED_CHECKS_NO_CLAIM.to_string()],
+            },
+            route: Some(lattice.route),
+            monotone: lattice.monotone,
+            k_s,
+            k_c: lattice.states.iter().map(|s| s.commitments).sum(),
+        });
+    }
     let k_c = lattice.states.iter().map(|s| s.commitments).sum();
     let report = compare(root, terms, ast, claim, &lattice, opts)?;
     Ok(Checked {
@@ -132,6 +146,13 @@ pub fn check_described(
     opts: &Options,
 ) -> Result<Report, SolveError> {
     debug_assert!(d.exhausted, "a claim is checked against all of R");
+    // A saved file's node checks none of its program's claims (Q-M1f.403).
+    if root.program().commit.is_some() {
+        return Ok(Report {
+            outcome: Outcome::NotChecked,
+            lines: vec![crate::read_out::SAVED_CHECKS_NO_CLAIM.to_string()],
+        });
+    }
     compare(root, terms, ast, claim, &of_described(d.clone()), opts)
 }
 

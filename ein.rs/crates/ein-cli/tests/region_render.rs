@@ -93,15 +93,14 @@ impl ein_infer::events::Watch for Collect {
 fn studied(file: &str, cube: &Path, run: &Path) {
     let loaded = || {
         let path = repo_root().join(file);
-        let text = std::fs::read_to_string(&path).expect(file);
         let mut ast = ein_ir::Ast::new();
         let mut terms = ein_core::Terms::new();
-        let forms = ein_ir::parse(&mut ast, &text, path.to_str()).expect("parses");
-        let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
-        (kb, terms, ast, text)
+        // The text the state files carry, as the binary reads it.
+        let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
+        (kb, terms, ast)
     };
     ein_infer::forbid::studying(|| {
-        let (mut kb, mut terms, ast, _) = loaded();
+        let (mut kb, mut terms, ast) = loaded();
         let out = ein_infer::region::compute(
             &mut kb,
             &mut terms,
@@ -116,7 +115,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         };
         ein_render::dump::write_cube_dir(cube, &out, &terms, &inputs).expect("the cube dir");
 
-        let (mut kb, mut terms, ast, text) = loaded();
+        let (mut kb, mut terms, ast) = loaded();
         let visits = Arc::new(Mutex::new(Visits::default()));
         let mut events =
             ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
@@ -151,15 +150,13 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         );
         let inputs = ein_render::dump::region_answer::Inputs {
             source: file,
-            program: &text,
             summary: &summary,
             answer_txt: "",
             forms: &[],
         };
         let dir = run.join("answer");
         std::fs::create_dir_all(&dir).expect("answer/");
-        ein_render::dump::region_answer::write(&dir, &r, &mut kb, &mut terms, &ast, &inputs)
-            .expect("answer/");
+        ein_render::dump::region_answer::write(&dir, &r, &kb, &inputs).expect("answer/");
     });
 }
 

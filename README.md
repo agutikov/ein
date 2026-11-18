@@ -146,7 +146,7 @@ ein solve <file> --count           # how many: k_s and k_c, nothing listed
 ein solve <file> --no-search       # root alone: R is not searched
 ein solve <file> --trace out.md    # + a self-contained markdown derivation, in the program's :why texts
 ein solve <file> --events e.jsonl  # + the narration stream, one JSON object per step
-ein solve <file> --dump-answer DIR # + the read-out uncut, and every state as a loadable program
+ein solve <file> --dump-answer DIR # + the read-out uncut, and every state saved: its program and the choices made
 ein oracle <file>                  # R by brute force: the reference every question is held to
 ein test <file-or-dir>…            # check the claims programs state about their own answers
 ein saturate <file> [--dump]       # the least fixpoint alone

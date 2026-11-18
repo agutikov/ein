@@ -15,7 +15,7 @@
 //!   F)                                  the candidates of H a node commits; none at root
 //! ```
 //!
-//! [`write`] writes one from a program's [`Sources`] and a commitment.
+//! [`write()`] writes one from a program's [`Sources`] and a commitment.
 //! [`load_text`] reads a file's text, a program or a saved file, by the
 //! first two tokens ([`crate::grammar::opens_saved`]): a saved file is parsed
 //! whole, its wrappers read in order, and the program it carries is parsed
@@ -26,7 +26,12 @@
 //! is [`ein_core::Program::sources`], and the choices
 //! [`ein_core::Program::commit`]: the engine commits them after root's
 //! fixpoint, as a node commits its commitment (`ein_infer::region`), which is
-//! why this crate does not intern them.
+//! why this crate does not intern them. A load handed a saved file's parsed
+//! forms rather than its text, its first form its `(program …)`, reads it
+//! the same way (`load_forms`, from `crate::from_ir`'s `load_query_by`), so
+//! every load of a saved file is of the node it names. The parse takes a
+//! saved file one level past the nesting limit, its wrappers' own, and each
+//! text it carries is parsed again alone under the limit (Q-M1f.185).
 
 use std::path::Path;
 use std::sync::Arc;
@@ -56,7 +61,11 @@ pub fn write(sources: &Sources, commit: &[&str]) -> String {
     let mut out = String::with_capacity(
         FIRST_LINE.len()
             + sources.program.len()
-            + sources.modules.iter().map(|(_, t)| t.len() + 32).sum::<usize>()
+            + sources
+                .modules
+                .iter()
+                .map(|(_, t)| t.len() + 32)
+                .sum::<usize>()
             + 64,
     );
     out.push_str(FIRST_LINE);
@@ -130,12 +139,16 @@ pub fn split(text: &str, name: Option<&str>) -> Result<Option<Saved>, TextError>
     }
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, name).map_err(|e| TextError::Parse(e.to_string()))?;
-    let file = name.unwrap_or("<string>");
+    split_forms(&ast, &forms).map(Some)
+}
+
+/// A saved file's parts, read off its parsed top-level forms ([`split`]).
+fn split_forms(ast: &Ast, forms: &[NodeId]) -> Result<Saved, TextError> {
     let shape = |at: NodeId, what: &str| {
         TextError::Load(KbLoadError(format!(
-            "{file}: {what} at {} — a saved file is one (program …), then the (module …)s it \
-             carries, then at most one (commit …), and nothing else",
-            placed(&ast, at)
+            "{what} at {} — a saved file is one (program …), then the (module …)s it carries, \
+             each once, then at most one (commit …), and nothing else",
+            loc_repr(ast, ast.loc(at))
         )))
     };
     let mut saved = Saved {
@@ -145,7 +158,7 @@ pub fn split(text: &str, name: Option<&str>) -> Result<Option<Saved>, TextError>
     };
     for (i, &form) in forms.iter().enumerate() {
         match (ast.head_name(form), i) {
-            (Some("program"), 0) => saved.program = carried_text(&ast, form).to_string(),
+            (Some("program"), 0) => saved.program = carried_text(ast, form).to_string(),
             (Some("program"), _) => return Err(shape(form, "a second (program …)")),
             (Some("module"), _) if saved.commit.is_none() => {
                 let args = ast.form_args(form);
@@ -155,22 +168,27 @@ pub fn split(text: &str, name: Option<&str>) -> Result<Option<Saved>, TextError>
                 }
                 saved
                     .modules
-                    .push((module, carried_text(&ast, form).to_string()));
+                    .push((module, carried_text(ast, form).to_string()));
             }
             (Some("module"), _) => return Err(shape(form, "a (module …) after the (commit …)")),
             (Some("commit"), _) if saved.commit.is_none() => {
                 let facts: Vec<String> = ast
                     .form_args(form)
                     .iter()
-                    .map(|&f| dump_compact(&ast, f))
+                    .map(|&f| dump_compact(ast, f))
                     .collect();
                 saved.commit = Some(facts);
             }
             (Some("commit"), _) => return Err(shape(form, "a second (commit …)")),
-            _ => return Err(shape(form, "a form that is no wrapper")),
+            _ => {
+                return Err(shape(
+                    form,
+                    "a form that is no (program …), (module …) or (commit …)",
+                ));
+            }
         }
     }
-    Ok(Some(saved))
+    Ok(saved)
 }
 
 /// The text a wrapper carries: its last argument, the string the grammar's
@@ -179,23 +197,6 @@ fn carried_text(ast: &Ast, form: NodeId) -> &str {
     match ast.form_args(form).last().map(|&a| ast.node(a)) {
         Some(Node::Str(s)) => ast.sym(s),
         _ => unreachable!("a wrapper carries its text (ein.y's Saved)"),
-    }
-}
-
-/// A top-level form where a saved file's error names it: its position where
-/// it has one, else its first characters.
-fn placed(ast: &Ast, form: NodeId) -> String {
-    match ast.loc(form) {
-        Some(l) => loc_repr(ast, Some(l)),
-        None => {
-            let text = dump_compact(ast, form);
-            let cut: String = text.chars().take(60).collect();
-            if cut.len() < text.len() {
-                format!("{cut}…")
-            } else {
-                cut
-            }
-        }
     }
 }
 
@@ -247,13 +248,57 @@ pub fn load_text(
             parse: parse_time,
         });
     };
+    // The file's own parse, and then its program's.
+    let split = t.elapsed();
+    let mut loaded = load_saved(ast, terms, saved, name, query, opts)?;
+    loaded.parse += split;
+    Ok(loaded)
+}
+
+/// A saved file's forms, parsed, loaded as [`load_text`] loads its text: what
+/// a load handed a file's forms rather than its text reads
+/// (`crate::from_ir::load_query_by`, where the first form is a `(program …)`),
+/// so every load of a saved file is the node it names. Its notes are not
+/// said: a command reads a file's text.
+pub(crate) fn load_forms(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    query: usize,
+    opts: &LoadOptions,
+) -> Result<Kb, KbLoadError> {
+    let into = |e: TextError| match e {
+        TextError::Parse(e) => KbLoadError(e),
+        TextError::Load(e) => e,
+    };
+    let saved = split_forms(ast, forms).map_err(into)?;
+    let name = forms
+        .first()
+        .and_then(|&f| ast.loc(f))
+        .map(|l| ast.file(l.file).to_string());
+    load_saved(ast, terms, saved, name.as_deref(), query, opts)
+        .map(|l| l.kb)
+        .map_err(into)
+}
+
+/// The program a saved file carries, parsed under its own name and loaded
+/// against the modules the file carries, with its sources and its choices.
+fn load_saved(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    saved: Saved,
+    name: Option<&str>,
+    query: usize,
+    opts: &LoadOptions,
+) -> Result<Loaded, TextError> {
+    let t = std::time::Instant::now();
     let file = name.unwrap_or("<string>");
     let forms = parse(ast, &saved.program, Some(&program_name(name)))
         .map_err(|e| TextError::Parse(e.to_string()))?;
     let parse_time = t.elapsed();
     let resolver = Resolver::carrying(file, &saved.modules);
-    let mut kb = load_query_by(&resolver, ast, terms, &forms, None, query, opts)
-        .map_err(TextError::Load)?;
+    let mut kb =
+        load_query_by(&resolver, ast, terms, &forms, None, query, opts).map_err(TextError::Load)?;
     let modules = resolver.modules_read();
     let ours = Resolver::new();
     let notes = modules

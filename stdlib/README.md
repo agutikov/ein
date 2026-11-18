@@ -137,10 +137,11 @@ The whole rule, the refusals and what prints are
 [`02-syntax.md` § Import](../docs/ein/user/04-reference/02-syntax.md#import) and
 [`07-diagnostics.md` § 2.28](../docs/ein/user/04-reference/07-diagnostics.md#228-an-import-is-by-full-name-and-a-short-name-names-one-declaration-in-a-file).
 
-**A program with its imports inlined.** No command prints it on its own;
-every state file `ein solve FILE --dump-answer DIR` writes begins with it
-([`10-answer-dump.md`](../docs/ein/user/04-reference/10-answer-dump.md)). The library
-route is three calls:
+**A program with its imports inlined.** No command prints it: a state file
+`ein solve FILE --dump-answer DIR` writes carries the program as written and
+each module it imports beside it, and reads its imports from those
+([`10-answer-dump.md`](../docs/ein/user/04-reference/10-answer-dump.md)), and a
+`.einb` stores the program inlined. The library route is three calls:
 
 ```rust
 let forms = ein_ir::parse(&mut ast, &text, Some(file))?;
@@ -543,8 +544,8 @@ the calculation, with its firings.
 ### How long a number may be
 
 The theory has no width and no overflow: a number is as long as its digits.
-What bounds a run is outside the theory, in three places
-([Q-M1f.185](../docs/decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md)).
+What bounds a run is outside the theory
+([Q-M1f.185](../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md)).
 
 **1. A program can write a number of 999 digits, and no longer.** A written
 number nests a level a digit, and the parser refuses a program nested past
@@ -553,27 +554,27 @@ parentheses* (`ein_ir::grammar::NESTING_LIMIT`). The limit is the parser's
 alone: a rule can derive a longer number, 999 nines plus 1 is answered with
 its thousand digits, and the engine holds a fact of any depth.
 
-**2. A state can be written that cannot be read back.** `ein solve
---dump-answer` writes a state as a program, one fact a line, and the parser
-that reads it back has the same limit. A step of a circuit holds its operands
-**inside its tag**, so its facts are deeper than the request that started it.
-The depth of the deepest fact of the state file `ein solve FILE --dump-answer
-DIR` writes, against an operand's digits:
+**2. A state is saved and loaded again whatever its depth.** A step of a
+circuit holds its operands **inside its tag**, so its facts are deeper than
+the request that started it. The depth of the deepest fact of a state,
+against an operand's digits:
 
-| operation | the deepest fact of its state | the longest operand a request can hold | the longest whose state file reloads |
-|---|---|---:|---:|
-| `add`, `sub`, `cmp` | the operand's digits + 2 | 999 | 998 |
-| `mul`, `div` | digits + 3 | 999 | 997 |
-| `int-add` | digits + 4 | 998 | 996 |
-| `int-mul` | digits + 5 | 998 | 995 |
-| `rat-add`, `rat-cmp`, by a numerator's digits | digits + 7 | 997 | 993 |
+| operation | the deepest fact of its state | the longest operand a request can hold |
+|---|---|---:|
+| `add`, `sub`, `cmp` | the operand's digits + 2 | 999 |
+| `mul`, `div` | digits + 3 | 999 |
+| `int-add` | digits + 4 | 998 |
+| `int-mul` | digits + 5 | 998 |
+| `rat-add`, `rat-cmp`, by a numerator's digits | digits + 7 | 997 |
 
 The third column is the parser's limit less the request's own nesting, an
 operand's digits and one for a natural number, two for an integer, three for
-a rational; the fourth is 1 000 less the first. Past the fourth column every
-answer is still right and still printed: `ein solve` and `ein saturate
---dump` write a deeper state without a word, and only the state file's reload
-is refused, with the line above.
+a rational. A state deeper than the limit is answered and printed, and
+`ein saturate --dump` writes its facts without a word. `ein solve
+--dump-answer` saves it as any state, its program and the choices made and
+no fact of it, so its file loads again: what the parser reads of it is the
+program, which it read already
+([Q-M1f.392](../docs/decisions/answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md)).
 
 **3. Each step holds its numbers whole.** A step of a circuit is a fact that
 holds its whole state, and nothing is forgotten. A sum, a difference and a
@@ -581,8 +582,8 @@ comparison cost a few firings a digit; a product's facts, and a quotient's,
 grow as the product of the two lengths
 (`the_circuit_of_one_multiplication` holds the growth at six and twelve
 digits). Stored, a circuit's facts share their numbers; written as text, each
-fact repeats its own, so the text `ein solve` and `ein test` read out, and a
-state file, grow far faster than the stored state. A long product or quotient
+fact repeats its own, so the text `ein solve` and `ein test` read out grows
+far faster than the stored state. A long product or quotient
 is `ein saturate`'s to compute and a query's to read, not a state to write
 out.
 

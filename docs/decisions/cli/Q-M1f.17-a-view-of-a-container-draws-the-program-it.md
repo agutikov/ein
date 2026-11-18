@@ -12,4 +12,4 @@ draw another file than the one the command was handed.
 **Held by.** `ein-cli/tests/program_read.rs`:
 `every_command_answers_a_program_its_container_and_a_file_relative_import`, each view's stdout on a container held to
 its `.ein`'s; `a_containers_positions_name_its_stored_program`. Every command reads a program by one path, `ein-cli`'s
-`common::read_program`. The answer directory: [Q-M1f.27](Q-M1f.27-a-containers-answer-directory-writes-the-program.md).
+`common::read_program`. The answer directory: [Q-M1f.27](Q-M1f.27-a-containers-answer-directory-saves-the-program.md).

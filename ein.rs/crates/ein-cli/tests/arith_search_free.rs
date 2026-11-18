@@ -11,7 +11,7 @@
 //! | k_s is 1 and R is {∅}: one state, root itself, alive and owing nothing | `region.k_s`, `k_c`, `root`, `states` |
 //! | one saturation, no fork | `work.saturations` |
 //! | monotone: **one `absent` read a base the program imports**, statically, over the base's `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (decimal's and binary's alike) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
-//! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
+//! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts the solve's one state file loads to, the saturation's dump, and the claims `ein test` holds |
 //!
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
 //! theories, `std.math.decimal-arith`, `std.math.num9`, `std.math.int`,
@@ -687,10 +687,14 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
     );
 
     // ── the same answer ──
-    let state = ein_corpus::unprefixed(
-        &std::fs::read_to_string(dump.join("models/01.ein")).expect("the one state's file"),
-    );
-    let from_solve = results(&state, " ; ");
+    // The one state's file, loaded: the state the solve saved.
+    let state = ein(&[
+        "saturate",
+        "--dump",
+        &dump.join("models/01.ein").to_string_lossy(),
+    ]);
+    assert_eq!(state.code, 0, "{file}: the state's file\n{}", state.stderr);
+    let from_solve = results(&state.stdout, " :rule ");
     let from_saturate = results(&saturate.stdout, " :rule ");
     assert!(!from_solve.is_empty(), "{file}: no answer in the state");
     assert_eq!(

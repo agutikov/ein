@@ -836,7 +836,8 @@ fn solve_command() -> Command {
                 .help(
                     "write the answer as files to DIR: answer.txt (the read-out \
                      uncut), answer.json (= --json-summary), index.json, one \
-                     loadable file per state, the owing frontier, N, and each \
+                     saved file per state (its program and the choices made, \
+                     which load to it), the owing frontier, N, and each \
                      form asked for (-H, --models, -p, -P, -f, --diff-models) \
                      uncut under forms/ (docs/ein/user/04-reference/10-answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \

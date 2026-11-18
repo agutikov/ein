@@ -440,6 +440,23 @@ fn block(c: &SolverConfig) -> String {
     out
 }
 
+/// `text` with `block` appended to its program: after the program's last
+/// form, or, in a saved file, after the last form of the program it carries,
+/// the file written again around it (Q-M1f.401).
+fn with_block(text: &str, block: &str) -> String {
+    match ein_ir::saved::split(text, None) {
+        Ok(Some(saved)) => {
+            let sources = ein_core::Sources {
+                program: format!("{}{block}", saved.program),
+                modules: saved.modules,
+            };
+            let commit: Vec<&str> = saved.commit.iter().flatten().map(String::as_str).collect();
+            ein_ir::saved::write(&sources, &commit)
+        }
+        _ => format!("{text}{block}"),
+    }
+}
+
 /// `c` as a block with `flag` flipped — checked to differ, so that a flag
 /// the block does not spell cannot pass as one that changes nothing.
 fn flipped(c: &SolverConfig, flag: &str) -> String {
@@ -707,7 +724,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             let k = &known[i];
             let text = match flag {
                 None => k.text.clone(),
-                Some(f) => format!("{}{}", k.text, flipped(&k.resolved, f)),
+                Some(f) => with_block(&k.text, &flipped(&k.resolved, f)),
             };
             let (flags, mode) = &k.questions[q];
             printed(&k.path, &text, flags, *mode)
@@ -841,11 +858,8 @@ fn the_librarys_question_does_the_binarys_work() {
     );
     let dir = Scratch::new("ein-lever-library-question");
     let copy = dir.join("zebra-alternatives.ein");
-    std::fs::write(
-        &copy,
-        format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG)),
-    )
-    .expect("the copy writes");
+    std::fs::write(&copy, with_block(&k.text, &flipped(&k.resolved, CORE_FLAG)))
+        .expect("the copy writes");
     let file = copy.to_string_lossy().to_string();
     let text = std::fs::read_to_string(&copy).expect("the copy reads");
     let mismatched = par_map(
@@ -926,7 +940,7 @@ fn the_refuted_by_gap_still_has_its_program() {
         let Reach::Known(k) = reach(&path) else {
             panic!("{witness}: R is not known");
         };
-        let flipped_text = format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG));
+        let flipped_text = with_block(&k.text, &flipped(&k.resolved, CORE_FLAG));
         let mut moved = 0usize;
         for (flags, mode) in &k.questions {
             let want = printed(&k.path, &k.text, flags, *mode);
@@ -994,7 +1008,7 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
     let Reach::Known(k) = reach(&path) else {
         panic!("alt-cap-core.ein: R is not known");
     };
-    let flipped_text = format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG));
+    let flipped_text = with_block(&k.text, &flipped(&k.resolved, CORE_FLAG));
     let mut moved = 0usize;
     for (flags, mode) in &k.questions {
         let want = printed(&k.path, &k.text, flags, *mode);

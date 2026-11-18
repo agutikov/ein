@@ -44,6 +44,7 @@ program can be written without reading anything else.
 | keep the facts of a relation from being guessed | `(__closed__ R)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | choose what the blind enumerator guesses | `(solve :hypothesis-relations (…))` / `:no-hypothesis (…)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | judge root alone | `(solve :no-search)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
+| save a state, or read one saved | `ein solve FILE --dump-answer DIR`, whose state files are `(program …)`, `(module NAME …)` and `(commit F …)` | [§ A saved file's three heads](#a-saved-files-three-heads--program-module-commit) |
 
 ## Top-level declarators — the closed set
 
@@ -288,6 +289,23 @@ silent too; with H one `note:`, *the hrule proposes no candidate*, and with HR o
 candidate*, which replace the notes above. It relaxes no conflict: H, O and the lists are read as declared, so every
 row of the table stands beside it
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)).
+
+## A saved file's three heads — `program`, `module`, `commit`
+
+A **saved file**, the state `ein solve FILE --dump-answer DIR` writes, is its program as written and the choices made,
+in three forms that stand only at the top of a file
+([`10-answer-dump.md`](10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made)):
+
+| name | form | meaning |
+|---|---|---|
+| `program` | `(program <the program's text>)` | the program file's bytes as the load read them, read again as the file they were. A file that opens with `(program` is a saved file, and it holds one |
+| `module` | `(module NAME <the module's text>)` | a module the load read, each once, sorted by name; every import of the file is read from these and never from the disk ([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)) |
+| `commit` | `(commit F …)` | the choices made: candidates of the program's H, each as the read-out prints it, in H's order, committed after root's fixpoint; at most one, last, and none in a file of root ([Q-M1f.400](../../../decisions/read-out/Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md)) |
+
+Each is a **position word**, as `relation` and `model` are: a name wherever a name goes, so a relation, a rule or an
+atom may be called `program`, `module` or `commit`, and a nested fact `(note (commit a))` loads. At the top of a file
+none is a fact's relation: a top-level `(commit a)` is a parse error, and a program that holds one of the three forms
+is refused at load ([`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
 
 ## Not reserved
 

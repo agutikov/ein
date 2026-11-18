@@ -104,8 +104,8 @@ ein show hyps FILE [--no-require-why]
 ```
 
 **stdout is H and nothing else**: one candidate a line, as the fact is written, every candidate, uncut, in the
-universe's order. So it pipes, and a line is a fact a `.ein` file could hold: it is printed as a state file's facts
-are (`--dump-answer`'s `models/`), and spelled as the program's own file spells the fact, a short name where the file
+universe's order. So it pipes, and a line is a fact a `.ein` file could hold: it is printed as a saved state's
+`(commit …)` names a candidate (`--dump-answer`'s `models/`), and spelled as the program's own file spells the fact, a short name where the file
 lists it and the full name where it does not.
 
 <!-- generated: ein show hyps examples/zebra2.ein | head -3 -->

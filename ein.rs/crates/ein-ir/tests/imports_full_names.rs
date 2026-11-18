@@ -291,13 +291,13 @@ fn the_refusals() {
         e.contains("'std.math.decimal-arith.add' is a full name of std.math.decimal-arith"),
         "{e}"
     );
-    // …and a name the program declares is its own, whatever its dots: a
-    // state file declares the full names it was loaded with.
+    // …and a name the program declares is its own, whatever its dots, where
+    // its prefix is no module of the program.
     resolved(
         &mods,
         "(relation std.math.decimal-arith.add T T :why \"a\")\n(std.math.decimal-arith.add a b)\n",
     )
-    .expect("a state file's declarations");
+    .expect("a dotted name of no module's prefix");
     // A declaration of the program under an imported module's full name
     // (Q-M1f.239).
     let e = refused(

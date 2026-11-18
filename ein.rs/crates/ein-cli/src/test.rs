@@ -194,6 +194,10 @@ struct Tally {
     /// checked because the run was asked not to search, which is no failure
     /// to check, so it moves no exit code.
     no_search: bool,
+    /// The claims a saved file's node holds, each NOT CHECKED (Q-M1f.403):
+    /// a claim is its program's, about the program's R, so a node's run
+    /// checks none, which is no failure to check and moves no exit code.
+    saved: usize,
 }
 
 impl Tally {
@@ -206,7 +210,11 @@ impl Tally {
         if self.errors > 0 || self.checked() == 0 {
             return 2;
         }
-        let unchecked = if self.no_search { 0 } else { self.not_checked };
+        let unchecked = if self.no_search {
+            0
+        } else {
+            self.not_checked - self.saved
+        };
         i32::from(self.failed + unchecked > 0)
     }
 
@@ -777,7 +785,12 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     // (the module header). One deadline for the file, whatever is asked.
     // Under `--no-search` one question, root alone, and no
     // fallback: what root does not decide stays NOT CHECKED.
-    let no_search = m.get_flag("no-search");
+    // A saved file's node (Q-M1f.403): its claims are its program's, about
+    // the program's R, and no question about the node decides one, so the
+    // least it is asked is root alone, the node, and each claim is NOT
+    // CHECKED with the reason, moving no exit code.
+    let saved = kb.program().commit.is_some();
+    let no_search = m.get_flag("no-search") || saved;
     let (least, describing) = if no_search {
         let root = Mode {
             which: explore::Which::All,
@@ -898,6 +911,9 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         }
         Outcome::NotChecked => {
             tally.not_checked += 1;
+            if saved {
+                tally.saved += 1;
+            }
             Came::NotChecked
         }
     };
@@ -980,10 +996,16 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         };
         if volume == Volume::Verbose || came != Came::Held {
             lines.push(match volume {
-                // `--no-search` counts no state of R.
+                // `--no-search` counts no state of R, and a saved file's
+                // node asks root alone (Q-M1f.403).
                 Volume::Verbose if r.answer.route == explore::Route::Root => format!(
-                    "  solve · :expect {shape} — {} (--no-search: root alone)",
-                    came.verb()
+                    "  solve · :expect {shape} — {} ({}: root alone)",
+                    came.verb(),
+                    if saved {
+                        "a saved file's node"
+                    } else {
+                        "--no-search"
+                    }
                 ),
                 Volume::Verbose => format!(
                     "  solve · :expect {shape} — {} ({route}, k_s = {k_s}, k_c = {})",
@@ -1118,7 +1140,7 @@ fn ask(
     }
     opts.deadline = deadline;
     opts.refute = true;
-    opts.no_search = m.get_flag("no-search");
+    opts.no_search = m.get_flag("no-search") || kb.program().commit.is_some();
     // A claim states no core: the run takes one only where `--events` prints
     // it, at each node visited. `ein test` prints no `N`.
     opts.cores = ein_infer::region::Cores {

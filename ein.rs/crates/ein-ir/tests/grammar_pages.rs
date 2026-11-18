@@ -618,6 +618,11 @@ const PHRASE_GROUPS: &[(&str, &str, &str)] = &[
     ("Macro", "A macro", "macro"),
     ("Import", "An import", "import"),
     ("Trace", "A trace", "trace"),
+    (
+        "Saved",
+        "A saved file: the program, its modules and the choices made",
+        "saved",
+    ),
 ];
 
 /// `rules`, cut into the diagrams `groups` names: the region's text, each
@@ -1366,6 +1371,22 @@ const TABLE: &[Row] = &[
         &["top-level-claim"],
         "(merged (model) (model))",
     ),
+    // A saved file's three wrappers stand at the top, and none is a fact's
+    // relation there (Q-M1f.401).
+    row(
+        "a top-level fact's relation",
+        &[],
+        "(relation commit T) (commit a)",
+    ),
+    row("a top-level fact's relation", &[], "(program a)"),
+    row("a top-level fact's relation", &[], "(module)"),
+    row("a saved file's (commit …)", &[], "(commit)"),
+    row(
+        "a saved file's (program …)",
+        &[],
+        "(program (commit (p a)))",
+    ),
+    row("a saved file's (module …)", &[], "(module m (module n))"),
     // ── Declarations ──
     row("a relation's name", &["relation-name"], "(relation)"),
     row(

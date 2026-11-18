@@ -22,7 +22,7 @@ Everything is `cargo test`.
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
 | [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants, the `slow` and `heavy_dump` sets pinned among them |
 | [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **every core names its cause**: every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the regressions' witnesses, and reads `slow` to leave the zebra family to the slow half |
-| [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip**: every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the slow half, and holds `heavy_dump` to the state files it counts |
+| [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip**: every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file loaded as the state the run saved, and saved and loaded again in both directions; reads `slow` and `heavy_dump` to leave those entries to the slow half, and holds `heavy_dump` to the state files it counts |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs; `EIN_JOBS_SWEEP` names the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
@@ -227,7 +227,8 @@ Three decisions are worth knowing before editing the column:
 more** (`ein_corpus::manifest::HEAVY_DUMP_FILES`). The dump is
 `ein solve FILE --dump-answer DIR`, which no entry declares and
 [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs)
-runs on every entry, reloading each state file to its state by value.
+runs on every entry, each state file loaded as the state the run saved and held to the two invariances, save → load
+→ save byte for byte and load → save → load dump for dump.
 
 - **By default** the round trip leaves out every entry that is `slow` or
   `heavy_dump`, and fails on an unflagged one that writes 40 000 or more.

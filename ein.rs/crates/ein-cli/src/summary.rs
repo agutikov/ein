@@ -118,6 +118,18 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
             "owed",
             Json::Array(stats.owed.iter().map(|w| Json::str(w.as_str())).collect()),
         ),
+        // A saved file's node (Q-M1f.402): the candidates of H its
+        // `(commit …)` names, `[]` for a program.
+        (
+            "commit",
+            Json::Array(
+                stats
+                    .commit
+                    .iter()
+                    .map(|c| Json::str(c.text.as_str()))
+                    .collect(),
+            ),
+        ),
         ("plans", Json::int(stats.plans as i64)),
         (
             "saturator",

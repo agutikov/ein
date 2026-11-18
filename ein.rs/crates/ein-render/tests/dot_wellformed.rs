@@ -51,7 +51,7 @@ use ein_corpus::{corpus_files, repo_root, under_tests};
 fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
-use ein_ir::{Ast, parse};
+use ein_ir::Ast;
 use ein_render::shape::{KB_VIEWS, all_views, dot_shape, kb_dot_shape};
 use std::io::Write;
 use std::process::{Command, Stdio};
@@ -295,7 +295,7 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     // `id_order_invariance` digests them.
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+    let Ok(forms) = ein_ir::saved::parse_text(&mut ast, &text, path.to_str()) else {
         return file;
     };
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent());
@@ -320,7 +320,8 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
             }
         } else {
             let mut ast = Ast::new();
-            let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
+            let forms =
+                ein_ir::saved::parse_text(&mut ast, &text, path.to_str()).expect("it parsed above");
             dot_shape(&mut ast, &mut Terms::new(), &forms, path.parent(), view)
         };
         let out = match drawn {
@@ -541,7 +542,7 @@ fn sweep_structure(path: &std::path::Path) -> StructureSweep {
     };
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+    let Ok(forms) = ein_ir::saved::parse_text(&mut ast, &text, path.to_str()) else {
         return out;
     };
     let Ok(mut kb) = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) else {

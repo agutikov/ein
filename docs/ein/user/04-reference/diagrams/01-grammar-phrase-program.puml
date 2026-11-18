@@ -1,4 +1,6 @@
 @startebnf
-Program = { Form } ;
+Program = { TopForm } ;
+TopForm = Form | Saved ;
+Forms = { Form } ;
 Form = Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact ;
 @endebnf

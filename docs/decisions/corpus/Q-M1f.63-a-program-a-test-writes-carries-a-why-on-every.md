@@ -7,7 +7,7 @@ writes the program it wrote before. A test that mutates the corpus's own program
 their `:why`s, and keeps its draws too.
 
 **Why.** A generated program that loads only with the requirement off asks the engine a question no user's program
-asks. A `:why` that states the form keeps every surface that prints one, a trace or a state file, readable on a
+asks. A `:why` that states the form keeps every surface that prints one, a trace or a read-out, readable on a
 generated program as on a written one.
 
 **Held by.** The generators of the engine's tests: `ein-infer/tests/detector.rs`, `compile_limits.rs` and

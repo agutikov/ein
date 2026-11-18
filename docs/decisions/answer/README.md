@@ -30,3 +30,6 @@ Decisions on the answer: the region R, a dead node's core, how a claim is decide
 - [Q-M1f.222](Q-M1f.222-under-ein-test-a-state-found-refutes-a-claim.md) — Under `ein test`, a state found refutes a claim that does not list its class
 - [Q-M1f.256](Q-M1f.256-under-no-search-a-claim-is-decided-as-far-as.md) — Under `--no-search`, a claim is decided as far as root decides it
 - [Q-M1f.311](Q-M1f.311-describe-takes-the-tree-and-the-classes.md) — Describe takes the tree and the classes, and the state route on request
+- [Q-M1f.392](Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md) — A saved state is saved and loaded as itself, in both directions
+- [Q-M1f.402](Q-M1f.402-a-saved-file-is-a-node-of-its-programs-lattice.md) — A saved file is a node of its program's lattice
+- [Q-M1f.403](Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md) — A saved file with a commitment checks none of its program's claims

@@ -191,7 +191,7 @@ For a bare declaration the two coincide, so one fact is stored. A relation no fo
 behind it. So `(relation ?R)` matches every declared relation and every object a rule has concluded it of.
 
 **The `:why` template** turns a fact of the relation into natural-language text, its *statement*, written after each
-fact of the relation in a `--dump-answer` state file and after each one `--trace` derives. It refers to the fact's
+fact of the relation `--trace` derives. It refers to the fact's
 argument **slots by position**: `{?1}` is the first argument, `{?2}` the second; a rule's and a goal's template refer
 to variables by name
 ([Q31](../../../decisions/language/Q31-a-why-template-refers-to-a-variable-as-var.md)). Every text a program writes,
@@ -350,8 +350,7 @@ premises it read, in place of `:source`, so that it reads back as a derivation:
 ```
 
 `:using` is a list of facts, each resolved by the loader to the premise the derivation names. A program an author
-writes has none of these; `ein saturate --dump` writes `:rule` with no `:using`, and a `--dump-answer` state file
-writes the provenance as a comment.
+writes has none of these, and `ein saturate --dump` writes `:rule` with no `:using`.
 
 ### Rules
 
@@ -783,9 +782,8 @@ its module declares is refused
 full name of a module no import of the program brings
 ([Q-M1f.238](../../../decisions/imports/Q-M1f.238-a-full-name-of-a-module-no-import-brings-is.md)): a module enters a
 program by an import of it. The main file may not declare a name under the full name of a module it imports
-([Q-M1f.239](../../../decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md)); a
-`--dump-answer` state file, which imports nothing and declares the full names it was loaded with, is the main file's
-own declarations. A module's declared name holds no dot
+([Q-M1f.239](../../../decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md)); a dotted
+name whose prefix is no module of the program is the main file's own. A module's declared name holds no dot
 ([Q-M1f.241](../../../decisions/imports/Q-M1f.241-a-modules-declared-name-holds-no-dot.md)), so a full name reads
 one way.
 

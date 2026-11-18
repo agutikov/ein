@@ -169,6 +169,8 @@ rows! {
     Paths => "paths", Block;
     /// A cycle of the rules' dependency graph through an `absent`.
     NegativeCycle => "negative cycle", Block;
+    /// The node a saved file names: the run is the part of R above it.
+    Commit => "commit", Block;
     /// A debt root does not owe, and what H holds for it.
     LaterDebt => "later debt", Block;
     /// A relation H leaves out.
@@ -327,7 +329,13 @@ impl Row {
         ("strata", &[Row::NegativeCycle]),
         (
             "universe",
-            &[Row::LaterDebt, Row::Outside, Row::Types, Row::RelationNames],
+            &[
+                Row::Commit,
+                Row::LaterDebt,
+                Row::Outside,
+                Row::Types,
+                Row::RelationNames,
+            ],
         ),
         (
             "empty",
@@ -953,6 +961,27 @@ fn later_rows(out: &mut Out, later: &[LaterDebtText]) {
 
 /// The `outside` row under `universe`, when the universe leaves a relation
 /// out: every question prints it, since every question is over the same H.
+/// The `commit` row under `universe`, where the run is a saved file's
+/// (Q-M1f.402): the candidates of H its `(commit …)` names, the node whose
+/// part of the program's R the run describes, its universe the rest of H.
+/// Nothing for a program, nor for a saved file with no `(commit …)`, whose
+/// run is its program's.
+fn commit_row(out: &mut Out, root: &ein_infer::region::RootStats) {
+    if root.commit.is_empty() {
+        return;
+    }
+    let facts: Vec<&str> = root.commit.iter().map(|c| c.text.as_str()).collect();
+    out.line(sub_row(
+        Row::Commit,
+        format!(
+            "{} of H, the node this saved file names: R is the part of its program's R above \
+             it, and the universe is the rest of H — {}",
+            plural(facts.len() as u64, "candidate", "candidates"),
+            facts.join(" ")
+        ),
+    ));
+}
+
 fn outside_row(out: &mut Out, outside: &[Outside]) {
     if let Some(t) = outside_text(outside) {
         out.line(sub_row(Row::Outside, t));
@@ -1414,6 +1443,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
             ),
         );
     }
+    commit_row(&mut out, &a.root);
     later_rows(&mut out, &a.root.later);
     outside_row(&mut out, &a.root.outside);
     types_row(&mut out, &a.root.types_as_objects);
@@ -2056,6 +2086,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             ),
         );
     }
+    commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);
@@ -2287,6 +2318,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         Row::Universe,
         plural(a.n() as u64, "candidate", "candidates"),
     );
+    commit_row(out, &a.root);
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);

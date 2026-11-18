@@ -44,13 +44,6 @@ The same program, as `ein solve FILE` prints its query's answer, each row of the
                         “Bob knows Alice”
 ```
 
-as `--dump-answer DIR` writes a state, each fact with its reason and its statement:
-
-```text
-(knows Alice Bob) ; source "Alice says she knows Bob" — Alice knows Bob
-(knows Bob Alice) ; rule knows-back: Alice knows Bob, so Bob knows Alice — Bob knows Alice
-```
-
 and as `--trace OUT.md` writes a firing, its reason quoted, a given premise with its source, and the conclusion with
 its statement:
 
@@ -76,11 +69,11 @@ written; a reference it cannot bind is left as it is.
 
 | text | on | fills | printed by |
 |---|---|---|---|
-| `:why` | `(relation R …)` | **by position**: `{?1}` the fact's first argument, `{?2}` its second, … — the fact's **statement** | a `--dump-answer` state file, after each fact; `--trace`, after each fact a step derives (a firing of several conclusions names each, in its rule's order, `; ` between two) |
-| `:why` | `(rule …)`, `(hrule …)` | the firing's variables: a parameter, or a variable a positive premise binds — a derived fact's **reason** | `--trace`'s step, a rule node of the derivation views, an obligation's owe line, a state file after each fact the rule derived first |
+| `:why` | `(relation R …)` | **by position**: `{?1}` the fact's first argument, `{?2}` its second, … — the fact's **statement** | `--trace`, after each fact a step derives (a firing of several conclusions names each, in its rule's order, `; ` between two) |
+| `:why` | `(rule …)`, `(hrule …)` | the firing's variables: a parameter, or a variable a positive premise binds — a derived fact's **reason** | `--trace`'s step, a rule node of the derivation views, an obligation's owe line |
 | `:why` | `(macro …)` | a parameter | nothing (§ 5): it documents the pattern |
 | `:goal-text` | `(query …)` | the goal's variables, per row | the read-out's projection rows, in `“…”` |
-| `:source` | a fact the program states | — | a state file after the fact; `--trace`'s premises line |
+| `:source` | a fact the program states | — | `--trace`'s premises line |
 
 A reference nothing can bind is printed as written, `{?zz}`: a template with a misspelt variable loads, and shows
 the misspelling where it is printed.
@@ -114,39 +107,47 @@ A fact has two texts, from two places:
 
 The reason, by how the fact was first reached:
 
-| the first justification | the reason | the state file writes |
+| the first justification | the reason | the trace writes |
 |---|---|---|
-| a statement, with a `:source` | the program's `:source`, quoted | `; source "…" — <statement>` |
-| a statement with none (a background fact) | none | `; <statement>` |
-| a rule's firing | the rule's `:why`, filled with that firing's bindings | `; rule r: <reason> — <statement>` |
-| a hypothesis | none: the commitment, which the read-out names | `; hypothesis N — <statement>` |
+| a statement, with a `:source` | the program's `:source` | the fact as a premise, `` `R(a, b)` — from <source> `` |
+| a statement with none (a background fact) | none | the fact as a premise, `` `R(a, b)` `` |
+| a rule's firing | the rule's `:why`, filled with that firing's bindings | the step's quote, `> <reason>`, then `` Derives `R(a, b)` — <statement> `` |
+| a hypothesis | none: the commitment, which the read-out names | the state's `Assuming **(R a b)**.`, before its steps |
 
 **The ladder.** A fact reads from the program's texts where it has one: its `:source`, its rule's `:why`, its
 relation's `:why`. Where it has none it reads as its s-expression, `(R a b)`, and **never as invented prose**: there
-is no built-in vocabulary that turns a relation into a verb.
+is no built-in vocabulary that turns a relation into a verb. `ein render kb` labels a fact's arrow from the same
+place, a given's `:source` and a derived fact's rule.
 
 **First recorded.** A fact may be reached several ways, and which arrives first can move with the order rules fire
 in. A reason is an explanation, as a core is: it is not part of the answer, and within one run the order is fixed, so
-the same run writes the same reasons.
+the same run writes the same reasons
+([Q-M1f.58](../../../decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md)).
 
-A state file of `ein solve examples/zebra.ein --dump-answer DIR`, `DIR/models/01.ein`, held to a run of that
-command. A rule the program does not list in an import prints by its full name, `std.slots.slot-fill`, and one it
-lists by the name it writes, `includes`:
+A step of `ein solve examples/zebra.ein --trace OUT.md`, held to a run of that command. A rule the program does not
+list in an import prints by its full name, `std.slots.slot-fill`, and one it lists by the name it writes, `includes`:
 
-<!-- state-file: examples/zebra.ein -->
-```lisp
-(co-located Englishman Red) ; source "condition (2)" — Englishman and Red are in the same house
-(co-located House-1 Water) ; rule std.slots.slot-fill: every Drink except Water is excluded for slot House-1 ⟹ Water is at House-1. — House-1 and Water are in the same house
-(instance House-5 House) ; House-5 is an instance of House
-(next-to House-2 House-1) ; rule includes: next-to includes right-of: from House-2 →right-of→ House-1, derive House-2 →next-to→ House-1. — House-2's house is next to House-1's
+<!-- trace: examples/zebra.ein -->
+```text
+### Step 18 — `includes`
+
+> next-to includes right-of: from House-2 →right-of→ House-1, derive House-2 →next-to→ House-1.
+
+Premises: `right-of(House-2, House-1)` — from condition (1)
+
+Derives `next-to(House-2, House-1)` — House-2's house is next to House-1's
+### Step 615 — `std.slots.slot-fill`
+> every Nationality except Norwegian is excluded for slot House-1 ⟹ Norwegian is at House-1.
+Derives `co-located(House-1, Norwegian)` — House-1 and Norwegian are in the same house
 ```
-<!-- /state-file -->
+<!-- /trace -->
 
 **What is not rendered.** The read-out's `(model …)` blocks and its `as :expect` line are Ein text a claim can be
-pasted from, so they stay s-expressions, as `ein solve`'s stdout and the dump's `answer.txt` do. A state file reloads
-to its facts because the English is a comment, and a line break in a text is a comment line of its own. `--trace`
-writes markdown, so there a text's line break is a hard break and the line after it stays in its block, a rule's
-`:why` in its quote ([Q-M1f.109](../../../decisions/read-out/Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md)).
+pasted from, so they stay s-expressions, as `ein solve`'s stdout and the dump's `answer.txt` do. A saved state holds
+no fact of the state, only its program and the choices made, so it carries the texts as the program wrote them and
+renders none ([`10-answer-dump.md`](../04-reference/10-answer-dump.md)). `--trace` writes markdown, so there a text's
+line break is a hard break and the line after it stays in its block, a rule's `:why` in its quote
+([Q-M1f.109](../../../decisions/read-out/Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md)).
 
 A bare `ein solve` renders no fact, so the texts cost nothing there.
 
@@ -185,8 +186,8 @@ and reads as written.
 **Every text a program writes is the domain's**: the program's `:why`s, `:source`s and `:goal-text`s, and the
 standard library's, which is a program. The engine fills them and never edits them. **The words around them are the
 engine's**: the read-out's labels ([the read-out reference](../04-reference/08-read-out.md)), the trace's headings and its
-*Derives* and *Premises*, the provenance words a state file writes (`source`, `rule`, `hypothesis`) and its
-separators (`: `, ` — `), and the verdict and protocol words the engine reserves
+*Derives*, *Premises* and *Assuming*, the provenance words `ein saturate --dump` writes (`:source`, `:rule`,
+`:hypothesis`), the separators (`: `, ` — `), and the verdict and protocol words the engine reserves
 ([the engine's reserved strings](../../ein.rs/07-reserved-engine-strings.md)). The engine owns no domain
 word: it has no sentence for a relation that has none, and a kernel relation, `not` or `relation`, reads as its
 s-expression. A word the engine adds to an output is the engine's, listed on one of those two pages, and never
@@ -198,12 +199,11 @@ part of a vocabulary for the domain.
   test, names something its form can fill: a relation's, a position its declaration has; a rule's or an hrule's, a
   variable it binds (a parameter, or a positive premise's, macros expanded); a macro's, a parameter. None writes
   `{x}`, a reference with its `?` missing.
-- No line of a dump's `answer.txt`, of a state file's facts, or of a trace carries an unfilled `{?`, over every
-  example program the test suite dumps.
+- No line of a dump's `answer.txt` carries an unfilled `{?`, over every corpus program the test suite dumps.
 - Each text is printed byte for byte on every surface that prints it, Cyrillic, CJK, an emoji and every escape among
   them, and `--no-require-why` decides loading alone.
-- § 3's block is lines of the state file its marker's run writes, and § 4's `kernel` register is the engine's
-  reserved names, name for name.
+- § 3's block is lines of the trace its marker's run writes, and § 4's `kernel` register is the engine's reserved
+  names, name for name.
 
 The test suite holds this page to the binary.
 
@@ -212,4 +212,4 @@ The test suite holds this page to the binary.
 - [Relations](02-relations.md) and [rules](05-rules.md): where the `:why` templates are written.
 - [Facts](03-facts.md): the record a reason is read from.
 - [The read-out reference](../04-reference/08-read-out.md): every row `ein solve` prints, the projection rows among them.
-- [The answer dump](../04-reference/10-answer-dump.md): the state files, and why they reload.
+- [The answer dump](../04-reference/10-answer-dump.md): a saved state, its program and the choices made.

@@ -298,7 +298,7 @@ first rule's activator, a fact about the relation:
 
 ![The rule every-declared-pair: a declaration alone, and the activator it asserts](diagrams/01-rule-every-declared-pair.svg)
 
-In words, from the state file: *Norwegian is an instance of Person, the label lives-in declares for its first
+In words, from the trace: *Norwegian is an instance of Person, the label lives-in declares for its first
 argument*. In mathematics the rule is one implication, for every relation $R$ it is activated on:
 
 $$

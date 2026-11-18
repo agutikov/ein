@@ -383,6 +383,42 @@ pub struct RootStats {
     /// which `dead`, `owes` and `owed` above describe (Q-M1f.402). Empty
     /// for a program, and for a saved root.
     pub commit: Vec<Candidate>,
+    /// **The program's H, where the run is a saved file's**: its universe is
+    /// H less [`Self::commit`], and a state found above the node is saved as
+    /// the program with the commitment of the union, in H's order
+    /// ([`Self::commitment`]). Empty where `commit` is.
+    pub program_h: Vec<Candidate>,
+}
+
+impl RootStats {
+    /// **A commitment as a saved file states it** (Q-M1f.400): `own`, a set
+    /// of the run's `universe` by place, and the node a saved file names
+    /// ([`Self::commit`]), each candidate by its text, in H's order. A run
+    /// of a program has no such node; one of a saved file states the
+    /// program's commitment of the union (Q-M1f.402), so every saved file is
+    /// the program with one commitment of H.
+    pub fn commitment(&self, universe: &[Candidate], own: &[u32]) -> Vec<String> {
+        if self.commit.is_empty() {
+            let mut own = own.to_vec();
+            own.sort_unstable();
+            own.dedup();
+            return own
+                .iter()
+                .map(|&b| universe[b as usize].text.clone())
+                .collect();
+        }
+        let held: FxHashSet<FactId> = self
+            .commit
+            .iter()
+            .map(|c| c.fact)
+            .chain(own.iter().map(|&b| universe[b as usize].fact))
+            .collect();
+        self.program_h
+            .iter()
+            .filter(|c| held.contains(&c.fact))
+            .map(|c| c.text.clone())
+            .collect()
+    }
 }
 
 impl Region {
@@ -765,7 +801,7 @@ pub(crate) fn compute_prepared(
 /// run is the part of the program's lattice above that node: H is the
 /// program's, a route's universe is H less these candidates, and the node
 /// function writes them with a node's own facts, in H's order, into a fork of
-/// the program's root ([`Snapshot::floor`]), so a node of the run is the
+/// the program's root (`Snapshot::floor`), so a node of the run is the
 /// program's node of the union, fact for fact and origin for origin.
 #[derive(Clone, Debug)]
 pub struct Floor {
@@ -811,14 +847,14 @@ fn floor_of(candidates: &[Candidate], commit: &[String]) -> Result<Floor, SolveE
     for text in commit {
         let Some(i) = candidates.iter().position(|c| c.text == *text) else {
             return Err(SolveError::Refused(format!(
-                "(commit …) names {text}, which is no candidate of the program's H: a saved \
+                "(commit …) names {text}, which is no candidate of its program's H — a saved \
                  file's choices are candidates of H, which `ein show hyps` lists (Q-M1f.400)"
             )));
         };
         if places.contains(&i) {
             return Err(SolveError::Refused(format!(
-                "(commit …) names {text} twice: a commitment is a set of candidates of H \
-                 (Q-M1f.400)"
+                "(commit …) names {text} twice — a commitment is a set of candidates of H, each \
+                 named once (Q-M1f.400)"
             )));
         }
         places.push(i);
@@ -923,7 +959,7 @@ pub struct SavedNode {
 /// names, read by the node function as every route reads a node, to
 /// quiescence. `None`, with `root` untouched, for a file with no `(commit
 /// …)`, whose state is root's fixpoint. `root` is freshly loaded, as
-/// [`prepare`] takes it; a choice that is no candidate of H is refused here,
+/// `prepare` takes it; a choice that is no candidate of H is refused here,
 /// as on every command.
 pub fn saved_node(
     root: &mut Kb,
@@ -1246,6 +1282,7 @@ fn above(
     stats.owes = owes as u32;
     stats.owed = owed;
     stats.commit = floor.candidates.clone();
+    stats.program_h = p.candidates.clone();
     Ok(Prepared {
         snapshot,
         root_dead: dead && (monotone || p.root_dead),
@@ -2140,7 +2177,8 @@ fn node_in_region(
         .collect();
     // A saved file's commitment is H's, as a route's own candidates are.
     let floor = snapshot.floor();
-    let is_candidate = |f: FactId| axes.is_candidate.contains(&f) || floor.is_some_and(|c| c.holds(f));
+    let is_candidate =
+        |f: FactId| axes.is_candidate.contains(&f) || floor.is_some_and(|c| c.holds(f));
     for &f in &delta {
         if is_candidate(f) {
             continue;
@@ -2151,9 +2189,10 @@ fn node_in_region(
         }
     }
     // L9's premise at this node, where the table relies on it.
-    let unheld = axes.instances.as_ref().and_then(|t| {
-        crate::unheld::breach(&fork, root, terms, &t.unheld_relations, is_candidate)
-    });
+    let unheld = axes
+        .instances
+        .as_ref()
+        .and_then(|t| crate::unheld::breach(&fork, root, terms, &t.unheld_relations, is_candidate));
     // The core, where one is taken, is the node's over its fixpoint, as the
     // oracle's is: a node stopped at its first contradiction goes on from
     // there, silently, firing what it would have fired, once everything it

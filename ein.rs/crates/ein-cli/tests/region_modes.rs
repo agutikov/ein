@@ -821,12 +821,12 @@ fn a_count_past_the_cap_is_an_answer_on_every_surface() {
         assert_eq!(doc["region"]["k_c"], CAP_JSON, "{n}");
         assert_eq!(doc["region"]["exhausted"], true, "{n}");
         assert_eq!(doc["region"]["components"][0], CAP_JSON, "{n}");
-        let state = std::fs::read_to_string(format!("{answer}/models/02.ein")).unwrap();
-        assert!(
-            state.contains(";;; reached by: 9223372036854775807 or more commitments\n"),
-            "{n}: {}",
-            &state[..state.len().min(600)]
-        );
+        // The state's count in the answer directory's index, where a run
+        // says what it saved: the summary's state, the same number.
+        let index: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(format!("{answer}/index.json")).unwrap())
+                .unwrap();
+        assert_eq!(index["region"]["states"][1]["commitments"], CAP_JSON, "{n}");
         // `--count` is describe's question with the listing left out.
         let c = ein(&["solve", &file, "--count"]);
         assert_eq!((c.code, c.err.as_str()), (0, ""), "{n}");

@@ -215,16 +215,23 @@ pub fn load_query_by(
     kb.program_mut().active_query = active_query;
     let mut errors: Vec<String> = Vec::new();
 
-    // A saved file's wrappers stand at the top of a saved file, which opens
-    // with its `(program …)` and is read by `crate::saved`: a program holds
-    // none (Q-M1f.401).
+    // A saved file, its first form its `(program …)`: its program against
+    // the modules it carries, with its choices (`crate::saved`). Its
+    // wrappers stand at the top of a saved file alone: a program holds none
+    // (Q-M1f.401).
+    if forms
+        .first()
+        .is_some_and(|&f| ast.head_name(f) == Some("program"))
+    {
+        return crate::saved::load_forms(ast, terms, forms, active_query, opts);
+    }
     if let Some(&w) = forms
         .iter()
         .find(|&&f| matches!(ast.head_name(f), Some("program" | "module" | "commit")))
     {
         return Err(KbLoadError(format!(
-            "({} …) at {} — a saved file's, which opens with its (program …): a program \
-             holds no (program …), (module …) or (commit …)",
+            "a program holds a ({} …) at {} — (program …), (module …) and (commit …) are a \
+             saved file's, which opens with its (program …)",
             ast.head_name(w).unwrap_or(""),
             loc_repr(ast, ast.loc(w))
         )));

@@ -15,8 +15,8 @@
 ;;; The import brings `palette` and `color`, which the rule writes.
 ;;; Root fires `palette` and holds `(color Red)` and `(color Green)`; no
 ;;; candidate, so R is {∅}, one state. `ein solve --dump-answer DIR` writes
-;;; that state as `DIR/models/01.ein`: *the program as loaded, imports
-;;; inlined, and then every fact of the state*. The program as loaded holds
+;;; that state as `DIR/models/01.ein`: *the program as written and every
+;;; module its load read, each as written* (Q-M1f.401). The module holds
 ;;; `(relation color …)` and `(rule palette …)`, so the file does.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
@@ -31,7 +31,8 @@
 ;;; rule: `ein saturate --dump` on it listed no declared relation and no rule
 ;;; where the run that wrote it had one of each.
 ;;; The engine now gives the answer above by hand: an import brings its
-;;; module whole (Q-M1f.247), so the state file holds both.
+;;; module whole (Q-M1f.247), and a state file carries it as written, so it
+;;; holds both.
 ;;;
 
 (import dump-selection-library :symbols (palette))

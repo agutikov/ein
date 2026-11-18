@@ -373,8 +373,8 @@ fn what_not_does_not_deny_is_refused_under_a_negation_too() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// A state that holds one is written as a file that loads: the fact a rule
-/// built is a fact a file may write.
+/// A state that holds one is saved as a file that loads to it: the fact a
+/// rule built is derived again, by the rule that built it.
 #[test]
 fn a_state_that_holds_one_is_a_file_that_loads() {
     let scratch = Scratch::new("ein-negneg-state-file");
@@ -384,10 +384,13 @@ fn a_state_that_holds_one_is_a_file_that_loads() {
     let r = ein(&["solve", &f, "--dump-answer", &dir]);
     assert_eq!(r.code, 0, "{}", r.err);
     let state = scratch.path().join("answer/models/01.ein");
-    let text = std::fs::read_to_string(&state).expect("the one state, a file");
+    assert!(state.is_file(), "the one state, a file");
+    let dump = ein(&["saturate", "--dump", &state.display().to_string()]);
+    assert_eq!(dump.code, 0, "{}", dump.err);
     assert!(
-        text.contains(&format!("(not (not {G}))")),
-        "the state holds the fact: {text}"
+        dump.out.contains(&format!("(not (not {G}) :rule ")),
+        "the state holds the fact: {}",
+        dump.out
     );
     let again = ein(&["solve", &state.display().to_string()]);
     assert_eq!(again.code, 0, "{}", again.err);

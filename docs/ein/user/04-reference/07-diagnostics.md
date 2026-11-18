@@ -1045,8 +1045,8 @@ short the names it declares, lists or prefixes with an alias, and any other shor
 What is **not** refused: one short name bound to one full name twice; a short name the file writes that no import of
 it lists, which is the file's own whatever a module declares under it
 ([Q-M1f.236](../../../decisions/imports/Q-M1f.236-a-short-name-a-file-writes-and-lists-from-no.md)); a dotted name the
-main file declares where no module of the program has its prefix, which is how a `--dump-answer` state file declares
-the full names it was loaded with; and a dotted name whose prefix is no module at all, a name like another.
+main file declares where no module of the program has its prefix; and a dotted name whose prefix is no module at all,
+a name like another.
 
 **What prints** is the main file's listed short name, else its first alias's spelling, else the full name, every
 surface alike: a state, a trace, a core, `refuted by`, `--events`
@@ -1068,6 +1068,34 @@ conjunct, read after a macro's expansion:
 
 An `(and …)` of one conjunct, `(and (p ?x))`, is one conclusion and loads. A macro's call that leaves the `(and …)`
 is placed as § 2.16 places a form a body writes, at the macro's body.
+
+### 2.30 A saved file is its program, its modules and one commitment of H
+
+A saved file is one `(program …)`, the `(module …)`s it carries and at most one `(commit …)`, and a load reads it as
+the node of its program's lattice the commitment names
+([`10-answer-dump.md`](10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made);
+[Q-M1f.400](../../../decisions/read-out/Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md),
+[Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md),
+[Q-M1f.402](../../../decisions/answer/Q-M1f.402-a-saved-file-is-a-node-of-its-programs-lattice.md)). The three heads
+stand only at the top of a file, and a form that breaks their shape, `(commit)`, `(module)` or a `(program …)` holding
+one of them, is a parse error ([`01-grammar.md`](01-grammar.md)'s table). Each of the following is refused, one line,
+at the command's load-error exit:
+
+| the file | the line |
+|---|---|
+| a program that holds a wrapper | `kb load error: a program holds a (commit …) at None — (program …), (module …) and (commit …) are a saved file's, which opens with its (program …)` |
+| a saved file of another shape: a second `(program …)` or `(commit …)`, a module twice or after the `(commit …)`, any other form | `kb load error: a second (commit …) at None — a saved file is one (program …), then the (module …)s it carries, each once, then at most one (commit …), and nothing else`, the finding first: `a second (module m …)`, `a (module …) after the (commit …)`, `a form that is no (program …), (module …) or (commit …)`, placed where the form is written |
+| an import the file carries no module for | `kb load error: (import m) — F carries no module m, and a saved file reads no other file (None)` |
+| a choice that is no candidate of the program's H | ``(commit …) names (note (bad b)), which is no candidate of its program's H — a saved file's choices are candidates of H, which `ein show hyps` lists (Q-M1f.400)`` |
+| a choice named twice | `(commit …) names (note (bad a)) twice — a commitment is a set of candidates of H, each named once (Q-M1f.400)` |
+| a file with a `(commit …)` given to `ein kb save` | `kb save error: F is a saved file with a (commit …), a node of its program's lattice, and a .einb holds a program's root — save the program, or the saved file of its root` |
+
+The two refusals of a choice read H, which is built at root's fixpoint, so they are made by the commands that read
+the node, `ein solve` in every mode, `oracle`, `saturate`, `test` and `render kb`, as § 2.7's is by the commands
+that take the universe; `ein show hyps` and `ein render h-space` read the program's H and refuse neither. What is
+**not** refused: a carried module of the standard library that is not the one the binary would read, which is
+loaded as carried, with `note: F: the std.math.arith it carries is not this binary's standard library's; the text it
+carries is loaded`.
 
 ## See also
 

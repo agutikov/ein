@@ -21,12 +21,12 @@ use ein_infer::explore::{self, Answer, Ask, Mode, Verdict, Which};
 use ein_infer::region::{self, Outcome, Region};
 use ein_ir::{Ast, load, parse};
 
+/// A program read as every command reads one: its text, or a saved file's
+/// program against the modules it carries, with its `(commit …)`.
 fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
-    let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
+    let kb = ein_ir::load_file(&mut ast, &mut terms, path).ok()?;
     Some((kb, terms, ast))
 }
 
@@ -486,165 +486,7 @@ fn every_mode_is_the_oracle() {
         "explore::every_mode_is_the_oracle",
         &paths,
         |p| (rel_of(p), String::new()),
-        |path| {
-            let mut failures: Vec<String> = Vec::new();
-            let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
-            let mut stopped = 0usize;
-            let mut refused = 0usize;
-            'unit: {
-                let rel = rel_of(path);
-                let Some((mut kb, mut terms, ast)) = loaded(path) else {
-                    break 'unit;
-                };
-                let out = region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {});
-                // A refusal is the whole answer, and every path gives it alike.
-                if let Err(ein_infer::SolveError::Refused(m)) = &out {
-                    refused += 1;
-                    for mode in cells(1) {
-                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
-                        match explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
-                        {
-                            Err(ein_infer::SolveError::Refused(n)) if n == *m => {}
-                            other => failures.push(format!(
-                                "{rel} {mode:?}: the oracle refuses and the mode answers {:?}",
-                                other.map(|a| a.route)
-                            )),
-                        }
-                    }
-                    break 'unit;
-                }
-                let Ok(Outcome::Region(r)) = out else {
-                    break 'unit;
-                };
-                let root = facts_text(&kb, &terms);
-                let monotone = r.monotonicity.is_monotone();
-                // The cube's own description, on every program: a flagged one prints
-                // it, and the claim check reads it.
-                failures.extend(described_against(
-                    &format!("{rel} the cube"),
-                    &r,
-                    &ein_infer::described::of_cube(&r),
-                ));
-                *counted
-                    .entry(if monotone { "monotone" } else { "flagged" })
-                    .or_default() += 1;
-                let k_s = part(&r, Which::All).classes.len();
-                // Describe's answer, unbudgeted and at the C3 budget, for `--count`'s
-                // to be held to.
-                let mut described: [Option<String>; 2] = [None, None];
-                for mode in cells(k_s) {
-                    let mut opts = explore::Options::new(mode);
-                    opts.jobs = jobs();
-                    opts.budget = u64::MAX;
-                    let (a, after) = ask(path, &opts);
-                    match mode.ask {
-                        Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
-                        Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
-                            failures.push(format!("{rel} --count: not describe's answer"));
-                        }
-                        _ => {}
-                    }
-                    if after != root {
-                        failures.push(format!(
-                            "{rel} {mode:?}: root afterwards is not sat(program)"
-                        ));
-                    }
-                    if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
-                        failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
-                    }
-                    // Each mode's route: a flagged program keeps the cube
-                    // and its warning, but where its root is dead, which decides it
-                    // (L0, a fork only adds: `explore::run`), and
-                    // route 1 reads root alone, with the warning; a monotone one whose
-                    // root is alive takes the state route for describe and the modes'
-                    // routes over states otherwise, naming L5 exactly when the
-                    // obligation tree used it. No program the oracle answers has a
-                    // flagged dead root: *forbid* refuses `activator-all-int`
-                    // and `activator-all-nested`, which have one.
-                    let describe =
-                        mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
-                    let route_ok = if !monotone && a.root_dead {
-                        a.route == explore::Route::DownSet && a.warning.is_some()
-                    } else if !monotone {
-                        a.route == explore::Route::Cube && a.warning.is_some()
-                    } else if describe {
-                        matches!(
-                            a.route,
-                            explore::Route::States | explore::Route::TreeClasses
-                        )
-                    } else if a.root_dead {
-                        a.route == explore::Route::DownSet
-                    } else {
-                        matches!(a.route, explore::Route::States | explore::Route::Tree)
-                    };
-                    if !route_ok {
-                        failures.push(format!(
-                            "{rel} {mode:?}: route {:?} (warning {}) on a {} program",
-                            a.route,
-                            a.warning.is_some(),
-                            if monotone { "monotone" } else { "flagged" }
-                        ));
-                    }
-                    let l5 = a.licences.contains(&explore::Licence::Exhaustive);
-                    if l5 != matches!(a.route, explore::Route::Tree | explore::Route::TreeClasses) {
-                        failures.push(format!(
-                            "{rel} {mode:?}: route {:?} with licences {:?}",
-                            a.route, a.licences
-                        ));
-                    }
-                    *counted
-                        .entry(if l5 { "tree" } else { "other" })
-                        .or_default() += 1;
-                    failures.extend(against(&rel, &r, &a, false));
-                    failures.extend(empty_rule(&rel, &r, mode, &a));
-                    // Describe's other route, asked by name: the state route
-                    // is held to the oracle as the default is.
-                    if describe && monotone && !a.root_dead {
-                        let mut states = opts;
-                        states.describe_route = explore::DescribeRoute::States;
-                        let (b, _) = ask(path, &states);
-                        if b.route != explore::Route::States {
-                            failures.push(format!(
-                                "{rel} {mode:?} --describe-route states: route {:?}",
-                                b.route
-                            ));
-                        }
-                        failures.extend(against(&rel, &r, &b, false));
-                    }
-                    if mode.which == Which::Minimal && r.in_r(0) {
-                        *counted
-                            .entry(if monotone {
-                                "∅ rule, monotone"
-                            } else {
-                                "∅ rule, flagged"
-                            })
-                            .or_default() += 1;
-                    }
-                    // C3: a budget that stops many runs on the way. The cube is
-                    // bounded by the limit and not by the budget, so a flagged
-                    // program answers as above.
-                    if monotone {
-                        opts.budget = 8;
-                        let (b, _) = ask(path, &opts);
-                        stopped += usize::from(b.stopped.is_some());
-                        failures.extend(against(&rel, &r, &b, true));
-                        failures.extend(empty_rule(&rel, &r, mode, &b));
-                        match mode.ask {
-                            Ask::Describe if mode.which == Which::All => {
-                                described[1] = Some(said(&b))
-                            }
-                            Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
-                                failures.push(format!(
-                                    "{rel} --count at budget 8: not describe's answer"
-                                ));
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-            }
-            (failures, counted, stopped, refused)
-        },
+        |path| every_mode_unit(path, &oracle),
     );
     for (f, c, s, r) in found {
         failures.extend(f);
@@ -680,6 +522,347 @@ fn every_mode_is_the_oracle() {
         "{counted:?}"
     );
     eprintln!("{counted:?}");
+}
+
+/// The nodes of `r` a saved file is written at: the first and the last state
+/// of R past ∅, by its smallest commitment, the first dead node and the first
+/// owing one, each past ∅ and each once.
+fn saved_nodes_of(r: &Region) -> Vec<u64> {
+    let mut v: Vec<u64> = Vec::new();
+    let classes: BTreeSet<u64> = (1..1u64 << r.n())
+        .filter(|&m| r.in_r(m))
+        .map(|m| r.nodes[m as usize].class)
+        .filter(|&c| c != 0)
+        .collect();
+    v.extend(classes.first());
+    v.extend(classes.last());
+    let first = |bit: u8, set: bool| {
+        (1..1u64 << r.n()).find(|&m| {
+            (r.status[m as usize] & bit != 0) == set && {
+                // An owing node is alive.
+                bit != region::OWING || r.status[m as usize] & region::DEAD == 0
+            }
+        })
+    };
+    v.extend(first(region::DEAD, true));
+    v.extend(first(region::OWING, true));
+    v.sort_unstable();
+    v.dedup();
+    v
+}
+
+/// **A saved file is a node of its program's lattice** (Q-M1f.402): written
+/// at a node `c` of a program's cube, as `--dump-answer` writes a state, its
+/// cube is the program's above `c`, node for node, every node's two bits and
+/// its closure the program's at the union, over H less `c`; and every cell of
+/// `ein solve`'s two axes on it is that cube, as [`every_mode_is_the_oracle`]
+/// holds each on a program. Over every corpus program whose cube the oracle
+/// enumerates, at the first and last state of R past ∅, a dead node and an
+/// owing one ([`saved_nodes_of`]).
+#[test]
+fn every_mode_is_the_oracle_above_a_saved_node() {
+    let oracle = region::Options {
+        jobs: jobs(),
+        ..region::Options::default()
+    };
+    let scratch = ein_corpus::Scratch::new("ein-explore-saved-nodes");
+    let paths = ein_corpus::corpus_files();
+    let found = ein_corpus::pool::map(
+        "explore::every_mode_is_the_oracle_above_a_saved_node",
+        &paths.iter().enumerate().collect::<Vec<_>>(),
+        |(_, p)| (rel_of(p), String::new()),
+        |&(i, path)| {
+            let mut unit: Unit = Default::default();
+            let mut kinds: BTreeMap<&'static str, usize> = BTreeMap::new();
+            let rel = rel_of(path);
+            let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                return (unit, kinds);
+            };
+            let Ok(Outcome::Region(r)) =
+                region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+            else {
+                return (unit, kinds);
+            };
+            let Some(sources) = kb.program().sources.clone() else {
+                unit.0
+                    .push(format!("{rel}: loaded from a file, it carries no text"));
+                return (unit, kinds);
+            };
+            for (k, c) in saved_nodes_of(&r).into_iter().enumerate() {
+                let commit: Vec<&str> = (0..r.n())
+                    .filter(|&b| c >> b & 1 == 1)
+                    .map(|b| r.candidates[b].text.as_str())
+                    .collect();
+                let file = scratch.join(format!("p{i}-{k}.ein"));
+                std::fs::write(&file, ein_ir::saved::write(&sources, &commit)).expect("written");
+                let at = format!("{rel} at {}", r.name(c));
+                let Some((mut kb, mut terms, ast)) = loaded(&file) else {
+                    unit.0.push(format!("{at}: the saved file does not load"));
+                    continue;
+                };
+                let f = match region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {}) {
+                    Ok(Outcome::Region(f)) => f,
+                    other => {
+                        unit.0.push(format!(
+                            "{at}: the oracle answers {:?}",
+                            other.map(|_| "no cube")
+                        ));
+                        continue;
+                    }
+                };
+                // H less `c`, in H's order, and where each is in H.
+                let rest: Vec<usize> = (0..r.n()).filter(|&b| c >> b & 1 == 0).collect();
+                let texts = |v: &[region::Candidate]| -> Vec<String> {
+                    v.iter().map(|x| x.text.clone()).collect()
+                };
+                let want: Vec<String> =
+                    rest.iter().map(|&b| r.candidates[b].text.clone()).collect();
+                if texts(&f.candidates) != want {
+                    unit.0
+                        .push(format!("{at}: the universe is not H less the commitment"));
+                    continue;
+                }
+                let lift = |m: u64| -> u64 {
+                    rest.iter()
+                        .enumerate()
+                        .filter(|&(j, _)| m >> j & 1 == 1)
+                        .fold(c, |acc, (_, &b)| acc | 1 << b)
+                };
+                for m in 0..1u64 << f.n() {
+                    let up = lift(m) as usize;
+                    let (x, y) = (&f.nodes[m as usize], &r.nodes[up]);
+                    if f.status[m as usize] != r.status[up] || lift(x.closure) != y.closure {
+                        unit.0.push(format!(
+                            "{at}: node {} is {} with the closure {}, and the program's {} is \
+                             {} with {}",
+                            f.name(m),
+                            f.status[m as usize],
+                            f.name(x.closure),
+                            r.name(up as u64),
+                            r.status[up],
+                            r.name(y.closure)
+                        ));
+                        break;
+                    }
+                }
+                *kinds
+                    .entry(match r.status[c as usize] {
+                        0 => "in R",
+                        s if s & region::DEAD != 0 => "dead",
+                        _ => "owing",
+                    })
+                    .or_default() += 1;
+                *kinds
+                    .entry(if r.monotonicity.is_monotone() {
+                        "monotone"
+                    } else {
+                        "flagged"
+                    })
+                    .or_default() += 1;
+                let (f, c, s, n) = every_mode_unit(&file, &oracle);
+                unit.0.extend(f);
+                for (k, v) in c {
+                    *unit.1.entry(k).or_default() += v;
+                }
+                unit.2 += s;
+                unit.3 += n;
+            }
+            (unit, kinds)
+        },
+    );
+    let mut failures: Vec<String> = Vec::new();
+    let mut kinds: BTreeMap<&'static str, usize> = BTreeMap::new();
+    let mut counted: BTreeMap<&'static str, usize> = BTreeMap::new();
+    let mut stopped = 0usize;
+    for ((f, c, s, _), k) in found {
+        failures.extend(f);
+        for (key, n) in k {
+            *kinds.entry(key).or_default() += n;
+        }
+        for (key, n) in c {
+            *counted.entry(key).or_default() += n;
+        }
+        stopped += s;
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    eprintln!("{kinds:?} {counted:?}, {stopped} runs the budget stopped");
+    // Every saved file the oracle answers is held cell by cell, the budget's
+    // cells among them.
+    assert!(
+        counted.get("tree").copied().unwrap_or(0) + counted.get("other").copied().unwrap_or(0)
+            >= 16 * kinds.get("in R").copied().unwrap_or(0)
+            && stopped > 0,
+        "{counted:?}"
+    );
+    assert!(
+        kinds.get("in R").copied().unwrap_or(0) >= 100
+            && kinds.get("dead").copied().unwrap_or(0) >= 50
+            && kinds.get("owing").copied().unwrap_or(0) >= 5
+            && kinds.get("flagged").copied().unwrap_or(0) >= 5,
+        "{kinds:?}"
+    );
+}
+
+/// What [`every_mode_unit`] found of one program: the failures, the cells
+/// counted by kind, the runs the budget stopped, and the refusals.
+type Unit = (Vec<String>, BTreeMap<&'static str, usize>, usize, usize);
+
+/// Every cell of `ein solve`'s two axes on the program at `path`, against
+/// the oracle's cube of it: one unit of [`every_mode_is_the_oracle`], and of
+/// [`every_mode_is_the_oracle_above_a_saved_node`] on a saved file.
+fn every_mode_unit(path: &Path, oracle: &region::Options) -> Unit {
+    let mut failures: Vec<String> = Vec::new();
+    let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
+    let mut stopped = 0usize;
+    let mut refused = 0usize;
+    'unit: {
+        let rel = rel_of(path);
+        let Some((mut kb, mut terms, ast)) = loaded(path) else {
+            break 'unit;
+        };
+        let out = region::compute(&mut kb, &mut terms, &ast, oracle, &mut |_| {});
+        // A refusal is the whole answer, and every path gives it alike.
+        if let Err(ein_infer::SolveError::Refused(m)) = &out {
+            refused += 1;
+            for mode in cells(1) {
+                let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                match explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode)) {
+                    Err(ein_infer::SolveError::Refused(n)) if n == *m => {}
+                    other => failures.push(format!(
+                        "{rel} {mode:?}: the oracle refuses and the mode answers {:?}",
+                        other.map(|a| a.route)
+                    )),
+                }
+            }
+            break 'unit;
+        }
+        let Ok(Outcome::Region(r)) = out else {
+            break 'unit;
+        };
+        let root = facts_text(&kb, &terms);
+        let monotone = r.monotonicity.is_monotone();
+        // The cube's own description, on every program: a flagged one prints
+        // it, and the claim check reads it.
+        failures.extend(described_against(
+            &format!("{rel} the cube"),
+            &r,
+            &ein_infer::described::of_cube(&r),
+        ));
+        *counted
+            .entry(if monotone { "monotone" } else { "flagged" })
+            .or_default() += 1;
+        let k_s = part(&r, Which::All).classes.len();
+        // Describe's answer, unbudgeted and at the C3 budget, for `--count`'s
+        // to be held to.
+        let mut described: [Option<String>; 2] = [None, None];
+        for mode in cells(k_s) {
+            let mut opts = explore::Options::new(mode);
+            opts.jobs = jobs();
+            opts.budget = u64::MAX;
+            let (a, after) = ask(path, &opts);
+            match mode.ask {
+                Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
+                Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
+                    failures.push(format!("{rel} --count: not describe's answer"));
+                }
+                _ => {}
+            }
+            if after != root {
+                failures.push(format!(
+                    "{rel} {mode:?}: root afterwards is not sat(program)"
+                ));
+            }
+            if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
+                failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
+            }
+            // Each mode's route: a flagged program keeps the cube
+            // and its warning, but where its root is dead, which decides it
+            // (L0, a fork only adds: `explore::run`), and
+            // route 1 reads root alone, with the warning; a monotone one whose
+            // root is alive takes the state route for describe and the modes'
+            // routes over states otherwise, naming L5 exactly when the
+            // obligation tree used it. No program the oracle answers has a
+            // flagged dead root: *forbid* refuses `activator-all-int`
+            // and `activator-all-nested`, which have one.
+            let describe =
+                mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
+            let route_ok = if !monotone && a.root_dead {
+                a.route == explore::Route::DownSet && a.warning.is_some()
+            } else if !monotone {
+                a.route == explore::Route::Cube && a.warning.is_some()
+            } else if describe {
+                matches!(
+                    a.route,
+                    explore::Route::States | explore::Route::TreeClasses
+                )
+            } else if a.root_dead {
+                a.route == explore::Route::DownSet
+            } else {
+                matches!(a.route, explore::Route::States | explore::Route::Tree)
+            };
+            if !route_ok {
+                failures.push(format!(
+                    "{rel} {mode:?}: route {:?} (warning {}) on a {} program",
+                    a.route,
+                    a.warning.is_some(),
+                    if monotone { "monotone" } else { "flagged" }
+                ));
+            }
+            let l5 = a.licences.contains(&explore::Licence::Exhaustive);
+            if l5 != matches!(a.route, explore::Route::Tree | explore::Route::TreeClasses) {
+                failures.push(format!(
+                    "{rel} {mode:?}: route {:?} with licences {:?}",
+                    a.route, a.licences
+                ));
+            }
+            *counted
+                .entry(if l5 { "tree" } else { "other" })
+                .or_default() += 1;
+            failures.extend(against(&rel, &r, &a, false));
+            failures.extend(empty_rule(&rel, &r, mode, &a));
+            // Describe's other route, asked by name: the state route
+            // is held to the oracle as the default is.
+            if describe && monotone && !a.root_dead {
+                let mut states = opts;
+                states.describe_route = explore::DescribeRoute::States;
+                let (b, _) = ask(path, &states);
+                if b.route != explore::Route::States {
+                    failures.push(format!(
+                        "{rel} {mode:?} --describe-route states: route {:?}",
+                        b.route
+                    ));
+                }
+                failures.extend(against(&rel, &r, &b, false));
+            }
+            if mode.which == Which::Minimal && r.in_r(0) {
+                *counted
+                    .entry(if monotone {
+                        "∅ rule, monotone"
+                    } else {
+                        "∅ rule, flagged"
+                    })
+                    .or_default() += 1;
+            }
+            // C3: a budget that stops many runs on the way. The cube is
+            // bounded by the limit and not by the budget, so a flagged
+            // program answers as above.
+            if monotone {
+                opts.budget = 8;
+                let (b, _) = ask(path, &opts);
+                stopped += usize::from(b.stopped.is_some());
+                failures.extend(against(&rel, &r, &b, true));
+                failures.extend(empty_rule(&rel, &r, mode, &b));
+                match mode.ask {
+                    Ask::Describe if mode.which == Which::All => described[1] = Some(said(&b)),
+                    Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
+                        failures.push(format!("{rel} --count at budget 8: not describe's answer"));
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+    (failures, counted, stopped, refused)
 }
 
 /// The orders of the obligation tree the oracle holds beside the routes'

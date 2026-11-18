@@ -4,7 +4,7 @@ No renderer the engine builds is reachable from Rust alone. The three that once 
 
 - `ein render program FILE` draws the program as written, one DOT digraph per group;
 - `ein render kb FILE [--since FILE]` draws a KB, FILE loaded and saturated, and a `--dump-answer` state file is a
-  FILE, so a model draws as root does;
+  FILE that loads to its state, so a model draws as root does;
 - `ein solve FILE --dump-lattice DIR` writes every node the run visited, and `ein render lattice` draws them.
 
 The dump is a reader of the run: it combines with every other flag and moves no byte of stdout, stderr or the exit

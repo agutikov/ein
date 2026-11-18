@@ -6,8 +6,8 @@ one named constant in [`ein_core::terms`](../../../ein.rs/crates/ein-core/src/te
 if and only if it appears here or among the names the language reserves for a program to write (`relation`, `not`,
 `absent`, `eq`, `open`, …, which `ein_core::terms::RESERVED` lists with the two below).
 
-**The words around a program's English are the engine's too**: the provenance words a `--dump-answer` state file
-writes after a fact (`source`, `rule`, `hypothesis`), the trace's *Derives* and *Premises*, and the read-out's
+**The words around a program's English are the engine's too**: the provenance words `ein saturate --dump` writes
+after a fact (`:source`, `:rule`, `:hypothesis`), the trace's *Derives*, *Premises* and *Assuming*, and the read-out's
 labels. Every text a program writes, its `:why`s, `:source`s and `:goal-text`s, is the domain's, which the engine
 fills and never edits ([Q-M1f.12](../../decisions/read-out/Q-M1f.12-natural-language-text-reaches-a-fixed-set.md)).
 
@@ -81,7 +81,7 @@ nothing: each compiles with no synthetic head, so no run reaches an atom `#empty
 ## Provenance kinds
 
 A closed set the engine branches on, `ein_core::prov::ProvKind`: `source` (a file wrote it), `rule` (a rule derived
-it), `hypothesis` (a commitment assumed it), `rejected`. The words are the ones a state file and a trace print
+it), `hypothesis` (a commitment assumed it), `rejected`. The words are the ones `ein saturate --dump` and a trace print
 ([`03-design/03-data-model.md`](03-design/03-data-model.md)).
 
 ## `__closed__` — engine effect

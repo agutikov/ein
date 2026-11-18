@@ -132,23 +132,27 @@ fn a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source() {
 /// **`--dump-answer` on a container writes the directory its source writes**:
 /// not refused before the run, as a container carrying no program
 /// source would be, while the same run on the `.ein` answers and every other
-/// command reads the program the container stores. The same files,
-/// each the source's byte for byte but for the path it names; on a program
-/// that imports, a state file's program is the one the container stores,
-/// every declaration its imports brought (Q-M1f.27), and its header and its
-/// state are the source's.
+/// command reads the program the container stores. The same files, each the
+/// source's byte for byte but for the path it names, and its state files: a
+/// state file carries the program the container stores, resolved and
+/// import-flattened, every declaration its imports brought (Q-M1f.27), and
+/// its `(commit …)` is the source's, and it loads to the source's state, fact
+/// for fact and origin for origin.
 #[test]
 fn the_answer_directory_of_a_container_is_its_sources() {
-    const STATE: &str = ";; ── the state ──";
+    let commit_of = |t: &str| t.rsplit_once("\n(commit\n").map(|(_, c)| c.to_string());
+    let facts_of = |p: &Path| {
+        ein_cli::saturate::dump_section(p, &ein_ir::LoadOptions::default())
+            .expect("a state file loads")
+            .1
+    };
     let dir = scratch("dump-answer");
-    for (puzzle, imports) in [
-        (
-            "examples/ein-bugs/wrong-answers/einb-dump-answer.ein",
-            false,
-        ),
-        ("examples/branching/01_saturate_only.ein", false),
-        ("examples/lattice/02_genuine_3set_death.ein", false),
-        ("examples/zebra2-hints.ein", true),
+    // The last imports.
+    for puzzle in [
+        "examples/ein-bugs/wrong-answers/einb-dump-answer.ein",
+        "examples/branching/01_saturate_only.ein",
+        "examples/lattice/02_genuine_3set_death.ein",
+        "examples/zebra2-hints.ein",
     ] {
         let einb = dir.join("kb.einb");
         let container = einb.to_str().expect("utf-8");
@@ -203,33 +207,21 @@ fn the_answer_directory_of_a_container_is_its_sources() {
                 container,
                 puzzle,
             );
-            if !(imports && f.extension().is_some_and(|e| e == "ein")) {
+            if f.extension().is_none_or(|e| e != "ein") {
                 assert_eq!(got, want, "{puzzle}: {}", f.display());
                 continue;
             }
-            // A state file of a program that imports: its header and its
-            // state are the source's, and its program the container's.
-            let header = |t: &str| -> String {
-                t.lines()
-                    .take_while(|l| l.starts_with(";;;"))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            };
-            let state = |t: &str| t.split_once(STATE).map(|(_, s)| s.to_string());
+            // A state file: the container's program, the source's
+            // commitment, and the source's state.
             assert_eq!(
-                header(&got),
-                header(&want),
-                "{puzzle}: {}'s header",
-                f.display()
-            );
-            assert!(
-                state(&want).is_some(),
-                "{puzzle}: {} holds a state",
+                commit_of(&got),
+                commit_of(&want),
+                "{puzzle}: {}'s commitment",
                 f.display()
             );
             assert_eq!(
-                state(&got),
-                state(&want),
+                facts_of(&b.join(f)),
+                facts_of(&a.join(f)),
                 "{puzzle}: {}'s state",
                 f.display()
             );

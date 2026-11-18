@@ -62,8 +62,26 @@ every escape a string reads, and one `:source` with a raw newline; its claim is
 about facts, which the text does not move. `ein-cli/tests/natural_language_text.rs`
 holds the text byte for byte on every surface that carries it: the read-out and
 `answer.txt`, `--trace`, `ein saturate --dump`, a `--dump-answer` state file,
-`ein render program` and a `.einb`. Corpus group `positive`, runs `test`,
+which carries the program as written, `ein render program` and a `.einb`. Corpus group `positive`, runs `test`,
 `solve` and `saturate`.
+
+## `saved/` — a saved state loads as itself
+
+A state `ein solve FILE --dump-answer DIR` writes is a saved file: the program as written, every module its load
+read, and the choices made, `(commit …)`, which loads back to the state with no other file beside it
+([Q-M1f.392](../docs/decisions/answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md),
+[`10-answer-dump.md`](../docs/ein/user/04-reference/10-answer-dump.md)).
+
+| file | what it shows |
+|---|---|
+| `01_a_rule_builds_a_fact.ein` | root alone: a rule builds `(note (bad a))`, a fact with a fact inside it no file writes |
+| `02_a_choice_with_a_fact_inside_it.ein` | a state on a choice: an hrule proposes `(note (bad a))`, saved as `(commit (note (bad a)))` |
+| `03_the_standard_library.ein` | the standard library's twin: its state carries the five modules its imports read |
+| `04_a_saved_node.ein` | a saved file in the corpus: `02`'s state as its dump writes it, which every command reads as the node it names, its claims NOT CHECKED |
+
+`ein-cli/tests/saved_files.rs` saves each, loads each and holds the load to one solution and the same facts with
+the same origins, both invariances as the commands that check them; `answer_round_trip.rs` holds every corpus
+program's every state file to them. Corpus group `positive`, runs `test`, `solve` and `saturate`.
 
 ## `imports/` — a theory built on a theory
 

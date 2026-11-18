@@ -13,10 +13,10 @@
 
 use ein_core::Terms;
 use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_ir::Ast;
 use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
-use ein_ir::{Ast, parse};
 use ein_render::shape::{PARSE_VIEWS, all_views, dot_shape, kb_dot_shape};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -264,9 +264,26 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
     }
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    let kb = ein_ir::load(&mut ast, terms, &forms, path.parent());
+    let kb = load_text(&mut ast, terms, &text, path)?;
     run_loaded(&ast, terms, kb, path, op, jobs)
+}
+
+/// A program's text loaded as every command loads it, `ein_ir::saved`'s
+/// one read, so the KB carries the text a state file saves and a saved
+/// file is the node it names: `None` where it does not parse, and the load's
+/// refusal where it does not load.
+fn load_text(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    text: &str,
+    path: &Path,
+) -> Option<Result<ein_core::Kb, ein_ir::KbLoadError>> {
+    let opts = ein_ir::LoadOptions::default();
+    match ein_ir::saved::load_text(ast, terms, text, path.to_str(), path.parent(), 0, &opts) {
+        Ok(loaded) => Some(Ok(loaded.kb)),
+        Err(ein_ir::saved::TextError::Parse(_)) => None,
+        Err(ein_ir::saved::TextError::Load(e)) => Some(Err(e)),
+    }
 }
 
 impl Op {
@@ -292,8 +309,9 @@ fn run_unloaded(path: &Path, op: Op) -> Option<String> {
     let base = path.parent();
     // A file that does not parse still has an observable — the message — and
     // it is what `examples/broken/*.ein` exist to pin. Every other op needs an
-    // AST, so for those a parse failure is genuinely "nothing here".
-    let forms = match parse(&mut ast, &text, path.to_str()) {
+    // AST, so for those a parse failure is genuinely "nothing here". A saved
+    // file's forms are the program it carries, as the binary draws them.
+    let forms = match ein_ir::saved::parse_text(&mut ast, &text, path.to_str()) {
         Ok(forms) => forms,
         Err(e) => {
             return matches!(op, Op::Ir("parse")).then(|| format!("<refused> {e}"));
@@ -385,9 +403,8 @@ struct Parsed {
 fn load_once(path: &Path) -> Loaded {
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
     let mut terms = Terms::new();
-    let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent());
+    let kb = load_text(&mut ast, &mut terms, &text, path)?;
     Some(Parsed { ast, terms, kb })
 }
 
@@ -608,31 +625,42 @@ fn region_op(
             )
         }
         Op::States => {
-            // The state files, from the call the binary makes; the program
-            // each repeats above its facts is the CLI's (imports inlined), and
-            // what is compared is the facts and their comments below it.
+            // The state files, from the call the binary makes: each is the
+            // program as read and the commitment, of which the commitment is
+            // compared; and the state it loads to, each fact with its origin
+            // as a comment, read through the node function every route uses.
             let r = ein_infer::read_out::run(kb, terms, ast, &opts).map_err(|e| e.to_string())?;
             let scratch = ein_corpus::Scratch::new("ein-corpus-ops-states");
             let inputs = ein_render::dump::region_answer::Inputs {
                 source: &file,
-                program: "",
                 summary: "",
                 answer_txt: "",
                 forms: &[],
             };
-            ein_render::dump::region_answer::write(scratch.path(), &r, kb, terms, ast, &inputs)?;
-            let mut files: Vec<_> = std::fs::read_dir(scratch.path().join("models"))
-                .map(|d| d.filter_map(|e| e.ok().map(|e| e.path())).collect())
-                .unwrap_or_default();
-            files.sort();
+            ein_render::dump::region_answer::write(scratch.path(), &r, kb, &inputs)?;
+            let candidates = r.answer.candidates.clone();
+            let mut nodes = ein_infer::region::Nodes::new(kb, terms, ast, &candidates)
+                .map_err(|e| e.to_string())?;
+            let width = r.states.len().max(1).to_string().len().max(2);
             let mut out = String::new();
-            for f in files {
-                let text = std::fs::read_to_string(&f).map_err(|e| e.to_string())?;
-                let facts = text.split_once("── the state").map_or("", |(_, b)| b);
-                out.push_str(&format!(
-                    "--- {}\n{facts}",
-                    f.file_name().unwrap_or_default().to_string_lossy()
-                ));
+            for (i, s) in r.states.iter().enumerate() {
+                let name = format!("{:0width$}.ein", i + 1);
+                let text = std::fs::read_to_string(scratch.path().join("models").join(&name))
+                    .map_err(|e| e.to_string())?;
+                let commit = text.rsplit_once("\n(commit\n").map_or("", |(_, c)| c);
+                let facts: Vec<_> = s.rep.iter().map(|&b| candidates[b as usize].fact).collect();
+                let state = nodes
+                    .with_fixpoint(&facts, |kb, terms| {
+                        let relation = terms.kernel.relation;
+                        let mut state: Vec<_> = kb
+                            .facts()
+                            .filter(|&f| terms.facts.get(f).0 != relation)
+                            .collect();
+                        state.sort_by_cached_key(|&f| ein_infer::events::sexpr(terms, f));
+                        ein_render::dump::serialise::facts_to_ein_text(kb, terms, &state)
+                    })
+                    .map_err(|e| e.to_string())?;
+                out.push_str(&format!("--- {name}\n(commit\n{commit}{state}"));
             }
             Ok(out)
         }

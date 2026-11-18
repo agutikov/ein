@@ -3,9 +3,9 @@
 //!
 //! Three of its claims are checked here:
 //!
-//! - its § 3 block, between `<!-- state-file: FILE -->` and `<!--
-//!   /state-file -->`, is lines of the state file `ein solve FILE
-//!   --dump-answer DIR` writes, each one verbatim;
+//! - its § 3 block, between `<!-- trace: FILE -->` and `<!-- /trace -->`, is
+//!   lines of the trace `ein solve FILE --trace OUT.md` writes, each one
+//!   verbatim;
 //! - its § 4 has a row for each of the four registers, and the `kernel`
 //!   row's names are [`ein_core::RESERVED`], name for name;
 //! - every decision id it cites links the decision's own file under
@@ -16,27 +16,30 @@ use std::process::Command;
 use ein_corpus::{Scratch, repo_root};
 
 const PAGE: &str = "docs/ein/user/03-syntax-and-semantics/14-natural-language.md";
-const OPEN: &str = "<!-- state-file: ";
-const CLOSE: &str = "<!-- /state-file -->";
+const OPEN: &str = "<!-- trace: ";
+const CLOSE: &str = "<!-- /trace -->";
 
 fn page() -> String {
     std::fs::read_to_string(repo_root().join(PAGE)).expect("the page")
 }
 
 #[test]
-fn the_pages_state_file_lines_are_a_runs() {
+fn the_pages_trace_lines_are_a_runs() {
     let page = page();
-    let start = page.find(OPEN).expect("the page marks a state-file block");
+    let start = page.find(OPEN).expect("the page marks a trace block");
     let rest = &page[start + OPEN.len()..];
     let (file, rest) = rest.split_once(" -->").expect("the marker closes");
     let block = &rest[..rest.find(CLOSE).expect("the block closes")];
-    let lines: Vec<&str> = block.lines().filter(|l| l.starts_with('(')).collect();
+    let lines: Vec<&str> = block
+        .lines()
+        .filter(|l| !l.is_empty() && !l.starts_with("```"))
+        .collect();
     assert!(lines.len() >= 3, "the block shows {} lines", lines.len());
 
     let scratch = Scratch::new("ein-nl-page");
-    let dir = scratch.path().join("answer");
+    let trace = scratch.path().join("trace.md");
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(["solve", file, "--dump-answer", &dir.to_string_lossy()])
+        .args(["solve", file, "--trace", &trace.to_string_lossy(), "-G"])
         .current_dir(repo_root())
         .output()
         .expect("the binary runs");
@@ -45,13 +48,13 @@ fn the_pages_state_file_lines_are_a_runs() {
         "{}",
         String::from_utf8_lossy(&out.stderr)
     );
-    let state = std::fs::read_to_string(dir.join("models").join("01.ein")).expect("a state file");
-    let written: Vec<&str> = state.lines().collect();
+    let written = std::fs::read_to_string(&trace).expect("a trace");
+    let written: Vec<&str> = written.lines().collect();
     for l in lines {
         assert!(
             written.contains(&l),
-            "{PAGE}'s § 3 shows a line `ein solve {file} --dump-answer DIR` does not write:\n{l}\n\
-             (re-take it from DIR/models/01.ein)"
+            "{PAGE}'s § 3 shows a line `ein solve {file} --trace OUT.md` does not write:\n{l}\n\
+             (re-take it from OUT.md)"
         );
     }
 }

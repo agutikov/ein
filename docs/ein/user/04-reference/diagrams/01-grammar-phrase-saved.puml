@@ -1,0 +1,9 @@
+@startebnf
+Saved =
+    "(" , "program" , Forms , ")"
+  | "(" , "module" , ModuleName , Forms , ")"
+  | "(" , "commit" , CommitFacts , ")" ;
+ModuleName = Name ;
+CommitFact = NestedFact | NegFact ;
+CommitFacts = { CommitFact }- ;
+@endebnf

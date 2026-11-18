@@ -16,7 +16,7 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.26](Q-M1f.26-every-member-of-n-carries-its-core.md) — Every member of N carries its core, and a renderer refuses one without
 - [Q-M1f.29](Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md) — A question that prints no core writes a dead root's core `null`
 - [Q-M1f.48](Q-M1f.48-a-text-surface-writes-the-empty-core.md) — A text surface writes the empty core `∅`
-- [Q-M1f.58](Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md) — A fact reads in English in a state file and the trace, from its first recorded justification
+- [Q-M1f.58](Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) — A fact reads in English in the trace, from its first recorded justification
 - [Q-M1f.59](Q-M1f.59-a-macros-why-documents-the-pattern-and-is.md) — A macro's `:why` documents the pattern and is rendered nowhere
 - [Q-M1f.60](Q-M1f.60-a-fact-of-a-relation-nobody-declares-has-no.md) — A fact of a relation nobody declares has no statement
 - [Q-M1f.61](Q-M1f.61-a-query-has-one-goal-text-and-each-conjunct.md) — A query has one `:goal-text`, and each conjunct reads by its relation's `:why`
@@ -29,3 +29,5 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.255](Q-M1f.255-ein-solve-no-search-prints-root-and-an-r-row.md) — `ein solve --no-search` prints root, and an `R` row that says it was not searched
 - [Q-M1f.259](Q-M1f.259-under-no-search-the-summary-states-no-region.md) — Under `--no-search` the summary states no region, and root's standing is in `root`
 - [Q-M1f.340](Q-M1f.340-every-name-is-a-json-string.md) — Every name is a JSON string
+- [Q-M1f.400](Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md) — A saved file states the choices made in one `(commit …)`
+- [Q-M1f.401](Q-M1f.401-a-saved-file-carries-its-program-and-modules.md) — A saved file carries its program and modules as written, and reads no other file

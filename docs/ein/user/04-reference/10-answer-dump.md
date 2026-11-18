@@ -1,10 +1,11 @@
 # The answer dump — `ein solve --dump-answer DIR`
 
-**What a solve answered, as files.** One directory per run: the read-out uncut, the summary, one **loadable** program
-per state the run reached, the owing frontier of an empty R, the minimal dead sets, each form asked for uncut, and an
+**What a solve answered, as files.** One directory per run: the read-out uncut, the summary, one **saved file** per
+state the run reached, the owing frontier of an empty R, the minimal dead sets, each form asked for uncut, and an
 index naming each. It is the answer of the question the run asked: R, or the part of it the question names, as
 [`13-solutions-and-models.md`](../03-syntax-and-semantics/13-solutions-and-models.md) defines it, in the format
-`ein-answer/2`.
+`ein-answer/3`. A saved file is the program as written and the choices made, and loads back to its state
+([§ A state file is its program and the choices made](#a-state-file-is-its-program-and-the-choices-made)).
 
 ```sh
 ein solve examples/lattice/02_genuine_3set_death.ein --dump-answer out/
@@ -18,8 +19,8 @@ out/
   index.json      what is here — the question, the summary's region block, and every state file by name
   answer.txt      the read-out uncut: stdout with no listing cut, and every row of a block stdout stops at four
   answer.json     byte-identical to --json-summary on the same run
-  models/NN.ein   program + one state's facts, one per state the run reached
-  owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
+  models/NN.ein   one state saved: the program, its modules and the choices made, one per state the run reached
+  owing/NN.ein    one owing node saved, the same form, on an empty R of the owing kind
   nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it
   forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
 ```
@@ -31,11 +32,11 @@ out/
   every other member it met unlisted, with no line
   ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)).
 - **`index.json`** carries `asked` and the same `region` block as the summary, per state file its `path`, `state`
-  number, `lines` (`minimal` / `maximal`) and `listed`, and `forms`.
-- **A state file's header** gives its number, the commitment it was read from, its lines, how many commitments reach
-  it and its minimal generators. **A count of commitments, here and in `answer.json`, is reported up to $2^{63} - 1$**:
-  `9223372036854775807` reads *that many or more*, and a state file's header says so, *reached by:
-  9223372036854775807 or more commitments*
+  number, `lines` (`minimal` / `maximal`), `listed` and `commit`, the candidates its `(commit …)` names, and per owing
+  file its `path` and `commit`, and `forms`. What the run says of a state is here and not in its file: its number and
+  lines, and in `region.states`, the state's `N`-th entry, the commitment it was read from (`from`), how many
+  commitments reach it (`commitments`) and its minimal generators. **A count of commitments, here and in
+  `answer.json`, is reported up to $2^{63} - 1$**: `9223372036854775807` reads *that many or more*
   ([Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 - **`answer.txt`** reads back: its `(region …)` is the claim a `(solve … :expect …)` states, `(merged …)`s included
   ([`12-query.md`](../03-syntax-and-semantics/12-query.md)). Its rows are whole too: every `owed` row under `∅`, each instance
@@ -71,48 +72,112 @@ out/
   byte for byte. `index.json`'s **`forms`** lists each as `{form, path}`, in the order stdout prints them, and is `[]`
   where no form was asked for.
 
-Each state file costs one more saturation of a state the run already classified, and is mostly the program, so the
-directory's size is about $k$ times the inlined program.
+A state file costs no saturation: it is written from the program as it was read and the commitment, so the
+directory's size is about $k$ times the program and its modules.
 
-## Every state file loads, and is a fixpoint
+## A state file is its program and the choices made
 
-A state file is the program as loaded, imports inlined, followed by every fact of the state, one a line, sorted by its
-text. The program is written with every module it imports whole, under the names the program prints: its own spelling
-where it has one, the full name otherwise ([`11-macros.md`](../03-syntax-and-semantics/11-macros.md) has imports). A state file
-declares the full names it was loaded with, `std.math.decimal-arith.strip`, and imports nothing, which the loader reads
-as the program's own names
-([Q-M1f.239](../../../decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md)). The program's
-own `(relation …)` declarations are not repeated, because the loader refuses a second one. So the file **loads as a
-program**, and saturating it **derives no fact and no `(false)`**. It holds every candidate of its state's closure and
-no other candidate. Each state is read again the way every route reads a node, so the file is the state the read-out
-names and not a copy of one.
-
-**It loads to the state.** Each fact is written as text the loader reads back to the same object: a name bare where it
-reads as one name (`House-1`, `neqw`, `1`, `07`, `1..5`), a nested fact `(rel …)`. A name the loader made up, which
-starts with `#`, is written quoted and does not load back. So loading `models/NN.ein` gives that state's facts, **the
-same objects**, each fact as given.
-
-**What a reloaded state's facts rest on: nothing; each reads as given.** A fact's provenance is written as a
-**comment** after it, which the loader skips: `; source "…"` for a fact the program states with a source, `; rule r`
-for one a rule derived, `; hypothesis N` for the commitment. A state file is the state's facts, not a second kind of
-program that re-states where each came from, so a reloaded state is its facts as given, and the comment is for a
-reader.
-
-**The comment says the fact in English**
-([Q-M1f.58](../../../decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-a-state-file.md)): a derived fact's rule
-is followed by its `:why` filled with the bindings of the fact's first recorded justification, and every fact whose
-relation carries a `:why` by that `:why` filled with its arguments, after ` — ` (alone, for a given with no sentence):
+A state is a function of its program and of the hypotheses committed, so a state file holds exactly those two and no
+fact of the state: **the program unchanged, with the choices made**. Loaded, it derives the state again, every fact by
+the rule that derived it, with the origin it had, and **it reads no other file**
+([Q-M1f.392](../../../decisions/answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md)). The state
+`{(note (bad a))}` of [`tests/saved/02_a_choice_with_a_fact_inside_it.ein`](../../../../tests/saved/02_a_choice_with_a_fact_inside_it.ein),
+`models/02.ein`, the program's comments cut here:
 
 ```lisp
-(co-located Englishman Red) ; source "condition (2)" — Englishman and Red are in the same house
-(co-located House-3 Milk) ; rule symmetric: co-located is symmetric: Milk ↔ House-3. — House-3 and Milk are in the same house
-(instance House-5 House) ; House-5 is an instance of House
+;;; ein-saved/1 — the program and every module it imports, each as written, and the choices made: this file reads no other.
+(program
+(relation item Thing :why "{?1} is an item")
+(relation bad Thing :why "{?1} is bad")
+(relation note Fact :why "a note says {?1}")
+(relation flagged Thing :why "{?1} is flagged")
+
+(item a)
+
+(hrule guess ()
+  :match  (item ?x)
+  :assert (note (bad ?x))
+  :why    "suppose a note about {?x}")
+
+(rule flag ()
+  :match  (note (bad ?x))
+  :assert (flagged ?x)
+  :why    "a note says {?x} is bad, so {?x} is flagged")
+
+(solve :expect (region (model) (model (note (bad a)))))
+
+(query :goal (flagged ?x)
+       :goal-text "{?x} is flagged"
+       :expect (or (model) (model (flagged a))))
+
+)
+(commit
+  (note (bad a)))
 ```
 
-A line break in a text starts a new comment line, `;   `, so the text is carried character for character and the file
-still loads to its facts. A fact with no text at all keeps the comment it had, or none. Which justification is *first
-recorded* can move with rule order: a reason is an explanation, as a core is
-([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)).
+- **One fixed first line**, the same in every saved file: what it is, and that it reads no other file. It names no
+  run, no path and no state number, which a second save would not reproduce; those are `index.json`'s.
+- **`(program …)`** holds the program file's bytes as they were read, between a line break after `program` and one
+  before `)`: its comments, its layout and its imports as written. A state of a `.einb` carries the program the
+  container stores, resolved and import-flattened, and no module
+  ([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)).
+- **`(module NAME …)`**, one for each module the load read, each once, its bytes the same way, sorted by name: `std.x.y`,
+  or a path from the program's directory, a dot a directory, a module's own imports among them. Each import of the
+  program and of a module is read from these and **never from the disk**; a module of the standard library is the one
+  the load read, from `$EIN_STDLIB`, the checkout or the binary's embedded copy, and one that is not what the binary
+  loading the file would read is loaded as carried, with a `note:` naming it
+  ([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
+- **`(commit F …)`**, the choices made: the candidates of H the state was read from, each as the read-out prints it,
+  in H's order. A load commits them after root's fixpoint, as a node of the search commits its commitment, each an
+  origin `:hypothesis`. Root's file has none. An owing node's file is the same form, and nothing in a file says what
+  its node is: the load computes it
+  ([Q-M1f.400](../../../decisions/read-out/Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md)).
+
+Each text is read as the file it was, under its own name, `<program saved in F>` and `<module NAME saved in F>`, so a
+position in it is the line and column of the program or the module. A `(program …)`, `(module …)` or `(commit …)`
+stands only at the top of a saved file, and a file that opens with `(program` is one; what each refuses is
+[`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h).
+The three are forms of the grammar
+([`01-grammar.md` § 2.16](01-grammar.md#216-a-saved-file-the-program-its-modules-and-the-choices-made)), and their
+heads are names everywhere else ([`03-reserved-names.md`](03-reserved-names.md)).
+
+**Save and load, in both directions.** No command is added: *save* is `ein solve FILE --dump-answer DIR`, and *load*
+is any command given a saved file. A saved file's root is the node it names, so `--no-search --dump-answer` saves it
+again, and the two invariances are these commands:
+
+```sh
+ein solve P --dump-answer A                            # save: A/models/NN.ein
+ein solve A/models/NN.ein --no-search --dump-answer B  # load it, and save its root
+cmp A/models/NN.ein B/root.ein                         # save → load → save: byte for byte
+ein saturate --dump A/models/NN.ein > a.txt
+ein saturate --dump B/root.ein > b.txt                 # load → save → load: the KB sections are the same
+```
+
+`ein saturate --dump` of a saved file prints the node's state, root's fixpoint and then the choices committed and
+saturated, each fact with its first origin, `:source`, `:rule` or `:hypothesis`, in the order held; on the state
+above it is root's `(item a)`, then `(note (bad a) :hypothesis 0)` and `(flagged a :rule flag)`. A state's first load
+is the state the run saved, fact for fact and origin for origin.
+
+## A saved file is a node of its program's lattice
+
+A saved file is its program with one commitment of the program's H, and every command reads it as that node
+([Q-M1f.402](../../../decisions/answer/Q-M1f.402-a-saved-file-is-a-node-of-its-programs-lattice.md)):
+
+- **`ein solve F` describes the part of the program's R above the node**, in every mode, and `ein oracle F` that part
+  by brute force: the run's universe is H less the commitment, ∅ of its lattice is the node, and every node of it is
+  the program's node of the union. The read-out names the node in a `commit` row under `universe`
+  ([`08-read-out.md` § 5.3](08-read-out.md#53-under-universe)). A state found above it is saved as the program with
+  that state's commitment, the union, in one `(commit …)`: every saved file of a program is the program and one
+  commitment.
+- **`ein saturate F`, `ein render kb F`** read the node's state; `ein render program F` draws the program it carries.
+- **`ein show hyps F` and `ein render h-space F`** read the program's H, the node aside, its choices among H.
+- **The program's claims are not checked** on a file with a `(commit …)`: they are about the program's R, and the
+  read-out names each NOT CHECKED, *the claim is the program's, about the program's R, and this saved file is a node
+  of its lattice*, and exits 0; `ein test` asks it root alone, the node, and counts each claim not checked with no
+  exit code. Root's file loads to the program's root and checks them as the program does
+  ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)).
+- **`ein kb save`** stores a root's file as the program it carries, its imports read from the modules it carries, and
+  refuses a file with a `(commit …)`: a container holds a program's root.
 
 ## The contract
 
@@ -128,26 +193,26 @@ recorded* can move with rule order: a reason is an explanation, as a core is
   is a usage error, exit 2.
 - **One run, one directory.** A file with several `(query …)` blocks is one run, and each query's classes are in
   `answer.json`'s `queries`.
-- **A `.einb` writes the directory its `.ein` writes**: every state file starts with the program the container
-  stores, resolved and import-flattened, as `ein render program` draws it
-  ([Q-M1f.17](../../../decisions/cli/Q-M1f.17-a-view-of-a-container-draws-the-program-it.md)). On a program that
-  imports, that program keeps every declaration its imports brought
-  ([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md)), and every file
-  but a state file's program is the `.ein`'s, but for the path it names.
+- **A `.einb` writes the directory its `.ein` writes**, but for its state files: each carries the program the
+  container stores, resolved and import-flattened, as `ein render program` draws it
+  ([Q-M1f.17](../../../decisions/cli/Q-M1f.17-a-view-of-a-container-draws-the-program-it.md)), and no module; on a
+  program that imports, that program keeps every declaration its imports brought, and the commitments are the
+  `.ein`'s ([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)). Every
+  other file is the `.ein`'s, but for the path it names.
 - **A budget stop is an answer**: `--region-budget` and `--region-limit` write the whole directory, and `index.json`'s
   `region` says `exhausted: false` and `stopped: {why, …}`. **A `-T` abort is not**: it exits 2, and the directory it
   made first stays empty.
-- **A second dump into the same directory leaves nothing stale.** When `index.json` names this format, `models/`,
-  `owing/` and `forms/` are cleared before writing. A directory holding anything else is written beside and nothing
+- **A second dump into the same directory leaves nothing stale.** When `index.json` names an answer directory's
+  format, this one or an earlier one, `models/`, `owing/` and `forms/` are cleared before writing. A directory holding anything else is written beside and nothing
   in it is deleted.
 - **`--count` writes two files**: `answer.txt`, its read-out uncut, every warning row among it, and `answer.json`, its
   summary, whose `asked.ask` is `count` and whose `region.states` and `region.frontier` are `null`. It reads no state,
   so it writes no state file, no form, no `index.json` and no `nogoods.json`, as `--monotone` writes none (every form
   is refused beside `--count`, exit 2); and where `index.json` names this format it removes what that dump left, the
   two top-level files with the subtrees.
-- **`--no-search` writes root**: `answer.txt`, `answer.json`, root's state as `root.ein` (loadable, as a state file is,
-  its header saying what root owes and *R: not searched*) and `forms/`, and no `index.json`, `nogoods.json` or state of
-  R.
+- **`--no-search` writes root**: `answer.txt`, `answer.json`, root's node saved as `root.ein`, the program with no
+  `(commit …)` or a saved file's own node, which is that file again, and `forms/`, and no `index.json`,
+  `nogoods.json` or state of R. What root is, owing or dead, is `answer.json`'s `root` block.
 
 ## The run summary
 
@@ -169,7 +234,7 @@ of the `root` block below; the test suite fails when a counter or a field appear
 
 The `root` block is **root's fixpoint and how H was built, as every route starts from them**: read off the run's own
 root and not recomputed, so a summary adds no work and no option moves the block. `root.facts` is root's fixpoint and
-`root.hypgen.emitted` is `region.universe.candidates` on every run, and `--monotone`'s block is the region run's. It
+`root.hypgen.emitted` is `region.universe.candidates` on every run of a program, and `--monotone`'s block is the region run's. It
 holds root's standing too, `dead`, `owes` and `owed`, on every question: `ein solve --no-search` states no R, so its
 `region` is `null` as `--monotone`'s is, and the block is where it says what root is
 ([Q-M1f.259](../../../decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md)); the three
@@ -177,18 +242,19 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 
 | field | what it holds |
 |---|---|
-| `root.facts` | the facts of root's fixpoint, $\operatorname{sat}(\text{program})$: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` holds when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
+| `root.facts` | the facts of root's fixpoint, $\operatorname{sat}(\text{program})$: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` loads to when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
 | `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
 | `root.dead` | root's own fixpoint derives `(false)`: root's standing, which every run reaches first and `ein solve --no-search` reports. It is `region.root` = `dead` on every description |
 | `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as a node counts them: `region.root_owes` on every description. With `root.dead`, whether $\emptyset$ is in R |
 | `root.owed` | those instances, each through its rule's `:why` (the rule's name where it has none), in the order the rules report them: `region.root_owed`, and the read-out's `owed` rows |
+| `root.commit` | the candidates of H a saved file's `(commit …)` names, each as the file writes it, in H's order: the node the run is the part of R above, and whose standing `root.dead`, `root.owes` and `root.owed` are. `[]` for a program and for a saved file of root. The read-out's `commit` row under `universe` |
 | `root.plans` | the plans root's saturation compiled, the derived activators' included |
 | `root.saturator.naf_rounds` | how many times root's saturation reached the NAF boundary with candidates parked on an `absent` guard, and judged them against the quiesced world |
 | `root.saturator.naf_admitted` | parked candidates the boundary admitted: every guard passed, and the firing was queued |
 | `root.saturator.naf_retired` | parked candidates the boundary retired as dead: an anti-monotone guard found a match, which a growing KB keeps |
 | `root.saturator.naf_dropped` | always 0: a guard is judged once, at the boundary, so no admitted firing is dropped later. A boundary that judged wrong would show here |
 | `root.hypgen.raw` | candidates the generator built at root's fixpoint, with no field of the config reaching it, the obligations rung in report order, before any filter. It is `emitted` plus the sum of `filtered` |
-| `root.hypgen.emitted` | the candidates that survived every filter: **H**, the universe every route reads, so it equals `region.universe.candidates` and is the universe `ein solve --monotone` prints, whose `region` is `null`. A repeat is dropped as `seen_in_call` before it counts |
+| `root.hypgen.emitted` | the candidates that survived every filter: **H**, the universe every route reads, so it equals `region.universe.candidates` and is the universe `ein solve --monotone` prints, whose `region` is `null`; on a saved file's run, whose universe is H less its node's choices, it is `region.universe.candidates` and `root.commit`'s count. A repeat is dropped as `seen_in_call` before it counts |
 | `root.hypgen.filtered` | why a built candidate is not in H, sparse, only the keys that fired: `fact_already_exists` (root holds it), `negated_fact` (root holds its `(not …)`), `seen_in_call` (proposed again, from another atom the enumerator proposes about) |
 | `root.hypgen.pre_candidate` | relation and slot skips before any candidate exists, sparse: `closed_relation` (a `(__closed__ R)` root holds, which the program states or derives through `std.closure`), `no_hypothesis_relation` and `relation_not_whitelisted` (the `(solve …)` lists `:no-hypothesis` and `:hypothesis-relations`), `self_edge` (both arguments the same atom) |
 | `root.hypgen.later_debts` | what H holds for debts root does not owe and a commitment can bring, **written only where H holds a candidate for one**, so the key is absent from every other summary: one `{obligation, activator, relation, by, added, candidates}` per activator of an obligation rule that root's fixpoint does not hold and a rule's `:assert` concludes, in the order the obligations rung read them. `obligation` is the rule, `activator` the fact that would activate it, `relation` the relation its plan owes, `by` the rules that conclude the activator, `candidates` the facts of H that would pay the debt and that no debt before it proposed, in H's order, and `added` their count. The read-out's `later debt` rows say the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
@@ -203,4 +269,5 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 ## Where it is read
 
 `ein render region CUBE --answer DIR` reads `index.json`, and draws each state on the oracle's cube against the part of
-R the run asked ([`12-rendering.md`](12-rendering.md)). `ein render kb DIR/models/NN.ein` draws one state.
+R the run asked ([`12-rendering.md`](12-rendering.md)). `ein render kb DIR/models/NN.ein` draws one state, and every
+command reads a state file as the node it names.

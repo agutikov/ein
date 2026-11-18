@@ -10,11 +10,9 @@ use ein_infer::firing::Firing;
 
 use super::json::Json;
 
-/// A fact's provenance as the comment a state file writes after it: `;
-/// source "…"`, `; rule r` or `; hypothesis N`, and nothing for a fact with
-/// none. A comment, so the loader skips it and a reloaded fact reads as
-/// given
-/// ([`10-answer-dump.md`](../../../../../docs/ein/user/04-reference/10-answer-dump.md#every-state-file-loads-and-is-a-fixpoint)).
+/// A fact's provenance as the comment written after it: `; source "…"`,
+/// `; rule r` or `; hypothesis N`, and nothing for a fact with none. A
+/// comment, so the loader skips it and a reloaded fact reads as given.
 ///
 /// **And the fact in English** ([`crate::sentence`]): a rule's `:why` filled
 /// with the firing's bindings
@@ -99,12 +97,9 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
 
 /// Some of a KB's facts as top-level ein forms, in the order given, one per
 /// line, each with the provenance comment [`kb_to_ein_text`] gives it: the
-/// text loads back to the same facts, and every fact reloads as given.
-///
-/// A `--dump-answer` state file chooses its facts (the program's schema is
-/// not repeated, so the file loads) and their order
-/// (sorted, so two model files diff line by line), which the whole-KB writer
-/// above does not let a caller do.
+/// text loads back to the same facts, and every fact reloads as given. The
+/// caller chooses the facts and their order, which the whole-KB writer above
+/// does not let it do.
 pub fn facts_to_ein_text(kb: &Kb, terms: &Terms, facts: &[FactId]) -> String {
     let mut text = String::new();
     for &f in facts {

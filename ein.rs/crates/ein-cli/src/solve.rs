@@ -9,13 +9,11 @@
 //! with what replaced each, and the helpers `test` and `oracle` share.
 
 use std::io::Write;
-use std::path::Path;
 
 use clap::ArgMatches;
 use clap::parser::ValueSource;
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::events::{Events, Level};
-use ein_ir::Ast;
 
 /// The retired options and levers, each with the sentence its refusal
 /// prints: what replaces it. They stay in the parser,
@@ -219,31 +217,4 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
         return std::thread::available_parallelism().map_or(1, |n| n.get());
     }
     n.max(1) as usize
-}
-
-/// The program `--dump-answer` writes at the head of every file: the source
-/// with its imports inlined, by the three calls `stdlib/README.md` documents
-/// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
-/// holds to the same program; or, on a `.einb`, the program it stores, already
-/// resolved and import-flattened (Q-M1f.27). The program as loaded,
-/// whole: an import brings its module whole and nothing is shaken out, so
-/// the file declares every full name the run had. The file has already
-/// loaded, so a failure here is a defect, and it is written into the file
-/// rather than swallowed.
-pub(crate) fn inlined_program(file: &str) -> String {
-    let path = Path::new(file);
-    let p = match crate::common::program_text(path) {
-        Ok(p) => p,
-        Err(e) => return format!(";; (the source could not be read for inlining: {e})\n"),
-    };
-    let text = p.text;
-    let mut ast = Ast::new();
-    let forms = match ein_ir::parse(&mut ast, &text, p.name.as_deref()) {
-        Ok(f) => f,
-        Err(e) => return format!(";; (the source did not parse for inlining: {e})\n{text}"),
-    };
-    match ein_ir::resolve_imports(&mut ast, &forms, p.base.as_deref()) {
-        Ok(inlined) => ein_ir::dump_canonical(&ast, &inlined),
-        Err(e) => format!(";; (imports could not be inlined: {e})\n{text}"),
-    }
 }

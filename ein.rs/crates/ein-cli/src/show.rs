@@ -32,6 +32,7 @@ pub fn cmd_hyps(file: &str, load: &ein_ir::LoadOptions) -> i32 {
     let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(file), load) else {
         return 1;
     };
+    crate::common::program_of_saved(&mut kb);
     let h = match ein_infer::structure::hypotheses(&mut kb, &mut terms, &ast) {
         Ok(h) => h,
         Err(e) => {

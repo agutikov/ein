@@ -224,12 +224,12 @@ above, whose one given fact is *"The Norwegian lives in the first house"*, condi
 ein render kb examples/zebra2.ein                       # root, after saturation
 ein render kb examples/zebra2.ein --colour-by origin    # given / derived
 ein solve examples/lattice/02_genuine_3set_death.ein --dump-answer out/
-ein render kb out/models/02.ein --since out/root.ein    # a state, and what it added, in bold
+ein render kb out/models/02.ein --since out/models/01.ein  # a state, and what it holds beyond another, in bold
 ```
 
-A `--dump-answer` state file ([`10-answer-dump.md`](10-answer-dump.md)) is a `FILE`: it loads as a program and saturates to
-itself, so a state is drawn the way root is. `--since FILE` loads and saturates a second file and draws at
-`penwidth=3` every fact it lacks: a state against its `root.ein` is what the commitment added. `--no-types` leaves out
+A `--dump-answer` state file ([`10-answer-dump.md`](10-answer-dump.md)) is a `FILE`: its program and the choices made,
+which load to the state, so a state is drawn the way root is. `--since FILE` loads a second file and draws at
+`penwidth=3` every fact it lacks: a state against the state of ∅ is what its commitment added. `--no-types` leaves out
 the lines under `// types`, which give a box to each atom an `is-a` fact points at, and `--no-instances` those under
 `// instances`, which give an oval; either way every edge stays, the `is-a` edges among them, and an atom that lost
 its line is drawn in Graphviz's default shape.

@@ -106,8 +106,9 @@ The exclusive start conditions are `AFTER_WORD`: a rule that names no condition 
 Six facts about the terminals that the diagrams state and do not explain:
 
 1. **A reserved word is a token only as a whole word.** The thirteen reserved words, `not`, `and`, `or`, `neq`,
-   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the ten position words,
-   `relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged` and `owing`, are rules written
+   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the thirteen position
+   words, `relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a saved
+   file's `program`, `module` and `commit`, are rules written
    before `NAME`, and `NAME` is longest match: `neq` is the token `'neq'`, a tie the earlier rule wins, while `neqw`,
    `neq_test`, `neq-1`, `rule-x`, `rule.x`, `not-a` and `open-slot` are each the one `NAME` they spell, wherever they
    are written ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)).
@@ -181,7 +182,7 @@ tokens, and no production names them.
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-program.puml`](diagrams/01-grammar-phrase-program.puml):
-`Program`, `Form`.
+`Program`, `TopForm`, `Forms`, `Form`.
 
 ![A program and its forms, as a railroad diagram](diagrams/01-grammar-phrase-program.svg)
 
@@ -298,6 +299,14 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 `Trace`, `Steps`, `Step`, `StepClause`, `StepClauses`, `StepUsing`, `Derived`.
 
 ![A trace, as a railroad diagram](diagrams/01-grammar-phrase-trace.svg)
+
+### 2.16 A saved file: the program, its modules and the choices made
+
+From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
+[`01-grammar-phrase-saved.puml`](diagrams/01-grammar-phrase-saved.puml):
+`Saved`, `ModuleName`, `CommitFact`, `CommitFacts`.
+
+![A saved file: the program, its modules and the choices made, as a railroad diagram](diagrams/01-grammar-phrase-saved.svg)
 
 <!-- /generated: ein.y -->
 

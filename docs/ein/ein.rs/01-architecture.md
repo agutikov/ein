@@ -110,6 +110,7 @@ after root.
 | `stdlib.rs` | where `std.*` comes from: the override, the checkout, the embedded copy |
 | `read.rs` | the one read of a program's text from a path |
 | `from_ir.rs` | the loader |
+| `saved.rs` | a saved file: its writer, and the read of its program against the modules it carries |
 | `dump.rs` | the canonical IR printer |
 | `claim.rs`, `expect.rs` | the parsed forms of a `(solve … :expect …)` region claim and a query's `:expect` |
 

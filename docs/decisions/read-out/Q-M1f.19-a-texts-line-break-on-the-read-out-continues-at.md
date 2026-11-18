@@ -3,7 +3,7 @@
 Where a row's value is a text the program wrote, a `:goal-text` filled for a class's row or an obligation's `:why`
 under an `owed` or `owing` row, every line break it holds (`\r\n`, `\n`, `\r`) starts a new line at the column the
 text's first character is printed at, and each such line is one of stdout's 100. The surfaces that quote a text,
-`ein saturate --dump`, the program a state file re-writes and the `source` row, write the break escaped.
+`ein saturate --dump` and the `source` row, write the break escaped, and a state file carries the program as written.
 
 **Why.** The text is natural language the program wrote for a reader, and its line break is the writer's; the
 read-out's job is to keep it inside its row, not to rewrite it.

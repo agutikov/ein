@@ -446,18 +446,33 @@ fn dump_kb(
     graph: &strata::Graph,
     strata: &[(Symbol, Option<u32>)],
 ) {
-    println!();
-    println!("{}", "=".repeat(70));
-    println!("=  SATURATED KB DUMP");
-    println!("{}", "=".repeat(70));
+    print!("{}", kb_section(ast, terms, kb, graph, strata));
+}
+
+/// **The KB section `--dump` prints**: the relations, the rules and their
+/// strata, every fact by origin ([`facts_section`]), and the query, from
+/// the `=  SATURATED KB DUMP` banner to its closing rule.
+fn kb_section(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    graph: &strata::Graph,
+    strata: &[(Symbol, Option<u32>)],
+) -> String {
+    use std::fmt::Write as _;
+    let mut o = String::new();
+    let _ = writeln!(o);
+    let _ = writeln!(o, "{}", "=".repeat(70));
+    let _ = writeln!(o, "=  SATURATED KB DUMP");
+    let _ = writeln!(o, "{}", "=".repeat(70));
 
     let p = kb.program();
     if !p.relations.is_empty() {
         let declared: Vec<_> = p.relations.values().filter(|r| r.declared).collect();
         let open_w: Vec<_> = p.relations.values().filter(|r| !r.declared).collect();
         if !declared.is_empty() {
-            println!();
-            println!(";; Relations — declared ({})", declared.len());
+            let _ = writeln!(o);
+            let _ = writeln!(o, ";; Relations — declared ({})", declared.len());
             for r in &declared {
                 let sig: Vec<&str> = r.signature.iter().map(|&s| terms.sym(s)).collect();
                 let sig = sig.join(" ");
@@ -466,28 +481,29 @@ fn dump_kb(
                 } else {
                     format!(" {sig}")
                 };
-                println!("(relation {}{tail})", terms.sym(r.name));
+                let _ = writeln!(o, "(relation {}{tail})", terms.sym(r.name));
             }
         }
         if !open_w.is_empty() {
-            println!();
-            println!(";; Relations — auto-vivified ({})", open_w.len());
+            let _ = writeln!(o);
+            let _ = writeln!(o, ";; Relations — auto-vivified ({})", open_w.len());
             for r in &open_w {
-                println!(";;   {}", terms.sym(r.name));
+                let _ = writeln!(o, ";;   {}", terms.sym(r.name));
             }
         }
     }
 
     if !p.rules.is_empty() {
-        println!();
-        println!(";; Rules ({})", p.rules.len());
+        let _ = writeln!(o);
+        let _ = writeln!(o, ";; Rules ({})", p.rules.len());
         for rule in p.rules.values() {
             let params: Vec<String> = rule
                 .params
                 .iter()
                 .map(|&s| format!("?{}", terms.sym(s)))
                 .collect();
-            println!(
+            let _ = writeln!(
+                o,
                 ";;   {}  :params ({})  {}",
                 terms.sym(rule.name),
                 params.join(" "),
@@ -499,26 +515,62 @@ fn dump_kb(
         }
         // Whether a stratification exists, and where not,
         // each negative cycle by its relations and the rules on its edges.
-        println!();
+        let _ = writeln!(o);
         if graph.stratified() {
             let k = graph.depth();
-            println!(
+            let _ = writeln!(
+                o,
                 ";; Strata — stratified, {k} {}",
                 if k == 1 { "stratum" } else { "strata" }
             );
         } else {
-            println!(
+            let _ = writeln!(
+                o,
                 ";; Strata — not stratifiable: {} negative cycle{}; the fixpoint below may depend \
                  on the boundary's admission order, and need not be unique",
                 graph.cycles.len(),
                 if graph.cycles.len() == 1 { "" } else { "s" }
             );
             for c in &graph.cycles {
-                println!(";;   negative cycle  {}", c.stratum_text());
+                let _ = writeln!(o, ";;   negative cycle  {}", c.stratum_text());
             }
         }
     }
 
+    o.push_str(&facts_section(terms, kb));
+
+    if let Some(query) = p.query() {
+        let _ = writeln!(o);
+        let _ = writeln!(o, ";; Query");
+        for &pair in query.kw_pairs.iter() {
+            let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
+                continue;
+            };
+            let Node::Keyword(name) = ast.node(key) else {
+                continue;
+            };
+            let _ = writeln!(
+                o,
+                ";;   :{}  {}",
+                ast.sym(name),
+                ein_ir::dump_compact(ast, value)
+            );
+        }
+    }
+
+    let _ = writeln!(o);
+    let _ = writeln!(o, "{}", "=".repeat(70));
+    o
+}
+
+/// **A KB's facts by origin**, as `--dump` prints them: the background, the
+/// given and the derived (a rule's, and a commitment's `:hypothesis`), each
+/// by relation, each fact with its first origin, in the order the KB holds
+/// them. The part of the dump a saved file's load and the run that saved it
+/// agree on, fact for fact and origin for origin (Q-M1f.402).
+pub fn facts_section(terms: &Terms, kb: &Kb) -> String {
+    use std::fmt::Write as _;
+    let mut o = String::new();
     // Facts grouped by origin, then by relation within a bucket, insertion
     // order preserved inside each group.
     let mut buckets: [Vec<ein_core::FactId>; 3] = [Vec::new(), Vec::new(), Vec::new()];
@@ -543,8 +595,8 @@ fn dump_kb(
         if facts.is_empty() {
             continue;
         }
-        println!();
-        println!(";; ── {label} ({} facts) ──", facts.len());
+        let _ = writeln!(o);
+        let _ = writeln!(o, ";; ── {label} ({} facts) ──", facts.len());
         let mut groups: Vec<(String, Vec<ein_core::FactId>)> = Vec::new();
         for &f in facts {
             let rel = terms.sym(terms.facts.get(f).0).to_string();
@@ -556,34 +608,55 @@ fn dump_kb(
         groups.sort_by(|a, b| a.0.cmp(&b.0));
         for (rel, facts_for_rel) in &groups {
             if facts_for_rel.len() > 1 {
-                println!(";;   {rel} ({})", facts_for_rel.len());
+                let _ = writeln!(o, ";;   {rel} ({})", facts_for_rel.len());
             }
             for &f in facts_for_rel {
-                println!("  {}", fact_text_with_provenance(terms, kb, f));
+                let _ = writeln!(o, "  {}", fact_text_with_provenance(terms, kb, f));
             }
         }
     }
+    o
+}
 
-    if let Some(query) = p.query() {
-        println!();
-        println!(";; Query");
-        for &pair in query.kw_pairs.iter() {
-            let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
-                continue;
-            };
-            let Node::Keyword(name) = ast.node(key) else {
-                continue;
-            };
-            println!(
-                ";;   :{}  {}",
-                ast.sym(name),
-                ein_ir::dump_compact(ast, value)
-            );
-        }
+/// **`ein saturate --dump FILE`'s KB section, and its facts**
+/// ([`facts_section`]), as the command prints them: the file read as every
+/// command reads one, root saturated, and a saved file's node committed and
+/// saturated by the node function (Q-M1f.402). What a reader that holds a
+/// saved file's load to another's compares, with no process between.
+pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<(String, String), String> {
+    let held = crate::common::read_program(path)?;
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = crate::common::load_held(&mut ast, &mut terms, path, held, 0, load)?.kb;
+    let memo = SharedMemo::default();
+    {
+        let mut events = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut events,
+            memo: memo.clone(),
+        };
+        let mut sat = Saturator::new(&mut s).map_err(|e| crate::common::saturate_error_line(&e))?;
+        while sat
+            .step(&mut s)
+            .map_err(|e| crate::common::saturate_error_line(&e))?
+            .is_some()
+        {}
     }
-
-    println!();
-    println!("{}", "=".repeat(70));
+    let node =
+        ein_infer::region::saved_node(&mut kb, &mut terms, &ast).map_err(|e| e.to_string())?;
+    let (kb, plans) = match &node {
+        Some(n) => (&n.kb, n.plans.clone()),
+        None => (&kb, ein_infer::monotone::plans_of(&memo)),
+    };
+    let graph = strata::graph(kb, &terms, &plans);
+    let rule_strata = strata::rule_strata(kb, &terms, &plans, &graph);
+    Ok((
+        kb_section(&ast, &terms, kb, &graph, &rule_strata),
+        facts_section(&terms, kb),
+    ))
 }
 
 /// The per-rule tally's key: a rule name and whether the firing was
@@ -813,11 +886,44 @@ fn bench(
         }
     }
 
+    // **A saved file's node** (Q-M1f.402): the candidates of H its
+    // `(commit …)` names, committed after root's fixpoint and saturated to
+    // quiescence by the node function every route reads a node with, so the
+    // state it loads to is the state the run saved, fact for fact and origin
+    // for origin. Past the step limit root has no fixpoint to commit them to.
+    let committed = kb.program().commit.as_ref().map(|c| c.len());
+    let node = match committed {
+        Some(n) if limit_msg.is_none() => {
+            let t = Instant::now();
+            let root_facts = kb.facts().count();
+            let node = ein_infer::region::saved_node(&mut kb, &mut terms, &ast)
+                .map_err(|e| e.to_string())?
+                .ok_or("a saved file's (commit …) names no node")?;
+            println!();
+            println!(
+                "commit:   {} ms  ({} candidates of H committed, {} facts beyond root)",
+                ms(t),
+                n,
+                node.kb.facts().count() - root_facts
+            );
+            Some(node)
+        }
+        Some(_) => {
+            println!();
+            println!("commit:   not committed — root did not reach its fixpoint");
+            None
+        }
+        None => None,
+    };
+
     if dump {
-        let plans = ein_infer::monotone::plans_of(&memo);
-        let graph = strata::graph(&kb, &terms, &plans);
-        let rule_strata = strata::rule_strata(&kb, &terms, &plans, &graph);
-        dump_kb(&ast, &terms, &kb, &graph, &rule_strata);
+        let (kb, plans) = match &node {
+            Some(n) => (&n.kb, n.plans.clone()),
+            None => (&kb, ein_infer::monotone::plans_of(&memo)),
+        };
+        let graph = strata::graph(kb, &terms, &plans);
+        let rule_strata = strata::rule_strata(kb, &terms, &plans, &graph);
+        dump_kb(&ast, &terms, kb, &graph, &rule_strata);
     }
     Ok(())
 }

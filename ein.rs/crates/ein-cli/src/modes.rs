@@ -204,9 +204,9 @@ pub fn run(m: &ArgMatches) -> i32 {
     opts.deadline = max_time.map(|s| Instant::now() + Duration::from_secs_f64(s.max(0.0)));
 
     // `--dump-answer` makes its directory before the run, so a path that
-    // cannot be written fails before the work. Every state file starts with
-    // the program, which a `.einb` stores, and the dump writes that one
-    // (Q-M1f.27; `solve::inlined_program`).
+    // cannot be written fails before the work. Every state file carries the
+    // program as the load read it, which a `.einb` stores, and the dump
+    // writes that one (Q-M1f.27, Q-M1f.401).
     let dump = m.get_one::<String>("dump-answer").cloned();
     if let Some(dir) = dump.as_deref()
         && let Err(e) = std::fs::create_dir_all(dir)
@@ -461,44 +461,28 @@ pub fn run(m: &ArgMatches) -> i32 {
         && opts.no_search
     {
         // `--no-search`'s answer is root: its read-out, the summary, root's
-        // state as a loadable file and the forms; no state of R (Q-M1f.255).
-        let program = crate::solve::inlined_program(&file);
+        // node saved and the forms; no state of R (Q-M1f.255).
         let answer_txt = uncut(&r, &file, opts.budget);
         let inputs = ein_render::dump::region_answer::Inputs {
             source: &file,
-            program: &program,
             summary: &summary,
             answer_txt: &answer_txt,
             forms: &forms,
         };
-        if let Err(e) = ein_render::dump::region_answer::write_root(
-            Path::new(dir),
-            &r,
-            &mut kb,
-            &mut terms,
-            &ast,
-            &inputs,
-        ) {
+        if let Err(e) =
+            ein_render::dump::region_answer::write_root(Path::new(dir), &r, &kb, &inputs)
+        {
             crate::solve::artefact_failed("dump-answer", dir, e);
         }
     } else if let Some(dir) = dump.as_deref() {
-        let program = crate::solve::inlined_program(&file);
         let answer_txt = uncut(&r, &file, opts.budget);
         let inputs = ein_render::dump::region_answer::Inputs {
             source: &file,
-            program: &program,
             summary: &summary,
             answer_txt: &answer_txt,
             forms: &forms,
         };
-        if let Err(e) = ein_render::dump::region_answer::write(
-            Path::new(dir),
-            &r,
-            &mut kb,
-            &mut terms,
-            &ast,
-            &inputs,
-        ) {
+        if let Err(e) = ein_render::dump::region_answer::write(Path::new(dir), &r, &kb, &inputs) {
             crate::solve::artefact_failed("dump-answer", dir, e);
         }
     }

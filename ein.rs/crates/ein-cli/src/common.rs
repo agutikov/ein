@@ -129,7 +129,7 @@ pub fn load_held(
                 load,
             )
             .map_err(|e| e.to_string())?;
-            let (parse, load) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
+            let (parse, loading) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
             say_notes(&loaded.notes);
             judge_mechanisms(ast, terms, &loaded.kb, |ast, terms| {
                 ein_ir::saved::load_text(
@@ -147,7 +147,10 @@ pub fn load_held(
             Ok(Loaded {
                 kb: loaded.kb,
                 forms: loaded.forms,
-                how: How::Text { parse, load },
+                how: How::Text {
+                    parse,
+                    load: loading,
+                },
             })
         }
         #[cfg(feature = "einb")]
@@ -345,6 +348,17 @@ fn open_einb(
             derived_dropped: opened.derived_dropped,
         },
     })
+}
+
+/// **A saved file read as its program** (Q-M1f.402): its `(commit …)` set
+/// aside, so that what a command reads is the program's own H and its
+/// structure, of which the node is a commitment. What `ein show hyps` and
+/// `ein render h-space` read; a run of `ein solve` or `ein oracle` reads the
+/// node, and the part of R above it.
+pub fn program_of_saved(kb: &mut Kb) {
+    if kb.program().commit.is_some() {
+        kb.program_mut().commit = None;
+    }
 }
 
 /// The flat top-level `(rule …)` / `(hrule …)` declarations.

@@ -1,19 +1,29 @@
-//! **Every state `--dump-answer` writes reloads to its own facts, by value**,
-//! on every corpus program.
+//! **Every state `--dump-answer` writes is saved and loaded as itself**, in
+//! both directions, on every corpus program
+//! ([Q-M1f.392](../../../../docs/decisions/answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md)).
 //!
-//! [`10-answer-dump.md`](../../../../docs/ein/user/04-reference/10-answer-dump.md) says
-//! each state file loads, and what it loads to: the state's facts, each a
-//! value the one printer (`ein_core::text`) wrote as text the loader reads
-//! back to the same value, and each **as given**, since a fact's provenance
-//! is a comment the loader skips.
+//! A state file is the program as it was read, every module its load read,
+//! and the choices made, `(commit …)`
+//! ([`10-answer-dump.md`](../../../../docs/ein/user/04-reference/10-answer-dump.md)),
+//! and a load derives the state again. For each file the run wrote, its
+//! models' and an empty R's owing frontier's:
 //!
-//! The comparison is by value, never by text: a fact on each side is its
-//! `repr`, which tells a name from an int and a nested fact from either, and
-//! the state on the left is the run's own, read again through the node
-//! function every route uses (`region::Nodes`), not anything the dump wrote.
-//! A printer that wrote a name as its raw text would reload `(holds "x y")`
-//! as the two-argument `(holds x y)`, and a name `#|` would open a block
-//! comment.
+//! - **the first load is the state saved**: the file's facts, as `ein
+//!   saturate --dump` prints them (`ein_cli::saturate::facts_section`), each
+//!   with its origin and in its order, are the run's own state's, read
+//!   through the node function every route uses (`region::Nodes`), fact for
+//!   fact and origin for origin;
+//! - **save → load → save is byte for byte**: the file loaded and its root
+//!   saved again, as `ein solve F --no-search --dump-answer D` writes
+//!   `D/root.ein`, is the file;
+//! - **load → save → load is dump for dump**: the KB section `ein saturate
+//!   --dump` prints of the file and of that second save is the same text.
+//!
+//! The three are read with no process between (`ein_cli::saturate::dump_section`,
+//! `region_answer::root_file`), and the binary is held to them on each
+//! program's first and last file: `ein solve F --no-search --dump-answer D`
+//! then `cmp`, and `ein saturate --dump` of both, against the section read
+//! in the process.
 //!
 //! **And every member of N is written with its core**: the same run's
 //! `nogoods.json` gives each member of N it met a core, its search's status
@@ -39,7 +49,7 @@
 //! event (`no_core_unless_dead`), an owing hole among them.
 //!
 //! **And no unfilled template reaches it**: no
-//! line of `answer.txt` or of a state file's facts carries `{?`
+//! line of `answer.txt` carries `{?`
 //! ([`no_placeholder_reaches_an_output`]).
 //!
 //! **Two tiers.** By default the test dumps every entry that is neither
@@ -59,11 +69,10 @@
 //! EIN_ROUND_TRIP_LIST=1 … -- --nocapture  # each program's state files
 //! ```
 
-use std::collections::BTreeSet;
 use std::path::Path;
 use std::process::Command;
 
-use ein_core::{Kb, ProvKind, Terms};
+use ein_core::Terms;
 use ein_corpus::manifest::HEAVY_DUMP_FILES;
 use ein_corpus::{Scratch, corpus, repo_root};
 use ein_infer::explore::{Ask, Mode, Options, Which};
@@ -76,89 +85,130 @@ fn include_slow() -> bool {
     on("EIN_CORPUS_SLOW") || on("EIN_BLESS")
 }
 
-/// A KB's facts by value, each its `repr`, a name and an int apart.
-fn by_value(kb: &Kb, terms: &Terms) -> BTreeSet<String> {
-    kb.facts()
-        .map(|f| ein_core::repr::repr(&terms.repr_fact(f)))
-        .collect()
-}
-
-/// A state file, loaded: its facts by value, and how many of them carry a
-/// provenance other than a given fact's.
-fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| format!("{e}"))?;
-    let not_given = kb
-        .facts()
-        .filter(|&f| {
-            kb.primary(f)
-                .is_some_and(|p| terms.provs.get(p).kind != ProvKind::Source)
-        })
-        .count();
-    Ok((by_value(&kb, &terms), not_given))
-}
-
-/// **The state files that do not load**, each a known wrong answer of its
-/// program's: a state the printer writes as a line the parser refuses. Not a
-/// printer's defect but the program's own wrong answer, so each is named
-/// rather than checked, with how many of its state files do not load, and
-/// each must still fail: a state file here that loads is the wrong answer
-/// fixed, and the fixing commit takes it off the list, with `answer_dump.rs`'s
-/// copy. Empty: a concluded `neq` is checked, never stored; `:assert ()`
-/// asserts nothing; and a conclusion is read flat, so no state holds a fact
-/// headed `and`.
-const DO_NOT_LOAD: [(&str, usize); 0] = [];
-
-/// **The state files that reload a fact with a provenance today**, each a
-/// known wrong answer of its program's, named rather than checked: it must
-/// still reload so, and the commit that fixes it takes it off the list.
-/// Empty: no corpus program writes a fact with a `:rule` or a `:using`. Where
-/// one does, a state file writes the program as loaded, so that fact with its
-/// written `:rule`, and the loader stores what is written: the reloaded state
-/// holds one fact that is not a given, beside the same fact written as a
-/// given under *the state*, which is a known gap (the loader stores a written
-/// fact's `:rule` and `:using` unchecked).
-const WRITTEN_PROVENANCE: [&str; 0] = [];
-
-/// **The witnesses whose state file prints an unfilled template reference**,
-/// each a known wrong answer, named rather than checked. Empty: a fact written
-/// with fewer arguments than its relation declares, `(likes Bob)` beside
-/// `(relation likes Person Drink :why "{?1} likes {?2}")`, whose English
-/// would be *Bob likes {?2}*, is refused at load, so no state holds such a
-/// fact.
+/// **The witnesses whose `answer.txt` prints an unfilled template
+/// reference**, each a known wrong answer, named rather than checked. Empty:
+/// a fact written with fewer arguments than its relation declares,
+/// `(likes Bob)` beside `(relation likes Person Drink :why "{?1} likes
+/// {?2}")`, whose English would be *Bob likes {?2}*, is refused at load, so
+/// no state holds such a fact.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
-/// **The witnesses whose state file re-writes less than the program as
-/// loaded**, each a known wrong answer, named rather than checked. Empty: an
-/// import brings its module whole, so the file is the program as loaded (a
-/// library's entry rule with an empty `:match`, imported by its name, is
-/// written with the relation only it names), and the sweep below holds
-/// `dump-selection.ein` as it holds every corpus program.
-const SELECTION_DROPPED: [&str; 0] = [];
-
-/// The difference, a few facts each way.
-fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
-    let lost: Vec<&String> = want.difference(got).take(3).collect();
-    let extra: Vec<&String> = got.difference(want).take(3).collect();
-    format!(
-        "{} facts lost ({lost:?}…), {} not the state's ({extra:?}…)",
-        want.difference(got).count(),
-        got.difference(want).count()
-    )
+/// What the invariances held, summed over files.
+#[derive(Default)]
+struct Counts {
+    /// State files whose first load is the state saved.
+    states: usize,
+    /// State files saved again byte for byte.
+    bytes: usize,
+    /// State files whose two loads print the same dump.
+    dumps: usize,
+    /// State files the binary was run on.
+    cli: usize,
 }
 
-/// `ein solve FILE --dump-answer DIR`, then every state file it wrote against
-/// the run's own state: the number of files checked, or `None` where the
-/// program does not load or the run writes no state. `eager` counts the
-/// members of N held to their eager cores ([`eager_cores`]), and `held` the
-/// nodes and holes held to their deadness ([`no_core_unless_dead`]).
+impl Counts {
+    fn add(&mut self, o: &Counts) {
+        self.states += o.states;
+        self.bytes += o.bytes;
+        self.dumps += o.dumps;
+        self.cli += o.cli;
+    }
+}
+
+/// `path` loaded, its root saved again as `ein solve FILE --no-search
+/// --dump-answer DIR` writes `DIR/root.ein`: the bytes, or why not.
+fn saved_again(path: &Path) -> Result<String, String> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
+    let mut opts = Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    opts.no_search = true;
+    let r = read_out::run_with(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &opts,
+        &mut ein_infer::events::Events::off(),
+    )
+    .map_err(|e| e.to_string())?;
+    ein_render::dump::region_answer::root_file(&r, &kb)
+}
+
+/// `ein saturate --dump`'s KB section of `path`, in the process, and its
+/// facts.
+fn section(path: &Path) -> Result<(String, String), String> {
+    ein_cli::saturate::dump_section(path, &ein_ir::LoadOptions::default())
+}
+
+/// The KB section of `ein saturate --dump`'s output, from its banner.
+fn printed_section(stdout: &str) -> String {
+    let at = stdout.find("\n=====").map_or(stdout.len(), |i| i);
+    stdout[at..].to_string()
+}
+
+/// The binary on one state file: `ein solve F --no-search --dump-answer D`
+/// then `D/root.ein` against F byte for byte, and `ein saturate --dump` of
+/// both, each section against `whole`, the one read in the process.
+fn by_the_binary(file: &str, path: &Path, again: &Path, whole: &str, bad: &mut Vec<String>) {
+    let ein = |args: &[&std::ffi::OsStr]| {
+        Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs")
+    };
+    let out = ein(&[
+        "solve".as_ref(),
+        path.as_os_str(),
+        "--no-search".as_ref(),
+        "--dump-answer".as_ref(),
+        again.as_os_str(),
+    ]);
+    let name = path.file_name().unwrap_or_default().to_string_lossy();
+    let root = again.join("root.ein");
+    match (std::fs::read(path), std::fs::read(&root)) {
+        (Ok(a), Ok(b)) if a == b => {}
+        (Ok(_), Ok(_)) => bad.push(format!(
+            "{file}: {name}: `ein solve F --no-search --dump-answer D` writes D/root.ein, which \
+             is not F byte for byte"
+        )),
+        _ => bad.push(format!(
+            "{file}: {name}: `ein solve F --no-search --dump-answer D` wrote no root.ein (exit \
+             {:?}): {}",
+            out.status.code(),
+            String::from_utf8_lossy(&out.stderr)
+        )),
+    }
+    for p in [path, root.as_path()] {
+        let out = ein(&["saturate".as_ref(), "--dump".as_ref(), p.as_os_str()]);
+        let printed = printed_section(&String::from_utf8_lossy(&out.stdout));
+        if !out.status.success() || printed != whole {
+            bad.push(format!(
+                "{file}: {}: `ein saturate --dump` prints another KB section than the load in \
+                 the process (exit {:?})",
+                p.display(),
+                out.status.code()
+            ));
+        }
+    }
+}
+
+/// `ein solve FILE --dump-answer DIR`, then every state file it wrote held to
+/// the run's own state and to the two invariances (the module header): the
+/// number of files checked, or `None` where the program does not load or the
+/// run writes no state. `eager` counts the members of N held to their eager
+/// cores ([`eager_cores`]), `held` the nodes and holes held to their deadness
+/// ([`no_core_unless_dead`]), and `counts` the files each invariance held.
 fn check(
     file: &str,
     dir: &Path,
     bad: &mut Vec<String>,
     eager: &mut usize,
     held: &mut Held,
+    counts: &mut Counts,
 ) -> Option<usize> {
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(["solve", file, "--dump-answer"])
@@ -203,9 +253,6 @@ fn check(
     }
     let mut unfilled: Vec<String> = Vec::new();
     no_placeholder_reaches_an_output(file, &dir.join("answer.txt"), &mut unfilled);
-    for (path, _) in &files {
-        no_placeholder_reaches_an_output(file, &dir.join(path), &mut unfilled);
-    }
     match (UNFILLED_TEMPLATE.contains(&file), unfilled.is_empty()) {
         (false, _) => bad.append(&mut unfilled),
         (true, false) => {}
@@ -219,75 +266,104 @@ fn check(
     held.add(no_core_unless_dead(file, dir, bad));
     let candidates = r.answer.candidates.clone();
     let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &candidates).expect("prepares");
-    let named = DO_NOT_LOAD
-        .iter()
-        .find(|(f, _)| *f == file)
-        .map(|&(_, n)| n);
-    let mut unloaded = 0usize;
-    for (path, set) in &files {
+    let again = dir.join("again");
+    std::fs::create_dir_all(&again).expect("a scratch directory");
+    let last = files.len().saturating_sub(1);
+    for (i, (path, set)) in files.iter().enumerate() {
+        let saved = dir.join(path);
+        // The run's own state, each fact with its origin.
         let facts: Vec<_> = set.iter().map(|&b| candidates[b as usize].fact).collect();
         let want = nodes
-            .with_fixpoint(&facts, |kb, terms| by_value(kb, terms))
+            .with_fixpoint(&facts, |kb, terms| {
+                ein_cli::saturate::facts_section(terms, kb)
+            })
             .expect("saturates");
-        match reloaded(&dir.join(path)) {
-            Err(_) if named.is_some() => unloaded += 1,
-            Err(e) => bad.push(format!("{file}: {path} does not load: {e}")),
-            Ok((got, not_given)) => {
-                let dropped = SELECTION_DROPPED.contains(&file);
-                if got != want && !dropped {
-                    bad.push(format!("{file}: {path}: {}", diff(&want, &got)));
-                }
-                if got == want && dropped {
-                    bad.push(format!(
-                        "{file}: {path} reloads to its state, and SELECTION_DROPPED names it: \
-                         it is fixed, so drop it from the list in the same commit"
-                    ));
-                }
-                let written = WRITTEN_PROVENANCE.contains(&file);
-                if not_given > 0 && !written {
-                    bad.push(format!(
-                        "{file}: {path}: {not_given} facts reload with a provenance, not as given"
-                    ));
-                }
-                if not_given == 0 && written {
-                    bad.push(format!(
-                        "{file}: {path}: every fact reloads as given, and WRITTEN_PROVENANCE \
-                         names it: it is fixed, so drop it from the list in the same \
-                         commit"
-                    ));
-                }
+        // The first load.
+        let (whole, got) = match section(&saved) {
+            Ok(s) => s,
+            Err(e) => {
+                bad.push(format!("{file}: {path} does not load: {e}"));
+                continue;
             }
+        };
+        if got == want {
+            counts.states += 1;
+        } else {
+            bad.push(format!(
+                "{file}: {path}: the first load is not the state the run saved:\n{}",
+                first_difference(&want, &got)
+            ));
+        }
+        // Save → load → save.
+        let text = std::fs::read_to_string(&saved).expect("the run wrote it");
+        let second = match saved_again(&saved) {
+            Ok(t) => t,
+            Err(e) => {
+                bad.push(format!("{file}: {path}: its load saves no root: {e}"));
+                continue;
+            }
+        };
+        if second == text {
+            counts.bytes += 1;
+        } else {
+            bad.push(format!(
+                "{file}: {path}: saved again, it is not the same bytes:\n{}",
+                first_difference(&text, &second)
+            ));
+        }
+        // Load → save → load.
+        let path_again = again.join(format!("{i}.ein"));
+        std::fs::write(&path_again, &second).expect("a scratch file");
+        match section(&path_again) {
+            Ok((w, _)) if w == whole => counts.dumps += 1,
+            Ok((w, _)) => bad.push(format!(
+                "{file}: {path}: its second save loads to another dump:\n{}",
+                first_difference(&whole, &w)
+            )),
+            Err(e) => bad.push(format!(
+                "{file}: {path}: its second save does not load: {e}"
+            )),
+        }
+        // The binary, on the first and the last.
+        if i == 0 || i == last {
+            by_the_binary(file, &saved, &again.join(format!("b{i}")), &whole, bad);
+            counts.cli += 1;
         }
     }
-    if let Some(n) = named
-        && unloaded != n
-    {
-        bad.push(format!(
-            "{file}: DO_NOT_LOAD says {n} of its state files do not load, and {unloaded} do not: \
-             it is fixed, so drop it from the list in the same commit"
-        ));
-    }
+    let _ = std::fs::remove_dir_all(&again);
     Some(files.len())
 }
 
+/// Where two texts first differ: the line on each side.
+fn first_difference(want: &str, got: &str) -> String {
+    let (w, g): (Vec<&str>, Vec<&str>) = (want.lines().collect(), got.lines().collect());
+    let at = w
+        .iter()
+        .zip(&g)
+        .position(|(a, b)| a != b)
+        .unwrap_or(w.len().min(g.len()));
+    format!(
+        "  line {}: {:?}\n  where it should be {:?} ({} lines against {})",
+        at + 1,
+        g.get(at).copied().unwrap_or("<end>"),
+        w.get(at).copied().unwrap_or("<end>"),
+        g.len(),
+        w.len()
+    )
+}
+
 /// **No unfilled template reaches an output**: no line of `answer.txt` (the
-/// read-out, a class's `:goal-text` filled) or of a state file (each fact's
-/// English, its rule's `:why` and its relation's filled) carries `{?`, which
+/// read-out, a class's `:goal-text` filled) carries `{?`, which
 /// [`ein_core::render_why`] leaves where a reference names nothing it binds.
-/// A state file re-writes the program above its facts, `:why` templates and
-/// all, so only the lines after its `── the state` marker are read.
-/// `ein-ir/tests/template_wellformedness.rs` holds the cause, the
-/// template, and this holds the effect wherever a template is filled.
+/// A state file carries the program as written, `:why` templates and all,
+/// and fills none. `ein-ir/tests/template_wellformedness.rs` holds the
+/// cause, the template, and this holds the effect wherever a template is
+/// filled.
 fn no_placeholder_reaches_an_output(file: &str, path: &Path, bad: &mut Vec<String>) {
     let Ok(text) = std::fs::read_to_string(path) else {
         return;
     };
-    let rendered = match text.split_once("── the state") {
-        Some((_, facts)) => facts,
-        None if path.extension().is_some_and(|x| x == "ein") => return,
-        None => &text,
-    };
-    for line in rendered.lines().filter(|l| l.contains("{?")) {
+    for line in text.lines().filter(|l| l.contains("{?")) {
         bad.push(format!(
             "{file}: {} prints an unfilled template reference: {line}",
             path.file_name().unwrap_or_default().to_string_lossy()
@@ -620,6 +696,7 @@ fn shard(k: usize) {
     let mut bad = Vec::new();
     let (mut programs, mut states, mut eager) = (0, 0, 0);
     let mut held = Held::default();
+    let mut counts = Counts::default();
     let entries = corpus();
     let selected: Vec<_> = entries
         .select(&[], None, slow)
@@ -645,16 +722,18 @@ fn shard(k: usize) {
         |&(i, e)| {
             let dir = root.join(format!("e{i}"));
             let (mut bad, mut eager, mut held) = (Vec::new(), 0, Held::default());
-            let wrote = check(&e.path, &dir, &mut bad, &mut eager, &mut held);
+            let mut counts = Counts::default();
+            let wrote = check(&e.path, &dir, &mut bad, &mut eager, &mut held, &mut counts);
             // A dump past the limit is tens of thousands of files.
             let _ = std::fs::remove_dir_all(&dir);
-            (wrote, bad, eager, held)
+            (wrote, bad, eager, held, counts)
         },
     );
-    for ((_, e), (wrote, b, n, h)) in mine.iter().zip(done) {
+    for ((_, e), (wrote, b, n, h, c)) in mine.iter().zip(done) {
         bad.extend(b);
         eager += n;
         held.add(h);
+        counts.add(&c);
         bad.extend(heavy_dump_flag(e, wrote));
         match wrote {
             Some(n) => {
@@ -685,10 +764,20 @@ fn shard(k: usize) {
         held.not_dead
     );
     eprintln!(
-        "shard {k}: {programs} programs, {states} state files, {eager} members of N held to \
-         their eager cores, {} dead nodes and holes each with a core and {} others each with \
-         none",
-        held.dead, held.not_dead
+        "shard {k}: {programs} programs, {states} state files: {} loaded as the state saved, {} \
+         saved again byte for byte, {} loaded again to the same dump, {} through the binary; \
+         {eager} members of N held to their eager cores, {} dead nodes and holes each with a \
+         core and {} others each with none",
+        counts.states, counts.bytes, counts.dumps, counts.cli, held.dead, held.not_dead
+    );
+    assert!(
+        counts.states == states && counts.bytes == states && counts.dumps == states,
+        "shard {k}: of {states} state files, {} loaded as the state saved, {} saved again byte \
+         for byte, {} loaded again to the same dump:\n{}",
+        counts.states,
+        counts.bytes,
+        counts.dumps,
+        bad.join("\n")
     );
     assert!(
         bad.is_empty(),
@@ -699,47 +788,49 @@ fn shard(k: usize) {
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_0() {
+fn every_state_file_is_saved_and_loaded_as_itself_0() {
     shard(0);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_1() {
+fn every_state_file_is_saved_and_loaded_as_itself_1() {
     shard(1);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_2() {
+fn every_state_file_is_saved_and_loaded_as_itself_2() {
     shard(2);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_3() {
+fn every_state_file_is_saved_and_loaded_as_itself_3() {
     shard(3);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_4() {
+fn every_state_file_is_saved_and_loaded_as_itself_4() {
     shard(4);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_5() {
+fn every_state_file_is_saved_and_loaded_as_itself_5() {
     shard(5);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_6() {
+fn every_state_file_is_saved_and_loaded_as_itself_6() {
     shard(6);
 }
 
 #[test]
-fn every_state_file_reloads_to_its_own_facts_by_value_7() {
+fn every_state_file_is_saved_and_loaded_as_itself_7() {
     shard(7);
 }
 
 /// The witnesses: programs in the final grammar whose names exercise the
-/// printer, written here, and `syntax/arg-kinds`.
+/// printer, written here, and `syntax/arg-kinds`. A state file writes each
+/// choice as the printer spells the candidate, and a load reads it back to
+/// the same candidate of H.
 ///
 /// A string is no value (Q-M1e2.23) and there is no int: a run of digits is
 /// a name (Q-M1e2.24). What the printer must get right is the name rule's
@@ -747,7 +838,7 @@ fn every_state_file_reloads_to_its_own_facts_by_value_7() {
 /// witnesses write `7` beside `07`, `-7` and `1..5`, every decorator, and the
 /// brackets, as fact arguments, candidates, nested facts and derived facts.
 #[test]
-fn the_witnesses_reload_to_their_states() {
+fn the_witnesses_are_saved_and_loaded_as_their_states() {
     let root = Scratch::new("ein-answer-round-trip-w");
     let digits = root.join("digits.ein");
     std::fs::write(
@@ -792,6 +883,7 @@ fn the_witnesses_reload_to_their_states() {
             &mut bad,
             &mut 0,
             &mut Held::default(),
+            &mut Counts::default(),
         );
         states += wrote.unwrap_or_else(|| panic!("{file}: no state written"));
     }

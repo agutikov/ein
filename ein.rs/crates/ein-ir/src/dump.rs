@@ -58,6 +58,30 @@ pub fn escape_string_literal(s: &str) -> String {
     ein_core::text::quote(s)
 }
 
+/// A saved file's `(program …)` or `(module NAME …)` as the file writes it:
+/// the head, the name, and the text it carries between a line break after
+/// them and one before `)`, which the parser reads back as the same text
+/// (`crate::saved`). `None` for every other node: no other form holds a
+/// string as its last argument.
+fn carried(ast: &Ast, node: NodeId) -> Option<String> {
+    let Node::SForm { head, args } = ast.node(node) else {
+        return None;
+    };
+    let word = ast.atom_name(head)?;
+    let args = ast.args(args);
+    let (Some(&last), true) = (args.last(), matches!(word, "program" | "module")) else {
+        return None;
+    };
+    let Node::Str(text) = ast.node(last) else {
+        return None;
+    };
+    let name: String = args[..args.len() - 1]
+        .iter()
+        .map(|&a| format!(" {}", atom_text(ast, a)))
+        .collect();
+    Some(format!("({word}{name}\n{}\n)", ast.sym(text)))
+}
+
 /// Single-line rendering of any node.
 pub fn dump_compact(ast: &Ast, node: NodeId) -> String {
     let mut out = String::new();
@@ -66,6 +90,10 @@ pub fn dump_compact(ast: &Ast, node: NodeId) -> String {
 }
 
 fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
+    if let Some(text) = carried(ast, node) {
+        out.push_str(&text);
+        return;
+    }
     match ast.node(node) {
         Node::Atom(_) | Node::Var(_) => out.push_str(&atom_text(ast, node)),
         Node::Keyword(s) => {
@@ -107,6 +135,9 @@ fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
 /// Multi-line rendering: compact when it fits the column budget, otherwise one
 /// argument per line.
 pub fn dump_pretty(ast: &Ast, node: NodeId, indent: usize, width: usize) -> String {
+    if let Some(text) = carried(ast, node) {
+        return text;
+    }
     let compact = dump_compact(ast, node);
     let cur = indent * INDENT.len();
     let Node::SForm { head, args } = ast.node(node) else {

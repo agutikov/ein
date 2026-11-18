@@ -391,7 +391,7 @@ pub struct Visit {
 /// visited, neither the cube alone.
 #[derive(Clone, Debug, Default)]
 pub struct RunDoc {
-    /// `--answer DIR`'s `index.json` was read (`ein-answer/2`).
+    /// `--answer DIR`'s `index.json` was read (`ein-answer/3`).
     pub answered: bool,
     /// `--visited DIR`'s `nodes.json` was read (`ein-lattice/2`).
     pub visited: bool,
@@ -431,9 +431,10 @@ impl RunDoc {
         if let Some(dir) = answer {
             let j = load(dir, "index.json")?;
             let p = dir.join("index.json");
-            if j.get("schema").and_then(Json::as_str) != Some("ein-answer/2") {
+            let schema = crate::dump::region_answer::ANSWER;
+            if j.get("schema").and_then(Json::as_str) != Some(schema) {
                 return Err(format!(
-                    "{}: not an ein-answer/2 document (`ein solve --dump-answer`)",
+                    "{}: not an {schema} document (`ein solve --dump-answer`)",
                     p.display()
                 ));
             }

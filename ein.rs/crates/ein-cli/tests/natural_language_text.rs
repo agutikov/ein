@@ -14,8 +14,7 @@
 //! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
 //! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and the derived fact's relation's `:why`, filled | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (Q-M1f.109) |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
-//! | a `--dump-answer` state file | all three, the program re-written | quoted, and it reloads to the same text |
-//! | a `--dump-answer` state file's fact comments (Q-M1f.58) | a rule's `:why` filled at the fact's first recorded justification, and the relation's `:why` filled with the fact's arguments | the characters, each line after a line break a comment line of its own (`;   `) |
+//! | a `--dump-answer` state file | all three, in the program it carries | as the program writes them, byte for byte, and it reads back to the same texts |
 //! | `ein render program` | `:goal-text` | quoted, inside a DOT label |
 //! | a `.einb` | all three | `ein solve` of it prints what `ein solve` of the `.ein` does |
 //!
@@ -184,64 +183,35 @@ fn the_dump_quotes_the_source_and_the_goal_text() {
     }
 }
 
-/// A `--dump-answer` state file writes the program with every text quoted, and
-/// reads back to the same six texts.
+/// A `--dump-answer` state file carries the program as written, every text
+/// as the program writes it, and its program reads back to the same six
+/// texts.
 #[test]
-fn a_state_file_writes_every_text_and_reads_back_to_it() {
+fn a_state_file_carries_every_text_as_written() {
     let scratch = Scratch::new("ein-nl-text-state");
     let dir = scratch.path().join("answer");
     let r = ein(&["solve", PROGRAM, "--dump-answer", &dir.to_string_lossy()]);
     assert_eq!(r.code, 0, "{}", r.err);
     let state = dir.join("models").join("01.ein");
     let file = std::fs::read_to_string(&state).expect("the state file");
-    for text in [
-        RELATION_WHY,
-        HOUSED_WHY,
-        SOURCE_ANN,
-        SOURCE_BOB,
-        RULE_WHY,
-        GOAL_TEXT,
-    ] {
-        let quoted = ein_core::text::quote(text);
-        assert!(file.contains(&quoted), "the state file: no {quoted}");
-    }
-    let mut got = texts(&state);
+    let program = std::fs::read_to_string(repo_root().join(PROGRAM)).expect("the program");
+    assert!(
+        file.contains(&format!("(program\n{program}\n)\n")),
+        "the state file carries the program byte for byte"
+    );
+    let mut ast = Ast::new();
+    ein_ir::saved::parse_text(&mut ast, &file, Some(&state.to_string_lossy()))
+        .expect("its program parses");
+    let mut got: Vec<String> = (0..ast.arena_sizes().0)
+        .filter_map(|i| match ast.node(ein_ir::NodeId(i as u32)) {
+            Node::Str(s) => Some(ast.sym(s).to_string()),
+            _ => None,
+        })
+        .collect();
     got.sort();
-    got.dedup();
     let mut want = texts(&repo_root().join(PROGRAM));
     want.sort();
     assert_eq!(got, want);
-}
-
-/// Each fact of a state file is written in English after it (Q-M1f.58): a
-/// given's `:source` quoted, a derived fact's rule and its
-/// `:why` filled with the firing's bindings, then ` — ` and the relation's
-/// `:why` filled with the fact's arguments, every line break in either a new
-/// comment line. The file still reloads to its facts (the test above).
-#[test]
-fn a_state_file_writes_each_fact_in_english() {
-    let scratch = Scratch::new("ein-nl-text-facts");
-    let dir = scratch.path().join("answer");
-    let r = ein(&["solve", PROGRAM, "--dump-answer", &dir.to_string_lossy()]);
-    assert_eq!(r.code, 0, "{}", r.err);
-    let file = std::fs::read_to_string(dir.join("models").join("01.ein")).expect("the state file");
-    let comment = ein_render::sentence::as_comment;
-    for (p, h, source) in [("Ann", "H1", SOURCE_ANN), ("Bob", "H2", SOURCE_BOB)] {
-        let lives = RELATION_WHY.replace("{?1}", p).replace("{?2}", h);
-        let line = format!(
-            "(lives {p} {h}) ; source {} — {}\n",
-            ein_core::text::quote(source),
-            comment(&lives)
-        );
-        assert!(file.contains(&line), "the state file: no {line:?}:\n{file}");
-        let why = RULE_WHY.replace("{?p}", p).replace("{?h}", h);
-        let housed = HOUSED_WHY.replace("{?1}", p);
-        let line = format!(
-            "(housed {p}) ; rule settle: {}\n",
-            comment(&format!("{why} — {housed}"))
-        );
-        assert!(file.contains(&line), "the state file: no {line:?}:\n{file}");
-    }
 }
 
 /// `ein render program` draws the query's `:goal-text` quoted, inside the

@@ -183,7 +183,7 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
     if t.untraced > 0 {
         lines.push(format!(
             "_{} more {} not traced: the read-out printed {} — `--dump-answer DIR` writes every \
-             state, and `models/` holds each as a loadable program._",
+             state, and `models/` saves each, a file that loads to it._",
             t.untraced,
             if t.untraced == 1 {
                 "state is"

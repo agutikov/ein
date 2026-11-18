@@ -910,7 +910,9 @@ fn a_region_claim_the_tree_leaves_is_decided_by_the_state_route() {
                     .claim
                     .map(|c| c.outcome)
             };
-            if !src.contains(":expect (region") {
+            // A saved file's claims are its program's, checked by none of its
+            // runs (Q-M1f.403).
+            if !src.contains(":expect (region") || ein_ir::grammar::opens_saved(&src) {
                 return (Vec::new(), 0, 0);
             }
             let Some(want) = oracle_word() else {

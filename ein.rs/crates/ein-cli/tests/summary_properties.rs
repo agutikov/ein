@@ -475,9 +475,13 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                         u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
                     );
                     // ── the root block against what it describes ────────────────
+                    // A saved file's run is over H less its node's choices
+                    // (Q-M1f.402), which `root.commit` names.
+                    let committed = s["root"]["commit"].as_array().map_or(0, Vec::len) as i64;
                     check(
-                        "root.hypgen.emitted == region.universe.candidates",
-                        u(&s, "root.hypgen.emitted") == u(&s, "region.universe.candidates"),
+                        "root.hypgen.emitted == region.universe.candidates + |root.commit|",
+                        u(&s, "root.hypgen.emitted")
+                            == u(&s, "region.universe.candidates") + committed,
                     );
                     if let Some((facts, h, mono)) = &root {
                         rooted += 1;
@@ -487,7 +491,7 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                         );
                         check(
                             "root.hypgen.emitted is H, as every route starts from it",
-                            u(&s, "root.hypgen.emitted") == *h,
+                            u(&s, "root.hypgen.emitted") == *h + committed,
                         );
                         check(
                             "--monotone's root block is the region run's",

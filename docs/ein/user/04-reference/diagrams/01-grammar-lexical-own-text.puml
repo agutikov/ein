@@ -5,7 +5,7 @@ reserved-word =
   | "macro" | "import" | "open" ;
 position-word =
     "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
-  | "owing" ;
+  | "owing" | "program" | "module" | "commit" ;
 known-keyword =
     ":why" | ":source" | ":goal-text" | ":match" | ":assert" | ":rule" | ":using" | ":goal"
   | ":over" | ":expect" | ":hrules" | ":hypothesis-relations" | ":no-hypothesis" | ":no-search"

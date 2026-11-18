@@ -196,10 +196,14 @@ fn the_summary_states_no_region_and_the_dump_writes_root() {
         std::fs::read_to_string(&json).expect("the summary")
     );
     let root = dir.join("root.ein");
+    // Root saved: the program as written and no choice.
     let text = std::fs::read_to_string(&root).expect("root.ein");
+    let program = std::fs::read_to_string(repo_root().join("tests/region/04_owing.ein"))
+        .expect("the program");
     assert!(
-        text.contains(";;; root:       not in R — owes 1")
-            && text.contains(";;; R:          not searched"),
+        text.starts_with(ein_ir::saved::FIRST_LINE)
+            && text.contains(&format!("(program\n{program}\n)\n"))
+            && !text.contains("(commit"),
         "{text}"
     );
     // Root's state loads, and its fixpoint owes what root owes.

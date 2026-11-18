@@ -172,11 +172,12 @@ pub fn cmd_program(file: &str, mode: RuleMode, levi: bool, load: &ein_ir::LoadOp
 /// `file` loaded and saturated (Q-M1e.20).
 ///
 /// **A model is a file**, not a `--state model:N` here. `ein solve
-/// --dump-answer` writes each recorded state as a program that loads and
-/// saturates to itself, so `render kb DIR/models/02.ein --since DIR/root.ein`
-/// draws model 2 with what its commitment added in bold — from the one solve
-/// whose answer the directory holds, rather than from a second solve this
-/// command would have to be handed the same flags for.
+/// --dump-answer` saves each recorded state as its program and the choices
+/// made, which load to the state again (Q-M1f.402), so `render kb
+/// DIR/models/02.ein --since DIR/models/01.ein` draws model 2 with what it
+/// holds beyond model 1 in bold — from the one solve whose answer the
+/// directory holds, rather than from a second solve this command would have
+/// to be handed the same flags for.
 pub fn cmd_kb(
     file: &str,
     since: Option<&str>,
@@ -223,7 +224,16 @@ fn loaded_and_saturated(
         eprintln!("{}", crate::common::saturate_error_line(&e));
         return None;
     }
-    Some(kb)
+    // A saved file's state: its node, committed and saturated by the node
+    // function (Q-M1f.402); root's fixpoint for a file with no `(commit …)`.
+    match ein_infer::region::saved_node(&mut kb, terms, ast) {
+        Ok(Some(node)) => Some(node.kb),
+        Ok(None) => Some(kb),
+        Err(e) => {
+            eprintln!("{e}");
+            None
+        }
+    }
 }
 
 /// What `ein render h-space` was asked.
@@ -273,6 +283,7 @@ pub fn cmd_h_space(a: &HSpaceArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
     let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(a.file), load) else {
         return 1;
     };
+    crate::common::program_of_saved(&mut kb);
     let budget = a.budget.unwrap_or(ein_infer::downset::DEFAULT_BUDGET);
     let asked = WholeOptions {
         layer: Options {

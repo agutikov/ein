@@ -33,6 +33,7 @@ the test suite runs every caption again and compares the block, so every block i
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 | [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
+| [X21](#x21--testssaved04_a_saved_nodeein-a-saved-file-a-node-of-its-programs-lattice) | `tests/saved/04_a_saved_node.ein` | 0 | a saved file: the `commit` row, the part of the program's R above the node, and the program's claims not checked |
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
@@ -2470,6 +2471,57 @@ solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
   (region
     ;; state 1 of 1 — 2 candidates · minimal and maximal · from {(drinks Ann Tea), (likes Ann Soup)}
     (model (drinks Ann Tea) (likes Ann Soup)))
+
+exit 0
+```
+
+## X21 — `tests/saved/04_a_saved_node.ein`: a saved file, a node of its program's lattice
+
+The state `{(note (bad a))}` of `tests/saved/02_a_choice_with_a_fact_inside_it.ein`, as `--dump-answer` saved it: the
+program as written and `(commit (note (bad a)))`. The run is the part of the program's R above that node: its universe
+is H less the choice, here no candidate, so R is {∅}, ∅ being the node, and the `commit` row under `universe` names
+it. The program's claims are about the program's R, so none is checked, and the run exits 0.
+
+`ein solve tests/saved/04_a_saved_node.ein`
+
+```text
+solve · tests/saved/04_a_saved_node.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: R is {∅} or empty, decided by root alone
+    commit          1 candidate of H, the node this saved file names: R is the part of its program's R above it, and the universe is the rest of H — (note (bad a))
+    outside         flagged — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 2 facts beyond root · 2 layers
+
+  (region
+    ;; state 1 of 1 — ∅, root itself · minimal and maximal
+    (model))
+
+  query             (flagged ?x)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?x = a
+                        “a is flagged”
+  as :expect        (model (flagged a))
+  :expect           NOT CHECKED — the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
+
+  (solve :expect)   NOT CHECKED
+                    the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
+
+stderr: note: tests/saved/04_a_saved_node.ein: query :expect NOT CHECKED — the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
+stderr: note: tests/saved/04_a_saved_node.ein: (solve :expect) NOT CHECKED — the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
 
 exit 0
 ```

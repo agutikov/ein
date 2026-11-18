@@ -1,10 +1,14 @@
 @startebnf
 Name =
     NAME | "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
-  | "owing" ;
-DeclName = NAME | "step" | "true" | "model" | "region" | "merged" | "owing" ;
+  | "owing" | "program" | "module" | "commit" ;
+DeclName =
+    NAME | "step" | "true" | "model" | "region" | "merged" | "owing" | "program" | "module"
+  | "commit" ;
 FactHead = NAME | "step" | "eq" | "true" | "model" ;
-ValueHead = NAME | "relation" | "step" | "true" | "model" | "region" | "merged" | "owing" ;
+ValueHead =
+    NAME | "relation" | "step" | "true" | "model" | "region" | "merged" | "owing" | "program"
+  | "module" | "commit" ;
 PremiseHead = ValueHead | Var ;
 ConclusionHead = ValueHead | Var ;
 @endebnf

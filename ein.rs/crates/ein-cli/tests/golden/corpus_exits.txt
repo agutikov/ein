@@ -1893,6 +1893,18 @@
 0    tests/region/09_query_over_maximal.ein :: test
 0    tests/region/10_denied_extensions.ein :: saturate
 0    tests/region/10_denied_extensions.ein :: test
+0    tests/saved/01_a_rule_builds_a_fact.ein :: saturate
+0    tests/saved/01_a_rule_builds_a_fact.ein :: solve
+0    tests/saved/01_a_rule_builds_a_fact.ein :: test
+0    tests/saved/02_a_choice_with_a_fact_inside_it.ein :: saturate
+0    tests/saved/02_a_choice_with_a_fact_inside_it.ein :: solve
+0    tests/saved/02_a_choice_with_a_fact_inside_it.ein :: test
+0    tests/saved/03_the_standard_library.ein :: saturate
+0    tests/saved/03_the_standard_library.ein :: solve
+0    tests/saved/03_the_standard_library.ein :: test
+0    tests/saved/04_a_saved_node.ein :: saturate
+0    tests/saved/04_a_saved_node.ein :: solve
+0    tests/saved/04_a_saved_node.ein :: test
 0    tests/stdlib/algebra/01_copiers.ein :: render constraints
 1    tests/stdlib/algebra/01_copiers.ein :: render rules
 0    tests/stdlib/algebra/01_copiers.ein :: saturate

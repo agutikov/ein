@@ -1,5 +1,5 @@
 //! The read-out as data: `--json-summary` as `ein-summary/2` and
-//! `--dump-answer DIR` as `ein-answer/2`, the fields
+//! `--dump-answer DIR` as `ein-answer/3`, the fields
 //! [`08-read-out.md` § 11](../../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)
 //! and [`10-answer-dump.md`](../../../../../docs/ein/user/04-reference/10-answer-dump.md)
 //! define.
@@ -14,22 +14,18 @@
 
 use std::path::Path;
 
-use ein_core::{FactId, Kb, Terms};
-use ein_infer::SolveError;
+use ein_core::Kb;
 use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Route, Stopped, Verdict, Which};
 use ein_infer::read_out::{Listed, Listing, ReadOut};
-use ein_infer::region::Nodes;
-use ein_ir::Ast;
 
 use super::json::{Json, dumps_indent};
-use super::serialise::facts_to_ein_text;
 
 /// The summary's schema.
 pub const SUMMARY: &str = "ein-summary/2";
 /// The answer directory's schema.
-pub const ANSWER: &str = "ein-answer/2";
+pub const ANSWER: &str = "ein-answer/3";
 
 fn strs(v: &[String]) -> Json {
     Json::Array(v.iter().map(|s| Json::str(s.as_str())).collect())
@@ -578,8 +574,6 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
 pub struct Inputs<'a> {
     /// The source path, as given.
     pub source: &'a str,
-    /// The program, imports inlined — the head of every state file.
-    pub program: &'a str,
     /// The summary's bytes, which `answer.json` is.
     pub summary: &'a str,
     /// The read-out with no listing cut, which `answer.txt` is.
@@ -598,12 +592,18 @@ fn nn(i: usize, of: usize) -> String {
 /// The subtrees this writer owns: the state files and the forms.
 const SUBTREES: [&str; 3] = ["models", "owing", "forms"];
 
-/// Remove what a previous `ein-answer/2` write left, and nothing else: a
+/// Whether `dir`'s `index.json` is an answer directory's, of this schema or
+/// an earlier one: what this writer clears before it writes.
+fn ours(dir: &Path) -> bool {
+    std::fs::read_to_string(dir.join("index.json"))
+        .is_ok_and(|t| t.contains("\"schema\": \"ein-answer/"))
+}
+
+/// Remove what a previous answer directory's write left, and nothing else: a
 /// directory whose `index.json` names another schema, or none, is written
 /// beside and not cleared.
 pub fn clear_previous(dir: &Path) -> std::io::Result<()> {
-    let ours = std::fs::read_to_string(dir.join("index.json"))
-        .is_ok_and(|t| t.contains(&format!("\"schema\": \"{ANSWER}\"")));
+    let ours = ours(dir);
     if ours {
         for sub in SUBTREES {
             match std::fs::remove_dir_all(dir.join(sub)) {
@@ -617,13 +617,12 @@ pub fn clear_previous(dir: &Path) -> std::io::Result<()> {
 
 /// `ein solve --count --dump-answer DIR`: the read-out
 /// uncut as `answer.txt` and the summary as `answer.json`, and nothing else,
-/// since `--count` reads no state. What a previous `ein-answer/2` write left,
+/// since `--count` reads no state. What a previous answer directory's write left,
 /// its `index.json` and `nogoods.json` among it, is removed, so the directory
 /// names no state file that is not there.
 pub fn write_counted(dir: &Path, answer_txt: &str, summary: &str) -> Result<(), String> {
     let io = |e: std::io::Error| e.to_string();
-    let ours = std::fs::read_to_string(dir.join("index.json"))
-        .is_ok_and(|t| t.contains(&format!("\"schema\": \"{ANSWER}\"")));
+    let ours = ours(dir);
     clear_previous(dir).map_err(io)?;
     if ours {
         for file in ["index.json", "nogoods.json"] {
@@ -638,43 +637,16 @@ pub fn write_counted(dir: &Path, answer_txt: &str, summary: &str) -> Result<(), 
 }
 
 /// `ein solve --no-search --dump-answer DIR`: the read-out
-/// uncut as `answer.txt`, the summary as `answer.json`, root's state as
-/// `root.ein`, loadable, as a state file is, whatever root is, and each form
-/// asked for under `forms/`. No state of R is written, and no `index.json` or
-/// `nogoods.json`, which a previous `ein-answer/2` write's are removed with,
-/// as `--count`'s are: R was not searched.
-pub fn write_root(
-    dir: &Path,
-    r: &ReadOut,
-    root: &mut Kb,
-    terms: &mut Terms,
-    ast: &Ast,
-    inputs: &Inputs,
-) -> Result<(), String> {
+/// uncut as `answer.txt`, the summary as `answer.json`, root's node saved as
+/// `root.ein` ([`saved_file`]), whatever root is: a program's root, or the
+/// node a saved file names, which is its file again byte for byte. And each
+/// form asked for under `forms/`. No state of R is written, and no
+/// `index.json` or `nogoods.json`, which a previous write's are removed
+/// with, as `--count`'s are: R was not searched.
+pub fn write_root(dir: &Path, r: &ReadOut, root: &Kb, inputs: &Inputs) -> Result<(), String> {
     let io = |e: std::io::Error| e.to_string();
     write_counted(dir, inputs.answer_txt, inputs.summary)?;
-    let a = &r.answer;
-    let standing = match r.described().map(|d| &d.root) {
-        Some(x) if x.in_r() => "in R — alive, and owes nothing".to_string(),
-        Some(x) if x.alive => format!("not in R — owes {}", x.owes),
-        Some(_) => "dead — its own fixpoint derives (false)".to_string(),
-        None => "not read".to_string(),
-    };
-    let mut head = vec![
-        format!("root — written by `ein solve --no-search --dump-answer` ({ANSWER})."),
-        format!("source:     {}", inputs.source),
-        format!("root:       {standing}"),
-        "R:          not searched".to_string(),
-    ];
-    if let Some(d) = r.described() {
-        head.extend(d.root.owed.iter().map(|w| format!("  {w}")));
-    }
-    let mut nodes = ein_infer::region::Nodes::new(root, terms, ast, &a.candidates)
-        .map_err(|e| e.to_string())?;
-    let text = nodes
-        .with_fixpoint(&[], |kb, terms| state_file(terms, kb, inputs, &head))
-        .map_err(|e| e.to_string())?;
-    std::fs::write(dir.join("root.ein"), text).map_err(io)?;
+    std::fs::write(dir.join("root.ein"), root_file(r, root)?).map_err(io)?;
     if !inputs.forms.is_empty() {
         std::fs::create_dir_all(dir.join("forms")).map_err(io)?;
     }
@@ -684,32 +656,31 @@ pub fn write_root(
     Ok(())
 }
 
-fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> String {
-    let relation = terms.kernel.relation;
-    let mut state: Vec<FactId> = kb
-        .facts()
-        .filter(|&f| terms.facts.get(f).0 != relation)
-        .collect();
-    state.sort_by_cached_key(|&f| ein_infer::events::sexpr(terms, f));
-    let mut text = String::new();
-    for h in head {
-        text.push_str(";;; ");
-        text.push_str(h);
-        text.push('\n');
-    }
-    format!(
-        "{text};;;\n\
-         ;;; Below: the program as loaded, imports inlined, and then every fact of\n\
-         ;;; the state ({} facts; the program's own relation declarations are not\n\
-         ;;; repeated). It loads, and saturating it derives nothing new: the state is\n\
-         ;;; a fixpoint of the program (10-answer-dump.md, every state file loads).\n\n\
-         {}\n\
-         ;; ── the state ──────────────────────────────────────────────────────────\n\n\
-         {}",
-        state.len(),
-        inputs.program.trim_end(),
-        facts_to_ein_text(kb, terms, &state),
-    )
+/// **Root's node saved**, as `--no-search --dump-answer` writes it in
+/// `root.ein`: the program with no `(commit …)`, or a saved file's own node,
+/// which is that file again.
+pub fn root_file(r: &ReadOut, root: &Kb) -> Result<String, String> {
+    let a = &r.answer;
+    saved_file(root, &a.root.commitment(&a.candidates, &[]))
+}
+
+/// **A node saved** (Q-M1f.400 to Q-M1f.402): the program as it was read,
+/// every module its load read, each as it was read, and `commit`, the
+/// candidates of H the node commits, in H's order ([`ein_ir::saved::write`]).
+/// Nothing of the state is in it: a load derives it again, by the rules that
+/// derived it, from the same choices. `root` is the run's: its
+/// [`ein_core::Program::sources`] is what its load read, a saved file's
+/// carried texts among them.
+pub fn saved_file(root: &Kb, commit: &[String]) -> Result<String, String> {
+    let Some(sources) = root.program().sources.as_deref() else {
+        return Err(
+            "the program was loaded from forms and not from a text, so no file of its \
+                    states can carry it"
+                .to_string(),
+        );
+    };
+    let commit: Vec<&str> = commit.iter().map(String::as_str).collect();
+    Ok(ein_ir::saved::write(sources, &commit))
 }
 
 /// `nogoods.json`: each member of `N` a describing run met, with its unsat
@@ -744,127 +715,53 @@ pub fn nogoods(r: &ReadOut) -> Result<Json, String> {
     Ok(Json::Array(dead))
 }
 
-/// Write `ein-answer/2` into `dir`, which exists: `answer.txt`, `answer.json`,
-/// one loadable program per state the run reached under `models/` (listed or
-/// not: a partial run's other members are where its cut says they are), the
-/// owing frontier of an empty R under `owing/`, `nogoods.json`, each form the
-/// run printed after its read-out, uncut, under `forms/`, and
-/// `index.json` naming what each file is. Each state is read again through the
-/// node function every route uses.
-pub fn write(
-    dir: &Path,
-    r: &ReadOut,
-    root: &mut Kb,
-    terms: &mut Terms,
-    ast: &Ast,
-    inputs: &Inputs,
-) -> Result<(), String> {
+/// Write the answer directory into `dir`, which exists: `answer.txt`,
+/// `answer.json`, one saved file per state the run reached under `models/`
+/// (listed or not: a partial run's other members are where its cut says they
+/// are), the owing frontier of an empty R under `owing/`, `nogoods.json`,
+/// each form the run printed after its read-out, uncut, under `forms/`, and
+/// `index.json` naming what each file is. A state's file is the program
+/// with the commitment the state was read from ([`saved_file`]); no state is
+/// read to write it.
+pub fn write(dir: &Path, r: &ReadOut, root: &Kb, inputs: &Inputs) -> Result<(), String> {
     let io = |e: std::io::Error| e.to_string();
-    let solve = |e: SolveError| e.to_string();
     clear_previous(dir).map_err(io)?;
     std::fs::write(dir.join("answer.txt"), inputs.answer_txt).map_err(io)?;
     std::fs::write(dir.join("answer.json"), inputs.summary).map_err(io)?;
     let a = &r.answer;
-    let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
-    let name = |set: &[u32]| -> String {
-        if set.is_empty() {
-            "∅".to_string()
-        } else {
-            let v: Vec<&str> = set.iter().map(|&b| cands[b as usize].as_str()).collect();
-            format!("{{{}}}", v.join(", "))
-        }
-    };
-    let facts = |set: &[u32]| -> Vec<FactId> {
-        set.iter().map(|&b| a.candidates[b as usize].fact).collect()
-    };
     let owing: &[ein_infer::read_out::OwingState] = match &r.listing {
         Listing::Owing(f) => f,
         _ => &[],
     };
     let mut index_states: Vec<Json> = Vec::new();
     let mut index_owing: Vec<Json> = Vec::new();
-    if !r.states.is_empty() || !owing.is_empty() {
-        let mut nodes = Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?;
-        if !r.states.is_empty() {
-            std::fs::create_dir_all(dir.join("models")).map_err(io)?;
-        }
-        let k = r.states.len();
-        for (i, s) in r.states.iter().enumerate() {
-            let path = format!("models/{}.ein", nn(i, k));
-            let lines: Vec<&str> = [(s.minimal, "minimal"), (s.maximal, "maximal")]
-                .into_iter()
-                .filter_map(|(on, l)| on.then_some(l))
-                .collect();
-            let mut head = vec![
-                format!(
-                    "state {} of {k} — written by `ein solve --dump-answer` ({ANSWER}).",
-                    i + 1
-                ),
-                format!("source:     {}", inputs.source),
-                format!("from:       {}", name(&s.rep)),
-                format!(
-                    "lines:      {}",
-                    if lines.is_empty() {
-                        "—".to_string()
-                    } else {
-                        lines.join(", ")
-                    }
-                ),
-            ];
-            if let Some(c) = s.commitments {
-                let more = if c >= ein_infer::count::CAP {
-                    " or more"
-                } else {
-                    ""
-                };
-                head.push(format!("reached by: {c}{more} commitments"));
-            }
-            if !s.generators.is_empty() {
-                head.push(format!(
-                    "minimal:    {}",
-                    s.generators
-                        .iter()
-                        .map(|g| name(g))
-                        .collect::<Vec<_>>()
-                        .join(" | ")
-                ));
-            }
-            let text = nodes
-                .with_fixpoint(&facts(&s.rep), |kb, terms| {
-                    state_file(terms, kb, inputs, &head)
-                })
-                .map_err(solve)?;
-            std::fs::write(dir.join(&path), text).map_err(io)?;
-            index_states.push(Json::obj(vec![
-                ("path", Json::str(path)),
-                ("state", Json::int(i as i64 + 1)),
-                ("lines", lines_of(s)),
-                ("listed", Json::Bool(s.listed)),
-            ]));
-        }
-        if !owing.is_empty() {
-            std::fs::create_dir_all(dir.join("owing")).map_err(io)?;
-        }
-        for (i, o) in owing.iter().enumerate() {
-            let path = format!("owing/{}.ein", nn(i, owing.len()));
-            let mut head = vec![
-                format!(
-                    "an owing node of an empty R — written by `ein solve --dump-answer` \
-                     ({ANSWER})."
-                ),
-                format!("source:     {}", inputs.source),
-                format!("commitment: {}", name(&o.node.set)),
-                format!("owes:       {}", o.node.owes),
-            ];
-            head.extend(o.node.owed.iter().map(|w| format!("  {w}")));
-            let text = nodes
-                .with_fixpoint(&facts(&o.node.set), |kb, terms| {
-                    state_file(terms, kb, inputs, &head)
-                })
-                .map_err(solve)?;
-            std::fs::write(dir.join(&path), text).map_err(io)?;
-            index_owing.push(Json::obj(vec![("path", Json::str(path))]));
-        }
+    if !r.states.is_empty() {
+        std::fs::create_dir_all(dir.join("models")).map_err(io)?;
+    }
+    let k = r.states.len();
+    for (i, s) in r.states.iter().enumerate() {
+        let path = format!("models/{}.ein", nn(i, k));
+        let commit = a.root.commitment(&a.candidates, &s.rep);
+        std::fs::write(dir.join(&path), saved_file(root, &commit)?).map_err(io)?;
+        index_states.push(Json::obj(vec![
+            ("path", Json::str(path)),
+            ("state", Json::int(i as i64 + 1)),
+            ("lines", lines_of(s)),
+            ("listed", Json::Bool(s.listed)),
+            ("commit", strs(&commit)),
+        ]));
+    }
+    if !owing.is_empty() {
+        std::fs::create_dir_all(dir.join("owing")).map_err(io)?;
+    }
+    for (i, o) in owing.iter().enumerate() {
+        let path = format!("owing/{}.ein", nn(i, owing.len()));
+        let commit = a.root.commitment(&a.candidates, &o.node.set);
+        std::fs::write(dir.join(&path), saved_file(root, &commit)?).map_err(io)?;
+        index_owing.push(Json::obj(vec![
+            ("path", Json::str(path)),
+            ("commit", strs(&commit)),
+        ]));
     }
     // Each form uncut, the stdout form's rest.
     let mut index_forms: Vec<Json> = Vec::new();

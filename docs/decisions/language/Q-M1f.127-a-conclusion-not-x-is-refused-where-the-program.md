@@ -19,8 +19,7 @@ through a variable; what the loader does not read is the firing's
 ([Q-M1f.128](Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)).
 
 **Why.** Each source is one the program's text shows without running it, so the refusal is decided at load on every
-command. Reading less would load a program whose states past root negate names, and whose state files would be
-refused on reload.
+command. Reading less would load a program whose states past root negate names.
 
 **Held by.** `ein_ir::from_ir`'s `refuse_negated_names`; `ein-ir`'s
 `from_ir::tests::a_conclusion_negating_a_name_is_refused_at_load`; `ein-cli/tests/negated_names.rs`:

@@ -124,19 +124,8 @@ three derived ones among them:
   (shares-chores Bob Ann :rule chores)
 ```
 
-and the state files `ein solve FILE --dump-answer DIR` writes for the two are the same, line for line, from the
-first fact to the last:
-
-```text
-(lives-in Ann Elm-St) ; Ann lives in Elm-St
-(lives-in Bob Elm-St) ; Bob lives in Elm-St
-(lives-in Cy Oak-St) ; Cy lives in Oak-St
-(may-borrow Ann Bob) ; rule borrow: Ann lives with Bob, who owns a bicycle — Ann may borrow Bob's bicycle
-(owns-bike Bob) ; Bob owns a bicycle
-(owns-bike Cy) ; Cy owns a bicycle
-(shares-chores Ann Bob) ; rule chores: Ann and Bob live in one house — Ann shares the chores with Bob
-(shares-chores Bob Ann) ; rule chores: Bob and Ann live in one house — Bob shares the chores with Ann
-```
+and the two derive each fact by the same rule, with the same reason: `ein solve FILE --trace OUT.md` writes `chores`'
+step for both, *Ann and Bob live in one house*, where the macro's text is nowhere.
 
 The query's answer is the block above under either program, its first row excepted, which prints the goal as each
 wrote it. What the macro bought is the program's text: the pattern is stated once, has a name a reader can look
@@ -155,7 +144,7 @@ and the same command on the program written out draws what the engine matches, t
 
 A macro's `:why` documents the pattern for a reader of the program, *Ann and Bob are two people who live in one
 house*, and is printed nowhere: a call is gone by the time anything runs, so what a derivation reads as is the
-`:why` of the rule whose `:match` used it, as the state file above shows.
+`:why` of the rule whose `:match` used it, as the trace above shows.
 
 ## A macro that means something: `forall`
 

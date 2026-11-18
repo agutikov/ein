@@ -30,7 +30,7 @@ and a text named `x.einb` is parsed (`einb_cli.rs`: `a_container_is_recognised_u
 its views draw the stored program
 ([Q-M1f.17](../../../decisions/cli/Q-M1f.17-a-view-of-a-container-draws-the-program-it.md)), its
 `--dump-answer` directory is its source's
-([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-writes-the-program.md)), and a position
+([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)), and a position
 in it names `<program stored in x.einb>`
 ([Q-M1f.15](../../../decisions/diagnostics/Q-M1f.15-a-position-in-a-container-names-its-stored.md)).
 

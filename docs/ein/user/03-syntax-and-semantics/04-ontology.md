@@ -78,18 +78,34 @@ first argument in that place:
 ## In words
 
 ```text
-(can-drink Human Coffee) ; rule inherit-right: Coffee is a Drink, so Coffee inherits can-drink from Drink — Human can drink Coffee
-(can-drink Human Drink) ; Human can drink Drink
-(can-drink Jack Coffee) ; rule inherit-right: Coffee is a Drink, so Coffee inherits can-drink from Drink — Jack can drink Coffee
-(can-drink Jack Drink) ; rule inherit-left: Jack is a Human, so Jack inherits can-drink from Human — Jack can drink Drink
-(inherit-left can-drink)
-(inherit-right can-drink)
-(is-a Coffee Drink) ; Coffee is a Drink
-(is-a Jack Human) ; Jack is a Human
+### Step 1 — `inherit-left`
+
+> Jack is a Human, so Jack inherits can-drink from Human
+
+Premises: `can-drink(Human, Drink)`, `is-a(Jack, Human)`
+
+Derives `can-drink(Jack, Drink)` — Jack can drink Drink
+
+### Step 2 — `inherit-right`
+
+> Coffee is a Drink, so Coffee inherits can-drink from Drink
+
+Premises: `can-drink(Human, Drink)`, `is-a(Coffee, Drink)`
+
+Derives `can-drink(Human, Coffee)` — Human can drink Coffee
+
+### Step 3 — `inherit-right`
+
+> Coffee is a Drink, so Coffee inherits can-drink from Drink
+
+Premises: `can-drink(Jack, Drink)`, `is-a(Coffee, Drink)`
+
+Derives `can-drink(Jack, Coffee)` — Jack can drink Coffee
 ```
 
-The state file of `ein solve FILE --dump-answer DIR`. The activator facts, `(inherit-left can-drink)`, have no
-statement: they are facts about a rule, and no declaration carries a sentence for them.
+Root's steps in `ein solve FILE --trace OUT.md`: each rule's reason, the facts it read, and what it derives with its
+statement. The activator facts, `(inherit-left can-drink)`, have no statement: they are facts about a rule, and no
+declaration carries a sentence for them.
 
 ## In mathematics
 

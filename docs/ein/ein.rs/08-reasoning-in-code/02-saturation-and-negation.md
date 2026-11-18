@@ -483,7 +483,7 @@ has `null` for its core and a dead node with the empty core `[]`.
 |---|---|
 | every core a run prints names a fact of its commitment and, with root, derives its contradiction; `refuted by` names its derivation's last step | `ein-infer/tests/corpus_cores.rs`: `every_core_names_its_commitment_and_derives_its_contradiction` |
 | a rule with no premise refutes root with the empty core | `ein-infer/tests/corpus_cores.rs`: `a_rule_with_no_premise_refutes_root_with_the_empty_core` |
-| a node that is not dead has no core | `ein-cli/tests/answer_round_trip.rs`: its `no_core_unless_dead` check, in `every_state_file_reloads_to_its_own_facts_by_value_0` to `_7`, over every corpus dump |
+| a node that is not dead has no core | `ein-cli/tests/answer_round_trip.rs`: its `no_core_unless_dead` check, in `every_state_file_is_saved_and_loaded_as_itself_0` to `_7`, over every corpus dump |
 | no core is printed unqualified from a cut search | `ein-infer/tests/corpus_cores.rs`: `no_core_is_printed_unqualified_from_a_cut_search` |
 | every budget cap stays sound and reports itself, each by name | `ein-infer/tests/explain_semantics.rs`: `every_budget_cap_stays_sound_and_reports_itself`, `each_cap_a_search_stops_at_is_named` |
 | the search finds a saving between two facts that a per-fact choice misses | `ein-infer/tests/explain_semantics.rs`: `the_search_finds_a_shared_optimum_a_greedy_pick_would_miss` |

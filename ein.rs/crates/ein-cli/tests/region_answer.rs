@@ -1,4 +1,4 @@
-//! `--json-summary` (`ein-summary/2`) and `--dump-answer DIR` (`ein-answer/2`)
+//! `--json-summary` (`ein-summary/2`) and `--dump-answer DIR` (`ein-answer/3`)
 //! under the region modes, the fields
 //! [`08-read-out.md` § 11](../../../../docs/ein/user/04-reference/08-read-out.md#11---json-summary-the-answer-blocks)
 //! defines (the directory is
@@ -9,8 +9,8 @@
 //! - **the same facts as stdout**: the counts the summary carries are the ones
 //!   the read-out prints;
 //! - **the directory is the answer**: `answer.txt` is the read-out uncut,
-//!   `answer.json` is the summary byte for byte, each `models/` file loads and
-//!   is a fixpoint of its own program holding its state's model, and
+//!   `answer.json` is the summary byte for byte, each `models/` file loads to
+//!   its node, alive and holding its state's model, and
 //!   `nogoods.json` is N;
 //! - **additive**: stdout, stderr and the exit code are the same with the two
 //!   flags and without.
@@ -149,7 +149,7 @@ fn the_summary_has_one_shape_on_every_arm_and_says_what_stdout_says() {
     }
 }
 
-/// A state file loads, saturates to itself, and holds its state's model.
+/// A state file loads to its node, alive, holding its state's model.
 fn a_fixpoint_holding(path: &Path, model: &[String]) -> Option<String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -157,15 +157,17 @@ fn a_fixpoint_holding(path: &Path, model: &[String]) -> Option<String> {
         Ok(kb) => kb,
         Err(e) => return Some(format!("does not load: {e}")),
     };
-    let loaded = kb.n_facts();
     if let Err(e) = ein_infer::saturate_events(&ast, &mut terms, &mut kb) {
         return Some(format!("does not saturate: {e:?}"));
     }
-    if kb.n_facts() != loaded {
-        return Some(format!(
-            "derives {} facts — not a fixpoint",
-            kb.n_facts() - loaded
-        ));
+    // The node the file names, as every command loads it.
+    let kb = match ein_infer::region::saved_node(&mut kb, &mut terms, &ast) {
+        Ok(Some(node)) => node.kb,
+        Ok(None) => kb,
+        Err(e) => return Some(format!("names no node: {e}")),
+    };
+    if ein_infer::contradiction::has_contradiction(&kb, &terms) {
+        return Some("loads to (false)".to_string());
     }
     let facts: BTreeSet<String> = kb
         .facts()
@@ -199,7 +201,7 @@ fn the_answer_directory_is_the_answer() {
             "{label}: the flags moved stdout, stderr or the exit code"
         );
         let index = json(&dir.join("index.json"));
-        assert_eq!(index["schema"], "ein-answer/2", "{label}");
+        assert_eq!(index["schema"], "ein-answer/3", "{label}");
         assert_eq!(
             std::fs::read(dir.join("answer.json")).unwrap(),
             std::fs::read(&summary).unwrap(),

@@ -128,9 +128,10 @@ of a text is therefore fixed by the rules, and `ein.l` leans on that:
 - **A reserved word is a whole token.** `not` is the word; `not-a`, `nota` and `neq-1` are longer, so they are names
   ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)). The
   thirteen `grammar::RESERVED_WORDS` (`not`, `and`, `or`, `neq`, `rule`, `hrule`, `query`, `solve`, `config`,
-  `trace`, `macro`, `import` and `open`) are never names. The ten
+  `trace`, `macro`, `import` and `open`) are never names. The thirteen
   `grammar::POSITION_WORDS` (`relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`,
-  `owing`) are tokens of their own that `ein.y`'s `Name` takes wherever a name goes.
+  `owing`, and a saved file's `program`, `module` and `commit`) are tokens of their own that `ein.y`'s `Name` takes
+  wherever a name goes.
 - **A keyword a form takes is a token of its own**; any other `:word` is `KEYWORD`, which no production uses, so an
   unknown keyword is a parse error where it stands
   ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
@@ -165,7 +166,7 @@ to lex.
 `grammar::NESTING_LIMIT` is 1 000 parentheses, a top-level form at depth 1. Before parsing, one pass over the tokens
 counts depth, and a text whose first `(` past the limit exists is refused with one line naming it. The LR parser
 survives any depth; the limit protects what recurses over the tree it builds, macro expansion, the loader and the
-dumper ([Q-M1f.185](../../../decisions/engine/Q-M1f.185-a-state-file-nested-past-the-parsers-limit-does.md);
+dumper ([Q-M1f.185](../../../decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md);
 `generated_parser::the_nesting_limit`).
 
 ## 4. Positions and strings
@@ -373,7 +374,10 @@ it is refused with the line its path would be refused with as a program
    [Q-M1f.253](../../../decisions/imports/Q-M1f.253-under-an-alias-a-name-prints-as-the-main-file.md)). The loader
    holds these names, so every surface prints the same spelling.
 
-The result is what `--dump-answer` heads each file with and what a `.einb` stores, once printed (§ 10).
+The result is what a `.einb` stores, once printed (§ 10). A `--dump-answer` state file prints none of it: it
+carries the program and every module the resolution read, each as written, and its load resolves the program's
+imports against those, `Resolver::carrying`, never the disk (`ein_ir::saved`;
+[Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
 `Resolver::short_names` gives the main file's listed short names with their full names, which is how
 `import_invariance.rs` writes a program with every import whole.
 
@@ -427,8 +431,8 @@ compiler's output is rendered the same way ([05-matcher.md](05-matcher.md)).
 - **`dump_canonical(ast, nodes)`** writes every form pretty at `DEFAULT_WIDTH` (80), a blank line between two, and
   a trailing newline when there is anything.
 
-Its bytes are observable: they are `ein-ir/tests/golden/zebra2.golden` and `zebra.golden`, the resolved program at
-the head of each `--dump-answer` file, the program a `.einb` stores
+Its bytes are observable: they are `ein-ir/tests/golden/zebra2.golden` and `zebra.golden`, the program a `.einb`
+stores, which a state saved from the container carries
 ([09-binary-format.md](09-binary-format.md#23-the-sections)), and the goal text `ein test` prints. Unescaping and escaping are inverse and positions are not compared, so
 $\operatorname{parse} \circ \operatorname{dump}$ is a fixed point on every program the parser accepts.
 

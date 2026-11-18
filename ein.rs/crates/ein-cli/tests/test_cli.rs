@@ -928,6 +928,11 @@ fn header_for(row: &serde_json::Value) -> String {
             _ => "(region …)",
         };
         let region = &row["region"];
+        // Root alone, as the run over the whole selection asks a saved
+        // file's node, which counts no state of R.
+        if region["route"] == "root alone" {
+            return format!("  solve · :expect {shape} — {verb} (a saved file's node: root alone)");
+        }
         return format!(
             "  solve · :expect {shape} — {verb} ({}, k_s = {}, k_c = {})",
             region["route"].as_str().expect("a route"),

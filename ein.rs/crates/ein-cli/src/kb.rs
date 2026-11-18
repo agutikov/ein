@@ -25,9 +25,13 @@ pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOption
     let path = PathBuf::from(file);
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let loaded = match read_program(&path)
-        .and_then(|held| load_held(&mut ast, &mut terms, &path, held, 0, load))
-    {
+    let mut saved = false;
+    let loaded = match read_program(&path).and_then(|held| {
+        if let ein_ir::read::Held::Text(text) = &held {
+            saved = ein_ir::grammar::opens_saved(text);
+        }
+        load_held(&mut ast, &mut terms, &path, held, 0, load)
+    }) {
         Ok(l) => l,
         Err(e) => {
             eprintln!("{e}");
@@ -35,6 +39,25 @@ pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOption
         }
     };
     let (mut kb, forms) = (loaded.kb, loaded.forms);
+    // A saved file (Q-M1f.401): its program is stored, its imports resolved
+    // against the modules it carries. One with a `(commit …)` is a node of
+    // its program's lattice, and a container holds a program's root, which
+    // would lose the choices: refused.
+    if kb.program().commit.is_some() {
+        eprintln!(
+            "kb save error: {file} is a saved file with a (commit …), a node of its program's \
+             lattice, and a .einb holds a program's root — save the program, or the saved file \
+             of its root"
+        );
+        return 1;
+    }
+    let carried = match kb.program().sources.as_deref() {
+        Some(s) if saved => Some(ein_einb::sections::Carried {
+            file: file.to_string(),
+            modules: s.modules.clone(),
+        }),
+        _ => None,
+    };
     // The default is the **loaded** KB, and that is the whole reason `ein solve
     // x.einb` can be byte-identical to `ein solve x.ein`: the solve starts from
     // the same place. `--saturate` banks the fixpoint instead, which is faster
@@ -71,6 +94,7 @@ pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOption
         state,
         sources,
         solutions: None,
+        carried,
     };
     match ein_einb::save(
         Path::new(out),

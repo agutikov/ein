@@ -1,17 +1,17 @@
 //! **`ein solve --dump-answer DIR`, held to what it says**: the region
-//! read-out's directory, `ein-answer/2`.
+//! read-out's directory, `ein-answer/3`.
 //!
-//! The flag writes the answer as files: the read-out, the summary, one
-//! loadable program per state the run reached, the owing frontier of an empty
-//! R, the minimal dead sets, and `index.json` naming each. Its page is
+//! The flag writes the answer as files: the read-out, the summary, one saved
+//! file per state the run reached, the owing frontier of an empty R, the
+//! minimal dead sets, and `index.json` naming each. Its page is
 //! [`docs/ein/user/04-reference/10-answer-dump.md`](../../../../docs/ein/user/04-reference/10-answer-dump.md),
 //! and these are the claims on it that a test can hold:
 //!
 //! - `answer.json` **is** `--json-summary`, and `answer.txt` stdout, byte for
 //!   byte, on every question;
-//! - every state file **loads**, holds exactly its state's candidates, and is
-//!   a **fixpoint** of its own program — saturating it derives no fact and no
-//!   `(false)`. A recorded state that is not a fixpoint is a wrong answer
+//! - every state file **loads** to its node, which is alive and holds exactly
+//!   its state's candidates of H, and states the commitment `index.json`
+//!   names. A recorded state that is dead is a wrong answer
 //!   (`examples/ein-bugs/alive-empty-phase1.ein`), and this makes it
 //!   observable per file;
 //! - `models/NN` is stdout's *state N of k*;
@@ -84,29 +84,38 @@ fn dump(file: &str, flags: &[&str], env: &[String], dir: &Path) -> Run {
     ein(&args, env)
 }
 
-/// A state file, loaded and saturated in-process: `None` when it is a
-/// fixpoint, holds every candidate of `closure` and no other of
-/// `candidates`, else what is wrong with it.
-fn not_a_fixpoint(path: &Path, closure: &[String], candidates: &[String]) -> Option<String> {
+/// A state file, loaded in-process to the node it names, as every command
+/// loads one (`ein_infer::region::saved_node`): `None` when the node is
+/// alive, holds every candidate of `closure` and no other of `candidates`,
+/// and its `(commit …)` is `commit`, else what is wrong with it.
+fn not_its_state(
+    path: &Path,
+    closure: &[String],
+    candidates: &[String],
+    commit: &[String],
+) -> Option<String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = match ein_ir::load_file(&mut ast, &mut terms, path) {
         Ok(kb) => kb,
         Err(e) => return Some(format!("does not load: {e}")),
     };
-    let loaded = kb.n_facts();
+    let written: Vec<String> = kb.program().commit.iter().flatten().cloned().collect();
+    if written != commit {
+        return Some(format!(
+            "commits {written:?}, where index.json names {commit:?}"
+        ));
+    }
     if let Err(e) = ein_infer::saturate_events(&ast, &mut terms, &mut kb) {
         return Some(format!("does not saturate: {e:?}"));
     }
+    let kb = match ein_infer::region::saved_node(&mut kb, &mut terms, &ast) {
+        Ok(Some(node)) => node.kb,
+        Ok(None) => kb,
+        Err(e) => return Some(format!("names no node: {e}")),
+    };
     if ein_infer::contradiction::has_contradiction(&kb, &terms) {
-        return Some("saturates to (false)".to_string());
-    }
-    let saturated = kb.n_facts();
-    if saturated != loaded {
-        return Some(format!(
-            "derives {} facts it did not hold — not a fixpoint",
-            saturated - loaded
-        ));
+        return Some("loads to (false)".to_string());
     }
     let held: std::collections::BTreeSet<String> = kb
         .facts()
@@ -138,9 +147,9 @@ fn strings(v: &J) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// Every state file the directory holds against its state in the summary.
-/// The one printer writes every state (`classes-int-name` among them), and
-/// `answer_round_trip.rs` holds each to its facts by value.
+/// Every state file the directory holds against its state in the summary,
+/// and its commitment against `index.json`'s; `answer_round_trip.rs` holds
+/// each to the run's own state, fact for fact and origin for origin.
 fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
@@ -155,14 +164,16 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     for (i, entry) in index["models"].as_array().into_iter().flatten().enumerate() {
         let path = entry["path"].as_str().expect("a path");
         let closure = strings(&states[i]["closure"]);
-        if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
+        let commit = strings(&entry["commit"]);
+        if let Some(why) = not_its_state(&dir.join(path), &closure, &candidates, &commit) {
             bad.push(format!("{label}: {path} {why}"));
         }
         n += 1;
     }
     for entry in index["owing"].as_array().into_iter().flatten() {
         let path = entry["path"].as_str().expect("a path");
-        if let Some(why) = not_a_fixpoint(&dir.join(path), &[], &[]) {
+        let commit = strings(&entry["commit"]);
+        if let Some(why) = not_its_state(&dir.join(path), &[], &[], &commit) {
             bad.push(format!("{label}: {path} {why}"));
         }
         n += 1;
@@ -170,15 +181,13 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     n
 }
 
-/// **The programs whose state files do not load**: a state holding a fact
-/// the printer writes as a line the parser refuses. It is a known wrong
-/// answer of the program's, so each is named rather than checked, with **how
-/// many** of its run's state files do not load, and each must still fail to
-/// load, for that reason alone; the commit that fixes it takes it off the
-/// list, with `answer_round_trip.rs`' copy. Empty: a concluded `neq` is
-/// checked, never stored; `:assert ()` asserts nothing; and a conclusion is
-/// read flat, so no state holds a fact headed `and`, which a state file would
-/// write as a fact line `(and (p a) (q a))`.
+/// **The programs whose state files do not load**: a state whose saved file
+/// the loader refuses. It is a known wrong answer of the program's, so each
+/// is named rather than checked, with **how many** of its run's state files
+/// do not load, and each must still fail to load, for that reason alone; the
+/// commit that fixes it takes it off the list. Empty: a state file is its
+/// program, which loaded, and candidates of H, each as the read-out prints
+/// it.
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// The programs the per-commit checks run on, with a question each: all of R
@@ -218,18 +227,18 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
     }
 }
 
-/// **Every state file is a fixpoint of its own program** — over every run
-/// the regressions record and the cases above, the puzzle's model among them.
+/// **Every state file loads to its own state** — over every run the
+/// regressions record and the cases above, the puzzle's model among them.
 ///
 /// The regressions are the list that matters here: their rows are runs the
-/// engine once answered wrong. A written state that its own rules would
-/// extend or refute is what this would report.
+/// engine once answered wrong. A saved state that loads dead, or to another
+/// closure, is what this would report.
 ///
 /// With no exception but [`DO_NOT_LOAD`]'s, whose state files a known wrong
 /// answer makes unloadable. A run whose recorded claim is refuted exits 1 and
 /// writes its states as any answer does.
 #[test]
-fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
+fn every_recorded_state_loads_to_its_own_state() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
     let mut states = 0;
@@ -342,11 +351,9 @@ fn the_files_are_the_answer_in_the_read_outs_order() {
     assert_eq!(blocks.len(), models.len(), "{}", r.out);
     for (n, (block, entry)) in blocks.iter().zip(models).enumerate() {
         assert_eq!(entry["state"], n as u64 + 1);
-        let text = std::fs::read_to_string(dir.join(entry["path"].as_str().unwrap())).unwrap();
-        assert!(
-            text.starts_with(&format!(";;; state {} of {}", n + 1, models.len())),
-            "{text}"
-        );
+        // The file loads to the state stdout lists as its N-th.
+        let path = dir.join(entry["path"].as_str().unwrap());
+        let held = loaded_facts(&path);
         let facts = block
             .trim_start_matches("(model")
             .trim_end_matches(')')
@@ -354,12 +361,27 @@ fn the_files_are_the_answer_in_the_read_outs_order() {
             .map(|f| format!("({})", f.trim().trim_matches(['(', ')'])));
         for f in facts.filter(|f| f != "()") {
             assert!(
-                text.lines().any(|l| l.starts_with(&f[..f.len() - 1])),
-                "stdout's state {} lists {f}, which its file does not hold",
+                held.contains(&f),
+                "stdout's state {} lists {f}, which its file does not load to",
                 n + 1
             );
         }
     }
+}
+
+/// The facts a state file loads to, each as the read-out prints it.
+fn loaded_facts(path: &Path) -> std::collections::BTreeSet<String> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).expect("a state file loads");
+    ein_infer::saturate_events(&ast, &mut terms, &mut kb).expect("saturates");
+    let kb = match ein_infer::region::saved_node(&mut kb, &mut terms, &ast).expect("a node") {
+        Some(node) => node.kb,
+        None => kb,
+    };
+    kb.facts()
+        .map(|f| ein_infer::events::sexpr(&terms, f))
+        .collect()
 }
 
 /// **The flag moves no answer.** Stdout, stderr, the exit code, the summary
@@ -477,8 +499,8 @@ fn a_stopped_run_still_says_what_it_is() {
 }
 
 /// **A container writes the directory its program writes** (Q-M1f.27):
-/// every state file starts with the program the container stores, and a
-/// `.einb` is not refused here.
+/// every state file carries the program the container stores, and a `.einb`
+/// is not refused here.
 /// `einb_cli::the_answer_directory_of_a_container_is_its_sources` holds the
 /// directory file for file against the source's.
 #[test]
