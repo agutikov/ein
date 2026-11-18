@@ -227,7 +227,7 @@ search?*
 
 | name | today | under the direction | counted |
 |---|---|---|---|
-| `false` | the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | 658 in 278 programs |
+| `false` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | 658 in 278 programs |
 | `not` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today the kernel's: beside its fact it kills; the agenda, *forbid* and the static check read it; a candidate root denies is not in $H$ ([`design.md` § 3.4](design.md#34-the-extent-an-owed-instance-a-hypothesis-and-openr)) | a relation of one argument whose meaning is two rules: the contradiction ([A.1](design.md#a1-the-contradiction-rule-set-contrainc)) and the elimination of a double negation (Q-M1f.391). Whatever read it for a decision then reads the rules that lead to `ein.kill`, which is V-1's fix. Leaving a denied candidate out of $H$, and § 5's move into *not*, become economies: committing a denied candidate gives a dead child | |
 | `relation` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today a position word: the declaration, the fact `(relation R A B)` rules match, the count of arguments, the `:why` | a convention for what rules read (Q-M1f.381: any head is a relation). The declaration keeps three uses: the count the loader holds a fact to, the `:why` a fact is read in, and the blind rung's guessing (which relations, which objects) until proposing is rules (§ 6, row 1) | |
 | `eq` | computed; binds a free side | **stays as it is**, on the user's word (*"Ok, so eq still required, leave as it is"*). Substitution at load would say most uses with one variable, but not `std.math`'s two `(neq ?v z) (eq ?v ?x)` (`decimal-arith.ein`'s `operand-undeclared`, binary's twin): *?x is a name, and not a fact*. `neq`'s free side ranges over names, and substituting `?x` for `?v` loses that. On nested facts both compare as they should (§ 8.4) | 146 in 40 files, 30 of them under `examples/ein-bugs/wrong-answers/` |
@@ -255,7 +255,7 @@ search?*
 - the split in the search, which it makes (§ 7 (A)).
 
 **The rest becomes a theory's**: `false`, `not` and `relation` (ruled 2026-11-18: conventions of the standard
-library), `hrule`, `__closed__`, and `is-a`, which already is one (V-6; P1f.23's ruling that the kernel reads no
+library; the argument-count check an open question), `hrule`, `__closed__`, and `is-a`, which already is one (V-6; P1f.23's ruling that the kernel reads no
 theory's name, Q-M1f.419's drawing). `__symmetric__` goes outright (P1f.23's S1f.23.4). The grammar's reserved words shrink to the
 declarators and the connectives. What a declarator may not bind becomes the `ein.` prefix, `eq`, `neq` and the
 connectives.
@@ -320,12 +320,16 @@ did, [§ 10.8](#108-questions-as-facts-what-rules-can-do-with-open-q)). Each is 
 5. The search as rules: (A), (B), or (A) with (B) on the reasoning pages (§ 7).
 6. The kernel's surface (§ 8): the census of what it reads re-taken; for each name of § 8.2, its place under the
    rulings (the kernel's, a theory's, syntax), with what reads it moved and the corpus's answers unchanged; `eq`'s
-   test of a name; the module every program gets; **`not` and `relation` as the standard library's conventions**
-   (the fourth instruction): each reader of § 8.1 that reads either today (for `not`: the contradiction, the
+   test of a name; the module every program gets; **`false`, `not` and `relation` as the standard library's
+   conventions** (the fourth instruction): each reader of § 8.1 that reads one today (for `false`: the node's death,
+   the agenda's first half, *forbid*, the static check; for `not`: the contradiction, the
    agenda's first half, *forbid*, the static check, $H$'s denied candidates; for `relation`: the loader's count of
    arguments and its refusal, the `:why` a fact is read in, the registry a goal and a claim are held to, the blind
    rung's labels) and what it becomes, a rule of that module or a reading of the rules, with the corpus's answers
-   unchanged and a refusal at load that becomes a verdict said as such; with [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
+   unchanged. **The argument-count check is the user's open question** (*"will think about it in p1f.21"*): kept
+   at load as the loader's reading of a declaration, or a rule's verdict at run time, or dropped (Q-M1f.372: Ein has
+   no types, and a label means what a rule makes it mean); S1f.21.4 shows each on the corpus's programs that the
+   check refuses or that write a relation at two counts, and does not choose; with [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
    a relation that only an activator names.
 7. What becomes of [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
    whose four options this design stands beside, and of
