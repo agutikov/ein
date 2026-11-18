@@ -334,7 +334,7 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  Two phases are left: **P1f.21, the kernel's verdicts as rules**
+  Three phases are left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   with its survey done, its question put (Q-M1f.390) and its next stage,
   S1f.21.4, planned, **not started without the user's word**; and
@@ -343,7 +343,10 @@ paragraph, no register count, no measurement (the user's rule).
   which builds what the user rules of the review bundle
   ([`review/`](plans/m1f_hypothesis_and_documentation/review/README.md), its
   pages and programs committed, its outputs ignored), a stage a batch, each
-  **run on the user's word**. The milestone's plans are deleted when both
+  **run on the user's word**; and **P1f.30, the inverse of `ein render`**
+  ([its README](plans/m1f_hypothesis_and_documentation/p1f.30_graph_to_kb/README.md)),
+  a drawing read back as a knowledge base by `ein show`, its first survey
+  started on the user's word and the rest **not started without it**. The milestone's plans are deleted when all
   are done, and **the work stops after M1f** (the user's rulings); the close
   of M1f was started and is paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
