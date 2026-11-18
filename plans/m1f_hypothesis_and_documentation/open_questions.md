@@ -72,7 +72,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.55](#q-m1f55--a-container-on-a-solves-now) | a `container` on a solve's `now` | **defaulted 2026-11-09 (the user's instruction): (a), the case page runs the container, as `wrong_answers.rs` does**; S1f.5.19 |
 | [Q-M1f.56](#q-m1f56--what-the-nl-census-counts-which-fact-set-and-which-registers) | what the NL census counts: which fact set, and which registers | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every fact of every state file, and four registers, puzzle, stdlib, kernel and undeclared**; S1f.5.14 |
 | [Q-M1f.57](#q-m1f57--which-fixtures-get-a-why) | which fixtures get a `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every file the loader reads, on the form's last line in a refused fixture; a file refused at the parse and the records under `plans/` and `docs/history/` are left**; S1f.5.14 |
-| [Q-M1f.58](#q-m1f58--where-a-fact-is-rendered-in-english-and-what-it-reads-from) | where a fact is rendered in English, and what it reads from | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), a state file's comments and `--trace`'s *Derives* line, from the fact's first recorded justification; stdout does not move**; S1f.5.14 |
+| [Q-M1f.58](#q-m1f58--where-a-fact-is-rendered-in-english-and-what-it-reads-from) | where a fact is rendered in English, and what it reads from | **rewritten 2026-11-18** by S1f.23.5's rulings and build (`bd21f0bb`, merged by `79dd213b`): a `:why` reads the form it is written on, a declaration's `{?n}` its n-th arrow; a fact of a relation takes no text from the declaration and reads by its `:source`, its rule's `:why`, or as written; the decision file's title extended, slug kept (Q-M1f.480). Before: **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), a state file's comments and `--trace`'s *Derives* line, from the fact's first recorded justification; stdout does not move**; S1f.5.14 |
 | [Q-M1f.59](#q-m1f59--what-a-macros-why-renders) | what a macro's `:why` renders | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), nothing: it documents the pattern, and the rule that used it says what it meant there**; S1f.5.14 |
 | [Q-M1f.60](#q-m1f60--a-relation-nobody-declares) | a relation nobody declares | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no slot: a derived fact reads by its reason, a stated one falls back, counted under `stdlib` or `undeclared`**; S1f.5.14 |
 | [Q-M1f.61](#q-m1f61--a-template-per-goal-conjunct) | a template per goal conjunct | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no change**; S1f.5.14 |
@@ -342,7 +342,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the first place at fault from the units |
 | [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
 | [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a root's saved file is stored as the program it carries, one with a `(commit …)` refused |
-| [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build. Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
+| [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build (`fbe2ba66`, `3047bbae`, merged by `79dd213b`). Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
 | [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), both read the program's H, the node aside |
 | [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), root alone, the node; each claim NOT CHECKED, no exit code |
 | [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
@@ -403,6 +403,18 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.472](#q-m1f472--names-of-the-drawings-that-changed-form) | Names of the drawings that changed form | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), `levi` → `canonical`, `compact` → `folded`; `01-is-a-convention` dropped, its paragraph rewritten; the two `12-*-form` drawings merged into `12-query-view` |
 | [Q-M1f.473](#q-m1f473--programs-a-page-draws-that-no-file-holds) | Programs a page draws that no file holds | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), reconstructed for the drawing from the page's text: the hrule `guess-drink`, the written-out `bag-is-ready` |
 | [Q-M1f.474](#q-m1f474--an-arrow-in-a-hand-schematic-that-is-no-arrow-of-the-graph) | An arrow in a hand schematic that is no arrow of the graph | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), allowed where its page says so (`03-bijective-family`) |
+| [Q-M1f.475](#q-m1f475--where-a-declarations-statement-prints-on-the-premises-line) | Where a declaration's statement prints on the premises line | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), right after the declaration, ` — <statement>`, the premises' sources still once after the last premise, so a line can carry two dashes (the examples page's open point 3 (a)) |
+| [Q-M1f.476](#q-m1f476--a-declaration-a-rule-concludes) | A declaration a rule concludes | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), it reads by its `:why` on the *Derives* line, however a run reaches it (open point 10); no corpus program derives one |
+| [Q-M1f.477](#q-m1f477--the-bound-on-a-declarations-references) | The bound on a declaration's references | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `{?2}` to `{?n+2}`, `{?1}` refused by `template_wellformedness.rs`, an untyped declaration bounded to `{?2}`; the engine prints a `{?1}` as `relation` and a reference past the arrows as written (open point 7 (a)) |
+| [Q-M1f.478](#q-m1f478--l-102s-reach) | L-102's reach | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `sentence.rs`' `fact_sentence`, `FactSentence`, `Origin` and `as_comment` go with the six functions L-102 names, which alone read them; the shape golden's `states` op digests each fact and its first origin, no English |
+| [Q-M1f.479](#q-m1f479--l-105s-reach) | L-105's reach | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `nl_census.py`'s `KERNEL` copy goes with its answer half, and `check_tool_mirrors.py`'s census mirror with it; § 4's registers stay held to `ein_core::RESERVED` by `natural_language_page.rs` |
+| [Q-M1f.480](#q-m1f480--the-decisions-the-ruling-rewrites) | The decisions the ruling rewrites | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), Q-M1f.58 rewritten as the ruling (title extended, slug kept); Q-M1f.61's title extended (slug kept); Q-M1f.60, Q-M1f.214, Q-M1f.12 and Q31 restated; Q27's example renumbered; Q-M1f.62, Q-M1f.57 and Q-M1f.63 stand |
+| [Q-M1f.481](#q-m1f481--the-pages-the-ruling-rewrites) | The pages the ruling rewrites | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `14-natural-language.md` rewritten, its § 3 block from `zebra2.ein`; six pages' trace blocks re-taken from their programs; the prose of nine more pages and AGENTS.md's rule on `:why` |
+| [Q-M1f.482](#q-m1f482--the-words-of-a-renumbered-why) | The words of a renumbered `:why` | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), not rewritten (open point 9): only the page examples that show the rule use the user's pattern, `a {?3} {?2} a {?4}`; the shipped texts read stiffly as their declaration, and the pages say so |
+| [Q-M1f.483](#q-m1f483--the-region-views-words-on-an-arrow) | The region view's words on an arrow | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), `sat` and `✗ alive`, words on arrows with `constraint=false`, counted as R-31's pattern and written as `xlabel`s, though Graphviz refused none |
+| [Q-M1f.484](#q-m1f484--a-traces-slice-that-graphviz-refuses) | A trace's slice that Graphviz refuses | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), left as it is and its refusals filed (the phase's R-33), since what routes them, `rankdir=TB`, changes how a slice is laid out (Q-M1f.428, Q-M1f.429) |
+| [Q-M1f.485](#q-m1f485--what-09-core-in-derivation-draws-heavy) | What `09-core-in-derivation` draws heavy | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), the facts the derivations added, *heavy* being *a derivation added it* as on the page and in `09-proof-graph`; the core red and double-bordered, not heavy |
+| [Q-M1f.486](#q-m1f486--long_numbersein-and-the-pools-long-lane) | `long_numbers.ein` and the pool's long lane | **defaulted 2026-11-18 (S1f.23.1, task 4), the user's to revise**: (a), not on `ein_corpus::pool::LONG`: at four workers the order units start in cannot shorten a sweep the work bounds |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1830,6 +1842,15 @@ is pasted from.
 no read-out byte; (b) is a form nobody asked for and the stage's minimum-work rule leaves it out; (c) breaks what a
 claim is. *First recorded* is the stage file's own pick, and the user's ruling of 2026-11-08 on cores (*"core is an
 explanation, F22 makes it canonical"*) covers it.
+
+**Rewritten 2026-11-18** by S1f.23.5 ([its Record](p1f.23_review_processing/s1f.23.5_a_why_reads_its_own_form.md#record);
+the user: *"Declaration only"*, *"{?n}, renumbered"*), built by `bd21f0bb`, merged by `79dd213b`: a `:why` reads
+the form it is written on, a declaration's `{?n}` its n-th arrow, `{?1}` the atom `relation`, `{?2}` the
+relation's name, `{?k+2}` its k-th label; a fact of a relation takes no text from the declaration and carries
+none of its own, reading by its `:source`, its rule's `:why`, or as written; a saved state holds no fact to
+render (Q-M1f.392). The decision file keeps its slug, its title extended
+([Q-M1f.480](#q-m1f480--the-decisions-the-ruling-rewrites)). The writer of (a)'s state-file comments went with
+L-102 ([Q-M1f.478](#q-m1f478--l-102s-reach)).
 
 ### Q-M1f.59 — What a macro's `:why` renders
 
@@ -8910,3 +8931,156 @@ solve's summary, under `--diff-models`, with the main run's.
 - **(b)** never.
 
 **Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+
+### Q-M1f.475 — Where a declaration's statement prints on the premises line
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 1. **Put, not ruled.** The examples page's open point 3,
+ruled as its default (a) by the user's *"defaults for the rest"*, put a declaration's statement on the trace's
+premises line; where on the line was left to the build.
+
+- **(a)** right after the declaration, `` `relation(owns, Person, Pet)` — a Person owns a Pet ``, the premises'
+  sources still once after the last premise, ` — from <source>`: a line can carry two dashes, the second the
+  sources' of the line, and `14-natural-language.md` § 3 says so. **Default.**
+- **(b)** the statements gathered after the sources, one dash a line.
+
+**Default taken: (a).** Built: `bd21f0bb` (`TraceStep`'s `premise_statements`), merged by `79dd213b`.
+
+### Q-M1f.476 — A declaration a rule concludes
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 2. **Put, not ruled.** A rule may conclude a fact of
+`relation` whose tuple is a declaration the program wrote.
+
+- **(a)** it reads by the declaration's `:why` on the *Derives* line, as the examples page's open point 10 has it
+  (*however a run reaches it*: one object, one text); no corpus program derives one, and the stage's new test does not
+  either. **Default.**
+- **(b)** it reads as written there, as every other derived fact does, its statement on a premises line alone.
+
+**Default taken: (a).** Built: `bd21f0bb` (`ein_render::sentence::statement`).
+
+### Q-M1f.477 — The bound on a declaration's references
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 3. **Put, not ruled.** `ein-ir/tests/template_wellformedness.rs`
+held a relation's `:why` to `{?1}` … `{?n}`, n its labels, and admitted any `{?n}` in an untyped declaration's.
+
+- **(a)** `{?2}` to `{?n+2}`, `{?1}` refused there (it always prints `relation`, so a `{?1}` is a text the
+  renumbering missed), an untyped declaration bounded to `{?2}`; the engine itself prints a `{?1}` as `relation`
+  and a reference past the arrows as written (the examples page's open point 7 (a)); no corpus text is past the
+  bound. **Default.**
+- **(b)** `{?1}` to `{?n+2}`, every arrow of the form.
+
+**Default taken: (a).** Built: `bd21f0bb`.
+
+### Q-M1f.478 — L-102's reach
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 4. **Put, not ruled.** [The milestone's findings](findings.md)
+L-102 names the functions of `ein_render::dump::serialise` that no command calls.
+
+- **(a)** the six go (`facts_to_ein_text`, `kb_to_ein_text`, `fact_line`, `provenance_comment`, `firing_to_json`,
+  `fact_summary`), and with them `sentence.rs`' `fact_sentence`, `FactSentence`, `Origin` and `as_comment`, which
+  only that writer read; the shape golden's `states` op prints each fact of a state and its first recorded origin
+  (`source "…"`, `rule r`, `hypothesis N`), with no English, the trace's ops holding the rule's filled `:why`.
+  **Default.**
+- **(b)** the six alone, the `states` op digesting the rule's filled `:why`.
+
+**Default taken: (a).** Built: `fbe2ba66` (454 `states` lines of the shape golden moved).
+
+### Q-M1f.479 — L-105's reach
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 5. **Put, not ruled.** [The milestone's findings](findings.md)
+L-105: `utils/nl_census.py`'s answer half counts nothing on the saved format.
+
+- **(a)** the answer half retired, and with it the census's copy of the kernel's names, `KERNEL`, so
+  `check_tool_mirrors.py` drops its census mirror; the flag half stays (which programs the loader refuses for a
+  missing `:why`, `--check`), and `14-natural-language.md` § 4's registers stay held to `ein_core::RESERVED` by
+  `natural_language_page.rs`. **Default.**
+- **(b)** `KERNEL` and its mirror kept with the flag half.
+
+**Default taken: (a).** Built: `3047bbae`.
+
+### Q-M1f.480 — The decisions the ruling rewrites
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 6. **Put, not ruled.**
+
+- **(a)** [Q-M1f.58](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) rewritten as
+  the ruling, its title extended and its slug kept; Q-M1f.61's title now *…each conjunct reads as written*, slug
+  kept; Q-M1f.60, Q-M1f.214, Q-M1f.12 and Q31 restated to the rule; Q27's example renumbered; Q-M1f.62, Q-M1f.57
+  and Q-M1f.63 stand (the examples page's open points 4 and 5). **Default.**
+- **(b)** a decision of its own for the ruling, Q-M1f.58 superseded and its citations rewritten to the new id.
+
+**Default taken: (a).** Built: `bd21f0bb`.
+
+### Q-M1f.481 — The pages the ruling rewrites
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 7. **Put, not ruled.**
+
+- **(a)** `14-natural-language.md` rewritten: its intro, § 1's row, § 2's house style restated as the sentence a
+  declaration reads as (the standard library's and the examples' texts said to read stiffly), § 3's ladder without
+  the relation's rung and its block moved from `zebra.ein`, whose trace reads no declaration, to `zebra2.ein`, § 4's
+  column *who can give its declaration a text*, §§ 5 to 7; the trace blocks of `04-ontology.md`, `05-rules.md`,
+  `07-properties-and-operators.md`, `10-theory.md`, `11-macros.md` and the guide's `05-jack-drinks-coffee.md`
+  re-taken from their programs; the prose of `01-objects.md`, `02-relations.md`, `03-facts.md`, `09-hypotheses.md`,
+  `02-syntax.md`, `07-diagnostics.md`, `12-rendering.md`, the guide's `01-objects-and-relations.md` and the
+  section's README; AGENTS.md's standing rule on `:why`. **Default.**
+- **(b)** `14-natural-language.md` and the trace blocks alone, the other pages' prose left to a stage of its own.
+
+**Default taken: (a).** Built: `bd21f0bb`.
+
+### Q-M1f.482 — The words of a renumbered `:why`
+
+**Raised** 2026-11-18 by S1f.23.5's build (task 2), reading 8: the examples page's open point 9, ruled as its
+default by the user's *"defaults for the rest"*, as built.
+
+- **(a)** the words are not rewritten: the renumbering is mechanical, `{?k}` → `{?k+2}`, and only the page examples
+  that show the rule use the user's pattern, `a {?3} {?2} a {?4}`; Q-M1f.58 and `14-natural-language.md` § 2 say the
+  shipped texts read stiffly as their declaration. **Default.**
+- **(b)** every declaration's text rewritten as a sentence about its declaration, in the user's pattern.
+
+**Default taken: (a).** Built: `bd21f0bb`.
+
+### Q-M1f.483 — The region view's words on an arrow
+
+**Raised** 2026-11-18 by S1f.23.1's task 4, reading (i). **Put, not ruled.** The phase's R-31 was a word written as
+an arrow's `label` on a link with `constraint=false`; the region view's `sat` and `✗ alive` (`region_dot.rs`) are
+words on such arrows.
+
+- **(a)** counted as R-31's pattern and written as `xlabel`s, though Graphviz refused none (7 728 region views of 644
+  programs probed); the two drawings under `docs/` that copy the view, `06-class-of-two` and
+  `08-region-merged-states`, drawn again. **Default.**
+- **(b)** left as `label`s until one is refused.
+
+**Default taken: (a).** Built: `18bc66ac`.
+
+### Q-M1f.484 — A trace's slice that Graphviz refuses
+
+**Raised** 2026-11-18 by S1f.23.1's task 4, reading (ii). **Put, not ruled.** The phase's
+[R-33](p1f.23_review_processing/findings.md): 169 canonical and 487 folded blocks of the calculator's 36 programs'
+traces refused; `rankdir=TB` routes every refused block sampled.
+
+- **(a)** the slice is left as it is and its refusals filed (R-33): what routes them changes how a slice is laid
+  out, which [Q-M1f.428](#q-m1f428--how-a-derivation-is-drawn) and
+  [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawing-of-a-derivation) rule. **Default.**
+- **(b)** a slice laid out top to bottom, `rankdir=TB`.
+
+**Default taken: (a).** Nothing built; R-33 stays open, the main session's and the user's.
+
+### Q-M1f.485 — What `09-core-in-derivation` draws heavy
+
+**Raised** 2026-11-18 by S1f.23.1's task 4, reading (iii). **Put, not ruled.** The phase's R-28.
+
+- **(a)** the two facts the derivations added, `penwidth=2`, *heavy* meaning *a derivation added it*, as in
+  `09-proof-graph` and on the page; the core's three terminals red and double-bordered
+  ([Q-M1f.469](#q-m1f469--how-a-derivations-drawing-marks-a-terminal-and-the-core)), not heavy. **Default.**
+- **(b)** the core heavy too.
+
+**Default taken: (a).** Built: `d5fceff9`.
+
+### Q-M1f.486 — `long_numbers.ein` and the pool's long lane
+
+**Raised** 2026-11-18 by S1f.23.1's task 4, reading (iv). **Put, not ruled.** The phase's R-32: `dot_wellformed` on
+the pool, 261.2 s on the runner's four threads, the work bounding it, not one file.
+
+- **(a)** `examples/arith/long_numbers.ein` is not added to `ein_corpus::pool::LONG`: at four workers the order
+  units start in cannot shorten a sweep the work bounds. **Default.**
+- **(b)** added, so its seven views start first.
+
+**Default taken: (a).** Built: `82e8097b`, which leaves `LONG` as it was.
