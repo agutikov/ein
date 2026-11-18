@@ -56,7 +56,7 @@ Two readings of a drawing, as the main session put them that day:
 
 | stage | what | state |
 |---|---|---|
-| S1f.30.1 | **The survey and the design**: the two readings on real drawings (corpus KB views in both forms, hand-made graphs with each case 1 cannot keep), what each command would print, the questions above with their defaults | not started |
+| S1f.30.1 | **The survey and the design**: the two readings on real drawings (corpus KB views in both forms, hand-made graphs with each case 1 cannot keep), what each command would print, the questions above with their defaults | **its examples started 2026-11-18 on the user's word** (*"Find some examples from internet or draw yourself, e.g. state machine, an algorithms, class diagram, C4 diagrams, https://graphviz.org/gallery/ ... whatever; and try convert them into Ein KB, record what succeded, what failed and why."*): [`s1f.30.1_examples.md`](s1f.30.1_examples.md); the design after it |
 | S1f.30.2 | **The build**, on the user's rulings | not started |
 | S1f.30.3 | **The close** | last |
 
