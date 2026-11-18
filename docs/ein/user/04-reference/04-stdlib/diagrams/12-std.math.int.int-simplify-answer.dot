@@ -11,10 +11,10 @@ digraph rule_int_simplify_answer_lhs_rhs {
       "(int-simplify ?x)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "int-done_L" -> "h1_int-done_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_int-done_L" -> "(int-simplify ?x)_L" [xlabel="2", color="#1f77b4"];
     "h1_int-done_L" -> "?s_L" [xlabel="3", color="#1f77b4"];
-    "(int-simplify ?x)_L" -> "int-simplify_L" [xlabel="1", color="#2ca02c"];
+    "int-simplify_L" -> "(int-simplify ?x)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(int-simplify ?x)_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -22,7 +22,7 @@ digraph rule_int_simplify_answer_lhs_rhs {
     "?x_R" [label="?x", shape=diamond];
     "?s_R" [label="?s", shape=diamond];
     "h2_int-simple-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_int-simple-of_R" -> "int-simple-of_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-simple-of_R" -> "h2_int-simple-of_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_int-simple-of_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_int-simple-of_R" -> "?s_R" [xlabel="3", color="#9467bd", style=dashed];
   }

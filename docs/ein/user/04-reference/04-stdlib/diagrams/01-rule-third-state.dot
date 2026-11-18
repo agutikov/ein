@@ -14,17 +14,17 @@ digraph rule_third_state_lhs_rhs {
       "(likes ?p ?f)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "h1_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_isa_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "h1_isa_L" -> "Person_L" [xlabel="3", color="#bcbd22"];
     "h2_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "h2_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_isa_L" -> "?f_L" [xlabel="2", color="#bcbd22"];
     "h2_isa_L" -> "Food_L" [xlabel="3", color="#bcbd22"];
     "h3_unknown_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h3_unknown_L" -> "unknown_L" [xlabel="1", color="#e377c2"];
+    "unknown_L" -> "h3_unknown_L" [xlabel="1", dir=back, color="#e377c2"];
     "h3_unknown_L" -> "(likes ?p ?f)_L" [xlabel="2", color="#e377c2"];
-    "(likes ?p ?f)_L" -> "likes_L" [xlabel="1", color="#1f77b4"];
+    "likes_L" -> "(likes ?p ?f)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(likes ?p ?f)_L" -> "?p_L" [xlabel="2", color="#1f77b4"];
     "(likes ?p ?f)_L" -> "?f_L" [xlabel="3", color="#1f77b4"];
   }
@@ -33,7 +33,7 @@ digraph rule_third_state_lhs_rhs {
     "?p_R" [label="?p", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
     "h4_state-open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h4_state-open_R" -> "state-open_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "state-open_R" -> "h4_state-open_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h4_state-open_R" -> "?p_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h4_state-open_R" -> "?f_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

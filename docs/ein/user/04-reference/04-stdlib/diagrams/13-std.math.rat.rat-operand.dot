@@ -12,10 +12,10 @@ digraph rule_rat_operand_lhs_rhs {
       "(rat ?i ?d)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_operand_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_operand_L" -> "operand_L" [xlabel="1", color="#2ca02c"];
+    "operand_L" -> "h1_operand_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_operand_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
     "h1_operand_L" -> "(rat ?i ?d)_L" [xlabel="3", color="#2ca02c"];
-    "(rat ?i ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "rat_L" -> "(rat ?i ?d)_L" [xlabel="1", dir=back, color="#d62728"];
     "(rat ?i ?d)_L" -> "?i_L" [xlabel="2", color="#d62728"];
     "(rat ?i ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
   }
@@ -30,10 +30,10 @@ digraph rule_rat_operand_lhs_rhs {
       "(rat ?i ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_operand-is_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_operand-is_R" -> "operand-is_R" [xlabel="1", color="#17becf", style=dashed];
+    "operand-is_R" -> "h2_operand-is_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_operand-is_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_operand-is_R" -> "(rat ?i ?d)_R" [xlabel="3", color="#17becf", style=dashed];
-    "(rat ?i ?d)_R" -> "rat_R" [xlabel="1", color="#d62728", style=dashed];
+    "rat_R" -> "(rat ?i ?d)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(rat ?i ?d)_R" -> "?i_R" [xlabel="2", color="#d62728", style=dashed];
     "(rat ?i ?d)_R" -> "?d_R" [xlabel="3", color="#d62728", style=dashed];
   }

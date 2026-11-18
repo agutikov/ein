@@ -15,11 +15,11 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
       "(rat-q-num ?k ?s ?d ?g)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(rat-q-num ?k ?s ?d ?g)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
-    "(rat-q-num ?k ?s ?d ?g)_L" -> "rat-q-num_L" [xlabel="1", color="#bcbd22"];
+    "rat-q-num_L" -> "(rat-q-num ?k ?s ?d ?g)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(rat-q-num ?k ?s ?d ?g)_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "(rat-q-num ?k ?s ?d ?g)_L" -> "?s_L" [xlabel="3", color="#bcbd22"];
     "(rat-q-num ?k ?s ?d ?g)_L" -> "?d_L" [xlabel="4", color="#bcbd22"];
@@ -38,11 +38,11 @@ digraph rule_rat_lowest_denominator_lhs_rhs {
       "(rat-q-den ?k ?s ?q)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_div-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_div-call_R" -> "div-call_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "div-call_R" -> "h2_div-call_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "(rat-q-den ?k ?s ?q)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?d_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_div-call_R" -> "?g_R" [xlabel="4", color="#bcbd22", style=dashed];
-    "(rat-q-den ?k ?s ?q)_R" -> "rat-q-den_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "rat-q-den_R" -> "(rat-q-den ?k ?s ?q)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-q-den ?k ?s ?q)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-q-den ?k ?s ?q)_R" -> "?s_R" [xlabel="3", color="#1f77b4", style=dashed];
     "(rat-q-den ?k ?s ?q)_R" -> "?q_R" [xlabel="4", color="#1f77b4", style=dashed];

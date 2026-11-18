@@ -6,13 +6,13 @@ digraph rule_not_integer_is_false_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?thing_L" [label="?thing", shape=diamond];
     "h1_not-integer_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_not-integer_L" -> "not-integer_L" [xlabel="1", color="#2ca02c"];
+    "not-integer_L" -> "h1_not-integer_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_not-integer_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
     "h1_not-integer_L" -> "?thing_L" [xlabel="3", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h2_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

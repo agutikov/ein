@@ -2,133 +2,134 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: kb Pages: 1 -->
-<svg width="368pt" height="285pt"
- viewBox="0.00 0.00 368.00 285.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 281.49)">
+<svg width="507pt" height="109pt"
+ viewBox="0.00 0.00 507.00 109.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 104.57)">
 <title>kb</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-281.49 364.04,-281.49 364.04,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-104.57 502.5,-104.57 502.5,4 -4,4"/>
 <!-- Ann -->
 <g id="node1" class="node">
 <title>Ann</title>
-<polygon fill="none" stroke="black" points="160.5,-49.49 106.5,-49.49 106.5,-13.49 160.5,-13.49 160.5,-49.49"/>
-<text xml:space="preserve" text-anchor="middle" x="133.5" y="-27.94" font-family="Inter" font-size="14.00">Ann</text>
+<polygon fill="none" stroke="black" points="118.55,-48.75 64.55,-48.75 64.55,-12.75 118.55,-12.75 118.55,-48.75"/>
+<text xml:space="preserve" text-anchor="middle" x="91.55" y="-27.2" font-family="Inter" font-size="14.00">Ann</text>
 </g>
 <!-- Ann&#45;&gt;Ann -->
 <g id="edge9" class="edge">
 <title>Ann&#45;&gt;Ann</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M160.74,-17.26C170.52,-16.95 178.5,-21.7 178.5,-31.49 178.5,-37.16 175.83,-41.13 171.69,-43.42"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="171.28,-39.93 162.22,-45.42 172.73,-46.78 171.28,-39.93"/>
-<text xml:space="preserve" text-anchor="middle" x="220.59" y="-3.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M118.79,-37.49C128.58,-37.64 136.55,-35.39 136.55,-30.75 136.55,-28.14 134.03,-26.29 130.08,-25.19"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="130.61,-21.73 120.3,-24.16 129.88,-28.69 130.61,-21.73"/>
+<text xml:space="preserve" text-anchor="middle" x="59.62" y="-41.45" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
 </g>
 <!-- Person -->
 <g id="node2" class="node">
 <title>Person</title>
-<polygon fill="none" stroke="black" points="147.75,-277.49 85.25,-277.49 85.25,-241.49 147.75,-241.49 147.75,-277.49"/>
-<text xml:space="preserve" text-anchor="middle" x="116.5" y="-255.94" font-family="Inter" font-size="14.00">Person</text>
+<polygon fill="none" stroke="black" points="216.8,-48.75 154.3,-48.75 154.3,-12.75 216.8,-12.75 216.8,-48.75"/>
+<text xml:space="preserve" text-anchor="middle" x="185.55" y="-27.2" font-family="Inter" font-size="14.00">Person</text>
 </g>
 <!-- Ann&#45;&gt;Person -->
 <g id="edge1" class="edge">
 <title>Ann&#45;&gt;Person</title>
-<path fill="none" stroke="#7f7f7f" d="M119,-49.7C110.95,-60.41 101.73,-74.88 97.5,-89.49 83.55,-137.7 96.5,-196.39 106.78,-230.39"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="103.43,-231.42 109.8,-239.89 110.1,-229.3 103.43,-231.42"/>
-<text xml:space="preserve" text-anchor="middle" x="79.25" y="-133.59" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M118.72,-30.75C126.71,-30.75 134.69,-30.75 142.68,-30.75"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="142.45,-34.25 152.45,-30.75 142.45,-27.25 142.45,-34.25"/>
+<text xml:space="preserve" text-anchor="middle" x="142.5" y="-17.45" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Bob -->
 <g id="node3" class="node">
 <title>Bob</title>
-<polygon fill="none" stroke="black" points="160.5,-125.49 106.5,-125.49 106.5,-89.49 160.5,-89.49 160.5,-125.49"/>
-<text xml:space="preserve" text-anchor="middle" x="133.5" y="-103.94" font-family="Inter" font-size="14.00">Bob</text>
+<polygon fill="none" stroke="black" points="288.55,-48.75 234.55,-48.75 234.55,-12.75 288.55,-12.75 288.55,-48.75"/>
+<text xml:space="preserve" text-anchor="middle" x="261.55" y="-27.2" font-family="Inter" font-size="14.00">Bob</text>
 </g>
 <!-- Ann&#45;&gt;Bob -->
 <g id="edge4" class="edge">
 <title>Ann&#45;&gt;Bob</title>
-<path fill="none" stroke="#17becf" d="M121.9,-49.66C120.11,-58.09 119.58,-68.49 120.33,-78.07"/>
-<polygon fill="#17becf" stroke="#17becf" points="116.82,-78.24 121.66,-87.67 123.75,-77.28 116.82,-78.24"/>
-<text xml:space="preserve" text-anchor="middle" x="96.38" y="-56.09" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
+<path fill="none" stroke="#17becf" d="M118.89,-46.94C128.42,-51.73 139.4,-56.33 150.05,-58.75 180.82,-65.73 190.93,-68.15 221.05,-58.75 224.19,-57.77 227.3,-56.46 230.31,-54.93"/>
+<polygon fill="#17becf" stroke="#17becf" points="232.03,-57.98 238.83,-49.85 228.45,-51.96 232.03,-57.98"/>
+<text xml:space="preserve" text-anchor="middle" x="201.23" y="-68.19" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
 </g>
 <!-- Ann&#45;&gt;Bob -->
 <g id="edge12" class="edge">
 <title>Ann&#45;&gt;Bob</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M145.1,-49.66C146.89,-58.09 147.42,-68.49 146.67,-78.07"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="143.25,-77.28 145.34,-87.67 150.18,-78.24 143.25,-77.28"/>
-<text xml:space="preserve" text-anchor="middle" x="73.5" y="-73.34" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by includes</text>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M110.42,-49.07C123.06,-60.01 140.7,-72.89 159.05,-78.75 181.49,-85.92 190.22,-87.6 212.05,-78.75 223.2,-74.23 233.23,-65.86 241.29,-57.36"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="243.7,-59.92 247.67,-50.1 238.44,-55.3 243.7,-59.92"/>
+<text xml:space="preserve" text-anchor="middle" x="97.33" y="-86.23" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by includes</text>
 </g>
 <!-- Cid -->
 <g id="node4" class="node">
 <title>Cid</title>
-<polygon fill="none" stroke="black" points="198.5,-201.49 144.5,-201.49 144.5,-165.49 198.5,-165.49 198.5,-201.49"/>
-<text xml:space="preserve" text-anchor="middle" x="171.5" y="-179.94" font-family="Inter" font-size="14.00">Cid</text>
+<polygon fill="none" stroke="black" points="378.55,-48.75 324.55,-48.75 324.55,-12.75 378.55,-12.75 378.55,-48.75"/>
+<text xml:space="preserve" text-anchor="middle" x="351.55" y="-27.2" font-family="Inter" font-size="14.00">Cid</text>
 </g>
 <!-- Ann&#45;&gt;Cid -->
 <g id="edge8" class="edge">
 <title>Ann&#45;&gt;Cid</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M148.8,-49.8C159.38,-59.93 172.24,-73.79 178.5,-89.49 186.79,-110.29 181.67,-135.38 176.46,-154.26"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="173.16,-153.08 173.75,-163.66 179.89,-155.02 173.16,-153.08"/>
-<text xml:space="preserve" text-anchor="middle" x="271.16" y="-108.64" font-family="Times,serif" font-size="14.00" fill="#9467bd">grandparent by compose</text>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M118.82,-48.52C128.72,-54 140.25,-59.31 151.55,-62.08 185.65,-70.45 276.23,-73.14 309.55,-62.08 314.34,-60.49 319.03,-58.12 323.44,-55.38"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="325.16,-58.44 331.32,-49.82 321.13,-52.72 325.16,-58.44"/>
+<text xml:space="preserve" text-anchor="middle" x="314.26" y="-55.98" font-family="Times,serif" font-size="14.00" fill="#9467bd">grandparent by compose</text>
 </g>
 <!-- Ann&#45;&gt;Cid -->
 <g id="edge14" class="edge">
 <title>Ann&#45;&gt;Cid</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M160.8,-46.75C174.61,-57.04 189.59,-72.14 196.5,-89.49 204.86,-110.48 199.57,-135.85 191.5,-154.79"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="188.37,-153.22 187.17,-163.75 194.67,-156.27 188.37,-153.22"/>
-<text xml:space="preserve" text-anchor="middle" x="274.84" y="-88.39" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by compose</text>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M111.85,-49.19C124.12,-59.06 140.62,-70.23 157.55,-75.42 188.57,-84.93 273.36,-87.29 303.55,-75.42 313.51,-71.5 322.63,-64.44 330.18,-57.07"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="332.36,-59.86 336.68,-50.18 327.27,-55.05 332.36,-59.86"/>
+<text xml:space="preserve" text-anchor="middle" x="299.11" y="-87.27" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by compose</text>
 </g>
 <!-- Bob&#45;&gt;Ann -->
 <g id="edge6" class="edge">
 <title>Bob&#45;&gt;Ann</title>
-<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M133.5,-89.17C133.5,-80.8 133.5,-70.53 133.5,-61.05"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="137,-61.17 133.5,-51.17 130,-61.17 137,-61.17"/>
-<text xml:space="preserve" text-anchor="middle" x="195.75" y="-55.87" font-family="Times,serif" font-size="14.00" fill="#2ca02c">child by converse</text>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M245.48,-49.16C237.62,-56.77 227.5,-64.75 216.55,-68.75 190.67,-78.22 181.1,-76.14 154.55,-68.75 144.16,-65.86 133.77,-60.74 124.51,-55.18"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="126.54,-52.32 116.23,-49.87 122.76,-58.21 126.54,-52.32"/>
+<text xml:space="preserve" text-anchor="middle" x="113.68" y="-60.71" font-family="Times,serif" font-size="14.00" fill="#2ca02c">child by converse</text>
 </g>
 <!-- Bob&#45;&gt;Person -->
 <g id="edge2" class="edge">
 <title>Bob&#45;&gt;Person</title>
-<path fill="none" stroke="#7f7f7f" d="M131.55,-125.7C128.67,-151.11 123.25,-198.97 119.76,-229.76"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="116.3,-229.19 118.65,-239.52 123.25,-229.98 116.3,-229.19"/>
-<text xml:space="preserve" text-anchor="middle" x="112.65" y="-170" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M234.07,-30.75C232.2,-30.75 230.34,-30.75 228.47,-30.75"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="228.53,-27.25 218.53,-30.75 228.53,-34.25 228.53,-27.25"/>
+<text xml:space="preserve" text-anchor="middle" x="228.52" y="-17.45" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Bob&#45;&gt;Bob -->
 <g id="edge10" class="edge">
 <title>Bob&#45;&gt;Bob</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M160.74,-93.26C170.52,-92.95 178.5,-97.7 178.5,-107.49 178.5,-113.16 175.83,-117.13 171.69,-119.42"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="171.28,-115.93 162.22,-121.42 172.73,-122.78 171.28,-115.93"/>
-<text xml:space="preserve" text-anchor="middle" x="220.59" y="-79.95" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M288.79,-37.49C298.58,-37.64 306.55,-35.39 306.55,-30.75 306.55,-28.14 304.03,-26.29 300.08,-25.19"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="300.61,-21.73 290.3,-24.16 299.88,-28.69 300.61,-21.73"/>
+<text xml:space="preserve" text-anchor="middle" x="348.88" y="-24.2" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
 </g>
 <!-- Bob&#45;&gt;Cid -->
 <g id="edge5" class="edge">
 <title>Bob&#45;&gt;Cid</title>
-<path fill="none" stroke="#17becf" d="M130.71,-125.66C133.39,-134.56 138.6,-145.63 144.67,-155.64"/>
-<polygon fill="#17becf" stroke="#17becf" points="141.7,-157.49 150.13,-163.9 147.54,-153.63 141.7,-157.49"/>
-<text xml:space="preserve" text-anchor="middle" x="115.91" y="-133.23" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
+<path fill="none" stroke="#17becf" d="M288.97,-19.31C296.95,-17.44 304.92,-16.84 312.9,-17.52"/>
+<polygon fill="#17becf" stroke="#17becf" points="312.25,-20.96 322.68,-19.08 313.36,-14.05 312.25,-20.96"/>
+<text xml:space="preserve" text-anchor="middle" x="306.54" y="-3.95" font-family="Times,serif" font-size="14.00" fill="#17becf">parent</text>
 </g>
 <!-- Bob&#45;&gt;Cid -->
 <g id="edge13" class="edge">
 <title>Bob&#45;&gt;Cid</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M153.92,-125.66C160.11,-134.19 166.03,-144.72 170.21,-154.38"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="166.93,-155.6 173.71,-163.75 173.49,-153.16 166.93,-155.6"/>
-<text xml:space="preserve" text-anchor="middle" x="239.08" y="-131.39" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by includes</text>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M288.97,-42.19C296.95,-44.06 304.92,-44.66 312.9,-43.98"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="313.36,-47.45 322.68,-42.42 312.25,-40.54 313.36,-47.45"/>
+<text xml:space="preserve" text-anchor="middle" x="380.04" y="-48.2" font-family="Times,serif" font-size="14.00" fill="#1f77b4">ancestor by includes</text>
 </g>
 <!-- Cid&#45;&gt;Person -->
 <g id="edge3" class="edge">
 <title>Cid&#45;&gt;Person</title>
-<path fill="none" stroke="#7f7f7f" d="M158.74,-201.66C152.06,-210.65 143.72,-221.87 136.23,-231.95"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="133.44,-229.84 130.28,-239.95 139.05,-234.01 133.44,-229.84"/>
-<text xml:space="preserve" text-anchor="middle" x="131.78" y="-207.99" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M335.48,-49.16C327.62,-56.77 317.5,-64.75 306.55,-68.75 276.5,-79.74 264.83,-79.11 234.55,-68.75 226.57,-66.02 218.88,-61.4 212.06,-56.3"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="214.47,-53.75 204.51,-50.14 210.05,-59.18 214.47,-53.75"/>
+<text xml:space="preserve" text-anchor="middle" x="261.5" y="-63.37" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Cid&#45;&gt;Bob -->
 <g id="edge7" class="edge">
 <title>Cid&#45;&gt;Bob</title>
-<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M162.6,-165.17C158.11,-156.42 152.56,-145.61 147.52,-135.79"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="150.69,-134.3 143,-127 144.46,-137.5 150.69,-134.3"/>
-<text xml:space="preserve" text-anchor="middle" x="214.84" y="-149.62" font-family="Times,serif" font-size="14.00" fill="#2ca02c">child by converse</text>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M324.17,-30.75C316.2,-30.75 308.22,-30.75 300.25,-30.75"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="300.49,-27.25 290.49,-30.75 300.49,-34.25 300.49,-27.25"/>
+<text xml:space="preserve" text-anchor="middle" x="244.35" y="-34.7" font-family="Times,serif" font-size="14.00" fill="#2ca02c">child by converse</text>
 </g>
 <!-- Cid&#45;&gt;Cid -->
 <g id="edge11" class="edge">
 <title>Cid&#45;&gt;Cid</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M198.74,-169.26C208.52,-168.95 216.5,-173.7 216.5,-183.49 216.5,-189.16 213.83,-193.13 209.69,-195.42"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="209.28,-191.93 200.22,-197.42 210.73,-198.78 209.28,-191.93"/>
-<text xml:space="preserve" text-anchor="middle" x="258.59" y="-173.2" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M378.79,-37.49C388.58,-37.64 396.55,-35.39 396.55,-30.75 396.55,-28.14 394.03,-26.29 390.08,-25.19"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="390.61,-21.73 380.3,-24.16 389.88,-28.69 390.61,-21.73"/>
+<text xml:space="preserve" text-anchor="middle" x="438.88" y="-24.2" font-family="Times,serif" font-size="14.00" fill="#9467bd">same by identity</text>
 </g>
+<!-- layer 0 -->
 </g>
 </svg>
-<!-- source sha256: e573884186e2c8f84138f3a04c44d5a0169827a445c2fc16ba685fd67f302a35 -->
+<!-- source sha256: b625074e3262757b084150aef142cf532b9c91102c4418ae23d16d56dcc3beee -->

@@ -13,13 +13,13 @@ digraph rule_strip_top_lhs_rhs {
       "(?B ?a ?r)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_STRIP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_STRIP_L" -> "?STRIP_L" [xlabel="1", color="#ff7f0e"];
+    "?STRIP_L" -> "h1_STRIP_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_STRIP_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
     "h1_STRIP_L" -> "(?B ?a ?r)_L" [xlabel="3", color="#ff7f0e"];
     "h2_NZ_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h2_NZ_L" -> "?NZ_L" [xlabel="1", color="#ff7f0e"];
+    "?NZ_L" -> "h2_NZ_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h2_NZ_L" -> "?a_L" [xlabel="2", color="#ff7f0e"];
-    "(?B ?a ?r)_L" -> "?B_L" [xlabel="1", color="#2ca02c"];
+    "?B_L" -> "(?B ?a ?r)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(?B ?a ?r)_L" -> "?a_L" [xlabel="2", color="#2ca02c"];
     "(?B ?a ?r)_L" -> "?r_L" [xlabel="3", color="#2ca02c"];
   }
@@ -35,11 +35,11 @@ digraph rule_strip_top_lhs_rhs {
       "(?B ?a ?r)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h3_TURN_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h3_TURN_R" -> "?TURN_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?TURN_R" -> "h3_TURN_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h3_TURN_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h3_TURN_R" -> "(?B ?a ?r)_R" [xlabel="3", color="#9467bd", style=dashed];
     "h3_TURN_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
-    "(?B ?a ?r)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?B_R" -> "(?B ?a ?r)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?B ?a ?r)_R" -> "?a_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B ?a ?r)_R" -> "?r_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

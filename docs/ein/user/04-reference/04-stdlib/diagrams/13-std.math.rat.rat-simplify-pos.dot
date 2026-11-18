@@ -15,13 +15,13 @@ digraph rule_rat_simplify_pos_lhs_rhs {
       "(int ?a z)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "int-done_L" -> "h1_int-done_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_int-done_L" -> "(rat-low ?k ?d)_L" [xlabel="2", color="#1f77b4"];
     "h1_int-done_L" -> "(int ?a z)_L" [xlabel="3", color="#1f77b4"];
-    "(rat-low ?k ?d)_L" -> "rat-low_L" [xlabel="1", color="#2ca02c"];
+    "rat-low_L" -> "(rat-low ?k ?d)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(rat-low ?k ?d)_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
     "(rat-low ?k ?d)_L" -> "?d_L" [xlabel="3", color="#2ca02c"];
-    "(int ?a z)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?a z)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?a z)_L" -> "?a_L" [xlabel="2", color="#17becf"];
     "(int ?a z)_L" -> "z_L" [xlabel="3", color="#17becf"];
   }
@@ -37,11 +37,11 @@ digraph rule_rat_simplify_pos_lhs_rhs {
       "(rat-g ?k pos ?a ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_gcd-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_gcd-call_R" -> "gcd-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "gcd-call_R" -> "h2_gcd-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "?a_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_gcd-call_R" -> "?d_R" [xlabel="4", color="#2ca02c", style=dashed];
-    "(rat-g ?k pos ?a ?d)_R" -> "rat-g_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "rat-g_R" -> "(rat-g ?k pos ?a ?d)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-g ?k pos ?a ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-g ?k pos ?a ?d)_R" -> "pos_R" [xlabel="3", color="#1f77b4", style=dashed];
     "(rat-g ?k pos ?a ?d)_R" -> "?a_R" [xlabel="4", color="#1f77b4", style=dashed];

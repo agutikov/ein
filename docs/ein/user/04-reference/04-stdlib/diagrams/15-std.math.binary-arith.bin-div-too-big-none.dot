@@ -14,9 +14,9 @@ digraph rule_bin_div_too_big_none_lhs_rhs {
       "(bin-div-trial ?k ?d ?rest z ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_bin-short_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_bin-short_L" -> "bin-short_L" [xlabel="1", color="#9467bd"];
+    "bin-short_L" -> "h1_bin-short_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_bin-short_L" -> "(bin-div-trial ?k ?d ?rest z ?u)_L" [xlabel="2", color="#9467bd"];
-    "(bin-div-trial ?k ?d ?rest z ?u)_L" -> "bin-div-trial_L" [xlabel="1", color="#17becf"];
+    "bin-div-trial_L" -> "(bin-div-trial ?k ?d ?rest z ?u)_L" [xlabel="1", dir=back, color="#17becf"];
     "(bin-div-trial ?k ?d ?rest z ?u)_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "(bin-div-trial ?k ?d ?rest z ?u)_L" -> "?d_L" [xlabel="3", color="#17becf"];
     "(bin-div-trial ?k ?d ?rest z ?u)_L" -> "?rest_L" [xlabel="4", color="#17becf"];
@@ -31,7 +31,7 @@ digraph rule_bin_div_too_big_none_lhs_rhs {
     "?u_R" [label="?u", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_bin-div-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_bin-div-step_R" -> "bin-div-step_R" [xlabel="1", color="#9467bd", style=dashed];
+    "bin-div-step_R" -> "h2_bin-div-step_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_bin-div-step_R" -> "?rest_R" [xlabel="4", color="#9467bd", style=dashed];

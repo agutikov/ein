@@ -11,7 +11,7 @@ digraph rule_div_next_lhs_rhs {
     "?t_L" [label="?t", shape=diamond];
     "nz_L" [label="nz", shape=box];
     "h1_div-digit_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_div-digit_L" -> "div-digit_L" [xlabel="1", color="#9467bd"];
+    "div-digit_L" -> "h1_div-digit_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_div-digit_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "h1_div-digit_L" -> "?ms_L" [xlabel="3", color="#9467bd"];
     "h1_div-digit_L" -> "?rest_L" [xlabel="4", color="#9467bd"];
@@ -19,7 +19,7 @@ digraph rule_div_next_lhs_rhs {
     "h1_div-digit_L" -> "?j_L" [xlabel="6", color="#9467bd"];
     "h1_div-digit_L" -> "?t_L" [xlabel="7", color="#9467bd"];
     "h2_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "nz_L" -> "h2_nz_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_nz_L" -> "?j_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -36,13 +36,13 @@ digraph rule_div_next_lhs_rhs {
       "(n ?w ?j)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h3_div-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_div-step_R" -> "div-step_R" [xlabel="1", color="#d62728", style=dashed];
+    "div-step_R" -> "h3_div-step_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_div-step_R" -> "?k_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?ms_R" [xlabel="3", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?rest_R" [xlabel="4", color="#d62728", style=dashed];
     "h3_div-step_R" -> "?t_R" [xlabel="5", color="#d62728", style=dashed];
     "h3_div-step_R" -> "(n ?w ?j)_R" [xlabel="6", color="#d62728", style=dashed];
-    "(n ?w ?j)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n ?w ?j)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?w ?j)_R" -> "?w_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?w ?j)_R" -> "?j_R" [xlabel="3", color="#9467bd", style=dashed];
   }

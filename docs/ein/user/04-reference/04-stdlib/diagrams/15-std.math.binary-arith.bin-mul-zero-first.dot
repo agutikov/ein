@@ -14,12 +14,12 @@ digraph rule_bin_mul_zero_first_lhs_rhs {
       "(bin-b 0 ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_bin-mul-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_bin-mul-step_L" -> "bin-mul-step_L" [xlabel="1", color="#7f7f7f"];
+    "bin-mul-step_L" -> "h1_bin-mul-step_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?k_L" [xlabel="2", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "?u_L" [xlabel="3", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "(bin-b 0 ?rest)_L" [xlabel="4", color="#7f7f7f"];
     "h1_bin-mul-step_L" -> "z_L" [xlabel="5", color="#7f7f7f"];
-    "(bin-b 0 ?rest)_L" -> "bin-b_L" [xlabel="1", color="#7f7f7f"];
+    "bin-b_L" -> "(bin-b 0 ?rest)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(bin-b 0 ?rest)_L" -> "0_L" [xlabel="2", color="#7f7f7f"];
     "(bin-b 0 ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -30,7 +30,7 @@ digraph rule_bin_mul_zero_first_lhs_rhs {
     "?rest_R" [label="?rest", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_bin-mul-step_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_bin-mul-step_R" -> "bin-mul-step_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "bin-mul-step_R" -> "h2_bin-mul-step_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_bin-mul-step_R" -> "?k_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_bin-mul-step_R" -> "?u_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_bin-mul-step_R" -> "?rest_R" [xlabel="4", color="#7f7f7f", style=dashed];

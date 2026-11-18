@@ -8,15 +8,15 @@ digraph rule_difunctional_lhs_rhs {
     "?c_L" [label="?c", shape=diamond];
     "?d_L" [label="?d", shape=diamond];
     "h1_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "h1_R_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_R_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
     "h1_R_L" -> "?b_L" [xlabel="3", color="#1f77b4"];
     "h2_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "h2_R_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_R_L" -> "?c_L" [xlabel="2", color="#1f77b4"];
     "h2_R_L" -> "?b_L" [xlabel="3", color="#1f77b4"];
     "h3_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h3_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "h3_R_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h3_R_L" -> "?c_L" [xlabel="2", color="#1f77b4"];
     "h3_R_L" -> "?d_L" [xlabel="3", color="#1f77b4"];
   }
@@ -25,7 +25,7 @@ digraph rule_difunctional_lhs_rhs {
     "?a_R" [label="?a", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
     "h4_R_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h4_R_R" -> "?R_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?R_R" -> "h4_R_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h4_R_R" -> "?a_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h4_R_R" -> "?d_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

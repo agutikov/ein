@@ -5,11 +5,11 @@ digraph rule_symmetric_overlay {
   "?a" [label="?a", shape=diamond];
   "?b" [label="?b", shape=diamond];
   "h1_rel" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-  "h1_rel" -> "?rel" [xlabel="1", color="#2ca02c"];
+  "?rel" -> "h1_rel" [xlabel="1", dir=back, color="#2ca02c"];
   "h1_rel" -> "?a" [xlabel="2", color="#2ca02c"];
   "h1_rel" -> "?b" [xlabel="3", color="#2ca02c"];
   "h2_rel" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-  "h2_rel" -> "?rel" [xlabel="1", color="#2ca02c", style=dashed];
+  "?rel" -> "h2_rel" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   "h2_rel" -> "?b" [xlabel="2", color="#2ca02c", style=dashed];
   "h2_rel" -> "?a" [xlabel="3", color="#2ca02c", style=dashed];
 }

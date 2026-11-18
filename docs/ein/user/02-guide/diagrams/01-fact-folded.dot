@@ -1,6 +1,8 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
-  "Norwegian" -> "House-1" [xlabel="nation-loc", color="#d62728", fontcolor="#d62728", style=solid];
+  "Norwegian" -> "House-1" [xlabel="nation-loc", color="#d62728", fontcolor="#d62728", style=solid, constraint=false];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  { rank=same; "layer 0"; "Norwegian"; "House-1"; }
 }

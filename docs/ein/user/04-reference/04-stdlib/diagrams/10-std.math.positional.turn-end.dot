@@ -7,7 +7,7 @@ digraph rule_turn_end_lhs_rhs {
     "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_TURN_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_TURN_L" -> "?TURN_L" [xlabel="1", color="#9467bd"];
+    "?TURN_L" -> "h1_TURN_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_TURN_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "h1_TURN_L" -> "z_L" [xlabel="3", color="#9467bd"];
     "h1_TURN_L" -> "?acc_L" [xlabel="4", color="#9467bd"];
@@ -18,11 +18,11 @@ digraph rule_turn_end_lhs_rhs {
     "?acc_R" [label="?acc", shape=diamond];
     "?VALID_R" [label="?VALID", shape=diamond];
     "h2_DONE_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_DONE_R" -> "?DONE_R" [xlabel="1", color="#9467bd", style=dashed];
+    "?DONE_R" -> "h2_DONE_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_DONE_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_DONE_R" -> "?acc_R" [xlabel="3", color="#9467bd", style=dashed];
     "h3_VALID_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_VALID_R" -> "?VALID_R" [xlabel="1", color="#17becf", style=dashed];
+    "?VALID_R" -> "h3_VALID_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_VALID_R" -> "?acc_R" [xlabel="2", color="#17becf", style=dashed];
   }
 }

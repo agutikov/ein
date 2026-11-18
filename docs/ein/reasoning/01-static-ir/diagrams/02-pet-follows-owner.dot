@@ -8,11 +8,11 @@ digraph rule_pet_follows_owner_lhs_rhs {
     "lives-in_L" [label="lives-in", shape=box];
     "?h_L" [label="?h", shape=diamond];
     "h1_owns_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_owns_L" -> "owns_L" [xlabel="1", color="#ff7f0e"];
+    "owns_L" -> "h1_owns_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_owns_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
     "h1_owns_L" -> "?x_L" [xlabel="3", color="#ff7f0e"];
     "h2_lives-in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h2_lives-in_L" -> "lives-in_L" [xlabel="1", color="#9467bd"];
+    "lives-in_L" -> "h2_lives-in_L" [xlabel="1", dir=back, color="#9467bd"];
     "h2_lives-in_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "h2_lives-in_L" -> "?h_L" [xlabel="3", color="#9467bd"];
   }
@@ -21,7 +21,7 @@ digraph rule_pet_follows_owner_lhs_rhs {
     "?x_R" [label="?x", shape=diamond];
     "?h_R" [label="?h", shape=diamond];
     "h3_pet-at_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h3_pet-at_R" -> "pet-at_R" [xlabel="1", color="#9467bd", style=dashed];
+    "pet-at_R" -> "h3_pet-at_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h3_pet-at_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "h3_pet-at_R" -> "?h_R" [xlabel="3", color="#9467bd", style=dashed];
   }

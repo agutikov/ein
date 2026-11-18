@@ -1,16 +1,16 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
-  "Ann" -> "Guest" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Bob" -> "Guest" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "C1" -> "Chair" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "C2" -> "Chair" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Soup" -> "Food" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Ann" -> "C1" [xlabel="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
-  "Bob" -> "C2" [xlabel="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
-  f_a0d391e5b2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=solid];
-  f_a0d391e5b2 -> "allergic" [xlabel="1", color="#2ca02c", style=solid];
-  f_a0d391e5b2 -> "Bob" [xlabel="2", color="#2ca02c", style=solid];
-  "Ann" -> "Soup" [xlabel="meal by soup-unless-allergic", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed];
+  "Ann" -> "Guest" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Bob" -> "Guest" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "C1" -> "Chair" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "C2" -> "Chair" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Soup" -> "Food" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Ann" -> "C1" [xlabel="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid, constraint=false];
+  "Bob" -> "C2" [xlabel="seats", color="#ff7f0e", fontcolor="#ff7f0e", style=solid, constraint=false];
+  "Bob" -> "Bob" [xlabel="allergic", color="#2ca02c", fontcolor="#2ca02c", style=solid, constraint=false];
+  "Ann" -> "Soup" [xlabel="meal by soup-unless-allergic", color="#ff7f0e", fontcolor="#ff7f0e", style=dashed, constraint=false];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  { rank=same; "layer 0"; "Ann"; "Guest"; "Bob"; "C1"; "Chair"; "C2"; "Soup"; "Food"; }
 }

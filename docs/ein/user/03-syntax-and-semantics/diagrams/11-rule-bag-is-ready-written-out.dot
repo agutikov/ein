@@ -6,7 +6,7 @@ digraph rule_bag_is_ready_lhs_rhs {
     "?bag_L" [label="?bag", shape=diamond];
     "Bag_L" [label="Bag", shape=box];
     "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "is-a_L" -> "h1_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_is-a_L" -> "?bag_L" [xlabel="2", color="#7f7f7f"];
     "h1_is-a_L" -> "Bag_L" [xlabel="3", color="#7f7f7f"];
     subgraph cluster_absent_L_0 {
@@ -14,14 +14,14 @@ digraph rule_bag_is_ready_lhs_rhs {
       "goes-in_L" [label="goes-in", shape=box];
       "?i_L" [label="?i", shape=diamond];
       "h2_goes-in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-      "h2_goes-in_L" -> "goes-in_L" [xlabel="1", color="#17becf"];
+      "goes-in_L" -> "h2_goes-in_L" [xlabel="1", dir=back, color="#17becf"];
       "h2_goes-in_L" -> "?i_L" [xlabel="2", color="#17becf"];
       "h2_goes-in_L" -> "?bag_L" [xlabel="3", color="#17becf"];
       subgraph cluster_absent_L_0_0 {
         label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
         "packed_L" [label="packed", shape=box];
         "h3_packed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-        "h3_packed_L" -> "packed_L" [xlabel="1", color="#8c564b"];
+        "packed_L" -> "h3_packed_L" [xlabel="1", dir=back, color="#8c564b"];
         "h3_packed_L" -> "?i_L" [xlabel="2", color="#8c564b"];
       }
     }
@@ -30,7 +30,7 @@ digraph rule_bag_is_ready_lhs_rhs {
     "ready_R" [label="ready", shape=box];
     "?bag_R" [label="?bag", shape=diamond];
     "h4_ready_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h4_ready_R" -> "ready_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "ready_R" -> "h4_ready_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h4_ready_R" -> "?bag_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

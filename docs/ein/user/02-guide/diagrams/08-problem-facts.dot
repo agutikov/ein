@@ -1,15 +1,15 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_209d718a04 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=solid, xlabel="Bob has 5 apples."];
-  f_209d718a04 -> "has" [xlabel="1", color="#ff7f0e", style=solid];
+  "has" -> f_209d718a04 [xlabel="1", dir=back, color="#ff7f0e", style=solid];
   f_209d718a04 -> "Bob" [xlabel="2", color="#ff7f0e", style=solid];
   f_209d718a04 -> "apples" [xlabel="3", color="#ff7f0e", style=solid];
   f_209d718a04 -> f_1ef22eea1a [xlabel="4", color="#ff7f0e", style=solid];
   f_209d718a04 -> "t0" [xlabel="5", color="#ff7f0e", style=solid];
   f_d8b858f486 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid, xlabel="He gave 2 to Alice."];
-  f_d8b858f486 -> "gave" [xlabel="1", color="#1f77b4", style=solid];
+  "gave" -> f_d8b858f486 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_d8b858f486 -> "Bob" [xlabel="2", color="#1f77b4", style=solid];
   f_d8b858f486 -> "Alice" [xlabel="3", color="#1f77b4", style=solid];
   f_d8b858f486 -> "apples" [xlabel="4", color="#1f77b4", style=solid];
@@ -17,7 +17,7 @@ digraph kb {
   f_d8b858f486 -> "t0" [xlabel="6", color="#1f77b4", style=solid];
   f_d8b858f486 -> "t1" [xlabel="7", color="#1f77b4", style=solid];
   f_52af80af5c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid, xlabel="How many apples does Bob have?"];
-  f_52af80af5c -> "asked" [xlabel="1", color="#1f77b4", style=solid];
+  "asked" -> f_52af80af5c [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_52af80af5c -> f_50d8dcbc12 [xlabel="2", color="#1f77b4", style=solid];
   newrank=true;
   subgraph cluster_ctx_0 {
@@ -32,14 +32,25 @@ digraph kb {
     label="has ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_1ef22eea1a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
   }
-  f_1ef22eea1a -> "n" [xlabel="1", color="#9467bd", style=solid];
+  "n" -> f_1ef22eea1a [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_1ef22eea1a -> "z" [xlabel="2", color="#9467bd", style=solid];
   f_1ef22eea1a -> "5" [xlabel="3", color="#9467bd", style=solid];
-  f_721209ac60 -> "n" [xlabel="1", color="#9467bd", style=solid];
+  "n" -> f_721209ac60 [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_721209ac60 -> "z" [xlabel="2", color="#9467bd", style=solid];
   f_721209ac60 -> "2" [xlabel="3", color="#9467bd", style=solid];
-  f_50d8dcbc12 -> "amount" [xlabel="1", color="#9467bd", style=solid];
+  "amount" -> f_50d8dcbc12 [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_50d8dcbc12 -> "Bob" [xlabel="2", color="#9467bd", style=solid];
   f_50d8dcbc12 -> "apples" [xlabel="3", color="#9467bd", style=solid];
   f_50d8dcbc12 -> "t1" [xlabel="4", color="#9467bd", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  { rank=same; "layer 0"; "has"; "gave"; "asked"; "n"; "amount"; }
+  { rank=same; "layer 1"; f_209d718a04; f_d8b858f486; f_52af80af5c; }
+  { rank=same; "layer 2"; f_1ef22eea1a; f_721209ac60; f_50d8dcbc12; }
+  { rank=same; "layer 3"; "Bob"; "apples"; "t0"; "Alice"; "t1"; "z"; "5"; "2"; }
 }

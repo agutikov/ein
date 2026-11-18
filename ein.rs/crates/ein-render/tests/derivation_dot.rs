@@ -100,7 +100,14 @@ fn an_or_graph_draws_a_diamond_per_justification() {
     assert!(dag.is_or_graph());
     let dot = derivation_dag_to_dot(&dag, &kb, &terms);
     assert_eq!(dot.matches("shape=diamond").count(), 2, "{dot}");
-    assert!(dot.contains(" -> j0 [style=bold];"), "{dot}");
+    // Each derivation's arrows stand out, twice the default width.
+    assert!(dot.contains(" -> j0 [color=\""), "{dot}");
+    assert!(
+        dot.lines()
+            .filter(|l| l.contains(" -> j") || l.trim_start().starts_with("j"))
+            .all(|l| l.contains("penwidth=2")),
+        "{dot}"
+    );
     assert!(dot.contains("j1 -> "), "{dot}");
 
     // The primary-only view is unchanged by the alternative existing: one

@@ -14,10 +14,10 @@ digraph rule_lcm_zero_lhs_rhs {
       "(lcm-g ?x ?y ?u ?v)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_gcd-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gcd-done_L" -> "gcd-done_L" [xlabel="1", color="#7f7f7f"];
+    "gcd-done_L" -> "h1_gcd-done_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gcd-done_L" -> "(lcm-g ?x ?y ?u ?v)_L" [xlabel="2", color="#7f7f7f"];
     "h1_gcd-done_L" -> "z_L" [xlabel="3", color="#7f7f7f"];
-    "(lcm-g ?x ?y ?u ?v)_L" -> "lcm-g_L" [xlabel="1", color="#1f77b4"];
+    "lcm-g_L" -> "(lcm-g ?x ?y ?u ?v)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(lcm-g ?x ?y ?u ?v)_L" -> "?x_L" [xlabel="2", color="#1f77b4"];
     "(lcm-g ?x ?y ?u ?v)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
     "(lcm-g ?x ?y ?u ?v)_L" -> "?u_L" [xlabel="4", color="#1f77b4"];
@@ -29,7 +29,7 @@ digraph rule_lcm_zero_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_lcm-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_lcm-of_R" -> "lcm-of_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "lcm-of_R" -> "h2_lcm-of_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "?y_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h2_lcm-of_R" -> "z_R" [xlabel="4", color="#1f77b4", style=dashed];

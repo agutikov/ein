@@ -46,7 +46,8 @@ impl ColourBy {
 pub struct KbDotOpts<'a> {
     pub colour_by: ColourBy,
     /// Fold a fact of three arrows that no drawn fact points at into one
-    /// labelled arrow (Q-M1f.419); by default every fact is its octagon.
+    /// labelled arrow, and a fact of two into a loop (Q-M1f.425); by default
+    /// every fact is its octagon.
     pub fold: bool,
     /// A prior KB to diff against: facts present here but absent from it are
     /// drawn at `penwidth=3` — the transition highlight, "this step added E".
@@ -208,15 +209,14 @@ fn add(
 }
 
 /// The opening lines of a knowledge base's digraph, the KB view's and the
-/// program view's `kb` alike. Every fact is an octagon outside any cluster,
+/// program view's `kb` alike: laid out by `dot` in layers from the top, each
+/// relation above its facts and each fact above its arguments
+/// ([`crate::fact_graph`]). Every fact is an octagon outside any cluster,
 /// so the digraph sets [`POLYGON_RANKSEP`], as a rule's overlay does.
 pub fn kb_digraph_open(name: &str) -> Vec<String> {
     vec![
         format!("digraph {name} {{"),
-        // `fdp` is the layout engine; the comment is the hint that lets
-        // `render_examples.sh` pick it for kb outputs.
-        "  // suggested layout: fdp".to_string(),
-        "  rankdir=BT;".to_string(),
+        "  rankdir=TB;".to_string(),
         format!("  {POLYGON_RANKSEP};"),
         "  node [fontname=\"Inter\", shape=box];".to_string(),
     ]

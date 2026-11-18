@@ -12,10 +12,10 @@ digraph rule_int_operand_check_lhs_rhs {
       "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "(int ?p ?n)_L" [xlabel="3", color="#17becf"];
-    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?p ?n)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
     "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
@@ -29,9 +29,9 @@ digraph rule_int_operand_check_lhs_rhs {
       "(int ?p ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_int-check_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_int-check_R" -> "int-check_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "int-check_R" -> "h2_int-check_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_int-check_R" -> "(int ?p ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(int ?p ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?p ?n)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?p ?n)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?p ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
   }

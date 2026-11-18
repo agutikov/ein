@@ -14,14 +14,14 @@ digraph rule_bin_numeral_prefix_named_lhs_rhs {
       "(b2 ?m ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "bin-check_L" -> "h1_bin-check_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
     "h1_bin-check_L" -> "(b2 ?m ?a)_L" [xlabel="3", color="#1f77b4"];
     "?m_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "h2_bin-named_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_bin-named_L" -> "bin-named_L" [xlabel="1", color="#bcbd22"];
+    "bin-named_L" -> "h2_bin-named_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_bin-named_L" -> "?m_L" [xlabel="2", color="#bcbd22"];
-    "(b2 ?m ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "b2_L" -> "(b2 ?m ?a)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(b2 ?m ?a)_L" -> "?m_L" [xlabel="2", color="#bcbd22"];
     "(b2 ?m ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];
   }
@@ -35,10 +35,10 @@ digraph rule_bin_numeral_prefix_named_lhs_rhs {
       "(b2 ?m ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h3_not-binary_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h3_not-binary_R" -> "not-binary_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "not-binary_R" -> "h3_not-binary_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h3_not-binary_R" -> "(b2 ?m ?a)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h3_not-binary_R" -> "?m_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "(b2 ?m ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "b2_R" -> "(b2 ?m ?a)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(b2 ?m ?a)_R" -> "?m_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(b2 ?m ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

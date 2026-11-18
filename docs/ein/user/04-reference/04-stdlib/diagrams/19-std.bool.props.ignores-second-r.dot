@@ -7,7 +7,7 @@ digraph rule_ignores_second_r_lhs_rhs {
     "?a_L" [label="?a", shape=diamond];
     "?c_L" [label="?c", shape=diamond];
     "h1_column_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_column_L" -> "column_L" [xlabel="1", color="#d62728"];
+    "column_L" -> "h1_column_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_column_L" -> "?f_L" [xlabel="2", color="#d62728"];
     "h1_column_L" -> "?a_L" [xlabel="3", color="#d62728"];
     "h1_column_L" -> "?a_L" [xlabel="4", color="#d62728"];
@@ -18,7 +18,7 @@ digraph rule_ignores_second_r_lhs_rhs {
     "ignores-second_R" [label="ignores-second", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h2_ignores-second_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_ignores-second_R" -> "ignores-second_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "ignores-second_R" -> "h2_ignores-second_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_ignores-second_R" -> "?f_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

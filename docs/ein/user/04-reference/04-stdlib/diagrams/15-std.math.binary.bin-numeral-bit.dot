@@ -14,12 +14,12 @@ digraph rule_bin_numeral_bit_lhs_rhs {
       "(b2 ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "bin-check_L" -> "h1_bin-check_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
     "h1_bin-check_L" -> "(b2 ?p ?a)_L" [xlabel="3", color="#1f77b4"];
     "?a_L" -> "0_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "?a_L" -> "1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "(b2 ?p ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "b2_L" -> "(b2 ?p ?a)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];
   }
@@ -33,10 +33,10 @@ digraph rule_bin_numeral_bit_lhs_rhs {
       "(b2 ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_not-binary_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_not-binary_R" -> "not-binary_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "not-binary_R" -> "h2_not-binary_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_not-binary_R" -> "(b2 ?p ?a)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_not-binary_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "(b2 ?p ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "b2_R" -> "(b2 ?p ?a)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(b2 ?p ?a)_R" -> "?p_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(b2 ?p ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

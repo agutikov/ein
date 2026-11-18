@@ -4,12 +4,12 @@ digraph proof_graph {
   A [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="A", peripheries=2];
   B [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="B", peripheries=2];
   C [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="C", peripheries=2];
-  d1 [label="δ₁: rule ρ₁\nprimary", shape=box, style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
-  d2 [label="δ₂: rule ρ₂\nalternative", shape=box, style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
+  d1 [label="δ₁: rule ρ₁\nprimary", shape=box, style="rounded", color="#0047ab", fontcolor="#0047ab", penwidth=2];
+  d2 [label="δ₂: rule ρ₂\nalternative", shape=box, style="rounded,dashed", color="#8b008b", fontcolor="#8b008b", penwidth=2];
   F [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="F", penwidth=2];
-  A -> d1 [color="#e377c2"];
-  B -> d1 [color="#e377c2"];
-  C -> d2 [color="#17becf"];
-  d1 -> F [color="#e377c2", style=bold];
-  d2 -> F [color="#17becf", style="bold,dashed"];
+  A -> d1 [color="#0047ab", penwidth=2];
+  B -> d1 [color="#0047ab", penwidth=2];
+  C -> d2 [color="#8b008b", penwidth=2];
+  d1 -> F [color="#0047ab", penwidth=2];
+  d2 -> F [color="#8b008b", style=dashed, penwidth=2];
 }

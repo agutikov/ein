@@ -15,13 +15,13 @@ digraph rule_div_bring_zero_lhs_rhs {
       "(b 0 ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_div-step_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_div-step_L" -> "div-step_L" [xlabel="1", color="#d62728"];
+    "div-step_L" -> "h1_div-step_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_div-step_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_div-step_L" -> "?ms_L" [xlabel="3", color="#d62728"];
     "h1_div-step_L" -> "(b 0 ?rest)_L" [xlabel="4", color="#d62728"];
     "h1_div-step_L" -> "z_L" [xlabel="5", color="#d62728"];
     "h1_div-step_L" -> "?w_L" [xlabel="6", color="#d62728"];
-    "(b 0 ?rest)_L" -> "b_L" [xlabel="1", color="#1f77b4"];
+    "b_L" -> "(b 0 ?rest)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(b 0 ?rest)_L" -> "0_L" [xlabel="2", color="#1f77b4"];
     "(b 0 ?rest)_L" -> "?rest_L" [xlabel="3", color="#1f77b4"];
   }
@@ -34,7 +34,7 @@ digraph rule_div_bring_zero_lhs_rhs {
     "0_R" [label="0", shape=box];
     "z_R" [label="z", shape=box];
     "h2_div-digit_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_div-digit_R" -> "div-digit_R" [xlabel="1", color="#9467bd", style=dashed];
+    "div-digit_R" -> "h2_div-digit_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_div-digit_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_div-digit_R" -> "?ms_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_div-digit_R" -> "?rest_R" [xlabel="4", color="#9467bd", style=dashed];

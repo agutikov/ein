@@ -6,13 +6,13 @@ digraph rule_not_decimal_is_false_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?thing_L" [label="?thing", shape=diamond];
     "h1_not-decimal_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_not-decimal_L" -> "not-decimal_L" [xlabel="1", color="#d62728"];
+    "not-decimal_L" -> "h1_not-decimal_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_not-decimal_L" -> "?x_L" [xlabel="2", color="#d62728"];
     "h1_not-decimal_L" -> "?thing_L" [xlabel="3", color="#d62728"];
   }
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h2_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

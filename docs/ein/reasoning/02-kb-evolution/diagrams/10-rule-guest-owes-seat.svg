@@ -2,12 +2,12 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_guest_owes_seat_lhs_rhs Pages: 1 -->
-<svg width="343pt" height="257pt"
- viewBox="0.00 0.00 343.00 257.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="324pt" height="257pt"
+ viewBox="0.00 0.00 324.00 257.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 253)">
 <title>rule_guest_owes_seat_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-253 339,-253 339,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="167.5" y="-231.7" font-family="Times,serif" font-size="14.00">guest&#45;owes&#45;seat</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-253 320,-253 320,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="158" y="-231.7" font-family="Times,serif" font-size="14.00">guest&#45;owes&#45;seat</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
 <polygon fill="none" stroke="black" points="8,-8 8,-215.75 177,-215.75 177,-8 8,-8"/>
@@ -20,8 +20,8 @@
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="185,-16 185,-175.3 327,-175.3 327,-16 185,-16"/>
-<text xml:space="preserve" text-anchor="middle" x="256" y="-158" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="185,-105.25 185,-182.5 308,-182.5 308,-105.25 185,-105.25"/>
+<text xml:space="preserve" text-anchor="middle" x="246.5" y="-165.2" font-family="Times,serif" font-size="14.00">assert</text>
 </g>
 <!-- ?g_L -->
 <g id="node1" class="node">
@@ -55,37 +55,19 @@
 <polygon fill="#ff7f0e" stroke="#ff7f0e" points="40.68,-64.47 44.52,-54.59 35.36,-59.92 40.68,-64.47"/>
 <text xml:space="preserve" text-anchor="middle" x="48.25" y="-81.95" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">seats</text>
 </g>
-<!-- open_R -->
-<g id="node4" class="node">
-<title>open_R</title>
-<polygon fill="none" stroke="black" points="247,-60 193,-60 193,-24 247,-24 247,-60"/>
-<text xml:space="preserve" text-anchor="middle" x="220" y="-37.33" font-family="Times,serif" font-size="14.00">open</text>
-</g>
 <!-- seats_R -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>seats_R</title>
-<polygon fill="none" stroke="black" points="319,-60 265,-60 265,-24 319,-24 319,-60"/>
-<text xml:space="preserve" text-anchor="middle" x="292" y="-37.33" font-family="Times,serif" font-size="14.00">seats</text>
+<polygon fill="none" stroke="black" points="247,-149.25 193,-149.25 193,-113.25 247,-113.25 247,-149.25"/>
+<text xml:space="preserve" text-anchor="middle" x="220" y="-126.58" font-family="Times,serif" font-size="14.00">seats</text>
 </g>
-<!-- h1_open_R -->
-<g id="node6" class="node">
-<title>h1_open_R</title>
-<polygon fill="none" stroke="#2ca02c" stroke-dasharray="5,2" points="266.8,-126.78 266.8,-135.72 260.47,-142.05 251.53,-142.05 245.2,-135.72 245.2,-126.78 251.53,-120.45 260.47,-120.45 266.8,-126.78"/>
-</g>
-<!-- h1_open_R&#45;&gt;open_R -->
+<!-- seats_R&#45;&gt;seats_R -->
 <g id="edge3" class="edge">
-<title>h1_open_R&#45;&gt;open_R</title>
-<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M251.87,-120.24C246.93,-108.27 238.46,-87.73 231.49,-70.84"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="234.81,-69.71 227.76,-61.8 228.33,-72.38 234.81,-69.71"/>
-<text xml:space="preserve" text-anchor="middle" x="235.02" y="-94.27" font-family="Times,serif" font-size="14.00">1</text>
-</g>
-<!-- h1_open_R&#45;&gt;seats_R -->
-<g id="edge4" class="edge">
-<title>h1_open_R&#45;&gt;seats_R</title>
-<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M260.13,-120.24C265.07,-108.27 273.54,-87.73 280.51,-70.84"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="283.67,-72.38 284.24,-61.8 277.19,-69.71 283.67,-72.38"/>
-<text xml:space="preserve" text-anchor="middle" x="267.98" y="-94.27" font-family="Times,serif" font-size="14.00">2</text>
+<title>seats_R&#45;&gt;seats_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M247.24,-139.61C257.02,-139.79 265,-137 265,-131.25 265,-128.01 262.48,-125.72 258.53,-124.36"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="259.11,-120.9 248.74,-123.09 258.21,-127.85 259.11,-120.9"/>
+<text xml:space="preserve" text-anchor="middle" x="282.25" y="-126.58" font-family="Times,serif" font-size="14.00" fill="#2ca02c">open</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: dbedd9ddb5fc9431ceb9945d39df6e88ca04a30870b3b8ac79f47b4a5ca19256 -->
+<!-- source sha256: 59e3aebacda3a47657e6f8c6e7bec7e2661bb4d8495a3b4f9da2a507ee78a3a9 -->

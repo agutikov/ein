@@ -7,7 +7,7 @@ digraph rule_to_dec_answer_lhs_rhs {
     "z_L" [label="z", shape=box];
     "?acc_L" [label="?acc", shape=diamond];
     "h1_to-dec-go_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_to-dec-go_L" -> "to-dec-go_L" [xlabel="1", color="#bcbd22"];
+    "to-dec-go_L" -> "h1_to-dec-go_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_to-dec-go_L" -> "?b_L" [xlabel="2", color="#bcbd22"];
     "h1_to-dec-go_L" -> "z_L" [xlabel="3", color="#bcbd22"];
     "h1_to-dec-go_L" -> "?acc_L" [xlabel="4", color="#bcbd22"];
@@ -17,7 +17,7 @@ digraph rule_to_dec_answer_lhs_rhs {
     "?b_R" [label="?b", shape=diamond];
     "?acc_R" [label="?acc", shape=diamond];
     "h2_dec-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_dec-of_R" -> "dec-of_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "dec-of_R" -> "h2_dec-of_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_dec-of_R" -> "?b_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_dec-of_R" -> "?acc_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

@@ -12,10 +12,10 @@ digraph rule_cmp_answer_lhs_rhs {
       "(?ORDER ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_ORDER-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_ORDER-IS_L" -> "?ORDER-IS_L" [xlabel="1", color="#ff7f0e"];
+    "?ORDER-IS_L" -> "h1_ORDER-IS_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_ORDER-IS_L" -> "(?ORDER ?x ?y)_L" [xlabel="2", color="#ff7f0e"];
     "h1_ORDER-IS_L" -> "?o_L" [xlabel="3", color="#ff7f0e"];
-    "(?ORDER ?x ?y)_L" -> "?ORDER_L" [xlabel="1", color="#1f77b4"];
+    "?ORDER_L" -> "(?ORDER ?x ?y)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(?ORDER ?x ?y)_L" -> "?x_L" [xlabel="2", color="#1f77b4"];
     "(?ORDER ?x ?y)_L" -> "?y_L" [xlabel="3", color="#1f77b4"];
   }
@@ -25,7 +25,7 @@ digraph rule_cmp_answer_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "?o_R" [label="?o", shape=diamond];
     "h2_CMP-OF_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_CMP-OF_R" -> "?CMP-OF_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?CMP-OF_R" -> "h2_CMP-OF_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_CMP-OF_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h2_CMP-OF_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
     "h2_CMP-OF_R" -> "?o_R" [xlabel="4", color="#ff7f0e", style=dashed];

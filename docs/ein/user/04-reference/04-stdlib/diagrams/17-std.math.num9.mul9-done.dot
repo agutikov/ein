@@ -9,7 +9,7 @@ digraph rule_mul9_done_lhs_rhs {
     "?left_L" [label="?left", shape=diamond];
     "?p_L" [label="?p", shape=diamond];
     "h1_mul9-at_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_mul9-at_L" -> "mul9-at_L" [xlabel="1", color="#e377c2"];
+    "mul9-at_L" -> "h1_mul9-at_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_mul9-at_L" -> "?x_L" [xlabel="2", color="#e377c2"];
     "h1_mul9-at_L" -> "?y_L" [xlabel="3", color="#e377c2"];
     "h1_mul9-at_L" -> "0_L" [xlabel="4", color="#e377c2"];
@@ -22,7 +22,7 @@ digraph rule_mul9_done_lhs_rhs {
     "?y_R" [label="?y", shape=diamond];
     "?p_R" [label="?p", shape=diamond];
     "h2_product9-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_product9-of_R" -> "product9-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "product9-of_R" -> "h2_product9-of_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_product9-of_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_product9-of_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_product9-of_R" -> "?p_R" [xlabel="4", color="#2ca02c", style=dashed];

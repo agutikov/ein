@@ -7,11 +7,11 @@ digraph rule_let_digit_lhs_rhs {
     "?v_L" [label="?v", shape=diamond];
     "?NZ_L" [label="?NZ", shape=diamond];
     "h1_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "?LET_L" -> "h1_LET_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_LET_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "h1_LET_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
     "h2_NZ_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h2_NZ_L" -> "?NZ_L" [xlabel="1", color="#ff7f0e"];
+    "?NZ_L" -> "h2_NZ_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h2_NZ_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
@@ -24,9 +24,9 @@ digraph rule_let_digit_lhs_rhs {
       "(?LET ?x ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h3_MALFORMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_MALFORMED_R" -> "?MALFORMED_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?MALFORMED_R" -> "h3_MALFORMED_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_MALFORMED_R" -> "(?LET ?x ?v)_R" [xlabel="2", color="#ff7f0e", style=dashed];
-    "(?LET ?x ?v)_R" -> "?LET_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?LET_R" -> "(?LET ?x ?v)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(?LET ?x ?v)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(?LET ?x ?v)_R" -> "?v_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

@@ -12,10 +12,10 @@ digraph rule_strip_zero_lhs_rhs {
       "(?B 0 ?r)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_STRIP_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_STRIP_L" -> "?STRIP_L" [xlabel="1", color="#ff7f0e"];
+    "?STRIP_L" -> "h1_STRIP_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_STRIP_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
     "h1_STRIP_L" -> "(?B 0 ?r)_L" [xlabel="3", color="#ff7f0e"];
-    "(?B 0 ?r)_L" -> "?B_L" [xlabel="1", color="#2ca02c"];
+    "?B_L" -> "(?B 0 ?r)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(?B 0 ?r)_L" -> "0_L" [xlabel="2", color="#2ca02c"];
     "(?B 0 ?r)_L" -> "?r_L" [xlabel="3", color="#2ca02c"];
   }
@@ -24,7 +24,7 @@ digraph rule_strip_zero_lhs_rhs {
     "?k_R" [label="?k", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
     "h2_STRIP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_STRIP_R" -> "?STRIP_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?STRIP_R" -> "h2_STRIP_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_STRIP_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h2_STRIP_R" -> "?r_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

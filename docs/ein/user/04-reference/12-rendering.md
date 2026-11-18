@@ -3,7 +3,9 @@
 `ein render` writes DOT on stdout and never draws an image: turning it into one is Graphviz's job,
 `ein render kb FILE | dot -Tsvg > kb.svg`. **Every form has a fixed DOT shape**, and only the graph's structure is
 fixed: positions, ranks and the style choices this page does not state are free
-([Q21](../../../decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md)). Every view reads its program
+([Q21](../../../decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md)). A drawing of facts asks
+`dot` for **layers** by default ([§ Layers](#layers--a-relation-above-its-facts-a-fact-above-its-arguments)), a
+preference and not a contract: no test holds a layout. Every view reads its program
 through the loader first, so a program the loader refuses is refused with its line, exit 1, as every other command
 refuses it ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)), and every
 renderer has a command that reaches it
@@ -22,17 +24,30 @@ renderer has a command that reaches it
 
 **Every view that draws facts takes `--fold`**: `program`, `kb`, `rules`, `rule`, `constraints`, and `ein solve` for
 the trace's drawings. Without it each fact is drawn as the graph has it; with it a fact of three arrows is one
-labelled arrow ([§ A fact as the graph has it](#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold)).
+labelled arrow and a fact of two a labelled loop
+([§ A fact as the graph has it](#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold)).
+
+**The canonical form is the drawing of a knowledge base**, its objects and its facts: the views above, a rule's
+patterns, a derivation's facts
+([Q-M1f.430](../../../decisions/cli/Q-M1f.430-the-canonical-form-draws-a-knowledge-base.md)). The lattice, region and
+h-space views draw states, nodes and candidates, each labelled with what it holds, and use none of these shapes.
+**No arrow goes to or from an arrow** ([Q-M1f.429](../../../decisions/cli/Q-M1f.429-no-arrow-goes-to-or-from-an-arrow.md)):
+every arrow joins two shapes, so a fact another arrow of the drawing touches is never folded.
 
 ## Node-shape legend
+
+Three shapes stand for objects, in every drawing of facts
+([Q-M1f.433](../../../decisions/cli/Q-M1f.433-an-object-is-a-labelled-box-a-fact-an-unlabelled.md)): **an object
+is a labelled box, a fact an unlabelled octagon, a variable a labelled diamond**.
 
 | element | DOT shape |
 |---|---|
 | an atom: a name under an arrow, the relation under a fact's first arrow among them | `box`, labelled with its name. A relation is one node for every fact of it in the drawing |
-| a fact, of any count, held or not | `octagon` with no name in it, `label=""`, its first arrow numbered `1` at its relation's atom and the next numbered `2`, `3`, … at its arguments in turn, each number the arrow's `xlabel` |
+| a fact, of any count, held or not | `octagon` with no name in it, `label=""`, its first arrow numbered `1` at its relation's atom and the next numbered `2`, `3`, … at its arguments in turn, each number the arrow's `xlabel` ([Q-M1f.435](../../../decisions/cli/Q-M1f.435-an-arrows-number-is-written-beside-it.md)); the first arrow is written from the relation to the fact and drawn back, `"rel" -> f [xlabel="1", dir=back]`, so that the relation is laid out above it |
 | that octagon where the fact is in a context only, pointed at and not held | inside a dashed, rounded frame, labelled with the relations of the facts that point at it and `ctx`: `claims ctx`, `claims, doubts ctx` |
 | that octagon where the knowledge base holds the fact | in no frame, whatever points at it; no octagon is filled |
 | under `--fold`, a fact of three arrows, a relation and two arguments, that no drawn fact points at | an edge from the first argument to the second, with the relation's name on it: the edge's `xlabel` in a drawing of a knowledge base, its `label` in a rule's panel and in a trace's slice |
+| under `--fold`, a fact of two arrows, a relation and one argument, that no drawn fact points at | a loop on its argument, with the relation's name on it, as above |
 | a derived fact | dashed: its octagon and its arrows, or its folded edge |
 | what a fact rests on: a given fact's source, a derived fact's rule | beside its octagon, an `xlabel`: `(10)` for `"condition (10)"`, `by <rule>`; on a folded edge, after the relation's name |
 | a pattern variable `?x`, in a rule's drawing | `diamond` |
@@ -63,14 +78,62 @@ and needs none: a fact of any count is its node
 name in a fact's node, or a fact's text in any node. [Objects](../03-syntax-and-semantics/01-objects.md#as-a-graph)
 has the graph beside the drawings of one program.
 
-**`--fold` folds a fact of three arrows.** A fact of a relation and two arguments that no drawn fact points at is
-one arrow from its first argument to its second, with its relation's name on it, `a -> b [xlabel="rel"]` in a
-drawing of a knowledge base and `a -> b [label="rel"]` in a rule's panel, and its relation is then no node for that
-fact
+**`--fold` folds a fact of three arrows, and a fact of two**
+([Q-M1f.425](../../../decisions/cli/Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md)). A fact of a
+relation and two arguments that no drawn fact points at is one arrow from its first argument to its second, with its
+relation's name on it, `a -> b [xlabel="rel"]` in a drawing of a knowledge base and `a -> b [label="rel"]` in a rule's
+panel; a fact of a relation and one argument, `(rel a)`, is a loop on its argument, `a -> a [xlabel="rel"]`; and its
+relation is then no node for that fact
 ([Q-M1f.382](../../../decisions/language/Q-M1f.382-a-labelled-arrow-is-a-fact-of-three-arrows.md)). Nothing else is
-folded: a fact of two arrows, `(rel a)`, stays its octagon and is never a loop, a fact of four arrows or more is its
-octagon, and a fact that a drawn fact points at is its node in either form. What a fact is, drawn both ways, is
+folded: a fact of one arrow, or of four or more, is its octagon, and a fact that a drawn fact points at is its node
+in either form; in a drawing of a derivation, so is a fact the derivation's arrows touch
+([§ The trace](#the-trace--ein-solve---trace)). What a fact is, drawn both ways, is
 [`../03-syntax-and-semantics/03-facts.md`](../03-syntax-and-semantics/03-facts.md).
+
+## Layers — a relation above its facts, a fact above its arguments
+
+**A drawing of facts is laid out in layers by default**
+([Q21](../../../decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md)): every view of a knowledge
+base, the KB view, the program view's `kb` and the constraint view, and a rule's panels, a trace's slices and the
+derivation graph with them. A fact's first arrow is written from its relation's atom to the fact and drawn back,
+`"owns" -> f [xlabel="1", dir=back]`, so it still points at the relation and `dot` ranks the relation above the fact;
+its next arrows go down to its arguments. **The layers are a sandwich**, objects and facts in turn, and a view of a
+knowledge base writes them for `dot`, one `{ rank=same; … }` group a rank under the comment `// layers`: a layer of
+objects, a band of facts, a layer of objects, …, a chain of invisible anchors, `"layer 0" -> "layer 1" …`, one in each
+group, saying which is above which. A rule's panels, a slice and the derivation graph, where a step stands between
+facts, write no groups and are layered by their arrows alone. A knowledge base of facts about names stands in five
+layers so: the atom `relation` on top, with what states a property of a relation, `symmetric`; the declarations,
+facts of `relation`; the relations and their labels; the relations' facts; the plain objects.
+
+**A band of facts is as deep as its facts nest.** The facts that no fact points at share the band's top rank; a fact
+under an arrow of a fact stands a rank below it, in the same band, and one under that a rank lower still; the names
+under the band's arrows stand in the layer below the whole band, and every relation above it. So
+`(believes Ann (not (likes Dan Fish)))` is three ranks of one band, `believes`' fact on the first, the negation on the
+second, `(likes Dan Fish)` on the third, with `believes`, `not` and `likes` in the layer above and `Ann`, `Dan` and
+`Fish` in the layer below. A fact stands in the band under its relation's layer, or under the band of a fact that
+points at it, the lower; a relation that is no fact's argument stands just above its highest fact, and a fact of it
+that holds no fact and that nothing points at just above its names. No name is read: the layers come from the arrows
+alone, and where the arrows go round, a fact of a relation whose own name is under its arrows, the view writes no
+layers and `dot` finds its own. Under `--fold` a folded arrow is no node and ranks nothing, `constraint=false`: its
+arguments stand in the layer where the fact's octagon would put them, and the arrow runs within that layer, so the
+folded drawing keeps the canonical one's layers of objects, the folded facts' ranks gone. This program:
+
+```lisp
+(relation owns Person Pet :why "{?3} owns {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(symmetric owns)
+(owns Alice Dog)
+(owns Bob Cat)
+(lives-in Alice House-1)
+(lives-in Bob House-2)
+```
+
+is drawn by `ein render kb` in its five layers:
+
+![ein render kb of a program of two declarations, a fact of symmetric and four facts: relation and symmetric on the top layer, the facts of relation and of symmetric under them, the relations and the labels, the four facts, the plain objects at the bottom](diagrams/12-layers.svg)
+
+The layers are a preference, and no test holds them: a test holds a drawing's nodes and arrows, read as drawn, the
+groups and their anchors aside, and Graphviz lays them out ([Q21](../../../decisions/cli/Q21-every-form-has-a-fixed-dot-shape-and-its-layout.md)).
 
 ## A fact under an arrow — every object once
 
@@ -156,10 +219,10 @@ and under the second arrows of its declaration and of the fact of `symmetric`.
 
 ![ein render program, the digraph kb: every fact an octagon with no name in it, its arrow 1 at its relation's box; co-located is one box that three facts point at](diagrams/12-program-kb.svg)
 
-The same digraph under `--fold`: each fact of three arrows that nothing points at is one labelled arrow, and the
-declarations, of four arrows, and the fact of `symmetric`, of two, stay octagons.
+The same digraph under `--fold`: each fact of three arrows that nothing points at is one labelled arrow, the fact of
+`symmetric`, of two, a loop on `co-located`, and the declarations, of four arrows, stay octagons.
 
-![ein render program --fold, the digraph kb: the facts of is-a and the given fact are labelled arrows; the declarations and the fact of symmetric are octagons](diagrams/12-program-kb-fold.svg)
+![ein render program --fold, the digraph kb: the facts of is-a and the given fact are labelled arrows, the fact of symmetric a loop on co-located, the declarations octagons](diagrams/12-program-kb-fold.svg)
 
 ## Rules — `ein render rules` and `ein render rule`
 
@@ -208,9 +271,11 @@ symmetric*, *color-loc is a bijection*, as opposed to its stated conditions abou
 read for what it means: each is drawn as a fact, by the KB view's code, `(symmetric next-to)` an octagon whose
 arrow `1` is at `symmetric` and whose arrow `2` is at `next-to`; `(implies right-of next-to)` an octagon of three
 arrows, or under `--fold` an edge from `right-of` to `next-to` labelled `implies`. A declaration is a fact of
-`relation`, which no program declares, and is drawn among them. A fact that such a fact has as an argument is drawn
+`relation`, which no program declares, and is drawn among them; `(symmetric next-to)`, of two arrows, is a loop on
+`next-to` under `--fold`. A fact that such a fact has as an argument is drawn
 as in every view, an octagon, in its frame where the program does not state it
-([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)).
+([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)). The view is one slice of the knowledge base,
+the facts it keeps ([Q-M1f.426](../../../decisions/cli/Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md)).
 
 ## The KB — `ein render kb`
 
@@ -221,8 +286,10 @@ its facts of `is-a`, of the given fact and of every derived fact that names it.
 | element | DOT shape and style |
 |---|---|
 | an atom | a `box`, the node default, labelled with its name; never declared on a line of its own |
-| a fact, held, that no drawn fact points at | `f_… [shape=octagon, label="", …]`, its edges `f_… -> "rel" [xlabel="1", …]`, `f_… -> "a" [xlabel="2", …]`, … under the comment `// facts` |
+| a fact, held, that no drawn fact points at | `f_… [shape=octagon, label="", …]`, its edges `"rel" -> f_… [xlabel="1", dir=back, …]`, `f_… -> "a" [xlabel="2", …]`, … under the comment `// facts` |
 | under `--fold`, such a fact of three arrows | an edge `a -> b [xlabel="rel …", …]` |
+| under `--fold`, such a fact of two arrows | a loop `a -> a [xlabel="rel …", …]` |
+| the layers | under the comment `// layers`, last: an invisible anchor a rank, `"layer 0" [style=invis, …]`, the anchors chained by invisible arrows, and a `{ rank=same; "layer N"; … }` group a rank, top first ([§ Layers](#layers--a-relation-above-its-facts-a-fact-above-its-arguments)) |
 | a fact that a drawn fact points at, held or not | that octagon, under `// facts in a context`: inside `subgraph cluster_ctx_…`, its frame, where the knowledge base does not hold it, and outside every frame where it does ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)) |
 | a stored negation, `(not g)` | a fact of `not`: an octagon whose arrow `2` is at `g`'s node, in the frame `not ctx` where `g` is not held |
 | a fact that applies a rule, `(symmetric co-located)` | a fact like any other: an octagon whose arrow `1` is at the rule's name |
@@ -239,7 +306,7 @@ For the program above, whose one given fact is *"The Norwegian lives in the firs
 
 ```sh
 ein render kb examples/zebra2.ein                       # root, after saturation
-ein render kb examples/zebra2.ein --fold                # each fact of three arrows one labelled arrow
+ein render kb examples/zebra2.ein --fold                # each fact of three arrows one labelled arrow, of two a loop
 ein render kb examples/zebra2.ein --colour-by origin    # given / derived
 ein solve examples/lattice/02_genuine_3set_death.ein --dump-answer out/
 ein render kb out/models/02.ein --since out/models/01.ein  # a state, and what it holds beyond another, in bold
@@ -408,11 +475,20 @@ negation grey. **Only that cone is drawn**, never the whole KB; a refuted commit
 its core's facts point at, and a note, `learned no-good`, points at each fact of the no-good it lifts to. States
 folded away are `<details>` blocks.
 
+A slice is laid out in layers, as a knowledge base is
+([§ Layers](#layers--a-relation-above-its-facts-a-fact-above-its-arguments)), each premise above the step it feeds
+and the step above what it derives. **The derivation stands out**
+([Q-M1f.428](../../../decisions/cli/Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md)): each of its
+arrows, from a premise to a step, from a step to a fact it derives, from the core to `⊥`, and each step's border is
+twice Graphviz's default width, `penwidth=2`, in a dark colour picked by the rule's name, never red, the commitment's
+and the core's, nor grey, a negation's. The derivation graph and a written trace's `dag` view draw their steps the
+same way.
+
 | option | does |
 |---|---|
 | `-G`, `--no-diagrams` | no inline `dot` blocks |
 | `-F`, `--full-kb-snapshots` | each traced state's whole KB appended, drawn as [§ The KB](#the-kb--ein-render-kb) draws one |
-| `--fold` | every drawing of the trace folded: in a slice a fact of three arrows that no fact of the cone points at is one arrow from its first argument to its second, labelled with its relation, through a point where the firings' arrows meet it; a snapshot is drawn as `ein render kb --fold` draws one |
+| `--fold` | every drawing of the trace folded: in a slice a fact of three arrows, or two, that no fact of the cone points at and **no arrow of the derivation touches** is one labelled arrow, or a loop; a premise, a fact derived, a fact of the core or of the no-good stays its octagon, since no arrow goes to or from an arrow ([Q-M1f.429](../../../decisions/cli/Q-M1f.429-no-arrow-goes-to-or-from-an-arrow.md)), so a step's slice, every fact of it the step's premise or conclusion, is drawn as it is without the option; a snapshot is drawn as `ein render kb --fold` draws one |
 | `-R`, `--reorder` | each section's steps clustered by the fact they derive about, rather than in the engine's order ([Q20](../../../decisions/read-out/Q20-the-trace-is-in-the-engines-order-and-reorder.md)) |
 | `-l`, `--relevant` | each derivation pruned to what the goal reads |
 

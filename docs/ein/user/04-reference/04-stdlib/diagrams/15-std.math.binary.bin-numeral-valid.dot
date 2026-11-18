@@ -6,7 +6,7 @@ digraph rule_bin_numeral_valid_lhs_rhs {
     "?w_L" [label="?w", shape=diamond];
     "z_L" [label="z", shape=box];
     "h1_bin-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
+    "bin-check_L" -> "h1_bin-check_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
     "h1_bin-check_L" -> "z_L" [xlabel="3", color="#1f77b4"];
   }
@@ -14,7 +14,7 @@ digraph rule_bin_numeral_valid_lhs_rhs {
     "bin-valid_R" [label="bin-valid", shape=box];
     "?w_R" [label="?w", shape=diamond];
     "h2_bin-valid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h2_bin-valid_R" -> "bin-valid_R" [xlabel="1", color="#8c564b", style=dashed];
+    "bin-valid_R" -> "h2_bin-valid_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "h2_bin-valid_R" -> "?w_R" [xlabel="2", color="#8c564b", style=dashed];
   }
 }

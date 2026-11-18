@@ -6,7 +6,7 @@ digraph rule_gcd_ask_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "h1_gcd_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_gcd_L" -> "gcd_L" [xlabel="1", color="#2ca02c"];
+    "gcd_L" -> "h1_gcd_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_gcd_L" -> "?x_L" [xlabel="2", color="#2ca02c"];
     "h1_gcd_L" -> "?y_L" [xlabel="3", color="#2ca02c"];
   }
@@ -25,13 +25,13 @@ digraph rule_gcd_ask_lhs_rhs {
       "(gcd-first (gcd ?x ?y) ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(gcd-first (gcd ?x ?y) ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(gcd-first (gcd ?x ?y) ?y)_R" -> "gcd-first_R" [xlabel="1", color="#e377c2", style=dashed];
+    "gcd-first_R" -> "(gcd-first (gcd ?x ?y) ?y)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "(gcd-first (gcd ?x ?y) ?y)_R" -> "(gcd ?x ?y)_R" [xlabel="2", color="#e377c2", style=dashed];
     "(gcd-first (gcd ?x ?y) ?y)_R" -> "?y_R" [xlabel="3", color="#e377c2", style=dashed];
-    "(gcd ?x ?y)_R" -> "gcd_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "gcd_R" -> "(gcd ?x ?y)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(gcd ?x ?y)_R" -> "?x_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(gcd ?x ?y)_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

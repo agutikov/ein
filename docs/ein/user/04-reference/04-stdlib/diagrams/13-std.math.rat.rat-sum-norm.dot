@@ -13,10 +13,10 @@ digraph rule_rat_sum_norm_lhs_rhs {
       "(rat-sum-den ?k ?s ?t)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
     }
     "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "done_L" -> "h1_done_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_done_L" -> "(rat-sum-den ?k ?s ?t)_L" [xlabel="2", color="#e377c2"];
     "h1_done_L" -> "?f_L" [xlabel="3", color="#e377c2"];
-    "(rat-sum-den ?k ?s ?t)_L" -> "rat-sum-den_L" [xlabel="1", color="#8c564b"];
+    "rat-sum-den_L" -> "(rat-sum-den ?k ?s ?t)_L" [xlabel="1", dir=back, color="#8c564b"];
     "(rat-sum-den ?k ?s ?t)_L" -> "?k_L" [xlabel="2", color="#8c564b"];
     "(rat-sum-den ?k ?s ?t)_L" -> "?s_L" [xlabel="3", color="#8c564b"];
     "(rat-sum-den ?k ?s ?t)_L" -> "?t_L" [xlabel="4", color="#8c564b"];
@@ -28,7 +28,7 @@ digraph rule_rat_sum_norm_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "?f_R" [label="?f", shape=diamond];
     "h2_rat-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_rat-norm_R" -> "rat-norm_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "rat-norm_R" -> "h2_rat-norm_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_rat-norm_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_rat-norm_R" -> "?s_R" [xlabel="3", color="#bcbd22", style=dashed];
     "h2_rat-norm_R" -> "?t_R" [xlabel="4", color="#bcbd22", style=dashed];

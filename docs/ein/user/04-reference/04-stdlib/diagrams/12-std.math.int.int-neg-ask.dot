@@ -5,7 +5,7 @@ digraph rule_int_neg_ask_lhs_rhs {
     "int-neg_L" [label="int-neg", shape=box];
     "?x_L" [label="?x", shape=diamond];
     "h1_int-neg_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_int-neg_L" -> "int-neg_L" [xlabel="1", color="#9467bd"];
+    "int-neg_L" -> "h1_int-neg_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_int-neg_L" -> "?x_L" [xlabel="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
@@ -22,12 +22,12 @@ digraph rule_int_neg_ask_lhs_rhs {
       "(int-only (int-neg ?x))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(int-only (int-neg ?x))_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(int-only (int-neg ?x))_R" -> "int-only_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-only_R" -> "(int-only (int-neg ?x))_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(int-only (int-neg ?x))_R" -> "(int-neg ?x)_R" [xlabel="2", color="#9467bd", style=dashed];
-    "(int-neg ?x)_R" -> "int-neg_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-neg_R" -> "(int-neg ?x)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(int-neg ?x)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

@@ -7,7 +7,7 @@ digraph rule_div_multiples_lhs_rhs {
     "?u_L" [label="?u", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     "h1_div-call_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_div-call_L" -> "div-call_L" [xlabel="1", color="#bcbd22"];
+    "div-call_L" -> "h1_div-call_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_div-call_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "h1_div-call_L" -> "?u_L" [xlabel="3", color="#bcbd22"];
     "h1_div-call_L" -> "?v_L" [xlabel="4", color="#bcbd22"];
@@ -26,13 +26,13 @@ digraph rule_div_multiples_lhs_rhs {
       "(div-m1 ?k ?u ?v)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
     "h2_mul-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_mul-walk_R" -> "mul-walk_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "mul-walk_R" -> "h2_mul-walk_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "(div-m1 ?k ?u ?v)_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "?v_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "1_R" [xlabel="4", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "0_R" [xlabel="5", color="#7f7f7f", style=dashed];
     "h2_mul-walk_R" -> "z_R" [xlabel="6", color="#7f7f7f", style=dashed];
-    "(div-m1 ?k ?u ?v)_R" -> "div-m1_R" [xlabel="1", color="#e377c2", style=dashed];
+    "div-m1_R" -> "(div-m1 ?k ?u ?v)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "(div-m1 ?k ?u ?v)_R" -> "?k_R" [xlabel="2", color="#e377c2", style=dashed];
     "(div-m1 ?k ?u ?v)_R" -> "?u_R" [xlabel="3", color="#e377c2", style=dashed];
     "(div-m1 ?k ?u ?v)_R" -> "?v_R" [xlabel="4", color="#e377c2", style=dashed];

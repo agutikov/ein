@@ -234,9 +234,9 @@ an answer. What each view draws, and how, is [`12-rendering.md`](12-rendering.md
 **Every view that draws facts takes `--fold`**, and so does `ein solve` for the drawings of its `--trace`: by
 default a fact is drawn as the graph has it, an octagon with no name in it whose arrow `1` is at its relation's atom
 and whose next arrows are at its arguments; under `--fold` a fact of three arrows that nothing drawn points at is one
-arrow from its first argument to its second, labelled with its relation
-([Q-M1f.419](../../../decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md)). It changes the
-drawing and nothing else.
+arrow from its first argument to its second, and a fact of two arrows a loop on its argument, labelled with its
+relation ([Q-M1f.425](../../../decisions/cli/Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md)). It
+changes the drawing and nothing else.
 
 | view | what it draws or lists |
 |---|---|

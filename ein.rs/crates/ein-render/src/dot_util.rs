@@ -154,10 +154,10 @@ pub fn multiline(parts: &[&str]) -> String {
 
 /// The opening lines of a `digraph`, as the seed of the caller's line list.
 ///
-/// Shared by the LR-family emitters (`slice`, `lattice_dag`, `constraints`).
-/// The other preambles — `kb_dot`'s interleaved `fdp` comment, the derivation
-/// DAG's and the rule renderer's bespoke headers, the `Builder`'s inline `{` —
-/// differ too much to route here byte-identically.
+/// Shared by the slice, the lattice dump's DAG and the constraint view. The
+/// other preambles — `kb_dot`'s, the derivation DAG's and the rule
+/// renderer's bespoke headers, the `Builder`'s inline `{` — differ too much
+/// to route here byte-identically.
 pub fn digraph_open(name: &str, rankdir: Option<&str>, node_defaults: Option<&str>) -> Vec<String> {
     let mut out = vec![format!("digraph {name} {{")];
     if let Some(r) = rankdir {
@@ -255,7 +255,10 @@ mod tests {
         let mut ast = Ast::new();
         let forms = ein_ir::parse(&mut ast, src, None).expect("the fact parses");
         let program = crate::ir_to_dot(&ast, &forms, crate::DotOpts::default());
-        assert!(program.contains(" -> \"house\" [xlabel=\"1\""), "{program}");
+        assert!(
+            program.contains("  \"house\" -> f_") && program.contains("[xlabel=\"1\", dir=back"),
+            "{program}"
+        );
         let constraints = crate::render_constraints(&ast, &forms, "witness", false);
         assert!(constraints.starts_with("digraph"), "{constraints}");
         let labels: Vec<String> = ast

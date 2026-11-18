@@ -5,14 +5,14 @@ digraph rule_symmetric_negative_setup_lhs_rhs {
     "symmetric_L" [label="symmetric", shape=box];
     "?rel_L" [label="?rel", shape=diamond];
     "h1_symmetric_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_symmetric_L" -> "symmetric_L" [xlabel="1", color="#7f7f7f"];
+    "symmetric_L" -> "h1_symmetric_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_symmetric_L" -> "?rel_L" [xlabel="2", color="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
     "symmetric-negative_R" [label="symmetric-negative", shape=box];
     "?rel_R" [label="?rel", shape=diamond];
     "h2_symmetric-negative_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_symmetric-negative_R" -> "symmetric-negative_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "symmetric-negative_R" -> "h2_symmetric-negative_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_symmetric-negative_R" -> "?rel_R" [xlabel="2", color="#7f7f7f", style=dashed];
   }
 }

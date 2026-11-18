@@ -5,12 +5,12 @@ digraph rule_division_by_zero_is_false_lhs_rhs {
     "division-by-zero_L" [label="division-by-zero", shape=box];
     "?request_L" [label="?request", shape=diamond];
     "h1_division-by-zero_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_division-by-zero_L" -> "division-by-zero_L" [xlabel="1", color="#e377c2"];
+    "division-by-zero_L" -> "h1_division-by-zero_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_division-by-zero_L" -> "?request_L" [xlabel="2", color="#e377c2"];
   }
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h2_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h2_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

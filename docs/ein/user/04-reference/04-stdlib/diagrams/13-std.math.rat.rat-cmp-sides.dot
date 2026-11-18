@@ -12,11 +12,11 @@ digraph rule_rat_cmp_sides_lhs_rhs {
       "(rat-cmp-num ?k)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_rat-cross-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_rat-cross-is_L" -> "rat-cross-is_L" [xlabel="1", color="#17becf"];
+    "rat-cross-is_L" -> "h1_rat-cross-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_rat-cross-is_L" -> "(rat-cmp-num ?k)_L" [xlabel="2", color="#17becf"];
     "h1_rat-cross-is_L" -> "?s_L" [xlabel="3", color="#17becf"];
     "h1_rat-cross-is_L" -> "?t_L" [xlabel="4", color="#17becf"];
-    "(rat-cmp-num ?k)_L" -> "rat-cmp-num_L" [xlabel="1", color="#1f77b4"];
+    "rat-cmp-num_L" -> "(rat-cmp-num ?k)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(rat-cmp-num ?k)_L" -> "?k_L" [xlabel="2", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
@@ -26,7 +26,7 @@ digraph rule_rat_cmp_sides_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "eq_R" [label="eq", shape=box];
     "h2_cmp-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "cmp-walk_R" [xlabel="1", color="#9467bd", style=dashed];
+    "cmp-walk_R" -> "h2_cmp-walk_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "?s_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "?t_R" [xlabel="4", color="#9467bd", style=dashed];

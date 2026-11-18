@@ -5,7 +5,7 @@ digraph rule_self_dual_r_lhs_rhs {
     "dual-of_L" [label="dual-of", shape=box];
     "?f_L" [label="?f", shape=diamond];
     "h1_dual-of_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_dual-of_L" -> "dual-of_L" [xlabel="1", color="#2ca02c"];
+    "dual-of_L" -> "h1_dual-of_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_dual-of_L" -> "?f_L" [xlabel="2", color="#2ca02c"];
     "h1_dual-of_L" -> "?f_L" [xlabel="3", color="#2ca02c"];
   }
@@ -13,7 +13,7 @@ digraph rule_self_dual_r_lhs_rhs {
     "self-dual_R" [label="self-dual", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h2_self-dual_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_self-dual_R" -> "self-dual_R" [xlabel="1", color="#9467bd", style=dashed];
+    "self-dual_R" -> "h2_self-dual_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_self-dual_R" -> "?f_R" [xlabel="2", color="#9467bd", style=dashed];
   }
 }

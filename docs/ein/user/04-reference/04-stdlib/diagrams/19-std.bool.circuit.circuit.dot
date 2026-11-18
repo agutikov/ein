@@ -12,22 +12,22 @@ digraph rule_circuit_lhs_rhs {
     "one-value_R" [label="one-value", shape=box];
     "gates_R" [label="gates", shape=box];
     "h1___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h1___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h1___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h1___closed___R" -> "gate_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h2___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2___closed___R" -> "val_R" [xlabel="2", color="#e377c2", style=dashed];
     "h3___closed___R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h3___closed___R" -> "__closed___R" [xlabel="1", color="#e377c2", style=dashed];
+    "__closed___R" -> "h3___closed___R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h3___closed___R" -> "circuit-rule_R" [xlabel="2", color="#e377c2", style=dashed];
     "h4_circuit-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h4_circuit-rule_R" -> "circuit-rule_R" [xlabel="1", color="#17becf", style=dashed];
+    "circuit-rule_R" -> "h4_circuit-rule_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h4_circuit-rule_R" -> "propagate_R" [xlabel="2", color="#17becf", style=dashed];
     "h5_circuit-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h5_circuit-rule_R" -> "circuit-rule_R" [xlabel="1", color="#17becf", style=dashed];
+    "circuit-rule_R" -> "h5_circuit-rule_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h5_circuit-rule_R" -> "one-value_R" [xlabel="2", color="#17becf", style=dashed];
     "h6_circuit-rule_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h6_circuit-rule_R" -> "circuit-rule_R" [xlabel="1", color="#17becf", style=dashed];
+    "circuit-rule_R" -> "h6_circuit-rule_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h6_circuit-rule_R" -> "gates_R" [xlabel="2", color="#17becf", style=dashed];
   }
 }

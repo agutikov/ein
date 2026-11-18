@@ -1,0 +1,16 @@
+; The program of 04-stdlib/04-bijections.md, whose state the page draws folded (04-elimination-state).
+(import std.bijection)
+
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
+
+(is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
+(is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+
+(not (wears Ann Red))
+(wears Bob Green)
+
+(query :goal (wears ?who ?colour))

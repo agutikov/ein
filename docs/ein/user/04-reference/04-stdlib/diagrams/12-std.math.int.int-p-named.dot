@@ -12,12 +12,12 @@ digraph rule_int_p_named_lhs_rhs {
       "(int ?x ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_int-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_int-check_L" -> "int-check_L" [xlabel="1", color="#2ca02c"];
+    "int-check_L" -> "h1_int-check_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_int-check_L" -> "(int ?x ?n)_L" [xlabel="2", color="#2ca02c"];
     "h2_named_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h2_named_L" -> "named_L" [xlabel="1", color="#d62728"];
+    "named_L" -> "h2_named_L" [xlabel="1", dir=back, color="#d62728"];
     "h2_named_L" -> "?x_L" [xlabel="2", color="#d62728"];
-    "(int ?x ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?x ?n)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?x ?n)_L" -> "?x_L" [xlabel="2", color="#17becf"];
     "(int ?x ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
@@ -31,10 +31,10 @@ digraph rule_int_p_named_lhs_rhs {
       "(int ?x ?n)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h3_not-integer_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h3_not-integer_R" -> "not-integer_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "not-integer_R" -> "h3_not-integer_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h3_not-integer_R" -> "(int ?x ?n)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h3_not-integer_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(int ?x ?n)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?x ?n)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?x ?n)_R" -> "?x_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?x ?n)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
   }

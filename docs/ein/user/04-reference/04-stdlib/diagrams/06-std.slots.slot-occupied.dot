@@ -11,19 +11,19 @@ digraph rule_slot_occupied_lhs_rhs {
     "?super_L" [label="?super", shape=diamond];
     "?c_L" [label="?c", shape=diamond];
     "h1_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_R_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "h1_R_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_R_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
     "h1_R_L" -> "?b_L" [xlabel="3", color="#1f77b4"];
     "h2_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "h2_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_isa_L" -> "?b_L" [xlabel="2", color="#bcbd22"];
     "h2_isa_L" -> "?T_L" [xlabel="3", color="#bcbd22"];
     "h3_sub_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h3_sub_L" -> "?sub_L" [xlabel="1", color="#9467bd"];
+    "?sub_L" -> "h3_sub_L" [xlabel="1", dir=back, color="#9467bd"];
     "h3_sub_L" -> "?T_L" [xlabel="2", color="#9467bd"];
     "h3_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
     "h4_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h4_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "h4_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h4_isa_L" -> "?c_L" [xlabel="2", color="#bcbd22"];
     "h4_isa_L" -> "?T_L" [xlabel="3", color="#bcbd22"];
     "?c_L" -> "?b_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
@@ -38,9 +38,9 @@ digraph rule_slot_occupied_lhs_rhs {
       "(?R ?a ?c)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h5_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h5_not_R" -> "not_R" [xlabel="1", color="#d62728", style=dashed];
+    "not_R" -> "h5_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h5_not_R" -> "(?R ?a ?c)_R" [xlabel="2", color="#d62728", style=dashed];
-    "(?R ?a ?c)_R" -> "?R_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?R_R" -> "(?R ?a ?c)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?R ?a ?c)_R" -> "?a_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(?R ?a ?c)_R" -> "?c_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

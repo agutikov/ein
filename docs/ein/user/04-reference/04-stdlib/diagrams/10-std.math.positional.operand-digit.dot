@@ -7,11 +7,11 @@ digraph rule_operand_digit_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?NZ_L" [label="?NZ", shape=diamond];
     "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "?OPERAND_L" -> "h1_OPERAND_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_OPERAND_L" -> "?x_L" [xlabel="3", color="#d62728"];
     "h2_NZ_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h2_NZ_L" -> "?NZ_L" [xlabel="1", color="#ff7f0e"];
+    "?NZ_L" -> "h2_NZ_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h2_NZ_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
   }
   subgraph cluster_rhs { label="assert";
@@ -24,10 +24,10 @@ digraph rule_operand_digit_lhs_rhs {
       "(?NOT-A-NUMBER ?x)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h3_BAD-OPERAND_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_BAD-OPERAND_R" -> "?BAD-OPERAND_R" [xlabel="1", color="#17becf", style=dashed];
+    "?BAD-OPERAND_R" -> "h3_BAD-OPERAND_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_BAD-OPERAND_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h3_BAD-OPERAND_R" -> "(?NOT-A-NUMBER ?x)_R" [xlabel="3", color="#17becf", style=dashed];
-    "(?NOT-A-NUMBER ?x)_R" -> "?NOT-A-NUMBER_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "?NOT-A-NUMBER_R" -> "(?NOT-A-NUMBER ?x)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(?NOT-A-NUMBER ?x)_R" -> "?x_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

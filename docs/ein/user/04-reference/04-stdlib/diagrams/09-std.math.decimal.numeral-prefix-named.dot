@@ -14,14 +14,14 @@ digraph rule_numeral_prefix_named_lhs_rhs {
       "(n ?m ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_check_L" -> "check_L" [xlabel="1", color="#7f7f7f"];
+    "check_L" -> "h1_check_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_check_L" -> "?w_L" [xlabel="2", color="#7f7f7f"];
     "h1_check_L" -> "(n ?m ?a)_L" [xlabel="3", color="#7f7f7f"];
     "?m_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "h2_named_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h2_named_L" -> "named_L" [xlabel="1", color="#d62728"];
+    "named_L" -> "h2_named_L" [xlabel="1", dir=back, color="#d62728"];
     "h2_named_L" -> "?m_L" [xlabel="2", color="#d62728"];
-    "(n ?m ?a)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?m ?a)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?m ?a)_L" -> "?m_L" [xlabel="2", color="#9467bd"];
     "(n ?m ?a)_L" -> "?a_L" [xlabel="3", color="#9467bd"];
   }
@@ -35,10 +35,10 @@ digraph rule_numeral_prefix_named_lhs_rhs {
       "(n ?m ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h3_not-decimal_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h3_not-decimal_R" -> "not-decimal_R" [xlabel="1", color="#d62728", style=dashed];
+    "not-decimal_R" -> "h3_not-decimal_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h3_not-decimal_R" -> "(n ?m ?a)_R" [xlabel="2", color="#d62728", style=dashed];
     "h3_not-decimal_R" -> "?m_R" [xlabel="3", color="#d62728", style=dashed];
-    "(n ?m ?a)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n ?m ?a)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?m ?a)_R" -> "?m_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?m ?a)_R" -> "?a_R" [xlabel="3", color="#9467bd", style=dashed];
   }

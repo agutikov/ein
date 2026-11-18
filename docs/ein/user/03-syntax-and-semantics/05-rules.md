@@ -117,8 +117,9 @@ Premises: `ancestor(Ann, Bea)`, `ancestor(Bea, Cid)`
 Derives `ancestor(Ann, Cid)`.
 ```
 
-and under it the firing drawn, the premises it read on the left, the rule with its reason in the middle, the fact
-it added on the right, in bold, each fact its octagon with its arrows at its relation and its arguments:
+and under it the firing drawn, the premises it read above, the rule with its reason under them, the fact it added
+below, in bold, each fact its octagon with its arrows at its relation and its arguments, the firing's own arrows
+heavy and coloured:
 
 ![One firing drawn: the two premises it read, each an octagon over ancestor and its arguments, the rule with its reason, and the fact it added, in bold](diagrams/05-firing.svg)
 

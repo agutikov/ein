@@ -12,10 +12,10 @@ digraph rule_gcd_ask_second_lhs_rhs {
       "(gcd-first ?r ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(gcd-first ?r ?y)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "?u_L" [xlabel="3", color="#17becf"];
-    "(gcd-first ?r ?y)_L" -> "gcd-first_L" [xlabel="1", color="#e377c2"];
+    "gcd-first_L" -> "(gcd-first ?r ?y)_L" [xlabel="1", dir=back, color="#e377c2"];
     "(gcd-first ?r ?y)_L" -> "?r_L" [xlabel="2", color="#e377c2"];
     "(gcd-first ?r ?y)_L" -> "?y_L" [xlabel="3", color="#e377c2"];
   }
@@ -30,10 +30,10 @@ digraph rule_gcd_ask_second_lhs_rhs {
       "(gcd-second ?r ?u)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(gcd-second ?r ?u)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?y_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(gcd-second ?r ?u)_R" -> "gcd-second_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "gcd-second_R" -> "(gcd-second ?r ?u)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(gcd-second ?r ?u)_R" -> "?r_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(gcd-second ?r ?u)_R" -> "?u_R" [xlabel="3", color="#1f77b4", style=dashed];
   }

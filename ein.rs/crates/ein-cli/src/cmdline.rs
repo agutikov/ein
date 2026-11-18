@@ -158,7 +158,8 @@ fn rule_mode() -> Arg {
 /// `--fold`, on every view that draws facts and on `ein solve`'s trace: a
 /// fact of three arrows, a relation and two arguments, that nothing drawn
 /// points at is drawn as one arrow from its first argument to its second,
-/// labelled with the relation's name; by default every fact is drawn in the
+/// and a fact of two arrows as a loop on its argument, labelled with the
+/// relation's name (Q-M1f.425); by default every fact is drawn in the
 /// canonical form, an octagon with no name in it whose first arrow is at its
 /// relation (Q-M1f.419). One builder, so the views cannot describe it
 /// differently. It changes a drawing and nothing else.
@@ -169,9 +170,10 @@ fn fold() -> Arg {
         .help(
             "draw a fact of three arrows (a relation and two arguments) that \
              nothing drawn points at as one arrow from its first argument to its \
-             second, labelled with the relation. By default every fact is an \
-             octagon with no name in it, its arrow 1 at the relation's atom and \
-             2, 3, … at its arguments",
+             second, and a fact of two arrows as a loop on its argument, \
+             labelled with the relation. By default every fact is an octagon \
+             with no name in it, its arrow 1 at the relation's atom and 2, 3, … \
+             at its arguments",
         )
 }
 
@@ -902,8 +904,10 @@ fn solve_command() -> Command {
         .arg(fold().help(
             "(--trace) draw a fact of three arrows (a relation and two \
                  arguments) as one arrow from its first argument to its second, \
-                 labelled with the relation, in every drawing of the trace; by \
-                 default every fact is an octagon with no name in it",
+                 and a fact of two as a loop, labelled with the relation, in \
+                 every drawing of the trace but at a step's premises and \
+                 conclusions; by default every fact is an octagon with no name \
+                 in it",
         ))
 }
 

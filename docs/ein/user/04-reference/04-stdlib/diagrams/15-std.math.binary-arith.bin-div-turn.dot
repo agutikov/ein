@@ -16,14 +16,14 @@ digraph rule_bin_div_turn_lhs_rhs {
       "(b2 ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h1_bin-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_bin-done_L" -> "bin-done_L" [xlabel="1", color="#8c564b"];
+    "bin-done_L" -> "h1_bin-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_bin-done_L" -> "(bin-div-m1 ?k ?u ?v)_L" [xlabel="2", color="#8c564b"];
     "h1_bin-done_L" -> "(b2 ?p ?a)_L" [xlabel="3", color="#8c564b"];
-    "(bin-div-m1 ?k ?u ?v)_L" -> "bin-div-m1_L" [xlabel="1", color="#ff7f0e"];
+    "bin-div-m1_L" -> "(bin-div-m1 ?k ?u ?v)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(bin-div-m1 ?k ?u ?v)_L" -> "?k_L" [xlabel="2", color="#ff7f0e"];
     "(bin-div-m1 ?k ?u ?v)_L" -> "?u_L" [xlabel="3", color="#ff7f0e"];
     "(bin-div-m1 ?k ?u ?v)_L" -> "?v_L" [xlabel="4", color="#ff7f0e"];
-    "(b2 ?p ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
+    "b2_L" -> "(b2 ?p ?a)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];
   }
@@ -45,14 +45,14 @@ digraph rule_bin_div_turn_lhs_rhs {
       "(bin-div-digits ?k (b2 ?p ?a))_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_bin-top-first_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_bin-top-first_R" -> "bin-top-first_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "bin-top-first_R" -> "h2_bin-top-first_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "(bin-div-digits ?k (b2 ?p ?a))_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "?u_R" [xlabel="3", color="#ff7f0e", style=dashed];
     "h2_bin-top-first_R" -> "z_R" [xlabel="4", color="#ff7f0e", style=dashed];
-    "(bin-div-digits ?k (b2 ?p ?a))_R" -> "bin-div-digits_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "bin-div-digits_R" -> "(bin-div-digits ?k (b2 ?p ?a))_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(bin-div-digits ?k (b2 ?p ?a))_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(bin-div-digits ?k (b2 ?p ?a))_R" -> "(b2 ?p ?a)_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "(b2 ?p ?a)_R" -> "b2_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "b2_R" -> "(b2 ?p ?a)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(b2 ?p ?a)_R" -> "?p_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(b2 ?p ?a)_R" -> "?a_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

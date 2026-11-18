@@ -12,10 +12,10 @@ digraph rule_operand_check_lhs_rhs {
       "(?N ?p ?a)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_OPERAND-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_OPERAND-IS_L" -> "?OPERAND-IS_L" [xlabel="1", color="#bcbd22"];
+    "?OPERAND-IS_L" -> "h1_OPERAND-IS_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "?k_L" [xlabel="2", color="#bcbd22"];
     "h1_OPERAND-IS_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#bcbd22"];
-    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?p ?a)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -29,10 +29,10 @@ digraph rule_operand_check_lhs_rhs {
       "(?N ?p ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_CHECK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_CHECK_R" -> "?CHECK_R" [xlabel="1", color="#d62728", style=dashed];
+    "?CHECK_R" -> "h2_CHECK_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_CHECK_R" -> "(?N ?p ?a)_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_CHECK_R" -> "(?N ?p ?a)_R" [xlabel="3", color="#d62728", style=dashed];
-    "(?N ?p ?a)_R" -> "?N_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?N_R" -> "(?N ?p ?a)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(?N ?p ?a)_R" -> "?p_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(?N ?p ?a)_R" -> "?a_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

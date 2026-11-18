@@ -24,10 +24,11 @@ closing parenthesis. The drawing's source is the digraph `ein render rules
 FILE` prints for the rule, byte for byte, in the canonical form, every pattern
 an octagon whose first arrow is at its relation. A rule whose canonical
 drawing has more than `MAX_NODES` nodes is drawn folded, the digraph `ein
-render rules --fold FILE` prints, where that one has no more, and the image's
-text says so; one whose folded drawing has more too is shown as Ein alone and
-has no file: a closing rule names every relation and rule of its module, and
-its drawing is a few hundred octagons nobody reads.
+render rules --fold FILE` prints, each pattern of three arrows an arrow and
+each of two a loop, where that one has no more, and the image's text says so;
+one whose folded drawing has more too is shown as Ein alone and has no file. A
+closing rule names every relation and rule of its module, each in a pattern of
+two arrows, so it is drawn folded where its module is small.
 
 **A source's name** is `NN-MODULE.RULE.dot`: `NN` the number of the page that
 shows the rule, `MODULE` the module's dotted name, `RULE` the rule's name as
@@ -163,7 +164,7 @@ def stem(page: Path, module: str, rule: str) -> str:
 def region(source: str, dot: str, folded: bool, page: Path, module: str, rule: str) -> list[str]:
     lines = ["```lisp", *source.splitlines(), "```"]
     if drawn(dot):
-        how = "as the engine draws it folded, each pattern of three arrows one labelled arrow" if folded \
+        how = "as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop" if folded \
             else "as the engine draws it"
         lines += ["", f"![The rule {rule} of {module}, {how}]"
                       f"(diagrams/{stem(page, module, rule)}.svg)"]

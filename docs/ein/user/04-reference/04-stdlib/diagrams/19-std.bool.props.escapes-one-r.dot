@@ -7,7 +7,7 @@ digraph rule_escapes_one_r_lhs_rhs {
     "1_L" [label="1", shape=box];
     "0_L" [label="0", shape=box];
     "h1_gate2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_gate2_L" -> "gate2_L" [xlabel="1", color="#7f7f7f"];
+    "gate2_L" -> "h1_gate2_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_gate2_L" -> "?f_L" [xlabel="2", color="#7f7f7f"];
     "h1_gate2_L" -> "1_L" [xlabel="3", color="#7f7f7f"];
     "h1_gate2_L" -> "1_L" [xlabel="4", color="#7f7f7f"];
@@ -17,7 +17,7 @@ digraph rule_escapes_one_r_lhs_rhs {
     "escapes-one_R" [label="escapes-one", shape=box];
     "?f_R" [label="?f", shape=diamond];
     "h2_escapes-one_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_escapes-one_R" -> "escapes-one_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "escapes-one_R" -> "h2_escapes-one_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_escapes-one_R" -> "?f_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

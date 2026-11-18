@@ -7,7 +7,7 @@ digraph rule_every_declared_pair_lhs_rhs {
     "?T1_L" [label="?T1", shape=diamond];
     "?T2_L" [label="?T2", shape=diamond];
     "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_relation_L" -> "relation_L" [xlabel="1", color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
     "h1_relation_L" -> "?T1_L" [xlabel="3", color="#bcbd22"];
     "h1_relation_L" -> "?T2_L" [xlabel="4", color="#bcbd22"];
@@ -16,7 +16,7 @@ digraph rule_every_declared_pair_lhs_rhs {
     "first-argument-fits_R" [label="first-argument-fits", shape=box];
     "?R_R" [label="?R", shape=diamond];
     "h2_first-argument-fits_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_first-argument-fits_R" -> "first-argument-fits_R" [xlabel="1", color="#d62728", style=dashed];
+    "first-argument-fits_R" -> "h2_first-argument-fits_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_first-argument-fits_R" -> "?R_R" [xlabel="2", color="#d62728", style=dashed];
   }
 }

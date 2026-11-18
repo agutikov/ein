@@ -11,7 +11,7 @@ digraph rule_rat_cross_first_lhs_rhs {
     "?m_L" [label="?m", shape=diamond];
     "?e_L" [label="?e", shape=diamond];
     "h1_rat-cross_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_rat-cross_L" -> "rat-cross_L" [xlabel="1", color="#d62728"];
+    "rat-cross_L" -> "h1_rat-cross_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_rat-cross_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_rat-cross_L" -> "?p_L" [xlabel="3", color="#d62728"];
     "h1_rat-cross_L" -> "?n_L" [xlabel="4", color="#d62728"];
@@ -35,11 +35,11 @@ digraph rule_rat_cross_first_lhs_rhs {
       "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_mul-call_R" -> "mul-call_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "mul-call_R" -> "h2_mul-call_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_mul-call_R" -> "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_mul-call_R" -> "?p_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_mul-call_R" -> "?e_R" [xlabel="4", color="#2ca02c", style=dashed];
-    "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "rat-x1_R" [xlabel="1", color="#17becf", style=dashed];
+    "rat-x1_R" -> "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
     "(rat-x1 ?k ?n ?d ?q ?m ?e)_R" -> "?d_R" [xlabel="4", color="#17becf", style=dashed];

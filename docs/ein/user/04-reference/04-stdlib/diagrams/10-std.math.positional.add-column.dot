@@ -20,23 +20,23 @@ digraph rule_add_column_lhs_rhs {
       "(?N ?q ?c)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_ADD-WALK_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_ADD-WALK_L" -> "?ADD-WALK_L" [xlabel="1", color="#17becf"];
+    "?ADD-WALK_L" -> "h1_ADD-WALK_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_ADD-WALK_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "h1_ADD-WALK_L" -> "(?N ?p ?a)_L" [xlabel="3", color="#17becf"];
     "h1_ADD-WALK_L" -> "(?N ?q ?c)_L" [xlabel="4", color="#17becf"];
     "h1_ADD-WALK_L" -> "?e_L" [xlabel="5", color="#17becf"];
     "h1_ADD-WALK_L" -> "?acc_L" [xlabel="6", color="#17becf"];
     "h2_FA_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h2_FA_L" -> "?FA_L" [xlabel="1", color="#17becf"];
+    "?FA_L" -> "h2_FA_L" [xlabel="1", dir=back, color="#17becf"];
     "h2_FA_L" -> "?a_L" [xlabel="2", color="#17becf"];
     "h2_FA_L" -> "?c_L" [xlabel="3", color="#17becf"];
     "h2_FA_L" -> "?e_L" [xlabel="4", color="#17becf"];
     "h2_FA_L" -> "?s_L" [xlabel="5", color="#17becf"];
     "h2_FA_L" -> "?f_L" [xlabel="6", color="#17becf"];
-    "(?N ?p ?a)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?p ?a)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?p ?a)_L" -> "?a_L" [xlabel="3", color="#7f7f7f"];
-    "(?N ?q ?c)_L" -> "?N_L" [xlabel="1", color="#7f7f7f"];
+    "?N_L" -> "(?N ?q ?c)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?q_L" [xlabel="2", color="#7f7f7f"];
     "(?N ?q ?c)_L" -> "?c_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -54,13 +54,13 @@ digraph rule_add_column_lhs_rhs {
       "(?B ?s ?acc)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h3_ADD-WALK_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h3_ADD-WALK_R" -> "?ADD-WALK_R" [xlabel="1", color="#17becf", style=dashed];
+    "?ADD-WALK_R" -> "h3_ADD-WALK_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?k_R" [xlabel="2", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?p_R" [xlabel="3", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?q_R" [xlabel="4", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "?f_R" [xlabel="5", color="#17becf", style=dashed];
     "h3_ADD-WALK_R" -> "(?B ?s ?acc)_R" [xlabel="6", color="#17becf", style=dashed];
-    "(?B ?s ?acc)_R" -> "?B_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "?B_R" -> "(?B ?s ?acc)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?s_R" [xlabel="2", color="#2ca02c", style=dashed];
     "(?B ?s ?acc)_R" -> "?acc_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

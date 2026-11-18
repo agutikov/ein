@@ -20,15 +20,15 @@ digraph rule_rat_operand_check_lhs_rhs {
       "(int ?p ?n)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(rat-of ?k)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "(rat (int ?p ?n) ?d)_L" [xlabel="3", color="#17becf"];
-    "(rat-of ?k)_L" -> "rat-of_L" [xlabel="1", color="#2ca02c"];
+    "rat-of_L" -> "(rat-of ?k)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(rat-of ?k)_L" -> "?k_L" [xlabel="2", color="#2ca02c"];
-    "(rat (int ?p ?n) ?d)_L" -> "rat_L" [xlabel="1", color="#d62728"];
+    "rat_L" -> "(rat (int ?p ?n) ?d)_L" [xlabel="1", dir=back, color="#d62728"];
     "(rat (int ?p ?n) ?d)_L" -> "(int ?p ?n)_L" [xlabel="2", color="#d62728"];
     "(rat (int ?p ?n) ?d)_L" -> "?d_L" [xlabel="3", color="#d62728"];
-    "(int ?p ?n)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?p ?n)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?p ?n)_L" -> "?p_L" [xlabel="2", color="#17becf"];
     "(int ?p ?n)_L" -> "?n_L" [xlabel="3", color="#17becf"];
   }
@@ -46,12 +46,12 @@ digraph rule_rat_operand_check_lhs_rhs {
       "(rat-den ?k ?p ?n ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h2_cmp-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_cmp-walk_R" -> "cmp-walk_R" [xlabel="1", color="#9467bd", style=dashed];
+    "cmp-walk_R" -> "h2_cmp-walk_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="2", color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "?d_R" [xlabel="3", color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "z_R" [xlabel="4", color="#9467bd", style=dashed];
     "h2_cmp-walk_R" -> "eq_R" [xlabel="5", color="#9467bd", style=dashed];
-    "(rat-den ?k ?p ?n ?d)_R" -> "rat-den_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "rat-den_R" -> "(rat-den ?k ?p ?n ?d)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "(rat-den ?k ?p ?n ?d)_R" -> "?k_R" [xlabel="2", color="#1f77b4", style=dashed];
     "(rat-den ?k ?p ?n ?d)_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
     "(rat-den ?k ?p ?n ?d)_R" -> "?n_R" [xlabel="4", color="#1f77b4", style=dashed];

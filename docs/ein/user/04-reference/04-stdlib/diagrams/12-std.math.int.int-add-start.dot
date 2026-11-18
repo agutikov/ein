@@ -22,17 +22,17 @@ digraph rule_int_add_start_lhs_rhs {
       "(int ?q ?m)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(int-second (int-add ?x ?y) ?p ?n)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "(int ?q ?m)_L" [xlabel="3", color="#17becf"];
-    "(int-second (int-add ?x ?y) ?p ?n)_L" -> "int-second_L" [xlabel="1", color="#bcbd22"];
+    "int-second_L" -> "(int-second (int-add ?x ?y) ?p ?n)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(int-second (int-add ?x ?y) ?p ?n)_L" -> "(int-add ?x ?y)_L" [xlabel="2", color="#bcbd22"];
     "(int-second (int-add ?x ?y) ?p ?n)_L" -> "?p_L" [xlabel="3", color="#bcbd22"];
     "(int-second (int-add ?x ?y) ?p ?n)_L" -> "?n_L" [xlabel="4", color="#bcbd22"];
-    "(int-add ?x ?y)_L" -> "int-add_L" [xlabel="1", color="#ff7f0e"];
+    "int-add_L" -> "(int-add ?x ?y)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(int-add ?x ?y)_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
     "(int-add ?x ?y)_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
-    "(int ?q ?m)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?q ?m)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?q ?m)_L" -> "?q_L" [xlabel="2", color="#17becf"];
     "(int ?q ?m)_L" -> "?m_L" [xlabel="3", color="#17becf"];
   }
@@ -50,13 +50,13 @@ digraph rule_int_add_start_lhs_rhs {
       "(int-add ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h2_int-add-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_int-add-call_R" -> "int-add-call_R" [xlabel="1", color="#e377c2", style=dashed];
+    "int-add-call_R" -> "h2_int-add-call_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_int-add-call_R" -> "(int-add ?x ?y)_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_int-add-call_R" -> "?p_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_int-add-call_R" -> "?n_R" [xlabel="4", color="#e377c2", style=dashed];
     "h2_int-add-call_R" -> "?q_R" [xlabel="5", color="#e377c2", style=dashed];
     "h2_int-add-call_R" -> "?m_R" [xlabel="6", color="#e377c2", style=dashed];
-    "(int-add ?x ?y)_R" -> "int-add_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "int-add_R" -> "(int-add ?x ?y)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(int-add ?x ?y)_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-add ?x ?y)_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

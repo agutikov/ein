@@ -2,8 +2,10 @@
 
 Every item that waits for the user's call, one folder each, built so that each call can be made by reading the
 folder: the items of the list *Waiting for you* given at the close of P1f.22 (2026-11-18) that **are still open**,
-and the readings later stages took. The drawings' items (`03-drawings/`) the save-and-load items (`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on
-2026-11-18 and left the bundle, and the verdicts' two (`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
+and the readings later stages took. The first drawings' items (34 to 55), the save-and-load items
+(`01-save-and-load/`) and the numerals' (`02-numerals/`) were answered by the user on 2026-11-18 and left the
+bundle; `03-drawings/` now holds what S1f.23.6 built of those answers (56 to 60); the verdicts' two
+(`05-verdicts-as-rules/`) moved into P1f.21's `review/`. An item whose question is resolved, by a ruling, by losing
 its object, or otherwise, is removed from the bundle (the user's rule, 2026-11-18); where it went is in its ledger and
 in `git log`. **Its pages and programs are committed; what its runs produce is ignored** (`.gitignore`: each item's
 `README.md` and `programs/*.ein` are kept, everything else, outputs, dumps, drawings, logs, re-run scripts, is
@@ -23,7 +25,10 @@ your answer; a re-render never touches it.
 
 | topic | items | what they are about |
 |---|---|---|
+| [03-drawings](03-drawings/README.md) | 5 | the drawings after S1f.23.6 built the user's answers: the layered layout, the fold of a fact of two arrows, a derivation's drawing, R-33 |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
+
+The drawings' topic holds again the five items S1f.23.6 put after building the answers on it (56 to 60).
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -41,8 +46,9 @@ does not say.
 - `runs/`, every output raw, one file a command: the read-out, `--json-summary`, `--events` (and as a table),
   `--trace`, `ein saturate --dump`, `--dump-answer`, `ein show hyps`, `ein test`; before and today side by side,
   with `diff -u` between them.
-- `renders/`, every view that bears on the item, `.dot` and `.svg`, each drawn with the layout its DOT suggests
-  (`fdp` for a KB view, else `dot`; `03-drawings/tools/draw.sh`).
+- `renders/`, every view that bears on the item, `.dot` and `.svg`, each drawn with the layout its DOT suggests,
+  `dot` for every view of today's binary ([`tools/draw.sh`](tools/draw.sh); a KB view of an earlier binary suggests
+  `fdp`).
 - `tools/` or `rerun.sh`, the script that made the runs: it re-takes them from the repo root.
 
 **A file with `.MOCK.` in its name is not the binary's output.** It is the binary's output, or a page's drawing,
@@ -71,3 +77,8 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 | 22 | [L-92](04-language-and-decisions/22-L-92/README.md) | Q-M1f.362's sentence on the index | kept |
 | 23 | [L-93](04-language-and-decisions/23-L-93/README.md) | two stale sentences of the pages (a third found) | left |
 | 24 | [L-94](04-language-and-decisions/24-L-94/README.md) | Q-M1f.119 misses a fact's argument | kept |
+| 56 | [the layers](03-drawings/56-layers/README.md) | the layered layout as built, nested facts in bands | (a) layers and bands written |
+| 57 | [a folded arrow's rank](03-drawings/57-folded-ranks/README.md) | under `--fold`, a folded arrow within a layer, or ranked as any arrow | (a) within a layer |
+| 58 | [the two-arrow fold](03-drawings/58-two-arrow-fold/README.md) | a stored negation folds into a loop; five closing rules drawn folded | (a) as built |
+| 59 | [a derivation's drawing](03-drawings/59-derivation/README.md) | the palette, the widths, the layers, `--fold` changing no step's slice | (a) as built |
+| 60 | [R-33](03-drawings/60-R-33/README.md) | the slices Graphviz refused: refused no more; a per-commit check of two traces | (a) as built |

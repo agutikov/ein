@@ -6,7 +6,7 @@ digraph rule_let_named_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?v_L" [label="?v", shape=diamond];
     "h1_LET_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
+    "?LET_L" -> "h1_LET_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_LET_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "h1_LET_L" -> "?v_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -14,7 +14,7 @@ digraph rule_let_named_lhs_rhs {
     "?NAMED_R" [label="?NAMED", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "h2_NAMED_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_NAMED_R" -> "?NAMED_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?NAMED_R" -> "h2_NAMED_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_NAMED_R" -> "?x_R" [xlabel="2", color="#bcbd22", style=dashed];
   }
 }

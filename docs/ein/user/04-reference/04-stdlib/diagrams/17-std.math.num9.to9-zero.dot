@@ -5,7 +5,7 @@ digraph rule_to9_zero_lhs_rhs {
     "to9_L" [label="to9", shape=box];
     "z_L" [label="z", shape=box];
     "h1_to9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_to9_L" -> "to9_L" [xlabel="1", color="#9467bd"];
+    "to9_L" -> "h1_to9_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_to9_L" -> "z_L" [xlabel="2", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
@@ -18,10 +18,10 @@ digraph rule_to9_zero_lhs_rhs {
       "(num9 0 0 0 0 0 0 0 0 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_as9_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_as9_R" -> "as9_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "as9_R" -> "h2_as9_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_as9_R" -> "z_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_as9_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "num9_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="4", color="#d62728", style=dashed];

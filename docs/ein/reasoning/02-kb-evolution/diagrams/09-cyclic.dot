@@ -1,18 +1,18 @@
 digraph cyclic {
-  rankdir=LR;
+  rankdir=TB;
   node [fontname="Inter", shape=box];
   ab [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, peripheries=2];
   ba [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
-  s1 [label="symmetric\nprimary", style="rounded,bold", color="#e377c2", fontcolor="#e377c2"];
-  s2 [label="symmetric\nalternative", style="rounded,bold,dashed", color="#17becf", fontcolor="#17becf"];
-  ab -> "r" [xlabel="1"];
+  s1 [label="symmetric\nprimary", style="rounded", color="#0047ab", fontcolor="#0047ab", penwidth=2];
+  s2 [label="symmetric\nalternative", style="rounded,dashed", color="#8b008b", fontcolor="#8b008b", penwidth=2];
+  "r" -> ab [xlabel="1", dir=back];
   ab -> "a" [xlabel="2"];
   ab -> "b" [xlabel="3"];
-  ba -> "r" [xlabel="1"];
+  "r" -> ba [xlabel="1", dir=back];
   ba -> "b" [xlabel="2"];
   ba -> "a" [xlabel="3"];
-  ab -> s1 [color="#e377c2"];
-  s1 -> ba [color="#e377c2", style=bold];
-  ba -> s2 [color="#17becf"];
-  s2 -> ab [color="#17becf", style="bold,dashed"];
+  ab -> s1 [color="#0047ab", penwidth=2];
+  s1 -> ba [color="#0047ab", penwidth=2];
+  ba -> s2 [color="#8b008b", penwidth=2];
+  s2 -> ab [color="#8b008b", style=dashed, penwidth=2];
 }

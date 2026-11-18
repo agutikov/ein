@@ -14,24 +14,24 @@ digraph rule_complete_via_macro_lhs_rhs {
       "(marked ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
     }
     "h1_group_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_group_L" -> "group_L" [xlabel="1", color="#ff7f0e"];
+    "group_L" -> "h1_group_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_group_L" -> "?g_L" [xlabel="2", color="#ff7f0e"];
     "h2_forall_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_forall_L" -> "forall_L" [xlabel="1", color="#1f77b4"];
+    "forall_L" -> "h2_forall_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_forall_L" -> "?y_L" [xlabel="2", color="#1f77b4"];
     "h2_forall_L" -> "(member ?y ?g)_L" [xlabel="3", color="#1f77b4"];
     "h2_forall_L" -> "(marked ?y)_L" [xlabel="4", color="#1f77b4"];
-    "(member ?y ?g)_L" -> "member_L" [xlabel="1", color="#ff7f0e"];
+    "member_L" -> "(member ?y ?g)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(member ?y ?g)_L" -> "?y_L" [xlabel="2", color="#ff7f0e"];
     "(member ?y ?g)_L" -> "?g_L" [xlabel="3", color="#ff7f0e"];
-    "(marked ?y)_L" -> "marked_L" [xlabel="1", color="#2ca02c"];
+    "marked_L" -> "(marked ?y)_L" [xlabel="1", dir=back, color="#2ca02c"];
     "(marked ?y)_L" -> "?y_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
     "complete_R" [label="complete", shape=box];
     "?g_R" [label="?g", shape=diamond];
     "h3_complete_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h3_complete_R" -> "complete_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "complete_R" -> "h3_complete_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h3_complete_R" -> "?g_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

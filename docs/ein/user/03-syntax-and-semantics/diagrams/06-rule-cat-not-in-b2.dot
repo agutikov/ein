@@ -13,9 +13,9 @@ digraph rule_cat_not_in_b2_lhs_rhs {
       "(in Cat B2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h1_not_R" -> "not_R" [xlabel="1", color="#d62728", style=dashed];
+    "not_R" -> "h1_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h1_not_R" -> "(in Cat B2)_R" [xlabel="2", color="#d62728", style=dashed];
-    "(in Cat B2)_R" -> "in_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "in_R" -> "(in Cat B2)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(in Cat B2)_R" -> "Cat_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(in Cat B2)_R" -> "B2_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

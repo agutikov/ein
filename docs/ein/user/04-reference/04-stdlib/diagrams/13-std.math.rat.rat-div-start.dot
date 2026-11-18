@@ -22,17 +22,17 @@ digraph rule_rat_div_start_lhs_rhs {
       "(rat-div ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_rat-operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_rat-operand-is_L" -> "rat-operand-is_L" [xlabel="1", color="#1f77b4"];
+    "rat-operand-is_L" -> "h1_rat-operand-is_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_rat-operand-is_L" -> "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" [xlabel="2", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?q_L" [xlabel="3", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?m_L" [xlabel="4", color="#1f77b4"];
     "h1_rat-operand-is_L" -> "?e_L" [xlabel="5", color="#1f77b4"];
-    "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" -> "rat-second_L" [xlabel="1", color="#8c564b"];
+    "rat-second_L" -> "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" [xlabel="1", dir=back, color="#8c564b"];
     "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" -> "(rat-div ?x ?y)_L" [xlabel="2", color="#8c564b"];
     "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" -> "?p_L" [xlabel="3", color="#8c564b"];
     "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" -> "?n_L" [xlabel="4", color="#8c564b"];
     "(rat-second (rat-div ?x ?y) ?p ?n ?d)_L" -> "?d_L" [xlabel="5", color="#8c564b"];
-    "(rat-div ?x ?y)_L" -> "rat-div_L" [xlabel="1", color="#d62728"];
+    "rat-div_L" -> "(rat-div ?x ?y)_L" [xlabel="1", dir=back, color="#d62728"];
     "(rat-div ?x ?y)_L" -> "?x_L" [xlabel="2", color="#d62728"];
     "(rat-div ?x ?y)_L" -> "?y_L" [xlabel="3", color="#d62728"];
   }
@@ -57,17 +57,17 @@ digraph rule_rat_div_start_lhs_rhs {
       "(rat-div ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_int-norm_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
-    "h2_int-norm_R" -> "int-norm_R" [xlabel="1", color="#e377c2", style=dashed];
+    "int-norm_R" -> "h2_int-norm_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
     "h2_int-norm_R" -> "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" [xlabel="2", color="#e377c2", style=dashed];
     "h2_int-norm_R" -> "?q_R" [xlabel="3", color="#e377c2", style=dashed];
     "h2_int-norm_R" -> "?m_R" [xlabel="4", color="#e377c2", style=dashed];
-    "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "rat-div-by_R" [xlabel="1", color="#9467bd", style=dashed];
+    "rat-div-by_R" -> "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "(rat-div ?x ?y)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "?p_R" [xlabel="3", color="#9467bd", style=dashed];
     "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "?n_R" [xlabel="4", color="#9467bd", style=dashed];
     "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "?d_R" [xlabel="5", color="#9467bd", style=dashed];
     "(rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e)_R" -> "?e_R" [xlabel="6", color="#9467bd", style=dashed];
-    "(rat-div ?x ?y)_R" -> "rat-div_R" [xlabel="1", color="#d62728", style=dashed];
+    "rat-div_R" -> "(rat-div ?x ?y)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(rat-div ?x ?y)_R" -> "?x_R" [xlabel="2", color="#d62728", style=dashed];
     "(rat-div ?x ?y)_R" -> "?y_R" [xlabel="3", color="#d62728", style=dashed];
   }

@@ -1,0 +1,58 @@
+digraph kb {
+  rankdir=TB;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+  // facts
+  f_0307f66032 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_0307f66032 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_0307f66032 -> "owns" [xlabel="2", color="#bcbd22", style=solid];
+  f_0307f66032 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
+  f_0307f66032 -> "Pet" [xlabel="4", color="#bcbd22", style=solid];
+  f_e4b012b25a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_e4b012b25a [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_e4b012b25a -> "owns" [xlabel="2", color="#bcbd22", style=solid];
+  f_37791a66b1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_37791a66b1 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_37791a66b1 -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
+  f_37791a66b1 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
+  f_37791a66b1 -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_bb680ca11c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_bb680ca11c [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_bb680ca11c -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
+  f_dc459fa9ff [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "symmetric" -> f_dc459fa9ff [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_dc459fa9ff -> "owns" [xlabel="2", color="#7f7f7f", style=solid];
+  f_15e15b12a5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "owns" -> f_15e15b12a5 [xlabel="1", dir=back, color="#ff7f0e", style=solid];
+  f_15e15b12a5 -> "Alice" [xlabel="2", color="#ff7f0e", style=solid];
+  f_15e15b12a5 -> "Dog" [xlabel="3", color="#ff7f0e", style=solid];
+  f_d656365b94 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "owns" -> f_d656365b94 [xlabel="1", dir=back, color="#ff7f0e", style=solid];
+  f_d656365b94 -> "Bob" [xlabel="2", color="#ff7f0e", style=solid];
+  f_d656365b94 -> "Cat" [xlabel="3", color="#ff7f0e", style=solid];
+  f_31a9d56696 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
+  "lives-in" -> f_31a9d56696 [xlabel="1", dir=back, color="#9467bd", style=solid];
+  f_31a9d56696 -> "Alice" [xlabel="2", color="#9467bd", style=solid];
+  f_31a9d56696 -> "House-1" [xlabel="3", color="#9467bd", style=solid];
+  f_e6e05a8376 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
+  "lives-in" -> f_e6e05a8376 [xlabel="1", dir=back, color="#9467bd", style=solid];
+  f_e6e05a8376 -> "Bob" [xlabel="2", color="#9467bd", style=solid];
+  f_e6e05a8376 -> "House-2" [xlabel="3", color="#9467bd", style=solid];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; "symmetric"; }
+  { rank=same; "layer 1"; f_0307f66032; f_e4b012b25a; f_37791a66b1; f_bb680ca11c; f_dc459fa9ff; }
+  { rank=same; "layer 2"; "owns"; "Person"; "Pet"; "lives-in"; "House"; }
+  { rank=same; "layer 3"; f_15e15b12a5; f_d656365b94; f_31a9d56696; f_e6e05a8376; }
+  { rank=same; "layer 4"; "Alice"; "Dog"; "Bob"; "Cat"; "House-1"; "House-2"; }
+}

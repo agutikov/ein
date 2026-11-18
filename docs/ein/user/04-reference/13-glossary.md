@@ -138,7 +138,7 @@ participant, a node for each hyperedge, and an arrow from a hyperedge's node to 
 base is that graph with one change, that a fact may point at a fact, so it is not bipartite. `ein` draws facts as
 that graph: one octagon per fact, with no name in it, an arrow numbered `1` to its relation, one node under the first
 arrow of every fact of it, and an arrow numbered `2`, `3`, … to each argument; `--fold` draws a fact of three arrows
-that nothing points at as one labelled arrow instead. See
+that nothing points at as one labelled arrow instead, and a fact of two as a labelled loop. See
 [`12-rendering.md` § A fact as the graph has it](12-rendering.md#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold).
 
 ### Provenance

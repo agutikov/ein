@@ -12,10 +12,10 @@ digraph rule_div_begin_lhs_rhs {
       "(?DIV-DIGITS ?k ?ms)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_TOP-FIRST-IS_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_TOP-FIRST-IS_L" -> "?TOP-FIRST-IS_L" [xlabel="1", color="#2ca02c"];
+    "?TOP-FIRST-IS_L" -> "h1_TOP-FIRST-IS_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_TOP-FIRST-IS_L" -> "(?DIV-DIGITS ?k ?ms)_L" [xlabel="2", color="#2ca02c"];
     "h1_TOP-FIRST-IS_L" -> "?t_L" [xlabel="3", color="#2ca02c"];
-    "(?DIV-DIGITS ?k ?ms)_L" -> "?DIV-DIGITS_L" [xlabel="1", color="#17becf"];
+    "?DIV-DIGITS_L" -> "(?DIV-DIGITS ?k ?ms)_L" [xlabel="1", dir=back, color="#17becf"];
     "(?DIV-DIGITS ?k ?ms)_L" -> "?k_L" [xlabel="2", color="#17becf"];
     "(?DIV-DIGITS ?k ?ms)_L" -> "?ms_L" [xlabel="3", color="#17becf"];
   }
@@ -26,7 +26,7 @@ digraph rule_div_begin_lhs_rhs {
     "?t_R" [label="?t", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_DIV-STEP_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h2_DIV-STEP_R" -> "?DIV-STEP_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?DIV-STEP_R" -> "h2_DIV-STEP_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h2_DIV-STEP_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h2_DIV-STEP_R" -> "?ms_R" [xlabel="3", color="#ff7f0e", style=dashed];
     "h2_DIV-STEP_R" -> "?t_R" [xlabel="4", color="#ff7f0e", style=dashed];

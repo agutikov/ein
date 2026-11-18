@@ -5,7 +5,7 @@ digraph rule_derive_reflexive_lhs_rhs {
     "reflexive_L" [label="reflexive", shape=box];
     "?R_L" [label="?R", shape=diamond];
     "h1_reflexive_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_reflexive_L" -> "reflexive_L" [xlabel="1", color="#2ca02c"];
+    "reflexive_L" -> "h1_reflexive_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_reflexive_L" -> "?R_L" [xlabel="2", color="#2ca02c"];
   }
   subgraph cluster_rhs { label="assert";
@@ -13,10 +13,10 @@ digraph rule_derive_reflexive_lhs_rhs {
     "?R_R" [label="?R", shape=diamond];
     "reflexive-cod_R" [label="reflexive-cod", shape=box];
     "h2_reflexive-dom_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h2_reflexive-dom_R" -> "reflexive-dom_R" [xlabel="1", color="#9467bd", style=dashed];
+    "reflexive-dom_R" -> "h2_reflexive-dom_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h2_reflexive-dom_R" -> "?R_R" [xlabel="2", color="#9467bd", style=dashed];
     "h3_reflexive-cod_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h3_reflexive-cod_R" -> "reflexive-cod_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "reflexive-cod_R" -> "h3_reflexive-cod_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h3_reflexive-cod_R" -> "?R_R" [xlabel="2", color="#1f77b4", style=dashed];
   }
 }

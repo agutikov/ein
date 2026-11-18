@@ -12,10 +12,10 @@ digraph rule_sub_answer_short_lhs_rhs {
       "(?SHORTFALL ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_DONE_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_DONE_L" -> "?DONE_L" [xlabel="1", color="#9467bd"];
+    "?DONE_L" -> "h1_DONE_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_DONE_L" -> "(?SHORTFALL ?x ?y)_L" [xlabel="2", color="#9467bd"];
     "h1_DONE_L" -> "?r_L" [xlabel="3", color="#9467bd"];
-    "(?SHORTFALL ?x ?y)_L" -> "?SHORTFALL_L" [xlabel="1", color="#9467bd"];
+    "?SHORTFALL_L" -> "(?SHORTFALL ?x ?y)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(?SHORTFALL ?x ?y)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(?SHORTFALL ?x ?y)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -26,7 +26,7 @@ digraph rule_sub_answer_short_lhs_rhs {
     "z_R" [label="z", shape=box];
     "?r_R" [label="?r", shape=diamond];
     "h2_DIFF-OF_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
-    "h2_DIFF-OF_R" -> "?DIFF-OF_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "?DIFF-OF_R" -> "h2_DIFF-OF_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "h2_DIFF-OF_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "h2_DIFF-OF_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
     "h2_DIFF-OF_R" -> "z_R" [xlabel="4", color="#7f7f7f", style=dashed];

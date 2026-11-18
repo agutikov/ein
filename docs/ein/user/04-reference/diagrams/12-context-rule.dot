@@ -13,13 +13,13 @@ digraph rule_believe_the_reliable_lhs_rhs {
       "(owns ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h1_reliable_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_reliable_L" -> "reliable_L" [xlabel="1", color="#2ca02c"];
+    "reliable_L" -> "h1_reliable_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_reliable_L" -> "?p_L" [xlabel="2", color="#2ca02c"];
     "h2_claims_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h2_claims_L" -> "claims_L" [xlabel="1", color="#bcbd22"];
+    "claims_L" -> "h2_claims_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h2_claims_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "h2_claims_L" -> "(owns ?x ?y)_L" [xlabel="3", color="#bcbd22"];
-    "(owns ?x ?y)_L" -> "owns_L" [xlabel="1", color="#ff7f0e"];
+    "owns_L" -> "(owns ?x ?y)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(owns ?x ?y)_L" -> "?x_L" [xlabel="2", color="#ff7f0e"];
     "(owns ?x ?y)_L" -> "?y_L" [xlabel="3", color="#ff7f0e"];
   }
@@ -28,7 +28,7 @@ digraph rule_believe_the_reliable_lhs_rhs {
     "?x_R" [label="?x", shape=diamond];
     "?y_R" [label="?y", shape=diamond];
     "h3_owns_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_owns_R" -> "owns_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "owns_R" -> "h3_owns_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_owns_R" -> "?x_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h3_owns_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

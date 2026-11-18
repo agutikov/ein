@@ -2,84 +2,85 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: kb Pages: 1 -->
-<svg width="482pt" height="272pt"
- viewBox="0.00 0.00 482.00 272.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 268)">
+<svg width="366pt" height="95pt"
+ viewBox="0.00 0.00 366.00 95.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 90.67)">
 <title>kb</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-268 478.01,-268 478.01,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-90.67 362.45,-90.67 362.45,4 -4,4"/>
 <!-- Jack -->
 <g id="node1" class="node">
 <title>Jack</title>
-<polygon fill="none" stroke="black" points="227.02,-36 173.02,-36 173.02,0 227.02,0 227.02,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="200.02" y="-14.45" font-family="Inter" font-size="14.00">Jack</text>
+<polygon fill="none" stroke="black" points="77.36,-36 23.36,-36 23.36,0 77.36,0 77.36,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="50.36" y="-14.45" font-family="Inter" font-size="14.00">Jack</text>
 </g>
 <!-- Human -->
 <g id="node2" class="node">
 <title>Human</title>
-<polygon fill="none" stroke="black" points="267.39,-112 202.64,-112 202.64,-76 267.39,-76 267.39,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="235.02" y="-90.45" font-family="Inter" font-size="14.00">Human</text>
+<polygon fill="none" stroke="black" points="159.74,-36 94.99,-36 94.99,0 159.74,0 159.74,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="127.36" y="-14.45" font-family="Inter" font-size="14.00">Human</text>
 </g>
 <!-- Jack&#45;&gt;Human -->
 <g id="edge1" class="edge">
 <title>Jack&#45;&gt;Human</title>
-<path fill="none" stroke="#7f7f7f" d="M208.14,-36.16C212.26,-44.88 217.37,-55.68 222.02,-65.52"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="218.74,-66.76 226.18,-74.31 225.06,-63.77 218.74,-66.76"/>
-<text xml:space="preserve" text-anchor="middle" x="204.97" y="-42.33" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M77.73,-18C79.6,-18 81.46,-18 83.33,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="83.28,-21.5 93.28,-18 83.28,-14.5 83.28,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="89.47" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Coffee -->
 <g id="node3" class="node">
 <title>Coffee</title>
-<polygon fill="none" stroke="black" points="201.77,-188 142.27,-188 142.27,-152 201.77,-152 201.77,-188"/>
-<text xml:space="preserve" text-anchor="middle" x="172.02" y="-166.45" font-family="Inter" font-size="14.00">Coffee</text>
+<polygon fill="none" stroke="black" points="237.11,-36 177.61,-36 177.61,0 237.11,0 237.11,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="207.36" y="-14.45" font-family="Inter" font-size="14.00">Coffee</text>
 </g>
 <!-- Jack&#45;&gt;Coffee -->
 <g id="edge4" class="edge">
 <title>Jack&#45;&gt;Coffee</title>
-<path fill="none" stroke="#e377c2" d="M192.31,-36.21C184.92,-61.61 175.67,-109.48 171.94,-140.27"/>
-<polygon fill="#e377c2" stroke="#e377c2" points="168.47,-139.72 170.91,-150.03 175.44,-140.44 168.47,-139.72"/>
-<text xml:space="preserve" text-anchor="middle" x="115.18" y="-80.51" font-family="Times,serif" font-size="14.00" fill="#e377c2">drinks puzzle text</text>
+<path fill="none" stroke="#e377c2" d="M69.36,-36.2C76.09,-41.49 84.07,-46.58 92.36,-49.33 121.89,-59.13 132.68,-58.65 162.36,-49.33 167.54,-47.71 172.64,-45.25 177.45,-42.42"/>
+<polygon fill="#e377c2" stroke="#e377c2" points="179.15,-45.49 185.56,-37.05 175.29,-39.65 179.15,-45.49"/>
+<text xml:space="preserve" text-anchor="middle" x="64.12" y="-60.44" font-family="Times,serif" font-size="14.00" fill="#e377c2">drinks puzzle text</text>
 </g>
 <!-- Jack&#45;&gt;Coffee -->
 <g id="edge7" class="edge">
 <title>Jack&#45;&gt;Coffee</title>
-<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M201.3,-36.21C199.2,-61.73 190.51,-109.9 182.72,-140.67"/>
-<polygon fill="#17becf" stroke="#17becf" points="179.41,-139.5 180.19,-150.07 186.17,-141.32 179.41,-139.5"/>
-<text xml:space="preserve" text-anchor="middle" x="96.38" y="-98.05" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;rhs</text>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M64.19,-36.33C72.8,-46.17 84.8,-57.33 98.36,-62.67 122.35,-72.1 132.23,-71.74 156.36,-62.67 166.72,-58.77 176.34,-51.72 184.38,-44.34"/>
+<polygon fill="#17becf" stroke="#17becf" points="186.73,-46.95 191.36,-37.42 181.8,-41.98 186.73,-46.95"/>
+<text xml:space="preserve" text-anchor="middle" x="227.68" y="-73.37" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;rhs</text>
 </g>
 <!-- Drink -->
 <g id="node4" class="node">
 <title>Drink</title>
-<polygon fill="none" stroke="black" points="262.02,-264 208.02,-264 208.02,-228 262.02,-228 262.02,-264"/>
-<text xml:space="preserve" text-anchor="middle" x="235.02" y="-242.45" font-family="Inter" font-size="14.00">Drink</text>
+<polygon fill="none" stroke="black" points="309.36,-36 255.36,-36 255.36,0 309.36,0 309.36,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="282.36" y="-14.45" font-family="Inter" font-size="14.00">Drink</text>
 </g>
 <!-- Jack&#45;&gt;Drink -->
 <g id="edge5" class="edge">
 <title>Jack&#45;&gt;Drink</title>
-<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M227.47,-31.4C244.86,-40.89 265.91,-55.79 276.02,-76 299.39,-122.74 272.41,-183.54 252.49,-218.01"/>
-<polygon fill="#17becf" stroke="#17becf" points="249.52,-216.15 247.37,-226.53 255.52,-219.76 249.52,-216.15"/>
-<text xml:space="preserve" text-anchor="middle" x="378.76" y="-123.31" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;lhs</text>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M66.43,-36.41C74.29,-44.02 84.41,-52 95.36,-56 154.63,-77.68 178.09,-77.68 237.36,-56 244.72,-53.31 251.7,-48.83 257.87,-43.87"/>
+<polygon fill="#17becf" stroke="#17becf" points="259.99,-46.66 265.16,-37.41 255.35,-41.43 259.99,-46.66"/>
+<text xml:space="preserve" text-anchor="middle" x="261.61" y="-58.96" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;lhs</text>
 </g>
 <!-- Human&#45;&gt;Coffee -->
 <g id="edge6" class="edge">
 <title>Human&#45;&gt;Coffee</title>
-<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M220.41,-112.16C212.59,-121.34 202.81,-132.84 194.08,-143.08"/>
-<polygon fill="#17becf" stroke="#17becf" points="191.57,-140.64 187.75,-150.52 196.9,-145.18 191.57,-140.64"/>
-<text xml:space="preserve" text-anchor="middle" x="107.38" y="-118.42" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;rhs</text>
+<path fill="none" stroke="#17becf" stroke-dasharray="5,2" d="M160.17,-18C162.03,-18 163.88,-18 165.74,-18"/>
+<polygon fill="#17becf" stroke="#17becf" points="165.62,-21.5 175.62,-18 165.62,-14.5 165.62,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="262.07" y="-21.95" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink by inherit&#45;rel&#45;rhs</text>
 </g>
 <!-- Human&#45;&gt;Drink -->
 <g id="edge3" class="edge">
 <title>Human&#45;&gt;Drink</title>
-<path fill="none" stroke="#17becf" d="M235.02,-112.21C235.02,-137.61 235.02,-185.48 235.02,-216.27"/>
-<polygon fill="#17becf" stroke="#17becf" points="231.52,-216.02 235.02,-226.02 238.52,-216.02 231.52,-216.02"/>
-<text xml:space="preserve" text-anchor="middle" x="268.39" y="-156.51" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink</text>
+<path fill="none" stroke="#17becf" d="M145.57,-36.44C154.38,-44.06 165.58,-52.03 177.36,-56 202.63,-64.51 212.32,-65.16 237.36,-56 244.72,-53.31 251.7,-48.83 257.87,-43.87"/>
+<polygon fill="#17becf" stroke="#17becf" points="259.99,-46.66 265.16,-37.41 255.35,-41.43 259.99,-46.66"/>
+<text xml:space="preserve" text-anchor="middle" x="170.8" y="-49.19" font-family="Times,serif" font-size="14.00" fill="#17becf">can&#45;drink</text>
 </g>
 <!-- Coffee&#45;&gt;Drink -->
 <g id="edge2" class="edge">
 <title>Coffee&#45;&gt;Drink</title>
-<path fill="none" stroke="#7f7f7f" d="M186.63,-188.16C194.45,-197.34 204.23,-208.84 212.95,-219.08"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="210.14,-221.18 219.29,-226.52 215.47,-216.64 210.14,-221.18"/>
-<text xml:space="preserve" text-anchor="middle" x="190.9" y="-194.42" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M237.54,-18C239.54,-18 241.55,-18 243.56,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="243.53,-21.5 253.53,-18 243.53,-14.5 243.53,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="249.7" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
+<!-- layer 0 -->
 </g>
 </svg>
-<!-- source sha256: a0a509ca07d946faa97465ae07f2bdd7cc90c52390526d59c79bb9ee18920a1f -->
+<!-- source sha256: 80b234945f7e0e1a737088057f8f02b3e2545f58d3cf010a357862f0a4c94915 -->

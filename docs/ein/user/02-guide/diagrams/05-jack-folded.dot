@@ -1,12 +1,14 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
-  "Jack" -> "Human" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Coffee" -> "Drink" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Human" -> "Drink" [xlabel="can-drink", color="#17becf", fontcolor="#17becf", style=solid];
-  "Jack" -> "Coffee" [xlabel="drinks puzzle text", color="#e377c2", fontcolor="#e377c2", style=solid];
-  "Jack" -> "Drink" [xlabel="can-drink by inherit-rel-lhs", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Human" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Jack" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Jack" -> "Human" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Coffee" -> "Drink" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Human" -> "Drink" [xlabel="can-drink", color="#17becf", fontcolor="#17becf", style=solid, constraint=false];
+  "Jack" -> "Coffee" [xlabel="drinks puzzle text", color="#e377c2", fontcolor="#e377c2", style=solid, constraint=false];
+  "Jack" -> "Drink" [xlabel="can-drink by inherit-rel-lhs", color="#17becf", fontcolor="#17becf", style=dashed, constraint=false];
+  "Human" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed, constraint=false];
+  "Jack" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed, constraint=false];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  { rank=same; "layer 0"; "Jack"; "Human"; "Coffee"; "Drink"; }
 }

@@ -798,4 +798,6 @@ those facts.
                            undeclared))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")
 ```
+
+![The rule decimal-arith of std.math.decimal-arith, as the engine draws it folded, each pattern of three arrows one labelled arrow and each of two a loop](diagrams/09-std.math.decimal-arith.decimal-arith.svg)
 <!-- /rule -->

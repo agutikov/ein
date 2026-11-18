@@ -11,9 +11,9 @@ digraph rule_int_n_zero_lhs_rhs {
       "(int ?p 0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_int-check_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_int-check_L" -> "int-check_L" [xlabel="1", color="#2ca02c"];
+    "int-check_L" -> "h1_int-check_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_int-check_L" -> "(int ?p 0)_L" [xlabel="2", color="#2ca02c"];
-    "(int ?p 0)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?p 0)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?p 0)_L" -> "?p_L" [xlabel="2", color="#17becf"];
     "(int ?p 0)_L" -> "0_L" [xlabel="3", color="#17becf"];
   }
@@ -27,10 +27,10 @@ digraph rule_int_n_zero_lhs_rhs {
       "(int ?p 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_not-integer_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_not-integer_R" -> "not-integer_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "not-integer_R" -> "h2_not-integer_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_not-integer_R" -> "(int ?p 0)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_not-integer_R" -> "0_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(int ?p 0)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?p 0)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?p 0)_R" -> "?p_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?p 0)_R" -> "0_R" [xlabel="3", color="#17becf", style=dashed];
   }

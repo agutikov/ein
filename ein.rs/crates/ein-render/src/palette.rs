@@ -30,12 +30,20 @@ pub const PALETTE: [&str; 10] = [
 /// needed: the digest is big-endian, so folding it byte by byte under the
 /// modulus gives the same residue.
 pub fn hash_color(name: &str) -> &'static str {
+    PALETTE[stable_index(name, PALETTE.len())]
+}
+
+/// `sha1(name) mod n`, the digest read as one big-endian 160-bit integer:
+/// the index a name picks in a palette of `n` colours, the same in every
+/// process and every build.
+pub fn stable_index(name: &str, n: usize) -> usize {
     let digest = Sha1::digest(name.as_bytes());
+    let n = n as u32;
     let mut acc: u32 = 0;
     for byte in digest.iter() {
-        acc = (acc * 256 + u32::from(*byte)) % PALETTE.len() as u32;
+        acc = (acc * 256 + u32::from(*byte)) % n;
     }
-    PALETTE[acc as usize]
+    acc as usize
 }
 
 #[cfg(test)]

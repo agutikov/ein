@@ -6,7 +6,7 @@ digraph rule_converse_pair_symmetric_lhs_rhs {
     "?R1_L" [label="?R1", shape=diamond];
     "?R2_L" [label="?R2", shape=diamond];
     "h1_converse_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h1_converse_L" -> "converse_L" [xlabel="1", color="#2ca02c"];
+    "converse_L" -> "h1_converse_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h1_converse_L" -> "?R1_L" [xlabel="2", color="#2ca02c"];
     "h1_converse_L" -> "?R2_L" [xlabel="3", color="#2ca02c"];
   }
@@ -15,7 +15,7 @@ digraph rule_converse_pair_symmetric_lhs_rhs {
     "?R2_R" [label="?R2", shape=diamond];
     "?R1_R" [label="?R1", shape=diamond];
     "h2_converse_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_converse_R" -> "converse_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "converse_R" -> "h2_converse_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_converse_R" -> "?R2_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_converse_R" -> "?R1_R" [xlabel="3", color="#2ca02c", style=dashed];
   }

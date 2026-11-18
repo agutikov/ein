@@ -11,7 +11,7 @@ digraph rule_div9_done_lhs_rhs {
     "?r_L" [label="?r", shape=diamond];
     "?q_L" [label="?q", shape=diamond];
     "h1_div9-at_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_div9-at_L" -> "div9-at_L" [xlabel="1", color="#17becf"];
+    "div9-at_L" -> "h1_div9-at_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_div9-at_L" -> "?n_L" [xlabel="2", color="#17becf"];
     "h1_div9-at_L" -> "?d_L" [xlabel="3", color="#17becf"];
     "h1_div9-at_L" -> "?ms_L" [xlabel="4", color="#17becf"];
@@ -27,7 +27,7 @@ digraph rule_div9_done_lhs_rhs {
     "?q_R" [label="?q", shape=diamond];
     "?r_R" [label="?r", shape=diamond];
     "h2_quot9-of_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
-    "h2_quot9-of_R" -> "quot9-of_R" [xlabel="1", color="#d62728", style=dashed];
+    "quot9-of_R" -> "h2_quot9-of_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "h2_quot9-of_R" -> "?n_R" [xlabel="2", color="#d62728", style=dashed];
     "h2_quot9-of_R" -> "?d_R" [xlabel="3", color="#d62728", style=dashed];
     "h2_quot9-of_R" -> "?q_R" [xlabel="4", color="#d62728", style=dashed];

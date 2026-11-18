@@ -84,14 +84,16 @@ $$
 
 That is the fixed point of Ein's model, *an instance is an instance of instance*, reached with two membership
 facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state,
-every fact of it, the declarations' facts and the two property facts among them:
+every fact of it, the declarations' facts and the two property facts among them, folded: a fact of three arrows a
+labelled arrow, and a fact of two, the declarations' second facts and the property $\operatorname{transitive}(\operatorname{is-a}^{*})$,
+a labelled loop on its argument:
 
 ![The saturated state in which instance is an instance of instance: the atom is-a under the second arrow of its declaration's facts, the label of its facts' arrows, and the tail of one of them](diagrams/01-instance-of-instance.svg)
 
-The drawing folds each fact of three arrows into a labelled arrow
+The drawing folds each fact of three arrows into a labelled arrow and each of two into a labelled loop
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)), and the membership
 relation appears in it three ways: as the first argument of the facts its declaration is (the arrow numbered 2 of
-two octagons whose arrow 1 is at $\mathsf{relation}$), as the label of the arrows that are its facts, and as the
+an octagon whose arrow 1 is at $\mathsf{relation}$, and a loop labelled $\mathsf{relation}$), as the label of the arrows that are its facts, and as the
 atom, a box, with such an arrow of its own to $\mathsf{Relation}$. A fact of it is drawn as any other fact is.
 The pink dashed arrows are the derived facts; the one from the membership relation to $\mathsf{Object}$ is $e_3$,
 the conclusion of the derivation above.

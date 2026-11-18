@@ -6,7 +6,7 @@ digraph rule_rat_sub_ask_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "h1_rat-sub_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_rat-sub_L" -> "rat-sub_L" [xlabel="1", color="#7f7f7f"];
+    "rat-sub_L" -> "h1_rat-sub_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_rat-sub_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "h1_rat-sub_L" -> "?y_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -30,15 +30,15 @@ digraph rule_rat_sub_ask_lhs_rhs {
       "(rat-first (rat-sub ?x ?y) ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" -> "rat-of_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "rat-of_R" -> "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "(rat-of (rat-first (rat-sub ?x ?y) ?y))_R" -> "(rat-first (rat-sub ?x ?y) ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
-    "(rat-first (rat-sub ?x ?y) ?y)_R" -> "rat-first_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "rat-first_R" -> "(rat-first (rat-sub ?x ?y) ?y)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(rat-first (rat-sub ?x ?y) ?y)_R" -> "(rat-sub ?x ?y)_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(rat-first (rat-sub ?x ?y) ?y)_R" -> "?y_R" [xlabel="3", color="#bcbd22", style=dashed];
-    "(rat-sub ?x ?y)_R" -> "rat-sub_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "rat-sub_R" -> "(rat-sub ?x ?y)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(rat-sub ?x ?y)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(rat-sub ?x ?y)_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

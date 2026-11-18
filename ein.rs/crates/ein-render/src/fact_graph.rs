@@ -11,11 +11,23 @@
 //! relation points at it. No relation is drawn otherwise than another
 //! (Q-M1f.421).
 //!
+//! **Laid out in layers** (Q21): a fact's first arrow is written from its
+//! relation's atom to the fact, `"rel" -> f [xlabel="1", dir=back]`, so that
+//! it is drawn as it is, from the fact to the relation, and `dot` ranks the
+//! relation above the fact; its next arrows go down to its arguments. The
+//! drawing writes its layers too (`FactSet::layers`), objects and facts in
+//! turn, a band of facts as deep as its facts nest: `relation` on top, the
+//! declarations, the relations and their labels, the relations' facts, the
+//! plain objects, where no fact nests. Only the graph's structure is fixed;
+//! the layers are a preference, and no test holds them.
+//!
 //! **Folded** (`fold`), a fact of three arrows, a relation and two
 //! arguments, that no drawn fact points at is one arrow from its first
-//! argument to its second, its relation's name written on it. Nothing else
-//! is folded: a fact of two arrows stays an octagon, and so does a fact that
-//! a drawn fact points at, which is a node.
+//! argument to its second, its relation's name written on it; a fact of two
+//! arrows, a relation and one argument, that no drawn fact points at is a
+//! loop on its argument, its relation's name written on it (Q-M1f.425).
+//! Nothing else is folded: a fact of one arrow, or of four or more, stays an
+//! octagon, and so does a fact that a drawn fact points at, which is a node.
 //!
 //! **Every word on an arrow is its `xlabel`**: an arrow's number, and a folded
 //! arrow's relation, placed beside it once the graph is laid out. A `label` is
@@ -37,6 +49,30 @@ use crate::dot_util::{FRAMED_RANKING, HYPER_SHAPE, ctx_frames, ctx_label, quote}
 /// The attributes every fact's octagon carries: a small node with no name in
 /// it, as the reasoning pages draw one.
 pub const FACT_NODE: &str = "label=\"\", width=0.3, height=0.3, fixedsize=true";
+
+/// A fact's first arrow, numbered `1`, from the fact's node `fact` to its
+/// relation's node `relation`, as one DOT line with no indent: written from
+/// the relation to the fact and drawn back, so that `dot` ranks the
+/// relation above the fact and the arrow still points at the relation.
+/// `attrs` are the arrow's other attributes, each after a `, `.
+pub fn first_arrow(fact: &str, relation: &str, attrs: &str) -> String {
+    format!("{relation} -> {fact} [xlabel=\"1\", dir=back{attrs}];")
+}
+
+/// Whether a fact of `args` arguments folds, where nothing drawn points at
+/// it: a fact of three arrows into one arrow, of two into a loop
+/// (Q-M1f.425).
+pub fn folds(args: usize) -> bool {
+    args == 1 || args == 2
+}
+
+/// The attributes of a layer's anchor: a node drawn as nothing.
+const ANCHOR: &str = "style=invis, label=\"\", width=0, height=0, fixedsize=true";
+
+/// The id of the anchor of the `i`-th layer, top first.
+fn anchor(i: usize) -> String {
+    format!("\"layer {i}\"")
+}
 
 /// What stands under an arrow of a fact: a name, or a fact of the set.
 #[derive(Clone, Debug)]
@@ -169,9 +205,8 @@ impl FactSet {
             look.width()
         );
         let mut out = vec![format!(
-            "  {} -> {} [xlabel=\"1\", {tail}];",
-            fact.id,
-            quote(&fact.relation)
+            "  {}",
+            first_arrow(&fact.id, &quote(&fact.relation), &format!(", {tail}"))
         )];
         for (i, a) in fact.args.iter().enumerate() {
             out.push(format!(
@@ -185,9 +220,12 @@ impl FactSet {
     }
 
     /// A fact of three arrows as one arrow from its first argument to its
-    /// second, labelled with its relation's name and its note: the arrow's
-    /// `xlabel`, as a number is, since one `label` in a digraph makes `dot`
-    /// lay out every arrow over two ranks.
+    /// second, and a fact of two as a loop on its argument, labelled with its
+    /// relation's name and its note: the arrow's `xlabel`, as a number is,
+    /// since one `label` in a digraph makes `dot` lay out every arrow over
+    /// two ranks. A folded arrow ranks nothing (`constraint=false`): its
+    /// arguments stand in the layer where the fact's octagon would put them,
+    /// the canonical drawing's, and the arrow runs within that layer.
     fn folded(&self, f: usize) -> String {
         let fact = &self.facts[f];
         let look = &fact.look;
@@ -196,10 +234,10 @@ impl FactSet {
             label.push(' ');
             label.push_str(n);
         }
+        let from = self.under_id(&fact.args[0]);
+        let to = fact.args.get(1).map_or(from.clone(), |a| self.under_id(a));
         format!(
-            "  {} -> {} [xlabel={}, color=\"{c}\", fontcolor=\"{c}\", style={}{}];",
-            self.under_id(&fact.args[0]),
-            self.under_id(&fact.args[1]),
+            "  {from} -> {to} [xlabel={}, color=\"{c}\", fontcolor=\"{c}\", style={}{}, constraint=false];",
             quote(&label),
             look.style(),
             look.width(),
@@ -219,19 +257,28 @@ impl FactSet {
             lines.push(String::new());
             lines.push("  // facts".to_string());
         }
+        // The octagons, in the order drawn: the facts not folded, then the
+        // facts a fact points at.
+        let mut octagons: Vec<usize> = Vec::new();
+        let mut folded: Vec<usize> = Vec::new();
         for &f in &self.drawn {
             // A fact that a fact points at is its node, below, and no arrow.
             if is_nested.contains(&f) {
                 continue;
             }
-            if fold && self.facts[f].args.len() == 2 {
+            if fold && folds(self.facts[f].args.len()) {
                 lines.push(self.folded(f));
+                folded.push(f);
             } else {
                 lines.push(format!("  {}", self.node(f)));
                 lines.extend(self.arrows(f));
+                octagons.push(f);
             }
         }
+        octagons.extend(nested.iter().map(|(g, _)| *g));
+        let layers = self.layers(&octagons, &folded);
         if nested.is_empty() {
+            lines.extend(layers);
             return lines;
         }
         lines.push(String::new());
@@ -253,6 +300,171 @@ impl FactSet {
         for (g, _) in &nested {
             lines.extend(self.arrows(*g));
         }
+        lines.extend(layers);
         lines
+    }
+
+    /// The drawing's layers, as `rank=same` groups, one a line, top first:
+    /// the objects and the facts in turn, a sandwich, and a band of facts
+    /// as deep as its facts nest (Q21). A fact stands in the band under its
+    /// relation's layer, or under the band of a fact that points at it, the
+    /// lower; in its band, one rank below the deepest fact of the band that
+    /// points at it, so the facts nothing points at share the band's top rank
+    /// and a fact under an arrow stands below the fact whose arrow it is
+    /// under. A name under a fact's arrow stands in the layer under the
+    /// fact's band; a name under no fact's argument arrow, a relation and
+    /// nothing else, in the layer above its highest fact. Read off the arrows
+    /// alone, no name; where the arrows go round (a fact of a relation whose
+    /// name is under its own arrows) there are no layers to write, and none
+    /// is written. A folded fact is no node and no group holds it, but it
+    /// places its names as its octagon would, in the layer under the band it
+    /// would stand in, so that a folded arrow runs within a layer; a fact its
+    /// arrow ends at stands in that band too, on the band's top rank, where
+    /// the folded fact's octagon is not.
+    fn layers(&self, octagons: &[usize], folded: &[usize]) -> Vec<String> {
+        let is_octagon: HashSet<usize> = octagons.iter().copied().collect();
+        let every: Vec<usize> = octagons.iter().chain(folded).copied().collect();
+        let mut pointers: HashMap<usize, Vec<usize>> = HashMap::new();
+        for &f in &every {
+            for a in &self.facts[f].args {
+                if let Under::Fact(g) = a
+                    && is_octagon.contains(g)
+                {
+                    pointers.entry(*g).or_default().push(f);
+                }
+            }
+        }
+        let mut layer: HashMap<&str, usize> = HashMap::new();
+        let mut band: HashMap<usize, (usize, usize)> = every.iter().map(|&f| (f, (0, 0))).collect();
+        let mut settled = false;
+        for _ in 0..(2 * every.len() + 2) {
+            let mut moved = false;
+            for &f in &every {
+                let fact = &self.facts[f];
+                let ptrs = pointers.get(&f).map_or(&[][..], Vec::as_slice);
+                let b = ptrs
+                    .iter()
+                    .map(|p| band[p].0)
+                    .chain([
+                        band[&f].0,
+                        layer.get(fact.relation.as_str()).copied().unwrap_or(0),
+                    ])
+                    .max()
+                    .unwrap_or(0);
+                let d = ptrs
+                    .iter()
+                    .filter(|p| is_octagon.contains(p) && band[p].0 == b)
+                    .map(|p| band[p].1 + 1)
+                    .max()
+                    .unwrap_or(0);
+                if band[&f] != (b, d) {
+                    band.insert(f, (b, d));
+                    moved = true;
+                }
+                for a in &fact.args {
+                    if let Under::Name(n) = a {
+                        let l = layer.entry(n.as_str()).or_insert(0);
+                        if *l < b + 1 {
+                            *l = b + 1;
+                            moved = true;
+                        }
+                    }
+                }
+            }
+            if !moved {
+                settled = true;
+                break;
+            }
+        }
+        if !settled || every.is_empty() {
+            return Vec::new();
+        }
+        // A fact of such a relation, a relation under no argument arrow,
+        // that holds no fact and that no fact points at stands in the band
+        // just above its names, not wherever its relation is.
+        for &f in octagons {
+            let fact = &self.facts[f];
+            if layer.contains_key(fact.relation.as_str())
+                || pointers.contains_key(&f)
+                || fact.args.iter().any(|a| matches!(a, Under::Fact(_)))
+            {
+                continue;
+            }
+            let lowest = fact
+                .args
+                .iter()
+                .filter_map(|a| match a {
+                    Under::Name(n) => layer.get(n.as_str()).copied(),
+                    Under::Fact(_) => None,
+                })
+                .min();
+            if let Some(l) = lowest
+                && l > band[&f].0 + 1
+            {
+                band.insert(f, (l - 1, 0));
+            }
+        }
+        // A relation under no argument arrow, which no layer holds yet,
+        // stands just above its highest fact.
+        let mut above: HashMap<&str, usize> = HashMap::new();
+        for &f in octagons {
+            let r = self.facts[f].relation.as_str();
+            if !layer.contains_key(r) {
+                let b = band[&f].0;
+                above.entry(r).and_modify(|l| *l = (*l).min(b)).or_insert(b);
+            }
+        }
+        layer.extend(above);
+        // The groups, each in the order its members are first drawn.
+        let mut groups: Vec<((usize, usize, usize), Vec<String>)> = Vec::new();
+        let mut put = |key: (usize, usize, usize), id: String| match groups
+            .iter_mut()
+            .find(|(k, _)| *k == key)
+        {
+            Some((_, ids)) if !ids.contains(&id) => ids.push(id),
+            Some(_) => {}
+            None => groups.push((key, vec![id])),
+        };
+        for &f in octagons {
+            let fact = &self.facts[f];
+            put((layer[fact.relation.as_str()], 0, 0), quote(&fact.relation));
+            for a in &fact.args {
+                if let Under::Name(n) = a {
+                    put((layer[n.as_str()], 0, 0), quote(n));
+                }
+            }
+        }
+        for &f in folded {
+            for a in &self.facts[f].args {
+                if let Under::Name(n) = a {
+                    put((layer[n.as_str()], 0, 0), quote(n));
+                }
+            }
+        }
+        for &f in octagons {
+            let (b, d) = band[&f];
+            put((b, 1, d), self.facts[f].id.clone());
+        }
+        groups.sort_by_key(|(k, _)| *k);
+        // A group says only that its members share a rank; which group is
+        // above which is said by a chain of invisible anchors, one in each
+        // group, since two groups no arrow joins would otherwise share a
+        // rank. An anchor's id holds a space, which no name does.
+        let mut out = vec![String::new(), "  // layers".to_string()];
+        for i in 0..groups.len() {
+            out.push(format!("  {} [{ANCHOR}];", anchor(i)));
+        }
+        for i in 1..groups.len() {
+            out.push(format!(
+                "  {} -> {} [style=invis];",
+                anchor(i - 1),
+                anchor(i)
+            ));
+        }
+        out.extend(groups.iter().enumerate().map(|(i, (_, ids))| {
+            let members: Vec<String> = ids.iter().map(|i| format!("{i};")).collect();
+            format!("  {{ rank=same; {}; {} }}", anchor(i), members.join(" "))
+        }));
+        out
     }
 }

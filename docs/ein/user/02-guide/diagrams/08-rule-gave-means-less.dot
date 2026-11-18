@@ -22,10 +22,10 @@ digraph rule_gave_means_less_lhs_rhs {
       "(amount ?p ?k ?u)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_wanted_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h1_wanted_L" -> "wanted_L" [xlabel="1", color="#7f7f7f"];
+    "wanted_L" -> "h1_wanted_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h1_wanted_L" -> "(amount ?p ?k ?u)_L" [xlabel="2", color="#7f7f7f"];
     "h2_gave_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_gave_L" -> "gave_L" [xlabel="1", color="#1f77b4"];
+    "gave_L" -> "h2_gave_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_gave_L" -> "?p_L" [xlabel="2", color="#1f77b4"];
     "h2_gave_L" -> "?r_L" [xlabel="3", color="#1f77b4"];
     "h2_gave_L" -> "?k_L" [xlabel="4", color="#1f77b4"];
@@ -33,14 +33,14 @@ digraph rule_gave_means_less_lhs_rhs {
     "h2_gave_L" -> "?t_L" [xlabel="6", color="#1f77b4"];
     "h2_gave_L" -> "?u_L" [xlabel="7", color="#1f77b4"];
     "h3_value_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h3_value_L" -> "value_L" [xlabel="1", color="#17becf"];
+    "value_L" -> "h3_value_L" [xlabel="1", dir=back, color="#17becf"];
     "h3_value_L" -> "(amount ?p ?k ?t)_L" [xlabel="2", color="#17becf"];
     "h3_value_L" -> "?a_L" [xlabel="3", color="#17becf"];
-    "(amount ?p ?k ?u)_L" -> "amount_L" [xlabel="1", color="#9467bd"];
+    "amount_L" -> "(amount ?p ?k ?u)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(amount ?p ?k ?u)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(amount ?p ?k ?u)_L" -> "?k_L" [xlabel="3", color="#9467bd"];
     "(amount ?p ?k ?u)_L" -> "?u_L" [xlabel="4", color="#9467bd"];
-    "(amount ?p ?k ?t)_L" -> "amount_L" [xlabel="1", color="#9467bd"];
+    "amount_L" -> "(amount ?p ?k ?t)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(amount ?p ?k ?t)_L" -> "?p_L" [xlabel="2", color="#9467bd"];
     "(amount ?p ?k ?t)_L" -> "?k_L" [xlabel="3", color="#9467bd"];
     "(amount ?p ?k ?t)_L" -> "?t_L" [xlabel="4", color="#9467bd"];
@@ -50,7 +50,7 @@ digraph rule_gave_means_less_lhs_rhs {
     "?a_R" [label="?a", shape=diamond];
     "?x_R" [label="?x", shape=diamond];
     "h4_sub_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
-    "h4_sub_R" -> "sub_R" [xlabel="1", color="#9467bd", style=dashed];
+    "sub_R" -> "h4_sub_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "h4_sub_R" -> "?a_R" [xlabel="2", color="#9467bd", style=dashed];
     "h4_sub_R" -> "?x_R" [xlabel="3", color="#9467bd", style=dashed];
   }

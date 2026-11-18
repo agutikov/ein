@@ -10,14 +10,14 @@ digraph rule_left_neg_lhs_rhs {
     "?d_L" [label="?d", shape=diamond];
     "?g_L" [label="?g", shape=diamond];
     "h1_column_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_column_L" -> "column_L" [xlabel="1", color="#d62728"];
+    "column_L" -> "h1_column_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_column_L" -> "?f_L" [xlabel="2", color="#d62728"];
     "h1_column_L" -> "?a_L" [xlabel="3", color="#d62728"];
     "h1_column_L" -> "?b_L" [xlabel="4", color="#d62728"];
     "h1_column_L" -> "?c_L" [xlabel="5", color="#d62728"];
     "h1_column_L" -> "?d_L" [xlabel="6", color="#d62728"];
     "h2_column_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h2_column_L" -> "column_L" [xlabel="1", color="#d62728"];
+    "column_L" -> "h2_column_L" [xlabel="1", dir=back, color="#d62728"];
     "h2_column_L" -> "?g_L" [xlabel="2", color="#d62728"];
     "h2_column_L" -> "?c_L" [xlabel="3", color="#d62728"];
     "h2_column_L" -> "?d_L" [xlabel="4", color="#d62728"];
@@ -29,7 +29,7 @@ digraph rule_left_neg_lhs_rhs {
     "?f_R" [label="?f", shape=diamond];
     "?g_R" [label="?g", shape=diamond];
     "h3_left-negated_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_left-negated_R" -> "left-negated_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "left-negated_R" -> "h3_left-negated_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_left-negated_R" -> "?f_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h3_left-negated_R" -> "?g_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

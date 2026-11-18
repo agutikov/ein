@@ -6,7 +6,7 @@ digraph rule_int_div_trunc_ask_lhs_rhs {
     "?x_L" [label="?x", shape=diamond];
     "?y_L" [label="?y", shape=diamond];
     "h1_int-div-trunc_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
-    "h1_int-div-trunc_L" -> "int-div-trunc_L" [xlabel="1", color="#9467bd"];
+    "int-div-trunc_L" -> "h1_int-div-trunc_L" [xlabel="1", dir=back, color="#9467bd"];
     "h1_int-div-trunc_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "h1_int-div-trunc_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -30,15 +30,15 @@ digraph rule_int_div_trunc_ask_lhs_rhs {
       "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h2_operand_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_operand_R" -> "operand_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "operand_R" -> "h2_operand_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_operand_R" -> "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_operand_R" -> "?x_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "int-first_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "int-first_R" -> "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "(int-div-of (int-div-trunc ?x ?y))_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-first (int-div-of (int-div-trunc ?x ?y)) ?y)_R" -> "?y_R" [xlabel="3", color="#ff7f0e", style=dashed];
-    "(int-div-of (int-div-trunc ?x ?y))_R" -> "int-div-of_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-div-of_R" -> "(int-div-of (int-div-trunc ?x ?y))_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(int-div-of (int-div-trunc ?x ?y))_R" -> "(int-div-trunc ?x ?y)_R" [xlabel="2", color="#9467bd", style=dashed];
-    "(int-div-trunc ?x ?y)_R" -> "int-div-trunc_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-div-trunc_R" -> "(int-div-trunc ?x ?y)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(int-div-trunc ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(int-div-trunc ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
   }

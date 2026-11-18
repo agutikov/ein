@@ -8,11 +8,11 @@ digraph rule_inherit_right_lhs_rhs {
     "is-a_L" [label="is-a", shape=box];
     "?inst_L" [label="?inst", shape=diamond];
     "h1_r_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h1_r_L" -> "?r_L" [xlabel="1", color="#ff7f0e"];
+    "?r_L" -> "h1_r_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h1_r_L" -> "?other_L" [xlabel="2", color="#ff7f0e"];
     "h1_r_L" -> "?t_L" [xlabel="3", color="#ff7f0e"];
     "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
-    "h2_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "h2_is-a_L" -> "?inst_L" [xlabel="2", color="#7f7f7f"];
     "h2_is-a_L" -> "?t_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -21,7 +21,7 @@ digraph rule_inherit_right_lhs_rhs {
     "?other_R" [label="?other", shape=diamond];
     "?inst_R" [label="?inst", shape=diamond];
     "h3_r_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
-    "h3_r_R" -> "?r_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "?r_R" -> "h3_r_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "h3_r_R" -> "?other_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "h3_r_R" -> "?inst_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

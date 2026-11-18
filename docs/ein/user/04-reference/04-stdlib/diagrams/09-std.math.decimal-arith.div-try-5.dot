@@ -27,7 +27,7 @@ digraph rule_div_try_5_lhs_rhs {
       "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_div-choose_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-choose_L" -> "div-choose_L" [xlabel="1", color="#8c564b"];
+    "div-choose_L" -> "h1_div-choose_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-choose_L" -> "?k_L" [xlabel="2", color="#8c564b"];
     "h1_div-choose_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [xlabel="3", color="#8c564b"];
     "h1_div-choose_L" -> "?rest_L" [xlabel="4", color="#8c564b"];
@@ -37,11 +37,11 @@ digraph rule_div_try_5_lhs_rhs {
     "h1_div-choose_L" -> "?hi_L" [xlabel="8", color="#8c564b"];
     "h1_div-choose_L" -> "?left_L" [xlabel="9", color="#8c564b"];
     "h2_mid_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
-    "h2_mid_L" -> "mid_L" [xlabel="1", color="#ff7f0e"];
+    "mid_L" -> "h2_mid_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "h2_mid_L" -> "?lo_L" [xlabel="2", color="#ff7f0e"];
     "h2_mid_L" -> "?hi_L" [xlabel="3", color="#ff7f0e"];
     "h2_mid_L" -> "5_L" [xlabel="4", color="#ff7f0e"];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" -> "multiples_L" [xlabel="1", color="#17becf"];
+    "multiples_L" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" [xlabel="1", dir=back, color="#17becf"];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" -> "?m1_L" [xlabel="2", color="#17becf"];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" -> "?m2_L" [xlabel="3", color="#17becf"];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_L" -> "?m3_L" [xlabel="4", color="#17becf"];
@@ -84,13 +84,13 @@ digraph rule_div_try_5_lhs_rhs {
       "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h3_sub-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h3_sub-walk_R" -> "sub-walk_R" [xlabel="1", color="#8c564b", style=dashed];
+    "sub-walk_R" -> "h3_sub-walk_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" [xlabel="2", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "?u_R" [xlabel="3", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "?m5_R" [xlabel="4", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "0_R" [xlabel="5", color="#8c564b", style=dashed];
     "h3_sub-walk_R" -> "z_R" [xlabel="6", color="#8c564b", style=dashed];
-    "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "div-trial_R" [xlabel="1", color="#9467bd", style=dashed];
+    "div-trial_R" -> "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "?k_R" [xlabel="2", color="#9467bd", style=dashed];
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [xlabel="3", color="#9467bd", style=dashed];
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "?rest_R" [xlabel="4", color="#9467bd", style=dashed];
@@ -100,7 +100,7 @@ digraph rule_div_try_5_lhs_rhs {
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "?hi_R" [xlabel="8", color="#9467bd", style=dashed];
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "?left_R" [xlabel="9", color="#9467bd", style=dashed];
     "(div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)_R" -> "5_R" [xlabel="10", color="#9467bd", style=dashed];
-    "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "multiples_R" [xlabel="1", color="#17becf", style=dashed];
+    "multiples_R" -> "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m1_R" [xlabel="2", color="#17becf", style=dashed];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m2_R" [xlabel="3", color="#17becf", style=dashed];
     "(multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)_R" -> "?m3_R" [xlabel="4", color="#17becf", style=dashed];

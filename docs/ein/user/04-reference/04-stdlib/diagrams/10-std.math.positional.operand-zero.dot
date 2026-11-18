@@ -6,7 +6,7 @@ digraph rule_operand_zero_lhs_rhs {
     "?k_L" [label="?k", shape=diamond];
     "z_L" [label="z", shape=box];
     "h1_OPERAND_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-    "h1_OPERAND_L" -> "?OPERAND_L" [xlabel="1", color="#d62728"];
+    "?OPERAND_L" -> "h1_OPERAND_L" [xlabel="1", dir=back, color="#d62728"];
     "h1_OPERAND_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "h1_OPERAND_L" -> "z_L" [xlabel="3", color="#d62728"];
   }
@@ -15,7 +15,7 @@ digraph rule_operand_zero_lhs_rhs {
     "?k_R" [label="?k", shape=diamond];
     "z_R" [label="z", shape=box];
     "h2_OPERAND-IS_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
-    "h2_OPERAND-IS_R" -> "?OPERAND-IS_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "?OPERAND-IS_R" -> "h2_OPERAND-IS_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "h2_OPERAND-IS_R" -> "?k_R" [xlabel="2", color="#bcbd22", style=dashed];
     "h2_OPERAND-IS_R" -> "z_R" [xlabel="3", color="#bcbd22", style=dashed];
   }

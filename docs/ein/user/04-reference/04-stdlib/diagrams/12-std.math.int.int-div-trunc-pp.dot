@@ -20,16 +20,16 @@ digraph rule_int_div_trunc_pp_lhs_rhs {
       "(int-div-trunc ?x ?y)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h1_div-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_div-done_L" -> "div-done_L" [xlabel="1", color="#8c564b"];
+    "div-done_L" -> "h1_div-done_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_div-done_L" -> "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" [xlabel="2", color="#8c564b"];
     "h1_div-done_L" -> "?q_L" [xlabel="3", color="#8c564b"];
     "h1_div-done_L" -> "?r_L" [xlabel="4", color="#8c564b"];
-    "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" -> "int-div-m_L" [xlabel="1", color="#ff7f0e"];
+    "int-div-m_L" -> "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" [xlabel="1", dir=back, color="#ff7f0e"];
     "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" -> "(int-div-trunc ?x ?y)_L" [xlabel="2", color="#ff7f0e"];
     "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" -> "pos_L" [xlabel="3", color="#ff7f0e"];
     "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" -> "pos_L" [xlabel="4", color="#ff7f0e"];
     "(int-div-m (int-div-trunc ?x ?y) pos pos ?b)_L" -> "?b_L" [xlabel="5", color="#ff7f0e"];
-    "(int-div-trunc ?x ?y)_L" -> "int-div-trunc_L" [xlabel="1", color="#9467bd"];
+    "int-div-trunc_L" -> "(int-div-trunc ?x ?y)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(int-div-trunc ?x ?y)_L" -> "?x_L" [xlabel="2", color="#9467bd"];
     "(int-div-trunc ?x ?y)_L" -> "?y_L" [xlabel="3", color="#9467bd"];
   }
@@ -49,17 +49,17 @@ digraph rule_int_div_trunc_pp_lhs_rhs {
       "(int ?r z)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h2_int-div-done_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_int-div-done_R" -> "int-div-done_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "int-div-done_R" -> "h2_int-div-done_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int-div-trunc ?x ?y)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int ?q z)_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h2_int-div-done_R" -> "(int ?r z)_R" [xlabel="4", color="#2ca02c", style=dashed];
-    "(int-div-trunc ?x ?y)_R" -> "int-div-trunc_R" [xlabel="1", color="#9467bd", style=dashed];
+    "int-div-trunc_R" -> "(int-div-trunc ?x ?y)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(int-div-trunc ?x ?y)_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
     "(int-div-trunc ?x ?y)_R" -> "?y_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(int ?q z)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?q z)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?q z)_R" -> "?q_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?q z)_R" -> "z_R" [xlabel="3", color="#17becf", style=dashed];
-    "(int ?r z)_R" -> "int_R" [xlabel="1", color="#17becf", style=dashed];
+    "int_R" -> "(int ?r z)_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "(int ?r z)_R" -> "?r_R" [xlabel="2", color="#17becf", style=dashed];
     "(int ?r z)_R" -> "z_R" [xlabel="3", color="#17becf", style=dashed];
   }

@@ -5,8 +5,11 @@
 //! is an octagon with no name in it, its first arrow, numbered `1`, at its
 //! relation's atom, a node, and its next arrows, `2`, `3`, …, at its
 //! arguments. Folded, a fact of three arrows that no drawn fact points at is
-//! one arrow from its first argument to its second, labelled with its
-//! relation's name. No view draws an octagon with a name in it, a node
+//! one arrow from its first argument to its second, and a fact of two arrows
+//! a loop on its argument, labelled with its relation's name (Q-M1f.425). A
+//! first arrow written back, from the relation's atom to the fact with
+//! `dir=back`, which lays the relation out above its facts, is read as it is
+//! drawn: the fact's arrow at its relation. No view draws an octagon with a name in it, a node
 //! labelled with a fact's text, or any relation otherwise than another
 //! (Q-M1f.421): no box for what an `is-a` fact points at, no oval for what it
 //! starts from, no empty arrowhead, no class node for `=`.
@@ -124,7 +127,9 @@ fn frame_of(dot: &str, id: &str) -> Option<String> {
 }
 
 /// The arrows of a drawing: `(from, to, label)`, the label an arrow's number
-/// or its `label`, `""` where it has neither.
+/// or its `label`, `""` where it has neither. An arrow written `dir=back` is
+/// read as it is drawn, from its head to its tail: the layout is free, and
+/// only the arrows are the drawing's structure (Q21).
 fn arrows(dot: &str) -> Vec<(&str, &str, &str)> {
     dot.lines()
         .map(str::trim)
@@ -142,9 +147,21 @@ fn arrows(dot: &str) -> Vec<(&str, &str, &str)> {
                 .or_else(|| attrs.split_once(", label=\"").map(|(_, l)| l))
                 .and_then(|l| l.split_once('"'))
                 .map_or("", |(l, _)| l);
-            Some((from, to, label))
+            if attrs.contains("dir=back") {
+                Some((to, from, label))
+            } else {
+                Some((from, to, label))
+            }
         })
         .collect()
+}
+
+/// Whether the drawing has an arrow from `from` to `to` numbered or labelled
+/// `label`, read as drawn ([`arrows`]).
+fn has_arrow(dot: &str, from: &str, to: &str, label: &str) -> bool {
+    arrows(dot)
+        .iter()
+        .any(|(f, t, l)| *f == from && *t == to && *l == label)
 }
 
 /// **The rules a drawing of facts keeps**, in the form it is drawn in,
@@ -187,6 +204,11 @@ fn holds_the_rules(dot: &str, fold: bool) -> Result<(), String> {
         }
     }
     for line in dot.lines().map(str::trim).filter(|l| l.contains(" -> ")) {
+        if line.contains("dir=back") && !line.contains("xlabel=\"1\"") {
+            return Err(format!(
+                "an arrow drawn back that is no first arrow: {line}"
+            ));
+        }
         let Some(&(from, to, label)) = arrows(line).first() else {
             continue;
         };
@@ -211,9 +233,10 @@ fn holds_the_rules(dot: &str, fold: bool) -> Result<(), String> {
                 .collect();
             out.sort_unstable();
             let pointed_at = all.iter().any(|(_, t, _)| *t == id);
-            if out == ["1", "2", "3"] && !pointed_at {
+            if (out == ["1", "2", "3"] || out == ["1", "2"]) && !pointed_at {
                 return Err(format!(
-                    "a fact of three arrows that nothing points at, not folded: {id}"
+                    "a fact of {} arrows that nothing points at, not folded: {id}",
+                    out.len()
                 ));
             }
         }
@@ -248,7 +271,7 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once() {
         );
         for (i, to) in ["\"=\"", "\"5\"", &sum].iter().enumerate() {
             assert!(
-                dot.contains(&format!("  {e} -> {to} [xlabel=\"{}\"", i + 1)),
+                has_arrow(&dot, &e, to, &(i + 1).to_string()),
                 "fold={fold}:\n{dot}"
             );
         }
@@ -278,10 +301,7 @@ fn the_kb_view_draws_a_fact_in_two_contexts_once() {
             );
             assert!(!dot.contains(&four), "{dot}");
         } else {
-            assert!(
-                dot.contains(&format!("  {four} -> \"=\" [xlabel=\"1\"")),
-                "{dot}"
-            );
+            assert!(has_arrow(&dot, &four, "\"=\"", "1"), "{dot}");
         }
         // No node is named or labelled by a fact's text.
         for text in ["(= 5", "(= 4", "(+ 2"] {
@@ -342,10 +362,7 @@ fn a_knowledge_base_with_no_fact_under_an_arrow_has_no_frame() {
         // The fact of four arrows is an octagon in both forms; folded, the
         // two of three arrows are arrows.
         let triple = fact_id("triple", &["a".into(), "b".into(), "c".into()]);
-        assert!(
-            dot.contains(&format!("  {triple} -> \"triple\" [xlabel=\"1\"")),
-            "{dot}"
-        );
+        assert!(has_arrow(&dot, &triple, "\"triple\"", "1"), "{dot}");
         assert_eq!(
             dot.contains("  \"Norwegian\" -> \"Dog\" [xlabel=\"owns\""),
             fold,
@@ -366,10 +383,7 @@ fn is_a_and_relation_are_ordinary_relations() {
             assert!(!dot.contains("shape=oval"), "{dot}");
             assert!(!dot.contains("// types"), "{dot}");
             let decl = fact_id("relation", &["owns".into(), "Person".into(), "Pet".into()]);
-            assert!(
-                dot.contains(&format!("  {decl} -> \"relation\" [xlabel=\"1\"")),
-                "{dot}"
-            );
+            assert!(has_arrow(&dot, &decl, "\"relation\"", "1"), "{dot}");
             let bob = fact_id("is-a", &["Bob".into(), "Person".into()]);
             if fold {
                 assert!(
@@ -377,10 +391,7 @@ fn is_a_and_relation_are_ordinary_relations() {
                     "{dot}"
                 );
             } else {
-                assert!(
-                    dot.contains(&format!("  {bob} -> \"is-a\" [xlabel=\"1\"")),
-                    "{dot}"
-                );
+                assert!(has_arrow(&dot, &bob, "\"is-a\"", "1"), "{dot}");
             }
         }
     }
@@ -426,14 +437,15 @@ fn a_negation_is_a_fact_of_not_that_points_at_the_fact_it_denies() {
             Some("not, think ctx"),
             "{dot}"
         );
-        assert!(
-            dot.contains(&format!("  {n} -> \"not\" [xlabel=\"1\"")),
-            "{dot}"
-        );
-        assert!(
-            dot.contains(&format!("  {n} -> {g} [xlabel=\"2\"")),
-            "{dot}"
-        );
+        if fold {
+            // A fact of two arrows that nothing points at: a loop on the
+            // fact it denies (Q-M1f.425).
+            assert!(has_arrow(&dot, &g, &g, "not"), "{dot}");
+            assert!(!octagons(&dot).contains(&n.as_str()), "{dot}");
+        } else {
+            assert!(has_arrow(&dot, &n, "\"not\"", "1"), "{dot}");
+            assert!(has_arrow(&dot, &n, &g, "2"), "{dot}");
+        }
         assert!(!dot.contains("\"Bob\" -> \"Carol\""), "{dot}");
     }
     // Alone, too: a negation is a fact of `not`, and the fact it denies is in
@@ -498,10 +510,7 @@ fn the_rule_view_draws_a_pattern_as_a_fact() {
         "no premise: {dot}"
     );
     for (i, v) in ["\"=_L\"", "\"?a_L\"", "\"?b_L\""].iter().enumerate() {
-        assert!(
-            dot.contains(&format!("{u} -> {v} [xlabel=\"{}\"", i + 1)),
-            "{dot}"
-        );
+        assert!(has_arrow(&dot, u, v, &(i + 1).to_string()), "{dot}");
     }
     assert!(dot.contains("\"=_L\" [label=\"=\", shape=box];"), "{dot}");
     // Folded, the pattern of `think` that nothing points at is an arrow, and
@@ -546,9 +555,8 @@ fn the_rule_view_draws_a_pattern_as_a_fact() {
     );
     assert_eq!(frame_of(&noted, "\"(= ?a ?b)_L\""), None, "{noted}");
     assert!(
-        noted
-            .lines()
-            .any(|l| l.contains("_not_L\" -> \"not_L\" [xlabel=\"1\", color=\"#d62728\"")),
+        noted.lines().any(|l| l.contains("\"not_L\" -> ")
+            && l.contains("_not_L\" [xlabel=\"1\", dir=back, color=\"#d62728\"")),
         "{noted}"
     );
     assert!(
@@ -569,10 +577,12 @@ fn the_constraint_view_draws_a_property_as_a_fact() {
         // A property of a relation is a fact about it, never a word in its
         // node: an octagon whose second arrow is at the relation.
         let sym = fact_id("symmetric", &["r".into()]);
-        assert!(
-            dot.contains(&format!("  {sym} -> \"r\" [xlabel=\"2\"")),
-            "{dot}"
-        );
+        if fold {
+            // Folded, a fact of two arrows is a loop on its argument.
+            assert!(has_arrow(&dot, "\"r\"", "\"r\"", "symmetric"), "{dot}");
+        } else {
+            assert!(has_arrow(&dot, &sym, "\"r\"", "2"), "{dot}");
+        }
         // A fact the program states is in no frame; one it does not, in the
         // frame of what points at it.
         let f = fact_id("f", &["a".into()]);
@@ -587,9 +597,10 @@ fn the_constraint_view_draws_a_property_as_a_fact() {
 }
 
 /// The program view's `kb` digraph, as the KB view's code draws it, less the
-/// facts the loader adds beside a declaration, `(relation r)`.
+/// facts the loader adds beside a declaration, `(relation r)`: its octagon
+/// and every arrow that ends at it, or folded, its loop on `r`.
 fn kb_less_the_loaders(kb: &str, ast: &Ast, forms: &[NodeId]) -> String {
-    let added: HashSet<String> = forms
+    let names: Vec<String> = forms
         .iter()
         .filter(|f| ast.head_name(**f) == Some("relation"))
         .filter_map(|f| {
@@ -598,13 +609,40 @@ fn kb_less_the_loaders(kb: &str, ast: &Ast, forms: &[NodeId]) -> String {
                 .iter()
                 .filter(|a| !matches!(ast.node(**a), ein_ir::Node::KwPair { .. }))
                 .count();
-            (labels > 1).then(|| fact_id("relation", &[ein_render::value_label(ast, args[0])]))
+            (labels > 1).then(|| ein_render::value_label(ast, args[0]))
+        })
+        .collect();
+    let added: HashSet<String> = names
+        .iter()
+        .map(|r| fact_id("relation", std::slice::from_ref(r)))
+        .collect();
+    let loops: Vec<String> = names
+        .iter()
+        .map(|r| {
+            let r = ein_render::dot_util::quote(r);
+            format!("{r} -> {r} [xlabel=\"relation\"")
         })
         .collect();
     kb.lines()
-        .filter(|l| {
-            let id = l.trim().split([' ', '[']).next().unwrap_or("");
-            !added.contains(id)
+        .filter_map(|l| {
+            let t = l.trim();
+            // A layer's group lists the loader's facts among its members.
+            if let Some(members) = t.strip_prefix("{ rank=same; ") {
+                let kept: Vec<&str> = members
+                    .trim_end_matches('}')
+                    .split_whitespace()
+                    .filter(|m| !added.contains(m.trim_end_matches(';')))
+                    .collect();
+                return (!kept.is_empty())
+                    .then(|| format!("  {{ rank=same; {} }}", kept.join(" ")));
+            }
+            let (from, rest) = t.split_once(" -> ").unwrap_or((t, ""));
+            let to = rest.split([' ', '[']).next().unwrap_or("");
+            let from = from.split([' ', '[']).next().unwrap_or("");
+            (!added.contains(from)
+                && !added.contains(to)
+                && !loops.iter().any(|p| t.starts_with(p)))
+            .then(|| l.to_string())
         })
         .collect::<Vec<_>>()
         .join("\n")

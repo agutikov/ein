@@ -10,9 +10,9 @@ digraph rule_from9_zero_lhs_rhs {
       "(num9 0 0 0 0 0 0 0 0 0)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_from9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_from9_L" -> "from9_L" [xlabel="1", color="#8c564b"];
+    "from9_L" -> "h1_from9_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_from9_L" -> "(num9 0 0 0 0 0 0 0 0 0)_L" [xlabel="2", color="#8c564b"];
-    "(num9 0 0 0 0 0 0 0 0 0)_L" -> "num9_L" [xlabel="1", color="#d62728"];
+    "num9_L" -> "(num9 0 0 0 0 0 0 0 0 0)_L" [xlabel="1", dir=back, color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="2", color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="3", color="#d62728"];
     "(num9 0 0 0 0 0 0 0 0 0)_L" -> "0_L" [xlabel="4", color="#d62728"];
@@ -33,10 +33,10 @@ digraph rule_from9_zero_lhs_rhs {
       "(num9 0 0 0 0 0 0 0 0 0)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h2_of9_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h2_of9_R" -> "of9_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "of9_R" -> "h2_of9_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h2_of9_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h2_of9_R" -> "z_R" [xlabel="3", color="#2ca02c", style=dashed];
-    "(num9 0 0 0 0 0 0 0 0 0)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "num9_R" -> "(num9 0 0 0 0 0 0 0 0 0)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
     "(num9 0 0 0 0 0 0 0 0 0)_R" -> "0_R" [xlabel="4", color="#d62728", style=dashed];

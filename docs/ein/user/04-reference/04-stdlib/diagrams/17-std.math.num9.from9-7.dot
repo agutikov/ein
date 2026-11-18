@@ -18,12 +18,12 @@ digraph rule_from9_7_lhs_rhs {
       "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_from9_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
-    "h1_from9_L" -> "from9_L" [xlabel="1", color="#8c564b"];
+    "from9_L" -> "h1_from9_L" [xlabel="1", dir=back, color="#8c564b"];
     "h1_from9_L" -> "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" [xlabel="2", color="#8c564b"];
     "h2_nz_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-    "h2_nz_L" -> "nz_L" [xlabel="1", color="#2ca02c"];
+    "nz_L" -> "h2_nz_L" [xlabel="1", dir=back, color="#2ca02c"];
     "h2_nz_L" -> "?a7_L" [xlabel="2", color="#2ca02c"];
-    "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" -> "num9_L" [xlabel="1", color="#d62728"];
+    "num9_L" -> "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" [xlabel="1", dir=back, color="#d62728"];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" -> "0_L" [xlabel="2", color="#d62728"];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" -> "0_L" [xlabel="3", color="#d62728"];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_L" -> "?a7_L" [xlabel="4", color="#d62728"];
@@ -66,13 +66,13 @@ digraph rule_from9_7_lhs_rhs {
       "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h3_of9_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h3_of9_R" -> "of9_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "of9_R" -> "h3_of9_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
     "h3_of9_R" -> "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" [xlabel="2", color="#2ca02c", style=dashed];
     "h3_of9_R" -> "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" [xlabel="3", color="#2ca02c", style=dashed];
     "h4_valid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h4_valid_R" -> "valid_R" [xlabel="1", color="#17becf", style=dashed];
+    "valid_R" -> "h4_valid_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h4_valid_R" -> "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" [xlabel="2", color="#17becf", style=dashed];
-    "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "num9_R" [xlabel="1", color="#d62728", style=dashed];
+    "num9_R" -> "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "0_R" [xlabel="2", color="#d62728", style=dashed];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "0_R" [xlabel="3", color="#d62728", style=dashed];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "?a7_R" [xlabel="4", color="#d62728", style=dashed];
@@ -82,25 +82,25 @@ digraph rule_from9_7_lhs_rhs {
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "?a3_R" [xlabel="8", color="#d62728", style=dashed];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "?a2_R" [xlabel="9", color="#d62728", style=dashed];
     "(num9 0 0 ?a7 ?a6 ?a5 ?a4 ?a3 ?a2 ?a1)_R" -> "?a1_R" [xlabel="10", color="#d62728", style=dashed];
-    "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" -> "(n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2) ?a1)_R" -> "?a1_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2)_R" -> "(n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3) ?a2)_R" -> "?a2_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3)_R" -> "(n (n (n (n z ?a7) ?a6) ?a5) ?a4)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n (n (n (n z ?a7) ?a6) ?a5) ?a4) ?a3)_R" -> "?a3_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n (n (n (n z ?a7) ?a6) ?a5) ?a4)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n (n (n z ?a7) ?a6) ?a5) ?a4)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n (n (n z ?a7) ?a6) ?a5) ?a4)_R" -> "(n (n (n z ?a7) ?a6) ?a5)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n (n (n z ?a7) ?a6) ?a5) ?a4)_R" -> "?a4_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n (n (n z ?a7) ?a6) ?a5)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n (n z ?a7) ?a6) ?a5)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n (n z ?a7) ?a6) ?a5)_R" -> "(n (n z ?a7) ?a6)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n (n z ?a7) ?a6) ?a5)_R" -> "?a5_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n (n z ?a7) ?a6)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n (n z ?a7) ?a6)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n (n z ?a7) ?a6)_R" -> "(n z ?a7)_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n (n z ?a7) ?a6)_R" -> "?a6_R" [xlabel="3", color="#9467bd", style=dashed];
-    "(n z ?a7)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n z ?a7)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n z ?a7)_R" -> "z_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n z ?a7)_R" -> "?a7_R" [xlabel="3", color="#9467bd", style=dashed];
   }

@@ -24,19 +24,19 @@ digraph rule_rat_div_pos_lhs_rhs {
       "(int (n ?a ?b) z)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_int-done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h1_int-done_L" -> "int-done_L" [xlabel="1", color="#1f77b4"];
+    "int-done_L" -> "h1_int-done_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h1_int-done_L" -> "(rat-div-by ?k ?p ?n ?d ?e)_L" [xlabel="2", color="#1f77b4"];
     "h1_int-done_L" -> "(int (n ?a ?b) z)_L" [xlabel="3", color="#1f77b4"];
-    "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "rat-div-by_L" [xlabel="1", color="#9467bd"];
+    "rat-div-by_L" -> "(rat-div-by ?k ?p ?n ?d ?e)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "?k_L" [xlabel="2", color="#9467bd"];
     "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "?p_L" [xlabel="3", color="#9467bd"];
     "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "?n_L" [xlabel="4", color="#9467bd"];
     "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "?d_L" [xlabel="5", color="#9467bd"];
     "(rat-div-by ?k ?p ?n ?d ?e)_L" -> "?e_L" [xlabel="6", color="#9467bd"];
-    "(int (n ?a ?b) z)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int (n ?a ?b) z)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int (n ?a ?b) z)_L" -> "(n ?a ?b)_L" [xlabel="2", color="#17becf"];
     "(int (n ?a ?b) z)_L" -> "z_L" [xlabel="3", color="#17becf"];
-    "(n ?a ?b)_L" -> "n_L" [xlabel="1", color="#9467bd"];
+    "n_L" -> "(n ?a ?b)_L" [xlabel="1", dir=back, color="#9467bd"];
     "(n ?a ?b)_L" -> "?a_L" [xlabel="2", color="#9467bd"];
     "(n ?a ?b)_L" -> "?b_L" [xlabel="3", color="#9467bd"];
   }
@@ -56,7 +56,7 @@ digraph rule_rat_div_pos_lhs_rhs {
       "(n ?a ?b)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
     }
     "h2_rat-mul-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
-    "h2_rat-mul-call_R" -> "rat-mul-call_R" [xlabel="1", color="#8c564b", style=dashed];
+    "rat-mul-call_R" -> "h2_rat-mul-call_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
     "h2_rat-mul-call_R" -> "?k_R" [xlabel="2", color="#8c564b", style=dashed];
     "h2_rat-mul-call_R" -> "?p_R" [xlabel="3", color="#8c564b", style=dashed];
     "h2_rat-mul-call_R" -> "?n_R" [xlabel="4", color="#8c564b", style=dashed];
@@ -64,7 +64,7 @@ digraph rule_rat_div_pos_lhs_rhs {
     "h2_rat-mul-call_R" -> "?e_R" [xlabel="6", color="#8c564b", style=dashed];
     "h2_rat-mul-call_R" -> "z_R" [xlabel="7", color="#8c564b", style=dashed];
     "h2_rat-mul-call_R" -> "(n ?a ?b)_R" [xlabel="8", color="#8c564b", style=dashed];
-    "(n ?a ?b)_R" -> "n_R" [xlabel="1", color="#9467bd", style=dashed];
+    "n_R" -> "(n ?a ?b)_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
     "(n ?a ?b)_R" -> "?a_R" [xlabel="2", color="#9467bd", style=dashed];
     "(n ?a ?b)_R" -> "?b_R" [xlabel="3", color="#9467bd", style=dashed];
   }

@@ -214,10 +214,10 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
     dot_accepts("render kb --since", &r.out);
     let bold: Vec<&str> = r.out.lines().filter(|l| l.contains("penwidth=3")).collect();
     // State 6 seats two guests: two facts of `seat` ∅ did not have, each
-    // drawn bold with its first arrow at the relation.
+    // drawn bold with its first arrow at the relation, written back from it.
     assert_eq!(
         bold.iter()
-            .filter(|l| l.contains(" -> \"seat\" [xlabel=\"1\""))
+            .filter(|l| l.contains("\"seat\" -> ") && l.contains("[xlabel=\"1\", dir=back"))
             .count(),
         2,
         "the bold facts are not the commitment's:\n{}",
@@ -228,8 +228,9 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
 /// **One program in both forms, through every door that draws facts**
 /// (Q-M1f.419): by default a fact of three arrows is an octagon with no name
 /// in it, its arrow `1` at the relation's atom, and under `--fold` it is one
-/// arrow from its first argument to its second, labelled with the relation.
-/// The trace's drawings take the option too.
+/// arrow from its first argument to its second, labelled with the relation
+/// (Q-M1f.425). The trace's drawings take the option too, and in a step's
+/// drawing no fact its derivation's arrows touch is folded (Q-M1f.429).
 #[test]
 fn every_door_draws_a_fact_in_both_forms() {
     let tmp = scratch("fold");
@@ -290,8 +291,10 @@ fn every_door_draws_a_fact_in_both_forms() {
     };
     assert!(!seat(&canonical), "the trace folds by default");
     assert!(seat(&fold), "--fold folds nothing in the trace");
-    // A step's own drawing: a fact a firing reads or derives, folded, is an
-    // arrow through the point the firing's arrows meet.
+    // A step's own drawing: a fact a firing reads or derives is the end of
+    // the derivation's arrows, and an arrow goes only to or from a node, so
+    // it is its octagon under `--fold` too, and the step is drawn as it is
+    // by default.
     let packing = |extra: &[&str]| -> String {
         let out = tmp.join(format!("packing{}.md", extra.len()));
         let out_s = out.to_string_lossy().into_owned();
@@ -306,13 +309,21 @@ fn every_door_draws_a_fact_in_both_forms() {
         assert_eq!(r.code, 0, "{argv:?}: {}", r.err);
         std::fs::read_to_string(&out).expect("the trace is written")
     };
-    assert!(
-        !packing(&[]).contains("arrowhead=none"),
-        "a slice folds by default"
+    let blocks = |md: &str| -> Vec<String> {
+        md.split("```dot\n")
+            .skip(1)
+            .filter_map(|b| b.split_once("```").map(|(d, _)| d.to_string()))
+            .collect()
+    };
+    let (canonical, fold) = (blocks(&packing(&[])), blocks(&packing(&["--fold"])));
+    assert!(!canonical.is_empty(), "no step drawn");
+    assert_eq!(
+        canonical, fold,
+        "a step's drawing folds a fact its derivation touches"
     );
     assert!(
-        packing(&["--fold"]).contains("shape=point"),
-        "--fold folds nothing in a slice"
+        fold.iter().all(|b| !b.contains("shape=point")),
+        "a point where an arrow meets an arrow"
     );
 }
 

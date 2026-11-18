@@ -2,109 +2,109 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: rule_derive_reflexive_lhs_rhs Pages: 1 -->
-<svg width="549pt" height="184pt"
- viewBox="0.00 0.00 549.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 180.1)">
+<svg width="379pt" height="256pt"
+ viewBox="0.00 0.00 379.00 256.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 252.1)">
 <title>rule_derive_reflexive_lhs_rhs</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-180.1 545,-180.1 545,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="270.5" y="-158.8" font-family="Times,serif" font-size="14.00">derive&#45;reflexive</text>
+<polygon fill="white" stroke="none" points="-4,4 -4,-252.1 375,-252.1 375,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="185.5" y="-230.8" font-family="Times,serif" font-size="14.00">derive&#45;reflexive</text>
 <g id="clust1" class="cluster">
 <title>cluster_lhs</title>
-<polygon fill="none" stroke="black" points="8,-8 8,-142.85 187,-142.85 187,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="97.5" y="-125.55" font-family="Times,serif" font-size="14.00">match</text>
+<polygon fill="none" stroke="black" points="8,-8 8,-214.85 102,-214.85 102,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="55" y="-197.55" font-family="Times,serif" font-size="14.00">match</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_rhs</title>
-<polygon fill="none" stroke="black" points="195,-8 195,-142.85 533,-142.85 533,-8 195,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="364" y="-125.55" font-family="Times,serif" font-size="14.00">assert</text>
+<polygon fill="none" stroke="black" points="110,-8 110,-214.85 363,-214.85 363,-8 110,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="236.5" y="-197.55" font-family="Times,serif" font-size="14.00">assert</text>
 </g>
 <!-- reflexive_L -->
 <g id="node1" class="node">
 <title>reflexive_L</title>
-<polygon fill="none" stroke="black" points="93.75,-52 16.25,-52 16.25,-16 93.75,-16 93.75,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="55" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive</text>
-</g>
-<!-- ?R_L -->
-<g id="node2" class="node">
-<title>?R_L</title>
-<polygon fill="none" stroke="black" points="145,-52 111.27,-34 145,-16 178.73,-34 145,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="145" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+<polygon fill="none" stroke="black" points="93.75,-181.6 16.25,-181.6 16.25,-145.6 93.75,-145.6 93.75,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="55" y="-158.92" font-family="Times,serif" font-size="14.00">reflexive</text>
 </g>
 <!-- h1_reflexive_L -->
 <g id="node3" class="node">
 <title>h1_reflexive_L</title>
-<polygon fill="none" stroke="#2ca02c" points="110.8,-94.33 110.8,-103.27 104.47,-109.6 95.53,-109.6 89.2,-103.27 89.2,-94.33 95.53,-88 104.47,-88 110.8,-94.33"/>
+<polygon fill="none" stroke="#2ca02c" points="65.8,-94.33 65.8,-103.27 59.47,-109.6 50.53,-109.6 44.2,-103.27 44.2,-94.33 50.53,-88 59.47,-88 65.8,-94.33"/>
 </g>
-<!-- h1_reflexive_L&#45;&gt;reflexive_L -->
+<!-- reflexive_L&#45;&gt;h1_reflexive_L -->
 <g id="edge1" class="edge">
-<title>h1_reflexive_L&#45;&gt;reflexive_L</title>
-<path fill="none" stroke="#2ca02c" d="M93.93,-89.33C88.8,-82.18 81.17,-71.53 74.03,-61.55"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="76.97,-59.65 68.3,-53.56 71.28,-63.72 76.97,-59.65"/>
-<text xml:space="preserve" text-anchor="middle" x="75.94" y="-74.46" font-family="Times,serif" font-size="14.00">1</text>
+<title>reflexive_L&#45;&gt;h1_reflexive_L</title>
+<path fill="none" stroke="#2ca02c" d="M55,-133.85C55,-125.29 55,-116.47 55,-109.96"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="51.5,-133.59 55,-143.59 58.5,-133.59 51.5,-133.59"/>
+<text xml:space="preserve" text-anchor="middle" x="50.5" y="-131.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_L -->
+<g id="node2" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="55,-52 21.27,-34 55,-16 88.73,-34 55,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="55" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
 </g>
 <!-- h1_reflexive_L&#45;&gt;?R_L -->
 <g id="edge2" class="edge">
 <title>h1_reflexive_L&#45;&gt;?R_L</title>
-<path fill="none" stroke="#2ca02c" d="M106.07,-89.33C112.01,-81.04 121.3,-68.07 129.32,-56.88"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="132.06,-59.07 135.04,-48.9 126.37,-54.99 132.06,-59.07"/>
-<text xml:space="preserve" text-anchor="middle" x="116.68" y="-72.2" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="#2ca02c" d="M55,-87.71C55,-81.13 55,-72.19 55,-63.54"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="58.5,-63.69 55,-53.69 51.5,-63.69 58.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="50.5" y="-73.99" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- reflexive&#45;dom_R -->
 <g id="node4" class="node">
 <title>reflexive&#45;dom_R</title>
-<polygon fill="none" stroke="black" points="315.38,-52 202.62,-52 202.62,-16 315.38,-16 315.38,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="259" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive&#45;dom</text>
-</g>
-<!-- ?R_R -->
-<g id="node5" class="node">
-<title>?R_R</title>
-<polygon fill="none" stroke="black" points="367,-52 333.27,-34 367,-16 400.73,-34 367,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="367" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
-</g>
-<!-- reflexive&#45;cod_R -->
-<g id="node6" class="node">
-<title>reflexive&#45;cod_R</title>
-<polygon fill="none" stroke="black" points="525.38,-52 418.62,-52 418.62,-16 525.38,-16 525.38,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="472" y="-29.32" font-family="Times,serif" font-size="14.00">reflexive&#45;cod</text>
+<polygon fill="none" stroke="black" points="230.38,-181.6 117.62,-181.6 117.62,-145.6 230.38,-145.6 230.38,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="174" y="-158.92" font-family="Times,serif" font-size="14.00">reflexive&#45;dom</text>
 </g>
 <!-- h2_reflexive&#45;dom_R -->
 <g id="node7" class="node">
 <title>h2_reflexive&#45;dom_R</title>
-<polygon fill="none" stroke="#9467bd" stroke-dasharray="5,2" points="323.8,-94.33 323.8,-103.27 317.47,-109.6 308.53,-109.6 302.2,-103.27 302.2,-94.33 308.53,-88 317.47,-88 323.8,-94.33"/>
+<polygon fill="none" stroke="#9467bd" stroke-dasharray="5,2" points="206.8,-94.33 206.8,-103.27 200.47,-109.6 191.53,-109.6 185.2,-103.27 185.2,-94.33 191.53,-88 200.47,-88 206.8,-94.33"/>
 </g>
-<!-- h2_reflexive&#45;dom_R&#45;&gt;reflexive&#45;dom_R -->
+<!-- reflexive&#45;dom_R&#45;&gt;h2_reflexive&#45;dom_R -->
 <g id="edge3" class="edge">
-<title>h2_reflexive&#45;dom_R&#45;&gt;reflexive&#45;dom_R</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M306.16,-89.85C299.86,-82.52 290.17,-71.25 281.2,-60.82"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="284.09,-58.81 274.92,-53.51 278.79,-63.38 284.09,-58.81"/>
-<text xml:space="preserve" text-anchor="middle" x="285.62" y="-75.14" font-family="Times,serif" font-size="14.00">1</text>
+<title>reflexive&#45;dom_R&#45;&gt;h2_reflexive&#45;dom_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M183.87,-134.43C186.93,-125.69 190.11,-116.62 192.44,-109.96"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="180.63,-133.08 180.63,-143.68 187.24,-135.4 180.63,-133.08"/>
+<text xml:space="preserve" text-anchor="middle" x="181.81" y="-131.4" font-family="Times,serif" font-size="14.00">1</text>
 </g>
-<!-- h2_reflexive&#45;dom_R&#45;&gt;?R_R -->
-<g id="edge4" class="edge">
-<title>h2_reflexive&#45;dom_R&#45;&gt;?R_R</title>
-<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M319.84,-89.85C327.26,-81.22 339.39,-67.11 349.49,-55.36"/>
-<polygon fill="#9467bd" stroke="#9467bd" points="351.86,-57.98 355.73,-48.11 346.55,-53.41 351.86,-57.98"/>
-<text xml:space="preserve" text-anchor="middle" x="333.63" y="-72.53" font-family="Times,serif" font-size="14.00">2</text>
+<!-- ?R_R -->
+<g id="node5" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="216,-52 182.27,-34 216,-16 249.73,-34 216,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="216" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- reflexive&#45;cod_R -->
+<g id="node6" class="node">
+<title>reflexive&#45;cod_R</title>
+<polygon fill="none" stroke="black" points="355.38,-181.6 248.62,-181.6 248.62,-145.6 355.38,-145.6 355.38,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="302" y="-158.92" font-family="Times,serif" font-size="14.00">reflexive&#45;cod</text>
 </g>
 <!-- h3_reflexive&#45;cod_R -->
 <g id="node8" class="node">
 <title>h3_reflexive&#45;cod_R</title>
-<polygon fill="none" stroke="#1f77b4" stroke-dasharray="5,2" points="429.8,-94.33 429.8,-103.27 423.47,-109.6 414.53,-109.6 408.2,-103.27 408.2,-94.33 414.53,-88 423.47,-88 429.8,-94.33"/>
+<polygon fill="none" stroke="#1f77b4" stroke-dasharray="5,2" points="290.8,-94.33 290.8,-103.27 284.47,-109.6 275.53,-109.6 269.2,-103.27 269.2,-94.33 275.53,-88 284.47,-88 290.8,-94.33"/>
+</g>
+<!-- reflexive&#45;cod_R&#45;&gt;h3_reflexive&#45;cod_R -->
+<g id="edge5" class="edge">
+<title>reflexive&#45;cod_R&#45;&gt;h3_reflexive&#45;cod_R</title>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M292.13,-134.43C289.07,-125.69 285.89,-116.62 283.56,-109.96"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="288.76,-135.4 295.37,-143.68 295.37,-133.08 288.76,-135.4"/>
+<text xml:space="preserve" text-anchor="middle" x="285.19" y="-131.4" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h2_reflexive&#45;dom_R&#45;&gt;?R_R -->
+<g id="edge4" class="edge">
+<title>h2_reflexive&#45;dom_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#9467bd" stroke-dasharray="5,2" d="M199.21,-87.71C201.56,-80.33 204.86,-69.99 207.91,-60.41"/>
+<polygon fill="#9467bd" stroke="#9467bd" points="211.14,-61.78 210.84,-51.19 204.47,-59.66 211.14,-61.78"/>
+<text xml:space="preserve" text-anchor="middle" x="200.8" y="-72.54" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- h3_reflexive&#45;cod_R&#45;&gt;?R_R -->
 <g id="edge6" class="edge">
 <title>h3_reflexive&#45;cod_R&#45;&gt;?R_R</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M412.41,-89.85C405.34,-81.3 393.81,-67.38 384.14,-55.7"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="386.95,-53.6 377.87,-48.13 381.55,-58.06 386.95,-53.6"/>
-<text xml:space="preserve" text-anchor="middle" x="390.26" y="-72.47" font-family="Times,serif" font-size="14.00">2</text>
-</g>
-<!-- h3_reflexive&#45;cod_R&#45;&gt;reflexive&#45;cod_R -->
-<g id="edge5" class="edge">
-<title>h3_reflexive&#45;cod_R&#45;&gt;reflexive&#45;cod_R</title>
-<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M425.71,-89.85C431.83,-82.6 441.22,-71.47 449.95,-61.13"/>
-<polygon fill="#1f77b4" stroke="#1f77b4" points="452.59,-63.42 456.37,-53.52 447.24,-58.91 452.59,-63.42"/>
-<text xml:space="preserve" text-anchor="middle" x="436.78" y="-75.35" font-family="Times,serif" font-size="14.00">1</text>
+<path fill="none" stroke="#1f77b4" stroke-dasharray="5,2" d="M272.66,-90.6C263.69,-81.8 248.18,-66.58 235.65,-54.28"/>
+<polygon fill="#1f77b4" stroke="#1f77b4" points="238.24,-51.92 228.65,-47.41 233.34,-56.92 238.24,-51.92"/>
+<text xml:space="preserve" text-anchor="middle" x="245.69" y="-72.5" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: b1016151506d13c508068fc96af8663a0a6e6f58288e184b6f35afdbec1e860d -->
+<!-- source sha256: 0748659214787b27cb5460446b935da9da21452dc83f37642ef0594a08ad85e0 -->

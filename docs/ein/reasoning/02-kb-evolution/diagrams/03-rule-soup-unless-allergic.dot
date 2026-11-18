@@ -7,10 +7,7 @@ digraph rule_soup_unless_allergic_lhs_rhs {
     "?g_L" -> "?c_L" [label="seats", color="#ff7f0e", fontcolor="#ff7f0e"];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-      "allergic_L" [label="allergic", shape=box];
-      "h1_allergic_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
-      "h1_allergic_L" -> "allergic_L" [xlabel="1", color="#2ca02c"];
-      "h1_allergic_L" -> "?g_L" [xlabel="2", color="#2ca02c"];
+      "?g_L" -> "?g_L" [label="allergic", color="#2ca02c", fontcolor="#2ca02c"];
     }
   }
   subgraph cluster_rhs { label="assert";

@@ -1,33 +1,47 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_d3022860ca [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d3022860ca -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_d3022860ca [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_d3022860ca -> "is-instance" [xlabel="2", color="#bcbd22", style=solid];
   f_d3022860ca -> "Object" [xlabel="3", color="#bcbd22", style=solid];
   f_d3022860ca -> "Type" [xlabel="4", color="#bcbd22", style=solid];
   f_efd47dc5ca [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_efd47dc5ca -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_efd47dc5ca [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_efd47dc5ca -> "is-instance" [xlabel="2", color="#bcbd22", style=solid];
   f_37791a66b1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_37791a66b1 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_37791a66b1 -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
   f_37791a66b1 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_37791a66b1 -> "House" [xlabel="4", color="#bcbd22", style=solid];
   f_bb680ca11c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_bb680ca11c -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_bb680ca11c [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_bb680ca11c -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
   f_32bfb4df75 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_32bfb4df75 -> "is-instance" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-instance" -> f_32bfb4df75 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_32bfb4df75 -> "Norwegian" [xlabel="2", color="#7f7f7f", style=solid];
   f_32bfb4df75 -> "Person" [xlabel="3", color="#7f7f7f", style=solid];
   f_4035c4583f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_4035c4583f -> "is-instance" [xlabel="1", color="#7f7f7f", style=solid];
+  "is-instance" -> f_4035c4583f [xlabel="1", dir=back, color="#7f7f7f", style=solid];
   f_4035c4583f -> "House-1" [xlabel="2", color="#7f7f7f", style=solid];
   f_4035c4583f -> "House" [xlabel="3", color="#7f7f7f", style=solid];
   f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid, xlabel="(10)"];
-  f_ba78d8e6bc -> "lives-in" [xlabel="1", color="#9467bd", style=solid];
+  "lives-in" -> f_ba78d8e6bc [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#9467bd", style=solid];
   f_ba78d8e6bc -> "House-1" [xlabel="3", color="#9467bd", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; }
+  { rank=same; "layer 1"; f_d3022860ca; f_efd47dc5ca; f_37791a66b1; f_bb680ca11c; }
+  { rank=same; "layer 2"; "is-instance"; "Object"; "Type"; "lives-in"; }
+  { rank=same; "layer 3"; f_32bfb4df75; f_4035c4583f; f_ba78d8e6bc; }
+  { rank=same; "layer 4"; "Person"; "House"; "Norwegian"; "House-1"; }
 }

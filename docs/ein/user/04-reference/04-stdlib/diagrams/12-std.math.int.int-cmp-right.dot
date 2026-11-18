@@ -13,10 +13,10 @@ digraph rule_int_cmp_right_lhs_rhs {
       "(int-cmp-l ?k ?n ?q)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     }
     "h1_done_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
-    "h1_done_L" -> "done_L" [xlabel="1", color="#e377c2"];
+    "done_L" -> "h1_done_L" [xlabel="1", dir=back, color="#e377c2"];
     "h1_done_L" -> "(int-cmp-l ?k ?n ?q)_L" [xlabel="2", color="#e377c2"];
     "h1_done_L" -> "?l_L" [xlabel="3", color="#e377c2"];
-    "(int-cmp-l ?k ?n ?q)_L" -> "int-cmp-l_L" [xlabel="1", color="#d62728"];
+    "int-cmp-l_L" -> "(int-cmp-l ?k ?n ?q)_L" [xlabel="1", dir=back, color="#d62728"];
     "(int-cmp-l ?k ?n ?q)_L" -> "?k_L" [xlabel="2", color="#d62728"];
     "(int-cmp-l ?k ?n ?q)_L" -> "?n_L" [xlabel="3", color="#d62728"];
     "(int-cmp-l ?k ?n ?q)_L" -> "?q_L" [xlabel="4", color="#d62728"];
@@ -35,13 +35,13 @@ digraph rule_int_cmp_right_lhs_rhs {
       "(int-cmp-r ?k ?l)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
     }
     "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
+    "add-walk_R" -> "h2_add-walk_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_add-walk_R" -> "(int-cmp-r ?k ?l)_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?n_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?q_R" [xlabel="4", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "0_R" [xlabel="5", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
-    "(int-cmp-r ?k ?l)_R" -> "int-cmp-r_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "int-cmp-r_R" -> "(int-cmp-r ?k ?l)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
     "(int-cmp-r ?k ?l)_R" -> "?k_R" [xlabel="2", color="#ff7f0e", style=dashed];
     "(int-cmp-r ?k ?l)_R" -> "?l_R" [xlabel="3", color="#ff7f0e", style=dashed];
   }

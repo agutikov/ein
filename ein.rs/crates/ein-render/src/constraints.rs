@@ -84,7 +84,7 @@ pub fn render_constraints(ast: &Ast, forms: &[NodeId], name: &str, fold: bool) -
         .copied()
         .filter(|f| !declared.contains(&ast.head_name(*f).unwrap_or("")))
         .collect();
-    let mut lines = digraph_open(name, Some("LR"), Some("fontname=\"Inter\", shape=box"));
+    let mut lines = digraph_open(name, Some("TB"), Some("fontname=\"Inter\", shape=box"));
     lines.push(format!("  {POLYGON_RANKSEP};"));
     if structural.is_empty() {
         lines.push(

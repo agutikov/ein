@@ -10,7 +10,19 @@
 //! Colour key: hypothesis / seed facts red, derived facts bold, negative
 //! (eliminated-alternative) facts grey, rule nodes coloured by rule, the `⊥`
 //! refutation node red. Each fact is drawn as its node in the canonical form,
-//! or folded on request, as every view draws one (Q-M1f.419).
+//! or folded on request, as every view draws one (Q-M1f.419), and laid out in
+//! layers as a knowledge base is ([`crate::fact_graph`]): a relation above
+//! its facts, a fact above its arguments.
+//!
+//! **The derivation stands out** (Q-M1f.428): each arrow of it, from a
+//! premise to a step, from a step to what it derives, from the core to `⊥`,
+//! is twice Graphviz's default width, `penwidth=2`, in a colour of
+//! [`DERIVATION_PALETTE`], dark enough to read against the facts' black.
+//!
+//! **No arrow goes to or from an arrow** (Q-M1f.429): a fact a derivation's
+//! arrow touches, a premise, a fact derived, a fact of the core or of the
+//! no-good, is its octagon in either form, and only a fact no such arrow
+//! touches is folded.
 
 use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 
@@ -21,12 +33,35 @@ use crate::dot_util::{
     FRAMED_RANKING, HYPER_SHAPE, POLYGON_RANKSEP, ctx_frames, ctx_label, digraph_open, hashed_id,
     multiline, quote,
 };
-use crate::fact_graph::FACT_NODE;
+use crate::fact_graph::{FACT_NODE, first_arrow, folds};
 use crate::kb_dot::{KbDotOpts, to_dot};
-use crate::palette::hash_color;
 
 const SEED_COLOUR: &str = "#d62728"; // red — hypothesis / seed facts, ⊥
 const NEG_COLOUR: &str = "#7f7f7f"; // grey — eliminated-alternative facts
+
+/// The width of a derivation's arrows and of its steps' borders: twice
+/// Graphviz's default.
+pub const DERIVATION_WIDTH: &str = "penwidth=2";
+
+/// The colours of a derivation's steps, one per rule, fixed by its name: dark
+/// and saturated, each at a contrast of 6 or more against white, and none
+/// red, the commitment's and the core's colour, or grey, a negation's.
+pub const DERIVATION_PALETTE: [&str; 8] = [
+    "#0047ab", // cobalt blue
+    "#006400", // dark green
+    "#6a0dad", // purple
+    "#a14a00", // burnt orange
+    "#00686b", // teal
+    "#8b008b", // dark magenta
+    "#5c3317", // brown
+    "#1a237e", // indigo
+];
+
+/// A step's colour: [`DERIVATION_PALETTE`] indexed by the rule's name, by the
+/// same stable digest as a relation's colour ([`crate::palette::hash_color`]).
+pub fn derivation_colour(rule: &str) -> &'static str {
+    DERIVATION_PALETTE[crate::palette::stable_index(rule, DERIVATION_PALETTE.len())]
+}
 
 /// The content key behind a slice node id — stable across runs, and
 /// deliberately **recursive**: it descends into nested fact arguments, which
@@ -104,7 +139,10 @@ fn under_id(terms: &Terms, a: Value) -> String {
 /// at is its node too, in the frame of its context where `kb` does not hold
 /// it. Under `fold`, a fact of three arrows that no fact of the cone points
 /// at is one arrow from its first argument to its second, labelled with its
-/// relation, through a point where the firings' arrows meet it.
+/// relation, and a fact of two arrows a loop on its argument, where no
+/// derivation's arrow touches it: a premise, a fact derived, a fact of the
+/// core or of the no-good is always its octagon, so that no arrow goes to or
+/// from an arrow (Q-M1f.429).
 ///
 /// `contradiction` is a dead commitment's `(unsat_core, learned_clause)`: the
 /// core facts point at a `⊥` node, and a note, `learned no-good`, points at
@@ -164,6 +202,15 @@ pub fn render_slice(
     };
     core.iter().for_each(|f| touch(*f));
     clause.iter().for_each(|f| touch(*f));
+    // The facts a derivation's arrow touches: never folded, since an arrow
+    // goes only to or from a node.
+    let touched: HashSet<String> = firings
+        .iter()
+        .flat_map(|f| f.premises.iter().chain(f.derived.iter()))
+        .chain(core.iter())
+        .chain(clause.iter())
+        .map(|f| key(terms, *f))
+        .collect();
 
     // What a fact of the cone points at, at any depth, with the relations
     // that point at it: a node, never folded.
@@ -218,8 +265,8 @@ pub fn render_slice(
             format!(", {tail}")
         };
         let mut arrows = vec![format!(
-            "  {id} -> {} [xlabel=\"1\"{tail}];",
-            quote(terms.sym(rel))
+            "  {}",
+            first_arrow(&id, &quote(terms.sym(rel)), &tail)
         )];
         for (i, a) in args.iter().enumerate() {
             arrows.push(format!(
@@ -231,7 +278,7 @@ pub fn render_slice(
         (decl, arrows)
     };
 
-    let mut lines = digraph_open(name, Some("LR"), Some("fontname=\"Inter\", shape=box"));
+    let mut lines = digraph_open(name, Some("TB"), Some("fontname=\"Inter\", shape=box"));
     lines.push(format!("  {POLYGON_RANKSEP};"));
     let mut arrows: Vec<String> = Vec::new();
     for &f in &cone {
@@ -239,33 +286,21 @@ pub fn render_slice(
             continue;
         }
         let (rel, args) = terms.fact(f);
-        if fold && args.len() == 2 {
-            // One labelled arrow, through the point the firings meet.
-            let id = node_id(&key(terms, f));
+        if fold && folds(args.len()) && !touched.contains(&key(terms, f)) {
+            // One labelled arrow from the first argument to the second, or
+            // a loop on the one argument.
             let m = marks(f);
-            let c = m.colour.unwrap_or("#000000");
-            lines.push(format!(
-                "  {id} [shape=point, width=0.08, color=\"{c}\"{}];",
-                m.penwidth
-                    .map_or(String::new(), |p| format!(", penwidth={p}"))
-            ));
+            let mut attrs = format!("label={}", quote(terms.sym(rel)));
+            if let Some(c) = m.colour {
+                attrs.push_str(&format!(", fontcolor=\"{c}\""));
+            }
             let tail = m.edge_attrs();
-            let tail = if tail.is_empty() {
-                String::new()
-            } else {
-                format!(", {tail}")
-            };
-            arrows.push(format!(
-                "  {} -> {id} [label={}, arrowhead=none{tail}];",
-                under_id(terms, args[0]),
-                quote(terms.sym(rel))
-            ));
-            let to = under_id(terms, args[1]);
-            arrows.push(if tail.is_empty() {
-                format!("  {id} -> {to};")
-            } else {
-                format!("  {id} -> {to} [{}];", tail.trim_start_matches(", "))
-            });
+            if !tail.is_empty() {
+                attrs.push_str(&format!(", {tail}"));
+            }
+            let from = under_id(terms, args[0]);
+            let to = args.get(1).map_or(from.clone(), |a| under_id(terms, *a));
+            arrows.push(format!("  {from} -> {to} [{attrs}];"));
             continue;
         }
         let (decl, a) = octagon(f);
@@ -295,7 +330,7 @@ pub fn render_slice(
     for (idx, firing) in firings.iter().enumerate() {
         let rule_name = terms.sym(firing.rule).to_string();
         let fnode = quote(&format!("fire{idx}_{rule_name}"));
-        let colour = hash_color(&rule_name);
+        let colour = derivation_colour(&rule_name);
         let why = kb
             .and_then(|kb| {
                 crate::sentence::rule_sentence(kb.program(), terms, firing.rule, &firing.bindings)
@@ -304,22 +339,24 @@ pub fn render_slice(
         let style = if firing.redundant {
             "rounded,dashed"
         } else {
-            "rounded,bold"
+            "rounded"
         };
         steps.push(format!(
             "  {fnode} [shape=box, style=\"{style}\", color=\"{colour}\", \
-             fontcolor=\"{colour}\", label={}];",
+             fontcolor=\"{colour}\", {DERIVATION_WIDTH}, label={}];",
             multiline(&[&rule_name, &why])
         ));
         for p in firing.premises.iter() {
             let pid = node_id(&key(terms, *p));
-            edges.push(format!("  {pid} -> {fnode} [color=\"{colour}\"];"));
+            edges.push(format!(
+                "  {pid} -> {fnode} [color=\"{colour}\", {DERIVATION_WIDTH}];"
+            ));
         }
         // One application fans out to each derived fact.
         for d in firing.derived.iter() {
             let did = node_id(&key(terms, *d));
             edges.push(format!(
-                "  {fnode} -> {did} [color=\"{colour}\", style=bold];"
+                "  {fnode} -> {did} [color=\"{colour}\", {DERIVATION_WIDTH}];"
             ));
         }
     }
@@ -330,21 +367,25 @@ pub fn render_slice(
         let bottom = quote("⊥");
         steps.push(format!(
             "  {bottom} [shape=doublecircle, color=\"{SEED_COLOUR}\", \
-             fontcolor=\"{SEED_COLOUR}\", label=\"⊥\"];"
+             fontcolor=\"{SEED_COLOUR}\", {DERIVATION_WIDTH}, label=\"⊥\"];"
         ));
         for f in &core {
             let cid = node_id(&key(terms, *f));
-            edges.push(format!("  {cid} -> {bottom} [color=\"{SEED_COLOUR}\"];"));
+            edges.push(format!(
+                "  {cid} -> {bottom} [color=\"{SEED_COLOUR}\", {DERIVATION_WIDTH}];"
+            ));
         }
         if !clause.is_empty() {
             let ng = quote("learned-nogood");
             steps.push(format!("  {ng} [shape=note, label=\"learned no-good\"];"));
             edges.push(format!(
-                "  {bottom} -> {ng} [style=dashed, label=\"lifts to\"];"
+                "  {bottom} -> {ng} [style=dashed, {DERIVATION_WIDTH}, label=\"lifts to\"];"
             ));
             for f in &clause {
                 let fid = node_id(&key(terms, *f));
-                edges.push(format!("  {ng} -> {fid} [style=dashed];"));
+                edges.push(format!(
+                    "  {ng} -> {fid} [style=dashed, {DERIVATION_WIDTH}];"
+                ));
             }
         }
     }

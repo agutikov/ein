@@ -1,79 +1,78 @@
 digraph kb {
-  // suggested layout: fdp
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
 
   // facts
   f_c208bacfe4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c208bacfe4 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_c208bacfe4 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_c208bacfe4 -> "person" [xlabel="2", color="#bcbd22", style=solid];
   f_c208bacfe4 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_707e614673 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_707e614673 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_707e614673 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_707e614673 -> "person" [xlabel="2", color="#bcbd22", style=solid];
   f_8caee6393b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_8caee6393b -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_8caee6393b [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_8caee6393b -> "likes" [xlabel="2", color="#bcbd22", style=solid];
   f_8caee6393b -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_8caee6393b -> "Food" [xlabel="4", color="#bcbd22", style=solid];
   f_a10b78f01e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_a10b78f01e -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_a10b78f01e [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_a10b78f01e -> "likes" [xlabel="2", color="#bcbd22", style=solid];
   f_d60e429037 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_d60e429037 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_d60e429037 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_d60e429037 -> "believes" [xlabel="2", color="#bcbd22", style=solid];
   f_d60e429037 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_d60e429037 -> "Claim" [xlabel="4", color="#bcbd22", style=solid];
   f_55569d1d8d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_55569d1d8d -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_55569d1d8d [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_55569d1d8d -> "believes" [xlabel="2", color="#bcbd22", style=solid];
   f_6cc6980351 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  f_6cc6980351 -> "person" [xlabel="1", color="#1f77b4", style=solid];
+  "person" -> f_6cc6980351 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_6cc6980351 -> "Ann" [xlabel="2", color="#1f77b4", style=solid];
   f_c4eaa034c3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  f_c4eaa034c3 -> "person" [xlabel="1", color="#1f77b4", style=solid];
+  "person" -> f_c4eaa034c3 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_c4eaa034c3 -> "Bob" [xlabel="2", color="#1f77b4", style=solid];
   f_1b16a4f0ea [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid];
-  f_1b16a4f0ea -> "person" [xlabel="1", color="#1f77b4", style=solid];
+  "person" -> f_1b16a4f0ea [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_1b16a4f0ea -> "Cid" [xlabel="2", color="#1f77b4", style=solid];
   f_c3b2adfbf0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", fontcolor="#e377c2", style=solid];
-  f_c3b2adfbf0 -> "__closed__" [xlabel="1", color="#e377c2", style=solid];
+  "__closed__" -> f_c3b2adfbf0 [xlabel="1", dir=back, color="#e377c2", style=solid];
   f_c3b2adfbf0 -> "person" [xlabel="2", color="#e377c2", style=solid];
   f_371044011b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_371044011b -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_371044011b [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_371044011b -> "Ann" [xlabel="2", color="#8c564b", style=solid];
   f_371044011b -> f_b10ac10970 [xlabel="3", color="#8c564b", style=solid];
   f_1b4a202558 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_1b4a202558 -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_1b4a202558 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_1b4a202558 -> "Bob" [xlabel="2", color="#8c564b", style=solid];
   f_1b4a202558 -> f_b10ac10970 [xlabel="3", color="#8c564b", style=solid];
   f_bd6ca8abff [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_bd6ca8abff -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_bd6ca8abff [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_bd6ca8abff -> "Cid" [xlabel="2", color="#8c564b", style=solid];
   f_bd6ca8abff -> f_b10ac10970 [xlabel="3", color="#8c564b", style=solid];
   f_54fc6bf5c7 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_54fc6bf5c7 -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_54fc6bf5c7 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_54fc6bf5c7 -> "Ann" [xlabel="2", color="#8c564b", style=solid];
   f_54fc6bf5c7 -> f_0b12cdd493 [xlabel="3", color="#8c564b", style=solid];
   f_4115da9c7e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_4115da9c7e -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_4115da9c7e [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_4115da9c7e -> "Bob" [xlabel="2", color="#8c564b", style=solid];
   f_4115da9c7e -> f_0b12cdd493 [xlabel="3", color="#8c564b", style=solid];
   f_91a8315124 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_91a8315124 -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_91a8315124 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_91a8315124 -> "Ann" [xlabel="2", color="#8c564b", style=solid];
   f_91a8315124 -> f_11e3b3411e [xlabel="3", color="#8c564b", style=solid];
   f_6dd37df268 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_6dd37df268 -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_6dd37df268 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_6dd37df268 -> "Ann" [xlabel="2", color="#8c564b", style=solid];
   f_6dd37df268 -> f_d3307a64ff [xlabel="3", color="#8c564b", style=solid];
   f_fdfdf8e1fe [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_fdfdf8e1fe -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_fdfdf8e1fe [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_fdfdf8e1fe -> "Bob" [xlabel="2", color="#8c564b", style=solid];
   f_fdfdf8e1fe -> f_d3307a64ff [xlabel="3", color="#8c564b", style=solid];
   f_8c1b256bd5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_8c1b256bd5 -> "believes" [xlabel="1", color="#8c564b", style=solid];
+  "believes" -> f_8c1b256bd5 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_8c1b256bd5 -> "Cid" [xlabel="2", color="#8c564b", style=solid];
   f_8c1b256bd5 -> f_d3307a64ff [xlabel="3", color="#8c564b", style=solid];
 
@@ -90,18 +89,40 @@ digraph kb {
     label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_23786afd82 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", fontcolor="#1f77b4", style=solid];
   }
-  f_b10ac10970 -> "likes" [xlabel="1", color="#1f77b4", style=dashed];
+  "likes" -> f_b10ac10970 [xlabel="1", dir=back, color="#1f77b4", style=dashed];
   f_b10ac10970 -> "Dan" [xlabel="2", color="#1f77b4", style=dashed];
   f_b10ac10970 -> "Soup" [xlabel="3", color="#1f77b4", style=dashed];
-  f_0b12cdd493 -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_0b12cdd493 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_0b12cdd493 -> "Dan" [xlabel="2", color="#1f77b4", style=solid];
   f_0b12cdd493 -> "Tea" [xlabel="3", color="#1f77b4", style=solid];
-  f_11e3b3411e -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_11e3b3411e [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_11e3b3411e -> "Eve" [xlabel="2", color="#1f77b4", style=solid];
   f_11e3b3411e -> "Fish" [xlabel="3", color="#1f77b4", style=solid];
-  f_d3307a64ff -> "not" [xlabel="1", color="#d62728", style=dashed];
+  "not" -> f_d3307a64ff [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_d3307a64ff -> f_23786afd82 [xlabel="2", color="#d62728", style=dashed];
-  f_23786afd82 -> "likes" [xlabel="1", color="#1f77b4", style=solid];
+  "likes" -> f_23786afd82 [xlabel="1", dir=back, color="#1f77b4", style=solid];
   f_23786afd82 -> "Dan" [xlabel="2", color="#1f77b4", style=solid];
   f_23786afd82 -> "Fish" [xlabel="3", color="#1f77b4", style=solid];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 5" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 6" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  "layer 4" -> "layer 5" [style=invis];
+  "layer 5" -> "layer 6" [style=invis];
+  { rank=same; "layer 0"; "relation"; "__closed__"; }
+  { rank=same; "layer 1"; f_c208bacfe4; f_707e614673; f_8caee6393b; f_a10b78f01e; f_d60e429037; f_55569d1d8d; f_c3b2adfbf0; }
+  { rank=same; "layer 2"; "person"; "Person"; "likes"; "Food"; "believes"; "Claim"; "not"; }
+  { rank=same; "layer 3"; f_6cc6980351; f_c4eaa034c3; f_1b16a4f0ea; f_371044011b; f_1b4a202558; f_bd6ca8abff; f_54fc6bf5c7; f_4115da9c7e; f_91a8315124; f_6dd37df268; f_fdfdf8e1fe; f_8c1b256bd5; }
+  { rank=same; "layer 4"; f_b10ac10970; f_0b12cdd493; f_11e3b3411e; f_d3307a64ff; }
+  { rank=same; "layer 5"; f_23786afd82; }
+  { rank=same; "layer 6"; "Ann"; "Bob"; "Cid"; "Dan"; "Soup"; "Tea"; "Eve"; "Fish"; }
 }

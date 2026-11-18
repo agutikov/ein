@@ -2,78 +2,78 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: query Pages: 1 -->
-<svg width="1847pt" height="197pt"
- viewBox="0.00 0.00 1847.00 197.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 193)">
+<svg width="1880pt" height="255pt"
+ viewBox="0.00 0.00 1880.00 255.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 250.6)">
 <title>query</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-193 1843,-193 1843,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-250.6 1876,-250.6 1876,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_goal_1</title>
-<polygon fill="none" stroke="black" points="1358,-8 1358,-181 1831,-181 1831,-8 1358,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="1594.5" y="-163.7" font-family="Times,serif" font-size="14.00">query</text>
+<polygon fill="none" stroke="black" points="1358,-8 1358,-238.6 1864,-238.6 1864,-8 1358,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="1611" y="-221.3" font-family="Times,serif" font-size="14.00">query</text>
 </g>
 <!-- solve -->
 <g id="node1" class="node">
 <title>solve</title>
-<polygon fill="none" stroke="black" points="1342,-135.88 0,-135.88 0,-99.88 1348,-99.88 1348,-129.88 1342,-135.88"/>
-<polyline fill="none" stroke="black" points="1342,-135.88 1342,-129.88"/>
-<polyline fill="none" stroke="black" points="1348,-129.88 1342,-129.88"/>
-<text xml:space="preserve" text-anchor="middle" x="674" y="-113.2" font-family="Times,serif" font-size="14.00">:expect (region (model) (model (seat Ann C1)) (model (seat Ann C2)) (model (seat Bob C1)) (model (seat Bob C2)) (model (seat Ann C1) (seat Bob C2)) (model (seat Ann C2) (seat Bob C1)))</text>
+<polygon fill="none" stroke="black" points="1342,-193.47 0,-193.47 0,-157.47 1348,-157.47 1348,-187.47 1342,-193.47"/>
+<polyline fill="none" stroke="black" points="1342,-193.47 1342,-187.47"/>
+<polyline fill="none" stroke="black" points="1348,-187.47 1342,-187.47"/>
+<text xml:space="preserve" text-anchor="middle" x="674" y="-170.8" font-family="Times,serif" font-size="14.00">:expect (region (model) (model (seat Ann C1)) (model (seat Ann C2)) (model (seat Bob C1)) (model (seat Bob C2)) (model (seat Ann C1) (seat Bob C2)) (model (seat Ann C2) (seat Bob C1)))</text>
 </g>
 <!-- seat_Q1 -->
 <g id="node2" class="node">
 <title>seat_Q1</title>
-<polygon fill="none" stroke="black" points="1420,-52 1366,-52 1366,-16 1420,-16 1420,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="1393" y="-29.32" font-family="Times,serif" font-size="14.00">seat</text>
-</g>
-<!-- ?who_Q1 -->
-<g id="node3" class="node">
-<title>?who_Q1</title>
-<polygon fill="none" stroke="black" points="1490,-52 1437.67,-34 1490,-16 1542.33,-34 1490,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="1490" y="-29.32" font-family="Times,serif" font-size="14.00">?who</text>
-</g>
-<!-- C1_Q1 -->
-<g id="node4" class="node">
-<title>C1_Q1</title>
-<polygon fill="none" stroke="black" points="1614,-52 1560,-52 1560,-16 1614,-16 1614,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="1587" y="-29.32" font-family="Times,serif" font-size="14.00">C1</text>
+<polygon fill="none" stroke="black" points="1420,-193.47 1366,-193.47 1366,-157.47 1420,-157.47 1420,-193.47"/>
+<text xml:space="preserve" text-anchor="middle" x="1393" y="-170.8" font-family="Times,serif" font-size="14.00">seat</text>
 </g>
 <!-- h1_seat_Q1 -->
 <g id="node5" class="node">
 <title>h1_seat_Q1</title>
-<polygon fill="none" stroke="#ff7f0e" points="1387.8,-113.4 1387.8,-122.35 1381.47,-128.67 1372.53,-128.67 1366.2,-122.35 1366.2,-113.4 1372.53,-107.08 1381.47,-107.08 1387.8,-113.4"/>
+<polygon fill="none" stroke="#ff7f0e" points="1428.8,-94.33 1428.8,-103.27 1422.47,-109.6 1413.53,-109.6 1407.2,-103.27 1407.2,-94.33 1413.53,-88 1422.47,-88 1428.8,-94.33"/>
 </g>
-<!-- h1_seat_Q1&#45;&gt;seat_Q1 -->
+<!-- seat_Q1&#45;&gt;h1_seat_Q1 -->
 <g id="edge1" class="edge">
-<title>h1_seat_Q1&#45;&gt;seat_Q1</title>
-<path fill="none" stroke="#ff7f0e" d="M1378.96,-106.84C1381.08,-96.01 1384.54,-78.31 1387.49,-63.18"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1390.85,-64.25 1389.33,-53.76 1383.98,-62.9 1390.85,-64.25"/>
-<text xml:space="preserve" text-anchor="middle" x="1379.77" y="-83.63" font-family="Times,serif" font-size="14.00">1</text>
+<title>seat_Q1&#45;&gt;h1_seat_Q1</title>
+<path fill="none" stroke="#ff7f0e" d="M1402.38,-146.47C1406.67,-133.65 1411.48,-119.28 1414.62,-109.91"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1399.13,-145.13 1399.28,-155.72 1405.77,-147.35 1399.13,-145.13"/>
+<text xml:space="preserve" text-anchor="middle" x="1402.19" y="-137.53" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?who_Q1 -->
+<g id="node3" class="node">
+<title>?who_Q1</title>
+<polygon fill="none" stroke="black" points="1418,-52 1365.67,-34 1418,-16 1470.33,-34 1418,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1418" y="-29.32" font-family="Times,serif" font-size="14.00">?who</text>
+</g>
+<!-- C1_Q1 -->
+<g id="node4" class="node">
+<title>C1_Q1</title>
+<polygon fill="none" stroke="black" points="1542,-52 1488,-52 1488,-16 1542,-16 1542,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1515" y="-29.32" font-family="Times,serif" font-size="14.00">C1</text>
 </g>
 <!-- h1_seat_Q1&#45;&gt;?who_Q1 -->
 <g id="edge2" class="edge">
 <title>h1_seat_Q1&#45;&gt;?who_Q1</title>
-<path fill="none" stroke="#ff7f0e" d="M1381.98,-106.92C1385.34,-100.91 1390.21,-93.41 1396,-88 1413.6,-71.57 1437.21,-58.28 1456.37,-49.12"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1457.77,-52.33 1465.39,-44.97 1454.85,-45.97 1457.77,-52.33"/>
-<text xml:space="preserve" text-anchor="middle" x="1415.71" y="-73.23" font-family="Times,serif" font-size="14.00">2</text>
+<path fill="none" stroke="#ff7f0e" d="M1418,-87.71C1418,-81.13 1418,-72.19 1418,-63.54"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1421.5,-63.69 1418,-53.69 1414.5,-63.69 1421.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="1413.5" y="-73.99" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 <!-- h1_seat_Q1&#45;&gt;C1_Q1 -->
 <g id="edge3" class="edge">
 <title>h1_seat_Q1&#45;&gt;C1_Q1</title>
-<path fill="none" stroke="#ff7f0e" d="M1381.34,-106.58C1384.51,-100.29 1389.4,-92.6 1396,-88 1451.19,-49.55 1481.19,-72.69 1548.99,-52.14"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1549.89,-55.52 1558.3,-49.08 1547.7,-48.87 1549.89,-55.52"/>
-<text xml:space="preserve" text-anchor="middle" x="1463.2" y="-67.31" font-family="Times,serif" font-size="14.00">3</text>
+<path fill="none" stroke="#ff7f0e" d="M1426.95,-92C1438.69,-84.4 1460.01,-70.6 1478.72,-58.49"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="1480.44,-61.54 1486.93,-53.17 1476.64,-55.67 1480.44,-61.54"/>
+<text xml:space="preserve" text-anchor="middle" x="1453.16" y="-76.08" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 <!-- query_1 -->
 <g id="node6" class="node">
 <title>query_1</title>
-<polygon fill="none" stroke="black" points="1816.62,-147.75 1405.38,-147.75 1405.38,-88 1822.62,-88 1822.62,-141.75 1816.62,-147.75"/>
-<polyline fill="none" stroke="black" points="1816.62,-147.75 1816.62,-141.75"/>
-<polyline fill="none" stroke="black" points="1822.62,-141.75 1816.62,-141.75"/>
-<text xml:space="preserve" text-anchor="middle" x="1614" y="-130.45" font-family="Times,serif" font-size="14.00">:goal&#45;text &quot;{?who} sits on the first chair&quot;</text>
-<text xml:space="preserve" text-anchor="middle" x="1614" y="-113.2" font-family="Times,serif" font-size="14.00">:over maximal</text>
-<text xml:space="preserve" text-anchor="middle" x="1614" y="-95.95" font-family="Times,serif" font-size="14.00">:expect (or (model (seat Ann C1)) (model (seat Bob C1)))</text>
+<polygon fill="none" stroke="black" points="1849.62,-205.35 1438.38,-205.35 1438.38,-145.6 1855.62,-145.6 1855.62,-199.35 1849.62,-205.35"/>
+<polyline fill="none" stroke="black" points="1849.62,-205.35 1849.62,-199.35"/>
+<polyline fill="none" stroke="black" points="1855.62,-199.35 1849.62,-199.35"/>
+<text xml:space="preserve" text-anchor="middle" x="1647" y="-188.05" font-family="Times,serif" font-size="14.00">:goal&#45;text &quot;{?who} sits on the first chair&quot;</text>
+<text xml:space="preserve" text-anchor="middle" x="1647" y="-170.8" font-family="Times,serif" font-size="14.00">:over maximal</text>
+<text xml:space="preserve" text-anchor="middle" x="1647" y="-153.55" font-family="Times,serif" font-size="14.00">:expect (or (model (seat Ann C1)) (model (seat Bob C1)))</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: 2dbd4eead5daf514013b9df381813ef0adf2a70bf767d2e098cbed534732dbfd -->
+<!-- source sha256: cddb3c2d26778d2f6b113a117e508c4bcc0f90d1dbee682ad33d3475fc06d11e -->

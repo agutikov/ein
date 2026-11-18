@@ -24,35 +24,35 @@ digraph rule_no_room_left_lhs_rhs {
       "(?R ?a ?v)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     }
     "h1_functional_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_functional_L" -> "functional_L" [xlabel="1", color="#bcbd22"];
+    "functional_L" -> "h1_functional_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_functional_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
     "h1_functional_L" -> "0_L" [xlabel="3", color="#bcbd22"];
     "h1_functional_L" -> "1_L" [xlabel="4", color="#bcbd22"];
     "h2_total_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h2_total_L" -> "total_L" [xlabel="1", color="#1f77b4"];
+    "total_L" -> "h2_total_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h2_total_L" -> "?R_L" [xlabel="2", color="#1f77b4"];
     "h2_total_L" -> "0_L" [xlabel="3", color="#1f77b4"];
     "h3_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h3_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "h3_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h3_isa_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
     "h3_isa_L" -> "?OT_L" [xlabel="3", color="#bcbd22"];
     "h4_forall_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
-    "h4_forall_L" -> "forall_L" [xlabel="1", color="#1f77b4"];
+    "forall_L" -> "h4_forall_L" [xlabel="1", dir=back, color="#1f77b4"];
     "h4_forall_L" -> "?v_L" [xlabel="2", color="#1f77b4"];
     "h4_forall_L" -> "(?isa ?v ?VT)_L" [xlabel="3", color="#1f77b4"];
     "h4_forall_L" -> "(not (?R ?a ?v))_L" [xlabel="4", color="#1f77b4"];
-    "(?isa ?v ?VT)_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
+    "?isa_L" -> "(?isa ?v ?VT)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(?isa ?v ?VT)_L" -> "?v_L" [xlabel="2", color="#bcbd22"];
     "(?isa ?v ?VT)_L" -> "?VT_L" [xlabel="3", color="#bcbd22"];
-    "(not (?R ?a ?v))_L" -> "not_L" [xlabel="1", color="#d62728"];
+    "not_L" -> "(not (?R ?a ?v))_L" [xlabel="1", dir=back, color="#d62728"];
     "(not (?R ?a ?v))_L" -> "(?R ?a ?v)_L" [xlabel="2", color="#d62728"];
-    "(?R ?a ?v)_L" -> "?R_L" [xlabel="1", color="#1f77b4"];
+    "?R_L" -> "(?R ?a ?v)_L" [xlabel="1", dir=back, color="#1f77b4"];
     "(?R ?a ?v)_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
     "(?R ?a ?v)_L" -> "?v_L" [xlabel="3", color="#1f77b4"];
   }
   subgraph cluster_rhs { label="assert";
     "false_R" [label="false", shape=box];
     "h5_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
-    "h5_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "false_R" -> "h5_false_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
   }
 }

@@ -1,37 +1,51 @@
 digraph kb {
-  rankdir=BT;
+  rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
   f_37791a66b1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_37791a66b1 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_37791a66b1 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_37791a66b1 -> "lives-in" [xlabel="2", color="#bcbd22", style=solid];
   f_37791a66b1 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_37791a66b1 -> "House" [xlabel="4", color="#bcbd22", style=solid];
   f_c7d7a79813 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c7d7a79813 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_c7d7a79813 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_c7d7a79813 -> "adult" [xlabel="2", color="#bcbd22", style=solid];
   f_c7d7a79813 -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_c19a3b2aac [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_c19a3b2aac -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_c19a3b2aac [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_c19a3b2aac -> "keeps" [xlabel="2", color="#bcbd22", style=solid];
   f_c19a3b2aac -> "Person" [xlabel="3", color="#bcbd22", style=solid];
   f_c19a3b2aac -> "House" [xlabel="4", color="#bcbd22", style=solid];
   f_c19a3b2aac -> "Pet" [xlabel="5", color="#bcbd22", style=solid];
   f_189966b82d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_189966b82d -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  "relation" -> f_189966b82d [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_189966b82d -> "solved" [xlabel="2", color="#bcbd22", style=solid];
   f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid];
-  f_ba78d8e6bc -> "lives-in" [xlabel="1", color="#9467bd", style=solid];
+  "lives-in" -> f_ba78d8e6bc [xlabel="1", dir=back, color="#9467bd", style=solid];
   f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#9467bd", style=solid];
   f_ba78d8e6bc -> "House-1" [xlabel="3", color="#9467bd", style=solid];
   f_f24a1b9ad4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_f24a1b9ad4 -> "adult" [xlabel="1", color="#bcbd22", style=solid];
+  "adult" -> f_f24a1b9ad4 [xlabel="1", dir=back, color="#bcbd22", style=solid];
   f_f24a1b9ad4 -> "Norwegian" [xlabel="2", color="#bcbd22", style=solid];
   f_81cc97aa67 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
-  f_81cc97aa67 -> "keeps" [xlabel="1", color="#d62728", style=solid];
+  "keeps" -> f_81cc97aa67 [xlabel="1", dir=back, color="#d62728", style=solid];
   f_81cc97aa67 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
   f_81cc97aa67 -> "House-1" [xlabel="3", color="#d62728", style=solid];
   f_81cc97aa67 -> "Zebra" [xlabel="4", color="#d62728", style=solid];
   f_c08e9231d4 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=solid];
-  f_c08e9231d4 -> "solved" [xlabel="1", color="#2ca02c", style=solid];
+  "solved" -> f_c08e9231d4 [xlabel="1", dir=back, color="#2ca02c", style=solid];
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; }
+  { rank=same; "layer 1"; f_37791a66b1; f_c7d7a79813; f_c19a3b2aac; f_189966b82d; }
+  { rank=same; "layer 2"; "lives-in"; "Person"; "House"; "adult"; "keeps"; "Pet"; "solved"; }
+  { rank=same; "layer 3"; f_ba78d8e6bc; f_f24a1b9ad4; f_81cc97aa67; f_c08e9231d4; }
+  { rank=same; "layer 4"; "Norwegian"; "House-1"; "Zebra"; }
 }

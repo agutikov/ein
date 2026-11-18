@@ -22,17 +22,17 @@ digraph rule_int_cmp_start_lhs_rhs {
       "(int ?q ?m)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
     }
     "h1_operand-is_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
-    "h1_operand-is_L" -> "operand-is_L" [xlabel="1", color="#17becf"];
+    "operand-is_L" -> "h1_operand-is_L" [xlabel="1", dir=back, color="#17becf"];
     "h1_operand-is_L" -> "(int-second (int-cmp ?x ?y) ?p ?n)_L" [xlabel="2", color="#17becf"];
     "h1_operand-is_L" -> "(int ?q ?m)_L" [xlabel="3", color="#17becf"];
-    "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "int-second_L" [xlabel="1", color="#bcbd22"];
+    "int-second_L" -> "(int-second (int-cmp ?x ?y) ?p ?n)_L" [xlabel="1", dir=back, color="#bcbd22"];
     "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "(int-cmp ?x ?y)_L" [xlabel="2", color="#bcbd22"];
     "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?p_L" [xlabel="3", color="#bcbd22"];
     "(int-second (int-cmp ?x ?y) ?p ?n)_L" -> "?n_L" [xlabel="4", color="#bcbd22"];
-    "(int-cmp ?x ?y)_L" -> "int-cmp_L" [xlabel="1", color="#7f7f7f"];
+    "int-cmp_L" -> "(int-cmp ?x ?y)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(int-cmp ?x ?y)_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "(int-cmp ?x ?y)_L" -> "?y_L" [xlabel="3", color="#7f7f7f"];
-    "(int ?q ?m)_L" -> "int_L" [xlabel="1", color="#17becf"];
+    "int_L" -> "(int ?q ?m)_L" [xlabel="1", dir=back, color="#17becf"];
     "(int ?q ?m)_L" -> "?q_L" [xlabel="2", color="#17becf"];
     "(int ?q ?m)_L" -> "?m_L" [xlabel="3", color="#17becf"];
   }
@@ -50,13 +50,13 @@ digraph rule_int_cmp_start_lhs_rhs {
       "(int-cmp ?x ?y)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h2_int-cmp-call_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
-    "h2_int-cmp-call_R" -> "int-cmp-call_R" [xlabel="1", color="#1f77b4", style=dashed];
+    "int-cmp-call_R" -> "h2_int-cmp-call_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
     "h2_int-cmp-call_R" -> "(int-cmp ?x ?y)_R" [xlabel="2", color="#1f77b4", style=dashed];
     "h2_int-cmp-call_R" -> "?p_R" [xlabel="3", color="#1f77b4", style=dashed];
     "h2_int-cmp-call_R" -> "?n_R" [xlabel="4", color="#1f77b4", style=dashed];
     "h2_int-cmp-call_R" -> "?q_R" [xlabel="5", color="#1f77b4", style=dashed];
     "h2_int-cmp-call_R" -> "?m_R" [xlabel="6", color="#1f77b4", style=dashed];
-    "(int-cmp ?x ?y)_R" -> "int-cmp_R" [xlabel="1", color="#7f7f7f", style=dashed];
+    "int-cmp_R" -> "(int-cmp ?x ?y)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
     "(int-cmp ?x ?y)_R" -> "?x_R" [xlabel="2", color="#7f7f7f", style=dashed];
     "(int-cmp ?x ?y)_R" -> "?y_R" [xlabel="3", color="#7f7f7f", style=dashed];
   }

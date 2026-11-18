@@ -13,11 +13,11 @@ digraph rule_to_dec_double_lhs_rhs {
       "(bin-b ?bit ?rest)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
     }
     "h1_to-dec-go_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
-    "h1_to-dec-go_L" -> "to-dec-go_L" [xlabel="1", color="#bcbd22"];
+    "to-dec-go_L" -> "h1_to-dec-go_L" [xlabel="1", dir=back, color="#bcbd22"];
     "h1_to-dec-go_L" -> "?b_L" [xlabel="2", color="#bcbd22"];
     "h1_to-dec-go_L" -> "(bin-b ?bit ?rest)_L" [xlabel="3", color="#bcbd22"];
     "h1_to-dec-go_L" -> "?acc_L" [xlabel="4", color="#bcbd22"];
-    "(bin-b ?bit ?rest)_L" -> "bin-b_L" [xlabel="1", color="#7f7f7f"];
+    "bin-b_L" -> "(bin-b ?bit ?rest)_L" [xlabel="1", dir=back, color="#7f7f7f"];
     "(bin-b ?bit ?rest)_L" -> "?bit_L" [xlabel="2", color="#7f7f7f"];
     "(bin-b ?bit ?rest)_L" -> "?rest_L" [xlabel="3", color="#7f7f7f"];
   }
@@ -34,13 +34,13 @@ digraph rule_to_dec_double_lhs_rhs {
       "(doubling ?b ?rest)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
     }
     "h2_add-walk_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
-    "h2_add-walk_R" -> "add-walk_R" [xlabel="1", color="#17becf", style=dashed];
+    "add-walk_R" -> "h2_add-walk_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
     "h2_add-walk_R" -> "(doubling ?b ?rest)_R" [xlabel="2", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?acc_R" [xlabel="3", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?acc_R" [xlabel="4", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "?bit_R" [xlabel="5", color="#17becf", style=dashed];
     "h2_add-walk_R" -> "z_R" [xlabel="6", color="#17becf", style=dashed];
-    "(doubling ?b ?rest)_R" -> "doubling_R" [xlabel="1", color="#bcbd22", style=dashed];
+    "doubling_R" -> "(doubling ?b ?rest)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
     "(doubling ?b ?rest)_R" -> "?b_R" [xlabel="2", color="#bcbd22", style=dashed];
     "(doubling ?b ?rest)_R" -> "?rest_R" [xlabel="3", color="#bcbd22", style=dashed];
   }
