@@ -153,6 +153,19 @@ t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string l
   escape it does not read as one, at its quote), and any in a comment. A byte that is not UTF-8 is refused before
   the text is read ([§ 2](#2-errors-and-exit-codes)).
 
+### 1.7 A text nested past 1 000 parentheses is refused before it is parsed
+
+A top-level form is at depth 1. One pass over the tokens counts depth before the parse, and a text whose `(` passes
+1 000 is refused with one line at that `(`, and no other:
+
+```text
+<file>:<line>:<col>: this `(` nests deeper than the limit of 1000 parentheses
+```
+
+Every command exits 1 (`ein test`: 2). A rule may derive a fact deeper than the limit, and a state that holds one is
+answered and saved; its saved file loads again, since what the parser reads of it is the program
+([Q-M1f.185](../../../decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md)).
+
 ## 2. Errors and exit codes
 
 A failure the engine cannot place in a form prints one line and exits non-zero:
