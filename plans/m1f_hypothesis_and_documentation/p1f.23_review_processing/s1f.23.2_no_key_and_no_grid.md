@@ -1,9 +1,11 @@
 # S1f.23.2 — `--models key` and `--models grid` removed
 
 **Phase:** [P1f.23](README.md)
-**Status:** run to its end 2026-11-18 on the branch `s1f.23.2-models-forms` (`377e3761`), in the worktree
-`build/wt-s1f232`, beside S1f.23.1, which edits the same CLI files on master; it waits for the main session's merge
-after S1f.23.1's code, and one gate, `utils/ci_container.sh` and one nightly hold the two on the merged tree.
+**Status:** done 2026-11-18 on the branch `s1f.23.2-models-forms` (`377e3761`, its record `05bc83b8`), in the
+worktree `build/wt-s1f232`, beside S1f.23.1, which edited the same CLI files on master; **merged** into master
+2026-11-18 by `34c2d79b`, through S1f.23.3's branch; one gate, `utils/ci_container.sh` and one nightly hold the phase's
+stages on the merged tree. Its readings are Q-M1f.448 to .453, its findings P1f.23's [R-7 and R-8](findings.md), its
+(a) R-5.
 
 ## The ruling
 

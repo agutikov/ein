@@ -1,10 +1,11 @@
 # S1f.23.3 — `--diff-models` leaves `ein solve`; `ein test` shows how a claim's models differ from what it found
 
 **Phase:** [P1f.23](README.md)
-**Status:** run to its end 2026-11-18 on the user's word, in the worktree `build/wt-s1f233` on the branch
-`s1f.23.3-test-diff`, which holds S1f.23.2's work and master's plan commits merged in; it waits for the main session's
-merge after S1f.23.1's code, and one gate, `utils/ci_container.sh` and one nightly hold the phase's stages on the merged
-tree.
+**Status:** done 2026-11-18 on the user's word, in the worktree `build/wt-s1f233` on the branch
+`s1f.23.3-test-diff` (`2fd6827f`, its record `b1e66537`), which holds S1f.23.2's work and master's plan commits merged
+in; **merged** into master 2026-11-18 by `34c2d79b`, with `4b152a70` (R-2's refusal texts); one gate,
+`utils/ci_container.sh` and one nightly hold the phase's stages on the merged tree. Its readings are Q-M1f.454 to
+.466, its findings P1f.23's [R-9 to R-13](findings.md), its (a) R-5.
 
 ## The ruling
 

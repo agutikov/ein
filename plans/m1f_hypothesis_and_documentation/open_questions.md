@@ -342,7 +342,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the first place at fault from the units |
 | [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
 | [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a root's saved file is stored as the program it carries, one with a `(commit …)` refused |
-| [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English, and no file holds a state's facts in English now; [the milestone's findings](findings.md) L-102 and L-105 wait on it |
+| [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **resolved 2026-11-18** by S1f.23.5's rulings (a `:why` reads only the form it is written on; facts stay as they are): a fact has no English of its own, so no state file has a fact's English to write, and (a) stands; [the milestone's findings](findings.md) L-102 and L-105 follow, the writer gone and `utils/nl_census.py`'s answer half retired in S1f.23.5's build. Before: **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English |
 | [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), both read the program's H, the node aside |
 | [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), root alone, the node; each claim NOT CHECKED, no exit code |
 | [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
@@ -376,6 +376,25 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.445](#q-m1f445--the-renaming-tests-tier) | the renaming test's tier | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), per commit outside `tests/`, every program in the nightly |
 | [Q-M1f.446](#q-m1f446--the-forall-drawing-the-renaming-test-found) | the `forall` drawing the renaming test found | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), S1f.23.1's, which dropped the read (Q-M1f.427); `READS` emptied on the merge |
 | [Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the loader's argument-count check, once `relation` is a convention: kept at load, a rule's verdict at run time, or dropped | **open, the user's, not ruled** (*"will think about it in p1f.21"*): no default taken; P1f.21's S1f.21.4 shows each option and does not choose |
+| [Q-M1f.448](#q-m1f448----models-with-key-and-grid-gone) | `--models`, with `key` and `grid` gone | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), removed whole, from `ein solve` and `ein oracle` |
+| [Q-M1f.449](#q-m1f449----models-removed-or-retired) | `--models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
+| [Q-M1f.450](#q-m1f450----models-grids-reading-of-is-a-and-the-grids-names) | `--models grid`'s reading of `is-a`, and the grid's names | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), ended with the code: `grid.rs` deleted, P1f.23's R-1 and R-3 with it |
+| [Q-M1f.451](#q-m1f451--the-determining-key-on-the-reasoning-page) | the determining key on the reasoning page | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), taken out with the term and *what models differ in* |
+| [Q-M1f.452](#q-m1f452--what-the-walkthrough-shows-where-it-showed-the-grids) | what the walkthrough shows where it showed the grids | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), `-f`'s output, Ein facts, no table |
+| [Q-M1f.453](#q-m1f453--modelsrs-name-once-it-holds-the-diff-alone) | `models.rs`' name, once it holds the diff alone | **defaulted 2026-11-18 (S1f.23.2), the user's to revise**: (a), kept; superseded on the merge by S1f.23.3's `claim_diff.rs` (Q-M1f.465) |
+| [Q-M1f.454](#q-m1f454--ein-test---diffs-spelling) | `ein test --diff`'s spelling | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `--diff stats|full`, a bare `--diff` the stats where no word follows; before a path refused, exit 2 |
+| [Q-M1f.455](#q-m1f455--how-many-facts-off-a-near-model-is) | how many facts off a near model is | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), an edit distance: a fact replaced counts once |
+| [Q-M1f.456](#q-m1f456--what-the-diff-counts-as-a-match) | what the diff counts as a match | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), what the claim's check pairs, a maximum matching: a held claim's diff is all matches |
+| [Q-M1f.457](#q-m1f457--which-claims-have-a-diff) | which claims have a diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), every claim a run decided, held or FAILED, but the region's `(false)` |
+| [Q-M1f.458](#q-m1f458--a-missing-model-and-an-extra-found-item) | a missing model and an extra found item | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), a missing model against its nearest found item with its facts; an extra found item names its nearest model, without facts |
+| [Q-M1f.459](#q-m1f459--an-owing--claims-diff) | an `(owing …)` claim's diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), against the owing frontier, *owing node i* |
+| [Q-M1f.460](#q-m1f460--merged--and-the-diff) | `(merged …)` and the diff | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), not diffed: the claim's own lines say why |
+| [Q-M1f.461](#q-m1f461--where-the-diff-prints) | where the diff prints | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), after the claim's lines, every claim with a diff at the default volume; `-q` diffs only what it prints |
+| [Q-M1f.462](#q-m1f462--the-reports-diff-and-its-id) | the report's `diff`, and its id | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `diff` on every row, `null` where none; `ein-test-report/6` |
+| [Q-M1f.463](#q-m1f463--the-review-bundles-right-answer-written-as-claims) | the review bundle's right answer, written as claims | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), query claims, one per relation of `closes`, over the row's line |
+| [Q-M1f.464](#q-m1f464--the-review-run-pages-cross-check-1) | the review run page's cross-check 1 | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), the `ein test` run's claims against the listed states, by count |
+| [Q-M1f.465](#q-m1f465--the-diffs-module) | the diff's module | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `claim_diff.rs` |
+| [Q-M1f.466](#q-m1f466----diff-models-removed-or-retired) | `--diff-models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8106,6 +8125,12 @@ its source or its rule.
 `the_pages_trace_lines_are_a_runs`. The code that wrote the comments (`ein_render::dump::serialise`'s
 `facts_to_ein_text`, `kb_to_ein_text`) is read by no surface of the binary now (N-36; L-102 of [the milestone's findings](findings.md) now).
 
+**Resolved 2026-11-18** by S1f.23.5's rulings
+([its stage file's Record](p1f.23_review_processing/s1f.23.5_a_why_reads_its_own_form.md#record)): a `:why` reads only
+the form it is written on, and facts stay as they are (*"leave facts as they are"*), so a fact has no English of its
+own and no state file has a fact's English to write; (a) stands. L-102 and L-105 follow from it: the writer goes and
+`utils/nl_census.py`'s answer half is retired, both in S1f.23.5's build.
+
 ### Q-M1f.415 — `ein show hyps` and `ein render h-space` of a saved file
 
 **Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.**
@@ -8584,3 +8609,224 @@ P1f.21's S1f.21.4 shows each on the corpus's programs that the check refuses or 
 and does not choose ([`open_facts.md` § 9](p1f.21_verdicts_as_rules/open_facts.md#9-what-s1f214-answers), item 6), with
 [V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
 a relation that only an activator names.
+
+### Q-M1f.448 — `--models`, with `key` and `grid` gone
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 1. **Put, not ruled.** The user ruled `--models key` and
+`--models grid` away (*"remove key and grid"*); the flag's one value left, `list`, the default, added nothing, and
+nothing read it: no script (`utils/review` ran only `key` and `grid`), no corpus run, no config row (`06-config.md`
+named it in its presentation list alone), neither `ein test` nor any artefact.
+
+- **(a)** **removed whole**, from both parsers that had it (`ein solve`, `ein oracle`), with its help, its id in
+  `--monotone`'s conflicts, its `--count` refusal and its name in `--dump-answer`'s help. **Default.**
+- **(b)** kept with `list` alone, a flag of nothing, for a reader that still passes it.
+
+**Default taken: (a).** Built: `ein-cli/src/cmdline.rs`, `modes.rs`, `oracle.rs`; `help_surface.rs` and the help
+golden; `05-cli.md`, `06-config.md`.
+
+### Q-M1f.449 — `--models`: removed, or retired
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 2. **Put, not ruled.** `ein solve` refuses a retired option with
+what answers instead (`cmdline.rs`' `retired(…)`, `solve::RETIRED`); that table holds what the switch to R replaced.
+
+- **(a)** **removed, not retired**: clap refuses `--models` as an unknown argument, exit 2. **Default.**
+- **(b)** a retired entry, refused with what answers instead, `--maximal` and `-f`.
+
+**Default taken: (a).** `--diff-models` takes the same reading, Q-M1f.466.
+
+### Q-M1f.450 — `--models grid`'s reading of `is-a`, and the grid's names
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 3. **Put, not ruled.** Q-M1f.412's review item found
+`--models grid` reading `is-a` (P1f.23's [R-1](p1f.23_review_processing/findings.md)), and its help speaking of a
+type (R-3); both waited on the user's ruling on theory names, Q-M1f.436.
+
+- **(a)** **ended with the code**: `ein-render/src/grid.rs` is deleted whole, and R-1 and R-3 with it. **Default.**
+- **(b)** kept open until the user rules on them by name.
+
+**Default taken: (a).** R-1 and R-3 are marked ended in P1f.23's findings.
+
+### Q-M1f.451 — The determining key on the reasoning page
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 4. **Put, not ruled.** `reasoning/02-kb-evolution/10-satisfiability.md`
+§ 6 defined the *determining key*, what `--models key` computed, and *what models differ in*, the variables only the
+key read; no other page uses either.
+
+- **(a)** **taken out**, with the term, *what models differ in*, the drawing `diagrams/10-key.dot`, the intro's
+  *compact exact form*, and `key` from the notation table of `reasoning/README.md`; the model and the count's
+  guarantee stay. **Default.**
+- **(b)** kept as mathematics, a notion of the page with no command behind it.
+
+**Default taken: (a).**
+
+### Q-M1f.452 — What the walkthrough shows where it showed the grids
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 5. **Put, not ruled.** The guide's `06-zebra-walkthrough.md`
+showed `--models grid`'s tables at root after step 1 and at the final state.
+
+- **(a)** **`-f`'s output**: Ein facts of the five relations a guess is made of, as printed, and no table; the
+  minus-15 bullet says `--maximal` lists the states. **Default.**
+- **(b)** a hand-drawn table, marked as drawn by hand.
+
+**Default taken: (a).**
+
+### Q-M1f.453 — `models.rs`' name, once it holds the diff alone
+
+**Raised** 2026-11-18 by S1f.23.2's build, reading 6. **Put, not ruled.** With the key and the grid gone,
+`ein-render/src/models.rs` held `--diff-models`' code alone.
+
+- **(a)** **kept**, `models.rs`. **Default.**
+- **(b)** `diff.rs`.
+
+**Default taken: (a)**, and superseded on the merge by S1f.23.3, which removed `--diff-models` and renamed the module
+for what it holds, `claim_diff.rs` (Q-M1f.465).
+
+### Q-M1f.454 — `ein test --diff`'s spelling
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 1. **Put, not ruled.** The user asked for the near-miss as an
+option of `ein test` (*"when ein test see expected models and solution result it can diff them (under option) and
+print stats and/or diffs"*).
+
+- **(a)** **`--diff stats|full`**, clap's optional value: a bare `--diff` is `stats` where no word follows it; before
+  a path it takes the path for its level and is refused, exit 2, naming the two levels (pinned by a test).
+  **Default.**
+- **(b)** `--diff[=LEVEL]` (`require_equals`): a bare `--diff` anywhere, but `--diff full` reads `full` as a path.
+
+**Default taken: (a).** Built: `ein-cli/src/cmdline.rs`, `test.rs`; `test_cli.rs`'
+`a_bare_diff_before_a_path_is_refused_with_its_levels`.
+
+### Q-M1f.455 — How many facts off a near model is
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 2. **Put, not ruled.**
+
+- **(a)** **an edit distance**: a fact replaced counts once, `max(lacks, has)`, so the user's *one fact off*
+  includes a wrong value, `(in C 1)` for `(in C 0)`; pairs are taken fewest facts off first, then fewest facts
+  differing, then the found items' order and the models'; near only while at most half the larger side off, and at
+  least one. **Default.**
+- **(b)** the symmetric difference: a wrong value is two facts off, and a model of one fact never pairs near.
+
+**Default taken: (a).** Built: `ein-render/src/claim_diff.rs`; `a_claim_one_fact_off_reads_as_one_fact_off`.
+
+### Q-M1f.456 — What the diff counts as a match
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 3. **Put, not ruled.**
+
+- **(a)** **what the claim's check pairs**: a maximum matching, a listed negative read for its presence, so a held
+  claim's diff is all matches, and a region claim that lists a model twice against one state shows one match and one
+  missing. **Default.**
+- **(b)** every model equal to a found item a match, so a model listed twice is two matches of one state.
+
+**Default taken: (a).** Built: `claim::compared`, `claim_diff::diff_sets`; `the_diff_moves_no_verdict_and_no_exit_code`.
+
+### Q-M1f.457 — Which claims have a diff
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 4. **Put, not ruled.**
+
+- **(a)** **every claim a run decided, held or FAILED, but the region's `(false)`**, which lists no model and is
+  about root: `(region)` has one over no relation (every state extra, each `(model)`), a query's `(false)` one whose
+  every class is extra; a NOT CHECKED claim has none, what its run found not being what it is about; a query claim
+  refuted from a part has one, marked *a part of R*. **Default.**
+- **(b)** only a FAILED claim has a diff.
+
+**Default taken: (a).**
+
+### Q-M1f.458 — A missing model and an extra found item
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 5. **Put, not ruled.**
+
+- **(a)** **a missing model is shown against the found item nearest it**, among all found, matched ones too, with
+  its facts; **an extra found item names the model nearest it and how far, without facts** (the user named the
+  missing and near models' facts; an extra state's facts are the read-out's). Past the pair table's bound no
+  nearest is sought. **Default.**
+- **(b)** an extra found item with its facts too.
+
+**Default taken: (a).** Built: `a_region_claim_names_the_missing_and_the_extra`.
+
+### Q-M1f.459 — An `(owing …)` claim's diff
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 6. **Put, not ruled.**
+
+- **(a)** **compared with the owing frontier**, its nodes numbered in the read-out's order, *owing node i*; where R
+  is not empty the frontier is empty and every owing model missing. **Default.**
+- **(b)** compared with R's states, as a region claim's models are.
+
+**Default taken: (a).**
+
+### Q-M1f.460 — `(merged …)` and the diff
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 7. **Put, not ruled.**
+
+- **(a)** **not diffed**: the diff is the models', so a claim FAILED by its `(merged …)` alone has an all-match
+  diff, and the claim's own lines say why. **Default.**
+- **(b)** the merged classes diffed too.
+
+**Default taken: (a).**
+
+### Q-M1f.461 — Where the diff prints
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 8. **Put, not ruled.**
+
+- **(a)** **under `--diff` a claim with a diff prints its line at the default volume**, held ones too; the diff
+  follows the claim's report lines and precedes the warning and *outside the universe* lines; `-q` diffs only the
+  claims it prints. **Default.**
+- **(b)** `--diff` overrides `-q`.
+
+**Default taken: (a).** Built: `quiet_diffs_only_the_claims_it_prints`.
+
+### Q-M1f.462 — The report's `diff`, and its id
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 9. **Put, not ruled.**
+
+- **(a)** **`diff` on every row**, `null` without the option, on a claim no run decided and on the region's
+  `(false)`; one shape on every arm, indices 1-based as printed, `items` `null` under `stats`; the id moves to
+  `ein-test-report/6`. **Default.**
+- **(b)** the key only under `--diff`, and the id kept.
+
+**Default taken: (a).** Built: `05-cli.md` § 4.4, `06-config.md`. On the merge master's report was still
+`ein-test-report/5`, [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row)'s default (a) having moved no id, so `/6` is the
+diff's alone (P1f.23's R-10).
+
+### Q-M1f.463 — The review bundle's right answer, written as claims
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 10. **Put, not ruled.** `utils/review/case.py` writes a register
+row's right answer into a copy of the witness and runs `ein test --diff full` on it, where `--diff-models` read a
+file of its own format.
+
+- **(a)** **query claims, one per relation of `closes`**, over the line the row's run asks, not a region claim: a
+  region claim closes only the relations its models name (fifo-gap-root's `p`, named by no right model, is the row's
+  wrong fact) and is about all of R, where two of the three rows that state models ask `--maximal`. Where `right`
+  states more than one model the claims state each relation's facts across them and not which go together; the three
+  rows that state models state one each. A witness that imports a module of its own is not copied, and its page says
+  so (no open row does). **Default.**
+- **(b)** a region claim, `(solve … :expect (region …))`, of the right models.
+
+**Default taken: (a).** Built: `utils/review/case.py`, `run.py`.
+
+### Q-M1f.464 — The review run page's cross-check 1
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 11. **Put, not ruled.** Cross-check 1 compared the old second
+solve's summary, under `--diff-models`, with the main run's.
+
+- **(a)** **the `ein test` run's claims, where whole, against the run's listed states, by count**. **Default.**
+- **(b)** dropped, with the second solve.
+
+**Default taken: (a).** Built: `utils/review/run.py`.
+
+### Q-M1f.465 — The diff's module
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 12. **Put, not ruled.** S1f.23.2's reading kept `models.rs`
+(Q-M1f.453), and offered `diff.rs`.
+
+- **(a)** **`claim_diff.rs`**: it holds a claim's diff and no models' form. **Default.**
+- **(b)** `diff.rs`.
+- **(c)** `models.rs`, as S1f.23.2 left it.
+
+**Default taken: (a).** Built: `ein-render/src/claim_diff.rs`; `01-architecture.md` and its module diagram.
+
+### Q-M1f.466 — `--diff-models`: removed, or retired
+
+**Raised** 2026-11-18 by S1f.23.3's build, reading 13. **Put, not ruled.** As Q-M1f.449 for `--models`.
+
+- **(a)** **removed, not retired**: clap refuses it as an unknown argument, exit 2. **Default.**
+- **(b)** a retired entry, refused with what answers instead, `ein test --diff`.
+
+**Default taken: (a).**
