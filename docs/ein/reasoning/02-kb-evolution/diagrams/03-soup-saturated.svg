@@ -2,122 +2,123 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: kb Pages: 1 -->
-<svg width="436pt" height="209pt"
- viewBox="0.00 0.00 436.00 209.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 205.49)">
+<svg width="604pt" height="98pt"
+ viewBox="0.00 0.00 604.00 98.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 93.85)">
 <title>kb</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-205.49 432.35,-205.49 432.35,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-93.85 600.36,-93.85 600.36,4 -4,4"/>
 <!-- Ann -->
 <g id="node1" class="node">
 <title>Ann</title>
-<polygon fill="none" stroke="black" points="265.63,-188 211.63,-188 211.63,-152 265.63,-152 265.63,-188"/>
-<text xml:space="preserve" text-anchor="middle" x="238.63" y="-166.45" font-family="Inter" font-size="14.00">Ann</text>
+<polygon fill="none" stroke="black" points="54,-36 0,-36 0,0 54,0 54,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-14.45" font-family="Inter" font-size="14.00">Ann</text>
 </g>
 <!-- Guest -->
 <g id="node2" class="node">
 <title>Guest</title>
-<polygon fill="none" stroke="black" points="339.5,-112 283.75,-112 283.75,-76 339.5,-76 339.5,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="311.63" y="-90.45" font-family="Inter" font-size="14.00">Guest</text>
+<polygon fill="none" stroke="black" points="127.88,-36 72.12,-36 72.12,0 127.88,0 127.88,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="100" y="-14.45" font-family="Inter" font-size="14.00">Guest</text>
 </g>
 <!-- Ann&#45;&gt;Guest -->
 <g id="edge1" class="edge">
 <title>Ann&#45;&gt;Guest</title>
-<path fill="none" stroke="#7f7f7f" d="M255.56,-151.84C264.8,-142.47 276.41,-130.7 286.67,-120.3"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="288.94,-122.98 293.47,-113.4 283.96,-118.06 288.94,-122.98"/>
-<text xml:space="preserve" text-anchor="middle" x="262.89" y="-135.82" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M54.38,-18C56.38,-18 58.38,-18 60.38,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="60.33,-21.5 70.33,-18 60.33,-14.5 60.33,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="66.52" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- C1 -->
 <g id="node4" class="node">
 <title>C1</title>
-<polygon fill="none" stroke="black" points="265.63,-112 211.63,-112 211.63,-76 265.63,-76 265.63,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="238.63" y="-90.45" font-family="Inter" font-size="14.00">C1</text>
+<polygon fill="none" stroke="black" points="434,-36 380,-36 380,0 434,0 434,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="407" y="-14.45" font-family="Inter" font-size="14.00">C1</text>
 </g>
 <!-- Ann&#45;&gt;C1 -->
 <g id="edge6" class="edge">
 <title>Ann&#45;&gt;C1</title>
-<path fill="none" stroke="#ff7f0e" d="M238.63,-151.84C238.63,-143.49 238.63,-133.23 238.63,-123.74"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="242.13,-123.84 238.63,-113.84 235.13,-123.84 242.13,-123.84"/>
-<text xml:space="preserve" text-anchor="middle" x="219.88" y="-135.82" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">seats</text>
+<path fill="none" stroke="#ff7f0e" d="M43.07,-36.41C50.93,-44.02 61.05,-52 72,-56 132.52,-78.14 301.48,-78.14 362,-56 369.36,-53.31 376.34,-48.83 382.51,-43.87"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="384.63,-46.66 389.8,-37.41 379.99,-41.43 384.63,-46.66"/>
+<text xml:space="preserve" text-anchor="middle" x="198.25" y="-76.55" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">seats</text>
 </g>
 <!-- Soup -->
 <g id="node7" class="node">
 <title>Soup</title>
-<polygon fill="none" stroke="black" points="193.63,-112 139.63,-112 139.63,-76 193.63,-76 193.63,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="166.63" y="-90.45" font-family="Inter" font-size="14.00">Soup</text>
+<polygon fill="none" stroke="black" points="506,-36 452,-36 452,0 506,0 506,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="479" y="-14.45" font-family="Inter" font-size="14.00">Soup</text>
 </g>
 <!-- Ann&#45;&gt;Soup -->
 <g id="edge9" class="edge">
 <title>Ann&#45;&gt;Soup</title>
-<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M221.93,-151.84C212.82,-142.47 201.36,-130.7 191.24,-120.3"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="194.02,-118.14 184.54,-113.41 189.01,-123.02 194.02,-118.14"/>
-<text xml:space="preserve" text-anchor="middle" x="101.25" y="-118.57" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">meal by soup&#45;unless&#45;allergic</text>
+<path fill="none" stroke="#ff7f0e" stroke-dasharray="5,2" d="M43.07,-36.41C50.93,-44.02 61.05,-52 72,-56 109.77,-69.82 396.23,-69.82 434,-56 441.36,-53.31 448.34,-48.83 454.51,-43.87"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="456.63,-46.66 461.8,-37.41 451.99,-41.43 456.63,-46.66"/>
+<text xml:space="preserve" text-anchor="middle" x="151.75" y="-53.06" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">meal by soup&#45;unless&#45;allergic</text>
 </g>
 <!-- Bob -->
 <g id="node3" class="node">
 <title>Bob</title>
-<polygon fill="none" stroke="black" points="374.63,-188 320.63,-188 320.63,-152 374.63,-152 374.63,-188"/>
-<text xml:space="preserve" text-anchor="middle" x="347.63" y="-166.45" font-family="Inter" font-size="14.00">Bob</text>
+<polygon fill="none" stroke="black" points="200,-36 146,-36 146,0 200,0 200,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="173" y="-14.45" font-family="Inter" font-size="14.00">Bob</text>
 </g>
 <!-- Bob&#45;&gt;Guest -->
 <g id="edge2" class="edge">
 <title>Bob&#45;&gt;Guest</title>
-<path fill="none" stroke="#7f7f7f" d="M339.28,-151.84C335.04,-143.12 329.78,-132.32 325,-122.48"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="328.24,-121.15 320.72,-113.69 321.95,-124.21 328.24,-121.15"/>
-<text xml:space="preserve" text-anchor="middle" x="317.43" y="-136.32" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M145.72,-18C143.71,-18 141.71,-18 139.71,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="139.74,-14.5 129.74,-18 139.74,-21.5 139.74,-14.5"/>
+<text xml:space="preserve" text-anchor="middle" x="133.57" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Bob&#45;&gt;Bob -->
 <g id="edge8" class="edge">
 <title>Bob&#45;&gt;Bob</title>
-<path fill="none" stroke="#2ca02c" d="M374.87,-184.24C384.65,-184.54 392.63,-179.8 392.63,-170 392.63,-164.34 389.96,-160.36 385.82,-158.07"/>
-<polygon fill="#2ca02c" stroke="#2ca02c" points="386.86,-154.71 376.35,-156.08 385.41,-161.56 386.86,-154.71"/>
-<text xml:space="preserve" text-anchor="middle" x="401.72" y="-188.19" font-family="Times,serif" font-size="14.00" fill="#2ca02c">allergic</text>
+<path fill="none" stroke="#2ca02c" d="M200.24,-24.74C210.02,-24.89 218,-22.64 218,-18 218,-15.39 215.48,-13.54 211.53,-12.44"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="212.06,-8.98 201.75,-11.41 211.33,-15.94 212.06,-8.98"/>
+<text xml:space="preserve" text-anchor="middle" x="227.32" y="-28.7" font-family="Times,serif" font-size="14.00" fill="#2ca02c">allergic</text>
 </g>
 <!-- C2 -->
 <g id="node6" class="node">
 <title>C2</title>
-<polygon fill="none" stroke="black" points="411.63,-112 357.63,-112 357.63,-76 411.63,-76 411.63,-112"/>
-<text xml:space="preserve" text-anchor="middle" x="384.63" y="-90.45" font-family="Inter" font-size="14.00">C2</text>
+<polygon fill="none" stroke="black" points="290,-36 236,-36 236,0 290,0 290,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="263" y="-14.45" font-family="Inter" font-size="14.00">C2</text>
 </g>
 <!-- Bob&#45;&gt;C2 -->
 <g id="edge7" class="edge">
 <title>Bob&#45;&gt;C2</title>
-<path fill="none" stroke="#ff7f0e" d="M356.21,-151.84C360.57,-143.12 365.97,-132.32 370.89,-122.48"/>
-<polygon fill="#ff7f0e" stroke="#ff7f0e" points="373.95,-124.19 375.29,-113.68 367.69,-121.06 373.95,-124.19"/>
-<text xml:space="preserve" text-anchor="middle" x="347.2" y="-119.07" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">seats</text>
+<path fill="none" stroke="#ff7f0e" d="M200.42,-18C208.4,-18 216.37,-18 224.35,-18"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="224.11,-21.5 234.11,-18 224.11,-14.5 224.11,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="217.99" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#ff7f0e">seats</text>
 </g>
 <!-- Chair -->
 <g id="node5" class="node">
 <title>Chair</title>
-<polygon fill="none" stroke="black" points="338.63,-36 284.63,-36 284.63,0 338.63,0 338.63,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="311.63" y="-14.45" font-family="Inter" font-size="14.00">Chair</text>
+<polygon fill="none" stroke="black" points="362,-36 308,-36 308,0 362,0 362,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="335" y="-14.45" font-family="Inter" font-size="14.00">Chair</text>
 </g>
 <!-- C1&#45;&gt;Chair -->
 <g id="edge3" class="edge">
 <title>C1&#45;&gt;Chair</title>
-<path fill="none" stroke="#7f7f7f" d="M255.56,-75.84C264.8,-66.47 276.41,-54.7 286.67,-44.3"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="288.94,-46.98 293.47,-37.4 283.96,-42.06 288.94,-46.98"/>
-<text xml:space="preserve" text-anchor="middle" x="262.89" y="-59.82" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M379.75,-18C377.75,-18 375.75,-18 373.74,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="373.79,-14.5 363.79,-18 373.79,-21.5 373.79,-14.5"/>
+<text xml:space="preserve" text-anchor="middle" x="367.6" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- C2&#45;&gt;Chair -->
 <g id="edge4" class="edge">
 <title>C2&#45;&gt;Chair</title>
-<path fill="none" stroke="#7f7f7f" d="M367.7,-75.84C358.46,-66.47 346.84,-54.7 336.59,-44.3"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="339.3,-42.06 329.78,-37.4 334.32,-46.98 339.3,-42.06"/>
-<text xml:space="preserve" text-anchor="middle" x="335.62" y="-59.82" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M290.28,-18C292.28,-18 294.28,-18 296.29,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="296.24,-21.5 306.24,-18 296.24,-14.5 296.24,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="302.43" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
 <!-- Food -->
 <g id="node8" class="node">
 <title>Food</title>
-<polygon fill="none" stroke="black" points="193.63,-36 139.63,-36 139.63,0 193.63,0 193.63,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="166.63" y="-14.45" font-family="Inter" font-size="14.00">Food</text>
+<polygon fill="none" stroke="black" points="578,-36 524,-36 524,0 578,0 578,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="551" y="-14.45" font-family="Inter" font-size="14.00">Food</text>
 </g>
 <!-- Soup&#45;&gt;Food -->
 <g id="edge5" class="edge">
 <title>Soup&#45;&gt;Food</title>
-<path fill="none" stroke="#7f7f7f" d="M166.63,-75.84C166.63,-67.49 166.63,-57.23 166.63,-47.74"/>
-<polygon fill="#7f7f7f" stroke="#7f7f7f" points="170.13,-47.84 166.63,-37.84 163.13,-47.84 170.13,-47.84"/>
-<text xml:space="preserve" text-anchor="middle" x="154.25" y="-59.82" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
+<path fill="none" stroke="#7f7f7f" d="M506.28,-18C508.28,-18 510.28,-18 512.29,-18"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="512.24,-21.5 522.24,-18 512.24,-14.5 512.24,-21.5"/>
+<text xml:space="preserve" text-anchor="middle" x="518.43" y="-4.7" font-family="Times,serif" font-size="14.00" fill="#7f7f7f">is&#45;a</text>
 </g>
+<!-- layer 0 -->
 </g>
 </svg>
-<!-- source sha256: ecd428ac802cd1a938682c7c55d78388029d9f82529e0f6d1416736cbb162d23 -->
+<!-- source sha256: 27f5d6e74cb396343932bd63f5b3cfd3ef9ed9a277711d34c20b7a17f9540cd8 -->

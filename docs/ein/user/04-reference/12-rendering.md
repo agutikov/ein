@@ -114,9 +114,9 @@ second, `(likes Dan Fish)` on the third, with `believes`, `not` and `likes` in t
 points at it, the lower; a relation that is no fact's argument stands just above its highest fact, and a fact of it
 that holds no fact and that nothing points at just above its names. No name is read: the layers come from the arrows
 alone, and where the arrows go round, a fact of a relation whose own name is under its arrows, the view writes no
-layers and `dot` finds its own. Under `--fold` a folded arrow is no node and ranks as any arrow does, its second
-argument a layer below its first, so a knowledge base most of whose facts fold is laid out as a graph of labelled
-arrows. This program:
+layers and `dot` finds its own. Under `--fold` a folded arrow is no node and ranks nothing, `constraint=false`: its
+arguments stand in the layer where the fact's octagon would put them, and the arrow runs within that layer, so the
+folded drawing keeps the canonical one's layers of objects, the folded facts' ranks gone. This program:
 
 ```lisp
 (relation owns Person Pet :why "{?3} owns {?4}")

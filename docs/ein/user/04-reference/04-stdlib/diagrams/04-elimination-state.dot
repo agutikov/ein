@@ -2,21 +2,21 @@ digraph kb {
   rankdir=TB;
   ranksep=0.55;
   node [fontname="Inter", shape=box];
-  "Ann" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Bob" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Cid" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Red" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Green" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  "Blue" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
-  f_e2b85627de -> f_e2b85627de [xlabel="not", color="#d62728", fontcolor="#d62728", style=solid];
-  "Bob" -> "Green" [xlabel="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
-  f_28610e96fc -> f_28610e96fc [xlabel="not by std.bijection.functional-negative", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_1f19059689 -> f_1f19059689 [xlabel="not by std.bijection.functional-negative", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_2ff4cd6203 -> f_2ff4cd6203 [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed];
-  f_eeffa78f6a -> f_eeffa78f6a [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed];
-  "Ann" -> "Blue" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  f_f06f91b304 -> f_f06f91b304 [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed];
-  "Cid" -> "Red" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  "Ann" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Bob" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Cid" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Red" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Green" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Blue" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  f_e2b85627de -> f_e2b85627de [xlabel="not", color="#d62728", fontcolor="#d62728", style=solid, constraint=false];
+  "Bob" -> "Green" [xlabel="wears", color="#8c564b", fontcolor="#8c564b", style=solid, constraint=false];
+  f_28610e96fc -> f_28610e96fc [xlabel="not by std.bijection.functional-negative", color="#d62728", fontcolor="#d62728", style=dashed, constraint=false];
+  f_1f19059689 -> f_1f19059689 [xlabel="not by std.bijection.functional-negative", color="#d62728", fontcolor="#d62728", style=dashed, constraint=false];
+  f_2ff4cd6203 -> f_2ff4cd6203 [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed, constraint=false];
+  f_eeffa78f6a -> f_eeffa78f6a [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed, constraint=false];
+  "Ann" -> "Blue" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed, constraint=false];
+  f_f06f91b304 -> f_f06f91b304 [xlabel="not by std.bijection.injective-negative", color="#d62728", fontcolor="#d62728", style=dashed, constraint=false];
+  "Cid" -> "Red" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed, constraint=false];
   newrank=true;
   subgraph cluster_ctx_0 {
     label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
@@ -52,5 +52,5 @@ digraph kb {
   "layer 1" -> "layer 2" [style=invis];
   { rank=same; "layer 0"; "wears"; }
   { rank=same; "layer 1"; f_e2b85627de; f_28610e96fc; f_1f19059689; f_2ff4cd6203; f_eeffa78f6a; f_f06f91b304; }
-  { rank=same; "layer 2"; "Ann"; "Red"; "Bob"; "Blue"; "Green"; "Cid"; }
+  { rank=same; "layer 2"; "Ann"; "Red"; "Bob"; "Blue"; "Green"; "Cid"; "Agent"; "Colour"; }
 }

@@ -14,8 +14,9 @@ writes its layers as `rank=same` groups, objects and facts in turn, a sandwich. 
 names stands in five layers so: the atom `relation`, with what states a property of a relation; the declarations;
 the relations and their labels; the relations' facts; the plain objects. A band of facts is as deep as its facts
 nest: the facts nothing points at share its top rank, a fact under a fact's arrow stands a rank below that fact, and
-the names under the band's arrows stand in the layer below the whole band. A folded arrow is no node, and ranks as any
-arrow does. That is a preference, and not part of the shape: a test reads a view's nodes and arrows, an arrow drawn
+the names under the band's arrows stand in the layer below the whole band. A folded arrow is no node and ranks
+nothing: its arguments stand where the canonical drawing puts them, and it runs within their layer. That is a
+preference, and not part of the shape: a test reads a view's nodes and arrows, an arrow drawn
 back read as it is drawn, and never its positions or its groups.
 
 **Why.** A program is one structure with two surfaces, the text to write and the graph to look at, and the meaning is
@@ -27,6 +28,6 @@ defined, objects and facts in turn, where a strip laid out from the arguments up
 **Held by.** `ein_render::ir_dot`, `ein_render::kb_dot` and `ein_render::fact_graph`: `first_arrow`, the one way a
 first arrow is written, and the layers a drawing of a knowledge base writes; `ein-render/tests/every_object_once.rs`, which reads an arrow drawn back as it is drawn;
 `ein-render/tests/dot_wellformed.rs`, the views of the
-corpus programs accepted by `dot`; `ein-render/tests/id_order_invariance.rs`:
+corpus programs accepted by `dot`, and every slice of two calculator programs' traces; `ein-render/tests/id_order_invariance.rs`:
 `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, every DOT view's bytes held to a digest.
 The shapes: [12-rendering.md](../../ein/user/04-reference/12-rendering.md).
