@@ -629,3 +629,164 @@ fn a_container_saved_again_is_the_container() {
         );
     }
 }
+
+/// The kinds of the sections a container holds, in its table's order.
+fn section_kinds(path: &Path) -> Vec<ein_einb::Kind> {
+    let bytes = std::fs::read(path).expect("a container");
+    ein_einb::section_sizes(&bytes)
+        .expect("a section table")
+        .into_iter()
+        .map(|(k, _)| k)
+        .collect()
+}
+
+/// **A node's container opens as the node** (Q-M1f.413). `ein kb save` of a
+/// saved file with a `(commit …)` stores the commitment in a `COMMIT`
+/// section, and every command reads the container as it reads the saved
+/// file: `ein solve`, asked each question, prints the saved file's stdout
+/// and stderr byte for byte but the path, with its exit code; `ein saturate
+/// --dump` prints the node's state; `ein test` asks it nothing, each claim
+/// NOT CHECKED (Q-M1f.403); `ein show hyps` lists the program's H. Saved
+/// again, it is the same bytes. **A root's container is unchanged**: the
+/// container of the saved file of root, as the program's, holds the same
+/// sections and no `COMMIT`. The corpus's saved nodes are held the same way
+/// by `answer_round_trip.rs`.
+#[test]
+fn a_nodes_container_opens_as_the_node() {
+    let dir = scratch("node");
+    let program = "tests/saved/02_a_choice_with_a_fact_inside_it.ein";
+    let dump = dir.join("dump");
+    let r = ein(&[
+        "solve",
+        program,
+        "--dump-answer",
+        dump.to_str().expect("utf-8"),
+    ]);
+    assert_eq!(r.code, 0, "{}", r.stderr);
+    let node_file = dump.join("models/02.ein");
+    let node = node_file.to_str().expect("utf-8");
+    let einb = dir.join("node.einb");
+    let container = einb.to_str().expect("utf-8");
+    let saved = ein(&["kb", "save", node, container]);
+    assert_eq!(
+        (saved.code, saved.stderr.as_str()),
+        (0, ""),
+        "a node is stored"
+    );
+    assert!(
+        section_kinds(&einb).contains(&ein_einb::Kind::Commit),
+        "{:?}",
+        section_kinds(&einb)
+    );
+
+    for flags in [
+        &[][..],
+        &["--maximal"],
+        &["--single"],
+        &["--count"],
+        &["--no-search"],
+        &["-H"],
+        &["--stats"],
+    ] {
+        let run = |file: &str| {
+            let mut args = vec!["solve", file];
+            args.extend_from_slice(flags);
+            ein(&args)
+        };
+        let (from_file, from_container) = (run(node), run(container));
+        assert_eq!(
+            normalise(&from_container.stdout, container, node),
+            normalise(&from_file.stdout, node, node),
+            "solve {flags:?}: stdout differs between the node's container and its saved file"
+        );
+        assert_eq!(
+            normalise(&from_container.stderr, container, node),
+            from_file.stderr,
+            "solve {flags:?}: stderr differs"
+        );
+        assert_eq!(from_container.code, from_file.code, "solve {flags:?}: exit");
+    }
+    let r = ein(&["solve", container]);
+    assert!(
+        r.stdout
+            .lines()
+            .any(|l| l.trim_start().starts_with("commit") && l.ends_with("— (note (bad a))")),
+        "the read-out names the node:\n{}",
+        r.stdout
+    );
+
+    // The node's state, fact for fact and origin for origin.
+    let dumped = |file: &str| {
+        let r = ein(&["saturate", "--dump", file]);
+        assert_eq!(r.code, 0, "{file}: {}", r.stderr);
+        let at = r.stdout.find("\n=====").expect("a KB section");
+        r.stdout[at..].to_string()
+    };
+    let state = dumped(container);
+    assert_eq!(state, dumped(node), "the container's state is the node's");
+    assert!(
+        state.contains("(note (bad a) :hypothesis 0)") && state.contains("(flagged a :rule flag)"),
+        "{state}"
+    );
+
+    // `ein test` asks it nothing, as it asks the saved file nothing.
+    let (t_file, t_container) = (ein(&["test", "-v", node]), ein(&["test", "-v", container]));
+    assert_eq!(t_container.code, 0, "{}", t_container.stdout);
+    assert_eq!(
+        normalise(&t_container.stdout, container, node)
+            .lines()
+            .filter(|l| !l.starts_with("1 file,"))
+            .collect::<Vec<_>>(),
+        t_file
+            .stdout
+            .lines()
+            .filter(|l| !l.starts_with("1 file,"))
+            .collect::<Vec<_>>(),
+    );
+    assert!(
+        t_container
+            .stdout
+            .contains("0 held, 0 FAILED, 2 not checked"),
+        "{}",
+        t_container.stdout
+    );
+
+    // H is the program's, the node's choice among it.
+    let h = ein(&["show", "hyps", container]);
+    assert_eq!(
+        (h.code, h.stdout.as_str()),
+        (0, "(note (bad a))\n"),
+        "{}",
+        h.stderr
+    );
+
+    // Saved again: the same bytes.
+    let again = dir.join("again.einb");
+    let r = ein(&["kb", "save", container, again.to_str().expect("utf-8")]);
+    assert_eq!(r.code, 0, "{}", r.stderr);
+    assert!(
+        std::fs::read(&again).expect("saved again") == std::fs::read(&einb).expect("saved"),
+        "a node's container saved again is other bytes"
+    );
+
+    // A root's container: its saved file's, as its program's, no COMMIT.
+    let (of_root, of_program) = (dir.join("root.einb"), dir.join("program.einb"));
+    for (source, out) in [
+        (dump.join("models/01.ein"), &of_root),
+        (repo_root().join(program), &of_program),
+    ] {
+        let r = ein(&[
+            "kb",
+            "save",
+            source.to_str().expect("utf-8"),
+            out.to_str().expect("utf-8"),
+        ]);
+        assert_eq!((r.code, r.stderr.as_str()), (0, ""), "{}", source.display());
+    }
+    assert_eq!(section_kinds(&of_root), section_kinds(&of_program));
+    assert!(
+        !section_kinds(&of_root).contains(&ein_einb::Kind::Commit),
+        "{:?}",
+        section_kinds(&of_root)
+    );
+}

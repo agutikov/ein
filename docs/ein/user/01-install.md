@@ -71,7 +71,7 @@ The toolchain is pinned by [`ein.rs/rust-toolchain.toml`](../../../ein.rs/rust-t
 $ ein --version
 ein 0.1.0
 protocol   ein-events/1
-container  einb/2.0
+container  einb/2.1
 features   einb, parallel, snmalloc
 stdlib     sha256:7592561c…60c5a3  checkout /path/to/ein/stdlib
 ```

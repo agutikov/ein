@@ -42,9 +42,20 @@ stderr and exit code, where a fresh process opens the container: the identity pa
 by default it banks the **loaded** KB, which is why a solve of the container starts where a solve of the source does.
 `--saturate` banks root's least fixpoint instead: another starting point, which reaches the same answer and is not
 claimed byte-identical, because root's derivations are already there when the run starts. A `.einb` handed to `ein kb
-save` is opened and saved again, keeping its sources and its state. `ein kb` is registered only in a build with the
-`einb` feature, on by default; a build without it refuses a container with a `kb load error:` line. `ein --version`
-prints the format a build reads on its `container` line, `einb/2.0`.
+save` is opened and saved again, keeping its sources, its state and its node. `ein kb` is registered only in a build
+with the `einb` feature, on by default; a build without it refuses a container with a `kb load error:` line. `ein
+--version` prints the format a build reads on its `container` line, `einb/2.1`.
+
+**A saved file's container is its node** ([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)).
+A saved file, the program, its modules and at most one `(commit …)`
+([`10-answer-dump.md`](../../user/04-reference/10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made)),
+is stored as the program it carries, its imports resolved against the modules it carries
+(`ein_einb::sections::Carried`) and never the disk, and its `(commit …)` in the `COMMIT` section. An open sets the
+stored program's commitment from it, `ein_core::Program::commit`, as the saved file's load sets it, so every command
+reads the container as the node: `ein solve x.einb` prints what `ein solve` of the saved file prints, byte for byte
+but the path, with the same stderr and exit code, a position a load's `note:` names being the stored program's
+([Q-M1f.15](../../../decisions/diagnostics/Q-M1f.15-a-position-in-a-container-names-its-stored.md))
+(`einb_cli.rs`: `a_nodes_container_opens_as_the_node`; over the corpus, `answer_round_trip.rs`' `by_its_container`). A root has no commitment, and its container has no `COMMIT`.
 
 ## 2. The container
 
@@ -103,6 +114,7 @@ to `header::ALIGN = 8`.
 | 10 | `SOLUTIONS` | when the caller supplies one | § 6 |
 | 11 | `CLOSURE` | when the KB has a closure entry | per believed fact with one: the fact, its closure, and its smallest-closure record if any |
 | 12 | `UNIVERSAL` | when a record has some | per derivation record whose universal guards read facts, ascending by the record's position: the position and the facts |
+| 13 | `COMMIT` | when the program is a saved file's node | the candidates of H its `(commit …)` names, each as the file writes it, in its order: a count, then the strings (`sections::write_commit`) |
 
 Kinds 3 and 9 are retired and never reused, so a section of either kind is an unknown one and skipped. A reader
 requires `META`, `SYMBOLS`, `FACTS`, `PROV` and `PROGRAM`, and `PRESENT` wherever it keeps the file's facts.
@@ -127,6 +139,10 @@ What the encodings decide:
   `ExprRef` the rebuilt registries hold indexes the AST that is there. What it costs is a parse of already-resolved
   text on open. The text carries every `:why`, `:source` and `:goal-text` as written
   ([Q-M1f.12](../../../decisions/read-out/Q-M1f.12-natural-language-text-reaches-a-fixed-set.md)).
+- **A commitment is text, not facts.** A choice is a candidate of H by its text
+  ([Q-M1f.400](../../../decisions/read-out/Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md)), which the run
+  reads against H after root's fixpoint, and a fact a choice names need not be one the loaded program holds, so it has
+  no row in `FACTS` to name it by.
 - **No index is stored.** Every reverse index is a projection of the fact list in insertion order, and
   `Kb::rebuild_indexes` is the projection that defines it, so a rebuilt index is produced by the code that defines
   the original. The one exception is `rules_by_relation`, which is taken once at load and never extended: rebuilt from
@@ -201,13 +217,18 @@ therefore position-independent and not interner-independent: it cannot be shared
 
 ### 4.1 The format version
 
-`header::FORMAT_MAJOR = 2` and `header::FORMAT_MINOR = 0`. The major moves on any change of layout, and a reader
+`header::FORMAT_MAJOR = 2` and `header::FORMAT_MINOR = 1`. The major moves on any change of layout, and a reader
 refuses every major but its own, with `EinbError::Version` (`.einb format 1.2 — this engine reads 2.x`); a file of
 another major is a cache to save again. The minor moves when a section kind is added, and a reader of the same major
 skips a kind it does not know, which is what makes a minor additive. The numbers in `header::Kind` are on disk and are
 never reordered; a retired number is never reused. Format 2 has no integer table and no time in `META`
 ([Q-M1f.10](../../../decisions/engine/Q-M1f.10-a-einb-file-holds-no-integer-table.md),
-[Q-M1f.110](../../../decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)).
+[Q-M1f.110](../../../decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)); 2.1 adds
+`COMMIT`, kind 13, which a root's container does not hold, so a root's container is 2.0's in every section
+([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)). **What a section holds
+is not its layout**: `SYMBOLS` is the interner in id order, whatever names the kernel interns before a program's, so
+a kernel that interns fewer writes a shorter file of the same layout, and a reader opening a file a kernel with
+other names wrote takes the remap of § 3 and answers the same.
 
 ### 4.2 A file refused
 
@@ -270,7 +291,7 @@ and re-cap a capped one), and then `Kb::rebuild_indexes_from`.
 ([Q-M1f.110](../../../decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)): `META` holds no
 time, so a save is a function of the program, its state and the engine, and the records an open pushes for the loader
 fall past the kept prefix. `ein kb save` of a container keeps its state, writing `Solved` as `Saturated` since it
-stores no solutions and a dropped derived state as `Loaded`.
+stores no solutions and a dropped derived state as `Loaded`, and its node, the `COMMIT` an open set.
 
 ## 6. The solution store
 
@@ -299,10 +320,10 @@ and what a run computes stay separable. The section's one writer is the library 
 
 | file | holds |
 |---|---|
-| [`ein-einb/tests/roundtrip.rs`](../../../../ein.rs/crates/ein-einb/tests/roundtrip.rs) | `every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner`: every corpus program that loads, saved and opened into an empty `Terms` (the identity path taken, and `Kb::diff` clean) and into a crowded one (remapped, and `ein_core::shape` the same text); `a_saturated_kb_round_trips_with_its_derivations`; `a_saturated_zebra2_is_under_80_kb_and_opens_cold_under_6_ms_or_20_with_assertions`, a size ceiling and an open-time ceiling on one saturated container; `a_stored_solution_reconstitutes_the_model_it_was_taken_from`; `nothing_in_the_solve_path_reads_the_solution_store` |
+| [`ein-einb/tests/roundtrip.rs`](../../../../ein.rs/crates/ein-einb/tests/roundtrip.rs) | `every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner`: every corpus program that loads, saved and opened into an empty `Terms` (the identity path taken, and `Kb::diff` clean) and into a crowded one (remapped, and `ein_core::shape` the same text); `a_saturated_kb_round_trips_with_its_derivations`; `a_saturated_zebra2_is_under_80_kb_and_opens_cold_under_6_ms_or_20_with_assertions`, a size ceiling and an open-time ceiling on one saturated container; `a_stored_solution_reconstitutes_the_model_it_was_taken_from`; `nothing_in_the_solve_path_reads_the_solution_store`; `a_nodes_commitment_is_stored_and_a_roots_is_not`, a saved node's `COMMIT` opened into an empty and a crowded `Terms`, saved again to the same bytes, and none for its program |
 | [`ein-einb/tests/invalidation.rs`](../../../../ein.rs/crates/ein-einb/tests/invalidation.rs) | `a_fresh_file_is_believed_whole`, `another_engine_keeps_the_program_and_drops_the_derived_sections`, `an_edited_source_is_a_cache_miss_and_says_so`, `a_stdlib_that_moved_under_the_file_is_a_cache_miss`, `not_looking_at_the_sources_is_not_evidence_that_they_moved`, `a_file_that_holds_an_integer_is_refused` (no kind 3 written, a 1.x header refused, a value with the integer's tag refused) |
 | [`ein-einb/tests/corruption.rs`](../../../../ein.rs/crates/ein-einb/tests/corruption.rs) | `a_good_file_opens_and_every_truncation_of_it_does_not`, `a_single_flipped_bit_anywhere_is_caught_by_the_digest`, `damaged_bytes_never_panic_when_the_digest_is_not_checked`, `arbitrary_bytes_are_refused_and_never_mis_parsed` (its budget raised by `EIN_EINB_FUZZ_ITERS`), `an_unknown_section_kind_is_ignored_rather_than_refused`, `a_newer_major_version_is_refused`, `a_file_that_is_not_one_is_told_apart_by_its_first_bytes` |
-| [`ein-cli/tests/einb_cli.rs`](../../../../ein.rs/crates/ein-cli/tests/einb_cli.rs) | `a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source`, `the_answer_directory_of_a_container_is_its_sources`, `the_diagnostic_flags_agree_too` (`--stats`, `--trace`, `--explain`, `--final-state`, `--dump-config`), `a_saturated_container_reaches_the_same_verdict`, `an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit`, `a_container_is_recognised_under_any_name`, `a_container_the_engine_cannot_read_fails_as_a_load_error`, `a_container_is_not_larger_than_the_program_it_replaces`, `what_the_cli_writes_is_a_file_the_library_recognises`, `the_two_magic_constants_agree`, `a_container_saved_again_is_the_container` |
+| [`ein-cli/tests/einb_cli.rs`](../../../../ein.rs/crates/ein-cli/tests/einb_cli.rs) | `a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source`, `the_answer_directory_of_a_container_is_its_sources`, `the_diagnostic_flags_agree_too` (`--stats`, `--trace`, `--explain`, `--final-state`, `--dump-config`), `a_saturated_container_reaches_the_same_verdict`, `an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit`, `a_container_is_recognised_under_any_name`, `a_container_the_engine_cannot_read_fails_as_a_load_error`, `a_container_is_not_larger_than_the_program_it_replaces`, `what_the_cli_writes_is_a_file_the_library_recognises`, `the_two_magic_constants_agree`, `a_container_saved_again_is_the_container`, `a_nodes_container_opens_as_the_node` |
 | unit tests | `cast.rs`: `a_row_is_twelve_bytes_with_no_padding`, `a_cast_refuses_a_partial_record_and_a_misaligned_start`, `the_round_trip_through_bytes_is_the_identity`, `an_aligned_buffer_is_aligned`; `tables.rs`: `a_fresh_table_is_the_identity_and_a_permuted_one_is_not`, `a_value_keeps_its_tag_and_moves_its_payload` |
 
 What *identical* means in a round trip is `ein_core::kb::Kb::diff`: both KBs materialised, then compared field by

@@ -408,3 +408,103 @@ fn nothing_in_the_solve_path_reads_the_solution_store() {
         "the CLI reads a stored solution store: {offenders:?}"
     );
 }
+
+/// **A node's container holds its commitment, and a root's holds none**
+/// (Q-M1f.413). A saved file with a `(commit …)`, loaded as every command
+/// loads one and saved, writes a `COMMIT` section of its choices, which an
+/// open, into an empty interner and into a crowded one, sets as the stored
+/// program's commitment, as the saved file's load sets it; saved again, it is
+/// the same bytes. The program the node is of, saved, writes no `COMMIT`
+/// section and opens with no commitment, and so does its saved root file.
+#[test]
+fn a_nodes_commitment_is_stored_and_a_roots_is_not() {
+    let load_saved = |rel: &str| {
+        let path = repo_root().join(rel);
+        let text = std::fs::read_to_string(&path).expect("the corpus file");
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let loaded = ein_ir::saved::load_text(
+            &mut ast,
+            &mut terms,
+            &text,
+            path.to_str(),
+            path.parent(),
+            0,
+            &ein_ir::LoadOptions::default(),
+        )
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        let carried = ein_ir::grammar::opens_saved(&text).then(|| ein_einb::sections::Carried {
+            file: path.display().to_string(),
+            modules: loaded
+                .kb
+                .program()
+                .sources
+                .as_ref()
+                .map(|s| s.modules.clone())
+                .unwrap_or_default(),
+        });
+        save_to_vec(
+            &loaded.kb,
+            &terms,
+            &mut ast,
+            &loaded.forms,
+            path.parent(),
+            &SaveOptions {
+                carried,
+                ..SaveOptions::default()
+            },
+        )
+        .expect("saves")
+    };
+    let kinds = |bytes: &[u8]| -> Vec<ein_einb::Kind> {
+        ein_einb::section_sizes(bytes)
+            .expect("a section table")
+            .into_iter()
+            .map(|(k, _)| k)
+            .collect()
+    };
+
+    let node = load_saved("tests/saved/04_a_saved_node.ein");
+    assert!(
+        kinds(&node).contains(&ein_einb::Kind::Commit),
+        "{:?}",
+        kinds(&node)
+    );
+    for mut terms in [Terms::new(), crowded()] {
+        let opened = ein_einb::open_bytes(&node, &mut terms, &OpenOptions::default())
+            .expect("the node's container opens");
+        assert_eq!(
+            opened.kb.program().commit.as_deref(),
+            Some(&["(note (bad a))".to_string()][..]),
+            "the node's choices"
+        );
+    }
+    // Saved again, from what it opened to: the same bytes (Q-M1f.110).
+    let mut terms = Terms::new();
+    let mut opened =
+        ein_einb::open_bytes(&node, &mut terms, &OpenOptions::default()).expect("opens");
+    let again = save_to_vec(
+        &opened.kb,
+        &terms,
+        &mut opened.ast,
+        &opened.forms,
+        None,
+        &SaveOptions::default(),
+    )
+    .expect("saves again");
+    assert!(
+        again == node,
+        "a node's container saved again is other bytes"
+    );
+
+    let program = load_saved("tests/saved/02_a_choice_with_a_fact_inside_it.ein");
+    assert!(
+        !kinds(&program).contains(&ein_einb::Kind::Commit),
+        "{:?}",
+        kinds(&program)
+    );
+    let mut terms = Terms::new();
+    let opened =
+        ein_einb::open_bytes(&program, &mut terms, &OpenOptions::default()).expect("opens");
+    assert_eq!(opened.kb.program().commit, None, "a root has no commitment");
+}

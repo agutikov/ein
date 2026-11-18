@@ -928,10 +928,10 @@ fn header_for(row: &serde_json::Value) -> String {
             _ => "(region …)",
         };
         let region = &row["region"];
-        // Root alone, as the run over the whole selection asks a saved
-        // file's node, which counts no state of R.
-        if region["route"] == "root alone" {
-            return format!("  solve · :expect {shape} — {verb} (a saved file's node: root alone)");
+        // No run, as a saved file's node is asked nothing (Q-M1f.403): the
+        // header names no question.
+        if region.is_null() {
+            return format!("  solve · :expect {shape} — {verb}");
         }
         return format!(
             "  solve · :expect {shape} — {verb} ({}, k_s = {}, k_c = {})",
@@ -1137,8 +1137,9 @@ fn claim_blocks(out: &str) -> Vec<(String, Vec<String>)> {
 
 /// Every claim's scope line against its row: `outside the universe: …`
 /// where the row's `outside` names a relation, each of them named in the
-/// line, and no such line where the row's list is empty. Rows in walk order,
-/// which is print order. The failures.
+/// line, and no such line where the row's list is empty or where no run
+/// checked the claim. Rows in walk order, which is print order. The
+/// failures.
 fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
     let rows: Vec<&serde_json::Value> = doc["rows"]
         .as_array()
@@ -1169,7 +1170,13 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
                 })
                 .collect()
         };
-        let outside = names(&row["outside"], Some("relation"));
+        // A row no run checked, a saved file's node's (Q-M1f.403), has no
+        // list and prints no line.
+        let outside = if row["outside"].is_null() && row["route"].is_null() {
+            Vec::new()
+        } else {
+            names(&row["outside"], Some("relation"))
+        };
         match (line("outside the universe: "), outside.is_empty()) {
             (None, true) => {}
             (Some(l), false) if outside.iter().all(|n| l.contains(n.as_str())) => {}
