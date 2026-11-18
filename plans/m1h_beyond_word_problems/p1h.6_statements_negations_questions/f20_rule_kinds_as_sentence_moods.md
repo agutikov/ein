@@ -1,5 +1,8 @@
 # F20 — The three rule kinds are the three sentence forms
 
+**Moved** 2026-11-18 from `plans/followups/` (it was followup F20) into M1h's [P1h.6](README.md), on the user's
+instruction (*"M1h - pull F20 there"*). The note below is as it was written.
+
 **Added:** 2026-10-16, from the user, during M1e2 S1e2.1a.9:
 
 > I just noticed how our rule types (asserting positive facts, restirctions
@@ -11,7 +14,7 @@
 
 Ein has three kinds of rule, told apart by what they conclude. Each matches
 a sentence form, and each has its own role in the region R
-([`06-solution-semantics.md` § 4](../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#4-restrictions-and-obligations-the-two-lines)):
+([`06-solution-semantics.md` § 4](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#4-restrictions-and-obligations-the-two-lines)):
 
 | rule kind | concludes | sentence form | Zebra, in words | what it does to R |
 |---|---|---|---|---|
@@ -32,10 +35,10 @@ without contradicting its negations, closed under its assertions.**
 - **M2 (NL → IR)** has to classify each clause of a puzzle text. The mood of
   the sentence (declarative, negative, interrogative) is a first,
   surface-level signal for which kind of rule to emit. The formalizer's passes
-  ([S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)) already turn
+  ([S2.2.4](../../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)) already turn
   the puzzle's question into goal variables (`?who_water`, `?h_zebra`). An
   obligation is the same thing, inside the program.
-- **The way back (IR → NL)**: [idea 08](../ideas/08-human-style-deductive-trace.md)'s
+- **The way back (IR → NL)**: [idea 08](../../ideas/08-human-style-deductive-trace.md)'s
   explanation can render each rule in its own mood, and an open state as the
   questions it has not answered.
 - **The verdict words** line up the same way. `Solution` means every
@@ -50,7 +53,7 @@ without contradicting its negations, closed under its assertions.**
   (Groenendijk and Roelofsen) treats a question as a set of possibilities to
   be resolved. Both are close to *an obligation is the disjunction of its
   alternatives, discharged by one of them*
-  ([`10-satisfiability.md`](../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md)).
+  ([`10-satisfiability.md`](../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md)).
 - **Answer set programming** has the same three forms:
   - normal rules are assertions;
   - integrity constraints (`:- body.`) are negations;
@@ -66,7 +69,7 @@ settles no open question. It becomes work when either of these starts:
 
 - M2's formalizer decides which rule kind a clause becomes, at its contract
   or passes stage (S2.2.1, S2.2.4). The mood is then a feature or a
-  constraint of the grammar ([F2](f2_self_modifying_language.md), GBNF);
+  constraint of the grammar ([F2](../../followups/f2_self_modifying_language.md), GBNF);
 - the explanation work of idea 08 renders rules and open states back into
   text.
 

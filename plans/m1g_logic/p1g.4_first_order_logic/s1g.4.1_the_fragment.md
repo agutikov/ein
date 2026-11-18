@@ -5,7 +5,7 @@
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md), above all
 [S1g.1.2](../p1g.1_survey_and_design/s1g.1.2_two_levels.md)'s meta-level tables.
 **Pulls in:** [F1b](../../followups/f1b_logical_formulation.md)'s PFL.1;
-[F20](../../followups/f20_rule_kinds_as_sentence_moods.md)'s three rule kinds;
+[F20](../../m1h_beyond_word_problems/p1h.6_statements_negations_questions/f20_rule_kinds_as_sentence_moods.md)'s three rule kinds;
 [F7](../../followups/f7_rule_induction.md)'s four-class taxonomy;
 [F21](../../followups/f21_non_monotone_programs_decided.md) for `absent`;
 [F17](../../followups/f17_formal_verification/ideas.md)'s comparison with rewriting logic.

@@ -5,7 +5,7 @@
 **Depends on:** [S1g.1.1](s1g.1.1_what_ein_represents_today.md), whose programs are its examples.
 **Pulls in:** [F1b](../../followups/f1b_logical_formulation.md)'s PFL.2 in outline (which rules of inference
 are *direct* in Ein and which need machinery); [idea 06](../../ideas/06-inference-rules-completeness.md)'s
-row *hypothesis + contradiction*; [F20](../../followups/f20_rule_kinds_as_sentence_moods.md)'s three rule
+row *hypothesis + contradiction*; [F20](../../m1h_beyond_word_problems/p1h.6_statements_negations_questions/f20_rule_kinds_as_sentence_moods.md)'s three rule
 kinds; [F26](../../followups/f26_consistency_and_completeness.md)'s table of what Ein means by its words.
 
 ## What it asks
