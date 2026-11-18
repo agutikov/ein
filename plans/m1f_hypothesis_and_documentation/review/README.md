@@ -25,7 +25,10 @@ your answer; a re-render never touches it.
 |---|---|---|
 | [01-save-and-load](01-save-and-load/README.md) | 8 | the saved file: what it prints, what reads it, what went with the state files (a fact's English) |
 | [02-numerals](02-numerals/README.md) | 8 | the calculator's check of a numeral after `written` was erased |
+| [03-drawings](03-drawings/README.md) | 5 | the drawings after S1f.23.6 built the user's answers: the layered layout, the fold of a fact of two arrows, a derivation's drawing, R-33 |
 | [04-language-and-decisions](04-language-and-decisions/README.md) | 6 | a relation's count, a non-monotone case, the `is-a` row, three decisions' sentences |
+
+The drawings' topic holds again the five items S1f.23.6 put after building the answers on it (56 to 60).
 
 Each topic's README has its items in a table, the default of each, and what building the item found that the ledger
 does not say.
@@ -43,8 +46,9 @@ does not say.
 - `runs/`, every output raw, one file a command: the read-out, `--json-summary`, `--events` (and as a table),
   `--trace`, `ein saturate --dump`, `--dump-answer`, `ein show hyps`, `ein test`; before and today side by side,
   with `diff -u` between them.
-- `renders/`, every view that bears on the item, `.dot` and `.svg`, each drawn with the layout its DOT suggests
-  (`fdp` for a KB view, else `dot`; `03-drawings/tools/draw.sh`).
+- `renders/`, every view that bears on the item, `.dot` and `.svg`, each drawn with the layout its DOT suggests,
+  `dot` for every view of today's binary ([`tools/draw.sh`](tools/draw.sh); a KB view of an earlier binary suggests
+  `fdp`).
 - `tools/` or `rerun.sh`, the script that made the runs: it re-takes them from the repo root.
 
 **A file with `.MOCK.` in its name is not the binary's output.** It is the binary's output, or a page's drawing,
@@ -89,3 +93,8 @@ The two earlier trees are the worktrees `build/wt-rev-0a4/` and `build/wt-rev-a8
 | 29 | [L-101](02-numerals/29-L-101/README.md) | `int-check-parts` / `rat-check-parts` ask non-numerals | as they are |
 | 30 | [L-104](01-save-and-load/30-L-104/README.md) | `saturate --dump` prints `:hypothesis 0` for every choice | as is |
 | 31 | [F23 D-24](01-save-and-load/31-F23-D-24/README.md) | the carried-module note when `$EIN_STDLIB` points nowhere | as is |
+| 56 | [the layers](03-drawings/56-layers/README.md) | the layered layout as built, nested facts in bands | (a) layers and bands written |
+| 57 | [a folded arrow's rank](03-drawings/57-folded-ranks/README.md) | under `--fold`, a folded arrow within a layer, or ranked as any arrow | (a) within a layer |
+| 58 | [the two-arrow fold](03-drawings/58-two-arrow-fold/README.md) | a stored negation folds into a loop; five closing rules drawn folded | (a) as built |
+| 59 | [a derivation's drawing](03-drawings/59-derivation/README.md) | the palette, the widths, the layers, `--fold` changing no step's slice | (a) as built |
+| 60 | [R-33](03-drawings/60-R-33/README.md) | the slices Graphviz refused: refused no more; a per-commit check of two traces | (a) as built |

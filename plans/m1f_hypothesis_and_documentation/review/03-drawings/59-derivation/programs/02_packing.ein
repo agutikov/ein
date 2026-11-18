@@ -1,0 +1,56 @@
+;;; 02_packing — a rule that packs a fact into another fact's argument.
+;;;
+;;; `01_common_belief.ein` unpacks: a belief's content becomes a fact of its
+;;; own when every person holds it. This program packs: a rule takes a fact
+;;; the state holds and writes it as an argument of another fact.
+;;;
+;;; - **Packing makes no new name.** `(knows Ann (likes Dan Soup))` has the
+;;;   fact `(likes Dan Soup)` under its arrow, built from names the program
+;;;   already has and identified by its structure. The same fact written in
+;;;   the file, in Bob's `(claims Bob (likes Dan Soup))`, is the same object:
+;;;   `confirmed` joins the two on `?c` and finds it.
+;;; - **A packed fact is not asserted again, nor made true.** Bob also claims
+;;;   `(likes Dan Tea)`; no one knows it, since no state holds it, so it is
+;;;   not confirmed, and `(likes Dan Tea)` stays in the context of the claim
+;;;   and nowhere else.
+;;; - **The blind enumerator never takes a packed fact for an object**: its
+;;;   objects are names. Here nothing is guessed at all, `(solve :no-search)`.
+;;; - **What not to write**: a rule whose conclusion packs, inside the same
+;;;   relation, what its premise matched, `(noted ?c) ⇒ (noted (noted ?c))`,
+;;;   builds an ever deeper term on each firing and its saturation does not
+;;;   end; nothing refuses it today.
+
+(relation likes     Person Food  :why "{?3} likes {?4}")
+(relation witness   Person       :why "{?3} is a witness")
+(relation knows     Person Claim :why "{?3} knows that {?4}")
+(relation claims    Person Claim :why "{?3} claims that {?4}")
+(relation confirmed Claim        :why "that {?3} is confirmed")
+
+(likes Dan Soup)
+(likes Eve Fish)
+(witness Ann)
+
+(claims Bob (likes Dan Soup))
+(claims Bob (likes Dan Tea))
+
+;; packing: a fact the state holds becomes the argument of another
+(rule witnessed ()
+  :match  (and (witness ?w) (likes ?p ?f))
+  :assert (knows ?w (likes ?p ?f))
+  :why    "{?w} is a witness, so knows that {?p} likes {?f}")
+
+;; a claim is confirmed when a witness knows it: a fact a rule packed,
+;; joined with the same fact a file wrote under an arrow
+(rule confirm ()
+  :match  (and (claims ?x ?c) (knows ?w ?c))
+  :assert (confirmed ?c)
+  :why    "{?x} claims what {?w} knows")
+
+(solve :no-search)
+
+(query :goal (knows ?w ?c)
+  :expect (model (knows Ann (likes Dan Soup)) (knows Ann (likes Eve Fish))))
+(query :goal (confirmed ?c)
+  :expect (model (confirmed (likes Dan Soup))))
+(query :goal (likes Dan ?f)
+  :expect (model (likes Dan Soup)))

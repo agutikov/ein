@@ -351,19 +351,19 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.420](#q-m1f420--what-ein-render-program-draws) | what `ein render program` draws | **ruled 2026-11-18 by the user**: the program's knowledge base as one graph, as the KB view draws one, its rules, its query; no split into ontology and facts; built by S1f.23.1 |
 | [Q-M1f.421](#q-m1f421--is-a-and-relation-in-a-drawing) | `is-a` and `relation` in a drawing | **ruled 2026-11-18 by the user**: ordinary relations, nothing special in any drawing; `--no-types` and `--no-instances` go; built by S1f.23.1 |
 | [Q-M1f.422](#q-m1f422--the-traces-drawings-folded) | the trace's drawings folded | **ruled 2026-11-18 by the user**: `ein solve --fold` folds the trace's drawings; built by S1f.23.1 |
-| [Q-M1f.423](#q-m1f423--how-the-arrows-of-a-fact-are-numbered) | how the arrows of a fact are numbered | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), `1` at the relation, `2`, `3`, … at the arguments, digits alone |
-| [Q-M1f.424](#q-m1f424--where-what-a-fact-rests-on-is-drawn) | where what a fact rests on is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), an `xlabel` beside the octagon; L-96 gone |
-| [Q-M1f.425](#q-m1f425--the-folds-option-and-what-it-folds) | the fold's option, and what it folds | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), `--fold`, `--levi` gone; three arrows only, never a fact pointed at |
-| [Q-M1f.426](#q-m1f426--what-the-constraint-view-draws) | what the constraint view draws | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), each fact as a fact; every un-annotated fact of an undeclared relation, declarations among them |
-| [Q-M1f.427](#q-m1f427--how-a-rules-pattern-is-drawn) | how a rule's pattern is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), as a fact; `(not P)` a red fact of `not`; `forall` a pattern as called |
-| [Q-M1f.428](#q-m1f428--how-a-derivation-is-drawn) | how a derivation is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), each fact its node, each step a node; `⊥` a mark; the no-good a note pointing at its facts |
-| [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawing-of-a-derivation) | a folded fact in a drawing of a derivation | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), a labelled arrow through a point the firings meet |
-| [Q-M1f.430](#q-m1f430--the-region-lattice-and-h-space-views) | the region, lattice and h-space views | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), left as they are, a label of a state and not a drawing of a fact |
-| [Q-M1f.431](#q-m1f431--the-program-views-three-parts) | the program view's three parts | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), as built; a claim's text in a query's note still a question |
-| [Q-M1f.432](#q-m1f432--what-the-kb-view-leaves-out) | what the KB view leaves out | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), nothing: stored negations and facts that apply a rule drawn |
-| [Q-M1f.433](#q-m1f433--the-shape-of-an-atom) | the shape of an atom | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), a box |
-| [Q-M1f.434](#q-m1f434--the-standard-librarys-rule-drawings-past-the-bound) | the standard library's rule drawings past the bound | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), canonical, else folded, else Ein only |
-| [Q-M1f.435](#q-m1f435--where-an-arrows-number-is-written) | where an arrow's number is written | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), its `xlabel`, and a folded arrow's relation in a knowledge base's drawing too, laid out in seconds where a `label` takes minutes |
+| [Q-M1f.423](#q-m1f423--how-the-arrows-of-a-fact-are-numbered) | how the arrows of a fact are numbered | **ruled 2026-11-18 by the user**: (a), `1` at the relation, `2`, `3`, … at the arguments, digits alone; carried by the decision Q-M1f.419 |
+| [Q-M1f.424](#q-m1f424--where-what-a-fact-rests-on-is-drawn) | where what a fact rests on is drawn | **ruled 2026-11-18 by the user**: (a), an `xlabel` beside the octagon; carried by Q-M1f.419 |
+| [Q-M1f.425](#q-m1f425--the-folds-option-and-what-it-folds) | the fold's option, and what it folds | **ruled 2026-11-18 by the user**: (a) + (b), `--fold` on every command that draws facts, a fact of three arrows an arrow and a fact of two a loop on its argument; **built** by S1f.23.6; the decision Q-M1f.425 |
+| [Q-M1f.426](#q-m1f426--what-the-constraint-view-draws) | what the constraint view draws | **ruled 2026-11-18 by the user**: (a), each fact as a fact; the user's addition, a slice of the KB defined by a query, is S1f.23.7 (planned, not started); the decision Q-M1f.426 |
+| [Q-M1f.427](#q-m1f427--how-a-rules-pattern-is-drawn) | how a rule's pattern is drawn | **ruled 2026-11-18 by the user**: (a), as a fact; `(not P)` a red fact of `not`; `forall` a pattern as called (R-15 (i)); the decision Q-M1f.427 |
+| [Q-M1f.428](#q-m1f428--how-a-derivation-is-drawn) | how a derivation is drawn | **ruled 2026-11-18 by the user**: (a), and *"more contrast colors and 2x thicker lines"*: a derivation's arrows and steps `penwidth=2`, in a dark palette by the rule's name; **built** by S1f.23.6; the decision Q-M1f.428 |
+| [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawing-of-a-derivation) | a folded fact in a drawing of a derivation | **ruled 2026-11-18 by the user**: no arrow to or from an arrow; a fact a derivation's arrow touches never folded, every other fact of two or three arrows folded, no point; **built** by S1f.23.6; the decision Q-M1f.429 |
+| [Q-M1f.430](#q-m1f430--the-region-lattice-and-h-space-views) | the region, lattice and h-space views | **ruled 2026-11-18 by the user**: (a), left as they are; the canonical form for a KB alone (Q-M1f.470); the decision Q-M1f.430 |
+| [Q-M1f.431](#q-m1f431--the-program-views-three-parts) | the program view's three parts | **ruled 2026-11-18 by the user**: (a), as built; a claim's text in a query's note stays; carried by Q-M1f.420, amended |
+| [Q-M1f.432](#q-m1f432--what-the-kb-view-leaves-out) | what the KB view leaves out | **ruled 2026-11-18 by the user**: (a), nothing left out; carried by Q-M1f.420, amended |
+| [Q-M1f.433](#q-m1f433--the-shape-of-an-atom) | the shape of an atom | **ruled 2026-11-18 by the user**: (a): an object a labelled box, a fact an unlabelled octagon, a variable a labelled diamond; the decision Q-M1f.433 |
+| [Q-M1f.434](#q-m1f434--the-standard-librarys-rule-drawings-past-the-bound) | the standard library's rule drawings past the bound | **ruled 2026-11-18 by the user**: (a), canonical, else folded, else Ein only; the bound kept (L-97); the decision Q-M1f.434 |
+| [Q-M1f.435](#q-m1f435--where-an-arrows-number-is-written) | where an arrow's number is written | **ruled 2026-11-18 by the user**: (a), its `xlabel`, and a folded arrow's relation in a knowledge base's drawing too; the decision Q-M1f.435 |
 | [Q-M1f.436](#q-m1f436--the-kernel-reads-no-theorys-name-and-the-built-in-symmetry-goes) | the kernel reads no theory's name, and the built-in symmetry goes | **ruled 2026-11-18 by the user**: the kernel gives a fixed meaning to its own names alone; `is-a`, `symmetric` and every other name a theory's or a program's; the native mirror dropped, `__symmetric__` an ordinary name; **built** by S1f.23.4, with S1f.23.1's and S1f.23.2's parts, held by the renaming test; the decision Q-M1f.436 |
 | [Q-M1f.437](#q-m1f437--the-flagged-spelling-of-symmetric-derived-node) | the flagged spelling of `symmetric-derived-node` | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), not the stop condition, the answer the same; the program retired |
 | [Q-M1f.438](#q-m1f438--the-programs-that-showed-only-the-mirror-retired-or-rewritten) | the programs that showed only the mirror: retired or rewritten | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), all six retired with their corpus entries and four regression rows |
@@ -395,14 +395,14 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.464](#q-m1f464--the-review-run-pages-cross-check-1) | the review run page's cross-check 1 | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), the `ein test` run's claims against the listed states, by count |
 | [Q-M1f.465](#q-m1f465--the-diffs-module) | the diff's module | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), `claim_diff.rs` |
 | [Q-M1f.466](#q-m1f466----diff-models-removed-or-retired) | `--diff-models`: removed, or retired | **defaulted 2026-11-18 (S1f.23.3), the user's to revise**: (a), removed, not retired: clap refuses it, exit 2 |
-| [Q-M1f.467](#q-m1f467--a-commands-output-on-a-page-canonical-or-folded) | A command's output on a page: canonical or folded | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), on a page, the binary's output for the command as the page writes it, canonical by default; folded where the page's point is the compact view, and the page then writes `--fold` (in `reasoning/`, says that it folds) |
-| [Q-M1f.468](#q-m1f468--a-pages-kb-drawing-the-whole-view-or-a-cut) | A page's KB drawing: the whole view or a cut | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), a KB drawing may be a cut of the view: the facts of the relations the section is about and every fact they point at, a framed fact kept only where a kept fact points at it, the page saying what is left out; Q-M1f.368's *kept as the file the command wrote* read of a whole view |
-| [Q-M1f.469](#q-m1f469--how-a-derivations-drawing-marks-a-terminal-and-the-core) | How a derivation's drawing marks a terminal and the core | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), a terminal double-bordered, the core red, where both were filled before (no octagon is filled, Q-M1f.398) |
-| [Q-M1f.470](#q-m1f470--which-hand-drawings-the-canonical-form-leaves-as-they-are) | Which hand drawings the canonical form leaves as they are | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), as Q-M1f.430 for the views, extended to the pages: region, lattice, cube and h-space drawings, states and constructions, dependency graphs, schematics and flowcharts, the design diagrams: none of them a drawing of facts |
-| [Q-M1f.471](#q-m1f471--01-object-orders-drawing) | `01-object-order`'s drawing | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), six unlabelled octagons f1 to f6 in the order's chain, their arrows left out, the page giving each fact in TeX |
-| [Q-M1f.472](#q-m1f472--names-of-the-drawings-that-changed-form) | Names of the drawings that changed form | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), `levi` → `canonical`, `compact` → `folded`; `01-is-a-convention` dropped, its paragraph rewritten; the two `12-*-form` drawings merged into `12-query-view` |
-| [Q-M1f.473](#q-m1f473--programs-a-page-draws-that-no-file-holds) | Programs a page draws that no file holds | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), reconstructed for the drawing from the page's text: the hrule `guess-drink`, the written-out `bag-is-ready` |
-| [Q-M1f.474](#q-m1f474--an-arrow-in-a-hand-schematic-that-is-no-arrow-of-the-graph) | An arrow in a hand schematic that is no arrow of the graph | **defaulted 2026-11-18 (S1f.23.1, task 2), the user's to revise**: (a), allowed where its page says so (`03-bijective-family`) |
+| [Q-M1f.467](#q-m1f467--a-commands-output-on-a-page-canonical-or-folded) | A command's output on a page: canonical or folded | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.467 |
+| [Q-M1f.468](#q-m1f468--a-pages-kb-drawing-the-whole-view-or-a-cut) | A page's KB drawing: the whole view or a cut | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.468 |
+| [Q-M1f.469](#q-m1f469--how-a-derivations-drawing-marks-a-terminal-and-the-core) | How a derivation's drawing marks a terminal and the core | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.469 |
+| [Q-M1f.470](#q-m1f470--which-hand-drawings-the-canonical-form-leaves-as-they-are) | Which hand drawings the canonical form leaves as they are | **ruled 2026-11-18 by the user**: (a), *"canonical drawing is ONLY for Ein KB (objects and facts)"*; a small lattice with its states' facts drawn an exception, filed to M20; the decision Q-M1f.470 |
+| [Q-M1f.471](#q-m1f471--01-object-orders-drawing) | `01-object-order`'s drawing | **ruled 2026-11-18 by the user**: (a), *"their own arrows have nothing related to this ordering example"* |
+| [Q-M1f.472](#q-m1f472--names-of-the-drawings-that-changed-form) | Names of the drawings that changed form | **ruled 2026-11-18 by the user**: (a) |
+| [Q-M1f.473](#q-m1f473--programs-a-page-draws-that-no-file-holds) | Programs a page draws that no file holds | **ruled 2026-11-18 by the user**: (a); the decision Q-M1f.473 |
+| [Q-M1f.474](#q-m1f474--an-arrow-in-a-hand-schematic-that-is-no-arrow-of-the-graph) | An arrow in a hand schematic that is no arrow of the graph | **ruled 2026-11-18 by the user**: (a) for a hand drawing, *"not render output"*; the decision Q-M1f.474 |
 | [Q-M1f.475](#q-m1f475--where-a-declarations-statement-prints-on-the-premises-line) | Where a declaration's statement prints on the premises line | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), right after the declaration, ` — <statement>`, the premises' sources still once after the last premise, so a line can carry two dashes (the examples page's open point 3 (a)) |
 | [Q-M1f.476](#q-m1f476--a-declaration-a-rule-concludes) | A declaration a rule concludes | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), it reads by its `:why` on the *Derives* line, however a run reaches it (open point 10); no corpus program derives one |
 | [Q-M1f.477](#q-m1f477--the-bound-on-a-declarations-references) | The bound on a declaration's references | **defaulted 2026-11-18 (S1f.23.5, task 2), the user's to revise**: (a), `{?2}` to `{?n+2}`, `{?1}` refused by `template_wellformedness.rs`, an untyped declaration bounded to `{?2}`; the engine prints a `{?1}` as `relation` and a reference past the arrows as written (open point 7 (a)) |
@@ -8283,18 +8283,23 @@ reads or concludes is folded is [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawin
 
 ### Q-M1f.423 — How the arrows of a fact are numbered
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"number the arrows 1/2"*). **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"number the arrows 1/2"*). **Ruled 2026-11-18.**
 
 - **(a)** **as the reasoning pages number them**: the first arrow, at the relation, is `1`, and the arguments' are
   `2`, `3`, … in order (`01-canonical-graph.dot`, *counted from the first*); digits alone, in every view; a folded
   arrow carries the relation's name and no number. **Default.**
 - **(b)** the arrows to the arguments `1`, `2`, … and the first arrow unnumbered, or `0`.
 
-**Default taken: (a).** Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`, `ir_dot.rs`.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 34; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; carried by the decision
+[Q-M1f.419](../../docs/decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md), which states the
+numbering.
+
+The default had been (a). Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`, `ir_dot.rs`.
 
 ### Q-M1f.424 — Where what a fact rests on is drawn
 
-**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** The KB view wrote a fact's source's short id or
+**Raised** 2026-11-18 by S1f.23.1's build. **Ruled 2026-11-18.** The KB view wrote a fact's source's short id or
 `by <rule>` in the octagon's label, after the relation's name and a literal `\n` (L-96), or after the name on its
 arrow.
 
@@ -8304,13 +8309,17 @@ arrow.
   L-96 is gone from every view this stage rewrote. **Default.**
 - **(b)** a node of its own for the source, pointed at by the fact.
 
-**Default taken: (a).** Built: `ein-render/src/fact_graph.rs` (`Look`), `kb_dot.rs`, `ir_dot.rs`' `stated_look`;
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 35; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; carried by
+[Q-M1f.419](../../docs/decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md), which says what stands
+beside an octagon.
+
+The default had been (a). Built: `ein-render/src/fact_graph.rs` (`Look`), `kb_dot.rs`, `ir_dot.rs`' `stated_look`;
 the derivation graph writes its source, rule or hypothesis there too.
 
 ### Q-M1f.425 — The fold's option, and what it folds
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"optionally fold 3-facts into labelled arrows"*). **Put,
-not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"optionally fold 3-facts into labelled arrows"*). **Ruled 2026-11-18.**
 
 - **(a)** **`--fold`, one name on every subcommand that draws facts** (`ein render program`, `kb`, `rules`, `rule`,
   `constraints`, and `ein solve` for the trace, Q-M1f.422); `--levi` goes, since the octagon is the default. It
@@ -8318,13 +8327,22 @@ not ruled.**
   drawn fact points at is a node. **Default.**
 - **(b)** a fact of two arrows folded into a loop on its argument, as the views drew one before.
 
-**Default taken: (a).** Built: `ein-cli/src/cmdline.rs`' `fold`; held by `every_object_once.rs` and
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 36; the answers are `e4c0eaf6`),
+verbatim: *"(a) + (b)"* **(a) and (b)**: `--fold` on every command that draws facts, folding a fact of three arrows
+into an arrow and a fact of two into a loop on its argument, where nothing drawn points at it. **Built** by
+[S1f.23.6](p1f.23_review_processing/s1f.23.6_the_drawings_answers.md): `ein_render::fact_graph::folds`, `rules.rs`,
+`slice.rs`; `every_object_once.rs` fails on a fact of two or three arrows that nothing points at and is not folded.
+Recorded by S1f.23.6; the decision
+[Q-M1f.425](../../docs/decisions/cli/Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md); Q-M1f.419 and
+Q-M1f.382 amended.
+
+The default had been (a). Built: `ein-cli/src/cmdline.rs`' `fold`; held by `every_object_once.rs` and
 `render_doors.rs`' `every_door_draws_a_fact_in_both_forms`; the pages `12-rendering.md`, `05-cli.md`,
 `06-config.md`.
 
 ### Q-M1f.426 — What the constraint view draws
 
-**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** The view wrote a relation's properties into its
+**Raised** 2026-11-18 by S1f.23.1's build. **Ruled 2026-11-18.** The view wrote a relation's properties into its
 node, `next-to\n«symmetric»` (a fact's text in a node), and chose its facts by leaving out three heads, `relation`,
 `type` and `instance`; the user's ruling of 2026-11-18 on theory names takes `type` and `instance` out (S1f.23.1's
 Record).
@@ -8335,12 +8353,20 @@ Record).
   declaration, a fact of `relation`, which no program declares, is drawn among them. **Default.**
 - **(b)** as (a), declarations left out by the name `relation`.
 
-**Default taken: (a).** Built: `ein-render/src/constraints.rs`; held by `every_object_once.rs`'
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 37; the answers are `e4c0eaf6`),
+verbatim: *"So, it turns out that we have commands that render part of KB. I'm not against it - (a). Small addition -
+would be nice to formalize this KB slice with something, e.g. ein query or rule that selects all nodes where relation
+is argument (is it correct definition?), and together with `constraints` allow to render arbitrary query."* **(a)**;
+the addition, a slice of the knowledge base defined by a query and drawn, is
+[S1f.23.7](p1f.23_review_processing/s1f.23.7_a_slice_by_a_query.md), planned and not started. Recorded by S1f.23.6;
+the decision [Q-M1f.426](../../docs/decisions/cli/Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md).
+
+The default had been (a). Built: `ein-render/src/constraints.rs`; held by `every_object_once.rs`'
 `the_constraint_view_draws_a_property_as_a_fact`.
 
 ### Q-M1f.427 — How a rule's pattern is drawn
 
-**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build. **Ruled 2026-11-18.**
 
 - **(a)** **a pattern as a fact**: an octagon with no name in it, its arrow `1` at its relation, a box per panel,
   or the variable's diamond where the relation is a variable; folded under `--fold` where it has three arrows and
@@ -8350,12 +8376,16 @@ Record).
   drew as a `∀` cluster, and `unknown` are patterns as called. An empty `()` draws nothing. **Default.**
 - **(b)** `forall` kept as a cluster of its own.
 
-**Default taken: (a).** Built: `ein-render/src/rules.rs`; held by `every_object_once.rs`'
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 38; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, written in the item's notes; R-15's answer with it, (i). Recorded by S1f.23.6; the decision
+[Q-M1f.427](../../docs/decisions/cli/Q-M1f.427-a-rules-pattern-is-drawn-as-a-fact-and-no-macro.md).
+
+The default had been (a). Built: `ein-render/src/rules.rs`; held by `every_object_once.rs`'
 `the_rule_view_draws_a_pattern_as_a_fact` and `presentation_semantics.rs`.
 
 ### Q-M1f.428 — How a derivation is drawn
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (L-99). **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (L-99). **Ruled 2026-11-18.**
 
 - **(a)** **each fact as its node, each step a node of its own**: in a trace's slice, the firing's node from its
   premises to what it derives, a commitment's facts red and a stored negation grey, no node filled; a fact a fact of
@@ -8366,12 +8396,20 @@ Record).
   `s1` and its rule, from its premises to the fact it derives. **Default.**
 - **(b)** the derivation graph's diamond only where a fact has two derivations, as before.
 
-**Default taken: (a).** Built: `ein-render/src/slice.rs`, `derivation.rs`, `ir_dot.rs`' `render_trace_dag`; the
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 39; the answers are `e4c0eaf6`),
+verbatim: *"(a) I like what we already have, just use more contrast colors and 2x thicker lines then default."*
+**(a)**, and a derivation's arrows and steps in colours of more contrast and twice Graphviz's default width. **Built**
+by [S1f.23.6](p1f.23_review_processing/s1f.23.6_the_drawings_answers.md): `slice.rs`' `DERIVATION_PALETTE` (eight dark
+colours, none red nor grey, picked by the rule's name) and `DERIVATION_WIDTH` (`penwidth=2`), on the slices, the
+derivation graph and a written trace's `dag` view. Recorded by S1f.23.6; the decision
+[Q-M1f.428](../../docs/decisions/cli/Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md).
+
+The default had been (a). Built: `ein-render/src/slice.rs`, `derivation.rs`, `ir_dot.rs`' `render_trace_dag`; the
 goldens `slice_render_slice.dot`, `kb_provenance_dag.dot`, `ir_render_trace_dag.dot`, the trace goldens.
 
 ### Q-M1f.429 — A folded fact in a drawing of a derivation
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.422. **Put, not ruled.** In a slice every fact is the end of a
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.422. **Ruled 2026-11-18.** In a slice every fact is the end of a
 firing's arrow, and an arrow cannot end at an arrow.
 
 - **(a)** **a labelled arrow through a point**: a fact of three arrows that no fact of the cone points at is an
@@ -8379,23 +8417,36 @@ firing's arrow, and an arrow cannot end at an arrow.
   argument; the firings' arrows enter and leave the point. **Default.**
 - **(b)** under `--fold` a slice folds nothing, and only the `-F` snapshots fold.
 
-**Default taken: (a).** Built: `ein-render/src/slice.rs`; held by `render_doors.rs`'
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 40; the answers are `e4c0eaf6`),
+verbatim: *"do not fold, when we show derivation with additional arrow (of different color); general rule for
+rendering - no arrow to/from arrows, arrows go only to/from shapes; So other 3-facts and 2-facts can be folded, but
+not those that hold derivation arrows."* **neither option**: no arrow goes to or from an arrow, in every drawing; in a
+slice a fact a derivation's arrow touches is never folded, every other fact of two or three arrows folds, and the
+point goes. **Built** by [S1f.23.6](p1f.23_review_processing/s1f.23.6_the_drawings_answers.md): `slice.rs`;
+`render_doors.rs` holds a step's slices under `--fold` to the canonical ones, with no point. Recorded by S1f.23.6; the
+decision [Q-M1f.429](../../docs/decisions/cli/Q-M1f.429-no-arrow-goes-to-or-from-an-arrow.md).
+
+The default had been (a). Built: `ein-render/src/slice.rs`; held by `render_doors.rs`'
 `every_door_draws_a_fact_in_both_forms`.
 
 ### Q-M1f.430 — The region, lattice and h-space views
 
-**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** These views draw states, nodes and candidates,
+**Raised** 2026-11-18 by S1f.23.1's build. **Ruled 2026-11-18.** These views draw states, nodes and candidates,
 labelled with their facts' text, and the region view draws a reported state as an octagon with its facts in it.
 
 - **(a)** **left as they are**: a node is a state or a candidate, and its label a list of what it holds, not a
   drawing of a fact. **Default.**
 - **(b)** they are form 4 too, and each state's or candidate's facts are drawn as nodes.
 
-**Default taken: (a).** Nothing built; `region_dot.rs`, `dump/region_lattice.rs` and `structure.rs` are unchanged.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 41; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.430](../../docs/decisions/cli/Q-M1f.430-the-canonical-form-draws-a-knowledge-base.md), with Q-M1f.470's words.
+
+The default had been (a). Nothing built; `region_dot.rs`, `dump/region_lattice.rs` and `structure.rs` are unchanged.
 
 ### Q-M1f.431 — The program view's three parts
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420. **Ruled 2026-11-18.**
 
 - **(a)** **as built**: the digraph `kb` holds every fact and declaration the program states, in the order the
   loader reads them, declarations first, a fact written twice drawn once as written first; a written check,
@@ -8409,12 +8460,17 @@ labelled with their facts' text, and the region view draws a reported state as a
 **What stays a question:** a note writes a claim as it is written, `:expect (model (owns Bob Dog))`, so a fact's
 text stands in a note's label, as a state's does in the region view (Q-M1f.430).
 
-**Default taken: (a).** Built: `ein-render/src/ir_dot.rs`; held by `every_object_once.rs`'
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 42; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; carried by
+[Q-M1f.420](../../docs/decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md), amended with the
+parts' details.
+
+The default had been (a). Built: `ein-render/src/ir_dot.rs`; held by `every_object_once.rs`'
 `the_program_views_kb_is_the_kb_views_drawing` and its corpus sweep.
 
 ### Q-M1f.432 — What the KB view leaves out
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420 (*"`ein render kb` renders whole KB"*). **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420 (*"`ein render kb` renders whole KB"*). **Ruled 2026-11-18.**
 The view left out a fact that applies a rule, `(symmetric co-located)`, and every stored negation.
 
 - **(a)** **nothing**: every fact the knowledge base holds is drawn, a stored negation a fact of `not` whose second
@@ -8422,31 +8478,47 @@ The view left out a fact that applies a rule, `(symmetric co-located)`, and ever
   the program view's `kb` and the KB view of a program with no rule are one drawing. **Default.**
 - **(b)** both left out, in the KB view and the program view's `kb`.
 
-**Default taken: (a).** Built: `ein-render/src/kb_dot.rs`; the page `12-rendering.md` § The KB.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 43; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; carried by
+[Q-M1f.420](../../docs/decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md), amended: the KB
+view leaves nothing out.
+
+The default had been (a). Built: `ein-render/src/kb_dot.rs`; the page `12-rendering.md` § The KB.
 
 ### Q-M1f.433 — The shape of an atom
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.421 (*"every atom the same shape"*). **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.421 (*"every atom the same shape"*). **Ruled 2026-11-18.**
 
 - **(a)** **a box, as the reasoning pages draw one**: the node default of the KB, program and constraint views, so
   no atom has a line of its own, and `box` in a rule's panel, where a variable is a diamond. **Default.**
 - **(b)** Graphviz's default ellipse, as the KB view drew an atom that was neither a type nor an instance.
 
-**Default taken: (a).** Built: `ein-render/src/kb_dot.rs`' `kb_digraph_open`, `dot_util.rs`' `GROUND_SHAPE`.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 44; the answers are `e4c0eaf6`),
+verbatim: *"(a) main: object - labelled box, fact - non-labelled octagon, variable - labelled diamond;"* **(a)**, the
+user's rule for every drawing of facts: an object a labelled box, a fact an unlabelled octagon, a variable a labelled
+diamond, built so already. Recorded by S1f.23.6; the decision
+[Q-M1f.433](../../docs/decisions/cli/Q-M1f.433-an-object-is-a-labelled-box-a-fact-an-unlabelled.md).
+
+The default had been (a). Built: `ein-render/src/kb_dot.rs`' `kb_digraph_open`, `dot_util.rs`' `GROUND_SHAPE`.
 
 ### Q-M1f.434 — The standard library's rule drawings past the bound
 
-**Raised** 2026-11-18 by S1f.23.1's build; L-97 is still open. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's build; L-97 is still open. **Ruled 2026-11-18.**
 
 - **(a)** **the canonical drawing where it is within `MAX_NODES`, else the folded one where that is, else Ein
   only**, the image's text saying a drawing is folded. **Default.**
 - **(b)** the canonical drawing or Ein only.
 
-**Default taken: (a).** Built: `utils/gen_stdlib_rule_pages.py`' `chosen`; the counts are S1f.23.1's Record.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 45; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.434](../../docs/decisions/docs/Q-M1f.434-a-standard-library-rule-is-drawn-canonical-else.md); with Q-M1f.425's
+loop the generator counts 493 canonical, 6 folded, 12 as Ein only (five closing rules move from Ein only to folded).
+
+The default had been (a). Built: `utils/gen_stdlib_rule_pages.py`' `chosen`; the counts are S1f.23.1's Record.
 
 ### Q-M1f.435 — Where an arrow's number is written
 
-**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.423. **Put, not ruled.** Written as the arrow's `label`, as the
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.423. **Ruled 2026-11-18.** Written as the arrow's `label`, as the
 reasoning pages' hand drawings write it, each number is a node of `dot`'s layered layout, and a knowledge base of
 some hundreds of facts with frames is laid out in minutes: the program view's `kb` of
 `examples/arith/long_numbers.ein`, 750 arrows, took 360 s of `dot` with labels, 55 s with `taillabel` and 38 s with
@@ -8462,7 +8534,11 @@ some hundreds of facts with frames is laid out in minutes: the program view's `k
   `(owns)`. A rule's panel and a trace's slice, small, keep a folded arrow's `label`. **Default.**
 - **(b)** the `label`, as the pages draw it, with the gate's DOT sweep slower by that view alone.
 
-**Default taken: (a).** Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`.
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 46; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.435](../../docs/decisions/cli/Q-M1f.435-an-arrows-number-is-written-beside-it.md).
+
+The default had been (a). Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`.
 
 ### Q-M1f.436 — The kernel reads no theory's name, and the built-in symmetry goes
 
@@ -8862,75 +8938,114 @@ solve's summary, under `--diff-models`, with the main run's.
 
 ### Q-M1f.467 — A command's output on a page: canonical or folded
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** on a page, the binary's output for the command as the page writes it, canonical by default; folded where the page's point is the compact view, and the page then writes `--fold` (in `reasoning/`, says that it folds). **Default.**
 - **(b)** the page shows the canonical form everywhere.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 47; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.467](../../docs/decisions/docs/Q-M1f.467-a-commands-drawing-on-a-page-is-its-output.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.468 — A page's KB drawing: the whole view or a cut
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** a KB drawing may be a cut of the view: the facts of the relations the section is about and every fact they point at, a framed fact kept only where a kept fact points at it, the page saying what is left out; Q-M1f.368's *kept as the file the command wrote* read of a whole view. **Default.**
 - **(b)** only whole views, however large.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 48; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.468](../../docs/decisions/docs/Q-M1f.468-a-pages-drawing-of-a-knowledge-base-may-be-a-cut.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.469 — How a derivation's drawing marks a terminal and the core
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** a terminal double-bordered, the core red, where both were filled before (no octagon is filled, Q-M1f.398). **Default.**
 - **(b)** another mark, or none.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 49; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.469](../../docs/decisions/docs/Q-M1f.469-a-derivations-drawing-on-a-page-marks-its.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.470 — Which hand drawings the canonical form leaves as they are
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** as Q-M1f.430 for the views, extended to the pages: region, lattice, cube and h-space drawings, states and constructions, dependency graphs, schematics and flowcharts, the design diagrams: none of them a drawing of facts. **Default.**
 - **(b)** each drawn with its facts in the canonical form.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 50; the answers are `e4c0eaf6`),
+verbatim: *"(a) canonical drawing is ONLY for Ein KB (objects and facts), everything else can be drawn in any other
+best way.
+plans/m1f_hypothesis_and_documentation/review/03-drawings/50-Q-M1f.470/renders/06-class-of-two.option-b-facts-drawn.MOCK.svg
+- this one looks good, it could be an option for small lattice and small KB, but it is an exception.
+plans/m1f_hypothesis_and_documentation/review/03-drawings/50-Q-M1f.470/renders/08-constructions.svg - this also looks
+good."* **(a)**, the canonical form for a knowledge base's objects and facts only; the mock of a small lattice with
+its states' facts drawn an option for a small lattice over a small knowledge base, an exception (filed to M20 by the
+main session, `23539de5`). Recorded by S1f.23.6; the decision
+[Q-M1f.470](../../docs/decisions/docs/Q-M1f.470-only-a-knowledge-base-is-drawn-in-the-canonical.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.471 — `01-object-order`'s drawing
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** six unlabelled octagons f1 to f6 in the order's chain, their arrows left out, the page giving each fact in TeX. **Default.**
 - **(b)** each fact with its arrows.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 51; the answers are `e4c0eaf6`),
+verbatim: *"(a), their own arrows have nothing related to this ordering example"* **(a)**, the default as built.
+Recorded by S1f.23.6; no decision file: one page's drawing.
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.472 — Names of the drawings that changed form
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** `levi` → `canonical`, `compact` → `folded`; `01-is-a-convention` dropped, its paragraph rewritten; the two `12-*-form` drawings merged into `12-query-view`. **Default.**
 - **(b)** the old names kept.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 52; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; no decision file: the names of files.
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.473 — Programs a page draws that no file holds
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** reconstructed for the drawing from the page's text: the hrule `guess-drink`, the written-out `bag-is-ready`. **Default.**
 - **(b)** a program file added for each, or the drawing dropped.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 53; the answers are `e4c0eaf6`),
+verbatim: *"(a)"* **(a)**, the default as built. Recorded by S1f.23.6; the decision
+[Q-M1f.473](../../docs/decisions/docs/Q-M1f.473-a-program-a-page-draws-and-no-file-holds.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.474 — An arrow in a hand schematic that is no arrow of the graph
 
-**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.23.1's task 2, the hand-written drawings and the pages. **Ruled 2026-11-18.**
 
 - **(a)** allowed where its page says so (`03-bijective-family`). **Default.**
 - **(b)** never.
 
-**Default taken: (a).** Built: `231486f0` (the merge of task 2, `1d858bb1`).
+**Ruled 2026-11-18** by the user, on the review bundle's `03-drawings/` (item 54; the answers are `e4c0eaf6`),
+verbatim: *"Allowed as hand-written, for explanations, not render output. For rendering layout see L-100"* **(a)** for
+a hand drawing, and never in a command's output; the layout of a command's drawing is L-100's. Recorded by S1f.23.6;
+the decision [Q-M1f.474](../../docs/decisions/docs/Q-M1f.474-a-hand-schematic-may-draw-an-arrow-the-graph.md).
+
+The default had been (a). Built: `231486f0` (the merge of task 2, `1d858bb1`).
 
 ### Q-M1f.475 — Where a declaration's statement prints on the premises line
 

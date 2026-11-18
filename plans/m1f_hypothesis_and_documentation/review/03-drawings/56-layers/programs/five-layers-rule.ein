@@ -1,0 +1,8 @@
+; A rule drawn in layers: its patterns' relations above them, their variables below. Written for the review.
+(relation owns Person Pet :why "{?3} owns {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation pet-lives-in Pet House :why "{?3} lives in {?4}")
+(rule pet-of-owner ()
+  :match  (and (owns ?p ?a) (lives-in ?p ?h))
+  :assert (pet-lives-in ?a ?h)
+  :why    "{?a} is {?p}'s, who lives in {?h}")
