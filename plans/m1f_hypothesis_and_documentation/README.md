@@ -26,14 +26,15 @@ agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-r
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
-**Phases left** (2026-11-17): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, and
-[P1f.22](p1f.22_nested_facts/README.md), nested facts, both created 2026-11-17 on the user's instructions. Each has
-its survey done and its questions put (Q-M1f.390; Q-M1f.391 to .396). **P1f.22 is started** (2026-11-17, on the
-user's word, *"start p1f.22"*) and waits for the rulings on its six questions; **P1f.21 is not started without the
-user's word**. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go ahead
-to close p1f.20"*) and its folder deleted; what it found and left is [`findings.md`](findings.md). The user accepted
-the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop after M1f; the
-close of the milestone was started, then paused on the user's word, and resumes when the two phases are done.
+**Phase left** (2026-11-18): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
+2026-11-17 on the user's instruction: its survey is done, its question put (Q-M1f.390) and its next stage, S1f.21.4,
+planned on the user's two further instructions of 2026-11-18; **it is not started without the user's word**.
+**P1f.22, nested facts, is closed** (2026-11-18, run to its end on the user's word, *"continue till the end of
+phase"*) and its folder deleted. **P1f.20, the documentation tree, is closed** (2026-11-17, on the user's word, *"go
+ahead to close p1f.20"*) and its folder deleted. What the two found and left is [`findings.md`](findings.md). The
+user accepted the tree on 2026-11-17 and asked for M1f's plans to be deleted on completion and for the work to stop
+after M1f; the close of the milestone was started, then paused on the user's word, and resumes when P1f.21 is
+done.
 
 ---
 
@@ -52,8 +53,8 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | P1f.8 | ~~Middle-school algebra and geometry~~: **split and moved to M1g on 2026-11-13** | 0 here (11 moved) | — | **planned 2026-11-11 on the user's instruction of that day**, extended 2026-11-12, and on 2026-11-13 **split into two phases and moved to [M1g](../m1g_logic/README.md)** on the user's instruction (*"seems too complex having both algebra and geometry, let's split it into 2 phases and move into m1g"*): [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra (S1f.8.1 to .5, .10 and .11, now S1g.10.1 to S1g.10.7), and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), school geometry (S1f.8.6 to .9, now S1g.11.1 to S1g.11.4). Nothing of the content was redesigned. The link here is a stub with the table of old and new ids; the number 8 is used and vacated, and is not reassigned |
 | P1f.10 | The structure of the hypothesis set — **closed 2026-11-16**, its close | 14 (**re-planned 2026-11-15** on the user's two ideas, against the engine after the walk's deletion: seven re-scoped in place, seven added; one dropped and one closed in M1e2 beside them) | — | **track S**, the structure as information: what one candidate and two decide at root, held to N; groups as a **cover**, not a partition; which exclusions are the theory's and which the puzzle's; *exactly one* and the grids, found beside declared; what couples the groups; all of it **shown on real programs**, then by a surface the user rules. **Track R**, independent of it: a price list first, and only where it says *go*, an excluded pair spent in the extension step and an order on the obligation tree read from the structure, with R identical on every corpus program and SEND + MORE = MONEY as written decided within the default budget; a *no* is a full result. **Track H**: the three owned findings about what H is (W26 and Q-M1e.11, E-1/E-7/E-54, E-51), each ruled |
 | P1f.20 | `docs/ein/`: the tree a released system would have — **closed 2026-11-17** | 10, every one done; the user reviewed the tree, and its last stage carried out the review's rulings | 25 d | every decision a file under `docs/decisions/`; `docs/history/` and every finished plan deleted, what is true of them rewritten into `docs/ein/`; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
-| [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 4 planned; the first, the survey and the design, done | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390. **Not started further without the user's word** |
-| [P1f.22](p1f.22_nested_facts/README.md) | Nested facts | 4 planned; the first, what we have, done | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .396. **Started 2026-11-17 on the user's word; waits for those rulings** |
+| [P1f.21](p1f.21_verdicts_as_rules/README.md) | The kernel's verdicts as rules | 5 planned; the first, the survey and the design, done; S1f.21.4, open facts and `(ein.kill)` on programs, planned 2026-11-18 and next | — | the contradiction, alive and dead, owed and discharged each stated as a rule on the reasoning pages; and `(open R <justification>)` built or not, on the user's ruling of Q-M1f.390, with the user's further instructions on `(ein.kill)`, open facts and the reserved names. **Not started further without the user's word** |
+| P1f.22 | Nested facts — **closed 2026-11-18** | 8, every one done, the last run on the user's word | — | one consistent explanation of how a fact under an arrow of another is represented and how rules pack and unpack it, on the user's rulings of Q-M1f.391 to .398; and what the rulings on the way asked for: `(not (not g))` a fact, every object drawn once with a frame around what is in a context only, `written` erased, and a saved state saved and loaded as itself |
 
 **P1f.5, P1f.6, P1f.7, P1f.8 and P1f.10 are finished, and their folders were deleted by
 P1f.20's history sweep, S1f.20.9**: their records are in git
@@ -84,7 +85,30 @@ decisions (Q-M1f.341 to .349, .367 to .371, .375 and .378 under `docs/decisions/
 .382 under `docs/decisions/language/`), and Q-M1f.314 is [this ledger's](open_questions.md#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line);
 the wrong answer it found is the register's `W8/fifo-gap-root`, F21's; every open finding of its L-1 to L-90, and
 the defaults its stages took that the user never ruled on, are [`findings.md`](findings.md), which says where
-each one that moved to another owner is (F21, F23, M2's P2.1, P1f.22).
+each one that moved to another owner is (F21, F23, M2's P2.1; L-88 went to P1f.22, which closed it).
+
+**P1f.22 is closed** (2026-11-18, on the user's word), and its folder is deleted
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts`). What it delivered, each
+on the user's rulings:
+
+- **Nested facts explained** in the three perspectives: the global context and a fact's context on the
+  knowledge-base page, packing and unpacking on the rules page, the same in Ein on the user's pages (Q-M1f.391 to
+  .398 under `docs/decisions/`).
+- **The negation of a negation is a fact** a file writes and a rule matches, the kernel unchanged, and its
+  elimination a rule a theory states, shown under `examples/beliefs/` (Q-M1f.391).
+- **`ein render` draws every object once**, a fact a fact points at as its octagon with its arrows, and a dashed
+  frame around what is in a context only, no octagon filled (Q-M1f.395, Q-M1f.398).
+- **`written` erased**: the loader states nothing of what a file nests, and a numeral is checked by the operation
+  that takes it (Q-M1f.404).
+- **A saved state is saved and loaded as itself**: its program, its modules and the choices made, `(commit …)`, in
+  one file that reads no other, loaded as the node of its program's lattice, held by both invariances over every
+  corpus state file (Q-M1f.392, Q-M1f.400 to .403).
+
+What it owned went to its owners: its rulings are decisions; the readings its stages defaulted are the ledger's
+Q-M1f.405 to .411 and .413 to .418; Q-M1f.399, the names of `(false)` and `(open)`, is P1f.21's; every open finding
+of its N-1 to N-50 is [`findings.md`](findings.md)'s L-91 to L-108 but four, which are F21's (N-15), F23's D-23 and
+D-24 (N-20's message, N-39) and P1f.21's V-7 (N-22); and what P1f.21 reads of its page on the user's notes is
+[P1f.21's `open_facts.md` § 10](p1f.21_verdicts_as_rules/open_facts.md#10-what-p1f22-worked-out-that-this-phase-reads).
 
 The numbering is deliberate and the gaps are real: **1–4, 9 and 11–19 are
 unassigned** (8 too until 2026-11-11, when P1f.8 took it; since 2026-11-13, when the user split P1f.8 and moved it to M1g as P1g.10 and P1g.11, 8 is **used and vacated**, not free, and is not reassigned), and the phases here keep the positions they were given rather

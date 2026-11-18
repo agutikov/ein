@@ -319,19 +319,34 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by S1f.10.19: `pairs` everywhere, the engine's order |
 | [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **ruled 2026-11-17 as defaulted** (the user, at S1f.20.2's review, item 13, verbatim [below](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line)): every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet; **readings revised by S1f.20.9 part C2** (the check now reads every crate comment, every project `.md`, `corpus/regressions.toml`, plan finding, followup and review ids, register cases and process paths, has no baseline and does not read itself; the section says each) |
 | [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits: the verdict, with its justification or as a fact. The user's *"maybe better would be to emit (open) facts as (open ?R <justification>)"* | **put 2026-11-17, not ruled**; [S1f.21.1](p1f.21_verdicts_as_rules/s1f.21.1_the_survey_and_the_design.md)'s [`design.md` § 5](p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation). Recommended default: **(b)**, the verdict carries its justification, the instance, and stays a verdict; nothing is built on a default, and [S1f.21.2](p1f.21_verdicts_as_rules/README.md#stages) writes the pages for today's kernel either way |
-| [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **ruled 2026-11-17: (c)** with the elimination a rule (*"Q-M1f.391 OK"*, to the reading put to the user): `(not (not g))` is a fact a file may write and a rule may match, the kernel is not changed, and the rule that concludes `g` from it is a theory's, its home P1f.21's to say (its V-5); [`contexts.md`](p1f.22_nested_facts/contexts.md) § 6. Built by S1f.22.3 |
-| [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **ruled 2026-11-17**: a bug; the requirement an invariance in both directions (*"save -> load -> save byte identical, load -> save -> load - have identical dumps; both save and load must not modify the program, must not add or remove any bit of information"*); **a saved solution is the program unchanged with the choices made**, the state derived again on load (*"(a)"*); **and it loads with no other file beside it** (*"yes"*). Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md), whose first task shows the format on real programs for the user's look |
+| [Q-M1f.391](#q-m1f391--the-negation-of-a-negation-that-a-rule-builds) | the negation of a negation that a rule builds: a conclusion `(not ?x)` whose variable holds a stored negation stores `(not (not g))`, which the pages say is no fact and no file can write | **ruled 2026-11-17: (c)** with the elimination a rule (*"Q-M1f.391 OK"*, to the reading put to the user): `(not (not g))` is a fact a file may write and a rule may match, the kernel is not changed, and the rule that concludes `g` from it is a theory's, its home P1f.21's to say (its V-5); P1f.22's `contexts.md` § 6, copied to [P1f.21's `open_facts.md` § 10.5](p1f.21_verdicts_as_rules/open_facts.md#105-the-negation-of-a-negation-and-its-elimination-as-a-rule). **Built** by S1f.22.3 |
+| [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written) | a state file that reads back dead, through `written`: the reload states `written` for a fact a rule assembled under an arrow, and a rule over `written` fires | **ruled 2026-11-17**: a bug; the requirement an invariance in both directions (*"save -> load -> save byte identical, load -> save -> load - have identical dumps; both save and load must not modify the program, must not add or remove any bit of information"*); **a saved solution is the program unchanged with the choices made**, the state derived again on load (*"(a)"*); **and it loads with no other file beside it** (*"yes"*). The format ruled as Q-M1f.400 to .403; **built** by S1f.22.5, on master since `88ba8cde`: a saved state is its program, its modules and `(commit …)`, and loads as the node of its program's lattice |
 | [Q-M1f.393](#q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise) | a fact held in a variable, as a conclusion or a premise: a rule denies whatever fact a variable holds, `(not ?f)`, and can neither hold it nor ask whether it is held | **ruled 2026-11-17: (a)** (*"Q-M1f.393 yes (a)"*): a rule unpacks by a fact's count, the relation a parameter where wanted; Q-M1f.351 stands |
-| [Q-M1f.394](#q-m1f394--the-words-for-a-fact-under-an-arrow) | the words for a fact under an arrow: the three cases' names, whether a denied fact is in its negation's context, and *value* and *term* beside *fact* | **ruled 2026-11-17**, in the user's words: (1) *"held = in the global context; in a context = in a fact's (local) context"*; (2) a negation is a context, the one the kernel reads; (3) *object* for every node of the graph in the core theory, *value* only for what a variable of a rule is bound to, *graph node* fine, *relational node* not used, *term* a word of the syntax, `docs/ein/ein.rs/` free to name as software documentation needs; [`q394_words.md`](p1f.22_nested_facts/q394_words.md) |
-| [Q-M1f.395](#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) | what `ein render` draws of a fact under an arrow: `kb` draws a fact that is held and nested twice, `rule` a nested pattern as one box | **ruled 2026-11-17**: every object is drawn once, and *"3-arity fact can [be] an arrow only when nothing points on it"*: a fact that a fact points at is drawn as its node with its own arrows, held or not, in `ein render kb` and `ein render rule`; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 7.3. Built by S1f.22.3 |
+| [Q-M1f.394](#q-m1f394--the-words-for-a-fact-under-an-arrow) | the words for a fact under an arrow: the three cases' names, whether a denied fact is in its negation's context, and *value* and *term* beside *fact* | **ruled 2026-11-17**, in the user's words: (1) *"held = in the global context; in a context = in a fact's (local) context"*; (2) a negation is a context, the one the kernel reads; (3) *object* for every node of the graph in the core theory, *value* only for what a variable of a rule is bound to, *graph node* fine, *relational node* not used, *term* a word of the syntax, `docs/ein/ein.rs/` free to name as software documentation needs; P1f.22's `q394_words.md` |
+| [Q-M1f.395](#q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow) | what `ein render` draws of a fact under an arrow: `kb` draws a fact that is held and nested twice, `rule` a nested pattern as one box | **ruled 2026-11-17**: every object is drawn once, and *"3-arity fact can [be] an arrow only when nothing points on it"*: a fact that a fact points at is drawn as its node with its own arrows, held or not, in `ein render kb` and `ein render rule`; P1f.22's `contexts.md` § 7.3. **Built** by S1f.22.4; the mark re-ruled with Q-M1f.398 |
 | [Q-M1f.396](#q-m1f396--where-the-explanation-stands-and-which-example-it-uses) | where the explanation of nested facts stands in `docs/ein/reasoning/`, and which example it is told on | **ruled 2026-11-17: (a)**, sections of the two pages of `01-static-ir/` (*"Q-M1f.396 sections"*); the example not named, so the default stands, the user's example beside the page's `says` |
-| [Q-M1f.397](#q-m1f397--the-reserved-words-in-the-three-perspectives) | the reserved words in the three perspectives of the documentation | **ruled 2026-11-17** by the user's note: in `docs/ein/reasoning/` they are conceptual mathematical objects; in `docs/ein/user/` and `docs/ein/ein.rs/` they are the surface between the reasoning kernel and a theory in pure Ein; [`contexts.md`](p1f.22_nested_facts/contexts.md) § 8 |
-| [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17**, in two looks at the trial's figures: *"I would like to see frame around facts in contexts rather than around global facts"*, then *"label contexts `<relation name> cts` instead of `in context`"*. So: a fact is **filled** where held, and **inside a dashed frame labelled with the context's relation**, `think ctx`, where it is in a context; a fact that facts of two relations point at is in one frame that names both; frames stand side by side. [`contexts.md`](p1f.22_nested_facts/contexts.md) § 14. S1f.22.2 draws so |
+| [Q-M1f.397](#q-m1f397--the-reserved-words-in-the-three-perspectives) | the reserved words in the three perspectives of the documentation | **ruled 2026-11-17** by the user's note: in `docs/ein/reasoning/` they are conceptual mathematical objects; in `docs/ein/user/` and `docs/ein/ein.rs/` they are the surface between the reasoning kernel and a theory in pure Ein; P1f.22's `contexts.md` § 8 |
+| [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17**, in two looks at the trial's figures: *"I would like to see frame around facts in contexts rather than around global facts"*, then *"label contexts `<relation name> cts` instead of `in context`"*. So: a fact is **filled** where held, and **inside a dashed frame labelled with the context's relation**, `think ctx`, where it is in a context; a fact that facts of two relations point at is in one frame that names both; frames stand side by side; S1f.22.2 drew so. **Re-ruled 2026-11-18**: *"let's draw a frame around objects that are in context only"*, and *"drop the filling"*: a frame around what is in a context only, a held object in no frame, no octagon filled; **built** by S1f.22.7 (`58b91dc3`) |
 | [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **put 2026-11-17, not ruled; P1f.21's**, entered there as its V-5, with **the user's direction** of the same day: `(false)` stays a fact that rules infer, in a context or globally, and a state is dead only where a rule infers `(ein.contradiction)` from the global `(false)` or from whatever a theory chooses; *"both (false) renaming and (open) facts belongs to p1f.21"*. Nothing is renamed or built in P1f.22 |
-| [Q-M1f.400](#q-m1f400--how-a-saved-file-states-the-choices-made) | how a saved file states the choices made: no form does today, and a choice typed as a fact reads as given and is `written` | **put 2026-11-18, not ruled**; [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, [`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md). Default: **(a)**, a form of its own, `(commit F …)`, committed after root's fixpoint as a node commits it |
-| [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **put 2026-11-18, not ruled**; the same page. Default: **(a)**, `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file |
-| [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **put 2026-11-18, not ruled**; the same page. Default: no new command; the dump `ein saturate --dump`'s KB section; a loaded file a program whose root is its state; one fixed first line |
-| [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **put 2026-11-18, not ruled**; the same page. Default: **(a)**, a file with a commitment checks no claim and says so |
+| [Q-M1f.400](#q-m1f400--how-a-saved-file-states-the-choices-made) | how a saved file states the choices made: no form does today, and a choice typed as a fact reads as given and is `written` | **ruled 2026-11-18: (a)** (*"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*): a form of its own, `(commit F …)`, committed after root's fixpoint as a node commits it; its three points as defaulted. **Built** by S1f.22.5 |
+| [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **ruled 2026-11-18: (a)**: `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file; its four points as defaulted. **Built** by S1f.22.5 |
+| [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **ruled 2026-11-18: (C)** for a save of a loaded file, a saved file a node of its program's lattice; the defaults for the rest: no new command, the dump `ein saturate --dump`'s KB section, one fixed first line. **Built** by S1f.22.5 |
+| [Q-M1f.403](#q-m1f403--the-programs-claims-in-a-saved-file) | the program's claims in a saved file: 188 of 826 state files with a commitment exit 1 today, each a claim about the program's R checked against the file's own | **ruled 2026-11-18: (a)**: a file with a commitment checks no claim, names each NOT CHECKED, and exits 0. **Built** by S1f.22.5 |
+| [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it) | `written` is erased; a numeral is checked by the operation that takes it | **ruled 2026-11-18** by the user (*"revert this decision, completely erase this `written` crutch …"*): Q-M1f.272, .275, .279 and .280 reverted whole, and the half of .210 and .276 that flagged a numeral where it is written. **Built** by S1f.22.6 (`bf9693dc`); its readings are Q-M1f.405 to .411 |
+| [Q-M1f.405](#q-m1f405--which-numerals-are-taken-from-the-input-program-and-what-once-is) | which numerals are *taken from the input program*, and what *once* is | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a numeral an operation takes, whoever wrote the request, checked once as a fact of the numeral; built so. Under it a malformed numeral handed straight to a tagged call, dead on master, is alive, outside the corpus ((e) would flag it) |
+| [Q-M1f.406](#q-m1f406--the-label-and-where-a-number-an-operation-makes-gets-it) | the label, and where a number an operation makes gets it | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), `(valid N)` and `(bin-valid N)`, a fact of the numeral, concluded where a walk ends and where the arithmetic makes a number |
+| [Q-M1f.407](#q-m1f407--a-numeral-no-operation-takes-is-not-checked) | a numeral no operation takes is not checked | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), not checked; three corpus programs, dead before, answer R = {∅} and are rewritten to claim it |
+| [Q-M1f.408](#q-m1f408--where-the-checks-rules-live) | where the check's rules live | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the representation's, `std.math.decimal` and `std.math.binary`, the operations asking |
+| [Q-M1f.409](#q-m1f409--an-integer-and-a-rational-their-check-and-their-label) | an integer and a rational: their check and their label | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), `(int-check I)` and `(rat-check Q)`, no label of their own. Under it a rational whose numerator is a malformed natural number, dead on master, is alive, outside the corpus ((d) would flag it) |
+| [Q-M1f.410](#q-m1f410--no-join-on-a-number-and-a-result-a-programs-rule-hands-on) | no join on a number, and a result a program's rule hands on | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), a made number handed to a second request is walked again |
+| [Q-M1f.411](#q-m1f411--a-numeral-with-two-faults-has-one-flag) | a numeral with two faults has one flag | **defaulted 2026-11-18 (S1f.22.6), the user's to revise**: (a), the first place at fault from the units |
+| [Q-M1f.412](#q-m1f412--the-read-outs-is-a-row) | the read-out's `is-a` row | **ruled 2026-11-18** (*"V-6 (a), drop the is-a row"*), **built** `5a3f2979`; P1f.21's V-6. Its reading, no schema id moves, **defaulted**: (a) |
+| [Q-M1f.413](#q-m1f413--ein-kb-save-of-a-saved-file) | `ein kb save` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a root's saved file is stored as the program it carries, one with a `(commit …)` refused |
+| [Q-M1f.414](#q-m1f414--a-facts-english-which-a-state-file-wrote-in-a-comment) | a fact's English, which a state file wrote in a comment | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the trace is where a fact reads in English, and no file holds a state's facts in English now; [the milestone's findings](findings.md) L-102 and L-105 wait on it |
+| [Q-M1f.415](#q-m1f415--ein-show-hyps-and-ein-render-h-space-of-a-saved-file) | `ein show hyps` and `ein render h-space` of a saved file | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), both read the program's H, the node aside |
+| [Q-M1f.416](#q-m1f416--what-ein-test-asks-of-a-saved-files-node-and-how-its-claims-exit) | what `ein test` asks of a saved file's node, and how its claims exit | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), root alone, the node; each claim NOT CHECKED, no exit code |
+| [Q-M1f.417](#q-m1f417--what-a-run-of-a-saved-file-says-of-its-node-and-the-directorys-schema) | what a run of a saved file says of its node, and the directory's schema | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), the read-out's `commit` row, `root.commit`, `index.json`'s `commit`, `ein-answer/3` |
+| [Q-M1f.418](#q-m1f418--the-nesting-limit-and-a-saved-files-wrappers) | the nesting limit, and a saved file's wrappers | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a saved file parsed with one level more, each text it carries under the limit; Q-M1f.185 rewritten |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7420,10 +7435,10 @@ S1f.21.4 puts it again on programs.
 
 ### Q-M1f.391 — The negation of a negation that a rule builds
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-1 of
-[P1f.22's findings](p1f.22_nested_facts/findings.md). **Not ruled.** The programs, the commands and the options'
-costs are [`analysis.md` § 4.1](p1f.22_nested_facts/analysis.md#41-q-m1f391--the-negation-of-a-negation-that-a-rule-builds)
-and [§ 1.8](p1f.22_nested_facts/analysis.md#18-where-the-engine-is-not-consistent).
+**Raised** 2026-11-17 by S1f.22.1, finding N-1 of
+P1f.22's findings. **Not ruled.** The programs, the commands and the options'
+costs are `analysis.md` § 4.1
+and § 1.8.
 
 A conclusion `(not ?x)` whose variable holds a stored negation, bound under an arrow of a fact such as
 `(think Alice (not (= 5 (+ 2 2))))`, stores `(not (not (= 5 (+ 2 2))))`. The knowledge-base page, the user's
@@ -7441,14 +7456,15 @@ elimination, already trivial in ein. That's why I also raised a question about (
 a rule in p1f.21."* Read as **(c)** with the elimination a rule: `(not (not g))` is a fact a file may write and a
 rule may match, the kernel is not changed, and the rule that concludes `g` from it is a theory's, its home
 P1f.21's to say. The rule is not writable today (the parse refuses `(not (not …))`), though a state can hold the
-fact. What it would take, and what stays out, is [`contexts.md` § 6](p1f.22_nested_facts/contexts.md#6-the-negation-of-a-negation-and-its-elimination-as-a-rule).
+fact. What it would take, and what stays out, is P1f.22's `contexts.md` § 6, copied to
+[P1f.21's `open_facts.md` § 10.5](p1f.21_verdicts_as_rules/open_facts.md#105-the-negation-of-a-negation-and-its-elimination-as-a-rule).
 
 **Ruled 2026-11-17: (c), the elimination a rule.** The user, to the reading above: *"Q-M1f.391 OK"*.
 
 ### Q-M1f.392 — A state file that reads back dead, through `written`
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), finding N-2. **Not ruled.**
-[`analysis.md` § 4.2](p1f.22_nested_facts/analysis.md#42-q-m1f392--a-state-file-that-reads-back-dead-through-written).
+**Raised** 2026-11-17 by S1f.22.1, finding N-2. **Not ruled.**
+`analysis.md` § 4.2.
 
 A state file writes a derived fact as a fact, so its reload states `written` for a fact a rule assembled under an
 arrow, which the run that wrote the file did not; where a rule reads `written`, the reload can be dead. The
@@ -7461,20 +7477,20 @@ answer-dump page says a reload derives no fact and no `(false)`.
   nested past the parser's limit; the engine is not changed. **Default.**
 
 **The user, 2026-11-17:** *"I don't understand - write with details into separate file in plans."* Written:
-[`q392_state_file_and_written.md`](p1f.22_nested_facts/q392_state_file_and_written.md). Still not ruled. (The
+`q392_state_file_and_written.md`. Still not ruled. (The
 user's *"Q-M1f.392 (a) for now, I don't yet know why we would need to change it"* is read as Q-M1f.393's (a),
 below: this question's (a) is a change, and the sentence before it says the question is not understood.)
 
 **The user, 2026-11-17, again:** *"I still do not understand, show an issue, how to reproduce it, explain for
 dummies."* The page is written again from the start, with the program
-[`q392_demo.ein`](p1f.22_nested_facts/q392_demo.ein) and three commands. Still not ruled.
+`q392_demo.ein` and three commands. Still not ruled.
 
 **Ruled 2026-11-17: it is a bug.** The user, shown it as *"`ein` can save a solution to a file. For some
 programs, loading that saved file back says there is no solution"*: *"it is a bug and has to be verified with
 simple unit test. Where from comes (written ...)???? Why? What for?"* So option (c) is out: a saved state loads
 back as that state, and a unit test holds it. Where `written` comes from and what reads it, and the fix proposed
 with its test, are the last sections of
-[`q392_state_file_and_written.md`](p1f.22_nested_facts/q392_state_file_and_written.md). The fix is S1f.22.3's
+`q392_state_file_and_written.md`. The fix is S1f.22.3's
 first task and is built on the user's word on it.
 
 **The requirement, 2026-11-17.** Asked *"should a saved solution always load back as that solution?"*, the user:
@@ -7497,13 +7513,13 @@ the imports was for, and is a change to the program).
 load with no other file beside it? - yes"*. So a saved solution is the program unchanged with the choices made,
 the state derived again on load, and it is one file that loads alone. The two pull apart where a program imports,
 and what keeps both is the modules' texts carried in the file as they are;
-[S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md) designs that, the form for the choices and what *save*
+S1f.22.5 designs that, the form for the choices and what *save*
 and *load* are as commands, and shows it on real programs before anything is built.
 
 ### Q-M1f.393 — A fact held in a variable, as a conclusion or a premise
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
-[`analysis.md` § 4.3](p1f.22_nested_facts/analysis.md#43-q-m1f393--a-fact-held-in-a-variable-as-a-conclusion-or-a-premise).
+**Raised** 2026-11-17 by S1f.22.1. **Not ruled.**
+`analysis.md` § 4.3.
 
 A rule unpacks a fact from under an arrow by spelling its relation and its count. It cannot conclude `?f` for a
 variable bound to a whole fact (Q-M1f.351), nor write `?f`, `(not ?f)` or `(absent ?f)` as a premise; it can
@@ -7517,7 +7533,7 @@ conclude `(not ?f)`.
 we would need to change it. The only strictly required for now is to know fact's arity, for all other you can use
 variables."* It names Q-M1f.392 and describes this question's (a): a rule unpacks by spelling the fact's count, the
 relation a parameter where wanted. One thing (a) leaves out is noted for the user in
-[`contexts.md` § 6](p1f.22_nested_facts/contexts.md#6-the-negation-of-a-negation-and-its-elimination-as-a-rule):
+P1f.22's `contexts.md` § 6, copied to [P1f.21's `open_facts.md` § 10.5](p1f.21_verdicts_as_rules/open_facts.md#105-the-negation-of-a-negation-and-its-elimination-as-a-rule):
 a variable for a whole fact may be denied at the top of a conclusion and may not stand under `not` in an argument,
 so the rule *deny whatever a liar thinks* has no twin inside a context.
 
@@ -7525,9 +7541,9 @@ so the rule *deny whatever a liar thinks* has no twin inside a context.
 
 ### Q-M1f.394 — The words for a fact under an arrow
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
-[`analysis.md` § 4.4](p1f.22_nested_facts/analysis.md#44-q-m1f394--the-words-for-a-fact-under-an-arrow), with the
-pages' words in [§ 2.5](p1f.22_nested_facts/analysis.md#25-where-the-pages-disagree-with-one-another).
+**Raised** 2026-11-17 by S1f.22.1. **Not ruled.**
+`analysis.md` § 4.4, with the
+pages' words in § 2.5.
 
 1. The three cases: **(a)** *held* and *in a context*, the context of a fact being the held facts that point at
    it at any depth (**default**); **(b)** the knowledge-base page's *held* and *only pointed at*, the third case
@@ -7540,7 +7556,7 @@ pages' words in [§ 2.5](p1f.22_nested_facts/analysis.md#25-where-the-pages-disa
    that they are one.
 
 **The user, 2026-11-17:** *"explain with examples in separate file."* Written:
-[`q394_words.md`](p1f.22_nested_facts/q394_words.md). Still not ruled. The user's own words in the same note,
+`q394_words.md`. Still not ruled. The user's own words in the same note,
 *global context* and *local/fact context*, are taken into option (a) of the first point as a second name for the
 knowledge base.
 
@@ -7548,7 +7564,7 @@ knowledge base.
 in a fact's (local) context"*. (2) *"`not` obviously holds something like logically mirrored world where all true
 facts are false and all false are true, right? it looks quite consistent with context idea here"*: a negation is a
 context; what the mirror is and is not is
-[`contexts.md` § 11](p1f.22_nested_facts/contexts.md#11-not-as-a-context). (3) *"object - in core ein theory
+P1f.22's `contexts.md` § 11, copied to [P1f.21's `open_facts.md` § 10.6](p1f.21_verdicts_as_rules/open_facts.md#106-not-as-a-context). (3) *"object - in core ein theory
 explained on graphs, we have to say what are all those nodes - they are objects; value - … Use word `value` only
 when talk about variables in rules, … the object is a value only when binded to variable; `relational node` -
 don't use it, it is too SQL-ish; graph node - ok; In docs/ein/ein.rs - use whatever naming convention you want,
@@ -7557,8 +7573,8 @@ quotations of the pages were behind the pages (N-16 of the phase's findings).
 
 ### Q-M1f.395 — What `ein render` draws of a fact under an arrow
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md), findings N-3 and N-4. **Not
-ruled.** [`analysis.md` § 4.5](p1f.22_nested_facts/analysis.md#45-q-m1f395--what-ein-render-draws-of-a-fact-under-an-arrow).
+**Raised** 2026-11-17 by S1f.22.1, findings N-3 and N-4. **Not
+ruled.** `analysis.md` § 4.5.
 
 - **(a)** the rendering page says what the drawing leaves out; no writer changes. **Default.**
 - **(b)** the node of a nested fact is filled where the knowledge base holds the fact.
@@ -7568,7 +7584,7 @@ ruled.** [`analysis.md` § 4.5](p1f.22_nested_facts/analysis.md#45-q-m1f395--wha
 made from entire tuple. It is not valid because if fact present in multiple contexts it will be drawn multiple
 times, while canonical (semi-Levi-bipartite) graph has every object drawn once."* So the text node goes, from the
 writer and from the knowledge-base page's table of the labelled-arrow form. The shape to build, to confirm, is
-[`contexts.md` § 7.3](p1f.22_nested_facts/contexts.md#73-ein-render-every-object-once): a fact that a fact points
+`contexts.md` § 7.3: a fact that a fact points
 at is drawn as its node with its own arrows, held or not, in `ein render kb` and `ein render rule`; how *held* is
 marked is Q-M1f.398.
 
@@ -7576,8 +7592,8 @@ marked is Q-M1f.398.
 
 ### Q-M1f.396 — Where the explanation stands, and which example it uses
 
-**Raised** 2026-11-17 by [S1f.22.1](p1f.22_nested_facts/s1f.22.1_what_we_have.md). **Not ruled.**
-[`analysis.md` § 4.6](p1f.22_nested_facts/analysis.md#46-q-m1f396--where-the-explanation-stands-and-which-example-it-uses).
+**Raised** 2026-11-17 by S1f.22.1. **Not ruled.**
+`analysis.md` § 4.6.
 
 - Where: **(a)** sections of `01-knowledge-base.md` and `02-rewriting-rules.md`, a sentence each on the pages of
   `02-kb-evolution/` (**default**); **(b)** a third page of `01-static-ir/`.
@@ -7588,10 +7604,10 @@ marked is Q-M1f.398.
 
 ### Q-M1f.397 — The reserved words in the three perspectives
 
-**Ruled 2026-11-17** by the user's note at the start of [P1f.22](p1f.22_nested_facts/README.md), verbatim: *"In
+**Ruled 2026-11-17** by the user's note at the start of P1f.22, verbatim: *"In
 the docs/ein/reasoning all those reserved words are conceptual mathematical objects. But in docs/ein/user and
 docs/ein/ein.rs they are surface between ein reasoning kernel and pure ein theory."* It had no id and takes this
-one. How it is read for the pages is [`contexts.md` § 8](p1f.22_nested_facts/contexts.md#8-the-reserved-words-in-the-three-perspectives):
+one. How it is read for the pages is `contexts.md` § 8:
 the reasoning defines the negation, falsity, absence, equality, `written` and `relation` as mathematics; the
 user's pages and the engine's present the same names as the fixed list of relations whose facts the kernel reads
 or states, everything else being a rule of Ein.
@@ -7602,7 +7618,7 @@ or states, everything else being a rule of Ein.
 show that nexted fact is in global context or/and is in local/fact context. Now it is not explicitely presented.
 Maybe consider approach similar to `absent` drawing in rules."* **Not ruled.** The three ways, each drawn on one
 knowledge base in which every case occurs, are
-[`contexts.md` § 7.2](p1f.22_nested_facts/contexts.md#72-three-ways-to-show-the-global-context-one-object-drawn-once-in-each).
+`contexts.md` § 7.2.
 
 - **(a)** a frame: the knowledge base is a frame, and a fact is inside it exactly when it is held; the filling is
   kept. **Default.**
@@ -7613,14 +7629,14 @@ A box for each context, the nested fact drawn inside it, is ruled out by the sam
 would be drawn twice.
 
 **Ruled 2026-11-17: (a), to try.** The user: *"lets try (a) and see how it looks"*. Tried on six of the figures
-the explanation needs, [`contexts.md` § 14](p1f.22_nested_facts/contexts.md#14-the-frame-tried-twice): it reads well;
+the explanation needs, `contexts.md` § 14: it reads well;
 the pinning of rows in the pages' sources has to go; the extent's dashed frame cannot stand beside it, and the
 trial draws the extent as its first arrows; frames nest where a figure already frames a rule and a knowledge base.
 
 **Re-ruled 2026-11-17.** The user, on the first trial: *"frame-*.svg - I would like to see frame around facts in
 contexts rather than around global facts."* So the frame is around the facts that are in a context, and *held*
 keeps its filling: two marks for two properties. Tried again,
-[`contexts.md` § 14](p1f.22_nested_facts/contexts.md#14-the-frame-tried-twice): the three cases are told apart at
+`contexts.md` § 14: the three cases are told apart at
 a glance, and a figure with no fact under an arrow does not change.
 
 **The label, 2026-11-17.** The user, on the second trial: *"label contexts `<relation name> cts` instead of `in
@@ -7641,7 +7657,7 @@ is in one frame that names both, and frames are never one inside another.
 So **a frame is around the objects that are in a context only**: pointed at, and not held. A held object is in no
 frame, whatever points at it. Which contexts it is in is read off the arrows that enter it, as before.
 
-**Tried on the three multi-context figures** of P1f.22's [`diagrams/`](p1f.22_nested_facts/diagrams/), as
+**Tried on the three multi-context figures** of P1f.22's `diagrams/`, as
 `frame-ctx-only-*.{dot,svg}`. Each is `ein render kb`'s output with every held octagon moved out of its frame and a
 frame left empty dropped:
 - *held-in-two-contexts*: `(owns Bob Dog)`, held and under `think` and `says`, stands in no frame, and the figure
@@ -7669,7 +7685,7 @@ It writes no answer. Because the DOT writers change, `utils/ci_container.sh` is 
 
 ### Q-M1f.399 — The names of what controls the search: `false` and `open`
 
-**Raised** 2026-11-17 by the user, ruling [P1f.22](p1f.22_nested_facts/README.md)'s questions: *"This also leads
+**Raised** 2026-11-17 by the user, ruling P1f.22's questions: *"This also leads
 me to the surface between ein theory and reasoning kernel - things like (false) and (open) are effectively
 controlling the search. Maybe word `false` is too heavey loaded with classical binary logic and not expose it's
 actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accassible
@@ -7677,7 +7693,7 @@ from ein? Like (ein.search.state.refute)?"* **Not ruled, and no default taken.**
 [P1f.21](p1f.21_verdicts_as_rules/README.md)'s question, the kernel's verdicts and how a program sees them, and is
 entered there as its [V-5](p1f.21_verdicts_as_rules/findings.md#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names).
 The options, with what each reads like held and under an arrow, are
-[`contexts.md` § 12](p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search):
+P1f.22's `contexts.md` § 12, copied to [P1f.21's `open_facts.md` § 10.7](p1f.21_verdicts_as_rules/open_facts.md#107-the-kernels-surface-false-and-open-control-the-search):
 
 - **(a)** keep `false`; the pages say once that it is no truth value and what the kernel does with it.
 - **(b)** a word for the proposition: `(contradiction)`, `(impossible)` or `(absurd)`.
@@ -7701,17 +7717,17 @@ puts it on programs, with the reserved names that are left (§ 8 there).
 
 ### Q-M1f.400 — How a saved file states the choices made
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+**Raised** 2026-11-18 by S1f.22.5's first task, on
 [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s ruling (*a saved solution is the program
 unchanged with the choices made, the state derived again on load*). **Put, not ruled.** The files and the runs are
-[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md); the measurement is its
-[§ 2](p1f.22_nested_facts/s1f.22.5_the_format.md#2-is-a-state-a-function-of-the-program-and-the-choices-measured).
+`s1f.22.5_the_format.md`; the measurement is its
+§ 2.
 
 No form states a choice today: a state file writes each committed candidate as a typed fact, `; hypothesis 0` in a
-comment (the `0` is the same in all 157 907 such lines, N-29). Measured over 1 267 state files of the corpus, the
+comment (the `0` is the same in all 157 907 such lines, N-29; L-104 of [the milestone's findings](findings.md) now). Measured over 1 267 state files of the corpus, the
 choices typed and saturated with the program read each as given (2 303 facts, 826 states); where a choice has a
 fact inside it, it is `written`, and the program of
-[§ 3.2](p1f.22_nested_facts/s1f.22.5_the_format.md#32-q392_demo_hypothesis-a-choice-that-has-a-fact-inside-it)
+§ 3.2
 loads dead; saturated at once with the program, the choices move facts in 6 programs (each with an `absent`) and a
 derived fact's first rule in 8. So a choice is not text of the program: it is committed after root's fixpoint, as
 a node of the search commits it.
@@ -7741,14 +7757,14 @@ the program and its modules, each `F` a candidate of H, committed after root's f
 `written` for what it has inside it. The three points under it take their defaults, which the user did not revise: a
 choice that is no candidate of H on load is refused; an owing node's file and a dead node's take the same form; the
 commitment written is the one the state was read from. Built by
-[S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+S1f.22.5's tasks 2 to 4.
 
 ### Q-M1f.401 — How the program and its modules are in one file, unchanged
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+**Raised** 2026-11-18 by S1f.22.5's first task, on
 [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s rulings that the program is unchanged
 and that the file *"loads with no other file beside it"* (*"yes"*). **Put, not ruled.**
-[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md) § 3.3, § 3.5 and § 3.6 show it on a program
+`s1f.22.5_the_format.md` § 3.3, § 3.5 and § 3.6 show it on a program
 that imports the standard library and on one with a local module.
 
 Today the program is inlined and printed again: its comments and layout are gone, and its imports are replaced by
@@ -7791,16 +7807,16 @@ around each module's, as the run read them; imports resolved against the modules
 a saved file reads no other file. The four points under it take their defaults: the bytes the resolution chose (a
 `.einb`'s save carries the flattened program it stores); a carried standard-library module that differs from the
 binary's is loaded with a `note:`; every module the load reads, once, sorted by name in the file and read in the
-order the imports reach them. Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+order the imports reach them. Built by S1f.22.5's tasks 2 to 4.
 
 ### Q-M1f.402 — What save and load are as commands, the dump they are held to, and a file's first lines
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task, on
+**Raised** 2026-11-18 by S1f.22.5's first task, on
 [Q-M1f.392](#q-m1f392--a-state-file-that-reads-back-dead-through-written)'s requirement, verbatim: *"save and load
 must in both directions must have identical results: save -> load -> save byte identical, load -> save -> load -
 have identical dumps; both save and load must not modify the program, must not add or remove any bit of
 information"*. **Put, not ruled.** The commands, run today on every program of
-[`s1f.22.5_the_format.md`](p1f.22_nested_facts/s1f.22.5_the_format.md), are in each folder's `commands.txt`.
+`s1f.22.5_the_format.md`, are in each folder's `commands.txt`.
 
 Measured today, over 1 267 state files: a second save is byte-identical for **0**, and 2.9 times as long; the two
 loads' dumps are identical for 1 265, so today's file passes the second invariance and fails at the step before
@@ -7837,12 +7853,12 @@ whose root is its state, is out. The other points take their defaults, which the
 (save is `--dump-answer`; `ein solve F --no-search --dump-answer D` then `cmp F D/root.ein` checks the first
 invariance); the dump the second compares is `ein saturate --dump`'s KB section, byte for byte; one fixed first line,
 and what today's header says of the run moves to `index.json`. Built by
-[S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+S1f.22.5's tasks 2 to 4.
 
 ### Q-M1f.403 — The program's claims in a saved file
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s first task. **Put, not
-ruled.** [`s1f.22.5_the_format.md` § 4](p1f.22_nested_facts/s1f.22.5_the_format.md#4-the-design-point-by-point).
+**Raised** 2026-11-18 by S1f.22.5's first task. **Put, not
+ruled.** `s1f.22.5_the_format.md` § 4.
 
 A saved file holds the program unchanged, its `(query … :expect …)` and `(solve … :expect …)` among it, and those
 are claims about the program's R. Measured today: of 826 corpus state files with a commitment, **188, in 40
@@ -7857,7 +7873,7 @@ none, 2 exit 1 where their program exits 0, both N-30's, and 1 exits 1 as its pr
 
 **Ruled 2026-11-18: (a).** The user: *"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*. A saved file with a commitment checks none of the program's claims: its
 read-out names them as the program's, NOT CHECKED, and it exits 0; a root's file checks them as the program does.
-Built by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s tasks 2 to 4.
+Built by S1f.22.5's tasks 2 to 4.
 
 ### Q-M1f.404 — `written` is erased; a numeral is checked by the operation that takes it
 
@@ -7872,12 +7888,12 @@ Reverted: Q-M1f.272, Q-M1f.275, Q-M1f.279 and Q-M1f.280 whole. From Q-M1f.210 an
 malformed number is flagged where it is written, with no calculation reading it. The loader states no `written`,
 and `written` is no reserved name. A numeral an operation takes from the program is checked once and labelled
 valid, or flagged. A numeral an operation produces is labelled valid as it is produced. Built by
-[S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), whose readings of the ruling are put as Q-M1f.405
+S1f.22.6, whose readings of the ruling are put as Q-M1f.405
 onward, each with a default.
 
 ### Q-M1f.405 — Which numerals are "taken from the input program", and what "once" is
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 1 of
+**Raised** 2026-11-18 by S1f.22.6, reading 1 of
 [Q-M1f.404](#q-m1f404--written-is-erased-a-numeral-is-checked-by-the-operation-that-takes-it). **Put, not ruled.**
 The stage's Record shows it on real programs.
 
@@ -7898,9 +7914,11 @@ The stage's Record shows it on real programs.
   (`(add-walk (mine a) (n z x) (n z 1) 0 z)`: `states (k_s) 1`, master `0`). Under (e) every number the calculator
   hands itself, every intermediate of a product and a quotient, is walked again, a firing a place.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.406 — The label, and where a number an operation makes gets it
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 2. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 2. **Put, not ruled.**
 
 - **(a)** **`(valid N)`, `std.math.decimal`'s, and `(bin-valid N)`, `std.math.binary`'s, a fact of the numeral**:
   the walk's end for a numeral an operation takes; for a number the arithmetic makes, a conclusion of the firing
@@ -7911,9 +7929,11 @@ The stage's Record shows it on real programs.
   a tagged call's hand-over unlabelled, and fourteen answer rules of `std.math.int` and `std.math.rat` to write.
 - **(c)** as (a), with `z` labelled only where a walk makes it or a check reaches it.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.407 — A numeral no operation takes is not checked
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 3. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 3. **Put, not ruled.**
 Three corpus programs answer otherwise, each dead before and R = {∅} after:
 `tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein`, `03_in_a_fact_of_the_programs_own.ein` and
 `04_in_a_rules_conclusion.ein`. Binary has no such program.
@@ -7926,9 +7946,11 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
 - **(c)** a `let`'s value checked as the `let` is read, `let` being the calculator's relation: `02` dead again, and
   `03` and `04` alive.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.408 — Where the check's rules live
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 4. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 4. **Put, not ruled.**
 
 - **(a)** **the representation's**: `std.math.decimal` declares `check` and `valid` and holds the walk
   (`numeral-step`, `numeral-step-zero`, `numeral-valid`) and its four flags; `std.math.binary` the same under
@@ -7939,9 +7961,11 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
   the flags.
 - **(c)** each operation checking its own operands, the representation keeping nothing.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.409 — An integer and a rational: their check and their label
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 5. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 5. **Put, not ruled.**
 
 - **(a)** **`(int-check I)` and `(rat-check Q)`, asked where an operand's look-up finds one** (`int-operand-check`,
   `rat-check-ask`), read by the six shape rules of each, which flag a digit or a named constant where a part goes as
@@ -7960,9 +7984,11 @@ Three corpus programs answer otherwise, each dead before and R = {∅} after:
   where an integer goes, a natural number is flagged, `(int-add (n z x) I)` dead as on master, since
   `std.math.decimal-arith`'s look-up finds it and checks it. No corpus program writes either.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.410 — No join on a number, and a result a program's rule hands on
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), reading 6. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.6, reading 6. **Put, not ruled.**
 The rule of the calculator ([Q-M1f.362](../../docs/decisions/stdlib/math/Q-M1f.362-no-rule-of-the-calculator-joins-two-facts-on.md))
 is kept: the walk carries the numeral it checks, so its end labels it with no second premise, and no operation
 waits for the label. One consequence: a number an operation made, which a rule of the program's own hands to a
@@ -7977,9 +8003,11 @@ tells it from a numeral the file wrote, and only a negation or a join could.
   facts already held: no second walk, and a fact a digit more for every number any walk makes, the intermediate
   ones included.
 
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.404 states it.
+
 ### Q-M1f.411 — A numeral with two faults has one flag
 
-**Raised** 2026-11-18 by [S1f.22.6](p1f.22_nested_facts/s1f.22.6_written_erased.md), found building the walk.
+**Raised** 2026-11-18 by S1f.22.6, found building the walk.
 **Put, not ruled.** The loader's statement read every place of a numeral at once, so `(n (n (n z x) y) 5)` was
 flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first fault it meets from the units.
 
@@ -7988,6 +8016,8 @@ flagged twice, at `(n z x)` and at `(n (n z x) y)`. The walk stops at the first 
   re-worded so): the program is dead either way, and no corpus program writes such a numeral. **Default.**
 - **(b)** every place at fault flagged: the walk carries on past a fault, which needs a second walk relation or a
   fault bit carried, so that the label is not derived for a malformed numeral.
+
+**Default taken: (a).** Built by S1f.22.6 (`bf9693dc`); the decision Q-M1f.274 states it.
 
 ### Q-M1f.412 — The read-out's `is-a` row
 
@@ -8013,7 +8043,7 @@ One reading taken with it, **put, not ruled**:
 
 ### Q-M1f.413 — `ein kb save` of a saved file
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.** A
+**Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.** A
 `.einb` stores a program, resolved and import-flattened, and its root's sections; a saved file is a program with one
 commitment of H (Q-M1f.402), and a container has no place for the commitment. Resolving the saved file's imports
 from the disk, as the container's writer did, would read other files than the saved one.
@@ -8031,7 +8061,7 @@ from the disk, as the container's writer did, would read other files than the sa
 
 ### Q-M1f.414 — A fact's English, which a state file wrote in a comment
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.** A
+**Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.** A
 state file wrote every fact of the state with its reason and its statement in a comment
 ([Q-M1f.58](../../docs/decisions/read-out/Q-M1f.58-a-fact-reads-in-english-in-the-trace.md) as it stood). The ruled
 format, Q-M1f.400 and Q-M1f.401, holds no fact of the state, so no file holds a state's facts in English: `--trace`
@@ -8045,11 +8075,11 @@ its source or its rule.
 
 **Default taken: (a).** Built: the page, the decision, `ein-cli/tests/natural_language_page.rs`'
 `the_pages_trace_lines_are_a_runs`. The code that wrote the comments (`ein_render::dump::serialise`'s
-`facts_to_ein_text`, `kb_to_ein_text`) is read by no surface of the binary now (N-36).
+`facts_to_ein_text`, `kb_to_ein_text`) is read by no surface of the binary now (N-36; L-102 of [the milestone's findings](findings.md) now).
 
 ### Q-M1f.415 — `ein show hyps` and `ein render h-space` of a saved file
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.**
 Q-M1f.402 (C): *H is the program's*; a run of a saved file is over H less the node's choices.
 
 - **(a)** **both read the program's H, the node aside**: `ein show hyps F` lists every candidate of H, the node's
@@ -8061,7 +8091,7 @@ Q-M1f.402 (C): *H is the program's*; a run of a saved file is over H less the no
 
 ### Q-M1f.416 — What `ein test` asks of a saved file's node, and how its claims exit
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build, on Q-M1f.403 (a)
+**Raised** 2026-11-18 by S1f.22.5's build, on Q-M1f.403 (a)
 (*a file with a commitment checks no claim … and it exits 0*). `ein test` asks a file the least question that
 decides its claims, and a claim not checked exits 1 there but under `--no-search`.
 
@@ -8075,7 +8105,7 @@ decides its claims, and a claim not checked exits 1 there but under `--no-search
 
 ### Q-M1f.417 — What a run of a saved file says of its node, and the directory's schema
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.**
 Q-M1f.402's *what today's header says of the run moves to `index.json`*; and a run of a saved file, the part of R
 above a node, has to say which node.
 
@@ -8092,7 +8122,7 @@ above a node, has to say which node.
 
 ### Q-M1f.418 — The nesting limit, and a saved file's wrappers
 
-**Raised** 2026-11-18 by [S1f.22.5](p1f.22_nested_facts/s1f.22.5_save_and_load.md)'s build. **Put, not ruled.**
+**Raised** 2026-11-18 by S1f.22.5's build. **Put, not ruled.**
 `(program …)` and `(module …)` stand one level above the texts they carry, so a program at the parser's limit,
 1 000 parentheses, is one level past it inside its saved file, which would then not load.
 

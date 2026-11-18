@@ -334,16 +334,13 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  Two phases are left: **P1f.21, the kernel's verdicts as rules**
+  One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
-  and **P1f.22, nested facts**
-  ([its README](plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts/README.md)).
-  Each has its survey and its questions put (Q-M1f.390; Q-M1f.391 to .396).
-  **P1f.22 is started on the user's word**: its questions are ruled
-  (Q-M1f.391 to .398) and its stages run in the order its README lists. **P1f.21 is not
-  started without the user's word.** The milestone's plans are deleted
-  when both are done, and **the work stops after M1f** (the user's rulings);
-  the close of M1f was started and is paused.
+  with its survey done, its question put (Q-M1f.390) and its next stage,
+  S1f.21.4, planned. **P1f.21 is not started without the user's word.**
+  The milestone's plans are deleted when it is done, and **the work stops
+  after M1f** (the user's rulings); the close of M1f was started and is
+  paused.
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;
@@ -354,12 +351,12 @@ paragraph, no register count, no measurement (the user's rule).
 - **What waits for the user**: milestone-wide questions, with every default
   taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
-  (Q-M1f.n); a default stands until the user revises it. What the
-  documentation tree found and left, the user's calls among it marked, and
-  the defaults it took, are the milestone's
+  (Q-M1f.n); a default stands until the user revises it. What the closed
+  phases found and left, the user's calls among it marked, and the defaults
+  they took, are the milestone's
   [`findings.md`](plans/m1f_hypothesis_and_documentation/findings.md) (L-n).
   A phase keeps what it finds outside its scope in a findings page of its own
-  and shows it: P1f.21's (V-n) and P1f.22's (N-n), beside each phase's README.
+  and shows it: P1f.21's (V-n), beside its README.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);

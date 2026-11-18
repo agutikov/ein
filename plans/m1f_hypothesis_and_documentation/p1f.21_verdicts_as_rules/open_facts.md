@@ -53,7 +53,7 @@ What follows, for S1f.21.4 to show on programs:
 
 - **`(false)` becomes an ordinary fact**, a proposition, held or under an arrow (`(think Ann (false))`), which
   nothing in the kernel reads. The objection of P1f.22's
-  [`contexts.md` § 12](../p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search)
+  `contexts.md` § 12, [§ 10.7](#107-the-kernels-surface-false-and-open-control-the-search) here,
   to a control word under an arrow goes: `ein.kill` is read only held, and refused under an arrow as `open` is
   today.
 - **Who states `(false)` ⟹ `(ein.kill)`.** If it is a module a program imports, every program that writes
@@ -146,7 +146,7 @@ from an open one would stay held in the states above, where the open fact is gon
 | 2 | **hopeless** | a debt that is unpaid and none of whose candidates is open | a verdict like `(ein.kill)`: no state above pays it, so none is in $R$, though the state is alive | nothing |
 | 3 | **forced** | a debt with one open candidate | the next split is that candidate, with one child | the tree route, its alternatives one |
 | 4 | **order** | the open debts and candidates | which to split on: fewest candidates first | the tree route, in rule order |
-| 5 | **ask** | a question | a further question; an answer, only where asked | the calculator's requests; V-5's point 1 and [`contexts.md` § 13](../p1f.22_nested_facts/contexts.md#13-questions-as-facts-what-rules-can-do-with-open-q) |
+| 5 | **ask** | a question | a further question; an answer, only where asked | the calculator's requests; V-5's point 1 and [§ 10.8](#108-questions-as-facts-what-rules-can-do-with-open-q) |
 | 6 | **report** | a state of $R$ | which candidates stay open in it | the read-out, in part |
 
 Rows 2 and 3 read a count, an absence over open facts, so inside their stratum they are boundary rules, read on its
@@ -174,7 +174,7 @@ runs in, and a split needs states that disagree, one holding F and one not. Ther
   saturation, the licences.
 - **(B) Each state is a context.** P1f.22's nested facts make a state an object, `(in W F)` with W a fact naming
   the commitment. Every rule of the program is written again under `(in ?w …)`, which a macro can do
-  ([`contexts.md` § 4](../p1f.22_nested_facts/contexts.md#4-macros-as-the-wrapping)), and a rule makes the child
+  ([§ 10.3](#103-macros-as-the-wrapping)), and a rule makes the child
   worlds from the open facts. The whole lattice is then one saturation, and $R$ is the worlds that hold no
   `ein.kill` and owe nothing. This is an assumption-based truth maintenance system: the oracle written in rules.
   It costs what the kernel saves:
@@ -308,8 +308,8 @@ Two more:
 
 On real corpus programs, at least `examples/lattice/05_owed_seats_bounded.ein`, `examples/zebra2-obligations.ein`
 and a program with an hrule, with their answers computed (emulated in Ein with a stand-in relation where the
-parse refuses `open` or `ein.`, as [`contexts.md` § 13](../p1f.22_nested_facts/contexts.md#13-questions-as-facts-what-rules-can-do-with-open-q)
-did). Each is put as a question with a default:
+parse refuses `open` or `ein.`, as P1f.22's `contexts.md` § 13
+did, [§ 10.8](#108-questions-as-facts-what-rules-can-do-with-open-q)). Each is put as a question with a default:
 
 1. The verdict's name, and where `(false)` ⟹ `(ein.kill)` and the contradiction rules live (§ 3); with V-1.
 2. The form of an open fact, `(open F)` or `(open F J)`, and J for each rung (§ 4).
@@ -319,7 +319,446 @@ did). Each is put as a question with a default:
 5. The search as rules: (A), (B), or (A) with (B) on the reasoning pages (§ 7).
 6. The kernel's surface (§ 8): the census of what it reads re-taken; for each name of § 8.2, its place under the
    rulings (the kernel's, a theory's, syntax), with what reads it moved and the corpus's answers unchanged; `eq`'s
-   test of a name; the module every program gets.
+   test of a name; the module every program gets; with [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
+   a relation that only an activator names.
 7. What becomes of [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
    whose four options this design stands beside, and of
    [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), the name.
+
+## 10. What P1f.22 worked out that this phase reads
+
+Copied at P1f.22's close (2026-11-18) from that phase's page on the user's notes, `contexts.md`, which went with
+its folder (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.22_nested_facts`). The sections
+below are that page's § 1 and § 10 (the user's words), § 3 to § 6 and § 11 to § 13, as written on 2026-11-17, every
+run on the gate build of that day; a note under a section says where a later stage of P1f.22 changed what it says of
+the engine. What this phase reads in them: the user's words (§ 10.1); a contradiction in a context, and
+*everybody's thoughts are false* (§ 10.4, § 10.6); the elimination of a double negation as a rule (§ 10.5); the
+names of `(false)` and `(open)` (§ 10.7); and questions as facts (§ 10.8). What the page worked out of the drawings,
+the words and the reserved words in the three perspectives is decisions now (Q-M1f.394, .395, .397, .398).
+
+### 10.1 The user's notes, verbatim
+
+The first, 2026-11-17, on the six questions of P1f.22's survey:
+
+> docs/ein/reasoning/ - canonical graph representation has to somehow show that nexted fact is in global context
+> or/and is in local/fact context. Now it is not explicitely presented. Maybe consider approach similar to `absent`
+> drawing in rules. The implementation (ein.rs) renders nested facts as atoms with names made from entire tuple. It
+> is not valid because if fact present in multiple contexts it will be drawn multiple times, while canonical
+> (semi-Levi-bipartite) graph has every object drawn once. I want to have: all rules are global, so no rule binds
+> nested-only fact as global fact, but can bind it as nested fact. So there could be separate global rules for this
+> fact and another rules for same facts in the context - the straightforward way to write pattern as is wrapping
+> every fact with context, and maybe macros could be useful here to simplify this wrappings? Q-M1f.391 Rule for
+> (not (not g)) -> g is a simple rule, essential negation elimination, already trivial in ein. That's why I also
+> raised a question about (and g (not g)) -> (false) could be a rule in p1f.21; Another question about rules that
+> infer (false) under context - does it reach global context? If not then how is it stored or reported or affect
+> further inference, maybe just store it in context and that's it, like (think Ann (false))? Then it has to be
+> bindable to checks - for example to infer false if everybody's thought are false (just an example). In the
+> docs/ein/reasoning all those reserved words are conceptual mathematical objects. But in docs/ein/user and
+> docs/ein/ein.rs they are surface between ein reasoning kernel and pure ein theory.  Q-M1f.392 - I don't
+> udnerstant - write with details into separate file in plans. Q-M1f.392 (a) for now, I don't yet know why we would
+> need to change it. The only strictly required for now is to know fact's arity, for all other you can use
+> variables. Q-M1f.394 explain with examples in separate file. Q-M1f.396 sections.
+
+The second, the same day, on that page's readings of the first (what each ruled is the ledger's Q-M1f.391 to
+.399):
+
+> Q-M1f.393 yes (a); Q-M1f.391 OK; Q-M1f.398 lets try (a) and see how it looks; Q-M1f.395 - yes, 3-arity fact can
+> an arrow only when nothing points on it; Q-M1f.392 I still do not understand, show an issue, how to reproduce it,
+> explain for dummies. Q-M1f.394 held = in the global context; in a context = in a fact's (local) context;
+> Question 2: `not` obviously holds something like logically mirrored world where all true facts are false and all
+> false are true, right? it looks quite consistent with context idea here, isn't it? And it already meets some
+> criterias, e.g. denied facts not bind to rules without context, right? E.g. this is a way to define tri-state,
+> multi-state logic and other kinds of logic. This also leads me to the surface between ein theory and reasoning
+> kernel - things like (false) and (open) are effectively controlling the search. Maybe word `false` is too heavey
+> loaded with classical binary logic and not expose it's actual function in ein? Maybe (abort) or (dead) is more
+> clear? Or some common search control interface accassible from ein? Like (ein.search.state.refute)? Also for
+> (open) (in p1f.21) if we will emit ordinary facts (open (lives-in Alice House-1)) they naturally are hypotheses,
+> what rules can do with them? And, (open) context contains "open" questions, like "Does Alice live in House-1?" -
+> so there is a menaning of those facst, so we can write rules to infer something from them directly, right? What,
+> for instance? Question 3 — value, term, object, fact - is't simple - they are in different contexts: object - in
+> core ein theory explained on graphs, we have to say what are all those nodes - they are objects; value - wording
+> "(knows Carol Dan) inside the claims fact is a value, not a fact of the knowledge base." is not correct. Use word
+> `value` only when talk about variables in rules, it's obvious that {var 1-n values} and here value is an object,
+> but the object is a value only when binded to variable; `relational node` - don't use it, it is too SQL-ish;
+> graph node - ok; In docs/ein/ein.rs - use whatever naming convention you want, just make software documentation
+> good; term - is mostly about syntax; I found only one place where now "ground term" exists, maybe survey showed
+> false positive here.
+
+### 10.2 Rules are global: what a premise reads, and what a wrapped premise reads
+
+**A premise is matched among held facts and nowhere else; a pattern under an arrow of a premise is matched against
+the fact that stands there, held or not.** So a rule written over `(= ?x ?y)` is a rule of the global context, and
+the same rule for a context is the same patterns, each wrapped. `x6.ein`:
+
+```lisp
+(= a b)
+(think Ann (= c d))
+(rule sym ()
+  :match  (= ?x ?y)
+  :assert (= ?y ?x)
+  :why    "{?x} is {?y}")
+(rule sym-in ()
+  :match  (think ?c (= ?x ?y))
+  :assert (think ?c (= ?y ?x))
+  :why    "{?c} thinks {?x} is {?y}")
+(query :goal (= ?x ?y))
+(query :goal (think ?c (= ?x ?y)))
+```
+
+`ein solve x6.ein`:
+
+```text
+  query 1 of 2      (= ?x ?y)
+                      ?x = a · ?y = b
+                      ?x = b · ?y = a
+  query 2 of 2      (think ?c (= ?x ?y))
+                      ?c = Ann · ?x = c · ?y = d
+                      ?c = Ann · ?x = d · ?y = c
+```
+
+`sym` fired on `(= a b)` and not on `(= c d)`, which only Ann thinks; `sym-in` fired on what Ann thinks and
+concluded a fact Ann thinks, `(think Ann (= d c))`, and `(= d c)` is not held. The two rules do not see one
+another's facts. This is the engine today, and P1f.22's analysis's Propositions 1 to 3 are this said in mathematics.
+
+**The context can be a parameter**, so one rule serves every context relation that names it. `x4.ein`:
+
+```lisp
+(think Ann (= 5 (+ 2 2)))
+(think Ann (not (= 5 (+ 2 2))))
+(says Bob (likes Bob Carol))
+(says Bob (not (likes Bob Carol)))
+(rule ctx-contradiction (?C ?R)
+  :match  (and (?C ?p (?R ?a ?b)) (?C ?p (not (?R ?a ?b))))
+  :assert (?C ?p (false))
+  :why    "{?p}: {?R} of {?a} and {?b}, and not")
+(ctx-contradiction think =)
+(ctx-contradiction says likes)
+(query :goal (think ?p (false)))
+(query :goal (says ?p (false)))
+```
+
+`ein solve x4.ein`: alive, one state, `?p = Ann` for the first query and `?p = Bob` for the second. What is fixed
+in the text is the count of arguments, of the context (`?C` of two) and of the fact in it (`?R` of two); the
+relations are parameters, each bound by an activator. That is the note's *"the only strictly required … is to
+know fact's arity"*.
+
+### 10.3 Macros as the wrapping
+
+**A macro wraps.** A macro's parameter may stand for a whole pattern, and its call is replaced by its body in a
+`:match`, an `:assert` and a `:goal`. `m2.ein`:
+
+```lisp
+(macro in (?c ?F) (think ?c ?F) :why "{?c} thinks {?F}")
+(think Ann (= a b))
+(think Ann (not (= a b)))
+(rule contradiction-in ()
+  :match  (and (in ?c (= ?x ?y)) (in ?c (not (= ?x ?y))))
+  :assert (in ?c (false))
+  :why    "{?c} thinks {?x} is {?y} and not")
+(query :goal (in ?c (false)))
+```
+
+`ein solve m2.ein`: `?c = Ann`, `as :expect (model (think Ann (false)))`. With the macro the rule reads as the
+global rule does, each fact under `in ?c`. A macro for one fixed context is the same with one parameter, `(macro
+ann (?F) (think Ann ?F) …)` (`m1.ein`, a transitivity inside what Ann thinks: `(ann (= a ?w))` answers `b` and
+`c`). And a macro's call expands where it stands **inside** a pattern too: with `(macro eqp (?x ?y) (= ?x ?y) …)`,
+the premise `(think ?p (eqp ?x ?y))` matches `(think Ann (= a b))` (`m3.ein`).
+
+**A macro does not write a rule.** Its body is a premise; `(macro lifted (?c) (rule …) …)` is refused at the parse
+(`m4.ein`: ``unexpected `rule` ``). So there is no form today that takes a rule written for the global context and
+gives its twin for a context: **each rule is written twice**, once bare and once wrapped, or once with the context
+a parameter as in § 10.2. The gap, if it is one:
+
+| a program wants | today | what would close it |
+|---|---|---|
+| a rule for a context, written once | the rule with every fact under `(in ?c …)`, by a macro or by hand | nothing |
+| one rule for several context relations | the context relation a parameter, an activator each (§ 10.2) | nothing |
+| **a rule set written once, applied both globally and inside a context** | written twice | a form that lifts a rule, e.g. a rule-level macro; nothing has asked for it, and it is not proposed here |
+
+### 10.4 `(false)` in a context
+
+**It does not reach the global context.** `(false)` is a fact, the one of the relation `false` with no argument,
+and it may stand under an arrow (Q-M1f.123). `(think Ann (false))` is then a held fact of `think` that points at
+the node $\bot$; $\bot$ itself is not held, and a knowledge base is dead exactly when it *holds* $\bot$ or a fact
+with its negation. `x1.ein`, a rule that infers it:
+
+```lisp
+(think Ann (= 5 (+ 2 2)))
+(think Ann (not (= 5 (+ 2 2))))
+(think Bob (= 5 (+ 2 2)))
+(rule ctx-contradiction ()
+  :match  (and (think ?p (= ?a ?b)) (think ?p (not (= ?a ?b))))
+  :assert (think ?p (false))
+  :why    "{?p} thinks {?a} is {?b} and thinks it is not")
+(query :goal (think ?p (false)))
+```
+
+`ein solve x1.ein`: `states (k_s) 1`, `∅ in R — root is alive and owes nothing`, `?p = Ann`,
+`as :expect (model (think Ann (false)))`. So:
+
+- **stored**: as the fact `(think Ann (false))`, in the context and nowhere else, as the note proposes;
+- **reported**: as any fact is, in the state, in a query's rows and in a claim; no row of the read-out treats it
+  apart;
+- **further inference**: it is read by the rules that match it, and by nothing else. The kernel reads $\bot$ only
+  where it is held.
+
+**It is bindable**, in a premise and under a quantifier. *Everybody's thoughts are false* is one `forall`.
+`x3.ein`:
+
+```lisp
+(import std.macro :symbols (forall))
+(person Ann)
+(person Bob)
+(think Ann (false))
+(think Bob (false))
+(rule all-confused ()
+  :match  (forall ?p (person ?p) (think ?p (false)))
+  :assert (false)
+  :why    "everybody's thoughts are false")
+```
+
+`ein solve x3.ein`: `states (k_s) 0`, `unsat core (think Ann (false))`, `unsat core (think Bob (false))`,
+`refuted by all-confused`. Without the line `(think Bob (false))` (`x3b.ein`): `states (k_s) 1`, root alive. So the
+global `(false)` is reached from the contexts' by a rule that says so, and only so.
+
+**What the kernel does not do in a context.** Globally, a fact held with its negation is dead with no rule
+written. In a context nothing is: `(think Ann g)` beside `(think Ann (not g))` is alive until a rule such as
+`ctx-contradiction` concludes `(think Ann (false))`. That is the same asymmetry P1f.21's question is about from
+the other side: if $g \land \lnot g \Rightarrow \bot$ becomes a rule of Ein, its twin for a context is that rule
+wrapped (§ 10.2), and the two read alike. A check, `(eq …)` or `(neq …)`, cannot be wrapped: it is computed, never
+stored, and is refused under an arrow.
+
+**A finding on the way** (P1f.22's N-15, now [F21's](../../followups/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root)). The same *everybody* written as two rules over `absent`, a rule
+that derives `(some-sane)` where a person has no `(think ?p (false))` and a rule that concludes `(false)` where
+`(some-sane)` is absent, answers **dead with Bob not confused** (`x2b.ein`), under `lattice monotone (the static
+check)`. It is the open wrong answer `W8/fifo-gap-root` met again: two rules that wait on an `absent` at one
+boundary, admitted in the agenda's order, the one that concludes `(false)` first. The `forall` form asks its
+nested absence as one question and is right.
+
+### 10.5 The negation of a negation, and its elimination as a rule
+
+**Read of the note**: `(not (not g))` is to be an ordinary fact, and $\lnot\lnot g \Rightarrow g$ a rule a theory
+states, as $g \land \lnot g \Rightarrow \bot$ would be in P1f.21. That is Q-M1f.391's option (c) with the
+elimination moved out of the kernel into a rule. What is so today:
+
+| | today |
+|---|---|
+| a rule's `(not ?x)` over a stored negation | stores `(not (not g))` (`e11.ein`); the kernel reads it as the negation of the fact `(not g)`: dead beside `(not g)`, alive beside `g` |
+| a file writing `(not (not g))`, as a fact, a premise or a conclusion | refused at the parse: ``unexpected `not` `` (`d1.ein`, the rule below) |
+| the state file of a state that holds one | does not load, for that reason |
+
+So the rule is **not** writable today, though the engine already holds the fact it would read. `d1.ein`:
+
+```lisp
+(rule dne (?R)
+  :match  (not (not (?R ?a ?b)))
+  :assert (?R ?a ?b)
+  :why    "not not")
+(dne =)
+```
+
+``d1.ein:2:17: unexpected `not` ``. Under the reading above, P1f.22 would:
+
+1. **admit `(not (not …))`** at any depth in the grammar, as a fact, a pattern and a conclusion; the knowledge-base
+   page's shape of $\mathsf{not}$ loses its last clause, and Q-M1f.113's *"a fact of an ordinary relation, or its
+   negation"* becomes *"a fact, or the negation of one"*;
+2. change **nothing in the kernel**: a held $\lnot f$ beside a held $f$ is dead for every fact $f$, a negation
+   among them, as it is now; `e11`, `f1` and `f2` answer as today, and `f2`'s state file loads;
+3. leave **the elimination to a rule**, one for each count of arguments with the relation a parameter, as `dne`
+   above. Where that rule lives (a module of the standard library a program imports, beside the contradiction
+   rule) is P1f.21's to say, and is put there.
+
+**One thing this reading leaves out, to know of.** A variable for a whole fact may be denied at the top of a
+conclusion, `:assert (not ?f)`, and may not stand under `not` anywhere else. `x5.ein` and `x5b.ein`:
+
+```lisp
+(rule ctx-contradiction ()                     ; refused: unexpected `?f`
+  :match  (and (think ?p ?f) (think ?p (not ?f)))
+  :assert (think ?p (false))
+  :why    "{?p} thinks {?f} and thinks not")
+
+(rule flip ()                                  ; refused: unexpected `?f`
+  :match  (and (liar ?p) (think ?p ?f))
+  :assert (think ?p (not ?f))
+  :why    "{?p} lies")
+```
+
+So the global rule *deny whatever a liar thinks*, which loads, has no wrapped twin: inside a context the denial
+must spell the fact's relation and count, `(think ?p (not (?R ?a ?b)))`. That is consistent with *the arity is
+required*, and with Q-M1f.393 (a) as P1f.22 read the user's note; it is said here because *wrap every fact with
+the context* meets it. Admitting `(not ?x)` under an argument arrow would touch none of the analyses that Q-M1f.393's (b) touches (the
+premise's and the conclusion's relation stay fixed), and is not proposed unless asked for.
+
+**What holds now** (re-run at P1f.22's close, 2026-11-18). S1f.22.3 built this reading, Q-M1f.391 (c): the
+grammar admits `(not (not …))` at any depth, as a fact, a pattern and a conclusion; the kernel is not changed; and the
+state file of a state that holds one loads. So the table's second and third rows no longer hold, and `d1.ein` loads.
+`examples/beliefs/06_double_negation.ein` writes the elimination as a rule, `eliminate`, one rule for facts of two
+arguments with the relation a parameter, on for `=` by its activator, and its twin `eliminate-in` wrapped in
+`(think ?p …)`; it declares `=`, for the reason [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count)
+gives. No rule of the elimination is in `stdlib/`: where it lives is this phase's (V-5, point 2). The rest of the
+section holds as written: `x5.ein` is still refused, ``x5.ein:2:45: unexpected `?f`: a variable``.
+
+### 10.6 `not` as a context
+
+**Right: `not` is a context, and it already behaves as one.** The fact a negation denies is under the negation's
+arrow and is not held, so no bare premise binds it; a rule about denied facts writes its patterns under `not`, as
+a rule about what Ann thinks writes them under `think`. `n1.ein`:
+
+```lisp
+(not (= 5 (+ 2 2)))
+(rule seen ()
+  :match  (= ?a ?b)
+  :assert (seen-held ?a)
+  :why    "an equality is held")
+(rule seen-denied ()
+  :match  (not (= ?a ?b))
+  :assert (seen-denied ?a)
+  :why    "an equality is denied")
+(query :goal (seen-held ?x))
+(query :goal (seen-denied ?x))
+```
+
+`ein solve n1.ein`: `(seen-held ?x)` has no row; `(seen-denied ?x)` answers `?x = 5`.
+
+**Not quite: it is no mirror of the global context.** A mirror would hold every fact the global context lacks,
+and then a fact would be held or denied and nothing else. The `not` context holds exactly the facts that something
+stated or concluded as denied, and grows the way the global one does, by what is written and what rules conclude.
+A fact in neither is **open**. So there are two contexts that grow independently, and four things they can say of
+one fact:
+
+| | in the global context | in the `not` context |
+|---|---|---|
+| asserted | yes | no |
+| negated | no | yes |
+| open | no | no |
+| contradicted | yes | yes |
+
+The three-valued reading is already there (asserted, negated, open), and it comes from `not` *not* being the
+complement. Where it is a mirror is one step further out: with the elimination of § 10.5 as a rule, the `not` context
+of the `not` context is the global one again.
+
+**What makes `not` different from `think` is one reading by the kernel**: a fact in both contexts makes the state
+dead. That reading is the rule $g \land \lnot g \Rightarrow \bot$ that P1f.21 is about; once it is a rule a theory
+states, the kernel reads **no** context, and `not` is a context a module gives its meaning to, as a program gives
+`think` its.
+
+**Other logics, as contexts.** A program adds a truth value by adding a context relation and the rules between
+the contexts. `n2.ein`, four verdicts of one fact, the third value the program's own `maybe`:
+
+```lisp
+(import std.macro :symbols (unknown))
+(= a b)
+(not (= a c))
+(maybe (= a d))
+(pair a b) (pair a c) (pair a d) (pair a e)
+(rule v-true    () :match (and (pair ?x ?y) (= ?x ?y))         :assert (verdict ?x ?y yes)   :why "held")
+(rule v-false   () :match (and (pair ?x ?y) (not (= ?x ?y)))   :assert (verdict ?x ?y no)    :why "denied")
+(rule v-maybe   () :match (and (pair ?x ?y) (maybe (= ?x ?y))) :assert (verdict ?x ?y maybe) :why "maybe")
+(rule v-unknown () :match (and (pair ?x ?y) (unknown (= ?x ?y)) (absent (maybe (= ?x ?y))))
+                   :assert (verdict ?x ?y unknown) :why "nothing said")
+(query :goal (verdict a ?y ?v))
+```
+
+`ein solve n2.ein`: `?v = yes · ?y = b`, `?v = no · ?y = c`, `?v = maybe · ?y = d`, `?v = unknown · ?y = e`, under
+`lattice monotone (the static check)`. What such a logic *means* (what follows from `maybe g` beside `not g`) is
+the rules the program writes between the contexts; the kernel supplies it only for `not`.
+
+### 10.7 The kernel's surface: `(false)` and `(open)` control the search
+
+**The observation is right, and it is half of what `(false)` is.** It has two parts to play, and the name fits
+neither well:
+
+| where `(false)` stands | what it does | run |
+|---|---|---|
+| **held**, in the global context | the kernel's verdict *this state is impossible*: the node is dropped, its core recorded, the search goes on elsewhere. This is control | every dead state |
+| **under an arrow**, in a context | a proposition, *what this context says is contradictory*: `(think Ann (false))`. It controls nothing, and rules read it | `x1.ein`, § 10.4 |
+
+It is not a truth value in either. No fact of Ein *is false*: a denied fact is `(not g)`, and `(false)` is what
+logic writes $\bot$, the absurd. So the worry is sound: a reader who knows two-valued logic reads `(false)` as
+*the value false* and `(not g)` as *g is false*, and only the second is near the truth.
+
+**Three ways to go**, none of them this phase's to build:
+
+| | what | reads, held | reads, in a context | costs |
+|---|---|---|---|---|
+| (a) keep `false` | the pages say once that it is no truth value and what the kernel does with it (Q-M1f.397's surface) | `(false)` | `(think Ann (false))` | nothing |
+| (b) a word for the proposition | `(contradiction)`, `(impossible)` or `(absurd)` | *this state holds a contradiction* | `(think Ann (contradiction))` | a rename |
+| (c) a word for the search's act | `(dead)`, `(abort)`, `(refute)` | *drop this state* | `(think Ann (dead))`, `(think Ann (abort))`: a command where a proposition goes | a rename |
+| (d) the surface as a named interface | every relation the kernel reads or states under one prefix, `ein.…`, as a module's names are under `std.…`; a program writes the short names | `(ein.refute)` or `(false)` by a short name | as written | a rename, and a decision on how a program gets the short names |
+
+`(abort)` says more than happens: one state is dropped and the search continues. `(dead)` is the word the pages
+already use for the *verdict* on a state, which P1f.21's design keeps apart from the fact that causes it (*dead
+from `(false)`*). The rename itself is mechanical and wide: `(false)` is written 658 times in 278 programs under
+`examples/`, `tests/` and `stdlib/` (`grep -c '(false)'` over the three, summed), and in the pages, the
+diagnostics and the goldens.
+
+**What I would do.** Not rename in this phase. It is the same question as P1f.21's, what the kernel's verdicts
+are and how a program sees them, so it is put there as
+[Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), with the options
+above. If it is renamed, I would take a word for the **proposition** ((b)), because the same fact has to read well
+under an arrow, where it controls nothing; the control is then one sentence of the kernel's surface: *a state that
+holds it is dropped*. And (d) is worth its own look there: it would make Q-M1f.397's line between kernel and
+theory something a reader sees in every name.
+
+### 10.8 Questions as facts: what rules can do with `(open q)`
+
+Today `open` is the verdict and nothing else: `(think Alice (open p))` is refused at the parse (*"open is
+reserved: it is the verdict a rule's :assert states … and names no relation and no value"*). So the runs below
+write the relation `question` where the note writes `open`; nothing else differs.
+
+**They are naturally hypotheses: yes.** An hrule over the question facts proposes exactly what is asked.
+`q2.ein`:
+
+```lisp
+(relation lives-in Person House :why "{?1} lives in {?2}")
+(question (lives-in Alice House-1))
+(question (lives-in Bob House-2))
+(lives-in Carol House-3)
+(hrule ask ()
+  :match  (question (lives-in ?p ?h))
+  :assert (lives-in ?p ?h)
+  :why    "suppose {?p} lives in {?h}: it is asked")
+```
+
+`ein show hyps q2.ein`: `(lives-in Alice House-1)`, `(lives-in Bob House-2)`, ``H, built by the rung `hrules`: 2
+candidates``. That is the second rung of the ladder, *the facts that would discharge what root owes*, written as a
+rule of Ein instead of read off the obligations by the kernel.
+
+**What rules can infer from a question directly.** `q1.ein`:
+
+```lisp
+(relation lives-in Person House :why "{?1} lives in {?2}")
+(relation has Person Key        :why "{?1} has {?2}")
+(question (lives-in Alice House-1))
+(key-of House-1 Key-1)
+(has Alice Key-1)
+(rule sub-question ()
+  :match  (and (question (lives-in ?p ?h)) (key-of ?h ?k))
+  :assert (question (has ?p ?k))
+  :why    "to know whether {?p} lives in {?h}, ask whether {?p} has {?k}")
+(rule answer ()
+  :match  (and (question (lives-in ?p ?h)) (key-of ?h ?k) (has ?p ?k))
+  :assert (lives-in ?p ?h)
+  :why    "{?p} has {?k}, the key of {?h}")
+(query :goal (question ?q))
+(query :goal (lives-in ?p ?h))
+(solve :no-search)
+```
+
+`ein solve q1.ein`: the questions are `(lives-in Alice House-1)` and `(has Alice Key-1)`; `(lives-in Alice
+House-1)` is held. So, each a thing a rule can do with a question:
+
+| | from a question | the example |
+|---|---|---|
+| 1 | **a further question**: what would have to be known to answer it. Reasoning from the goal backwards, in an engine that only goes forwards | `sub-question` |
+| 2 | **an answer, computed only where asked** | `answer`. The calculator already works so: `(add X Y)` is a question and `sum-of` its answer, which is why it computes only what a program asks |
+| 3 | **a hypothesis** | `q2.ein` above |
+| 4 | **a contradiction**: every answer to a question is denied | what domain elimination concludes |
+| 5 | **a report**: which questions nothing answers | `(question q)` with `(unknown q)`; it reads an absence, so it is a boundary rule and not a monotone one |
+
+**The one thing an ordinary fact cannot be is *still open*.** A held fact is never removed, so `(question q)`,
+held, means *q was asked*, in this state and in every larger one, and it stays held after `q` is answered. *Still
+unanswered* is the question together with the absence of `q` and of `(not q)`, which is what the kernel's pass
+computes today and what P1f.21's survey found of `(open R)` (*"it can be removed"*). That lines the note up with
+Q-M1f.390's option (c): the question (there, the *requirement*) is a fact, the answer (the *payment*) is a fact,
+and *owed* is their difference, never stored. It is entered there as [V-5](findings.md#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names).

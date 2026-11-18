@@ -1,7 +1,0 @@
-(relation owns who what :why "{who} owns {what}")
-(relation think who what :why "{who} thinks {what}")
-(relation says who what :why "{who} says {what}")
-(owns Bob Dog)
-(think Alice (owns Bob Dog))
-(says Carol (owns Bob Dog))
-(solve :no-search)

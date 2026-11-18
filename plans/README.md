@@ -117,10 +117,11 @@ the tree they left, and one out of that review's close:
   closed keywords, `eq`/`neq` as relations and the rest), removes `:priority`
   before the generated grammar is swapped in, and last makes `:why` required
   through a loader flag and writes the NL pages; `P1f.20`, split out of P1f.5 on 2026-11-08,
-  rebuilt the doc tree as `docs/ein/` and `docs/decisions/`, and closed on 2026-11-17. Two phases are left,
-  created on 2026-11-17, each with its survey done and not started further without the user's word: `P1f.21`,
-  the kernel's verdicts as rules, and `P1f.22`, nested facts. Phase numbers 1–4, 6–9 and 11–19 are deliberately
-  free.
+  rebuilt the doc tree as `docs/ein/` and `docs/decisions/`, and closed on 2026-11-17; `P1f.22`, nested facts,
+  created on 2026-11-17, explained them, drew every object once, erased `written` and made a saved state load as
+  itself, and closed on 2026-11-18. One phase is left, `P1f.21`, the kernel's verdicts as rules, created on
+  2026-11-17, with its survey done and its next stage planned, not started without the user's word. Phase numbers
+  1–4, 6–9 and 11–19 are deliberately free.
 - **M1g — Logic in Ein** ([m1g_logic/](m1g_logic/README.md)) after M1f — planned
   2026-11-11 on the user's instruction, and it **runs after M1f is complete**:
   from the truth tables of M1f's S1f.6.17 to propositional logic (a formula a
@@ -231,11 +232,11 @@ plans/
 ├── m1f_hypothesis_and_documentation/ the hypothesis set's structure, and the documentation
 │   ├── README.md                     (created 2026-08-29 out of M1e's P1e.1b + P1e.5)
 │   ├── open_questions.md             Q-M1f.<n>
-│   ├── findings.md                   what the documentation tree (P1f.20) found and left
+│   ├── findings.md                   what the documentation tree (P1f.20) and nested facts (P1f.22)
+│   │                                 found and left
 │   ├── stdlib_usage_builder/         what the stdlib's usage pages were built from (findings.md's L-64)
-│   ├── p1f.21_verdicts_as_rules/     the kernel's verdicts as rules: surveyed, waits for the user
-│   └── p1f.22_nested_facts/          nested facts: surveyed, waits for the user (P1f.5, .6, .7, .8,
-│                                     .10 and .20 finished and deleted; in git)
+│   └── p1f.21_verdicts_as_rules/     the kernel's verdicts as rules: surveyed, waits for the user (P1f.5,
+│                                     .6, .7, .8, .10, .20 and .22 finished and deleted; in git)
 ├── wrong_answers/                    the open wrong answers: register.toml, its rules, witnesses
 ├── m1g_logic/                        logic in Ein — planned 2026-11-11, runs after M1f
 │   ├── README.md                     (promotes followups/f1b; the user's instruction verbatim)
@@ -329,7 +330,7 @@ Stage files have a stable shape:
 | M1d | *(plans removed 2026-08-27, the record `docs/history/m1d_satisfiability/` at M1f's S1f.20.9 — git history)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
 | M1e | *(plans removed 2026-10-14, the record `docs/history/m1e_review_processing/` at M1f's S1f.20.9 — git history)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are M1e2's | est. ~11 weeks; ran six days |
 | M1e2 | *(plans removed at M1f's S1f.20.9 — git history)* | **closed** 2026-11-08, no `docs/history/` record by the user's instruction: 103 rows fixed, 1 not wrong, 10 open and deferred (F21, F22, M1f S1f.10.6); the no-owner items are M1f's P1f.5. Created 2026-10-14 at M1e's close. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of `inventory.md` | ~8 weeks |
-| [M1f](m1f_hypothesis_and_documentation/README.md) | P1f.21 and P1f.22; P1f.5, P1f.6, P1f.7, P1f.8, P1f.10 and P1f.20 finished and deleted (git history) | **running** since 2026-11-08 — the language as ruled, the calculator, the structure of the hypothesis set, and the pages a released system would have. **P1f.20, the documentation tree, closed on 2026-11-17** on the user's word, after the user's review of the new docs. **P1f.21, the kernel's verdicts as rules, and P1f.22, nested facts**, each have a survey done and wait for the user's rulings and word; the milestone's plans are deleted when both are done, and the work stops after M1f | ~18 weeks |
+| [M1f](m1f_hypothesis_and_documentation/README.md) | P1f.21; P1f.5, P1f.6, P1f.7, P1f.8, P1f.10, P1f.20 and P1f.22 finished and deleted (git history) | **running** since 2026-11-08 — the language as ruled, the calculator, the structure of the hypothesis set, and the pages a released system would have. **P1f.20, the documentation tree, closed on 2026-11-17** on the user's word, after the user's review of the new docs. **P1f.22, nested facts, closed on 2026-11-18**, run to its end on the user's word. **P1f.21, the kernel's verdicts as rules**, has its survey done and its next stage planned, and waits for the user's word; the milestone's plans are deleted when it is done, and the work stops after M1f | ~18 weeks |
 | [M1g](m1g_logic/README.md) | **full** — 11 phases, 40 stage files (1 optional; P1g.6's seven provisional; P1g.7, P1g.8 and P1g.9 a README each, added 2026-11-12; P1g.10 and P1g.11, school algebra and school geometry, eleven stage files, moved in from M1f's P1f.8 on 2026-11-13) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
 | [M1h](m1h_beyond_word_problems/README.md) | **full to each phase's stop** — 7 phases, 37 stage files (13 past a stop, in outline; two of those hold the place of a plan written after a survey), written out 2026-11-13 on the user's instruction | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Every phase stops for the user before anything ships; Q-M1h.1–20 are open, and its place against M1g is not ruled | — (no estimates, the user's ruling of 2026-11-08) |
 | M1j | *(plans removed at M1f's S1f.20.9 — git history)* | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |

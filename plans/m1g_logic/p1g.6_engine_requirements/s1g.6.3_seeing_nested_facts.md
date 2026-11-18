@@ -35,7 +35,10 @@ and both ways go blind on it:
 - **C-5.** `ein render kb` and `ein render rule` draw a nested fact as **one opaque labelled node** (the
   coordinator's finding of 2026-11-11). A formula's tree, a proof term's steps and a number's digits are a
   string in a box. Two formulas that share a subformula share nothing in the drawing. Idea 02's claim, that
-  the graph is the formal substrate, stops at the first parenthesis.
+  the graph is the formal substrate, stops at the first parenthesis. **Since M1f's P1f.22** it does not: every
+  view that draws facts draws a fact under an arrow once, as its octagon with a numbered arrow to each argument,
+  shared subterms shared ([Q-M1f.395](../../../docs/decisions/cli/Q-M1f.395-ein-render-draws-every-object-once.md)).
+  What is left of C-5 is below: unfolding past the edge bound, selectively, and the proof as a drawing.
 - **C-6.** A `:why` template fills `{?x}` with the value as Ein text, so a trace of the calculator reads
   `(n (n z 1) 7)` where a person reads 17 (the same finding), and a trace of a proof will read
   `(Imp (And p q) p)` where a person reads *(p ∧ q) → p*. S1f.5.14 measured how much of an answer reads as

@@ -13,7 +13,11 @@ take it onto programs, **not started**; S1f.21.2 and S1f.21.3 wait on it, and th
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
 P1f.20 found on those pages and left is [the milestone's findings page](../findings.md), L-82 and L-83 among it.
-Its first stage reads the engine and writes here.
+Its first stage reads the engine and writes here. P1f.22, nested facts, is done and its folder deleted: what this
+phase reads of it, the user's notes verbatim, a contradiction in a context, the double negation's elimination as a
+rule, the names of `(false)` and `(open)` and questions as facts, is
+[`open_facts.md` § 10](open_facts.md#10-what-p1f22-worked-out-that-this-phase-reads), copied from its page at its
+close, and its finding that is this phase's is [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count).
 **Blocks:** the close of M1f, which was started on the user's acceptance of the documentation tree and paused
 on the user's word; it resumes when this phase is done.
 

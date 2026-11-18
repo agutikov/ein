@@ -850,6 +850,52 @@ refuse it, there being no cycle. The row is not reviewed, and its reading rules 
    at the review: the order decides no answer only where no rule's `absent` reads what another rule waiting on an
    `absent` derives (`AGENTS.md` § The language says it so).
 
+### Met again by P1f.22: *everybody's thoughts are false* at a dead root
+
+**Handed over** at the close of M1f's P1f.22, nested facts (2026-11-18): its finding N-15, from the user's notes of
+2026-11-17 (*"to infer false if everybody's thought are false (just an example)"*), worked out on that phase's
+page on contexts and left as the user's call. No register row is filed for it: whether it is a row, and whose, is
+the call below.
+
+**What.** *Everybody's thoughts are false*, written as two rules over `absent`, one that derives `(some-sane)` for a
+person with no `(think ?p (false))` and one that concludes `(false)` where `(some-sane)` is absent, answers dead with
+one person not confused, under `lattice monotone (the static check)`. Both rules wait on an `absent` at one boundary
+and the agenda admits the one that concludes `(false)` first. `fifo-gap-root`'s witness shows a stale fact at an
+alive root; here R is empty where the stratified reading gives {∅}. The same sentence written with `forall`, one
+nested absence, is right.
+
+`x2b.ein`:
+
+```lisp
+(person Ann)
+(person Bob)
+(think Ann (false))
+(rule confused () :match (think ?p (false)) :assert (confused ?p) :why "c")
+(rule someone-sane () :match (and (person ?p) (absent (think ?p (false)))) :assert (some-sane) :why "s")
+(rule all-confused () :match (absent (some-sane)) :assert (false) :why "a")
+```
+
+`ein solve x2b.ein`: `states (k_s) 0`, `lattice monotone (the static check) — R is convex: no hole`, `unsat core ∅,
+the empty set: the refutation rests on no fact`, `refuted by all-confused`. `x3b.ein`, the `forall` form:
+
+```lisp
+(import std.macro :symbols (forall))
+(person Ann)
+(person Bob)
+(think Ann (false))
+(rule all-confused ()
+  :match  (forall ?p (person ?p) (think ?p (false)))
+  :assert (false)
+  :why    "everybody's thoughts are false")
+```
+
+`ein solve x3b.ein`: `states (k_s) 1`, `∅ in R — root is alive and owes nothing`. Both re-run on the gate build at
+P1f.22's close. With `(think Bob (false))` added, the `forall` form is dead, as it should be
+(`examples/beliefs/10_everybody_contradicts.ein` holds it; `09_false_in_a_context.ein` the alive case).
+
+**The user's call**: whether it is a twin of `W8/fifo-gap-root`, read with that row's reading (D2's stratum-order
+admission, under which R is {∅}), or a row of its own; and with that row's first call, whether the reading stands.
+
 ## Why it is parked
 
 - The user's direction, above.

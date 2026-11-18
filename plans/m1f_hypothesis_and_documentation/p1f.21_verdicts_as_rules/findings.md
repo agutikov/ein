@@ -17,6 +17,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
 | [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **fixed** by `5a3f2979`: ruled (a) 2026-11-18, Q-M1f.412 |
+| [V-7](#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count) | a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count among its own, and the invariant's sweep calls it a breach | P1f.22's S1f.22.3 (its N-22), handed over at that phase's close, 2026-11-18 | open: **the user's call**, with § 8's `relation` |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -124,7 +125,7 @@ of the agenda's rules; what the dump leaves unsaid is that it is.
 ## V-5 — The user's notes from P1f.22: questions as facts, the two negation rules, and the names
 
 **What.** Three things the user said while ruling P1f.22's questions (2026-11-17, verbatim in
-[P1f.22's `contexts.md` § 10](../p1f.22_nested_facts/contexts.md#10-the-users-second-notes-verbatim-and-what-they-rule))
+[`open_facts.md` § 10.1](open_facts.md#101-the-users-notes-verbatim), copied from P1f.22's `contexts.md` § 10)
 that are this phase's to take up, none of them built or ruled here.
 
 1. **`(open q)` as a fact that is a question.** *"if we will emit ordinary facts (open (lives-in Alice House-1))
@@ -133,7 +134,7 @@ that are this phase's to take up, none of them built or ruled here.
    from them directly"*. Run with a relation `question` in the place of `open`, which the parse refuses under an
    arrow: an hrule over the questions proposes exactly the asked facts, and ordinary rules derive a further
    question, an answer where asked, a contradiction where every answer is denied
-   ([P1f.22's `contexts.md` § 13](../p1f.22_nested_facts/contexts.md#13-questions-as-facts-what-rules-can-do-with-open-q),
+   (P1f.22's `contexts.md` § 13, [`open_facts.md` § 10.8](open_facts.md#108-questions-as-facts-what-rules-can-do-with-open-q),
    `q1.ein` and `q2.ein`). What a held fact cannot be is *still open*: it stays held once answered. That is
    [`design.md` § 3.2](design.md#32-it-can-be-removed) again, and it lines the note up with Q-M1f.390's option
    (c), the question and its answer as facts and *owed* their difference.
@@ -141,12 +142,14 @@ that are this phase's to take up, none of them built or ruled here.
    Q-M1f.391: `(not (not g))` becomes a fact a file may write, the kernel is not changed, and the rule that
    concludes `g` from it is a theory's. Its home, the module and whether a program imports it, is this phase's to
    say, with [Appendix A.1](design.md#a1-the-contradiction-rule-set-contrainc)'s rule set, which is of the same
-   shape: one rule a count of arguments, the relation a parameter.
+   shape: one rule a count of arguments, the relation a parameter. Built by P1f.22's S1f.22.3: the grammar admits
+   the fact, and `examples/beliefs/06_double_negation.ein` writes the rule in a program
+   ([`open_facts.md` § 10.5](open_facts.md#105-the-negation-of-a-negation-and-its-elimination-as-a-rule)).
 3. **The names.** *"things like (false) and (open) are effectively controlling the search. Maybe word `false` is
    too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead)
    is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"*
    Put as [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), with
-   the options in [P1f.22's `contexts.md` § 12](../p1f.22_nested_facts/contexts.md#12-the-kernels-surface-false-and-open-control-the-search).
+   the options in P1f.22's `contexts.md` § 12, [`open_facts.md` § 10.7](open_facts.md#107-the-kernels-surface-false-and-open-control-the-search).
    One fact bears on it from P1f.22: `(false)` also stands under an arrow, `(think Ann (false))`, where it is a
    proposition and controls nothing, so a name for the search's act reads badly there.
 
@@ -222,3 +225,29 @@ program`), `grid.rs` (`--models grid` gathers a functional licence's rows from `
 `from_ir.rs` `program_relations`, which counts `is-a` among every program's relations, so a goal or a claim may
 name it in a program with no `is-a`.
 
+## V-7 — A rule can conclude a fact of a relation the program does not count
+
+**Handed over** at P1f.22's close, 2026-11-18: its finding N-22, found by S1f.22.3 and left as the user's call,
+since no stage of that phase had it. It is this phase's because it is § 8's `relation`: the user's third
+instruction (*"relation - is not actually, it's just a convention already now - any new head of tuple will be new
+relation atom"*) and [`open_facts.md` § 8.2](open_facts.md#82-each-name-under-this-phases-direction)'s row for it.
+
+**What.** A rule that concludes a fact of a relation it takes from a parameter can conclude one of a relation the
+registry lacks. The engine's relations of a program are the declared ones and the heads of the facts a file
+states, fixed at load. A relation written only under an arrow of a fact, and named by an activator, is in neither;
+a rule `(?R ?a ?b)` applied to it concludes a fact of it all the same. The reasoning's saturation page counts such a
+relation among the program's (*"every atom under the first arrow of a fact pattern a rule can conclude"*), and the
+invariant's sweep, `ein-infer/tests/alive_invariant.rs`' `no_run_reaches_a_name_the_program_does_not_have`, calls
+it a breach of *no new relations*. It is what Q-M1f.393 (a) tells a program to write when it unpacks with the
+relation a parameter. No answer is known to be wrong by it: `ein solve`, `ein oracle` and `ein test` agreed on every
+such program run then.
+
+**Shown by.** `(think Bob (= 7 (+ 3 4)))` `(rule unpack (?R) :match (think ?p (?R ?a ?b)) :assert (?R ?a ?b) :why
+"u")` `(unpack =)`: `ein saturate --dump` holds `(= 7 (+ 3 4) :rule unpack)` under `;; Relations — auto-vivified
+(2)` listing `think` and `unpack` alone (re-run on the gate build at P1f.22's close). With
+`examples/beliefs/06_double_negation.ein` as first written, `=` undeclared, that test failed: *R1 …
+`new-relation: = in (= 5 (+ 2 2))`*; the program now declares `=`, as does the knowledge-base page's example.
+
+**The user's call**, none taken: the registry takes a relation an activator names for a parameter that heads a
+conclusion; or the loader refuses the activator; or a page says that such a relation is declared. Under the third
+instruction's reading of `relation`, *any head is a relation*, the first.

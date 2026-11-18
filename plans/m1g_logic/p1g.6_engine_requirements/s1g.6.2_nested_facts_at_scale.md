@@ -66,8 +66,10 @@ A cache is a lever: identical output with it and without, held by a test, like `
 `x.ein` today.
 
 **C-4, the nesting limit.** The parser nests to 1 000. A rule derives deeper; such a state's dump does not
-reload (E-4). The calculator's side is S1f.6.9's choice for the user, and **this stage follows that ruling**
-and does not re-open it. What it adds is the logic's side: which theories of M1g nest how deep (a unary
+reload (E-4). **Since M1f's P1f.22** it does: a saved state is its program and the choices made, and holds no
+fact of the state, so the parser reads only the program, which it read already
+([Q-M1f.185](../../../docs/decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md)). The
+calculator's side is S1f.6.9's choice for the user, and **this stage follows that ruling** and does not re-open it. What it adds is the logic's side: which theories of M1g nest how deep (a unary
 number n nests n; a context of assumptions; an assignment; a proof term), so the ruling is checked against
 them, and the read-out or the dump says so when a state holds a fact a program could not write back, instead
 of producing a file that fails to load.
