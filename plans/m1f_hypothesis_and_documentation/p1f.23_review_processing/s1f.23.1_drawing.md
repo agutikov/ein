@@ -310,7 +310,7 @@ node, no `is-a` convention, no `--levi`, `--no-types`, `ontology`/`facts` digrap
   [Q-M1f.372](../../../docs/decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) (no
   drawing marks a label; `--no-types` gone).
 
-**The readings task 2 took** (defaults, for the main session to file):
+**The readings task 2 took** (defaults, filed as Q-M1f.467 to .473 and ruled by the user, `open_questions.md`):
 
 1. **A copy of a command's output is the binary's**, as the page writes the command, canonical by default. Folded
    where the drawing's point is the compact view, and the page writes `--fold` (outside `reasoning/`) or says the
@@ -522,7 +522,7 @@ S1f.23.5's workspace tests running in its worktree; `EIN_CORPUS_SLOW=1` `renamin
 the review's outputs); `utils/check_doc_blocks.py` rules 1 to 5 hold, 748 diagrams; `utils/check_generated.py` 9
 generators, every file as written; `utils/check_release_voice.py` ok; `utils/check_gate_steps.py` ok.
 
-**Readings this task took** (for the main session to file): **(i)** the region view's `sat` and `✗ alive` count as
+**Readings this task took** (filed as Q-M1f.483 to .486, `open_questions.md`): **(i)** the region view's `sat` and `✗ alive` count as
 R-31's pattern and are changed, though none was refused; **(ii)** a trace's slice is left as it is, its refusals
 filed (R-33), since what routes them changes the slice's layout; **(iii)** in `09-core-in-derivation` the core is
 not drawn heavy, *heavy* being *derived* on the page; **(iv)** `long_numbers.ein` stays off `pool::LONG`.

@@ -133,7 +133,7 @@ outputs, as known); every decision id resolves. `check_doc_blocks.py`, `check_re
 `wrong_answers.py` (16 open rows, each still answered wrong): green. Not run here, by the brief: `./run_tests.sh`,
 the nightly, `utils/ci_container.sh`.
 
-**Readings, each a default** (for the main session to file):
+**Readings, each a default** (filed as Q-M1f.475 to .482, `open_questions.md`):
 
 1. **The premises line** prints a declaration's statement right after it, ` — <statement>`, and the premises'
    sources stay once after the last premise, ` — from <source>`: a line can carry two ` — `, the second the sources'
@@ -162,7 +162,7 @@ the nightly, `utils/ci_container.sh`.
 8. **The words are not rewritten** (open point 9): only the page examples that show the rule use the user's pattern,
    `a {?3} {?2} a {?4}`.
 
-**Findings** (for the main session to file):
+**Findings** (filed as R-34 to R-38, [the phase's findings](findings.md)):
 
 - **N-a.** The *In words* sections of `01-objects.md`, `02-relations.md` and `03-facts.md` (two) quoted a state
   file's facts with their English in comments, which no state file has held since a saved state is its program and
