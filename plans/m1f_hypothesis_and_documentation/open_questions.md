@@ -349,6 +349,21 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.418](#q-m1f418--the-nesting-limit-and-a-saved-files-wrappers) | the nesting limit, and a saved file's wrappers | **defaulted 2026-11-18 (S1f.22.5's build), the user's to revise**: (a), a saved file parsed with one level more, each text it carries under the limit; Q-M1f.185 rewritten |
 | [Q-M1f.419](#q-m1f419--how-ein-render-draws-a-fact) | how `ein render` draws a fact | **ruled 2026-11-18 by the user**: the canonical form by default, a fact of three arrows folded into a labelled arrow on request, no labelled octagon and no text node produced or drawn on a page; built by P1f.23's S1f.23.1 |
 | [Q-M1f.420](#q-m1f420--what-ein-render-program-draws) | what `ein render program` draws | **ruled 2026-11-18 by the user**: the program's knowledge base as one graph, as the KB view draws one, its rules, its query; no split into ontology and facts; built by S1f.23.1 |
+| [Q-M1f.421](#q-m1f421--is-a-and-relation-in-a-drawing) | `is-a` and `relation` in a drawing | **ruled 2026-11-18 by the user**: ordinary relations, nothing special in any drawing; `--no-types` and `--no-instances` go; built by S1f.23.1 |
+| [Q-M1f.422](#q-m1f422--the-traces-drawings-folded) | the trace's drawings folded | **ruled 2026-11-18 by the user**: `ein solve --fold` folds the trace's drawings; built by S1f.23.1 |
+| [Q-M1f.423](#q-m1f423--how-the-arrows-of-a-fact-are-numbered) | how the arrows of a fact are numbered | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), `1` at the relation, `2`, `3`, … at the arguments, digits alone |
+| [Q-M1f.424](#q-m1f424--where-what-a-fact-rests-on-is-drawn) | where what a fact rests on is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), an `xlabel` beside the octagon; L-96 gone |
+| [Q-M1f.425](#q-m1f425--the-folds-option-and-what-it-folds) | the fold's option, and what it folds | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), `--fold`, `--levi` gone; three arrows only, never a fact pointed at |
+| [Q-M1f.426](#q-m1f426--what-the-constraint-view-draws) | what the constraint view draws | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), each fact as a fact; every un-annotated fact of an undeclared relation, declarations among them |
+| [Q-M1f.427](#q-m1f427--how-a-rules-pattern-is-drawn) | how a rule's pattern is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), as a fact; `(not P)` a red fact of `not`; `forall` a pattern as called |
+| [Q-M1f.428](#q-m1f428--how-a-derivation-is-drawn) | how a derivation is drawn | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), each fact its node, each step a node; `⊥` a mark; the no-good a note pointing at its facts |
+| [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawing-of-a-derivation) | a folded fact in a drawing of a derivation | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), a labelled arrow through a point the firings meet |
+| [Q-M1f.430](#q-m1f430--the-region-lattice-and-h-space-views) | the region, lattice and h-space views | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), left as they are, a label of a state and not a drawing of a fact |
+| [Q-M1f.431](#q-m1f431--the-program-views-three-parts) | the program view's three parts | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), as built; a claim's text in a query's note still a question |
+| [Q-M1f.432](#q-m1f432--what-the-kb-view-leaves-out) | what the KB view leaves out | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), nothing: stored negations and facts that apply a rule drawn |
+| [Q-M1f.433](#q-m1f433--the-shape-of-an-atom) | the shape of an atom | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), a box |
+| [Q-M1f.434](#q-m1f434--the-standard-librarys-rule-drawings-past-the-bound) | the standard library's rule drawings past the bound | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), canonical, else folded, else Ein only |
+| [Q-M1f.435](#q-m1f435--where-an-arrows-number-is-written) | where an arrow's number is written | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), its `xlabel`, and a folded arrow's relation in a knowledge base's drawing too, laid out in seconds where a `label` takes minutes |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8170,3 +8185,215 @@ Q-M1f.421 on.
 program's knowledge base, drawn as the KB view draws one; its rules; its query. The digraphs `ontology` and `facts`
 go. It answers L-98 (the program view is several digraphs). **Built by**
 [S1f.23.1](p1f.23_review_processing/s1f.23.1_drawing.md).
+
+### Q-M1f.421 — `is-a` and `relation` in a drawing
+
+**Raised and ruled** 2026-11-18 by the user, during S1f.23.1, replacing the stage's reading that left `is-a`'s
+shapes as they were. The user, verbatim:
+
+> `is-a` - is just ordinary relation, no special dashed arrows, nothing special, completely ordinary relations. even
+> `relation` relation is ordinary relation
+
+**Ruling.** No drawing gives `is-a`, `relation` or any relation a look of its own: no dashed arrow with an empty
+head, no box for an atom an `is-a` fact points at and no oval for one it starts from; every atom one shape. A
+declaration is drawn as the fact it is, an octagon whose first arrow is at the atom `relation`, or folded where it has
+three arrows, in the program view and the KB view alike. `ein render kb`'s `--no-types` and `--no-instances`, which
+existed for that convention alone, go. **Built by** S1f.23.1: the decision
+[Q-M1f.421](../../docs/decisions/cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md); the program
+view's equality node for a fact of `=` goes with it, a fact of `=` drawn as any fact. The reads of `is-a` outside the
+drawings are [P1f.23's findings](p1f.23_review_processing/findings.md) R-1 to R-3, the user's to rule.
+
+### Q-M1f.422 — The trace's drawings folded
+
+**Raised and ruled** 2026-11-18 by the user, during S1f.23.1, verbatim:
+
+> trace can also draw folded relations if --fold flag provided;
+
+**Ruling.** `ein solve` takes `--fold` beside `--trace`'s other modifiers: each step's drawing and each `-F`
+snapshot are drawn in the canonical form by default and folded under it, as the views of `ein render` are. **Built
+by** S1f.23.1, under the decision
+[Q-M1f.419](../../docs/decisions/cli/Q-M1f.419-ein-render-draws-a-fact-as-the-graph-has-it.md); how a fact a step
+reads or concludes is folded is [Q-M1f.429](#q-m1f429--a-folded-fact-in-a-drawing-of-a-derivation).
+
+### Q-M1f.423 — How the arrows of a fact are numbered
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"number the arrows 1/2"*). **Put, not ruled.**
+
+- **(a)** **as the reasoning pages number them**: the first arrow, at the relation, is `1`, and the arguments' are
+  `2`, `3`, … in order (`01-canonical-graph.dot`, *counted from the first*); digits alone, in every view; a folded
+  arrow carries the relation's name and no number. **Default.**
+- **(b)** the arrows to the arguments `1`, `2`, … and the first arrow unnumbered, or `0`.
+
+**Default taken: (a).** Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`, `ir_dot.rs`.
+
+### Q-M1f.424 — Where what a fact rests on is drawn
+
+**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** The KB view wrote a fact's source's short id or
+`by <rule>` in the octagon's label, after the relation's name and a literal `\n` (L-96), or after the name on its
+arrow.
+
+- **(a)** **beside the octagon, an `xlabel`**: `(10)`, `by symmetric`; on a folded arrow after the relation's name, as
+  before. A derived fact stays dashed, its octagon and its arrows; a fact a state holds beyond `--since`'s stays at
+  `penwidth=3`, its octagon and its arrows; the colour stays by relation. The literal `\n` goes with the label, so
+  L-96 is gone from every view this stage rewrote. **Default.**
+- **(b)** a node of its own for the source, pointed at by the fact.
+
+**Default taken: (a).** Built: `ein-render/src/fact_graph.rs` (`Look`), `kb_dot.rs`, `ir_dot.rs`' `stated_look`;
+the derivation graph writes its source, rule or hypothesis there too.
+
+### Q-M1f.425 — The fold's option, and what it folds
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (*"optionally fold 3-facts into labelled arrows"*). **Put,
+not ruled.**
+
+- **(a)** **`--fold`, one name on every subcommand that draws facts** (`ein render program`, `kb`, `rules`, `rule`,
+  `constraints`, and `ein solve` for the trace, Q-M1f.422); `--levi` goes, since the octagon is the default. It
+  folds a fact of exactly three arrows that no drawn fact points at; a fact of two arrows is no loop, and a fact a
+  drawn fact points at is a node. **Default.**
+- **(b)** a fact of two arrows folded into a loop on its argument, as the views drew one before.
+
+**Default taken: (a).** Built: `ein-cli/src/cmdline.rs`' `fold`; held by `every_object_once.rs` and
+`render_doors.rs`' `every_door_draws_a_fact_in_both_forms`; the pages `12-rendering.md`, `05-cli.md`,
+`06-config.md`.
+
+### Q-M1f.426 — What the constraint view draws
+
+**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** The view wrote a relation's properties into its
+node, `next-to\n«symmetric»` (a fact's text in a node), and chose its facts by leaving out three heads, `relation`,
+`type` and `instance`; the user's ruling of 2026-11-18 on theory names takes `type` and `instance` out (S1f.23.1's
+Record).
+
+- **(a)** **each fact drawn as a fact**, by the KB view's code: `(symmetric next-to)` an octagon whose second arrow
+  is at `next-to`, folded where it has three arrows. The facts drawn are every fact the program states with no
+  `:source`, `:rule` or `:using`, of a relation it does not declare; no name is left out by what it means, so a
+  declaration, a fact of `relation`, which no program declares, is drawn among them. **Default.**
+- **(b)** as (a), declarations left out by the name `relation`.
+
+**Default taken: (a).** Built: `ein-render/src/constraints.rs`; held by `every_object_once.rs`'
+`the_constraint_view_draws_a_property_as_a_fact`.
+
+### Q-M1f.427 — How a rule's pattern is drawn
+
+**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.**
+
+- **(a)** **a pattern as a fact**: an octagon with no name in it, its arrow `1` at its relation, a box per panel,
+  or the variable's diamond where the relation is a variable; folded under `--fold` where it has three arrows and
+  nothing points at it. Guards keep their dotted `≠`/`=` links and `absent` its cluster. A `(not P)` is a pattern
+  of `not`, red, its arrow `2` at `P`'s node, which stands in `not ctx` where `P` is no premise, as the reasoning
+  pages draw a negation (`01-context-negation.dot`). No macro's name is read: `std.macro`'s `forall`, which the view
+  drew as a `∀` cluster, and `unknown` are patterns as called. An empty `()` draws nothing. **Default.**
+- **(b)** `forall` kept as a cluster of its own.
+
+**Default taken: (a).** Built: `ein-render/src/rules.rs`; held by `every_object_once.rs`'
+`the_rule_view_draws_a_pattern_as_a_fact` and `presentation_semantics.rs`.
+
+### Q-M1f.428 — How a derivation is drawn
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.419 (L-99). **Put, not ruled.**
+
+- **(a)** **each fact as its node, each step a node of its own**: in a trace's slice, the firing's node from its
+  premises to what it derives, a commitment's facts red and a stored negation grey, no node filled; a fact a fact of
+  the cone points at is its node too, in its frame where the state does not hold it. The `⊥` of a refutation stays
+  a mark of the step, which the core's facts point at, and is no fact's node; the learned no-good is a note,
+  `learned no-good`, that points at each of its facts. The derivation graph draws a diamond for every derivation,
+  one where a fact has one, and what a fact rests on beside it. A written trace's `dag` view draws each step a node,
+  `s1` and its rule, from its premises to the fact it derives. **Default.**
+- **(b)** the derivation graph's diamond only where a fact has two derivations, as before.
+
+**Default taken: (a).** Built: `ein-render/src/slice.rs`, `derivation.rs`, `ir_dot.rs`' `render_trace_dag`; the
+goldens `slice_render_slice.dot`, `kb_provenance_dag.dot`, `ir_render_trace_dag.dot`, the trace goldens.
+
+### Q-M1f.429 — A folded fact in a drawing of a derivation
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.422. **Put, not ruled.** In a slice every fact is the end of a
+firing's arrow, and an arrow cannot end at an arrow.
+
+- **(a)** **a labelled arrow through a point**: a fact of three arrows that no fact of the cone points at is an
+  arrow from its first argument to a point, labelled with its relation, and on from the point to its second
+  argument; the firings' arrows enter and leave the point. **Default.**
+- **(b)** under `--fold` a slice folds nothing, and only the `-F` snapshots fold.
+
+**Default taken: (a).** Built: `ein-render/src/slice.rs`; held by `render_doors.rs`'
+`every_door_draws_a_fact_in_both_forms`.
+
+### Q-M1f.430 — The region, lattice and h-space views
+
+**Raised** 2026-11-18 by S1f.23.1's build. **Put, not ruled.** These views draw states, nodes and candidates,
+labelled with their facts' text, and the region view draws a reported state as an octagon with its facts in it.
+
+- **(a)** **left as they are**: a node is a state or a candidate, and its label a list of what it holds, not a
+  drawing of a fact. **Default.**
+- **(b)** they are form 4 too, and each state's or candidate's facts are drawn as nodes.
+
+**Default taken: (a).** Nothing built; `region_dot.rs`, `dump/region_lattice.rs` and `structure.rs` are unchanged.
+
+### Q-M1f.431 — The program view's three parts
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420. **Put, not ruled.**
+
+- **(a)** **as built**: the digraph `kb` holds every fact and declaration the program states, in the order the
+  loader reads them, declarations first, a fact written twice drawn once as written first; a written check,
+  `(eq …)`, `(neq …)`, `(not (eq …))`, is no fact and not drawn; an `(import …)` and a `(config …)` draw nothing; a
+  program that states no fact has no `kb`. A digraph per rule and hrule as `ein render rule` draws one, and per
+  macro its body as a match, `macro_<name>`. The digraph `query`: each query a cluster, its `:goal` drawn as a rule's
+  match is and its other clauses in a note; the `(solve …)` clause a note, a flag written alone, `:no-search` (it
+  printed `:no-search (#empty)`). A written `(trace …)` is drawn after them. **Default.**
+- **(b)** the query's `:goal` in its note as text, as before.
+
+**What stays a question:** a note writes a claim as it is written, `:expect (model (owns Bob Dog))`, so a fact's
+text stands in a note's label, as a state's does in the region view (Q-M1f.430).
+
+**Default taken: (a).** Built: `ein-render/src/ir_dot.rs`; held by `every_object_once.rs`'
+`the_program_views_kb_is_the_kb_views_drawing` and its corpus sweep.
+
+### Q-M1f.432 — What the KB view leaves out
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.420 (*"`ein render kb` renders whole KB"*). **Put, not ruled.**
+The view left out a fact that applies a rule, `(symmetric co-located)`, and every stored negation.
+
+- **(a)** **nothing**: every fact the knowledge base holds is drawn, a stored negation a fact of `not` whose second
+  arrow is at the fact it denies, a fact that applies a rule an octagon whose first arrow is at the rule's name, so
+  the program view's `kb` and the KB view of a program with no rule are one drawing. **Default.**
+- **(b)** both left out, in the KB view and the program view's `kb`.
+
+**Default taken: (a).** Built: `ein-render/src/kb_dot.rs`; the page `12-rendering.md` § The KB.
+
+### Q-M1f.433 — The shape of an atom
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.421 (*"every atom the same shape"*). **Put, not ruled.**
+
+- **(a)** **a box, as the reasoning pages draw one**: the node default of the KB, program and constraint views, so
+  no atom has a line of its own, and `box` in a rule's panel, where a variable is a diamond. **Default.**
+- **(b)** Graphviz's default ellipse, as the KB view drew an atom that was neither a type nor an instance.
+
+**Default taken: (a).** Built: `ein-render/src/kb_dot.rs`' `kb_digraph_open`, `dot_util.rs`' `GROUND_SHAPE`.
+
+### Q-M1f.434 — The standard library's rule drawings past the bound
+
+**Raised** 2026-11-18 by S1f.23.1's build; L-97 is still open. **Put, not ruled.**
+
+- **(a)** **the canonical drawing where it is within `MAX_NODES`, else the folded one where that is, else Ein
+  only**, the image's text saying a drawing is folded. **Default.**
+- **(b)** the canonical drawing or Ein only.
+
+**Default taken: (a).** Built: `utils/gen_stdlib_rule_pages.py`' `chosen`; the counts are S1f.23.1's Record.
+
+### Q-M1f.435 — Where an arrow's number is written
+
+**Raised** 2026-11-18 by S1f.23.1's build, on Q-M1f.423. **Put, not ruled.** Written as the arrow's `label`, as the
+reasoning pages' hand drawings write it, each number is a node of `dot`'s layered layout, and a knowledge base of
+some hundreds of facts with frames is laid out in minutes: the program view's `kb` of
+`examples/arith/long_numbers.ein`, 750 arrows, took 360 s of `dot` with labels, 55 s with `taillabel` and 38 s with
+`xlabel`, on this machine under the load of two other test runs (the program view before the stage, 493 arrows,
+142 s). `dot_wellformed.rs` lays out each view of every corpus program outside `tests/` per commit.
+
+- **(a)** **the arrow's `xlabel`**, which Graphviz places beside the arrow after the layout, near its middle, in
+  every drawing of facts: the KB, program and constraint views, a rule's patterns, a trace's slices, the derivation
+  graph; and in a drawing of a knowledge base (the KB view, the program view's `kb`, the constraint view) a folded
+  arrow's relation too, `xlabel="owns"`: one `label` in a digraph makes `dot` lay every arrow over two ranks, and
+  the folded `kb` of `long_numbers.ein`, ten labelled arrows among 752, ran past a quarter of an hour of `dot`, where
+  with `xlabel`s it took 51 s. The user's *label="owns"* is read as the word written on the arrow, `owns` and not
+  `(owns)`. A rule's panel and a trace's slice, small, keep a folded arrow's `label`. **Default.**
+- **(b)** the `label`, as the pages draw it, with the gate's DOT sweep slower by that view alone.
+
+**Default taken: (a).** Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`.
