@@ -219,15 +219,16 @@ the body, two patterns the call points at and no premise of the rule, so they st
 ![The rule bag-is-ready-with-forall: the call of forall a pattern whose arrows 3 and 4 are at the guard and the body, in the frame forall ctx](diagrams/11-rule-bag-is-ready-with-forall.svg)
 
 The same command on the program with the expansion written out draws what the engine matches: an `absent (∄)`
-cluster around the guard and the body's absence.
+cluster around the guard, and inside it the body's absence, a cluster of its own.
 
-![The rule bag-is-ready-written-out: an absence around the guard and the body's absence, the body drawn red](diagrams/11-rule-bag-is-ready-written-out.svg)
+![The rule bag-is-ready-written-out: an absence around the guard, and inside it the body's absence, a cluster around the pattern of packed](diagrams/11-rule-bag-is-ready-written-out.svg)
 
 The two pictures are one statement read two ways: *for every item in the bag, packed*, and *there is no item in
 the bag that is not packed*. The first is the call as written, and what it means is the macro's text; the second is
-what the engine matches. The inner `(absent (packed ?i))` is its pattern drawn red; a stored negation
-`(not (packed ?i))` in its place would be drawn as a fact of `not`, red, whose arrow `2` is at the pattern, which
-would stand in the frame `not ctx`.
+what the engine matches. The inner `(absent (packed ?i))` is a cluster inside the outer one, holding the pattern of
+`packed` and the box `packed`, which only it names; a stored negation `(not (packed ?i))` in its place would be
+drawn in the outer cluster alone, as a fact of `not`, red, whose arrow `2` is at the pattern, which would stand in
+the frame `not ctx`.
 
 ### In words
 

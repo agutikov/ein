@@ -15,7 +15,7 @@ digraph rule_connex_lhs_rhs {
     "h2_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
     "h2_isa_L" -> "?b_L" [xlabel="2", color="#bcbd22"];
     "h2_isa_L" -> "?Dom_L" [xlabel="3", color="#bcbd22"];
-    "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?a_L" -> "?b_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "h3_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];

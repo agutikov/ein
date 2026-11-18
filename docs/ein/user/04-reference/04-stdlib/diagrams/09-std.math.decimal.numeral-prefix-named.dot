@@ -17,7 +17,7 @@ digraph rule_numeral_prefix_named_lhs_rhs {
     "h1_check_L" -> "check_L" [xlabel="1", color="#7f7f7f"];
     "h1_check_L" -> "?w_L" [xlabel="2", color="#7f7f7f"];
     "h1_check_L" -> "(n ?m ?a)_L" [xlabel="3", color="#7f7f7f"];
-    "?m_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?m_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "h2_named_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
     "h2_named_L" -> "named_L" [xlabel="1", color="#d62728"];
     "h2_named_L" -> "?m_L" [xlabel="2", color="#d62728"];

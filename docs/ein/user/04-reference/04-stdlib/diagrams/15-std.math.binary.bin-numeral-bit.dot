@@ -17,8 +17,8 @@ digraph rule_bin_numeral_bit_lhs_rhs {
     "h1_bin-check_L" -> "bin-check_L" [xlabel="1", color="#1f77b4"];
     "h1_bin-check_L" -> "?w_L" [xlabel="2", color="#1f77b4"];
     "h1_bin-check_L" -> "(b2 ?p ?a)_L" [xlabel="3", color="#1f77b4"];
-    "?a_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?a_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?a_L" -> "0_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?a_L" -> "1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "(b2 ?p ?a)_L" -> "b2_L" [xlabel="1", color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?p_L" [xlabel="2", color="#bcbd22"];
     "(b2 ?p ?a)_L" -> "?a_L" [xlabel="3", color="#bcbd22"];

@@ -11,14 +11,17 @@ digraph rule_complete_via_expansion_lhs_rhs {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "member_L" [label="member", shape=box];
       "?y_L" [label="?y", shape=diamond];
-      "marked_L" [label="marked", shape=box];
       "h2_member_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
       "h2_member_L" -> "member_L" [xlabel="1", color="#ff7f0e"];
       "h2_member_L" -> "?y_L" [xlabel="2", color="#ff7f0e"];
       "h2_member_L" -> "?g_L" [xlabel="3", color="#ff7f0e"];
-      "h3_marked_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-      "h3_marked_L" -> "marked_L" [xlabel="1", color="#d62728"];
-      "h3_marked_L" -> "?y_L" [xlabel="2", color="#d62728"];
+      subgraph cluster_absent_L_0_0 {
+        label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+        "marked_L" [label="marked", shape=box];
+        "h3_marked_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+        "h3_marked_L" -> "marked_L" [xlabel="1", color="#2ca02c"];
+        "h3_marked_L" -> "?y_L" [xlabel="2", color="#2ca02c"];
+      }
     }
   }
   subgraph cluster_rhs { label="assert";

@@ -186,9 +186,9 @@ expansion when the program is loaded.
 
 The first program's second rule, `complete-via-expansion`, is `forall`'s expansion written by hand, and the engine
 draws it as what it is, an `absent` inside an `absent`: the outer one a dashed cluster `absent (∄)` around the guard
-`(member ?y ?g)`, and the inner one's pattern, `(marked ?y)`, red inside it:
+`(member ?y ?g)`, and the inner one a cluster of its own inside it, around the pattern `(marked ?y)`:
 
-![The rule complete-via-expansion: the cluster absent holding the octagon of member and the red octagon of marked](diagrams/01-rule-complete-via-expansion.svg)
+![The rule complete-via-expansion: the cluster absent holding the octagon of member and, inside it, the cluster absent holding the octagon of marked](diagrams/01-rule-complete-via-expansion.svg)
 
 `ein test` holds both programs to their claims:
 

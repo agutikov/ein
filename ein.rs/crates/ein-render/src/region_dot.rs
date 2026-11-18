@@ -715,14 +715,17 @@ fn dot(doc: &RegionDoc, cube: &Cube, run: &RunDoc, ov: &Overlay, view: View) -> 
         }
     }
 
-    // Saturation, as a move inside the cube.
+    // Saturation, as a move inside the cube. Its word, like the unsound
+    // exclusion's below, is the arrow's `xlabel`: an arrow that sets no rank
+    // (`constraint=false`) with a `label` is one Graphviz's spline router can
+    // find no room for, as a rule's `≠` link showed (`crate::rules`).
     for &a in &nodes {
         let cl = cube.nodes[a as usize].closure;
         if cl != a && cube.nodes[a as usize].status & DEAD == 0 && shown.contains(&cl) {
             let _ = writeln!(
                 out,
                 "  m{a} -> m{cl} [color=\"{SATURATION_COLOUR}\", penwidth=2.2, arrowhead=vee, \
-                 constraint=false, label=\"sat\", fontsize=8, fontcolor=\"{SATURATION_COLOUR}\", \
+                 constraint=false, xlabel=\"sat\", fontsize=8, fontcolor=\"{SATURATION_COLOUR}\", \
                  tooltip=\"sat(root + {}) holds {}\"];",
                 esc(&doc.name(a)),
                 esc(&doc.facts(cl & !a).join(", "))
@@ -734,7 +737,7 @@ fn dot(doc: &RegionDoc, cube: &Cube, run: &RunDoc, ov: &Overlay, view: View) -> 
         let _ = writeln!(
             out,
             "  m{d} -> m{a} [color=\"{SPURIOUS_COLOUR}\", style=dashed, penwidth=2, \
-             constraint=false, label=\"✗ alive\", fontsize=8, fontcolor=\"{SPURIOUS_COLOUR}\", \
+             constraint=false, xlabel=\"✗ alive\", fontsize=8, fontcolor=\"{SPURIOUS_COLOUR}\", \
              tooltip=\"the run visited {} dead and not {}, which is above it and alive\"];",
             esc(&doc.name(d)),
             esc(&doc.name(a))

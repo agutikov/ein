@@ -41,7 +41,7 @@ digraph rule_slot_adjacent_bwd_lhs_rhs {
       "h7_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
       "h7_isa_L" -> "?p_o_L" [xlabel="2", color="#bcbd22"];
       "h7_isa_L" -> "?PT_L" [xlabel="3", color="#bcbd22"];
-      "?p_o_L" -> "?p1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+      "?p_o_L" -> "?p1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     }
   }
   subgraph cluster_rhs { label="assert";

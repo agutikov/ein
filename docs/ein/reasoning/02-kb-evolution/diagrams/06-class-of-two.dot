@@ -18,5 +18,5 @@ digraph region {
   m0 -> m2 [color="#238b45", style=solid, penwidth=2];
   m1 -> m3 [color="#238b45", style=solid, penwidth=2];
   m2 -> m3 [color="#969696", style=dotted, arrowhead=none, penwidth=0.8];
-  m2 -> m3 [color="#08519c", penwidth=2.2, arrowhead=vee, constraint=false, label="sat", fontsize=8, fontcolor="#08519c"];
+  m2 -> m3 [color="#08519c", penwidth=2.2, arrowhead=vee, constraint=false, xlabel="sat", fontsize=8, fontcolor="#08519c"];
 }

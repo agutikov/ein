@@ -25,7 +25,7 @@ digraph rule_converse_illtyped_dom_lhs_rhs {
     "h3_relation_L" -> "?R2_L" [xlabel="2", color="#bcbd22"];
     "h3_relation_L" -> "?D2_L" [xlabel="3", color="#bcbd22"];
     "h3_relation_L" -> "?Rn2_L" [xlabel="4", color="#bcbd22"];
-    "?Rn1_L" -> "?D2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?Rn1_L" -> "?D2_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "h4_isR*_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];

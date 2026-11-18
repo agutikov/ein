@@ -16,7 +16,7 @@ digraph rule_slot_owed_fill_lhs_rhs {
     "h2_sub_L" -> "?sub_L" [xlabel="1", color="#9467bd"];
     "h2_sub_L" -> "?Tv_L" [xlabel="2", color="#9467bd"];
     "h2_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
-    "?Tv_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?Tv_L" -> "?index_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "?v_L" [label="?v", shape=diamond];

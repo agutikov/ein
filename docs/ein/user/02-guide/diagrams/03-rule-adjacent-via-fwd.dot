@@ -22,7 +22,7 @@ digraph rule_adjacent_via_fwd_lhs_rhs {
       "h3_S_L" -> "?S_L" [xlabel="1", color="#2ca02c"];
       "h3_S_L" -> "?h_o_L" [xlabel="2", color="#2ca02c"];
       "h3_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
-      "?h_o_L" -> "?h2_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+      "?h_o_L" -> "?h2_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     }
   }
   subgraph cluster_rhs { label="assert";

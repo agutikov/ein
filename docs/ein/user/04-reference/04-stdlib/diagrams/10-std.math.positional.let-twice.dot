@@ -14,7 +14,7 @@ digraph rule_let_twice_lhs_rhs {
     "h2_LET_L" -> "?LET_L" [xlabel="1", color="#7f7f7f"];
     "h2_LET_L" -> "?x_L" [xlabel="2", color="#7f7f7f"];
     "h2_LET_L" -> "?w_L" [xlabel="3", color="#7f7f7f"];
-    "?v_L" -> "?w_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?v_L" -> "?w_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
   }
   subgraph cluster_rhs { label="assert";
     "?MALFORMED_R" [label="?MALFORMED", shape=diamond];

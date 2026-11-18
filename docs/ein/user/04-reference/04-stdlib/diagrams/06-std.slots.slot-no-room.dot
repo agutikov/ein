@@ -29,7 +29,7 @@ digraph rule_slot_no_room_lhs_rhs {
     "h2_sub_L" -> "?sub_L" [xlabel="1", color="#9467bd"];
     "h2_sub_L" -> "?Ta_L" [xlabel="2", color="#9467bd"];
     "h2_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
-    "?Ta_L" -> "?index_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?Ta_L" -> "?index_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     "h3_forall_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
     "h3_forall_L" -> "forall_L" [xlabel="1", color="#1f77b4"];
     "h3_forall_L" -> "?i_L" [xlabel="2", color="#1f77b4"];

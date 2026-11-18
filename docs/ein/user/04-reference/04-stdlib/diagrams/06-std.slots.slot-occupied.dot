@@ -26,7 +26,7 @@ digraph rule_slot_occupied_lhs_rhs {
     "h4_isa_L" -> "?isa_L" [xlabel="1", color="#bcbd22"];
     "h4_isa_L" -> "?c_L" [xlabel="2", color="#bcbd22"];
     "h4_isa_L" -> "?T_L" [xlabel="3", color="#bcbd22"];
-    "?c_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?c_L" -> "?b_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
   }
   subgraph cluster_rhs { label="assert";
     "not_R" [label="not", shape=box];

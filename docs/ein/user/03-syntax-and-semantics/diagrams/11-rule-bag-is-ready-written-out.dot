@@ -13,14 +13,17 @@ digraph rule_bag_is_ready_lhs_rhs {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "goes-in_L" [label="goes-in", shape=box];
       "?i_L" [label="?i", shape=diamond];
-      "packed_L" [label="packed", shape=box];
       "h2_goes-in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
       "h2_goes-in_L" -> "goes-in_L" [xlabel="1", color="#17becf"];
       "h2_goes-in_L" -> "?i_L" [xlabel="2", color="#17becf"];
       "h2_goes-in_L" -> "?bag_L" [xlabel="3", color="#17becf"];
-      "h3_packed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
-      "h3_packed_L" -> "packed_L" [xlabel="1", color="#d62728"];
-      "h3_packed_L" -> "?i_L" [xlabel="2", color="#d62728"];
+      subgraph cluster_absent_L_0_0 {
+        label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+        "packed_L" [label="packed", shape=box];
+        "h3_packed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+        "h3_packed_L" -> "packed_L" [xlabel="1", color="#8c564b"];
+        "h3_packed_L" -> "?i_L" [xlabel="2", color="#8c564b"];
+      }
     }
   }
   subgraph cluster_rhs { label="assert";

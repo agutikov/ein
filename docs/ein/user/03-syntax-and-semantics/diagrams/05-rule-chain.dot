@@ -14,7 +14,7 @@ digraph rule_chain_lhs_rhs {
     "h2_r_L" -> "?r_L" [xlabel="1", color="#ff7f0e"];
     "h2_r_L" -> "?b_L" [xlabel="2", color="#ff7f0e"];
     "h2_r_L" -> "?c_L" [xlabel="3", color="#ff7f0e"];
-    "?a_L" -> "?c_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?a_L" -> "?c_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
   }
   subgraph cluster_rhs { label="assert";
     "?r_R" [label="?r", shape=diamond];

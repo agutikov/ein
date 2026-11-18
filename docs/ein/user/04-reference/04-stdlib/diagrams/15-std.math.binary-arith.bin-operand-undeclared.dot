@@ -13,10 +13,10 @@ digraph rule_bin_operand_undeclared_lhs_rhs {
     "h1_bin-operand_L" -> "bin-operand_L" [xlabel="1", color="#e377c2"];
     "h1_bin-operand_L" -> "?k_L" [xlabel="2", color="#e377c2"];
     "h1_bin-operand_L" -> "?x_L" [xlabel="3", color="#e377c2"];
-    "?v_L" -> "z_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?v_L" -> "?x_L" [label="=", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "0_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
-    "?x_L" -> "1_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?v_L" -> "z_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?v_L" -> "?x_L" [xlabel="=", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?x_L" -> "0_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "?x_L" -> "1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "bin-let_L" [label="bin-let", shape=box];

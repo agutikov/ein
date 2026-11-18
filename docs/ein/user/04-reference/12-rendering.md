@@ -180,10 +180,11 @@ Within each panel the drawing tells apart the three things a `:match` or an `:as
   a box, or the variable's diamond where the relation is a `?var`, and its next arrows at its arguments, in the
   relation's colour. Under `--fold` a pattern of three arrows that nothing points at is one arrow from `a` to `b`
   labelled `R`;
-- **a guard**, `(neq ?a ?b)` or `(eq …)`, is a *dotted, undirected* `≠` or `=` link: it is computed, not data, so it
-  is never drawn as a fact;
-- **an `(absent …)`** is a cluster labelled `absent (∄)`: what it holds is drawn inside, the nodes it alone names
-  inside and the shared ones outside, so the *no such match exists* reading survives. A `(not P)` is a pattern of
+- **a guard**, `(neq ?a ?b)` or `(eq …)`, is a *dotted, undirected* link, its sign `≠` or `=` written beside it as
+  an arrow's number is: it is computed, not data, so it is never drawn as a fact;
+- **an `(absent …)`** is a cluster labelled `absent (∄)`, at any depth: what it holds is drawn inside, the nodes it
+  alone names inside and the shared ones outside, so the *no such match exists* reading survives, and an `(absent …)`
+  under an `(absent …)`, what `forall` expands to, is a cluster inside its cluster. A `(not P)` is a pattern of
   `not`, drawn red, whose arrow `1` is at the box `not` and whose arrow `2` is at `P`'s node, as the reasoning pages
   draw a negation; a macro's call, `std.macro`'s `forall` and `unknown` among them, is a pattern as written;
 - **a pattern under an arrow of a pattern**, the `(owns ?x ?y)` of `(claims ?p (owns ?x ?y))`, is its own octagon in

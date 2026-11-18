@@ -425,6 +425,131 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
     );
 }
 
+/// The clusters of one rule's drawing, `cluster_absent_…`, each with the
+/// lines from its opening to its closing brace, in the order opened.
+fn absent_clusters(dot: &str) -> Vec<(String, Vec<String>)> {
+    let lines: Vec<&str> = dot.lines().collect();
+    let mut out = Vec::new();
+    for (i, line) in lines.iter().enumerate() {
+        let Some(id) = line.trim().strip_prefix("subgraph cluster_absent_") else {
+            continue;
+        };
+        let mut depth = 0i32;
+        let mut body = Vec::new();
+        for l in &lines[i..] {
+            depth += l.matches('{').count() as i32 - l.matches('}').count() as i32;
+            body.push(l.trim().to_string());
+            if depth == 0 {
+                break;
+            }
+        }
+        out.push((id.trim_end_matches(" {").to_string(), body));
+    }
+    out
+}
+
+/// **An `absent` is a cluster at any depth.** `(absent (and G (absent (not
+/// B))))`, which `std.macro`'s `forall` expands to, and `(absent (and G (not
+/// B)))` say two things: no `G` whose `B` is not stored negated, and no `G`
+/// whose `B` is. Drawn alike, the inner absence read as a red pattern, the
+/// picture says the second of the first. So the inner `absent` is a cluster
+/// inside the outer one, holding what it alone names, the pattern of `not`
+/// and the box `not`, and the two rules draw differently; a pattern under an
+/// `absent` is drawn in its relation's colour, as anywhere, and only `not`'s
+/// is red. An `absent` in an arm of an `(or …)` is a cluster too.
+#[test]
+fn an_absent_under_an_absent_is_a_cluster_inside_it() {
+    let text = "\
+(rule two-absences (?R ?isa)
+  :match  (and (?isa ?b ?B)
+               (absent (and (?isa ?o ?B) (neq ?o ?b) (absent (not (?R ?a ?o))))))
+  :assert (?R ?a ?b))
+(rule one-absence (?R ?isa)
+  :match  (and (?isa ?b ?B)
+               (absent (and (?isa ?o ?B) (neq ?o ?b) (not (?R ?a ?o)))))
+  :assert (?R ?a ?b))
+(rule unmarked (?g)
+  :match  (and (group ?g) (absent (and (member ?y ?g) (absent (marked ?y)))))
+  :assert (done ?g))
+(rule either ()
+  :match  (or (and (p ?x) (q ?x)) (and (p ?x) (absent (r ?x))))
+  :assert (q ?x))";
+    let (ast, forms) = parsed(text);
+    let draw = |name: &str| {
+        let rule = rule_named(&ast, &forms, name).expect(name);
+        render_rule_form(&ast, rule, RuleMode::SideBySide, false)
+    };
+    let (two, one) = (draw("two-absences"), draw("one-absence"));
+    let unnamed =
+        |dot: &str, name: &str| dot.replace(&name.replace('-', "_"), "").replace(name, "");
+    assert_ne!(
+        unnamed(&two, "two-absences"),
+        unnamed(&one, "one-absence"),
+        "two rules that mean different things are drawn alike"
+    );
+
+    // One absence: one cluster, the pattern of `not` in it.
+    let clusters = absent_clusters(&one);
+    assert_eq!(clusters.len(), 1, "{one}");
+    assert!(
+        clusters[0]
+            .1
+            .iter()
+            .any(|l| l == "\"not_L\" [label=\"not\", shape=box];"),
+        "{one}"
+    );
+
+    // Two: the inner cluster inside the outer, holding the box `not` and the
+    // pattern of `not`; the outer holds them only by holding the inner.
+    let clusters = absent_clusters(&two);
+    let ids: Vec<&str> = clusters.iter().map(|(id, _)| id.as_str()).collect();
+    assert_eq!(ids, ["L_0", "L_0_0"], "{two}");
+    let (outer, inner) = (&clusters[0].1, &clusters[1].1);
+    assert!(
+        outer.windows(inner.len()).any(|w| w == inner.as_slice()),
+        "the inner absence is not inside the outer one: {two}"
+    );
+    let not_box = "\"not_L\" [label=\"not\", shape=box];";
+    assert!(inner.iter().any(|l| l == not_box), "{two}");
+    assert_eq!(two.matches(not_box).count(), 1, "{two}");
+    assert!(
+        inner
+            .iter()
+            .any(|l| l.starts_with("\"h") && l.contains("_not_L\" -> \"not_L\"")),
+        "{two}"
+    );
+    // `?o` is named by both absences, so it is the outer one's.
+    let o = "\"?o_L\" [label=\"?o\", shape=diamond];";
+    assert!(
+        outer.iter().any(|l| l == o) && !inner.iter().any(|l| l == o),
+        "{two}"
+    );
+
+    // `forall` written out: the pattern of `marked` in the inner cluster, in
+    // its relation's colour, not red.
+    let unmarked = draw("unmarked");
+    let clusters = absent_clusters(&unmarked);
+    assert_eq!(clusters.len(), 2, "{unmarked}");
+    let marked = clusters[1]
+        .1
+        .iter()
+        .find(|l| l.starts_with("\"h") && l.contains("_marked_L\" [shape=octagon"))
+        .unwrap_or_else(|| panic!("the pattern of marked is in the inner cluster: {unmarked}"));
+    assert!(!marked.contains("#d62728"), "{marked}");
+
+    // An `absent` in an arm of an `(or …)`: its cluster, `r` in it.
+    let either = draw("either");
+    let clusters = absent_clusters(&either);
+    assert_eq!(clusters.len(), 1, "{either}");
+    assert!(
+        clusters[0]
+            .1
+            .iter()
+            .any(|l| l == "\"r_L\" [label=\"r\", shape=box];"),
+        "{either}"
+    );
+}
+
 // ── the refutation slice ───────────────────────────────────────────
 
 /// **bottom-edges-sorted-by-repr.** The `→ ⊥` edges are in `repr` order,
