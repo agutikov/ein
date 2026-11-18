@@ -10,11 +10,13 @@ digraph ein_render {
   cube    [shape=cylinder, label="Region, the oracle's cube\n(ein_infer::region)"];
   hs      [shape=cylinder, label="the structure of H\n(ein_infer::structure)"];
   visits  [shape=cylinder, label="the nodes a run visited\n(ein_infer::events::Watch)"];
+  cmp     [shape=cylinder, label="a claim's models and what\nits run found\n(ein_infer::claim::Compared)"];
 
   prog  [label="rules.rs, constraints.rs,\nir_dot.rs"];
   kbv   [label="kb_dot.rs, derivation.rs"];
   trace [label="trace/, slice.rs,\nsentence.rs"];
-  text  [label="read_out.rs\ngrid.rs, models.rs"];
+  text  [label="read_out.rs"];
+  cdiff [label="claim_diff.rs"];
   dans  [label="dump/region_answer.rs,\ndump/json.rs, dump/serialise.rs"];
   dlat  [label="dump/region_lattice.rs"];
   dreg  [label="dump/region.rs,\nregion_doc.rs, region_dot.rs"];
@@ -29,11 +31,13 @@ digraph ein_render {
   o_lat  [shape=note, label="nodes.json, nodes.md"];
   o_reg  [shape=note, label="an oracle dump:\nregion.json, region.md"];
   o_hs   [shape=note, label="h-space.json,\nits read-out"];
+  o_diff [shape=note, label="ein test --diff's block,\nthe report's diff"];
 
   forms -> prog;  kb -> kbv;  firings -> trace;  ro -> trace;
-  ro -> text;  ro -> dans;  visits -> dlat;  cube -> dreg;  hs -> struc;
+  ro -> text;  ro -> dans;  visits -> dlat;  cube -> dreg;  hs -> struc;  cmp -> cdiff;
   prog -> facts;  kbv -> facts;  facts -> dot;
   prog -> dot;  kbv -> dot;  trace -> dot;  dlat -> dot;  dreg -> dot;  struc -> dot;
   dot -> o_dot;
   trace -> o_md;  text -> o_out;  dans -> o_ans;  dlat -> o_lat;  dreg -> o_reg;  struc -> o_hs;
+  cdiff -> o_diff;
 }

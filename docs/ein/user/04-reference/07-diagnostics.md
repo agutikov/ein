@@ -626,7 +626,7 @@ guard's or a conclusion's argument, a macro call's, an activator binding a relat
 claim's; a name in a `(solve …)` list, a query's `:over`, an import, a fact's `:rule` or `:using`, or a trace step;
 the verdict's own argument, `(open open)`; and a macro's body, called or not
 ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)). A container whose stored
-program writes one is refused where it is read, and a `--diff-models` file that lists one is refused at its read.
+program writes one is refused where it is read.
 What the loader still refuses of the verdict is § 2.2's last five, each placed where the `(open …)` is written. The
 words a fact's head admits by position are names, each by
 [Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md) (`eq` checked,

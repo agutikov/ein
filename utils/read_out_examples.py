@@ -443,8 +443,8 @@ the full run decides it, and root's core is printed as describe prints it.
 """)
 add(block(["--no-search", "tests/stdlib/algebra/09_irreflexive_violated.ein"]))
 add("""**The puzzle** (X10's program): root owes 36 instances, four of them named and the rest counted, and H holds 56
-candidates, none visited. The forms draw root whatever it is: `--models grid` draws what root alone deduced, five of
-the puzzle's facts placed, and `-p` its facts.
+candidates, none visited. The forms draw root whatever it is: `-f` lists what root alone deduced of the candidates'
+relations, and `-p` its facts.
 """)
 add(block(["--no-search", "examples/zebra2.ein"]))
 add("""**A program that states `(solve :no-search)`**: its lattice is root alone, so a bare `ein solve` describes R, here

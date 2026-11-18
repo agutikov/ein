@@ -1,16 +1,15 @@
 //! **The forms after the read-out share its 100 lines** (Q-M1e2.34).
 //!
-//! The six forms (`--models key|grid`,
-//! `-p`, `-P`, `-f`, `--diff-models`, `-H`) are listings, and share stdout's
-//! 100 lines with the read-out's. Each is drawn from the states stdout
+//! The four forms (`-p`, `-P`, `-f`, `-H`) are listings,
+//! and share stdout's 100 lines with the read-out's. Each is drawn from the states stdout
 //! showed, prints its items while what the read-out left lasts, at least
 //! one, and then where the rest is; `--dump-answer DIR` writes each uncut,
 //! one file per form (`DIR/forms/<form>.txt`, named in `index.json`), and
 //! `answer.txt` stays the read-out uncut.
 //!
 //! `pets.ein` is the witness: R is thousands of states, of which the
-//! read-out lists a few dozen, and `--models grid` drawn from all of them
-//! would print tens of thousands of lines.
+//! read-out lists a few dozen, and `-p` drawn from all of them would print
+//! tens of thousands of lines.
 
 use std::path::Path;
 use std::process::Command;
@@ -58,10 +57,8 @@ fn added<'a>(bare: &str, with: &'a str) -> Vec<&'a str> {
 }
 
 /// The forms, their files and their flags.
-const FORMS: [(&str, &[&str]); 6] = [
+const FORMS: [(&str, &[&str]); 4] = [
     ("hyp-stats", &["-H"]),
-    ("grid", &["--models", "grid"]),
-    ("key", &["--models", "key"]),
     ("print-final-state", &["-p"]),
     ("print-final-positive", &["-P"]),
     ("print-final-hfacts", &["-f"]),
@@ -99,10 +96,9 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
         assert_eq!(r.code, 0, "{flags:?}: {}", r.err);
         let lines = added(&bare.out, &r.out);
         // The read-out spent the 100 lines: one item, the form's head, and
-        // the line that says where the rest is. 20 lines is the key's head
-        // (six), H's (four), a state of `-p` (nine) with room to spare,
-        // against tens of thousands for `--models grid` drawn from every
-        // state.
+        // the line that says where the rest is. 20 lines is H's head (four)
+        // or a state of `-p` (nine) with room to spare, against tens of
+        // thousands for `-p` drawn from every state.
         assert!(
             lines.len() <= 20,
             "{flags:?} printed {} lines after the read-out:\n{}",
@@ -151,19 +147,13 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
         // form is drawn state by state; each listed state is an item.
         let printed: Vec<&str> = lines[..lines.len() - 1].to_vec();
         match name {
-            "grid" | "print-final-state" | "print-final-positive" | "print-final-hfacts" => {
-                let state = if name == "grid" {
-                    "  ── state "
-                } else {
-                    "── state "
-                };
+            "print-final-state" | "print-final-positive" | "print-final-hfacts" => {
+                let state = "── state ";
                 assert_eq!(
                     file.lines().filter(|l| l.starts_with(state)).count(),
                     11_339,
                     "{name}: one item per listed state"
                 );
-                // The head names the set it was drawn from: the shown states
-                // on stdout, every state of R in the file.
                 // Stdout's one item is the file's first, line for line: from
                 // the first state's line to the end of the block.
                 let first = |lines: &[&str]| -> Vec<String> {
@@ -180,18 +170,6 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
                     first(&file_lines),
                     "{name}: stdout's item is not the file's first"
                 );
-                if name == "grid" {
-                    // The head names the set it was drawn from: the states
-                    // stdout showed, and in the file every state of R.
-                    assert!(
-                        printed
-                            .join("\n")
-                            .contains("models — the 38 states shown above, of R's 11 339"),
-                        "{}",
-                        printed.join("\n")
-                    );
-                    assert!(file.contains("models — every state of R, each as a grid"));
-                }
             }
             "hyp-stats" => {
                 // A relation's line is never cut: stdout names every relation.
@@ -203,19 +181,6 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
                 }
                 assert_eq!(file.lines().filter(|l| l.starts_with("    (")).count(), 15);
             }
-            "key" => {
-                assert!(
-                    printed.join("\n").contains(
-                        "models — the determining key of the 38 states shown above, of R's 11 339"
-                    ),
-                    "{}",
-                    printed.join("\n")
-                );
-                assert!(
-                    file.contains("models — the determining key of every state of R"),
-                    "{file}"
-                );
-            }
             _ => unreachable!(),
         }
     }
@@ -223,23 +188,14 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
 
 /// **Where nothing is cut, the form on stdout is its file**: seven states,
 /// every form whole, no `not shown` line, and `forms/<form>.txt` is exactly
-/// what stdout printed after the read-out. `--diff-models` is a form too.
+/// what stdout printed after the read-out.
 #[test]
 fn where_nothing_is_cut_stdout_is_the_file() {
     let dir = scratch("three");
-    let want = dir.join("want.txt");
-    std::fs::write(
-        &want,
-        "closes a-prop b-prop c-prop\nmodel\n(a-prop X)\n(b-prop X)\nmodel\n(a-prop X)\n(c-prop X)\n",
-    )
-    .unwrap();
-    let w = want.to_string_lossy().to_string();
     let bare = ein(&["solve", THREE]);
-    let mut forms: Vec<(&str, Vec<&str>)> = FORMS.iter().map(|(n, f)| (*n, f.to_vec())).collect();
-    forms.push(("diff-models", vec!["--diff-models", &w]));
-    for (name, flags) in forms {
+    for (name, flags) in FORMS {
         let d = dir.join(name);
-        let r = dump(THREE, &flags, &d);
+        let r = dump(THREE, flags, &d);
         assert_eq!(r.code, 0, "{flags:?}: {}", r.err);
         let lines = added(&bare.out, &r.out);
         assert!(
@@ -279,12 +235,12 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
     let d = dir.join("d");
     assert_eq!(dump(THREE, &["-p", "-H"], &d).code, 0);
     assert!(d.join("forms/print-final-state.txt").exists());
-    assert_eq!(dump(THREE, &["--models", "grid"], &d).code, 0);
+    assert_eq!(dump(THREE, &["-f"], &d).code, 0);
     let left: Vec<String> = std::fs::read_dir(d.join("forms"))
         .unwrap()
         .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(left, ["grid.txt"], "a stale form survived");
+    assert_eq!(left, ["print-final-hfacts.txt"], "a stale form survived");
     // `--count` lists no state and refuses every form (Q-M1f.218),
     // and its directory names no form.
     assert_eq!(ein(&["solve", THREE, "--count", "-p"]).code, 2);

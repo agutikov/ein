@@ -115,7 +115,7 @@ pub fn header_argv(command: &str) -> String {
 /// (Q-M1f.218), so an option that asks for a line, a listed state, a
 /// claim or another question is a usage error, exit 2, as a retired option
 /// is (`crate::solve::RETIRED`).
-const COUNT_REFUSES: [(&str, &str); 12] = [
+const COUNT_REFUSES: [(&str, &str); 10] = [
     (
         "minimal",
         "--count is over all of R only, and --minimal asks about its minimal line: a bare \
@@ -141,16 +141,6 @@ const COUNT_REFUSES: [(&str, &str); 12] = [
         "monotone",
         "--count and --monotone are two questions: `ein solve FILE --monotone` asks whether the \
          program is monotone, and builds no node",
-    ),
-    (
-        "models",
-        "--count lists no state, and --models draws the states listed: a bare `ein solve FILE \
-         --models FORM` draws R's",
-    ),
-    (
-        "diff-models",
-        "--count lists no state, and --diff-models compares the states listed with a file: a \
-         bare `ein solve FILE --diff-models FILE` compares R's",
     ),
     (
         "print-final-state",
@@ -253,23 +243,6 @@ pub fn run(m: &ArgMatches) -> i32 {
         || summary_path.is_some()
         || dump.is_some()
         || m.get_one::<String>("events").is_some();
-    // `--diff-models FILE` is read before the run: a file it cannot read, or
-    // whose facts the parser refuses (every error recovery reaches, each with
-    // the file's line and column), is a usage error, and nothing runs.
-    let want = match m.get_one::<String>("diff-models") {
-        None => None,
-        Some(path) => match std::fs::read_to_string(path)
-            .map_err(|e| e.to_string())
-            .and_then(|t| ein_render::models::parse_expected(&t, path).map_err(|e| e.to_string()))
-        {
-            Ok(e) => Some((path.clone(), e)),
-            Err(e) => {
-                eprintln!("error: --diff-models {path}: {e}");
-                return 2;
-            }
-        },
-    };
-
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let t_load = Instant::now();
@@ -368,7 +341,6 @@ pub fn run(m: &ArgMatches) -> i32 {
         &mut kb,
         &mut terms,
         &ast,
-        want.as_ref(),
     ) {
         Ok(f) => f,
         Err(e) => {
@@ -613,8 +585,7 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
 }
 
 /// What a region run prints after its read-out when asked — `08-read-out.md`
-/// § 8: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
-/// each its own form, then `--diff-models FILE`.
+/// § 8: `-H`, then `-p`, `-P` and `-f`, each its own form.
 ///
 /// **They share stdout's 100 lines with the read-out** (Q-M1e2.34). Each is
 /// drawn from the states stdout
@@ -626,19 +597,17 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
 /// What [`extras`] is asked to print — read off `solve`'s flags, or
 /// `oracle`'s, which has fewer of them.
 pub(crate) struct Shown {
-    form: Option<String>,
     dumps: Vec<crate::factdump::Mode>,
     universe: bool,
 }
 
 impl Shown {
-    /// From the flags of a command that has them: each of `--models`, `-p`,
-    /// `-P`, `-f` and `-H` it does not define is off.
+    /// From the flags of a command that has them: each of `-p`, `-P`, `-f`
+    /// and `-H` it does not define is off.
     pub(crate) fn of(m: &ArgMatches) -> Shown {
         use crate::factdump::Mode as Dump;
         let has = |id: &str| m.try_get_one::<bool>(id).ok().flatten().copied() == Some(true);
         Shown {
-            form: m.try_get_one::<String>("models").ok().flatten().cloned(),
             dumps: [
                 ("print-final-state", Dump::All),
                 ("print-final-positive", Dump::Positive),
@@ -670,9 +639,6 @@ struct Form {
     /// Items the uncut form holds and this one does not draw: the listed
     /// states stdout did not show.
     beyond: usize,
-    /// What the uncut form says that no cut of these items holds: a key or a
-    /// comparison of every listed state, where stdout drew a part of them.
-    also: Option<String>,
 }
 
 impl Form {
@@ -743,7 +709,6 @@ impl Form {
                 if more == 1 { self.unit.0 } else { self.unit.1 }
             ));
         }
-        rest.extend(self.also.clone());
         if !rest.is_empty() {
             println!(
                 "  ;; not shown: {} — {hint} writes the form uncut to DIR/forms/{}.txt",
@@ -773,13 +738,8 @@ pub(crate) fn extras(
     kb: &mut ein_core::Kb,
     terms: &mut Terms,
     ast: &Ast,
-    want: Option<&(String, ein_render::models::Expected)>,
 ) -> Result<Vec<(&'static str, String)>, String> {
     use crate::factdump::{Mode as Dump, final_state_lines};
-    use ein_render::read_out::group;
-    let plural = |n: usize, one: &str, many: &str| {
-        format!("{} {}", group(n as u64), if n == 1 { one } else { many })
-    };
     let mut left = text.left();
     let mut uncut: Vec<(&'static str, String)> = Vec::new();
     if shown.universe {
@@ -789,9 +749,8 @@ pub(crate) fn extras(
             uncut.push((h.name, h.text()));
         }
     }
-    let form = shown.form.as_deref();
     let dumps = &shown.dumps;
-    if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
+    if dumps.is_empty() {
         return Ok(uncut);
     }
     let a = &r.answer;
@@ -805,7 +764,7 @@ pub(crate) fn extras(
     };
     // On an empty R of the owing kind there is no state, and the owing
     // frontier is what the read-out lists instead: the forms draw it, labelled
-    // as what it is, and the diff has no state to compare.
+    // as what it is.
     let frontier: &[ein_infer::read_out::OwingState] = match &r.listing {
         _ if root_only => &[],
         ein_infer::read_out::Listing::Owing(f) if listed.is_empty() => f,
@@ -830,37 +789,6 @@ pub(crate) fn extras(
     } else {
         all
     };
-    let root_words = "root, read alone — --no-search: R was not searched".to_string();
-    let what_all = match (r.described().is_some(), &r.listing) {
-        _ if root_only => root_words.clone(),
-        _ if !frontier.is_empty() => {
-            "the owing frontier — R is empty, and every alive node owes".to_string()
-        }
-        (true, ein_infer::read_out::Listing::Region) => "every state of R".to_string(),
-        (true, _) => "the line members this run certified".to_string(),
-        (false, _) => format!(
-            "the {} listed",
-            if listed.len() == 1 { "state" } else { "states" }
-        ),
-    };
-    let what_shown = match (r.described().is_some(), &r.listing) {
-        _ if root_only => root_words,
-        (true, ein_infer::read_out::Listing::Region) => format!(
-            "the {} shown above, of R's {}",
-            plural(on_screen, "state", "states"),
-            group(all as u64)
-        ),
-        (true, _) => format!(
-            "the {} shown above, of the {} this run certified",
-            plural(on_screen, "line member", "line members"),
-            group(all as u64)
-        ),
-        (false, _) => format!(
-            "the {} shown above, of the {} listed",
-            plural(on_screen, "state", "states"),
-            group(all as u64)
-        ),
-    };
     let of = |set: &[u32]| -> Vec<ein_core::FactId> {
         set.iter().map(|&b| a.candidates[b as usize].fact).collect()
     };
@@ -883,8 +811,6 @@ pub(crate) fn extras(
             targets.push(rel);
         }
     }
-    let exhausted = a.exhausted;
-    let maximal = listed.iter().all(|(_, s)| s.maximal);
     let n_states = r.states.len();
     let mut nodes =
         ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
@@ -912,83 +838,8 @@ pub(crate) fn extras(
             };
             // The forms over the first `c` states read: stdout's, or all.
             let forms_over = |c: usize, kbs: &[ein_core::Kb], terms: &Terms| -> Vec<Form> {
-                let whole = c == all;
-                let what = if whole { &what_all } else { &what_shown };
                 let beyond = all - c;
-                let also = |what: &str| {
-                    (!whole).then(|| format!("{what} of all {} listed", group(all as u64)))
-                };
                 let mut out: Vec<Form> = Vec::new();
-                match form {
-                    // A key tells states apart, so one state or none has no
-                    // key, and the flag is inert there.
-                    Some("key") if all < 2 => {}
-                    Some("key") => {
-                        let mut head = vec![
-                            String::new(),
-                            format!("models — the determining key of {what}"),
-                        ];
-                        let mut rows: Vec<Vec<String>> = Vec::new();
-                        let mut tail: Vec<String> = Vec::new();
-                        if c < 2 {
-                            head.push(
-                                "  one state shown: a key tells states apart, and needs two"
-                                    .to_string(),
-                            );
-                        } else {
-                            let refs: Vec<&ein_core::Kb> = kbs[..c].iter().collect();
-                            let of = if whole {
-                                ein_render::models::KeyOf::States { maximal }
-                            } else {
-                                ein_render::models::KeyOf::Shown { listed: all }
-                            };
-                            match ein_render::models::key_parts_of(
-                                terms, &refs, exhausted, "  ", of,
-                            ) {
-                                Ok(p) => {
-                                    head.extend(p.head);
-                                    rows = p.rows.into_iter().map(|l| vec![l]).collect();
-                                    tail = p.tail;
-                                }
-                                Err(why) => {
-                                    head.push("  determining key — none within budget".to_string());
-                                    head.extend(ein_render::models::wrap(
-                                        &format!("{why}."),
-                                        "    ",
-                                    ));
-                                }
-                            }
-                        }
-                        out.push(Form {
-                            name: "key",
-                            head,
-                            groups: Form::one_group(rows),
-                            tail,
-                            unit: ("more row", "more rows"),
-                            beyond: 0,
-                            also: also("the key"),
-                        });
-                    }
-                    Some("grid") => {
-                        let items = (0..c)
-                            .map(|i| {
-                                let mut b = vec![String::new(), format!("  ── {} ──", label(i))];
-                                b.extend(ein_render::grid::grid_or_reason(terms, &kbs[i], "  "));
-                                b
-                            })
-                            .collect();
-                        out.push(Form {
-                            name: "grid",
-                            head: vec![String::new(), format!("models — {what}, each as a grid")],
-                            groups: Form::one_group(items),
-                            tail: Vec::new(),
-                            unit,
-                            beyond,
-                            also: None,
-                        });
-                    }
-                    _ => {}
-                }
                 for d in dumps {
                     let items = (0..c)
                         .map(|i| {
@@ -1008,60 +859,6 @@ pub(crate) fn extras(
                         tail: Vec::new(),
                         unit,
                         beyond,
-                        also: None,
-                    });
-                }
-                if let Some((path, want)) = want {
-                    use ein_render::models::{comparable_facts, diff_model_sets, diff_parts};
-                    let closes = want.closes.as_deref();
-                    let got: Vec<Vec<String>> = if frontier.is_empty() {
-                        kbs[..c]
-                            .iter()
-                            .map(|kb| comparable_facts(terms, kb, closes))
-                            .collect()
-                    } else {
-                        Vec::new()
-                    };
-                    let d = diff_model_sets(&got, &want.models);
-                    let over = match closes {
-                        Some(c) => format!("compared over {}", c.join(" ")),
-                        None => "compared as positive facts minus the given ones".to_string(),
-                    };
-                    let head_line = if frontier.is_empty() {
-                        format!("{what} against {path}, {over}")
-                    } else {
-                        format!("R's states (none) against {path}, {over}")
-                    };
-                    let want_label = |j: usize| {
-                        let facts = &want.models[j];
-                        format!(
-                            "model {} of the file [{}]",
-                            j + 1,
-                            if facts.is_empty() {
-                                "no facts".to_string()
-                            } else {
-                                facts.join(" ")
-                            }
-                        )
-                    };
-                    let (h, items) = diff_parts(&d, &head_line, &label, &want_label, "");
-                    let mut head = vec![String::new()];
-                    head.extend(h);
-                    if !whole {
-                        head.push(
-                            "  over the states shown above only: a model missing here may be a \
-                             listed state stdout did not show"
-                                .to_string(),
-                        );
-                    }
-                    out.push(Form {
-                        name: "diff-models",
-                        head,
-                        groups: Form::one_group(items),
-                        tail: Vec::new(),
-                        unit: ("more entry", "more entries"),
-                        beyond: 0,
-                        also: also("the comparison"),
                     });
                 }
                 out
@@ -1159,7 +956,6 @@ fn universe(r: &ReadOut, terms: &Terms) -> Form {
         tail: Vec::new(),
         unit: ("more candidate", "more candidates"),
         beyond: 0,
-        also: None,
     }
 }
 

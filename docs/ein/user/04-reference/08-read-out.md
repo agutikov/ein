@@ -275,7 +275,7 @@ what root decides of it: on a dead root what the full run decides, every node be
 NOT CHECKED, with whether $\emptyset$ is in R
 ([Q-M1f.256](../../../decisions/answer/Q-M1f.256-under-no-search-a-claim-is-decided-as-far-as.md)).
 `--json-summary` writes `asked.ask` = `no-search`, `region` and `verdict` `null`; `--dump-answer DIR` writes `root.ein`,
-root's state, beside `answer.txt` and `answer.json`; the forms (`-p`, `-P`, `-f`, `--models`, `--diff-models`) draw root
+root's state, beside `answer.txt` and `answer.json`; the forms (`-p`, `-P`, `-f`) draw root
 whatever it is ([`10-answer-dump.md`](10-answer-dump.md)). A program whose `(solve …)` states `:no-search` is another thing:
 its lattice is root alone, so a bare `ein solve` describes R, $\lbrace \emptyset \rbrace$ or empty, its `universe` row saying *the program
 states :no-search*.
@@ -424,7 +424,8 @@ all of R by default, or over the states listed where the run asked another quest
 <!-- /rows -->
 
 A claim the run refutes writes one stderr line and exits 1; one it could not check writes a `note:` and exits 0
-(§ 10).
+(§ 10). How a claim's models differ from the states or classes found, model by model and the near-miss *one fact
+off* among them, is `ein test --diff`'s ([`05-cli.md` § 2.3](05-cli.md#23-ein-test)); `ein solve` prints no diff.
 
 **A claim under a mode.** A claim is about a whole part of R, so `ein solve` checks it where the answer lists that part
 whole: under describe when R is exhausted, under `--single` that says `Solution`, `Contradiction` or `Open`, and under
@@ -451,12 +452,9 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 | flag | its head | what it prints, per listed state | what it is about |
 |---|---|---|---|
 | `-H` | H's size, over how many relations, and how many dead alone | each relation's candidates, and those dead alone | H, the universe |
-| `--models key` | the set it keys, and the key's size | the smallest set of slots that tells the states apart, and the combinations that occur | the listed states, as a key |
-| `--models grid` | the set it draws | a grid per state where a relation says what a row is, or why none | each listed state |
 | `-p` | per state, its number, and the count of facts | every fact beyond the program as loaded: root's derivations, the commitment and what it derives | a state's facts beyond the program |
 | `-P` | the same, `(not …)` omitted | the positive ones | [the model](../03-syntax-and-semantics/13-solutions-and-models.md#model) |
 | `-f` | the relations, and the count of facts | every fact of the candidates' relations, given ones too | the candidates' relations' facts |
-| `--diff-models FILE` | the listed states against the file's, and what they are compared over | per state, what differs | the listed states |
 
 `-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is
 `ein show hyps FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the

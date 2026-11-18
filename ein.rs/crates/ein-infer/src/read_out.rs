@@ -1013,6 +1013,39 @@ fn query_claim(
     }
 }
 
+/// What a query's claim, its `:expect` at `node`, is compared with, as
+/// `query_claim` compares it: each model the claim lists, its facts
+/// rendered, sorted and listed once, against each of `q`'s classes, in the
+/// order the read-out numbers them. `None` where the classes are not over the
+/// part the claim is about (`q.as_asked`), so the run checked no claim.
+pub fn query_compared(ast: &Ast, node: NodeId, q: &Query) -> Option<crate::claim::Compared> {
+    if !q.as_asked {
+        return None;
+    }
+    let models = ein_ir::expect::parse(ast, node)
+        .models()
+        .iter()
+        .map(|m| {
+            let mut v: Vec<String> = m
+                .facts
+                .iter()
+                .map(|&f| ein_ir::expect::render(ast, f))
+                .collect();
+            v.sort();
+            v.dedup();
+            v
+        })
+        .collect();
+    Some(crate::claim::Compared {
+        against: crate::claim::Against::Classes(q.over),
+        exact: q.exact,
+        over: Vec::new(),
+        presence: Vec::new(),
+        models,
+        found: q.classes.iter().map(|c| c.facts.clone()).collect(),
+    })
+}
+
 /// The program's region claim against this run: checked when the run
 /// described all of `R`, and otherwise not checked, with why.
 fn check_claim(

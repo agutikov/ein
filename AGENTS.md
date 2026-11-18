@@ -647,9 +647,9 @@ EIN_ID_SEEDS=8 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_in
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the shape golden's every line, tests/ too
-ein solve … --maximal --models key|grid                       # the key and grid forms, over the states listed
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the leftover probe
 ein test examples tests stdlib --json-report r.json          # every claim's verdict, as JSON
+ein test FILE --diff full                                    # each claim's models against what its run found: match, near (one fact off), missing, extra
 ein solve … --dump-answer DIR                                # the answer as files, each state loadable
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # a question about R, the least work it needs
 ein solve … --count                                          # how many, R's two counts by describe's route, no state read

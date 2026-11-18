@@ -255,66 +255,6 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
     assert!(!dir.join("walk.json").exists());
 }
 
-/// **`--diff-models` compares by value.**
-///
-/// The file keeps its line format, and the facts between two `model` lines are
-/// read by the generated parser and printed by the one printer, which prints
-/// the states' facts too, so the same fact in another spelling matches: five
-/// rows, the second to fourth another spelling of a fact the state holds,
-/// and the fifth, `(p a` with no `)`, a fact the parser refuses, which is a
-/// usage error, exit 2, before the run, with every error recovery reaches. A
-/// string is no value (Q-M1e2.23), so the state here holds `(p a)` alone,
-/// which `closes p` compares. A fact that spans lines is the sixth case.
-#[test]
-fn diff_models_reads_a_models_facts_as_ein() {
-    let dir = scratch("diff-by-value");
-    let program = dir.join("one.ein");
-    std::fs::write(&program, "(relation p T :why \"p holds of {?1}\")\n(p a)\n")
-        .expect("the program is written");
-    let p = program.to_string_lossy().to_string();
-    for (n, fact) in [
-        "(p a)",
-        "(p  a)",
-        "( p a )",
-        "(p a) ; the fact",
-        "(p\n   a)",
-    ]
-    .iter()
-    .enumerate()
-    {
-        let want = dir.join(format!("want-{n}.txt"));
-        std::fs::write(&want, format!("closes p\nmodel\n{fact}\n")).expect("written");
-        let r = ein(&["solve", &p, "--diff-models", &want.to_string_lossy()]);
-        assert_eq!(r.code, 0, "{fact:?}: {}", r.err);
-        assert!(
-            r.out
-                .contains("1 matched, 0 near, 0 missing, 0 spurious — the sets agree"),
-            "{fact:?}:\n{}",
-            r.out
-        );
-    }
-    let bad = dir.join("unclosed.txt");
-    std::fs::write(&bad, "closes p\nmodel\n(p a\n").expect("written");
-    let b = bad.to_string_lossy().to_string();
-    let r = ein(&["solve", &p, "--diff-models", &b]);
-    assert_eq!(r.code, 2, "{}", r.err);
-    assert!(r.out.is_empty(), "it ran:\n{}", r.out);
-    assert!(
-        r.err.starts_with(&format!(
-            "error: --diff-models {b}: a model's facts do not parse\n"
-        )),
-        "{}",
-        r.err
-    );
-    assert!(
-        r.err
-            .lines()
-            .any(|l| l == format!("{b}:4:1: unexpected end of input")),
-        "{}",
-        r.err
-    );
-}
-
 #[test]
 fn the_oracle_refuses_past_its_limit() {
     let r = ein(&["oracle", THREE, "--region-limit", "2"]);
@@ -322,7 +262,7 @@ fn the_oracle_refuses_past_its_limit() {
     assert!(r.err.contains("over --region-limit 2"), "{}", r.err);
 }
 
-/// `--models key|grid`, `-p/-P/-f` and `--diff-models` over the listed states
+/// `-p/-P/-f` over the listed states
 /// (`08-read-out.md` § 8). Each block
 /// follows the read-out, which it leaves as it was, and names its set.
 #[test]
@@ -335,7 +275,7 @@ fn the_listed_states_print_as_asked() {
     let check = |extra: &[&str], want: &[&str]| {
         let mode: Vec<&str> = extra
             .iter()
-            .take_while(|a| !["--models", "-P", "-p", "-f", "--diff-models"].contains(a))
+            .take_while(|a| !["-P", "-p", "-f"].contains(a))
             .copied()
             .collect();
         let (bare, r) = (run(&mode), run(extra));
@@ -355,66 +295,12 @@ fn the_listed_states_print_as_asked() {
         }
     };
     check(
-        &["--region-budget", "524288", "--models", "key"],
-        &[
-            "models — the determining key of every state of R",
-            "7 rows, one per state. Not every state is maximal",
-        ],
-    );
-    check(
-        &["--maximal", "--models", "key"],
-        &["its R is that\n    state alone"],
-    );
-    check(
         &["--maximal", "-P"],
         &[
             "── state 1 of 3 ──",
             "── state 3 of 3 ──",
             "final-state facts",
         ],
-    );
-    let dir = scratch("diff");
-    let want = dir.join("want.txt");
-    std::fs::write(
-        &want,
-        "closes a-prop b-prop c-prop\nmodel\n(a-prop X)\n(b-prop X)\nmodel\n(a-prop X)\n(c-prop X)\n",
-    )
-    .unwrap();
-    let w = want.to_string_lossy().to_string();
-    check(
-        &["--maximal", "--diff-models", &w],
-        &[
-            "2 matched, 0 near, 0 missing, 1 spurious",
-            "+ spurious: state 3 of 3",
-        ],
-    );
-    // A file it cannot read stops the run before it starts.
-    let r = run(&["--maximal", "--diff-models", "/nonexistent/want.txt"]);
-    assert_eq!(r.code, 2);
-    assert!(
-        r.out.is_empty() && r.err.starts_with("error: --diff-models"),
-        "{}",
-        r.err
-    );
-    // `--models grid` per state, here with the reason a program without a
-    // row type gets; the cells themselves are `models_grid.rs`'s.
-    let g = ein(&[
-        "solve",
-        "examples/branching/04_two_levels.ein",
-        "--maximal",
-        "--models",
-        "grid",
-    ]);
-    assert_eq!(g.code, 0, "{}", g.err);
-    assert!(
-        g.out.contains("models — the states listed, each as a grid"),
-        "{}",
-        g.out
-    );
-    assert!(
-        g.out.contains("── state 2 of 2 ──") && g.out.contains("grid — none:"),
-        "{}",
-        g.out
     );
 }
 
@@ -857,7 +743,7 @@ fn a_count_past_the_cap_is_an_answer_on_every_surface() {
     );
 }
 
-/// `ein oracle`'s five options from `ein solve`
+/// `ein oracle`'s four options from `ein solve`
 /// ([`05-cli.md` § 2.2](../../../../docs/ein/user/04-reference/05-cli.md#22-ein-oracle)).
 #[test]
 fn the_oracle_takes_the_read_outs_options() {
@@ -871,16 +757,10 @@ fn the_oracle_takes_the_read_outs_options() {
         serde_json::from_str(&std::fs::read_to_string(&p).unwrap()).unwrap();
     assert_eq!(doc["schema"], "ein-summary/2");
     assert_eq!(doc["region"]["k_s"], 7);
-    let k = ein(&["oracle", THREE, "--models", "key"]);
+    let pp = ein(&["oracle", THREE, "-P"]);
     // Below the header, which names the flag, the read-out is the same.
     let body = |s: &str| s[s.find('\n').unwrap()..].to_string();
-    assert!(
-        body(&k.out).starts_with(&body(&bare.out))
-            && k.out.contains("models — the determining key of"),
-        "{}",
-        k.out
-    );
-    let pp = ein(&["oracle", THREE, "-P"]);
+    assert!(body(&pp.out).starts_with(&body(&bare.out)), "{}", pp.out);
     assert_eq!(pp.out.matches("── state ").count(), 7, "{}", pp.out);
     let t = ein(&[
         "oracle",
@@ -1085,9 +965,6 @@ fn the_count_question_is_describes_counts() {
         ("-n 2", "`ein solve FILE -n N`"),
         ("--single", "`ein solve FILE --single`"),
         ("--monotone", "`ein solve FILE --monotone`"),
-        ("--models key", "`ein solve FILE --models FORM`"),
-        ("--models list", "`ein solve FILE --models FORM`"),
-        ("--diff-models x", "`ein solve FILE --diff-models FILE`"),
         ("-p", "`ein solve FILE -p`"),
         ("-P", "`ein solve FILE -P`"),
         ("-f", "`ein solve FILE -f`"),

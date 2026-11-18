@@ -716,7 +716,7 @@ fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
 fn every_file_of_the_selection_has_a_row() {
     let d = Dir::new("report-rows");
     let r = report(&["examples/features"], &d.0.join("r.json"));
-    assert_eq!(r["schema"], "ein-test-report/5");
+    assert_eq!(r["schema"], "ein-test-report/6");
     let rows = r["rows"].as_array().expect("rows");
     let files: std::collections::BTreeSet<&str> =
         rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
@@ -1205,7 +1205,7 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
-    assert_eq!(doc["schema"], "ein-test-report/5");
+    assert_eq!(doc["schema"], "ein-test-report/6");
     let bad = scope_disagreements(&r.out, &doc);
     assert!(bad.is_empty(), "{}\n{}", bad.join("\n"), r.out);
 
@@ -1233,24 +1233,42 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     assert!(silent["outside"].is_null(), "{silent}");
 }
 
+/// `ein test examples tests stdlib -v --json-report`, the corpus's every
+/// claim, run once per test binary and shared by the tests that read it:
+/// plain, or under `--diff full`.
+fn corpus_run(diff: bool) -> &'static (Run, serde_json::Value) {
+    static PLAIN: std::sync::OnceLock<(Run, serde_json::Value)> = std::sync::OnceLock::new();
+    static DIFFED: std::sync::OnceLock<(Run, serde_json::Value)> = std::sync::OnceLock::new();
+    let cell = if diff { &DIFFED } else { &PLAIN };
+    cell.get_or_init(|| {
+        let d = Dir::new(if diff { "corpus-diff" } else { "corpus" });
+        let out = d.0.join("r.json");
+        let path = out.to_string_lossy().into_owned();
+        let mut args = vec![
+            "test",
+            "examples",
+            "tests",
+            "stdlib",
+            "-v",
+            "--json-report",
+            &path,
+        ];
+        if diff {
+            args.extend(["--diff", "full"]);
+        }
+        let r = ein(&args);
+        let doc: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+        (r, doc)
+    })
+}
+
 /// **The same over the corpus**: every claim `ein test -v` prints, its scope
 /// lines against its row, both directions.
 #[test]
 fn every_corpus_claims_scope_lines_are_its_rows() {
-    let d = Dir::new("report-scope-corpus");
-    let out = d.0.join("r.json");
-    let r = ein(&[
-        "test",
-        "examples",
-        "tests",
-        "stdlib",
-        "-v",
-        "--json-report",
-        &out.to_string_lossy(),
-    ]);
-    let doc: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
-    let bad = scope_disagreements(&r.out, &doc);
+    let (r, doc) = corpus_run(false);
+    let bad = scope_disagreements(&r.out, doc);
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // Not vacuous: `tests/region/07` prints the one.
     assert!(
@@ -1289,7 +1307,7 @@ fn claim_rows(doc: &serde_json::Value) -> Vec<&serde_json::Value> {
 /// say which**: `--single` for a claim of one class, `-n k+1`
 /// for one of k, the line's flag before it for a claim over a line, and
 /// describe for a solve claim. `-v` names the question before what the run
-/// found, and `ein-test-report/5`'s row carries it as `route`.
+/// found, and `ein-test-report/6`'s row carries it as `route`.
 #[test]
 fn a_claim_is_asked_the_least_question_and_the_surfaces_say_which() {
     let d = Dir::new("routes");
@@ -1316,7 +1334,7 @@ fn a_claim_is_asked_the_least_question_and_the_surfaces_say_which() {
     }
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
-    assert_eq!(doc["schema"], "ein-test-report/5");
+    assert_eq!(doc["schema"], "ein-test-report/6");
     let routes: Vec<(&str, &serde_json::Value)> = claim_rows(&doc)
         .iter()
         .map(|x| (x["route"].as_str().expect("a route"), &x["fell_back_from"]))
@@ -1675,4 +1693,269 @@ fn a_run_that_prints_no_n_takes_none_and_says_the_same() {
     };
     assert_eq!(lines(&plain.out), lines(&with.out));
     assert_eq!(read(&tested)["region"]["nogoods"], n);
+}
+
+// ── `--diff`: a claim's models against what its run found ─────────
+
+/// Stdout with every diff block taken out — the `    diff: …` line and the
+/// deeper lines under it — and the summary line's time: what `--diff` adds.
+fn without_diffs(out: &str) -> Vec<String> {
+    let mut kept = Vec::new();
+    let mut inside = false;
+    for l in out.lines() {
+        if l.starts_with("    diff: ") {
+            inside = true;
+            continue;
+        }
+        if inside && l.starts_with("      ") {
+            continue;
+        }
+        inside = false;
+        kept.push(match (l.find("  ("), l.rfind(" s)")) {
+            (Some(a), Some(b)) if l.contains(" expectation") && a < b => {
+                format!("{}{}", &l[..a], &l[b + 3..])
+            }
+            _ => l.to_string(),
+        });
+    }
+    kept
+}
+
+/// A row without its `diff`, and without the time its region took.
+fn undiffed(row: &serde_json::Value) -> serde_json::Value {
+    let mut r = row.clone();
+    r.as_object_mut().expect("a row").remove("diff");
+    if let Some(region) = r["region"].as_object_mut() {
+        region.remove("ms");
+    }
+    r
+}
+
+/// **`--diff` moves no verdict, no exit code and no other line**, over every
+/// claim of the corpus. Under `-v` every claim's line prints, so stdout under
+/// `--diff full` less its diff blocks is stdout without it, the time aside;
+/// every row of the report is the same but for its `diff`, `null` without the
+/// option. And the diff is what the check compares: every claim a run decided
+/// has one but the region's `(false)`, which lists no model; a held claim's
+/// is all matches; a FAILED one's disagrees, or the claim's `(merged …)` is
+/// why it failed.
+#[test]
+fn the_diff_moves_no_verdict_and_no_exit_code() {
+    let (plain, a) = corpus_run(false);
+    let (diffed, b) = corpus_run(true);
+    assert_eq!(plain.code, diffed.code, "{}", diffed.err);
+    assert_eq!(plain.err, diffed.err);
+    assert_eq!(without_diffs(&plain.out), without_diffs(&diffed.out));
+    assert_eq!(a["tally"], b["tally"]);
+    let (ra, rb) = (
+        a["rows"].as_array().expect("rows"),
+        b["rows"].as_array().expect("rows"),
+    );
+    assert_eq!(ra.len(), rb.len());
+    let mut against: std::collections::BTreeMap<String, usize> = Default::default();
+    let mut negatives = 0usize;
+    for (x, y) in ra.iter().zip(rb) {
+        assert_eq!(undiffed(x), undiffed(y));
+        assert!(x["diff"].is_null(), "a diff without --diff: {x}");
+        let decided = y["outcome"] == "held" || y["outcome"] == "failed";
+        let falsity = y["place"] == "solve" && y["expect"]["shape"] == "false";
+        let d = &y["diff"];
+        assert_eq!(d.is_null(), !decided || falsity, "{y}");
+        if d.is_null() {
+            continue;
+        }
+        *against
+            .entry(d["against"].as_str().expect("against").to_string())
+            .or_default() += 1;
+        negatives += usize::from(!d["presence"].as_array().expect("presence").is_empty());
+        let n = |k: &str| d[k].as_u64().unwrap_or_else(|| panic!("{k} in {d}"));
+        let agrees = n("near") + n("missing") + n("extra") == 0;
+        if y["outcome"] == "held" {
+            assert!(
+                agrees && n("match") == n("models") && n("match") == n("found"),
+                "a held claim's diff is not all matches: {y}"
+            );
+        } else {
+            assert!(
+                !agrees || y["expect"]["merged"].as_u64().is_some_and(|m| m > 0),
+                "a FAILED claim's diff agrees and nothing else explains it: {y}"
+            );
+        }
+        let items = d["items"].as_array().expect("--diff full writes the items");
+        assert_eq!(items.len() as u64, n("models") + n("extra"), "{d}");
+    }
+    // Not vacuous: each kind of claim, and a listed negative.
+    for kind in ["states", "owing", "classes"] {
+        assert!(
+            against.get(kind).is_some_and(|n| *n > 0),
+            "no {kind}: {against:?}"
+        );
+    }
+    assert!(negatives > 0, "no claim lists a negative");
+}
+
+/// `examples/binary_logic/knights.ein`, the second query's claim with one
+/// answer one fact off: `(in C 1)` where the state has `(in C 0)`.
+fn knights_one_fact_off(d: &Dir) -> String {
+    let src = std::fs::read_to_string(repo_root().join("examples/binary_logic/knights.ein"))
+        .expect("the program");
+    let right = "(model (in A 1) (in B 0) (in C 0))))";
+    assert!(src.contains(right), "the fixture moved");
+    d.file(
+        "knights.ein",
+        &src.replace(right, "(model (in A 1) (in B 0) (in C 1))))"),
+    )
+}
+
+/// **A claim one fact off reads as one fact off** — the near-miss — and the
+/// option moves no verdict: FAILED and exit 1 with it and without. `stats`
+/// prints the counts, `full` each model too, and a bare `--diff` at the end
+/// is `stats`; the report writes the same.
+#[test]
+fn a_claim_one_fact_off_reads_as_one_fact_off() {
+    let d = Dir::new("diff-knights");
+    let file = knights_one_fact_off(&d);
+    let plain = ein(&["test", &file]);
+    let full = ein(&["test", &file, "--diff", "full"]);
+    let stats = ein(&["test", &file, "--diff", "stats"]);
+    let bare = ein(&["test", &file, "--diff"]);
+    for r in [&plain, &full, &stats, &bare] {
+        assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+        assert!(
+            r.out
+                .contains("query 2 of 2 · :goal (and (in A ?a) (in B ?b) (in C ?c)) — FAILED")
+        );
+    }
+    let block = "    diff: 2 models against the 2 classes of all of R\n      \
+                 1 match, 1 near (1 fact off), 0 missing, 0 extra\n";
+    assert!(
+        full.out.contains(&format!(
+            "{block}      = model 1 is class 1\n      ~ model 2 is class 2, 1 fact off\n          \
+         - (in C 1)\n          + (in C 0)\n"
+        )),
+        "{}",
+        full.out
+    );
+    assert!(
+        stats.out.contains(block) && !stats.out.contains("~ model"),
+        "{}",
+        stats.out
+    );
+    assert_eq!(stats.out.lines().count(), bare.out.lines().count());
+    // The held query's line prints under the option, its diff all matches.
+    assert!(
+        full.out
+            .contains("  query 1 of 2 · :goal (in C ?c) — holds\n    diff: 1 model")
+    );
+    assert!(!plain.out.contains("query 1 of 2"), "{}", plain.out);
+
+    let doc = report(&[&file, "--diff", "full"], &d.0.join("r.json"));
+    let row = &doc["rows"].as_array().expect("rows")[1];
+    assert_eq!(row["query"], 2);
+    assert_eq!(row["diff"]["against"], "classes");
+    assert_eq!(
+        row["diff"]["near_off"],
+        serde_json::json!([{"off": 1, "near": 1}])
+    );
+    assert_eq!(
+        row["diff"]["items"][1],
+        serde_json::json!({"kind": "near", "model": 2, "found": 2, "off": 1,
+                           "lacks": ["(in C 1)"], "has": ["(in C 0)"]})
+    );
+    let stats = report(&[&file, "--diff", "stats"], &d.0.join("s.json"));
+    assert!(stats["rows"][1]["diff"]["items"].is_null());
+    assert!(report(&[&file], &d.0.join("p.json"))["rows"][1]["diff"].is_null());
+}
+
+/// **A missing state and an extra one**, beside a match and a near-miss:
+/// `examples/lattice/14_seats_nothing_proposes.ein`'s region with its second
+/// state written three facts off and its fourth one fact off. The missing
+/// model is given the state nearest it and the extra state the model nearest
+/// it.
+#[test]
+fn a_region_claim_names_the_missing_and_the_extra() {
+    let d = Dir::new("diff-seats");
+    let src =
+        std::fs::read_to_string(repo_root().join("examples/lattice/14_seats_nothing_proposes.ein"))
+            .expect("the program");
+    let (two, four) = (
+        "(model (sits Ann S1) (sits Bob S2) (sits Cat B2) (sits Dan B1))",
+        "(model (sits Ann S2) (sits Bob S1) (sits Cat B2) (sits Dan B1))))",
+    );
+    assert!(src.contains(two) && src.contains(four), "the fixture moved");
+    let file = d.file(
+        "seats.ein",
+        &src.replace(
+            two,
+            "(model (sits Ann B1) (sits Bob S2) (sits Cat S1) (sits Dan B2))",
+        )
+        .replace(
+            four,
+            "(model (sits Ann S2) (sits Bob S1) (sits Cat B2) (sits Dan B2))))",
+        ),
+    );
+    let r = ein(&["test", &file, "--diff", "full"]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    for line in [
+        "    diff: 4 models against R's 4 states, compared over sits",
+        "      2 match, 1 near (1 fact off), 1 missing, 1 extra",
+        "      = model 1 is state 1",
+        "      - model 2: no state is it; the nearest is state 1, 2 facts off",
+        "      = model 3 is state 3",
+        "      ~ model 4 is state 4, 1 fact off",
+        "          - (sits Dan B2)",
+        "          + (sits Dan B1)",
+        "      + state 2: no model is it; the nearest is model 1, 2 facts off",
+    ] {
+        assert!(
+            r.out.lines().any(|l| l == line),
+            "no {line:?} in\n{}",
+            r.out
+        );
+    }
+}
+
+/// **`-q` diffs the claims it prints**: a held file prints nothing but the
+/// summary, and a failing one its claim and the claim's diff.
+#[test]
+fn quiet_diffs_only_the_claims_it_prints() {
+    let d = Dir::new("diff-quiet");
+    let failing = knights_one_fact_off(&d);
+    let held = ein(&[
+        "test",
+        "examples/binary_logic/knights.ein",
+        "-q",
+        "--diff",
+        "full",
+    ]);
+    assert_eq!(held.code, 0, "{}", held.err);
+    assert_eq!(held.out.lines().count(), 1, "{}", held.out);
+    let failed = ein(&["test", &failing, "-q", "--diff", "full"]);
+    assert!(
+        failed.out.contains("~ model 2 is class 2, 1 fact off"),
+        "{}",
+        failed.out
+    );
+    assert!(!failed.out.contains("query 1 of 2"), "{}", failed.out);
+}
+
+/// **A bare `--diff` takes the word after it as its level**, so one before a
+/// path is refused, exit 2, with the two levels; after the paths, or with a
+/// level, it reads as asked.
+#[test]
+fn a_bare_diff_before_a_path_is_refused_with_its_levels() {
+    let r = ein(&["test", "--diff", "examples/binary_logic/knights.ein"]);
+    assert_eq!(r.code, 2, "{}", r.out);
+    assert!(
+        r.err.contains("[possible values: stats, full]"),
+        "{}",
+        r.err
+    );
+    let r = ein(&[
+        "test",
+        "--diff",
+        "stats",
+        "examples/binary_logic/knights.ein",
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
 }

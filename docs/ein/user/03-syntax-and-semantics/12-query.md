@@ -456,7 +456,9 @@ What that leaves undecided it asks the describing question, of the program loade
 belongs to the part asked, so **under `ein test` a run that did not exhaust a part still refutes a claim by a class it
 does not list**, where `ein solve` would print a note
 ([Q-M1f.222](../../../decisions/answer/Q-M1f.222-under-ein-test-a-state-found-refutes-a-claim.md)). `-v` names the
-question each claim was read off. A query with no `:expect` states nothing and is never solved. Under `--no-search`
+question each claim was read off, and `--diff` how a claim's models differ from what was found, over what the claim
+names: which match a state or a class, which are a few facts off one and in which facts, which are missing and what
+was found beyond them; it decides nothing. A query with no `:expect` states nothing and is never solved. Under `--no-search`
 each file is read at root alone and a claim root does not decide is `NOT CHECKED`, moving no exit code
 ([Q-M1f.256](../../../decisions/answer/Q-M1f.256-under-no-search-a-claim-is-decided-as-far-as.md)). A load error
 takes exit 2 under `ein test`, so a broken file is never mistaken for a false claim. The command, its options and its

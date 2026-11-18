@@ -1642,7 +1642,7 @@ impl<'a> Nodes<'a> {
     }
 
     /// `read` the fixpoints of root plus each of `sets`, all at once — for a
-    /// reader that compares states, as a model set's determining key does.
+    /// reader of several states together, as `ein solve`'s forms are.
     ///
     /// The fixpoints are handed out mutably so a reader can fork one, as
     /// `EIN_LEFTOVER`'s probe does; they are dropped after `read`.

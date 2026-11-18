@@ -112,7 +112,7 @@ in either or in both, and it is one node.
 | [finding R](02-kb-evolution/07-finding-r.md) | $\mathcal{O}$ the oracle's table; $\mathcal{K}$ the sets known dead; $\mathcal{C}$ the alive closed sets; $s$, $T$ closed sets; $M(T)$; $\mathcal{W}$; $\Lambda$; $\operatorname{Leaves}(C)$; L0 to L8 the licences |
 | [monotonicity](02-kb-evolution/08-monotonicity.md) | $\operatorname{site}$, $\operatorname{depth}$, $\operatorname{stale}$; $\mathit{Sh}$ the closure over shapes |
 | [cores](02-kb-evolution/09-cores.md) | $\mathcal{T}(K)$ the terminals; $Z$ a set of them; $\operatorname{der}_K(Z)$, $\operatorname{contr}(K)$, $\operatorname{by}(f)$; $\operatorname{origin}$, $\operatorname{front}$ |
-| [satisfiability](02-kb-evolution/10-satisfiability.md) | $\Gamma$ a claim; $\operatorname{holds}(\Gamma, \mathcal{S})$; $\operatorname{alt}(I, S)$ the alternatives a state has not denied; $\operatorname{key}$, $\operatorname{rows}_g$ |
+| [satisfiability](02-kb-evolution/10-satisfiability.md) | $\Gamma$ a claim; $\operatorname{holds}(\Gamma, \mathcal{S})$; $\operatorname{alt}(I, S)$ the alternatives a state has not denied; $\operatorname{rows}_g$ |
 | [rules as data](03-rule-evolution/01-rules-as-data.md) | $W_{\!d}$ the declaring words |
 | [analysis of rules](03-rule-evolution/02-analysis-of-rules.md) | $\operatorname{reads}$, $\operatorname{writes}$, $\operatorname{sgn}$; $c$ a strongly connected component; $\chi$ |
 | [transformations](03-rule-evolution/03-transformations.md) | $\tau$ a transformation; $\beta$ a renaming; $\alpha$ the map to full names; $\operatorname{resolve}$, $\operatorname{expand}$, $\operatorname{lits}$, $\operatorname{inst}_K(P)$ |

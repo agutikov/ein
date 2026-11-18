@@ -55,12 +55,6 @@ const SIGPIPE: i32 = 13;
 
 /// Every subcommand and every option that writes to stdout, by name.
 fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
-    let models = dir.join("two.models");
-    std::fs::write(
-        &models,
-        "closes co-located\nmodel\n  (co-located Alice Cat) (co-located Alice Tea)\n",
-    )
-    .expect("the models file");
     let region = dir.join("region");
     let dumped = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(["oracle", W, "--dump"])
@@ -69,7 +63,7 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         .output()
         .expect("ein oracle --dump");
     assert!(dumped.status.success(), "ein oracle {W} --dump failed");
-    let (m, r) = (models.display().to_string(), region.display().to_string());
+    let r = region.display().to_string();
     let mut v: Vec<(&str, Vec<&str>)> = vec![
         ("--version", vec!["--version"]),
         ("-V", vec!["-V"]),
@@ -116,18 +110,6 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("solve -t", vec!["solve", W, "-t"]),
         ("solve -s", vec!["solve", W, "-s"]),
         ("solve -y", vec!["solve", W, "-y"]),
-        (
-            "solve --models key",
-            vec!["solve", W, "--maximal", "--models", "key"],
-        ),
-        (
-            "solve --models grid",
-            vec!["solve", W, "--maximal", "--models", "grid"],
-        ),
-        (
-            "solve --diff-models",
-            vec!["solve", W, "--maximal", "--diff-models", &m],
-        ),
         ("solve -p", vec!["solve", W, "--maximal", "-p"]),
         ("solve -P", vec!["solve", W, "--maximal", "-P"]),
         ("solve -f", vec!["solve", W, "--maximal", "-f"]),
@@ -142,11 +124,6 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("solve --trace", vec!["solve", W, "--trace", "/dev/stdout"]),
         ("oracle", vec!["oracle", W]),
         ("oracle -s", vec!["oracle", W, "-s"]),
-        ("oracle --models key", vec!["oracle", W, "--models", "key"]),
-        (
-            "oracle --models grid",
-            vec!["oracle", W, "--models", "grid"],
-        ),
         ("oracle -p", vec!["oracle", W, "-p"]),
         ("oracle -P", vec!["oracle", W, "-P"]),
         (
@@ -156,6 +133,7 @@ fn runs(dir: &Path) -> Vec<(String, Vec<String>)> {
         ("test", vec!["test", T]),
         ("test -v", vec!["test", T, "-v"]),
         ("test -q", vec!["test", T, "-q"]),
+        ("test --diff", vec!["test", T, "--diff", "full"]),
         (
             "test --json-report",
             vec!["test", T, "--json-report", "/dev/stdout"],

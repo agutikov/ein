@@ -537,7 +537,7 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 | a goal's rows over a state | [`ein-infer/src/verdict.rs`](../../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | the branch on an owed instance | [`ein-infer/src/tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs), the obligation tree, under the licences of [`07-search.md` § 3](../03-design/07-search.md#3-the-licences) |
 | what the universe leaves out | [`ein-infer/src/scope.rs`](../../../../ein.rs/crates/ein-infer/src/scope.rs) |
-| the determining key | [`ein-render/src/models.rs`](../../../../ein.rs/crates/ein-render/src/models.rs) |
+| a claim's models, compared with what its run found | [`ein-infer/src/claim.rs`](../../../../ein.rs/crates/ein-infer/src/claim.rs): `compared`, a region claim's models and R's states or owing nodes as its check reads them, and [`read_out.rs`](../../../../ein.rs/crates/ein-infer/src/read_out.rs)' `query_compared`, a query's; [`ein-render/src/claim_diff.rs`](../../../../ein.rs/crates/ein-render/src/claim_diff.rs): `diff`, the pairing, and `lines` and `json`, what `ein test --diff` prints and writes |
 
 ### 6.2 The algorithm
 
@@ -550,10 +550,11 @@ each obligation plan once and counts its matches; the event is `owe`
 run: **held**, **FAILED**, or **NOT CHECKED**. A failed claim exits 1, and so does one not checked, except under
 `--no-search`, where a claim root does not decide moves no exit code
 ([`05-cli.md`](../../user/04-reference/05-cli.md)). A claim is written `:expect`, on a `(query …)` or on the
-`(solve …)` form.
+`(solve …)` form. Under `--diff` each claim a run decided is followed by its models against what the run found, read
+as its check reads them (`claim::compared`, `read_out::query_compared`), paired by `claim_diff::diff`: the matches as
+a maximum matching of the pairs the check pairs, so a held claim's diff is all matches, then the near-misses.
 
-The key is a minimum hitting set over the pairs of listed states, searched within a budget on the pair table
-and declined with the reason past it. The count of what a listed state leaves open is the leftover probe,
+The count of what a listed state leaves open is the leftover probe,
 `EIN_LEFTOVER=1`, read on a copy of the state ([`06-config.md`](../../user/04-reference/06-config.md)).
 
 The program of the reasoning page's § 5 is
@@ -574,17 +575,18 @@ its § 2.3 are in the catalogue:
 | no option, lever or flag changes what is derived or which states are in R | `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode` |
 | no order of the search, interning order or number of workers moves an answer | `ein-infer/tests/explore.rs`: `every_order_of_the_tree_is_the_oracle`; `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`; `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
 | a claim that names a relation states the whole of its held extent in every state it lists | `ein-infer/tests/claim_semantics.rs`: `naming_a_relation_closes_it_in_every_model` |
+| a claim's diff moves no verdict, no exit code and no other line, and a held claim's is all matches, over every claim of the corpus | `ein-cli/tests/test_cli.rs`: `the_diff_moves_no_verdict_and_no_exit_code` |
 | a claim the run did not decide is not checked; a run a budget stopped leaves its claim not checked and says why; under `--no-search` a claim not checked moves no exit code | `ein-infer/tests/expect_semantics.rs`: `a_claim_the_run_did_not_decide_is_not_checked`; `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/no_search.rs`: `test_decides_what_root_decides_and_a_claim_not_checked_exits_0` |
 | every route that branches on an owed instance's alternatives finds the oracle's R | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | on the zebra family, branching on what the obligations owe finds what the hrule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
 | every question names a relation H holds no fact of, in one sentence | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | what the blind enumerator would still propose at a listed state is a read, off unless asked | `ein-cli/tests/leftover_probe.rs`: `the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says` |
-| an exhausted run reports the states, an unexhausted one the states found; the key changes stdout and nothing recorded, names its size and one row per state, and an unaffordable key says why | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found`, `the_key_form_changes_stdout_and_nothing_recorded`, `the_key_table_names_its_size_its_alternatives_and_one_row_per_state`, `an_unaffordable_key_says_why` |
+| an exhausted run reports the states, an unexhausted one the states found | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found` |
 
 ### 6.4 Commands
 
 ```sh
 ein test FILE                        # every claim the file states: held, FAILED or NOT CHECKED
-ein solve FILE --maximal --models key  # the determining key of the states listed
+ein solve FILE --maximal -n 5        # at most five states of the line, and whether that is all of it
 ein render rule --name NAME FILE     # an obligation or a restriction as its match and its conclusion
 ```

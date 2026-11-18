@@ -12,13 +12,15 @@ without decoding anything: every graph an SVG, every JSON a table.
 
 A run is several invocations. `main` carries every flag that can share a solve
 (`--trace --full-kb-snapshots`, `--dump-answer`, `--dump-lattice`,
-`--events`, `--json-summary` and the stdout diagnostics), `grid` / `key` the
-two model forms, `diff` the comparison with the register's right answer, and
+`--events`, `--json-summary` and the stdout diagnostics), `diff` the
+comparison with the register's right answer, `ein test --diff full` on a copy
+of the witness with that answer written into it as claims (P1f.23), and
 `oracle` R by brute force: `ein oracle --dump`, whose directory
 `ein render region` draws into `pages/region/` with this run on it (its
 `--dump-lattice` and `--dump-answer`, S1e2.1a.7), and whose answer the run is
-held to (cross-checks 5 and 7). Their answers have to be the same answer,
-which is cross-check 1.
+held to (cross-checks 5 and 7). Their answers have to be the same answer:
+`diff`'s claims are over the line `main` asked, as many states where both
+are whole, which is cross-check 1.
 
 **Since S1e2.1a.5's switch (2026-10-18) there is no walk.** A region run
 classifies nodes and never writes root, so the walk's `--dump-states`
@@ -63,8 +65,8 @@ REGION_ROWS_PAGED = 1 << 16
 # reads: the page says how many nodes there are and links the DOT, and the
 # step pages list every node.
 DAG_NODES_DRAWN = 1_000
-# State files given a section of their own — a grid, a drawing and their
-# facts — on the answer page. `--dump-answer` writes every state the run
+# State files given a section of their own — a drawing and their facts — on
+# the answer page. `--dump-answer` writes every state the run
 # reached, and a describe of `saturation/square-bwd/houses` reaches 10 077:
 # one `ein render kb` and one Graphviz layout each is an hour and 1.8 GB. Past
 # this the rest are rows of a paged table, each linking its loadable file.
@@ -85,9 +87,12 @@ class RunSpec:
     title: str = ""
     events: bool = True
     trace: bool = True
-    # A model set to compare the answer with (`--diff-models`): the case page
-    # writes one from the register's `right.models` (S1e2.1.6).
-    diff_models: Path | None = None
+    # The witness with the register's right answer written into it as claims,
+    # which `ein test --diff full` compares the answer with (P1f.23): the case
+    # page writes it from the register's `right.models`, and the last
+    # `right_queries` queries of it are the claims.
+    right_claims: Path | None = None
+    right_queries: int = 0
     # The source a `.einb` `file` was saved from (M1f S1f.5.19, a `container`
     # row): the program page shows its text, which is what the container
     # stores, and says so.
@@ -208,19 +213,16 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     if spec.events:
         main += ["--events", str(raw / "events.jsonl"), "--events-level", "verbose"]
     invs = [run("main", main, spec.env)]
-    # Since S1e2.3.3 a form shares stdout's 100 lines with the read-out, and
-    # `--dump-answer` writes it uncut under `forms/`: each form run writes its
-    # own answer directory, and the pages read the uncut file (`form_text`).
-    invs.append(run("grid", solve + ["--models", "grid",
-                                     "--json-summary", str(raw / "summary.grid.json"),
-                                     "--dump-answer", str(raw / FORM_DIRS["grid"])], spec.env))
-    invs.append(run("key", solve + ["--models", "key",
-                                    "--json-summary", str(raw / "summary.key.json"),
-                                    "--dump-answer", str(raw / FORM_DIRS["key"])], spec.env))
-    if spec.diff_models:
-        invs.append(run("diff", solve + ["--diff-models", str(spec.diff_models),
-                                         "--json-summary", str(raw / "summary.diff.json"),
-                                         "--dump-answer", str(raw / FORM_DIRS["diff"])], spec.env))
+    budget = flag_value(spec.flags, "--region-budget")
+    # The right answer, as the claims of a copy of the witness, against what
+    # `ein test` finds (P1f.23): its exit is 1 where a claim is false, which
+    # on a wrong answer is the point.
+    if spec.right_claims:
+        claims = spec.right_claims
+        shown_path = str(claims.relative_to(REPO)) if claims.is_relative_to(REPO) else str(claims)
+        invs.append(run("diff", [bin, "test", shown_path, "--diff", "full",
+                                 "--json-report", str(raw / "test-report.json")]
+                        + (["--region-budget", budget] if budget else []), spec.env))
     # R by brute force: the cube `ein render region` draws, and the answer
     # cross-check 5 holds the run to. Past --region-limit it refuses, exit 2.
     limit = flag_value(spec.flags, "--region-limit")
@@ -229,7 +231,6 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
                                "--json-summary", str(raw / "summary.oracle.json")]
                     + (["--region-limit", limit] if limit else []) + (["-j", jobs] if jobs else []),
                     spec.env, timeout=ORACLE_TIMEOUT))
-    budget = flag_value(spec.flags, "--region-budget")
     lattice = [bin, "render", "lattice", spec.file] + (["--region-budget", budget] if budget else [])
     for name, argv in [("render-program", [bin, "render", "program", spec.file]),
                        ("render-rules", [bin, "render", "rules", spec.file]),
@@ -409,7 +410,7 @@ def call_to_fact(text: str) -> list[str]:
 
 def verdict_block(stdout: str) -> str:
     """The read-out, verbatim: from `solve ·` (or `oracle ·`) to the first
-    diagnostic block after it — `H`, a state's facts, the timing, the key."""
+    diagnostic block after it — `H`, a state's facts, the timing."""
     lines = stdout.splitlines()
     try:
         start = next(i for i, l in enumerate(lines) if l.startswith(("solve ·", "oracle ·")))
@@ -417,28 +418,20 @@ def verdict_block(stdout: str) -> str:
         return stdout.strip()
     end = len(lines)
     for i in range(start + 1, len(lines)):
-        if re.match(r"^(H — the universe|── state|timing$|stats$|final-state facts|the states listed against|"
-                    r"determining key|grid —|work$)", lines[i]):
+        if re.match(r"^(H — the universe|── state|timing$|stats$|final-state facts|work$)", lines[i]):
             end = i
             break
     return "\n".join(lines[start:end]).rstrip()
 
 
 def diff_block(inv: Invocation, run_out: Path | None = None) -> str:
-    """`--diff-models`' block, verbatim: the uncut file the run's
-    `--dump-answer` wrote (S1e2.3.3) when there is one; else from `the states
-    listed against` to the blank line that ends it — or the refusal, when the
-    file did not parse."""
-    if run_out is not None:
-        text = form_text(run_out, "diff", "diff-models")
-        if text.strip():
-            return text.strip("\n")
-    lines = inv.stdout.splitlines()
-    start = next((i for i, l in enumerate(lines) if l.startswith(("the states listed against", "models against"))), None)
-    if start is None:
-        return inv.stderr.strip() or "(no diff printed)"
-    end = next((i for i in range(start, len(lines)) if not lines[i].strip()), len(lines))
-    return "\n".join(lines[start:end])
+    """`ein test --diff full`'s output on the right answer's claims, verbatim:
+    each claim's line, why it failed, and its diff (P1f.23); its stderr where
+    the copy did not load."""
+    out = inv.stdout.strip("\n")
+    if inv.code not in (0, 1) and inv.stderr.strip():
+        out = (out + "\n" if out else "") + inv.stderr.strip()
+    return out or "(nothing printed)"
 
 
 def program_page(p: Pages) -> None:
@@ -824,8 +817,8 @@ def overlay_head(table_md: str) -> list[str]:
 # ── the answer ────────────────────────────────────────────────────────────────
 
 # The answer directory each invocation writes. `main`'s holds `-p` and `-H`
-# under `forms/`, and each form run's holds its form (S1e2.3.3).
-FORM_DIRS = {"main": "answer", "grid": "answer.grid", "key": "answer.key", "diff": "answer.diff"}
+# under `forms/` (S1e2.3.3).
+FORM_DIRS = {"main": "answer"}
 
 
 def form_text(run_out: Path, inv: str, form: str, stdout: str = "") -> str:
@@ -842,22 +835,6 @@ def form_files(run_out: Path) -> list[Path]:
     return sorted(f for d in FORM_DIRS.values() for f in (run_out / "raw" / d / "forms").glob("*.txt"))
 
 
-def grids_from(stdout: str) -> list[str]:
-    """`--models grid`'s per-state grid blocks, in order, verbatim."""
-    out, cur = [], None
-    for line in stdout.splitlines():
-        if line.strip().startswith("grid —"):
-            # A blank line between the licence and the table, so a markdown
-            # viewer starts a table rather than continuing the paragraph.
-            cur = [line.strip(), ""]
-            out.append(cur)
-        elif cur is not None and line.strip().startswith(("|", "(no ")):
-            cur.append(line.strip())
-        else:
-            cur = None
-    return ["\n".join(g) for g in out]
-
-
 def answer_pages(p: Pages, s: dict | None) -> None:
     raw = p.raw / "answer"
     page = p.dir / "answer.md"
@@ -868,23 +845,14 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                ("06-solution-semantics.md § 2",
                 "docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r")]
     listed = [x for x in states if x.get("listed")]
-    lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
-                   "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "
+    lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: graph, "
+                   "commitment, its `(model …)`", "`--dump-answer DIR`, "
                    "`ein render kb … --since FILE`", defined,
-                   [raw / "index.json", raw / "answer.json", raw / "answer.txt", p.raw / "grid.stdout.txt",
-                    p.raw / "key.stdout.txt", *form_files(p.out)], page,
+                   [raw / "index.json", raw / "answer.json", raw / "answer.txt", *form_files(p.out)], page,
                    f"asked **{asked_text(s)}** · {len(listed)} state(s) listed of {len(states)} reached · "
                    f"exhausted = {yes(region.get('exhausted'))}"
                    + (f" · R empty: **{region['empty']}**" if region.get("empty") else ""))
     lines += details("`answer.txt` — the read-out, uncut", ["```text", read(raw / "answer.txt").rstrip(), "```"])
-    key = p.inv.get("key")
-    key_text = form_text(p.out, "key", "key", key.stdout) if key else ""
-    if "determining key" in key_text:
-        lines += ["## The determining key (`--models key`)", "", "```text"]
-        lines += key_text.split("determining key", 1)[1].splitlines()[:200]
-        lines += ["```", ""]
-    grids = grids_from(form_text(p.out, "grid", "grid", p.inv["grid"].stdout)) if "grid" in p.inv else []
-    gi = 0
     files = state_files(raw)
     for f in files[:STATES_DRAWN]:
         stem = f["stem"]
@@ -900,9 +868,6 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                                                    or "—"),
                   f"- **commitments reaching it:** {st.get('commitments') if st.get('commitments') is not None else '— (not counted by this question)'}",
                   f"- **file:** [`{f['path']}`]({rel(raw / f['path'], page)})", ""]
-        if f["kind"] == "models" and f.get("listed", True) and gi < len(grids):
-            lines += ["**Grid** (`--models grid`, verbatim):", "", grids[gi], ""]
-            gi += 1
         inv = p.inv.get(f"render-{stem.replace('/', '-')}")
         if inv and inv.code == 0:
             for name, svg in p.dot_stream(inv.stdout, stem):
@@ -932,7 +897,7 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                                                 f"{note} · [the answer]({rel(page, path)})"),
                       ["state", "kind", "lines", "listed", "from", "facts", "file"], [row(f) for f in rest])
         lines += [f"## The other {len(rest)} states", "",
-                  f"Past the first {STATES_DRAWN} a state is a row, not a section: no grid and no drawing, and its "
+                  f"Past the first {STATES_DRAWN} a state is a row, not a section: no drawing, and its "
                   "file is one link away — " + ", ".join(f"[page {i + 1}]({rel(x, page)})" for i, x in enumerate(pages)),
                   ""]
     frontier = region.get("frontier") or []
@@ -1146,28 +1111,31 @@ def facts_by_line(s: dict | None, line: str) -> list[list[str]]:
 def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict]) -> None:
     """Seven claims the artefacts make about each other, each a pass, a named
     mismatch, or not applicable with the reason."""
-    def strip(x):
-        if isinstance(x, dict):
-            return {k: strip(v) for k, v in x.items() if k not in ("source",)}
-        if isinstance(x, list):
-            return [strip(v) for v in x]
-        return x
-    # 1 — the invocations agree.
-    base = strip(s) if s else None
-    for other in ("summary.grid.json", "summary.key.json", "summary.diff.json"):
-        o = load_json(p.raw / other)
-        if o is None:
-            if other == "summary.diff.json" and not p.spec.diff_models:
-                continue
-            inv = p.inv.get(other.split(".")[1])
-            p.checks.append((f"1 · {other} agrees with summary.json", False, "not written" + (
-                f": the `{inv.name}` run exited {inv.code}" + (" (killed — the OOM killer, or a signal)" if inv.code == -9
-                                                               else "") + f", `raw/{inv.name}.stderr.txt`"
-                if inv and inv.code != 0 else "")))
-            continue
-        same = strip(o) == base
-        diff = "" if same else ", ".join(k for k in (base or {}) if strip(o).get(k) != (base or {}).get(k))
-        p.checks.append((f"1 · {other} agrees with summary.json", same, diff and f"differs in: {diff}"))
+    # 1 — the invocations agree: `ein test`'s run of the right answer's claims
+    # (P1f.23) is over the line this run asked, so where both are whole, its
+    # classes are over as many states as this run lists.
+    if p.spec.right_claims:
+        name = "1 · the right answer's claims are over as many states as this run lists"
+        rep, inv = load_json(p.raw / "test-report.json"), p.inv.get("diff")
+        if rep is None:
+            p.checks.append((name, False, "test-report.json not written" + (
+                f": `ein test` exited {inv.code}" + (" (killed — the OOM killer, or a signal)" if inv.code == -9
+                                                     else "") + f", `raw/{inv.name}.stderr.txt`"
+                if inv and inv.code not in (0, 1) else "")))
+        else:
+            rows = [r for r in rep.get("rows") or [] if r.get("place") == "query"
+                    and r.get("query", 0) > r.get("queries", 0) - p.spec.right_queries]
+            whole = [r["answer"]["states"] for r in rows if (r.get("answer") or {}).get("exact")]
+            region = (s or {}).get("region") or {}
+            n = len([x for x in region.get("states") or [] if x.get("listed")])
+            if not whole or region.get("exhausted") is not True:
+                p.checks.append((name, None, "not applicable: " + (
+                    "this run did not exhaust what it asked" if whole else
+                    "no claim's classes are over the whole of what it is about")))
+            else:
+                ok = set(whole) == {n}
+                p.checks.append((name, ok, "" if ok else
+                                 f"the claims' classes are over {sorted(set(whole))} states, this run lists {n}"))
     # 2 — answer.json is --json-summary.
     a, b = read(p.raw / "answer" / "answer.json"), read(p.raw / "summary.json")
     p.checks.append(("2 · answer/answer.json is summary.json, byte for byte", bool(a) and a == b,
@@ -1284,7 +1252,7 @@ def run_page(p: Pages, s: dict | None) -> Path:
     if main.code != 0 or main.stderr.strip():
         lines += ["## stderr", "", "```text", main.stderr.strip() or "(empty)", "```", ""]
     if "diff" in p.inv:
-        lines += ["## Against the right answer — `--diff-models`, verbatim", "", "```text",
+        lines += ["## Against the right answer — `ein test --diff full`, verbatim", "", "```text",
                   diff_block(p.inv["diff"], p.out), "```", ""]
     fails = [c for c in p.checks if c[1] is False]
     applicable = [c for c in p.checks if c[1] is not None]

@@ -56,12 +56,16 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
             .find(|g| g.get_args().any(|a| a.as_str() == id))
             .map(|g| g.get_id().as_str().to_string())
             .unwrap_or_else(|| "-".to_string());
-        let arity = match arg.get_num_args() {
-            Some(r) => r.min_values(),
-            None if arg.get_action().takes_values() => 1,
-            None => 0,
+        // An option whose value may be left out takes a range, `0..1`, and
+        // keeps its metavar; what a bare one means its help says (`clap`
+        // keeps that value private).
+        let (arity, takes) = match arg.get_num_args() {
+            Some(r) if r.min_values() == 0 && r.max_values() == 1 => ("0..1".to_string(), true),
+            Some(r) => (r.min_values().to_string(), r.min_values() > 0),
+            None if arg.get_action().takes_values() => ("1".to_string(), true),
+            None => ("0".to_string(), false),
         };
-        let metavar = if arity == 0 {
+        let metavar = if !takes {
             "-".to_string()
         } else {
             let name = arg
@@ -78,7 +82,7 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
                 name
             }
         };
-        let default = if arity == 0 {
+        let default = if !takes {
             "False".to_string()
         } else {
             match arg.get_default_values().first() {

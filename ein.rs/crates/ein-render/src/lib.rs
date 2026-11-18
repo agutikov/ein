@@ -1,4 +1,4 @@
-//! `ein-render` — DOT renderers, the markdown trace, the solution table.
+//! `ein-render` — DOT renderers, the markdown trace, the read-out.
 //!
 //! Everything that formats lives here, so every rendered surface is one crate
 //! and can be diffed as a unit
@@ -12,15 +12,14 @@
 #![forbid(unsafe_code)]
 
 pub mod builder;
+pub mod claim_diff;
 pub mod constraints;
 pub mod derivation;
 pub mod dot_util;
 pub mod dump;
 pub mod fact_graph;
-pub mod grid;
 pub mod ir_dot;
 pub mod kb_dot;
-pub mod models;
 pub mod palette;
 pub mod read_out;
 pub mod region_doc;
@@ -44,7 +43,6 @@ pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value
 pub use ein_core::render_why;
 pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
-pub use models::{KeyOutcome, ModelsForm, key_table};
 pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};
 pub use sentence::{FactSentence, Origin, fact_sentence, rule_sentence};
