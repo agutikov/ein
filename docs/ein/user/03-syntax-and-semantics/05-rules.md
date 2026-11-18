@@ -69,16 +69,18 @@ the four rules derive:
 
 A rule is a **rewrite of the graph**: where the picture on its left is found in the knowledge base, the picture on
 its right is added. `ein render rules FILE` draws every rule of a program so, and `ein render rule --name N FILE`
-one of them: two panels, what the rule matches and what it asserts. Variables are diamonds, a pattern of two
-arguments a labelled arrow, a pattern of one an octagon over its argument, a guard a dotted undirected link, and
-the conclusion dashed. The four rules of the program above, in the order it writes them:
+one of them: two panels, what the rule matches and what it asserts. A pattern is drawn as a fact is, an octagon
+with no name in it, its arrow `1` at its relation and its next arrows at its arguments; variables are diamonds and
+names boxes, a guard is a dotted undirected link, and the conclusion is dashed. `--fold` draws each pattern of three
+arrows that nothing points at as one arrow labelled with its relation. The four rules of the program above, in the
+order it writes them:
 
 ![The rule parent-is-ancestor: what it matches and what it asserts](diagrams/05-rule-parent-is-ancestor.svg)
 
-`chain` is drawn with its parameter as the arrows' label, `?r`: the picture is of any relation the rule is
-activated on. The dotted link is the guard `(neq ?a ?c)`:
+`chain` is drawn with its parameter as a diamond, `?r`, under the first arrow of each of its patterns: the picture
+is of any relation the rule is activated on. The dotted link is the guard `(neq ?a ?c)`:
 
-![The rule chain: what it matches and what it asserts, its parameter the arrows' label](diagrams/05-rule-chain.svg)
+![The rule chain: what it matches and what it asserts, each pattern's arrow 1 at the diamond ?r, its parameter](diagrams/05-rule-chain.svg)
 
 The two disjuncts of `owns-a-pet`'s `(or …)` are drawn side by side over the variable they share; the picture does
 not say *or*, the rule's text does:
@@ -91,13 +93,14 @@ drawing still reads *no such match exists*:
 ![The rule no-child: its absence a dashed cluster](diagrams/05-rule-no-child.svg)
 
 `--rule-mode overlay` draws one panel instead, the matched pattern solid and the conclusion dashed over it. A stored
-negation `(not P)` is drawn red, its label prefixed `¬`, and `(false)` as an octagon
-([constraints](06-constraints.md)).
+negation `(not P)` is a pattern of `not`, drawn red, whose arrow `2` is at `P`'s node, and `(false)` an octagon whose
+arrow `1` is at the box `false` ([constraints](06-constraints.md)).
 
-What the rewrites did to this program's graph is `ein render kb FILE`, the declarations' facts left out: the three
-solid arrows are what the program wrote, and each dashed one is a firing, labelled with its rule.
+What the rewrites did to this program's graph is `ein render kb FILE`, every fact an octagon, the declarations' and
+the activator `(chain ancestor)` among them: the three solid octagons of `parent` and `has-dog` are what the
+program wrote, and each dashed one is a firing's conclusion, with its rule beside it.
 
-![The program's graph after the rewrites: three arrows written, the derived ones dashed](diagrams/05-program-kb.svg)
+![The program's graph after the rewrites: the facts written solid, the derived ones dashed, each with its rule beside it](diagrams/05-program-kb.svg)
 
 ## In words
 
@@ -115,9 +118,9 @@ Derives `ancestor(Ann, Cid)` — Ann is an ancestor of Cid
 ```
 
 and under it the firing drawn, the premises it read on the left, the rule with its reason in the middle, the fact
-it added on the right:
+it added on the right, in bold, each fact its octagon with its arrows at its relation and its arguments:
 
-![One firing drawn: the premises it read, the rule with its reason, the fact it added](diagrams/05-firing.svg)
+![One firing drawn: the two premises it read, each an octagon over ancestor and its arguments, the rule with its reason, and the fact it added, in bold](diagrams/05-firing.svg)
 
 The quote is the rule's reason, and the line after *Derives* is the conclusion's statement, its relation's `:why`.
 A good reason says what the rule concludes and from what; a refutation's says what cannot be

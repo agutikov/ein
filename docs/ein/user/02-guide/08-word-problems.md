@@ -145,17 +145,18 @@ far the first number falls short of the second, here by nothing
 the engine supposes no fact of them: a relation left open is one whose facts the engine may take as
 [hypotheses](../03-syntax-and-semantics/09-hypotheses.md), and a word theory supposes nothing.
 
-**As a graph.** The problem's three sentences, from `ein render program` on that file: a fact of more than two
-arguments is an octagon with a numbered arrow to each, and a number or a quantity, itself a fact, is an octagon of
-its own, in a dashed frame named for the fact that points at it, since the program does not state it
+**As a graph.** The problem's three sentences, from the digraph `kb` of `ein render program` on that file, cut to
+them: each fact is an octagon, its arrow `1` at its relation and its next arrows at its arguments in order, its
+sentence beside it; and a number or a quantity, itself a fact, is an octagon of its own, in a dashed frame named for
+the fact that points at it, since the program does not state it
 ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)).
 
-![The word problem's three sentences as facts](diagrams/08-problem-facts.svg)
+![The word problem's three sentences as facts: has, gave and asked octagons, the numbers and the quantity framed octagons they point at](diagrams/08-problem-facts.svg)
 
 And the rule that turns *gave* into a subtraction, from `ein render rule --name gave-means-less`: it matches a wanted
 amount, the sentence that says what was given, and the value the giver had before, and asserts the request `(sub ?a
-?x)`, the dashed arrow. The two amounts are patterns under an arrow, each an octagon in its frame with arrows to the
-variables it binds.
+?x)`, the dashed octagon. The two amounts are patterns under an arrow, each an octagon in its frame with arrows to
+its relation and to the variables it binds.
 
 ![The rule gave-means-less: a wanted amount, what was given and the value before, and the request it asserts](diagrams/08-rule-gave-means-less.svg)
 

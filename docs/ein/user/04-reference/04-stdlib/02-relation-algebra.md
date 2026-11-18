@@ -136,10 +136,13 @@ Read these before importing a relation-algebra module: they decide whether a rul
   as :expect        (model (same Ann Ann) (same Bob Bob) (same Cid Cid))
 ```
 
-The same state as `ein render kb` draws it, the declarations left out: a fact the program wrote is a solid arrow,
-and one a rule derived is a dashed arrow labelled with the relation and the rule that derived it.
+The same state as `ein render kb --fold` draws it, each fact of three arrows one arrow labelled with its relation,
+and of it the facts of the six declared relations alone: the declarations' facts and the facts that apply a rule,
+`(converse parent child)` and the others, are left out. A fact the program wrote is a solid arrow, and one a rule
+derived is a dashed arrow labelled with the relation and the rule that derived it; `(same Ann Ann)` folds into an
+arrow from `Ann` back to itself, its two arguments one atom.
 
-![The state of the operators' example: written facts solid, derived ones dashed](diagrams/02-operators-state.svg)
+![The state of the operators' example, folded: written facts solid arrows, derived ones dashed and labelled with their rule](diagrams/02-operators-state.svg)
 
 `(includes parent ancestor)`, a closure of [the section below](#closures), copies the two parent facts, and `(compose ancestor ancestor ancestor)` closes them:
 Ann is an ancestor of Cid. `imply1`, `imply2-fwd` and `imply2-reverse` copy a property or a relation into

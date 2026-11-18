@@ -2,18 +2,28 @@ digraph rule_nobody_home_lhs_rhs {
   rankdir=TB;
   label="nobody-home"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "is-a_L" [label="is-a", shape=box];
     "?h_L" [label="?h", shape=diamond];
-    "House_L" [label="House", shape=rectangle];
-    "?h_L" -> "House_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "House_L" [label="House", shape=box];
+    "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "h1_is-a_L" -> "?h_L" [xlabel="2", color="#7f7f7f"];
+    "h1_is-a_L" -> "House_L" [xlabel="3", color="#7f7f7f"];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "lives-in_L" [label="lives-in", shape=box];
       "?p_L" [label="?p", shape=diamond];
-      "?p_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
+      "h2_lives-in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+      "h2_lives-in_L" -> "lives-in_L" [xlabel="1", color="#9467bd"];
+      "h2_lives-in_L" -> "?p_L" [xlabel="2", color="#9467bd"];
+      "h2_lives-in_L" -> "?h_L" [xlabel="3", color="#9467bd"];
     }
   }
   subgraph cluster_rhs { label="assert";
+    "vacant_R" [label="vacant", shape=box];
     "?h_R" [label="?h", shape=diamond];
-    "h1_vacant_R" [shape=octagon, label="vacant", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "h1_vacant_R" -> "?h_R" [label="1", color="#ff7f0e", style=dashed];
+    "h3_vacant_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "h3_vacant_R" -> "vacant_R" [xlabel="1", color="#ff7f0e", style=dashed];
+    "h3_vacant_R" -> "?h_R" [xlabel="2", color="#ff7f0e", style=dashed];
   }
 }

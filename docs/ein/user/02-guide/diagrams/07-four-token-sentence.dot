@@ -1,6 +1,9 @@
 digraph kb {
   rankdir=BT;
-
-  // facts
-  "Norwegian" -> "House-1" [label="lives-in (10)", color="#9467bd", fontcolor="#9467bd", style=solid];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid, xlabel="(10)"];
+  f_ba78d8e6bc -> "lives-in" [xlabel="1", color="#9467bd", style=solid];
+  f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#9467bd", style=solid];
+  f_ba78d8e6bc -> "House-1" [xlabel="3", color="#9467bd", style=solid];
 }

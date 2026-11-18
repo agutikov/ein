@@ -1,3 +1,0 @@
-digraph query {
-  "query" [shape=note, label=":goal (seat ?who C1)\n:goal-text \"{?who} sits on the first chair\"\n:over maximal\n:expect (or (model (seat Ann C1)) (model (seat Bob C1)))"];
-}

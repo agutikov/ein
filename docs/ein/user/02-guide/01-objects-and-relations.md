@@ -25,7 +25,10 @@ nationality is something the program *says*, with an ordinary fact:
 (is-a Englishman Nationality)
 ```
 
-![Two is-a facts: Norwegian and Englishman are each a Nationality](diagrams/01-is-a-facts.svg)
+![Two is-a facts, each an octagon with its arrow 1 at is-a, 2 at Norwegian or Englishman and 3 at Nationality](diagrams/01-is-a-facts.svg)
+
+Each fact is a node of the graph too, an octagon, with numbered arrows: `1` at its relation, `is-a`, then `2` and
+`3` at what it is said of, in order ([§ Facts](#facts--a-relation-and-its-arguments) below has the whole story).
 
 **Ein has no types.** Nothing in the language sets `Nationality` apart from `Norwegian`: both are atoms, nodes with
 a name, and `is-a` is a relation like any other, one the puzzle chose to call that. When this guide says *the
@@ -33,8 +36,7 @@ Norwegian is a Nationality* it reads that fact aloud. Such a fact matters to the
 it, and the rules that do are the subject of [Chapter 3](03-rule-families.md).
 
 (The precise model, the graph with its atoms and its facts, is
-[objects](../03-syntax-and-semantics/01-objects.md); the [glossary](../04-reference/13-glossary.md) has each word,
-and defines *Levi-bipartite*.)
+[objects](../03-syntax-and-semantics/01-objects.md); the [glossary](../04-reference/13-glossary.md) has each word.)
 
 ## Relations — how things connect
 
@@ -45,12 +47,15 @@ Norwegian House-1)`. You declare it once, with a name for each of its slots:
   ```lisp
   (relation nation-loc Nationality House :why "the {?1} lives in {?2}")
   ```
-- **graph:** the declaration is itself stored as a fact, `(relation nation-loc Nationality House)`, a node with one
-  arrow to the relation it declares and one to each slot's label. This is how `ein render kb` draws it:
+- **graph:** the declaration is itself stored as a fact, `(relation nation-loc Nationality House)`, a node whose
+  arrow `1` is at the relation `relation`, `2` at the relation it declares and `3`, `4` at each slot's label. This is
+  how `ein render kb` draws it, cut to the declaration's facts:
 
-  ![The declaration of nation-loc as a stored fact](diagrams/01-declaration.svg)
+  ![The declaration of nation-loc as two stored facts, octagons whose arrow 1 is at relation and arrow 2 at nation-loc](diagrams/01-declaration.svg)
 
-  The loop on `nation-loc` is a second stored fact, `(relation nation-loc)`: *`nation-loc` is a declared relation*.
+  The second octagon, with only the arrows `1` and `2`, is a second stored fact, `(relation nation-loc)`:
+  *`nation-loc` is a declared relation*. `relation` is drawn as any relation is, one box under the first arrow of
+  each of its facts.
 - **English:** "a nationality lives in a house."
 
 The declaration does two things. It fixes **how many arguments** a `nation-loc` fact has, two, and Ein refuses a
@@ -76,17 +81,21 @@ of knowledge:
   ```lisp
   (nation-loc Norwegian House-1)
   ```
-- **graph (compact):** an arrow between the two arguments with the relation's name on it, as `ein render program`
-  draws it,
+- **graph:** a **node** of its own, an octagon with no name in it, with an arrow numbered `1` to its relation and
+  one numbered `2`, `3` to each of its arguments in turn. That is what the fact is, and how `ein render program`
+  draws it:
 
-  ![The fact (nation-loc Norwegian House-1) as a labelled link between two atoms](diagrams/01-fact-compact.svg)
+  ![The fact (nation-loc Norwegian House-1) as an octagon, its arrow 1 at nation-loc, 2 at Norwegian, 3 at House-1](diagrams/01-fact-canonical.svg)
 
-  which is the readable shorthand for what the fact is: a **node** of its own, with an arrow to its relation and
-  one to each of its two arguments. The **Levi** view, `ein render program --levi`, draws that node, with the
-  relation's name written in it and an arrow to each argument
-  ([objects](../03-syntax-and-semantics/01-objects.md#as-a-graph) has the graph itself beside both drawings):
+  A fact of a relation and two arguments, three arrows, has a readable shorthand: one arrow from its first argument
+  to its second, with the relation's name on it. `ein render program --fold` draws it so
+  ([rendering](../04-reference/12-rendering.md#a-fact-as-the-graph-has-it--the-canonical-form-and-the-fold) has what
+  is folded and what is not):
 
-  ![The same fact in the Levi view: a node joined to its two arguments](diagrams/01-fact-levi.svg)
+  ![The same fact folded: one arrow from Norwegian to House-1 labelled nation-loc](diagrams/01-fact-folded.svg)
+
+  The shorthand loses the relation as a node: a hundred `nation-loc` facts are a hundred arrows with one word on
+  them, where the graph has one `nation-loc` box that a hundred octagons point at.
 
 - **English:** "the Norwegian lives in House-1", which is the relation's `:why` with the fact's arguments in it.
 
@@ -120,12 +129,11 @@ That's the whole vocabulary. Put together, a tiny model reads:
 
 Save it as `tiny.ein`, and `ein render kb tiny.ein` draws all of it as one graph, every atom once:
 
-![The program tiny.ein as one graph, every atom once](diagrams/01-tiny-program.svg)
+![The program tiny.ein as one graph: the two declaration facts, the two is-a facts and the clue, each an octagon, every atom a box](diagrams/01-tiny-program.svg)
 
-The drawing puts `Nationality` in a box and the two atoms with an `is-a` arrow into it in ovals, and its comments
-call them *types* and *instances*. That is a convention of the drawing, keyed on a relation named `is-a`
-([rendering](../04-reference/12-rendering.md)): it changes no answer, and a puzzle that named its grouping relation
-otherwise would see plain arrows. The clue's arrow carries its source, `(10)`.
+Every atom is a box, `Nationality` and `Norwegian` alike, and every fact an octagon, the `is-a` facts and the
+declaration's two among them: no relation is drawn otherwise than another
+([rendering](../04-reference/12-rendering.md)). The clue's octagon has its source beside it, `(10)`.
 
 So far nothing is *derived*: these are all things we stated. In [Chapter 2](02-first-rules.md) we add **rules**, and
 Ein starts producing new facts on its own.

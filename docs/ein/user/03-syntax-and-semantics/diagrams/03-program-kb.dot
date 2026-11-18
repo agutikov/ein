@@ -1,15 +1,49 @@
 digraph kb {
   rankdir=BT;
-  "Alice" -> "Bob" [label="knows Alice says she knows Bob", color="#17becf", fontcolor="#17becf", style=solid];
-  "Bob" -> "Carol" [label="knows", color="#17becf", fontcolor="#17becf", style=solid];
-  "Carol" -> f_49646612cf [label="claims", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Bob" -> "Alice" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
-  "Carol" -> "Bob" [label="knows by knows-back", color="#17becf", fontcolor="#17becf", style=dashed];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_ecefbc34bf [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_ecefbc34bf -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "knows" [xlabel="2", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "Person" [xlabel="3", color="#bcbd22", style=solid];
+  f_ecefbc34bf -> "Person" [xlabel="4", color="#bcbd22", style=solid];
+  f_fccc388ce9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_fccc388ce9 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_fccc388ce9 -> "knows" [xlabel="2", color="#bcbd22", style=solid];
+  f_f63fda0b3f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_f63fda0b3f -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_f63fda0b3f -> "claims" [xlabel="2", color="#bcbd22", style=solid];
+  f_f63fda0b3f -> "Person" [xlabel="3", color="#bcbd22", style=solid];
+  f_f63fda0b3f -> "Claim" [xlabel="4", color="#bcbd22", style=solid];
+  f_0325585856 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_0325585856 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_0325585856 -> "claims" [xlabel="2", color="#bcbd22", style=solid];
+  f_976d7e7ab9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid, xlabel="Alice says she knows Bob"];
+  f_976d7e7ab9 -> "knows" [xlabel="1", color="#17becf", style=solid];
+  f_976d7e7ab9 -> "Alice" [xlabel="2", color="#17becf", style=solid];
+  f_976d7e7ab9 -> "Bob" [xlabel="3", color="#17becf", style=solid];
+  f_0c86c39875 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  f_0c86c39875 -> "knows" [xlabel="1", color="#17becf", style=solid];
+  f_0c86c39875 -> "Bob" [xlabel="2", color="#17becf", style=solid];
+  f_0c86c39875 -> "Carol" [xlabel="3", color="#17becf", style=solid];
+  f_5bc8aa3007 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_5bc8aa3007 -> "claims" [xlabel="1", color="#bcbd22", style=solid];
+  f_5bc8aa3007 -> "Carol" [xlabel="2", color="#bcbd22", style=solid];
+  f_5bc8aa3007 -> f_49646612cf [xlabel="3", color="#bcbd22", style=solid];
+  f_884e5d5933 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by knows-back"];
+  f_884e5d5933 -> "knows" [xlabel="1", color="#17becf", style=dashed];
+  f_884e5d5933 -> "Bob" [xlabel="2", color="#17becf", style=dashed];
+  f_884e5d5933 -> "Alice" [xlabel="3", color="#17becf", style=dashed];
+  f_ebc7d3e63f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=dashed, xlabel="by knows-back"];
+  f_ebc7d3e63f -> "knows" [xlabel="1", color="#17becf", style=dashed];
+  f_ebc7d3e63f -> "Carol" [xlabel="2", color="#17becf", style=dashed];
+  f_ebc7d3e63f -> "Bob" [xlabel="3", color="#17becf", style=dashed];
   newrank=true;
   subgraph cluster_ctx_0 {
     label="claims ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
-    f_49646612cf [shape=octagon, label="(knows)", color="#17becf", fontcolor="#17becf", style=solid];
+    f_49646612cf [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
   }
-  f_49646612cf -> "Carol" [label="#1", color="#17becf", style=solid];
-  f_49646612cf -> "Dan" [label="#2", color="#17becf", style=solid];
+  f_49646612cf -> "knows" [xlabel="1", color="#17becf", style=solid];
+  f_49646612cf -> "Carol" [xlabel="2", color="#17becf", style=solid];
+  f_49646612cf -> "Dan" [xlabel="3", color="#17becf", style=solid];
 }

@@ -1,8 +1,0 @@
-digraph facts {
-  ranksep=0.55;
-  "h_1_nation-loc" [shape=octagon, label="nation-loc"];
-  "Norwegian" [shape=rectangle];
-  "House-1" [shape=rectangle];
-  "h_1_nation-loc" -> "Norwegian" [label="1"];
-  "h_1_nation-loc" -> "House-1" [label="2"];
-}

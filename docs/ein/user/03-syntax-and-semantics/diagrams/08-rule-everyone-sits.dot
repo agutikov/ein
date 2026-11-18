@@ -2,20 +2,33 @@ digraph rule_everyone_sits_lhs_rhs {
   rankdir=TB;
   label="everyone-sits"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "is-a_L" [label="is-a", shape=box];
     "?p_L" [label="?p", shape=diamond];
-    "Person_L" [label="Person", shape=rectangle];
-    "?p_L" -> "Person_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
+    "Person_L" [label="Person", shape=box];
+    "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "h1_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+    "h1_is-a_L" -> "?p_L" [xlabel="2", color="#7f7f7f"];
+    "h1_is-a_L" -> "Person_L" [xlabel="3", color="#7f7f7f"];
     subgraph cluster_absent_L_0 {
       label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
       "?c_L" [label="?c", shape=diamond];
-      "Chair_L" [label="Chair", shape=rectangle];
-      "?c_L" -> "Chair_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
-      "?p_L" -> "?c_L" [label="seat", color="#1f77b4", fontcolor="#1f77b4"];
+      "Chair_L" [label="Chair", shape=box];
+      "seat_L" [label="seat", shape=box];
+      "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+      "h2_is-a_L" -> "is-a_L" [xlabel="1", color="#7f7f7f"];
+      "h2_is-a_L" -> "?c_L" [xlabel="2", color="#7f7f7f"];
+      "h2_is-a_L" -> "Chair_L" [xlabel="3", color="#7f7f7f"];
+      "h3_seat_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+      "h3_seat_L" -> "seat_L" [xlabel="1", color="#ff7f0e"];
+      "h3_seat_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
+      "h3_seat_L" -> "?c_L" [xlabel="3", color="#ff7f0e"];
     }
   }
   subgraph cluster_rhs { label="assert";
-    "seat_R" [label="seat", shape=rectangle];
-    "h1_open_R" [shape=octagon, label="open", color="#2ca02c", fontcolor="#2ca02c"];
-    "h1_open_R" -> "seat_R" [label="1", color="#2ca02c", style=dashed];
+    "open_R" [label="open", shape=box];
+    "seat_R" [label="seat", shape=box];
+    "h4_open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h4_open_R" -> "open_R" [xlabel="1", color="#2ca02c", style=dashed];
+    "h4_open_R" -> "seat_R" [xlabel="2", color="#2ca02c", style=dashed];
   }
 }

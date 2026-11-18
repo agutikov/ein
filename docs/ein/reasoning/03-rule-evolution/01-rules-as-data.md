@@ -84,16 +84,17 @@ $$
 
 That is the fixed point of Ein's model, *an instance is an instance of instance*, reached with two membership
 facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state,
-with the two declarations' facts kept:
+every fact of it, the declarations' facts and the two property facts among them:
 
-![The saturated state in which instance is an instance of instance](diagrams/01-instance-of-instance.svg)
+![The saturated state in which instance is an instance of instance: the atom is-a under the second arrow of its declaration's facts, the label of its facts' arrows, and the tail of one of them](diagrams/01-instance-of-instance.svg)
 
-The drawing is with labelled arrows
+The drawing folds each fact of three arrows into a labelled arrow
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)), and the membership
-relation appears in it three ways: as the first argument of the fact its declaration is (the octagon's arrow
-numbered 1), as the label of the dashed arrows with an empty head, which are its facts, and as an oval, the
-atom, with such an arrow of its own to $\mathsf{Relation}$. The pink arrows are the derived facts; the one from
-the membership relation to $\mathsf{Object}$ is $e_3$, the conclusion of the derivation above.
+relation appears in it three ways: as the first argument of the facts its declaration is (the arrow numbered 2 of
+two octagons whose arrow 1 is at $\mathsf{relation}$), as the label of the arrows that are its facts, and as the
+atom, a box, with such an arrow of its own to $\mathsf{Relation}$. A fact of it is drawn as any other fact is.
+The pink dashed arrows are the derived facts; the one from the membership relation to $\mathsf{Object}$ is $e_3$,
+the conclusion of the derivation above.
 
 ### Facts, relations, properties and rules
 

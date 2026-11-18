@@ -26,9 +26,11 @@ lesson you'll take to your own puzzles:
 (bijective  nation-loc) (bijective drink-loc) (bijective smoke-loc) (bijective pet-loc)
 ```
 
-One tag pulls in a whole family of imported logic:
+One tag pulls in a whole family of imported logic. The tag is a fact like any other, an octagon whose arrow `1` is
+at `bijective` and whose arrow `2` is at `color-loc`; the dashed arrow is no arrow of the graph, and points at what
+the fact switches on:
 
-![The tag (bijective color-loc) and the family of logic it pulls in](diagrams/03-bijective-family.svg)
+![The fact (bijective color-loc) as an octagon, and a dashed arrow from it to the family of logic it pulls in](diagrams/03-bijective-family.svg)
 
 You never wrote `symmetric`/`bijective`'s logic: the stdlib did
 ([the relation algebra](../04-reference/04-stdlib/02-relation-algebra.md), [bijections](../04-reference/04-stdlib/04-bijections.md)). Each `(bijective R)` pulls
@@ -62,10 +64,13 @@ four colours excluded from House-1, and the survivor, forced.
   (color-loc Yellow House-1 :rule std.bijection.range-elimination)
 ```
 
-As a graph, a stored negation dotted and labelled `¬`, as a rule's drawing
-labels one, and the derived fact dashed:
+As a graph, the same five facts as `ein render kb examples/zebra2.ein` draws
+them, cut to them: each stored negation a fact of `not`, its arrow `2` at the
+fact it denies, which stands in the frame `not ctx` because the knowledge
+base does not hold it; every fact here derived, so dashed, with the rule
+beside it:
 
-![Range elimination: the stored negations dotted, the derived fact dashed](diagrams/03-range-elimination.svg)
+![Range elimination: four facts of not, each pointing at a framed color-loc fact of House-1, and the derived color-loc Yellow House-1](diagrams/03-range-elimination.svg)
 
 Elimination needs negatives to eat, which is where the next family comes in.
 
@@ -83,9 +88,10 @@ lot. `(bijective R)` gives the *property* side; zebra2 adds
 ```
 
 As `ein render rule --name co-located-negative examples/zebra2.ein` draws
-it, a `¬` on an arrow marking a stored negation:
+it: a stored negation is a fact of `not`, drawn red, whose arrow `2` is at
+the pattern it denies, which stands in the frame `not ctx`:
 
-![The rule co-located-negative: a stored negation in, a stored negation out](diagrams/03-rule-co-located-negative.svg)
+![The rule co-located-negative: a stored negation in, a stored negation out, each a fact of not pointing at a framed pattern](diagrams/03-rule-co-located-negative.svg)
 
 **English:** "the Norwegian is in House-1, so the Englishman isn't; the
 Englishman is the red house, so House-1 isn't red." Each `(not …)` it
@@ -154,7 +160,8 @@ out:
 ![The rule disjunctive-prune-fwd: its absence a dashed box, its conclusion a stored negation](diagrams/03-rule-disjunctive-prune-fwd.svg)
 
 **This rule reads a declaration.** `(relation ?R2 ?A ?B)` matches the stored
-fact of `?R2`'s declaration, the octagon, and binds `?B` to the label of its
+fact of `?R2`'s declaration, the octagon whose arrow `1` is at `relation`,
+and binds `?B` to the label of its
 second slot: for `(relation pet-loc Pet House …)` that is `House`. Then
 `(is-a ?h_other ?B)` ranges `?h_other` over every atom with an `is-a` fact
 into that label, the five houses. This is the whole of what Chapter 1 meant

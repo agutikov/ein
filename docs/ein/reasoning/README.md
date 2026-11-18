@@ -117,16 +117,17 @@ in either or in both, and it is one node.
 | [analysis of rules](03-rule-evolution/02-analysis-of-rules.md) | $\operatorname{reads}$, $\operatorname{writes}$, $\operatorname{sgn}$; $c$ a strongly connected component; $\chi$ |
 | [transformations](03-rule-evolution/03-transformations.md) | $\tau$ a transformation; $\beta$ a renaming; $\alpha$ the map to full names; $\operatorname{resolve}$, $\operatorname{expand}$, $\operatorname{lits}$, $\operatorname{inst}_K(P)$ |
 
-**Graphs.** A knowledge base is a graph, and the first part draws it as it is: a box is an atom, with its name
-in it; an octagon is a fact, in a dashed frame where the knowledge base only points at it and does not hold it;
-an arrow carries its place among the arrows of its fact, the first pointing at the relation; a diamond is a variable
-([the knowledge base](01-static-ir/01-knowledge-base.md#the-graph)). The pages after it draw facts **with labelled arrows**, the way a
-program is drawn for its author ([rendering](../user/04-reference/12-rendering.md)): a fact with a relation and
-two arguments is one arrow from the first argument to the second, labelled with the relation's name; a fact of
-one argument is a loop; a fact of any other count is a node of its own with one arrow to each argument, numbered
-by argument; a dashed arrow is a fact that was derived, or, in a rule, the fact a conclusion adds. That form is a
-drawing convention, and [the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what it stands for and what it
-loses. Every drawing is an image, and its source is the file of the same name in the `diagrams/` folder beside
+**Graphs.** A knowledge base is a graph, and the pages draw it as it is: a box is an atom, with its name
+in it; an octagon is a fact, with no name in it, in a dashed frame where the knowledge base only points at it and
+does not hold it; an arrow carries its place among the arrows of its fact, $1$ on the first, which points at the
+relation; a diamond is a variable; a dashed octagon, with its dashed arrows, is a fact that was derived, or, in a
+rule, a fact the conclusion adds ([the knowledge base](01-static-ir/01-knowledge-base.md#the-graph)). No relation
+is drawn otherwise than another. A drawing may **fold** a fact with a relation and two arguments that no fact
+points at into one arrow from the first argument to the second, labelled with the relation's name, the way a
+program is often drawn for its author ([rendering](../user/04-reference/12-rendering.md)); a drawing that folds
+says so beside it, and [the knowledge base](01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows) says what
+the fold stands for and what it loses. Nothing else is folded: a fact of one argument is an octagon, never a loop.
+Every drawing is an image, and its source is the file of the same name in the `diagrams/` folder beside
 its page ([Q-M1f.368](../../decisions/docs/Q-M1f.368-a-diagram-is-a-file-and-a-page-shows-its-picture.md)).
 
 ## Reading order

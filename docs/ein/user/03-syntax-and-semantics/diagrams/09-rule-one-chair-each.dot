@@ -2,14 +2,23 @@ digraph rule_one_chair_each_lhs_rhs {
   rankdir=TB;
   label="one-chair-each"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "seat_L" [label="seat", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?a_L" [label="?a", shape=diamond];
     "?b_L" [label="?b", shape=diamond];
-    "?p_L" -> "?a_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?p_L" -> "?b_L" [label="seat", color="#ff7f0e", fontcolor="#ff7f0e"];
+    "h1_seat_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_seat_L" -> "seat_L" [xlabel="1", color="#ff7f0e"];
+    "h1_seat_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
+    "h1_seat_L" -> "?a_L" [xlabel="3", color="#ff7f0e"];
+    "h2_seat_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h2_seat_L" -> "seat_L" [xlabel="1", color="#ff7f0e"];
+    "h2_seat_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
+    "h2_seat_L" -> "?b_L" [xlabel="3", color="#ff7f0e"];
     "?a_L" -> "?b_L" [label="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
   }
   subgraph cluster_rhs { label="assert";
-    "h1_false_R" [shape=octagon, label="false", color="#2ca02c", fontcolor="#2ca02c"];
+    "false_R" [label="false", shape=box];
+    "h3_false_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "h3_false_R" -> "false_R" [xlabel="1", color="#2ca02c", style=dashed];
   }
 }

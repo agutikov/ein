@@ -1,18 +1,25 @@
 digraph kb {
   rankdir=BT;
-  // types
-  "Nationality" [shape=box, label="Nationality"];
-  // instances
-  "Englishman" [shape=oval, label="Englishman"];
-  "Norwegian" [shape=oval, label="Norwegian"];
-
-  // facts
-  f_4405c3d64e [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  f_4405c3d64e -> "nation-loc" [label="#1", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "Nationality" [label="#2", color="#bcbd22", style=solid];
-  f_4405c3d64e -> "House" [label="#3", color="#bcbd22", style=solid];
-  "nation-loc" -> "nation-loc" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Norwegian" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Englishman" -> "Nationality" [style=dashed, arrowhead=empty, label="is-a"];
-  "Norwegian" -> "House-1" [label="nation-loc (10)", color="#d62728", fontcolor="#d62728", style=solid];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_4405c3d64e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_4405c3d64e -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [xlabel="3", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_c3d57f8713 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_c3d57f8713 -> "relation" [xlabel="1", color="#bcbd22", style=solid];
+  f_c3d57f8713 -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_dc6eb765fe [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_dc6eb765fe -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  f_dc6eb765fe -> "Norwegian" [xlabel="2", color="#7f7f7f", style=solid];
+  f_dc6eb765fe -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_44a51b0731 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_44a51b0731 -> "is-a" [xlabel="1", color="#7f7f7f", style=solid];
+  f_44a51b0731 -> "Englishman" [xlabel="2", color="#7f7f7f", style=solid];
+  f_44a51b0731 -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_481b793602 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(10)"];
+  f_481b793602 -> "nation-loc" [xlabel="1", color="#d62728", style=solid];
+  f_481b793602 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
+  f_481b793602 -> "House-1" [xlabel="3", color="#d62728", style=solid];
 }

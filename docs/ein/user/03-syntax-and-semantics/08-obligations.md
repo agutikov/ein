@@ -81,12 +81,13 @@ member of the domain has an image*, activated per relation by a fact:
 ## As a graph
 
 `ein render rule --name everyone-sits FILE` draws the obligation as its two sides: the match, with the `absent` as a
-dashed cluster (*∄*), and the verdict, an octagon named `open` pointing at the relation it names.
+dashed cluster (*∄*), and the verdict, a fact of `open`, an octagon whose arrow `1` is at the box `open` and whose
+arrow `2` is at the relation it names.
 
-![The rule everyone-sits: the match with its absence a dashed cluster, and the verdict open](diagrams/08-rule-everyone-sits.svg)
+![The rule everyone-sits: the match with its absence a dashed cluster, and the verdict, a fact of open whose arrow 2 is at seat](diagrams/08-rule-everyone-sits.svg)
 
-Outside the cluster is the trigger, a person; inside it is what must not be missing, a chair with a `seat` arrow from
-that person. The library's `total-owed` is the same picture with every name a variable: the relation `?R` and its
+Outside the cluster is the trigger, a fact of `is-a` over a person; inside it is what must not be missing, a chair
+and a fact of `seat` from that person to it. The library's `total-owed` is the same picture with every name a variable: the relation `?R` and its
 two labels are read from the declaration's fact, and `?isa` is the membership relation the activator passes
 (`ein render rule --name total-owed STDLIB/algebra.ein`, with `STDLIB` a standard library on disk, the directory
 `ein --version` names):

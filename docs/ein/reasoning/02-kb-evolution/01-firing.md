@@ -74,10 +74,10 @@ the first: which conclusion survived would depend on which activator came first.
 [Saturation](02-saturation.md#the-agenda-the-order-rules-fire-in) has the proposition this identity buys, and
 the example where a projection would show.
 
-**As a rewrite of the graph.** The drawings below are with labelled arrows
+**As a rewrite of the graph.** The drawings below fold each fact into a labelled arrow
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): an atom is a node, and
-a fact with a relation and two arguments is an arrow from its first argument to its second, labelled with the
-relation's name. A rule is drawn as its pattern above its conclusion, with its variables as diamonds. The rule
+a fact with a relation and two arguments, which no fact here points at, is an arrow from its first argument to
+its second, labelled with the relation's name. A rule is drawn as its pattern above its conclusion, with its variables as diamonds. The rule
 below says that whoever lives in a house lives near the house next to it,
 
 $$
@@ -87,8 +87,8 @@ $$
 ![The rule neighbour: its pattern above its conclusion](diagrams/01-rule-neighbour.svg)
 
 A match $\theta$ sends the diamonds of the pattern to nodes of the knowledge base so that each arrow of the
-pattern lands on an arrow with the same label. Here is a knowledge base before the firing, $K$: an oval and a
-box are the two ends of a fact of $\operatorname{is-a}$, which is drawn as a dashed arrow with an empty head.
+pattern lands on an arrow with the same label. Here is a knowledge base before the firing, $K$, drawn without its declarations' facts: a fact of
+$\operatorname{is-a}$ is an arrow like any other.
 
 ![A knowledge base before the firing](diagrams/01-before-firing.svg)
 

@@ -1,0 +1,9 @@
+digraph kb {
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_481b793602 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+  f_481b793602 -> "nation-loc" [xlabel="1", color="#d62728", style=solid];
+  f_481b793602 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
+  f_481b793602 -> "House-1" [xlabel="3", color="#d62728", style=solid];
+}

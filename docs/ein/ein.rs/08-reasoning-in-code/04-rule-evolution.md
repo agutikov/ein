@@ -57,7 +57,7 @@ The page: [rules as data](../../reasoning/03-rule-evolution/01-rules-as-data.md)
 
 ```sh
 ein saturate kinds.ein --dump     # the derived facts, each with the rule that derived it
-ein render kb kinds.ein           # the drawing on the page
+ein render kb --fold kinds.ein    # the drawing on the page, each fact of three arrows folded
 ```
 
 <!-- output -->

@@ -1,28 +1,60 @@
 digraph kb {
   rankdir=BT;
-  node [fontname="Inter"];
-  // types
-  "Agent" [shape=box, label="Agent"];
-  "Colour" [shape=box, label="Colour"];
-  // instances
-  "Ann" [shape=oval, label="Ann"];
-  "Blue" [shape=oval, label="Blue"];
-  "Bob" [shape=oval, label="Bob"];
-  "Cid" [shape=oval, label="Cid"];
-  "Green" [shape=oval, label="Green"];
-  "Red" [shape=oval, label="Red"];
-  // facts
-  "Ann" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Bob" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Cid" -> "Agent" [style=dashed, arrowhead=empty, label="is-a"];
-  "Red" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "Green" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "Blue" -> "Colour" [style=dashed, arrowhead=empty, label="is-a"];
-  "wears" -> "wears" [label="bijective", color="#17becf", fontcolor="#17becf", style=solid];
-  "is-a" -> "is-a" [label="bijection-hierarchy", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "Bob" -> "Green" [label="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
-  "wears" -> "is-a" [label="std.algebra.total-owed by std.bijection.bijective-setup", color="#9467bd", fontcolor="#9467bd", style=dashed];
-  "wears" -> "is-a" [label="std.algebra.surjective-owed by std.bijection.bijective-setup", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  "Ann" -> "Blue" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
-  "Cid" -> "Red" [label="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  "Ann" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Bob" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Cid" -> "Agent" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Red" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Green" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Blue" -> "Colour" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_a6b96650fa [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+  f_a6b96650fa -> "not" [xlabel="1", color="#d62728", style=solid];
+  f_a6b96650fa -> f_e2b85627de [xlabel="2", color="#d62728", style=solid];
+  "Bob" -> "Green" [xlabel="wears", color="#8c564b", fontcolor="#8c564b", style=solid];
+  f_d4f58390cd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.functional-negative"];
+  f_d4f58390cd -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_d4f58390cd -> f_28610e96fc [xlabel="2", color="#d62728", style=dashed];
+  f_b50a0dc23e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.functional-negative"];
+  f_b50a0dc23e -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_b50a0dc23e -> f_1f19059689 [xlabel="2", color="#d62728", style=dashed];
+  f_427849ffe0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.injective-negative"];
+  f_427849ffe0 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_427849ffe0 -> f_2ff4cd6203 [xlabel="2", color="#d62728", style=dashed];
+  f_abb3620524 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.injective-negative"];
+  f_abb3620524 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_abb3620524 -> f_eeffa78f6a [xlabel="2", color="#d62728", style=dashed];
+  "Ann" -> "Blue" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  f_4a0ccf3329 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by std.bijection.injective-negative"];
+  f_4a0ccf3329 -> "not" [xlabel="1", color="#d62728", style=dashed];
+  f_4a0ccf3329 -> f_f06f91b304 [xlabel="2", color="#d62728", style=dashed];
+  "Cid" -> "Red" [xlabel="wears by std.bijection.domain-elimination", color="#8c564b", fontcolor="#8c564b", style=dashed];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_e2b85627de [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_28610e96fc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_1f19059689 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_2ff4cd6203 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_eeffa78f6a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+    f_f06f91b304 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  }
+  f_e2b85627de -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_e2b85627de -> "Ann" [xlabel="2", color="#8c564b", style=solid];
+  f_e2b85627de -> "Red" [xlabel="3", color="#8c564b", style=solid];
+  f_28610e96fc -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_28610e96fc -> "Bob" [xlabel="2", color="#8c564b", style=solid];
+  f_28610e96fc -> "Red" [xlabel="3", color="#8c564b", style=solid];
+  f_1f19059689 -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_1f19059689 -> "Bob" [xlabel="2", color="#8c564b", style=solid];
+  f_1f19059689 -> "Blue" [xlabel="3", color="#8c564b", style=solid];
+  f_2ff4cd6203 -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_2ff4cd6203 -> "Ann" [xlabel="2", color="#8c564b", style=solid];
+  f_2ff4cd6203 -> "Green" [xlabel="3", color="#8c564b", style=solid];
+  f_eeffa78f6a -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_eeffa78f6a -> "Cid" [xlabel="2", color="#8c564b", style=solid];
+  f_eeffa78f6a -> "Green" [xlabel="3", color="#8c564b", style=solid];
+  f_f06f91b304 -> "wears" [xlabel="1", color="#8c564b", style=solid];
+  f_f06f91b304 -> "Cid" [xlabel="2", color="#8c564b", style=solid];
+  f_f06f91b304 -> "Blue" [xlabel="3", color="#8c564b", style=solid];
 }

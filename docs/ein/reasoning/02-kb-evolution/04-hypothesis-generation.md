@@ -142,8 +142,10 @@ and each drink, that the guest drinks it*:
 
 ![The hrule guess-drink: what it matches and the fact each match proposes, dashed](diagrams/04-rule-guess-drink.svg)
 
-A diamond is a variable, a rectangle an atom, a solid arrow a premise, a fact the pattern must find, and the dashed
-arrow the fact the rule proposes. A root that holds one guest and two drinks gives
+The drawing folds each fact pattern of three arrows into a labelled arrow
+([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): a diamond is a variable, a
+box an atom, a solid arrow a premise, a fact the pattern must find, and the dashed arrow the fact the rule
+proposes. A root that holds one guest and two drinks gives
 
 $$
 \begin{aligned}
@@ -195,10 +197,11 @@ as a dashed cluster:
 
 ![The rule total-owed: the obligation's trigger, and its witness as a dashed cluster](diagrams/04-rule-total-owed.svg)
 
-Outside the dashed cluster is the trigger: the relation $r$ is declared with the labels $A$ and $B$, and $x$ is a
+It folds each fact pattern of three arrows as the drawing above does. Outside the dashed cluster is the trigger:
+the octagon of four arrows, the first at $\mathsf{relation}$, declares $r$ with the labels $A$ and $B$, and $x$ is a
 member of $A$. Inside it is the witness: the arrow labelled with the relation, a fact pattern of it, is the witness
-step, and the membership of $y$ in $B$ beside it is the domain. The octagon on the right is the verdict, pointing at
-the relation whose facts would pay. In formulas, with the rule's two parameters bound by the activator to a relation
+step, and the membership of $y$ in $B$ beside it is the domain. The dashed octagon in the lower panel is the
+verdict, a fact of $\mathsf{open}$ whose second arrow is at the relation whose facts would pay. In formulas, with the rule's two parameters bound by the activator to a relation
 $r$ and to a membership relation $\operatorname{isa}$:
 
 $$
@@ -224,12 +227,13 @@ activator, and declines the rung where it does (§ 4.3).
 
 **Read off a root.** One guest, two chairs, two drinks; the guest is owed a chair and a drink, each of the two
 relations is stated functional, and a stated fact says nobody at the first chair drinks milk. Root's facts are the
-solid and the dashed arrows below, in the vocabulary the engine draws a knowledge base in, and the dotted arrows are
-the four payments:
+solid arrows below, each a fact of three arrows folded into a labelled arrow, and the dotted arrows are the four
+payments:
 
 ![A root's facts, and the four payments of what it owes as dotted arrows](diagrams/04-root-and-payments.svg)
 
-A box is a label, an oval an atom that is no label, a dashed arrow with an open head a membership, a solid arrow a stated fact. Root
+A box is an atom, a solid arrow a stated fact, a fact of $\operatorname{is-a}$ as any other, and a dotted arrow a
+payment, a fact root does not hold. Root
 owes two instances, $I_{\mathrm{s}}$, *the guest has a chair*, and $I_{\mathrm{d}}$, *the guest has a drink*, and
 
 $$
@@ -487,8 +491,9 @@ $\lvert \Pi_{\mathrm{bl}} \rvert = p\,k + q\,k\,(k - 1)$.
 
 ![The blind enumerator's six candidates over three guessable atoms](diagrams/04-blind-enumerator.svg)
 
-Three guessable atoms and one relation of two arguments give the six dotted arrows: both directions between every two,
-whatever the labels the relation's declaration writes.
+Three guessable atoms and one relation of two arguments give the six dotted arrows, each a candidate of three arrows
+folded into an arrow labelled with its relation: both directions between every two, whatever the labels the
+relation's declaration writes.
 
 **The enumerator holds no argument to a label**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)). No object has a

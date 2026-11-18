@@ -2,7 +2,7 @@
 
 A **rule** watches for a pattern of facts and, when it matches, asserts new
 facts. That's the whole engine in one sentence: *rules rewrite the graph,
-adding edges until nothing new can be added* (a fixpoint). This chapter
+adding facts until nothing new can be added* (a fixpoint). This chapter
 meets the two gentlest rules, each as Ein, as the graph of the rule, and as
 the graph of the facts once it has fired, and then the relation they make
 the puzzle's engine, each runnable in one command.
@@ -46,15 +46,18 @@ rule on for `next-to`.
 
 **graph** — the rule's own shape, what it matches above what it asserts,
 from `ein render rule --name symmetric` on that file. A diamond is a
-variable, and a dashed arrow is a fact the rule adds:
+variable, and each pattern is drawn as a fact is, an octagon whose arrow `1`
+is at its relation, here the variable `?rel`, and whose arrows `2` and `3`
+are at its arguments; a dashed octagon is a fact the rule adds:
 
-![The rule symmetric: what it matches and what it asserts](diagrams/02-rule-symmetric.svg)
+![The rule symmetric: a pattern octagon over ?rel, ?a and ?b above the dashed one it adds over ?rel, ?b and ?a](diagrams/02-rule-symmetric.svg)
 
-**The facts once it has fired**, the two `next-to` arrows of `ein render kb`
-on that file: the solid one is the fact the program states, labelled with
-its source, and the dashed one the fact `symmetric` added.
+**The facts once it has fired**, the two `next-to` facts of `ein render kb`
+on that file, cut to them: the solid one is the fact the program states,
+its source beside it, and the dashed one the fact `symmetric` added, the
+rule beside it.
 
-![The two next-to arrows once symmetric has fired: one stated, one added](diagrams/02-symmetric-fired.svg)
+![The two next-to facts once symmetric has fired: one stated, one added, both pointing at the one next-to box](diagrams/02-symmetric-fired.svg)
 
 **Run it:**
 
@@ -101,12 +104,12 @@ is a **guard** — a built-in predicate that only matches when the two differ
 
 ![The rule transitive: what it matches and what it asserts, the guard a dotted link](diagrams/02-rule-transitive.svg)
 
-**The facts once it has fired**, from `ein render kb` on that file. The
-program states the two arrows of the chain; the third, from `Cat` to
-`Animal`, is the one `transitive` added. The drawing gives every `is-a`
-arrow one style, and a box to each name an `is-a` arrow points at:
+**The facts once it has fired**, from `ein render kb` on that file, cut to
+the facts of `is-a`. The program states the two facts of the chain; the
+third, of `Cat` and `Animal`, dashed, is the one `transitive` added. `is-a`
+is drawn as any relation is, and every name is a box:
 
-![The is-a chain once transitive has fired: two arrows stated, the third added](diagrams/02-transitive-fired.svg)
+![The is-a chain once transitive has fired: two facts stated, the third added, dashed](diagrams/02-transitive-fired.svg)
 
 **Run it:**
 
@@ -149,11 +152,12 @@ it an equivalence. Its symmetric and transitive closure links a nationality,
 a drink and a pet into one equivalence class, and a `guess` *hypothesis
 rule* proposes the cross-attribute pairings the facts don't pin directly.
 
-**graph** — the `co-located` arrows of `ein render kb` on that file: the two
-the program states, solid, with the number of their clue, and the four the
-two rules add, dashed, each with the rule that added it.
+**graph** — the `co-located` facts the knowledge base holds, from
+`ein render kb` on that file, cut to them: the two the program states,
+solid, with the number of their clue, and the four the two rules add,
+dashed, each with the rule that added it.
 
-![The co-located arrows: two the program states, four the two rules add](diagrams/02-co-located-fired.svg)
+![The co-located facts: two the program states, four the two rules add, every octagon's arrow 1 at the one co-located box](diagrams/02-co-located-fired.svg)
 
 **Run it** (its header documents the unique answer):
 

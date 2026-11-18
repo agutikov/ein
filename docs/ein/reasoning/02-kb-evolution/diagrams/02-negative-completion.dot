@@ -1,15 +1,39 @@
 digraph negative_completion {
-  rankdir=LR;
-  node [fontname="Inter"];
-  subgraph cluster_before { label="one positive fact, r functional";
-    a0 [label="a", shape=oval]; b0 [label="b", shape=oval]; c0 [label="b′", shape=oval]; d0 [label="b″", shape=oval];
-    a0 -> b0 [label="r"];
-    a0 -> c0 [style=invis]; a0 -> d0 [style=invis];
+  rankdir=TB; nodesep=0.35; ranksep=0.55; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  subgraph cluster_before { label="one positive fact, r functional"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    r0 [label="r"];
+    a0 [label="a"]; b0 [label="b"]; c0 [label="b′"]; d0 [label="b″"];
+    f0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+    { rank=same; a0; b0; c0; d0; }
+    f0 -> r0 [label="1"];
+    f0 -> a0 [label="2"];
+    f0 -> b0 [label="3"];
   }
-  subgraph cluster_after { label="what saturation adds";
-    a1 [label="a", shape=oval]; b1 [label="b", shape=oval]; c1 [label="b′", shape=oval]; d1 [label="b″", shape=oval];
-    a1 -> b1 [label="r"];
-    a1 -> c1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
-    a1 -> d1 [label="¬ r", color="#d62728", fontcolor="#d62728", style=dashed];
+  subgraph cluster_after { label="what saturation adds"; fontname="Helvetica"; fontsize=10; style=rounded; color="#888888";
+    r1 [label="r"]; not1 [label="not"];
+    a1 [label="a"]; b1 [label="b"]; c1 [label="b′"]; d1 [label="b″"];
+    f1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+    n1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    n2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    subgraph cluster_ctx_not { label="not ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+      g1 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+      g2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+    }
+    { rank=same; a1; b1; c1; d1; }
+    f1 -> r1 [label="1"];
+    f1 -> a1 [label="2"];
+    f1 -> b1 [label="3"];
+    n1 -> not1 [label="1", color="#d62728", fontcolor="#d62728", style=dashed];
+    n1 -> g1 [label="2", color="#d62728", fontcolor="#d62728", style=dashed];
+    n2 -> not1 [label="1", color="#d62728", fontcolor="#d62728", style=dashed];
+    n2 -> g2 [label="2", color="#d62728", fontcolor="#d62728", style=dashed];
+    g1 -> r1 [label="1"];
+    g1 -> a1 [label="2"];
+    g1 -> c1 [label="3"];
+    g2 -> r1 [label="1"];
+    g2 -> a1 [label="2"];
+    g2 -> d1 [label="3"];
   }
 }

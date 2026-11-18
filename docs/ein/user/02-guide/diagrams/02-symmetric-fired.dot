@@ -1,5 +1,13 @@
 digraph kb {
   rankdir=BT;
-  "House-1" -> "House-2" [label="next-to demo", color="#d62728", fontcolor="#d62728", style=solid];
-  "House-2" -> "House-1" [label="next-to by symmetric", color="#d62728", fontcolor="#d62728", style=dashed];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_203bb25e0e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="demo"];
+  f_203bb25e0e -> "next-to" [xlabel="1", color="#d62728", style=solid];
+  f_203bb25e0e -> "House-1" [xlabel="2", color="#d62728", style=solid];
+  f_203bb25e0e -> "House-2" [xlabel="3", color="#d62728", style=solid];
+  f_136135786a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by symmetric"];
+  f_136135786a -> "next-to" [xlabel="1", color="#d62728", style=dashed];
+  f_136135786a -> "House-2" [xlabel="2", color="#d62728", style=dashed];
+  f_136135786a -> "House-1" [xlabel="3", color="#d62728", style=dashed];
 }

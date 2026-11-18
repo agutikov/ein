@@ -54,31 +54,33 @@ all the same, one of the relation's extent and not of its held extent.
 
 ## As a graph
 
-`ein render kb FILE` draws every fact of the saturated knowledge base, styled by where it came from. The program
-above, its declarations' facts left out:
+`ein render kb FILE` draws every fact of the saturated knowledge base, each an octagon with no name in it, its
+arrow `1` at its relation's box and its next arrows at its arguments, styled by where it came from. The program
+above, its declarations' four facts among them:
 
-![The facts of the saturated knowledge base, styled by where each came from](diagrams/03-program-kb.svg)
+![The facts of the saturated knowledge base, each an octagon, styled by where each came from](diagrams/03-program-kb.svg)
 
-A **given** fact is a solid arrow whose label carries its source, the short `(N)` where the source has one and the
-whole sentence otherwise; a **background** fact is a plain solid arrow; a **derived** fact is dashed, labelled with
-the rule that derived it. A fact that is an argument of another is a node of its own, an octagon with its
-relation's name in it and a numbered arrow to each of its arguments, in a dashed frame named for the relations of
-the facts that point at it where the knowledge base does not hold it, and in no frame where it does; it is drawn
-once, and as no arrow ([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)).
-Here the frame reads `claims ctx`: Carol's claim points at `(knows Carol Dan)`, which is not held, and nothing
-else does. `--colour-by origin`
-colours the arrows by the same three origins instead of by relation, and `--since OTHER` draws thick every fact that
-`OTHER` lacks, which is how a state is drawn against root. The view leaves out a rule's activator facts and stored
-negations; `ein render program FILE` draws a program's written negations.
+A **given** fact is solid, with its source beside its octagon, the short `(N)` where the source has one and the
+whole sentence otherwise; a **background** fact is plain solid; a **derived** fact is dashed, its octagon and its
+arrows, with `by` and the rule that derived it beside it. A fact that is an argument of another is drawn the same
+way, once, an octagon under the arrow that points at it, in a dashed frame named for the relations of the facts
+that point at it where the knowledge base does not hold it, and in no frame where it does
+([rendering](../04-reference/12-rendering.md#a-fact-under-an-arrow--every-object-once)). Here the frame reads
+`claims ctx`: Carol's claim points at `(knows Carol Dan)`, which is not held, and nothing else does. `--fold` draws
+each fact of three arrows that nothing points at as one arrow from its first argument to its second, labelled with
+its relation; `--colour-by origin` colours the facts by the same three origins instead of by relation, and `--since
+OTHER` draws thick every fact that `OTHER` lacks, which is how a state is drawn against root. The view draws every
+fact the knowledge base holds, a stored negation and a rule's activator fact among them.
 
-The two dashed arrows are firings of the program's one rule, which `ein render rule --name knows-back FILE` draws as
-what it matches and what it asserts ([rules](05-rules.md)):
+The two dashed octagons are what the program's one rule derived, which `ein render rule --name knows-back FILE` draws
+as what it matches and what it asserts ([rules](05-rules.md)):
 
 ![The rule knows-back: what it matches and what it asserts](diagrams/03-rule-knows-back.svg)
 
 and where a derived fact came from is itself a graph, the fact's record drawn: `ein solve FILE --trace OUT.md`
 writes one drawing per firing, the premises on the left, the rule with its reason in the middle, the fact it added
-on the right. The first step of this program:
+on the right, in bold, each fact its octagon with its arrows at its relation and its arguments. The first step of
+this program:
 
 ![The program's first firing: its premise, the rule with its reason, the fact it added](diagrams/03-first-firing.svg)
 
@@ -255,8 +257,9 @@ facts that point into it. A held octagon is in no frame:
 ![Two held facts of claims, c and d: c points into a frame named claims ctx at g, which only Carol claims, and d at f, which is held too and in no frame](diagrams/03-facts-in-contexts.svg)
 
 $c$ and $d$ are the two claims, $g$ is `(knows Carol Dan)` and $f$ is `(knows Bob Carol)`. `ein render kb` draws
-the two the same way, each an octagon, $g$ in a frame and $f$ in none, with the relation's name written in the
-octagon and on the arrows of the facts that nothing points at, as [above](#as-a-graph).
+the two the same way, each an octagon with no name in it, its arrow `1` at the box `knows`, $g$ in a frame and $f$
+in none, as [above](#as-a-graph); under `--fold` the facts that nothing points at are labelled arrows, and $g$ and
+$f$, which a claim points at, stay octagons.
 
 **In words.** A fact in a context is read inside the statement of the fact that speaks about it. `ein solve FILE
 --dump-answer DIR` writes the state's three facts:

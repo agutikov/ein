@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: kb Pages: 1 -->
+<svg width="286pt" height="106pt"
+ viewBox="0.00 0.00 286.00 106.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 101.6)">
+<title>kb</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-101.6 281.75,-101.6 281.75,4 -4,4"/>
+<!-- f_481b793602 -->
+<g id="node1" class="node">
+<title>f_481b793602</title>
+<polygon fill="none" stroke="#d62728" points="154.8,-6.33 154.8,-15.27 148.47,-21.6 139.53,-21.6 133.2,-15.27 133.2,-6.33 139.53,0 148.47,0 154.8,-6.33"/>
+</g>
+<!-- nation&#45;loc -->
+<g id="node2" class="node">
+<title>nation&#45;loc</title>
+<polygon fill="none" stroke="black" points="82,-97.6 0,-97.6 0,-61.6 82,-61.6 82,-97.6"/>
+<text xml:space="preserve" text-anchor="middle" x="41" y="-76.05" font-family="Inter" font-size="14.00">nation&#45;loc</text>
+</g>
+<!-- f_481b793602&#45;&gt;nation&#45;loc -->
+<g id="edge1" class="edge">
+<title>f_481b793602&#45;&gt;nation&#45;loc</title>
+<path fill="none" stroke="#d62728" d="M135.22,-17.5C122.45,-25.78 98.02,-41.62 77.23,-55.1"/>
+<polygon fill="#d62728" stroke="#d62728" points="75.45,-52.09 68.96,-60.47 79.26,-57.96 75.45,-52.09"/>
+<text xml:space="preserve" text-anchor="middle" x="97.1" y="-26" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- Norwegian -->
+<g id="node3" class="node">
+<title>Norwegian</title>
+<polygon fill="none" stroke="black" points="188.38,-97.6 99.62,-97.6 99.62,-61.6 188.38,-61.6 188.38,-97.6"/>
+<text xml:space="preserve" text-anchor="middle" x="144" y="-76.05" font-family="Inter" font-size="14.00">Norwegian</text>
+</g>
+<!-- f_481b793602&#45;&gt;Norwegian -->
+<g id="edge2" class="edge">
+<title>f_481b793602&#45;&gt;Norwegian</title>
+<path fill="none" stroke="#d62728" d="M144,-21.95C144,-29.45 144,-40.06 144,-50.07"/>
+<polygon fill="#d62728" stroke="#d62728" points="140.5,-49.82 144,-59.82 147.5,-49.82 140.5,-49.82"/>
+<text xml:space="preserve" text-anchor="middle" x="139.5" y="-28.26" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- House&#45;1 -->
+<g id="node4" class="node">
+<title>House&#45;1</title>
+<polygon fill="none" stroke="black" points="277.75,-97.6 206.25,-97.6 206.25,-61.6 277.75,-61.6 277.75,-97.6"/>
+<text xml:space="preserve" text-anchor="middle" x="242" y="-76.05" font-family="Inter" font-size="14.00">House&#45;1</text>
+</g>
+<!-- f_481b793602&#45;&gt;House&#45;1 -->
+<g id="edge3" class="edge">
+<title>f_481b793602&#45;&gt;House&#45;1</title>
+<path fill="none" stroke="#d62728" d="M152.7,-17.73C164.85,-26.02 187.63,-41.54 207.14,-54.84"/>
+<polygon fill="#d62728" stroke="#d62728" points="204.91,-57.55 215.14,-60.29 208.85,-51.77 204.91,-57.55"/>
+<text xml:space="preserve" text-anchor="middle" x="179.81" y="-25.98" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: c95b305cf5b5f04616501a163337a4e3489d5345d0a562fc3e85e61da1c1d16e -->

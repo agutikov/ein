@@ -233,10 +233,13 @@ modules have none, since what they close is the program's to say.
 
 On the pages of rules, each rule is its Ein, as the module writes it, and its drawing, as
 `ein render rule --name NAME FILE` writes it for the module's file: the `match` cluster above, the `assert` cluster
-below, a variable a diamond, a fact of two arguments an arrow, any other an octagon with a numbered edge to each
-argument, an `absent` a dashed cluster ([Rendering](../12-rendering.md#rules--ein-render-rules-and-ein-render-rule)
-is the legend). A closing rule, which names every relation and rule of its module, is shown as Ein alone: its
-drawing is a few hundred nodes. The text and the drawing of a rule on these pages are generated from the module's
+below, a variable a diamond, an atom a box, each pattern an octagon with no name in it whose arrow `1` is at its
+relation and whose arrows `2`, `3`, … are at its arguments, an `absent` a dashed cluster
+([Rendering](../12-rendering.md#rules--ein-render-rules-and-ein-render-rule) is the legend). A rule whose drawing has
+more nodes than a page can show is drawn with `--fold`, each pattern of three arrows that nothing points at one
+arrow labelled with its relation, where that drawing is small enough, and its image's text says so; past that, and
+for a closing rule, which names every relation and rule of its module and whose drawing is a few hundred nodes, the
+rule is shown as Ein alone. The text and the drawing of a rule on these pages are generated from the module's
 file and the engine, and are not edited by hand: the drawing's source is the file `NN-MODULE.RULE.dot` under
 [`diagrams/`](diagrams/), `NN` the page's number, and the page shows the picture drawn from it.
 

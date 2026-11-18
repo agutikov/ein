@@ -92,13 +92,13 @@ asked of `∅`, where the goal has no row. The region claim is about all seven g
 shows
 ([solutions and models](13-solutions-and-models.md#as-a-graph)).
 
-`ein render program FILE` draws the two forms themselves, each a note holding its keywords, one digraph each, beside
-the rules, the ontology and the facts (the program's hrule and its two restrictions are drawn on
-[hypotheses](09-hypotheses.md#as-a-graph)):
+`ein render program FILE` draws the two forms themselves in its digraph `query`, beside its digraph `kb` and a
+digraph per rule (the program's hrule and its two restrictions are drawn on
+[hypotheses](09-hypotheses.md#as-a-graph)): the `(solve …)` clause a note holding its keywords, and the query a
+cluster, its `:goal` drawn as a rule's match is, a pattern whose arrow `1` is at the box `seat`, and its other
+clauses in a note beside it:
 
-![The solve form as a note holding its keywords](diagrams/12-solve-form.svg)
-
-![The query form as a note holding its keywords](diagrams/12-query-form.svg)
+![The digraph query: the solve form as a note holding its keywords, and the query a cluster, its goal a pattern of seat over ?who and C1 beside a note holding its other clauses](diagrams/12-query-view.svg)
 
 ## In words
 

@@ -1,8 +1,16 @@
 digraph step1 {
   rankdir=LR;
-  "f_976d7e7ab9" [label="knows(Alice, Bob)", shape=box, style=rounded];
-  "f_884e5d5933" [label="knows(Bob, Alice)", shape=box, style=rounded, penwidth=2];
+  node [fontname="Inter", shape=box];
+  ranksep=0.55;
+  "f_976d7e7ab9" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  "f_884e5d5933" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
   "fire0_knows-back" [shape=box, style="rounded,bold", color="#8c564b", fontcolor="#8c564b", label="knows-back\nAlice knows Bob, so Bob knows Alice"];
+  "f_976d7e7ab9" -> "knows" [xlabel="1"];
+  "f_976d7e7ab9" -> "Alice" [xlabel="2"];
+  "f_976d7e7ab9" -> "Bob" [xlabel="3"];
+  "f_884e5d5933" -> "knows" [xlabel="1", penwidth=2];
+  "f_884e5d5933" -> "Bob" [xlabel="2", penwidth=2];
+  "f_884e5d5933" -> "Alice" [xlabel="3", penwidth=2];
   "f_976d7e7ab9" -> "fire0_knows-back" [color="#8c564b"];
   "fire0_knows-back" -> "f_884e5d5933" [color="#8c564b", style=bold];
 }

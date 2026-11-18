@@ -2,15 +2,27 @@ digraph rule_pet_follows_owner_lhs_rhs {
   rankdir=TB;
   label="pet-follows-owner"; labelloc=t;
   subgraph cluster_lhs { label="match";
+    "owns_L" [label="owns", shape=box];
     "?p_L" [label="?p", shape=diamond];
     "?x_L" [label="?x", shape=diamond];
+    "lives-in_L" [label="lives-in", shape=box];
     "?h_L" [label="?h", shape=diamond];
-    "?p_L" -> "?x_L" [label="owns", color="#ff7f0e", fontcolor="#ff7f0e"];
-    "?p_L" -> "?h_L" [label="lives-in", color="#9467bd", fontcolor="#9467bd"];
+    "h1_owns_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "h1_owns_L" -> "owns_L" [xlabel="1", color="#ff7f0e"];
+    "h1_owns_L" -> "?p_L" [xlabel="2", color="#ff7f0e"];
+    "h1_owns_L" -> "?x_L" [xlabel="3", color="#ff7f0e"];
+    "h2_lives-in_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "h2_lives-in_L" -> "lives-in_L" [xlabel="1", color="#9467bd"];
+    "h2_lives-in_L" -> "?p_L" [xlabel="2", color="#9467bd"];
+    "h2_lives-in_L" -> "?h_L" [xlabel="3", color="#9467bd"];
   }
   subgraph cluster_rhs { label="assert";
+    "pet-at_R" [label="pet-at", shape=box];
     "?x_R" [label="?x", shape=diamond];
     "?h_R" [label="?h", shape=diamond];
-    "?x_R" -> "?h_R" [label="pet-at", color="#9467bd", fontcolor="#9467bd", style=dashed];
+    "h3_pet-at_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "h3_pet-at_R" -> "pet-at_R" [xlabel="1", color="#9467bd", style=dashed];
+    "h3_pet-at_R" -> "?x_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h3_pet-at_R" -> "?h_R" [xlabel="3", color="#9467bd", style=dashed];
   }
 }

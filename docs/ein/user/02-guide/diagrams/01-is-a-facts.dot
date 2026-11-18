@@ -1,4 +1,15 @@
-digraph { rankdir=LR; node [shape=box];
-  Norwegian  -> Nationality [label="is-a"];
-  Englishman -> Nationality [label="is-a"];
+digraph is_a_facts {
+  rankdir=TB; nodesep=0.35; ranksep=0.6;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  { rank=min; "is-a"; }
+  { rank=max; "Norwegian"; "Englishman"; "Nationality"; }
+  node [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
+  m1; m2;
+  m1 -> "is-a" [label="1"];
+  m1 -> "Norwegian" [label="2"];
+  m1 -> "Nationality" [label="3"];
+  m2 -> "is-a" [label="1"];
+  m2 -> "Englishman" [label="2"];
+  m2 -> "Nationality" [label="3"];
 }

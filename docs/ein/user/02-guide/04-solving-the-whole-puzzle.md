@@ -59,9 +59,11 @@ used: a `:goal` pattern Ein matches against the solved KB, and a `:goal-text`
 template that renders the headline answer.
 
 The hrule drawn, from `ein render rule --name guess examples/zebra2.ein`: it
-matches two `is-a` arrows and proposes the dashed one.
+matches two facts of `is-a`, each an octagon whose arrow `1` is at the box
+`is-a`, and proposes the dashed one, a fact whose arrow `1` is at the
+variable `?R`.
 
-![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/04-rule-guess.svg)
+![The hrule guess: two is-a pattern octagons it matches and the dashed ?R fact each match proposes](diagrams/04-rule-guess.svg)
 
 ## Solve it
 

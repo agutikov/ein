@@ -82,12 +82,16 @@ two must agree.
 the same, and the claim on the `(solve …)` form, which lists `complete` and `complete-raw` for `Team` and for no
 other group, holds.
 
-The engine draws the call as a dashed cluster labelled `forall (∀)`: the variable it binds is inside, the ones it
-shares with the rest of the match are outside. This is `ein render rule --name complete-via-macro` of the program:
+The engine draws the call as the form it is written as, a pattern of `forall`, read by no name
+([Q-M1f.436](../../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)). This is
+`ein render rule --name complete-via-macro` of the program:
 
-![The rule complete-via-macro: the call of forall a dashed cluster](diagrams/01-rule-complete-via-macro.svg)
+![The rule complete-via-macro: the call of forall an octagon whose arrow 1 is at the box forall, 2 at ?y, and 3 and 4 at the guard and the body, two octagons in the frame forall ctx](diagrams/01-rule-complete-via-macro.svg)
 
-Inside the cluster, the arrow from `?y` to `?g` labelled `member` is the guard, and the octagon `marked` over `?y` is the body.
+The call is an octagon whose arrow `1` is at the box `forall`, `2` at the variable `?y` it binds, `3` at the guard
+`(member ?y ?g)` and `4` at the body `(marked ?y)`. Guard and body are octagons of their own, each with its arrow `1`
+at its relation, in the frame `forall ctx`: the call points at them, and the knowledge base is not asked to hold
+either.
 
 `forall` reads an absence, so it is sound only where the facts of the guard's relation and of the body's are decided by saturation:
 the program above names all five relations in `:no-hypothesis`. `std.algebra`'s `total` and `surjective`, and the
@@ -154,9 +158,11 @@ Both of Ann's pairs are decided, one each way, so only Bob's two are in neither 
 facts, and a stored negation is not closed by it, so a rule that probes with `unknown` is how a program states that
 a negation was *not* derived.
 
-The engine draws a call of `unknown` as a call: an octagon over the fact it asks about.
+The engine draws a call of `unknown` as the pattern it is written as: an octagon whose arrow `1` is at the box
+`unknown` and whose arrow `2` is at the fact it asks about, `(likes ?p ?f)`, an octagon of its own in the frame
+`unknown ctx`.
 
-![The rule third-state: the call of unknown an octagon over the fact it asks about](diagrams/01-rule-third-state.svg)
+![The rule third-state: the call of unknown an octagon whose arrow 2 is at the octagon of (likes ?p ?f), in the frame unknown ctx](diagrams/01-rule-third-state.svg)
 
 ## How it works
 
@@ -179,9 +185,10 @@ expansion when the program is loaded.
 | `(unknown P)` | `(and (absent P) (absent (not P)))` |
 
 The first program's second rule, `complete-via-expansion`, is `forall`'s expansion written by hand, and the engine
-draws it as what it is, an `absent` inside an `absent`:
+draws it as what it is, an `absent` inside an `absent`: the outer one a dashed cluster `absent (∄)` around the guard
+`(member ?y ?g)`, and the inner one's pattern, `(marked ?y)`, red inside it:
 
-![The rule complete-via-expansion: an absent inside an absent](diagrams/01-rule-complete-via-expansion.svg)
+![The rule complete-via-expansion: the cluster absent holding the octagon of member and the red octagon of marked](diagrams/01-rule-complete-via-expansion.svg)
 
 `ein test` holds both programs to their claims:
 

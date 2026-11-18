@@ -1,0 +1,12 @@
+digraph kb {
+  rankdir=BT;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  "Jack" -> "Human" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Coffee" -> "Drink" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Human" -> "Drink" [xlabel="can-drink", color="#17becf", fontcolor="#17becf", style=solid];
+  "Jack" -> "Coffee" [xlabel="drinks puzzle text", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "Jack" -> "Drink" [xlabel="can-drink by inherit-rel-lhs", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Human" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
+  "Jack" -> "Coffee" [xlabel="can-drink by inherit-rel-rhs", color="#17becf", fontcolor="#17becf", style=dashed];
+}

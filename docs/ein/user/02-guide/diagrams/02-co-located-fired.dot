@@ -1,9 +1,29 @@
 digraph kb {
   rankdir=BT;
-  "Alice" -> "Tea" [label="co-located (1)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Alice" -> "Cat" [label="co-located (2)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
-  "Tea" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Cat" -> "Alice" [label="co-located by symmetric", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Tea" -> "Cat" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
-  "Cat" -> "Tea" [label="co-located by transitive", color="#bcbd22", fontcolor="#bcbd22", style=dashed];
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+  f_0721be1f84 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(1)"];
+  f_0721be1f84 -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  f_0721be1f84 -> "Alice" [xlabel="2", color="#bcbd22", style=solid];
+  f_0721be1f84 -> "Tea" [xlabel="3", color="#bcbd22", style=solid];
+  f_cc83d9e543 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(2)"];
+  f_cc83d9e543 -> "co-located" [xlabel="1", color="#bcbd22", style=solid];
+  f_cc83d9e543 -> "Alice" [xlabel="2", color="#bcbd22", style=solid];
+  f_cc83d9e543 -> "Cat" [xlabel="3", color="#bcbd22", style=solid];
+  f_87bd571572 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by symmetric"];
+  f_87bd571572 -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  f_87bd571572 -> "Tea" [xlabel="2", color="#bcbd22", style=dashed];
+  f_87bd571572 -> "Alice" [xlabel="3", color="#bcbd22", style=dashed];
+  f_6b98aa2513 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by symmetric"];
+  f_6b98aa2513 -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  f_6b98aa2513 -> "Cat" [xlabel="2", color="#bcbd22", style=dashed];
+  f_6b98aa2513 -> "Alice" [xlabel="3", color="#bcbd22", style=dashed];
+  f_62afb3297e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by transitive"];
+  f_62afb3297e -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  f_62afb3297e -> "Tea" [xlabel="2", color="#bcbd22", style=dashed];
+  f_62afb3297e -> "Cat" [xlabel="3", color="#bcbd22", style=dashed];
+  f_3b18dcc77f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=dashed, xlabel="by transitive"];
+  f_3b18dcc77f -> "co-located" [xlabel="1", color="#bcbd22", style=dashed];
+  f_3b18dcc77f -> "Cat" [xlabel="2", color="#bcbd22", style=dashed];
+  f_3b18dcc77f -> "Tea" [xlabel="3", color="#bcbd22", style=dashed];
 }
