@@ -13,6 +13,10 @@ The user, 2026-11-18, verbatim:
 > Btw, what about inverse of render? We can take arbitrary directed 2-graph (only arrows, not hypergraph) with
 > labelled nodes and labelled arrows (labels required) and convert it into ein KB, right? p1f.30
 
+and, the same day:
+
+> p1f.30: DOT input only, ein show reads it
+
 ## What it is
 
 Two readings of a drawing, as the main session put them that day:
@@ -33,10 +37,10 @@ Two readings of a drawing, as the main session put them that day:
 
 ## Questions the survey puts, each with a default
 
-- **The command**: a subcommand that reads a drawing and writes Ein text, beside `ein show` (which writes Ein text
-  a `.ein` file could hold, and nothing else); or every command that takes a `.ein` takes a `.dot`, dispatched as a
-  `.einb` is by its first bytes.
-- **The formats**: DOT first, the format `ein render` writes; GraphML or JSON on request.
+- **The command**: **ruled 2026-11-18, `ein show` reads it** (*"ein show reads it"*): it reads a drawing and
+  writes the knowledge base as Ein text, as it writes what it lists today, and nothing else on stdout. How it is
+  asked (a subcommand of `ein show`, or `ein show` dispatching on a `.dot` file) is the survey's, with a default.
+- **The format**: **ruled 2026-11-18, DOT only** (*"DOT input only"*).
 - **What cannot be read**: a label that is no name, two nodes of one label, a node no arrow touches, a node with
   arrows out under reading 1: refused with its line, renamed, or written with a note.
 - **The round trips**: under 2, every corpus program's KB view read back equals its knowledge base (a test over the
