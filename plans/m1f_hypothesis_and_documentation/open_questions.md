@@ -364,6 +364,18 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.433](#q-m1f433--the-shape-of-an-atom) | the shape of an atom | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), a box |
 | [Q-M1f.434](#q-m1f434--the-standard-librarys-rule-drawings-past-the-bound) | the standard library's rule drawings past the bound | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), canonical, else folded, else Ein only |
 | [Q-M1f.435](#q-m1f435--where-an-arrows-number-is-written) | where an arrow's number is written | **defaulted 2026-11-18 (S1f.23.1), the user's to revise**: (a), its `xlabel`, and a folded arrow's relation in a knowledge base's drawing too, laid out in seconds where a `label` takes minutes |
+| [Q-M1f.436](#q-m1f436--the-kernel-reads-no-theorys-name-and-the-built-in-symmetry-goes) | the kernel reads no theory's name, and the built-in symmetry goes | **ruled 2026-11-18 by the user**: the kernel gives a fixed meaning to its own names alone; `is-a`, `symmetric` and every other name a theory's or a program's; the native mirror dropped, `__symmetric__` an ordinary name; **built** by S1f.23.4, with S1f.23.1's and S1f.23.2's parts, held by the renaming test; the decision Q-M1f.436 |
+| [Q-M1f.437](#q-m1f437--the-flagged-spelling-of-symmetric-derived-node) | the flagged spelling of `symmetric-derived-node` | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), not the stop condition, the answer the same; the program retired |
+| [Q-M1f.438](#q-m1f438--the-programs-that-showed-only-the-mirror-retired-or-rewritten) | the programs that showed only the mirror: retired or rewritten | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), all six retired with their corpus entries and four regression rows |
+| [Q-M1f.439](#q-m1f439--examplesfeatures-numbering-with-06-gone) | `examples/features/`' numbering with `06` gone | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), kept, a gap at `06` |
+| [Q-M1f.440](#q-m1f440--the-retired-flag-enable-symmetric-mirror) | the retired flag `enable-symmetric-mirror` | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), stays retired, refused with a new reason, its field kept |
+| [Q-M1f.441](#q-m1f441--the---events-protocols-version-the-mirror-kind-gone) | the `--events` protocol's version, the `mirror` kind gone | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), stays `ein-events/1` |
+| [Q-M1f.442](#q-m1f442--q-m1f7s-file-name-its-title-changed) | Q-M1f.7's file name, its title changed | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), renamed to the new title's slug on the merge, every link with it |
+| [Q-M1f.443](#q-m1f443--a-decision-for-the-two-rulings) | a decision for the two rulings | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), a decision of its own, Q-M1f.436, taken on the merge; Q-M1f.7 cites it |
+| [Q-M1f.444](#q-m1f444--what-the-renaming-test-keeps) | what the renaming test keeps | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), as built: the kernel's names, `:over`'s values, the grammar's words, module names and aliases; the read-out's text not compared |
+| [Q-M1f.445](#q-m1f445--the-renaming-tests-tier) | the renaming test's tier | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), per commit outside `tests/`, every program in the nightly |
+| [Q-M1f.446](#q-m1f446--the-forall-drawing-the-renaming-test-found) | the `forall` drawing the renaming test found | **defaulted 2026-11-18 (S1f.23.4), the user's to revise**: (a), S1f.23.1's, which dropped the read (Q-M1f.427); `READS` emptied on the merge |
+| [Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the loader's argument-count check, once `relation` is a convention: kept at load, a rule's verdict at run time, or dropped | **open, the user's, not ruled** (*"will think about it in p1f.21"*): no default taken; P1f.21's S1f.21.4 shows each option and does not choose |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -8397,3 +8409,178 @@ some hundreds of facts with frames is laid out in minutes: the program view's `k
 - **(b)** the `label`, as the pages draw it, with the gate's DOT sweep slower by that view alone.
 
 **Default taken: (a).** Built: `ein-render/src/fact_graph.rs`, `rules.rs`, `slice.rs`, `derivation.rs`.
+
+### Q-M1f.436 — The kernel reads no theory's name, and the built-in symmetry goes
+
+**Raised and ruled** 2026-11-18 by the user, on P1f.23's review, verbatim:
+
+> In general: ein.rs must expect the minimal shape of the program: rules, relations, ... Not special names like
+> `is-a` `type` `instance` `symmetric` `bijection` `slot`; All those names belong to some specific theory and must
+> not pollute the kernel.
+
+and, on the main session's census of what `ein.rs` reads by a theory's name and its proposal of a stage for it, with
+the question whether the built-in `__symmetric__` was that stage's or P1f.21's:
+
+> Yes, let's drop also built-in symmetry.
+
+**Ruling.** The kernel gives a fixed meaning to its own names alone, `ein_core::terms::Kernel`'s, the grammar's words
+and `:over`'s three values; `is-a`, `type`, `instance`, `symmetric`, `bijective`, `slot-partition` and every other
+name are a theory's or a program's, and mean what the rules that read them make them mean. The native mirror goes:
+`__symmetric__` is an ordinary name, and a symmetric relation is `std.algebra`'s rule. `program_relations` names `eq`
+and `neq` alone, so a goal over `is-a` in a program that writes none is refused. **Built by** P1f.23's
+[S1f.23.4](p1f.23_review_processing/s1f.23.4_the_kernel_reads_no_theorys_name.md) (the mirror, `program_relations`,
+six programs retired with four regression rows, the renaming test), with
+[S1f.23.1](p1f.23_review_processing/s1f.23.1_drawing.md)'s part (no drawing reads `is-a`, `type`, `instance`,
+`relation` or `std.macro`'s `forall`: Q-M1f.421, Q-M1f.426, Q-M1f.427) and
+[S1f.23.2](p1f.23_review_processing/s1f.23.2_no_key_and_no_grid.md)'s (`--models key` and `grid`, whose `grid.rs`
+and `models.rs` read `is-a`, `T`, `slot-partition`, `functional`, `injective` and `bijective`, removed in its
+worktree; R-1 and R-3 until it is merged). **Held by** `ein-render/tests/renaming_invariance.rs`: every corpus
+program, with every name that is not the kernel's renamed, answers and is drawn alike, its `READS` empty on the
+merged tree. The decision
+[Q-M1f.436](../../docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md);
+[Q-M1f.7](../../docs/decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md) keeps the dunder
+and cites it.
+
+### Q-M1f.437 — The flagged spelling of `symmetric-derived-node`
+
+**Raised** 2026-11-18 by S1f.23.4's build, step 1. **Put, not ruled.** With `std.algebra`'s `(symmetric near)` in
+place of `(__symmetric__ near)`, `examples/ein-bugs/wrong-answers/symmetric-derived-node.ein` answered the same R, in
+every mode and the oracle, but the static check flagged it, *monotone no — 6 sites* (the module's lemmas read
+activator relations a commitment can change), so its route was the cube where the native spelling's was the state
+route. The native mark derived at a node was invisible to the static check.
+
+- **(a)** **not the stop condition**: the invariance the stage holds is of the answer, which is the same; shown in
+  its record, and the program retired with the mirror (Q-M1f.438). **Default.**
+- **(b)** the stop condition: the program shown to the user before the mirror goes.
+
+**Default taken: (a).** Built: S1f.23.4's Record, step 1; no corpus program carries the difference.
+
+### Q-M1f.438 — The programs that showed only the mirror: retired or rewritten
+
+**Raised** 2026-11-18 by S1f.23.4's build, step 2. **Put, not ruled.** Six programs wrote `(__symmetric__ R)` or
+existed as the control of one that did: `examples/features/06_symmetric_native.ein`, and under
+`examples/ein-bugs/wrong-answers/` `symmetric-derived-root`, `symmetric-written-root`, `symmetric-derived-node`,
+`symmetric-rule-node` and `dunder-object-symmetric-by-rule`.
+
+- **(a)** **retired, all six**, each showing only the mirror, with their corpus entries and their four rows of
+  `corpus/regressions.toml` (`symmetric-mirror-off`, `symmetric-by-rule`, `derived-at-root`, `derived-at-node`): a
+  fixed wrong answer of a mechanism that is gone goes with it, its history in git; a symmetric relation by
+  `std.algebra`'s rule is `examples/saturation/symmetric/`'s three. **Default.**
+- **(b)** rewritten to `std.algebra`'s rule and kept, with their rows.
+
+**Default taken: (a).** Built: `corpus/corpus.toml`, `corpus/regressions.toml` (333 rows, 329 after).
+
+### Q-M1f.439 — `examples/features/`' numbering with `06` gone
+
+**Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.**
+
+- **(a)** **kept, a gap at `06`**: the numbering rule is the documentation's (Q-M1f.367), not the examples'.
+  **Default.**
+- **(b)** renumbered, the programs after `06` moved down one, with every reference.
+
+**Default taken: (a).**
+
+### Q-M1f.440 — The retired flag `enable-symmetric-mirror`
+
+**Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.**
+
+- **(a)** **stays retired**: refused with a new reason, *it switched the kernel's native mirror, and the kernel mirrors
+  no relation …*, its field kept for the `.einb` layout. **Default.**
+- **(b)** taken off the retired list, so that it is refused as any unknown field is.
+
+**Default taken: (a).** Built: `ein-core/src/config.rs`' `RETIRED`; the grammar table's golden line;
+`06-config.md` § 2.4.
+
+### Q-M1f.441 — The `--events` protocol's version, the `mirror` kind gone
+
+**Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.**
+
+- **(a)** **stays `ein-events/1`**: the `mirror` kind is gone and no other field moved, so a reader of `/1` reads
+  every stream the engine writes. **Default.**
+- **(b)** `ein-events/2`.
+
+**Default taken: (a).** Built: `05-events.md`; `ein-cli/tests/events_reference.rs` (eighteen kinds).
+
+### Q-M1f.442 — Q-M1f.7's file name, its title changed
+
+**Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.** Q-M1f.7's title became *The dunder is never bound,
+and the writeback names never written*; its file kept the old title's slug, since the stage did not edit this file,
+which links it.
+
+- **(a)** **renamed on the merge** to the new title's slug,
+  `Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md` (Q-M1f.344), every link with it. **Default.**
+- **(b)** the old slug kept.
+
+**Default taken: (a).** Built on the merge.
+
+### Q-M1f.443 — A decision for the two rulings
+
+**Raised** 2026-11-18 by S1f.23.4's build. **Put, not ruled.** The stage gave the rulings no decision of their own:
+Q-M1f.7 and the pages carried *the kernel reads no theory's name*, and the stage left a decision file to the merge.
+
+- **(a)** **a decision of its own**, [Q-M1f.436](../../docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md),
+  under `engine/`, carrying both rulings; Q-M1f.7 keeps the dunder and cites it, as do `AGENTS.md` and
+  `07-reserved-engine-strings.md`. **Default**, taken on the merge.
+- **(b)** none: Q-M1f.7 and the pages carry the rulings, as the stage left them.
+
+**Default taken: (a).**
+
+### Q-M1f.444 — What the renaming test keeps
+
+**Raised** 2026-11-18 by S1f.23.4's build, step 4. **Put, not ruled.**
+
+- **(a)** **as built**: it keeps the kernel's names (what `Terms::new` interns), `:over`'s three values
+  (`ein_ir::expect::Over::NAMES`, which the loader reads as a keyword's), the grammar's words (no `NAME` token),
+  module names and aliases (where a file is found); it does not compare the read-out's text, which wraps at a width a
+  longer name moves and whose content is the summary's, which it compares. **Default.**
+- **(b)** the read-out's text compared too, under a normaliser of its layout.
+
+**Default taken: (a).** Built: `ein-render/tests/renaming_invariance.rs`.
+
+### Q-M1f.445 — The renaming test's tier
+
+**Raised** 2026-11-18 by S1f.23.4's build, step 4. **Put, not ruled.**
+
+- **(a)** **per commit the programs outside `tests/`**, as `id_order_invariance` and `dot_wellformed` read them, and
+  **under `EIN_CORPUS_SLOW=1` every program**, a step of the nightly's `deep-corpus` job (Q-M1f.290's split): at the
+  stage 19.9 s per commit, and the whole corpus 86 s on four P-core threads. **Default.**
+- **(b)** the nightly alone.
+
+**Default taken: (a).** Built: `run_tests.sh`, `.github/workflows/nightly.yml`.
+
+### Q-M1f.446 — The `forall` drawing the renaming test found
+
+**Raised** 2026-11-18 by S1f.23.4's build, step 4. **Put, not ruled.** The renaming test found `ein-render/src/rules.rs`
+reading `std.macro`'s `forall` by its name (`head_name`, `is_guard`), a theory's name in the renderer and not in the
+census at the ruling (P1f.23's R-4). S1f.23.4 listed `dot[rules]` and `dot[rules-overlay]` in the test's `READS` and
+left `rules.rs` to S1f.23.1, which was rewriting it.
+
+- **(a)** **S1f.23.1's**: its rewrite of `rules.rs` drops the read (Q-M1f.427), and the merge takes the two views out
+  of `READS`. **Default.**
+- **(b)** a stage of its own after S1f.23.1.
+
+**Default taken: (a).** Built: S1f.23.1 drew a call of `forall` as the form it is; on the merge `READS` is empty and
+every view is compared.
+
+### Q-M1f.447 — The loader's argument-count check, once `relation` is a convention
+
+**Raised** 2026-11-18 by the user, with [P1f.21's fourth instruction](p1f.21_verdicts_as_rules/README.md#the-fourth-instruction),
+verbatim:
+
+> p1f.21: `false` also becomes stdlib convention; argument-count check - will think about it in p1f.21, record as
+> open question;
+
+**Open: not ruled, and no default taken. The user will think about it in P1f.21.** Today the loader holds a form
+headed by a declared relation to as many arguments as the declaration has labels, and refuses another count. The
+fourth instruction makes `relation`, the declaration that check reads, a convention of the standard library and not
+the kernel's, so the check would be the loader reading a theory's form.
+
+- **(a)** kept at load, as the loader's reading of a declaration;
+- **(b)** a rule's verdict at run time, a rule of the module that states the convention over `relation`'s facts;
+- **(c)** dropped: Ein has no types, and a label means what a rule makes it mean (Q-M1f.372), so a relation may be
+  written at any count.
+
+P1f.21's S1f.21.4 shows each on the corpus's programs that the check refuses or that write a relation at two counts,
+and does not choose ([`open_facts.md` § 9](p1f.21_verdicts_as_rules/open_facts.md#9-what-s1f214-answers), item 6), with
+[V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
+a relation that only an activator names.

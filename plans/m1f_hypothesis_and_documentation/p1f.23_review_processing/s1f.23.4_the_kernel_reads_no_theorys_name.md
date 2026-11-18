@@ -2,8 +2,10 @@
 
 **Phase:** [P1f.23](README.md)
 **Status:** done 2026-11-18 in the worktree `build/wt-s1f234` on the branch `s1f.23.4-no-theory-names`, beside
-S1f.23.1 (master) and S1f.23.2 (its own worktree); the main session merges it, and one gate, `utils/ci_container.sh`
-and one nightly hold the phase's stages on the merged tree. Its readings wait to be filed (§ Record).
+S1f.23.1 (master) and S1f.23.2 (its own worktree); **merged** into master 2026-11-18 by `96244ed4`, with `e5b99bee`;
+one gate, `utils/ci_container.sh` and one nightly hold the phase's stages on the merged tree. The user's rulings are
+[Q-M1f.436](../open_questions.md#q-m1f436--the-kernel-reads-no-theorys-name-and-the-built-in-symmetry-goes), its
+readings Q-M1f.437 to .446, its findings P1f.23's [R-4 to R-6](findings.md).
 
 ## The ruling
 
@@ -59,7 +61,8 @@ P1f.21's.
 ## Readings and rulings to file
 
 The main session files the user's two rulings above, and this stage's readings (each with its default, written in
-its Record), in `open_questions.md` on merge; the stage does not edit that file.
+its Record), in `open_questions.md` on merge; the stage does not edit that file. **Filed on the merge**: the rulings
+as Q-M1f.436, the ten readings as Q-M1f.437 to .446, in the Record's order.
 
 ## Acceptance
 

@@ -326,7 +326,7 @@ did, [§ 10.8](#108-questions-as-facts-what-rules-can-do-with-open-q)). Each is 
    agenda's first half, *forbid*, the static check, $H$'s denied candidates; for `relation`: the loader's count of
    arguments and its refusal, the `:why` a fact is read in (S1f.23.5's ruling ends it), the registry a goal and a claim are held to, the blind
    rung's labels) and what it becomes, a rule of that module or a reading of the rules, with the corpus's answers
-   unchanged. **The argument-count check is the user's open question** (*"will think about it in p1f.21"*): kept
+   unchanged. **The argument-count check is the user's open question**, [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) (*"will think about it in p1f.21"*): kept
    at load as the loader's reading of a declaration, or a rule's verdict at run time, or dropped (Q-M1f.372: Ein has
    no types, and a label means what a rule makes it mean); S1f.21.4 shows each on the corpus's programs that the
    check refuses or that write a relation at two counts, and does not choose; with [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
