@@ -944,6 +944,9 @@ pub struct SavedNode {
     pub kb: Kb,
     /// The plans its saturation and root's compiled.
     pub plans: Vec<Arc<Plan>>,
+    /// The node's commitment as a saved file states it, in H's order
+    /// ([`RootStats::commitment`]): what a save of the file's root writes.
+    pub commit: Vec<String>,
 }
 
 /// **The state a saved file loads to** (Q-M1f.402): its program's root
@@ -973,6 +976,7 @@ pub fn saved_node(
     Ok(Some(SavedNode {
         kb,
         plans: crate::monotone::plans_of(&prepared.memo),
+        commit: prepared.root.commitment(&[], &[]),
     }))
 }
 

@@ -20,7 +20,9 @@
 //!   --dump` prints of the file and of that second save is the same text.
 //!
 //! The three are read with no process between (`ein_cli::saturate::dump_section`,
-//! `region_answer::root_file`), and the binary is held to them on each
+//! one load giving a file's section and its root saved again, by
+//! `region_answer::saved_file` from the node's commitment, as `ein solve
+//! --no-search --dump-answer` saves it), and the binary is held to them on each
 //! program's first and last file: `ein solve F --no-search --dump-answer D`
 //! then `cmp`, and `ein saturate --dump` of both, against the section read
 //! in the process.
@@ -115,31 +117,10 @@ impl Counts {
     }
 }
 
-/// `path` loaded, its root saved again as `ein solve FILE --no-search
-/// --dump-answer DIR` writes `DIR/root.ein`: the bytes, or why not.
-fn saved_again(path: &Path) -> Result<String, String> {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
-    let mut opts = Options::new(Mode {
-        which: Which::All,
-        ask: Ask::Describe,
-    });
-    opts.no_search = true;
-    let r = read_out::run_with(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &opts,
-        &mut ein_infer::events::Events::off(),
-    )
-    .map_err(|e| e.to_string())?;
-    ein_render::dump::region_answer::root_file(&r, &kb)
-}
-
-/// `ein saturate --dump`'s KB section of `path`, in the process, and its
-/// facts.
-fn section(path: &Path) -> Result<(String, String), String> {
+/// One load of `path`, in the process: `ein saturate --dump`'s KB section,
+/// its facts, and its root saved again as `ein solve FILE --no-search
+/// --dump-answer DIR` writes `DIR/root.ein`.
+fn section(path: &Path) -> Result<ein_cli::saturate::Dumped, String> {
     ein_cli::saturate::dump_section(path, &ein_ir::LoadOptions::default())
 }
 
@@ -279,30 +260,24 @@ fn check(
             })
             .expect("saturates");
         // The first load.
-        let (whole, got) = match section(&saved) {
+        let first = match section(&saved) {
             Ok(s) => s,
             Err(e) => {
                 bad.push(format!("{file}: {path} does not load: {e}"));
                 continue;
             }
         };
-        if got == want {
+        let (whole, second) = (first.whole, first.saved);
+        if first.facts == want {
             counts.states += 1;
         } else {
             bad.push(format!(
                 "{file}: {path}: the first load is not the state the run saved:\n{}",
-                first_difference(&want, &got)
+                first_difference(&want, &first.facts)
             ));
         }
         // Save → load → save.
         let text = std::fs::read_to_string(&saved).expect("the run wrote it");
-        let second = match saved_again(&saved) {
-            Ok(t) => t,
-            Err(e) => {
-                bad.push(format!("{file}: {path}: its load saves no root: {e}"));
-                continue;
-            }
-        };
         if second == text {
             counts.bytes += 1;
         } else {
@@ -315,10 +290,10 @@ fn check(
         let path_again = again.join(format!("{i}.ein"));
         std::fs::write(&path_again, &second).expect("a scratch file");
         match section(&path_again) {
-            Ok((w, _)) if w == whole => counts.dumps += 1,
-            Ok((w, _)) => bad.push(format!(
+            Ok(d) if d.whole == whole => counts.dumps += 1,
+            Ok(d) => bad.push(format!(
                 "{file}: {path}: its second save loads to another dump:\n{}",
-                first_difference(&whole, &w)
+                first_difference(&whole, &d.whole)
             )),
             Err(e) => bad.push(format!(
                 "{file}: {path}: its second save does not load: {e}"

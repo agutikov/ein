@@ -144,7 +144,7 @@ fn the_answer_directory_of_a_container_is_its_sources() {
     let facts_of = |p: &Path| {
         ein_cli::saturate::dump_section(p, &ein_ir::LoadOptions::default())
             .expect("a state file loads")
-            .1
+            .facts
     };
     let dir = scratch("dump-answer");
     // The last imports.

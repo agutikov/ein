@@ -618,12 +618,24 @@ pub fn facts_section(terms: &Terms, kb: &Kb) -> String {
     o
 }
 
-/// **`ein saturate --dump FILE`'s KB section, and its facts**
-/// ([`facts_section`]), as the command prints them: the file read as every
-/// command reads one, root saturated, and a saved file's node committed and
-/// saturated by the node function (Q-M1f.402). What a reader that holds a
-/// saved file's load to another's compares, with no process between.
-pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<(String, String), String> {
+/// One load of a file, as [`dump_section`] reads it.
+pub struct Dumped {
+    /// `ein saturate --dump FILE`'s KB section.
+    pub whole: String,
+    /// Its facts ([`facts_section`]).
+    pub facts: String,
+    /// The file's root saved again, as `ein solve FILE --no-search
+    /// --dump-answer DIR` writes `DIR/root.ein`: the program with no
+    /// `(commit …)`, or a saved file's node again (Q-M1f.402).
+    pub saved: String,
+}
+
+/// **`ein saturate --dump FILE`'s KB section, its facts, and its root saved
+/// again**, from one load: the file read as every command reads one, root
+/// saturated, and a saved file's node committed and saturated by the node
+/// function (Q-M1f.402). What a reader that holds a saved file's load to
+/// another's compares, with no process between.
+pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<Dumped, String> {
     let held = crate::common::read_program(path)?;
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -647,16 +659,19 @@ pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<(String, 
     }
     let node =
         ein_infer::region::saved_node(&mut kb, &mut terms, &ast).map_err(|e| e.to_string())?;
+    let commit = node.as_ref().map(|n| n.commit.clone()).unwrap_or_default();
+    let saved = ein_render::dump::region_answer::saved_file(&kb, &commit)?;
     let (kb, plans) = match &node {
         Some(n) => (&n.kb, n.plans.clone()),
         None => (&kb, ein_infer::monotone::plans_of(&memo)),
     };
     let graph = strata::graph(kb, &terms, &plans);
     let rule_strata = strata::rule_strata(kb, &terms, &plans, &graph);
-    Ok((
-        kb_section(&ast, &terms, kb, &graph, &rule_strata),
-        facts_section(&terms, kb),
-    ))
+    Ok(Dumped {
+        whole: kb_section(&ast, &terms, kb, &graph, &rule_strata),
+        facts: facts_section(&terms, kb),
+        saved,
+    })
 }
 
 /// The per-rule tally's key: a rule name and whether the firing was
