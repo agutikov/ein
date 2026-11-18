@@ -67,8 +67,9 @@ pub const VAR_SHAPE: &str = "diamond";
 /// collinear corners, and the spline router writes `triangulation failed`.
 /// 0.55 in halves to 20 pt, and no corpus view gives the warning at it,
 /// where the default gives it on several at every `nodesep` from 0.20 to
-/// 0.40. The side-by-side rules draw theirs inside clusters and are not
-/// refused. `dot_wellformed.rs` keeps that true.
+/// 0.40. A side-by-side rule's or macro's panels draw theirs inside clusters
+/// and set it only under `--fold`, where a folded arrow writes a `label`; a
+/// canonical panel writes none. `dot_wellformed.rs` keeps that true.
 pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
 
 // ── A fact in a context ────────────────────────────────────────────

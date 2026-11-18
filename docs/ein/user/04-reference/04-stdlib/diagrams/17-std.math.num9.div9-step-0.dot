@@ -1,6 +1,7 @@
 digraph rule_div9_step_0_lhs_rhs {
   rankdir=TB;
   label="div9-step-0"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
     "div9-at_L" [label="div9-at", shape=box];
     "?n_L" [label="?n", shape=diamond];

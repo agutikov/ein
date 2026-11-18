@@ -881,6 +881,14 @@ fn cluster(
     out
 }
 
+/// Under `--fold` a panel may write a folded arrow's `label`, which halves the
+/// rank separation, and a panel in its clusters is then refused by the router
+/// `dot_util::POLYGON_RANKSEP` stands against, so a folded panel sets it. A
+/// canonical panel numbers its arrows with `xlabel`, which ranks nothing.
+fn folded_ranksep(fold: bool) -> Option<String> {
+    fold.then(|| format!("  {POLYGON_RANKSEP};"))
+}
+
 fn render_sidebyside(
     ast: &Ast,
     safe: &str,
@@ -897,6 +905,7 @@ fn render_sidebyside(
         "  rankdir=TB;".to_string(),
         format!("  label={}; labelloc=t;", quote(name)),
     ];
+    out.extend(folded_ranksep(fold));
     out.extend(cluster(
         &mut r,
         ast,
@@ -927,6 +936,7 @@ fn render_macro(ast: &Ast, safe: &str, name: &str, body: Option<NodeId>, fold: b
         "  rankdir=TB;".to_string(),
         format!("  label={}; labelloc=t;", quote(&format!("macro {name}"))),
     ];
+    out.extend(folded_ranksep(fold));
     out.extend(cluster(
         &mut r,
         ast,

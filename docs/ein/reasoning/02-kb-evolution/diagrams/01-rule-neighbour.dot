@@ -1,6 +1,7 @@
 digraph rule_neighbour_lhs_rhs {
   rankdir=TB;
   label="neighbour"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
     "?p_L" [label="?p", shape=diamond];
     "?h_L" [label="?h", shape=diamond];

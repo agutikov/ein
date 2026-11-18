@@ -1,6 +1,7 @@
 digraph rule_guest_owes_seat_lhs_rhs {
   rankdir=TB;
   label="guest-owes-seat"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
     "?g_L" [label="?g", shape=diamond];
     "Guest_L" [label="Guest", shape=box];

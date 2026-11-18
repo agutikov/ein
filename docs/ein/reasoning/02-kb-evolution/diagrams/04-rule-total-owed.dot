@@ -1,6 +1,7 @@
 digraph rule_total_owed_lhs_rhs {
   rankdir=TB;
   label="total-owed"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
     "relation_L" [label="relation", shape=box];
     "?R_L" [label="?R", shape=diamond];

@@ -1,6 +1,7 @@
 digraph rule_guess_drink_lhs_rhs {
   rankdir=TB;
   label="guess-drink"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
     "?g_L" [label="?g", shape=diamond];
     "Guest_L" [label="Guest", shape=box];

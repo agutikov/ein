@@ -1,6 +1,7 @@
 digraph rule_binary_arith_lhs_rhs {
   rankdir=TB;
   label="binary-arith"; labelloc=t;
+  ranksep=0.55;
   subgraph cluster_lhs { label="match";
   }
   subgraph cluster_rhs { label="assert";
