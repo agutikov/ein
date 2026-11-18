@@ -17,6 +17,10 @@ and, the same day:
 
 > p1f.30: DOT input only, ein show reads it
 
+and:
+
+> p1f.30: isolated node becomes a unary fact
+
 ## What it is
 
 Two readings of a drawing, as the main session put them that day:
@@ -24,7 +28,9 @@ Two readings of a drawing, as the main session put them that day:
 1. **Any labelled digraph, an arrow a fact** (the fold read backwards): an arrow `a -[r]-> b` is the fact
    `(r a b)`, a node's label an atom's name, an arrow's label a relation. What it cannot keep or must decide: two
    nodes of one label are one atom (an object's identity is its name, Q-M1f.380); two parallel arrows of one label
-   are one fact (a knowledge base is a set); a node no arrow touches is lost (a knowledge base is its facts); a
+   are one fact (a knowledge base is a set); a node no arrow touches is **a fact of its own atom, `(Dog)`** (ruled 2026-11-18, *"isolated node becomes a
+   unary fact"*: a fact whose one arrow is at the atom, which the knowledge-base page allows, $n = 0$; so no node is
+   lost and no relation's name is made up); a
    label must be a name (an ASCII run of the grammar's allowed characters,
    [`01-grammar.md`](../../../docs/ein/user/04-reference/01-grammar.md)) and no word a stored fact may not have (`eq`, `neq`, `_`,
    `not` of two arguments); a node's label that is also an arrow's label is one atom, the relation, which Ein allows
@@ -41,8 +47,8 @@ Two readings of a drawing, as the main session put them that day:
   writes the knowledge base as Ein text, as it writes what it lists today, and nothing else on stdout. How it is
   asked (a subcommand of `ein show`, or `ein show` dispatching on a `.dot` file) is the survey's, with a default.
 - **The format**: **ruled 2026-11-18, DOT only** (*"DOT input only"*).
-- **What cannot be read**: a label that is no name, two nodes of one label, a node no arrow touches, a node with
-  arrows out under reading 1: refused with its line, renamed, or written with a note.
+- **What cannot be read**: a label that is no name, two nodes of one label, a node with arrows out under reading 1
+  (a node no arrow touches is ruled: a fact of its atom alone): refused with its line, renamed, or written with a note.
 - **The round trips**: under 2, every corpus program's KB view read back equals its knowledge base (a test over the
   corpus); under 1, a graph read and drawn with the fold is the graph, but for what 1 cannot keep.
 
