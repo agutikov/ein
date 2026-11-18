@@ -3,7 +3,7 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; Binary's twin of `stdlib/math/decimal-arith/51_tagged_calls_checked.ein`
+;;; Binary's twin of `tests/stdlib/math/decimal-arith/51_tagged_calls_checked.ein`
 ;;; (Q-M1f.404): each call, `(bin-add-walk TAG X Y 0 z)` and the rest, asks
 ;;; `std.math.binary`'s check of a numeral in either place and is handed on
 ;;; to the calculator's own walk, which answers under the program's tag. Here
