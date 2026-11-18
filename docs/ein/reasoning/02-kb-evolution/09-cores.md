@@ -128,7 +128,8 @@ $$
 ![A proof graph: facts, derivations and terminals](diagrams/09-proof-graph.svg)
 
 An octagon is a fact, with the letter the text calls it beside it, double-bordered where it is a terminal, and
-heavy where a derivation added it; a coloured box is a derivation, dashed where it is an alternative. The arrows into a derivation are an AND, the arrows into a fact an OR. Following the primary
+heavy, in the brighter shade of its derivation's colour, where a derivation added it; a coloured box is a
+derivation, dashed where it is an alternative. The arrows into a derivation are an AND, the arrows into a fact an OR. Following the primary
 alone, $F$ rests on $\lbrace A, B \rbrace$; searching both, on $\lbrace C \rbrace$.
 
 **What follows from a set of terminals.** For $Z \subseteq \mathcal{T}(K)$, the facts that follow from $Z$
@@ -143,10 +144,11 @@ and $Z$ is a **frontier** of a set of facts $G$ when $G \subseteq \operatorname{
 The graph is legitimately **cyclic**: once alternatives are recorded, symmetric and transitive closure make
 $r(a, b)$ and $r(b, a)$ justify each other in any ordinary puzzle.
 
-![A cyclic proof graph: the given r(a, b), double-bordered, and r(b, a), each an octagon with its arrows at r, a and b, justify each other through two derivations](diagrams/09-cyclic.svg)
+![A cyclic proof graph: the given r(a, b), double-bordered, and r(b, a), which the primary derivation added, heavy in its brighter shade, each an octagon with its arrows at r, a and b, justify each other through two derivations](diagrams/09-cyclic.svg)
 
-Each fact is drawn as its node, the given $r(\mathsf{a}, \mathsf{b})$ double-bordered, with its first arrow at the
-atom $\mathsf{r}$ and its next arrows at its arguments.
+Each fact is drawn as its node, the given $r(\mathsf{a}, \mathsf{b})$ double-bordered and $r(\mathsf{b},
+\mathsf{a})$, which the primary derivation added, heavy, with its first arrow at the atom $\mathsf{r}$ and its next
+arrows at its arguments.
 
 $\operatorname{der}_K$ is a least fixpoint, built up from the terminals, so a cycle adds nothing to it: a fact
 is never its own reason, and $r(b, a)$ rests on the given $r(a, b)$ and on nothing else. What a program's text
@@ -201,7 +203,7 @@ $$
 
 A contradiction's facts are explained together, a pair's two sides $\lbrace f, \lnot f \rbrace$ as one AND-node.
 
-![The derivation of the saturation page with its terminals double-bordered, the core's three drawn red, and the two facts its derivations added heavy](diagrams/09-core-in-derivation.svg)
+![The derivation of the saturation page with its terminals double-bordered, the core's three drawn red, and the two facts its derivations added heavy, each in the brighter shade of its derivation's colour](diagrams/09-core-in-derivation.svg)
 
 The derivation of [saturation](02-saturation.md), with its terminals double-bordered and the facts a derivation added
 heavy, as in the proof graph above. The core is the three terminals drawn red; the two givens of

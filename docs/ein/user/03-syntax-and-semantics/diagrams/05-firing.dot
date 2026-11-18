@@ -4,18 +4,18 @@ digraph step4 {
   ranksep=0.55;
   "f_0d0f2e8c80" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
   "f_03bbfb1dff" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true];
-  "f_b8f7bcae1f" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, penwidth=2];
-  "fire0_chain" [shape=box, style="rounded", color="#006400", fontcolor="#006400", penwidth=2, label="chain\nAnn ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid"];
+  "f_b8f7bcae1f" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1c9e9a", fontcolor="#1c9e9a", penwidth=3];
+  "fire0_chain" [shape=box, style="rounded", color="#11706e", fontcolor="#11706e", penwidth=2, label="chain\nAnn ancestor Bea and Bea ancestor Cid, so Ann ancestor Cid"];
   "ancestor" -> "f_0d0f2e8c80" [xlabel="1", dir=back];
   "f_0d0f2e8c80" -> "Ann" [xlabel="2"];
   "f_0d0f2e8c80" -> "Bea" [xlabel="3"];
   "ancestor" -> "f_03bbfb1dff" [xlabel="1", dir=back];
   "f_03bbfb1dff" -> "Bea" [xlabel="2"];
   "f_03bbfb1dff" -> "Cid" [xlabel="3"];
-  "ancestor" -> "f_b8f7bcae1f" [xlabel="1", dir=back, penwidth=2];
-  "f_b8f7bcae1f" -> "Ann" [xlabel="2", penwidth=2];
-  "f_b8f7bcae1f" -> "Cid" [xlabel="3", penwidth=2];
-  "f_0d0f2e8c80" -> "fire0_chain" [color="#006400", penwidth=2];
-  "f_03bbfb1dff" -> "fire0_chain" [color="#006400", penwidth=2];
-  "fire0_chain" -> "f_b8f7bcae1f" [color="#006400", penwidth=2];
+  "ancestor" -> "f_b8f7bcae1f" [xlabel="1", dir=back, color="#1c9e9a", penwidth=3];
+  "f_b8f7bcae1f" -> "Ann" [xlabel="2", color="#1c9e9a", penwidth=3];
+  "f_b8f7bcae1f" -> "Cid" [xlabel="3", color="#1c9e9a", penwidth=3];
+  "f_0d0f2e8c80" -> "fire0_chain" [color="#11706e", penwidth=2];
+  "f_03bbfb1dff" -> "fire0_chain" [color="#11706e", penwidth=2];
+  "fire0_chain" -> "f_b8f7bcae1f" [color="#11706e", penwidth=2];
 }

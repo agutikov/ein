@@ -79,10 +79,11 @@ as what it matches and what it asserts ([rules](05-rules.md)):
 
 and where a derived fact came from is itself a graph, the fact's record drawn: `ein solve FILE --trace OUT.md`
 writes one drawing per firing, the premises above, the rule with its reason under them, the fact it added below,
-in bold, each fact its octagon with its arrows at its relation and its arguments, and the firing's own arrows
-heavy and coloured. The first step of this program:
+each fact its octagon with its arrows at its relation and its arguments: the fact added the brightest, wide and in
+the rule's colour, the firing's own arrows and the rule's box wide in a deeper shade of it, and the rest black
+([rendering](../04-reference/12-rendering.md#the-trace--ein-solve---trace)). The first step of this program:
 
-![The program's first firing: its premise, the rule with its reason, the fact it added](diagrams/03-first-firing.svg)
+![The program's first firing: its premise in black, the rule with its reason and its arrows in a deep colour, the fact it added in a brighter shade of it, wide](diagrams/03-first-firing.svg)
 
 ## In words
 

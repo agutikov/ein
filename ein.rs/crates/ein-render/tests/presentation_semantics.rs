@@ -14,6 +14,8 @@
 //! - the derivation-DAG trace view;
 //! - `render rules` / `render rule --name` as *static file views*;
 //! - the `→ ⊥` edge order;
+//! - a derivation's three levels, and its palette's shades against black and
+//!   white;
 //! - the per-form dispatch's own shapes, and mode/view name resolution;
 //! - the read-out's **dead hole**, which *forbid* keeps out of every program
 //!   that loads, read at library level past the refusal.
@@ -630,6 +632,161 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
     .map(|(c, h)| id_of(c, h))
     .collect();
     assert_eq!(got, want, "the ⊥ edges are not in repr order:\n{dot}");
+}
+
+// ── a derivation's three levels ─────────────────────────────────────
+
+/// **A derivation is drawn at three levels** (Q-M1f.428): the fact a step
+/// derives, its octagon and every arrow of it, is the brightest, in the
+/// derived shade of the step's hue and wider than the rest; the step and the
+/// derivation's arrows, from each premise and to what it derives, are the
+/// same hue's explanation shade at twice the default width; a premise no
+/// step derives is the rest, Graphviz's default black at the default width,
+/// its octagon and its arrows naming no colour and no width.
+#[test]
+fn a_derivation_is_drawn_at_three_levels() {
+    use ein_render::slice::{DERIVED_WIDTH, derivation_hue};
+    let mut terms = Terms::new();
+    let atom = |terms: &mut Terms, n: &str| terms.value_text(n).expect("room");
+    let (a, b, c) = (
+        atom(&mut terms, "a"),
+        atom(&mut terms, "b"),
+        atom(&mut terms, "c"),
+    );
+    let rel = terms.intern_text("r").expect("room");
+    let ab = terms.intern_fact(rel, &[a, b]).expect("room");
+    let bc = terms.intern_fact(rel, &[b, c]).expect("room");
+    let ac = terms.intern_fact(rel, &[a, c]).expect("room");
+    let firing = ein_infer::firing::Firing {
+        rule: terms.intern_text("triangle").expect("room"),
+        activator: Box::new([]),
+        bindings: Box::new([]),
+        derived: Box::new([ac]),
+        premises: Box::new([ab, bc]),
+        redundant: false,
+    };
+    let dot = render_slice(&terms, &[], &[firing], None, "step", None, None, false);
+    let hue = derivation_hue("triangle");
+    assert_ne!(hue.explanation, hue.derived);
+    let id = |x: &str, y: &str| ein_render::hashed_id("f_", &format!("r|{x},{y}"), true);
+    let step = "\"fire0_triangle\"";
+    // A fact's own lines: its octagon and its arrows, not the step's.
+    let lines_of = |f: &str| -> Vec<&str> {
+        dot.lines()
+            .filter(|l| !l.contains(step))
+            .filter(|l| {
+                let l = l.trim();
+                l.starts_with(&format!("{f} ")) || l.contains(&format!("-> {f} [xlabel"))
+            })
+            .collect()
+    };
+    // The fact derived: its octagon and its three arrows.
+    let derived = lines_of(&id("a", "c"));
+    assert_eq!(derived.len(), 4, "{dot}");
+    for l in &derived {
+        assert!(
+            l.contains(&format!("color=\"{}\"", hue.derived))
+                && l.contains(&format!("penwidth={DERIVED_WIDTH}")),
+            "the derived fact is not the brightest and widest: {l}\n{dot}"
+        );
+    }
+    // The step and the derivation's three arrows.
+    let explanation: Vec<&str> = dot.lines().filter(|l| l.contains(step)).collect();
+    assert_eq!(explanation.len(), 4, "{dot}");
+    for l in &explanation {
+        assert!(
+            l.contains(&format!("color=\"{}\"", hue.explanation)) && l.contains("penwidth=2"),
+            "the derivation's explanation is not its hue's other shade at width 2: {l}\n{dot}"
+        );
+    }
+    // Each premise, its octagon and its arrows: no colour and no width.
+    for (x, y) in [("a", "b"), ("b", "c")] {
+        let premise = lines_of(&id(x, y));
+        assert_eq!(premise.len(), 4, "{dot}");
+        for l in &premise {
+            assert!(
+                !l.contains("color=") && !l.contains("penwidth"),
+                "a premise is marked: {l}\n{dot}"
+            );
+        }
+    }
+}
+
+/// **A redundant firing adds nothing**: what it derives was there before
+/// it, so its conclusion is drawn as the rest, while its step, dashed, and
+/// its arrows are the derivation's explanation.
+#[test]
+fn a_redundant_firings_conclusion_is_not_drawn_as_added() {
+    use ein_render::slice::derivation_hue;
+    let mut terms = Terms::new();
+    let (a, b) = (
+        terms.value_text("a").expect("room"),
+        terms.value_text("b").expect("room"),
+    );
+    let rel = terms.intern_text("r").expect("room");
+    let ab = terms.intern_fact(rel, &[a, b]).expect("room");
+    let ba = terms.intern_fact(rel, &[b, a]).expect("room");
+    let firing = ein_infer::firing::Firing {
+        rule: terms.intern_text("mirror").expect("room"),
+        activator: Box::new([]),
+        bindings: Box::new([]),
+        derived: Box::new([ab]),
+        premises: Box::new([ba]),
+        redundant: true,
+    };
+    let dot = render_slice(&terms, &[], &[firing], None, "step", None, None, false);
+    let hue = derivation_hue("mirror");
+    assert!(
+        !dot.contains(hue.derived),
+        "a redundant firing added a fact:\n{dot}"
+    );
+    assert!(
+        dot.contains("style=\"rounded,dashed\"") && dot.contains(hue.explanation),
+        "{dot}"
+    );
+}
+
+/// WCAG's relative luminance of a `#rrggbb` colour.
+fn luminance(hex: &str) -> f64 {
+    let channel = |i: usize| {
+        let v = f64::from(u8::from_str_radix(&hex[i..i + 2], 16).expect("hex")) / 255.0;
+        if v <= 0.04045 {
+            v / 12.92
+        } else {
+            ((v + 0.055) / 1.055).powf(2.4)
+        }
+    };
+    0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5)
+}
+
+/// **No shade of a derivation is near black, and each reads on white**
+/// (Q-M1f.428): every shade at a contrast of more than 3.5 against black;
+/// the explanation's, in which a step's label is written, at 5.5 or more
+/// against white, the derived fact's, a line, at 3 or more; and the derived
+/// fact's the brighter of its hue's two.
+#[test]
+fn no_shade_of_the_derivation_palette_is_near_black() {
+    let against_black = |c: &str| (luminance(c) + 0.05) / 0.05;
+    let against_white = |c: &str| 1.05 / (luminance(c) + 0.05);
+    for hue in ein_render::slice::DERIVATION_PALETTE {
+        for shade in [hue.explanation, hue.derived] {
+            assert!(against_black(shade) > 3.5, "{shade} is near black");
+        }
+        assert!(
+            against_white(hue.explanation) >= 5.5,
+            "{} does not read on white",
+            hue.explanation
+        );
+        assert!(
+            against_white(hue.derived) >= 3.0,
+            "{} does not read on white",
+            hue.derived
+        );
+        assert!(
+            luminance(hue.derived) > luminance(hue.explanation),
+            "{hue:?}: the derived fact's shade is not the brighter"
+        );
+    }
 }
 
 // ── the read-out's dead hole ───────────────────────────────────────

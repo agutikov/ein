@@ -118,10 +118,11 @@ Derives `ancestor(Ann, Cid)`.
 ```
 
 and under it the firing drawn, the premises it read above, the rule with its reason under them, the fact it added
-below, in bold, each fact its octagon with its arrows at its relation and its arguments, the firing's own arrows
-heavy and coloured:
+below, each fact its octagon with its arrows at its relation and its arguments: the fact added the brightest, wide
+and in the rule's colour, the firing's own arrows and the rule's box wide in a deeper shade of it, the premises
+black:
 
-![One firing drawn: the two premises it read, each an octagon over ancestor and its arguments, the rule with its reason, and the fact it added, in bold](diagrams/05-firing.svg)
+![One firing drawn: the two premises it read, each an octagon over ancestor and its arguments, in black, the rule with its reason and its arrows in a deep colour, and the fact it added in a brighter shade of it, wide](diagrams/05-firing.svg)
 
 The quote is the rule's reason, and the line after *Derives* is the conclusion as written: a fact has no text of
 its own, and reads by its rule's. A good reason says what the rule concludes and from what; a refutation's says what

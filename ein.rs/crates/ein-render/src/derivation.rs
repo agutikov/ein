@@ -9,14 +9,19 @@
 //! several recorded derivations shows them as alternatives rather than as
 //! one big conjunction. The graph stands in layers, as a knowledge base does
 //! ([`crate::fact_graph`]), each premise above the derivation it feeds, and
-//! the derivation's arrows stand out (Q-M1f.428): twice Graphviz's default
-//! width, in a colour of the slice's [`crate::slice::DERIVATION_PALETTE`].
+//! the derivation stands out as a slice's does (Q-M1f.428), in the first hue
+//! of [`crate::slice::DERIVATION_PALETTE`]: a fact a derivation added, one it
+//! concludes whose first record is a rule's, its octagon and its arrows, in
+//! the hue's derived shade at [`crate::slice::DERIVED_WIDTH`]; each diamond
+//! and the arrows into and out of it in the explanation's shade at twice
+//! Graphviz's default width; every other fact in the default black at the
+//! default width.
 
 use std::collections::HashSet;
 
 use crate::dot_util::{HYPER_SHAPE, POLYGON_RANKSEP, fact_key, hashed_id, quote};
 use crate::fact_graph::{FACT_NODE, first_arrow};
-use crate::slice::{DERIVATION_PALETTE, DERIVATION_WIDTH};
+use crate::slice::{DERIVATION_PALETTE, DERIVATION_WIDTH, DERIVED_WIDTH};
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 
 /// Render `dag` — the bytes `ein-render/tests/golden/dot/kb_provenance_dag.dot`
@@ -28,6 +33,20 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
         format!("  {POLYGON_RANKSEP};"),
         "  node [shape=box];".to_string(),
     ];
+    // A derivation records no rule here: every one is drawn in the
+    // palette's first hue.
+    let hue = DERIVATION_PALETTE[0];
+    // The facts a derivation added: concluded here, and recorded first as a
+    // rule's. A given fact a derivation also concludes was there before it.
+    let added: HashSet<FactId> = dag
+        .and_nodes
+        .iter()
+        .map(|(c, _)| *c)
+        .filter(|c| {
+            kb.primary(*c)
+                .is_some_and(|p| terms.provs.get(p).kind == ProvKind::Rule)
+        })
+        .collect();
     let mut arrows: Vec<String> = Vec::new();
     let mut drawn: HashSet<FactId> = HashSet::new();
     let mut queue: Vec<FactId> = dag.nodes.clone();
@@ -42,11 +61,20 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
         let nid = fact_dot_id(terms, f);
         let note = provenance_note(kb, terms, f)
             .map_or(String::new(), |n| format!(", xlabel={}", quote(&n)));
-        lines.push(format!("  {nid} [shape={HYPER_SHAPE}, {FACT_NODE}{note}];"));
+        // A fact a derivation added: the brightest, and wide; its note
+        // stays black, text being read where a line is only seen.
+        let tail = if added.contains(&f) {
+            format!(", color=\"{}\", penwidth={DERIVED_WIDTH}", hue.derived)
+        } else {
+            String::new()
+        };
+        lines.push(format!(
+            "  {nid} [shape={HYPER_SHAPE}, {FACT_NODE}{tail}{note}];"
+        ));
         let (rel, args) = terms.fact(f);
         arrows.push(format!(
             "  {}",
-            first_arrow(&nid, &quote(terms.sym(rel)), "")
+            first_arrow(&nid, &quote(terms.sym(rel)), &tail)
         ));
         for (j, a) in args.iter().enumerate() {
             let to = match a.as_fact() {
@@ -56,14 +84,11 @@ pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> Str
                 }
                 None => quote(&terms.display(*a)),
             };
-            arrows.push(format!("  {nid} -> {to} [xlabel=\"{}\"];", j + 2));
+            arrows.push(format!("  {nid} -> {to} [xlabel=\"{}\"{tail}];", j + 2));
         }
     }
     lines.extend(arrows);
-    // A derivation records no rule here: every one is drawn in the
-    // palette's first colour.
-    let colour = DERIVATION_PALETTE[0];
-    let attrs = format!("color=\"{colour}\", {DERIVATION_WIDTH}");
+    let attrs = format!("color=\"{}\", {DERIVATION_WIDTH}", hue.explanation);
     for (i, (conclusion, premises)) in dag.and_nodes.iter().enumerate() {
         let jid = format!("j{i}");
         lines.push(format!(

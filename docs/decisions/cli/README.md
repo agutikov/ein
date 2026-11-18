@@ -28,7 +28,7 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.425](Q-M1f.425-fold-folds-a-fact-of-three-arrows-into-an-arrow.md) — `--fold` folds a fact of three arrows into an arrow, and a fact of two into a loop
 - [Q-M1f.426](Q-M1f.426-the-constraint-view-draws-each-fact-as-a-fact.md) — The constraint view draws each fact as a fact, reading no name
 - [Q-M1f.427](Q-M1f.427-a-rules-pattern-is-drawn-as-a-fact-and-no-macro.md) — A rule's pattern is drawn as a fact, and no macro by its name
-- [Q-M1f.428](Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md) — A derivation is drawn with each fact its node and each step a node, its arrows standing out
+- [Q-M1f.428](Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md) — A derivation is drawn with each fact its node and each step a node, at three levels of emphasis
 - [Q-M1f.429](Q-M1f.429-no-arrow-goes-to-or-from-an-arrow.md) — No arrow goes to or from an arrow
 - [Q-M1f.430](Q-M1f.430-the-canonical-form-draws-a-knowledge-base.md) — The canonical form draws a knowledge base, and the views of states draw states
 - [Q-M1f.433](Q-M1f.433-an-object-is-a-labelled-box-a-fact-an-unlabelled.md) — An object is a labelled box, a fact an unlabelled octagon, a variable a labelled diamond

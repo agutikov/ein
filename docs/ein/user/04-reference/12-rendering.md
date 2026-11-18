@@ -468,21 +468,28 @@ set with why, the owing nodes where R is empty of that kind. Each step is a sect
 in English, its premises with their quoted `:source` sentences and, after a declaration it reads, the declaration's
 own `:why`, what it derives, as written, and an inline `dot` block, the step's **derivation
 slice**: the facts the step started from, its firings as rule nodes labelled with the rendered `:why`, and the facts
-derived, in bold. **Each fact is drawn as its node**, an octagon with no name in it, its arrow `1` at its relation
+it added. **Each fact is drawn as its node**, an octagon with no name in it, its arrow `1` at its relation
 and its next arrows at its arguments, and never as a node labelled with its text; a fact one of them points at is
-its node too, in the frame of its context where the state does not hold it. A commitment's facts are red, a stored
-negation grey. **Only that cone is drawn**, never the whole KB; a refuted commitment's slice ends in a `⊥` node, which
-its core's facts point at, and a note, `learned no-good`, points at each fact of the no-good it lifts to. States
-folded away are `<details>` blocks.
+its node too, in the frame of its context where the state does not hold it. **Only that cone is drawn**, never the
+whole KB; a refuted commitment's slice ends in a `⊥` node, which its core's facts point at, and a note,
+`learned no-good`, points at each fact of the no-good it lifts to. States folded away are `<details>` blocks.
 
 A slice is laid out in layers, as a knowledge base is
 ([§ Layers](#layers--a-relation-above-its-facts-a-fact-above-its-arguments)), each premise above the step it feeds
-and the step above what it derives. **The derivation stands out**
-([Q-M1f.428](../../../decisions/cli/Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md)): each of its
-arrows, from a premise to a step, from a step to a fact it derives, from the core to `⊥`, and each step's border is
-twice Graphviz's default width, `penwidth=2`, in a dark colour picked by the rule's name, never red, the commitment's
-and the core's, nor grey, a negation's. The derivation graph and a written trace's `dag` view draw their steps the
-same way.
+and the step above what it derives. **The derivation stands out, at three levels**
+([Q-M1f.428](../../../decisions/cli/Q-M1f.428-a-derivation-is-drawn-with-each-fact-its-node.md)), each step in a hue
+picked by its rule's name, in two shades:
+
+| level | what | drawn |
+|---|---|---|
+| 1, the brightest | a fact a step added: its octagon and its arrows | the hue's bright shade, `penwidth=3` |
+| 2 | the derivation's explanation: each step's border and label, and its arrows, from a premise to the step and from the step to a fact it derives | the hue's deeper shade, `penwidth=2` |
+| 3 | everything else: a premise no step of the slice added, a relation, a name | Graphviz's default black, at the default width |
+
+No shade is near black, and none is red or grey: a commitment's facts are red, a stored negation no step added grey,
+and the refutation's arrows, from the core to `⊥` and the no-good's, red at `penwidth=2`. A redundant firing, whose
+step is dashed, adds nothing, so what it derives is drawn as the rest. A written trace's `dag` view draws its steps and
+the facts they add the same way, and the derivation graph, which records no rule, in the first hue.
 
 | option | does |
 |---|---|

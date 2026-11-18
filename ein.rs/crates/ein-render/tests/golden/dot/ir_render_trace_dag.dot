@@ -3,14 +3,14 @@ digraph trace {
   node [shape=box];
 
   // facts
-  f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", fontcolor="#9467bd", style=solid, penwidth=2];
-  "lives-in" -> f_ba78d8e6bc [xlabel="1", dir=back, color="#9467bd", style=solid, penwidth=2];
-  f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#9467bd", style=solid, penwidth=2];
-  f_ba78d8e6bc -> "House-1" [xlabel="3", color="#9467bd", style=solid, penwidth=2];
-  f_40a0d01887 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid, penwidth=2];
-  "color-loc" -> f_40a0d01887 [xlabel="1", dir=back, color="#8c564b", style=solid, penwidth=2];
-  f_40a0d01887 -> "Blue" [xlabel="2", color="#8c564b", style=solid, penwidth=2];
-  f_40a0d01887 -> "House-2" [xlabel="3", color="#8c564b", style=solid, penwidth=2];
+  f_ba78d8e6bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#b46afa", fontcolor="#b46afa", style=solid, penwidth=3];
+  "lives-in" -> f_ba78d8e6bc [xlabel="1", dir=back, color="#b46afa", style=solid, penwidth=3];
+  f_ba78d8e6bc -> "Norwegian" [xlabel="2", color="#b46afa", style=solid, penwidth=3];
+  f_ba78d8e6bc -> "House-1" [xlabel="3", color="#b46afa", style=solid, penwidth=3];
+  f_40a0d01887 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#b46afa", fontcolor="#b46afa", style=solid, penwidth=3];
+  "color-loc" -> f_40a0d01887 [xlabel="1", dir=back, color="#b46afa", style=solid, penwidth=3];
+  f_40a0d01887 -> "Blue" [xlabel="2", color="#b46afa", style=solid, penwidth=3];
+  f_40a0d01887 -> "House-2" [xlabel="3", color="#b46afa", style=solid, penwidth=3];
 
   // layers
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
@@ -23,11 +23,11 @@ digraph trace {
   { rank=same; "layer 2"; "Norwegian"; "House-1"; "Blue"; "House-2"; }
 
   // steps
-  "step s1" [shape=box, style=rounded, fontcolor="#0047ab", color="#0047ab", penwidth=2, label="s1\nfrom-condition"];
-  "step s2" [shape=box, style=rounded, fontcolor="#6a0dad", color="#6a0dad", penwidth=2, label="s2\nadjacent"];
-  "c10" -> "step s1" [color="#0047ab", penwidth=2];
-  "step s1" -> f_ba78d8e6bc [color="#0047ab", penwidth=2];
-  f_ba78d8e6bc -> "step s2" [color="#6a0dad", penwidth=2];
-  "c15" -> "step s2" [color="#6a0dad", penwidth=2];
-  "step s2" -> f_40a0d01887 [color="#6a0dad", penwidth=2];
+  "step s1" [shape=box, style=rounded, fontcolor="#951be7", color="#951be7", penwidth=2, label="s1\nfrom-condition"];
+  "step s2" [shape=box, style=rounded, fontcolor="#951be7", color="#951be7", penwidth=2, label="s2\nadjacent"];
+  "c10" -> "step s1" [color="#951be7", penwidth=2];
+  "step s1" -> f_ba78d8e6bc [color="#951be7", penwidth=2];
+  f_ba78d8e6bc -> "step s2" [color="#951be7", penwidth=2];
+  "c15" -> "step s2" [color="#951be7", penwidth=2];
+  "step s2" -> f_40a0d01887 [color="#951be7", penwidth=2];
 }

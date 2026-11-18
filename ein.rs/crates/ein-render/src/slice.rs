@@ -7,17 +7,20 @@
 //! trace section; fed a dead commitment's firing chain plus `contradiction`,
 //! it becomes the refuted-branch slice terminating in `⊥`.
 //!
-//! Colour key: hypothesis / seed facts red, derived facts bold, negative
-//! (eliminated-alternative) facts grey, rule nodes coloured by rule, the `⊥`
+//! Colour key: hypothesis / seed facts red, negative (eliminated-alternative)
+//! facts grey, each step and each fact it derives in its rule's hue, the `⊥`
 //! refutation node red. Each fact is drawn as its node in the canonical form,
 //! or folded on request, as every view draws one (Q-M1f.419), and laid out in
 //! layers as a knowledge base is ([`crate::fact_graph`]): a relation above
 //! its facts, a fact above its arguments.
 //!
-//! **The derivation stands out** (Q-M1f.428): each arrow of it, from a
-//! premise to a step, from a step to what it derives, from the core to `⊥`,
-//! is twice Graphviz's default width, `penwidth=2`, in a colour of
-//! [`DERIVATION_PALETTE`], dark enough to read against the facts' black.
+//! **The derivation stands out** (Q-M1f.428), at three levels: the fact a
+//! step adds, its octagon and its arrows, is the brightest, in the
+//! [`Hue::derived`] shade of its rule's hue at [`DERIVED_WIDTH`]; the step's
+//! border and the derivation's arrows, from a premise to a step, from a step
+//! to what it derives, are its [`Hue::explanation`] shade, less bright, at
+//! [`DERIVATION_WIDTH`]; everything else is Graphviz's default black at the
+//! default width. No shade of [`DERIVATION_PALETTE`] is near black.
 //!
 //! **No arrow goes to or from an arrow** (Q-M1f.429): a fact a derivation's
 //! arrow touches, a premise, a fact derived, a fact of the core or of the
@@ -43,23 +46,61 @@ const NEG_COLOUR: &str = "#7f7f7f"; // grey — eliminated-alternative facts
 /// Graphviz's default.
 pub const DERIVATION_WIDTH: &str = "penwidth=2";
 
-/// The colours of a derivation's steps, one per rule, fixed by its name: dark
-/// and saturated, each at a contrast of 6 or more against white, and none
-/// red, the commitment's and the core's colour, or grey, a negation's.
-pub const DERIVATION_PALETTE: [&str; 8] = [
-    "#0047ab", // cobalt blue
-    "#006400", // dark green
-    "#6a0dad", // purple
-    "#a14a00", // burnt orange
-    "#00686b", // teal
-    "#8b008b", // dark magenta
-    "#5c3317", // brown
-    "#1a237e", // indigo
+/// The width of a fact a derivation adds, its octagon and its arrows: three
+/// times Graphviz's default, a step wider than the derivation's arrows.
+pub const DERIVED_WIDTH: u32 = 3;
+
+/// Graphviz's default colour, written where a fact's look must name one: the
+/// rest of a derivation's drawing, which no step derives.
+pub const DEFAULT_INK: &str = "black";
+
+/// One rule's hue, in two shades of it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Hue {
+    /// The derivation's explanation: a step's border and label, and its
+    /// arrows, from a premise to the step and from the step to what it
+    /// derives.
+    pub explanation: &'static str,
+    /// The fact the derivation adds, its octagon and its arrows: the same
+    /// hue, brighter.
+    pub derived: &'static str,
+}
+
+/// The hues of a derivation's steps, one per rule, fixed by its name. Each
+/// shade is clear of black, at a contrast of more than 3.5 against black,
+/// and readable on white: the explanation's, which a step's label is written
+/// in, at 5.5 or more, the derived fact's, a line, at 3 or more. None is red,
+/// the commitment's and the core's colour, or grey, a negation's.
+pub const DERIVATION_PALETTE: [Hue; 6] = [
+    Hue {
+        explanation: "#0e61cc",
+        derived: "#418cfa",
+    }, // blue
+    Hue {
+        explanation: "#11706e",
+        derived: "#1c9e9a",
+    }, // teal
+    Hue {
+        explanation: "#117622",
+        derived: "#1ca433",
+    }, // green
+    Hue {
+        explanation: "#98530f",
+        derived: "#d37619",
+    }, // orange
+    Hue {
+        explanation: "#951be7",
+        derived: "#b46afa",
+    }, // purple
+    Hue {
+        explanation: "#af2b94",
+        derived: "#f240cd",
+    }, // magenta
 ];
 
-/// A step's colour: [`DERIVATION_PALETTE`] indexed by the rule's name, by the
+/// A step's hue: [`DERIVATION_PALETTE`] indexed by the rule's name, by the
 /// same stable digest as a relation's colour ([`crate::palette::hash_color`]).
-pub fn derivation_colour(rule: &str) -> &'static str {
+pub fn derivation_hue(rule: &str) -> Hue {
     DERIVATION_PALETTE[crate::palette::stable_index(rule, DERIVATION_PALETTE.len())]
 }
 
@@ -86,9 +127,10 @@ fn node_id(key: &str) -> String {
     hashed_id("f_", key, true)
 }
 
-/// The marks of one fact of a cone: red where the commitment holds it, grey
-/// where it is a stored negation, bold where a firing derived it, and
-/// heavier where `since` lacks it.
+/// The marks of one fact of a cone: red where the commitment holds it, the
+/// derived shade of its step's hue and [`DERIVED_WIDTH`] where a firing
+/// added it, grey where it is a stored negation, and heavier where `since`
+/// lacks it.
 struct Marks {
     colour: Option<&'static str>,
     penwidth: Option<u32>,
@@ -162,11 +204,16 @@ pub fn render_slice(
     let since_keys: Option<HashSet<String>> =
         since.map(|s| s.facts().map(|f| key(terms, f)).collect());
     let seed_keys: HashSet<String> = commitment.iter().map(|f| key(terms, *f)).collect();
-    let derived_keys: HashSet<String> = firings
-        .iter()
-        .flat_map(|f| f.derived.iter())
-        .map(|d| key(terms, *d))
-        .collect();
+    // Each fact a firing adds, in the brighter shade of the first such
+    // firing's hue. A redundant firing adds nothing: what it derives was
+    // there before it.
+    let mut derived_shade: HashMap<String, &'static str> = HashMap::new();
+    for firing in firings.iter().filter(|f| !f.redundant) {
+        let shade = derivation_hue(terms.sym(firing.rule)).derived;
+        for d in firing.derived.iter() {
+            derived_shade.entry(key(terms, *d)).or_insert(shade);
+        }
+    }
 
     // The facts of the cone, in first-touch order: the seeds first, so they
     // are drawn red even when they are also a premise.
@@ -236,8 +283,11 @@ pub fn render_slice(
     let marks = |f: FactId| -> Marks {
         let k = key(terms, f);
         let (rel, _) = terms.fact(f);
+        let derived = derived_shade.get(&k).copied();
         let colour = if seed_keys.contains(&k) {
             Some(SEED_COLOUR)
+        } else if derived.is_some() {
+            derived
         } else if terms.sym(rel) == "not" {
             Some(NEG_COLOUR)
         } else {
@@ -245,8 +295,8 @@ pub fn render_slice(
         };
         let penwidth = if since_keys.as_ref().is_some_and(|sk| !sk.contains(&k)) {
             Some(3) // transition highlight
-        } else if derived_keys.contains(&k) {
-            Some(2) // bold — newly derived
+        } else if derived.is_some() {
+            Some(DERIVED_WIDTH)
         } else {
             None
         };
@@ -330,7 +380,7 @@ pub fn render_slice(
     for (idx, firing) in firings.iter().enumerate() {
         let rule_name = terms.sym(firing.rule).to_string();
         let fnode = quote(&format!("fire{idx}_{rule_name}"));
-        let colour = derivation_colour(&rule_name);
+        let colour = derivation_hue(&rule_name).explanation;
         let why = kb
             .and_then(|kb| {
                 crate::sentence::rule_sentence(kb.program(), terms, firing.rule, &firing.bindings)
@@ -375,16 +425,18 @@ pub fn render_slice(
                 "  {cid} -> {bottom} [color=\"{SEED_COLOUR}\", {DERIVATION_WIDTH}];"
             ));
         }
+        // The no-good's arrows are the refutation's, in the core's red: no
+        // arrow of a derivation is black.
         if !clause.is_empty() {
             let ng = quote("learned-nogood");
             steps.push(format!("  {ng} [shape=note, label=\"learned no-good\"];"));
             edges.push(format!(
-                "  {bottom} -> {ng} [style=dashed, {DERIVATION_WIDTH}, label=\"lifts to\"];"
+                "  {bottom} -> {ng} [style=dashed, color=\"{SEED_COLOUR}\", {DERIVATION_WIDTH}, label=\"lifts to\"];"
             ));
             for f in &clause {
                 let fid = node_id(&key(terms, *f));
                 edges.push(format!(
-                    "  {ng} -> {fid} [style=dashed, {DERIVATION_WIDTH}];"
+                    "  {ng} -> {fid} [style=dashed, color=\"{SEED_COLOUR}\", {DERIVATION_WIDTH}];"
                 ));
             }
         }
