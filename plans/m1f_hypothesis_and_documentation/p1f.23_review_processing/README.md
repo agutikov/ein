@@ -57,6 +57,21 @@ extent's drawing, in [the milestone's findings](../findings.md)); they answer L-
 | S1f.23.n | the next batch of the review's rulings | planned when ruled; run on the user's word |
 | S1f.23.z | **The close.** | last |
 
+**The checks on the merged tree, 2026-11-18**, after `e9e640f6` (R-16 and R-17), on AC: `./run_tests.sh` on
+`2e3684ec` **exit 0, 22 m 19 s** (a first try on `e9e640f6` stopped at the link check after 6 s, on F20's move into
+P1h.6, then uncommitted in the shared tree, committed as `2e3684ec`); `utils/ci_container.sh` on `fd8da416` **exit 1
+after 7 s** at the link check, 2 574 findings, every one in the 26 pages of [`../review/`](../review/README.md) that
+link their runs' ignored outputs, which a clean clone does not have (known, `c8b26770`: the folder is removed before a
+push), then `utils/ci_container.sh --tests-only` there **exit 0, 21 m 13 s**, and the other static steps and the bench
+smoke in the same image on the same clone **exit 0, 51 s**; `./run_tests.sh --nightly` on `fd8da416` **exit 101 after
+9 m 51 s**, at `deep-corpus: dot_wellformed, every program` (264.9 s): 6 of 8 821 views refused, the six that draw the
+rule `column-wrong` of `tests/stdlib/math/digits/02_a_core_names_its_rows.ein`, whose `≠` link Graphviz 16.0.0 and the
+runner's 14.1.2 amd64v3 alike cannot route (*Unable to reclaim box space in spline routing*; the drawing before the
+phase routes it, and the link written as an `xlabel` routes under both); the nightly's later steps not run. Each
+earlier step under 45 s. That step's time is `examples/arith/long_numbers.ein`'s seven views of 730 to 772 edges, 18 to
+64 s each under `dot`, one after another in one worker: 265.5 s on four P-core threads as on sixteen
+(`bench_env.sh --cores PT:4`), and per commit too (259.6 s).
+
 ## Rules of the phase
 
 The standing ones ([`AGENTS.md`](../../../AGENTS.md)): a stage per subagent; a claim about the engine is a run; what a
