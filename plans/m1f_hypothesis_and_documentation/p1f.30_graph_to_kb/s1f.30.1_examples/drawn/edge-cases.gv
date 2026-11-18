@@ -1,0 +1,47 @@
+// One drawing for each case reading 1 cannot keep or must decide.
+digraph edge_cases {
+  // two arrows of one label between one pair, and a third of another label
+  a -> b [label="calls"];
+  a -> b [label="calls"];
+  a -> b [label="returns"];
+  // a node whose label is also an arrow's label
+  n_calls [label="calls"];
+  b -> n_calls [label="logs"];
+  // labels with spaces, punctuation and characters that are not ASCII
+  c [label="São Paulo"];
+  d [label="Zürich"];
+  e [label="Москва"];
+  c -> d [label="flight 1 → 2"];
+  d -> e [label="поезд"];
+  // an empty label, and the default label written out
+  f [label=""];
+  g [label="\N"];
+  f -> g [label="x"];
+  // direction written as an attribute
+  h -> i [label="parent-of", dir=back];
+  h -> j [label="sibling-of", dir=both];
+  h -> k [label="near", dir=none];
+  // weight, colour, style and pen width
+  i -> j [label="w", weight=5, color=red, style=dashed, penwidth=3];
+  // a self-loop
+  k -> k [label="retries"];
+  // compass points, which are layout
+  l:n -> m:s [label="above"];
+  // nodes no arrow touches
+  Dog;
+  Cat [label="Cat"];
+  // labels that read as an Ein variable and an Ein keyword
+  v [label="?x"];
+  w [label=":why"];
+  v -> w [label="binds"];
+  // an xlabel in place of a label, and labels at the two ends only
+  p -> q [xlabel="annotated"];
+  p -> r [headlabel="1..*", taillabel="1"];
+  // a semicolon and parentheses
+  s [label="a;b"];
+  s -> t [label="has (parens)"];
+  // dotted labels, one of them the full name of a standard-library module's name
+  u [label="std.macro.forall"];
+  o [label="x.y"];
+  u -> o [label="dotted"];
+}

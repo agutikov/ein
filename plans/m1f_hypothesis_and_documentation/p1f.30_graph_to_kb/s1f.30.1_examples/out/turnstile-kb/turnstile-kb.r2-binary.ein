@@ -1,0 +1,8 @@
+;; reading 2 of turnstile-kb.kb.dot, a loop read as two.
+;; A declaration's :why is not in the drawing: load with --no-require-why.
+
+(init Start Locked)
+(coin Locked Unlocked)
+(push Locked Locked)
+(push Unlocked Locked)
+(coin Unlocked Unlocked)

@@ -1,0 +1,19 @@
+;; ein-crates: reading 1 of ein-crates.gv, b.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(depends-on ein-ir ein-core)
+(depends-on ein-infer ein-core)
+(depends-on ein-infer ein-ir)
+(depends-on ein-einb ein-core)
+(depends-on ein-einb ein-ir)
+(depends-on ein-einb ein-infer)
+(depends-on ein-render ein-core)
+(depends-on ein-render ein-ir)
+(depends-on ein-render ein-infer)
+(depends-on ein-cli ein-core)
+(depends-on ein-cli ein-ir)
+(depends-on ein-cli ein-infer)
+(depends-on ein-cli ein-render)
+(depends-on ein-cli ein-einb)
+(ein-corpus)
+(ein-narration)

@@ -1,0 +1,15 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "John@john1" -> "Mary" [label="married-to", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "John@john1" -> "John@john2" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Mary" -> "John@john2" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "John@john1" -> "Ann" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Mary" -> "Ann" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "John@john2" -> "Zoe" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "Ann" -> "John@john2" [label="sibling-of", color="#d62728", fontcolor="#d62728", style=solid];
+  f_3f28777e58 [shape=octagon, label="(Peter)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+}

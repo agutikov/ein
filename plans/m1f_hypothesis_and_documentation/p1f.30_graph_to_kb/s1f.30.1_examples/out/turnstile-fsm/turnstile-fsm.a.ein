@@ -1,0 +1,8 @@
+;; turnstile-fsm: reading 1 of turnstile-fsm.gv, a.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(init Start Locked)
+(coin Locked Unlocked)
+(push Locked Locked)
+(push Unlocked Locked)
+(coin Unlocked Unlocked)

@@ -1,0 +1,22 @@
+// Euclid's algorithm by subtraction as a flowchart: decisions answered on the
+// arrows, the steps between them unlabelled, the boxes holding statements.
+digraph euclid {
+  node [shape=box];
+  start   [shape=oval, label="Start"];
+  input   [shape=parallelogram, label="read a, b"];
+  test_eq [shape=diamond, label="a = b?"];
+  test_gt [shape=diamond, label="a > b?"];
+  sub_a   [label="a := a - b"];
+  sub_b   [label="b := b - a"];
+  output  [shape=parallelogram, label="print a"];
+  stop    [shape=oval, label="Stop"];
+  start -> input;
+  input -> test_eq;
+  test_eq -> output [label="yes"];
+  test_eq -> test_gt [label="no"];
+  test_gt -> sub_a [label="yes"];
+  test_gt -> sub_b [label="no"];
+  sub_a -> test_eq;
+  sub_b -> test_eq;
+  output -> stop;
+}

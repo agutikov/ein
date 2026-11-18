@@ -1,0 +1,26 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "a" -> "b" [label="calls", color="#17becf", fontcolor="#17becf", style=solid];
+  "a" -> "b" [label="returns", color="#d62728", fontcolor="#d62728", style=solid];
+  "b" -> "calls@n_calls" [label="logs", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Sao-Paulo" -> "Zurich" [label="flight-1-2", color="#17becf", fontcolor="#17becf", style=solid];
+  "Zurich" -> "e" [label="%D0%BF%D0%BE%D0%B5%D0%B7%D0%B4", color="#17becf", fontcolor="#17becf", style=solid];
+  "f" -> "g" [label="x", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "h" -> "i" [label="parent-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "h" -> "j" [label="sibling-of", color="#d62728", fontcolor="#d62728", style=solid];
+  "h" -> "k" [label="near", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "i" -> "j" [label="w", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "k" -> "k" [label="retries", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "l" -> "m" [label="above", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "x@v" -> "why" [label="binds", color="#17becf", fontcolor="#17becf", style=solid];
+  "p" -> "q" [label="annotated", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "p" -> "r" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "a-b" -> "t" [label="has-parens", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "std-macro-forall" -> "x.y" [label="dotted", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  f_7f556bc52c [shape=octagon, label="(Dog)", color="#17becf", fontcolor="#17becf", style=solid];
+  f_495fe18d6c [shape=octagon, label="(Cat)", color="#e377c2", fontcolor="#e377c2", style=solid];
+}

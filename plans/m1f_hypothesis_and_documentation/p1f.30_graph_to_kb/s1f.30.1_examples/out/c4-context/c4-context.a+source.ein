@@ -1,0 +1,7 @@
+;; c4-context: reading 1 of c4-context.gv, a+source.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(Views-account-balances-and-makes-payments-using Personal-Banking-Customer Internet-Banking-System :source "Views account balances, and makes payments using")
+(Sends-e-mail-using Internet-Banking-System E-mail-System :source "Sends e-mail using")
+(Gets-account-information-from-and-makes-payments-using-[XML/HTTPS] Internet-Banking-System Mainframe-Banking-System :source "Gets account information from, and makes payments using\n[XML/HTTPS]")
+(Sends-e-mails-to E-mail-System Personal-Banking-Customer :source "Sends e-mails to")

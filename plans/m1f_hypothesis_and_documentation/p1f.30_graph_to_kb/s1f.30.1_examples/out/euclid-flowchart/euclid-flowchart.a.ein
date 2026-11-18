@@ -1,0 +1,12 @@
+;; euclid-flowchart: reading 1 of euclid-flowchart.gv, a.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(edge Start read-a-b)
+(edge read-a-b a-=-b)
+(yes a-=-b print-a)
+(no a-=-b a->-b)
+(yes a->-b a-=-a-b)
+(no a->-b b-=-b-a)
+(edge a-=-a-b a-=-b)
+(edge b-=-b-a a-=-b)
+(edge print-a Stop)

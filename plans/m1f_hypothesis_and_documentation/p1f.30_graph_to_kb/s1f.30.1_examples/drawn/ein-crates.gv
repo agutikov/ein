@@ -1,0 +1,30 @@
+// The crates of Ein's workspace and their [dependencies] (dev-dependencies
+// left out), read off each crate's Cargo.toml; the two dev-only crates in a
+// cluster of their own: neither depends on a crate of the workspace, so no
+// arrow touches either.
+digraph ein_crates {
+  rankdir=BT;
+  node [shape=box];
+  subgraph cluster_ships {
+    label="ships";
+    "ein-core"; "ein-ir"; "ein-infer"; "ein-einb"; "ein-render"; "ein-cli";
+  }
+  subgraph cluster_dev {
+    label="dev-only";
+    "ein-corpus"; "ein-narration";
+  }
+  "ein-ir" -> "ein-core" [label="depends-on"];
+  "ein-infer" -> "ein-core" [label="depends-on"];
+  "ein-infer" -> "ein-ir" [label="depends-on"];
+  "ein-einb" -> "ein-core" [label="depends-on"];
+  "ein-einb" -> "ein-ir" [label="depends-on"];
+  "ein-einb" -> "ein-infer" [label="depends-on"];
+  "ein-render" -> "ein-core" [label="depends-on"];
+  "ein-render" -> "ein-ir" [label="depends-on"];
+  "ein-render" -> "ein-infer" [label="depends-on"];
+  "ein-cli" -> "ein-core" [label="depends-on"];
+  "ein-cli" -> "ein-ir" [label="depends-on"];
+  "ein-cli" -> "ein-infer" [label="depends-on"];
+  "ein-cli" -> "ein-render" [label="depends-on"];
+  "ein-cli" -> "ein-einb" [label="depends-on"];
+}

@@ -1,0 +1,23 @@
+;; edge-cases: reading 1 of edge-cases.gv, a+numbered.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(calls a b 1)
+(calls a b 2)
+(returns a b)
+(logs b calls)
+(flight-1-2 Sao-Paulo Zurich)
+(%D0%BF%D0%BE%D0%B5%D0%B7%D0%B4 Zurich e)
+(x f g)
+(parent-of h i)
+(sibling-of h j)
+(near h k)
+(w i j)
+(retries k k)
+(above l m)
+(binds x why)
+(annotated p q)
+(edge p r)
+(has-parens a-b t)
+(dotted std-macro-forall x.y)
+(Dog)
+(Cat)

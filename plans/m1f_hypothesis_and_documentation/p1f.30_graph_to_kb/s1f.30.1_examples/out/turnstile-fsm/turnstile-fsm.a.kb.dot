@@ -1,0 +1,12 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "Start" -> "Locked" [label="init", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Locked" -> "Unlocked" [label="coin", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "Locked" -> "Locked" [label="push", color="#17becf", fontcolor="#17becf", style=solid];
+  "Unlocked" -> "Locked" [label="push", color="#17becf", fontcolor="#17becf", style=solid];
+  "Unlocked" -> "Unlocked" [label="coin", color="#e377c2", fontcolor="#e377c2", style=solid];
+}

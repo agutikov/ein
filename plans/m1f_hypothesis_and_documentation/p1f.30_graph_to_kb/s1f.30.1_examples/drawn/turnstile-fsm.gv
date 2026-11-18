@@ -1,0 +1,12 @@
+// A coin-operated turnstile as a finite state machine: every arrow labelled,
+// every label a name. The clean case.
+digraph turnstile {
+  rankdir=LR;
+  node [shape=circle];
+  Start [shape=point];
+  Start -> Locked [label=init];
+  Locked -> Unlocked [label=coin];
+  Locked -> Locked [label=push];
+  Unlocked -> Locked [label=push];
+  Unlocked -> Unlocked [label=coin];
+}

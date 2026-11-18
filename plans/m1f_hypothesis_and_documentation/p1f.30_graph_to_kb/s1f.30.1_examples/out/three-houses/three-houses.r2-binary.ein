@@ -1,0 +1,22 @@
+;; reading 2 of three-houses.kb.dot, a loop read as two.
+;; A declaration's :why is not in the drawing: load with --no-require-why.
+
+(relation is-a Thing Kind)
+(relation lives-in Person House)
+(relation owns Person Pet)
+(relation pet-at Pet House)
+(relation left-of House House)
+(relation vacant House)
+(is-a Norwegian Person)
+(is-a Dog Pet)
+(is-a House-1 House)
+(is-a House-2 House)
+(is-a House-3 House)
+(owns Norwegian Dog :source "The Norwegian owns the dog")
+(lives-in Norwegian House-1 :source "The Norwegian lives in the first house")
+(left-of House-1 House-2 :source "The first house is left of the second")
+(left-of House-2 House-3 :source "The second house is left of the third")
+(pet-at Dog House-1)  ; derived by pet-follows-owner
+(left-of House-1 House-3)  ; derived by transitive
+(vacant House-2 House-2)  ; derived by nobody-home
+(vacant House-3 House-3)  ; derived by nobody-home

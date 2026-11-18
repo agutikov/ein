@@ -1,0 +1,10 @@
+;; c4-context: reading 1 of c4-context.gv, a+clusters.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(Views-account-balances-and-makes-payments-using Personal-Banking-Customer Internet-Banking-System)
+(Sends-e-mail-using Internet-Banking-System E-mail-System)
+(Gets-account-information-from-and-makes-payments-using-[XML/HTTPS] Internet-Banking-System Mainframe-Banking-System)
+(Sends-e-mails-to E-mail-System Personal-Banking-Customer)
+(in-cluster Internet-Banking-System Big-Bank-plc)
+(in-cluster E-mail-System Big-Bank-plc)
+(in-cluster Mainframe-Banking-System Big-Bank-plc)

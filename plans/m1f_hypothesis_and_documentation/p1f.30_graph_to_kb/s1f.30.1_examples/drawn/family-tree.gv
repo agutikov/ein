@@ -1,0 +1,19 @@
+// A small family tree: two people called John, a name with a diaeresis,
+// a marriage drawn with no arrowhead, siblings drawn with two, and a person
+// no arrow touches.
+digraph family {
+  node [shape=box];
+  john1 [label="John"];
+  mary  [label="Mary"];
+  john2 [label="John"];
+  ann   [label="Ann"];
+  zoe   [label="Zoë"];
+  peter [label="Peter"];
+  john1 -> mary  [label="married-to", dir=none];
+  john1 -> john2 [label="parent-of"];
+  mary  -> john2 [label="parent-of"];
+  john1 -> ann   [label="parent-of"];
+  mary  -> ann   [label="parent-of"];
+  john2 -> zoe   [label="parent-of"];
+  ann   -> john2 [label="sibling-of", dir=both];
+}

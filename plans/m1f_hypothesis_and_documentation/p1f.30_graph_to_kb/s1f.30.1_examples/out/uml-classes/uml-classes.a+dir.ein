@@ -1,0 +1,9 @@
+;; uml-classes: reading 1 of uml-classes.gv, a+dir.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(edge Dog Animal)
+(edge Cat Animal)
+(owns Owner Animal)
+(treats Vet Animal)
+(visits Owner Vet)
+(visits Vet Owner)

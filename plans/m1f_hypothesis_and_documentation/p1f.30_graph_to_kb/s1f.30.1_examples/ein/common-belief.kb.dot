@@ -1,0 +1,55 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "person" -> "Person" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "person" -> "person" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_8caee6393b [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_8caee6393b -> "likes" [label="#1", color="#bcbd22", style=solid];
+  f_8caee6393b -> "Person" [label="#2", color="#bcbd22", style=solid];
+  f_8caee6393b -> "Food" [label="#3", color="#bcbd22", style=solid];
+  "likes" -> "likes" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d60e429037 [shape=octagon, label="(relation)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  f_d60e429037 -> "believes" [label="#1", color="#bcbd22", style=solid];
+  f_d60e429037 -> "Person" [label="#2", color="#bcbd22", style=solid];
+  f_d60e429037 -> "Claim" [label="#3", color="#bcbd22", style=solid];
+  "believes" -> "believes" [label="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Ann" -> "Ann" [label="person", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "Bob" -> "Bob" [label="person", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "Cid" -> "Cid" [label="person", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "person" -> "person" [label="__closed__", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "Ann" -> f_b10ac10970 [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Bob" -> f_b10ac10970 [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Cid" -> f_b10ac10970 [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Ann" -> f_0b12cdd493 [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Bob" -> f_0b12cdd493 [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Ann" -> f_11e3b3411e [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Ann" -> f_d3307a64ff [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Bob" -> f_d3307a64ff [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Cid" -> f_d3307a64ff [label="believes", color="#8c564b", fontcolor="#8c564b", style=solid];
+
+  // facts in a context
+  newrank=true;
+  f_b10ac10970 [shape=octagon, label="(likes)\\nby common-belief-likes", color="#1f77b4", fontcolor="#1f77b4", style=dashed];
+  f_d3307a64ff [shape=octagon, label="(not)\\nby common-belief-not-likes", color="#d62728", fontcolor="#d62728", style=dashed];
+  subgraph cluster_ctx_0 {
+    label="believes ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_0b12cdd493 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+    f_11e3b3411e [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  }
+  subgraph cluster_ctx_1 {
+    label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_23786afd82 [shape=octagon, label="(likes)", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  }
+  f_b10ac10970 -> "Dan" [label="#1", color="#1f77b4", style=dashed];
+  f_b10ac10970 -> "Soup" [label="#2", color="#1f77b4", style=dashed];
+  f_0b12cdd493 -> "Dan" [label="#1", color="#1f77b4", style=solid];
+  f_0b12cdd493 -> "Tea" [label="#2", color="#1f77b4", style=solid];
+  f_11e3b3411e -> "Eve" [label="#1", color="#1f77b4", style=solid];
+  f_11e3b3411e -> "Fish" [label="#2", color="#1f77b4", style=solid];
+  f_d3307a64ff -> f_23786afd82 [label="#1", color="#d62728", style=dashed];
+  f_23786afd82 -> "Dan" [label="#1", color="#1f77b4", style=solid];
+  f_23786afd82 -> "Fish" [label="#2", color="#1f77b4", style=solid];
+}

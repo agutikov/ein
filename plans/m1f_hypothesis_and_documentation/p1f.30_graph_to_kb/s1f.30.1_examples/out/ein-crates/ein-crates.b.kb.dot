@@ -1,0 +1,23 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "ein-ir" -> "ein-core" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-infer" -> "ein-core" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-infer" -> "ein-ir" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-einb" -> "ein-core" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-einb" -> "ein-ir" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-einb" -> "ein-infer" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-render" -> "ein-core" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-render" -> "ein-ir" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-render" -> "ein-infer" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-cli" -> "ein-core" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-cli" -> "ein-ir" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-cli" -> "ein-infer" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-cli" -> "ein-render" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "ein-cli" -> "ein-einb" [label="depends-on", color="#8c564b", fontcolor="#8c564b", style=solid];
+  f_e5a84cb02b [shape=octagon, label="(ein-corpus)", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  f_56258ad5b6 [shape=octagon, label="(ein-narration)", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+}

@@ -1,0 +1,8 @@
+;; c4-context: reading 1 of c4-context.gv, a, written by hand: the arrow's [XML/HTTPS] kept as a
+;; fact about the arrow's fact, which the drawing cannot write and Ein can.
+
+(Views-account-balances-and-makes-payments-using Personal-Banking-Customer Internet-Banking-System)
+(Sends-e-mail-using Internet-Banking-System E-mail-System)
+(Gets-account-information-from-and-makes-payments-using Internet-Banking-System Mainframe-Banking-System)
+(technology (Gets-account-information-from-and-makes-payments-using Internet-Banking-System Mainframe-Banking-System) XML/HTTPS)
+(Sends-e-mails-to E-mail-System Personal-Banking-Customer)

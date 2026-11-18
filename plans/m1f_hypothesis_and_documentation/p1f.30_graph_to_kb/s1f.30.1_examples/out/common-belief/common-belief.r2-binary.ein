@@ -1,0 +1,21 @@
+;; reading 2 of common-belief.kb.dot, a loop read as two.
+;; A declaration's :why is not in the drawing: load with --no-require-why.
+
+(relation likes Person Food)
+(relation believes Person Claim)
+(relation person Person)
+(likes Dan Soup)  ; derived by common-belief-likes
+(not (likes Dan Fish))  ; derived by common-belief-not-likes
+(person Ann Ann)
+(person Bob Bob)
+(person Cid Cid)
+(__closed__ person person)
+(believes Ann (likes Dan Soup))
+(believes Bob (likes Dan Soup))
+(believes Cid (likes Dan Soup))
+(believes Ann (likes Dan Tea))
+(believes Bob (likes Dan Tea))
+(believes Ann (likes Eve Fish))
+(believes Ann (not (likes Dan Fish)))
+(believes Bob (not (likes Dan Fish)))
+(believes Cid (not (likes Dan Fish)))

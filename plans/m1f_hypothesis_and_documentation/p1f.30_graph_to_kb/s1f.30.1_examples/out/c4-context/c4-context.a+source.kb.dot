@@ -1,0 +1,12 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "Personal-Banking-Customer" -> "Internet-Banking-System" [label="Views-account-balances-and-makes-payments-using Views account balances, and makes payments using", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Internet-Banking-System" -> "E-mail-System" [label="Sends-e-mail-using Sends e-mail using", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "Internet-Banking-System" -> "Mainframe-Banking-System" [label="Gets-account-information-from-and-makes-payments-using-[XML/HTTPS] Gets account information from, and makes payments using
+[XML/HTTPS]", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "E-mail-System" -> "Personal-Banking-Customer" [label="Sends-e-mails-to Sends e-mails to", color="#8c564b", fontcolor="#8c564b", style=solid];
+}

@@ -1,0 +1,40 @@
+// Ein's kernel words where a drawing could well write them: gates on the
+// arrows of a circuit, equality drawn as an arrow, the arrows of a code and
+// version-control graph, and kernel words as node labels, two of them on
+// nodes no arrow touches.
+digraph kernel_words {
+  // a boolean circuit, the gate on each arrow
+  x -> y [label="not"];
+  x -> z [label="and"];
+  y -> z [label="or"];
+  // equality and inequality drawn as arrows
+  a -> b [label="eq"];
+  a -> c [label="neq"];
+  // a code and version-control graph
+  parser  -> lexer   [label="import"];
+  lexer   -> tokens  [label="module"];
+  HEAD    -> c1      [label="commit"];
+  build   -> main    [label="program"];
+  grammar -> parser  [label="rule"];
+  likes   -> Person  [label="relation"];
+  user    -> answer  [label="query"];
+  planner -> plan    [label="solve"];
+  defs    -> body    [label="macro"];
+  log     -> step1   [label="trace"];
+  doc     -> section [label="absent"];
+  ticket  -> state   [label="open"];
+  test    -> result  [label="false"];
+  slot    -> value   [label="_"];
+  Rex     -> Dog     [label="is-a"];
+  // kernel words as node labels
+  gate1 [label="not"];
+  gate2 [label="and"];
+  circuit -> gate1 [label="has-gate"];
+  circuit -> gate2 [label="has-gate"];
+  verdict [label="open"];
+  check -> verdict [label="returns"];
+  // kernel words on nodes no arrow touches
+  lonely_false [label="false"];
+  lonely_solve [label="solve"];
+  lonely_program [label="program"];
+}

@@ -1,0 +1,37 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+  // types
+  "Dog" [shape=box, label="Dog"];
+  // instances
+  "Rex" [shape=oval, label="Rex"];
+
+  // facts
+  "x" -> "y" [label="not_", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "x" -> "z" [label="and_", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "y" -> "z" [label="or_", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "a" -> "b" [label="eq_", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "a" -> "c" [label="neq_", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "parser" -> "lexer" [label="import_", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "lexer" -> "tokens" [label="module_", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "HEAD" -> "c1" [label="commit_", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "build" -> "main" [label="program_", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "grammar" -> "parser" [label="rule_", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "likes" -> "Person" [label="relation_", color="#17becf", fontcolor="#17becf", style=solid];
+  "user" -> "answer" [label="query_", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "planner" -> "plan" [label="solve_", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "defs" -> "body" [label="macro_", color="#d62728", fontcolor="#d62728", style=solid];
+  "log" -> "step1" [label="trace_", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "doc" -> "section" [label="absent_", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "ticket" -> "state" [label="open_", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "test" -> "result" [label="false_", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "slot" -> "value" [label="__", color="#17becf", fontcolor="#17becf", style=solid];
+  "Rex" -> "Dog" [style=dashed, arrowhead=empty, label="is-a"];
+  "circuit" -> "not_@gate1" [label="has-gate", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "circuit" -> "and_@gate2" [label="has-gate", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "check" -> "open_@verdict" [label="returns", color="#d62728", fontcolor="#d62728", style=solid];
+  f_0e34f8c892 [shape=octagon, label="(false_)", color="#e377c2", fontcolor="#e377c2", style=solid];
+  f_ba00bde8a9 [shape=octagon, label="(solve_)", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  f_b98a7a44b5 [shape=octagon, label="(program_)", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+}

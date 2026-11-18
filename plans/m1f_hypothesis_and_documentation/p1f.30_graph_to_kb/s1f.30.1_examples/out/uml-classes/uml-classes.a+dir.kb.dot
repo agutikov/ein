@@ -1,0 +1,13 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "Dog" -> "Animal" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Cat" -> "Animal" [label="edge", color="#8c564b", fontcolor="#8c564b", style=solid];
+  "Owner" -> "Animal" [label="owns", color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  "Vet" -> "Animal" [label="treats", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "Owner" -> "Vet" [label="visits", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "Vet" -> "Owner" [label="visits", color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+}

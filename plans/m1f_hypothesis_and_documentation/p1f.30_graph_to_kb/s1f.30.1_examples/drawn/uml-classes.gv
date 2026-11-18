@@ -1,0 +1,17 @@
+// A UML class diagram with record labels: inheritance as unlabelled arrows
+// with a hollow head, associations labelled, multiplicities at the ends.
+digraph classes {
+  node [shape=record];
+  Animal [label="{Animal|+ name : String\l+ age : Int\l|+ speak() : void\l}"];
+  Dog    [label="{Dog|+ breed : String\l|+ fetch() : void\l}"];
+  Cat    [label="{Cat||+ purr() : void\l}"];
+  Owner  [label="{Owner|+ name : String\l|}"];
+  Vet    [label="{Vet|+ licence : String\l|+ treat(a : Animal)\l}"];
+  edge [arrowhead=empty];
+  Dog -> Animal;
+  Cat -> Animal;
+  edge [arrowhead=vee];
+  Owner -> Animal [label="owns", headlabel="0..*", taillabel="1"];
+  Vet -> Animal [label="treats", headlabel="*", taillabel="*", style=dashed];
+  Owner -> Vet [label="visits", dir=none];
+}

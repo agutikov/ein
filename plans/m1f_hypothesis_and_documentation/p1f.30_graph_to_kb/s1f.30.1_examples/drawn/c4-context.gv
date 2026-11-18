@@ -1,0 +1,18 @@
+// A C4 system context diagram, drawn after the C4 model's Internet Banking
+// System example: each box a name, a [type] and a description; each arrow a
+// sentence, one of them with a [technology].
+digraph c4_context {
+  node [shape=box, style="rounded,filled", fillcolor="#dddddd"];
+  customer  [label="Personal Banking Customer\n[Person]\nA customer of the bank, with personal bank accounts."];
+  subgraph cluster_bank {
+    label="Big Bank plc";
+    style=dashed;
+    ibs       [label="Internet Banking System\n[Software System]\nAllows customers to view information about their bank accounts, and make payments."];
+    email     [label="E-mail System\n[Software System]\nThe internal Microsoft Exchange e-mail system."];
+    mainframe [label="Mainframe Banking System\n[Software System]\nStores all of the core banking information about customers, accounts, transactions, etc."];
+  }
+  customer -> ibs [label="Views account balances, and makes payments using"];
+  ibs -> email [label="Sends e-mail using"];
+  ibs -> mainframe [label="Gets account information from, and makes payments using\n[XML/HTTPS]"];
+  email -> customer [label="Sends e-mails to"];
+}

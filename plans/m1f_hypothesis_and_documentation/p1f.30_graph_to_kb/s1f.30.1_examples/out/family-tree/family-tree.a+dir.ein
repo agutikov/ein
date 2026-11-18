@@ -1,0 +1,13 @@
+;; family-tree: reading 1 of family-tree.gv, a+dir.
+;; An arrow is a fact, a label a name; nothing here is declared, so no relation is guessed.
+
+(married-to John@john1 Mary)
+(married-to Mary John@john1)
+(parent-of John@john1 John@john2)
+(parent-of Mary John@john2)
+(parent-of John@john1 Ann)
+(parent-of Mary Ann)
+(parent-of John@john2 Zoe)
+(sibling-of Ann John@john2)
+(sibling-of John@john2 Ann)
+(Peter)

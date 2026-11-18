@@ -1,0 +1,16 @@
+digraph kb {
+  // suggested layout: fdp
+  rankdir=BT;
+  node [fontname="Inter"];
+
+  // facts
+  "Start" -> "read-a-b" [label="e1", color="#2ca02c", fontcolor="#2ca02c", style=solid];
+  "read-a-b" -> "a-=-b" [label="e2", color="#1f77b4", fontcolor="#1f77b4", style=solid];
+  "a-=-b" -> "print-a" [label="yes", color="#9467bd", fontcolor="#9467bd", style=solid];
+  "a-=-b" -> "a->-b" [label="no", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "a->-b" -> "a-=-a-b" [label="yes", color="#9467bd", fontcolor="#9467bd", style=solid];
+  "a->-b" -> "b-=-b-a" [label="no", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "a-=-a-b" -> "a-=-b" [label="e3", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "b-=-b-a" -> "a-=-b" [label="e4", color="#e377c2", fontcolor="#e377c2", style=solid];
+  "print-a" -> "Stop" [label="e5", color="#bcbd22", fontcolor="#bcbd22", style=solid];
+}
