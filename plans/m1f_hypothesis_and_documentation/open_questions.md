@@ -10064,6 +10064,8 @@ drawings were the bundle's ignored outputs and went with the folder.
 **Ruled 2026-11-19: the default**, by the user's *"Go with all defaults to the end of this phase p1f.23 and stop"*
 (P1f.23); the item left the bundle with its topic.
 
+**What is kept**: the item's page and programs, in git history at `7c39c671`. Its scripts (`tools/concentric.py`, `sheets.py`, `rerun.sh`) and pictures were the bundle's ignored outputs and went with the folder; the page states both methods (a hidden centre under `twopi`; `dot`'s layers bent into rings, positions pinned, drawn with `neato -n2` or one DOT file with `layout=neato`, `inputscale=72`), from which they can be written again if a ring layout is ever asked for.
+
 ### Q-M1f.548 — A derivation's three levels, as built
 
 **Raised** 2026-11-19 by [S1f.23.11](p1f.23_review_processing/s1f.23.11_drawings_second_answers.md), task 1: the
