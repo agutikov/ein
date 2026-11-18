@@ -14,12 +14,11 @@ at `\n` and columns counted in characters. `<r>` is a rule's name, `<k>` a keywo
 the line has it, `<n>` a count; a `…` in a quoted line stands for the part this page does not repeat. Every example
 is the binary's own output.
 
-**The lines' own words.** A line is quoted as `ein` prints it, and four of its words are not the words of these
+**The lines' own words.** A line is quoted as `ein` prints it, and three of its words are not the words of these
 pages ([the glossary](13-glossary.md#the-language)). A line's **value** is an object in an argument's place: an
 atom, a fact, or, in a pattern, a variable. Its **atom**, in *no atom of the query's :goal*, is a pattern of the
-goal. Its **type** and **types** are a declaration's label and labels, and in *every object of a type* the atom
-that a fact of the program's membership relation classifies under; its **object** there is an atom. Ein has no
-types, and an object, on these pages, is any node of the knowledge-base graph.
+goal. Its **type** and **types** are a declaration's label and labels. Ein has no types, and an object, on these
+pages and in the lines, is any node of the knowledge-base graph.
 
 ## 1. Parse and load diagnostics
 
@@ -512,15 +511,15 @@ line per variable, in the order the `:assert` writes them:
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a variable no premise or parameter binds | `<rule\|hrule> '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)` |
+| a variable no premise or parameter binds | `<rule\|hrule> '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)` |
 | one that some disjuncts of a top-level `(or …)` bind and others do not | `… writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1 ?v3) — …`, the disjuncts that leave it unbound `or`-joined |
 
 A variable is bound, on each way the `:match` can hold, by a **parameter**, which the activator binds, a nested fact
 among the objects it may be bound to; by a **relation premise**, at any depth of its arguments, a stored `(not P)` among them;
 or by an **`eq` or `neq` guard**, which binds a variable nothing else binds over the program's names. One seen only
 inside an `(absent …)` is not bound outside it, and `forall` and `unknown` expand to one; `()` binds nothing; a
-top-level `(or …)` is one way per disjunct. The line's two spellings say what the implicit form could mean, *every
-object of a type* and *every name of the program*, each written out
+top-level `(or …)` is one way per disjunct. The line's two spellings say what the implicit form could mean, *the
+objects a relation holds of* and *every name of the program*, each written out
 ([Q-M1f.38](../../../decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)). An obligation's
 `(open ?R)` names a relation, which [§ 2.2](#22-the-verdicts-refusals) checks. The witness is
 [`examples/ein-bugs/unbound-assert-var.ein`](../../../../examples/ein-bugs/unbound-assert-var.ein).

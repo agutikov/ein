@@ -4332,7 +4332,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
 
 [[case]]
 id       = "assert-var-under-commitment"
@@ -4346,7 +4346,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
 
 [[case]]
 id       = "hrule-assert-var"
@@ -4360,7 +4360,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: hrule 'h': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+refused = "kb load error: hrule 'h': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
 
 [[case]]
 id       = "assert-var-never-fires"
@@ -4374,7 +4374,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
 
 [[case]]
 id       = "parameter-nested-assert"

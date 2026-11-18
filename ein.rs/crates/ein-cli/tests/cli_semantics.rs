@@ -1433,8 +1433,8 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     let line = |head: &str, name: &str, var: &str, place: &str| {
         format!(
             "{head} '{name}': its :assert writes ?{var}, which no premise or parameter \
-             binds{place} — to conclude it of every object of a type, bind it with a premise \
-             such as (is-a ?{var} T), or of every name of the program with (eq ?{var} ?{var})"
+             binds{place} — to conclude it of the objects a relation holds of, bind it with a \
+             premise such as (R ?{var}), or of every name of the program with (eq ?{var} ?{var})"
         )
     };
     let refused: [(&str, String); 5] = [

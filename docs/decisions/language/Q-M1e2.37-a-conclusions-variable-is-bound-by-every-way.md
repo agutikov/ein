@@ -3,8 +3,8 @@
 Every variable a rule's or an hrule's conclusion writes must be bound by a premise or a parameter on every way of
 satisfying its `:match`, each disjunct of an `(or …)` included. A conclusion variable nothing binds, `(rule r ()
 :match (p ?x) :assert (q ?y))`, is refused at load, by every command, one line a variable. What it would mean, the
-conclusion of every name, is written explicitly: a premise that binds the variable over the atoms a membership fact
-classifies, `(is-a ?y T)`, or `(eq ?y ?y)`, which binds it over the program's names
+conclusion of every name, is written explicitly: a premise of any relation that binds the variable over the objects
+the relation holds of, `(R ?y)`, or `(eq ?y ?y)`, which binds it over the program's names
 ([Q-M1e2.26](Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)). A parameter its activator binds is
 bound, a nested fact among the objects it may be bound to. The refusal's line:
 [Q-M1f.38](../diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md).
@@ -14,4 +14,4 @@ most often a misspelt variable. Refusing it forbids nothing that can be meant, s
 same, and catches the slip where it is written.
 
 **Held by.** `ein-cli/tests/cli_semantics.rs`: `a_conclusion_variable_nothing_binds_is_refused_at_load`, on every
-command, and what loads beside it: a variable a membership premise, an `eq` guard or a parameter binds.
+command, and what loads beside it: a variable a relation premise, an `eq` guard or a parameter binds.

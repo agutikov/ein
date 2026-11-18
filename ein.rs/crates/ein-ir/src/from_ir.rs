@@ -1793,8 +1793,9 @@ fn refuse_no_fact_holds(
 /// One line per variable, in the order the `:assert` writes them, naming the
 /// rule, the variable, the disjuncts that leave it unbound where some bind it,
 /// and the two explicit spellings of what the implicit form could mean:
-/// *every object of a type*, a premise such as `(is-a ?y T)`, and *every name
-/// of the program*, `(eq ?y ?y)`.
+/// *the objects a relation holds of*, a premise of any relation that binds it,
+/// `(R ?y)`, and *every name of the program*, `(eq ?y ?y)`. The line names no
+/// relation of a theory's: the kernel reads none (Q-M1f.436).
 ///
 /// **Checked at load, on every command**, so no firing meets a variable it
 /// cannot ground, and whether a program loads does not depend on whether a
@@ -1899,8 +1900,8 @@ fn refuse_unbound_conclusions(
         };
         errors.push(format!(
             "{head} '{name}': its :assert writes ?{v}, which no premise or parameter binds{place} \
-             — to conclude it of every object of a type, bind it with a premise such as \
-             (is-a ?{v} T), or of every name of the program with (eq ?{v} ?{v})"
+             — to conclude it of the objects a relation holds of, bind it with a premise such \
+             as (R ?{v}), or of every name of the program with (eq ?{v} ?{v})"
         ));
     }
 }
@@ -5840,8 +5841,8 @@ mod tests {
         let line = |head: &str, name: &str, var: &str, place: &str| {
             format!(
                 "{head} '{name}': its :assert writes ?{var}, which no premise or parameter \
-                 binds{place} — to conclude it of every object of a type, bind it with a \
-                 premise such as (is-a ?{var} T), or of every name of the program with \
+                 binds{place} — to conclude it of the objects a relation holds of, bind it \
+                 with a premise such as (R ?{var}), or of every name of the program with \
                  (eq ?{var} ?{var})"
             )
         };

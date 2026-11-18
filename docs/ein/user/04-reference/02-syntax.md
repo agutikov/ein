@@ -487,9 +487,10 @@ which the activator binds; by a relation premise, at any depth of its arguments;
 binds a variable nothing else binds, over the program's names. A variable seen only inside an `(absent …)`, a
 `forall` or an `unknown` is not bound outside it, `()` binds nothing, and a top-level `(or …)` must bind it in every
 disjunct. An hrule's `:assert` is held to the same rule. A rule or an hrule that writes one nothing binds is refused
-at load, one line per variable naming the two explicit spellings of what the implicit form could mean: a premise such
-as `(is-a ?y T)`, *every object of a type*, or `(eq ?y ?y)`, *every name of the program*. The two phrases are the
-line's: its *object of a type* is an atom that a fact of the program's membership relation classifies.
+at load, one line per variable naming the two explicit spellings of what the implicit form could mean: a premise of
+any relation that binds it, `(R ?y)`, *the objects a relation holds of*, or `(eq ?y ?y)`, *every name of the
+program*. The two phrases are the line's, and it names no relation of a theory's
+([Q-M1f.436](../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
 
 `(false)` is stored, since a contradiction survives any extension and a dead state stays dead; `open` is not, because
 openness exists to be destroyed by an extension, and a stored one would survive its own discharge. It is a tally on

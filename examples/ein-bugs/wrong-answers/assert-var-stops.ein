@@ -14,8 +14,8 @@
 ;;; by a parameter, a premise or an `eq` / `neq` guard (Q-M1e2.37), and a rule
 ;;; that writes one nothing binds is refused at load, with a line naming the
 ;;; two explicit spellings of what it could mean: a premise such as
-;;; `(is-a ?y T)`, every object of a type, or `(eq ?y ?y)`, every name of
-;;; the program. Every command that loads the program exits 1 with that line
+;;; `(R ?y)`, the objects a relation holds of, or `(eq ?y ?y)`, every name
+;;; of the program. Every command that loads the program exits 1 with that line
 ;;; (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
