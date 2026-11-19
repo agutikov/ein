@@ -61,14 +61,17 @@ reserved (items 21 to 23 are not built).
 
 The syntax is one key on one rule of the standard library, shown above and accepted; no corpus program is
 rewritten. So the stage does not stop for an examples look: it takes these defaults, records each, and they are
-shown at its end. **It stops only where a default cannot be built, or an answer or a count below moves.**
+shown at its end; the second is the user's ruling and no default. **It stops only where a default cannot be built, or an answer or a count below moves.**
 
 1. **`:assert` or `:ein`, never both** on one rule: the answer says *"another key, not :assert"*.
 2. **The module every program gets**: a module of the standard library, `std.core`, loaded into every program with
-   no import line, its rule shown and counted as any rule, not replaceable in this phase. **This is the one default
-   that adds a notion to the language**, a module no file imports; it is taken because the other reading, a program
-   imports the convention, leaves every program that writes `(false)` and imports nothing unable to refute:
-   `(false)` is on 692 lines of 284 files. Shown to the user at the stage's end as the reading to look at first.
+   no import line, its rule shown and counted as any rule. **Ruled 2026-11-19 by the user**, verbatim: *"std.core
+   always loaded - ok now, later will decide how it could be customized"*
+   ([Q-M1f.551](../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)). It adds a notion to the language, a module no file
+   imports; the other reading, a program imports the convention, leaves every program that writes `(false)` and
+   imports nothing unable to refute: `(false)` is on 692 lines of 284 files. **How a program customises it is not
+   this stage's**: the stage builds no way to leave the module out, to replace it or to add to it, and builds
+   nothing that would have to be undone for one.
 3. **A program's own rule may state the key**, from whatever it matches, with no `(false)` between; *forbid* reads
    such a rule as it reads one that concludes `(false)` today.
 4. **`refuted by` names the program's rules**: the module's rule is left out of an explanation, so no read-out row

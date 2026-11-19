@@ -479,6 +479,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
 | [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **ruled 2026-11-19 by the user**, verbatim: *"Yes, :ein   inconsistent"*: the word is `inconsistent`, as proposed on the user's *"maybe propose better name here"* (Q-M1f.399's answer); P1f.21's S1f.21.10 builds the key on it, unblocked the same day |
+| [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) | The module every program gets: `std.core`, always loaded | **ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be customized"*: a module of the standard library loaded into every program with no import line, built by P1f.21's S1f.21.10; **how it is customised is left for later, the user's**, and nothing is built for it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10217,4 +10218,27 @@ under the key is Q-M1f.390's and Q-M1f.549's, and S1f.21.10 builds the key for t
 
 **What it unblocks.** P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md), re-planned
 to build the key, with the user's *"unblock S1f.21.10"* of the same message: it waits on no decision.
+
+### Q-M1f.551 — The module every program gets: `std.core`, always loaded
+
+**Raised** 2026-11-19 by the plan of P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md),
+its second reading, shown to the user as the one default that adds a notion to the language. With `(false)` a
+convention of the standard library ([Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open)),
+what makes a state that holds it dead is one rule, from `(false)` to the key `:ein inconsistent`
+([Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein)), and that rule has to
+be somewhere every program has it.
+
+- **(a)** a module of the standard library, `std.core`, loaded into every program with no import line, its rules
+  shown and counted as any rule. No program changes.
+- **(b)** a module a program imports. Every program that writes `(false)` and imports nothing stops refuting:
+  `(false)` is on 692 lines of 284 files of the corpus.
+
+**Ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be
+customized"*. **(a), for now.**
+
+**Left open by the ruling, the user's, for later**: how the module is customised, whether a program may leave it
+out, replace its rule (the earlier direction's *"or from global (whatever)"*) or add to it. Nothing is built for it
+in S1f.21.10, and nothing that would have to be undone for it. It is to be put again when a program wants another
+core: [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md) adds the meaning of `not` to
+the same module and meets it first.
 

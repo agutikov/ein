@@ -188,6 +188,10 @@ It rules [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-t
 In the plan: [S1f.21.10](s1f.21.10_the_kernels_prefix.md), planned as the prefix, is re-planned to build the key and
 waits on no decision; S1f.21.11 keeps the rest of its group, the contradiction as rules and `relation`.
 
+And on the module that holds the rule from `(false)` to the key, the same day, verbatim: *"std.core always loaded -
+ok now, later will decide how it could be customized"* ([Q-M1f.551](../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)); and
+on the order: *"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -223,7 +227,7 @@ The rows are in the order the stages would run, which is by what each waits on.
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **started 2026-11-19** on the user's word (*"start s1f.21.6 and s1f.21.8"*), in the main tree |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation, the contradiction, and the requirement, the payment and `discharged`, each a module a program imports | **started 2026-11-19** on the user's word, in a worktree on its own branch, merged back when done; its readings take their defaults |
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
-| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | re-planned and **unblocked 2026-11-19** on the user's word, **not started**; waits on no decision; in order, after S1f.21.6 and S1f.21.8 are merged |
+| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | re-planned and **unblocked 2026-11-19** on the user's word; **to start when S1f.21.6 and S1f.21.8 are merged**, on the user's word (*"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*); `std.core` always loaded, ruled (Q-M1f.551) |
 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.10, S1f.21.8, V-1 and a choice with no default (how the rules reach every relation), Q-M1f.447 |
 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; waits on Q-M1f.549, S1f.21.7 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
