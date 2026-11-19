@@ -212,7 +212,18 @@ constrained-reasoning research.
   (thirty relations known of them, derived by rules), `std.bool.circuit` and
   `std.bool.inputs` (a circuit's inputs as hypotheses); a function's name is
   `std.bool.gates`', as a relation and as an argument, so a program that writes
-  one lists it. `std.logic` is left free for M1g.
+  one lists it. **The two rules of a stored negation are modules a program
+  imports**: `std.negation`, the elimination of a double negation
+  (`eliminate-0` to `eliminate-6`, one rule a count of arguments, the relation
+  its parameter), and `std.contradiction`, `clash-0` to `clash-6`, which
+  conclude `(false)` from a fact beside its stored negation, with `clash-of-0`
+  to `clash-of-6`, which activate them from the declarations where a program
+  writes `(clash-of-declared)`; neither declares a relation, and a rule with
+  no parameter reads a fact the program writes, since it can have no
+  activator. Their programs are under `tests/stdlib/negation/` and
+  `tests/stdlib/contradiction/`, and `ein-infer/tests/contradiction_rules.rs`
+  holds the firing, which no claim can see while the kernel judges a pair
+  itself. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each, and the
   reference a page for each family, usage apart from how a module works and
@@ -339,9 +350,10 @@ paragraph, no register count, no measurement (the user's rule).
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
   One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
-  with its survey done, its stages planned, S1f.21.6 done, S1f.21.8 running
-  and S1f.21.10 next, each on the user's word, and its open questions
-  Q-M1f.390, Q-M1f.447 and Q-M1f.549. **No other stage of P1f.21 starts
+  run in two parts on the user's word, what does not touch `open` or the
+  hypotheses first: S1f.21.6 and S1f.21.8 done, S1f.21.10 running, then
+  S1f.21.11 and the part's pages; Q-M1f.390 and Q-M1f.549 wait with the
+  second part, Q-M1f.447 with S1f.21.11. **No other stage of P1f.21 starts
   without the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is
