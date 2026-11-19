@@ -276,3 +276,11 @@ On the stage's tree, the gate profile:
 - `findings.md`: the container's format moved to `einb/2.2` (`ENDED`); `ein saturate`'s firing totals and
   `ein render h-space`'s applications of a dead node are one more; the measurement examples above.
 - `open_facts.md` § 8.1's first row and `design.md` § 1.1's table are of the kernel before this stage.
+
+### The coordinator's runs, after the stage
+
+**2026-11-19.** `utils/ci_container.sh` on `946ee788`: exit 0, 165 test binaries, no failure, every step of the
+per-commit tier. `utils/ci_container.sh --nightly` on `901f9fa3`, the same code under commits to the plans alone:
+exit 0, its 82 steps, no failure. Both in the runner's image, since the stage moves a DOT writer and is a large
+change to the engine.
+
