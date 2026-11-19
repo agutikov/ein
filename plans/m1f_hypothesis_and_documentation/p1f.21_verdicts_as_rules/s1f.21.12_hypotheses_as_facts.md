@@ -4,7 +4,13 @@
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started**.
 **Group:** [H](modifications.md#h-open-facts), items 30 to 35.
-**Waits on:** the first part of the phase, which runs before it. [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
+**Waits on:** the first part of the phase, which runs before it; and the three questions the user's answers to
+part 2's items left, each with a default: [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)
+(the *must* beside `open`), [Q-M1f.567](../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f)
+(the `hrule` form dropped) and [Q-M1f.568](../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users)
+(what nests in what). **It is planned again on them**: the answers make `(open H)` the hypotheses' fact with no
+justification in it, which `absent` reads as any other ([`absent_open_not.md`](absent_open_not.md),
+[`open_and_owe.md`](open_and_owe.md)). [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
 **is answered in its main call** (the user, 2026-11-19: *"all hypotheses generation engines should emit (open H) facts
 and add them into KB? I think yes"*): (b), every rung, the fact written `(open H)`. **It was planned here under (b)**:
 the candidates held as *asked*. Under (c) it is the design of

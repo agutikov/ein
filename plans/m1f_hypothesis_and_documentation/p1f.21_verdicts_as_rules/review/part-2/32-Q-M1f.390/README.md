@@ -1,5 +1,9 @@
 # 32 — Q-M1f.390: what an obligation emits
 
+**Answered 2026-11-19.** Your answer rules it: an obligation emits `(open H)` with no justification. It is in
+[the phase's README](../../../README.md#the-answers-to-part-2s-items); the table it asks for is
+[`absent_open_not.md`](../../../absent_open_not.md). This page stays for its runs.
+
 ## 1. The question
 
 An obligation is a rule whose conclusion is `(open ?R)`: *the relation R still owes something here*. Today that

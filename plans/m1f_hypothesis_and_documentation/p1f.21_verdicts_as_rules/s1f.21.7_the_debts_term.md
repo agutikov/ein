@@ -2,7 +2,10 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**not started**.
+**not run**: the user's answer to Q-M1f.390 of the same day sets it aside (*"obligation emits (open H) without
+justification, engine see where it was emitted anyway, so can record anythin it wants. But inside ein we just have
+(open H)"*). The term is not written into Ein; what the engine records of an instance is its own, and no stage is
+owed for it.
 **Group:** [C](modifications.md#c-q-m1f390-a-and-b-the-verdict-stays-a-verdict), items 14 to 16.
 **Waits on:** [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact).
 Under (a) there is nothing to build and the stage is not run. It is run under (b), the default, and under either

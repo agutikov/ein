@@ -2,7 +2,10 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**not started, and run only on a ruling for (c)** of
+**not started, and planned again on the answer to
+[Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)**, which puts its subject anew: the
+user's *must* as a held question, `(owe …)`, beside the hypotheses' `(open H)`. As first planned it was run only on
+a ruling for (c) of
 [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact).
 **Group:** [E](modifications.md#e-q-m1f390-c-the-requirement-and-the-payment-as-the-kernels-facts), item 20.
 **Waits on:** that ruling. Under (a), (b) or the user's form it is not run.

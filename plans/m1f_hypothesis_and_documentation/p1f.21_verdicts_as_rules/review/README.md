@@ -14,6 +14,6 @@ the page to read first. Each part has its index and its own answers file; an ite
 | part | what | items | answers |
 |---|---|---|---|
 | [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Running now | **none open**: 35, 36, 38, 40, 41 and 42 answered 2026-11-19 and filed; three readings of the answers are said back on the part's page | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
-| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | 32, what an obligation emits; 34, hypotheses as facts; 39, `std.debts`, held for this part | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
+| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | 32, 34 and 39 answered 2026-11-19 and filed; **three questions left, each with a default**: 44, how the *must* is emitted; 45, the `hrule` form dropped; 46, four cells of the table of `absent`, `open` and `not` | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

@@ -314,6 +314,45 @@ verbatim, each filed under its question in [the ledger](../open_questions.md).
    death gains the import (S1f.21.11's task 1.1);
 3. under item 36, a relation may be declared once a count (S1f.21.11's task 1.4).
 
+## The answers to part 2's items
+
+The user, 2026-11-19 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, each under its question in
+[the ledger](../open_questions.md). The second part is not started by them: they are answers to its questions.
+
+**Item 32**, [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact):
+
+> obligation emits (open H) without justification, engine see where it was emitted anyway, so can record
+> anythin it wants. But inside ein we just have (open H). btw, absent see it the same way as other facts. We
+> have to analyze and strictly define interaction between absent, open and not. not is just an ordinary
+> relation, absent is kernel primitive, open is both. draw a table 3x3 of now they behave together and where
+> it is defined (not (not P)) is simple, (absent (absent P)) probably compilation error, (open (absent P))
+> also compilation error. While (absent (open P)) possible. Maybe kernel primitives can't be nested because
+> it's argument always a fact?
+
+**Item 34**, [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules):
+
+> 1st (open ...) is a context for hypotheses. Not only obligations. Obligations MUST, hypotheses MAY be. As I
+> understand now our obligation rules emit facts that are hypotheses and obligation options at the same time.
+> How we can count the exact obligations and how we can define and emit them? Maybe in form of questions? How
+> to define them? Maybe something like (owe (?R ?a ?_x)) where ?R and ?a binded and ?_x not - so the emitted
+> thing is actually a query. Also a question about emitted open structure: the implied connector between KB
+> facts is `and` - all facts are true so ein search is truth maintenance system. What is a connector between
+> facts inside (open ...) ? Between new invented (owe ...) it is also `and` because we need to discharge all
+> obligations. But what about (open ...) ? Can we say anything about them or not? Probably not - they are
+> limited by restriction rules, not by obligation rules. If we will emit (open H) facts as pure hypotheses,
+> and obligations would be emitted different way, can we then drop hrules as special form according to
+> plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/one_way_each.md and use rules that emit open
+> facts in :hrules?
+
+**Item 39**, [Q-M1f.560](../open_questions.md#q-m1f560--stddebts-with-its-stage-or-with-the-second-part): *"(b)"*
+
+| what | ruled, or done |
+|---|---|
+| what an obligation emits | **ruled**: `(open H)`, no justification in it; the engine's record of where it was emitted is its own; `absent` reads it as any fact. S1f.21.7 is not run |
+| the table of `absent`, `open` and `not` | **drawn**, on runs: [`absent_open_not.md`](absent_open_not.md). Its open cells are Q-M1f.568 |
+| `open` is *may*, an obligation is *must* | **ruled**; the four questions asked with it are answered on runs in [`open_and_owe.md`](open_and_owe.md), and leave Q-M1f.566 (how the *must* is emitted) and Q-M1f.567 (the `hrule` form dropped), each with a default |
+| `std.debts` | **ruled (b)**, merged now; the merge is made on S1f.21.15's last commit, that stage having the same files open |
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -366,10 +405,10 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 
 | stage | group | what | state |
 |---|---|---|---|
-| [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
-| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; waits on Q-M1f.549, S1f.21.7 |
+| [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | **not run**: set aside 2026-11-19 by the user's answer to Q-M1f.390, no justification is written into Ein |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; planned again on the answers to Q-M1f.566, Q-M1f.567 and Q-M1f.568; after part 1 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
-| [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | planned, **run only on a ruling for Q-M1f.390 (c)** |
+| [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | planned, **not started**; planned again on the answer to Q-M1f.566, which puts its subject anew |
 | [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | planned, **not started**; after S1f.21.7, S1f.21.12 and S1f.21.13 |
 | S1f.21.5 | | **The close.** | last |
 

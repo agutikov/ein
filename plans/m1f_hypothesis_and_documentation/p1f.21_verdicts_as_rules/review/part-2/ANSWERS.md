@@ -2,67 +2,65 @@
 
 [← the part](README.md) · [← the bundle](../README.md) · [← the phase](../../README.md)
 
-One entry an item, in the part's order: its options as the item's page puts them, the default that stands
-until you answer, and a blank. Write your answer after **Your answer:** — a letter, *default*, or your own
-words — and anything else under **Notes**. An item left blank keeps its default. This file is yours: a
-re-render of the bundle rewrites the READMEs and never this file.
+Your answers of 2026-11-19 to items 32, 34 and 39 are filed in your words in
+[the phase's README](../../README.md#the-answers-to-part-2s-items) and in the ledger. Three questions came out of
+them. Write your answer after **Your answer:** — a letter, *default*, or your own words. An item left blank keeps
+its default. This file is yours.
 
-## 32 · Q-M1f.390: what an obligation emits
+## 44 · Q-M1f.566: how the *must* is emitted
 
-[The item](32-Q-M1f.390/README.md)
+[The analysis](../../open_and_owe.md#2-how-a-requirement-is-counted-and-how-it-could-be-emitted)
 
 **Options:**
 
-- **(a)** as today: the verdict counted, nothing built; the pages say why `(open R)` is no fact.
-- **(b)** the verdict carries the instance as its justification and stays a verdict; at most a term printed on
-  `owe` and in the dump. **Default.**
-- **(c)** the requirement and the payment as facts, *owed* their difference, `(discharged)` a fact; runs today as
-  rules, a build makes them the kernel's.
-- **(d)** `(open R j)` held by the state that owes it, in a part of the node no fork inherits, read by no rule.
-- **your form** `(open F J)`: (d) with the hypothesis in the fact, H held under `open` and moved per node, rules
-  reading it in a stratum of their own; S1f.21.4 is to put it on programs.
+- **(a)** as today: the requirement is no fact, the kernel counts a rule's instances; only the verdict's word
+  changes, to `owe`.
+- **(b)** a held fact, the question with the hole's domain in its place: `(owe seats Ann Chair)`. Runs today as
+  ordinary rules. Two rules that ask one question owe once. **Default.**
+- **(c)** a held fact, the instance as a term: `(owe (total-owed seats is-a Guest Chair Ann))`. Runs today, and is
+  how `std.debts` writes it. Exact to today's count.
+- **(d)** your form, a hole in the fact: `(owe (seats Ann ?_x))`. Refused today; a third kind of node, and a held
+  fact read as a pattern.
 
-**Your answer:** 
+In (b), (c) and (d) *discharged* is read at the fixpoint and never stored: *still owed* shrinks.
+
+**Your answer:**
 
 **Notes:**
 
 ---
 
-## 34 · Q-M1f.549: hypotheses as facts
+## 45 · Q-M1f.567: the `hrule` form dropped
 
-[The item](34-Q-M1f.549/README.md) · [the overview](../../overview.md)
+[The analysis](../../open_and_owe.md#4-can-the-hrule-form-go)
 
 **Options:**
 
-- **(a)** declined: $H$ stays the generator's list beside the knowledge base, as today.
-- **(b)** held, as *asked*: a candidate is a fact root holds, inherited and never removed; $H$ is that extent less
-  what root decides; *still open* is a reading, stored nowhere; a rule may read what is asked, and an hrule is a
-  rule that concludes it. **Recommended.**
-- **(c)** held, as *still open*, and moved: `(open F J)` in a part of the node no fork inherits, moved by the kernel
-  after each fixpoint, read by rules in a stratum of their own.
-- **(d)** the search itself as rules, every state a context, one saturation.
-- **And your two uses**, on (b) or (c): **1** search control from inside Ein; **2** search artefacts seen by rules,
-  facts inferred from the search. Recommended: both declined for now, 1 because the tree route already does it and
-  no program is known to want another order, 2 because its second absence answers wrong today (M1n).
-- **Answered in its main call, 2026-11-19** (*"all hypotheses generation engines should emit (open H) facts and add
-  them into KB? I think yes"*): (b), by every rung; dependent hypotheses above root not this phase's. **Left for
-  you here**: the two uses, each recommended declined; and whether an `(open H)` stays once H is decided, read so.
+- **(a)** the form stays, as you ruled of Q-M1f.561.
+- **(b)** the form goes, a rule concludes `(open F)`; its activators stay in `(solve :hrules …)`. **Default**, your
+  question as you put it.
+- **(c)** the form goes and the clause with it: an activator is an ordinary fact, `(guess chosen Drink)`.
 
-**Your answer:** 
+With (b) or (c): $H$ stays root's `open` facts; an `(open F)` first concluded above root is not proposed.
+
+**Your answer:**
 
 **Notes:**
 
 ---
 
-## 39 · Q-M1f.560: `std.debts`, with its stage or with the second part
+## 46 · Q-M1f.568: four cells of the table
 
-[The item](39-Q-M1f.560/README.md)
+[The table](../../absent_open_not.md#6-the-table-those-two-rules-give-once-open-p-is-a-fact)
 
-**Options:**
+**Defaults**; write the number of any you want otherwise:
 
-- **(a)** held on its branch for the second part, as now. **Default.**
-- **(b)** merged now: additive, nothing reads it unless a program imports it and asks.
+1. `(absent (absent P))` written directly is refused at the parse; with a conjunction between, the universal, it
+   stays. Today it loads and means *P is held*.
+2. `(open (open P))` is refused at load, until dependent hypotheses are taken up.
+3. `(not (open P))` and `(open (not P))` are legal; the kernel reads nothing in the first.
+4. `(open P)` may be written by a program as a fact, a candidate given by hand.
 
-**Your answer:** 
+**Your answer:**
 
 **Notes:**
