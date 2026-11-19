@@ -363,8 +363,8 @@ impl Universe {
             u.relations.insert(name.0);
             u.objects.insert(name.0);
         }
-        for (_, rel) in kb.program().relations.iter() {
-            for &ty in rel.signature.iter() {
+        for declaration in kb.program().declarations.iter() {
+            for &ty in declaration.signature.iter() {
                 u.objects.insert(ty.0);
             }
         }

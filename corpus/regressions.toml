@@ -6269,101 +6269,157 @@ models    = [
 
 [[case]]
 id       = "top-level-fact"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-top-level-fact.ein:29:2: the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "nested-fact"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-nested-fact.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-nested-fact.ein:31:7: the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "arity-request"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-request.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-request.ein:30:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand Operand) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "num9-eight-digits"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein:28:8: the fact (add9 (num9 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7)) holds (num9 0 0 1 2 3 0 7 8), which gives num9 8 arguments, and (relation num9 Digit Digit Digit Digit Digit Digit Digit Digit Digit) declares 9 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "in-match"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-in-match.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-in-match.ein:31:12: rule 'fans': its :match writes (likes ?who), which gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "in-assert"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-in-assert.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-in-assert.ein:33:12: rule 'fans': its :assert writes (fan ?who ?what), which gives fan 2 arguments, and (relation fan Person) declares 1 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "arity-in-goal"
-title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has labels loads, a fact of that count"
 settings = "default"
-decisions = ["Q-M1f.315"]
+decisions = ["Q-M1f.447"]
 witness  = "examples/ein-bugs/wrong-answers/arity-in-goal.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-in-goal.ein:30:15: query: its :goal writes (likes ?who), which gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "import-directives-as"

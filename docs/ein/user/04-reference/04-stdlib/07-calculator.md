@@ -341,10 +341,12 @@ The first of these, `(add (n end 1) (n z 5))`: root is alive, and the query has 
   as :expect        (model)
 ```
 
-### What the load refuses
+### A wrong count of arguments
 
-A wrong count of arguments, `(add X)`, `(n 1)`, a `num9` of eight digits, is refused when the program is loaded,
-since a form of a declared relation has the declared count of arguments ([diagnostics](../07-diagnostics.md)):
+A wrong count of arguments, `(add X)`, `(n 1)`, a `num9` of eight digits, is no error: a declaration holds no form to
+its count, and a fact of another count is another fact, which no rule of the calculator reads
+([Q-M1f.447](../../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). The program
+loads and the request is answered by silence:
 
 ```lisp
 (import std.math.decimal-arith :symbols (add))
@@ -356,8 +358,10 @@ since a form of a declared relation has the declared count of arguments ([diagno
 
 <!-- output -->
 ```text
-kb load error: nat-arity.ein:5:2: the fact (add (n z 7)) gives add 1 argument, and (relation add Operand Operand) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
+  ∅                 in R — root is alive and owes nothing
 ```
+
+and root holds the request and no answer to it.
 
 ## How it works
 

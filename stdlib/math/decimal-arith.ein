@@ -253,8 +253,9 @@
 ;;;     expects an integer, and an integer or a natural number where
 ;;;     `std.math.rat` expects a rational (Q-M1f.277).
 ;;;
-;;; A wrong count of arguments, `(add X)` or `(n 1)`, is refused when the
-;;; program is loaded (Q-M1f.315), and so is not the theory's to flag.
+;;; A wrong count of arguments, `(add X)` or `(n 1)`, is another fact, which
+;;; no rule of the theory reads (Q-M1f.447), and so is not the theory's to
+;;; flag.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;

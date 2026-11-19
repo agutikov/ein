@@ -307,7 +307,7 @@ in three forms that stand only at the top of a file
 Each is a **position word**, as `relation` and `model` are: a name wherever a name goes, so a relation, a rule or an
 atom may be called `program`, `module` or `commit`, and a nested fact `(note (commit a))` loads. At the top of a file
 none is a fact's relation: a top-level `(commit a)` is a parse error, and a program that holds one of the three forms
-is refused at load ([`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
+is refused at load ([`07-diagnostics.md` § 2.29](07-diagnostics.md#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
 
 ## Not reserved
 

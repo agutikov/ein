@@ -146,7 +146,7 @@ the rule that derived it, with the origin it had, and **it reads no other file**
 Each text is read as the file it was, under its own name, `<program saved in F>` and `<module NAME saved in F>`, so a
 position in it is the line and column of the program or the module. A `(program …)`, `(module …)` or `(commit …)`
 stands only at the top of a saved file, and a file that opens with `(program` is one; what each refuses is
-[`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h).
+[`07-diagnostics.md` § 2.29](07-diagnostics.md#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h).
 The three are forms of the grammar
 ([`01-grammar.md` § 2.16](01-grammar.md#216-a-saved-file-the-program-its-modules-and-the-choices-made)), and their
 heads are names everywhere else ([`03-reserved-names.md`](03-reserved-names.md)).

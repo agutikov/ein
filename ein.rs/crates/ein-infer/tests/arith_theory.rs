@@ -2318,9 +2318,9 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
 /// - **the walks the calls are handed on to**, [`RUNS`]: each declared with
 ///   its call's types, and held in every caller as its call is.
 ///
-/// The loader refuses a form of a declared relation with another count of
-/// arguments in a program it loads (Q-M1f.315); this holds the count against
-/// the interface, by name, in every file, and the start values, which no
+/// No loader holds a form of a declared relation to its count of arguments
+/// (Q-M1f.447), so a call of another count would be another fact, answered
+/// by silence; this holds the count against the interface, by name, in every file, and the start values, which no
 /// loader sees. A file that does not parse, or whose imports do not resolve,
 /// calls nothing and is not read.
 #[test]

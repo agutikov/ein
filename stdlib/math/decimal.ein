@@ -103,9 +103,10 @@
 ;;;   - a prefix that is a fact of another relation, `(n (pair 1 2) 3)`: no
 ;;;     rule can say *not of this shape*.
 ;;;
-;;; A wrong count of arguments, `(n 1)` or `(n z 1 2)`, is refused when the
-;;; program is loaded (Q-M1f.315), and a character that is no name character
-;;; at the parse: neither is this module's to flag.
+;;; A wrong count of arguments, `(n 1)` or `(n z 1 2)`, is another fact,
+;;; which no rule of this module reads (Q-M1f.447), and a character that is
+;;; no name character is refused at the parse: neither is this module's to
+;;; flag.
 ;;;
 ;;; **A named constant** is a name that stands for a number: `named` is
 ;;; declared here, and `std.math.decimal-arith`, which declares `let`, writes

@@ -138,7 +138,7 @@ No import brings a module's `(query …)`, `(solve …)` or `(config …)`
 ([Q-M1f.215](../docs/decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)).
 The whole rule, the refusals and what prints are
 [`02-syntax.md` § Import](../docs/ein/user/04-reference/02-syntax.md#import) and
-[`07-diagnostics.md` § 2.28](../docs/ein/user/04-reference/07-diagnostics.md#228-an-import-is-by-full-name-and-a-short-name-names-one-declaration-in-a-file).
+[`07-diagnostics.md` § 2.27](../docs/ein/user/04-reference/07-diagnostics.md#227-an-import-is-by-full-name-and-a-short-name-names-one-declaration-in-a-file).
 
 **A program with its imports inlined.** No command prints it: a state file
 `ein solve FILE --dump-answer DIR` writes carries the program as written and
@@ -761,15 +761,14 @@ orders `lt`, `eq` and `gt`; the tagged calls' answers, `done`, `short`,
 the state to be seen and is no promise: `b`, the names of its walks, its check
 and its tags, `arith-rule`, and the seven tables of `std.math.digits`
 ([Q-M1f.151](../docs/decisions/stdlib/math/decimal/Q-M1f.151-the-circuits-own-relations-are-named-with-words.md)).
-A second *declaration* of any of them is refused at load, with the name in the
-message. A written *fact* of a result or of the circuit is not: it is a fact
-like a derived one and the theory computes with it, so a `(sum-of X Y S)`
+A written *fact* of a result or of the circuit is a fact like a derived
+one, and the theory computes with it, so a `(sum-of X Y S)`
 written by hand is an answer nobody computed; no module reserves its names
 ([Q-M1f.319](../docs/decisions/imports/Q-M1f.319-no-module-reserves-its-names.md)).
-**A number or a request with the wrong count of arguments is refused at
-load**, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`, each a form of a relation the
-module declares
-([`07-diagnostics.md` § 2.26](../docs/ein/user/04-reference/07-diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
+**A number or a request with the wrong count of arguments is another
+fact**, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`: a declaration holds no form to
+its count, so it loads, and no rule of the module reads it
+([Q-M1f.447](../docs/decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)).
 
 ### Malformed requests and numerals: what is flagged, where, and what stays silent
 

@@ -1,6 +1,6 @@
 //! **A conflict between the hypothesis mechanisms is refused, on every
 //! command** (Q-M1f.245, Q-M1f.242;
-//! [`07-diagnostics.md` § 2.27](../../../../docs/ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)).
+//! [`07-diagnostics.md` § 2.26](../../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)).
 //!
 //! Five declarations steer what a commitment may be about: an hrule (H), an
 //! obligation (O), `:hypothesis-relations` (HR), `:no-hypothesis` (NH) and a

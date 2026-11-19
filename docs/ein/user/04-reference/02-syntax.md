@@ -153,27 +153,14 @@ form's head the declarator, so `(relation)` and the wrapped form `(relation R (T
 fact as the declared relation is, and it means what the rules that read the mirror make it mean
 ([§ What the signature means](#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)).
 `(relation adult Person)` is a legal declaration of **one label**, and
-`(relation opaque)` a legal **bare** one, of a relation whose facts have no argument
-([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)): `(opaque)` is its one
-form.
+`(relation opaque)` a legal **bare** one, of no label.
 
-**A declaration's count is held**
-([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). The number of
-labels is the number of arguments every form of the relation has, and the loader refuses a program that writes one
-with another count, a fact, a fact inside a fact at any depth, a pattern or a conclusion of a rule or an hrule, a
-goal's pattern and a fact a claim lists alike
-([Q-M1f.204](../../../decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md)), one line a
-form:
-
-```text
-kb load error: t.ein:2:2: the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
-```
-
-A keyword pair is no argument. A relation nothing declares has no count and is not held, a relation written as a
-variable, `(?R ?a ?b)`, is not read
-([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)), and no
-argument is held to a label: `(likes Tea Ann)` loads. The line's last word, *types*, is the engine's word for the
-labels, and what it counts.
+**A declaration holds no form to its count, and a relation is overloaded by its count**
+([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). A form of a declared relation may have another count of arguments than the declaration has
+labels, a fact, a pattern, a conclusion, a goal or a fact a claim lists alike: it loads, in silence, a fact of that
+count, which no pattern of another count matches. A relation may be declared more than once, at one count or at
+several, and no declaration is refused as a duplicate of another; each is a fact of `relation`. No argument is held
+to a label: `(likes Tea Ann)` loads.
 
 **The membership fact.** A pattern matches facts of its own count, so `(relation ?R ?A ?B)` sees only declarations
 of two labels. Every declaration therefore also stores `(relation R)`, the pattern for *is `?R` a declared relation?*
@@ -423,7 +410,7 @@ every program gets with no import line
 ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)):
 [`04-stdlib/21-core.md`](04-stdlib/21-core.md). The grammar takes one name after `:ein`; a word that is none of the
 engine's, `:ein` beside an `:assert`, and `:ein` on an hrule are refused at load, each line listing the engine's
-words ([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-rules-word-to-the-engine)).
+words ([`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-rules-word-to-the-engine)).
 
 **Under `:assert` a rule concludes a conjunction of literals**: facts and stored negations `(not P)`, with `(false)`
 and checks (`eq`, `neq`, `(not (eq …))`) among them, or `()`, or an obligation, `(open)` or `(open ?R)`, as the whole

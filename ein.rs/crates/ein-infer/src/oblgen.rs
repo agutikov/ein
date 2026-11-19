@@ -728,10 +728,11 @@ fn uncovered_relations(
     closed: &FxHashSet<Symbol>,
     owed: &FxHashSet<Symbol>,
 ) -> u64 {
-    s.kb.program()
+    let program = s.kb.program();
+    program
         .relations
         .values()
-        .filter(|r| !r.signature.is_empty())
+        .filter(|r| !program.declared_counts(r.name).is_empty())
         .filter(|r| !owed.contains(&r.name))
         .filter(|r| scoping(r.name, allowed, excluded, closed).is_none())
         .count() as u64

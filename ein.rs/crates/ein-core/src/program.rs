@@ -10,7 +10,7 @@
 //! declared-wins-over-open-world for relations.
 
 use crate::config::SolverConfig;
-use crate::entities::{Macro, NameCategory, Query, Registry, Relation, Rule, Solve};
+use crate::entities::{Declaration, Macro, NameCategory, Query, Registry, Relation, Rule, Solve};
 use crate::intern::Symbol;
 use crate::terms::Terms;
 
@@ -19,6 +19,10 @@ use crate::terms::Terms;
 #[derive(Clone, Default, Debug)]
 pub struct Program {
     pub relations: Registry<Relation>,
+    /// **Every `(relation …)` the program wrote**, in the order written: a
+    /// relation may be declared more than once, at one count or at several
+    /// (Q-M1f.447). [`Program::relations`] keeps the first of a name's.
+    pub declarations: Vec<Declaration>,
     pub rules: Registry<Rule>,
     /// Hypothesis rules — a `Rule` by shape, kept out of `rules` so
     /// the saturator, which walks `rules`, never fires one. `hypgen` is the
@@ -108,6 +112,27 @@ pub struct Sources {
 impl Program {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// The labels of each declaration of `name`, in the order written.
+    pub fn signatures(&self, name: Symbol) -> impl Iterator<Item = &[Symbol]> + '_ {
+        self.declarations
+            .iter()
+            .filter(move |d| d.name == name)
+            .map(|d| &*d.signature)
+    }
+
+    /// The counts of arguments `name` is declared with, each once, in the
+    /// order first written, a declaration of no label aside: what the blind
+    /// enumerator guesses facts of the relation at.
+    pub fn declared_counts(&self, name: Symbol) -> Vec<usize> {
+        let mut out: Vec<usize> = Vec::new();
+        for sig in self.signatures(name) {
+            if !sig.is_empty() && !out.contains(&sig.len()) {
+                out.push(sig.len());
+            }
+        }
+        out
     }
 
     /// The query this load is about — `queries[active_query]`.

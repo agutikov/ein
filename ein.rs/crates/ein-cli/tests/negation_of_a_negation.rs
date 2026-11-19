@@ -321,7 +321,7 @@ fn a_search_reaches_the_same_region_by_a_variable_and_by_shape() {
 }
 
 /// `(shape, the program, what the first line of stderr holds)`.
-const REFUSED: [(&str, &str, &str); 9] = [
+const REFUSED: [(&str, &str, &str); 8] = [
     ("of-a-name", "(not (not Bob))", "unexpected `Bob`"),
     (
         "of-a-name-in-an-argument",
@@ -355,11 +355,6 @@ const REFUSED: [(&str, &str, &str); 9] = [
          (rule r () :match (and (p ?x) (nn ?x)) :assert (q ?x) :why \"w\")",
         "rule 'r': its :match writes (not ?x), and not takes a pattern (relation argument …), \
          not ?x",
-    ),
-    (
-        "of-another-count",
-        "(relation p A B :why \"{?3} p {?4}\")\n(not (not (p a)))",
-        "the fact (not (not (p a))) holds (p a), which gives p 1 argument",
     ),
 ];
 

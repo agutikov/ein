@@ -17,7 +17,7 @@
 //! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion, held by invariance |
 //! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs`, and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
 //! | the same written by a macro's expansion | refused at load: `docs/ein/user/04-reference/07-diagnostics.md` § 2.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
-//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271): `07-diagnostics.md` § 2.29, [`an_hrule_concludes_one_fact`], on every command |
+//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271): `07-diagnostics.md` § 2.28, [`an_hrule_concludes_one_fact`], on every command |
 //!
 //! ```text
 //! cargo test -p ein-cli --test conclusion_shapes
@@ -364,7 +364,7 @@ fn no_disjunction_and_no_compound_fact_is_a_conclusion() {
 /// **An hrule proposes one fact per match**, so its conclusion, read flat, is
 /// one conjunct, and one of more is refused at load, on every command, one
 /// line placed where the `:assert` is written (Q-M1f.271,
-/// `docs/ein/user/04-reference/07-diagnostics.md` § 2.29), never the first conjunct
+/// `docs/ein/user/04-reference/07-diagnostics.md` § 2.28), never the first conjunct
 /// proposed alone and the others dropped in silence. An `(and …)` of
 /// one conjunct is one conclusion, and loads.
 #[test]
@@ -372,7 +372,7 @@ fn an_hrule_concludes_one_fact() {
     let both = "(macro both (?x) (and (p ?x) (q ?x)) :why \"both p and q of {?x}\")\n";
     let hrule = |assert: &str| {
         // Its relations open: an hrule proposing a closed one is refused too
-        // (`docs/ein/user/04-reference/07-diagnostics.md` § 2.27).
+        // (`docs/ein/user/04-reference/07-diagnostics.md` § 2.26).
         let decls = DECLS.lines().take(3).collect::<Vec<_>>().join("\n");
         format!("{decls}\n{both}(hrule h () :match () :assert {assert} :why \"the guess\")\n")
     };

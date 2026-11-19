@@ -110,7 +110,6 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "hrule_duplicate_name",
         "macro_arity_mismatch",
         "macro_duplicate",
-        "relation_duplicate",
         "reserved_open_aliased",
         "reserved_open_direct",
         "reserved_open_qualified",
@@ -286,7 +285,7 @@ fn load_errors_accumulate_in_pass_order() {
         // loader's errors are the only lines.
         "(r a b :rule x :using ((r c d)))\n(r c d :rule x :using ((r a b)))\n\
          (rule r () :match (x ?a) :why \"x holds of {?a}, and with no :assert the rule concludes nothing\")\n\
-         (relation dup :why \"dup holds\")\n(relation dup :why \"dup holds\")\n\
+         (relation __closed__ :why \"closed\")\n\
          (macro m (?a) (rel ?a) :why \"rel holds of {?a}\")\n(macro m (?a) (other ?a) :why \"other holds of {?a}\")",
     ];
     let mut out = String::new();
@@ -386,14 +385,10 @@ fn require_why_refuses_each_form_without_one() {
                 (hrule guess () :match (has ?p ?x) :assert (owns ?p ?x))";
     let refused = load_text_with(none, true).expect_err("refused");
     let lines: Vec<&str> = refused.split("; ").collect();
-    assert_eq!(lines.len(), 4, "{refused}");
+    assert_eq!(lines.len(), 3, "{refused}");
     assert_eq!(lines[0], missing("relation", "owns"));
-    assert!(
-        lines[1].starts_with("duplicate relation 'owns' at "),
-        "{refused}"
-    );
     assert_eq!(
-        lines[2..],
+        lines[1..],
         [missing("rule", "keep"), missing("hrule", "guess")]
     );
 }

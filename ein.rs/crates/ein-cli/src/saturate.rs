@@ -470,12 +470,12 @@ fn kb_section(
 
     let p = kb.program();
     if !p.relations.is_empty() {
-        let declared: Vec<_> = p.relations.values().filter(|r| r.declared).collect();
+        let declared = &p.declarations;
         let open_w: Vec<_> = p.relations.values().filter(|r| !r.declared).collect();
         if !declared.is_empty() {
             let _ = writeln!(o);
             let _ = writeln!(o, ";; Relations — declared ({})", declared.len());
-            for r in &declared {
+            for r in declared {
                 let sig: Vec<&str> = r.signature.iter().map(|&s| terms.sym(s)).collect();
                 let sig = sig.join(" ");
                 let tail = if sig.is_empty() {

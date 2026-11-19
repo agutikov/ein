@@ -108,8 +108,12 @@ pub(crate) fn outside(
     let declared: Vec<(Symbol, usize)> = program
         .relations
         .values()
-        .filter(|r| !r.signature.is_empty())
-        .map(|r| (r.name, r.signature.len()))
+        .flat_map(|r| {
+            program
+                .declared_counts(r.name)
+                .into_iter()
+                .map(move |arity| (r.name, arity))
+        })
         .collect();
     // Clause 3: what the rung proposes facts of.
     let proposed: FxHashSet<Symbol> = match mode {
@@ -156,7 +160,10 @@ pub(crate) fn outside(
             why,
         })
         .collect();
+    // A relation declared at several counts (Q-M1f.447) is named once, at
+    // the count first declared; the rung proposes it where any is.
     out.sort_by(|a, b| a.relation.cmp(&b.relation));
+    out.dedup_by(|a, b| a.relation == b.relation);
     Ok(out)
 }
 

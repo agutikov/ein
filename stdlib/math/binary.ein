@@ -83,8 +83,8 @@
 ;;;     program's names (Q-M1f.318);
 ;;;   - a prefix that is a fact of another relation, `(b2 (pair 1 0) 1)`.
 ;;;
-;;; A wrong count of arguments, `(b2 1)`, is refused when the program is loaded
-;;; (Q-M1f.315). What is not a numeral's fault is not this module's: a name no
+;;; A wrong count of arguments, `(b2 1)`, is another fact, which no rule of
+;;; this module reads (Q-M1f.447). What is not a numeral's fault is not this module's: a name no
 ;;; `bin-let` states, a bit where a number goes, `(bin-add 1 X)`, and a
 ;;; `bin-let` that cannot be read are `std.math.binary-arith`'s, flagged on the
 ;;; request (`(bin-malformed REQUEST)`, `(bin-undeclared NAME REQUEST)`).

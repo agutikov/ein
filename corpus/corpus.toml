@@ -338,6 +338,12 @@ runs   = ["solve", "saturate", "saturate --dump"]
 note   = "`(import std.core)`, the module every program gets, imported as any module is (Q-M1f.551): no second copy, the module's rule last in `saturate --dump`'s list, and the answer the program has without the line."
 
 [[entry]]
+path   = "examples/features/22_declared_twice.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump"]
+note   = "A relation declared twice at two arguments and once at one (Q-M1f.447): every declaration loads, each a fact of `relation`, and a fact of each count is its own, a pattern of two arguments matching the one of two and a pattern of one the one of one. Four claims, computed by hand."
+
+[[entry]]
 path   = "examples/arith/add.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/trace.md"]
@@ -2871,43 +2877,43 @@ note   = "The `import-facts-table` regression's module, the calculator's case: t
 path   = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments: refused at load, at the form, one line, on every command, where a run that loaded it would answer in silence."
+note   = "A top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments: it loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-nested-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`nested-fact`: a nested fact, `(n 1)` as an operand of a request to `std.math.decimal-arith`, whose `(relation n Number Digit)` declares two arguments. Refused at load, at the form, one line, on every command."
+note   = "`nested-fact`: a nested fact, `(n 1)` as an operand of a request to `std.math.decimal-arith`, whose `(relation n Number Digit)` declares two arguments. It loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-request.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "The calculator's request with one operand, `(add (n z 5))`, where `std.math.decimal-arith`'s `(relation add Operand Operand)` declares two: refused at load, at the form, one line, on every command, where a run that loaded it would answer in silence."
+note   = "The calculator's request with one operand, `(add (n z 5))`, where `std.math.decimal-arith`'s `(relation add Operand Operand)` declares two: it loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`num9-eight-digits`: a `std.math.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine. Refused at load, at the form, one line, on every command."
+note   = "`num9-eight-digits`: a `std.math.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine. It loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments: refused at load, at the form, one line, on every command, where a run that loaded it would answer in silence."
+note   = "A rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments: it loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument: refused at load, at the form, one line, on every command, where a run that loaded it would answer in silence."
+note   = "A rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument: it loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments: refused at load, at the form, one line, on every command, where a run that loaded it would answer in silence."
+note   = "A query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments: it loads, a fact of that count which no pattern of the declared count matches, and answers as written: a relation is overloaded by its count (Q-M1f.447)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-table.ein"
@@ -3382,11 +3388,6 @@ path   = "examples/broken/load/reserved_open_aliased.ein"
 group  = "load-negative"
 runs   = ["solve", "render rules"]
 note   = "The fourth route, which the finding did not name — `:as` takes the same `qualify()` path with a different prefix, so a fixture set covering only the three named routes would have left it unpinned."
-
-[[entry]]
-path   = "examples/broken/load/relation_duplicate.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
 path   = "examples/broken/load/unbound_head.ein"

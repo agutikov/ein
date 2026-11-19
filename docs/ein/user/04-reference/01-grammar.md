@@ -341,13 +341,15 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   other, but takes them in any order and number: a rule with no `:match`, or with two, parses, and the loader refuses
   it, `(rule r) missing :match or :assert at None`, as it refuses a rule that states `:ein` beside an `:assert`, on
   an hrule, or with a word that is none of the engine's
-  ([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-rules-word-to-the-engine)). A query takes at least one clause of its four, any one
+  ([`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-rules-word-to-the-engine)). A query takes at least one clause of its four, any one
   (`QueryClausesPlus`).
 - **What a claim names.** An expectation's facts have a fact's shape at the parse (`ClaimFact`); that the relations it
   names exist, and that it names the goal's, is the loader's.
-- **How many arguments a form of a declared relation has.** The loader holds every form of a declared relation to the
-  count of slots its declaration names ([`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). The
-  names it gives the slots are labels, ordinary atoms, and no argument is checked against one.
+- **How many arguments a form of a declared relation has** is left to no one: a declaration holds no form of its
+  relation to its count, and a relation is overloaded by its count of arguments
+  ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md);
+  [`02-syntax.md` § Relation declarator](02-syntax.md#relation-declarator)). The names it gives the slots are labels,
+  ordinary atoms, and no argument is checked against one.
 - **Unbound variables**: a conclusion's variable that no way of satisfying the `:match` binds
   ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)).
 - **What a macro's body expands to.** A `Template` takes any head at any arity, and a call takes any premise as an

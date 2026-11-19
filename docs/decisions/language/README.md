@@ -64,12 +64,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.131](Q-M1f.131-no-relation-is-declared-under-a-macros-name.md) — No relation is declared under a macro's name
 - [Q-M1f.132](Q-M1f.132-a-std-macro-macro-the-program-does-not-import.md) — A `std.macro` macro the program does not import heads no fact
 - [Q-M1f.133](Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md) — A macro's call inside a claim's fact or a `:using` is refused
-- [Q-M1f.201](Q-M1f.201-a-bare-relation-r-declares-no-argument.md) — A bare `(relation R)` declares no argument
-- [Q-M1f.202](Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md) — A relation written as a variable is held to no declared count
-- [Q-M1f.203](Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md) — A kernel marker and an activator are held to no declared count
-- [Q-M1f.204](Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md) — The declared count is held in a `:using`, a claim and a called macro's body
 - [Q-M1f.271](Q-M1f.271-an-hrules-conclusion-is-one-fact.md) — An hrule's conclusion is one fact
-- [Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md) — A form of a declared relation has as many arguments as its declaration has labels
 - [Q-M1f.339](Q-M1f.339-every-name-the-loader-makes-up-starts-with.md) — Every name the loader makes up starts with `#`
 - [Q-M1f.351](Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md) — A bare variable or name is no whole conclusion
 - [Q-M1f.372](Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) — Ein has no types: a declaration's slot names are labels
@@ -81,5 +76,6 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) — A rule unpacks a fact by its count
 - [Q-M1f.394](Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md) — A fact is in the global context, in a fact's context, or in both
 - [Q-M1f.399](Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md) — A rule states facts, or a word to the engine
+- [Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md) — A relation is overloaded by its count of arguments, and a declaration holds no form to it
 - [Q-M1f.522](Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md) — A relation of the program is any atom it writes first in a tuple
 - [Q-M1f.550](Q-M1f.550-the-engines-word-is-inconsistent.md) — The engine's word is `inconsistent`

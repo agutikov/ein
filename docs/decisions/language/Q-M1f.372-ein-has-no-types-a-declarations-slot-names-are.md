@@ -23,10 +23,10 @@ that matches `(relation ?R ?T1 ?T2)` and concludes `(first-argument-fits ?R)` su
 two labels. `is-instance` is the program's relation, as `is-a` is in another program: no membership relation is
 built in.
 
-A declaration is *almost* an ordinary fact, in four things. It fixes the count of arguments a form of the relation
-has ([Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). It carries the `:why` a fact of the
-relation reads as. It is written once for a relation. And it tells the blind enumerator what to guess about: that
-rung proposes facts of declared relations of one or two arguments, over the guessable atoms, which are the program's
+A declaration is *almost* an ordinary fact, in two things, and holds no form of its relation to its count
+([Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). It carries the `:why` a fact of the
+relation reads as. And it tells the blind enumerator what to guess about: that rung proposes facts of declared
+relations of one or two arguments, over the guessable atoms, which are the program's
 names less those some declaration writes as a label
 ([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md),
 [Q-M1f.306](../hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). That is the one place the
@@ -36,8 +36,7 @@ has. A fact of `relation` that a rule concludes is a fact and declares nothing.
 No drawing marks a label or a name on the right of an `is-a` fact: every atom is a box, and a declaration is drawn
 as the fact it is stored as
 ([Q-M1f.421](../cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). Where the engine's own words say
-*type*, as a refusal's *as many arguments as its declaration has types* does, they mean a label. No answer depends on
-either.
+*type*, they mean a label. No answer depends on either.
 
 **Why.** Membership is a relation and what a thing is classified under is a name, so a rule reads, derives and
 explains *what a thing is* as it does any fact, and a program chooses what its labels mean: nothing, a check, a

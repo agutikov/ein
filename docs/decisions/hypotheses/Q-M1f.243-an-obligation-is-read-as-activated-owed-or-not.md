@@ -13,4 +13,4 @@ would conflict or not by the facts of root, and the ladder and the check would r
 **Held by.** `ein_infer::mechanisms::check`; `ein-cli/tests/mechanism_conflicts.rs`:
 `a_conflict_is_refused_on_every_command`; the ladder's rung,
 [Q-M1f.308](Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md);
-[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.
+[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.

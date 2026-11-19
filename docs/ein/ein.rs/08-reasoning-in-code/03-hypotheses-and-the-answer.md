@@ -39,7 +39,7 @@ test under a crate's `tests/`.
 | $\operatorname{RelNames}(P)$ | the registry, `ein_core::Program::relations`, which `ein_ir::from_ir`'s `register_relations` fills with every atom the program writes first in a tuple, less the kernel's words (`ein_core::terms::heads_a_relation`), and the names of the facts root's fixpoint holds, which `candidate_objects` reads off the names index; with the rules' and obligations' names, `Program::categorise` |
 | $\operatorname{unsettled}$ | the candidate filters of `hypgen.rs`, in this order: `negated_fact`, `fact_already_exists`, `seen_in_call` |
 | $\operatorname{inscope}$ | the relation skips of `hypgen.rs`: `closed_relation`, a relation closed to hypotheses, `relation_not_whitelisted`, `no_hypothesis_relation`; and `self_edge` for a relation whose facts have two arguments |
-| the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.27](../../user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
+| the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.26](../../user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
 | what the universe leaves out | `scope.rs`: one sentence, on every surface |
 
 ### 1.2 The ladder as the engine runs it

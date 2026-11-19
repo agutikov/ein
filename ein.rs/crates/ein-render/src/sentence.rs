@@ -54,16 +54,17 @@ pub fn statement(program: &Program, terms: &Terms, f: FactId) -> Option<String> 
     if rel != terms.kernel.relation {
         return None;
     }
-    let declared = program.relations.get(args.first()?.as_sym()?)?;
-    let written = declared.declared
-        && args.len() == declared.signature.len() + 1
-        && args[1..]
-            .iter()
-            .zip(declared.signature.iter())
-            .all(|(a, &label)| a.as_sym() == Some(label));
-    if !written {
-        return None;
-    }
+    let name = args.first()?.as_sym()?;
+    // The declaration that wrote this fact, of the several a relation may
+    // have (Q-M1f.447).
+    let declared = program.declarations.iter().find(|d| {
+        d.name == name
+            && args.len() == d.signature.len() + 1
+            && args[1..]
+                .iter()
+                .zip(d.signature.iter())
+                .all(|(a, &label)| a.as_sym() == Some(label))
+    })?;
     let template = terms.sym(declared.why?);
     if template.is_empty() {
         return None;

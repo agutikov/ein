@@ -494,22 +494,30 @@ fn relation_plan(
     excluded: &FxHashSet<Symbol>,
 ) -> Vec<RelPlan> {
     let closed = closed_relations(s.kb, s.terms);
-    s.kb.program()
+    let program = s.kb.program();
+    // A relation declared at several counts is walked at each, in the order
+    // first written (Q-M1f.447).
+    program
         .relations
         .values()
-        .filter(|r| !r.signature.is_empty())
-        .map(|r| RelPlan {
-            rel: r.name,
-            arity: r.signature.len(),
-            skip: if closed.contains(&r.name) {
-                Some(Skip::ClosedRelation)
-            } else if allowed.as_ref().is_some_and(|a| !a.contains(&r.name)) {
-                Some(Skip::RelationNotWhitelisted)
-            } else if excluded.contains(&r.name) {
-                Some(Skip::NoHypothesisRelation)
-            } else {
-                None
-            },
+        .filter(|r| r.declared)
+        .flat_map(|r| {
+            program
+                .declared_counts(r.name)
+                .into_iter()
+                .map(|arity| RelPlan {
+                    rel: r.name,
+                    arity,
+                    skip: if closed.contains(&r.name) {
+                        Some(Skip::ClosedRelation)
+                    } else if allowed.as_ref().is_some_and(|a| !a.contains(&r.name)) {
+                        Some(Skip::RelationNotWhitelisted)
+                    } else if excluded.contains(&r.name) {
+                        Some(Skip::NoHypothesisRelation)
+                    } else {
+                        None
+                    },
+                })
         })
         .collect()
 }
@@ -644,8 +652,8 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     // symbol is a `u32`, so the set of type roles is a bitset built with one
     // OR per signature entry rather than a hash table filled per call.
     let mut type_nodes = ein_core::BitSet::new();
-    for rel in kb.program().relations.values() {
-        for &sym in rel.signature.iter() {
+    for declaration in kb.program().declarations.iter() {
+        for &sym in declaration.signature.iter() {
             type_nodes.insert(sym.0);
         }
     }
@@ -828,11 +836,11 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
             .filter(|&r| scoped(r))
             .collect());
     }
-    Ok(s.kb
-        .program()
+    let program = s.kb.program();
+    Ok(program
         .relations
         .values()
-        .filter(|r| !r.signature.is_empty())
+        .filter(|r| !program.declared_counts(r.name).is_empty())
         .map(|r| r.name)
         .filter(|&r| scoped(r))
         .collect())

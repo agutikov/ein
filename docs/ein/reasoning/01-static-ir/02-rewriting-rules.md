@@ -527,8 +527,7 @@ $$
 $\rho[a]$ is the rule **applied under** $a$: a pattern and a conclusion with no parameter left. A rule with no
 parameter, $m = 0$, has no activator pattern and is applied as it stands, once. A rule with parameters has one
 application for each activator: none where $\operatorname{Act}_K(\rho) = \emptyset$, and a fact under the rule's
-name with another count of arguments is no activator
-([Q-M1f.203](../../../decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md)). Two
+name with another count of arguments is no activator. Two
 activators that differ in any argument are two facts, so two applications, and an activator gives a parameter
 whatever object stands in its place, an atom or a fact
 ([Q-M1f.43](../../../decisions/engine/Q-M1f.43-a-plans-activator-is-every-argument.md)): $\mathsf{1}$ and
@@ -601,10 +600,9 @@ $$
   An activator that would put a fact there names no relation, and activates nothing: it is a fact of the state,
   with no instance of its rule, whether the text writes it or some rule's conclusion makes it
   ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)).
-- **A fact pattern of a declared relation has the declared count**
-  ([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). One whose
-  relation is a parameter is held to no count, and matches by count
-  ([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)).
+- **A fact pattern matches by count**, of a declared relation or not: a declaration holds no pattern to its count
+  ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)), and one whose relation is a parameter matches the facts of its count of the relation its
+  activator names.
 - **A rule's name is declared once.**
 - **A conclusion is literals and nothing else**: no disjunction, and no fact made of several. *One of these* is
   not said by a rewriting rule. A conjunction in a conclusion is read flat, as the set of its literals, at any depth of

@@ -129,7 +129,9 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// relation and to each argument (Q-M1f.419), a saturated knowledge base of a
 /// few hundred facts is past the bound too: the `kb-since` view of the Zebra
 /// programs (`examples/`, `examples/ein-bugs/`) and of the programs of
-/// `std.math.binary` (`tests/stdlib/math/binary/`).
+/// `std.math.binary` (`tests/stdlib/math/binary/`). The calculator's
+/// witnesses of a form at another count load, so they hold the tables too
+/// (`examples/ein-bugs/wrong-answers/`).
 /// `cargo test -p ein-render --test dot_wellformed
 /// -- --nocapture` prints how many views are skipped, of how many files. A
 /// view skipped anywhere else fails the sweep until its directory is named
@@ -137,13 +139,14 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// noticed. A run without `EIN_CORPUS_SLOW` reads no program under `tests/`,
 /// and holds the directories it reads to the entries outside it; a run with
 /// it, to every entry.
-const SKIPPING: [&str; 21] = [
+const SKIPPING: [&str; 22] = [
     "examples",
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
     "examples/binary_logic",
     "examples/ein-bugs",
+    "examples/ein-bugs/wrong-answers",
     "examples/word_problems",
     "stdlib/bool",
     "stdlib/math",

@@ -193,8 +193,7 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// variable no premise binds. A leaked binding would satisfy that head
 /// instead. **The refusal is the loader's**, so the rule never loads and no
 /// firing meets `?q` unbound. `all-beaten` is declared by nothing here: the
-/// fixture concludes it with one argument and with two, and a declared
-/// relation has one count (Q-M1f.315).
+/// fixture concludes it with one argument and with two.
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {

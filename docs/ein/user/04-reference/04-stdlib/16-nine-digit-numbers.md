@@ -220,7 +220,9 @@ A number written with ten digits has no number of nine: `big` is a fact a rule m
 
 **An operand is a number written out**
 ([Q-M1f.170](../../../../decisions/stdlib/math/num9/Q-M1f.170-a-num9-operand-is-a-number-written-out.md)): the module
-has no named constants. A `num9` with another count of digits is refused at load:
+has no named constants. A `num9` with another count of digits is another fact, which no rule of the module reads
+([Q-M1f.447](../../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)), so the request
+is answered by silence:
 
 ```lisp
 (import std.math.num9 :symbols (num9 add9))
@@ -230,10 +232,11 @@ has no named constants. A `num9` with another count of digits is refused at load
 
 <!-- output -->
 ```text
-kb load error: n9-eight.ein:3:8: the fact (add9 (num9 0 0 0 0 0 0 0 7) (num9 0 0 0 0 0 0 0 0 1)) holds (num9 0 0 0 0 0 0 0 7), which gives num9 8 arguments, and (relation num9 Digit Digit Digit Digit Digit Digit Digit Digit Digit) declares 9 — a form headed by a declared relation has as many arguments as its declaration has types
+  ∅                 in R — root is alive and owes nothing
 ```
 
-One with a digit's place holding something else is answered by silence, and the module flags no malformed digit:
+One with a digit's place holding something else is answered by silence too, and the module flags no malformed
+digit:
 
 ```lisp
 (import std.math.num9 :symbols (num9 add9 sum9-of))

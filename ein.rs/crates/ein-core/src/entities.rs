@@ -81,6 +81,18 @@ pub struct Relation {
     pub loc: Option<Loc>,
 }
 
+/// One `(relation R L…)` a program wrote: a relation may be declared more
+/// than once, at one count or at several (Q-M1f.447), and each declaration is
+/// kept, in the order written ([`crate::Program::declarations`]).
+#[derive(Clone, Debug)]
+pub struct Declaration {
+    pub name: Symbol,
+    pub signature: Box<[Symbol]>,
+    /// The `:why` render template of this declaration. `None` is the empty
+    /// template.
+    pub why: Option<Symbol>,
+}
+
 /// The structural view of a `:match` / `:assert` clause.
 ///
 /// No matching semantics: `expr` is the clause as parsed, and the two lists

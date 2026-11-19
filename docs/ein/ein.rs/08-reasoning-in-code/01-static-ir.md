@@ -130,7 +130,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | a stored negation, falsity | a fact of the relation `not`, one argument, and the fact of `false`, none: `ein_core::terms::Terms`' `kernel` symbols |
 | what is an object and what is not | the grammar: `FactHead`, `ValueHead`, `NestedFact`, `NegFact`, `NegPattern`, `Negated` in `ein-ir/src/ein.y`; after macro expansion, `refuse_malformed_primitives` in `ein-ir/src/from_ir.rs` |
 | a declaration as facts | `ingest_relation` in `ein-ir/src/from_ir.rs` |
-| the declared count of arguments | `declared_counts` and `wrong_counts` in `ein-ir/src/from_ir.rs` |
+| every declaration of a relation, at each count | `ein_core::Program::declarations` and `Program::signatures`, written by `ingest_relation` |
 | reading a text into $K_0$ | `ein-ir/src/from_ir.rs`: `load`, its passes and their accumulated refusals ([`03-design/04-ir-frontend.md` § 9](../03-design/04-ir-frontend.md#9-the-loader)) |
 | full names and a file's short names | `ein-ir/src/imports.rs`: `resolve_imports`, `short_names` ([`03-design/04-ir-frontend.md` § 8](../03-design/04-ir-frontend.md#8-import-resolution)) |
 | equality, computed and never stored | `ein-infer/src/predicates.rs`; the store's equality classes, which nothing writes and no matcher reads ([`03-design/03-data-model.md` § 10](../03-design/03-data-model.md#10-equality-classes)) |
@@ -147,8 +147,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | no name the loader makes up is a name a program can write | `ein-ir/tests/generated_parser.rs`: `no_name_the_loader_makes_up_is_a_name` |
 | a kernel marker is refused wherever a program binds it | `ein-ir/tests/engine_names.rs`: `a_dunder_is_refused_wherever_a_program_binds_it` |
 | one module reached through several imports is one copy; a short name is local to its file | `ein-ir/tests/imports_full_names.rs`: `the_users_dependency_graph`, `a_short_name_is_local_to_its_file`; `ein-ir/tests/imports_semantics.rs`: `one_module_under_two_spellings_is_one_copy` |
-| a form of a declared relation at another count is refused, and the labels are no type check | `ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_is_refused_on_every_command`, `what_is_not_a_declared_relations_form_loads` |
-| a relation name declared twice is refused at load | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical` |
+| a form of a declared relation at another count loads, a relation may be declared twice and at several counts, and the labels are no type check | `ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_loads_on_every_command`, `the_regressions_witnesses_load_on_every_command`, `a_relation_declared_twice_loads_and_each_count_answers_its_own`, `what_is_not_a_declared_relations_form_loads` |
 | a declaration is stored as the fact with its labels and the fact of one argument; a bare one as one fact | `ein-infer/tests/compile_semantics.rs`: `a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact`; the loader's unit test `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures` in `ein-ir/src/from_ir.rs` |
 | a relation nothing declares is a relation | the loader's unit test `an_undeclared_head_vivifies_a_relation_but_a_predicate_does_not` in `ein-ir/src/from_ir.rs` |
 | a nested fact pairs with its negation by its arrows, at every depth, under `std.contradiction` | `ein-infer/tests/search_semantics.rs`: `a_nested_positive_pairs_through_structural_identity` |

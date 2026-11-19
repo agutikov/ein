@@ -237,7 +237,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// closed**: such a node is not recorded as a model by the read-out at all;
 /// and a list that names a relation an obligation owes is refused at load
 /// (filtered obligations are nonsense by definition,
-/// [07-diagnostics.md § 2.27](../../../../docs/ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+/// [07-diagnostics.md § 2.26](../../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
 /// so a state is stuck because every candidate that would pay it is already
 /// refuted, Ann's of [`stuck_program`], who likes neither food: owed 1,
 /// branched on 1, declined 0.

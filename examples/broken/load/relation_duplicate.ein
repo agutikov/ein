@@ -1,4 +1,0 @@
-;; One name, one declaration.
-
-(relation opaque :why "opaque holds")
-(relation opaque :why "opaque holds")

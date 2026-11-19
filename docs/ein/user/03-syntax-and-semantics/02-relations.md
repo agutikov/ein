@@ -144,22 +144,17 @@ $$
 It speaks of `lives-in` as one object, and bounds nothing: for labels $L_1, \dots, L_n$ there is no set the
 $i$-th argument is drawn from, and $\operatorname{ext}_S(\text{lives-in})$ may hold a fact over any two objects.
 
-## The count is held, the labels are not
+## A relation is overloaded by its count, and the labels are not held
 
-A form headed by a declared relation has as many arguments as the declaration has labels, wherever it is written: a
-fact, a fact inside a fact and under `(not …)`, a rule's and an hrule's `:match` and `:assert`, a goal and a claim.
-`(lives-in Bob)` is refused at load, on every command, with a line that names both counts (the line calls the
-labels `types`, the engine's word for them)
-([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md);
-[diagnostics](../04-reference/07-diagnostics.md)). A bare `(relation solved)` declares no argument, and `(solved now)` is
-refused the same way ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)).
+A declaration holds no form to its count of labels: `(lives-in Bob)` beside `(relation lives-in Person House)` loads,
+a fact of one argument, which no pattern of two matches. A relation may be written at several counts, and declared
+at each, or twice at one: each declaration is a fact of `relation`, and a pattern of a count matches the facts of
+that count alone. That is the one overloading Ein has, by the count of arguments
+([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)).
 
 It is a count and no check of what is counted: what stands in an argument's place is not held to the label declared
 for it, and `(lives-in House-1 Norwegian)` loads beside the declaration above
-([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)). A
-relation that nobody declares has no count, so a fixture that wants one relation at several counts leaves it
-undeclared. A relation written as a variable, `(?R ?a ?b)`, is held to no declared count, nor is a kernel marker or
-a rule's activator fact.
+([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).
 
 ## A relation's properties are facts beside it
 

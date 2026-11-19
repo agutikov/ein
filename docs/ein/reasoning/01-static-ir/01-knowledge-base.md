@@ -167,8 +167,8 @@ r, T_1, \dots, T_n &\in \Sigma^{+}
 $$
 
 and beside it the knowledge base holds $\operatorname{relation}(r)$, which says that $r$ is declared whatever
-its count; for $n = 0$ the two are one fact
-([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)). The **declared
+its count; for $n = 0$ the two are one fact. A relation may be declared more than once, at one count or at
+several, each declaration a fact ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). The **declared
 relations** are the atoms under the second arrow of a declaration. *Declared relation* and *relation* are two
 definitions, and neither includes the other: a declared relation of which the knowledge base has no fact is
 under no first arrow, and a relation that nothing declares is a relation all the same. The atom
@@ -278,9 +278,9 @@ $f_2$ beside the declaration above. A rule reads a declaration as it reads any f
 gives a label the meaning *the argument in this place is one of these*
 ([Q-M1f.372](../../../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md),
 [Q23](../../../decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md);
-[the rules](02-rewriting-rules.md#relation-polymorphic) has that rule). Two things a declaration does that
-another fact does not are properties of the graph and are stated [below](#the-count-of-arguments): it fixes the
-count of arguments, and a relation is declared once. One place beside the rules reads which atoms are labels,
+[the rules](02-rewriting-rules.md#relation-polymorphic) has that rule). A declaration fixes no count of
+arguments, and a relation may be declared more than once ([below](#the-count-of-arguments)). One place beside the
+rules reads which atoms are labels,
 and it is stated [where it is used](../02-kb-evolution/04-hypothesis-generation.md#5-the-blind-enumerator).
 
 ### A fact about a relation, a fact about a fact, a negation, falsity
@@ -693,18 +693,11 @@ total and injective, so comparing quoted forms is a third total order, $u \lt_{q
 
 ### The count of arguments
 
-A fact has as many arguments as it has arrows after the first, and of a relation nothing declares the facts may
-be of any count, each count giving different facts. A declaration fixes the count:
-
-$$
-P \text{ declares } r \text{ with the labels } T_1, \dots, T_n \ \land\ f \in T \ \land\ \operatorname{rel}(f) = r \implies \operatorname{ar}(f) = n
-$$
-
-so on the declared relations of a program $\operatorname{ar}$ is a function of the relation, the number of its
-labels. The count is the whole of it: nothing is required of what stands under an arrow
-([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). And a relation
-is declared at most once: two declarations of one name are no program. Both are conditions on a text, and a text
-that fails one is no program.
+A fact has as many arguments as it has arrows after the first, and the facts of a relation may be of any count,
+each count giving different facts. A declaration holds no fact of its relation to its count: $\operatorname{ar}$
+is a function of the fact, and a relation may have facts of several counts, each count its own set of facts, which
+a pattern of another count does not match. That is the one overloading there is, by the count of arguments, and a relation may be declared at each
+count, or twice at one ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)).
 
 ### Nesting
 

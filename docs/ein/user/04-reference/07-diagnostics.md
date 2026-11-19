@@ -110,7 +110,7 @@ A loader line about a top-level form that carries no position of its own ends in
 kb load error: duplicate rule/hrule name 'g' at None
 ```
 
-So do a duplicate relation, rule, hrule or macro, a rule missing its `:match` or `:assert`, an import cycle, a bare
+So do a duplicate rule, hrule or macro, a rule missing its `:match` or `:assert`, an import cycle, a bare
 `(import std)`, an import that writes both `:as` and `:symbols`, and a `:symbols` name the module does not provide
 (the fixtures under [`examples/broken/load/`](../../../../examples/broken/load/) whose `.expected` holds `at None`).
 A line raised where a position is known carries it: a macro called with the wrong count ends
@@ -196,7 +196,7 @@ of a program below is made at load, before any rule fires, any hypothesis is pro
 every command that reads the program — `ein solve` in every mode, `oracle`, `saturate`, `test`, `show`, each
 `render` view and `kb save`, which writes no container — so no command stops part way through a run on a rule's
 shape, and no two commands disagree about whether a program loads. The one exception is a saved file's choice
-that names no node ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)), which reads
+that names no node ([§ 2.29](#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)), which reads
 H at root's fixpoint and is made by the commands that read the node. Each exits at the command's load-error exit:
 **1, and 2 under `ein test`**. A
 view refuses what the loader refuses
@@ -383,7 +383,7 @@ names with no `core.ein`, or a directory which is no standard library, refuses e
 imports `std.core` meets the same line where the import is the first read of the module. A library `$EIN_STDLIB`
 names with a `core.ein` of its own is read, and that module is every program's
 ([`04-stdlib/21-core.md`](04-stdlib/21-core.md#replacing-it)). A saved file carries the module with its program
-([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
+([§ 2.29](#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
 
 ### 2.8 `_` and `?_` are refused wherever they are written
 
@@ -709,7 +709,7 @@ hrule, or is passed on to a position that holds one. A program the loader has al
 check.
 
 **What is not refused here.** A list that names what the program has and contradicts another of its hypothesis
-declarations is [§ 2.27](#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)'s. An activator's
+declarations is [§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)'s. An activator's
 argument at a parameter that stands for no relation is any object, which no declaration lists, so
 `(guess (at Colour House))` loads and proposes nothing, and the read-out's `universe` row says *no candidate*
 ([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)); so does a
@@ -925,52 +925,7 @@ program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros
   loses the second with no word, as it does written twice in one file
   ([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)).
 
-### 2.26 A form of a declared relation has the declared count of arguments
-
-**A declaration that lists $n$ labels after the relation's name declares that a form of the relation has $n$
-arguments**, and the loader refuses a program that
-writes one with another count, one line a form, placed at the form
-([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)):
-
-```text
-$ ein solve t.ein       # (relation likes Person Drink :why "…") (likes Ann Tea) (likes Bob)
-kb load error: t.ein:1:71: the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
-```
-
-| where the form is written | the line, after its place |
-|---|---|
-| a fact | `the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — …` |
-| a fact inside a fact, at any depth, under `(not …)`, in a fact's `:using` | `the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — …` |
-| a rule's or an hrule's `:match` or `:assert`, at any depth, under `(absent …)` and `(not …)`, as its macros expand | `rule 'fans': its :match writes (likes ?who), which gives likes 1 argument, and … declares 2 — …` |
-| a query's `:goal`, as its macros expand | `query: its :goal writes (likes ?who), which gives likes 1 argument, and … declares 2 — …` |
-| a fact a claim lists, a query's `:expect` or `(solve … :expect …)`'s | `solve: its :expect lists (likes Ann), which gives likes 1 argument, and … declares 2 — …` ([Q-M1f.204](../../../decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md)) |
-
-- **What declares a count** is the program's own `(relation …)` and an imported one: an import is resolved before the
-  loader reads a form, so a flat import's relation is held under its name and `(import M :as o)`'s under `o.name`.
-- **A bare `(relation flag)` declares none**, so `(flag)` is its one form and `(flag up)` is refused
-  ([Q-M1f.201](../../../decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)).
-- **A keyword pair is no argument**: `(likes Ann Tea :source "said")` has two.
-- **A macro's body is held where a rule or a goal calls it**, on its expansion; a macro nothing calls is not read, as
-  § 2.16 has it.
-- **A relation nothing declares has no count** and is not held: `(says Ann)` beside `(says Ann Bob)` loads. That
-  includes the kernel's own, which no program declares: `(__closed__ r extra)` loads, and `(relation R ?A ?B)`, the
-  declaration's stored fact, is a pattern at any count
-  ([Q-M1f.203](../../../decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md)). `eq` is
-  held to two arguments by § 2.14.
-- **A relation written as a variable is not read**, `(?R ?a ?b)`, whatever the program shows its parameter holds: a
-  rule over a parameter is generic over counts, matching is by count, and `(mirror likes)` on a rule that reads
-  `(?R ?a)` matches nothing
-  ([Q-M1f.202](../../../decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)). So a rule
-  can still *derive* a fact of a declared relation at another count through a parameter; no written form is one.
-- **An activator is not a declared relation's form**: `(functional r extra)` against a rule `functional (?R)`
-  activates nothing, in silence; an activator in a `(solve :hrules …)` list is held to its hrule's parameters by
-  § 2.20.
-- **It checks no argument against a label**: `(likes Tea Ann)` loads. Ein has no types, and what is written in an
-  argument's place is not held to the label of its slot. The line's last word, *types*, is the engine's word for the
-  declaration's labels, and what it counts.
-- **No flag turns it off.**
-
-### 2.27 A program's hypothesis mechanisms do not contradict one another
+### 2.26 A program's hypothesis mechanisms do not contradict one another
 
 Five declarations steer what a commitment may be about ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)):
 an `(hrule …)` (**H**, with its `:hrules` activators), an obligation rule, `:assert (open ?R)` (**O**, with its
@@ -1036,7 +991,7 @@ alone*, which replace the notes above. **It relaxes no conflict**: H, O and the 
 refused pair is refused beside it with the same line
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)).
 
-### 2.28 An import is by full name, and a short name names one declaration in a file
+### 2.27 An import is by full name, and a short name names one declaration in a file
 
 Every import brings its module whole (§ 2.25); a name a module declares has one full name, `M.name`, the module's name
 a path from the program file's directory or `std.x`
@@ -1070,7 +1025,7 @@ surface alike: a state, a trace, a core, `refuted by`, `--events`
 another file writes as a name of its own is not taken. The answer does not depend on the import form
 ([Q-M1f.249](../../../decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)).
 
-### 2.29 An hrule proposes one fact per match
+### 2.28 An hrule proposes one fact per match
 
 An hrule proposes facts, each a commitment of its own, so its conclusion is one fact
 ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): an hrule whose `:assert`,
@@ -1084,7 +1039,7 @@ conjunct, read after a macro's expansion:
 An `(and …)` of one conjunct, `(and (p ?x))`, is one conclusion and loads. A macro's call that leaves the `(and …)`
 is placed as § 2.16 places a form a body writes, at the macro's body.
 
-### 2.30 A saved file is its program, its modules and one commitment of H
+### 2.29 A saved file is its program, its modules and one commitment of H
 
 A saved file is one `(program …)`, the `(module …)`s it carries and at most one `(commit …)`, and a load reads it as
 the node of its program's lattice the commitment names
@@ -1114,7 +1069,7 @@ and draws no line: a carried module of the standard library that is not the one 
 carried where the binary has no standard library to read, which is loaded as carried; a saved file compares nothing
 ([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
 
-### 2.31 A rule's word to the engine
+### 2.30 A rule's word to the engine
 
 A rule states what it concludes under `:assert`, or a word to the engine under `:ein`
 ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert);

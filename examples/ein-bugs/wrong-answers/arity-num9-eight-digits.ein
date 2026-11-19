@@ -10,17 +10,18 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `(num9 0 0 1 2 3 0 7 8)` is a form headed by a declared relation with
-;;; eight arguments where the declaration has nine types: the program is
-;;; refused at load, at the form, one line naming the relation and the two
-;;; counts, on every command (exit 1, `ein test`: 2).
+;;; `(num9 0 0 1 2 3 0 7 8)` is a form of a declared relation at another count than its
+;;; declaration's: a fact of that count, which no pattern of the declared
+;;; count matches. A declaration holds no form to its count, and a relation
+;;; is overloaded by its count of arguments (Q-M1f.447): the program loads,
+;;; on every command, and answers as written.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `f9a6fd1d`, release: the program loads, the wide rule matches no
 ;;; request, nothing is derived, not a sum and not an overflow, and the goal
 ;;; has no row, exit 0 on every command, with no word.
-;;; The engine refuses it at load (Q-M1f.315), on every command.
+;;; That is the answer (Q-M1f.447).
 ;;;
 
 (import std.math.num9 :symbols (arith9 add9 num9 sum9-of))

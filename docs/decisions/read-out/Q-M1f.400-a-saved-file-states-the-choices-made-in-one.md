@@ -17,4 +17,4 @@ readable and keeps it a node when another candidate is added to H.
 `ein-cli/tests/saved_files.rs`: `a_choice_is_saved_as_a_commitment_and_loaded_as_the_node`,
 `what_a_saved_file_is_refused_for`; `ein-ir/tests/grammar_pages.rs`' table. The page:
 [10-answer-dump.md](../../ein/user/04-reference/10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made);
-the refusals: [07-diagnostics.md § 2.30](../../ein/user/04-reference/07-diagnostics.md#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h).
+the refusals: [07-diagnostics.md § 2.29](../../ein/user/04-reference/07-diagnostics.md#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h).

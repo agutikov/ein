@@ -529,10 +529,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - A query's `:goal` is held to what a rule's `:match` is held to. Every name
   in a `(solve …)` list names something the program has. A macro's call is no
   fact.
-- **A form headed by a declared relation has as many arguments as its
-  declaration has labels.** It is no check of what is written there: Ein has
-  no types, and a label means what a rule makes it mean (Q-M1f.372). A
-  fixture that wants a relation at several counts leaves it undeclared.
+- **A relation is overloaded by its count of arguments**
+  ([Q-M1f.447](docs/decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)):
+  a declaration is an ordinary fact and holds no form to its count, so a
+  form of a declared relation at another count loads, in silence, a fact no
+  pattern of the other count matches. A relation may be declared more than
+  once, at one count or at several, and no declaration is refused as a
+  duplicate; what reads a declaration reads each (`ein_core::Program::declarations`):
+  the blind rung guesses at each declared count, and `std.contradiction`
+  activates the rule of each. Ein has no types, and a label means what a
+  rule makes it mean (Q-M1f.372).
 - **Every import brings its module whole**, with its own imports, one copy
   per program, every declared name under its **full name**,
   `std.math.decimal-arith.add`; the three shapes differ only in names: `:symbols (…)` lets the file write

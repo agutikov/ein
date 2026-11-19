@@ -1,0 +1,38 @@
+;;; A relation declared twice, and at two counts: overloading by the count of
+;;; arguments (Q-M1f.447).
+;;;
+;;; A declaration is an ordinary fact, `(relation likes Person Drink)`, which
+;;; holds no form of `likes` to its count. So `likes` may be declared more
+;;; than once, here at two arguments twice, each with its own `:why`, and at
+;;; one, and a fact of each count is written. Each count is its own set of
+;;; facts: a pattern of two arguments matches the facts of two, one of one
+;;; the facts of one, and a rule over one count derives nothing from the
+;;; other.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root holds `(likes Ann Tea)`, `(likes Bob)` and the rule's `(fan Ann)`,
+;;; and each declaration as its fact: `(relation likes Person Drink)` once,
+;;; for the two that write it, and `(relation likes Person)`. With no search,
+;;; R is root alone.
+
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation likes Person Drink :why "{?3} is fond of {?4}")
+(relation likes Person       :why "{?3} likes something")
+(relation fan   Person       :why "{?3} is a fan")
+
+(likes Ann Tea)
+(likes Bob)
+
+(rule fond ()
+  :match  (likes ?who ?what)
+  :assert (fan ?who)
+  :why    "{?who} likes {?what}, so {?who} is a fan")
+
+(solve :no-search)
+
+(query :goal (likes ?who ?what) :expect (model (likes Ann Tea)))
+(query :goal (likes ?who)       :expect (model (likes Bob)))
+(query :goal (fan ?who)         :expect (model (fan Ann)))
+(query :goal (relation likes ?t)
+  :expect (model (relation likes Person)))

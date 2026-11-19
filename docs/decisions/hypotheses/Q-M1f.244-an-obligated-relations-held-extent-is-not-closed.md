@@ -13,4 +13,4 @@ paid; a list beside an hrule filters nothing, so it takes nothing from the oblig
 **Held by.** `ein-cli/tests/mechanism_conflicts.rs`: `a_conflict_is_refused_on_every_command`, whose shapes include
 an obligation and a derived closure beside an hrule; `ein-infer/tests/obligation_reports.rs`:
 `the_closed_and_owing_corner_is_a_conflict`; `examples/ein-bugs/closed-and-owing.ein`;
-[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.
+[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.

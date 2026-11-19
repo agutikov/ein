@@ -390,8 +390,9 @@ errors **accumulate** and surface as one `KbLoadError`, `; `-joined, so the text
 in are both observable (`load_semantics::load_errors_accumulate_in_pass_order`). Import resolution is the exception:
 its errors are fatal and returned at once, because a half-resolved program cannot be ingested.
 
-The loader refuses what a context-free grammar cannot see: a form's count of arguments against its relation's
-declaration, which keywords a form requires and that each appears once, a conclusion's variable no premise binds, a
+The loader refuses what a context-free grammar cannot see, but a form's count of arguments, which no declaration
+holds ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)): which keywords
+a form requires and that each appears once, a conclusion's variable no premise binds, a
 relation written as a variable no parameter binds, a nested `(or …)`, a malformed primitive an expansion writes, a
 `(solve …)` list naming what the program does not have, and a `:match` (with
 the rule's parameters) or a `:goal` writing more than `MAX_MATCH_VARIABLES` (256) distinct variables
@@ -401,7 +402,9 @@ register file the compiler builds ([05-matcher.md](05-matcher.md)). Where its ma
 grammar refuses, the arm is an `expect` or an `unreachable!` naming the production of `ein.y`
 ([Q-M1f.9](../../../decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md)).
 
-What it builds, into `ein_core::Program`: the registries of relations, rules, hrules, obligations and macros; every
+What it builds, into `ein_core::Program`: the registries of relations (the first declaration of each), rules,
+hrules, obligations and macros; every declaration, in the order written (`Program::declarations`, a relation
+declared more than once read at each); every
 `(query …)`, in source order, `active_query` choosing the one a run asks; the one `(solve …)` a program may state;
 the relations a goal and a claim may name, `relations_of`, which `read_goal` holds a goal given beside the loaded
 program to, as the query it is read as would be held
