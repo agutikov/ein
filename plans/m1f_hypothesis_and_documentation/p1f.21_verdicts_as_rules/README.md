@@ -499,6 +499,35 @@ The user, 2026-11-20 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, 
 | 56 | [Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | the two lists of `(solve …)` and a closure, once the hypotheses are `open` facts: the explanation the user asked for, and the question again |
 | 57 | [Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | an obligation whose guard or trigger reads what a commitment can change: the user's answer, put back, since *declined* is no refusal today and the answer to the letter takes a claim that holds from six corpus programs |
 
+## The answers to items 56 and 57
+
+The user, 2026-11-20 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, each under its question in
+[the ledger](../open_questions.md). **With them no question of the second part is open.** The part is not started
+by them.
+
+**Item 56**, [Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts), the two lists and a closure:
+
+> all 3 (:hypothesis-relations, :no-hypothesis, __closed__) are configuration for blind enumerator, white list and
+> black list; blind enumerator runs ONLY if at the root fixpoint (open ...) context is empty - no facts. If any of
+> them present together with emitted open facts, but disagree - it's an error, invalid program. e.g. rule emits
+> closed relation hypotheses - it is an error. :no-hypothesis forbids existing open facts - error,
+> :hypothesis-relations lists relations that are not in open facts - also error. Do not ever run blind enumerator
+> together with hypotheses emitted by rules. (a)
+
+**Item 57**, [Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change), an obligation whose guard or trigger reads what a commitment can change:
+
+> (b) implement it and double check examples/ein-bugs/wrong-answers/oblig-derived-domain.ein, I expect it will
+> still be solvable, despite non-monotonicity. This is my expectation, not requirement. Let's review it after
+> implementation.
+
+| what | ruled |
+|---|---|
+| `:hypothesis-relations`, `:no-hypothesis`, `(__closed__ R)` | the blind enumerator's configuration, a white list and a black list |
+| the blind enumerator | runs only where root's fixpoint holds no `open` fact; never beside hypotheses a rule emits |
+| one of the three beside `open` facts it disagrees with | an error, the program invalid: a hypothesis of a closed relation; a `:no-hypothesis` that names an `open` fact's relation; a `:hypothesis-relations` that lists a relation no `open` fact is of |
+| an obligation whose guard or trigger reads what a commitment can change | never steps aside: it writes its guard's candidates at root, and the program is flagged |
+| `oblig-derived-domain.ein` | run again once that is built, and shown: the user expects it still solvable, *"my expectation, not requirement. Let's review it after implementation."* |
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -552,7 +581,7 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | **not run**: set aside 2026-11-19 by the user's answer to Q-M1f.390, no justification is written into Ein |
-| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | **planned again 2026-11-20** on the rulings Q-M1f.566 to Q-M1f.577, **not started**; two questions with defaults, Q-M1f.578 and Q-M1f.579; after part 1 |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | **planned again 2026-11-20** on the rulings Q-M1f.566 to Q-M1f.579, **not started**; no question of it is open; after part 1 |
 | [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) | H | **The `hrule` form and the keyword `:hrules` removed.** Every program, page and test written with a rule that concludes `(open F)` and its activators as facts; the form and the keyword deleted | planned 2026-11-20 on the ruling Q-M1f.567, **not started**; after S1f.21.12. In place of S1f.21.16 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; after S1f.21.12. Q-M1f.569 lets a rule read an `open` fact in a program that is then flagged, so its example may be written so |
 | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | **not run**: the user's answer to Q-M1f.566 keeps the obligation and its count as they are |

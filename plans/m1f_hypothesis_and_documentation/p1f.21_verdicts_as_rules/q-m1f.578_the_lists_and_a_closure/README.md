@@ -1,7 +1,22 @@
 # 56 · Q-M1f.578: the two lists of `(solve …)` and a closure, once the hypotheses are `open` facts
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 56 of part 2. Your answer, in the part's
+answers' file:
+
+> all 3 (:hypothesis-relations, :no-hypothesis, __closed__) are configuration for blind enumerator, white list and
+> black list; blind enumerator runs ONLY if at the root fixpoint (open ...) context is empty - no facts. If any of
+> them present together with emitted open facts, but disagree - it's an error, invalid program. e.g. rule emits
+> closed relation hypotheses - it is an error. :no-hypothesis forbids existing open facts - error,
+> :hypothesis-relations lists relations that are not in open facts - also error. Do not ever run blind enumerator
+> together with hypotheses emitted by rules. (a)
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-56-and-57).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/56-Q-M1f.578/`, as they were run.
 
 **From your answer to item 54**, 2026-11-20, of its third question: *"What? Explain in more details"*.
 
@@ -77,6 +92,6 @@ What do the two lists and a closure do to an `(open F)` fact?
 - **(c)** **As (a) for a rule and a written fact, as (b) for an obligation's candidates**: what a program writes
   against its own list is its mistake and is refused; what an obligation derives is filtered.
 
-## 5. Your call
+## 5. The ruling
 
-(a), (b) or (c), in [`ANSWERS.md`](../ANSWERS.md) under item 56. Blank keeps (a).
+Ruled: the answer at the head of this page.

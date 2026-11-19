@@ -14,6 +14,6 @@ the page to read first. Each part has its index and its own answers file; an ite
 | part | what | items | answers |
 |---|---|---|---|
 | [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Running now | **none open**: 35, 36, 38, 40, 41 and 42 answered 2026-11-19 and filed; three readings of the answers are said back on the part's page | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
-| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | **two open, each with a default**, what the answers to 52 to 55 leave: [56](part-2/56-Q-M1f.578/README.md), the two lists and a closure, explained; [57](part-2/57-Q-M1f.579/README.md), an obligation whose guard or trigger reads what a commitment can change. Every earlier item is ruled and out of the bundle | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
+| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | **none open**: every item is ruled and out of the bundle, the last, 56 and 57, on 2026-11-20. Its two builds are planned on the rulings | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

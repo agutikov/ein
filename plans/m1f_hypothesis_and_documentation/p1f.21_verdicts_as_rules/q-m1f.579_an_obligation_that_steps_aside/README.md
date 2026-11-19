@@ -1,7 +1,19 @@
 # 57 · Q-M1f.579: an obligation whose guard or trigger reads what a commitment can change
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 57 of part 2. Your answer, in the part's
+answers' file:
+
+> (b) implement it and double check examples/ein-bugs/wrong-answers/oblig-derived-domain.ein, I expect it will
+> still be solvable, despite non-monotonicity. This is my expectation, not requirement. Let's review it after
+> implementation.
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-56-and-57).
+It leaves nothing open; what `oblig-derived-domain.ein` answers once it is built is shown to you then, as you asked. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/57-Q-M1f.579/`, as they were run.
 
 **From your answer to item 54**, 2026-11-20, of its first question: *"not exactly, "guard or trigger reads what a
 commitment can change" is not declined anymore, it is allowed, detected as non-monotone programs, but allowed."*
@@ -55,7 +67,7 @@ Eight decline today for this reason (`ein solve FILE --events`, the `rung` line)
 
 All are under `examples/ein-bugs/wrong-answers/`: they are the witnesses of the wrong answer the stepping aside
 was built to end. Three more programs have such an obligation beside a hypothesis rule, which overrides it today
-([the page of item 54](../../../q-m1f.576_the_unions_edges/README.md)).
+([the page of item 54](../q-m1f.576_the_unions_edges/README.md)).
 
 ## 4. The question
 
@@ -69,6 +81,6 @@ was built to end. Three more programs have such an obligation beside a hypothesi
 - **(c)** **Both written.** It writes its guard's candidates at root and the blind enumerator writes its guesses
   too, so nothing is missed and the program need not be flagged for it; $H$ is as large as the blind one's.
 
-## 5. Your call
+## 5. The ruling
 
-(a), (b) or (c), in [`ANSWERS.md`](../ANSWERS.md) under item 57. Blank keeps (b), your answer as written.
+Ruled: the answer at the head of this page.

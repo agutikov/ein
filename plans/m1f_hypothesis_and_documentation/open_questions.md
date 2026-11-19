@@ -506,8 +506,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.575](#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) | What one `:assert` holds beside `(open R)` and beside `(open F)` | **ruled 2026-11-20 by the user: (a)**: `(open R)` is a rule's whole `:assert`, as today; `(open F)` stands in a conjunction like any fact |
 | [Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | The union's edges: an obligation whose candidates cannot be read, and the blind enumerator | **ruled in part 2026-11-20 by the user**: the blind enumerator writes only where no rule concludes `(open F)` at root and no obligation is activated. Of an obligation whose guard or trigger reads what a commitment can change, *"not declined anymore, it is allowed, detected as non-monotone"*, put back as Q-M1f.579; the lists and a closure, which the user asked to have explained, are Q-M1f.578 |
 | [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **ruled 2026-11-20 by the user: (a)**: `-P` leaves out the `(open …)` facts as it leaves out the `(not …)` |
-| [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **open, a default proposed**: put 2026-11-20 on the user's *"What? Explain in more details"*. Today they filter the blind enumerator and refuse a clash with a hypothesis rule or an obligation. Default (a): they refuse a clash, whoever proposes |
-| [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **open, a default proposed**: put 2026-11-20 on the user's answer to Q-M1f.576, since *declined* is no refusal today: such a program loads and is answered. Default (b), the answer as written: it writes its guard's candidates at root and the program is flagged; six corpus programs then lose a claim that holds |
+| [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **ruled 2026-11-20 by the user: (a), and more**: the three are the blind enumerator's configuration, a white list and a black list; the blind enumerator runs only where root's fixpoint holds no `open` fact, and never beside hypotheses a rule emits; beside `open` facts, a list or a closure that disagrees with them is an error, an invalid program |
+| [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **ruled 2026-11-20 by the user: (b)**: such an obligation never steps aside; it writes its guard's candidates at root and the program is flagged. `oblig-derived-domain.ein` is checked again once it is built: the user expects it still solvable, *"my expectation, not requirement"*, to be reviewed then |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11182,7 +11182,7 @@ added. The page of the question is [`q-m1f.577_a_view_without_the_open_facts/`](
 ([Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)): *"What? Explain in more details"*. The question had said in one sentence that the lists *bind every
 writer as today*, and half of the sentence was wrong.
 
-**Today**, on runs ([review item 56](p1f.21_verdicts_as_rules/review/part-2/56-Q-M1f.578/README.md)): `:hypothesis-relations`,
+**Today**, on runs ([review item 56](p1f.21_verdicts_as_rules/q-m1f.578_the_lists_and_a_closure/README.md)): `:hypothesis-relations`,
 `:no-hypothesis` and `(__closed__ R)` filter what the blind enumerator guesses, 6 candidates to 2 in the item's
 program. They filter nothing a hypothesis rule proposes (*no list filters an hrule's candidates*), and a clash is
 a load error: a rule that proposes facts of a relation a list takes out, and, with no hypothesis rule, an
@@ -11194,7 +11194,28 @@ that concludes `(open F)`.
 nothing. (c) They refuse what a program writes against its own list and filter an obligation's candidates.
 **Default (a).**
 
-**Open.** P1f.21's second part's.
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled 2026-11-20 by the user: (a), and more.** In P1f.21's answers' file of part 2, item 56, verbatim:
+
+> all 3 (:hypothesis-relations, :no-hypothesis, __closed__) are configuration for blind enumerator, white list and
+> black list; blind enumerator runs ONLY if at the root fixpoint (open ...) context is empty - no facts. If any of
+> them present together with emitted open facts, but disagree - it's an error, invalid program. e.g. rule emits
+> closed relation hypotheses - it is an error. :no-hypothesis forbids existing open facts - error,
+> :hypothesis-relations lists relations that are not in open facts - also error. Do not ever run blind enumerator
+> together with hypotheses emitted by rules. (a)
+
+So:
+
+- `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` are **the blind enumerator's configuration**, a
+  white list and a black list.
+- **The blind enumerator runs only where root's fixpoint holds no `open` fact**, and never beside hypotheses a rule
+  emits.
+- **Beside `open` facts, one of the three that disagrees with them is an error**, the program invalid: a rule
+  that emits a hypothesis of a closed relation; a `:no-hypothesis` that names the relation of an `open` fact root
+  holds; a `:hypothesis-relations` that lists a relation no `open` fact is of.
+
+The page of the question is [`q-m1f.578_the_lists_and_a_closure/`](p1f.21_verdicts_as_rules/q-m1f.578_the_lists_and_a_closure/README.md).
 
 ### Q-M1f.579 — An obligation whose guard or trigger reads what a commitment can change
 
@@ -11206,10 +11227,23 @@ the program loads, is answered, and is not flagged, since with every fact propos
 held above it. Eight corpus programs do so, all witnesses under `examples/ein-bugs/wrong-answers/`; six of them
 are monotone and state a claim that holds. With the guard read at root in place of the stepping aside,
 `oblig-derived-domain.ein` has one candidate, dead, and an empty $R$, where today it answers `(likes Ann Pie)`
-([review item 57](p1f.21_verdicts_as_rules/review/part-2/57-Q-M1f.579/README.md)).
+([review item 57](p1f.21_verdicts_as_rules/q-m1f.579_an_obligation_that_steps_aside/README.md)).
 
 (a) As today where nothing else proposes, and beside a rule it writes nothing. (b) The answer to the letter: it
 never steps aside, writes its guard's candidates at root, and the program is flagged. (c) It writes them and the
 blind enumerator writes its guesses too. **Default (b)**, the user's answer as written.
 
-**Open.** P1f.21's second part's.
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled 2026-11-20 by the user: (b).** In P1f.21's answers' file of part 2, item 57, verbatim:
+
+> (b) implement it and double check examples/ein-bugs/wrong-answers/oblig-derived-domain.ein, I expect it will
+> still be solvable, despite non-monotonicity. This is my expectation, not requirement. Let's review it after
+> implementation.
+
+So an obligation whose guard or trigger reads what a commitment can change never steps aside: it writes the
+candidates its guard gives at root, and the program is flagged as not monotone. **`examples/ein-bugs/wrong-answers/oblig-derived-domain.ein`
+is run again once this is built and shown to the user**, whatever it answers: the user expects it still solvable,
+which is an expectation and no requirement of the build, and is reviewed then. The page of the question is
+[`q-m1f.579_an_obligation_that_steps_aside/`](p1f.21_verdicts_as_rules/q-m1f.579_an_obligation_that_steps_aside/README.md), where
+the stand-in of it answers an empty $R$.
