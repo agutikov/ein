@@ -1,8 +1,22 @@
 # 45 · Q-M1f.567: the `hrule` form dropped for a rule that concludes `(open F)`
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) ·
-[the analysis](../../../open_and_owe.md#4-can-the-hrule-form-go)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) ·
+[the analysis](../open_and_owe.md#4-can-the-hrule-form-go)
+
+**Ruled 2026-11-19, and out of the review bundle**, where it was item 45 of part 2. Your answer, in the part's
+answers' file:
+
+> I already decided that all mechanisms that work with hypotheses - work with facts under (open ...) constext. The
+> hrule form initially was producing hypotheses - now it can do any rule that assert open facts. So there is no
+> more need for :hrules special place - we just activate hypotheses generating rules anywhere. The special form
+> (hrule ...) is not required anymore so we remove it and keyword :hrules.
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-44-45-and-46).
+What it leaves open is review items 48 and 51 ([part 2 of the bundle](../review/part-2/README.md)). The page is kept, with its
+programs, as the survey the second part's stages cite; where it says *not ruled* and *the default*, read it
+as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are on this machine under
+`build/review-archive/p1f21-part-2/45-Q-M1f.567/`, as they were run.
 
 **Raised** by your answer to item 34, 2026-11-19: *"If we will emit (open H) facts as pure hypotheses, and
 obligations would be emitted different way, can we then drop hrules as special form according to
@@ -64,13 +78,13 @@ has a second rule whose premise only a commitment brings: *a drink is chosen: do
 
 $R$ is the same four commitments. As rules, a state above root holds a question that was never proposed: a
 hypothesis that depends on another, which you parked
-([V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)). Under (b) and (c) the
+([V-21](../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)). Under (b) and (c) the
 reading is: **$H$ is root's `open` facts, and an `(open F)` first concluded above root is held and not proposed.**
 
-The other differences ([the analysis](../../../open_and_owe.md#4-can-the-hrule-form-go) has the table): a rule may
+The other differences ([the analysis](../open_and_owe.md#4-can-the-hrule-form-go) has the table): a rule may
 conclude any conjunction, where a hypothesis rule concludes one fact; the ladder's first rung becomes *root holds a
 fact of `open`*; and the obligation's verdict needs another word than `open`, which is item
-[44](../44-Q-M1f.566/README.md).
+[44](../q-m1f.566_how_the_must_is_emitted/README.md).
 
 ## 4. One thing the stand-in met
 
@@ -105,6 +119,6 @@ Under (b) or (c) every program with an `hrule` is written again: 52 files under 
   `zebra2.ein` and `zebra2-asked.ein` with their runs; `pairs.diff.txt`; `above-root.states.txt`.
 - `tools/run.sh`.
 
-## 7. Your call
+## 7. The ruling
 
-(a), (b) or (c), in [`ANSWERS.md`](../ANSWERS.md) under item 45. Blank keeps (b).
+Ruled: the answer at the head of this page.

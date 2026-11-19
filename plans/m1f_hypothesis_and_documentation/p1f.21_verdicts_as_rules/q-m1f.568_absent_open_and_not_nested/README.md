@@ -1,15 +1,28 @@
 # 46 · Q-M1f.568: `absent`, `open` and `not` nested, the four cells that are yours
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) ·
-[the table](../../../absent_open_not.md)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) ·
+[the table](../absent_open_not.md)
+
+**Ruled 2026-11-19, and out of the review bundle**, where it was item 46 of part 2. Your answer, in the part's
+answers' file:
+
+> 4 - yes, 3 - yes, 2,1 and (open (absent P)) - refused at load because both `absent` and `open` are special
+> kernel primitives (what are they now btw?) and their argument must be a fact, (absent P) is not a fact, while
+> (open P) is, because `open` is a special kernel promitive AND a fact.
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-44-45-and-46).
+What it leaves open is review items 49 ([part 2 of the bundle](../review/part-2/README.md)). The page is kept, with its
+programs, as the survey the second part's stages cite; where it says *not ruled* and *the default*, read it
+as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are on this machine under
+`build/review-archive/p1f21-part-2/46-Q-M1f.568/`, as they were run.
 
 **Raised** by your answer to item 32, 2026-11-19: *"We have to analyze and strictly define interaction between
 absent, open and not. … (not (not P)) is simple, (absent (absent P)) probably compilation error, (open (absent P))
 also compilation error. While (absent (open P)) possible. Maybe kernel primitives can't be nested because it's
 argument always a fact?"*
 
-[The table](../../../absent_open_not.md) answers it cell by cell on runs. Two rules that are already Ein's fill
+[The table](../absent_open_not.md) answers it cell by cell on runs. Two rules that are already Ein's fill
 every cell once `(open P)` is a fact: *`absent` is no fact, so it stands under none*, and *a fact's argument is a
 fact a state could hold*. **Four cells they do not decide are here, each with a default.**
 
@@ -40,7 +53,7 @@ say. The second is how the standard library's `forall` is written, and stays und
 | [`2-question-question.ein`](programs/2-question-question.ein) | loads. $H$ is `(question (p A))`, one candidate. The state that supposes it holds `(question (p A))`, and `(p A)` is not proposed |
 
 It is a hypothesis that P may be supposed: a hypothesis that depends on another, which you parked
-([V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)). As a fact it is legal by
+([V-21](../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)). As a fact it is legal by
 the two rules; what it would mean to the search is what is parked.
 
 - **(a)** refused at load, until dependent hypotheses are taken up. **Default.**
@@ -84,9 +97,8 @@ A candidate given by hand, with no rule.
   summary, the answer as files and the knowledge base drawn (`.kb.dot`, `.kb.svg`); `cells.txt`.
 - `tools/run.sh`, `tools/cells.py`.
 - The nine cells of the whole table, each as a premise, a conclusion and a written fact, are run by
-  [`absent_open_not/run.py`](../../../absent_open_not/run.py).
+  [`absent_open_not/run.py`](../absent_open_not/run.py).
 
-## 6. Your call
+## 6. The ruling
 
-In [`ANSWERS.md`](../ANSWERS.md) under item 46: the number of any cell you want otherwise than its default, with
-its letter. Blank keeps the four defaults.
+Ruled: the answer at the head of this page.

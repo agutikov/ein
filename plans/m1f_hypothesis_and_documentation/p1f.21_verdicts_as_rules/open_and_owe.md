@@ -32,7 +32,7 @@
 Two questions come out of it, [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)
 and [Q-M1f.567](../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f), each
 with a default. Each is an item of the review bundle with its options as programs and their runs:
-[44](review/part-2/44-Q-M1f.566/README.md) and [45](review/part-2/45-Q-M1f.567/README.md).
+[44](q-m1f.566_how_the_must_is_emitted/README.md) and [45](q-m1f.567_the_hrule_form_dropped/README.md).
 
 ## 1. What an obligation rule emits today
 

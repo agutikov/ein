@@ -2,7 +2,9 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**not started, and planned again on the answer to
+**not run**: the user's answer to Q-M1f.566, the same day, keeps the obligation and the kernel's count as they are
+(*"Obligations by (open R) and absent facts is already good. Let's leave this machinery."*), so nothing of this
+stage is built. What follows is the plan as it stood: it was planned again on the answer to
 [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)**, which puts its subject anew: the
 user's *must* as a held question, `(owe …)`, beside the hypotheses' `(open H)`. As first planned it was run only on
 a ruling for (c) of

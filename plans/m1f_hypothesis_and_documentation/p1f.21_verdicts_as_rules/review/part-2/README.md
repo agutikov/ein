@@ -2,9 +2,9 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Five questions are open, 47 to 51: the gaps your answers to items 44, 45 and 46 leave**, written here on your
-word (*"write down gaps as questions in …/review/part-2"*, 2026-11-19). Each is a folder with its page, its
-programs and their runs, and each has a default. They wait with their part: nothing of part 1 needs them.
+**Five questions are open, 47 to 51: what your answers to items 44, 45 and 46 leave.** Each is a folder with its
+page, its programs and their runs, each has a default, and each has its section in [`ANSWERS.md`](ANSWERS.md).
+They wait with their part: nothing of part 1 needs them.
 
 ## What is left for you
 
@@ -16,32 +16,34 @@ programs and their runs, and each has a default. They wait with their part: noth
 | [**50**](50-Q-M1f.572/README.md) | Q-M1f.572 | whether a state's `open` facts are listed, counted and compared with its facts | held and shown apart: a state's listing, counts and identity are of its other facts |
 | [**51**](51-Q-M1f.573/README.md) | Q-M1f.573 | `(open ?v)` with a variable, obligation or hypothesis; a hypothesis root has already decided; $H$ is root's | decided at load by what the variable is; a decided one is no candidate, as today; $H$ is root's |
 
-**Where to answer.** [`ANSWERS.md`](ANSWERS.md) is yours and holds your answers to 44, 45 and 46: I have added
-nothing to it. Write under a heading of the item's number there, or tell me. An item left unanswered keeps its
-defaults.
+Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its defaults.
 
-## Answered, and not filed yet
+## What follows from your answers without a question
 
-Items [44](44-Q-M1f.566/README.md), [45](45-Q-M1f.567/README.md) and [46](46-Q-M1f.568/README.md) are answered in
-your file. They are not filed as rulings yet, and their folders stay until they are: say *process* and I file them
-in your words, with the stages planned on them.
-
-| item | your answer, in short | what it leaves, here |
-|---|---|---|
-| 44 | obligations stay as they are, `(open R)` with its `absent`; `(open R)` is held as a fact and counted as before; `(open F)` over a fact is a hypothesis, the obligations' candidates among them; the bare `(open)` is refused; a fork drops every `open` fact | 47, 48, 50, 51 |
-| 45 | the `hrule` form and the keyword `:hrules` go; a rule that concludes `(open F)` is activated by a fact the program writes anywhere | 48, 51 |
-| 46 | cells 3 and 4 legal; `(absent (absent P))`, `(open (open P))` and `(open (absent P))` refused at load | 49 |
-
-**What follows from them without a question**, for the stage that builds them:
+For the stage that builds them:
 
 - **S1f.21.16 is not started**, on your word: *"not start S1f.21.16, will drop it after :hrules removed"*. It
-  would spell the `:hrules` clause again, which item 45 removes.
+  would spell the `:hrules` clause again, which your answer to item 45 removes.
 - **The bare `(open)`** is written by one corpus program that loads,
   `tests/stdlib/bijection/06_blind_enumeration.ein`, which uses it to make the obligations rung decline: it needs
   another way to do that. A named `(open R)` is already refused without an `absent` that holds its witness, so
-  after it every obligation asks a question ([item 44](44-Q-M1f.566/README.md), § 5, fifth point).
-- **S1f.21.9**, the requirement and the payment as the kernel's facts, is not run: item 44's answer keeps today's
-  count. `std.debts` stays a module a program imports.
+  after it every obligation asks a question
+  ([the page of item 44](../../q-m1f.566_how_the_must_is_emitted/README.md), § 5, fifth point).
+- **S1f.21.9**, the requirement and the payment as the kernel's facts, is not run: your answer to item 44 keeps
+  today's count. `std.debts` stays a module a program imports.
+
+## Ruled, and out of the bundle
+
+Each answer is in your words in [the phase's README](../../README.md) and under its question in the ledger.
+
+| item | question | ruled | where its page is now |
+|---|---|---|---|
+| 32 | Q-M1f.390 | an obligation emits `(open H)`, no justification in it; `absent` reads it as any fact | [`q-m1f.390_what_an_obligation_emits/`](../../q-m1f.390_what_an_obligation_emits/README.md) |
+| 34 | Q-M1f.549 | `(open …)` is the context for hypotheses, *may*; an obligation is *must* | [`q-m1f.549_hypotheses_as_facts/`](../../q-m1f.549_hypotheses_as_facts/README.md) |
+| 39 | Q-M1f.560 | (b): `std.debts` is merged. **Done**: `edbe6c3b` | in `git log` |
+| 44 | Q-M1f.566 | the obligation stays as it is, `(open R)` with its `absent`; `(open R)` is held as a fact and counted as before; `(open F)` over a fact is a hypothesis, the obligations' candidates among them; the bare `(open)` is refused; a fork drops every `open` fact | [`q-m1f.566_how_the_must_is_emitted/`](../../q-m1f.566_how_the_must_is_emitted/README.md), with the corpus's obligation rules |
+| 45 | Q-M1f.567 | the `hrule` form and the keyword `:hrules` go; a rule that concludes `(open F)` is activated by a fact the program writes anywhere | [`q-m1f.567_the_hrule_form_dropped/`](../../q-m1f.567_the_hrule_form_dropped/README.md) |
+| 46 | Q-M1f.568 | a written `(open P)`, `(not (open P))` and `(open (not P))` legal; `(absent (absent P))`, `(open (open P))` and `(open (absent P))` refused at load | [`q-m1f.568_absent_open_and_not_nested/`](../../q-m1f.568_absent_open_and_not_nested/README.md) |
 
 ## What to read beside them
 
@@ -49,14 +51,6 @@ in your words, with the stages planned on them.
 |---|---|
 | [`absent_open_not.md`](../../absent_open_not.md) | the table of `absent`, `open` and `not`, each inside each, as today's binary reads it |
 | [`open_and_owe.md`](../../open_and_owe.md) | your four questions of item 34, answered |
-
-## Ruled earlier, and out of the bundle
-
-| item | question | ruled | where it is now |
-|---|---|---|---|
-| 32 | Q-M1f.390 | an obligation emits `(open H)`, no justification in it; `absent` reads it as any fact | [`q-m1f.390_what_an_obligation_emits/`](../../q-m1f.390_what_an_obligation_emits/README.md) |
-| 34 | Q-M1f.549 | `(open …)` is the context for hypotheses, *may*; an obligation is *must* | [`q-m1f.549_hypotheses_as_facts/`](../../q-m1f.549_hypotheses_as_facts/README.md) |
-| 39 | Q-M1f.560 | (b): `std.debts` is merged. **Done**: `edbe6c3b` | in `git log` |
 
 **The binary.** Every item runs on `build/review-bin/ein-head-edbe6c3b`, the gate build of master at `edbe6c3b`,
 with the checkout's `stdlib/`; each item's `tools/run.sh` re-takes its `runs/`.

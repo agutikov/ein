@@ -2,7 +2,11 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**not started**.
+**not started**. **The three questions it waited on are ruled** ([the answers](README.md#the-answers-to-items-44-45-and-46)):
+the obligation stays as it is and `(open R)` is held as a fact; `(open F)` over a fact is a hypothesis any rule may
+conclude; the `hrule` form and the keyword `:hrules` go; the bare `(open)` is refused; a fork drops every `open`
+fact. **It is planned again on the answers to the five they leave**, Q-M1f.569 to Q-M1f.573 (review items 47 to
+51): what follows is the plan as it stood before the rulings.
 **Group:** [H](modifications.md#h-open-facts), items 30 to 35.
 **Waits on:** the first part of the phase, which runs before it; and the three questions the user's answers to
 part 2's items left, each with a default: [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)

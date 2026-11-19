@@ -29,7 +29,7 @@ into `runs/` (both ignored, so on this machine only).
 | `ein saturate --dump` | 180 | the four facts, the rule that concludes them, the counts |
 | `--dump-answer` | 428 | every state's file and the counts in `answer.json` |
 
-In *zebra2* written the same way it is 125 facts in each state ([item 45](../45-Q-M1f.567/README.md)).
+In *zebra2* written the same way it is 125 facts in each state ([item 45](../../../q-m1f.567_the_hrule_form_dropped/README.md)).
 
 Here the facts are root's, the same in every state. Made again at each state's fixpoint, as you ruled, they are
 another set in each state, where an obligation makes them: a candidate that would pay a debt already paid is not

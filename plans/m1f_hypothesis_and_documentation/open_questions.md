@@ -489,14 +489,14 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **ruled 2026-11-19 by the user, against both options**: nothing is refused; such a program loads, with a warning, and nothing is guaranteed of its output ([Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes)). The coordinator's proposal (b), to let *forbid* read the contradiction's rules, is withdrawn |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **ruled 2026-11-19 by the user**, in P1f.21's answers: *"forbid becomes a warning, fix :hrulse activators syntax"*. The `:hrules` clause lists activators whole (Q-M1f.565), which frees the four programs; and, read as option (d), what the loader refuses for what a rule *could* derive becomes a warning. The elimination stays a module a program imports. P1f.21's S1f.21.16 builds the syntax and S1f.21.17 the warning |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **ruled 2026-11-19 by the user: (b)**, merged now; **merged the same day, `edbe6c3b`** |
-| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
+| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* **Revised the same day by the user's answer to Q-M1f.567**: the `hrule` form and `:hrules` go |
 | [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41). **Stands 2026-11-19**: the user's answer to item 41 speaks of `std.core` alone and leaves these as built |
 | [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **ruled 2026-11-19 by the user**, in P1f.21's answers: an import of `std.core` works as a duplicated import, and is not refused; `$EIN_STDLIB` may replace `std.core`, and a library there without one is an error that says `std.core` was not found in it; no backward compatibility is kept, a saved file or a container that does not load is deleted and made again. P1f.21's S1f.21.17 builds the two that change |
 | [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, twice: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* and then *"Ok, I cancel those my listed decisions regarding absent -> false.  We allow to load non-monotone programs, but we don't claim about solution. That means - no tests validate the result of the solution of non-monotone programs. Remove this *forbid* from the code and docs completely."* The user's rulings of 2026-11-02 and 2026-11-04 behind Q-M1e2.5 are cancelled; every program loads, a flagged one under a loud warning, nothing claimed and nothing tested of its answer. P1f.21's S1f.21.15, started the same day |
-| [Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) | The `:hrules` clause lists activators as a rule's are written | **ruled 2026-11-19 by the user**: `(solve :hrules ((guess chosen Drink) (guess served Drink)))`, each activator a form headed by its hrule, where today the clause is `(guess (chosen Drink) guess (served Drink))`. P1f.21's S1f.21.16, planned, not started |
-| [Q-M1f.566](#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) | How a requirement is emitted: the *must* beside `open` | **open, a default proposed**: put 2026-11-19 on the user's answer to P1f.21's item 34 (*"Maybe something like (owe (?R ?a ?_x)) … the emitted thing is actually a query"*). A requirement held as a fact, `(owe …)`, *discharged* read at the fixpoint. Default (b): the question written with the hole's domain in its place, `(owe seats Ann Chair)` |
-| [Q-M1f.567](#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) | The `hrule` form dropped for a rule that concludes `(open F)` | **open, a default proposed**: put 2026-11-19 on the user's question in the same answer. It can: two programs answer byte for byte the same that way today. Default (b): the form goes, its activators stay in `(solve :hrules …)`; it revises Q-M1f.561's *as is* |
-| [Q-M1f.568](#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) | `absent`, `open` and `not` nested: the cells that are the user's | **open, defaults proposed**: put 2026-11-19 with the table the user asked for. The direct `(absent (absent P))` refused; `(open (open P))` refused until dependent hypotheses are taken up; `(not (open P))`, `(open (not P))` and a written `(open P)` legal |
+| [Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) | The `:hrules` clause lists activators as a rule's are written | **ruled 2026-11-19 by the user**: `(solve :hrules ((guess chosen Drink) (guess served Drink)))`, each activator a form headed by its hrule, where today the clause is `(guess (chosen Drink) guess (served Drink))`. P1f.21's S1f.21.16, planned, not started **Its subject goes**: the user's answer to Q-M1f.567 removes the keyword `:hrules`, and S1f.21.16 is not started |
+| [Q-M1f.566](#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) | How a requirement is emitted: the *must* beside `open` | **ruled 2026-11-19 by the user**: obligations stay as they are, a rule with its `absent` that concludes `(open R)`; `(open R)` is held as a fact, once, and counted by the kernel as before; `(open F)` over a fact is a hypothesis, the obligations' candidates among them; the bare `(open)` is refused at load; a fork drops every `open` fact; under another relation `open` and `absent` are plain facts. It leaves Q-M1f.569, .570, .572 and .573 |
+| [Q-M1f.567](#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) | The `hrule` form dropped for a rule that concludes `(open F)` | **ruled 2026-11-19 by the user**: the `hrule` form and the keyword `:hrules` go; a rule that concludes `(open F)` is activated by a fact the program writes anywhere. It revises Q-M1f.561's *as is* and takes Q-M1f.565's subject away. It leaves Q-M1f.570 and .573 |
+| [Q-M1f.568](#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) | `absent`, `open` and `not` nested: the cells that are the user's | **ruled 2026-11-19 by the user**: `(not (open P))`, `(open (not P))` and a written `(open P)` legal; `(absent (absent P))`, `(open (open P))` and `(open (absent P))` refused at load. The reason given leaves Q-M1f.571 |
 | [Q-M1f.569](#q-m1f569--what-may-read-an-open-fact-and-when) | What may read an `open` fact, and when | **open, defaults proposed**: put 2026-11-19 on the user's answer to P1f.21's item 44 (*"fork removes all open facts from KB"*). A fork keeps what a rule concluded from a dropped fact. Default: a rule may read them, they are written by a pass at each state's fixpoint, and a program whose rule reads `(open R)` or an obligation's candidate is flagged as not monotone; a written `(open P)` is there in every state |
 | [Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union) | A rule that concludes `(open F)` beside an obligation: override or union | **open, a default proposed**: put 2026-11-19 on the user's answers to items 44 and 45. Default (a): override, as a hypothesis rule does today; no answer moves |
 | [Q-M1f.571](#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) | What `absent` and `open` take, and what each is under an ordinary relation | **open, defaults proposed**: put 2026-11-19 on the user's answers to items 44 and 46, whose reason and whose verdicts differ in three cells. Default: `absent` takes a premise and the universal stays; `(open (open P))` refused; under an ordinary relation both are ordinary names |
@@ -10797,7 +10797,7 @@ control the hypotheses stays).
 *"How we can count the exact obligations and how we can define and emit them? Maybe in form of questions? How to
 define them? Maybe something like (owe (?R ?a ?_x)) where ?R and ?a binded and ?_x not - so the emitted thing is
 actually a query."* The analysis and its runs are [`open_and_owe.md` § 2](p1f.21_verdicts_as_rules/open_and_owe.md#2-how-a-requirement-is-counted-and-how-it-could-be-emitted);
-the options as programs, [review item 44](p1f.21_verdicts_as_rules/review/part-2/44-Q-M1f.566/README.md).
+the options as programs, [review item 44](p1f.21_verdicts_as_rules/q-m1f.566_how_the_must_is_emitted/README.md).
 
 What the runs give: *required* only grows, so a requirement can be a held fact and be counted as facts; *still owed*
 shrinks, so it is read at the fixpoint and never stored (stored, it is stale in 15 of the seats lattice's 16 nodes).
@@ -10813,9 +10813,39 @@ The user's form is refused today, a fact holding no variable.
 - **(d)** held, **a hole in the fact**, the user's form: `(owe (seats Ann ?_x))`. A third kind of node beside the
   atom and the fact, and a held fact read as a pattern, which is rules as data, a later milestone's.
 
-**Default proposed: (b)**, the form nearest the user's that needs nothing new in the language. **Open.** It is
+**Default proposed: (b)**, the form nearest the user's that needs nothing new in the language. **Ruled 2026-11-19, below.** It is
 P1f.21's second part's, and S1f.21.9, which was planned for the requirement and the payment as the kernel's facts,
 is planned again on the answer.
+
+**Ruled 2026-11-19 by the user.** In P1f.21's answers' file of part 2, item 44, verbatim:
+
+> Obligations by (open R) and absent facts is already good. Let's leave this machinery. (open R) is obligation and
+> (open (fact)) is an explicit hypothesis. Also leaving hypotheses auto-generation from absent facts in match that
+> are built on relation R from (open R). All hypotheses generated by obligation rules also go into (open ...)
+> context. Here for obligations everythin remain as is. We only add possibility to emit hypotheses explicitely.
+> (open R) also saved as fact. Not duplicate (open R) because they are ordinary facts, but kernel still counts
+> number of (open R) assertions as before. (open) is refused at load. Now let's decide what to do with open
+> context when fork. One option is to erase it and re-generate after fixed point. Another options is that kernel
+> will delete facts from it when they proved or refuted, but refutation now is already an stdlib convention - (not
+> ...) context, so it has to be done by rules, so it will be rules that delete facts, but I'm not ready to refuse
+> the only stable thing in the whole project - that we don't have rules that delete facts. So lit's pick option
+> when fork removes all open facts from KB. Under contexts, like (think Ann (open (= 5 (+ 2 2)))) it is a simple
+> fact, special form works only in global context. The same with `absent` - it is allowed but doesn't work in
+> context it became simple fact.
+
+Read as: (a) of the options, and more. The obligation stays the rule it is, a trigger and an `absent` over its
+witness, concluding `(open R)`; the candidates read off its `absent` stay, and are written as `(open F)` facts;
+`(open R)` is one held fact while the kernel counts instances as today; a rule may conclude `(open F)` of its own;
+the bare `(open)` is refused at load; a fork drops every `open` fact and they are made again at the fixpoint; under
+another relation `open` and `absent` are plain facts. S1f.21.9 is not run. The page of the question, with the
+corpus's obligation rules, is [`q-m1f.566_how_the_must_is_emitted/`](p1f.21_verdicts_as_rules/q-m1f.566_how_the_must_is_emitted/README.md).
+
+**What it leaves**, each put with a default: [Q-M1f.569](#q-m1f569--what-may-read-an-open-fact-and-when),
+[Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union),
+[Q-M1f.572](#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) and
+[Q-M1f.573](#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates); and what it
+says of `absent` under another relation is part of
+[Q-M1f.571](#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation).
 
 ### Q-M1f.567 — The `hrule` form dropped for a rule that concludes `(open F)`
 
@@ -10823,7 +10853,7 @@ is planned again on the answer.
 obligations would be emitted different way, can we then drop hrules as special form according to
 …/one_way_each.md and use rules that emit open facts in :hrules?"* The analysis is
 [`open_and_owe.md` § 4](p1f.21_verdicts_as_rules/open_and_owe.md#4-can-the-hrule-form-go); the options as programs,
-[review item 45](p1f.21_verdicts_as_rules/review/part-2/45-Q-M1f.567/README.md).
+[review item 45](p1f.21_verdicts_as_rules/q-m1f.567_the_hrule_form_dropped/README.md).
 
 It can. A hypothesis rule is a rule whose conclusion stands under `open`, read at root, and two programs written
 that way with another word for `open` answer byte for byte the same today. It is not what
@@ -10839,8 +10869,26 @@ that way with another word for `open` answer byte for byte the same today. It is
 
 With (b) or (c): $H$ stays root's `open` facts, and an `(open F)` first concluded above root is not proposed,
 dependent hypotheses being parked (P1f.21's V-21); a rule may conclude several `(open F)`; the ladder's first rung
-is *root holds a fact of `open`*. **Default proposed: (b).** **Open.** P1f.21's S1f.21.12 is planned again on the
+is *root holds a fact of `open`*. **Default proposed: (b).** **Ruled 2026-11-19, below.** P1f.21's S1f.21.12 is planned again on the
 answer.
+
+**Ruled 2026-11-19 by the user: the form goes, and the keyword with it.** In P1f.21's answers' file of part 2,
+item 45, verbatim:
+
+> I already decided that all mechanisms that work with hypotheses - work with facts under (open ...) constext. The
+> hrule form initially was producing hypotheses - now it can do any rule that assert open facts. So there is no
+> more need for :hrules special place - we just activate hypotheses generating rules anywhere. The special form
+> (hrule ...) is not required anymore so we remove it and keyword :hrules.
+
+And the same day, of *"anywhere"*: *"by "Activate anywhere" I meant in program, not necessary in :hrules list"*. So (c) of the options: an activator is a fact the program
+writes. It revises the user's ruling of [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed),
+*"we leave all existing options to control hypotheses as is"*, by the user's own word, and takes the subject of
+[Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) away: S1f.21.16 is not started
+(the user: *"not start S1f.21.16, will drop it after :hrules removed"*). The page of the question is
+[`q-m1f.567_the_hrule_form_dropped/`](p1f.21_verdicts_as_rules/q-m1f.567_the_hrule_form_dropped/README.md).
+
+**What it leaves**: [Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union)
+and [Q-M1f.573](#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates).
 
 ### Q-M1f.568 — `absent`, `open` and `not` nested: the cells that are the user's
 
@@ -10848,7 +10896,7 @@ answer.
 ([`absent_open_not.md`](p1f.21_verdicts_as_rules/absent_open_not.md), under [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)).
 Two rules Ein already has give every cell but these, once `(open P)` is a fact: `absent` is no fact and stands
 under none; a fact's argument is a fact a state could hold. Each cell on programs:
-[review item 46](p1f.21_verdicts_as_rules/review/part-2/46-Q-M1f.568/README.md).
+[review item 46](p1f.21_verdicts_as_rules/q-m1f.568_absent_open_and_not_nested/README.md).
 
 1. **`(absent (absent P))` written directly**: (a) refused at the parse, the form with a conjunction between kept,
    being the universal; (b) left, meaning *P is held*. The user: *"probably compilation error"*. **Default (a).**
@@ -10858,12 +10906,27 @@ under none; a fact's argument is a fact a state could hold. Each cell on program
    read.
 4. **`(open P)` as a fact a program writes**: **default: legal**, a candidate given by hand.
 
-**Open.** P1f.21's second part's, with S1f.21.12.
+**Ruled 2026-11-19, below.** P1f.21's second part's, with S1f.21.12.
+
+**Ruled 2026-11-19 by the user.** In P1f.21's answers' file of part 2, item 46, verbatim:
+
+> 4 - yes, 3 - yes, 2,1 and (open (absent P)) - refused at load because both `absent` and `open` are special
+> kernel primitives (what are they now btw?) and their argument must be a fact, (absent P) is not a fact, while
+> (open P) is, because `open` is a special kernel promitive AND a fact.
+
+So: cell 4, a written `(open P)`, legal; cell 3, `(not (open P))` and `(open (not P))`, legal; cells 1 and 2,
+`(absent (absent P))` and `(open (open P))`, refused at load, and `(open (absent P))` with them. *What are they
+now* is answered on [the page of Q-M1f.571](p1f.21_verdicts_as_rules/review/part-2/49-Q-M1f.571/README.md). The page of the
+question is [`q-m1f.568_absent_open_and_not_nested/`](p1f.21_verdicts_as_rules/q-m1f.568_absent_open_and_not_nested/README.md).
+
+**What it leaves**: the reason given, *their argument must be a fact*, gives three other results than the verdicts
+(it refuses every obligation's `(absent (and …))` and does not refuse `(open (open P))`), so the rule is put as
+[Q-M1f.571](#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation).
 
 ### Q-M1f.569 — What may read an `open` fact, and when
 
-**Raised** 2026-11-19 by the coordinator, on the user's answer to P1f.21's review item 44 (in the part's answers'
-file, not filed as a ruling yet): *"So lit's pick option when fork removes all open facts from KB."*; and of item
+**Raised** 2026-11-19 by the coordinator, on the user's answer to P1f.21's review item 44
+([Q-M1f.566](#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)): *"So lit's pick option when fork removes all open facts from KB."*; and of item
 32, ruled: *"btw, absent see it the same way as other facts."* A fork starts from root's fixpoint, so dropping the
 `open` facts there leaves what a rule concluded from them. Shown on runs in
 [review item 47](p1f.21_verdicts_as_rules/review/part-2/47-Q-M1f.569/README.md): with `(unfinished seats)` standing for `(open seats)` and a rule

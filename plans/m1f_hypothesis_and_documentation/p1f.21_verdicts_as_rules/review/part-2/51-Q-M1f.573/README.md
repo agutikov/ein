@@ -44,7 +44,7 @@ step takes `(open F)` out when F is decided, which is your answer on deleting.
 ## 3. To confirm: $H$ is root's
 
 An `(open F)` first concluded above root is held there and is not proposed
-([item 45](../45-Q-M1f.567/README.md), § 3; [V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root),
+([item 45](../../../q-m1f.567_the_hrule_form_dropped/README.md), § 3; [V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root),
 which you parked). **Default: so.**
 
 ## 4. Filed as you clarified it: where a rule is activated
