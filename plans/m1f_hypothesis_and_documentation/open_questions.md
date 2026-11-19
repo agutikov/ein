@@ -10436,7 +10436,12 @@ corpus programs, which import nothing. In a module every program gets it would r
 - **(a)** the elimination stays a module a program imports, `std.negation`, and what every program gets of `not`
   is the contradiction alone. **Proposed default**: no program changes.
 - **(b)** the load check reads what an activator can name, and no longer refuses these.
-- **(c)** the `:hrules` list is read as a list (P1f.21's finding V-13), which frees these four.
+- **(c)** the `:hrules` list is read as a list (P1f.21's finding V-13), which frees these four;
+- **(d)** added 2026-11-19, when the user asked why the program is refused: nothing is refused at load for what a
+  rule *could* derive, which is [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) ruled the
+  other way; a run that does derive such an activator stops there or warns. The review item has where each step
+  of the refusal was decided: that it is at load, by the user (2026-11-08, *"Q1 - b"*, against the agent's (a));
+  how coarse *could* is, by two defaults of 2026-11-09 (Q-M1f.41, Q-M1f.42 (a) and not its precise (c)).
 
 **What waits on it.** What S1f.21.11 adds to `std.core`.
 
