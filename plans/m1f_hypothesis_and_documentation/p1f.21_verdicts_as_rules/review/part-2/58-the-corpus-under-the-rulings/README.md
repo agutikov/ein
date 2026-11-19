@@ -12,7 +12,7 @@ that are refused today would load**:
 
 - **5 by the union** (Q-M1f.570): `zebra.ein`, `13_witness_of_two.ein`, `14_seats_nothing_proposes.ein`,
   `08_absent_witness_hole.ein`, `06_friends_tables_everyone_sits.ein` gain candidates; the first four answer
-  otherwise, and the claims of `13_witness_of_two.ein` and `14_seats_nothing_proposes.ein` fail.
+  otherwise (`zebra.ein` by its count of commitments, its one state the same), and the claims of `13_witness_of_two.ein` and `14_seats_nothing_proposes.ein` fail.
 - **8 by an obligation that no longer steps aside** (Q-M1f.579): the eight `oblig-*.ein` witnesses. **6 become
   flagged**, and every one of the six is read by a suite today: three by a `test` run, three by a regression row.
 - **1 becomes an error under the lists** (Q-M1f.578): `13_mixed_solution_and_open.ein`, which has a `test` run.
@@ -77,8 +77,8 @@ import's `:symbols` and is then on the obligations rung with A's two candidates.
 | [`08_absent_witness_hole.ein`](../../../../../../examples/lattice/08_absent_witness_hole.ein) | 3 → 4 | 5 → 11 | 5 → 13 | **flagged** → **flagged** | none stated | `(meal Ann Soup)`, supposed outright |
 | [`06_friends_tables_everyone_sits.ein`](../../../../../../examples/lattice/06_friends_tables_everyone_sits.ein) | 19 → 25 | 8 → 8 | 8 → 8 | no → no | none stated | six seats the rule excludes; R is the same |
 
-The union flags none of them: U's static check has the same D as A's, and no new site reads it. `13_witness_of_two`
-and `14_seats_nothing_proposes` have a `solve` run that checks their `(solve :expect)`, so the build restates each
+The union flags none that is not flagged today: U's static check has the same D as A's, and no new site reads
+it. `13_witness_of_two` and `14_seats_nothing_proposes` have a `solve` run that checks their `(solve :expect)`, so the build restates each
 claim as the union's R, or the program says what it means another way (a rule that denies what the guard
 excluded). [The page of Q-M1f.570](../../../q-m1f.570_override_or_union/README.md) has three of them three ways.
 
@@ -159,9 +159,10 @@ question below.
 
 What each answers with `opn` written for `open` is in `runs/census.md`: 19 of the 20 answer on the stand-in, 2 to
 32 states each, none flagged there (`open-derived-activator`'s flag is one the stand-in cannot show); the two whose
-claim names `open` print a refuted claim, exit 1. `open-goal-pattern-head`'s stand-in is refused because its goal
-names `opn`, which the program never writes, which says nothing of `open`. Every one of the 20 is held refused by a regression row today,
-so the build rewrites or removes those rows, and their corpus notes, with the decisions Q-M1f.66 and Q-M1f.86.
+claim names `open` print a refuted claim, exit 1. `open-goal-pattern-head`'s stand-in is refused: its goal names
+`opn`, a relation the program never writes, and that says nothing of `open`. Every one of the 20 is held refused by
+a regression row today, so the build rewrites or removes those rows, and their corpus notes, with the decisions
+Q-M1f.66 and Q-M1f.86.
 
 ## 8. What a suite reads that moves
 
@@ -207,8 +208,8 @@ so the build rewrites or removes those rows, and their corpus notes, with the de
 
 **Q-M1f.596, put here: where `open` may be written once it is the kernel's relation.** The rulings make `open` a
 relation the kernel reads at the head of a written fact, a conclusion and a pattern, and an ordinary name under an
-ordinary relation. They do not say what it is in five other places: a name `eq` compares, the `:rule` clause of a
-fact, a trace step's rule, a macro's body that writes `(open ?R)` (Q-M1f.86 refuses it today), and, refused under
+ordinary relation. They do not say what it is in four other places: a name `eq` compares, the `:rule` clause of a
+fact, a trace step's rule, a macro's body that writes `(open ?R)` (Q-M1f.86 refuses it today); nor, refused under
 both options, a macro named `open`, an import that lists it, a written `(open x)` with `x` no fact, an obligation
 made to owe `open`, and a `(solve …)` list that names it.
 
@@ -216,7 +217,8 @@ made to owe `open`, and a `(solve …)` list that names it.
   (Q-M1f.67). It stays refused where a program would declare it or make it more than the kernel's: a macro or an
   import's symbol named `open`, `(open x)` written with `x` no fact, an obligation that owes `open`, a list that
   names it. 20 witnesses load. **Default.**
-- **(b)** Q-M1f.66 and Q-M1f.86 stand wherever the rulings do not reach: the five places stay refused. 15 load.
+- **(b)** Q-M1f.66 and Q-M1f.86 stand wherever the rulings do not reach: the four places stay refused, and their 5
+  witnesses with them. 15 load.
 
 **Q-M1f.599, put here: the blind enumerator beside a rule that concludes nothing at root.** Ruled: it writes only
 where no rule concludes `(open F)` at root and no obligation is activated. Today a declared `(hrule …)` keeps it off

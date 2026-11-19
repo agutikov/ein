@@ -122,7 +122,9 @@ no stdlib, no corpus file and no page of `docs/`. Its items are 58 to 65 of [par
 each a page and its programs; every run is the gate build of the engine at `669d7d43`'s branch point
 (`build/review-bin/ein-head-edbe6c3b`) with the checkout's `stdlib/`, on the corpus at `669d7d43`, which the two
 builds beside it do not touch here. Each item's `tools/run.sh` re-takes its `runs/`; both are ignored by git and
-mirrored under `build/review-incoming/p1f21-s12-examples/`.
+mirrored under `build/review-incoming/p1f21-s12-examples/`. Each `run.sh` was run once more from clean on the last
+commit, and every number on a page is in its `runs/`. Commits: `f529cde2` (the items, the index, the answers' file,
+this record), and the one after it (item 58's wording).
 
 | task 1 | item | what it found |
 |---|---|---|
