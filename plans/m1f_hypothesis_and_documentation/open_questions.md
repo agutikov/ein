@@ -485,7 +485,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open |
 | [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
 | [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
-| [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled, no default**: put 2026-11-19 (P1f.21's review item 35); with the kernel's check gone, a relation no file declares and one of seven arguments or more has no contradiction; four ways, one of which undoes part of the ruling on `not`; S1f.21.11's task 2.1 waits on it |
+| [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled**: put 2026-11-19 (P1f.21's review item 35), five ways. The user's remark of the same day reads it as no gap but a feature: the contradiction is the standard library's, on by import for declared relations; **proposed since: (d)**. S1f.21.11's task 2.1 waits on it |
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
@@ -10364,6 +10364,16 @@ alone, and alive without it.
   relation is named by a name or by a parameter its activator binds*; it asks the loader to admit a relation
   variable that another premise of the match binds, which is the walk the kernel's own check makes. Every relation
   is reached, declared or not, at every count the rules are written for. **Proposed** once it was asked.
+
+**The user, the same day**, verbatim: *"Mybe this is not a bug... Maybe it's a feature of stdlib. e.g. negation elimination and contradiction introduction works only if we import std.contradiction and only for declared relations. Again return to the nature of Ein - it is a graph. Do graphs have true or false nodes? or do they have positive or negative? No, here we can separate kernel engine machinery from semantic."*
+Read: (d), and no gap. The contradiction is `std.contradiction`'s, on by import for the relations a program
+declares; a program that does not take it may hold a fact beside its negation; `std.core` stays one rule; nothing
+is added to the language. **Not filed as a ruling; the proposal is changed to (d) by it.** On the corpus as it is,
+three modules of the standard library conclude a stored negation and would import the module, and 65 files write
+a negation and import nothing from the library. Three other readers of `not` in the kernel, the candidate root
+denies, licence L8, and the readers of what leads to a death, are sound only where the contradiction is on, and
+S1f.21.11's examples show what each becomes
+([review item 35](p1f.21_verdicts_as_rules/review/part-1/35-Q-M1f.557/README.md)).
 
 **What waits on it.** S1f.21.11's task 2.1, the contradiction as the module's rules. How many corpus programs (d)
 would move is counted by that stage's first task, with a build that has the check off.

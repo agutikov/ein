@@ -16,11 +16,14 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(a)** an activator for every head a program writes, at every count, made at load.
 - **(b)** one rule for every fact: a premise that is a variable for a whole fact (Q-M1f.393 refuses it today).
 - **(c)** the kernel keeps its check, as its way of running the module's rule; it goes on reading `not`.
-- **(d)** a relation is checked where a program asks: what is declared, or activated by hand.
+- **(d)** a relation is checked where a program asks: what is declared, or activated by hand. **Proposed**, since
+  your remark that it may be a feature of the standard library and no gap: the contradiction works where
+  `std.contradiction` is imported, for declared relations; `std.core` stays one rule; nothing is added to the
+  language. 65 corpus files write a negation and import nothing from the library: those may move.
 - **(e)** your rule: one rule a count with the relation a variable of the pattern, `(and (?R ?a) (not (?R ?a)))`,
   no activator; the loader refuses it today, and would admit a relation variable another premise of the match
-  binds. **Proposed**, since you asked why not: the item's page answers it.
-- No default stood when the item was put; S1f.21.11's examples count what (d) moves on the corpus.
+  binds. Not needed under (d).
+- With (d), one thing more: is the import the switch, or the fact `(clash-of-declared)` beside it, as built?
 
 **Your answer:** 
 

@@ -149,6 +149,54 @@ declares. So a quantifier over declarations, were it allowed, would reach exactl
 more. Only a relation read off the denied fact itself, option (e), reaches every relation, since every stored
 negation carries the relation of what it denies.
 
+## Or it is no gap: the contradiction as the standard library's feature
+
+Your remark, 2026-11-19, verbatim: *"Mybe this is not a bug... Maybe it's a feature of stdlib. e.g. negation elimination and contradiction introduction works only if we import std.contradiction and only for declared relations. Again return to the nature of Ein - it is a graph. Do graphs have true or false nodes? or do they have positive or negative? No, here we can separate kernel engine machinery from semantic."*
+
+**It holds together, and it is option (d) said as what it is.** A knowledge base is a graph: `(not F)` is a fact
+that points at `F`, as `(think Ann F)` is. Nothing in a graph is true, false, positive or negative; that a fact and
+its negation may not stand together is a statement of a logic, and a logic is a theory a program takes. The kernel
+then knows two things only: a rule may state `:ein inconsistent`, and what a rule matches. The page on contexts
+already drew the table this gives ([`open_facts.md` § 10.6](../../../open_facts.md#106-not-as-a-context)): of one
+fact, *asserted*, *negated*, *open* or *contradicted*, the fourth a state a program may live in if it does not take
+the classical theory.
+
+**What it comes to, concretely.**
+
+- **The contradiction is `std.contradiction`'s**, on for the relations a program declares, by a rule that derives
+  each relation's activator from its declaration, which is how the module is built today (`clash-of-N`). A relation
+  no file declares has none, and a program that wants one writes its activator. The elimination of a double
+  negation is `std.negation`'s, imported the same way
+  ([item 38](../38-Q-M1f.559/README.md), its default).
+- **`std.core` stays one rule**, from `(false)` to the key. No rule of `not` is every program's.
+- **Nothing is added to the language**: no relation variable, no activator made at load. Option (e) is not needed.
+- **A program that does not import the module may hold a fact beside its negation and be alive.**
+
+**What it costs, counted on the corpus as it is** (`grep` over `examples/` and `tests/`, 893 files, at `946ee788`):
+
+- three modules of the standard library conclude a stored negation, `std.algebra` (3 rules), `std.bijection` (2)
+  and `std.slots` (9); each would import `std.contradiction`, and a program that imports one of them, 107 files,
+  gets it with them, an import bringing its module whole;
+- 123 files write a `(not (…))` themselves, and **65 of them import nothing from the standard library**: those are
+  the programs whose answer can move, each needing the import, or the activator where its relation is not declared.
+
+How many do move is not counted by a `grep`: it needs a build with the kernel's check off, which is S1f.21.11's
+first task.
+
+**Three readers of `not` that are not the death, and what each becomes.** The kernel reads a stored negation for
+more than killing, and each of these is sound only where the contradiction is on:
+
+- **a candidate root denies is no candidate.** Without the kernel's check, committing such a candidate gives a state
+  that holds both, alive unless the rule is on for its relation. So the filter either goes, and $H$ grows by what
+  root denies, or stays for the relations the rule is on for;
+- **what a state denies is dead above it** (licence L8): the same;
+- **the agenda's first half, *forbid* and the static check** read the rules that lead to a death: with the
+  contradiction a rule, they read it as any rule ([item 37](../37-Q-M1f.558/README.md)).
+
+**One thing to say with it**: whether importing the module is the switch, or the fact `(clash-of-declared)` beside
+the import, as built. Under *works only if we import*, the import is the switch and the fact goes; an import is
+whole, so a program that imports a module that imports it has it on too.
+
 ## The options
 
 - **(a) An activator for every head, made at load.** The loader knows every atom a program writes first in a
@@ -170,8 +218,8 @@ negation carries the relation of what it denies.
   ([above](#why-not-just-one-rule-with-the-relation-a-variable)). Every relation is reached at every count the
   rules are written for, with no activator and nothing made at load.
 
-**No default was taken when the item was put. With (e) in it, (e) is what I would propose**: it is the smallest
-change that leaves the kernel reading no `not`, and its one cost is a shape the loader refuses today and the
-matcher already runs for the kernel's own check. (c) undoes part of your ruling, (b) reopens a decision for more
-than is needed, (a) makes the loader write a module's word, and (d) changes what programs with an undeclared
-relation mean.
+**No default was taken when the item was put.** With (e) in it I proposed (e), the smallest change that reaches
+every relation. **Since your remark the proposal is (d)**, read as you put it: reaching every relation is not the
+aim; the contradiction is a feature a program takes by importing the module, for the relations it declares. It adds
+nothing to the language and takes the last reading of `not` out of the kernel. (c) undoes part of your ruling, (b)
+and (e) change the language for a reach that is then not wanted, and (a) makes the loader write a module's word.

@@ -10,7 +10,7 @@ stage's examples.
 
 | # | item | the question | state |
 |---|---|---|---|
-| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed (e), the user's rule: one rule a count with the relation a variable of the pattern, which the loader refuses today |
+| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed, since the user's remark that it may be a feature and no gap: (d), the contradiction is `std.contradiction`'s, on by import for the relations a program declares |
 | 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
 
 **A default is proposed or taken; an answer is wanted only where you would have it otherwise.**

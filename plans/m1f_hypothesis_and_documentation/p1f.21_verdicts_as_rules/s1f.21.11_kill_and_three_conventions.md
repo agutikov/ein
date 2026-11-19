@@ -34,7 +34,11 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    load; a premise that is a variable for a whole fact, which
    [Q-M1f.393](../../../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) refuses; the
    kernel keeping the pair check as its way of running the module's rule. **No default**: the third undoes part of
-   the ruling, and the choice is the user's.
+   the ruling, and the choice is the user's. **Since put as [Q-M1f.557](../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count)**,
+   with two more ways and the user's remark that it is no gap: the contradiction a feature a program takes by
+   importing the module, for the relations it declares. Under that reading this task counts the corpus programs
+   whose answer moves with the kernel's check off and the module imported where a negation is written, and shows
+   what the candidate root denies and licence L8 become where the rule is not on.
 2. **V-1**: the seven corpus programs *forbid* refuses once the contradiction is a rule it reads. Default: *forbid*
    reads the module's contradiction as it reads the kernel's today, that is, not as a refutation resting on an
    absence; what *forbid* should read is M1n's, and stays there.
