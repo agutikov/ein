@@ -39,7 +39,7 @@ grouped by where each fact came from:
   (relation claims Person Claim)
   (relation claims)
 
-;; ── GIVEN (1 facts) ──
+;; ── GIVEN (1 fact) ──
   (knows Alice Bob :source "Alice says she knows Bob")
 
 ;; ── DERIVED (2 facts) ──

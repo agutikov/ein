@@ -64,7 +64,7 @@ and the one fact derived:
 
 <!-- output -->
 ```text
-;; ── DERIVED (1 facts) ──
+;; ── DERIVED (1 fact) ──
   (false :rule on-and-off)
 ```
 

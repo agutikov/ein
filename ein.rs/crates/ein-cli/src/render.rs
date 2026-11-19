@@ -400,6 +400,11 @@ pub fn cmd_h_space(a: &HSpaceArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
         supports: a.supports,
     };
     let graphs = shown::graphs(&whole, a.file);
+    // A flagged program is said first, as every command that answers about a
+    // commitment says it (Q-M1f.564).
+    if !whole.theory.root.monotone {
+        eprintln!("{}", ein_infer::detector::warning_line(a.file));
+    }
     for sentence in shown::unread(&whole) {
         eprintln!("note: {}: {sentence}", a.file);
     }

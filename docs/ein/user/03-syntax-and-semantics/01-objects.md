@@ -208,7 +208,7 @@ that says the name is declared:
   (relation lives-in Person House)
   (relation lives-in)
 
-;; ── GIVEN (1 facts) ──
+;; ── GIVEN (1 fact) ──
   (lives-in Norwegian House-1 :source "condition (10)")
 ```
 

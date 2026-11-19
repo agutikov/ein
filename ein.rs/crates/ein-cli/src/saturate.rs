@@ -650,7 +650,9 @@ pub fn facts_section(terms: &Terms, kb: &Kb) -> String {
             continue;
         }
         let _ = writeln!(o);
-        let _ = writeln!(o, ";; ── {label} ({} facts) ──", facts.len());
+        let n = facts.len();
+        let noun = if n == 1 { "fact" } else { "facts" };
+        let _ = writeln!(o, ";; ── {label} ({n} {noun}) ──");
         let mut groups: Vec<(String, Vec<ein_core::FactId>)> = Vec::new();
         for &f in facts {
             let rel = terms.sym(terms.facts.get(f).0).to_string();
