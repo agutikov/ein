@@ -1,0 +1,25 @@
+;;; `std.contradiction/clash-2` — a fact of two arguments beside its
+;;; negation: the rule concludes `(false)`.
+;;;
+;;; One rule a file: `clash-2` is activated for the one relation, and no
+;;; other rule of the module is. The claim, `(false)`, holds of this program
+;;; with the rule and without it, since the kernel calls the pair dead by
+;;; itself; `01_clash_0.ein` says what the file gives the rule all the same,
+;;; and where its firing is asserted.
+
+(import std.contradiction :symbols (clash-2))
+
+(relation seats Guest Chair :why "{?3} is seated at {?4}")
+
+(clash-2 seats)
+
+(seats Ann C1)
+(not (seats Ann C1))          ; ⊥ — the fact and its denial
+
+;; Root alone (Q-M1f.254): the question is root's verdict.
+(solve
+  :no-search
+  :expect (false))
+
+(query
+  :goal (seats ?a ?b))

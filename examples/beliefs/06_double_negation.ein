@@ -2,20 +2,24 @@
 ;;;
 ;;; The negation of a negation is a fact, and it says only that a denial does
 ;;; not hold. That the fact itself then holds, *not not g, so g*, is a step
-;;; of classical logic and **a rule a program states**, not something the
-;;; language does by itself. This program states it:
+;;; of classical logic and **a rule a program asks for**, not something the
+;;; language does by itself. This program asks for it:
 ;;;
-;;; - **`eliminate`** is one rule for facts of two arguments, the relation a
-;;;   parameter: a rule concludes a fact with its relation and its count
-;;;   written, so "any fact" is one rule a count, and an activator a relation.
-;;;   `(eliminate =)` turns it on for `=` and nothing turns it on for `likes`.
-;;; - **`eliminate-in`** is the same rule for what somebody thinks: the same
-;;;   patterns, each under `(think ?p …)`. It concludes a fact Bob thinks, and
-;;;   nothing about the world.
+;;; - **`eliminate-2`** is the standard library's rule for facts of two
+;;;   arguments, `std.negation`'s, the relation a parameter: a rule concludes
+;;;   a fact with its relation and its count written, so "any fact" is one
+;;;   rule a count, and an activator a relation. `(eliminate-2 =)` turns it
+;;;   on for `=` and nothing turns it on for `likes`.
+;;; - **`eliminate-in`** is the same rule for what somebody thinks, written
+;;;   here: the same patterns, each under `(think ?p …)`. It concludes a fact
+;;;   Bob thinks, and nothing about the world. The library's rule reads a
+;;;   double negation the state holds, and a context is a program's own.
 ;;;
 ;;; So `(= 5 (+ 2 2))` is concluded; `(likes Dan Soup)` is not, though its
 ;;; double negation is held just the same; and Bob thinks `(= 7 (+ 3 4))`,
 ;;; which the state does not hold.
+
+(import std.negation :symbols (eliminate-2))
 
 (relation =     Thing Thing  :why "{?3} is {?4}")
 (relation likes Person Food  :why "{?3} likes {?4}")
@@ -25,11 +29,7 @@
 (not (not (likes Dan Soup)))
 (think Bob (not (not (= 7 (+ 3 4)))))
 
-(rule eliminate (?R)
-  :match  (not (not (?R ?a ?b)))
-  :assert (?R ?a ?b)
-  :why    "it is not so that {?a} {?R} {?b} is not so")
-(eliminate =)
+(eliminate-2 =)
 
 (rule eliminate-in (?R)
   :match  (think ?p (not (not (?R ?a ?b))))

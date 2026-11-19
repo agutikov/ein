@@ -69,6 +69,8 @@ files are modules.
 | `std.slots` | [`slots.ein`](slots.ein) | closed-world inference for **one co-location relation** whose equivalence classes are *slots*, one member for each child of `Super`: `slot-partition-setup` fans `(slot-partition R isa sub Super Index)` into `slot-locate`, `slot-exclusive`, `slot-occupied`, `slot-negative`, `slot-elimination` and `slot-fill`, `slot-no-room` and `slot-no-fill`, and the obligations `slot-owed-room` and `slot-owed-fill`; `slot-spatial-setup` fans `(slot-spatial R S isa PT)` into eight congruence rules, `slot-adjacent-fwd` and `-bwd` with their negatives, `slot-prune-fwd` and `-bwd`, `slot-endpoint-fwd` and `-bwd`. Needs `forall`, `symmetric` and `symmetric-negative-setup`. The zebra encoding, generalised | none |
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)`, a converse-typecheck driver named once, and the `(reflexive R)` closure; pairs with `std.algebra`'s `converse-illtyped-*` | none |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
+| `std.negation` | [`negation.ein`](negation.ein) | the elimination of a double negation, `(not (not g))` ⟹ `g`: `eliminate-0` to `eliminate-6`, one rule a count of arguments with the relation a parameter, each activated a relation ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
+| `std.contradiction` | [`contradiction.ein`](contradiction.ein) | a fact beside its negation as a rule that concludes `(false)`: `clash-0` to `clash-6`, one rule a count with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive those activators from the declarations where the program holds `(clash-of-declared)` ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
 | `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and the check an operation asks of one it takes ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `decimal` |
@@ -247,6 +249,67 @@ one pass over the quiescent KB, reported through `--events`' `owe` lines,
 `--json-summary`'s `owes` block and the trace's *Outstanding obligations*
 section
 ([`03-reserved-names.md` § the verdict `open`](../docs/ein/user/04-reference/03-reserved-names.md#the-verdict--open)).
+
+## `std.negation` and `std.contradiction`: negation as rules
+
+Two things the kernel does with a stored negation, each stated as a rule a
+program asks for
+([`04-stdlib/20-negation-and-contradiction.md`](../docs/ein/user/04-reference/04-stdlib/20-negation-and-contradiction.md)
+is the reference).
+
+**`std.negation`** eliminates a double negation. `(not (not g))` is a fact
+that says a denial does not hold, and the kernel concludes nothing from it
+([Q-M1f.391](../docs/decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md));
+`eliminate-N`, activated for a relation, concludes `g`.
+
+**`std.contradiction`** concludes `(false)` from a fact beside its negation.
+The kernel calls such a state dead with no rule, and the state need hold no
+`(false)`; `clash-N`, activated for a relation, derives the fact, with the pair
+as its premises. The verdict of no state changes. `clash-of-N` derives the
+activators from the declarations, where the program holds the fact
+`(clash-of-declared)`.
+
+**One rule a count of arguments.** A pattern writes its fact's count, and its
+relation may be a parameter
+([Q-M1f.393](../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)),
+so *any fact* is a schema: `…-0` to `…-6`, each activated a relation. A fact of
+more than six arguments is out of reach, and a program writes the rule for its
+count.
+
+**They are two modules because an import is whole.** `eliminate-N` concludes
+`(?R …)` with whatever the double negation held as its arguments, and the
+loader reads such a conclusion as writing into every rule of that count of
+parameters whose name the program writes as an argument
+([Q-M1f.42](../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)):
+a program that names such a rule, one whose parameter stands first in a
+pattern, is refused with `std.negation` imported, as it is with `std.algebra`
+at the counts of its copiers. `clash-N` concludes `(false)` and `clash-of-N` an
+activator whose argument is a relation's name, so `std.contradiction` loads
+wherever the program does.
+
+**No rule of either acts on an import alone.** `eliminate-N` and `clash-N`
+have a parameter, and `clash-of-N`, which has none, reads the fact
+`(clash-of-declared)`, a relation the module does not declare, as
+`std.algebra` reads `(bijective R)`. Neither module declares a relation or
+writes a fact, so a program that imports one and asks for nothing holds what
+it held.
+
+***Forbid* reads `clash-N`.** A refutation may not rest on an `absent` over a
+relation a commitment can still extend
+([Q-M1e2.5](../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)),
+which is a check of rules and not of the kernel's own contradiction. A program
+in which a rule derives a fact of `R` resting on such an `absent` is refused
+once `clash-N` is activated for `R`; such a program is one the static check
+flags as it stands.
+
+**What holds them.** [`tests/stdlib/negation/`](../tests/stdlib/negation/) and
+[`tests/stdlib/contradiction/`](../tests/stdlib/contradiction/). A claim
+cannot tell `clash-N` firing from the kernel's own verdict, since a dead state
+has no model to list, so the firing itself, its premises the pair and its
+conclusion `(false)`, is asserted in-process, in
+[`ein-infer/tests/contradiction_rules.rs`](../ein.rs/crates/ein-infer/tests/contradiction_rules.rs);
+the file a claim can tell the rules by is the one where all seven are
+activated and silent.
 
 ## `std.math.digits`: a library of facts
 

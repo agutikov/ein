@@ -41,6 +41,7 @@ output is what `ein` printed for the program above it; a line `…` in one stand
 | [17. The nine-digit numbers' rules](17-nine-digit-numbers-rules.md) | `std.math.num9` | how it works |
 | [18. Boolean functions and circuits](18-boolean-functions.md) | `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | the sixteen functions of two bits, what is known of them, circuits, and inputs as hypotheses |
 | [19. The Boolean modules' rules](19-boolean-rules.md) | the same four | how it works |
+| [20. Negation as rules](20-negation-and-contradiction.md) | `std.negation`, `std.contradiction` | the elimination of a double negation, and a fact beside its negation as a rule that concludes `(false)`; their rules at the end |
 
 The concepts the relation-algebra modules build on are
 [Properties and operators](../../03-syntax-and-semantics/07-properties-and-operators.md); the import form itself is
@@ -133,9 +134,9 @@ step of a module's own, `std.math.decimal-arith.strip`.
   `std.math.decimal-arith` imports both.
 - **A generic rule is activated by a fact headed by the rule's name**, `(symmetric next-to)`, and the rule's name is
   the module's: list it.
-- **A relation a module reads and does not declare is no module's**, and a program writes it as it is: `bijective`,
-  `join`, `bijection-hierarchy`, `typecheck-hierarchy`, `slot-partition`, `slot-spatial`, `type-hierarchy`,
-  `reflexive`, and `std.elim`'s positional markers.
+- **A relation a module reads or writes and does not declare is no module's**, and a program writes it as it is:
+  `bijective`, `join`, `bijection-hierarchy`, `typecheck-hierarchy`, `slot-partition`, `slot-spatial`,
+  `type-hierarchy`, `reflexive`, `std.elim`'s positional markers, and `std.contradiction`'s `clash-of-declared`.
 - **A module's entry rule may be listed** and brings nothing a whole import does not
   ([Q-M1f.240](../../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md)).
 - **No module reserves its names**
@@ -207,6 +208,8 @@ kb load error: import-clash.ein:2:9: 'domain-elimination' is bound to two full n
 | `std.bijection` | negative completion and elimination for a relation declared `(bijective R)` | none | `std.algebra`, `std.macro` | [4](04-bijections.md) |
 | `std.elim` | the same elimination, with the labels named in the activator | none | `std.macro` | [4](04-bijections.md#using-stdelim--elimination-with-positional-markers) |
 | `std.slots` | one co-location relation whose classes are slots | none | `std.macro` | [5](05-slots.md), rules [6](06-slots-rules.md) |
+| `std.negation` | the elimination of a double negation, one rule a count of arguments | none | nothing more | [20](20-negation-and-contradiction.md#using-stdnegation--eliminating-a-double-negation), rules [20](20-negation-and-contradiction.md#stdnegation) |
+| `std.contradiction` | a fact beside its negation, as a rule that concludes `(false)` | none | nothing more | [20](20-negation-and-contradiction.md#using-stdcontradiction--a-fact-beside-its-negation-concludes-false), rules [20](20-negation-and-contradiction.md#stdcontradiction) |
 | `std.math.digits` | the decimal digit tables, facts and no rule | none | nothing more | [8](08-natural-numbers.md#using-stdmathdigits--the-digit-tables) |
 | `std.math.arith` | `z`, zero; the division by zero's flag and its rule | `arith` | nothing more | [8](08-natural-numbers.md#using-stdmatharith--zero-and-the-division-by-zero), rules [9](09-natural-numbers-rules.md#stdmatharith) |
 | `std.math.decimal` | the decimal numeral `(n PREFIX DIGIT)` and its check | `decimal` | `arith`, `digits` | [8](08-natural-numbers.md#using-stdmathdecimal--the-decimal-numeral), rules [9](09-natural-numbers-rules.md#stdmathdecimal) |

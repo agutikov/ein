@@ -1,0 +1,98 @@
+;;; `std.negation` — `eliminate-0` to `eliminate-6`: *not not g, so g*, one
+;;; rule a count of arguments, the relation a parameter.
+;;;
+;;; ── What this program does to the seven ────────────────────────────────────
+;;;
+;;; Seven relations, `r0` to `r6`, one a count. Each has one double negation
+;;; written and its rule activated for it, so each rule fires once and
+;;; concludes the fact itself. Every argument of a fact is a different name,
+;;; so a rule that concluded its fact with two arguments exchanged would
+;;; conclude another fact, and the claim, which lists the relation's whole
+;;; held extent, would fail.
+;;;
+;;; Three more relations are what the rules must leave alone:
+;;;
+;;;   idle        a double negation held as `r2`'s is, and no activator: the
+;;;               step is asked for a relation at a time, and nobody asked
+;;;   miscounted  a double negation of two arguments, activated at the counts
+;;;               one and three: an activator reads facts of its rule's count,
+;;;               and `miscounted` has none there
+;;;   once        a single negation, `(not (once a b))`, activated: a denial
+;;;               is no double negation, and nothing is concluded from it
+;;;
+;;; `r2` also holds a single negation of the other order, `(not (r2 b a))`:
+;;; beside a conclusion with its arguments exchanged it would be a
+;;; contradiction.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Each query closes one relation's held extent: `r0` to `r6` hold exactly
+;;; the fact whose double negation was written, and `idle`, `miscounted` and
+;;; `once` hold none, `(model)`. Root is alive: a fact beside the negation of
+;;; its negation contradicts nothing (Q-M1f.391).
+
+(import std.negation
+  :symbols (eliminate-0 eliminate-1 eliminate-2 eliminate-3
+            eliminate-4 eliminate-5 eliminate-6))
+
+(relation r0                :why "r0 holds")
+(relation r1 T              :why "{?3} is r1")
+(relation r2 T T            :why "{?3} and {?4} are r2")
+(relation r3 T T T          :why "{?3}, {?4} and {?5} are r3")
+(relation r4 T T T T        :why "{?3}, {?4}, {?5} and {?6} are r4")
+(relation r5 T T T T T      :why "{?3}, {?4}, {?5}, {?6} and {?7} are r5")
+(relation r6 T T T T T T    :why "{?3}, {?4}, {?5}, {?6}, {?7} and {?8} are r6")
+(relation idle T T          :why "{?3} and {?4} are idle")
+(relation miscounted T T    :why "{?3} and {?4} are miscounted")
+(relation once T T          :why "{?3} and {?4} are once")
+
+(eliminate-0 r0)
+(eliminate-1 r1)
+(eliminate-2 r2)
+(eliminate-3 r3)
+(eliminate-4 r4)
+(eliminate-5 r5)
+(eliminate-6 r6)
+
+(not (not (r0)))
+(not (not (r1 a)))
+(not (not (r2 a b)))
+(not (not (r3 a b c)))
+(not (not (r4 a b c d)))
+(not (not (r5 a b c d e)))
+(not (not (r6 a b c d e f)))
+
+(not (r2 b a))                    ; a denial of the other order: no clash with (r2 a b)
+
+(not (not (idle a b)))            ; held, and no activator names `idle`
+
+(eliminate-1 miscounted)          ; activated at two counts its facts do not have
+(eliminate-3 miscounted)
+(not (not (miscounted a b)))
+
+(eliminate-2 once)                ; activated, and a single negation is all there is
+(not (once a b))
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (r0)
+  :expect (model (r0)))
+(query :goal (r1 ?a)
+  :expect (model (r1 a)))
+(query :goal (r2 ?a ?b)
+  :expect (model (r2 a b)))
+(query :goal (r3 ?a ?b ?c)
+  :expect (model (r3 a b c)))
+(query :goal (r4 ?a ?b ?c ?d)
+  :expect (model (r4 a b c d)))
+(query :goal (r5 ?a ?b ?c ?d ?e)
+  :expect (model (r5 a b c d e)))
+(query :goal (r6 ?a ?b ?c ?d ?e ?f)
+  :expect (model (r6 a b c d e f)))
+(query :goal (idle ?a ?b)
+  :expect (model))
+(query :goal (miscounted ?a ?b)
+  :expect (model))
+(query :goal (once ?a ?b)
+  :expect (model))

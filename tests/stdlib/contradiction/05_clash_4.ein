@@ -1,0 +1,25 @@
+;;; `std.contradiction/clash-4` — a fact of four arguments beside its
+;;; negation: the rule concludes `(false)`.
+;;;
+;;; One rule a file: `clash-4` is activated for the one relation, and no
+;;; other rule of the module is. The claim, `(false)`, holds of this program
+;;; with the rule and without it, since the kernel calls the pair dead by
+;;; itself; `01_clash_0.ein` says what the file gives the rule all the same,
+;;; and where its firing is asserted.
+
+(import std.contradiction :symbols (clash-4))
+
+(relation trade Seller Buyer Good Day :why "{?3} sells {?4} {?5} on {?6}")
+
+(clash-4 trade)
+
+(trade Ann Bob Wool Monday)
+(not (trade Ann Bob Wool Monday))          ; ⊥ — the fact and its denial
+
+;; Root alone (Q-M1f.254): the question is root's verdict.
+(solve
+  :no-search
+  :expect (false))
+
+(query
+  :goal (trade ?a ?b ?c ?d))

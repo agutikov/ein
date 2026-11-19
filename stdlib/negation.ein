@@ -1,0 +1,85 @@
+;;; Ein stdlib — `std.negation`: the elimination of a double negation.
+;;;
+;;; The negation of a negation is a fact (Q-M1f.391), and it says only that a
+;;; denial does not hold. The kernel reads `(not (not g))` as it reads any
+;;; negation, as the negation of the fact it points at: a state that holds it
+;;; beside `(not g)` is dead, and one that holds it beside `g`, or alone, is
+;;; alive. Nothing concludes `g` from it. *Not not g, so g* is a step of
+;;; classical logic, one logic among several, and so a rule a program asks
+;;; for. These are that rule.
+;;;
+;;; ── one rule a count of arguments ───────────────────────────────────────────
+;;; A rule concludes a fact with its relation and its count of arguments
+;;; written (Q-M1f.393), so "any fact" is one rule a count, the relation a
+;;; parameter: `eliminate-0` for a fact of no argument, to `eliminate-6` for
+;;; one of six. Each is activated a relation:
+;;;
+;;;     (import std.negation :symbols (eliminate-2))
+;;;     (eliminate-2 likes)      ; (not (not (likes Dan Soup)))  ⟹  (likes Dan Soup)
+;;;
+;;; A relation no activator names keeps its double negations as they are, and
+;;; an activator at another count than the relation's facts have matches
+;;; nothing: `(eliminate-1 likes)` reads `(not (not (likes ?a)))`, and no fact
+;;; of `likes` has one argument. A fact of more than six arguments is out of
+;;; these rules' reach; a program that needs one writes the rule for its
+;;; count, which is the same three lines.
+;;;
+;;; The rules read a double negation the state holds, at the top. One that
+;;; stands under an arrow of another fact, `(think Bob (not (not g)))`, is
+;;; what Bob thinks, and no rule here reads it: a program that wants the step
+;;; inside a context writes it with the context's relation
+;;; (`examples/beliefs/06_double_negation.ein`).
+;;;
+;;; ── what an import brings ───────────────────────────────────────────────────
+;;; Seven rules and nothing else: no relation, no fact, and no rule that acts
+;;; without its activator. So a program that imports the module and writes no
+;;; activator holds what it held.
+;;;
+;;; One thing the import can refuse. Each rule concludes `(?R …)`, a fact of
+;;; whichever relation its activator names, and its arguments are whatever
+;;; the double negation held, a fact among them. The loader reads such a
+;;; conclusion as writing into every rule of that count of parameters whose
+;;; name the program writes as an argument (Q-M1f.42), and refuses it where
+;;; one of those parameters names a relation: a relation is named by a
+;;; symbol, not a fact (Q-M1f.1). The program it refuses names, in a
+;;; `(solve … :hrules …)` list or in a fact, a rule or an hrule whose
+;;; parameter stands first in a pattern. `std.algebra`'s copiers, `converse`
+;;; and `imply1` among them, are read the same way at their counts.
+;;;
+;;; ── The names this module occupies ──────────────────────────────────────────
+;;; `eliminate-0` to `eliminate-6`.
+
+(rule eliminate-0 (?R)
+  :match  (not (not (?R)))
+  :assert (?R)
+  :why    "it is not so that ({?R}) is not so")
+
+(rule eliminate-1 (?R)
+  :match  (not (not (?R ?a)))
+  :assert (?R ?a)
+  :why    "it is not so that ({?R} {?a}) is not so")
+
+(rule eliminate-2 (?R)
+  :match  (not (not (?R ?a ?b)))
+  :assert (?R ?a ?b)
+  :why    "it is not so that ({?R} {?a} {?b}) is not so")
+
+(rule eliminate-3 (?R)
+  :match  (not (not (?R ?a ?b ?c)))
+  :assert (?R ?a ?b ?c)
+  :why    "it is not so that ({?R} {?a} {?b} {?c}) is not so")
+
+(rule eliminate-4 (?R)
+  :match  (not (not (?R ?a ?b ?c ?d)))
+  :assert (?R ?a ?b ?c ?d)
+  :why    "it is not so that ({?R} {?a} {?b} {?c} {?d}) is not so")
+
+(rule eliminate-5 (?R)
+  :match  (not (not (?R ?a ?b ?c ?d ?e)))
+  :assert (?R ?a ?b ?c ?d ?e)
+  :why    "it is not so that ({?R} {?a} {?b} {?c} {?d} {?e}) is not so")
+
+(rule eliminate-6 (?R)
+  :match  (not (not (?R ?a ?b ?c ?d ?e ?f)))
+  :assert (?R ?a ?b ?c ?d ?e ?f)
+  :why    "it is not so that ({?R} {?a} {?b} {?c} {?d} {?e} {?f}) is not so")

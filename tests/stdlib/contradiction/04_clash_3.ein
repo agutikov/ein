@@ -1,0 +1,25 @@
+;;; `std.contradiction/clash-3` — a fact of three arguments beside its
+;;; negation: the rule concludes `(false)`.
+;;;
+;;; One rule a file: `clash-3` is activated for the one relation, and no
+;;; other rule of the module is. The claim, `(false)`, holds of this program
+;;; with the rule and without it, since the kernel calls the pair dead by
+;;; itself; `01_clash_0.ein` says what the file gives the rule all the same,
+;;; and where its firing is asserted.
+
+(import std.contradiction :symbols (clash-3))
+
+(relation between Place Place Place :why "{?3} is between {?4} and {?5}")
+
+(clash-3 between)
+
+(between Inn Mill Ford)
+(not (between Inn Mill Ford))          ; ⊥ — the fact and its denial
+
+;; Root alone (Q-M1f.254): the question is root's verdict.
+(solve
+  :no-search
+  :expect (false))
+
+(query
+  :goal (between ?a ?b ?c))

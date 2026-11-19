@@ -12,8 +12,8 @@
 ;;; write it and a rule may match it.
 ;;;
 ;;; - **It says only that the denial does not hold.** Nothing here concludes
-;;;   `(= 5 (+ 2 2))` from it: that step is a rule a program states, and
-;;;   `06_double_negation.ein` states it. So `(= 5 (+ 2 2))` is neither held
+;;;   `(= 5 (+ 2 2))` from it: that step is a rule a program asks for, and
+;;;   `06_double_negation.ein` asks for it. So `(= 5 (+ 2 2))` is neither held
 ;;;   nor denied, and its denial is not held either: Alice only thinks it.
 ;;; - **`=`, `+`, `5` and `2` are names.** Ein has no numbers, and its own
 ;;;   equality is spelt `eq`.

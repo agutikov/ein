@@ -1,0 +1,25 @@
+;;; `std.contradiction/clash-6` — a fact of six arguments beside its
+;;; negation: the rule concludes `(false)`.
+;;;
+;;; One rule a file: `clash-6` is activated for the one relation, and no
+;;; other rule of the module is. The claim, `(false)`, holds of this program
+;;; with the rule and without it, since the kernel calls the pair dead by
+;;; itself; `01_clash_0.ein` says what the file gives the rule all the same,
+;;; and where its firing is asserted.
+
+(import std.contradiction :symbols (clash-6))
+
+(relation lesson Teacher Pupil Subject Room Day Hour :why "{?3} teaches {?4} {?5} in {?6} on {?7} at {?8}")
+
+(clash-6 lesson)
+
+(lesson Ann Bob Latin Hall Monday Noon)
+(not (lesson Ann Bob Latin Hall Monday Noon))          ; ⊥ — the fact and its denial
+
+;; Root alone (Q-M1f.254): the question is root's verdict.
+(solve
+  :no-search
+  :expect (false))
+
+(query
+  :goal (lesson ?a ?b ?c ?d ?e ?f))
