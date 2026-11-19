@@ -18,6 +18,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
 | [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **fixed** by `5a3f2979`: ruled (a) 2026-11-18, Q-M1f.412 |
 | [V-7](#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count) | a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count among its own, and the invariant's sweep calls it a breach | P1f.22's S1f.22.3 (its N-22), handed over at that phase's close, 2026-11-18 | open: **the user's call**, with § 8's `relation` |
+| [V-8](#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum) | the search written as rules answers wrong at its third stratum: a rule over a second absence fires before the first absence's facts are derived, under `lattice monotone` | the reading of 2026-11-19, [review item 34](review/34-Q-M1f.549/README.md) | open; M1n's ground, handed over at the close |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -268,3 +269,42 @@ S1f.23.10, task 2** (`fdbb71ae`, merged by `cbb9635b`): one notion of the progra
 relations for the registry, the invariant's baseline, the goal's list and the saturation page, R moving where the
 blind rung guessed about such a name. *"not arguments count"* touches the argument-count check, which stays open
 ([Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)) and is not decided by it.
+
+## V-8 — The search written as rules answers wrong at its third stratum
+
+**Found** 2026-11-19 by the reading the user's fifth instruction asked for
+([review item 34 § 4](review/34-Q-M1f.549/README.md#4-the-lattice-written-as-rules-row-5)), on the gate build at
+`e4a5f8fb`. $R$ of the program is right, `{∅}`; what is wrong is a fact root holds. It is the family of the
+register's `W8/fifo-gap-root`, and like P1f.22's N-15 it is **not filed as a row**: whether it is a twin of that row
+or a row of its own is the user's call, and its owner is [M1n](../../m1n_non_monotone_programs/README.md)'s P1n.2,
+stratum-order admission.
+
+**What.** [`two-worlds.ein`](review/34-Q-M1f.549/programs/two-worlds.ein) writes the lattice of a two-candidate
+program as rules, under `(solve :no-search)`: a world is a fact naming its commitment, `in-R` is concluded for a
+world that has paid and holds no `(in ?w (false))`, an absence, and `always` for a candidate that every world in
+$R$ holds, a `forall` over `in-R`, a second absence over the first's conclusions:
+
+```lisp
+(rule in-R ()
+  :match  (and (world ?w) (paid ?w) (absent (in ?w (false))))
+  :assert (in-R ?w)
+  :why    "{?w} is alive and owes nothing")
+(rule always ()
+  :match  (and (question ?f) (forall ?w (in-R ?w) (in ?w ?f)))
+  :assert (always ?f)
+  :why    "{?f} holds in every state of R")
+```
+
+`ein solve two-worlds.ein` answers `(in-R ?w)` with `(w (s a))` and `(w (s b))`, the oracle's $R$ of the object
+program [`two.ein`](review/34-Q-M1f.549/programs/two.ein), and `(always ?f)` with `(s a)` and `(s b)`. Neither is
+in every state of $R$: `(w (s b))` does not hold `(s a)`. The right answer has no row.
+
+**Shown by.** `ein saturate --dump two-worlds.ein`: `in-R … stratum 1`, `possible … stratum 1`, `always … stratum
+2`, `;; Strata — stratified, 3 strata`, and under `DERIVED` both `(always (s a) :rule always)` and `(always (s b)
+:rule always)`. The read-out says `lattice monotone (the static check)`: the program has no candidate, so no
+`absent` reads a relation a commitment extends. The strata are computed and printed, and the boundary admits
+`always` against a fixpoint that holds no `in-R` yet, where its `forall` is true of nothing.
+
+**What it decides here.** That *facts inferred from the search*, the second of the fifth instruction's two uses,
+waits on M1n: [S1f.21.13](s1f.21.13_the_search_and_rules.md) keeps the program as an example without `always`.
+

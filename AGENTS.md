@@ -339,8 +339,9 @@ paragraph, no register count, no measurement (the user's rule).
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
   One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
-  with its survey done, its question put (Q-M1f.390) and its next stage,
-  S1f.21.4, planned. **P1f.21 is not started without the user's word.**
+  with its survey done, its questions put (Q-M1f.390, Q-M1f.399, Q-M1f.447,
+  Q-M1f.549) and its stages planned, S1f.21.6 the first. **P1f.21 is not
+  started without the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is
   paused.

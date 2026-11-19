@@ -46,3 +46,28 @@ re-render of the bundle rewrites the READMEs and never this file.
 **Your answer:** 
 
 **Notes:** 
+
+---
+
+## 34 · Q-M1f.549: hypotheses as facts
+
+[The item](34-Q-M1f.549/README.md) · [the overview](../overview.md)
+
+**Options:**
+
+- **(a)** declined: $H$ stays the generator's list beside the knowledge base, as today.
+- **(b)** held, as *asked*: a candidate is a fact root holds, inherited and never removed; $H$ is that extent less
+  what root decides; *still open* is a reading, stored nowhere; a rule may read what is asked, and an hrule is a
+  rule that concludes it. **Recommended.**
+- **(c)** held, as *still open*, and moved: `(open F J)` in a part of the node no fork inherits, moved by the kernel
+  after each fixpoint, read by rules in a stratum of their own.
+- **(d)** the search itself as rules, every state a context, one saturation.
+- **And your two uses**, on (b) or (c): **1** search control from inside Ein; **2** search artefacts seen by rules,
+  facts inferred from the search. Recommended: both declined for now, 1 because the tree route already does it and
+  no program is known to want another order, 2 because its second absence answers wrong today (M1n).
+- **No default is taken**: the stages that wait on it, S1f.21.12 and S1f.21.13, are planned on the recommendation
+  and run on your answer.
+
+**Your answer:** 
+
+**Notes:** 

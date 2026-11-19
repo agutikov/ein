@@ -477,6 +477,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.546](#q-m1f546--the-reasoning-pages-hand-drawings-of-a-derivation) | The reasoning pages' hand drawings of a derivation | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): restyled by the same rule, a given fact a derivation also concludes plain. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.547](#q-m1f547--a-concentric-layout-the-layers-drawn-as-rings) | A concentric layout: the layers drawn as rings | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), no ring layout, nothing built; the review bundle's item 61, examples by S1f.23.11, task 2, its page and programs in `git log` (`7c39c671`); not `--layout radial`, `--layout rings` or a documented recipe |
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
+| [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10090,3 +10091,60 @@ three tests; Q-M1f.428's decision amended; every page's drawing of a derivation 
 
 **Ruled 2026-11-19: the default**, by the user's *"Go with all defaults to the end of this phase p1f.23 and stop"*
 (P1f.23); the item left the bundle with its topic.
+
+### Q-M1f.549 — Hypotheses as facts: held, in which reading, and how far the search goes into rules
+
+**Raised** 2026-11-19 by the user, with [P1f.21's fifth instruction](p1f.21_verdicts_as_rules/README.md#the-fifth-instruction),
+verbatim:
+
+> Now generally this p1f.21 phase is about one more step of unification, kernel minimization, making ein more
+> flexible - for instance we made (did we?) negated facts just conventionally hidden in (not ...) context, what if
+> we would make hypotheses just ordinary facts hidden in (open ...) context? it is different case because kernel
+> does search and has to make commitment sets from them, but kernel anyway has access to all facts, but maybe if we
+> will get benefits from having hypotheses as facts? E.g. I see 2 potential options: 1. search control from inside
+> ein 2. implement search with rules inside one stage, have search artefeacts seen by rules and infer facts from
+> search. This is only an raw idea. But we can establish the foundation for this in this phase or can decline it for
+> some pragmatic reason.
+
+**Open: not ruled.** Today a candidate is a tuple in a list the generator keeps beside root, and no knowledge base
+holds it until a commitment does; a stored negation is a held fact that points at a fact not held
+([`overview.md` § 2](p1f.21_verdicts_as_rules/overview.md#2-where-things-are-held-today)). The runs are
+[review item 34](p1f.21_verdicts_as_rules/review/34-Q-M1f.549/README.md)'s, on today's engine:
+
+- *zebra2* and the seats program, with their candidates concluded by an ordinary rule as held facts and one generic
+  hrule that supposes what root holds so, answer as before, the read-out the same byte for byte;
+- the facts held are *what is asked*, 125 on *zebra2*, and $H$ is what of it root has not decided, 56;
+- a rule that reads what is asked keeps the program monotone, and one that stores *asked and still undecided* as a
+  fact gets it flagged, with a stale fact in 15 of 16 nodes;
+- a two-candidate lattice written as rules gives the oracle's $R$ in one saturation, and the first rule over a
+  second absence answers wrong ([V-8](p1f.21_verdicts_as_rules/findings.md#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum)).
+
+The options:
+
+- **(a)** declined: $H$ stays the generator's list, as today.
+- **(b)** held, as *asked*: whatever rung proposes a candidate, root holds it as a fact, a fork inherits it and
+  nothing is removed; $H$ is that extent at root less what root decides; *still open* is a reading the kernel makes
+  per state and stores nowhere; any rule may read what is asked, and an hrule is a rule that concludes it.
+  **Recommended.**
+- **(c)** held, as *still open*, and moved: `(open F J)` in a part of the node no fork inherits, written and moved
+  by the kernel after each fixpoint, read by rules in a stratum of their own
+  ([`open_facts.md` § 5](p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not), § 6), the second
+  instruction's form as first worked out.
+- **(d)** the search itself as rules, every state a context, one saturation
+  ([`open_facts.md` § 7](p1f.21_verdicts_as_rules/open_facts.md#7-the-search-as-rules), (B)).
+
+And on (b) or (c), the instruction's two uses: **1**, search control from inside Ein; **2**, search artefacts seen
+by rules and facts inferred from the search.
+
+**The recommendation**: (b) in this phase, as the foundation; (c), (d) and both uses declined for now. (b) is the
+step `not` took, one more context, and adds no mechanism; (c) adds a part of a node, a stratum and a class of rule
+for a gain (b) shows is not needed; use 1 is what the tree route does already (the owed instance with the fewest
+alternatives, licence L5), no program is known to want another order, and it can be added on (b)'s facts; use 2 and
+(d) wait on M1n's stratum-order admission (V-8), and (d) is the cube. The reasons at length are
+[item 34 § 6](p1f.21_verdicts_as_rules/review/34-Q-M1f.549/README.md#6-the-recommendation-and-its-reasons).
+
+**What waits on it.** P1f.21's [S1f.21.12](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md), planned
+under (b), and [S1f.21.13](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md), planned under the
+recommendation. It stands beside [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact):
+under that question's default the debt stays a verdict that is counted, and under (b) here the candidates that
+would pay it are held. The candidate's name is [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open)'s.

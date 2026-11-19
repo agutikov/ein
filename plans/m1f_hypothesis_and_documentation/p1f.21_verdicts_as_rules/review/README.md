@@ -6,7 +6,9 @@ are this phase's. Pages and programs committed, outputs ignored, as in the bundl
 
 [← the phase](../README.md)
 
-P1f.21's two questions, **neither ruled**; the phase is not started. The material is
+P1f.21's questions, **none ruled**; the phase is not started. Item 34 was added 2026-11-19 with the user's fifth
+instruction, its runs taken with the gate build at `e4a5f8fb`; [the overview](../overview.md) is the page to read
+first. The material is
 `../../p1f.21_verdicts_as_rules/` (`design.md`, `open_facts.md` with the user's second and third instructions).
 Nothing was built: the options are runs of programs that emulate them today, and `.MOCK.` files. Re-taken with
 `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged (`tools/run.sh` in each): no run moved since the first
@@ -17,6 +19,7 @@ symmetry and every read of `is-a` (Q-M1f.436).
 |---|---|---|---|
 | 32 | [Q-M1f.390](32-Q-M1f.390/README.md) | what an obligation emits: the verdict, with its justification, or as a fact | not ruled; `design.md` recommends (b); the user's `(open F J)` beside (d) |
 | 33 | [Q-M1f.399](33-Q-M1f.399/README.md) | the names of what controls the search, `false` and `open` | not ruled; leaning `(ein.kill)` |
+| 34 | [Q-M1f.549](34-Q-M1f.549/README.md) | hypotheses as facts: held, in which reading, and how far the search goes into rules | not ruled; recommended (b), held as *asked* |
 
 ## Found while building
 
@@ -35,3 +38,8 @@ symmetry and every read of `is-a` (Q-M1f.436).
   double-negation rules loads. Emulated: since the agenda reads `(false)` by its name, a kill module loses the
   fail-first place and *refuted by* names the module's rule, not the program's; nothing reserves the `ein.` prefix.
   § 8.4's c6 gives 16 hits, not 18 (the claim holds).
+- **34**: *zebra2* and the seats program answer the same with their candidates held as ordinary facts and one generic
+  hrule over them, the read-out byte for byte; root holds 125 such facts on *zebra2* and $H$ is 56 of them. A rule
+  that stores *asked and still undecided* gets the program flagged and a stale fact in 15 of 16 nodes. The lattice of
+  a two-candidate program written as rules gives the oracle's $R$ in one saturation, and its rule over a second
+  absence answers wrong, three strata printed and not followed (V-8).

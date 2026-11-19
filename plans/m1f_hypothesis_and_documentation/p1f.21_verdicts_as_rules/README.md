@@ -9,6 +9,12 @@ is done: [`design.md`](design.md) is its survey and design, and its question is 
 `(ein.kill)`; the open facts the hypotheses themselves, which rules read, moved out of the open context as a state
 decides them; and the search as rules. Worked out in [`open_facts.md`](open_facts.md); S1f.21.4 is planned to
 take it onto programs, **not started**; S1f.21.2 and S1f.21.3 wait on it, and the close is S1f.21.5.
+**2026-11-19**: on the user's fifth instruction ([below](#the-fifth-instruction)) each group of
+[`modifications.md`](modifications.md) is planned as a stage ([§ Stages](#stages)), S1f.21.3 and S1f.21.4 are
+folded into them, [`overview.md`](overview.md) is the distilled overview **for review**, and the instruction's
+idea, hypotheses as ordinary facts, is put as
+[Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
+with runs ([review item 34](review/34-Q-M1f.549/README.md)). **No stage is started.**
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
@@ -28,6 +34,11 @@ on the user's word; it resumes when this phase is done.
 **The modifications, listed:** [`modifications.md`](modifications.md), written 2026-11-19 on the user's word:
 every modification the phase's pages propose, 37 items in nine groups, the simplest and least affecting first,
 each with the page it is from, its state and what it waits on. A reading; it rules nothing and runs no stage.
+
+**The overview, for review:** [`overview.md`](overview.md), written 2026-11-19 on the user's word: the phase in one
+sentence; where a negated fact, a refuted commitment, a hypothesis and a debt are held today, each on a run; what
+the phase would change in the language, the kernel and the standard library; hypotheses as facts, with a
+recommendation; the stages; what is the user's to rule.
 
 ## The instruction
 
@@ -118,6 +129,38 @@ What reads any of the three today, and what each reader becomes, is S1f.21.4's
 ([§ 9](open_facts.md#9-what-s1f214-answers), item 6). The same day, on P1f.23's review, the user ruled that the
 kernel reads no theory's name and dropped the built-in symmetry (`__symmetric__`); P1f.23's S1f.23.4 built that.
 
+## The fifth instruction
+
+The user, 2026-11-19, verbatim:
+
+> plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/modifications.md - plan sections from this list:
+> A, B, C, ... as stages; make a distilled overview of proposed modification of the main parts: language, kernel,
+> stdlib; and write down it for review; also explain is now negated/refuted facts are stored in kb under (not ...)
+> context or they are stored somehow outside of the kb? the same about hypotheses; Now generally this p1f.21 phase
+> is about one more step of unification, kernel minimization, making ein more flexible - for instance we made (did
+> we?) negated facts just conventionally hidden in (not ...) context, what if we would make hypotheses just
+> ordinary facts hidden in (open ...) context? it is different case because kernel does search and has to make
+> commitment sets from them, but kernel anyway has access to all facts, but maybe if we will get benefits from
+> having hypotheses as facts? E.g. I see 2 potential options: 1. search control from inside ein 2. implement search
+> with rules inside one stage, have search artefeacts seen by rules and infer facts from search. This is only an
+> raw idea. But we can establish the foundation for this in this phase or can decline it for some pragmatic reason.
+
+Each part, and where it is answered:
+
+- **The groups as stages**: [§ Stages](#stages), a file each.
+- **The overview**: [`overview.md`](overview.md), [§ 3](overview.md#3-the-modifications-distilled) by part.
+- **Where a negated fact is held**: in the knowledge base, as the held fact `(not F)` that points at F, which is
+  not held. A refuted commitment is in no knowledge base: its fork is dropped, and the search's memory and the
+  node's record keep the death. A candidate is in none either, a tuple in a list beside root, until a commitment
+  holds it ([`overview.md` § 2](overview.md#2-where-things-are-held-today), on runs).
+- **Did we**: for the representation and for a rule's premise, yes
+  ([Q-M1f.394](../../../docs/decisions/language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)); the
+  kernel still reads `not` by its name for six decisions, which is group G.
+- **Hypotheses as ordinary facts**: it runs today at no change of answer in the reading *asked*, and cannot in the
+  reading *still open*; put as [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
+  with the recommendation to establish that foundation here and to decline the two uses for now, each for a reason
+  a run gives ([review item 34](review/34-Q-M1f.549/README.md)).
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -143,13 +186,25 @@ goes; what then becomes of (2) is the design.
 
 ## Stages
 
-| stage | what | state |
-|---|---|---|
-| [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | **The survey and the design.** What the kernel does for each verdict, where, and what shows it; each verdict written as a rule, and whether Ein can load and run that rule today; `(open R)` today, the two properties shown on programs; `(open R <justification>)` designed: what the justification is, what holds a discharged debt, what changes in the engine, the stdlib, hypothesis generation, the read-out and the tests, on real corpus programs with their answers computed. Ends with the question for the user | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
-| S1f.21.4 | **Open facts and `(ein.kill)`: the design on programs.** The user's second and third instructions, from [`open_facts.md`](open_facts.md): the verdict's name and the module that concludes it, with the contradiction rules and V-1; the form of an open fact and its justification for each rung; the move and the stratum; the rules over open facts the standard library states and what the routes read of them; the search as rules; the reserved names that are left and what the kernel reads (§ 8). On real corpus programs with their answers computed, each put as a question with a default ([`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers)) | **next**, planned 2026-11-18, **not started** |
-| S1f.21.2 | **The reasoning pages.** In `docs/ein/reasoning/02-kb-evolution/`: the contradiction rule, alive and dead, owed and discharged, each as a rule with its graph and its formula, and the remark on `(open R)` as facts; the user's pages where the same is said in Ein, which S1f.21.1 finds for the contradiction rule of one relation or one count of arguments, for *dead*, and for the requirement, the payment and *discharged*, and not for the rule of every fact, for *alive* or for a stored debt ([`design.md` § What S1f.21.2 writes under each ruling](design.md#what-s1f212-writes-under-each-ruling)) | after S1f.21.4's rulings, and after S1f.21.3 where they change the kernel: the pages state the kernel as it is |
-| S1f.21.3 | **The engine**, if the user rules for a change: planned from S1f.21.1's and S1f.21.4's designs when the rulings are given. Under (a) of Q-M1f.390, and under (b) with nothing printed, with no `(ein.kill)` and no open fact, there is nothing to build and the stage is not run | waits for the rulings |
-| S1f.21.5 | **The close.** | last |
+Planned 2026-11-19 on the fifth instruction: each group of [`modifications.md`](modifications.md) is a stage.
+The rows are in the order the stages would run, which is by what each waits on.
+[`overview.md` § 5](overview.md#5-the-stages) has the same table with the items.
+
+| stage | group | what | state |
+|---|---|---|---|
+| [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | | **The survey and the design.** What the kernel does for each verdict; each verdict as a rule; `(open R)` as a fact; `(open R <justification>)` designed; the question | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
+| [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | planned, **not started**; waits on nothing |
+| [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation, the contradiction, and the requirement, the payment and `discharged`, each a module a program imports | planned, **not started**; waits on where each lives, its own first reading |
+| [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
+| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The kernel's prefix.** `ein.` reserved, a name under it the kernel does not define refused; no word renamed | planned, **not started**; waits on Q-M1f.399 |
+| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`(ein.kill)`, and `false`, `not` and `relation` as conventions.** Its examples, then the build in five commits | planned, **not started**; waits on S1f.21.8, S1f.21.10, V-1, Q-M1f.447 |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; waits on Q-M1f.549, S1f.21.7, S1f.21.10 |
+| [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
+| [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages.** The verdicts as rules on the reasoning pages and in Ein on the user's, the phase's rulings as decisions | planned, **not started**; after every build: a page states the kernel as built |
+| [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | planned, **run only on a ruling for Q-M1f.390 (c)** |
+| S1f.21.5 | | **The close.** | last |
+| S1f.21.3 | | *The engine*, as planned 2026-11-17 | **folded** 2026-11-19 into S1f.21.7 to S1f.21.13, a stage a group |
+| S1f.21.4 | | *Open facts and `(ein.kill)`: the design on programs*, as planned 2026-11-18 | **folded** 2026-11-19: its seven questions ([`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers)) are the examples tasks of the stages that build them: 1 and 6 S1f.21.11's, 2 to 4 S1f.21.12's, 5 S1f.21.13's, 7 the ledger's (Q-M1f.390, Q-M1f.399, with Q-M1f.549) |
 
 ## The question it puts
 
@@ -159,10 +214,18 @@ with four options: (a) as today; (b) the verdict carries its justification, the 
 which S1f.21.1 recommends; (c) the requirement and its payment are facts and *owed* is their difference; (d)
 `(open R j)` is a fact of the state that owes it, in a part of the node no fork inherits.
 [`design.md` § 5](design.md#5-the-question-and-a-recommendation) is the page to rule from. The ruling is the
-user's, and S1f.21.3 is planned only on it. The user's second instruction stands beside the four options: it is
-(d), with rules reading the open facts and the hypothesis in the fact. S1f.21.4 puts it again, with Q-M1f.399,
-the name. S1f.21.2 waits for both rulings, since the pages state the kernel as built; until that instruction it
-did not wait, and would have stated today's kernel as rules.
+user's, and the stages that build wait on it (S1f.21.7 and S1f.21.9). The user's second instruction stands beside
+the four options: it is (d), with rules reading the open facts and the hypothesis in the fact; Q-M1f.549 puts it
+again, in two readings, with Q-M1f.399, the name. S1f.21.2 waits for the rulings and the builds, since the pages
+state the kernel as built; until the second instruction it did not wait, and would have stated today's kernel as
+rules.
+
+**And, since the fifth instruction: are the hypotheses facts?**
+[Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules):
+(a) no, as today; (b) held as *asked*, from root upward, nothing removed, which is recommended; (c) held as *still
+open* and moved, the second instruction's form as [`open_facts.md` § 5](open_facts.md#5-the-move-open-held-not)
+designed it; (d) the search itself as rules. It fits Q-M1f.390's default: the debt stays a verdict that is counted,
+and the candidates that would pay it are held.
 
 ## Rules of the phase
 

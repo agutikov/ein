@@ -27,6 +27,15 @@ page it is cited from, as that page took it.
 last what replaces the search. **The order is by size and not by dependency**: group B, pages only, waits behind
 groups C to I, since a page states the kernel as built, and group A waits on nothing.
 
+**Planned as stages** 2026-11-19, on the user's word, a stage a group: A [S1f.21.6](s1f.21.6_surfaces.md),
+B [S1f.21.2](s1f.21.2_the_pages.md), C [S1f.21.7](s1f.21.7_the_debts_term.md),
+D [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md),
+E [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md), F [S1f.21.10](s1f.21.10_the_kernels_prefix.md),
+G [S1f.21.11](s1f.21.11_kill_and_three_conventions.md), H [S1f.21.12](s1f.21.12_hypotheses_as_facts.md),
+I [S1f.21.13](s1f.21.13_the_search_and_rules.md). Where a row below says *S1f.21.4*, read the examples task of the
+stage that builds it ([the README's table](README.md#stages)); [`overview.md`](overview.md) distils the list by
+part.
+
 | group | items | what changes | what an answer, a program or a golden sees | waits on |
 |---|---|---|---|---|
 | [A](#a-surfaces-no-answer-and-no-word-of-the-language-moves) | 1 to 5 | a printer, a dump's heading, a wording, the plan's own numbers | no answer; the lines the surface prints | nothing |
