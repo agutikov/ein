@@ -20,7 +20,7 @@ stage's examples.
 | 37 | [Q-M1f.558](37-Q-M1f.558/README.md) | *forbid*, once the contradiction is rules: seven corpus programs would be refused | (a) *forbid* reads the module's contradiction as it reads the kernel's; the seven load as now |
 | 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | (a) it stays a module a program imports; `std.core` gets the contradiction alone |
 | 40 | [Q-M1f.552 to .556](40-defaults-taken/README.md) | five readings the two finished stages took and built | as built; the fourth not as planned: two modules for the negation |
-| 41 | [S1f.21.10's readings](41-S1f.21.10-readings/README.md) | six readings the running stage builds on | as listed; shown with runs when it reports |
+| 41 | [S1f.21.10 as built](41-S1f.21.10-readings/README.md) | the key's five readings, and four consequences of a module every program gets: an import of it refused, older saved files no longer load, `$EIN_STDLIB`, the container's format | as built (Q-M1f.562, Q-M1f.563); shown on six programs |
 | 42 | [the open findings](42-findings/README.md) | what becomes of V-8, V-10, V-11, V-13, V-15, V-16 and V-17 | a disposition each |
 
 **Left for later on the user's word, and not asked**: how `std.core` is customised (Q-M1f.551).
@@ -47,3 +47,7 @@ are ignored, so they are on this machine only.
   rows of the wrong-answer register.
 - **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
   with it named twice; 16 with `std.contradiction` and it named twice.
+- **41**: a rule that concludes `(false)` and the same rule stating the key itself give the same dead root, the same
+  core and the same `refuted by`; `(think Ann (false))` is alive; `:ein dead`, both clauses on one rule and `(import
+  std.core)` are each refused with a line of their own; a state file dumped the day before no longer loads.
+

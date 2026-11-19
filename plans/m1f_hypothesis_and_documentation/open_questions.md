@@ -490,6 +490,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
 | [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
+| [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41) |
+| [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **defaulted 2026-11-19** (P1f.21's S1f.21.10, four consequences of Q-M1f.551): an import of `std.core` is refused; a saved file written before no longer loads; an `$EIN_STDLIB` that names no library refuses every program; the container is `einb/2.2`; built `68c3d5d0`. For the user to revise (review item 41) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10469,4 +10471,46 @@ has nothing to decide.**
 
 **What follows from it.** No stage. In the second part, S1f.21.12's readings on the declarator `hrule` and on the
 lists and the closure stand at their defaults, each *as it is*, by this ruling.
+
+### Q-M1f.562 — The key's readings, as built
+
+**Raised** 2026-11-19 by the plan of P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md),
+its readings 1 and 3 to 7. **Put, not ruled**; each default taken and built, `68c3d5d0`, shown on programs in
+[review item 41](p1f.21_verdicts_as_rules/review/part-1/41-S1f.21.10-readings/README.md).
+
+1. **A rule's conclusion**: (a) `:assert` or `:ein`, never both, and a word that is not the engine's refused at
+   load, **taken**; (b) a rule may state both.
+2. **Who may state the key**: (a) any rule, a program's own among them, read by *forbid* as a rule that concludes
+   `(false)` is, **taken**; (b) only the standard library's rule.
+3. **What `refuted by` names**: (a) the program's rules, the module's rule read through, so that no read-out row
+   moved, **taken**; (b) the rule that ended the state.
+4. **When a rule with the key fires**: (a) before anything else the agenda holds, so that a node stopped at its
+   first contradiction stops where it did, **taken**; (b) with the others that lead to a death.
+5. **The surfaces' words for a dead state**: (a) *holds a contradiction*
+   ([Q-M1f.553](#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation)), **taken**; (b) *is
+   inconsistent*.
+
+The word `false` in the grammar and `:expect (false)` are S1f.21.11's.
+
+### Q-M1f.563 — What a module every program gets brings
+
+**Raised** 2026-11-19 by the build of P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md).
+**Put, not ruled.** [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) ruled `std.core`
+always loaded. Four things follow in the build, each taken by default and shown in
+[review item 41](p1f.21_verdicts_as_rules/review/part-1/41-S1f.21.10-readings/README.md):
+
+- **(a) an import of `std.core` is refused**, in a program or a module: the module stands in one place, last, under
+  full names, so that a program and its container list the same rules in the same order;
+- **(b) a saved file written before no longer loads**: a saved file carries every module it needs and reads no
+  other file, and an older one carries no `std.core`. The corpus's one saved file was written again;
+- **(c) an `$EIN_STDLIB` that names no standard library refuses every program**, where it refused one that
+  imported from the library;
+- **(d) the container's format is `einb/2.2`**, with a section for the firings that ended a saved state, without
+  which a saturated dead knowledge base did not come back dead.
+
+`std.core` declares no relation. It may ([P1f.21's finding V-14](p1f.21_verdicts_as_rules/findings.md#v-14--a-declaration-an-import-brings-is-not-inert),
+the user's correction); the one natural declaration, of `false`, cannot be written while `false` is a reserved
+word, which is S1f.21.11's.
+
+Built: `68c3d5d0`.
 

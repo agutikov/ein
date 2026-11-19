@@ -17,8 +17,8 @@ idea, hypotheses as ordinary facts, is put as
 with runs ([review item 34](review/part-2/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
 its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
-(*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6 and S1f.21.8 are done** (the same day), the second merged but for
-`std.debts`, held for part 2; **S1f.21.10 is started**.
+(*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6, S1f.21.8 and S1f.21.10 are done** (the same day), the second merged but
+for `std.debts`, held for part 2. **S1f.21.11 is next, on the user's word.**
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
@@ -300,7 +300,7 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 |---|---|---|---|
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **done 2026-11-19**: `d35408cb`, `8d8327ce`, `c9ea9597`, `d1c9d4b3`, `984137bf`; V-2, V-3 and V-4 fixed, V-9 entered; its three readings took their defaults (Q-M1f.552 to .554); no answer moved. The batch's container gate is the coordinator's, with S1f.21.8's merge |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation and the contradiction, each a module a program imports; and the requirement, the payment and `discharged` | **done 2026-11-19; merged in part**: `std.negation` and `std.contradiction` (`b0ee99f4`) by the merge `ca98dec2`; `std.debts` (`6b76c164`) built and **held on the stage's branch for part 2**. Its readings: Q-M1f.555 (two modules for the negation, not the default), Q-M1f.556. The batch's container gate runs on the merge |
-| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **started 2026-11-19**, once S1f.21.6 and S1f.21.8 were merged, on the user's word (*"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*); in the main tree; `std.core` always loaded, ruled (Q-M1f.551) |
+| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **done 2026-11-19**: `68c3d5d0`, `946ee788`; no answer moved over the 913 corpus files; its readings and the four consequences of an always-loaded module are Q-M1f.562 and Q-M1f.563, review item 41; the gate in the runner's image and the nightly are run on its last commit |
 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.10, S1f.21.8, V-1 and a choice with no default (how the rules reach every relation), Q-M1f.447 |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | planned, **not started**; after S1f.21.8, S1f.21.10 and S1f.21.11 |
 

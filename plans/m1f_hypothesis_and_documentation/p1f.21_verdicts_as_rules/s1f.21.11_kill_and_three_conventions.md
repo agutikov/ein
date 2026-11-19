@@ -9,7 +9,9 @@ kernel's reading (items 24 and 25). **Not started.** Its direction is **ruled**:
 library's conventions, `eq` and `neq` stay the kernel's.
 **Group:** [G](modifications.md#g-the-verdict-as-a-rules-conclusion-einkill-and-three-names-as-conventions), items
 26 to 29.
-**Waits on:** [S1f.21.10](s1f.21.10_the_kernels_prefix.md), the key and the module every program gets;
+**Waits on:** [S1f.21.10](s1f.21.10_the_kernels_prefix.md), the key and the module every program gets, **done**: the
+kernel reads no `(false)` to judge a state, a rule of `std.core` is read through in an explanation (`Rule::implicit`),
+and `monotone::leads_to_an_end` is what the agenda, *forbid* and the detector read;
 [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md), the contradiction's rules;
 [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) and the choice of task 1.1,
 **which has no default**, for task 2.1;
@@ -68,7 +70,8 @@ Each a commit that leaves the gate green, so the stage can stop between any two.
 2. **The surfaces' words** (item 27): the read-out, `:expect (false)`, the events' `kind: dead`, the agenda's
    first half and the `refuted by` row.
 3. **The reserved words** (item 29): what a declarator may not bind is `eq`, `neq` and the connectives; `false` and
-   `not` are the standard library's names.
+   `not` are the standard library's names, and `std.core` may then declare them, which it could not while they
+   were reserved (S1f.21.10's record).
 4. **`relation`** (item 28): the count check by Q-M1f.447's ruling; the blind rung's reading of the declarations
    stays until [S1f.21.12](s1f.21.12_hypotheses_as_facts.md).
 

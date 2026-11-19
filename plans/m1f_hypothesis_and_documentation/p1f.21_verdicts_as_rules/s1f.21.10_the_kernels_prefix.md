@@ -70,7 +70,9 @@ shown at its end; the second is the user's ruling and no default. **It stops onl
    imports; the other reading, a program imports the convention, leaves every program that writes `(false)` and
    imports nothing unable to refute: `(false)` is on 691 lines of 284 files. **How a program customises it is not
    this stage's**: the stage builds no way to leave the module out, to replace it or to add to it, and builds
-   nothing that would have to be undone for one.
+   nothing that would have to be undone for one. **It may declare** (the user, the same day, correcting the
+   stage's brief: *"there is no requirement "std.core must declare nothing" - it may declare"*); as built it
+   declares nothing, the one natural declaration, of `false`, being unwritable while `false` is reserved.
 3. **A program's own rule may state the key**, from whatever it matches, with no `(false)` between; *forbid* reads
    such a rule as it reads one that concludes `(false)` today.
 4. **`refuted by` names the program's rules**: the module's rule is left out of an explanation, so no read-out row

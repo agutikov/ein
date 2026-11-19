@@ -263,7 +263,7 @@ programs ([§ 9](open_facts.md#9-what-s1f214-answers), items 1 and 6).
 
 **Ruled 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)): in items 24 and 25 the fact `(ein.kill)` is replaced by **a rule's key,
 `:ein` *word***, the word the engine's and no fact; the word is `inconsistent` ([Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), ruled),
-and S1f.21.10 builds it. Where an item below says
+and S1f.21.10 built it, 2026-11-19 (`68c3d5d0`): items 24 and 25 are done. Where an item below says
 `(ein.kill)` or `ein.kill`, read *a rule with the key*.
 
 24. **The kernel reads one fact in a saturation, `(ein.kill)`**, read only where it is held and refused under an

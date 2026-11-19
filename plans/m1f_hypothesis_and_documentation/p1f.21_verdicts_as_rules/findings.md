@@ -28,6 +28,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-15](#v-15--refuted-by-names-one-of-two-contradictions-by-the-relations-name) | `refuted by` names one of two contradictions over one core by the relation's name | S1f.21.8 | open; S1f.21.11's task 1.3 |
 | [V-16](#v-16--importing-stdalgebra-moves-a-program-that-uses-bijective-for-itself) | importing `std.algebra` moves a program that uses `bijective` for itself | S1f.21.8 | open |
 | [V-17](#v-17--the-stdlib-censuss---check-exits-1-on-a-saved-file) | the stdlib census's `--check` exits 1 on a saved file | S1f.21.8 | open |
+| [V-18](#v-18--the-measurement-examples-read-a-refutation-by-false) | the measurement examples read a refutation as a rule that writes `(false)` or a negation, and not one that states the key | S1f.21.10 | open |
+| [V-19](#v-19--a-saved-files-first-line-speaks-of-the-modules-it-imports) | a saved file's first line says *every module it imports*, and it carries `std.core` too | S1f.21.10 | open |
+| [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | open; S1f.21.2's |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -518,4 +521,22 @@ importing it means; no page lists them per module.
 `tests/saved/04_a_saved_node.ein [test]` as a failure, *exit 0 and no event file*: a saved file's claims are not
 checked, and `ein test` writes no events for it. The census itself is whole, every rule of the standard library
 activated. It is a dev-host step, so no gate reads it.
+
+## V-18 — The measurement examples read a refutation by `(false)`
+
+**Found** 2026-11-19 by S1f.21.10, outside its scope. The examples under `ein-infer/examples/` that take censuses
+(`shared/census.rs`' `refutes`, `refutation_census.rs`) still call a rule a refutation where it writes `(false)` or a
+negation. They compile and agree with the engine's own classifier, `monotone::refutes`, on every corpus program but
+one whose rule states `:ein inconsistent` itself. No gate reads them.
+
+## V-19 — A saved file's first line speaks of the modules it imports
+
+**Found** 2026-11-19 by S1f.21.10. A saved file's fixed first line says it carries *every module it imports*; since
+that stage it carries `std.core` as well, which nothing imports. Engine output, so the stage left it. A wording.
+
+## V-20 — A page shows a trace that now has a step more
+
+**Found** 2026-11-19 by S1f.21.10. `docs/ein/user/03-syntax-and-semantics/10-theory.md` shows two steps of a dead
+root's trace, the second ending *Derives `false`*; the trace now has a third, the module's rule stating the key.
+The page does not say the two are the last, so it is not false; it is S1f.21.2's to show the whole.
 

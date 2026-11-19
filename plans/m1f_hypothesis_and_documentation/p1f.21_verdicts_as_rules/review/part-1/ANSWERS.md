@@ -97,22 +97,28 @@ re-render of the bundle rewrites the READMEs and never this file.
 
 ---
 
-## 41 · The readings S1f.21.10 is building on
+## 41 · S1f.21.10 as built: the key's readings, and what a module every program gets brings
 
 [The item](41-S1f.21.10-readings/README.md)
 
-**The defaults**, being built now; write the number of any you want otherwise:
+**Built, each a default**; write the number or the letter of any you want otherwise:
 
 1. a rule states `:assert` or `:ein`, never both;
 3. any rule may state the key, a program's own among them;
-4. `refuted by` names the program's rules, and `std.core`'s rule is left out;
+4. `refuted by` names the program's rules, and `std.core`'s rule is read through;
 5. a rule with the key fires before anything else the agenda holds;
-6. the word `false` in the grammar and `:expect (false)` are left to S1f.21.11;
 7. the surfaces go on saying *holds a contradiction*, and not *is inconsistent*.
+
+And of `std.core` always loaded:
+
+- **(a)** an import of `std.core` is refused;
+- **(b)** a saved file written before this stage no longer loads;
+- **(c)** an `$EIN_STDLIB` that names no standard library refuses every program;
+- **(d)** the container's format is `einb/2.2`.
 
 **Your answer:** 
 
-**Notes:**
+**Notes:** 
 
 ---
 

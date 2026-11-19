@@ -1,0 +1,4 @@
+;; (false) under an arrow is a proposition somebody holds: nothing reads it, and the state is alive.
+(think Ann (false))
+(solve :no-search)
+(query :goal (think ?who (false)))
