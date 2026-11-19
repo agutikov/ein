@@ -8972,6 +8972,12 @@ it is written at, a declaration a count, where today a second declaration of a n
 a second declaration of the same count stays a duplicate; and what the blind enumerator, a `:why` and a goal's
 check, each of which reads a declaration, do with two.
 
+**The reading confirmed and widened, 2026-11-20.** The user, of the three readings said back: *"c - yes, it may
+because relation declaration is ordinary fact, and it may appear multiple times, rules may define what it means and
+how those multiple declarations used."* So a declaration is an ordinary fact: a relation may be declared more than
+once, at one count or at several, and no declaration is refused as a duplicate of another; what several
+declarations of a name mean is what rules make of them. P1f.21's S1f.21.11 builds it.
+
 ### Q-M1f.448 — `--models`, with `key` and `grid` gone
 
 **Raised** 2026-11-18 by S1f.23.2's build, reading 1. **Put, not ruled.** The user ruled `--models key` and
@@ -10501,6 +10507,11 @@ with goes; that the three modules of the standard library that conclude a negati
 imports one of them has it; and that each corpus program that writes a negation, imports nothing and relies on the
 death gains the import, so that no corpus answer moves.
 
+**The reading confirmed, 2026-11-20.** The user, of the three readings said back: *"b - yes"*. So the import alone
+is the switch and the fact `(clash-of-declared)` goes from the module; a module of the standard library that
+concludes a negation and means a death by it imports `std.contradiction`; a corpus program that relies on the death
+gains the import. P1f.21's S1f.21.11 builds it.
+
 ### Q-M1f.558 — *Forbid* and the contradiction as rules
 
 **Raised** 2026-11-17 as P1f.21's finding [V-1](p1f.21_verdicts_as_rules/findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none);
@@ -10569,6 +10580,11 @@ Two things:
 The elimination of a double negation stays a module a program imports, (a): no answer said otherwise, and it is
 what [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) rules of the
 contradiction.
+
+**The reading confirmed, 2026-11-20.** The user, of the three readings said back: *"3 readings: a - yes, b - yes, c - yes, it may because relation declaration is ordinary fact, and it may appear multiple times, rules may define what it means and how those multiple declarations used. Start stages, if anything can be done in parallel - do it."* So (a): the
+refusal at load of a program in which a rule could derive an activator that puts a fact where a relation's name
+goes becomes a warning, and the program loads. It reverses [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused)
+(b). P1f.21's S1f.21.17 builds it.
 
 ### Q-M1f.560 — `std.debts`: with its stage, or with the second part
 

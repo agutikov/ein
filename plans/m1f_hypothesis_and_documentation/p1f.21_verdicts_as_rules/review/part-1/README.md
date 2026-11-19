@@ -6,16 +6,16 @@
 under its question in [the ledger](../../../open_questions.md) and in
 [the phase's README](../../README.md#the-rulings-of-the-answers-file), and the items are out of the bundle.
 
-## Read off your answers, and said back
+## The three readings, confirmed
 
-Three things your answers do not say in so many words. Each is built only after you have seen it, and a word from
-you changes it.
+Three things your answers did not say in so many words were said back to you, and you confirmed each on
+2026-11-20: *"3 readings: a - yes, b - yes, c - yes, it may because relation declaration is ordinary fact, and it may appear multiple times, rules may define what it means and how those multiple declarations used. Start stages, if anything can be done in parallel - do it."*
 
-| # | your words | read as | where it waits |
+| # | your words | confirmed as | built by |
 |---|---|---|---|
-| 1 | item 38: *"forbid becomes a warning, fix :hrulse activators syntax"* | the first half is about **that item's refusal**, which is not *forbid*: the loader refuses a program in which a rule *could* derive an activator that puts a fact where a relation's name goes. Read as: it becomes a warning and the program loads, which reverses your *"Q1 - b"* of 2026-11-08 | [S1f.21.17](../../s1f.21.17_the_loader_warns_and_std_core_by_import.md)'s task 1, not built before your word |
-| 2 | item 35: *"… then it should also import std.contradiction"*; item 40: *"as built"* | the two differ on one fact: as built, a program writes `(clash-of-declared)` beside the import to ask for the rules. Read as: the import alone is the switch, and that fact goes. Also: the library's modules that conclude a negation import the module, and each corpus program that relies on the death gains the import, so no corpus answer moves | [S1f.21.11](../../s1f.21.11_kill_and_three_conventions.md)'s task 1.1, shown on the corpus first |
-| 3 | item 36: *"… relations overloading … different number of args"* | a relation may be **declared** once a count; today a second declaration of a name is refused as a duplicate | S1f.21.11's task 1.4, shown first |
+| a | item 38: *"forbid becomes a warning, fix :hrulse activators syntax"* | the loader's refusal of a program in which a rule *could* derive an activator that puts a fact where a relation's name goes becomes a warning, and the program loads | S1f.21.17 |
+| b | item 35: *"… then it should also import std.contradiction"* | the import alone is the switch, and the fact `(clash-of-declared)` goes; the library's modules that conclude a negation import the module; a corpus program that relies on the death gains the import | S1f.21.11 |
+| c | item 36: *"… relations overloading … different number of args"* | wider than put: a declaration is an ordinary fact, so a relation may be declared more than once, at one count or at several, and rules say what the several mean | S1f.21.11 |
 
 ## What was ruled
 

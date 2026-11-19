@@ -2,8 +2,9 @@
 
 **Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's answers to review items 38 and 41
-([the rulings](README.md#the-rulings-of-the-answers-file)); **not started**: it starts on the user's word.
-**Waits on:** for task 1, **the user's word that the reading below is theirs**; for tasks 2 and 3, nothing. In
+([the rulings](README.md#the-rulings-of-the-answers-file)); **started 2026-11-20** on the user's word (*"Start stages, if
+anything can be done in parallel - do it."*), beside S1f.21.11 and the examples of S1f.21.12.
+**Waits on:** nothing. Task 1's reading is confirmed by the user, 2026-11-20: *"a - yes"*. In
 order it is the next stage of part 1, before [S1f.21.11](s1f.21.11_kill_and_three_conventions.md);
 [S1f.21.16](s1f.21.16_hrules_lists_activators.md), which stood before it, is dropped.
 **Writes:** the loader's check on an activator a rule could derive and the compiler's reading of such an
@@ -28,8 +29,7 @@ S1f.21.15). Item 38 is about another refusal: at load, of a program in which a r
 that puts a fact where a relation's name goes, whether or not any run derives one. The answer stands under that
 item, and stood there when the user was told that the two differ and asked which was meant; so it is read as that
 item's option (d): **this refusal becomes a warning, and the program loads**. It reverses
-[Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), the user's of 2026-11-08. **Nothing of
-this task is built before the user has said the reading is theirs.**
+[Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), the user's of 2026-11-08. **The user confirmed it, 2026-11-20**: *"3 readings: a - yes"*.
 
 What the check is, and where each step of it was decided, is in review item 38's page (in `git log`, last at
 `bedbfbd4`) and in the ledger's Q-M1f.559.

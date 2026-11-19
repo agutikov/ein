@@ -4,7 +4,8 @@
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 re-planned twice the same day, on the answer to Q-M1f.399 and then when the user unblocked
 [S1f.21.10](s1f.21.10_the_kernels_prefix.md), which now builds the engine's key and takes `false` out of the
-kernel's reading (items 24 and 25). **Not started.** Its direction is **ruled**:
+kernel's reading (items 24 and 25). **Started 2026-11-20** on the user's word (*"Start stages, if anything can be
+done in parallel - do it."*), beside S1f.21.17. Its direction is **ruled**:
 [the fourth instruction](README.md#the-fourth-instruction), `not`, `relation` and `false` are the standard
 library's conventions, `eq` and `neq` stay the kernel's.
 **Group:** [G](modifications.md#g-the-verdict-as-a-rules-conclusion-einkill-and-three-names-as-conventions), items
@@ -37,7 +38,8 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    - those where it is not: a pair over a relation the program does not declare, or of more than six arguments,
      each with what would give it its death, a declaration or an activator written by hand.
 
-   **Three readings taken of the ruling, shown here and built only after the user has seen them:**
+   **Three readings taken of the ruling. The user confirmed them, 2026-11-20** (*"b - yes"*), so they are built, and
+   the lists below are the stage's record and no stop:
    - **the import is the switch**, with no fact beside it, so `(clash-of-declared)` goes from the module. Item 35's
      last line asked it, and the answer says *"should also import std.contradiction"*; item 40's *"as built"*
      reads the other way on this one fact;
@@ -59,9 +61,10 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    ([V-15](findings.md#v-15--refuted-by-names-one-of-two-contradictions-by-the-relations-name)).
 4. **The argument-count check goes** (ruled, Q-M1f.447 (c)). The user: *"(c) and I accept program may be not well-formed intensionally or occasionally and be silent while not binding relations with different args count. More than that - let's consider this as relations overloading but in only meaning possible in ein - in structural meaning, that means different number of args, because there is no types in ein and will not ever be."*
    Shown: each corpus program the check refuses today, loading, with its answer; a program that writes one relation
-   at two counts, each query answering its count. **A reading taken, shown and built only after it is seen**: a
-   relation may be **declared** once a count, where a second declaration of a name is a duplicate today, and a
-   second declaration of one count stays one; and what reads a declaration reads each: the blind rung's atoms, a
+   at two counts, each query answering its count. **The reading, confirmed and widened by the user, 2026-11-20**: *"c - yes, it may because relation declaration is
+   ordinary fact, and it may appear multiple times, rules may define what it means and how those multiple declarations
+   used."* So a relation may be **declared** more than once, at one count or at several, and no declaration is refused
+   as a duplicate, where a second declaration of a name is refused today; and what reads a declaration reads each: the blind rung's atoms, a
    `:why`'s `{?n}`, a goal's and a claim's check, and the contradiction's `clash-of-N`, one activator a count. With
    [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count).
 5. **The cost**: the bench set by `utils/bench_env.sh`, the pair check against the rules. A measurement, shown; no

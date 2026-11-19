@@ -6,8 +6,9 @@
 ([the answers to items 44 to 46](README.md#the-answers-to-items-44-45-and-46),
 [to items 47 to 51](README.md#the-answers-to-items-47-to-51),
 [to items 52 to 55](README.md#the-answers-to-items-52-to-55),
-[to items 56 and 57](README.md#the-answers-to-items-56-and-57)). **Not started**: it starts on the user's word, after
-part 1.
+[to items 56 and 57](README.md#the-answers-to-items-56-and-57)). **Its task 1, the examples, started 2026-11-20** on the user's word
+(*"Start stages, if anything can be done in parallel - do it."*), beside part 1's two builds: it changes no code
+and stops for the user. Its build starts after the user has read them, and after part 1.
 **Waits on:** part 1. No question of it is open.
 **After it:** [S1f.21.18](s1f.21.18_the_hrule_form_removed.md), which removes the `hrule` form and the keyword
 `:hrules`; [S1f.21.14](s1f.21.14_the_pages_of_open.md), the pages.
