@@ -25,7 +25,7 @@ re-render of the bundle rewrites the READMEs and never this file.
   binds. Not needed under (d).
 - With (d), one thing more: is the import the switch, or the fact `(clash-of-declared)` beside it, as built?
 
-**Your answer:** 
+**Your answer:** (d) if any program writes a negation and wants KB with P and not P dead - then it should also import std.contradiction. Otherwise in this program's theory there is no contradictions. Or it/they are defined different. For example: Kleene K3, Priest's LP, Belnap–Dunn FDE, Relevant logic, Paraconsistent logic. 
 
 **Notes:**
 
@@ -42,7 +42,7 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **(c)** dropped: a relation may be written at any count.
 - **No default is taken.** Only S1f.21.11's last build step waits on it.
 
-**Your answer:** 
+**Your answer:** (c) and I accept program may be not well-formed intensionally or occasionally and be silent while not binding relations with different args count. More than that - let's consider this as relations overloading but in only meaning possible in ein - in structural meaning, that means different number of args, because there is no types in ein and will not ever be.
 
 **Notes:**
 
@@ -55,8 +55,10 @@ re-render of the bundle rewrites the READMEs and never this file.
 **Options:**
 
 - **(a)** *forbid* reads the module's contradiction as it reads the kernel's today; the seven corpus programs load
-  as now. **Default.**
-- **(b)** *forbid* reads the rules as written; the seven are refused.
+  as now. First proposed; withdrawn.
+- **(b)** *forbid* reads the rules as written; the seven are refused where the contradiction is on. **Proposed**: it
+  is what the standing decision on a refutation under an `absent` says, with nothing added, and all seven are
+  programs the engine claims nothing of.
 - **(c)** left until M1n rules what *forbid* covers; the contradiction stays the kernel's until then.
 
 **Your answer:** 

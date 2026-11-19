@@ -486,7 +486,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
 | [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
 | [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled**: put 2026-11-19 (P1f.21's review item 35), five ways. The user's remark of the same day reads it as no gap but a feature: the contradiction is the standard library's, on by import for declared relations; **proposed since: (d)**. S1f.21.11's task 2.1 waits on it |
-| [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
+| [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; proposed (b)** since 2026-11-19: *forbid* reads the contradiction's rules as any rule, which is the standing decision Q-M1e2.5 with nothing added; the seven corpus programs, each one the static check flags, are refused where the contradiction is on. Put 2026-11-19 (P1f.21's review item 37, its finding V-1), first with (a) proposed |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
 | [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
@@ -10407,9 +10407,12 @@ and seven corpus programs that load today are refused, each one the static check
 the witnesses of three open rows of the wrong-answer register.
 
 - **(a)** *forbid* reads the module's contradiction as it reads the kernel's today, not as a refutation resting on
-  an absence: the seven load and are answered as now. **Proposed default**: it changes no program, and what
-  *forbid* should read of a flagged program is M1n's.
-- **(b)** *forbid* reads the rules as written: the seven are refused.
+  an absence: the seven load and are answered as now. First proposed, since it changes no program; **withdrawn**
+  2026-11-19, when the user asked what is decided of non-monotone programs: that reason argues from the answers of
+  flagged programs, which the standing ruling sets aside, and it makes one module's rules special to *forbid*.
+- **(b)** *forbid* reads the rules as written: the seven are refused where the contradiction is on. **Proposed
+  now**: it is [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) as it
+  stands, the kernel's own contradiction having escaped it only by being no rule.
 - **(c)** left until M1n rules what *forbid* covers, the contradiction staying the kernel's until then.
 
 **What waits on it.** S1f.21.11's task 2.1.
