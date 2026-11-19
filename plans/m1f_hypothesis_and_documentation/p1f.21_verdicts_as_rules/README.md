@@ -14,7 +14,7 @@ take it onto programs, **not started**; S1f.21.2 and S1f.21.3 wait on it, and th
 folded into them, [`overview.md`](overview.md) is the distilled overview **for review**, and the instruction's
 idea, hypotheses as ordinary facts, is put as
 [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
-with runs ([review item 34](review/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
+with runs ([review item 34](review/part-2/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
 its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
 (*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6 and S1f.21.8 are done** (the same day), the second merged but for
@@ -35,7 +35,8 @@ on the user's word; it resumes when this phase is done.
 
 **Review material:** [`review/`](review/README.md): **every question of the phase that is open** (written there
 2026-11-19 on the user's word), sorted by the phase's two parts, each with its options, its default where one
-stands, and runs on programs where a run shows it; [`review/ANSWERS.md`](review/ANSWERS.md) takes the answers. Moved
+stands, and runs on programs where a run shows it; in two folders, a part each, with an answers' file each ([`part-1/ANSWERS.md`](review/part-1/ANSWERS.md),
+[`part-2/ANSWERS.md`](review/part-2/ANSWERS.md)). Moved
 here from the milestone's review bundle on the user's word (2026-11-18).
 
 **The modifications, listed:** [`modifications.md`](modifications.md), written 2026-11-19 on the user's word:
@@ -166,11 +167,11 @@ Each part, and where it is answered:
 - **Hypotheses as ordinary facts**: it runs today at no change of answer in the reading *asked*, and cannot in the
   reading *still open*; put as [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
   with the recommendation to establish that foundation here and to decline the two uses for now, each for a reason
-  a run gives ([review item 34](review/34-Q-M1f.549/README.md)).
+  a run gives ([review item 34](review/part-2/34-Q-M1f.549/README.md)).
 
 ## The answer on the names
 
-The user, 2026-11-19, in [`review/ANSWERS.md`](review/ANSWERS.md), item 33, verbatim:
+The user, 2026-11-19, in the bundle's answers' file, item 33, verbatim:
 
 > no need to reserver `ein.` prefix; make (false) an stdlib convention; add rules detecting contradictions infereing
 > (false) and then - we can make another key, not :assert, but special engine control key `:ein false` which

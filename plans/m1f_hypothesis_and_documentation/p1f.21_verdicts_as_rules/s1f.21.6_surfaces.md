@@ -30,7 +30,7 @@ No answer and no word of the language moves: each task changes what a surface pr
    true of a held `(false)` and of a pair today, and of a held `(ein.kill)` after
    [S1f.21.11](s1f.21.11_kill_and_three_conventions.md). The other reading: left until that stage makes the words
    literally true.
-4. **An owing node below a non-empty $R$ has no saved file** ([item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building)).
+4. **An owing node below a non-empty $R$ has no saved file** ([item 32 § 7](review/part-2/32-Q-M1f.390/README.md#7-found-while-building)).
    Shown on a program and put. **Reading 3**, default: not built, and entered in [`findings.md`](findings.md) as a
    finding of its own; the other reading: `--dump-answer` writes the owing frontier whether $R$ is empty or not.
 5. **The plan's own numbers**, no project file: the five corrections

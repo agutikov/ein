@@ -1,10 +1,10 @@
 # 36 · Q-M1f.447: the argument-count check, once `relation` is a convention
 
-[← the topic](../README.md) · [← the phase](../../README.md) ·
-[the ledger](../../../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)
+[← the topic](../README.md) · [← the phase](../../../README.md) ·
+[the ledger](../../../../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention)
 
 **Part 1. Not ruled, and no default** (yours: *"argument-count check - will think about it in p1f.21, record as open
-question"*). Only the last build step of [S1f.21.11](../../s1f.21.11_kill_and_three_conventions.md) waits on it,
+question"*). Only the last build step of [S1f.21.11](../../../s1f.21.11_kill_and_three_conventions.md) waits on it,
 its task 2.4.
 
 **The question.** `relation` is ruled a convention of the standard library: a declaration is an optional fact a
@@ -34,7 +34,7 @@ which the standing rules already say.
   a state holds it and no longer when the file loads, and it kills the state where it refused the program. It
   cannot be run today: the loader refuses the program before a rule could judge it.
 - **(c) Dropped.** Ein has no types and a label means what a rule makes it mean
-  ([Q-M1f.372](../../../../../docs/decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)),
+  ([Q-M1f.372](../../../../../../docs/decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)),
   so a relation may be written at any count. A slip of the hand in a fact, one argument short, then loads in
   silence.
 

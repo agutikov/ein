@@ -10147,7 +10147,7 @@ verbatim:
 **Open: not ruled.** Today a candidate is a tuple in a list the generator keeps beside root, and no knowledge base
 holds it until a commitment does; a stored negation is a held fact that points at a fact not held
 ([`overview.md` § 2](p1f.21_verdicts_as_rules/overview.md#2-where-things-are-held-today)). The runs are
-[review item 34](p1f.21_verdicts_as_rules/review/34-Q-M1f.549/README.md)'s, on today's engine:
+[review item 34](p1f.21_verdicts_as_rules/review/part-2/34-Q-M1f.549/README.md)'s, on today's engine:
 
 - *zebra2* and the seats program, with their candidates concluded by an ordinary rule as held facts and one generic
   hrule that supposes what root holds so, answer as before, the read-out the same byte for byte;
@@ -10179,7 +10179,7 @@ step `not` took, one more context, and adds no mechanism; (c) adds a part of a n
 for a gain (b) shows is not needed; use 1 is what the tree route does already (the owed instance with the fewest
 alternatives, licence L5), no program is known to want another order, and it can be added on (b)'s facts; use 2 and
 (d) wait on M1n's stratum-order admission (V-8), and (d) is the cube. The reasons at length are
-[item 34 § 6](p1f.21_verdicts_as_rules/review/34-Q-M1f.549/README.md#6-the-recommendation-and-its-reasons).
+[item 34 § 6](p1f.21_verdicts_as_rules/review/part-2/34-Q-M1f.549/README.md#6-the-recommendation-and-its-reasons).
 
 **What waits on it.** P1f.21's [S1f.21.12](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md), planned
 under (b), and [S1f.21.13](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md), planned under the
@@ -10341,7 +10341,7 @@ only. A relation of seven arguments or more has no rule: it is the choice of S1f
 
 **Raised** 2026-11-19 by the list of P1f.21's modifications (its third point) and planned as the first of
 [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md)'s examples; put to the user the same
-day with runs, [review item 35](p1f.21_verdicts_as_rules/review/35-Q-M1f.557/README.md). **Open: not ruled, and no
+day with runs, [review item 35](p1f.21_verdicts_as_rules/review/part-1/35-Q-M1f.557/README.md). **Open: not ruled, and no
 default taken.**
 
 `not` is ruled a convention of the standard library (P1f.21's fourth instruction), its meaning the contradiction's
@@ -10363,7 +10363,7 @@ would move is counted by that stage's first task, with a build that has the chec
 ### Q-M1f.558 — *Forbid* and the contradiction as rules
 
 **Raised** 2026-11-17 as P1f.21's finding [V-1](p1f.21_verdicts_as_rules/findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none);
-put to the user 2026-11-19 with runs, [review item 37](p1f.21_verdicts_as_rules/review/37-Q-M1f.558/README.md).
+put to the user 2026-11-19 with runs, [review item 37](p1f.21_verdicts_as_rules/review/part-1/37-Q-M1f.558/README.md).
 **Open: not ruled.**
 
 *Forbid* reads rules, and the kernel's contradiction is none. Written as the standard library's rules it is read,
@@ -10383,7 +10383,7 @@ the witnesses of three open rows of the wrong-answer register.
 **Raised** 2026-11-19 by P1f.21's S1f.21.8, its finding
 [V-12](p1f.21_verdicts_as_rules/findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands);
 put to the user the same day with a program run four ways,
-[review item 38](p1f.21_verdicts_as_rules/review/38-Q-M1f.559/README.md). **Open: not ruled.**
+[review item 38](p1f.21_verdicts_as_rules/review/part-1/38-Q-M1f.559/README.md). **Open: not ruled.**
 
 The meaning of `not` is the contradiction and the elimination of a double negation. The elimination's rule
 concludes a fact whose relation is its parameter, and the loader refuses it beside a program that names a rule of
@@ -10401,7 +10401,7 @@ corpus programs, which import nothing. In a module every program gets it would r
 
 **Raised** 2026-11-19 by the coordinator, when the user cut P1f.21 in two (*"I want to leave open facts and
 hypotheses to the second part of the phase and finishe everything else before"*) while S1f.21.8 was building its
-third module; [review item 39](p1f.21_verdicts_as_rules/review/39-Q-M1f.560/README.md). **Open: not ruled.**
+third module; [review item 39](p1f.21_verdicts_as_rules/review/part-2/39-Q-M1f.560/README.md). **Open: not ruled.**
 
 `std.debts` writes what an obligation requires and what pays it as facts, and `(debts-discharged)` where nothing
 required is unpaid. It is built and tested, one commit (`6b76c164`) on the stage's branch, additive, and it decides

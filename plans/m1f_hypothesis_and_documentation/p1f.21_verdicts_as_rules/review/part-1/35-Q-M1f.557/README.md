@@ -1,16 +1,16 @@
 # 35 · Q-M1f.557: how the contradiction's rules reach every relation and count
 
-[← the topic](../README.md) · [← the phase](../../README.md) ·
-[the ledger](../../../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count)
+[← the topic](../README.md) · [← the phase](../../../README.md) ·
+[the ledger](../../../../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count)
 
 **Part 1. Not ruled, and no default.** It is the one choice
-[S1f.21.11](../../s1f.21.11_kill_and_three_conventions.md) cannot take by itself: its task 2.1 waits on it.
+[S1f.21.11](../../../s1f.21.11_kill_and_three_conventions.md) cannot take by itself: its task 2.1 waits on it.
 
 **The question.** `not` is ruled a convention of the standard library: a fact beside its stored negation is to be
 dead because rules say so, `std.contradiction`'s, and not because the kernel reads `not`. Those rules are written
 one a count of arguments, 0 to 6, and switched on a relation at a time, by an activator that `clash-of-N` derives
 from the relation's declaration. A relation is any atom first in a tuple, declared or not
-([Q-M1f.522](../../../../../docs/decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)).
+([Q-M1f.522](../../../../../../docs/decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)).
 So once the kernel's own check goes, **a relation no file declares, and one of seven arguments or more, has no
 contradiction**, where today every fact of every relation and count has one.
 
@@ -42,7 +42,7 @@ case to count.
   count up to the rules'. It costs the loader a word of the module's to write, and one fact a relation and count in
   every program.
 - **(b) One rule for every fact**: a premise that is a variable for a whole fact, `(and ?f (not ?f))`. No
-  activator, no count. [Q-M1f.393](../../../../../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)
+  activator, no count. [Q-M1f.393](../../../../../../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)
   refuses such a premise today, for a reason every analysis of a rule set rests on: each reads which relations a
   rule reads off its text.
 - **(c) The kernel keeps its check, as its way of running the module's rule.** Nothing moves and nothing is

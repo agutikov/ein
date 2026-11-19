@@ -1,7 +1,7 @@
 # 39 · Q-M1f.560: `std.debts`, with its stage or with the second part
 
-[← the topic](../README.md) · [← the phase](../../README.md) ·
-[the ledger](../../../open_questions.md#q-m1f560--stddebts-with-its-stage-or-with-the-second-part)
+[← the topic](../README.md) · [← the phase](../../../README.md) ·
+[the ledger](../../../../open_questions.md#q-m1f560--stddebts-with-its-stage-or-with-the-second-part)
 
 **Not ruled; held, which is the default.** It was put when you cut the phase in two and S1f.21.8 was still
 running; that stage reported before an answer, and the module was held.

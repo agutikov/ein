@@ -14,10 +14,10 @@ recommends (b). Your second instruction (*"instead of emitting (open ?R) emit (o
 hypothesis"*) stands beside (d): the open facts are the hypotheses themselves, `(open F J)`, moved out of *open*
 per node as a state decides them.
 
-Recorded in [`open_questions.md` § Q-M1f.390](../../../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
-(**put, not ruled**); the page to rule from is [`design.md` § 5](../../../p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation);
-your form is [`open_facts.md` § 4](../../../p1f.21_verdicts_as_rules/open_facts.md#4-open-f-the-hypothesis-itself) and
-[§ 5](../../../p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not).
+Recorded in [`open_questions.md` § Q-M1f.390](../../../../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
+(**put, not ruled**); the page to rule from is [`design.md` § 5](../../../../p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation);
+your form is [`open_facts.md` § 4](../../../../p1f.21_verdicts_as_rules/open_facts.md#4-open-f-the-hypothesis-itself) and
+[§ 5](../../../../p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not).
 
 Every run below is today's binary, `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged
 (`runs/ein-version.txt`); `tools/run.sh` makes every file.
@@ -236,7 +236,7 @@ at zebra2's, 3 and 2 at {(seats Ann C1)}; a debt is a disjunction of open facts,
 
 ## 4. The default
 
-**(b)**, recommended in [`design.md` § 5](../../../p1f.21_verdicts_as_rules/design.md#the-recommendation-b): it is all of
+**(b)**, recommended in [`design.md` § 5](../../../../p1f.21_verdicts_as_rules/design.md#the-recommendation-b): it is all of
 the *maybe* that can be had (the duplicate goes; the removal is what a verdict is, as *alive* is), it moves no
 licence, check, golden or state, and it does not close (c). The ledger's own strongest argument against it: the
 debt stays outside the knowledge base, so no rule and no claim reads one; (c) makes owed and discharged ordinary

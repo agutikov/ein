@@ -1,10 +1,10 @@
 # 37 · Q-M1f.558: *forbid*, once the contradiction is rules
 
-[← the topic](../README.md) · [← the phase](../../README.md) ·
-[the ledger](../../../open_questions.md#q-m1f558--forbid-and-the-contradiction-as-rules) ·
-[V-1](../../findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none)
+[← the topic](../README.md) · [← the phase](../../../README.md) ·
+[the ledger](../../../../open_questions.md#q-m1f558--forbid-and-the-contradiction-as-rules) ·
+[V-1](../../../findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none)
 
-**Part 1. Not ruled; a default is proposed.** [S1f.21.11](../../s1f.21.11_kill_and_three_conventions.md)'s task
+**Part 1. Not ruled; a default is proposed.** [S1f.21.11](../../../s1f.21.11_kill_and_three_conventions.md)'s task
 2.1 runs on it.
 
 **The question.** *Forbid* refuses, at load, a program whose refutation could rest on an `(absent …)` over a

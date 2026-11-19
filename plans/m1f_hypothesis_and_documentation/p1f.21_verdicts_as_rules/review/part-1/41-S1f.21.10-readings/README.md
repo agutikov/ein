@@ -1,6 +1,6 @@
 # 41 · The readings S1f.21.10 is building on
 
-[← the topic](../README.md) · [← the phase](../../README.md) · [the stage](../../s1f.21.10_the_kernels_prefix.md)
+[← the topic](../README.md) · [← the phase](../../../README.md) · [the stage](../../../s1f.21.10_the_kernels_prefix.md)
 
 **Part 1. The stage is running; each reading is a default it takes, to be shown with runs when it reports.** They
 are listed now so that one you would rather have otherwise is said before it is built. The stage's two rulings are
@@ -20,4 +20,4 @@ is no requirement "std.core must declare nothing" - it may declare"*). If a decl
 program's claim, the stage shows which and why and does not re-bank it.
 
 **Left for later on your word, and not asked here**: how `std.core` is customised, left out, replaced or added to
-([Q-M1f.551](../../../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)).
+([Q-M1f.551](../../../../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)).

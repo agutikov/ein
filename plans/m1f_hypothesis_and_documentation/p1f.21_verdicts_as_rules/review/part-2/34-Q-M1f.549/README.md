@@ -1,9 +1,9 @@
 # 34 · Q-M1f.549: hypotheses as facts — held, in which reading, and how far the search goes into rules
 
-[← the topic](../README.md) · [← the phase](../../README.md) · [the overview](../../overview.md) ·
-[the ledger](../../../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
+[← the topic](../README.md) · [← the phase](../../../README.md) · [the overview](../../../overview.md) ·
+[the ledger](../../../../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
 
-**Raised** 2026-11-19 by the user, [the fifth instruction](../../README.md#the-fifth-instruction): *"what if we
+**Raised** 2026-11-19 by the user, [the fifth instruction](../../../README.md#the-fifth-instruction): *"what if we
 would make hypotheses just ordinary facts hidden in (open ...) context? … 1. search control from inside ein 2.
 implement search with rules inside one stage, have search artefeacts seen by rules and infer facts from search. …
 we can establish the foundation for this in this phase or can decline it for some pragmatic reason."*
@@ -25,7 +25,7 @@ with its candidates held as facts, and `runs/two-worlds.kb.svg`.
 | 5 | a two-candidate program with its lattice written as rules, one saturation, no search | $R$ and the dead set come out as facts, the oracle's; a rule over them, *holds in every state of $R$*, **answers wrong**: the dump prints three strata and the agenda does not follow them |
 
 So: hypotheses can be ordinary held facts today, at no change of answer, **in the reading *asked*** (1 to 3);
-*still open* cannot be a held fact (4), which is [`design.md` § 4.2](../../design.md#42-what-becomes-of-property-2)'s
+*still open* cannot be a held fact (4), which is [`design.md` § 4.2](../../../design.md#42-what-becomes-of-property-2)'s
 proposition met again; and the search written as rules runs into the engine's open ground, a stratified program
 (5).
 
@@ -124,8 +124,8 @@ program's rule is written again under `(in ?w …)` by hand; `in-R` is a rule ov
 `runs/two-worlds.saturate-dump.txt` prints `in-R` and `possible` at stratum 1, `always` at stratum 2 and
 `;; Strata — stratified, 3 strata`; the boundary judges `always`'s nested absence over `in-R` before any `in-R` is
 derived. It is the family of the register's `W8/fifo-gap-root`, whose owner is
-[M1n](../../../../m1n_non_monotone_programs/README.md)'s P1n.2 (stratum-order admission), and it is entered as
-[V-8](../../findings.md#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum).
+[M1n](../../../../../m1n_non_monotone_programs/README.md)'s P1n.2 (stratum-order admission), and it is entered as
+[V-8](../../../findings.md#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum).
 
 So *search artefacts seen by rules* works as far as one absence deep, and *infer facts from the search* is the
 second absence, which the engine does not order today.
@@ -133,24 +133,24 @@ second absence, which the engine does not order today.
 ## 5. The options
 
 - **(a) Declined.** $H$ stays the generator's list beside the knowledge base, as today. The phase keeps to the
-  verdicts ([groups A to G](../../modifications.md#the-list-at-a-glance)).
+  verdicts ([groups A to G](../../../modifications.md#the-list-at-a-glance)).
 - **(b) Held, as *asked*.** Whatever rung proposes a candidate, root holds it as a fact, `(open F)` or
-  `(open F J)` under whatever name [Q-M1f.399](../../../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)
+  `(open F J)` under whatever name [Q-M1f.399](../../../../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)
   gives it; a fork inherits it; nothing is ever removed. $H$ is that extent at root less what root decides, and
   *still open* stays a reading the kernel makes per state and stores nowhere. Any rule may read what is asked. An
   hrule is then a rule that concludes it. **Recommended**, as the foundation.
 - **(c) Held, as *still open*, and moved.** `(open F J)` in a part of the node no fork inherits, written and
   moved by the kernel after each fixpoint, read by rules in a stratum of their own that conclude no held fact
-  ([`open_facts.md` § 5](../../open_facts.md#5-the-move-open-held-not) and
-  [§ 6](../../open_facts.md#6-what-rules-can-do-with-open-facts); group H as
-  [`modifications.md`](../../modifications.md#h-open-facts) lists it).
+  ([`open_facts.md` § 5](../../../open_facts.md#5-the-move-open-held-not) and
+  [§ 6](../../../open_facts.md#6-what-rules-can-do-with-open-facts); group H as
+  [`modifications.md`](../../../modifications.md#h-open-facts) lists it).
 - **(d) The search itself as rules**, every state a context, one saturation
-  ([`open_facts.md` § 7](../../open_facts.md#7-the-search-as-rules), (B)).
+  ([`open_facts.md` § 7](../../../open_facts.md#7-the-search-as-rules), (B)).
 
 And, on either of (b) and (c), the user's two uses:
 
 - **1. Search control from inside Ein**: rules that conclude what to split on, that a debt is forced, that a
-  state is hopeless ([`open_facts.md` § 6](../../open_facts.md#6-what-rules-can-do-with-open-facts), rows 2 to 4).
+  state is hopeless ([`open_facts.md` § 6](../../../open_facts.md#6-what-rules-can-do-with-open-facts), rows 2 to 4).
 - **2. Search artefacts seen by rules, facts inferred from the search.**
 
 ## 6. The recommendation, and its reasons
@@ -160,11 +160,11 @@ And, on either of (b) and (c), the user's two uses:
 - **(b) is the unification the phase is about, and it adds no mechanism.** A negation is a held fact that points
   at a fact not held; a candidate becomes the same thing under another relation. The kernel then reads one more
   context, once, at root, where today it reads a declarator, a clause of `solve`, two lists and a reserved
-  relation ([the overview § 3](../../overview.md#3-the-modifications-distilled)). Rows 1 and 2 are its invariance,
+  relation ([the overview § 3](../../../overview.md#3-the-modifications-distilled)). Rows 1 and 2 are its invariance,
   taken before anything is built.
 - **(c) adds what (b) shows is not needed**: a part of a node, a stratum, a class of rule that may conclude no held
   fact, and what the copy-on-write layers and the container are asked for was never read
-  ([item 30](../../modifications.md#h-open-facts)). Its one gain over (b) is that the fact's name is literally
+  ([item 30](../../../modifications.md#h-open-facts)). Its one gain over (b) is that the fact's name is literally
   true in every state; (b) pays for that with the name (*asked*, not *open*).
 - **Use 1 is not needed yet, and (b) does not close it.** The tree route already branches on the owed instance
   with the fewest alternatives left, which is *forced* and *order*, and a debt with no alternative left has no
@@ -173,13 +173,13 @@ And, on either of (b) and (c), the user's two uses:
   facts.
 - **Use 2 and (d) wait on M1n.** Row 5: the second absence is wrong today. Beside it, (d) is the cube, $2^{|H|}$
   worlds where the tree takes 7 saturations of *zebra2*'s $2^{56}$; every rule is written again under a context,
-  and no form lifts a rule ([`open_facts.md` § 10.3](../../open_facts.md#103-macros-as-the-wrapping)); and a fact
+  and no form lifts a rule ([`open_facts.md` § 10.3](../../../open_facts.md#103-macros-as-the-wrapping)); and a fact
   the search writes back into a state changes that state's facts, so $R$, which is why the walk's writebacks went
   with the walk. What is kept of it costs nothing: the statement of $R$ with no search on the reasoning pages
-  ([item 13](../../modifications.md#b-the-pages-todays-kernel-stated-as-rules)), and `two-worlds.ein` less its
-  last rule as an example, [S1f.21.13](../../s1f.21.13_the_search_and_rules.md).
+  ([item 13](../../../modifications.md#b-the-pages-todays-kernel-stated-as-rules)), and `two-worlds.ein` less its
+  last rule as an example, [S1f.21.13](../../../s1f.21.13_the_search_and_rules.md).
 
-**What (b) leaves to say**, each a question of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md) with a default:
+**What (b) leaves to say**, each a question of [S1f.21.12](../../../s1f.21.12_hypotheses_as_facts.md) with a default:
 the name of the fact; whether it carries the debt, `(open F J)`; that a candidate concluded above root is no
 candidate ($H$ is root's, or $R$ is no longer a region of one lattice); when the kernel's own rungs write theirs;
 and whether `hrule` stays as a spelling of the rule.

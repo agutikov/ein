@@ -18,8 +18,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
 | [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **fixed** by `5a3f2979`: ruled (a) 2026-11-18, Q-M1f.412 |
 | [V-7](#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count) | a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count among its own, and the invariant's sweep calls it a breach | P1f.22's S1f.22.3 (its N-22), handed over at that phase's close, 2026-11-18 | open: **the user's call**, with § 8's `relation` |
-| [V-8](#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum) | the search written as rules answers wrong at its third stratum: a rule over a second absence fires before the first absence's facts are derived, under `lattice monotone` | the reading of 2026-11-19, [review item 34](review/34-Q-M1f.549/README.md) | open; M1n's ground, handed over at the close |
-| [V-9](#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file) | an owing node below a non-empty $R$ has no saved file: `--dump-answer` saves the states of $R$, and the owing frontier only where $R$ is empty | [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), entered by S1f.21.6 | open, not built by S1f.21.6's default |
+| [V-8](#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum) | the search written as rules answers wrong at its third stratum: a rule over a second absence fires before the first absence's facts are derived, under `lattice monotone` | the reading of 2026-11-19, [review item 34](review/part-2/34-Q-M1f.549/README.md) | open; M1n's ground, handed over at the close |
+| [V-9](#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file) | an owing node below a non-empty $R$ has no saved file: `--dump-answer` saves the states of $R$, and the owing frontier only where $R$ is empty | [review item 32 § 7](review/part-2/32-Q-M1f.390/README.md#7-found-while-building), entered by S1f.21.6 | open, not built by S1f.21.6's default |
 | [V-10](#v-10--the-saturated-dump-says-1-facts) | the saturated dump says `(1 facts)` | S1f.21.6 | open |
 | [V-11](#v-11--a-skip-in-the-hypothesis-rules-reader-that-no-file-reaches) | a skip in the hypothesis rules' reader that no file reaches | S1f.21.6 | open |
 | [V-12](#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands) | the elimination of a double negation cannot be given to every program as it stands: it is refused beside a program that names a rule of its count of parameters | S1f.21.8 | open; S1f.21.11's |
@@ -315,13 +315,13 @@ blind rung guessed about such a name. *"not arguments count"* touches the argume
 ## V-8 — The search written as rules answers wrong at its third stratum
 
 **Found** 2026-11-19 by the reading the user's fifth instruction asked for
-([review item 34 § 4](review/34-Q-M1f.549/README.md#4-the-lattice-written-as-rules-row-5)), on the gate build at
+([review item 34 § 4](review/part-2/34-Q-M1f.549/README.md#4-the-lattice-written-as-rules-row-5)), on the gate build at
 `e4a5f8fb`. $R$ of the program is right, `{∅}`; what is wrong is a fact root holds. It is the family of the
 register's `W8/fifo-gap-root`, and like P1f.22's N-15 it is **not filed as a row**: whether it is a twin of that row
 or a row of its own is the user's call, and its owner is [M1n](../../m1n_non_monotone_programs/README.md)'s P1n.2,
 stratum-order admission.
 
-**What.** [`two-worlds.ein`](review/34-Q-M1f.549/programs/two-worlds.ein) writes the lattice of a two-candidate
+**What.** [`two-worlds.ein`](review/part-2/34-Q-M1f.549/programs/two-worlds.ein) writes the lattice of a two-candidate
 program as rules, under `(solve :no-search)`: a world is a fact naming its commitment, `in-R` is concluded for a
 world that has paid and holds no `(in ?w (false))`, an absence, and `always` for a candidate that every world in
 $R$ holds, a `forall` over `in-R`, a second absence over the first's conclusions:
@@ -338,7 +338,7 @@ $R$ holds, a `forall` over `in-R`, a second absence over the first's conclusions
 ```
 
 `ein solve two-worlds.ein` answers `(in-R ?w)` with `(w (s a))` and `(w (s b))`, the oracle's $R$ of the object
-program [`two.ein`](review/34-Q-M1f.549/programs/two.ein), and `(always ?f)` with `(s a)` and `(s b)`. Neither is
+program [`two.ein`](review/part-2/34-Q-M1f.549/programs/two.ein), and `(always ?f)` with `(s a)` and `(s b)`. Neither is
 in every state of $R$: `(w (s b))` does not hold `(s a)`. The right answer has no row.
 
 **Shown by.** `ein saturate --dump two-worlds.ein`: `in-R … stratum 1`, `possible … stratum 1`, `always … stratum
@@ -352,7 +352,7 @@ waits on M1n: [S1f.21.13](s1f.21.13_the_search_and_rules.md) keeps the program a
 
 ## V-9 — An owing node below a non-empty $R$ has no saved file
 
-**Found** by [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), which cut such a file by
+**Found** by [review item 32 § 7](review/part-2/32-Q-M1f.390/README.md#7-found-while-building), which cut such a file by
 hand; shown on a program and entered here by S1f.21.6, its task 4, 2026-11-19, on the gate build of the main tree
 at `c9ea9597`.
 

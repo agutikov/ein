@@ -6,75 +6,14 @@ are this phase's. Pages and programs committed, outputs ignored, as in the bundl
 
 [← the phase](../README.md)
 
-**Every question of the phase that is open, 2026-11-19**, written here on the user's word (*"write all remain open
-questions into …/review"*). [The overview](../overview.md) is the page to read first, and
-[`ANSWERS.md`](ANSWERS.md) is where an answer goes: an item left blank keeps its default. The phase runs in two
-parts ([the order](../README.md#the-order-two-parts)), and the items are sorted the same way.
+**Every question of the phase that is open**, written here on the user's word (*"write all remain open questions
+into …/review"*, 2026-11-19), **in two folders, a part each** (*"split questions … into part 1 and part 2
+subfolders"*), as the phase runs ([the order](../README.md#the-order-two-parts)). [The overview](../overview.md) is
+the page to read first. Each part has its index and its own answers file; an item left blank keeps its default.
 
-**Part 1 — what S1f.21.11 cannot take by itself.** No default; each is shown on programs here and on the corpus by
-that stage's examples.
-
-| # | item | the question | state |
+| part | what | items | answers |
 |---|---|---|---|
-| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **no default**; four ways |
-| 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
+| [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Running now | 35 and 36, **no default**: how the contradiction's rules reach every relation and count, and the argument-count check; 37, 38, 40, 41 and 42, each with a default | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
+| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | 32, what an obligation emits; 34, hypotheses as facts; 39, `std.debts`, held for this part | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
-**Part 1 — a default is proposed or taken; an answer is wanted only where you would have it otherwise.**
-
-| # | item | the question | the default |
-|---|---|---|---|
-| 37 | [Q-M1f.558](37-Q-M1f.558/README.md) | *forbid*, once the contradiction is rules: seven corpus programs would be refused | (a) *forbid* reads the module's contradiction as it reads the kernel's; the seven load as now |
-| 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | (a) it stays a module a program imports; `std.core` gets the contradiction alone |
-| 40 | [Q-M1f.552 to .556](40-defaults-taken/README.md) | five readings the two finished stages took and built | as built; the fourth not as planned: two modules for the negation |
-| 41 | [S1f.21.10's readings](41-S1f.21.10-readings/README.md) | six readings the running stage builds on | as listed; shown with runs when it reports |
-| 42 | [the open findings](42-findings/README.md) | what becomes of V-8, V-10, V-11, V-13, V-15, V-16 and V-17 | a disposition each |
-
-**Between the parts.**
-
-| # | item | the question | the default |
-|---|---|---|---|
-| 39 | [Q-M1f.560](39-Q-M1f.560/README.md) | `std.debts`, built by S1f.21.8: merged with its stage, or with the second part | (a) held on its branch for part 2, as now |
-
-**Part 2 — `open`, what a state owes, and the hypotheses.** They wait with their part; nothing of part 1 needs them.
-
-| # | item | the question | state |
-|---|---|---|---|
-| 32 | [Q-M1f.390](32-Q-M1f.390/README.md) | what an obligation emits: the verdict, with its justification, or as a fact | not ruled; default (b); `(open F J)` beside (d) |
-| 34 | [Q-M1f.549](34-Q-M1f.549/README.md) | hypotheses as facts: held, in which reading, and how far the search goes into rules | not ruled; recommended (b), held as *asked* |
-
-**Left for later on the user's word, and not asked**: how `std.core` is customised (Q-M1f.551).
-**Out of the bundle, ruled**: item 33, the names (Q-M1f.399, with the key's word, Q-M1f.550), 2026-11-19; its page
-and programs are in `git log`, last at `984137bf`.
-
-**The binaries.** Items 35 to 38 are run with `build/review-bin/ein-head-ca98dec2`, the gate build of master at the
-merge of S1f.21.6 and S1f.21.8, and its `stdlib/`; item 39 with `build/review-bin/ein-s1f218-9e40adbd`, the build of
-S1f.21.8's branch, which has `std.debts`; items 32 and 34 as their pages say. `tools/run.sh` in an item re-takes
-its runs into `runs/`; both are ignored, so they are on this machine only.
-
-## Found while building
-
-- **32**: every count of the ledger re-taken and held; the user's form holds 4 `(open F J)` facts at
-  {(seats Ann C1)}, 8 at seats' root, 112 at zebra2-obligations' root. Option (c) runs today as ordinary rules (the
-  unpaid requirement equals the kernel's debt at 16 of 16 nodes, same R); a debt derived as a fact is stale in 15 of
-  16 nodes. The two KB mocks are drawn again in the canonical form: each fact of `open` a red, bold octagon whose
-  arrow `1` is at the box `open`. `design.md` § 4.4 and § 4.5 assume a state file that lists facts; a saved file today lists none, so under
-  (d) or the user's form a saved file need not change. `--dump-answer` writes no file for an owing node below a
-  non-empty R.
-- **34**: *zebra2* and the seats program answer the same with their candidates held as ordinary facts and one generic
-  hrule over them, the read-out byte for byte; root holds 125 such facts on *zebra2* and $H$ is 56 of them. A rule
-  that stores *asked and still undecided* gets the program flagged and a stale fact in 15 of 16 nodes. The lattice of
-  a two-candidate program written as rules gives the oracle's $R$ in one saturation, and its rule over a second
-  absence answers wrong, three strata printed and not followed (V-8).
-- **35**: the rules derive `(false)` from a pair of a declared relation of one argument and nothing from the same
-  pair of an undeclared relation or of one of seven arguments; both are dead today by the kernel's check alone.
-  `clash-of-0` fires on every declaration, since root holds `(relation p)` beside `(relation p Thing)`.
-- **36**: a fact and a rule's conclusion at another count than the declaration's are each refused at load, with the
-  declaration quoted; an undeclared relation at two counts loads, and each query answers its count.
-- **37**: the soup program loads without the rules, 4 states, flagged by the static check, and is refused with
-  them, by `clash-0` and `clash-2` over `meal`. Of the seven corpus programs, four are the witnesses of three open
-  rows of the wrong-answer register.
-- **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
-  with it named twice; 16 with `std.contradiction` and it named twice.
-- **39**: with `std.debts` imported and asked for, the seats program's $R$ is its own, 2 states, each holding
-  `(debts-discharged)` and four facts of `debt-paid`.
-
+An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.
