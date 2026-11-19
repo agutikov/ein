@@ -214,8 +214,8 @@ claim on these pages settled.
 | [`docs/`](docs/ein/README.md) | the documentation and the decisions; [`docs/demo/`](docs/demo/README.md) and [`docs/ein/overview/`](docs/ein/overview/README.md) for the article and the comparison with other systems |
 
 Outside the project, as references: [`c/`](c/README.md), three plain-C Zebra baselines that differ only in how much
-the search is told about the constraints; [`nl2smt/`](nl2smt/README.md), the puzzle's English sentences through link
-grammar to an SMT solver; and [`docs/lib/`](docs/lib/README.md), a catalogue of the external reasoning systems,
+the search is told about the constraints; [`nl2smt/`](nl2smt/README.md), the puzzle's English sentences through a
+parser, NLTK or link grammar, to an SMT solver; and [`docs/lib/`](docs/lib/README.md), a catalogue of the external reasoning systems,
 solvers and research Ein relates to.
 
 ## License

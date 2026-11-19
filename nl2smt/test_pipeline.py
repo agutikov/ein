@@ -5,9 +5,11 @@
 
 The sentences can be added to, removed, reordered and swapped, and the SMT code and the
 solution follow: that is what shows the pipeline is no table of the puzzle's sentences.
-The tests are skipped, not failed, where link-parser, racket or every solver is missing.
+Every parser that is installed, NLTK and link-parser, is put through the same tests. They are
+skipped, not failed, where no parser, racket or every solver is installed.
 """
 import functools
+import re
 import shutil
 import subprocess
 import unittest
@@ -15,9 +17,19 @@ import unittest
 import nl2smt
 
 PUZZLES = nl2smt.HERE / "puzzles"
+PARSERS = [name for name in nl2smt.PARSERS if nl2smt.installed(name)]
 SOLVER = next((name for name in nl2smt.SOLVERS if shutil.which(name)), None)
-MISSING = [tool for tool in ("link-parser", "racket") if not shutil.which(tool)]
+MISSING = [] if PARSERS else ["a parser (%s)" % ", ".join(nl2smt.PARSERS)]
+MISSING += [] if shutil.which("racket") else ["racket"]
 MISSING += [] if SOLVER else ["an SMT solver (%s)" % ", ".join(nl2smt.SOLVERS)]
+
+# The puzzle and its edits: the files that are converted.
+EDITS = ["zebra.txt", "zebra-minus-15.txt", "zebra-reversed.txt", "zebra-shuffled.txt", "zebra-swapped.txt",
+         "zebra-contradiction.txt", "new-sentences.txt"]
+
+# What each parser says of "The dog the the lives.", which neither can parse.
+UNPARSED = {"nltk": 'no tree, the parser stops at "the", word 3',
+            "link-grammar": 'the parser links "the" to nothing'}
 
 # The names the two hand-written encodings give the constants, and the pipeline's.
 HAND = nl2smt.HERE / "smt"
@@ -51,7 +63,7 @@ def lines_of(name):
 
 @functools.cache
 def parsed(name):
-    """The file's sentences with their line numbers, and link-parser's output for them."""
+    """The file's sentences with their line numbers, and the parser's output for them."""
     lines = nl2smt.sentences((PUZZLES / name).read_text())
     return lines, nl2smt.parse(lines)
 
@@ -68,6 +80,11 @@ def solved(name, limit=2, solver=None):
 
 def as_set(model, names=None):
     return frozenset(((names or {}).get(constant, constant), int(house)) for constant, house in model)
+
+
+def code(smt):
+    """A script without its comments, which name the parser's parse of each sentence."""
+    return [row for row in smt.splitlines() if not row.startswith(";")]
 
 
 def facts(smt):
@@ -102,9 +119,15 @@ def hand_solutions(text):
         script += "(assert (not (and %s)))\n" % " ".join("(= %s %s)" % tuple(pair) for pair in said[1])
 
 
-@unittest.skipIf(MISSING, "not installed: " + ", ".join(MISSING))
-class Pipeline(unittest.TestCase):
+class Pipeline:
+    """The tests every parser is put through: below, a class of them for each one installed."""
     maxDiff = None
+    parser = None
+
+    @classmethod
+    def setUpClass(cls):
+        nl2smt.PARSER = cls.parser  # the parser nl2smt.parse takes
+        parsed.cache_clear()
 
     def test_1_the_full_puzzle_has_one_solution_and_both_answers(self):
         models, answers, complete = solved("zebra.txt")
@@ -130,8 +153,12 @@ class Pipeline(unittest.TestCase):
         models, _, complete = solved("zebra-minus-15.txt", limit=40)
         self.assertTrue(complete)
         self.assertEqual(len(models), 32)
-        self.assertEqual(set(models), hand_solutions(hand))
-        self.assertIn(ZEBRA, models)
+        # without clue 15 no line names the blue house, so the solutions say nothing of it: they are
+        # the hand-written twin's 32, each without its blue house
+        self.assertNotIn("colour-blue", {constant for model in models for constant, _ in model})
+        unnamed = lambda model: frozenset(pair for pair in model if pair[0] != "colour-blue")
+        self.assertEqual(set(models), {unnamed(model) for model in hand_solutions(hand)})
+        self.assertIn(unnamed(ZEBRA), models)
 
     def test_3_the_lines_reordered_reorder_the_assertions_and_keep_the_solution(self):
         full = lines_of("zebra.txt")
@@ -164,9 +191,7 @@ class Pipeline(unittest.TestCase):
 
     def test_5_the_output_is_no_fixed_text(self):
         # every edit has its own SMT code
-        edits = ["zebra.txt", "zebra-minus-15.txt", "zebra-reversed.txt", "zebra-shuffled.txt", "zebra-swapped.txt",
-                 "zebra-contradiction.txt", "new-sentences.txt"]
-        self.assertEqual(len({smt_of(name) for name in edits}), len(edits))
+        self.assertEqual(len({smt_of(name) for name in EDITS}), len(EDITS))
         # sentences of the vocabulary that are in no version of the puzzle are converted, and rightly
         self.assertEqual([assertion for _, assertion in facts(smt_of("new-sentences.txt"))], [
             "(assert (= nation-Japanese pet-zebra))",       # The Japanese owns the zebra.
@@ -176,8 +201,17 @@ class Pipeline(unittest.TestCase):
             "(assert (< colour-yellow colour-ivory))",      # The ivory house is to the right of the yellow house.
             "(assert (= smoke-Kools pet-dog))",             # The Kools smoker lives in the house where the dog is kept.
         ])
-        self.assertIn("(get-value ((= nation-Englishman colour-green) (= nation-Spaniard colour-green)",
-                      smt_of("new-sentences.txt"))          # Who lives in the green house?
+        self.assertIn("(get-value ((= nation-Spaniard colour-green) (= nation-Japanese colour-green)))",
+                      smt_of("new-sentences.txt"))          # Who lives in the green house? Of the two nations named.
+        # nothing is in the code that no line says: no thing the lines do not name, no count of the houses
+        named = {"nation-Spaniard", "nation-Japanese", "colour-red", "colour-green", "colour-ivory", "colour-yellow",
+                 "colour-blue", "pet-dog", "pet-zebra", "drink-tea", "drink-water", "smoke-Kools"}
+        short = "\n".join(code(smt_of("new-sentences.txt")))
+        self.assertEqual(set(re.findall(r"\b(?:nation|colour|pet|drink|smoke)-[\w-]+", short)), named)
+        self.assertNotIn("houses", short)
+        models, answers, complete = solved("new-sentences.txt")
+        self.assertEqual((len(models), complete), (2, False))
+        self.assertEqual([{constant for constant, _ in model} for model in models], [named, named])
         # a line that contradicts the puzzle leaves no solution
         self.assertEqual(lines_of("zebra-contradiction.txt"), lines_of("zebra.txt") + ["The Norwegian drinks milk."])
         self.assertEqual(solved("zebra-contradiction.txt"), ([], [], True))
@@ -187,7 +221,7 @@ class Pipeline(unittest.TestCase):
             parsed("refused-word.txt")
 
     def test_5_a_sentence_that_is_not_read_is_refused_with_its_line(self):
-        for name, why in (("refused-parse.txt", 'the parser links "the" to nothing'),
+        for name, why in (("refused-parse.txt", UNPARSED[self.parser]),
                           ("refused-shape.txt", '"drinks" wants a drink, which "dog" is not')):
             with self.assertRaises(nl2smt.Refused) as refusal:
                 smt_of(name)
@@ -195,8 +229,8 @@ class Pipeline(unittest.TestCase):
             self.assertIn(why, str(refusal.exception))
 
     def test_6_every_linkage_that_is_read_is_read_alike(self):
-        """link-parser gives a sentence several linkages and the converter takes the first it can read:
-        no sentence of the puzzle has two linkages that are read differently."""
+        """A parser gives a sentence several linkages, or several trees, and the converter takes the first
+        it can read: no sentence of the puzzle has two that are read differently."""
         readings, sentence = {}, None
         for row in nl2smt.convert(parsed("zebra.txt")[1], readings=True).splitlines():
             if row.startswith("line "):
@@ -212,6 +246,28 @@ class Pipeline(unittest.TestCase):
             with self.subTest(solver=solver):
                 self.assertEqual(solved("zebra.txt", solver=solver)[::2], ([ZEBRA], True))
         print("solvers run:", ", ".join(installed), end=" ... ", flush=True)
+
+
+for PARSER in PARSERS or [None]:  # the tests above, once under each parser that is installed
+    NAME = "Pipeline_" + (PARSER or "none").replace("-", "_")
+    globals()[NAME] = unittest.skipIf(MISSING, "not installed: " + ", ".join(MISSING))(
+        type(NAME, (Pipeline, unittest.TestCase), {"parser": PARSER}))
+
+
+@unittest.skipIf(MISSING, "not installed: " + ", ".join(MISSING))
+class Parsers(unittest.TestCase):
+    maxDiff = None
+
+    def test_8_every_parser_installed_gives_the_same_smt_code(self):
+        """The two converters read different things, links and trees, and write one script: under its
+        comments, which name each sentence's linkage or tree, the code is the same line for line."""
+        for name in EDITS:
+            lines = nl2smt.sentences((PUZZLES / name).read_text())
+            scripts = [code(nl2smt.convert(nl2smt.parse(lines, parser))) for parser in PARSERS]
+            for parser, script in zip(PARSERS, scripts):
+                with self.subTest(file=name, parser=parser):
+                    self.assertEqual(script, scripts[0])
+        print("parsers run:", ", ".join(PARSERS), end=" ... ", flush=True)
 
 
 if __name__ == "__main__":

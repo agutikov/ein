@@ -10,46 +10,18 @@
 ;; stdout      the SMT-LIB script; under --readings, what each linkage of each sentence says
 ;;
 ;; One direction, and no more English than the puzzle's clues need. A sentence is read
-;; off the first of its linkages that has a shape known here.
+;; off the first of its linkages that has a shape known here. The command line, the
+;; vocabulary and the script are script.rkt's, which nltk2smt.rkt shares; what is here is
+;; how a linkage is read.
 
-(define-values (readings? vocabulary-file models)
-  (match (vector->list (current-command-line-arguments))
-    [(list "--readings" file) (values #t file '())]
-    [(list file models ...) (values #f file (map (λ (m) (read (open-input-string m))) models))]))
-
-;; ---- the vocabulary: forms (kind tag word ...), a name of several words a list
-
-(define vocabulary (file->list vocabulary-file))
-(define (forms kind) (filter (λ (form) (eq? (first form) kind)) vocabulary))
-(define (spelling name) (string-join (map ~a (flatten name))))         ; (Old Gold) → "Old Gold"
-
-(define (known kind word)       ; a word of this kind: (tag . the vocabulary's spelling), or #f
-  (for*/first ([form (forms kind)] [name (cddr form)]
-               #:when (and word (string-ci=? (spelling name) word)))
-    (cons (second form) (spelling name))))
-
-(define (constant value)        ; (smoke . "Old Gold") → smoke-Old-Gold, the SMT constant
-  (string->symbol (format "~a-~a" (car value) (string-replace (cdr value) " " "-"))))
-(define (constants tag)         ; the constants of a tag's values, in the vocabulary's order
-  (for*/list ([form (forms 'value)] #:when (eq? (second form) tag) [name (cddr form)])
-    (constant (cons tag (spelling name)))))
+(require "script.rkt")
 
 ;; ---- link-parser's output
 
-(struct sentence (line text linkages))
 (struct linkage (words unlinked links))    ; words by position; links (left right label)
 
-(define (headed lines rx)       ; the lines in blocks, each begun by a line that matches rx
-  (for/fold ([blocks '()] #:result (reverse (map reverse blocks))) ([line lines])
-    (cond [(regexp-match? rx line) (cons (list line) blocks)]
-          [(null? blocks) blocks]
-          [else (cons (cons line (car blocks)) (cdr blocks))])))
-
-(define (read-sentences lines)
-  (for/list ([block (headed lines #px"^line \\d+: ")])
-    (match-define (list _ line text) (regexp-match #px"^line (\\d+): (.*)$" (first block)))
-    (sentence (string->number line) text
-              (filter-map read-linkage (headed (rest block) #px"^\\s*Linkage \\d+")))))
+(define (read-linkages lines)   ; the lines under a sentence's header: its linkages
+  (filter-map read-linkage (headed lines #px"^\\s*Linkage \\d+")))
 
 (define (read-linkage block)    ; [(word)(word)...][[left right height (label)]...][0]
   (match (regexp-match #rx"\\[\\((.*)\\)\\](\\[\\[.*\\]\\])\\[" (string-append* (rest block)))
@@ -81,7 +53,6 @@
 ;; ---- what a linkage says
 
 (define here (make-parameter #f))                   ; the linkage being read
-(define (fail . message) (raise (apply format message)))
 (define (word i) (and (< -1 i (vector-length (linkage-words (here)))) (vector-ref (linkage-words (here)) i)))
 (define (word? i . words) (and (word i) (member (string-downcase (word i)) words) #t))
 
@@ -92,7 +63,6 @@
 (define (left i type)
   (for/list ([l (linkage-links (here))] #:when (and (= (second l) i) (of-type? (third l) type))) (first l)))
 (define (linked? i j) (for/or ([l (linkage-links (here))]) (and (= (first l) i) (= (second l) j))))
-(define (one what found) (match found [(list it) it] [_ (fail "~a: ~a found" what (length found))]))
 
 ;; A noun, or a preposition with its noun, says which house:
 ;;   (at x)         the house of x, a constant or a house's number
@@ -145,34 +115,20 @@
     [(word? v "is" "are")
      (match* ((right v "Pv") (right v "Pp"))
        [((list p) '())                                       ; is drunk, are smoked, is kept: the passive
-        (fits (or (known 'verb (word p)) (fail "~s: not a verb" (word p))) subject)
+        (fits (or (known 'verb (word p)) (fail "~s: not a verb" (word p))) (word subject))
         (places p)]
        [('() (list p)) (list (place p))]                     ; is to the right of …, is next to …
        [(_ _) (fail "after ~s, no passive and no place" (word v))])]
     [(known 'verb (word v))                                  ; owns the dog, lives in …
      => (λ (verb)
-          (append (for/list ([o (right v "O")]) (fits verb o) (thing o))
+          (append (for/list ([o (right v "O")]) (fits verb (word o)) (thing o))
                   (places v)))]
     [else (fail "~s: not a verb" (word v))]))
 
 (define (places v)              ; the prepositions that modify the verb at v, and no noun
   (for/list ([p (right v "MV")] #:when (null? (left p "M"))) (place p)))
 
-(define (fits verb n)           ; owns wants a pet, drinks a drink, smokes a brand
-  (define value (known 'value (word n)))
-  (unless (and value (eq? (car value) (car verb)))
-    (fail "~s wants a ~a, which ~s is not" (cdr verb) (car verb) (word n))))
-
-(define (together a b)          ; a subject's house and the house it is put in: an SMT term
-  (match* (a b)
-    [(`(at ,x) `(at ,y)) `(= ,x ,y)]
-    [(`(at ,x) `(near ,y)) `(near ,x ,y)]
-    [(`(near ,x) `(at ,y)) `(near ,y ,x)]
-    [(`(at ,x) `(right ,y)) `(order ,y ,x)]
-    [(`(at ,x) `(rightward ,y)) `(< ,y ,x)]
-    [(_ _) (fail "a house beside a house beside a house")]))
-
-(define (reading)               ; the linkage's meaning: (houses n), (fact term) or (ask (constant term) ...)
+(define (reading)               ; the linkage's meaning: (houses n), (fact term) or (ask tag term)
   (for ([i (linkage-unlinked (here))]) (fail "the parser links ~s to nothing" (word i)))
   (define subject (one "the subject" (right 0 "W")))
   (cond
@@ -184,74 +140,12 @@
     [else
      (define said (one "what is said of the subject" (says (one "the subject's verb" (right subject "S")) subject)))
      (match (known 'asks (word subject))
-       [(cons tag _) `(ask ,@(for/list ([c (constants tag)]) (list c (together `(at ,c) said))))]   ; Who …?
+       [(cons tag _) (asks tag said)]                        ; Who …?
        [#f `(fact ,(together (thing subject) said))])]))
-
-(define (readings s)            ; each linkage's meaning, or as a string why it has none
-  (for/list ([l (sentence-linkages s)])
-    (with-handlers ([string? values]) (parameterize ([here l]) (reading)))))
-
-;; ---- the script
-
-(define (stop s . message)
-  (eprintf "line ~a: ~a\n" (sentence-line s) (apply format message))
-  (exit 1))
-
-(define (script taken)          ; taken: (sentence rank meaning) for each sentence, in the input's order
-  (define (title t) (format "line ~a, linkage ~a of ~a: ~a" (sentence-line (first t)) (second t)
-                            (length (sentence-linkages (first t))) (sentence-text (first t))))
-  (define (those kind) (filter (λ (t) (eq? (first (third t)) kind)) taken))
-  (define tags (remove-duplicates (map second (forms 'value))))
-  (define everything (append-map constants tags))
-  (define-values (houses counted)
-    (match (those 'houses)
-      ['() (values (apply max (map (λ (tag) (length (constants tag))) tags)) "no line says how many: one for each value")]
-      [(list t) (values (second (third t)) (title t))]
-      [(list _ t _ ...) (stop (first t) "the houses are counted twice")]))
-  (define (numbered term t)     ; the middle house has a number once the houses are counted
-    (cond [(eq? term 'middle)
-           (if (odd? houses) (quotient (+ houses 1) 2) (stop (first t) "~a houses have no middle one" houses))]
-          [(list? term) (map (λ (part) (numbered part t)) term)]
-          [else term]))
-
-  (printf "; written by lg2smt.rkt from link grammar's linkages of the sentences\n")
-  (printf "(set-option :produce-models true)\n(set-logic QF_LIA)\n")
-  (printf "(define-fun order ((x Int) (y Int)) Bool (= (+ x 1) y))\n")
-  (printf "(define-fun near ((x Int) (y Int)) Bool (or (= (+ x 1) y) (= (- x 1) y)))\n")
-  (printf "\n; ~a\n(define-fun houses () Int ~a)\n" counted houses)
-  (for ([tag tags])
-    (printf "\n; from the vocabulary: each ~a is in a house, and no two in one\n" tag)
-    (for ([c (constants tag)]) (printf "(declare-fun ~a () Int)\n" c))
-    (for ([c (constants tag)]) (printf "(assert (<= 1 ~a houses))\n" c))
-    (printf "(assert (distinct ~a))\n" (string-join (map ~a (constants tag)))))
-  (for ([t (those 'fact)])
-    (printf "\n; ~a\n(assert ~a)\n" (title t) (numbered (second (third t)) t)))
-  (for ([model models])
-    (printf "\n; not this solution, which is already found\n(assert (not (and~a)))\n"
-            (string-append* (for/list ([pair model]) (format " (= ~a ~a)" (first pair) (second pair))))))
-  (printf "\n(check-sat)\n(get-value (~a))\n" (string-join (map ~a everything)))
-  (for ([t (those 'ask)])       ; the answer is each constant whose term is true
-    (define asked (rest (third t)))
-    (printf "\n; ~a\n(echo \"question ~a ~a\")\n(get-value (~a))\n" (title t) (sentence-line (first t))
-            (string-join (map (compose ~a first) asked))
-            (string-join (for/list ([a asked]) (~a (numbered (second a) t)))))))
 
 ;; ---- from stdin to stdout
 
-(define sentences (read-sentences (port->lines)))
-
-(cond
-  [readings?
-   (for ([s sentences])
-     (printf "line ~a: ~a\n" (sentence-line s) (sentence-text s))
-     (for ([r (readings s)] [rank (in-naturals 1)])
-       (printf "  linkage ~a: ~a\n" rank (if (string? r) (string-append "not read, " r) r))))]
-  [else
-   (script
-    (for/list ([s sentences])
-      (define all (readings s))
-      (define rank (index-where all list?))
-      (cond [rank (list s (+ rank 1) (list-ref all rank))]
-            [(null? all) (stop s "the parser has no linkage of ~s" (sentence-text s))]
-            [else (stop s "cannot read ~s: ~a (its cheapest linkage; none of the ~a is read)"
-                        (sentence-text s) (first all) (length all))])))])
+(convert #:program "lg2smt.rkt" #:from "link grammar's linkages"
+         #:parse "linkage" #:first "its cheapest linkage"
+         #:parses (λ (lines) (values (read-linkages lines) #f))
+         #:reading (λ (l) (parameterize ([here l]) (reading))))

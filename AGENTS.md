@@ -314,11 +314,12 @@ constrained-reasoning research.
   the constraints. Wired into nothing: the gate does not run them and no crate
   depends on them. [`c/README.md`](c/README.md) is the catalogue and carries
   the argument.
-- **`nl2smt/`** — **the Zebra puzzle's sentences through link grammar to
-  SMT**, a proof of concept, wired
+- **`nl2smt/`** — **the Zebra puzzle's sentences through a parser, NLTK or
+  link grammar, to SMT**, a proof of concept, wired
   into nothing: no crate depends on it and the gate does not run it.
   [`nl2smt/README.md`](nl2smt/README.md) is the page, with the command and
-  its tests, which skip where `link-parser`, `racket` or every solver is
+  its tests, which run under each parser that is installed and skip where no
+  parser (Python's `nltk`, `link-parser`), `racket` or every solver is
   missing. `nl2smt/smt/` holds three hand-written `.smt` encodings that
   [M10](plans/m10_external_benchmarks/README.md) counts as part of its
   benchmark corpus, so their content does not change; `nl2smt/prototype/`
