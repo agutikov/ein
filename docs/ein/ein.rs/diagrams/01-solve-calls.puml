@@ -26,7 +26,7 @@ group prepare
   infer -> infer : Saturator::new, saturate\n(root's fixpoint, the snapshot)
   infer -> infer : hypgen::generate_config_free\n(H, sorted and deduplicated)
   infer -> infer : obligations::tally(root)
-  infer -> infer : monotone::classify, forbid::check
+  infer -> infer : monotone::classify
 end
 loop each batch of the route
   infer -> infer : region::fan_out(sets)\nfork root, write the commitment,\nresume, saturate, tally

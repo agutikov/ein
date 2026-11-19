@@ -284,8 +284,8 @@ one whose relations, rules, hrules or macros lack a `:why` ([`06-config.md` § 3
 | code | `solve` / `oracle` / `render` / `show` / `saturate` / `kb` | `test` |
 |---|---|---|
 | 0 | success: every answer, whatever it is | every expectation held, and at least one was checked |
-| 1 | a load error, *forbid*'s refusal among them; a claim the run refutes; an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked (under `--no-search`, false only) |
-| 2 | a usage error; a `-T` abort; an engine error (`-y`'s mismatch on a monotone program) | a load error or *forbid*'s refusal, a usage error, a `-T` abort — or nothing to check |
+| 1 | a load error; a claim the run refutes; an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked (under `--no-search`, false only) |
+| 2 | a usage error; a `-T` abort; an engine error (`-y`'s mismatch on a monotone program) | a load error, a usage error, a `-T` abort — or nothing to check |
 
 **An answer is never an exit code**
 ([Q-M1e2.33](../../../decisions/cli/Q-M1e2.33-every-answer-exits-0.md)): R empty, one state or many, a run the budget

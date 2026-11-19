@@ -46,7 +46,7 @@ pub struct Premise {
     /// The relation is in `D`.
     pub dynamic: bool,
     /// Recorded on a fact the contradiction itself is made of, the refuting
-    /// rule's own read: *forbid*'s `direct`. Else on a fact further down: `via`.
+    /// rule's own read: *direct*. Else on a fact further down: *via*.
     pub direct: bool,
     /// Recorded on a fact root's fixpoint holds.
     pub at_root: bool,

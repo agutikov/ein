@@ -11,9 +11,8 @@
 //! one line per conflict, at the command's load-error exit; a **dead** list
 //! (one an hrule makes filter nothing) or a **redundant** name is one `note:`
 //! line on stderr and moves nothing; H + O, the Zebra puzzle's form, is
-//! silent. Held here on witnesses of every pair, on a program whose refusal
-//! by *forbid* would name the one remedy that does nothing beside an hrule,
-//! and on the corpus's fixture of the refusal.
+//! silent. Held here on witnesses of every pair, on a word problem that
+//! writes two conflicts at once, and on the corpus's fixture of the refusal.
 
 use std::path::Path;
 use std::process::Command;
@@ -275,7 +274,7 @@ fn argv(cmd: &[&str], file: &Path, einb: &Path, events: &Path) -> Vec<String> {
 }
 
 /// `file` refused on every command with the same lines, the first starting
-/// `kb load error: <file>:` and holding `want`, no line of *forbid*'s, and no
+/// `kb load error: <file>:` and holding `want`, and no
 /// container written. Returns what went wrong, and the lines the first
 /// command printed.
 fn refused_everywhere(file: &Path, want: &str, dir: &Path) -> (Vec<String>, Vec<String>) {
@@ -396,17 +395,15 @@ fn a_dead_or_redundant_list_is_a_note_and_a_silent_pair_says_nothing() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **A program *forbid* would misdiagnose**: *what is not listed is zero*
-/// adopted for `has`, an hrule supposing Alice has an apple, and `(solve
-/// :hrules (maybe-apples) :no-hypothesis (has))`. *Forbid*'s refusal would
-/// name `(solve :no-hypothesis (has))` as its remedy, which the program
-/// already writes and which does nothing beside an hrule. It is refused for
-/// what it says: two conflicts, `maybe-apples`
-/// proposing `has` against the list that names it and against the closure
-/// `words` derives, and no line of *forbid*'s. Its twin without
-/// `listed_is_all`, which answered two states, is refused for the same two.
+/// **A word problem that writes two conflicts**: *what is not listed is
+/// zero* adopted for `has`, an hrule supposing Alice has an apple, and `(solve
+/// :hrules (maybe-apples) :no-hypothesis (has))`, a list that does nothing
+/// beside an hrule. It is refused for what it says: two conflicts,
+/// `maybe-apples` proposing `has` against the list that names it and against
+/// the closure `words` derives, and no other line. Its twin without
+/// `listed_is_all` is refused for the same two.
 #[test]
-fn e47s_witness_is_refused_for_the_conflict_and_not_by_forbid() {
+fn a_word_problem_is_refused_for_its_two_conflicts() {
     let scratch = Scratch::new("ein-mechanism-e47");
     for module in ["words", "gaps", "listed_is_all"] {
         std::fs::copy(
@@ -452,9 +449,6 @@ fn e47s_witness_is_refused_for_the_conflict_and_not_by_forbid() {
             bad.push(format!(
                 "{stem}: {lines:?}, want two lines, the second {second:?}"
             ));
-        }
-        if lines.iter().any(|l| l.contains("concludes (false)")) {
-            bad.push(format!("{stem}: a line of forbid's: {lines:?}"));
         }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));

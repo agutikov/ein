@@ -19,7 +19,7 @@ sweeps assert.
 |---|---|---|
 | [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation. Legal ein-lang; every command answers it as `ein oracle` does, and where an hrule reads `not`, every hrule is matched before any candidate is emitted |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | a program whose core could move under a permuted id space. No core it reports moves; its corpus fixture is [`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein), which the id-order sweep permutes |
-| [`d3-unsat-core.ein`](d3-unsat-core.md) | `id-order` | the same, from another seed. Refused at load by *forbid*: `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under an `absent` over a relation a commitment can extend; the refusal is the same under every permutation. Its fixture is [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein) |
+| [`d3-unsat-core.ein`](d3-unsat-core.md) | `id-order` | the same, from another seed. Not monotone: `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under an `absent` over a relation a commitment can extend, so the static check flags it and nothing is claimed of its answer. Its fixture is [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein) |
 | [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | one model that satisfies the goal twice. The read-out prints every binding row, sorted, so no row moves; its fixture is [`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein) |
 | [`fork-delta-order.ein`](fork-delta-order.md) | `id-order` | **written by hand**, for the mechanism by which a dead node's core could move with the interner: a fork's delta is in the order its commitment was written, so one core is reported under every permutation; its fixture is [`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein) |
 | [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `no-crash` | **written by hand**: two activators of one rule, a name of digits and a nested fact in one position, in either order. A rule application's identity is its activator's every argument, so both orders derive every `noted` fact; the fixtures are [`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein) and `binding-key-swapped.ein` |
@@ -31,5 +31,5 @@ The id-order half of a regression that points here is held by
 row, by `ein-cli/tests/regressions.rs`.
 
 ```sh
-ein solve corpus/fuzz_findings/d3-unsat-core.ein   # exits 1 with forbid's refusal
+ein solve corpus/fuzz_findings/d3-unsat-core.ein   # exits 0, with the warning that the program is not monotone
 ```

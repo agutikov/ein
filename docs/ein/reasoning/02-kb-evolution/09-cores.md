@@ -316,6 +316,6 @@ saturation of its own. A computation of $R$ may use that as a licence and conclu
 saturates ([finding R](07-finding-r.md)). The licence is exactly what an absence over the held extent of a
 relation ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) that a
 commitment can still extend would break, $\lbrace p(\mathsf{A}) \rbrace$ dead and
-$\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace$ alive, which is why a refutation may not rest on one
+$\lbrace p(\mathsf{A}), q(\mathsf{A}) \rbrace$ alive
 ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent)). On a program that may not be monotone the
 licence is not taken, and each node is computed ([monotonicity](08-monotonicity.md)).

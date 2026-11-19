@@ -12,8 +12,8 @@
 //! 2. **the candidates dead alone are the read-out's `dead alone`**,
 //!    `Described::dead_alone_set`.
 //!
-//! On every corpus file and regression witness the loader accepts, *forbid*
-//! does not refuse and whose describe exhausts at the default
+//! On every corpus file and regression witness the loader accepts
+//! and whose describe exhausts at the default
 //! `--region-budget`, the layer read at the same budget. A program the static
 //! check flags is among them where its cube is within `--region-limit`: there
 //! the layer saturates every pair, and `N`'s pairs are its excluded pairs and

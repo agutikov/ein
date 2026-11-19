@@ -244,7 +244,7 @@ fn every_recorded_state_loads_to_its_own_state() {
     let mut states = 0;
     let mut runs: Vec<(String, String, i32)> = Vec::new();
     for row in &regressions().case {
-        // A refused row (*forbid*) writes no state, nor one whose run ends in
+        // A refused row writes no state, nor one whose run ends in
         // an error, nor a command's that is not a solve: `regressions.rs`
         // holds all three.
         if row.now.refused.is_some() || row.now.error.is_some() || row.now.is_command() {

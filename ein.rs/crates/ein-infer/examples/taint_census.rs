@@ -1,6 +1,6 @@
 //! The taint census: every dead node of every flagged cube the oracle
 //! reaches, with the `absent` premises its death rests on, under each
-//! reading of *extendable* a refusal could take.
+//! reading of *extendable*.
 //!
 //! A node's **taint** is `shared/taint.rs`'s: every contradiction of its
 //! fixpoint, both sides of a pair, followed through every fact's primary
@@ -20,8 +20,7 @@
 //!   supersets, against `2ⁿ`;
 //! - the refutations a **node compiles**: plans of a rule with parameters whose
 //!   activator a commitment derives, which conclude `(false)` or `(not …)` —
-//!   and of those, the ones that read an `absent` over `D`, which is what a
-//!   *forbid* check at each node's compile would refuse, and
+//!   and of those, the ones that read an `absent` over `D`, and
 //!   the ones whose activator rests on one.
 //!
 //! Past the limit it reads the static half: the activator sites, and whether a
@@ -254,7 +253,7 @@ fn row(src: &Source, jobs: usize) -> Json {
             })
         })
         .collect();
-    let at_load: Vec<String> = root
+    let at_root: Vec<String> = root
         .plans
         .iter()
         .filter(|p| kb.program().rules.contains(p.rule))
@@ -278,7 +277,7 @@ fn row(src: &Source, jobs: usize) -> Json {
         Ok(Outcome::Region(r)) => r,
         Ok(Outcome::Refused { n, .. }) => {
             return json!({ "path": src.name, "n": n, "past_the_limit": true,
-                           "activator_sites": activator_sites, "refusable_at_load": at_load });
+                           "activator_sites": activator_sites, "refuting_at_root": at_root });
         }
         Err(e) => return skip(&format!("{e}")),
     };
@@ -450,7 +449,7 @@ fn row(src: &Source, jobs: usize) -> Json {
         "dead_rows": dead_rows,
         "compiled_refutations": compiled.into_values().collect::<Vec<_>>(),
         "activator_sites": activator_sites,
-        "refusable_at_load": at_load,
+        "refuting_at_root": at_root,
     })
 }
 
@@ -458,11 +457,11 @@ fn print_block(row: &Json) {
     let s = |v: &Json| v.as_str().unwrap_or("").to_string();
     if row["past_the_limit"].as_bool() == Some(true) {
         println!(
-            "{}  n {} — past the limit; activator sites {}; refusable at load {}",
+            "{}  n {} — past the limit; activator sites {}; refuting at root {}",
             s(&row["path"]),
             row["n"],
             row["activator_sites"],
-            row["refusable_at_load"]
+            row["refuting_at_root"]
         );
         return;
     }
@@ -557,7 +556,7 @@ fn print_block(row: &Json) {
     {
         println!("  activator sites {}", row["activator_sites"]);
     }
-    println!("  refusable at load {}", row["refusable_at_load"]);
+    println!("  refuting at root {}", row["refuting_at_root"]);
 }
 
 fn main() {
@@ -604,7 +603,7 @@ fn main() {
     let mut fork_only: Vec<String> = Vec::new();
     let mut compiled: Vec<String> = Vec::new();
     let mut act_sites: Vec<String> = Vec::new();
-    let mut load_refusable = 0usize;
+    let mut root_refuting = 0usize;
     for src in &sources {
         let row = row(src, jobs);
         if as_json {
@@ -622,11 +621,8 @@ fn main() {
         for a in row["activator_sites"].as_array().into_iter().flatten() {
             act_sites.push(format!("{name}: {a}"));
         }
-        if !row["refusable_at_load"]
-            .as_array()
-            .is_none_or(Vec::is_empty)
-        {
-            load_refusable += 1;
+        if !row["refuting_at_root"].as_array().is_none_or(Vec::is_empty) {
+            root_refuting += 1;
         }
         if row["past_the_limit"].as_bool() == Some(true) {
             continue;
@@ -722,7 +718,5 @@ fn main() {
     for x in &act_sites {
         println!("    {x}");
     }
-    println!(
-        "programs with a refuting plan over an `absent` in D at root (a check at load): {load_refusable}"
-    );
+    println!("programs with a refuting plan over an `absent` in D at root: {root_refuting}");
 }

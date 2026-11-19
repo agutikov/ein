@@ -30,18 +30,17 @@
 //!
 //! ## The second question — a refutation resting on an `absent`
 //!
-//! Why [`Q-M1e2.5`] refuses it: **`dead` is not upward-closed under
-//! `absent`**. A rule
+//! What the shape does: **`dead` is not upward-closed under `absent`**. A
+//! rule
 //!
 //! ```lisp
 //! (rule bad () :match (and (p ?x) (absent (q ?x))) :assert (false))
 //! ```
 //!
-//! makes `{(p A)}` dead and `{(p A), (q A)}` alive, and three mechanisms the
-//! walk shipped read the refuted premise `X ⊆ Y ∧ dead(X) ⇒ dead(Y)` — the
-//! lookahead kill cache, the singleton writeback, and the width-1 no-good
-//! clause. Five of its six configurations answered the twenty-line probe
-//! **wrongly**, all of them reporting `exhausted = true`.
+//! makes `{(p A)}` dead and `{(p A), (q A)}` alive, so a search that took a
+//! superset of a dead set for dead would lose a state that is alive. A
+//! program that writes it is not monotone: it loads, the static check flags
+//! it, and nothing is claimed of its answer ([`Q-M1f.564`]).
 //!
 //! The condition is a conjunction of two things this module already sees, plus
 //! one the caller supplies:
@@ -61,13 +60,13 @@
 //! `std.algebra`'s `connex`, whose `absent` reads the subject relation `?R`
 //! itself.
 //!
-//! This map's line is a warning, advisory as the rest of the map. The
-//! refusal is [`crate::forbid`]'s, at load, over the same shape read at
-//! relation grain on the whole program
-//! ([03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent),
-//! [07-diagnostics.md § 2.7](../../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
+//! This map's line is a warning, advisory as the rest of the map: it reads
+//! the rule alone. What every surface that reports `R` warns of is the static
+//! check's verdict over the whole program ([`crate::monotone`],
+//! [`crate::detector`];
+//! [03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
 //!
-//! [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
+//! [`Q-M1f.564`]: ../../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md
 
 use ein_core::{Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
@@ -87,14 +86,13 @@ pub struct NafDep {
     pub activator: Box<[Value]>,
     pub derived: Box<[String]>,
     pub declared_only: Box<[String]>,
-    /// The exposure [`Q-M1e2.5`] refuses, or `None`.
+    /// A refutation resting on an `absent` the search can still fill, or
+    /// `None`.
     ///
     /// `Some` **only** when both halves hold: the `:assert` refutes, and at
     /// least one watched relation is one the program's generator can still
     /// propose. The field's presence is the finding, so a caller never has to
     /// re-derive the conjunction.
-    ///
-    /// [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
     pub refutation: Option<Refutation>,
 }
 
@@ -228,7 +226,8 @@ fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
 ///
 /// `category` is the `warn` event's, and it is what tells the two apart in a
 /// stream: `DerivedNafWarning` is the stratification advice,
-/// `RefutationUnderAbsentWarning` the soundness one.
+/// `RefutationUnderAbsentWarning` names a rule that makes the program
+/// non-monotone.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafWarning {
     pub category: &'static str,
@@ -293,14 +292,10 @@ pub fn naf_warnings(
                 category: REFUTATION_UNDER_ABSENT,
                 text: format!(
                     "rule {rule}{act}: concludes {} from (absent …) over {}, which this \
-                     program's hypothesis generator can still propose — so a state the \
-                     search has not finished extending is refuted, and a commitment that \
-                     would have discharged the guard is never reached (`dead` is not \
-                     upward-closed under `absent`; Q-M1e2.5). Write the constraint over a \
-                     STORED negative, as std.algebra's `total` does — demand \
-                     `(not (R ?a ?b))` for every candidate rather than concluding from \
-                     its absence — or, if this is a requirement and not a refutation, \
-                     state it as `(open ?R)` and let the verdict report what the state owes.",
+                     program's hypothesis generator can still propose — so a state that \
+                     has not decided it is dead, and a commitment that decides it can be \
+                     alive (`dead` is not upward-closed under `absent`). The program is \
+                     not monotone, and nothing is claimed of its answer (Q-M1f.564).",
                     r.concludes,
                     r.watching.join(", ")
                 ),

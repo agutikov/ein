@@ -130,7 +130,7 @@ const WRITTEN: &[(&str, &str)] = &[
          (rule dead-0 () :match (and (thing ?x) (absent (h ?x))) :assert (false) :priority 300)\n\
          (query :goal (h ?x))\n",
     ),
-    // The same, through a derived positive (*forbid*'s `via`): `p ← ¬h`,
+    // The same, through a derived positive (*via*): `p ← ¬h`,
     // `p → ⊥`. The refutation reads no `absent`; the rule that derived its
     // premise did.
     (

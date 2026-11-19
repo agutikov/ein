@@ -179,7 +179,7 @@
 <g id="node13" class="node">
 <title>static</title>
 <polygon fill="none" stroke="black" points="1222.12,-406 981.88,-406 981.88,-370 1222.12,-370 1222.12,-406"/>
-<text xml:space="preserve" text-anchor="middle" x="1102" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">monotone.rs, detector.rs, forbid.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="1102" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">monotone.rs, detector.rs, extendable.rs</text>
 <text xml:space="preserve" text-anchor="middle" x="1102" y="-377.55" font-family="Helvetica,sans-Serif" font-size="11.00">the static check over the compiled plans</text>
 </g>
 <!-- region&#45;&gt;static -->
@@ -266,4 +266,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 5ed5e0f4d7593b2af9419348a84f19d2b53794ea5034862f6a6c12ae05aa9722 -->
+<!-- source sha256: fe61b568768dd2ec322feb7245da3c98f0a52c3381026b8cda73a615967c1185 -->

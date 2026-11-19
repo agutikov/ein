@@ -1,33 +1,33 @@
-;;; *forbid* misses a refutation whose activator chain first appears at a node,
-;;; two links past D — regression `forbid-chain-2`
-;;; (`corpus/regressions.toml`).
+;;; A refutation whose activator chain first appears at a node, two links
+;;; past D, resting on an `absent` a commitment can fill.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `forbid-chain-1.ein` with one link more: `r2`'s plan asserts the
+;;; `activator-chain-1.ein` with one link more: `r2`'s plan asserts the
 ;;; activator `(r3 a)`, and the plan of `r3` it compiles concludes
 ;;; `(false)`. While `a` has no `p2`, `mk` derives `(q a)` from `(p a)`, and
 ;;; the chain `q`, `r2`, `r3` runs at a node; root compiles none of the
 ;;; three.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; `{(p a)}` dies, its `(false)` resting through three activators on `(absent
-;;; (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole over a relation a
-;;; commitment can extend. *forbid*, through an activator (Q-M1e2.5): the
-;;; program is refused at every command that takes the universe.
+;;; The `(false)` rests through three activators on `(absent (p2 a))`, over
+;;; a relation a commitment can extend. Neither `r2`'s activator relation
+;;; nor `r3`'s is in D; both are in D⁺.
+;;;
+;;; Not monotone: the static check flags the program. It loads, every command
+;;; answers it with the warning, and nothing is claimed of its answer
+;;; (Q-M1f.564).
 ;;;
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loaded, as `forbid-chain-1.ein` did: R three states, the
-;;; one dead hole {(p a)}, exit 0, in every mode and `ein oracle` (at
-;;; `3efd3f5f`). Neither `r2`'s activator relation nor `r3`'s is in D, so
-;;; *forbid* read neither, and the status line named no site. Both are in D⁺
-;;; now, and every question about a commitment exits 1: `rule 'r3': concludes
-;;; (false) from its activator, which rule 'r2' derives resting on (absent …)
-;;; over p2`.
-
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 (relation seed T :why "{?3} is a seed") (relation p T :why "p holds of {?3}") (relation p2 T :why "p2 holds of {?3}") (relation q T :why "q holds of {?3}") (relation r2 T :why "r2 holds of {?3}")
 (relation r3 T :why "r3 holds of {?3}")
 

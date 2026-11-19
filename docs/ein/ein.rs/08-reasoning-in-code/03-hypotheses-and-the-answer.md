@@ -31,8 +31,8 @@ test under a crate's `tests/`.
 | $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the ladder and the conflict check share |
 | $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`) |
 | $\operatorname{declines}(P)$ and its reason | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
-| $D^{+}$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes once the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change, for the static check, for *forbid* and for this rung |
-| $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `forbid::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
+| $D^{+}$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes once the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change, for the static check and for this rung |
+| $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `extendable::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
 | stuck | `oblgen::Mode::Stuck` |
 | $\operatorname{Uncov}(P)$ | `RungReport::uncovered`, over `hypgen::eligible_relations` |
 | $\operatorname{guessable}(P)$ | `hypgen::candidate_objects`, seeded with `invariant::program_names`; the code's *objects* here are the guessable atoms |

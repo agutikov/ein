@@ -1338,8 +1338,8 @@ pub struct Theory {
     /// [`PairLayer::excluded`] are the pairs the theory excludes alone and
     /// [`PairLayer::dead_alone`] the candidates it kills alone, every index
     /// a place in root's [`PairLayer::candidates`]. `Err` where the small KB
-    /// has no layer: the message is the engine's, a refusal by *forbid* or a
-    /// rule that does not compile.
+    /// has no layer: the message is the engine's, a rule that does not
+    /// compile.
     pub small: Result<PairLayer, String>,
     /// Facts the small KB's own fixpoint holds that root's does not. A
     /// program over fewer statements derives no more unless a rule reads the

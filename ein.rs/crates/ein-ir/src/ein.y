@@ -9,7 +9,7 @@
 // grammar cannot see: arity against a signature, which keywords a form
 // requires and that each appears once, a variable no parameter or premise
 // binds, a relation named by a parameter its activator binds to a fact, the
-// macro table, imports, and *forbid*.
+// macro table and imports.
 //
 // Every action is one call into the builder `b`, which makes the
 // `ein_ir::Ast` the loader reads, node for node and `Loc` for `Loc`. The

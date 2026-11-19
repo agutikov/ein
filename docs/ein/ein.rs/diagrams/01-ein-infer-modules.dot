@@ -23,7 +23,7 @@ digraph ein_infer {
     readout [label="read_out.rs, verdict.rs,\nclaim.rs, expect.rs"];
   }
 
-  static  [label="monotone.rs, detector.rs, forbid.rs\nthe static check over the compiled plans"];
+  static  [label="monotone.rs, detector.rs, extendable.rs\nthe static check over the compiled plans"];
   explain [label="explain.rs\na dead node's core"];
   events  [label="events.rs\nthe --events writer, the Watch"];
 

@@ -2,120 +2,89 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: check Pages: 1 -->
-<svg width="1076pt" height="164pt"
- viewBox="0.00 0.00 1076.00 164.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 160.25)">
+<svg width="944pt" height="104pt"
+ viewBox="0.00 0.00 944.00 104.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100.25)">
 <title>check</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-160.25 1072.25,-160.25 1072.25,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-100.25 939.75,-100.25 939.75,4 -4,4"/>
 <!-- plans -->
 <g id="node1" class="node">
 <title>plans</title>
-<path fill="none" stroke="black" d="M137.5,-103.94C137.5,-106.35 106.69,-108.31 68.75,-108.31 30.81,-108.31 0,-106.35 0,-103.94 0,-103.94 0,-64.56 0,-64.56 0,-62.15 30.81,-60.19 68.75,-60.19 106.69,-60.19 137.5,-62.15 137.5,-64.56 137.5,-64.56 137.5,-103.94 137.5,-103.94"/>
-<path fill="none" stroke="black" d="M137.5,-103.94C137.5,-101.52 106.69,-99.56 68.75,-99.56 30.81,-99.56 0,-101.52 0,-103.94"/>
-<text xml:space="preserve" text-anchor="middle" x="68.75" y="-87.3" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s compiled plans,</text>
-<text xml:space="preserve" text-anchor="middle" x="68.75" y="-73.8" font-family="Helvetica,sans-Serif" font-size="11.00">the relations of H</text>
+<path fill="none" stroke="black" d="M137.5,-70.94C137.5,-73.35 106.69,-75.31 68.75,-75.31 30.81,-75.31 0,-73.35 0,-70.94 0,-70.94 0,-31.56 0,-31.56 0,-29.15 30.81,-27.19 68.75,-27.19 106.69,-27.19 137.5,-29.15 137.5,-31.56 137.5,-31.56 137.5,-70.94 137.5,-70.94"/>
+<path fill="none" stroke="black" d="M137.5,-70.94C137.5,-68.52 106.69,-66.56 68.75,-66.56 30.81,-66.56 0,-68.52 0,-70.94"/>
+<text xml:space="preserve" text-anchor="middle" x="68.75" y="-54.3" font-family="Helvetica,sans-Serif" font-size="11.00">root&#39;s compiled plans,</text>
+<text xml:space="preserve" text-anchor="middle" x="68.75" y="-40.8" font-family="Helvetica,sans-Serif" font-size="11.00">the relations of H</text>
 </g>
 <!-- classify -->
 <g id="node2" class="node">
 <title>classify</title>
-<polygon fill="none" stroke="black" points="348,-108.5 174.5,-108.5 174.5,-60 348,-60 348,-108.5"/>
-<text xml:space="preserve" text-anchor="middle" x="261.25" y="-94.05" font-family="Helvetica,sans-Serif" font-size="11.00">monotone::classify</text>
-<text xml:space="preserve" text-anchor="middle" x="261.25" y="-80.55" font-family="Helvetica,sans-Serif" font-size="11.00">a site: a read a commitment</text>
-<text xml:space="preserve" text-anchor="middle" x="261.25" y="-67.05" font-family="Helvetica,sans-Serif" font-size="11.00">can undo</text>
+<polygon fill="none" stroke="black" points="348,-75.5 174.5,-75.5 174.5,-27 348,-27 348,-75.5"/>
+<text xml:space="preserve" text-anchor="middle" x="261.25" y="-61.05" font-family="Helvetica,sans-Serif" font-size="11.00">monotone::classify</text>
+<text xml:space="preserve" text-anchor="middle" x="261.25" y="-47.55" font-family="Helvetica,sans-Serif" font-size="11.00">a site: a read a commitment</text>
+<text xml:space="preserve" text-anchor="middle" x="261.25" y="-34.05" font-family="Helvetica,sans-Serif" font-size="11.00">can undo</text>
 </g>
 <!-- plans&#45;&gt;classify -->
 <g id="edge1" class="edge">
 <title>plans&#45;&gt;classify</title>
-<path fill="none" stroke="black" d="M137.99,-84.25C146.06,-84.25 154.42,-84.25 162.8,-84.25"/>
-<polygon fill="black" stroke="black" points="162.7,-87.75 172.7,-84.25 162.7,-80.75 162.7,-87.75"/>
+<path fill="none" stroke="black" d="M137.99,-51.25C146.06,-51.25 154.42,-51.25 162.8,-51.25"/>
+<polygon fill="black" stroke="black" points="162.7,-54.75 172.7,-51.25 162.7,-47.75 162.7,-54.75"/>
 </g>
 <!-- mono -->
 <g id="node3" class="node">
 <title>mono</title>
-<polygon fill="none" stroke="black" points="585.25,-156.25 462,-156.25 462,-120.25 585.25,-120.25 585.25,-156.25"/>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-141.3" font-family="Helvetica,sans-Serif" font-size="11.00">monotone</text>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-127.8" font-family="Helvetica,sans-Serif" font-size="11.00">every licence of § 3</text>
+<polygon fill="none" stroke="black" points="537.25,-96.25 414,-96.25 414,-60.25 537.25,-60.25 537.25,-96.25"/>
+<text xml:space="preserve" text-anchor="middle" x="475.62" y="-81.3" font-family="Helvetica,sans-Serif" font-size="11.00">monotone</text>
+<text xml:space="preserve" text-anchor="middle" x="475.62" y="-67.8" font-family="Helvetica,sans-Serif" font-size="11.00">every licence of § 3</text>
 </g>
 <!-- classify&#45;&gt;mono -->
 <g id="edge2" class="edge">
 <title>classify&#45;&gt;mono</title>
-<path fill="none" stroke="black" d="M348.23,-102.08C381.49,-108.98 419.11,-116.78 450.88,-123.37"/>
-<polygon fill="black" stroke="black" points="449.87,-126.74 460.38,-125.34 451.29,-119.88 449.87,-126.74"/>
-<text xml:space="preserve" text-anchor="middle" x="385.12" y="-115.57" font-family="Helvetica,sans-Serif" font-size="9.00">no site</text>
+<path fill="none" stroke="black" d="M348.32,-62.19C366.25,-64.47 384.96,-66.85 402.32,-69.06"/>
+<polygon fill="black" stroke="black" points="401.65,-72.5 412.02,-70.29 402.54,-65.56 401.65,-72.5"/>
+<text xml:space="preserve" text-anchor="middle" x="381" y="-70.66" font-family="Helvetica,sans-Serif" font-size="9.00">no site</text>
 </g>
 <!-- flagged -->
 <g id="node4" class="node">
 <title>flagged</title>
-<polygon fill="none" stroke="black" points="584.5,-102.25 462.75,-102.25 462.75,-66.25 584.5,-66.25 584.5,-102.25"/>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-87.3" font-family="Helvetica,sans-Serif" font-size="11.00">flagged</text>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-73.8" font-family="Helvetica,sans-Serif" font-size="11.00">L7, the cube, alone</text>
+<polygon fill="none" stroke="black" points="536.5,-42.25 414.75,-42.25 414.75,-6.25 536.5,-6.25 536.5,-42.25"/>
+<text xml:space="preserve" text-anchor="middle" x="475.62" y="-27.3" font-family="Helvetica,sans-Serif" font-size="11.00">flagged</text>
+<text xml:space="preserve" text-anchor="middle" x="475.62" y="-13.8" font-family="Helvetica,sans-Serif" font-size="11.00">L7, the cube, alone</text>
 </g>
 <!-- classify&#45;&gt;flagged -->
 <g id="edge3" class="edge">
 <title>classify&#45;&gt;flagged</title>
-<path fill="none" stroke="black" d="M348.23,-84.25C381.47,-84.25 419.08,-84.25 450.84,-84.25"/>
-<polygon fill="black" stroke="black" points="450.75,-87.75 460.75,-84.25 450.75,-80.75 450.75,-87.75"/>
-<text xml:space="preserve" text-anchor="middle" x="385.12" y="-86.95" font-family="Helvetica,sans-Serif" font-size="9.00">a site</text>
-</g>
-<!-- forbid -->
-<g id="node6" class="node">
-<title>forbid</title>
-<polygon fill="none" stroke="black" points="625,-48.5 422.25,-48.5 422.25,0 625,0 625,-48.5"/>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-34.05" font-family="Helvetica,sans-Serif" font-size="11.00">forbid::check</text>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-20.55" font-family="Helvetica,sans-Serif" font-size="11.00">a refutation resting on an</text>
-<text xml:space="preserve" text-anchor="middle" x="523.62" y="-7.05" font-family="Helvetica,sans-Serif" font-size="11.00">absent a commitment can extend</text>
-</g>
-<!-- classify&#45;&gt;forbid -->
-<g id="edge6" class="edge">
-<title>classify&#45;&gt;forbid</title>
-<path fill="none" stroke="black" d="M348.23,-64.44C368.19,-59.84 389.73,-54.87 410.63,-50.06"/>
-<polygon fill="black" stroke="black" points="411.39,-53.47 420.35,-47.82 409.82,-46.65 411.39,-53.47"/>
-<text xml:space="preserve" text-anchor="middle" x="385.12" y="-62.32" font-family="Helvetica,sans-Serif" font-size="9.00">the sites</text>
+<path fill="none" stroke="black" d="M348.32,-40.31C366.53,-37.99 385.55,-35.57 403.14,-33.34"/>
+<polygon fill="black" stroke="black" points="403.5,-36.82 412.98,-32.09 402.61,-29.88 403.5,-36.82"/>
+<text xml:space="preserve" text-anchor="middle" x="381" y="-40.45" font-family="Helvetica,sans-Serif" font-size="9.00">a site</text>
 </g>
 <!-- det -->
 <g id="node5" class="node">
 <title>det</title>
-<polygon fill="none" stroke="black" points="884,-108.5 706.75,-108.5 706.75,-60 884,-60 884,-108.5"/>
-<text xml:space="preserve" text-anchor="middle" x="795.38" y="-94.05" font-family="Helvetica,sans-Serif" font-size="11.00">detector.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="795.38" y="-80.55" font-family="Helvetica,sans-Serif" font-size="11.00">what each site puts at stake,</text>
-<text xml:space="preserve" text-anchor="middle" x="795.38" y="-67.05" font-family="Helvetica,sans-Serif" font-size="11.00">cycles, order findings</text>
+<polygon fill="none" stroke="black" points="751.5,-48.5 574.25,-48.5 574.25,0 751.5,0 751.5,-48.5"/>
+<text xml:space="preserve" text-anchor="middle" x="662.88" y="-34.05" font-family="Helvetica,sans-Serif" font-size="11.00">detector.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="662.88" y="-20.55" font-family="Helvetica,sans-Serif" font-size="11.00">what each site puts at stake,</text>
+<text xml:space="preserve" text-anchor="middle" x="662.88" y="-7.05" font-family="Helvetica,sans-Serif" font-size="11.00">cycles, order findings</text>
 </g>
 <!-- flagged&#45;&gt;det -->
 <g id="edge4" class="edge">
 <title>flagged&#45;&gt;det</title>
-<path fill="none" stroke="black" d="M584.83,-84.25C617.26,-84.25 658.11,-84.25 695.11,-84.25"/>
-<polygon fill="black" stroke="black" points="694.94,-87.75 704.94,-84.25 694.94,-80.75 694.94,-87.75"/>
+<path fill="none" stroke="black" d="M536.77,-24.25C545,-24.25 553.62,-24.25 562.32,-24.25"/>
+<polygon fill="black" stroke="black" points="562.26,-27.75 572.26,-24.25 562.26,-20.75 562.26,-27.75"/>
 </g>
 <!-- warn -->
-<g id="node8" class="node">
+<g id="node6" class="node">
 <title>warn</title>
-<polygon fill="none" stroke="black" points="1062.25,-102.25 921,-102.25 921,-66.25 1068.25,-66.25 1068.25,-96.25 1062.25,-102.25"/>
-<polyline fill="none" stroke="black" points="1062.25,-102.25 1062.25,-96.25"/>
-<polyline fill="none" stroke="black" points="1068.25,-96.25 1062.25,-96.25"/>
-<text xml:space="preserve" text-anchor="middle" x="994.62" y="-80.55" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s warnings</text>
+<polygon fill="none" stroke="black" points="929.75,-42.25 788.5,-42.25 788.5,-6.25 935.75,-6.25 935.75,-36.25 929.75,-42.25"/>
+<polyline fill="none" stroke="black" points="929.75,-42.25 929.75,-36.25"/>
+<polyline fill="none" stroke="black" points="935.75,-36.25 929.75,-36.25"/>
+<text xml:space="preserve" text-anchor="middle" x="862.12" y="-20.55" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s warnings</text>
 </g>
 <!-- det&#45;&gt;warn -->
 <g id="edge5" class="edge">
 <title>det&#45;&gt;warn</title>
-<path fill="none" stroke="black" d="M884.33,-84.25C892.57,-84.25 900.91,-84.25 909.11,-84.25"/>
-<polygon fill="black" stroke="black" points="909.09,-87.75 919.09,-84.25 909.09,-80.75 909.09,-87.75"/>
-</g>
-<!-- refused -->
-<g id="node7" class="node">
-<title>refused</title>
-<polygon fill="none" stroke="black" points="862.25,-42.25 722.5,-42.25 722.5,-6.25 868.25,-6.25 868.25,-36.25 862.25,-42.25"/>
-<polyline fill="none" stroke="black" points="862.25,-42.25 862.25,-36.25"/>
-<polyline fill="none" stroke="black" points="868.25,-36.25 862.25,-36.25"/>
-<text xml:space="preserve" text-anchor="middle" x="795.38" y="-27.3" font-family="Helvetica,sans-Serif" font-size="11.00">the program is refused,</text>
-<text xml:space="preserve" text-anchor="middle" x="795.38" y="-13.8" font-family="Helvetica,sans-Serif" font-size="11.00">before any node</text>
-</g>
-<!-- forbid&#45;&gt;refused -->
-<g id="edge7" class="edge">
-<title>forbid&#45;&gt;refused</title>
-<path fill="none" stroke="black" d="M625.45,-24.25C653.61,-24.25 683.88,-24.25 710.91,-24.25"/>
-<polygon fill="black" stroke="black" points="710.76,-27.75 720.76,-24.25 710.76,-20.75 710.76,-27.75"/>
-<text xml:space="preserve" text-anchor="middle" x="665.88" y="-26.95" font-family="Helvetica,sans-Serif" font-size="9.00">one found</text>
+<path fill="none" stroke="black" d="M751.83,-24.25C760.07,-24.25 768.41,-24.25 776.61,-24.25"/>
+<polygon fill="black" stroke="black" points="776.59,-27.75 786.59,-24.25 776.59,-20.75 776.59,-27.75"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: 9830c5b36dbb802d011a7364b903c6c4e25deffc3cbc232feccab9f1fff8b9e8 -->
+<!-- source sha256: cb0f21cbdda2dc89aadda2d5e008e61935d846ba0181ef3286cfd5f9eb07dcf3 -->

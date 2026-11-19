@@ -35,22 +35,22 @@
 ;;; declares, which has no declaration to read and takes its activator
 ;;; written, and a fact of more than six arguments.
 ;;;
-;;; ── what it changes, and what it refuses ────────────────────────────────────
+;;; ── what it changes ─────────────────────────────────────────────────────────
 ;;; The verdict of no state: a state the rule calls dead, the kernel calls
 ;;; dead already. What changes is what a dead state holds and how it reads:
 ;;; `(false)` with a derivation, and `clash-N` as the rule that refuted it.
 ;;;
-;;; **A program can be refused with the rule that loads without it.** A
-;;; refutation may not rest on an `(absent …)` over a relation whose held
-;;; extent a commitment can still extend (Q-M1e2.5), and that is a check of
-;;; rules: it reads `clash-N` under each activator, and it does not read the
-;;; kernel's own contradiction, which is no rule. So a program in which a
-;;; rule derives a fact of `R` resting on such an `absent` is refused once
-;;; `clash-N` is activated for `R`, whether or not any rule could deny that
-;;; fact. Such a program is one the static check flags as it stands, and of a
-;;; flagged program nothing is claimed: without the rule it is answered, with
-;;; the rule it is refused. Activating relation by relation, `(clash-2 R)`,
-;;; keeps the refusal to the relations named.
+;;; **A rule that refutes is read by the static check as any other is.**
+;;; `clash-N` concludes `(false)` from a fact of `R` beside its negation, so
+;;; a program in which a rule derives a fact of `R` resting on an
+;;; `(absent …)` over a relation whose held extent a commitment can still
+;;; extend has, once `clash-N` is activated for `R`, a refutation resting on
+;;; that `absent`. Such a program is one the static check flags as it
+;;; stands, with the rule or without it, and of a flagged program nothing is
+;;; claimed (Q-M1f.564).
+;;;
+;;;
+;;;
 ;;;
 ;;; ── what an import brings ───────────────────────────────────────────────────
 ;;; Fourteen rules and nothing else: no relation and no fact. `clash-N` acts

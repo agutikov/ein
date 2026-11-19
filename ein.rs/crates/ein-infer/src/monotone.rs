@@ -539,9 +539,9 @@ pub(crate) fn dynamic(
     close(seed, &saturation, &[], terms)
 }
 
-/// `D` followed through the rules root has no plan of: the relations
-/// *forbid* calls extendable, `D⁺`
-/// ([08-monotonicity.md § 10](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#10-forbid-what-is-refused-at-load)).
+/// `D` followed through the rules root has no plan of: the extendable
+/// relations, `D⁺`
+/// ([03-absent-and-naf.md](../../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
 ///
 /// `D` is closed over the plans root compiled. A rule with parameters whose
 /// activator relation is in `D` is an activator site: a node compiles a plan
@@ -554,11 +554,11 @@ pub(crate) fn dynamic(
 /// the closure of a closure is the closure, so the two give one set. It is
 /// `D` on a program with no activator site.
 ///
-/// Two readers, through [`crate::forbid`]'s one reading of the rules: *forbid*
-/// itself, over the static check's `D`, and the obligations rung, over the
-/// relations of what it proposes, for the activators a commitment can derive
-/// ([`crate::oblgen`]). The static check and every other reader of `D` do
-/// not read it, so no site, no rung decline and no summary moves with it.
+/// Read through [`crate::extendable`]'s one reading of the rules: by the
+/// obligations rung, over the relations of what it proposes, for the
+/// activators a commitment can derive ([`crate::oblgen`]). The static check
+/// and every other reader of `D` do not read it, so no site, no rung decline
+/// and no summary moves with it.
 pub(crate) fn through_activators(
     seed: impl IntoIterator<Item = Rel>,
     saturation: &[(&Plan, &[(Rel, u32)])],
@@ -656,7 +656,8 @@ pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
 /// `:ein inconsistent` reads as a positive premise, outside every `absent`
 /// (Q-M1f.399). A rule that concludes a fact of one is one firing from such a
 /// rule's, and is read as a refutation by the agenda
-/// ([`crate::saturator::AGENDA`]) and by *forbid* ([`crate::forbid`]).
+/// ([`crate::saturator::AGENDA`]), the detector ([`crate::detector`]) and the
+/// NAF map ([`crate::naf_deps`]).
 pub fn leads_to_an_end<'a>(
     plans: impl IntoIterator<Item = &'a Plan>,
     terms: &Terms,

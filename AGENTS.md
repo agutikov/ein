@@ -513,9 +513,6 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   (`ein-cli/tests/import_invariance.rs`, every corpus program selective
   against whole against `:as`). **No import brings a module's `(query …)`,
   `(solve …)` or `(config …)`**: those are a program's.
-- *Forbid*: a program whose refutation could rest on an `absent` over a
-  relation whose held extent a commitment can still extend is refused
-  (`ein_infer::forbid`).
 - **The hypothesis mechanisms do not contradict one another**: an hrule, an
   obligation, `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)`,
   read on root's fixpoint. No active hrule proposes a fact of a relation a list
@@ -537,6 +534,15 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   **`--no-search`** (`ein solve`, `ein test`) declines to discover R: it
   reports root as the full run reaches it, states no R, and decides only the
   claims root decides.
+- **A non-monotone program loads, and nothing is claimed of its answer**
+  ([Q-M1f.564](docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
+  No command refuses a program for an `absent`, whatever its rules conclude
+  from it. A program the static check flags (`ein_infer::monotone`) is
+  answered by the cube, with no licence, under the warning that it is not
+  monotone; no page, comment or test says what it answers is right, sound or
+  complete. `ein-infer/tests/non_monotone_loads.rs` holds the corpus programs
+  whose refutation rests on an `absent` a commitment can still fill to
+  *flagged, and no licence*.
 - **Every answer exits 0.** Only a refuted claim exits 1; a load error takes
   each command's load-error exit (2 under `ein test`). A count of commitments
   is exact in the engine and reported up to 2^63 − 1, which every surface

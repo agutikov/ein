@@ -225,7 +225,7 @@ The reasoning: [absence](../../reasoning/02-kb-evolution/03-absent-and-naf.md).
 | a guard set aside | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs): every top-level `(absent …)` is lifted out of its disjunct into the plan's guards, so a plan's steps are a positive program ([`05-matcher.md` § 4](../03-design/05-matcher.md#4-predicates-and-guards)) |
 | parked, admitted, dropped | [`ein-infer/src/saturator.rs`](../../../../ein.rs/crates/ein-infer/src/saturator.rs): the parked set and the boundary's round, one admission each |
 | the absences a derivation rested on | `Prov::absent` in [`ein-core/src/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs); no walk for a core follows them ([`ein-core/src/walks.rs`](../../../../ein.rs/crates/ein-core/src/walks.rs)) |
-| a refutation resting on an `absent` | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs): `check` refuses, `extendable` is the set of relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can extend, `message` the text; [`naf_deps.rs`](../../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the advisory map of which guards read what |
+| a refutation resting on an `absent` | a site of the static check, [`ein-infer/src/monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs); [`ein-infer/src/extendable.rs`](../../../../ein.rs/crates/ein-infer/src/extendable.rs): `relations` is the set of relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can extend, $D^{+}$; [`naf_deps.rs`](../../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the advisory map of which guards read what |
 | the dependency graph and its strata | [`ein-infer/src/strata.rs`](../../../../ein.rs/crates/ein-infer/src/strata.rs) |
 | the universal and the *unknown* test | the macros `forall` and `unknown` of `std.macro`, which expand to nested `(absent …)` before a rule is compiled ([`02-syntax.md`](../../user/04-reference/02-syntax.md)) |
 
@@ -239,13 +239,11 @@ of the held extents of the relations it reads, and is judged again when one of t
 inherits parked from root keeps its stamp, so it is judged again in the node exactly where what its guard reads
 grew.
 
-Call a relation *extendable* where a commitment can extend its held extent. *Forbid* runs at load, over root's
-compiled plans and, from its pattern, every rule with parameters whose name, the relation of its activators, is
-extendable. It computes the relations a plan concludes facts of when it reads facts of an extendable relation
-inside an odd number of `absent`s, closed under *a plan that reads facts of one of them positively, or is
-compiled from an activator among them, concludes into the set*, and refuses each plan concluding `(false)` or a
-stored negation that reads facts of an extendable relation inside an odd number of `absent`s, reads facts of a
-relation of that set positively, or is compiled from an activator in it (`forbid::Cause`). The refused shape is
+Call a relation *extendable* where a commitment can extend its held extent: the static check's $D$, followed
+through every rule with parameters whose name, the relation of its activators, is extendable, each such rule read
+from its pattern (`monotone::through_activators`). A rule that concludes `(false)` or a stored negation resting on
+an `absent` over such a relation is read and compiled as any other: its `absent` is a site of the static check, so
+the program is flagged and its routes are the cube's. The shape is
 [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein).
 
 ### 3.3 What holds it
@@ -265,7 +263,7 @@ relation of that set positively, or is compiled from an activator in it (`forbid
 | a `forall` that turns from failing to passing is judged again and admitted; a node and a fresh saturation agree at the boundary | `ein-infer/tests/explain_semantics.rs`: `fork_and_direct_agree_at_the_naf_boundary` |
 | a match inherited parked from root is judged again in the node exactly where what its guard reads grew | `ein-infer/tests/naf_semantics.rs`: `a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew` |
 | an admitted firing records the absences it rested on, a free position as free, and a positive firing records none | `ein-infer/tests/naf_semantics.rs`: `a_boundary_admitted_firing_records_what_was_absent`, `a_free_position_in_a_negative_premise_is_recorded_as_free`, `a_nested_guard_records_both_levels` |
-| a refutation resting on an `absent` over the held extent of an extendable relation is refused, and the line names the forms that say what was meant | `ein-infer/tests/refutation_under_absent.rs`: `the_probe_is_refused_and_the_message_names_the_replacements`, `the_written_activator_programs_are_refused` |
+| a program whose refutation rests on an `absent` over the held extent of an extendable relation loads, is flagged, and is answered with no licence | `ein-infer/tests/non_monotone_loads.rs`: `a_refutation_under_an_absent_loads_flagged_and_unlicensed`, `the_written_activator_programs_load_flagged_and_unlicensed` |
 | every node is root's fixpoint and its commitment, as the oracle builds it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | a negative cycle is reported and the program still answered | `ein-cli/tests/strata_diagnostic.rs`: `solve_names_each_negative_cycle_and_still_answers` |
 
@@ -311,7 +309,7 @@ The reasoning: [monotone and non-monotone programs](../../reasoning/02-kb-evolut
 | the static check: $D$, a read's class, a site | [`ein-infer/src/monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs): `monotone::classify` over the compiled plans, `Site`, `SiteKind`, `ReadClass`, `Monotonicity::is_monotone` |
 | fact grain | a prototype beside the engine, [`ein-infer/examples/shared/fact_grain.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/fact_grain.rs), which `ein-infer/tests/region.rs` holds to the cubes; no route reads it |
 | the cube | [`ein-infer/src/region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs), the oracle: every subset of the candidates saturated as a fork of root |
-| what is refused at load | [`ein-infer/src/forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs) |
+| the relations a commitment can extend, $D^{+}$ | [`ein-infer/src/extendable.rs`](../../../../ein.rs/crates/ein-infer/src/extendable.rs) |
 | the detector | [`ein-infer/src/detector.rs`](../../../../ein.rs/crates/ein-infer/src/detector.rs): the static half off root's plans, the dynamic half off the nodes a run computes; `SPOT_PARENTS` is the number of one-step parents it builds for each printed state, three |
 | what a route learns from a dead node | [`ein-infer/src/known_dead.rs`](../../../../ein.rs/crates/ein-infer/src/known_dead.rs), asked only on a monotone program |
 | the static question alone | `explore::Checked` in [`ein-infer/src/explore.rs`](../../../../ein.rs/crates/ein-infer/src/explore.rs) |
@@ -341,12 +339,12 @@ The reasoning page states each cause by the shape of a program; these are the co
 | c4, an `absent` that takes a witness away | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
 | c5, an obligation's trigger | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables.ein`](../../../../examples/lattice/06_friends_tables.ein) with its monotone twin [`06_friends_tables_everyone_sits.ein`](../../../../examples/lattice/06_friends_tables_everyone_sits.ein) |
 | c6, an activator that applies an obligation | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
-| c7, c11, an activator that hides the `absent` | no corpus program: the two written in [`ein-infer/examples/shared/written.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/written.rs), `ACTIVATOR_REFUTES` and `ACTIVATOR_UNDER_ABSENT`, which `ein-infer/tests/refutation_under_absent.rs` loads |
+| c7, c11, an activator that hides the `absent` | no corpus program: the two written in [`ein-infer/examples/shared/written.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/written.rs), `ACTIVATOR_REFUTES` and `ACTIVATOR_UNDER_ABSENT`, which `ein-infer/tests/non_monotone_loads.rs` loads |
 | c8, an even cycle through an `absent` | `07_unstratifiable.ein` and [`examples/ein-bugs/wrong-answers/f07-rules-swapped.ein`](../../../../examples/ein-bugs/wrong-answers/f07-rules-swapped.ein), the same program with its two rules in the other order |
 | c9, an odd cycle through an `absent` | [`examples/ein-bugs/d3-unsat-core.ein`](../../../../examples/ein-bugs/d3-unsat-core.ein) |
 | c10, the FIFO gap | [`examples/lattice/10_fifo_gap.ein`](../../../../examples/lattice/10_fifo_gap.ein) |
 | c12, a FIFO race over a static read | [`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) |
-| a chain of activators that first appears at a node | [`examples/ein-bugs/wrong-answers/forbid-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/forbid-chain-1.ein) and its siblings |
+| a chain of activators that first appears at a node | [`examples/ein-bugs/wrong-answers/activator-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/activator-chain-1.ein) and its siblings |
 | what is no site | [`examples/zebra2.ein`](../../../../examples/zebra2.ein)'s spatial reads; `total-owed`'s witness in [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein); a stored negation of a fact of a relation that has candidates in [`examples/ein-bugs/complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) |
 | the one-fact test misreads the lines | [`examples/lattice/synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) |
 | the duality fails with no hole | [`examples/lattice/synth/maximal_not_top.ein`](../../../../examples/lattice/synth/maximal_not_top.ein) |
@@ -373,7 +371,6 @@ The reasoning page states each cause by the shape of a program; these are the co
 | a one-step parent path reaches another state on `lattice/08` and `lattice/10_fifo_gap`, and on no node of `lattice/04` or `lattice/09` the spot check reads | `ein-infer/tests/detector.rs`: `the_spot_check_reads_three_parents_of_each_printed_state` |
 | `lattice/10_fifo_gap`'s `{a, b}` holds a stale `p` and is in R; `features/07`'s `{(q one)}` and `stale-naf-fork`'s dead `{(q one)}` hold one | `ein-infer/tests/detector.rs`: `the_stale_check_reads_every_node_the_run_computes` |
 | the rule order of `features/07` moves its universe | no test states it: a known wrong answer on a flagged program, whose answer the engine claims nothing of; `ein-render/tests/golden/corpus_shapes.md5` digests both programs' read-outs, so either one moving changes the golden |
-| *forbid* refuses exactly the corpus programs and regression witnesses it names, and the written programs whose activator hides the `absent`; its message names what to write instead | `ein-infer/tests/refutation_under_absent.rs`: `the_refused_set_is_exactly_these`, `the_written_activator_programs_are_refused`, `the_probe_is_refused_and_the_message_names_the_replacements` |
 | the static half is empty on every monotone corpus program, and names each site's stake, each cycle with its parity and each order finding on a flagged one | `ein-infer/tests/detector.rs`: `the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one`, `each_site_names_what_it_concludes_and_puts_at_stake`, `a_cycle_through_an_absent_is_found_with_its_parity`, `the_order_check_finds_every_fifo_race` |
 | the status names the sites its violations are attributed to, and *not known* where the run did not read the cube | `ein-infer/tests/detector.rs`: `the_status_names_the_sites_its_violations_are_attributed_to` |
 | every route on a flagged program gives the oracle's R, and every mode agrees with it | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
@@ -416,7 +413,7 @@ its last line carries the source's hash, so a source that changes without its pi
 | `08-region-08-absent-witness-hole` | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
 | `08-region-04-obligation-trigger-hole` | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein) |
 | `08-region-09-activator-hole` | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
-| `08-region-three-components` | [`examples/lattice/synth/three_components.ein`](../../../../examples/lattice/synth/three_components.ein), which *forbid* refuses: `ein oracle` builds no cube of it, and the image is its cube with the refusal set aside, kept as it was drawn |
+| `08-region-three-components` | [`examples/lattice/synth/three_components.ein`](../../../../examples/lattice/synth/three_components.ein) |
 
 **The two cubes in the page's § 6** are `ein oracle FILE --dump DIR` and `ein render region DIR` with no run
 overlaid, shown without the legend, the tooltips and the file's path. The non-monotone one is

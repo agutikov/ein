@@ -30,7 +30,7 @@
 //! oracle's cube, every dead node, where the
 //! oracle enumerates it, and describe's N as the run gives it, every member
 //! with its core, past the limit too. Every corpus file and regression witness
-//! the loader accepts and *forbid* does not refuse; the slow entries under
+//! the loader accepts; the slow entries under
 //! `EIN_CORPUS_SLOW=1`.
 //!
 //! It reads the corpus's entries that are not slow by default, and the

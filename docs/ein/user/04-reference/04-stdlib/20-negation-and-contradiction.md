@@ -260,57 +260,6 @@ root is alive.
 What `(clash-of-declared)` does not reach is a relation nothing declares, which has no declaration to read: it takes
 its activator written, `(clash-1 guest)`.
 
-### What it refuses: a fact derived under an `absent`
-
-A refutation may not rest on an `(absent …)` over a relation whose held extent a commitment can still extend
-([Q-M1e2.5](../../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md),
-[diagnostics § 2.7](../07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)). That is a
-check of **rules**: it reads `clash-N` under each activator, as it reads any rule that concludes `(false)`, and it
-does not read the kernel's own contradiction, which is no rule. So a program can load without these rules and be
-refused with them:
-
-```lisp
-(import std.contradiction)
-
-(relation allergic Guest      :why "{?3} is allergic")
-(relation meal     Guest Dish :why "{?3} is served {?4}")
-
-(rule soup-unless-allergic ()
-  :match  (and (guest ?g) (absent (allergic ?g)))
-  :assert (meal ?g Soup)
-  :why    "{?g} is not known to be allergic, and is served soup")
-
-(guest Ann)
-
-(clash-of-declared)
-
-(solve :hypothesis-relations (allergic))
-(query :goal (meal ?g ?d))
-```
-
-<!-- output -->
-```text
-rule 'std.contradiction.clash-0' [activator meal]: concludes (false) from meal, which rule 'soup-unless-allergic' derives resting on (absent …) over allergic, a relation a commitment can still extend — so it calls a state that has not yet decided allergic a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (allergic)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does
-…
-```
-
-and the same line for `clash-2`. `meal` is derived resting on the absence of `allergic`, which a commitment can
-fill, and `clash-0` and `clash-2` conclude `(false)` from `meal`. The refusal is at the grain of the relation: it is
-issued whether or not any rule could deny a fact of `meal`, and here none can.
-
-Three things to know of it:
-
-- **The program was outside what is claimed already.** With the line `(clash-of-declared)` taken out it loads and is
-  answered, and the read-out says `lattice  not monotone: 1 site (the static check)`, naming
-  `soup-unless-allergic`: a positive conclusion from an absence a commitment can fill is what the static check
-  flags, and of a flagged program nothing is claimed
-  ([the read-out § 5.1](../08-read-out.md#51-under-lattice-and-monotone-the-warning)). The two readings agree that
-  the program is outside; one answers it and the other refuses it.
-- **Activating relation by relation keeps the refusal to the relations named.** With `(clash-1 allergic)` in the
-  place of `(clash-of-declared)` the program above loads: nothing derives a fact of `allergic` under an absence.
-- **The remedies are the message's**: close the relation if no commitment is meant to extend it, state the
-  requirement as an obligation, or conclude from a stored negative.
-
 ## How it works
 
 ### `std.negation`
@@ -612,7 +561,6 @@ Reads a declaration of one label; and so each rule after it, at its count.
 - [Constraints](../../03-syntax-and-semantics/06-constraints.md) — a stored negation, `(false)`, and the negation of
   a negation; [Rules § Rules and contexts](../../03-syntax-and-semantics/05-rules.md) — a rule for what somebody
   thinks.
-- [Diagnostics § 2.7](../07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill) and
-  [§ 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing) — the two refusals above.
+- [Diagnostics § 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing) — the refusal above.
 - [`tests/stdlib/negation/`](../../../../../tests/stdlib/negation/) and
   [`tests/stdlib/contradiction/`](../../../../../tests/stdlib/contradiction/) — a program for each rule or family.

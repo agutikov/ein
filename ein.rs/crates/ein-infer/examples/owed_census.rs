@@ -21,7 +21,7 @@
 //!
 //! From [`ein_infer::monotone::classify`] over root's plans, with `D` the
 //! relations a commitment can change and `D⁺` the same followed through the
-//! rules root has no plan of ([`ein_infer::forbid::extendable`]):
+//! rules root has no plan of ([`ein_infer::extendable::relations`]):
 //!
 //! | column | what |
 //! |---|---|
@@ -259,9 +259,10 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
     let hypothesised: FxHashSet<Symbol> =
         p.proposed.iter().map(|&f| terms.facts.get(f).0).collect();
     let m = monotone::classify(&kb, &terms, &plans, &hypothesised);
-    let extendable: FxHashSet<Rel> = ein_infer::forbid::extendable(&kb, &terms, &ast, &plans, &m)
-        .into_iter()
-        .collect();
+    let extendable: FxHashSet<Rel> =
+        ein_infer::extendable::relations(&kb, &terms, &ast, &plans, &m)
+            .into_iter()
+            .collect();
 
     let program = kb.program_arc();
     let mut stat = Static {
@@ -362,7 +363,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
         let r = match region::compute(&mut kb2, &mut terms2, &ast2, &opts, &mut |_| {}) {
             Ok(Outcome::Region(r)) => r,
             Ok(Outcome::Refused { .. }) => return Err("over-limit"),
-            Err(_) => return Err("refused"),
+            Err(_) => return Err("error"),
         };
         // This load's candidate `i` is the region's bit `bit[i]`.
         let texts: Vec<String> = p.proposed.iter().map(|&f| sexpr(&terms, f)).collect();

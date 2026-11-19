@@ -1,6 +1,5 @@
-;;; An activator whose every argument is a nested fact read as no activator
-;;; to *forbid* — regression
-;;; `activator-all-nested` (`corpus/regressions.toml`).
+;;; An activator whose every argument is a nested fact, in a chain of
+;;; activators that ends in a refutation: a program that is not monotone.
 ;;;
 ;;;
 ;;; `activator-all-int.ein` with `(item (box a))` for `(item 1)`, and
@@ -8,20 +7,21 @@
 ;;; `(alarm (box a))`. A nested fact binds no parameter, so each plan
 ;;; matches `(item ?n)` over every item, which here is the one.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; As `activator-all-int.ein`'s: `alarm`'s `(false)` rests, through two
+;;; As of `activator-all-int.ein`: `alarm`'s `(false)` rests, through two
 ;;; activators, on `(absent (checked ?x))`, and `checked` is a relation a
-;;; commitment can extend, so *forbid* refuses the program, as it does
-;;; `activator-all-symbol.ein`.
+;;; commitment can extend. The static check flags the program, its sites
+;;; naming `[activator (box a)]`; it loads, and nothing is claimed of its
+;;; answer (Q-M1f.564).
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `6a775f3d`, R empty, every node dead, exit 0 (`ein solve FILE`, in
-;;; either build): `Plan::activator_args` kept symbols only, so root's plan
-;;; of `alarm` read as having no activator, as the int one did. *forbid*
-;;; reads whether the plan's rule has parameters, and the program is
-;;; refused, naming `alarm [activator (box a)]`, as the control is.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (relation item    T :why "{?3} is an item")
 (relation checked T :why "{?3} is checked")

@@ -88,10 +88,10 @@
 //!
 //! 1. the **activators a commitment can derive** are read off the rules and
 //!    root's plans, with no saturation
-//!    ([`crate::forbid`]'s `derivable_activators`): each conclusion that
+//!    ([`crate::extendable`]'s `derivable_activators`): each conclusion that
 //!    holds no variable and would activate an obligation rule, in the
 //!    `:assert` of a rule that reads a relation of `D⁺` or is activated by
-//!    one. `D⁺` is *forbid*'s, by its one reading of the rules, seeded with
+//!    one. `D⁺` is [`crate::extendable`]'s, by its one reading of the rules, seeded with
 //!    the relations of the candidates the call would emit with every switch
 //!    off;
 //! 2. for each one the state does not hold, the rule's plan under it is
@@ -507,7 +507,7 @@ pub(crate) fn generate(
             }
         }
         let mut fresh: Vec<Arc<Plan>> = Vec::new();
-        for d in crate::forbid::derivable_activators(
+        for d in crate::extendable::derivable_activators(
             s.kb,
             s.terms,
             s.ast,

@@ -1,6 +1,6 @@
 @startuml
 start
-:prepare: root's fixpoint, H, root's debts,\nthe static check, forbid;
+:prepare: root's fixpoint, H, root's debts,\nthe static check;
 if (~--no-search?) then (yes)
   :root's node alone;
   stop

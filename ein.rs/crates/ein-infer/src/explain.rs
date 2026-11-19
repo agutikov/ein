@@ -76,7 +76,7 @@
 //! followed into no core (Q-M1e2.12). So a core is a set of facts from
 //! which, with root's plans, saturation derives the contradiction, and it
 //! names the commitment a plan only a node compiles rests on:
-//! `examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein`'s dead
+//! `examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein`'s dead
 //! `{(p a)}` reports `(p a) (seed a)`, and `core-activator-guard-only.ein`'s,
 //! whose refuting plan matches no fact, `(p a)`.
 //!

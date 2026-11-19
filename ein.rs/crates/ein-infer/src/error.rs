@@ -25,10 +25,9 @@ pub enum SolveError {
     /// says none can, so this is an engine error, never an answer. The message
     /// names the state and the parent.
     SpotCheck(String),
-    /// *Forbid* (Q-M1e2.5): a refutation rests on an `absent` over a
-    /// relation a commitment can still extend, so the program is refused
-    /// before any question about a commitment is answered. One line per
-    /// refusing rule ([`crate::forbid`]); a load error's exit code.
+    /// A saved file's `(commit …)` names no node of its program's lattice: a
+    /// fact that is no candidate of H, or one named twice (Q-M1f.400). The
+    /// message names the fact; a load error's exit code.
     Refused(String),
 }
 

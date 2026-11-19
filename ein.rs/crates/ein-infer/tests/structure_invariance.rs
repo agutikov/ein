@@ -214,7 +214,7 @@ fn listed(kb: &ein_core::Kb, terms: &Terms, ast: &Ast) -> Result<(String, Vec<St
 
 /// The structure of the program `text`, named `name`, its modules found
 /// from `base`, loaded into `terms`. `None` where it does not load;
-/// `Err` where the engine refuses it, by *forbid* or otherwise.
+/// `Err` where the engine refuses it.
 fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result<Read, String>> {
     // The node alone reads a program nothing else has used: the same text
     // into a copy of the same terms, so under a permutation its ids are the

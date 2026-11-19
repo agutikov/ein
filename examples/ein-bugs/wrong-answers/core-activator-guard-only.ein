@@ -1,7 +1,7 @@
 ;;; A dead node's core leaves out the activator its refutation rests on, where
 ;;; the refuting plan matches no fact — regression
 ;;; `core-activator-guard-only` (`corpus/regressions.toml`), found by
-;;; probing `forbid-chain-no-absent.ein`'s mechanism.
+;;; probing `activator-chain-no-absent.ein`'s mechanism.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

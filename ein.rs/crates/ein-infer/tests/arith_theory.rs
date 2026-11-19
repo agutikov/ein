@@ -1629,8 +1629,8 @@ fn no_rule_joins_two_facts_in(spec: &Spec) {
 /// `operand-undeclared`'s: an operand that is a name and that no `let`
 /// states. `let` is a relation a program writes and no rule of the theory
 /// concludes, and the closing rule closes it, so no commitment can add the
-/// fact the premise found absent: the loader's *forbid* does not refuse the
-/// theory, the static check calls a program that imports it monotone, and
+/// fact the premise found absent: the static check calls a program that
+/// imports it monotone, and
 /// `ein saturate --dump`'s `;; Strata` line says *stratified, 2 strata*, the
 /// rule that reads the `absent` above the rest (`arith_search_free.rs` holds
 /// all three on the binary). Binary has its own,

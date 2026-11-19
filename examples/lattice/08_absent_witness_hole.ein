@@ -16,9 +16,9 @@
 ;;; and it is the program's only one. The obligation's trigger, `(is-a ?a
 ;;; Guest)`, is static, and its witness `absent` pays as `meal` grows.
 ;;;
-;;; Its rule concludes `(meal ?g Soup)`, not `(false)` or `(not …)`, so the
-;;; *forbid* refusal (Q-M1e2.5), which is about a refutation resting on an
-;;; `absent`, does not reach it: this cause survives that refusal.
+;;; Its rule concludes `(meal ?g Soup)`, not `(false)` or `(not …)`: the
+;;; `absent` takes a witness away, and no refutation rests on it, so what is
+;;; at stake is the state and what it owes, not `dead`.
 ;;; The rule fires at no root fixpoint (its positive premise is a candidate),
 ;;; so the fork route and the scratch route build the same nodes here.
 ;;;

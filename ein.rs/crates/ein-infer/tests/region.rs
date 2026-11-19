@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
 use ein_infer::downset::{self, Declined, DownSet};
-use ein_infer::forbid;
+use ein_infer::extendable;
 use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Options, Outcome, Region};
 use ein_infer::states;
@@ -44,12 +44,9 @@ fn compute(rel: &str) -> (Outcome, Terms) {
     let forms = parse(&mut ast, &text, path.to_str()).expect("parses");
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
     // A named fixture is read for its region, which is what these tests
-    // study, including the shapes *forbid* refuses (Q-M1e2.5): the dead
-    // holes of `naf-upward-closure` and the two `lattice/synth/` witnesses.
-    let out = forbid::studying(|| {
-        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-    })
-    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    // study.
+    let out = region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
     (out, terms)
 }
 
@@ -277,8 +274,7 @@ use written::ACTIVATOR_REFUTES;
 /// that cause makes: an `absent` that takes a witness away
 /// (`lattice/08`), an obligation's trigger (`lattice/04`), and an activator
 /// (`lattice/09`, the same cube as `lattice/04` by another mechanism). None
-/// of the three concludes a refutation, so *forbid* reaches none of
-/// them. [`ACTIVATOR_REFUTES`] is the third cause carrying a refutation: a
+/// of the three concludes a refutation. [`ACTIVATOR_REFUTES`] is the third cause carrying a refutation: a
 /// dead hole, with the activator still the only site.
 #[test]
 fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
@@ -312,12 +308,10 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
     }
 
     let (mut kb, mut terms, ast) = loaded_text("activator-refutes", ACTIVATOR_REFUTES);
-    // Refused by *forbid* (`Cause::Parameter`, a rule with parameters), and
-    // studied here for the hole it would have.
-    let Outcome::Region(r) = forbid::studying(|| {
+    let Outcome::Region(r) =
         region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-    })
-    .expect("computes") else {
+            .expect("computes")
+    else {
         panic!("activator-refutes: within the limit");
     };
     let kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
@@ -597,9 +591,7 @@ fn fact_grain_on_programs_written_to_test_it() {
         // admits `bad`, whose conclusion is `(false)`, before `all-p`, and the
         // hole it was written to show does not open.
         let Outcome::Region(r) = ein_infer::saturator::fifo(|| {
-            forbid::studying(|| {
-                region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-            })
+            { region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {}) }
         })
         .expect("computes") else {
             panic!("{name}: within the limit");
@@ -950,8 +942,7 @@ fn jobs_change_nothing() {
                 keep_states: true,
                 ..Options::default()
             };
-            let out =
-                forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}));
+            let out = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {});
             match out.unwrap() {
                 Outcome::Region(r) => *r,
                 Outcome::Refused { n, .. } => panic!("{rel}: n = {n}"),
@@ -1141,10 +1132,7 @@ fn deaths(
     let alive_above = |m: u64| {
         (0..size).any(|x| x != m && x & m == m && r.status[x as usize] & region::DEAD == 0)
     };
-    // The deaths of a program *forbid* refuses are what this reads: studied,
-    // past the refusal.
-    let mut nodes =
-        forbid::studying(|| region::Nodes::new(kb, terms, ast, &r.candidates)).expect("prepares");
+    let mut nodes = region::Nodes::new(kb, terms, ast, &r.candidates).expect("prepares");
     let mut out = Vec::new();
     for m in 0..size {
         if r.status[m as usize] & region::DEAD == 0 {
@@ -1173,9 +1161,9 @@ fn deaths(
 /// `examples/shared/taint.rs`: every contradiction, both sides of a pair, and
 /// the activator of each plan a fact was derived by.
 ///
-/// **`D` is read as *forbid* reads it**: `D⁺`, the static check's `D`
-/// followed through the rules root has no plan of (`forbid::extendable`).
-/// Read as `D`, `forbid-chain-node-writes` is a
+/// **`D` is read as `D⁺`**: the static check's `D`
+/// followed through the rules root has no plan of (`extendable::relations`).
+/// Read as `D`, `activator-chain-node-writes` is a
 /// counterexample: its death rests on `(absent (x a))`, `x` outside `D`, and
 /// a plan only a node compiles writes `x` at the alive superset.
 ///
@@ -1196,9 +1184,9 @@ fn an_untainted_death_is_dead_in_every_superset() {
     let (mut cubes, mut dead, mut untainted) = (0usize, 0usize, 0usize);
     let mut check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| {
         // The static check first, on its own load, so a monotone cube is
-        // never enumerated; and what *forbid* calls extendable, `D⁺`, the
+        // never enumerated; and the extendable relations, `D⁺`, the
         // static check's `D` followed through the rules root has no plan of.
-        // Read as `D`, `forbid-chain-node-writes` would be a
+        // Read as `D`, `activator-chain-node-writes` would be a
         // counterexample to that reading and not to the claim: its dead hole
         // {(p a)} rests on `(absent (x a))`, and only a plan a node compiles
         // writes `x`, at the alive superset.
@@ -1208,7 +1196,7 @@ fn an_untainted_death_is_dead_in_every_superset() {
         let extendable: Vec<String> =
             match census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())) {
                 Some((root, ())) if !root.monotonicity.is_monotone() => {
-                    forbid::extendable(&kb, &terms, &ast, &root.plans, &root.monotonicity)
+                    extendable::relations(&kb, &terms, &ast, &root.plans, &root.monotonicity)
                         .iter()
                         .map(|r| r.label(&terms))
                         .collect()
@@ -1216,10 +1204,8 @@ fn an_untainted_death_is_dead_in_every_superset() {
                 _ => return,
             };
         let (mut kb, mut terms, ast) = load().expect("loaded once already");
-        // A study of the shape: the programs *forbid* refuses are read too,
-        // since every dead hole is on one of them.
         let Ok(Outcome::Region(r)) =
-            forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {}))
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
         else {
             return;
         };
@@ -1266,10 +1252,10 @@ fn an_untainted_death_is_dead_in_every_superset() {
     // untainted with an alive superset.
     let (mut kb, mut terms, ast) =
         loaded_text("activator_under_absent", written::ACTIVATOR_UNDER_ABSENT);
-    let Outcome::Region(r) = forbid::studying(|| {
-        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-    })
-    .expect("computes") else {
+    let Outcome::Region(r) =
+        { region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {}) }
+            .expect("computes")
+    else {
         panic!("activator_under_absent: within the limit");
     };
     assert_eq!(names(&r, &r.topology.holes), ["{(p A), (r A)}"]);
@@ -1547,8 +1533,6 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
                     flagged += 1;
                     // A dead root decides a flagged program too (L0, a fork only
                     // adds: `downset::compute`), and route 1 reads root alone.
-                    // No program the oracle answers has the shape: *forbid*
-                    // refuses `activator-all-int` and `activator-all-nested`.
                     if d.root_dead {
                         failures.extend(route_1_against_oracle(&rel, &r, &d));
                     } else if d.declined != Some(Declined::NotMonotone) {
@@ -1575,9 +1559,8 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
         saved.1 += u_saved.1;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // Floors under the counts the sweep finds, *forbid*'s refusals left out
-    // (no route answers them): a sweep that silently found none would pass
-    // the loop above.
+    // Floors under the counts the sweep finds: a sweep that silently found
+    // none would pass the loop above.
     assert!(
         monotone >= 140 && flagged >= 8,
         "{monotone} monotone, {flagged} flagged"
@@ -2303,29 +2286,29 @@ fn a_witness_two_candidates_derive_together_stands_for_neither() {
 /// A plan of a rule with parameters is compiled from an activator. A core
 /// that followed only the premises the plan matched would leave out a
 /// commitment that reaches a refutation only through one:
-/// `forbid-chain-no-absent`'s dead `{(p a)}` would report `(seed a)`, a fact
+/// `activator-chain-no-absent`'s dead `{(p a)}` would report `(seed a)`, a fact
 /// of root's while root is alive, `core-activator-committed`'s `{(r2 a)}`
 /// the same, and `core-activator-guard-only`'s `{(p a)}` nothing. Root's
 /// activators, stated (`core-activator-given`) or derived
 /// (`core-activator-root-derived`), are the program's, as the plans root
 /// compiles from them are its rules, and are followed into no core. The five
-/// `forbid-chain-*` witnesses, read past *forbid*'s refusal, report the core that names the
+/// `activator-chain-*` programs report the core that names the
 /// commitment too, but `-node-writes`, whose refutation matches it.
 #[test]
 fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
     let dir = "examples/ein-bugs/wrong-answers";
     let cases: [(&str, &[&str]); 11] = [
-        ("forbid-chain-no-absent", &["(p a)", "(seed a)"]),
+        ("activator-chain-no-absent", &["(p a)", "(seed a)"]),
         ("core-activator-committed", &["(r2 a)", "(seed a)"]),
         ("core-activator-guard-only", &["(p a)"]),
         ("core-activator-given", &["(p a)"]),
         ("core-activator-root-derived", &["(p a)"]),
-        ("forbid-chain-0", &["(p a)", "(seed a)"]),
-        ("forbid-chain-1", &["(p a)", "(seed a)"]),
-        ("forbid-chain-2", &["(p a)", "(seed a)"]),
-        ("forbid-chain-node-absent", &["(p a)", "(seed a)"]),
-        ("forbid-chain-param-absent", &["(p a)", "(seed a)"]),
-        ("forbid-chain-node-writes", &["(p a)"]),
+        ("activator-chain-0", &["(p a)", "(seed a)"]),
+        ("activator-chain-1", &["(p a)", "(seed a)"]),
+        ("activator-chain-2", &["(p a)", "(seed a)"]),
+        ("activator-chain-node-absent", &["(p a)", "(seed a)"]),
+        ("activator-chain-param-absent", &["(p a)", "(seed a)"]),
+        ("activator-chain-node-writes", &["(p a)"]),
     ];
     let mut bad = Vec::new();
     for (name, want) in cases {

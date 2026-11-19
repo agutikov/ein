@@ -113,7 +113,7 @@ const TWO_STEPS: &str = "\
 /// A chain of activators: `opens` derives `(serves K1)`, the activator of a
 /// rule root has no plan of, and that rule's `:assert` writes the
 /// obligation's. The relations a commitment can change have to be followed
-/// through the rule root never compiled, as *forbid* follows them.
+/// through the rule root never compiled (`D⁺`).
 const CHAIN: &str = "\
 (relation serves Kitchen :why \"kitchen {?3} serves\")
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink) (is-a K1 Kitchen)

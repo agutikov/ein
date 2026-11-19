@@ -1,9 +1,9 @@
-;;; A guard with an `absent` three deep: a refusal fixture.
+;;; A guard with an `absent` three deep, in a program that is not monotone.
 ;;;
 ;;; The companion to 13_lookahead_naf_world.ein: both rules conclude
 ;;; (false) from an `absent` over a relation the blind enumerator
-;;; proposes, and both are refused for it. That file's `absent` is at
-;;; depth 1; the one that matters here is at depth 3.
+;;; proposes, and both programs are flagged for it. That file's `absent`
+;;; is at depth 1; the one that matters here is at depth 3.
 ;;;
 ;;; `premature-signoff`'s guard nests one absent inside another. Read from
 ;;; the inside out:
@@ -46,17 +46,17 @@
 ;;;
 ;;;
 
-;; ── A refusal fixture ────────────────────────────────────────────────────
+;; ── Not monotone ─────────────────────────────────────────────────────────
 ;; `premature-signoff` concludes (false) from an (absent …) over `signed`,
-;; the shape *forbid* rules out (Q-M1e2.5), so every question about a
-;; commitment (`ein solve`, `ein render lattice`) exits 1 naming it, and
-;; `ein saturate` still saturates. It shows a refusal no witness does: the
-;; `absent` that matters is at depth 3, and odd depth is what the check
-;; reads as non-monotone, however deep. Deleting the rule keeps R, three
-;; states, and leaves a file about nothing. The refusal names its repairs:
-;; `(solve :no-hypothesis (signed))`, if no commitment is meant to extend
-;; `signed`; a requirement stated as a decision or an obligation; or a
-;; conclusion from a stored negative, `(not …)`.
+;; a relation a commitment can still extend, so the static check flags the
+;; program: the `absent` that matters is at depth 3, and odd depth is what
+;; the check reads as non-monotone, however deep. The program loads, every
+;; command answers it with the warning that it is not monotone, and nothing
+;; is claimed of its answer (Q-M1f.564). Deleting the rule leaves a
+;; monotone program, and a file about nothing.
+;;
+;;
+;;
 ;;
 ;; The file sets no `(config …)`: every flag has its default.
 ;;

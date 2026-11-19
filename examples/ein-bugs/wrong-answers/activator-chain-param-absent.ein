@@ -1,0 +1,43 @@
+;;; A refutation resting on an `absent` over the relation a parameter
+;;; names, in a plan only a node compiles.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `mk` derives the activator `(watch p2)` from `(p a)`. The plan of `watch`
+;;; it compiles binds `?R` to `p2`: while `a` has no `p2` it asserts
+;;; `(y a)`, and `bad` concludes `(false)` from any `y`. Root holds neither
+;;; candidate, so it compiles no plan of `watch` and derives no `y`.
+;;;
+;;; ── What is said of it ─────────────────────────────────────────────────
+;;;
+;;; `bad`'s `(false)` rests through `(y a)` on `(absent (p2 a))`, over a
+;;; relation a commitment can extend, whatever a node binds the parameter
+;;; to. Root has no plan of `watch`: the static check's one site is its
+;;; activator.
+;;;
+;;; Not monotone: the static check flags the program. It loads, every command
+;;; answers it with the warning, and nothing is claimed of its answer
+;;; (Q-M1f.564).
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+(relation seed T :why "{?3} is a seed") (relation p T :why "p holds of {?3}") (relation p2 T :why "p2 holds of {?3}") (relation y T :why "y holds of {?3}") (relation watch T :why "the relation {?3} is watched")
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
+
+(rule mk    ()   :match (p ?x) :assert (watch p2) :why "p holds of {?x}, so p2 is watched, switching rule watch on for it")
+(rule watch (?R) :match (and (seed ?x) (absent (?R ?x))) :assert (y ?x) :why "{?R} is watched and does not hold of the seed {?x}, so y holds of {?x}")
+(rule bad   ()   :match (y ?x) :assert (false) :why "y holds of {?x}, which cannot be")

@@ -150,21 +150,16 @@ fn a_dead_roots_h_is_listed() {
 }
 
 /// **A refused program lists nothing**: one the loader refuses, with the
-/// loader's line; one the engine refuses to read, with the line `ein solve`
-/// gives it; a file that is not there. Each exit 1 with an empty stdout.
+/// loader's line; a file that is not there. Each exit 1 with an empty stdout.
 #[test]
 fn a_refused_program_lists_nothing() {
-    for (file, by) in [
-        ("examples/broken/load/derivation_cycle.ein", "saturate"),
-        ("examples/branching/13_lookahead_naf_world.ein", "solve"),
-    ] {
-        let refusal = ein(&[by, file]);
-        assert_eq!(refusal.code, 1, "{file}: `ein {by}` reads it now");
-        let r = ein(&["show", "hyps", file]);
-        assert_eq!(r.code, 1, "{file}: {}", r.err);
-        assert!(r.out.is_empty(), "{file}: {}", r.out);
-        assert_eq!(r.err, refusal.err, "{file}: the refusal's own lines");
-    }
+    let file = "examples/broken/load/derivation_cycle.ein";
+    let refusal = ein(&["saturate", file]);
+    assert_eq!(refusal.code, 1, "{file}: `ein saturate` reads it now");
+    let r = ein(&["show", "hyps", file]);
+    assert_eq!(r.code, 1, "{file}: {}", r.err);
+    assert!(r.out.is_empty(), "{file}: {}", r.out);
+    assert_eq!(r.err, refusal.err, "{file}: the refusal's own lines");
     let r = ein(&["show", "hyps", "examples/no-such-file.ein"]);
     assert_eq!(r.code, 1, "{}", r.err);
     assert!(r.out.is_empty());

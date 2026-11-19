@@ -2,14 +2,14 @@
 ;;; synthesizer from the spec below, and then frozen: this file is
 ;;; maintained as it is, not regenerated.
 ;;;
-;;; ── Frozen, and refused ───────────────────────────────────────────────
+;;; ── Frozen, and not monotone ──────────────────────────────────────────
 ;;; `dead-1` and `dead-2` conclude (false) from an (absent (h …)) over h, which the
-;;; hrule proposes: the shape *forbid* rules out (Q-M1e2.5), so every
-;;; question about a commitment exits 1 naming them, and this file is the
-;;; regression trigger-hole witness. Regenerated, it would differ: the
-;;; synthesizer writes a dead node with a non-dead superset as owing, so
-;;; it writes the same region with its dead holes owing, and the target
-;;; below describes this file as written.
+;;; hrule proposes, so the static check flags the program: it loads, and
+;;; nothing is claimed of its answer (Q-M1f.564). Regenerated, it would
+;;; differ: the synthesizer writes a dead node with a non-dead superset as
+;;; owing, so it writes the same region with its dead holes owing, and the
+;;; target below describes this file as written.
+;;;
 ;;;
 ;;; A hole made by an obligation, not by an absent (lattice/04's mechanism):
 ;;; B triggers a debt only C pays, so {A,B} owes between {A} and {A,B,C}.

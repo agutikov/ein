@@ -35,7 +35,7 @@ schema = "ein-corpus/2"
 path   = "examples/beliefs/01_common_belief.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "A fact as another fact's argument: `(believes Ann (likes Dan Soup))` states a belief, its content a fact in the belief's context, which no state holds until a rule says when it is true. The rule here: what every person believes is true, one rule per shape of content (`likes`, `(not (likes …))`), \"every person\" a `forall` over `person`, which `(__closed__ person)` closes so the program is monotone and *forbid* does not refuse the negative one; `(solve :no-search)`, root alone. Two claims, computed by hand: `(likes Dan Soup)` and `(not (likes Dan Fish))`, and nothing Ann alone or two of three believe. Its KB drawn beside it, `01_common_belief.kb.dot` and `.svg` (`ein render kb`)."
+note   = "A fact as another fact's argument: `(believes Ann (likes Dan Soup))` states a belief, its content a fact in the belief's context, which no state holds until a rule says when it is true. The rule here: what every person believes is true, one rule per shape of content (`likes`, `(not (likes …))`), \"every person\" a `forall` over `person`, which `(__closed__ person)` closes so the program is monotone; `(solve :no-search)`, root alone. Two claims, computed by hand: `(likes Dan Soup)` and `(not (likes Dan Fish))`, and nothing Ann alone or two of three believe. Its KB drawn beside it, `01_common_belief.kb.dot` and `.svg` (`ein render kb`)."
 
 [[entry]]
 path   = "examples/beliefs/02_packing.ein"
@@ -167,7 +167,7 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/branching/13_lookahead_naf_world.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "A refusal fixture (*forbid*): `self-block` can never fire, and is refused by its shape: the check reads relations, not matches. `solve` and `render lattice` exit 1; the other runs read no universe and answer."
+note   = "`self-block` can never fire, and the program is flagged by its shape: the static check reads relations, not matches, and the rule concludes (false) from an `absent` over `cand`, which a commitment can extend. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/branching/15_lookahead_two_step_on.ein"
@@ -185,7 +185,7 @@ note   = "the second half of the pair `15` heads: the same program, and the same
 path   = "examples/branching/14_lookahead_unjudgeable.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "A refusal fixture (*forbid*): `premature-signoff` reads `signed` at absent depth 3, and odd depth is what the check reads. `solve` and `render lattice` exit 1; the other runs read no universe and answer."
+note   = "`premature-signoff` reads `signed` at absent depth 3, and odd depth is what the static check reads as non-monotone, however deep. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/domain_elim/ab.ein"
@@ -245,7 +245,7 @@ note   = "no `solve`: a feature demo of `open`, not of search — nothing bounds
 path   = "examples/features/05_stdlib_domain_elim.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "same shape as 04: the demo is the stdlib elimination rules, and the hypothesis space is incidental to it. no `solve`: it would measure the blind enumerator rather than the elimination rules, which `saturate` shows; affordable is not the test, asking the fixture's question is. It closes `is-a`, `(solve :no-hypothesis (is-a))`, as its tests/stdlib/elim/ siblings do: `std.elim`'s typechecks conclude (false) from an absent over `is-a`, which *forbid* refuses while a commitment can extend it; R is 32 states over 26 candidates."
+note   = "same shape as 04: the demo is the stdlib elimination rules, and the hypothesis space is incidental to it. no `solve`: it would measure the blind enumerator rather than the elimination rules, which `saturate` shows; affordable is not the test, asking the fixture's question is. It closes `is-a`, `(solve :no-hypothesis (is-a))`, as its tests/stdlib/elim/ siblings do: `std.elim`'s typechecks conclude (false) from an absent over `is-a`, and the program would not be monotone while a commitment could extend it; R is 32 states over 26 candidates."
 
 [[entry]]
 path   = "examples/features/07_unstratifiable.ein"
@@ -281,7 +281,7 @@ note   = "`:expect (or …)`, a claim that the answer is one of several: the two
 path   = "examples/features/12_expect_false.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "`:expect (false)`, the empty R, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: in the blind version a state leaving one pigeon nowhere is *complete* in an open world, and it has several equally small unsat cores, the case of corpus/fuzz_findings/unsat-core-id-space.md. It closes `instance` too, `:no-hypothesis (in instance)`: `no-room`'s forall is an absent over `instance`, which *forbid* refuses while a commitment can extend it. H is empty, and the answer is root's."
+note   = "`:expect (false)`, the empty R, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: in the blind version a state leaving one pigeon nowhere is *complete* in an open world, and it has several equally small unsat cores, the case of corpus/fuzz_findings/unsat-core-id-space.md. It closes `instance` too, `:no-hypothesis (in instance)`: `no-room`'s forall is an absent over `instance`, and the program would not be monotone while a commitment could extend it. H is empty, and the answer is root's."
 
 [[entry]]
 path   = "examples/features/13_mixed_solution_and_open.ein"
@@ -674,7 +674,7 @@ note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 compone
 path   = "examples/lattice/08_absent_witness_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "the first of the three causes of a non-monotone program, an `absent` at odd depth in a saturation rule, here one that concludes a positive fact: being allergic takes the soup that paid Ann's meal away, so {seats, allergic} owes between {seats} and the top. It concludes no refutation, so *forbid* does not reach it."
+note   = "the first of the three causes of a non-monotone program, an `absent` at odd depth in a saturation rule, here one that concludes a positive fact: being allergic takes the soup that paid Ann's meal away, so {seats, allergic} owes between {seats} and the top. It concludes no refutation: what is at stake is the state and what it owes."
 
 [[entry]]
 path   = "examples/lattice/09_activator_hole.ein"
@@ -752,13 +752,13 @@ note   = "Q-M1e2.7 (i): exactly one of four, R four isolated nodes, each a compo
 path   = "examples/lattice/synth/three_components.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "the user's shape: R in three components — a monotone sub-cube, a one-node hole, a bigger hole — a program written for its region. **Refused** (*forbid*: `dead-3` and `dead-7` rest on an absent over h), a witness that `dead` is not upward-closed under `absent`: `solve`, `render lattice` and `oracle` exit 1."
+note   = "the user's shape: R in three components — a monotone sub-cube, a one-node hole, a bigger hole — a program written for its region, kept as it was written: `dead-3` and `dead-7` rest on an absent over h, which the hrule proposes. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/synth/trigger_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root, a program written for its region. **Refused** (*forbid*: `dead-1` and `dead-2` rest on an absent over h), as three_components.ein is."
+note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root, a program written for its region, kept as it was written: `dead-1` and `dead-2` rest on an absent over h. Not monotone, as three_components.ein is."
 
 [[entry]]
 path   = "examples/lattice/synth/trivial_line.ein"
@@ -977,7 +977,7 @@ note   = "the record site at phase 1: a kill cache written into root after its c
 path   = "examples/ein-bugs/alive-empty-interlayer.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "the same record-site defect between layers, whose trigger is the singleton writeback rather than the kill cache. **Refused** (*forbid*): `totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, so `solve` exits 1 (`alive-empty-interlayer`)."
+note   = "`totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, beside stored negations no node holds. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/closed-and-owing.ein"
@@ -989,7 +989,7 @@ note   = "the refusal of an obligation on a closed relation (*\"obligated relati
 path   = "examples/ein-bugs/naf-upward-closure.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive. **Refused** (*forbid*, Q-M1e2.5): `bad` concludes (false) from (absent (q ?x)) over q, which a commitment can extend, so `solve` exits 1 naming it while `saturate` saturates. The refusal's witness (`naf-upward-closure`), and the library-level fixture the read-out's dead-hole line is held on. Its goal is on `is-a`; an empty goal extent is one a claim states like any other (Q-M1e.13)."
+note   = "`dead` is **not** upward-closed under `absent`: `bad` concludes (false) from (absent (q ?x)) over q, which a commitment can extend, so a node with `(p A)` and no `(q A)` matches it and one with both does not. The probe of the shape: `ein-infer/tests/non_monotone_loads.rs` holds that it is flagged and answered with no licence. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name.ein"
@@ -1043,7 +1043,7 @@ note   = "`unsat-core-id-space`, from `corpus/fuzz_findings/`: guards against a 
 path   = "examples/ein-bugs/d3-unsat-core.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`d3-unsat-core-id-order` and `d3-unsat-core/d3-unsat-core`, from `corpus/fuzz_findings/`: guards against an unsat core that moves with the fork path and with the interner. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `fire-0` concludes (not …) from r1, which `fire-1` derives under an `absent` a commitment can lift, so `solve` exits 1 naming them while `saturate` saturates; the refusal is the same under every permutation `id_order_invariance` takes."
+note   = "from `corpus/fuzz_findings/`: `fire-0` concludes (not …) from r1, which `fire-1` derives under an `absent` a commitment can lift. The id-order sweep permutes it. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/fork-delta-order.ein"
@@ -1157,19 +1157,19 @@ note   = "`string-then-int`: `activator-text-int-and-string.ein` with the two ac
 path   = "examples/ein-bugs/activator-all-int.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`activator-all-int`, a second shape of two activator values sharing a compile key: `flag` asserts the activator `(watch 1)` under `(absent (checked ?x))`, `watch` asserts `(alarm 1)`, and `alarm` concludes (false). *forbid* reads a plan's activator by the rule's parameters, not by its activator's symbols, so `solve` exits 1 naming `alarm`, as on the control, while `saturate` saturates."
+note   = "`flag` asserts the activator `(watch 1)` under `(absent (checked ?x))`, `watch` asserts `(alarm 1)`, and `alarm` concludes (false): a chain of activators whose every argument is a name of digits. A plan has an activator by its rule's parameters, not by its activator's symbols. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-nested.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`activator-all-nested`: `activator-all-int.ein` with `(item (box a))`, an activator whose every argument is a nested fact. Refused, as the control is."
+note   = "`activator-all-int.ein` with `(item (box a))`, an activator whose every argument is a nested fact. Not monotone, as the control is."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-symbol.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "The control of an activator read as none: `activator-all-int.ein` with `(item a)`. Refused (*forbid*, per activator): `alarm` concludes (false) from its activator, which `watch` derives resting on (absent …) over `checked`, so `solve` exits 1 naming it and `saturate` still saturates. The int and nested-fact witnesses answer as it does, less the `[activator a]` label."
+note   = "The control of `activator-all-int.ein`, with `(item a)`: `alarm` concludes (false) from its activator, which `watch` derives resting on (absent …) over `checked`. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
@@ -1239,7 +1239,7 @@ note   = "`fresh-name-nospawn`: alive-set-fresh-name.ein without its spawn rule:
 path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`naf-nowb-L`, a lever's regression on naf-upward-closure.ein's program. **Refused** (*forbid*), as naf-upward-closure.ein is: `solve` exits 1 naming `bad`."
+note   = "naf-upward-closure.ein's program again. Not monotone, as naf-upward-closure.ein is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats.ein"
@@ -1281,13 +1281,13 @@ note   = "`arity3`: a goal over a fact of three arguments, which the blind rung 
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`stale-naf-fork`: (p one), derived under (absent (q one)), would survive the commitment of (q one) and kill it — Q-M1e2.2. **Refused** (*forbid*, counting a refutation *via* what a rule derives): `p-and-q-clash` reads `p` derived under (absent (q ?x)), so `solve` exits 1."
+note   = "(p one), derived under (absent (q one)), stays in a fork that commits (q one), and `p-and-q-clash` reads both: what a node holds there is an assumption, a fork of root (Q-M1e2.2). Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "The twin of stale-naf-fork.ein: its program, kept for the shape a warning on a derived `absent` would miss. **Refused**, as stale-naf-fork.ein: what this twin shows, that the derived case is the one to read, is why the refusal reads it."
+note   = "The twin of stale-naf-fork.ein: its program, the `absent` in the rule that concludes a positive and the contradiction reached by another. Not monotone, as stale-naf-fork.ein is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
@@ -1359,7 +1359,7 @@ note   = "The control for oblig-derived-domain.ein: the same program plus `(food
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "`oblig-stdlib-total-owed`, on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`) and not refused by *forbid*, whose refusal is about a refutation, so it takes route 2, the cube. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too."
+note   = "`oblig-stdlib-total-owed`, on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`), so it takes route 2, the cube. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
@@ -1368,46 +1368,46 @@ runs   = ["solve", "test"]
 note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-1.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`forbid-chain-1`: `mk` derives the activator `(q a)` under `(absent (p2 ?x))`, `q`'s plan the activator `(r2 a)`, and `r2`'s plan concludes (false), all at a node. *forbid* reads a rule with parameters root has no plan of whenever its activator relation is in D⁺, D followed through the rules root has no plan of, so `solve` exits 1 naming `r2`; `saturate` still saturates."
+note   = "`mk` derives the activator `(q a)` under `(absent (p2 ?x))`, `q`'s plan the activator `(r2 a)`, and `r2`'s plan concludes (false), all at a node: `r2`'s activator relation is in D⁺, D followed through the rules root has no plan of. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-2.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`forbid-chain-2`: forbid-chain-1.ein one activator longer, `r2` asserting `(r3 a)` and `r3` concluding (false). `solve` exits 1 naming `r3`."
+note   = "activator-chain-1.ein one activator longer, `r2` asserting `(r3 a)` and `r3` concluding (false). Not monotone, as it is."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-0.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-0.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "The refused control of the `forbid-chain-*` regressions: forbid-chain-1.ein one link shorter, `q` concluding (false) itself. `q`'s activator relation is in D, so *forbid* reads `q` from its pattern and refuses it: `solve` exits 1 naming `q`, `saturate` still saturates."
+note   = "activator-chain-1.ein one link shorter, `q` concluding (false) itself; `q`'s activator relation is in D. Not monotone, as it is."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "the loading control of forbid-chain-1.ein: that program with no `absent` in `mk`. The chain concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}. Its regression (`forbid-chain-no-absent`) holds the core: N {(p a)}'s core is `(p a) (seed a)`, the refutation resting on `(p a)` through the activators `(q a)` and `(r2 a)`, which a core must not leave out."
+note   = "the loading control of activator-chain-1.ein: that program with no `absent` in `mk`. The chain concludes (false) at a node, but nothing rests on an `absent`: R two states, ∅ and {(p2 a)}. Its regression (`activator-chain-no-absent`) holds the core: N {(p a)}'s core is `(p a) (seed a)`, the refutation resting on `(p a)` through the activators `(q a)` and `(r2 a)`, which a core must not leave out."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`forbid-chain-node-absent`: the `absent` is read by `q`'s plan, which only a node compiles, and `r2`'s plan concludes (false) from the activator `q` asserts. An open rule's own `absent` taints what it derives, so `solve` exits 1 naming `r2`."
+note   = "the `absent` is read by `q`'s plan, which only a node compiles, and `r2`'s plan concludes (false) from the activator `q` asserts. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-param-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`forbid-chain-param-absent`: `watch`'s plan, compiled at a node from `(watch p2)`, derives `(y a)` while `(p2 a)` is absent, and `bad` concludes (false) from `y`. *forbid* follows what a rule derives under the `absent` over its parameter's relation, conservatively, and `solve` exits 1 naming `bad`."
+note   = "`watch`'s plan, compiled at a node from `(watch p2)`, derives `(y a)` while `(p2 a)` is absent, and `bad` concludes (false) from `y`: an `absent` over the relation a parameter names. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
-path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
+path   = "examples/ein-bugs/wrong-answers/activator-chain-node-writes.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`forbid-chain-node-writes`: `chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`. *forbid*'s extendable is D⁺, which holds `x`, and `solve` exits 1 naming `chk`."
+note   = "`chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`: `x` is in D⁺ and not in D. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-match.ein"
@@ -1455,13 +1455,13 @@ note   = "`core-activator-guard-only`: `mk` derives the activator `(w a)` from `
 path   = "examples/ein-bugs/wrong-answers/core-activator-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A boundary of regression `forbid-chain-no-absent`, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives or commits (Q-M1e2.12 (c)), and names no given one."
+note   = "A boundary of regression `activator-chain-no-absent`, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives or commits (Q-M1e2.12 (c)), and names no given one."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-root-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A boundary of regression `forbid-chain-no-absent`, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives (Q-M1e2.12 (c)), so `(start a)` is not named."
+note   = "A boundary of regression `activator-chain-no-absent`, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`: the core follows an activator only a node derives (Q-M1e2.12 (c)), so `(start a)` is not named."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
@@ -3022,7 +3022,7 @@ note   = "The control for `symmetric-import`: the import deleted and `std.algebr
 path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "Probe of Q-M1f.308: `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The blind enumerator proposes `lt` and *forbid* refuses `connex` at load, exit 1, where a ladder that gave its second rung to the import's obligation rules, which nothing activates, would propose nothing, read `connex`'s `absent` closed-world and load it, root dead, R empty."
+note   = "`std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. An obligation rule a program loads and nothing activates chooses no rung (Q-M1f.308), so the blind enumerator proposes `lt`, and `connex` concludes (false) from an `absent` over it. Not monotone: it loads, the static check flags it, and nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

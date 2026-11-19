@@ -309,8 +309,8 @@ struct Held {
     flagged: bool,
 }
 
-/// `None` where the program does not load or *forbid* refuses it: it has no
-/// layer to take a share of.
+/// `None` where the program does not load or its run ends in an error: it
+/// has no layer to take a share of.
 fn held(path: &Path) -> Option<Held> {
     let rel = rel_of(path);
     let (mut kb, mut terms, ast) = loaded(path)?;

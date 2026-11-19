@@ -13,7 +13,7 @@ the conclusion `(not ?f)`, which denies whatever fact `?f` is bound to
 in a context whatever its relation, and can hold one, or ask whether one is held, only by spelling its shape.
 
 **Why.** Every reading of a rule set asks which relations a rule reads and which it concludes: the strata, the
-monotonicity check, the refusal of a refutation that rests on an absence, and the invariant that a state names no
+monotonicity check, the relations a commitment can extend, and the invariant that a state names no
 relation the program lacks. Each reads the relation off the text, or off the activator that fills a parameter. A
 conclusion or a premise of no fixed relation would be one of any relation a fact in a context can have. And a
 premise of no fixed relation has no held extent to be matched in.

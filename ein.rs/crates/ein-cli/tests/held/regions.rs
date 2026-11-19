@@ -322,7 +322,8 @@ pub fn check(path: &Path, bless_it: bool) -> (usize, Vec<String>) {
     for row in &file.case {
         // A refused row states no region, and the library refuses its witness
         // as the binary does: at load, the binary's line the loader's, at the
-        // parse, the parser's, or by *forbid*. A command's refusal or error is
+        // parse, the parser's, or where a saved file's commitment names no
+        // node of its lattice. A command's refusal or error is
         // the command's own: the library answers the witness, and the row
         // states its region, as an answering row does. So is a solve's usage
         // refusal, exit 2: the binary refuses what the run was asked to

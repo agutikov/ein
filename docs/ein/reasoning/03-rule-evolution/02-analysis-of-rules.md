@@ -207,8 +207,8 @@ possibly one of several; the diagnostic of this page is the one that sees it.
 The graph is one of several things read off a program's rules without deriving a fact. Each is stated on the
 page of what it serves:
 
-- **the monotonicity check**, whether a commitment can change what an absence reads, and the refusal of a
-  refutation that could rest on such a read:
+- **the monotonicity check**, whether a commitment can change what an absence reads, and the relations a
+  commitment can extend, followed through each rule's activator:
   [monotone and non-monotone programs](../02-kb-evolution/08-monotonicity.md) and
   [negation as failure](../02-kb-evolution/03-absent-and-naf.md);
 - **the alive-set invariant**, that no rule asserts a name the program lacks:

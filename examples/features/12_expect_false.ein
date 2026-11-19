@@ -90,7 +90,7 @@
 ;; `instance` is out of the hypotheses too: `no-room` concludes (false) from a
 ;; `forall`, an (absent …) over `instance`, and with `instance` open the blind
 ;; enumerator would propose `(instance H1 P1)` and the like, a relation a
-;; commitment can extend, which *forbid* refuses (Q-M1e2.5). The types are
+;; commitment can extend, and the program would not be monotone. The types are
 ;; given in full, so no commitment is meant to extend them. H is empty
 ;; (`ein show hyps`), and the answer is root's.
 ;;

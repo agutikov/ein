@@ -12,9 +12,9 @@
 ;;; `total-owed`'s trigger and its domain both read `is-a`, and `special`
 ;;; derives `is-a` from a commitment, so the static check flags the program:
 ;;; an `obligation-trigger` site on `is-a` (no new debtor arises here, the
-;;; only derived `is-a` being `(is-a Z Food)`). It is not refused: *forbid*
-;;; (Q-M1e2.5) refuses a refutation resting on an `absent`, and `no-soup`
-;;; reads none.
+;;; only derived `is-a` being `(is-a Z Food)`). `no-soup` reads no `absent`:
+;;; no refutation here rests on one.
+;;;
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;

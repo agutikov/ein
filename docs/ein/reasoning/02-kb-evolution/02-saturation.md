@@ -381,9 +381,11 @@ rule that reads the other. Both encodings of the Zebra puzzle reach the same mod
 **The closed-world reads are on what saturation determines.** Both encodings read under an absence only the
 position structure, the neighbour, pruning and endpoint guards, which the clues fix before any hypothesis; they
 never read under one an attribute the search decides. That is the bet a closed-world read makes, and it is
-exactly the line the language draws: a refutation may not rest on an absence over the held extent of a relation
+exactly the line between a monotone program and one that is not: a refutation that rests on an absence over the
+held extent of a relation
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) that a
-commitment can still extend ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
+commitment can still extend takes *dead* out of what a larger commitment keeps
+([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent)).
 
 ## The alive-set invariant
 

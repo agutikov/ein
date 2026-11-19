@@ -1,9 +1,9 @@
-;;; `dead` is NOT upward-closed under `absent`, which is why a refutation may
-;;; not rest on an `absent` a commitment can still fill (Q-M1e2.5).
+;;; `dead` is NOT upward-closed under `absent`: the probe of a program that
+;;; is not monotone (Q-M1f.564).
 ;;;
 ;;; ── The premise this refutes ───────────────────────────────────────────
 ;;;
-;;; An early design of the search read:
+;;; One could read:
 ;;;
 ;;;   dead(X) — X holds a contradiction. Monotone: X ⊆ Y ∧ dead(X) ⇒ dead(Y),
 ;;;   because the KB is append-only and nothing retracts.
@@ -14,34 +14,18 @@
 ;;; § What follows says from the other direction: removing a fact can flip an
 ;;; absent and *fabricate* a contradiction the full KB never had.
 ;;;
-;;; Here `bad` fires only while `q` is missing:
+;;; Here `bad` fires only while `q` is missing: with `(p A)` and `(q A)` the
+;;; candidates, a node that holds `(p A)` without `(q A)` matches `bad`, and
+;;; one that holds both does not. A search that took a superset of a dead
+;;; set for dead would never reach the second.
 ;;;
-;;;   alive₀          = {(p A), (q A)}
-;;;   {(p A)}         is DEAD   — bad fires, (q A) absent
-;;;   {(p A), (q A)}  is ALIVE  — the guard's witness is present
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; so the single maximal state is {(p A), (q A)} and dead is not upward-
-;;; closed. Three mechanisms of a search that read the false premise, each
-;;; sufficient alone, answered wrongly on it: a lookahead kill cache (writing
-;;; `(not (p A))` with no premises), a singleton writeback, and a width-1
-;;; no-good clause (subsuming the live superset, so it was never generated).
-;;; Five of that search's six configurations answered wrongly, and every one
-;;; of them reported `exhausted = true`.
-;;;
-;;; ── What this file is ──────────────────────────────────────────────────
-;;;
-;;; A refusal's fixture: `bad` concludes `(false)` from `(absent (q ?x))`
-;;; over `q`, which a commitment can still extend, so the program is refused
-;;; at load (*forbid*, Q-M1e2.5). Every question about a commitment (`ein
-;;; solve` in every mode, `ein test`, `ein oracle`, `ein render lattice`)
-;;; exits 1 with one line naming `bad`, `(false)`, `q`, and the forms that
-;;; say what was meant; `ein saturate` still saturates. Regression
-;;; naf-upward-closure.
-;;;
-;;; Loaded anyway, its R would be three states, `∅`, `{(q A)}` and
-;;; `{(p A), (q A)}`, with the dead hole `{(p A)}`: what *respect* would
-;;; answer, kept as the row's alternative and as the library-level fixture
-;;; the read-out's dead-hole line is held on (`forbid::studying`).
+;;; `bad` concludes `(false)` from `(absent (q ?x))` over `q`, which a
+;;; commitment can still extend: a site of the static check, so the program
+;;; is flagged. It loads, every route takes the cube and none learns from a
+;;; dead node, every command answers it with the warning that it is not
+;;; monotone, and nothing is claimed of its answer.
 ;;;
 ;;; The goal is `is-a` rather than `p`. An answer with an empty goal extent
 ;;; is a claim like any other, `(model)` the class of a state where the goal
@@ -49,18 +33,34 @@
 ;;;
 ;;; ── A mis-encoded obligation ───────────────────────────────────────────
 ;;;
-;;; The user's reading:
+;;; The rule says *a world with p and without q is false* and never says *q
+;;; is required*, which is what `(open ?R)` is for (Q-M1d.2): there is no
+;;; definition of `q` and `p`, no obligation, only the rule that asserts
+;;; `(false)`. A program that means the requirement states it as an
+;;; obligation, or concludes from a stored negative as `std.algebra`'s
+;;; `total` does, and is monotone.
 ;;;
-;;; > not any well-formed ein program is correct. An example with
-;;; > `(rule bad () …)` is broken by design … there is no definition of `q`
-;;; > and `p` relations, no obligations, only the rule that asserts `(false)`.
 ;;;
-;;; It says *a world with p and without q is false* and never says *q is
-;;; required*, which is what `(open ?R)` is for (Q-M1d.2). The engine's
-;;; complaint is not wrong; the word is. That reading is why the refusal
-;;; names `(open ?R)` as one of its replacements — beside `total`'s
-;;; stored-negative discipline, and closing the relation where no commitment
-;;; is meant to extend it.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

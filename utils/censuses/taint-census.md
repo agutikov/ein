@@ -247,7 +247,8 @@ fact.
 
 ## 8. Handed on
 
-- [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md):
+- Q-M1e2.5, the decision then in force (since reversed by
+  [Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)):
   a dated note, the census and the test, and that learning before the refusal
   ships is F21's D6.
 - S1e2.2.5:

@@ -13,10 +13,11 @@ is claimed of a program that cannot be proved monotone. The symbols are those of
 and [saturation](02-saturation.md).
 
 **What is claimed of a flagged program.** A program the static check cannot prove monotone is **flagged**. It
-is detected, warned of, and answered under one stated reading: every node is a fork of root,
-$\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$, the answer says so, every way of asking
-gives the same $R$ under that reading, and nothing more is claimed about the program's solutions
-([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Which reading of a
+is read as any other program is, detected, warned of, and answered under one stated reading: every node is a fork
+of root, $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$, the answer says so, every way of
+asking gives the same $R$ under that reading, and nothing is claimed of that answer
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md),
+[Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Which reading of a
 node a non-monotone program should have is not decided, and nothing below decides it.
 
 ---
@@ -169,8 +170,8 @@ check.
 ### 3.3 The grain
 
 The check reads at **relation grain**: a read is dynamic when its *relation* is in $D$, whatever its pattern.
-The theorem above is stated at that grain, and the same $D$ is the one the refusal of § 10 and the obligations rung
-of [hypothesis generation](04-hypothesis-generation.md) read.
+The theorem above is stated at that grain, and the same $D$ is the one the obligations rung
+of [hypothesis generation](04-hypothesis-generation.md) reads.
 
 A finer reading, **fact grain**, calls a read dynamic only when its pattern can match a fact a commitment can
 add. It builds an over-approximation of every fact some node holds beyond root, as a closure over **shapes**,
@@ -188,7 +189,7 @@ the program stays flagged.
 
 Fact grain is sufficient too. It would unflag a program whose dynamic reads no commitment can ever match: a
 read that asks for membership under a label, $\operatorname{is-a}(a, \mathsf{House})$, where every candidate is a
-membership between atoms. Ein's check does not read at it: the check, the refusal of § 10 and the obligations
+membership between atoms. Ein's check does not read at it: the check and the obligations
 rung read one $D$ at relation grain, so a program with a read whose relation is in $D$ is flagged whatever the
 read's pattern.
 
@@ -258,7 +259,7 @@ site did:
 
 A flagged program whose cube shows one is **exercised**, and one whose cube shows none is **conservative**. Both
 are words about the **status**, which is what the cube reads. A conservative program can still have a broken
-**state**: a stale fact in a node, or a parent path that reaches another state (§ 8, § 11). Where the cube is
+**state**: a stale fact in a node, or a parent path that reaches another state (§ 8, § 10). Where the cube is
 too large to enumerate ([the region dump](../../user/04-reference/11-region-dump.md) states the limit), whether a
 site bit is *not known*.
 
@@ -309,7 +310,7 @@ line, a heavy green one its maximal line, a purple one a hole.
 | **what it means** | adding a commitment never takes a conclusion away and never adds a debt | some commitment does one or the other |
 | **what causes it** | nothing: no site (§ 3) | a **site**, from one of three sources: an absence at odd depth in a saturation rule over the held extent of a relation of $D$; an obligation's **trigger** over one; a rule whose **activators** are facts of a relation of $D$ (§ 9: c4, c5, c6, each a program's only site, each with the hole its cause makes) |
 | **how it looks** | a **band**. Dead is an up-set, drawn at the bottom; owing is a down-set among the alive nodes, near the empty commitment; $R$ lies between, and components separate where dead and owing meet | **islands**: a node outside $R$ between two members, joined to $R$ above it by a repair edge; a dead node with an alive superset; a discharged node with an owing superset |
-| **dead** | upward-closed | not, where a refutation rests on an absence over a relation whose held extent a commitment can extend, directly, through a fact derived under it, or through a rule a node applies. Each such rule is refused when the program is read (§ 10), and a death that rests on no such absence is dead in every superset |
+| **dead** | upward-closed | not, where a refutation rests on an absence over a relation whose held extent a commitment can extend, directly, through a fact derived under it, or through a rule a node applies ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent); § 9: c2, c3, c7, c9, c11) |
 | **discharged** | upward-closed | not, where a trigger grows (c5), an absence takes a witness away (c4), or a commitment applies an obligation (c6) |
 | **$R$'s shape** | convex | any subset of the cube (§ 1) |
 | **the lines, decided** | locally: a node of $R$ is maximal iff every edge up leaves $R$, minimal iff every edge down does | globally only. Across a hole the one-fact test calls a node a line node that is not one: on $R = \lbrace \emptyset, \lbrace A, B \rbrace \rbrace$, *$A$ and $B$ together or not at all*, the one-fact test calls $\emptyset$ maximal and $\lbrace A, B \rbrace$ minimal, and neither is |
@@ -353,7 +354,7 @@ reads the alive states and their extensions; on a flagged one it classifies ever
 | the soup and the allergy | an absence (c4) | an owing hole: being allergic takes away the soup that paid the guest's meal |
 | the seated guest dines | a trigger (c5) | an owing hole: seating the guest makes her a diner, and a diner owes a meal |
 | the kitchen opens | an activator (c6) | the same cube as the trigger's, by another mechanism: opening the kitchen declares that every guest owes a meal. The picture cannot tell the causes apart; the static check can |
-| three components | absences that refute (c2) | three components, two of them with dead holes, each revived by a repair edge. Its refutations rest on an absence over a relation whose held extent a commitment extends, so the program is refused when it is read (§ 10): the drawing is the cube with that refusal set aside, the shape the refusal exists to rule out |
+| three components | absences that refute (c2) | three components, two of them with dead holes, each revived by a repair edge. Its refutations rest on an absence over a relation whose held extent a commitment extends, so dead is not upward-closed on it |
 
 ![an absence takes a witness away: an owing hole](diagrams/08-region-08-absent-witness-hole.svg)
 
@@ -538,56 +539,32 @@ The two paths $(a, b)$ and $(b, a)$ are one node of the cube exactly when they r
 One row per cause, each with the shape of a program that shows it. **Path dependence is not a row**: it is a
 consequence, and § 8 says which causes produce it.
 
-| | cause | its shape | breaks | the static check sees it as | refused (§ 10) |
-|---|---|---|---|---|---|
-| c1 | an absence that concludes a positive fact | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$, with $q$ a candidate's relation | **the state**: a fact derived under a guard the commitment falsifies is kept | an absence site | no |
-| c2 | an absence that refutes | $p(x) \land \operatorname{absent}(q(x)) \implies \bot$ | **the state, and dead with it**: $\bot$ is a fact | an absence site concluding $\bot$ | yes |
-| c3 | a refutation through a fact derived under an absence | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$ and $p(x) \land q(x) \implies \bot$ | **the state, and dead**; the refuting rule reads no absence | an absence site on the deriving rule; the refuting rule is no site | yes |
-| c4 | an absence that takes a witness away | the soup and the allergy of § 7 | **the state, and owes with it** | an absence site | no |
-| c5 | an obligation's trigger | a seated guest dines and a diner owes a meal; a group that sits owes its members' seats | **the status alone**: owes | a trigger site | no: it refutes nothing |
-| c6 | an activator that applies an obligation | opening the kitchen states that every guest owes a meal | **the status alone**: owes | an activator site | no |
-| c7 | an activator that applies a refutation, hiding its absence | a rule with a parameter $R$ whose application at a node concludes $\bot$ from $\operatorname{absent}(R(x))$ | **the state, and dead** | an activator site only: root applied the rule to nothing | yes |
-| c8 | an even cycle through an absence | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$ and $t(x) \land \operatorname{absent}(p(x)) \implies q(x)$, in either written order | **the state**, and stability: the written order of the two rules moves which fixpoint root reaches, and with it the candidate set | two absence sites, and a cycle | no |
-| c9 | an odd cycle through an absence | a rule derives $r(v, v)$ under $\operatorname{absent}(\lnot r(\dots))$, and another derives $\lnot r(v, v)$ from a fact of $r$ | **the state**: a parent path keeps a fact derived under an absence the commitment falsifies | an absence site, and a cycle | yes, through the fact its refutation reads |
-| c10 | the FIFO gap | the two rules of § 8.3 | **the state**: cumulativity, on a stratified program | an absence site on the reader | no |
-| c11 | an activator derived under an absence | a rule deriving $\operatorname{watch}(r)$ under $\operatorname{absent}(q(x))$, whose applied rule refutes reading no absence (§ 8.4) | **the state, and dead**: the absence is in the activator's derivation, which no premise records | an absence site on the deriving rule and an activator site | yes |
-| c12 | a FIFO race over a static read | the two rules of § 3.4, $a$ given | **the state built from scratch**, under a *monotone* verdict; a fork never meets it | nothing: no site | no |
+| | cause | its shape | breaks | the static check sees it as |
+|---|---|---|---|---|
+| c1 | an absence that concludes a positive fact | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$, with $q$ a candidate's relation | **the state**: a fact derived under a guard the commitment falsifies is kept | an absence site |
+| c2 | an absence that refutes | $p(x) \land \operatorname{absent}(q(x)) \implies \bot$ | **the state, and dead with it**: $\bot$ is a fact | an absence site concluding $\bot$ |
+| c3 | a refutation through a fact derived under an absence | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$ and $p(x) \land q(x) \implies \bot$ | **the state, and dead**; the refuting rule reads no absence | an absence site on the deriving rule; the refuting rule is no site |
+| c4 | an absence that takes a witness away | the soup and the allergy of § 7 | **the state, and owes with it** | an absence site |
+| c5 | an obligation's trigger | a seated guest dines and a diner owes a meal; a group that sits owes its members' seats | **the status alone**: owes | a trigger site |
+| c6 | an activator that applies an obligation | opening the kitchen states that every guest owes a meal | **the status alone**: owes | an activator site |
+| c7 | an activator that applies a refutation, hiding its absence | a rule with a parameter $R$ whose application at a node concludes $\bot$ from $\operatorname{absent}(R(x))$ | **the state, and dead** | an activator site only: root applied the rule to nothing |
+| c8 | an even cycle through an absence | $t(x) \land \operatorname{absent}(q(x)) \implies p(x)$ and $t(x) \land \operatorname{absent}(p(x)) \implies q(x)$, in either written order | **the state**, and stability: the written order of the two rules moves which fixpoint root reaches, and with it the candidate set | two absence sites, and a cycle |
+| c9 | an odd cycle through an absence | a rule derives $r(v, v)$ under $\operatorname{absent}(\lnot r(\dots))$, and another derives $\lnot r(v, v)$ from a fact of $r$ | **the state**: a parent path keeps a fact derived under an absence the commitment falsifies | an absence site, and a cycle |
+| c10 | the FIFO gap | the two rules of § 8.3 | **the state**: cumulativity, on a stratified program | an absence site on the reader |
+| c11 | an activator derived under an absence | a rule deriving $\operatorname{watch}(r)$ under $\operatorname{absent}(q(x))$, whose applied rule refutes reading no absence (§ 8.4) | **the state, and dead**: the absence is in the activator's derivation, which no premise records | an absence site on the deriving rule and an activator site |
+| c12 | a FIFO race over a static read | the two rules of § 3.4, $a$ given | **the state built from scratch**, under a *monotone* verdict; a fork never meets it | nothing: no site |
 
 **The status and the state are apart.** *Exercised* and *conservative* are words about the status. c1, c8, c9,
 c10 and c12 break the state where the cube can say *conservative*, so what is reported of a flagged program
-(§ 11) keeps the state's evidence beside the status's and never folds one into the other.
+(§ 10) keeps the state's evidence beside the status's and never folds one into the other.
 
-## 10. *Forbid*: what is refused at load
-
-A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ over a relation
-whose held extent a commitment can still extend: directly, through a fact a rule derives resting on such an
-absence, or through its activator
-([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md);
-[absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent) states it as a formula, and the user's
-[diagnostics](../../user/04-reference/07-diagnostics.md) § 2.7 has the refusal as printed). The relations that are
-*extendable* in this sense are $D^{+}$: $D$ followed through every rule with parameters whose activators are facts
-of a relation it holds, each such rule read from its pattern, so that a chain of activators that first appears at
-a node is covered too. Over the held extent of such a relation the shape judges a state that has not yet decided
-$G$ as if $G$ were false: it says *contradiction* where the truth is *not yet*, and $\operatorname{dead}$ stops
-being upward-closed.
-
-Of the causes of § 9 it refuses c2, c3, c7, c9 and c11, every one that puts $\operatorname{dead}$ at stake. It
-does not refuse:
-
-- an absence that concludes a **positive** fact (c1, c4, c8), every state difference of § 8.4 among them;
-- obligation **triggers and activators**, which refute nothing (c5, c6);
-- the **FIFO gap** (c10, c12).
-
-Over a relation whose held extent no commitment can extend, the same shape is closed-world reasoning, and is
-accepted.
-
-## 11. The detector
+## 10. The detector
 
 Of a flagged program, and only of one, more can be said than *not monotone*. What follows decides nothing: no
 finding chooses a node, refuses a program or moves $R$. Where each finding is printed is the user's
 [read-out](../../user/04-reference/08-read-out.md).
 
-### 11.1 The static half
+### 10.1 The static half
 
 Read off root's applications, before any node:
 
@@ -602,7 +579,7 @@ Read off root's applications, before any node:
   another rule with an absence concludes a fact. The written order then decides which of the two the boundary
   admits first (§ 8.3).
 
-### 11.2 The dynamic half
+### 10.2 The dynamic half
 
 Whether a site bit, read only from the nodes a description of $R$ computes anyway, with **the status and the
 state apart**, because the cube reads only the status:
@@ -632,7 +609,7 @@ $$
   Its reach is one step: a node can be dead along a two-step chain through an alive parent that one-step parents
   do not show. A check of some parents says what was checked and claims nothing more.
 
-### 11.3 Why it finds nothing on an unflagged program
+### 10.3 Why it finds nothing on an unflagged program
 
 **Proposition.** On a program with no site there is nothing to find, on every node built by fork from root and
 on every split $\operatorname{sat}(\operatorname{sat}(\mathrm{root} \cup C_1) \cup (C \setminus C_1))$ from
@@ -650,9 +627,9 @@ answered, and the scope is the claim. An argument of this kind holds only while 
 something that fails when it stops being true
 ([Q-M1e.2](../../../decisions/docs/Q-M1e.2-an-argument-is-enough-only-when-its-premise-is.md)).
 
-## 12. How each kind is solved
+## 11. How each kind is solved
 
-### 12.1 Three words
+### 11.1 Three words
 
 - **stable**: the answer is a function of the program alone. It does not depend on any option of a run, on how
   objects were numbered, on rule order or on how many workers shared the work
@@ -661,7 +638,7 @@ something that fails when it stops being true
 - **effective**: the cost grows with the size of the answer's description, not with $2^n$, wherever the case
   allows.
 
-### 12.2 Per question
+### 11.2 Per question
 
 | question | monotone | flagged |
 |---|---|---|
@@ -669,17 +646,17 @@ something that fails when it stops being true
 | **the lines** | grow the alive down-set layer by layer, or enumerate $N$ and $E$ and dualise: the minimal line is $E$'s alive members, the maximal line the discharged complements of the minimal transversals of $N$. Prior art: MARCO-style MUS/MSS enumeration (Liffiton et al., *Constraints* 2016); incremental monotone dualisation is quasi-polynomial in input plus output (Fredman & Khachiyan, *J. Algorithms* 1996) | no duality: from the classified cube |
 | **$\lvert R \rvert$, components, sub-cubes** | from the lines: the sub-cubes, then inclusion–exclusion | from the classified cube |
 | **states, not commitments** | the closed sets in $R$ and their minimal generators, formal concept analysis's closed sets and minimal generators (Ganter & Wille 1999) | classes by state, read node by node |
-| **stable, how** | a node's state is unique; what is listed is ordered by the objects' content; the candidate set does not depend on a run's options; an option may only reorder or prune soundly | under the one stated reading of a node (§ 12.3); rule order can still move the candidate set (c8) |
+| **stable, how** | a node's state is unique; what is listed is ordered by the objects' content; the candidate set does not depend on a run's options; an option may only reorder or prune soundly | under the one stated reading of a node (§ 11.3); rule order can still move the candidate set (c8) |
 | **proved, how** | $N$, $E$ and the static verdict | the full classification |
 | **effective, how** | the alive states are visited and never a node a licence decides, and saturation jumps over transient nodes ([finding R](07-finding-r.md)) | the cube, $2^n$ nodes, where it can be enumerated; past that a partial answer that says so, a line certified only as far as the members met certify it ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)) |
 
-### 12.3 What is claimed of a flagged program
+### 11.3 What is claimed of a flagged program
 
 On a flagged program every computation of $R$ takes the cube: no licence holds, and nothing is learned from a
 dead node or from a denial. $R$ is the region of the one construction of each node, a fork of root; every way of
 asking gives that $R$
 ([Q-M1e2.32](../../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)); the answer
-states the assumption, warns that the program is not monotone, and reports what § 11 finds. Whether that $R$ is
+states the assumption, warns that the program is not monotone, and reports what § 10 finds. Whether that $R$ is
 the program's meaning is not claimed
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)), and under any
 order of the agenda nothing is claimed of such a program

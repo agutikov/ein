@@ -88,8 +88,7 @@
 //! ### The switch
 //!
 //! [`from_deaths_alone`] makes every memory opened on the calling thread
-//! while it runs learn from deaths alone, as a census's
-//! [`crate::forbid::studying`] lifts a refusal: for the test that holds the
+//! while it runs learn from deaths alone: for the test that holds the
 //! two to one answer, and for measuring what the denials save. It is no
 //! lever: no `(config …)` field, no option of `ein` and no `EIN_*` name
 //! reaches it.

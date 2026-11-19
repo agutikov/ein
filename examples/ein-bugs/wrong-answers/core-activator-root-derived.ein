@@ -1,4 +1,4 @@
-;;; A boundary of `forbid-chain-no-absent` (`corpus/regressions.toml`): the activator is one
+;;; A boundary of `activator-chain-no-absent` (`corpus/regressions.toml`): the activator is one
 ;;; root derives from a fact the program states.
 ;;;
 ;;; `mk0` derives `(r2 a)` from the given `(start a)`, so root compiles the

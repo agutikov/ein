@@ -1,10 +1,10 @@
 # d3-unsat-core
 
 A generated program, minimised, whose printed unsat core could differ between two runs that narrate different
-amounts of one derivation. It is refused at load by *forbid*: `fire-0` concludes `(not …)` from `r1`, which
+amounts of one derivation. It is not monotone: `fire-0` concludes `(not …)` from `r1`, which
 `fire-1` derives resting on an `absent` over `(not r1)`, a relation a commitment can still extend, so the program
-could call a state that has not yet decided `(not r1)` a contradiction. The refusal is the same under every
-permutation of the interner. Its fixture is
+can call a state that has not yet decided `(not r1)` a contradiction. It loads, the static check flags it, and
+nothing is claimed of its answer. Its fixture is
 [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein); this note and the `.ein` beside
 it stay as a frontend-fuzzer seed and the program below.
 
@@ -32,8 +32,8 @@ it stay as a frontend-fuzzer seed and the program below.
 
 A fork *resumes* root's saturation rather than re-deriving it, so two runs can narrate different amounts of one
 derivation; on a program whose refutation rests on an `absent` a commitment can lift, that difference could reach
-the printed core. *Forbid* refuses such a program at load, on every command, so no core of it is printed at all.
+the printed core. The id-order sweep permutes the fixture and compares each run with the unpermuted one.
 
 ```sh
-ein solve corpus/fuzz_findings/d3-unsat-core.ein   # forbid's refusal, naming fire-0 and fire-1
+ein solve corpus/fuzz_findings/d3-unsat-core.ein   # the warning, and the site fire-1 reads its absent at
 ```

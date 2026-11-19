@@ -151,8 +151,8 @@ Three parts, in the order a program lives through them.
    implementation performs.
 2. [Saturation](02-kb-evolution/02-saturation.md): the fixpoint, the agenda's order and what the order of the
    written facts cannot decide, and the alive-set invariant.
-3. [Negation as failure](02-kb-evolution/03-absent-and-naf.md): what an absence reads, and in which world; the
-   refusal of a refutation that rests on one.
+3. [Negation as failure](02-kb-evolution/03-absent-and-naf.md): what an absence reads, and in which world; a
+   refutation that rests on one, and the relations a commitment can extend.
 4. [Hypothesis generation](02-kb-evolution/04-hypothesis-generation.md): the ladder that builds the candidate set
    $H$; hypothesis rules, obligations and what would pay one, the blind enumerator and the guessable atoms.
 5. [The hypothesis space and its structure](02-kb-evolution/05-hypothesis-space.md): $H$, and what the theory says of

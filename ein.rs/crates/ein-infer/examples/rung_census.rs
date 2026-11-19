@@ -42,17 +42,15 @@
 //! saturation resumed from root's snapshot, dead by
 //! [`ein_infer::contradiction::has_contradiction`], owing by
 //! [`ein_infer::obligations::tally`], a state by
-//! [`ein_infer::canon::state_key`]. Before the cube, what a load would do
-//! with that H: the static check over root's plans
-//! ([`ein_infer::monotone::classify`]) and the refusal that reads it
-//! ([`ein_infer::forbid::check`]). The columns:
+//! [`ein_infer::canon::state_key`]. Before the cube, what a load would say
+//! of that H: the static check over root's plans
+//! ([`ein_infer::monotone::classify`]). The columns:
 //!
 //! | column | what |
 //! |---|---|
 //! | `today:k_c`, `today:k_s` | R as the engine answers today ([`ein_infer::region::compute`] on a second load) |
 //! | `static` | `monotone` or `flagged:N`, the static check over the blind list, N its sites |
-//! | `refusals` | the rules a load would refuse the program by, were the blind list H; `-` for none |
-//! | `cube` | `cube`; `same` where the blind list is empty, so H does not change; `refused`; `over-limit` past `--limit` |
+//! | `cube` | `cube`; `same` where the blind list is empty, so H does not change; `over-limit` past `--limit` |
 //! | `nodes`, `alive`, `owing`, `dead-alone` | the cube's nodes, those alive, those of them owing, the candidates dead alone |
 //! | `k_c'`, `k_s'` | R over the blind list: its commitments and its states |
 //!
@@ -60,8 +58,8 @@
 //! enumerator builds today and held, node for node, to
 //! [`ein_infer::region::compute`]'s two bits and its count of debts: the
 //! column `check`. There the blind list **is** H, so the two must agree;
-//! `refused` is a program the engine refuses, which has no region to hold
-//! the cube to.
+//! `error` is a program whose run ends in an error, which has no region to
+//! hold the cube to.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example rung_census -- \
@@ -79,7 +77,7 @@ mod census;
 #[path = "shared/marks.rs"]
 mod marks;
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
@@ -92,7 +90,7 @@ use ein_infer::hypgen::{HypGenStats, declares_no_search, generate_blind, generat
 use ein_infer::oblgen::Mode;
 use ein_infer::region::{self, Outcome};
 use ein_infer::saturator::{Saturator, Session, Snapshot};
-use ein_infer::{forbid, mechanisms, monotone, obligations};
+use ein_infer::{mechanisms, monotone, obligations};
 use ein_ir::{Ast, load, parse};
 use marks::{ANY, E17, E54, IN, IR, K1, K2, Marked, N, R1, R2, Reader, SETS, main_file};
 use rustc_hash::FxHashSet;
@@ -289,7 +287,7 @@ fn today(path: &Path, limit: u32) -> Result<(u64, usize, Box<region::Region>), &
     let r = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}) {
         Ok(Outcome::Region(r)) => r,
         Ok(Outcome::Refused { .. }) => return Err("over-limit"),
-        Err(_) => return Err("refused"),
+        Err(_) => return Err("error"),
     };
     let mut classes: FxHashSet<u64> = FxHashSet::default();
     let mut k_c = 0u64;
@@ -306,8 +304,6 @@ fn today(path: &Path, limit: u32) -> Result<(u64, usize, Box<region::Region>), &
 struct Under {
     monotone: bool,
     sites: usize,
-    /// The rules a load would refuse the program by.
-    refusals: BTreeSet<String>,
     cube: Result<Cube, &'static str>,
 }
 
@@ -475,14 +471,8 @@ fn read(path: &Path, limit: u32, check: bool) -> Result<Row, &'static str> {
     let hypothesised: FxHashSet<Symbol> = list.iter().map(|&f| terms.facts.get(f).0).collect();
     let root_plans = monotone::plans_of(&p.memo);
     let m = monotone::classify(&kb, &terms, &root_plans, &hypothesised);
-    let refusals: BTreeSet<String> = forbid::check(&kb, &terms, &ast, &root_plans, &m)
-        .iter()
-        .map(|r| census::named(&terms, r.rule, &r.activator))
-        .collect();
     let cube = if list.is_empty() {
         Err("same")
-    } else if !refusals.is_empty() {
-        Err("refused")
     } else if list.len() > limit as usize || list.len() >= 64 {
         Err("over-limit")
     } else {
@@ -491,7 +481,6 @@ fn read(path: &Path, limit: u32, check: bool) -> Result<Row, &'static str> {
     row.under = Some(Under {
         monotone: m.is_monotone(),
         sites: m.sites.len(),
-        refusals,
         cube,
     });
     Ok(row)
@@ -582,7 +571,6 @@ fn main() {
             "today:k_c",
             "today:k_s",
             "static",
-            "refusals",
             "cube",
             "nodes",
             "alive",
@@ -604,9 +592,9 @@ fn main() {
     // (class, rung) → programs the blind enumerator would propose on, and
     // the candidates
     let mut proposes: BTreeMap<(Class, &'static str), [usize; 2]> = BTreeMap::new();
-    // option → [moved, H the same, refused, over the limit, cube and R the
-    // same, cube and R differs]
-    let mut moved: BTreeMap<&'static str, [usize; 6]> = BTreeMap::new();
+    // option → [moved, H the same, over the limit, cube and R the same, cube
+    // and R differs]
+    let mut moved: BTreeMap<&'static str, [usize; 5]> = BTreeMap::new();
     // option → set → [programs, candidates], over the programs it moves
     let mut marked: BTreeMap<&'static str, [[usize; 2]; N]> = BTreeMap::new();
     let mut candidates: BTreeMap<&'static str, usize> = BTreeMap::new();
@@ -690,19 +678,16 @@ fn main() {
                 } else {
                     format!("flagged:{}", under.sites)
                 });
-                cells.push(joined(&under.refusals));
                 let options: &[&'static str] = if moves == "b,c" { &["b", "c"] } else { &["c"] };
                 let slot = match &under.cube {
                     Err("same") => 1,
-                    Err("refused") => 2,
-                    Err(_) => 3,
-                    Ok(c) if today.as_ref().ok() == Some(&(c.k_c, c.k_s)) => 4,
-                    Ok(_) => 5,
+                    Err(_) => 2,
+                    Ok(c) if today.as_ref().ok() == Some(&(c.k_c, c.k_s)) => 3,
+                    Ok(_) => 4,
                 };
                 let what = [
                     "",
                     "H the same",
-                    "refused at load",
                     "not reached",
                     "R the same over a new H",
                     "R differs",
@@ -729,12 +714,6 @@ fn main() {
                             c.k_c,
                             c.k_s
                         ),
-                        Err("refused") => format!(
-                            "{rel} (n {} → {}, by {})",
-                            row.n,
-                            list.marks.len(),
-                            joined(&under.refusals)
-                        ),
                         Err(_) => format!("{rel} (n {} → {})", row.n, list.marks.len()),
                     };
                     lists.entry(format!("({o}) {what}")).or_default().push(line);
@@ -755,7 +734,7 @@ fn main() {
                     }
                 }
             }
-            _ => cells.extend(std::iter::repeat_n("-".to_string(), 11)),
+            _ => cells.extend(std::iter::repeat_n("-".to_string(), 10)),
         }
         cells.push(row.check.to_string());
         println!("{}", cells.join("\t"));
@@ -778,13 +757,12 @@ fn main() {
         println!("# {}\t{rung}\t{n}\t{programs}\t{cands}", class.as_str());
     }
     println!(
-        "# option\tprograms moved to the blind enumerator\tH the same\trefused at load\tnot reached, past --limit {limit}\tR the same over a new H\tR differs\tnew candidates"
+        "# option\tprograms moved to the blind enumerator\tH the same\tnot reached, past --limit {limit}\tR the same over a new H\tR differs\tnew candidates"
     );
     for o in ["b", "c"] {
-        let [all, same, refused, over, r_same, r_differs] =
-            moved.get(o).copied().unwrap_or_default();
+        let [all, same, over, r_same, r_differs] = moved.get(o).copied().unwrap_or_default();
         println!(
-            "# ({o})\t{all}\t{same}\t{refused}\t{over}\t{r_same}\t{r_differs}\t{}",
+            "# ({o})\t{all}\t{same}\t{over}\t{r_same}\t{r_differs}\t{}",
             candidates.get(o).copied().unwrap_or_default()
         );
     }

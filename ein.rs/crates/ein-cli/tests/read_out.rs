@@ -600,8 +600,7 @@ fn count_prints_describes_rows_and_reads_no_state() {
     eprintln!(
         "{compared} programs compared, {partial} partial at 2^14, {claims} claims not checked"
     );
-    // A floor, so that a sweep that compared few programs cannot pass; the
-    // programs *forbid* refuses (Q-M1e2.5) `--count` refuses as describe does.
+    // A floor, so that a sweep that compared few programs cannot pass.
     assert!(
         compared >= 190 && partial >= 15 && claims >= 70,
         "{compared} compared, {partial} partial, {claims} claims"
@@ -734,8 +733,8 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 /// claim, and the summary lists the relations in `root.hypgen.outside`, on
 /// `--monotone` too. One witness per rung: `uncovered.ein`'s obligations,
 /// `arity3.ein`'s blind enumerator (whose `is-a`, scoped out by
-/// `:no-hypothesis`, is not named), `tests/region/07_cube.ein`'s hrules, which
-/// states a claim; and a program that leaves nothing out prints no row and an
+/// `:no-hypothesis`, is not named), `examples/lattice/13_witness_of_two.ein`'s
+/// hrules, which states a claim; and a program that leaves nothing out prints no row and an
 /// empty list.
 #[test]
 fn the_universes_scope_is_one_sentence_on_every_surface() {
@@ -755,9 +754,9 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
             ),
         ),
         (
-            "tests/region/07_cube.ein",
-            &["is-a"],
-            format!("is-a — no candidate: no hrule proposes it. {TAIL}"),
+            "examples/lattice/13_witness_of_two.ein",
+            &["fed"],
+            format!("fed — no candidate: no hrule proposes it. {TAIL}"),
         ),
         ("tests/region/01_states.ein", &[], String::new()),
     ];
@@ -837,7 +836,7 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
         assert_eq!(listed(&cube["outside"]), *relations, "{file}: region.json");
     }
     // `ein test`, beside the claim it prints.
-    let out = run(&["test", "-v", "tests/region/07_cube.ein"]);
+    let out = run(&["test", "-v", "examples/lattice/13_witness_of_two.ein"]);
     assert!(
         out.contains(&format!("    outside the universe: {}\n", cases[2].2)),
         "{out}"

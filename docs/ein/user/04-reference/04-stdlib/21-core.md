@@ -101,7 +101,7 @@ switch on and not off: the rule is loaded, no state holds `(false)`, and root is
 ## What a program cannot do with it
 
 - **Import it.** `(import std.core)`, in a program or in a module, is refused
-  ([`07-diagnostics.md` § 2.32](../07-diagnostics.md#232-no-import-names-the-module-every-program-gets)).
+  ([`07-diagnostics.md` § 2.7](../07-diagnostics.md#27-no-import-names-the-module-every-program-gets)).
 - **Leave it out, replace it or add to it.** Every load brings the module as the standard library holds it. A saved
   file carries it beside the program's other modules
   ([`10-answer-dump.md`](../10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made)), and a `.einb`

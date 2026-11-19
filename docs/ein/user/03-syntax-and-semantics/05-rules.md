@@ -375,14 +375,15 @@ adds facts, the positive rules run again, and so on until nothing is admitted. S
 about every parent fact the state will hold, not those derived so far.
 
 The definition, and what a rule set whose `absent`s read each other in a cycle still owes to the order rules are
-admitted in, is [the semantics of `absent`](../../reasoning/02-kb-evolution/03-absent-and-naf.md). Two things follow for a
+admitted in, is [the semantics of `absent`](../../reasoning/02-kb-evolution/03-absent-and-naf.md). One thing follows for a
 program:
 
-- **A refutation may not rest on an `absent` a hypothesis could still fill.** A program whose contradiction could
-  depend on such an absence is refused at load ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
 - **A program whose rules read under `absent` what a hypothesis can change is flagged.** Adding a fact can then
-  retract a conclusion, the answer's region may have holes, and the read-out's `lattice` row says so, naming the
-  sites; of such a program's answer the engine claims nothing ([solutions and models](13-solutions-and-models.md)).
+  retract a conclusion, or bring a state a contradiction called dead back to life; the answer's region may have
+  holes, and the read-out warns of it and names the sites under its `lattice` row. Such a program loads and is
+  answered, and of its answer the engine claims nothing
+  ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md);
+  [solutions and models](13-solutions-and-models.md)).
 
 ## Every firing is recorded
 

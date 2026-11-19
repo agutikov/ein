@@ -178,10 +178,9 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
 ///
 /// The one reading of O: [`read`]'s [`Mechanisms::obligations`]; the
 /// generation ladder's second rung, which is taken where this is not empty at
-/// the state H is built at, root ([`crate::hypgen`]'s `rung`); and *forbid*'s
-/// remedy, which names the obligations that owe a relation
-/// ([`crate::forbid::Proposers`]). The plans are compiled into the session's
-/// memo, as every reader of obligation plans compiles them.
+/// the state H is built at, root ([`crate::hypgen`]'s `rung`). The plans are
+/// compiled into the session's memo, as every reader of obligation plans
+/// compiles them.
 pub(crate) fn obligation_plans(
     s: &mut Session<'_>,
 ) -> Result<Vec<std::sync::Arc<crate::plan::Plan>>, CompileError> {

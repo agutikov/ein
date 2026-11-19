@@ -444,7 +444,7 @@ root derives `(q one)` where it derived `(p one)`. The candidate list becomes
 `{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image of today's. That
 happens **on both routes**. The oracle's own R on `features/07` depends on
 which of two rules at priority 200 is written first, which is the config
-principle's *stable* ([`08-monotonicity.md` § 12.1](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#121-three-words):
+principle's *stable* ([`08-monotonicity.md` § 11.1](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#111-three-words):
 *"it does not depend … on rule order"*) broken by today's node, not only by
 scratch.
 

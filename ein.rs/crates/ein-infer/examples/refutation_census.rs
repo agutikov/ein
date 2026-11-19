@@ -2,33 +2,22 @@
 //! `(not …)` conclusion rests on an `(absent P)` over a relation the search can
 //! still extend, per corpus entry and regression witness.
 //!
-//! *Still extendable* has two readings in the engine, and this prints both,
-//! because a refusal has to say which one it means:
+//! *Still extendable* has two readings in the engine, and this prints both:
 //!
 //! | column | extendable means | where it is computed |
 //! |---|---|---|
-//! | `s1e23` | the relation is **hypothesis-eligible** ([`hypgen::eligible_relations`]): the generator's scope, read directly | [`naf_deps::compute_naf_map`], the refutation warning's reading, pinned by `ein-infer/tests/refutation_under_absent.rs` |
+//! | `s1e23` | the relation is **hypothesis-eligible** ([`hypgen::eligible_relations`]): the generator's scope, read directly | [`naf_deps::compute_naf_map`], the refutation warning's reading |
 //! | `direct` | the relation is in **`D`**: the root candidate list's relations, config-free, closed under *a saturation plan that reads `D` writes `D`* | [`monotone::classify`], the static check the region modes route on |
 //! | `via` | the plan has no such `absent` itself, but reads **positively** a relation a non-monotone plan derives, so a commitment can take the premise away | this file: `N`, closed the same way `D` is |
 //!
 //! A `direct` row is a [`monotone::SiteKind::Absent`] site whose plan
 //! refutes. The other sites — a non-refuting `absent` (the shape that can
 //! leave a stale fact), an
-//! obligation trigger, an activator — are counted, because they are what a
-//! program still has after *forbid*.
+//! obligation trigger, an activator — are counted beside them.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example refutation_census -- [--json] [FILE…]
-//! cargo run --release -p ein-infer --example refutation_census -- --option-e [--json] [FILE…]
 //! ```
-//!
-//! **`--option-e`** reads a wider *forbid*: one extended to every `absent`
-//! at odd depth in a saturation rule, whatever the rule concludes, under two
-//! readings of *extendable*: the relation in `D` (b), and the relation
-//! hypothesis-eligible (a). Per program it lists the rules it would refuse
-//! under each, what each concludes, and which of them *forbid* already
-//! refuses (`direct`) or would through `via`. The fact grain, (c), is
-//! `site_census`'s per-site verdict.
 //!
 //! With no `FILE` it sweeps `corpus_files()` plus the regressions' witnesses.
 //! It writes nothing and changes no answer: it loads, saturates root, takes
@@ -67,22 +56,16 @@ fn key(r: Rel, terms: &Terms) -> (String, bool) {
 
 fn main() {
     let mut as_json = false;
-    let mut option_e = false;
     let mut files: Vec<PathBuf> = Vec::new();
     for a in std::env::args().skip(1) {
         match a.as_str() {
             "--json" => as_json = true,
-            "--option-e" => option_e = true,
             _ => files.push(PathBuf::from(a)),
         }
     }
     if files.is_empty() {
         files = census::selection();
     }
-    if option_e {
-        return e_census(&files, as_json);
-    }
-
     let (mut swept, mut flagged) = (0usize, 0usize);
     let given = files.len();
     // rule-location → entries, per column.
@@ -292,136 +275,6 @@ fn main() {
             for ((_, r, at), e) in &rules {
                 let e: Vec<&str> = e.iter().map(String::as_str).collect();
                 println!("         {r} ({at}) — {}", e.join(", "));
-            }
-        }
-    }
-}
-
-/// The wider *forbid*, per program: every saturation rule that reads a
-/// relation at odd `absent` depth, under (b) (`D`) and (a) (eligible),
-/// with what it concludes and whether *forbid* already refuses it.
-fn e_census(files: &[PathBuf], as_json: bool) {
-    let mut swept = 0usize;
-    // reading → (programs refused, of which forbid already refuses them all)
-    let mut sum: BTreeMap<&'static str, (BTreeSet<String>, BTreeSet<String>)> = BTreeMap::new();
-    for path in files {
-        let rel = census::relative(path);
-        let Some((mut kb, mut terms, ast)) = census::loaded(path) else {
-            continue;
-        };
-        let Some((root, eligible)) =
-            census::root_of(&mut kb, &mut terms, &ast, |_, s| eligible_relations(s).ok())
-        else {
-            continue;
-        };
-        swept += 1;
-        let m = root.monotonicity;
-        let dynamic: BTreeSet<(String, bool)> = m.dynamic.iter().map(|&r| key(r, &terms)).collect();
-        let eligible: BTreeSet<(String, bool)> = eligible
-            .iter()
-            .map(|&s| (terms.sym(s).to_string(), false))
-            .collect();
-        let program = kb.program();
-        let saturation: Vec<&Plan> = root
-            .plans
-            .iter()
-            .filter(|p| program.rules.contains(p.rule))
-            .map(|p| &**p)
-            .collect();
-        let mut out = serde_json::Map::new();
-        for (reading, set) in [("D", &dynamic), ("eligible", &eligible)] {
-            let mut rows: Vec<serde_json::Value> = Vec::new();
-            for p in &saturation {
-                let mut reads: Vec<String> = monotone::reads_of(p, &terms)
-                    .into_iter()
-                    .filter(|&(r, d)| d % 2 == 1 && member(set, r, &terms))
-                    .map(|(r, d)| format!("{}@{d}", r.label(&terms)))
-                    .collect();
-                reads.sort();
-                reads.dedup();
-                if reads.is_empty() {
-                    continue;
-                }
-                let concludes = match refutes(p, &terms) {
-                    Some(c) => c.to_string(),
-                    None => {
-                        let mut w: Vec<String> = monotone::writes_of(p, &terms)
-                            .into_iter()
-                            .map(|w| w.label(&terms))
-                            .collect();
-                        w.sort();
-                        w.dedup();
-                        w.join(" ")
-                    }
-                };
-                rows.push(json!({
-                    "rule": named(&terms, p.rule, &p.activator_args),
-                    "at": located(path, terms.sym(p.rule)),
-                    "reads": reads,
-                    "concludes": concludes,
-                    "refutes": refutes(p, &terms).is_some(),
-                }));
-            }
-            rows.sort_by_key(|r| r["rule"].as_str().unwrap_or("").to_string());
-            rows.dedup();
-            if !rows.is_empty() {
-                let e = sum
-                    .entry(if reading == "D" {
-                        "(b) D"
-                    } else {
-                        "(a) eligible"
-                    })
-                    .or_default();
-                e.0.insert(rel.clone());
-                if rows.iter().all(|r| r["refutes"].as_bool() == Some(true)) {
-                    e.1.insert(rel.clone());
-                }
-            }
-            out.insert(reading.to_string(), json!(rows));
-        }
-        if out
-            .values()
-            .all(|v| v.as_array().is_some_and(|a| a.is_empty()))
-        {
-            continue;
-        }
-        let row = json!({ "path": rel, "n": root.proposed.len(), "monotone": m.is_monotone(), "rules": out });
-        if as_json {
-            println!("{row}");
-        } else {
-            println!(
-                "{rel}  n {}  {}",
-                root.proposed.len(),
-                if m.is_monotone() {
-                    "monotone"
-                } else {
-                    "flagged"
-                }
-            );
-            for reading in ["D", "eligible"] {
-                for r in row["rules"][reading].as_array().into_iter().flatten() {
-                    println!(
-                        "  {reading:<8} {} → {} ← {}  ({})",
-                        r["rule"].as_str().unwrap_or("?"),
-                        r["concludes"].as_str().unwrap_or("?"),
-                        r["reads"],
-                        r["at"].as_str().unwrap_or("?")
-                    );
-                }
-            }
-        }
-    }
-    if !as_json {
-        println!("\nswept {} files: {swept} load and saturate", files.len());
-        for (reading, (all, only_refuting)) in &sum {
-            println!(
-                "{reading}: (E) refuses {} programs; on {} of them every such rule refutes, so forbid's direct set already reaches them",
-                all.len(),
-                only_refuting.len()
-            );
-            let rest: Vec<&String> = all.difference(only_refuting).collect();
-            for r in rest {
-                println!("    {r}");
             }
         }
     }

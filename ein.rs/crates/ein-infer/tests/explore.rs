@@ -8,8 +8,9 @@
 //! - **C4** the same answer at one job and at four.
 //!
 //! Over every corpus file and regression witness whose cube the oracle
-//! enumerates, monotone or flagged. Where the oracle refuses the program
-//! (*forbid*, Q-M1e2.5), every mode refuses it with the same message.
+//! enumerates, monotone or flagged. Where the oracle refuses a saved file
+//! whose commitment names no node, every mode refuses it with the same
+//! message.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -474,7 +475,6 @@ fn every_mode_is_the_oracle() {
     let mut failures: Vec<String> = Vec::new();
     let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
     let mut stopped = 0usize;
-    let mut refused = 0usize;
     let oracle = region::Options {
         jobs: jobs(),
         ..region::Options::default()
@@ -488,27 +488,23 @@ fn every_mode_is_the_oracle() {
         |p| (rel_of(p), String::new()),
         |path| every_mode_unit(path, &oracle),
     );
-    for (f, c, s, r) in found {
+    for (f, c, s, _refused) in found {
         failures.extend(f);
         for (k, n) in c {
             *counted.entry(k).or_default() += n;
         }
         stopped += s;
-        refused += r;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // C3 binds only where the budget stopped a run; a budget nothing reached
     // would pass the loop above without testing it. Each floor is under the
     // count the sweep finds.
     assert!(stopped >= 200, "the budget stopped {stopped} runs");
-    // *Forbid*'s refusals are counted apart: each is refused alike by every
-    // mode.
     assert!(
         counted.get("monotone").copied().unwrap_or(0) >= 140
             && counted.get("flagged").copied().unwrap_or(0) >= 8,
         "{counted:?}"
     );
-    assert!(refused >= 10, "{refused} refused");
     // The ∅ rule held on both routes, the five minimal cells of each flagged
     // program where ∅ is in `R` among them.
     assert!(
@@ -781,9 +777,7 @@ fn every_mode_unit(path: &Path, oracle: &region::Options) -> Unit {
             // route 1 reads root alone, with the warning; a monotone one whose
             // root is alive takes the state route for describe and the modes'
             // routes over states otherwise, naming L5 exactly when the
-            // obligation tree used it. No program the oracle answers has a
-            // flagged dead root: *forbid* refuses `activator-all-int`
-            // and `activator-all-nested`, which have one.
+            // obligation tree used it.
             let describe =
                 mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
             let route_ok = if !monotone && a.root_dead {
@@ -1088,12 +1082,10 @@ fn every_mode_at_four_jobs_is_every_mode_at_one() {
     ] {
         let path = repo_root().join(rel);
         for mode in cells(3) {
-            // `naf-upward-closure`'s dead hole, studied past *forbid*'s
-            // refusal: C4 is about the machinery.
             let run = |jobs: usize| {
                 let mut opts = explore::Options::new(mode);
                 opts.jobs = jobs;
-                ein_infer::forbid::studying(|| ask(&path, &opts).0)
+                ask(&path, &opts).0
             };
             let (a, b) = (run(1), run(4));
             assert_eq!(
@@ -1315,40 +1307,12 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let mut dead_holes = 0usize;
     let mut after_walk = 0usize;
     let mut walk_dead = 0usize;
-    // *Forbid* refuses every corpus program with a dead hole; these are
-    // studied past the refusal, as `every_mode_at_four_jobs_is_every_mode_at_one`
-    // studies one, so the holes the read-out prints a core for are read too.
-    let studied: Vec<PathBuf> = [
-        "examples/ein-bugs/naf-upward-closure.ein",
-        "examples/ein-bugs/wrong-answers/forbid-chain-0.ein",
-        "examples/ein-bugs/wrong-answers/forbid-chain-1.ein",
-        "examples/ein-bugs/wrong-answers/forbid-chain-2.ein",
-        "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein",
-        "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein",
-    ]
-    .iter()
-    .map(|r| repo_root().join(r))
-    .collect();
-    let all: Vec<(PathBuf, bool)> = corpus_and_regressions()
-        .into_iter()
-        .map(|p| (p, false))
-        .chain(studied.into_iter().map(|p| (p, true)))
-        .collect();
+    let all: Vec<PathBuf> = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::a_run_that_prints_no_core_takes_none_and_answers_alike",
         &all,
-        |(p, studying)| {
-            (
-                rel_of(p),
-                if *studying {
-                    "studying".into()
-                } else {
-                    String::new()
-                },
-            )
-        },
-        |(path, studying)| {
-            let studying = *studying;
+        |p| (rel_of(p), String::new()),
+        |path| {
             let mut failures = Vec::new();
             let mut runs = 0usize;
             let mut holes = 0usize;
@@ -1381,14 +1345,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                     };
                     let run = |o: &explore::Options| {
                         let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
-                        let mut go = || {
-                            explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
-                        };
-                        if studying {
-                            ein_infer::forbid::studying(go)
-                        } else {
-                            go()
-                        }
+                        explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
                     };
                     let (a, b) = match (run(&eager), run(&lazy)) {
                         (Ok(a), Ok(b)) => (a, b),
@@ -1425,15 +1382,8 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                                 loaded(path).expect("loaded once already");
                             let mut events = ein_infer::events::Events::off()
                                 .watched(Box::new(DeadCores(walked.clone())));
-                            let mut go = || {
-                                explore::run_with(&mut kb, &mut terms, &ast, o, &mut events)
-                                    .map_err(|e| e.to_string())
-                            };
-                            if studying {
-                                ein_infer::forbid::studying(go)
-                            } else {
-                                go()
-                            }
+                            explore::run_with(&mut kb, &mut terms, &ast, o, &mut events)
+                                .map_err(|e| e.to_string())
                         };
                         let answered = watched(&nogoods);
                         for (commitment, taken) in walked.lock().expect("the run is done").drain(..)

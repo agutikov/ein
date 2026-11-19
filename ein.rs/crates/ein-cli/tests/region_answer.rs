@@ -53,9 +53,7 @@ fn json(path: &Path) -> J {
 
 /// One run per arm of the read-out: exhausted, the owing and the dead kind of
 /// an empty R, a hole, a partial route-1 run, a flagged run past the limit,
-/// and the modes. The hole is an obligation's, owing:
-/// `ein-bugs/naf-upward-closure.ein`'s dead one is refused by *forbid*
-/// (Q-M1e2.5).
+/// and the modes. The hole is an obligation's, owing.
 const ARMS: [(&str, &[&str]); 9] = [
     (
         "examples/branching/05_mini_zebra.ein",

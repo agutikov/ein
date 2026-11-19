@@ -7,14 +7,14 @@ check flags as not monotone, where a fact derived under an `(absent …)` can su
 warns that the program is not monotone, prints the assumption in the read-out's `assumes` row, and claims nothing
 about the program's solutions.
 
-Whether such a fact disqualifies the state (a guard as a premise), whether the program should be refused, or
-whether the state stands as derived, is not decided.
+Whether such a fact disqualifies the state (a guard as a premise) or the state stands as derived is not decided.
+The program is not refused: it loads, with a warning
+([Q-M1f.564](Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 **Why.** Ein reasons about monotone programs, where a node's state does not depend on the path to it, and a
 non-monotone program is detected, warned of and solved under one stated reading rather than answered as if it
 were monotone. Choosing a semantics for programs whose state depends on the order facts arrive is a question about
-that class of program as a whole, and is taken up with it, not one witness at a time. A refutation resting on an
-`absent` a commitment can still fill is already refused at load.
+that class of program as a whole, and is taken up with it, not one witness at a time.
 
 **Held by.** `ein_infer::detector::ASSUMES`, the `assumes` row of a flagged program's read-out;
 `ein-cli/tests/region_modes.rs`: `the_monotone_question_is_about_the_program`; `ein-infer/tests/explore.rs`:

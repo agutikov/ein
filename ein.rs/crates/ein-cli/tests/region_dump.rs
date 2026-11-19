@@ -63,8 +63,7 @@ fn the_flag_moves_no_answer() {
     for (i, file) in [
         "examples/branching/15_lookahead_two_step_on.ein",
         "examples/ein-bugs/wrong-answers/owed-seats.ein",
-        // A flagged program with a hole, not `naf-upward-closure`, which
-        // *forbid* refuses (Q-M1e2.5).
+        // A flagged program with a hole.
         HOLE,
     ]
     .iter()
@@ -239,8 +238,6 @@ fn region_states_keeps_every_nodes_state() {
 #[test]
 fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     let root = scratch("warning");
-    // Not `naf-upward-closure` (exercised) nor `stale-naf-fork`
-    // (conservative), which *forbid* refuses (Q-M1e2.5).
     let cases = [
         (
             "examples/lattice/08_absent_witness_hole.ein",

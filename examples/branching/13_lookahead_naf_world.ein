@@ -1,4 +1,5 @@
-;;; A rule that can never fire, refused by its shape: a refusal fixture.
+;;; A rule that can never fire, in a program that is not monotone by its
+;;; shape.
 ;;;
 ;;; `self-block` concludes (false) from `(cand ?x)` and `(absent (cand ?x))`
 ;;; at once. Its two premises are jointly unsatisfiable in any one world,
@@ -9,21 +10,20 @@
 ;;; `cand` is a relation the blind enumerator proposes (`promote`
 ;;; concludes it, and nothing closes it), so `(cand B)` is a candidate
 ;;; and `cand` a relation a commitment can still extend. A refutation
-;;; that rests on an `absent` over such a relation is the shape *forbid*
-;;; refuses (Q-M1e2.5): every question about a commitment (`ein solve`,
-;;; `ein render lattice`) exits 1 naming `self-block`, and `ein saturate`
-;;; still saturates.
+;;; that rests on an `absent` over such a relation is a site of the
+;;; static check, which reads relations, not matches: the program is
+;;; flagged though the rule never fires. It loads, every command answers
+;;; it with the warning that it is not monotone, and nothing is claimed
+;;; of its answer (Q-M1f.564).
 ;;;
-;;; It shows a refusal no witness does: the check reads relations, not
-;;; matches, so a rule that can never fire is refused by its shape all
-;;; the same. Deleting the rule keeps R, three states — ∅, {(cand B)} and
-;;; the maximal state two commitments reach — with ?x = A in every one,
-;;; and ?x = B too where `(cand B)` holds, and leaves a file about
+;;; Deleting the rule leaves a monotone program, and a file about
 ;;; nothing.
 ;;;
-;;; The refusal names its repairs: close the relation, if no commitment
-;;; is meant to extend it; state a requirement as a decision or an
-;;; obligation; or conclude from a stored negative, `(not …)`.
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

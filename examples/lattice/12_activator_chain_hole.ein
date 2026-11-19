@@ -24,8 +24,8 @@
 ;;; *non-monotone here (exercised, by serves)* on its `status` row, with
 ;;; the cube's one hole.
 ;;;
-;;; No `absent` concludes a refutation here, so *forbid* has nothing to
-;;; refuse. Its nodes are forks of root (Q-M1e2.2); this file's question is
+;;; No `absent` concludes a refutation here. Its nodes are forks of root
+;;; (Q-M1e2.2); this file's question is
 ;;; the status line.
 
 (import std.algebra :symbols (total-owed))

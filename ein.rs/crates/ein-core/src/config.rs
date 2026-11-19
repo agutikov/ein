@@ -47,7 +47,7 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// the walk's levers and order seeds, which no route reads;
 /// `enable-symmetric-mirror`, which switched a mirror the kernel no longer
 /// has; and
-/// `warn-derived-naf`, whose refutation half is *forbid*'s refusal. Their
+/// `warn-derived-naf`, whose two questions are the detector's warning. Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which writes and reads every entry of [`FIELDS`] in order, so
 /// removing one is a change of its layout. No engine code reads any of them.
@@ -119,11 +119,9 @@ pub const RETIRED: &[(&str, &str)] = &[
     ),
     (
         "warn-derived-naf",
-        "its refutation half is forbid's refusal: a refutation resting on an \
-         (absent …) over a relation a commitment can still extend refuses the \
-         program, whatever the config says; its stratification half was the \
-         walk's advice, and every non-monotone site is the detector's warning \
-         on every surface that reports R (Q-M1e2.5)",
+        "it switched the walk's advice on a rule that reads (absent …): every \
+         non-monotone site is the detector's warning on every surface that \
+         reports R, whatever the config says (Q-M1f.564)",
     ),
 ];
 
@@ -177,11 +175,10 @@ pub struct SolverConfig {
     ///   *stratification* signal, not a soundness one — the guard is judged
     ///   at a fixpoint either way — and the static check reports it;
     /// - a rule that concludes `(false)` or a `(not …)` from a guard over a
-    ///   relation the program's **hypothesis generator can still propose** is
-    ///   a soundness signal — `dead` is not upward-closed under `absent` —
-    ///   and such a program is refused (Q-M1e2.5;
-    ///   `ein-infer/tests/refutation_under_absent.rs` names the corpus rules
-    ///   with the shape).
+    ///   relation the program's **hypothesis generator can still propose**
+    ///   makes the program non-monotone — `dead` is not upward-closed under
+    ///   `absent` — and the static check flags it: the program loads, and
+    ///   nothing is claimed of its answer (Q-M1f.564).
     pub warn_derived_naf: bool,
     /// **Retired**, and read by nothing; kept at its default for the `.einb`
     /// layout. Meant as: negative means the walk's content sort of a layer's

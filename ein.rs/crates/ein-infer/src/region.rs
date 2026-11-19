@@ -998,7 +998,7 @@ pub(crate) fn prepare_with(
 
 /// [`prepare`] over a universe the caller names, in the order it names it,
 /// where the generator's list would be: root is saturated and the static
-/// check read as [`prepare`] reads them, *forbid* included, and the
+/// check read as [`prepare`] reads them, and the
 /// generator is not run, so [`RootStats::hypgen`] and [`RootStats::outside`]
 /// say nothing. For a reader that asks
 /// what a program over fewer of its statements decides of the candidates
@@ -1130,31 +1130,6 @@ fn prepare_as(
             };
             crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans, &later)?
         };
-    }
-    // *Forbid* (Q-M1e2.5): a refutation resting on an `absent` over a
-    // relation a commitment can still extend refuses the program, here, after
-    // root's fixpoint and the static check, so every question about a
-    // commitment refuses alike. A monotone program pays one test.
-    if !crate::forbid::is_studying() {
-        let refused = crate::forbid::check(root, terms, ast, &plans, &monotonicity);
-        if !refused.is_empty() {
-            // The hrules that propose what a refusal rests on, which its first
-            // remedy names where the program declares any.
-            let proposers = {
-                let mut silent = Events::off();
-                let mut s = Session {
-                    kb: root,
-                    terms,
-                    ast,
-                    events: &mut silent,
-                    memo: memo.clone(),
-                };
-                crate::forbid::Proposers::of(&mut s)?
-            };
-            return Err(SolveError::Refused(crate::forbid::message(
-                &refused, terms, &proposers,
-            )));
-        }
     }
     if events.on() && !monotonicity.is_monotone() {
         // The detector's static half: optional fields, so
@@ -2350,7 +2325,7 @@ fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
 /// each step's premises and not the activator its plan was compiled from,
 /// which the core follows where a node derived it (Q-M1e2.12): the
 /// non-monotone detector reads this list for its status, and following the
-/// activator here would move that label on the `forbid-chain-*.ein`
+/// activator here would move that label on the `activator-chain-*.ein`
 /// witnesses.
 fn absent_premises(
     kb: &Kb,

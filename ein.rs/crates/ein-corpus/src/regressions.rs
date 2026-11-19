@@ -746,7 +746,7 @@ pub struct Now {
     /// aside. A command's `now` is a refusal, an error or this.
     #[serde(default)]
     pub answered: bool,
-    /// The run refuses the program — *forbid*: exit 1, and
+    /// The run refuses the program, a load error: exit 1, and
     /// this is the first line of its stderr. A refused run lists nothing, so
     /// the fields below keep their defaults.
     #[serde(default)]
@@ -754,7 +754,7 @@ pub struct Now {
     /// The run ended in an error before it answered: exit 1, and this
     /// is the first line of its stderr. Not a refusal: the
     /// program was accepted and a firing stopped the run, so the library
-    /// returns a saturation error where a refusal returns
+    /// returns a saturation error where a refusal is the loader's or
     /// `SolveError::Refused`. Such a run lists nothing, and is never
     /// [`Right`]. (Not the summary's `region.stopped`, which says why a
     /// search that answered stopped.)
@@ -1234,8 +1234,8 @@ pub struct Right {
     /// From what the answer was derived.
     #[serde(default)]
     pub derived: Option<String>,
-    /// The answer is a **refusal** — *forbid*: the program is
-    /// refused before any question about a commitment, a load error's exit.
+    /// The answer is a **refusal**: the program is refused at load, before
+    /// any question about a commitment, a load error's exit.
     /// A refusal states no verdict, `k` or model.
     #[serde(default)]
     pub refused: bool,
@@ -2229,7 +2229,7 @@ refuted_by = ["v", "w"]
             "{:?}",
             defects(&r, Held::Open)
         );
-        // Exit 1, the default, is *forbid*'s, which states no region.
+        // Exit 1, the default, is a load refusal's, which states no region.
         let mut s = r.clone();
         s.now.exit = None;
         assert!(

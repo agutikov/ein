@@ -1,0 +1,25 @@
+;;; A chain of activators that ends in a refutation, resting on an `absent`:
+;;; `activator-chain-1.ein` one link shorter.
+;;;
+;;; `mk` derives the activator `(q a)` from `(p a)` while `a` has no `p2`, and
+;;; the plan of `q` it compiles concludes `(false)` itself. Root holds
+;;; neither candidate, so it compiles no plan of `q`: `q`'s activator
+;;; relation is one a commitment can change (root's plan of `mk` writes it),
+;;; an activator site, beside `mk`'s `absent` over `p2`, which a commitment
+;;; can still extend.
+;;;
+;;; Not monotone: the static check flags the program. It loads, every command
+;;; answers it with the warning, and nothing is claimed of its answer
+;;; (Q-M1f.564).
+;;;
+;;;
+;;;
+(relation seed T :why "{?3} is a seed") (relation p T :why "p holds of {?3}") (relation p2 T :why "p2 holds of {?3}") (relation q T :why "q holds of {?3}")
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
+
+(rule mk () :match (and (p ?x) (absent (p2 ?x))) :assert (q ?x) :why "p holds of {?x} and p2 does not, so q holds of {?x}, switching rule q on for it")
+(rule q  (?n) :match (seed ?n) :assert (false) :why "q holds of the seed {?n}, which cannot be")

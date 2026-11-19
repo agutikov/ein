@@ -2,14 +2,14 @@
 ;;; synthesizer from the spec below, and then frozen: this file is
 ;;; maintained as it is, not regenerated.
 ;;;
-;;; ── Frozen, and refused ───────────────────────────────────────────────
+;;; ── Frozen, and not monotone ──────────────────────────────────────────
 ;;; `dead-3` and `dead-7` conclude (false) from an (absent (h …)) over h, which the
-;;; hrule proposes: the shape *forbid* rules out (Q-M1e2.5), so every
-;;; question about a commitment exits 1 naming them, and this file is the
-;;; regression three-components witness. Regenerated, it would differ: the
-;;; synthesizer writes a dead node with a non-dead superset as owing, so
-;;; it writes the same region with its dead holes owing, and the target
-;;; below describes this file as written.
+;;; hrule proposes, so the static check flags the program: it loads, and
+;;; nothing is claimed of its answer (Q-M1f.564). Regenerated, it would
+;;; differ: the synthesizer writes a dead node with a non-dead superset as
+;;; owing, so it writes the same region with its dead holes owing, and the
+;;; target below describes this file as written.
+;;;
 ;;;
 ;;; The user's shape: R in three separate components — one
 ;;; monotone (a 2-dimensional sub-cube over C), one with a one-node hole (as

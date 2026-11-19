@@ -17,8 +17,7 @@
 //! - a derivation's three levels, and its palette's shades against black and
 //!   white;
 //! - the per-form dispatch's own shapes, and mode/view name resolution;
-//! - the read-out's **dead hole**, which *forbid* keeps out of every program
-//!   that loads, read at library level past the refusal.
+//! - the read-out's **dead hole**.
 //!
 //! The read-out's English is held by `ein-cli/tests/acceptance_cli.rs`, and
 //! the region trace's flags by `ein-cli/tests/region_modes.rs`.
@@ -791,13 +790,8 @@ fn no_shade_of_the_derivation_palette_is_near_black() {
 
 /// **A dead hole is read out as dead, with what it died of.** The read-out
 /// has a line for a minimal hole of each kind, `— owes n` and `— dead: core`,
-/// and the cube's status counts dead nodes with an alive superset. *Forbid*
-/// refuses every program of the corpus with a dead hole — the witnesses of
-/// the regressions `naf-upward-closure`, `naf-nowb-L`, `three-components` and
-/// `trigger-hole` among them — so no `ein solve` prints the second kind,
-/// and the line is held here: `naf-upward-closure.ein`, read
-/// through `forbid::studying`, the library-level way past the refusal that no
-/// CLI path takes. The program is refused outside it, which is the other half.
+/// and the cube's status counts dead nodes with an alive superset. The
+/// second kind is held here, on `naf-upward-closure.ein`.
 #[test]
 fn a_dead_hole_is_read_out_as_dead_with_its_core() {
     let rel = "examples/ein-bugs/naf-upward-closure.ein";
@@ -814,8 +808,7 @@ fn a_dead_hole_is_read_out_as_dead_with_its_core() {
         });
         ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
     };
-    assert!(matches!(run(), Err(ein_infer::SolveError::Refused(_))));
-    let r = ein_infer::forbid::studying(run).expect("studied, it answers");
+    let r = run().expect("it answers");
     let out = ein_render::read_out::render(
         &r,
         &ein_render::read_out::Options {

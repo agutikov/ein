@@ -16,7 +16,6 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1d.7](Q-M1d.7-a-rule-is-a-sentence-about-the-state-it-fires.md) — A rule is a sentence about the state it fires in
 - [Q-M1e.10](Q-M1e.10-two-inert-config-flags-are-refused.md) — Two inert config flags are refused
 - [Q-M1e.18](Q-M1e.18-eq-neq-and-absent-are-read-only-at-their-own.md) — `eq`, `neq` and `absent` are read only at their own arity
-- [Q-M1e2.5](Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) — A refutation may not rest on an `absent` a commitment can still fill
 - [Q-M1e2.9](Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md) — A program's names are the constants its facts and rules write
 - [Q-M1e2.17](Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md) — A reserved word is a keyword only as a whole token
 - [Q-M1e2.18](Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md) — A keyword pair is no guard's argument, and a fact names no relation

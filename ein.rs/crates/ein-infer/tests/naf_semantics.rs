@@ -835,9 +835,8 @@ const DERIVED_NAF: &str = "\
 /// The distinction the advisory draws — a guard watching a *rule-derived*
 /// relation, as against one whose extension the puzzle fixes — is no
 /// soundness signal but a stratification one: only derived NAF can make a
-/// rule set non-stratifiable. `:warn-derived-naf` is a retired flag: the
-/// refusal is *forbid*'s, and a non-monotone site is the detector's warning
-/// on every surface.
+/// rule set non-stratifiable. `:warn-derived-naf` is a retired flag: a
+/// non-monotone site is the detector's warning on every surface.
 /// What is left is [`ein_infer::derived_naf_warnings`], read by the corpus's
 /// `naf` shape op. So: the library still names the rule and the relation; a
 /// run narrates no `warn`; and a program that sets the flag is refused at the
@@ -947,8 +946,8 @@ fn the_naf_map_is_incomplete_before_saturation() {
 /// The rules whose `(absent …)` watches a rule-derived relation, by name.
 ///
 /// The empty eligible set asks the *stratification* question only, which is
-/// this file's subject; the refutation question is
-/// `refutation_under_absent.rs`'s.
+/// this file's subject; the refutation question is read by the corpus's
+/// `naf` shape op.
 fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
     compute_naf_map(engine, terms, &Default::default())
         .into_iter()

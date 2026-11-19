@@ -788,15 +788,15 @@ invents a debt takes a discharged state out of R where the claim lists it.
 | `slots.ein::slot-owed-fill::drop-neq::(neq ?Tv ?index)` | `stdlib/slots/01_partition`, `08_spatial_adjacent`, `12_owed_fill_satisfied`: the same, on the fill side |
 | `slots.ein::slot-owed-fill::swap-premise::(?sub ?Tv ?super)` | the same three |
 
-***Forbid* kills two of `bijective-setup`'s.** Exchanging the arguments of
+**Two of `bijective-setup`'s survive.** Exchanging the arguments of
 `(total ?R ?isa)` or `(surjective ?R ?isa)` in its conclusion turns the
 activator into `(total is-a seats)`, so `std.algebra`'s `total` (or
 `surjective`) reads `seats` under `absent`. `bijection/06_blind_enumeration`
 is the one program in `stdlib/bijection/` that leaves the blind enumerator on,
-so `seats` is a relation a commitment can extend, and *forbid* refuses the
-program at load, exit 2
-([diagnostics § 2.7](../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)):
-a refusal is a kill.
+so under the mutant `seats` is a relation a commitment can extend and the
+program is no longer monotone: it loads, the static check flags it, and its
+claim, a model root already holds, is not moved. No claim of the directory
+needs the refutation `total` or `surjective` would have derived of `seats`.
 
 **The calculator's walks.** The modules' rules are mostly the two exchange
 families: a premise's two arguments, a tag and a number, and a conclusion's.

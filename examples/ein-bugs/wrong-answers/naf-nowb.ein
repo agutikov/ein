@@ -1,44 +1,44 @@
-;;; `naf-upward-closure.ein` under the singleton writeback's lever — its
-;;; lever row, where `dead` not being upward-closed under `absent` turned into a
-;;; certified `Contradiction`. Regression `naf-nowb-L`
-;;; (`corpus/regressions.toml`).
+;;; `naf-upward-closure.ein` again: the probe of a program on which `dead`
+;;; is not upward-closed under `absent`.
 ;;;
 ;;; Below this header the program is `../naf-upward-closure.ein`'s, its `:why`
-;;; texts aside. The lever, `:enable-singleton-writeback false` on a
-;;; `(config …)` line, is no flag of Ein: it wrote into root, which no route
-;;; does, and R never read it. That file's header is the argument (*forbid*).
+;;; texts aside. That file's header is the argument.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────────
 ;;;
 ;;; `bad` concludes `(false)` from `(absent (q ?x))` over `q`, which a
-;;; commitment can still extend, so the program is refused at load, the error
-;;; naming the replacement (*forbid*, Q-M1e2.5). Read without the refusal
-;;; (*respect*, the row's alternative), the lattice is
+;;; commitment can still extend: a node that holds `(p A)` without `(q A)`
+;;; matches `bad`, and one that holds both does not. The static check flags
+;;; the program. It loads, every command answers it with the warning that
+;;; it is not monotone, and nothing is claimed of its answer (Q-M1f.564).
+;;; The file states no claim.
 ;;;
-;;;   alive₀          = {(p A), (q A)}
-;;;   {(p A)}         is dead   — `bad` fires, (q A) absent
-;;;   {(p A), (q A)}  is alive  — the guard's witness is present
 ;;;
-;;; and its one maximal state is `{(p A), (q A)}`: `Solution`, k = 1.
 ;;;
-;;; ── What the engine answered ───────────────────────────────────────────────
 ;;;
-;;; The walk's two runs, which the regression records:
 ;;;
-;;;   default  Solution k = 1, `{(q A)}` — the same wrong model as
-;;;            `../naf-upward-closure.ein`'s: the kill cache wrote `(not (p A))`
-;;;            with no premises.
-;;;   -L       `No solution — the constraints are contradictory`, unsat core
-;;;            `(p A)`, `exhausted = true`. With neither the cache nor the
-;;;            writeback, `{(p A)}` died at layer 1 and its width-1 no-good
-;;;            pruned the live superset as if it were dead. `{(q A)}` survived
-;;;            and was not recorded either — `(p A)` was still proposed, so it
-;;;            was not `complete` — and the empty layer 2 ended the run with the
-;;;            dead core as the program's. Two mechanisms, then: the dead set not
-;;;            upward-closed under `absent`, and the unrecorded survivor.
 ;;;
-;;; The engine refuses the program at load: `ein solve` exits 1 naming `bad`
-;;; over `q`, and `ein saturate` still saturates. No `:expect`, then.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

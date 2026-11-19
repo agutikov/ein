@@ -1,24 +1,24 @@
-;;; A refusal, and a core that moved with interner ids —
-;;; regressions `d3-unsat-core-id-order` and `d3-unsat-core/d3-unsat-core`
-;;; (`corpus/regressions.toml`). `corpus/fuzz_findings/d3-unsat-core.ein`
-;;; is the same program, a frontend-fuzzer seed.
+;;; A generated program whose refutation rests, through a derived fact, on
+;;; an `absent` a commitment can lift: not monotone.
+;;; `corpus/fuzz_findings/d3-unsat-core.ein` is the same program, a
+;;; frontend-fuzzer seed.
 ;;;
-;;; ── What this program was ──────────────────────────────────────────────
+;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; The engine fuzzer's find (14 forms minimised to 9). The walk's
-;;; `solve -m 2` printed a 4-fact unsat core on the resumed fork path and 6
-;;; under `EIN_FORK_DELTA=0`, and 4 against 6 again at the id-order
-;;; property's third seed, 15839 (`corpus/fuzz_findings/d3-unsat-core.md`).
+;;; The engine fuzzer's find (14 forms minimised to 9), kept for the
+;;; id-order sweep: a fork resumes root's saturation, so two runs can
+;;; narrate different amounts of one derivation
+;;; (`corpus/fuzz_findings/d3-unsat-core.md`).
 ;;;
-;;; ── What it is ─────────────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; Refused at load (*forbid*, followed through derived facts, Q-M1e2.5):
 ;;; `fire-0` concludes (not …) from r1, which `fire-1` derives resting on
-;;; (absent (not (r1 o3 ?v1))), a relation a commitment can still extend, so
-;;; every question about a commitment exits 1 naming the two rules. The
-;;; refusal is the same under every permutation of the interner, which
-;;; `id_order_invariance` checks. `fire-0` declares `?P`, which its body
-;;; never names; the loader accepts that silently.
+;;; (absent (not (r1 o3 ?v1))), a relation a commitment can still extend.
+;;; The static check flags the program at `fire-1`'s `absent`: it loads,
+;;; every command answers it with the warning that it is not monotone, and
+;;; nothing is claimed of its answer (Q-M1f.564). `fire-0` declares `?P`,
+;;; which its body never names; the loader accepts that silently.
+;;;
 ;;;
 
 ;;; case 6710 (seed 20260820) of the engine fuzzer

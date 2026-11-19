@@ -481,8 +481,6 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
 /// under every question on every program whose R is known.
 #[test]
 fn the_sanity_flag_adds_its_row_and_nothing_else() {
-    // The flagged one is not `ein-bugs/naf-upward-closure.ein`, which
-    // *forbid* refuses (Q-M1e2.5); `lattice/04`'s hole is an obligation's.
     let fixtures = [
         "examples/branching/04_two_levels.ein",
         "examples/lattice/04_obligation_trigger_hole.ein",

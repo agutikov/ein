@@ -1,5 +1,5 @@
 //! The detector
-//! ([08-monotonicity.md § 11](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#11-the-detector)).
+//! ([08-monotonicity.md § 10](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#10-the-detector)).
 //!
 //! What a program the static check flags is warned of, held to the corpus:
 //! the static half ([`ein_infer::detector::Static`]) on every corpus program,
@@ -14,7 +14,6 @@ use ein_infer::compile::SharedMemo;
 use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
 use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
-use ein_infer::forbid;
 use ein_infer::monotone::Monotonicity;
 use ein_infer::region::{self, Nodes, Options, Outcome};
 use ein_infer::saturator::{Saturator, Session};
@@ -56,8 +55,6 @@ const ROOT_DEAD_PAST_THE_LIMIT: &str = "
 
 /// The static check of `text` (read from `at`), through the oracle's own
 /// preparation — the cube is refused past the limit and the check still runs.
-/// Read past *forbid*'s refusal, which comes after the check:
-/// the static half is the program's, refused or not.
 fn checked(text: &str, at: &Path) -> Option<(Monotonicity, Terms)> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -67,7 +64,7 @@ fn checked(text: &str, at: &Path) -> Option<(Monotonicity, Terms)> {
         limit: 0,
         ..Options::default()
     };
-    let out = forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}));
+    let out = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {});
     let m = match out.ok()? {
         Outcome::Region(r) => r.monotonicity,
         Outcome::Refused { monotonicity, .. } => monotonicity,
@@ -142,10 +139,9 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
             found_races.push(format!("{rel} {r}"));
         }
     }
-    // Every corpus program the static check flags, *forbid*'s refusals among
-    // them: each keeps its static half, which `checked` reads before the
-    // refusal. A program the check flags moves this count when it joins the
-    // corpus, and one it no longer flags when it changes.
+    // Every corpus program the static check flags. A program the check flags
+    // moves this count when it joins the corpus, and one it no longer flags
+    // when it changes.
     assert_eq!(flagged, 47, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
@@ -275,9 +271,7 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
 }
 
 /// The warning a run of `mode` gives on `rel`, read-out and all — `limit` is
-/// `--region-limit`. Studied past *forbid*'s refusal: the
-/// warnings these tests hold are on the shapes it refuses, the dead hole and
-/// the stale fact, as a library-level fixture.
+/// `--region-limit`.
 fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
     let path = repo_root().join(rel);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{rel}: {e}"));
@@ -287,7 +281,7 @@ fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
     let mut opts = explore::Options::new(mode);
     opts.limit = limit;
-    let r = forbid::studying(|| ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts))
+    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
         .unwrap_or_else(|e| panic!("{rel}: {e}"));
     *r.answer
         .warning
@@ -383,34 +377,33 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
         // Where the attribution names no site, the
         // derivation followed through each plan's activator. `lattice/12`'s
         // `total-owed` activator is derived by a plan of `serves`, which root
-        // never compiled; the `forbid-chain-*` witnesses, studied past
-        // *forbid*, die through
+        // never compiled; the `activator-chain-*` programs die through
         // `r2`, `r3` or `bad`, compiled at a node, none of them a site.
         (
             "examples/lattice/12_activator_chain_hole.ein",
             exercised(&["serves"], 1, 0, 1),
         ),
         (
-            "examples/ein-bugs/wrong-answers/forbid-chain-1.ein",
+            "examples/ein-bugs/wrong-answers/activator-chain-1.ein",
             exercised(&["q"], 1, 1, 0),
         ),
         (
-            "examples/ein-bugs/wrong-answers/forbid-chain-2.ein",
+            "examples/ein-bugs/wrong-answers/activator-chain-2.ein",
             exercised(&["q"], 1, 1, 0),
         ),
         (
-            "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein",
+            "examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein",
             exercised(&["q"], 1, 1, 0),
         ),
         (
-            "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein",
+            "examples/ein-bugs/wrong-answers/activator-chain-param-absent.ein",
             exercised(&["watch"], 1, 1, 0),
         ),
         // ... and where that names none either, the row says so: `chk`'s death
         // rests on `(absent (x a))`, no site reads `x`, and no rule on the
         // derivation is an activator site.
         (
-            "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein",
+            "examples/ein-bugs/wrong-answers/activator-chain-node-writes.ein",
             exercised(&[], 1, 1, 0),
         ),
         (

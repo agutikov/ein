@@ -101,10 +101,12 @@ the seam between what only grows and what a guess can retract
 | O8 learning from a refutation | on a monotone program a superset of a dead commitment is dead, so one dead node decides every node above it ([finding R](docs/ein/reasoning/02-kb-evolution/07-finding-r.md)) | CDCL, backjumping, arc consistency |
 | O9 state identity | two commitments whose worlds hold the same facts are one state; the identity is the sorted fact set | symmetry breaking, SBDS / SBDD |
 
-A program whose rules read `absent` over a relation a guess can still extend may not be monotone. The static check
-flags it ([monotonicity](docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)), every route then classifies the cube,
-and the read-out says so: of such a program the engine gives one R, every command the same, and claims nothing about
-whether it is the program's meaning. A refutation that could rest on such an `absent` is refused at load.
+A program whose rules read `absent` over a relation a guess can still extend may not be monotone. It loads as any
+other program does. The static check flags it
+([monotonicity](docs/ein/reasoning/02-kb-evolution/08-monotonicity.md)), every route then classifies the cube, and
+every command that answers warns, in capitals, that the program is not monotone: of such a program the engine gives
+one R, every command the same, and claims nothing of that answer
+([Q-M1f.564](docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 ## The standard library
 

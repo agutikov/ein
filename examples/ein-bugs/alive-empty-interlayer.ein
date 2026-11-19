@@ -1,34 +1,34 @@
-;;; The alive-∅ record site BETWEEN LAYERS: a search that wrote negatives
-;;; into root recorded as a model a state its own rules refute, at stock
-;;; config with no flags. Regression alive-empty-interlayer.
+;;; A refutation that reads an `absent` over a relation the hrule proposes,
+;;; beside stored negations nothing writes: a program that is not monotone.
 ;;
-;; `phase2` recomputed `alive` after a layer, found it empty, and recorded root
-;; — which by then held this layer's singleton writeback `(not (p Z))` and the
-;; kill cache's `(not (p A))` / `(not (p B))`, all written after root's last
-;; saturation. `totality` matched that state and had not fired.
+;; `taint` and `kill` make `(p Z)` dead in two steps. `mutex` would refute
+;; any `p` once `(not (p Z))` is stored, and `totality` says that something
+;; must have `p`: it concludes `(false)` from `(not (p Z))` with
+;; `(absent (p A))` and `(absent (p B))`.
 ;;
-;; Three enterings, one layer. The recorded state was
-;; `(is-a A T) (is-a B T) (is-a Z T) (not (p A)) (not (p B)) (not (p Z))`; feed
-;; it back as a program and that engine answered `Contradiction` on it, as
-;; it did on this file once it re-saturated before recording. The trigger
-;; was the singleton writeback, not the kill cache, so turning the cache off
-;; did not repair it; `alive-empty-phase1.ein` is the other site.
+;; ── What is said of it ────────────────────────────────────────────────────
 ;;
-;; ── The answer ────────────────────────────────────────────────────────────
+;; A node is `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7), so no
+;; `(not (p Z))` is ever stored, and neither `mutex` nor `totality` fires.
+;; But `totality` reads `(absent (p A))` over `p`, which the hrule proposes:
+;; a refutation resting on an `absent` a commitment can still fill. That is
+;; a site of the static check, so the program is flagged: it loads, every
+;; command answers it with the warning that it is not monotone, and nothing
+;; is claimed of its answer (Q-M1f.564). The file states no claim.
 ;;
-;; That `Contradiction` read the search's own negatives as the state's. A
-;; node is `sat(root ∪ C)` with nothing a search wrote (Q-M1e2.7), so no
-;; `(not (p Z))` is ever stored and `mutex` never fires. And `totality`
-;; concludes `(false)` from `(absent (p A))` over `p`, which the hrule
-;; proposes: a refutation resting on an `absent` a commitment can still
-;; fill (*forbid*, Q-M1e2.5), so the program is refused at load. Every
-;; question about a commitment exits 1 naming `totality` over `p`;
-;; `ein saturate` still saturates. A refused program has no R to check a
-;; claim against, so the file states none.
+;; Deleting `totality` leaves a program the static check calls monotone.
 ;;
-;; Deleting `totality` leaves a program the static check calls monotone,
-;; whose R is 4 states, maximal `{(p A), (p B)}`: the regression's
-;; alternative answer.
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
+;;
 ;;
 ;;
 ;;
@@ -65,8 +65,8 @@
   :assert (false) :why "p is false of Z, so it may hold of nothing, yet it holds of {?x}")
 
 ;; Totality as a saturation refutation: something must have p. It reads
-;; `(absent (p A))` over `p`, which the hrule proposes, and that is the
-;; shape *forbid* refuses.
+;; `(absent (p A))` over `p`, which the hrule proposes, and that is what
+;; makes the program non-monotone.
 (rule totality ()
   :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
   :assert (false) :why "p is false of Z and holds of neither A nor B, yet something must have p")

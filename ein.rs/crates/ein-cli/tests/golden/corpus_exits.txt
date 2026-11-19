@@ -312,17 +312,17 @@
 0    examples/branching/12_typed_blind_solve.ein :: saturate --dump
 0    examples/branching/12_typed_blind_solve.ein :: solve
 0    examples/branching/13_lookahead_naf_world.ein :: render constraints
-1    examples/branching/13_lookahead_naf_world.ein :: render lattice
+0    examples/branching/13_lookahead_naf_world.ein :: render lattice
 0    examples/branching/13_lookahead_naf_world.ein :: render rules
 0    examples/branching/13_lookahead_naf_world.ein :: saturate
 0    examples/branching/13_lookahead_naf_world.ein :: saturate --dump
-1    examples/branching/13_lookahead_naf_world.ein :: solve
+0    examples/branching/13_lookahead_naf_world.ein :: solve
 0    examples/branching/14_lookahead_unjudgeable.ein :: render constraints
-1    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
+0    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
 0    examples/branching/14_lookahead_unjudgeable.ein :: render rules
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate --dump
-1    examples/branching/14_lookahead_unjudgeable.ein :: solve
+0    examples/branching/14_lookahead_unjudgeable.ein :: solve
 0    examples/branching/15_lookahead_two_step_on.ein :: render rules
 0    examples/branching/15_lookahead_two_step_on.ein :: saturate
 0    examples/branching/15_lookahead_two_step_on.ein :: solve
@@ -559,18 +559,18 @@
 0    examples/domain_elim/b_only.ein :: saturate --dump
 0    examples/domain_elim/b_only.ein :: solve
 0    examples/ein-bugs/activator-all-int.ein :: saturate
-1    examples/ein-bugs/activator-all-int.ein :: solve
+0    examples/ein-bugs/activator-all-int.ein :: solve
 0    examples/ein-bugs/activator-all-nested.ein :: saturate
-1    examples/ein-bugs/activator-all-nested.ein :: solve
+0    examples/ein-bugs/activator-all-nested.ein :: solve
 0    examples/ein-bugs/activator-all-symbol.ein :: saturate
-1    examples/ein-bugs/activator-all-symbol.ein :: solve
+0    examples/ein-bugs/activator-all-symbol.ein :: solve
 1    examples/ein-bugs/activator-text-int-and-string.ein :: saturate
 1    examples/ein-bugs/activator-text-int-and-string.ein :: saturate --dump
 1    examples/ein-bugs/activator-text-int-and-string.ein :: solve
 1    examples/ein-bugs/activator-text-string-then-int.ein :: saturate
 1    examples/ein-bugs/activator-text-string-then-int.ein :: saturate --dump
 1    examples/ein-bugs/activator-text-string-then-int.ein :: solve
-1    examples/ein-bugs/alive-empty-interlayer.ein :: solve
+0    examples/ein-bugs/alive-empty-interlayer.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: test
@@ -603,7 +603,7 @@
 0    examples/ein-bugs/d3-goal-row-order.ein :: saturate
 0    examples/ein-bugs/d3-goal-row-order.ein :: solve
 0    examples/ein-bugs/d3-unsat-core.ein :: saturate
-1    examples/ein-bugs/d3-unsat-core.ein :: solve
+0    examples/ein-bugs/d3-unsat-core.ein :: solve
 1    examples/ein-bugs/fact-goal-binding.ein :: render rules
 0    examples/ein-bugs/fact-goal-binding.ein :: saturate
 0    examples/ein-bugs/fact-goal-binding.ein :: solve
@@ -620,7 +620,7 @@
 0    examples/ein-bugs/minimal-line-stated-obligation.ein :: solve
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
-1    examples/ein-bugs/naf-upward-closure.ein :: solve
+0    examples/ein-bugs/naf-upward-closure.ein :: solve
 0    examples/ein-bugs/nested-core.ein :: solve
 0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve
 1    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
@@ -646,6 +646,20 @@
 1    examples/ein-bugs/wrong-answers/absent-fact-nested.ein :: solve
 1    examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein :: saturate
 1    examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-0.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-0.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-1.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-1.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-2.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-2.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-node-writes.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-node-writes.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-chain-param-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-chain-param-absent.ein :: solve
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: saturate
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
@@ -789,20 +803,6 @@
 0    examples/ein-bugs/wrong-answers/forall-core-elim.ein :: solve
 0    examples/ein-bugs/wrong-answers/forall-core-false.ein :: saturate
 0    examples/ein-bugs/wrong-answers/forall-core-false.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-0.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-0.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-1.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-1.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-2.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-2.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein :: saturate
-0    examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein :: solve
-0    examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein :: saturate
-1    examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
@@ -1002,7 +1002,7 @@
 0    examples/ein-bugs/wrong-answers/match-only-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/match-only-declared.ein :: test
 0    examples/ein-bugs/wrong-answers/match-only.ein :: solve
-1    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
+0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
 0    examples/ein-bugs/wrong-answers/negative-only-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/negative-only-declared.ein :: test
 0    examples/ein-bugs/wrong-answers/negative-only.ein :: solve
@@ -1145,7 +1145,7 @@
 0    examples/ein-bugs/wrong-answers/relvar-eq-premise.ein :: saturate
 0    examples/ein-bugs/wrong-answers/relvar-eq-premise.ein :: solve
 0    examples/ein-bugs/wrong-answers/rung-connex-import.ein :: saturate
-1    examples/ein-bugs/wrong-answers/rung-connex-import.ein :: solve
+0    examples/ein-bugs/wrong-answers/rung-connex-import.ein :: solve
 0    examples/ein-bugs/wrong-answers/rung-discharged.ein :: saturate
 0    examples/ein-bugs/wrong-answers/rung-discharged.ein :: solve
 0    examples/ein-bugs/wrong-answers/rung-symmetric-import.ein :: saturate
@@ -1173,8 +1173,8 @@
 1    examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein :: solve
 1    examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein :: saturate
 1    examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein :: solve
-1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
-1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
+0    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
+0    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
 1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate
 1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: solve
 1    examples/ein-bugs/wrong-answers/str-in-assert.ein :: saturate
@@ -1482,14 +1482,14 @@
 0    examples/lattice/synth/one_model_per_component.ein :: render lattice
 0    examples/lattice/synth/one_model_per_component.ein :: saturate
 0    examples/lattice/synth/one_model_per_component.ein :: solve
-1    examples/lattice/synth/three_components.ein :: oracle --dump {out}/region
-1    examples/lattice/synth/three_components.ein :: render lattice
+0    examples/lattice/synth/three_components.ein :: oracle --dump {out}/region
+0    examples/lattice/synth/three_components.ein :: render lattice
 0    examples/lattice/synth/three_components.ein :: saturate
-1    examples/lattice/synth/three_components.ein :: solve
-1    examples/lattice/synth/trigger_hole.ein :: oracle --dump {out}/region
-1    examples/lattice/synth/trigger_hole.ein :: render lattice
+0    examples/lattice/synth/three_components.ein :: solve
+0    examples/lattice/synth/trigger_hole.ein :: oracle --dump {out}/region
+0    examples/lattice/synth/trigger_hole.ein :: render lattice
 0    examples/lattice/synth/trigger_hole.ein :: saturate
-1    examples/lattice/synth/trigger_hole.ein :: solve
+0    examples/lattice/synth/trigger_hole.ein :: solve
 0    examples/lattice/synth/trivial_line.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/trivial_line.ein :: render lattice
 0    examples/lattice/synth/trivial_line.ein :: saturate

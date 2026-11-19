@@ -76,7 +76,7 @@
 ;; ── `typecheck-arg-1` and `no-room-left` conclude (false) from an (absent …)
 ;; ── over `is-a`, and with `is-a` open the blind enumerator would propose
 ;; ── membership between two objects, `(is-a Red House-1)`: a relation a
-;; ── commitment can extend, which *forbid* refuses (Q-M1e2.5). The
+;; ── commitment can extend, and the program would not be monotone. The
 ;; ── hierarchy is given in full above and no commitment is meant to extend it,
 ;; ── so the program says so. R is 32 states, exact: `ein solve` describes it
 ;; ── whole.

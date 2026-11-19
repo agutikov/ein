@@ -85,11 +85,9 @@ impl ein_infer::events::Watch for Collect {
 
 /// `file`'s cube in `cube` and its `--maximal` run's `answer/` and
 /// `lattice/` in `run`, written by the writers `ein oracle --dump` and `ein
-/// solve --maximal --dump-answer --dump-lattice` call, at library level and
-/// past *forbid*'s refusal (`forbid::studying`, Q-M1e2.5), which no CLI
-/// path lifts. `naf-nowb`'s dead hole is the shape the refusal names, and its drawing
-/// is what the test below holds; `ein render region` reads the directories
-/// and refuses nothing.
+/// solve --maximal --dump-answer --dump-lattice` call, at library level.
+/// `naf-nowb`'s cube has a dead hole, and its drawing
+/// is what the test below holds; `ein render region` reads the directories.
 fn studied(file: &str, cube: &Path, run: &Path) {
     let loaded = || {
         let path = repo_root().join(file);
@@ -99,7 +97,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         let kb = ein_ir::load_file(&mut ast, &mut terms, &path).expect("loads");
         (kb, terms, ast)
     };
-    ein_infer::forbid::studying(|| {
+    {
         let (mut kb, mut terms, ast) = loaded();
         let out = ein_infer::region::compute(
             &mut kb,
@@ -157,7 +155,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         let dir = run.join("answer");
         std::fs::create_dir_all(&dir).expect("answer/");
         ein_render::dump::region_answer::write(&dir, &r, &kb, &inputs).expect("answer/");
-    });
+    };
 }
 
 /// `ein solve FILE FLAGS --dump-answer DIR/answer --dump-lattice
@@ -277,8 +275,8 @@ fn graphviz_accepts(dot: &str) -> Result<(), String> {
 /// The programs every view is drawn for: a hole, an unsound lookahead, a
 /// forced positive, saturation moving nodes, an owing root, the n = 9 border
 /// view and the n = 8 lines view — and one directory over the limit.
-/// `naf-nowb`'s dead hole is not among them, since *forbid* refuses it
-/// (Q-M1e2.5); the hole's test draws that one from a library-level fixture.
+/// `naf-nowb`'s dead hole is not among them: the hole's test draws that one
+/// from a library-level fixture.
 const DRAWN: [(&str, &[&str]); 9] = [
     ("examples/branching/15_lookahead_two_step_on.ein", &[]),
     ("examples/lattice/04_obligation_trigger_hole.ein", &[]),
@@ -441,9 +439,8 @@ fn a_node_of_the_part_asked_that_no_state_holds_is_missing() {
 }
 
 /// **A hole, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
-/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. *Forbid*
-/// refuses the program (Q-M1e2.5), so its directories are written by
-/// [`studied`], a library-level fixture, and the drawing is held so. The
+/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. Its
+/// directories are written by [`studied`], a library-level fixture. The
 /// region run takes the cube (route 2), visits every node and reports the
 /// alive superset — the hole carries its repair edge, and nothing is missing
 /// or read otherwise than the cube. A run that pruned above the dead `{(p

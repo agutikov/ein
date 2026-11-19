@@ -557,9 +557,7 @@ fn what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube() {
                 cores: Cores::READ_OUT,
                 ..region::Options::default()
             };
-            let out = ein_infer::forbid::studying(|| {
-                region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-            });
+            let out = { region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {}) };
             let Ok(Outcome::Region(r)) = out else {
                 return (failures, 0, 0, None);
             };
@@ -691,10 +689,8 @@ fn a_flagged_program_spends_no_denial() {
         let mut terms = Terms::new();
         let forms = parse(&mut ast, text, Some("<fixture>")).expect("parses");
         let mut kb = load(&mut ast, &mut terms, &forms, None).unwrap_or_else(|e| panic!("{e}"));
-        ein_infer::forbid::studying(|| {
-            explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
-        })
-        .unwrap_or_else(|e| panic!("{e}"))
+        { explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode)) }
+            .unwrap_or_else(|e| panic!("{e}"))
     };
     let all = |ask| Mode {
         which: Which::All,

@@ -66,7 +66,7 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 | compile | each rule, per activator, to a plan, memoised for the run | `ein_infer::{compile, plan, engine}` |
 | saturate root | the closure and the boundary, to root's fixpoint | `ein_infer::{saturator, match_, firing, contradiction}` |
 | build H | the generation ladder at root | `ein_infer::{hypgen, hrule, oblgen}` |
-| check | what root owes, the static monotonicity check, forbid | `ein_infer::{obligations, monotone, forbid}` |
+| check | what root owes, the static monotonicity check | `ein_infer::{obligations, monotone}` |
 | answer | the question's route over `R`, each node through the node function | `ein_infer::{explore, tree, tree_classes, states, downset, region}` |
 | read | `R` described once; each listed state's model and each query's projection | `ein_infer::{described, read_out, verdict}` |
 | print | the read-out, and whatever artefact was asked for | `ein_render::{read_out, trace, dump}`, `ein-cli/src/{solve, modes, summary}.rs` |
@@ -129,7 +129,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `obligations.rs` | the obligation pass over a quiescent KB |
 | `naf_deps.rs`, `strata.rs` | the static map of what reads an `absent` over what; the rule dependency graph and its strata |
 | `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out |
-| `monotone.rs`, `detector.rs`, `forbid.rs` | the static check, the detector, the refusal of a refutation resting on an extendable `absent` |
+| `monotone.rs`, `detector.rs`, `extendable.rs` | the static check, the detector, the relations a commitment can extend, followed through each rule's activator |
 | `region.rs` | the node function, the fan-out, the cube (route 2, the oracle) |
 | `explore.rs` | every question about `R` and its route; the licences |
 | `downset.rs`, `states.rs`, `tree.rs`, `tree_classes.rs`, `order.rs`, `known_dead.rs`, `transversal.rs`, `unheld.rs` | route 1, the state route, the obligation tree, the tree and the classes, the tree's order, the known-dead memory, transversals, licence L9 |

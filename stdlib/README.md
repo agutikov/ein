@@ -294,14 +294,6 @@ have a parameter, and `clash-of-N`, which has none, reads the fact
 writes a fact, so a program that imports one and asks for nothing holds what
 it held.
 
-***Forbid* reads `clash-N`.** A refutation may not rest on an `absent` over a
-relation a commitment can still extend
-([Q-M1e2.5](../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)),
-which is a check of rules and not of the kernel's own contradiction. A program
-in which a rule derives a fact of `R` resting on such an `absent` is refused
-once `clash-N` is activated for `R`; such a program is one the static check
-flags as it stands.
-
 **What holds them.** [`tests/stdlib/negation/`](../tests/stdlib/negation/) and
 [`tests/stdlib/contradiction/`](../tests/stdlib/contradiction/). A claim
 cannot tell `clash-N` firing from the kernel's own verdict, since a dead state

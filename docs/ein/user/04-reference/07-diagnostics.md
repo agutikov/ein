@@ -195,9 +195,10 @@ them. Each line is one finding, then ` — `, then what to write instead
 of a program below is made at load, before any rule fires, any hypothesis is proposed or any obligation is owed, on
 every command that reads the program — `ein solve` in every mode, `oracle`, `saturate`, `test`, `show`, each
 `render` view and `kb save`, which writes no container — so no command stops part way through a run on a rule's
-shape, and no two commands disagree about whether a program loads. The one exception is
-[§ 2.7](#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)'s, which reads root's fixpoint and is made by
-the commands that take the universe. Each exits at the command's load-error exit: **1, and 2 under `ein test`**. A
+shape, and no two commands disagree about whether a program loads. The one exception is a saved file's choice
+that names no node ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)), which reads
+H at root's fixpoint and is made by the commands that read the node. Each exits at the command's load-error exit:
+**1, and 2 under `ein test`**. A
 view refuses what the loader refuses
 ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)).
 
@@ -357,60 +358,22 @@ What is refused is a parameter that stands for a relation bound to a **fact**, `
 atom, and that is [§ 2.9](#29-a-rule-shape-that-reads-nothing)'s line, at load where the activator is written and
 where a rule could derive it. An activator of the wrong arity activates nothing and is not checked.
 
-### 2.7 A refutation resting on an `absent` a commitment can fill
+### 2.7 No import names the module every program gets
 
-A rule that concludes `(false)` or `(not …)` may not rest on an `(absent P)` over facts of a relation that a
-commitment can still add to — directly, through a fact a rule derived under one, or through its activator
-([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)). Over such facts the
-shape calls a state that has not yet decided `P` a contradiction, and a commitment that decides it would bring the
-state back to life: *dead* would not be upward-closed, and no answer about R could be trusted. The line says *a
-relation a commitment can still extend* and *close the relation*: what is extended or closed is the relation's held
-extent, the facts of it a state holds.
+`std.core` is brought into every program by the load, with no import line
+([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
+[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), so an import of it,
+in a program or in a module, is refused, one line, at the command's load-error exit:
 
-*Extendable* is the static check's set of the relations whose held extent a commitment can add to
-([`08-monotonicity.md`](../../reasoning/02-kb-evolution/08-monotonicity.md)), followed through every rule with parameters whose
-activator relation it holds, because a commitment can bring such a rule a plan root never had, and what that plan
-writes a commitment can change too; an `absent` such a rule reads itself, over a relation in the set or over the
-relation its parameter names, taints what it derives. The check runs after root's fixpoint, so it refuses **every
-command that takes the universe**: `ein solve` in every mode (`--monotone`, `--count` and `--no-search` too), every
-`(solve :expect)` check, `ein test`, `ein oracle`, `ein show hyps`, `ein render lattice` and `ein render h-space`.
-`ein saturate` and
-`ein render rules|constraints|program|kb` take no universe and do not refuse. A plan has an activator when its rule
-has parameters, whatever the activator's arguments, and the `[activator …]` label prints the activator's names.
+| the file | the line |
+|---|---|
+| `(import std.core)`, in any of an import's three shapes | `kb load error: F:3:9: (import std.core) — std.core is the module every program gets, with no import line: no import names it (Q-M1f.551)` |
+| a load that cannot read the module: an `$EIN_STDLIB` that names no standard library, a saved file that carries none | `kb load error: std.core, the module every program gets, cannot be read: …`, then the line the import of any module of the standard library would have drawn |
 
-One line per refusing rule, sorted by rule, with no `kb load error: ` before it:
-
-| cause | the line | exit |
-|---|---|---|
-| the rule reads an extendable relation inside an odd number of `absent`s | `rule '<r>'[ [activator <a…>]]: concludes <(false)\|(not …)> from (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (`ein test`: 2) |
-| it reads `<P>`, which rule `<d>` derives resting on such an `absent` | `… concludes <c> from <P>, which rule '<d>' derives resting on (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (2) |
-| the same, the `absent` over the relation a parameter of rule `<d>` names | `… concludes <c> from <P>, which rule '<d>' derives resting on (absent …) over the relation its parameter ?<p> names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — <the rest>` | 1 (2) |
-| its activator is such a fact | `… concludes <c> from its activator, which rule '<d>' derives resting on (absent …) over <R>, … — <the rest>` | 1 (2) |
-| a rule with parameters, whose activator a commitment can derive, reads its parameter's relation under an odd `absent` | `… concludes <c> from (absent …) over the relation its parameter ?<p> names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — <the rest>` | 1 (2) |
-
-`<the rest>` says why — *so it calls a state that has not yet decided <R> a contradiction, and a commitment would
-lift it (dead is not upward-closed under absent; …)* — and then names the three forms that say what was meant, behind
-*Write what it means:*
-
-1. **close the relation**, `(solve :no-hypothesis (<R>))`, if no commitment is meant to add a fact of it. Where the program
-   declares an hrule, no list filters a candidate
-   ([§ 2.27](#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)), so the form reads *let no hrule
-   propose <R>, if no commitment is meant to extend it — hrule 'h' proposes it, and no list filters an hrule's
-   candidates*, naming every active hrule that proposes `<R>`, or *let no hrule propose what <R> is derived from …*
-   where none proposes it directly. Where no hrule is declared and an obligation owes `<R>`, it reads *let no
-   obligation owe <R>, if no commitment is meant to extend it — obligation 'o' owes it, and no list may filter what
-   an obligation owes*;
-2. **state a requirement as a decision or an obligation**: a yes/no attribute that must be decided (`functional` +
-   `total-owed`), or `(open ?R)` with hrules that propose it;
-3. **conclude from a stored negative**, `(not …)`, as `std.algebra`'s `total` does.
-
-```text
-$ ein solve f.ein     # (q a) and (rule r () :match (and (q ?x) (absent (p ?x))) :assert (false) …), p declared
-rule 'r': concludes (false) from (absent …) over p, a relation a commitment can still extend — so it calls a state that has not yet decided p a contradiction, and a commitment would lift it (…). Write what it means: close the relation, (solve :no-hypothesis (p)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does
-```
-
-The witnesses are [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein)
-and the refused programs under [`examples/ein-bugs/`](../../../../examples/ein-bugs/).
+The second row is every program's: a load reads `std.core` whatever the program imports, so an `$EIN_STDLIB` that
+names a directory which is no standard library refuses every program, and a saved file carries the module with its
+program ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)). The first is pinned by
+`import_of_core` in [`examples/broken/load/`](../../../../examples/broken/load/).
 
 ### 2.8 `_` and `?_` are refused wherever they are written
 
@@ -1104,8 +1067,7 @@ at the command's load-error exit:
 | a choice named twice | `(commit …) names (note (bad a)) twice — a commitment is a set of candidates of H, each named once (Q-M1f.400)` |
 
 The two refusals of a choice read H, which is built at root's fixpoint, so they are made by the commands that read
-the node, `ein solve` in every mode, `oracle`, `saturate` and `render kb`, as § 2.7's is by the commands that take
-the universe; `ein show hyps` and `ein render h-space` read the program's H and refuse neither, `ein test` asks a
+the node, `ein solve` in every mode, `oracle`, `saturate` and `render kb`; `ein show hyps` and `ein render h-space` read the program's H and refuse neither, `ein test` asks a
 node nothing and refuses neither
 ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)), and `ein kb save`
 stores the choices as the file states them, its container refused by those commands as the file is
@@ -1133,23 +1095,6 @@ engine's words, of which there is one
 A misspelt word therefore does not load in silence, and a word of the language is none of the engine's: `:ein false`
 is refused as `:ein dead` is. The three are pinned by `ein_word_unknown`, `ein_beside_assert` and `ein_on_hrule` in
 [`examples/broken/load/`](../../../../examples/broken/load/).
-
-### 2.32 No import names the module every program gets
-
-`std.core` is brought into every program by the load, with no import line
-([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
-[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), so an import of it,
-in a program or in a module, is refused, one line, at the command's load-error exit:
-
-| the file | the line |
-|---|---|
-| `(import std.core)`, in any of an import's three shapes | `kb load error: F:3:9: (import std.core) — std.core is the module every program gets, with no import line: no import names it (Q-M1f.551)` |
-| a load that cannot read the module: an `$EIN_STDLIB` that names no standard library, a saved file that carries none | `kb load error: std.core, the module every program gets, cannot be read: …`, then the line the import of any module of the standard library would have drawn |
-
-The second row is every program's: a load reads `std.core` whatever the program imports, so an `$EIN_STDLIB` that
-names a directory which is no standard library refuses every program, and a saved file carries the module with its
-program ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)). The first is pinned by
-`import_of_core` in [`examples/broken/load/`](../../../../examples/broken/load/).
 
 ## See also
 

@@ -224,7 +224,7 @@ an `(absent …)` at odd depth in a saturation rule over a relation a commitment
 one, or a rule whose activator a commitment can derive. A program with no site is monotone, and its routes take every
 licence of § 3; a program with a site is **flagged**, and gets the cube alone.
 
-![The static check: root's plans classified monotone or flagged, and what forbid refuses](diagrams/07-static-check.svg)
+![The static check: root's plans classified monotone or flagged, and what a flagged program is reported with](diagrams/07-static-check.svg)
 
 **The detector** ([`detector.rs`](../../../../ein.rs/crates/ein-infer/src/detector.rs)) says more of a flagged program:
 its static half, read off root's plans before any node, is which property of a node each site puts at stake (the
@@ -235,13 +235,13 @@ reported with these warnings, and the engine claims nothing about it beyond what
 --monotone` asks the static question alone (`explore::Checked`): root's fixpoint and the check, no node built, so it
 has no `R` to disagree with another command about.
 
-**Forbid** ([`forbid.rs`](../../../../ein.rs/crates/ein-infer/src/forbid.rs)): a program whose refutation could rest
-on an `(absent P)` over a relation whose held extent a commitment can still extend is refused at load, since it
-would judge a state that has not decided `P` as if `P` were false, and `dead` would stop being upward-closed
-([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)). The refusal is what
-enforces L1's premise, since the premise is false of the shape it refuses:
-[`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein) is that shape, in
-which `{(p A)}` derives `(false)` and `{(p A), (q A)}` does not, and
-[`ein-infer/tests/refutation_under_absent.rs`](../../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs)
-holds the refused set (`the_refused_set_is_exactly_these`) and the message, which names the forms that say what was
-meant (`the_probe_is_refused_and_the_message_names_the_replacements`).
+**A refutation resting on an `absent` a commitment can fill** is the shape L1's premise is false of:
+[`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein), in which
+`{(p A)}` derives `(false)` and `{(p A), (q A)}` does not. Such a program loads as any other does, and what keeps
+L1 off it is the static check: the `absent` is a site, the program is flagged, and its routes are the cube's
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
+[`ein-infer/tests/non_monotone_loads.rs`](../../../../ein.rs/crates/ein-infer/tests/non_monotone_loads.rs) holds
+that each corpus program with the shape is flagged and answered with no licence
+(`a_refutation_under_an_absent_loads_flagged_and_unlicensed`). The relations a commitment can extend, followed
+through each rule's activator, are [`extendable.rs`](../../../../ein.rs/crates/ein-infer/src/extendable.rs)'s, read
+by the obligations rung.

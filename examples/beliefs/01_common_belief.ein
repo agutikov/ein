@@ -17,10 +17,10 @@
 ;;;   does not believe C. That is an `absent` over `person`, so it needs the
 ;;;   people **closed**: with no hrule the blind enumerator would guess more
 ;;;   people, and a rule resting on "no person disbelieves C" could then be
-;;;   undone by a guess. Without the closing line below the loader refuses the
-;;;   second rule (*forbid*: a `(not …)` concluded from an `absent` over a
-;;;   relation a commitment can still extend) and the static check flags the
-;;;   first. `(__closed__ person)` says the people are Ann, Bob and Cid and no
+;;;   undone by a guess. Without the closing line below the static check
+;;;   flags both rules, each an `absent` over a relation a commitment can
+;;;   still extend, and nothing is claimed of a flagged program's answer.
+;;;   `(__closed__ person)` says the people are Ann, Bob and Cid and no
 ;;;   one else; the program is then monotone.
 ;;;
 ;;; The three people believe `(likes Dan Soup)`, so it is true; Ann and Bob

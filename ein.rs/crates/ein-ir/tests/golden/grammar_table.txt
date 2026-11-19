@@ -882,7 +882,7 @@
 ## 125. a config's keyword (was: config-retired)
     (config :warn-derived-naf true)
 <row>:1:9: unexpected `:warn-derived-naf`: a keyword this form does not take
-  note: config flag :warn-derived-naf is retired: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R (Q-M1e2.5)
+  note: config flag :warn-derived-naf is retired: it switched the walk's advice on a rule that reads (absent …): every non-monotone site is the detector's warning on every surface that reports R, whatever the config says (Q-M1f.564)
   repair: Insert `:lattice-sanity-check`, Delete `:warn-derived-naf`
   repair: Insert `:record-alternative-justifications`, Delete `:warn-derived-naf`
   repair: Delete `:warn-derived-naf`, Delete `true`

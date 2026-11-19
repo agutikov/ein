@@ -479,36 +479,6 @@ models    = [
 ]
 
 [[case]]
-id       = "alive-empty-interlayer"
-title    = "a maximal alive commitment is never recorded"
-settings = "default"
-decisions = ["Q-M1e2.7", "Q-M1e2.5"]
-witness  = "examples/ein-bugs/alive-empty-interlayer.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'totality': concludes (false) from (absent …) over p, a relation a commitment can still extend — so it calls a state that has not yet decided p a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose p, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "d3-unsat-core/d3-unsat-core"
-title    = "a maximal alive commitment is never recorded"
-settings = "default"
-decisions = ["Q-M1e2.7"]
-witness  = "examples/ein-bugs/d3-unsat-core.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'fire-0' [activator T]: concludes (not …) from r1, which rule 'fire-1' derives resting on (absent …) over (not r1), a relation a commitment can still extend — so it calls a state that has not yet decided (not r1) a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (r1)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
 id       = "branching-04-L"
 title    = "a maximal alive commitment is never recorded"
 settings = "lever: -L"
@@ -642,66 +612,6 @@ relations = ["q"]
 models    = [
   [],
 ]
-
-[[case]]
-id       = "naf-upward-closure"
-title    = "dead is not upward-closed under absent"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/naf-upward-closure.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'bad': concludes (false) from (absent …) over q, a relation a commitment can still extend — so it calls a state that has not yet decided q a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (q)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "naf-nowb-L"
-title    = "dead is not upward-closed under absent"
-settings = "lever: -L, with (config :enable-singleton-writeback false) in the file"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'bad': concludes (false) from (absent …) over q, a relation a commitment can still extend — so it calls a state that has not yet decided q a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (q)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "three-components"
-title    = "dead is not upward-closed under absent"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/lattice/synth/three_components.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'dead-3': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose h, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "trigger-hole"
-title    = "dead is not upward-closed under absent"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/lattice/synth/trigger_hole.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'dead-1': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose h, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "fresh-name-default"
@@ -917,21 +827,6 @@ models    = [
 ]
 
 [[case]]
-id       = "stale-naf-fork"
-title    = "a positive derived under absent survives the commitment that falsifies its guard"
-settings = "default"
-decisions = ["Q-M1e2.2"]
-witness  = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent …) over q, a relation a commitment can still extend — so it calls a state that has not yet decided q a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (q)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
 id       = "complete-records-stale-K"
 title    = "the kill cache's writes remove a state of R"
 settings = "default"
@@ -1066,21 +961,6 @@ models    = [
   ["(r1 o1 o5)", "(r1 o4 o5)"],
   ["(r1 o4 o1)", "(r1 o4 o5)"],
 ]
-
-[[case]]
-id       = "d3-unsat-core-id-order"
-title    = "which core is reported depends on interner id order"
-settings = "default (under a permuted interner, seed 15839)"
-witness  = "examples/ein-bugs/d3-unsat-core.ein"
-id_order = { op = "trace[answer]", seed = 15839 }
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve --maximal"
-line    = "maximal"
-refused = "rule 'fire-0' [activator T]: concludes (not …) from r1, which rule 'fire-1' derives resting on (absent …) over (not r1), a relation a commitment can still extend — so it calls a state that has not yet decided (not r1) a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (r1)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "fork-delta-order"
@@ -1570,111 +1450,6 @@ line    = "all"
 refused = "examples/ein-bugs/activator-text-string-then-int.ein:25:19: unexpected `\"1\"`: a string"
 
 [[case]]
-id       = "activator-all-int"
-title    = "two activator values with the same text share a compile key, and a derivation is lost"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/activator-all-int.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'alarm' [activator 1]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose checked, if no commitment is meant to extend it — hrule 'check' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "activator-all-nested"
-title    = "two activator values with the same text share a compile key, and a derivation is lost"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/activator-all-nested.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose checked, if no commitment is meant to extend it — hrule 'check' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "forbid-chain-1"
-title    = "*forbid* misses a refutation whose activator chain first appears at a node"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "forbid-chain-2"
-title    = "*forbid* misses a refutation whose activator chain first appears at a node"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'r3': concludes (false) from its activator, which rule 'r2' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "forbid-chain-node-absent"
-title    = "*forbid* misses a refutation whose activator chain first appears at a node"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "forbid-chain-param-absent"
-title    = "*forbid* misses a refutation whose activator chain first appears at a node"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent …) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — so it calls a state that has not yet decided that relation a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose what that relation is derived from, if no commitment is meant to extend it — the hrules are this program's commitments, and no list filters their candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
-id       = "forbid-chain-node-writes"
-title    = "*forbid* misses a refutation whose activator chain first appears at a node"
-settings = "default"
-decisions = ["Q-M1e2.5"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'chk': concludes (false) from (absent …) over x, a relation a commitment can still extend — so it calls a state that has not yet decided x a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: let no hrule propose what x is derived from, if no commitment is meant to extend it — the hrules are this program's commitments, and no list filters their candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
-
-[[case]]
 id       = "str-in-match"
 title    = "a string written in a rule never matches, and in an :assert stops the run"
 settings = "default"
@@ -1745,11 +1520,11 @@ line    = "all"
 refused = "examples/ein-bugs/wrong-answers/str-in-hrule.ein:29:47: unexpected `\"lbl\"`: a string"
 
 [[case]]
-id       = "forbid-chain-no-absent"
+id       = "activator-chain-no-absent"
 title    = "a dead node's core leaves out the activator its refutation rests on"
 settings = "default"
 decisions = ["Q-M1e2.11", "Q-M1e2.12"]
-witness  = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
+witness  = "examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein"
 
 [case.region]
 route    = "route 2"
@@ -7440,18 +7215,3 @@ models    = [
   ["(likes B A)", "(near A B)", "(near B A)"],
   ["(near A B)", "(near B A)"],
 ]
-
-[[case]]
-id       = "connex-import"
-title    = "the ladder's second rung is taken by an obligation rule the program loads and nothing activates, so the blind enumerator does not run: H holds none of its candidates, and an absent over a relation it would propose is read closed-world"
-settings = "default"
-decisions = ["Q-M1f.308"]
-witness  = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over lt, a relation a commitment can still extend — so it calls a state that has not yet decided lt a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). Write what it means: close the relation, (solve :no-hypothesis (lt)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"

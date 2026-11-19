@@ -269,28 +269,22 @@ judged first. That order is not the order of the program's strata:
 
 ## A refutation resting on an absent
 
-A rule that concludes $\bot$ or a stored negation may not rest on an $\operatorname{absent}(G)$ that reads the
+Take a rule that concludes $\bot$ or a stored negation and rests on an $\operatorname{absent}(G)$ that reads the
 held extent of a relation a commitment can still extend: directly, through a fact a rule derived under such an
 absence, or through the activator its rule was applied with. Write $D^{+}$ for the relations whose held extent
 a commitment can extend (below) and $\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can
-depend on in those three ways:
+depend on in those three ways. The shape is
 
 $$
 \begin{aligned}
 & \bigl( \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \bigr) \\
-\land\ & \exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset \\
-\implies\ & P \text{ is refused}
+\land\ & \exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
 \end{aligned}
 $$
 
-A program that writes one is refused when it is read, with one line for each refusing rule
-([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md); the user's
-[diagnostics](../../user/04-reference/07-diagnostics.md) has the refusal as it is printed).
-
-The reason is what such a rule says. Over the held extent of such a relation it judges a state that has not yet
-decided $G$ as if $G$ were false: it says *contradiction* where the truth is *not yet*, an obligation written as a
-refutation. And *dead* stops being closed upward. Under $p(x) \land \operatorname{absent}(q(x)) \implies \bot$,
-with $p(\mathsf{A})$ and $q(\mathsf{A})$ candidates:
+Over the held extent of such a relation the rule judges a state that has not yet decided $G$ as if $G$ were false:
+it says *contradiction* where the truth is *not yet*. And *dead* stops being closed upward. Under
+$p(x) \land \operatorname{absent}(q(x)) \implies \bot$, with $p(\mathsf{A})$ and $q(\mathsf{A})$ candidates:
 
 ![A lattice of two candidates in which dead is not closed upward](diagrams/03-dead-not-upward-closed.svg)
 
@@ -303,13 +297,13 @@ $$
 $$
 
 Each node is a commitment, an arrow adds one candidate, green is alive and red dead. A search that took a
-superset of a dead set for dead would lose the bottom state, a member of $R$. The refusal names the forms that
-say what was meant:
+superset of a dead set for dead would lose the bottom state.
 
-1. close the held extent of the relation to hypotheses, if no commitment is meant to add a fact of it;
-2. make the attribute one the search must decide, and refute the decided *no*, a stored negation;
-3. state the requirement as an obligation ([satisfiability](10-satisfiability.md));
-4. conclude from a stored negation, as the standard library's totality does.
+**A program with the shape is not monotone.** It is read as any other program is; the static check finds a site
+in it ([monotonicity § 3](08-monotonicity.md#3-the-static-check)), so no step of the search rests on a property
+the program lacks, and nothing is claimed of its answer
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md);
+[monotonicity § 11.3](08-monotonicity.md#113-what-is-claimed-of-a-flagged-program)).
 
 **Extendable.** A relation is **extendable** when it is in $D^{+}$, the set of the relations whose held extent
 a commitment can change, followed through every rule with parameters whose activator's relation it holds, since
@@ -329,7 +323,7 @@ of what a rule that reads a fact of one of them concludes, and those of what any
 conclude once its activator's relation is among them. With another set $X_0$ of relations as the seed, in the
 place of $\operatorname{rels}(H)$, the same fixpoint is written $D^{+}(X_0)$, so
 $D^{+} = D^{+}(\operatorname{rels}(H))$. Over the held extent of a relation that is not
-extendable, the same shape is closed-world reasoning and is accepted.
+extendable, the same shape is closed-world reasoning: no commitment changes what the absence reads.
 
 This is not the stratification hazard and the two do not overlap. A guard over the facts of a relation that a
 rule derives can change its answer during saturation, and judging it at the fixpoint makes that sound. A guard

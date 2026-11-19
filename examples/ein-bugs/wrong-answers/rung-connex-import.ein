@@ -1,6 +1,5 @@
-;;; A refutation over a relation of the program's own read closed-world
-;;; because a module imported for it loads an obligation rule —
-;;; regression `connex-import` (`corpus/regressions.toml`).
+;;; `std.algebra`'s `connex` over a relation of the program's own that the
+;;; blind enumerator proposes: a program that is not monotone.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,24 +9,25 @@
 ;;; the import loads `std.algebra`'s two obligation rules with the module.
 ;;; A and C are not compared, so `connex` concludes `(false)` at root.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
 ;;; No hrule, and no obligation activated at root, so the blind enumerator
 ;;; builds H, and it proposes `lt`: `(lt B A)`, `(lt C A)`, `(lt C B)` and
-;;; `(lt A C)`. `connex` concludes `(false)` from an `absent` over `lt`, a
-;;; relation a commitment can still extend, which *forbid* refuses: every
-;;; question about a commitment exits 1, naming `connex` and its remedy,
-;;; `(solve :no-hypothesis (lt))`; `ein saturate` still saturates.
+;;; `(lt A C)`. An obligation rule a program loads and nothing activates
+;;; chooses no rung. `connex` concludes `(false)` from an `absent` over
+;;; `lt`, a relation a commitment can still extend, so the static check
+;;; flags the program: it loads, every command answers it with the warning
+;;; that it is not monotone, and nothing is claimed of its answer
+;;; (Q-M1f.564). `(solve :no-hypothesis (lt))` would close `lt`, and the
+;;; program would be monotone.
 ;;;
-;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; It loaded: no candidate, root dead, R empty, and `lt` named outside the
-;;; universe, *no obligation owes it*. The loaded obligation rules took the
-;;; ladder's second rung, which owed nothing and proposed nothing, so no
-;;; commitment extended `lt` and the `absent` was read closed-world. Today
-;;; the second rung is taken where an obligation is activated at root, and
-;;; the program is refused at load, as above: a program that loaded, and
-;;; whose remedy is to say what it means, `(solve :no-hypothesis (lt))`.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 
 (import std.algebra :symbols (connex))
 (relation lt Node Node :why "{?3} is less than {?4}")

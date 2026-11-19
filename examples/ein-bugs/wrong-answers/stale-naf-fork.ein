@@ -1,7 +1,7 @@
-;;; A positive derived under `(absent (q one))` survives into a world that
-;;; commits `(q one)` — regression `stale-naf-fork`
-;;; (`corpus/regressions.toml`), whose right answer is the refusal:
-;;; *forbid* refuses the program (below).
+;;; A positive derived under `(absent (q one))`, and a refutation that reads
+;;; it beside `(q one)`: a program that is not monotone.
+;;;
+;;;
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;
@@ -9,56 +9,56 @@
 ;;; together are a contradiction. The goal is `q`, so the rung proposes
 ;;; `(q one)`.
 ;;;
-;;; ── What the engine said, before it refused ────────────────────────────────
-;;;
-;;; As banked:
-;;;
-;;;   Solution k = 1, `{(p one)}` plus `(not (q one))`, `exhausted = true`
+;;; ── What a node is, here ───────────────────────────────────────────────────
 ;;;
 ;;; Committing `(q one)` falsifies `derive-p`'s guard, but nothing retracts
 ;;; (docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md § What is not
-;;; provided), so the fork held the stale `(p one)` beside `(q one)`, the
-;;; clash fired, and the candidate was killed: the state `{(q one)}` was
-;;; unreachable. R said the same at `c887a35b`: one state, ∅, root holding
-;;; `(p one)`, and the fork `{(q one)}` dead, the one of the cube's two nodes
-;;; holding a stale fact.
-;;;
-;;;
-;;; ── The answer, by hand: a reading ─────────────────────────────────────────
+;;; provided), so a fork of root holds the `(p one)` root derived beside the
+;;; `(q one)` it commits: a stale fact.
 ;;;
 ;;; Does a guard's `absent` premise bind the state the search ends in? Ein
-;;; does not decide it: a node is a fork of root, an assumption on a program the check flags (Q-M1e2.2). The readings:
+;;; does not decide it: a node is a fork of root, an assumption on a program
+;;; the check flags (Q-M1e2.2). The readings:
 ;;;
-;;;   guards are premises   committing `(q one)` withdraws `(p one)`, the
-;;;                         clash never fires, `{(q one)}` is alive, and root
-;;;                         is not maximal: **`Solution`, k = 1, `{(q one)}`**.
-;;;   append-only           the answer above was right: the fork with both is
-;;;                         dead, and root is the solution.
+;;;   guards are premises   committing `(q one)` withdraws `(p one)`, and the
+;;;                         clash never fires.
+;;;   append-only           the fork holds both, and the clash fires.
 ;;;
-;;; The program is stratified (`q` is no rule's conclusion), so the third
-;;; reading — refuse what cannot be stratified — does not reach it.
+;;; The program is stratified (`q` is no rule's conclusion).
 ;;;
-;;; ── Refused: *forbid*, through a derived fact ──────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────────
 ;;;
-;;; *Forbid* (Q-M1e2.5): a refutation may not rest on an `absent` over a
-;;; relation a commitment can still extend, because a state that has not yet
-;;; decided it would be called dead, and a commitment would lift that; a
-;;; refutation resting on an `absent` only through a fact a rule derived
-;;; under it counts. Here `p-and-q-clash` reads `(p ?x)`, which `derive-p`
-;;; derives under `(absent (q ?x))`, and `q` is a relation a commitment can
-;;; extend; unfolded it is `(thing ?x) (absent (q ?x)) (q ?x) ⟹ (false)`. So
-;;; the program is refused at load, every question about a commitment exits 1
-;;; naming `p-and-q-clash`, `derive-p` and `q`, and the regression's right
-;;; answer is the refusal. The two readings above are what a program that
-;;; loads leaves undecided (Q-M1e2.2); this one does not load, and
-;;; `features/07` keeps the question.
+;;; `p-and-q-clash` reads `(p ?x)`, which `derive-p` derives under
+;;; `(absent (q ?x))`, and `q` is a relation a commitment can extend;
+;;; unfolded it is `(thing ?x) (absent (q ?x)) (q ?x) ⟹ (false)`. The static
+;;; check flags the program at `derive-p`'s `absent`. It loads, every
+;;; command answers it with the warning that it is not monotone, and nothing
+;;; is claimed of its answer (Q-M1f.564). The file states no claim.
 ;;;
-;;; `ein solve` in every mode, `ein oracle` and `ein render lattice` exit 1
-;;; with that one line on stderr. `ein test` exits 2: here because no
-;;; `:expect` is stated (*nothing to check*), and on a copy stating one
-;;; because the file does not load. `ein saturate` saturates, deriving
-;;; `(p one)`, and the views that take no universe (`render rules`,
-;;; `constraints`, `program`, `kb`) draw.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

@@ -804,9 +804,6 @@ fn the_monotone_question_is_about_the_program() {
                 tail("3 candidates")
             ),
         ),
-        // Not `ein-bugs/naf-upward-closure.ein`, which *forbid* refuses
-        // (Q-M1e2.5): `--monotone` takes the universe and runs the static
-        // check, and the refusal is read there. Its refusal is held below.
         (
             "examples/lattice/08_absent_witness_hole.ein",
             format!(
@@ -854,14 +851,22 @@ fn the_monotone_question_is_about_the_program() {
         assert_eq!(r.out, format!("{}{body}", header(file)), "{file}");
         assert_eq!(r.err, "", "{file}");
     }
-    let refused = ein(&[
+    // A refutation resting on an `absent` a commitment can fill is a site
+    // like any other: the program loads and the verdict names it.
+    let probe = ein(&[
         "solve",
         "examples/ein-bugs/naf-upward-closure.ein",
         "--monotone",
     ]);
-    assert_eq!(refused.code, 1, "{}", refused.out);
-    assert!(refused.out.is_empty(), "{}", refused.out);
-    assert!(refused.err.starts_with("rule 'bad': "), "{}", refused.err);
+    assert_eq!(probe.code, 0, "{}", probe.err);
+    assert!(
+        probe.out.contains("  monotone          no — 1 site\n")
+            && probe
+                .out
+                .contains("    site            bad: absent reads q at absent depth 1"),
+        "{}",
+        probe.out
+    );
     for other in ["--minimal", "--maximal", "--single", "-n 2"] {
         let mut args = vec!["solve", THREE, "--monotone"];
         args.extend(other.split(' '));
@@ -1003,8 +1008,7 @@ fn the_count_question_is_describes_counts() {
         c.out
     );
 
-    // A flagged program keeps the warning, and its spot check is not run
-    // (`naf-upward-closure` is refused by *forbid*, Q-M1e2.5).
+    // A flagged program keeps the warning, and its spot check is not run.
     let flagged = ein(&[
         "solve",
         "examples/lattice/08_absent_witness_hole.ein",
@@ -1130,8 +1134,7 @@ fn one_verdict_on_every_corpus_program() {
         .collect();
     let failures = std::sync::Mutex::new(Vec::<(usize, String)>::new());
     let unread = std::sync::Mutex::new(Vec::<String>::new());
-    let (checked, flagged, refused) = (
-        std::sync::atomic::AtomicUsize::new(0),
+    let (checked, flagged) = (
         std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
     );
@@ -1158,21 +1161,6 @@ fn one_verdict_on_every_corpus_program() {
                 ]);
                 if asked.code != 0 {
                     // A file that does not load: no verdict to compare.
-                    // A refused one (Q-M1e2.5) is refused alike by
-                    // the read-out, with the same lines.
-                    if asked.err.starts_with("rule '") {
-                        let d = ein(&["solve", file, "--region-limit", "0"]);
-                        if (d.code, &d.err) != (asked.code, &asked.err) {
-                            failures.lock().expect("one writer at a time").push((
-                                i,
-                                format!(
-                                    "{file}: `--monotone` refuses and the read-out exits {}: {}",
-                                    d.code, d.err
-                                ),
-                            ));
-                        }
-                        refused.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    }
                     return;
                 }
                 let described = ein(&[
@@ -1278,17 +1266,11 @@ fn one_verdict_on_every_corpus_program() {
          None should: the loader refuses at load what the compiler would refuse on the read-out, \
          a goal's relation variable among them (Q-M1f.121)"
     );
-    let (checked, flagged, refused) = (
-        checked.into_inner(),
-        flagged.into_inner(),
-        refused.into_inner(),
-    );
-    // *forbid* refuses some corpus programs (Q-M1e2.5), which are neither
-    // checked nor flagged, and `features/05` and `/12` close a relation and
-    // are monotone.
+    let (checked, flagged) = (checked.into_inner(), flagged.into_inner());
+    // `features/05` and `/12` close a relation and are monotone.
     assert!(
-        checked > 190 && flagged >= 14 && refused >= 9,
-        "{checked} checked, {flagged} flagged, {refused} refused"
+        checked > 190 && flagged >= 40,
+        "{checked} checked, {flagged} flagged"
     );
     assert!(
         tested.values().any(|m| !m),

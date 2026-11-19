@@ -52,7 +52,7 @@
 ;;;
 ;;; Deliberately **no `(absent …)` anywhere.** The obvious encoding of "Z must
 ;;; be reached" is a NAF guard, and it works — but it would also give this
-;;; file the shape *forbid* refuses (Q-M1e2.5), where `dead` is not
+;;; file a refutation resting on an `absent`, where `dead` is not
 ;;; upward-closed under `absent`, and a reader could not
 ;;; then tell which of the two mechanisms cost the answer. Two positive
 ;;; refutation rules confound nothing.

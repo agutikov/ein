@@ -232,8 +232,6 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
             match region::compute(&mut kb, &mut terms, &ast, &o, &mut |_| {}) {
                 Ok(Outcome::Region(r)) if !stops => Some(r),
                 Ok(_) if stops => panic!("{rel}: ORACLE_STOPS names it, and the oracle answers"),
-                // *Forbid* refuses it, and every mode with it.
-                Err(ein_infer::SolveError::Refused(_)) => continue,
                 Err(ein_infer::SolveError::Saturate(_)) if stops => continue,
                 other => panic!("{rel}: the oracle: {:?}", other.err()),
             }

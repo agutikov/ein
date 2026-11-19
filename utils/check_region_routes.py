@@ -9,13 +9,12 @@ reach the same answer another way, and this check holds the binary to both,
 as a step of the gate after the tests (it needs the binary the tests ran):
 
 1. **The per-subset route**, `region.py`: one `ein saturate` process a node,
-   on the seven programs of Q-M1e2.7's tables, a program where saturation
-   moves a node inside the cube, one whose dead nodes die by a pair `X`,
-   `(not X)`, and one with a hole. Node for node: every node's status (dead,
-   owing n, or in R), every alive node's closure, the two lines, the holes,
-   the components' sizes, the maximal sub-cubes, N, and the N side of the
-   duality. The one of the seven *forbid* refuses (Q-M1e2.5) is refused by
-   the oracle, exit 1, and dumps nothing.
+   on the six monotone programs of Q-M1e2.7's tables, a program where
+   saturation moves a node inside the cube, one whose dead nodes die by a
+   pair `X`, `(not X)`, and one with a hole. Node for node: every node's
+   status (dead, owing n, or in R), every alive node's closure, the two
+   lines, the holes, the components' sizes, the maximal sub-cubes, N, and the
+   N side of the duality.
 2. **The synthesizer**, `region_synth.py --random 300 --seed 1 --max-n 6`:
    three hundred regions drawn at random, half with implications so that
    saturation moves nodes, each written as a program; the oracle must give
@@ -38,7 +37,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 UTILS = Path(__file__).resolve().parent
 
-# The seven programs of Q-M1e2.7's tables.
+# The six monotone programs of Q-M1e2.7's tables.
 SEVEN = [
     "examples/branching/15_lookahead_two_step_on.ein",
     "examples/lattice/02_genuine_3set_death.ein",
@@ -46,10 +45,7 @@ SEVEN = [
     "examples/ein-bugs/wrong-answers/owed-two-step.ein",
     "examples/ein-bugs/wrong-answers/owed-seats.ein",
     "examples/lattice/05_owed_seats_bounded.ein",
-    "examples/ein-bugs/naf-upward-closure.ein",
 ]
-# The one of the seven *forbid* refuses.
-REFUSED = "examples/ein-bugs/naf-upward-closure.ein"
 # Saturation moves a node inside the cube, so the closure check is not vacuous.
 MOVES = "examples/saturation/transitive/taxonomy.ein"
 # Dead nodes die by a pair, which derives no `(false)` fact.
@@ -68,13 +64,6 @@ def one_program(file: str, bin: str, scratch: Path) -> tuple[list[str], bool]:
     d = scratch / Path(file).stem
     r = subprocess.run([bin, "oracle", file, "--dump", str(d)], cwd=ROOT,
                        capture_output=True, text=True)
-    if file == REFUSED:
-        bad = []
-        if r.returncode != 1 or not r.stderr.startswith("rule 'bad': "):
-            bad.append(f"{file}: forbid's refusal expected, got exit {r.returncode}: {r.stderr}")
-        if (d / "region.json").exists():
-            bad.append(f"{file}: a refusal dumps nothing")
-        return bad, False
     if r.returncode != 0:
         return [f"{file}: the oracle exits {r.returncode}: {r.stderr}"], False
     region = json.loads((d / "region.json").read_text(encoding="utf-8"))
@@ -153,7 +142,7 @@ def main() -> int:
     if bad:
         print(f"check_region_routes: {len(bad)} finding(s)", file=sys.stderr)
         return 1
-    print("check_region_routes: the oracle agrees with the per-subset route on 10 programs, "
+    print("check_region_routes: the oracle agrees with the per-subset route on 9 programs, "
           "and gives back 300 random regions written as programs")
     return 0
 

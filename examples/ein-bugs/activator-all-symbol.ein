@@ -1,17 +1,17 @@
-;;; The control for an activator read as none — regressions
-;;; `activator-all-int` and `activator-all-nested`
-;;; (`corpus/regressions.toml`).
+;;; The control of `activator-all-int.ein` and `activator-all-nested.ein`:
+;;; the same chain of activators, each carrying a symbol.
 ;;;
 ;;; `activator-all-int.ein` with `(item a)` for `(item 1)`, and nothing
-;;; else. Every activator in the chain carries a symbol, so root's plan of
-;;; `alarm`, compiled from `(alarm a)`, has an activator as *forbid* reads
-;;; one, and its `(false)` rests through two activators on
-;;; `(absent (checked ?x))`, over a relation a commitment can extend.
+;;; else. Root's plan of `alarm` is compiled from `(alarm a)`, and its
+;;; `(false)` rests through two activators on `(absent (checked ?x))`,
+;;; over a relation a commitment can extend.
 ;;;
-;;; Refused at load (*forbid*, followed through each activator, Q-M1e2.5):
-;;; every question about a commitment exits 1 naming `alarm [activator a]`,
-;;; in either build, and `ein saturate` still saturates. The two witnesses
-;;; answer the same, each naming its own activator.
+;;; Not monotone: the static check flags it, its sites naming
+;;; `[activator a]`, as it flags the two twins, each naming its own
+;;; activator. The program loads, and nothing is claimed of its answer
+;;; (Q-M1f.564).
+;;;
+;;;
 ;;;
 
 (relation item    T :why "{?3} is an item")

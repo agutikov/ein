@@ -1,5 +1,5 @@
 //! The detector: what a program the static check flags is warned of
-//! ([`08-monotonicity.md` § 11](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#11-the-detector)).
+//! ([`08-monotonicity.md` § 10](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#10-the-detector)).
 //!
 //! [`crate::monotone::classify`] answers *is this program monotone?* from the
 //! compiled plans. On a program it flags, this module says more, in the words
@@ -35,7 +35,7 @@
 //! It decides nothing. A node on a flagged program is a fork of root by
 //! assumption, and the engine claims nothing about such a program's
 //! solutions (Q-M1e2.2,
-//! [08-monotonicity.md § 12.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#123-what-is-claimed-of-a-flagged-program)):
+//! [08-monotonicity.md § 11.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#113-what-is-claimed-of-a-flagged-program)):
 //! no finding here chooses a node, refuses a program or moves `R`.
 //!
 //! ### Why it is gated, and why the gate costs nothing it should not
@@ -47,7 +47,7 @@
 //! **On an unflagged program the detector has nothing to find**, on every node
 //! built by fork from root — which is how every shipped route builds one — and
 //! on every split `sat(sat(P ∪ C1) ∪ (C \ C1))` from a fixpoint that already
-//! holds root's. The argument is `08-monotonicity.md` § 11.3, from § 3.2's theorem: a program
+//! holds root's. The argument is `08-monotonicity.md` § 10.3, from § 3.2's theorem: a program
 //! with no site reads no relation in `D` under an odd `absent`, so its graph
 //! over `D` has no negative edge (no cycle through an `absent` over `D`), no
 //! `absent` rule reads under an `absent` a relation in `D` another concludes
@@ -908,12 +908,11 @@ fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTr
 }
 
 /// A dead node [`dead_sites`] names no site of: its first contradiction's
-/// derivation, followed through each plan's activator (*per activator*, as
-/// *forbid* reads it, here for a label). A derivation does not record the
+/// derivation, followed through each plan's activator (*per activator*, here
+/// for a label). A derivation does not record the
 /// activator its plan was compiled from, so where a chain of activators runs
 /// at a node, the refuting rule is no site and its premises carry no
-/// `absent`: on the `forbid-chain-*.ein` witnesses, read past *forbid*'s
-/// refusal, the rule
+/// `absent`: on the `activator-chain-*.ein` programs the rule
 /// above names nothing, and the status row would read *by* and an empty list.
 fn dead_chain_sites(
     nodes: &mut Nodes<'_>,

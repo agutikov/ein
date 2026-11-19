@@ -1,0 +1,40 @@
+;;; `activator-chain-1.ein` with no `absent`: the same chain of activators,
+;;; and nothing a commitment can take away.
+;;;
+;;; `mk` derives `(q a)` from `(p a)` whatever `a`'s `p2`; the chain `q`, `r2`
+;;; then concludes `(false)` at a node, as in `activator-chain-1.ein`. No
+;;; rule reads an `absent`. The static check still flags the program, for
+;;; `q`'s activator site: a node compiles a plan root never had, which the
+;;; check cannot see. It loads, every command answers it with the warning
+;;; that it is not monotone, and nothing is claimed of its answer
+;;; (Q-M1f.564).
+;;;
+;;; ── A dead node's core ─────────────────────────────────────────────────
+;;;
+;;; A refutation here rests on `(p a)` through the activators `(q a)` and
+;;; `(r2 a)`, and a derivation records the premises its plan matched, not
+;;; the activator the plan was compiled from. A firing records the activator
+;;; its plan was compiled from, and a dead node's core follows one the node
+;;; derived or committed, never root's (Q-M1e2.12).
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+
+(relation seed T :why "{?3} is a seed") (relation p T :why "p holds of {?3}") (relation p2 T :why "p2 holds of {?3}") (relation q T :why "q holds of {?3}") (relation r2 T :why "r2 holds of {?3}")
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
+
+(rule mk () :match (p ?x) :assert (q ?x) :why "p holds of {?x}, so q holds of {?x}, switching rule q on for it")
+(rule q  (?n) :match (seed ?n) :assert (r2 ?n) :why "q holds of the seed {?n}, so r2 holds of it, switching rule r2 on for {?n}")
+(rule r2 (?k) :match (seed ?k) :assert (false) :why "r2 holds of the seed {?k}, which cannot be")

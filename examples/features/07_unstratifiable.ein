@@ -37,8 +37,8 @@
 ; reading holds is not decided, and the row stays `open` until it is; of a
 ; flagged program the engine claims nothing.
 ;
-; *Forbid* (Q-M1e2.5), which refuses `stale-naf-fork.ein`, does not reach this file:
-; both rules conclude a positive fact, so nothing here refutes. No `:expect`
+; Both rules conclude a positive fact, so nothing here refutes: the `absent`
+; sites put the state at stake, not `dead`. No `:expect`
 ; is stated, so `ein test` has nothing to check.
 (relation thing Thing :why "{?3} is a thing")
 (relation p Thing :why "{?3} is p")
