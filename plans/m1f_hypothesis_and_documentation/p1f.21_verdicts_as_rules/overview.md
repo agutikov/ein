@@ -221,7 +221,8 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | | stage | group | items | what | waits on |
 |---|---|---|---|---|---|
 | 6 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | 14 to 16 | a debt's instance as a term | Q-M1f.390 |
-| 7 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | the candidates as facts | Q-M1f.549; S1f.21.7 |
+| 7 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | `open` facts: the hypotheses held, the obligation's verdict a fact; planned again on Q-M1f.566 to Q-M1f.573 | part 1; Q-M1f.574 to Q-M1f.577, each with a default |
+| | [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) | H | | the `hrule` form and the keyword `:hrules` removed (Q-M1f.567) | S1f.21.12 |
 | 8 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | 36, 37 | the search and rules: what is kept, and what is declined | Q-M1f.549; S1f.21.12 |
 | | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | 20 | the requirement and the payment as the kernel's facts | **run only on a ruling for Q-M1f.390 (c)** |
 | 9 | [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | 8, 11, 13, half of 10 | the pages of the second part | every build of the part |
@@ -236,11 +237,15 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) | how the *must* is emitted | **ruled**: the obligation and its count stay as they are; `(open R)` is held as a fact; `(open F)` over a fact is a hypothesis; a fork drops every `open` fact |
 | [Q-M1f.567](../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) | the `hrule` form dropped for a rule that concludes `(open F)` | **ruled**: the form and the keyword `:hrules` go; an activator is a fact the program writes |
 | [Q-M1f.568](../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) | `absent`, `open` and `not` nested | **ruled**: a written `(open P)`, `(not (open P))` and `(open (not P))` legal; `(absent (absent P))`, `(open (open P))` and `(open (absent P))` refused |
-| [Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when) | what may read an `open` fact, and when | open; default: a rule may, and one that reads `(open R)` or an obligation's candidate makes its program flagged |
-| [Q-M1f.570](../open_questions.md#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union) | a rule that concludes `(open F)` beside an obligation | open; default (a): override, as today |
-| [Q-M1f.571](../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) | what `absent` and `open` take, and what each is under an ordinary relation | open; a default for each of three |
-| [Q-M1f.572](../open_questions.md#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) | whether a state's `open` facts are shown and counted with its facts | open; default (b): held, and shown apart |
-| [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates) | `open` as an obligation or as a hypothesis, and which hypotheses are candidates | open; a default for each of three |
+| [Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when) | what may read an `open` fact, and when | **ruled**: a rule may read an `open` fact, and its program is then not monotone; a written `(open P)` is at root alone |
+| [Q-M1f.570](../open_questions.md#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union) | a rule that concludes `(open F)` beside an obligation | **ruled (b)**: the union |
+| [Q-M1f.571](../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) | what `absent` and `open` take, and what each is under an ordinary relation | **ruled**: every default; the rule of the item's § 4 |
+| [Q-M1f.572](../open_questions.md#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) | whether a state's `open` facts are shown and counted with its facts | **ruled (a)**: part of a state |
+| [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates) | `open` as an obligation or as a hypothesis, and which hypotheses are candidates | **ruled**: the defaults |
+| [Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone) | a hypothesis first held above root: how the program is found not monotone | open; default: a site of the static check, and a check in flight |
+| [Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) | what one `:assert` holds beside `(open R)` and beside `(open F)` | open; default (a): `(open R)` the whole `:assert`, `(open F)` like any fact |
+| [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | the union's edges: an obligation that declines, and the blind enumerator | open; a default for each |
+| [Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts) | a view of a state without its `open` facts | open; default (a): `-P` leaves them out |
 | [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names | **ruled 2026-11-19**: `false` kept, a convention of the standard library; no prefix; what ends a state is a rule's key, `:ein` |
 | [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | the key's word | **ruled 2026-11-19**: `inconsistent` |
 | [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the argument-count check | **ruled 2026-11-19: (c)**, dropped; a relation at several counts is overloading by count |
@@ -249,7 +254,7 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* and the contradiction as rules | **answered 2026-11-19** by Q-M1f.564: *forbid* is removed, a non-monotone program loads under a warning |
 | the stages' own | where the new rules live and the module every program gets; whether `hrule` stays as a spelling | each a question of its stage, with a default |
 
-Q-M1f.569 to Q-M1f.573 are the second part's and wait with it; they are what the user's answers to Q-M1f.566, .567 and .568 leave. **The first part has no question open**: what is
+Q-M1f.574 to Q-M1f.577 are the second part's and wait with it; they are what the user's answers to Q-M1f.569 to .573 leave. **The first part has no question open**: what is
 left of it for the user is the word that starts each stage, and three readings of the answers said back in
 [the phase's README](README.md#the-rulings-of-the-answers-file). The answers' files are [`review/part-1/ANSWERS.md`](review/part-1/ANSWERS.md) and
 [`review/part-2/ANSWERS.md`](review/part-2/ANSWERS.md).

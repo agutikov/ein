@@ -1,0 +1,49 @@
+;;; Item 54, A: examples/lattice/synth/local_not_global.ein, whole and as it is.
+;;; Its hypothesis rule proposes; its two obligations count.
+
+;;; local_not_global — a program written for its region by the region synthesizer,
+;;; from the region-spec below. Generated, not edited by hand: a change is
+;;; made to the spec, and the file is written again from it.
+;;;
+;;; The lines, decided locally and globally: A and B come
+;;; together or not at all, as lattice/06_friends_tables' groups do. Either
+;;; alone owes the other, so ∅ and {A,B} are in R with a hole on each side.
+;;; Every edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls
+;;; ∅ maximal and {A,B} minimal, and the cube says neither is.
+;;;
+;;; The cube is over 2 candidates (h A B), 4 nodes. The target:
+;;;   R           2 nodes in 2 component(s): 1 nodes from ∅; 1 nodes from {A,B}
+;;;   minimal     ∅
+;;;   maximal     {A,B}
+;;;   holes       {A}, {B}
+;;;   owing       2 nodes; dead 0
+;;;   monotone    no — a dead node revived or a debt added by growth needs an `absent` or an obligation trigger, so the static check should flag it
+;;;
+;;; 0 dead rule(s), 2 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"local_not_global","about":"The lines, decided locally and globally: A and B come\ntogether or not at all, as lattice/06_friends_tables' groups do. Either\nalone owes the other, so ∅ and {A,B} are in R with a hole on each side.\nEvery edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n∅ maximal and {A,B} minimal, and the cube says neither is.","candidates":"AB","R":[["",""],["AB","AB"]],"owing":[["A","A"],["B","B"]]}
+;;; region-status: RooR
+
+(relation h T :why "h holds of {?3}")
+(relation slot T :why "{?3} is a slot, a candidate for h")
+(relation world T :why "{?3} is the world")
+(relation need T T :why "h holding of {?4} pays debt {?3}")
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required")
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required")
+
+(query :goal (h ?x))

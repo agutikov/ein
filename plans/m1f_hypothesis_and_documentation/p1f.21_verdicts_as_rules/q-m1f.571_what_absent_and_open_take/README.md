@@ -1,8 +1,18 @@
 # 49 · Q-M1f.571: what `absent` and `open` take, and what each is under an ordinary relation
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) ·
-[the table](../../../absent_open_not.md)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) ·
+[the table](../absent_open_not.md)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 49 of part 2. Your answer, in the part's
+answers' file:
+
+> All defautls.
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-47-to-51).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/49-Q-M1f.571/`, as they were run.
 
 **From your answers**, 2026-11-19. To item 46: *"2,1 and (open (absent P)) - refused at load because both `absent`
 and `open` are special kernel primitives (what are they now btw?) and their argument must be a fact, (absent P) is
@@ -76,7 +86,6 @@ concluded `(absent P)` at the top stays refused: there it is the kernel's word, 
 It gives each of your cells: `(absent (absent P))`, `(open (open P))` and `(open (absent P))` refused;
 `(absent (open P))`, `(not (open P))`, `(open (not P))` and a written `(open P)` legal.
 
-## 5. Your call
+## 5. The ruling
 
-For 1, 2 and 3, a letter each; and whether § 4 is the rule. In [`ANSWERS.md`](../ANSWERS.md) under item 49. Blank
-keeps the defaults.
+Ruled: the answer at the head of this page.

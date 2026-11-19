@@ -1,7 +1,23 @@
 # 47 · Q-M1f.569: what may read an `open` fact, and when
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 47 of part 2. Your answer, in the part's
+answers' file:
+
+> 1. Let's allow rules reading open facts. But it's automatically non-monotone program - with warning, no claims,
+> no tests. That allows experimenting. (b) 2. (b) dropped with the rest, hand-written open fact present only in
+> root. 3. Yes, monotone program step by step proves or refutes hypotheses, not adding new, right? If it does -
+> then R is not upward-closed, search lattice is not hypercube, program is not monotone, and maybe even lattice is
+> not finite (not sure about that). Maybe it's good point for non-monotonicity detection during search, in
+> addition to static rules analysis that is performed before search starts, we could detect non-monotonicity
+> in-flight and WARN user (if it was not done yet).
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-47-to-51).
+It leaves review item 52, how a hypothesis first held above root is detected. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/47-Q-M1f.569/`, as they were run.
 
 **From your answer to item 44**, 2026-11-19: *"Now let's decide what to do with open context when fork. One option is
 to erase it and re-generate after fixed point. Another options is that kernel will delete facts from it when they
@@ -62,9 +78,8 @@ again.
 
 **3. To confirm: what *re-generate* means.** Every rule that concludes `(open …)`, a hypothesis among them, is read
 by that pass at every state, where a hypothesis rule today is read once, at root. $H$ stays what root holds
-([item 51](../51-Q-M1f.573/README.md), question 3). **Default: so.**
+([item 51](../q-m1f.573_obligation_or_hypothesis/README.md), question 3). **Default: so.**
 
-## 3. Your call
+## 3. The ruling
 
-For 1, (a), (b) or (c); for 2, (a) or (b); 3, yes or otherwise. In [`ANSWERS.md`](../ANSWERS.md) under item 47.
-Blank keeps the defaults.
+Ruled: the answer at the head of this page.

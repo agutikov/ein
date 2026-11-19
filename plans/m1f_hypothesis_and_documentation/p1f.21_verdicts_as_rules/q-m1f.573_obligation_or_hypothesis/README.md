@@ -1,7 +1,17 @@
 # 51 · Q-M1f.573: `open` as an obligation or as a hypothesis, and which hypotheses are candidates
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 51 of part 2. Your answer, in the part's
+answers' file:
+
+> 1 - (a); 2 - (a); 3 - yes
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-47-to-51).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/51-Q-M1f.573/`, as they were run.
 
 **From your answers**, 2026-11-19. To item 44: *"(open R) is obligation and (open (fact)) is an explicit
 hypothesis."* To item 45: *"So there is no more need for :hrules special place - we just activate hypotheses
@@ -44,7 +54,7 @@ step takes `(open F)` out when F is decided, which is your answer on deleting.
 ## 3. To confirm: $H$ is root's
 
 An `(open F)` first concluded above root is held there and is not proposed
-([item 45](../../../q-m1f.567_the_hrule_form_dropped/README.md), § 3; [V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root),
+([item 45](../q-m1f.567_the_hrule_form_dropped/README.md), § 3; [V-21](../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root),
 which you parked). **Default: so.**
 
 ## 4. Filed as you clarified it: where a rule is activated
@@ -52,9 +62,8 @@ which you parked). **Default: so.**
 An activator of a rule that concludes `(open F)` is a fact the program writes, anywhere in it, as any rule's is;
 there is no clause for it. A rule that could *derive* such an activator is the case of the loader's check on
 what a rule could derive, which is unchanged by this and is the first reading of your part-1 answers
-([part 1](../../part-1/README.md)), still to be confirmed.
+([part 1](../review/part-1/README.md)), still to be confirmed.
 
-## 5. Your call
+## 5. The ruling
 
-For 1 and 2, a letter each; 3, yes or otherwise. In [`ANSWERS.md`](../ANSWERS.md) under item 51. Blank keeps the
-defaults.
+Ruled: the answer at the head of this page.

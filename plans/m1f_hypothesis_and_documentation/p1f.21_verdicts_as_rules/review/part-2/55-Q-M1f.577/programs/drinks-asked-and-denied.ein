@@ -1,0 +1,25 @@
+;;; Item 55: a program whose states hold facts, stored negations and, under
+;;; `question`, which stands for `open`, hypotheses.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule chosen-is-not-served ()
+  :match  (chosen ?x)
+  :assert (not (served ?x))
+  :why    "{?x} is chosen, so it is not served.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (question (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink) (guess served Drink)
+
+(hrule ask (?R)
+  :match  (question (?R ?x))
+  :assert (?R ?x)
+  :why    "suppose ({?R} {?x}): it is asked")
+(solve :hrules (ask (chosen) (served)))

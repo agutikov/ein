@@ -1,0 +1,14 @@
+;;; Item 53 with today's engine, `question` standing for `open`: an ordinary
+;;; rule concludes a hypothesis and a fact in one :assert. It loads: root holds
+;;; (seen A) and (seen B), and H is (p A) (p B).
+
+(thing A) (thing B)
+(rule propose ()
+  :match  (thing ?x)
+  :assert (and (question (p ?x)) (seen ?x))
+  :why    "{?x} is seen, and may be a p.")
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))

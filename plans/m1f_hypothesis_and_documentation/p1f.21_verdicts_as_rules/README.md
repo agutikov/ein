@@ -416,6 +416,59 @@ below are answered.
 | 50 | [Q-M1f.572](../open_questions.md#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) | whether a state's `open` facts are shown and counted with its facts |
 | 51 | [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates) | a variable under `open`; a hypothesis root has decided; $H$ as root's |
 
+## The answers to items 47 to 51
+
+The user, 2026-11-20 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, each under its question in
+[the ledger](../open_questions.md). The second part is not started by them.
+
+**Item 47**, [Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when), what may read an `open` fact:
+
+> 1. Let's allow rules reading open facts. But it's automatically non-monotone program - with warning, no claims,
+> no tests. That allows experimenting. (b) 2. (b) dropped with the rest, hand-written open fact present only in
+> root. 3. Yes, monotone program step by step proves or refutes hypotheses, not adding new, right? If it does -
+> then R is not upward-closed, search lattice is not hypercube, program is not monotone, and maybe even lattice is
+> not finite (not sure about that). Maybe it's good point for non-monotonicity detection during search, in
+> addition to static rules analysis that is performed before search starts, we could detect non-monotonicity
+> in-flight and WARN user (if it was not done yet).
+
+**Item 48**, [Q-M1f.570](../open_questions.md#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union), override or union:
+
+> Rule can assert obligations (which imply hypotheses) and pure hypotheses independently. It can assert (open R) -
+> and then it works as before, plus it cant assert (open (fact)) with whatever other fact, in the same assert.
+> Identical open facts deduplicate naturally. Exactly (b).
+
+**Item 49**, [Q-M1f.571](../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation), what `absent` and `open` take: *"All defautls."*
+
+**Item 50**, [Q-M1f.572](../open_questions.md#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts), shown with a state's facts:
+
+> (a) hypotheses are valid part of the state; but now maybe we need separate flags/commands to show only positive
+> facts of KB when we want to see only them.
+
+**Item 51**, [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates), obligation or hypothesis: *"1 - (a); 2 - (a); 3 - yes"*
+
+| what | ruled |
+|---|---|
+| a rule that reads an `open` fact | allowed; its program is not monotone automatically: warned, nothing claimed, no test |
+| a written `(open P)` | dropped at a fork with the rest: at root alone |
+| the rules that conclude `(open …)` | every one read at every state; $H$ is root's |
+| the writers of `(open F)` | the union: a rule's, an obligation's, identical ones one fact |
+| `absent`, `open`, nesting | `absent` takes a premise and the universal stays; `(absent (absent P))`, `(open (open P))`, `(open (absent P))` refused; under an ordinary relation both are ordinary names |
+| a state | its `open` facts are part of it: listed, drawn, counted |
+| under `open` | a relation's name or parameter is the obligation; a fact, or a variable the `:match` binds, a hypothesis; one root has decided is no candidate |
+
+**What follows for the stages.** [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) is planned again on the eight
+rulings, Q-M1f.566 to Q-M1f.573, and [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) is planned for the sweep that
+removes the `hrule` form and the keyword `:hrules`. Neither is started.
+
+**What they leave**, each a review item with a default ([part 2 of the bundle](review/part-2/README.md)):
+
+| item | question | what it asks |
+|---|---|---|
+| 52 | [Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone) | a hypothesis first held above root: detected statically, in flight, or both. Today's static check calls such a program monotone |
+| 53 | [Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) | what one `:assert` holds beside `(open R)` and beside `(open F)`: *"cant"* reads two ways |
+| 54 | [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | what an obligation that declines and the blind enumerator do beside a rule |
+| 55 | [Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts) | a view of a state without its `open` facts |
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -469,10 +522,11 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | **not run**: set aside 2026-11-19 by the user's answer to Q-M1f.390, no justification is written into Ein |
-| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; Q-M1f.566 to .568 are ruled, and it is planned again on the answers to Q-M1f.569 to Q-M1f.573; after part 1 |
-| [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | **planned again 2026-11-20** on the rulings Q-M1f.566 to Q-M1f.573, **not started**; four questions with defaults, Q-M1f.574 to Q-M1f.577; after part 1 |
+| [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) | H | **The `hrule` form and the keyword `:hrules` removed.** Every program, page and test written with a rule that concludes `(open F)` and its activators as facts; the form and the keyword deleted | planned 2026-11-20 on the ruling Q-M1f.567, **not started**; after S1f.21.12. In place of S1f.21.16 |
+| [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; after S1f.21.12. Q-M1f.569 lets a rule read an `open` fact in a program that is then flagged, so its example may be written so |
 | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | **not run**: the user's answer to Q-M1f.566 keeps the obligation and its count as they are |
-| [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | planned, **not started**; after S1f.21.7, S1f.21.12 and S1f.21.13 |
+| [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | planned, **not started**; after S1f.21.12, S1f.21.18 and S1f.21.13 |
 | S1f.21.5 | | **The close.** | last |
 
 Folded, their ids kept:

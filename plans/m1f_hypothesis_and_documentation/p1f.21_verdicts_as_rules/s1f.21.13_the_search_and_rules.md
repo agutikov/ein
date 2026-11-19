@@ -8,7 +8,11 @@ steer a search.
 **Waits on:** [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
 and [S1f.21.12](s1f.21.12_hypotheses_as_facts.md). **It is planned here under the recommendation: the engine's
 search is not changed in this phase**, and the stage keeps what costs nothing and records what is declined and
-why. A ruling for either of the user's two uses plans it again.
+why. A ruling for either of the user's two uses plans it again. **Since planned**: the user ruled that a rule may read
+an `open` fact, in a program that is then not monotone and of which nothing is claimed
+([Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when)): *"That allows experimenting."* So
+the example below may be written with `open` once [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) is built, and
+what is declined stays declined.
 **Writes:** one program under `examples/` with its `corpus.toml` entry and its line of the catalogue; this
 folder's pages.
 

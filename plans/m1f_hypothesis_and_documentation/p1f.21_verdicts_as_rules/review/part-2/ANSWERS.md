@@ -2,28 +2,26 @@
 
 [← the part](README.md) · [← the bundle](../README.md) · [← the phase](../../README.md)
 
-Your answers of 2026-11-19 to items 44, 45 and 46 are filed in your words in
-[the phase's README](../../README.md#the-answers-to-items-44-45-and-46) and in the ledger. Five questions came out
-of them. Write your answer after **Your answer:** — a letter for each numbered question, *default*, or your own
+Your answers of 2026-11-20 to items 47 to 51 are filed in your words in
+[the phase's README](../../README.md#the-answers-to-items-47-to-51) and in the ledger. Four questions came out of
+them. Write your answer after **Your answer:** — a letter for each numbered question, *default*, or your own
 words. An item left blank keeps its defaults. This file is yours.
 
-## 47 · Q-M1f.569: what may read an `open` fact, and when
+## 52 · Q-M1f.574: a hypothesis first held above root: how the program is found not monotone
 
-[The item](47-Q-M1f.569/README.md)
+[The item](52-Q-M1f.574/README.md)
 
-A fork drops the `open` facts and keeps what a rule concluded from them.
+Your *"right?"*: by your definition yes. Today's static check calls such a program monotone: a rule with no
+`absent` that concludes a hypothesis from a fact only a commitment brings is no site of it.
 
-1. **May a rule's `:match` read an `open` fact?**
-   - **(a)** Not in this phase: the kernel and the read-out read them.
-   - **(b)** Yes. They are written by a pass at each state's fixpoint, and the rules that read them run after it. A
-     program whose rule reads `(open R)`, an obligation's candidate, or the absence of either is flagged as not
-     monotone. **Default.**
-   - **(c)** Yes, and at the fork the kernel also drops what was concluded from a dropped fact.
-2. **A written `(open P)` at a fork.**
-   - **(a)** It is there in every state. **Default.**
-   - **(b)** It is dropped with the rest.
-3. **Every rule that concludes `(open …)` is read at every state**, a hypothesis rule among them; $H$ stays
-   root's. **Default: so.**
+1. **How it is detected.**
+   - **(a)** Statically: a rule that concludes `(open F)` and reads a relation a commitment can change is a site
+     of the static check, as an obligation's trigger is today.
+   - **(b)** In flight: a state the run builds that holds an `(open F)` root does not.
+   - **(c)** Both. **Default.**
+2. **The run's answer, once found in flight.**
+   - **(a)** As computed, under the WARNING, nothing claimed. **Default.**
+   - **(b)** Computed again by the cube.
 
 **Your answer:**
 
@@ -31,38 +29,17 @@ A fork drops the `open` facts and keeps what a rule concluded from them.
 
 ---
 
-## 48 · Q-M1f.570: a rule that concludes `(open F)` beside an obligation
+## 53 · Q-M1f.575: what one `:assert` holds beside `(open R)` and beside `(open F)`
 
-[The item](48-Q-M1f.570/README.md)
+[The item](53-Q-M1f.575/README.md)
 
-- **(a)** Override, as a hypothesis rule does today: where a rule concludes `(open F)` at root, the obligations
-  count and write no `(open F)`. No answer moves. **Default.**
-- **(b)** Union: $H$ is every `(open F)` root holds. `14_seats_nothing_proposes.ein` goes from 4 states to 8,
-  `13_witness_of_two.ein` from 5 to 8.
-- **(c)** Union, and a flag of `(solve …)` turns the obligations' proposals off.
+Your sentence: *"It can assert (open R) - and then it works as before, plus it cant assert (open (fact)) with
+whatever other fact, in the same assert."* *cant* reads as *can* and as *can't*.
 
-**Your answer:**
-
-**Notes:**
-
----
-
-## 49 · Q-M1f.571: what `absent` and `open` take, and what each is under an ordinary relation
-
-[The item](49-Q-M1f.571/README.md)
-
-1. **`absent`'s argument.**
-   - **(a)** A premise: a pattern, or a conjunction, which may hold an `absent` (the universal). Only the direct
-     `(absent (absent P))` is refused. **Default.**
-   - **(b)** No `absent` anywhere inside an `absent`: `forall` and `std.debts`' rule go.
-2. **`(open (open P))`.**
-   - **(a)** Refused: directly under `open`, neither kernel word is written. **Default, your verdict.**
-   - **(b)** Legal, `(open P)` being a fact.
-3. **Under an ordinary relation**, as in `(think Ann (absent (p A)))`.
-   - **(a)** Both `open` and `absent` are ordinary names there, plain facts. **Default, your word in item 44.**
-   - **(b)** `open` is a plain fact there, and `absent` stays refused as an argument, as today.
-4. **The rule the defaults give**, [§ 4 of the item](49-Q-M1f.571/README.md#4-the-rule-the-defaults-give): is it
-   the rule? **Default: yes.**
+- **(a)** `(open R)` is a rule's whole `:assert`, as today. `(open F)` is a conclusion like any fact: it stands in
+  a conjunction with facts and with other `(open F)`. **Default.**
+- **(b)** Both stand in any conjunction: one rule concludes `(open R)`, `(open F)` and facts together.
+- **(c)** Each is a rule's whole `:assert`.
 
 **Your answer:**
 
@@ -70,14 +47,20 @@ A fork drops the `open` facts and keeps what a rule concluded from them.
 
 ---
 
-## 50 · Q-M1f.572: whether a state's `open` facts are shown and counted with its facts
+## 54 · Q-M1f.576: the union's edges
 
-[The item](50-Q-M1f.572/README.md)
+[The item](54-Q-M1f.576/README.md)
 
-- **(a)** Like any fact: listed, drawn and counted with a state's facts.
-- **(b)** Held, and shown apart: a state's listing, its counts and its identity are of its other facts; a saved file
-  leaves them out. **Default.**
-- **(c)** Held, and shown only by `ein show hyps` and to a rule that reads them.
+1. **An obligation whose candidates cannot be read** (its guard or trigger reads what a commitment can change),
+   **beside a rule that concludes `(open F)`.**
+   - **(a)** It writes no candidate and calls no one; the rule's candidates stand. **Default.**
+   - **(b)** It calls the blind enumerator, as it does alone: `06_friends_tables.ein` goes from 19 candidates to
+     923 or more.
+2. **The blind enumerator.**
+   - **(a)** It writes its guesses only where no rule concludes `(open F)` at root and no obligation is activated,
+     as today. **Default.**
+   - **(b)** Always.
+3. **The two lists of `(solve …)` and a closure** bind every writer as they bind today. **Default: so.**
 
 **Your answer:**
 
@@ -85,18 +68,14 @@ A fork drops the `open` facts and keeps what a rule concluded from them.
 
 ---
 
-## 51 · Q-M1f.573: `open` as an obligation or as a hypothesis, and which hypotheses are candidates
+## 55 · Q-M1f.577: a view of a state without its `open` facts
 
-[The item](51-Q-M1f.573/README.md)
+[The item](55-Q-M1f.577/README.md)
 
-1. **A variable under `open`.**
-   - **(a)** Read at load by what it is: a parameter that names a relation is the obligation's; a variable the
-     `:match` binds is a hypothesis, its value a fact. **Default.**
-   - **(b)** A hypothesis is always written with its fact, `(open (?R ?x))`.
-2. **A hypothesis root has already decided.**
-   - **(a)** `(open F)` is held, and F is no candidate where root holds F or its negation, as today. **Default.**
-   - **(b)** Every `(open F)` root holds is a candidate.
-3. **$H$ is root's `open` facts**: one first concluded above root is held and not proposed. **Default: so.**
+- **(a)** `-P` leaves out the `(open …)` facts as it leaves out the `(not …)`; `-p` lists everything. No new flag.
+  **Default.**
+- **(b)** A flag of its own, on `ein solve`, `ein saturate --dump` and the drawing of a knowledge base.
+- **(c)** Nothing now.
 
 **Your answer:**
 

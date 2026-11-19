@@ -1,0 +1,15 @@
+;;; Item 52: a rule that asks the next step from the step that is held.
+;;; `question` stands for `open`. Root holds (at Z) and asks (at (s Z)); the
+;;; state that supposes it asks (at (s (s Z))), and so on with no end if what
+;;; is asked above root were proposed. With H root's there are two states.
+
+(at Z)
+(rule next ()
+  :match  (at ?x)
+  :assert (question (at (s ?x)))
+  :why    "after {?x}, is it at (s {?x})?")
+(hrule ask-at ()
+  :match  (question (at ?x))
+  :assert (at ?x)
+  :why    "suppose (at {?x}): it is asked")
+(solve :hrules (ask-at))

@@ -9,7 +9,9 @@ on the obligations.
 [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) and [S1f.21.13](s1f.21.13_the_search_and_rules.md), and the rulings
 they run on, [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
 and [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules).
-It is the last stage before the close.
+It is the last stage before the close. **Since planned**: S1f.21.7 is not run, and the builds it follows are
+[S1f.21.12](s1f.21.12_hypotheses_as_facts.md), planned again on the rulings Q-M1f.566 to Q-M1f.573, and
+[S1f.21.18](s1f.21.18_the_hrule_form_removed.md); what it writes is those rulings as decisions and as pages.
 **Writes:** pages of `docs/ein/reasoning/02-kb-evolution/` and `docs/ein/user/03-syntax-and-semantics/`, their
 diagrams, the glossary, and the decisions of the second part's rulings.
 
