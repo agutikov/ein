@@ -1,0 +1,7 @@
+;; A declared relation of seven arguments: the rule set is written for 0 to 6.
+(import std.contradiction)
+(relation link A B C D E F G :why "{?3} to {?9}")
+(link a b c d e f g)
+(not (link a b c d e f g))
+(clash-of-declared)
+(solve :no-search)

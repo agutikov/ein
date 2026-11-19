@@ -1,0 +1,7 @@
+;; A declared relation of one argument: the rule set reaches it.
+(import std.contradiction)
+(relation p Thing :why "p holds of {?3}")
+(p a)
+(not (p a))
+(clash-of-declared)
+(solve :no-search)

@@ -485,6 +485,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open |
 | [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
 | [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
+| [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled, no default**: put 2026-11-19 (P1f.21's review item 35); with the kernel's check gone, a relation no file declares and one of seven arguments or more has no contradiction; four ways, one of which undoes part of the ruling on `not`; S1f.21.11's task 2.1 waits on it |
+| [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
+| [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
+| [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10332,4 +10336,78 @@ reading 2. **Put, not ruled.** A rule is written for one count of arguments, its
 record: stored negations only of facts of 0, 1 and 2 arguments, a negation of a negation only at 2; declared
 relations run to 10 labels, everything past six the calculator's, none negated at root. The census reads root
 only. A relation of seven arguments or more has no rule: it is the choice of S1f.21.11's task 1.1. Built: `b0ee99f4`.
+
+### Q-M1f.557 — How the contradiction's rules reach every relation and count
+
+**Raised** 2026-11-19 by the list of P1f.21's modifications (its third point) and planned as the first of
+[S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md)'s examples; put to the user the same
+day with runs, [review item 35](p1f.21_verdicts_as_rules/review/35-Q-M1f.557/README.md). **Open: not ruled, and no
+default taken.**
+
+`not` is ruled a convention of the standard library (P1f.21's fourth instruction), its meaning the contradiction's
+rules. Those are written one a count of arguments, 0 to 6, and switched on a relation at a time by an activator
+`clash-of-N` derives from the relation's declaration; and a relation is any atom first in a tuple
+([Q-M1f.522](../../docs/decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)). On
+today's engine the rules derive `(false)` from a pair of a declared relation of one argument, and nothing from the
+same pair of a relation no file declares, or of one of seven arguments: those two are dead by the kernel's check
+alone, and alive without it.
+
+- **(a)** an activator for every head a program writes, at every count, made at load;
+- **(b)** one rule for every fact, a premise that is a variable for a whole fact, which Q-M1f.393 refuses today;
+- **(c)** the kernel keeps its check, as its way of running the module's rule, which leaves it reading `not`;
+- **(d)** a relation is checked where a program asks: what is declared or activated by hand, and nothing else.
+
+**What waits on it.** S1f.21.11's task 2.1, the contradiction as the module's rules. How many corpus programs (d)
+would move is counted by that stage's first task, with a build that has the check off.
+
+### Q-M1f.558 — *Forbid* and the contradiction as rules
+
+**Raised** 2026-11-17 as P1f.21's finding [V-1](p1f.21_verdicts_as_rules/findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none);
+put to the user 2026-11-19 with runs, [review item 37](p1f.21_verdicts_as_rules/review/37-Q-M1f.558/README.md).
+**Open: not ruled.**
+
+*Forbid* reads rules, and the kernel's contradiction is none. Written as the standard library's rules it is read,
+and seven corpus programs that load today are refused, each one the static check already flags; four of them are
+the witnesses of three open rows of the wrong-answer register.
+
+- **(a)** *forbid* reads the module's contradiction as it reads the kernel's today, not as a refutation resting on
+  an absence: the seven load and are answered as now. **Proposed default**: it changes no program, and what
+  *forbid* should read of a flagged program is M1n's.
+- **(b)** *forbid* reads the rules as written: the seven are refused.
+- **(c)** left until M1n rules what *forbid* covers, the contradiction staying the kernel's until then.
+
+**What waits on it.** S1f.21.11's task 2.1.
+
+### Q-M1f.559 — The elimination and the module every program gets
+
+**Raised** 2026-11-19 by P1f.21's S1f.21.8, its finding
+[V-12](p1f.21_verdicts_as_rules/findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands);
+put to the user the same day with a program run four ways,
+[review item 38](p1f.21_verdicts_as_rules/review/38-Q-M1f.559/README.md). **Open: not ruled.**
+
+The meaning of `not` is the contradiction and the elimination of a double negation. The elimination's rule
+concludes a fact whose relation is its parameter, and the loader refuses it beside a program that names a rule of
+that count of parameters as an argument (Q-M1f.42), whether or not anything could aim the one at the other: four
+corpus programs, which import nothing. In a module every program gets it would refuse them.
+
+- **(a)** the elimination stays a module a program imports, `std.negation`, and what every program gets of `not`
+  is the contradiction alone. **Proposed default**: no program changes.
+- **(b)** the load check reads what an activator can name, and no longer refuses these.
+- **(c)** the `:hrules` list is read as a list (P1f.21's finding V-13), which frees these four.
+
+**What waits on it.** What S1f.21.11 adds to `std.core`.
+
+### Q-M1f.560 — `std.debts`: with its stage, or with the second part
+
+**Raised** 2026-11-19 by the coordinator, when the user cut P1f.21 in two (*"I want to leave open facts and
+hypotheses to the second part of the phase and finishe everything else before"*) while S1f.21.8 was building its
+third module; [review item 39](p1f.21_verdicts_as_rules/review/39-Q-M1f.560/README.md). **Open: not ruled.**
+
+`std.debts` writes what an obligation requires and what pays it as facts, and `(debts-discharged)` where nothing
+required is unpaid. It is built and tested, one commit (`6b76c164`) on the stage's branch, additive, and it decides
+neither of the second part's questions.
+
+- **(a)** held for the second part, where its names are read again under the rulings of Q-M1f.390 and Q-M1f.549.
+  **The default, and what stands**: the stage reported before an answer, and its first commit alone was merged.
+- **(b)** merged now.
 

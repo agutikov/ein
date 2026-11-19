@@ -1,0 +1,6 @@
+;; A relation no file declares, written at two counts.
+(likes Ann)
+(likes Ann Rex)
+(solve :no-search)
+(query :goal (likes ?x))
+(query :goal (likes ?x ?y))

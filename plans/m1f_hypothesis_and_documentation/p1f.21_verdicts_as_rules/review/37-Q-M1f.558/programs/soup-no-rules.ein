@@ -1,0 +1,16 @@
+;; The same program without the line (clash-of-declared): the kernel judges a pair itself, and forbid reads no rule.
+(import std.contradiction)
+
+(relation allergic Guest      :why "{?3} is allergic")
+(relation meal     Guest Dish :why "{?3} is served {?4}")
+
+(rule soup-unless-allergic ()
+  :match  (and (guest ?g) (absent (allergic ?g)))
+  :assert (meal ?g Soup)
+  :why    "{?g} is not known to be allergic, and is served soup")
+
+(guest Ann)
+
+
+(solve :hypothesis-relations (allergic))
+(query :goal (meal ?g ?d))

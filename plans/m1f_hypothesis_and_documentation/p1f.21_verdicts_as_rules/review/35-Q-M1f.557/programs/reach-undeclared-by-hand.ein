@@ -1,0 +1,6 @@
+;; The same, with the activator written by hand: the rule fires.
+(import std.contradiction :symbols (clash-1))
+(p a)
+(not (p a))
+(clash-1 p)
+(solve :no-search)
