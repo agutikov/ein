@@ -1,3 +1,0 @@
-;; std.core is every program's already: an import of it is refused.
-(import std.core)
-(p a)

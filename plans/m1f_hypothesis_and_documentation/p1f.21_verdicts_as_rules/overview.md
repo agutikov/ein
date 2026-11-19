@@ -211,7 +211,8 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | **done** |
 | 4 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | | *forbid* removed; a non-monotone program loads, warned, nothing claimed or tested of its answer (Q-M1f.564, the user's ruling) | **started** |
 | | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | | the `:hrules` clause lists activators as a rule's are written (Q-M1f.565, the user's ruling) | nothing; after S1f.21.15 |
-| 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | S1f.21.10, S1f.21.8; V-1 and a choice with no default; Q-M1f.447 |
+| | [S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md) | | | a warning where the loader refused for what a rule could derive (review item 38's answer, as read); `std.core` by import and by `$EIN_STDLIB` (item 41's) | the user's word on the reading; after S1f.21.16 |
+| 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | its questions **ruled** (Q-M1f.557 (d), Q-M1f.447 (c)); after S1f.21.15, .16 and .17 |
 | 5 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6, 7, 9, 12, half of 10 | the pages of the first part | every build of the part |
 
 **Part 2 — `open`, what a state owes, and the hypotheses.**
@@ -233,10 +234,13 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits | default (b): the verdict stays a verdict and carries its instance. It fits Q-M1f.549 (b): the debt is counted, the candidates are held |
 | [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names | **ruled 2026-11-19**: `false` kept, a convention of the standard library; no prefix; what ends a state is a rule's key, `:ein` |
 | [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | the key's word | **ruled 2026-11-19**: `inconsistent` |
-| [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the argument-count check | no default |
-| [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* and the contradiction as rules | open; its ground is M1n's |
+| [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the argument-count check | **ruled 2026-11-19: (c)**, dropped; a relation at several counts is overloading by count |
+| [Q-M1f.557](../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | how the contradiction reaches a relation | **ruled 2026-11-19: (d)**, it is a theory a program imports, `std.contradiction`; a program without it has no contradiction, or its own |
+| [Q-M1f.559](../open_questions.md#q-m1f559--the-elimination-and-the-module-every-program-gets), [Q-M1f.565](../open_questions.md#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) | the elimination's refusal; the `:hrules` clause | **ruled 2026-11-19**: the clause lists activators whole; and, as the answer is read, the refusal at load for what a rule could derive becomes a warning |
+| [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* and the contradiction as rules | **answered 2026-11-19** by Q-M1f.564: *forbid* is removed, a non-monotone program loads under a warning |
 | the stages' own | where the new rules live and the module every program gets; whether `hrule` stays as a spelling | each a question of its stage, with a default |
 
-Q-M1f.390 and Q-M1f.549 are the second part's and wait with it; the first part asks only what S1f.21.11's examples
-show. The answers' files are [`review/part-1/ANSWERS.md`](review/part-1/ANSWERS.md) and
+Q-M1f.390 and Q-M1f.549 are the second part's and wait with it. **The first part has no question open**: what is
+left of it for the user is the word that starts each stage, and three readings of the answers said back in
+[the phase's README](README.md#the-rulings-of-the-answers-file). The answers' files are [`review/part-1/ANSWERS.md`](review/part-1/ANSWERS.md) and
 [`review/part-2/ANSWERS.md`](review/part-2/ANSWERS.md).

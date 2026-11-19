@@ -1,7 +1,0 @@
-;; :assert and :ein on one rule.
-(p a)
-(rule r ()
-  :match  (p a)
-  :assert (q a)
-  :ein    inconsistent
-  :why    "p of a")

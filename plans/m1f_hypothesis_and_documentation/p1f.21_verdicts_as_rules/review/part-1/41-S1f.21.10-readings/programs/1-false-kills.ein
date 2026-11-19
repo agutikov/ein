@@ -1,8 +1,0 @@
-;; A rule concludes (false), and std.core's rule goes from it to the key: the state is dead.
-(relation p Thing :why "p holds of {?3}")
-(p a) (p b)
-(rule not-both ()
-  :match  (and (p a) (p b))
-  :assert (false)
-  :why    "p of a and of b")
-(solve :no-search)

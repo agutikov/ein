@@ -32,8 +32,9 @@ becomes `:hrules ((order) (cook) (shop))`.
 ## What it does
 
 1. **The grammar**: `:hrules (` *activator* … `)`, an activator `(` *name* *argument* … `)`; `()` lists none.
-   **Reading 1**, default: the grouped form is refused at the parse, with a line that shows the same clause in the
-   new spelling, as a retired spelling is; it is not read as a second way to write the clause.
+   **The grouped form is no grammar any more**: a parse error like any other, with no line of its own and no
+   second spelling kept. Backward compatibility is not kept until the user asks for it
+   ([Q-M1f.563](../open_questions.md#q-m1f563--what-a-module-every-program-gets-brings)).
 2. **The loader**: each activator is held as today's are, its hrule one the program declares, its count the
    hrule's count of parameters, an argument at a parameter that names a relation a relation of the program. **A
    rule named in the clause heads its form and is no argument**, so the reading that counted an hrule from its
@@ -60,8 +61,22 @@ becomes `:hrules ((order) (cook) (shop))`.
 
 ## Acceptance
 
-No file of the project writes the grouped form but the one that shows its refusal; `c-neg-twice.ein` of
-[review item 38](review/part-1/38-Q-M1f.559/README.md), re-spelled, loads; the gate on the stage's last commit.
+No file of the project writes the grouped form but a fixture of the parse error; the program below, which is
+review item 38's `c-neg-twice.ein` re-spelled, loads and answers as it does without its first line; the gate on the
+stage's last commit.
+
+```lisp
+(import std.negation)
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+(is-a Tea Drink) (is-a Milk Drink)
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+(solve :hrules ((guess chosen Drink) (guess served Drink)))
+```
 
 ## Record
 

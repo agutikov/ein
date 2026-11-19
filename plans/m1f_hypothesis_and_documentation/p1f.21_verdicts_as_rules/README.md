@@ -291,6 +291,29 @@ Filed as [Q-M1f.565](../open_questions.md#q-m1f565--the-hrules-clause-lists-acti
 activators, each a form headed by its hrule. The grouped form is the first spelling, of 2026-05-22, and nothing on
 record gives a reason for it. [S1f.21.16](s1f.21.16_hrules_lists_activators.md) builds it, planned and not started.
 
+## The rulings of the answers' file
+
+The user's answers to part 1's six items, 2026-11-19 (*"read and process …/review/part-1/ANSWERS.md"*), each
+verbatim, each filed under its question in [the ledger](../open_questions.md).
+
+| item | question | the user, verbatim | what it rules |
+|---|---|---|---|
+| 35 | [Q-M1f.557](../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | *"(d) if any program writes a negation and wants KB with P and not P dead - then it should also import std.contradiction. Otherwise in this program's theory there is no contradictions. Or it/they are defined different. For example: Kleene K3, Priest's LP, Belnap–Dunn FDE, Relevant logic, Paraconsistent logic."* | **(d)**: the contradiction is a theory a program imports, `std.contradiction`; a program that does not import it has none, or its own. The kernel's check goes (S1f.21.11) |
+| 36 | [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | *"(c) and I accept program may be not well-formed intensionally or occasionally and be silent while not binding relations with different args count. More than that - let's consider this as relations overloading but in only meaning possible in ein - in structural meaning, that means different number of args, because there is no types in ein and will not ever be."* | **(c)**: the argument-count check is dropped, in silence; a relation at several counts is overloading by count, the one kind Ein has (S1f.21.11) |
+| 38 | [Q-M1f.559](../open_questions.md#q-m1f559--the-elimination-and-the-module-every-program-gets) | *"forbid becomes a warning, fix :hrulse activators syntax"* | the `:hrules` clause lists activators whole (Q-M1f.565, S1f.21.16); and, **as read**, the refusal at load for what a rule could derive becomes a warning (S1f.21.17) |
+| 40 | Q-M1f.552 to .556 | *"as built"* | the five readings of the finished stages stand |
+| 41 | [Q-M1f.563](../open_questions.md#q-m1f563--what-a-module-every-program-gets-brings) | *"import std.core works like duplicated import; $EIN_STDLIB allows to replace std.core is in $EIN_STDLIB there is no std.core - print error about std.core not found in $EIN_STDLIB; There is still only a single user of ein - me, so I don't care about backward compatibility. Forget about it until I explicitely ask. Containers not load - delete and create new."* | `(import std.core)` is an import like any other; `$EIN_STDLIB` may replace `std.core`, and a library there without one is an error that says so (S1f.21.17); no backward compatibility |
+| 42 | the findings | *"OK"* | each disposition of [`findings.md`](findings.md) as proposed |
+
+**Read off the answers by the coordinator, said back to the user, and built only after:**
+
+1. item 38's *"forbid becomes a warning"* is about that item's refusal, the loader's of a program in which a rule
+   could derive an activator binding a relation to a fact, and reverses Q-M1f.1 (b) (S1f.21.17's task 1);
+2. under item 35, the import is the switch and the fact `(clash-of-declared)` goes, though item 40's *"as built"*
+   keeps it; the library's modules that conclude a negation import the module; a corpus program that relies on the
+   death gains the import (S1f.21.11's task 1.1);
+3. under item 36, a relation may be declared once a count (S1f.21.11's task 1.4).
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -334,7 +357,8 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **done 2026-11-19**: `68c3d5d0`, `946ee788`; no answer moved over the 913 corpus files; its readings and the four consequences of an always-loaded module are Q-M1f.562 and Q-M1f.563, review item 41. **The gate in the runner's image is green on `946ee788`** (165 test binaries) **and the nightly there on `901f9fa3`**, the same code under plan commits (82 steps, exit 0) |
 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | ***Forbid* is removed, and nothing validates a non-monotone program's answer.** The check and its words go from the code and the pages; a non-monotone program loads under a loud warning; no `:expect`, regression row, golden line of an answer or assertion is left on a flagged program | **started 2026-11-19** on the user's word (*"Remove this *forbid* from the code and docs completely"*), Q-M1f.564; in the main tree; before S1f.21.11 |
 | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | **The `:hrules` clause lists activators as a rule's are written.** `(solve :hrules ((guess chosen Drink) (guess served Drink)))`; every program that writes the clause re-spelled, no answer moving | planned 2026-11-19 on the user's ruling (Q-M1f.565), **not started**; after S1f.21.15 |
-| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.15, Q-M1f.557 (how the rules reach every relation; proposed (d)) and Q-M1f.447 |
+| [S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md) | | **A warning where the loader refused for what a rule could derive; `std.core` by import and by `$EIN_STDLIB`.** The first as review item 38's answer is read; the other two the user's answer to item 41 | planned 2026-11-19, **not started**; its first task waits on the user's word that the reading is theirs; after S1f.21.16 |
+| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; its two questions are **ruled 2026-11-19**, Q-M1f.557 (d) and Q-M1f.447 (c); after S1f.21.15, S1f.21.16 and S1f.21.17, on the user's word |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | planned, **not started**; after S1f.21.8, S1f.21.10 and S1f.21.11 |
 
 **Part 2 — `open`: what a state owes, and the hypotheses.** Not started before part 1 is done; its two questions,
@@ -382,3 +406,7 @@ and the candidates that would pay it are held.
 The standing ones ([`AGENTS.md`](../../../AGENTS.md)): a stage per subagent; what a stage finds outside its scope
 goes to a findings page of the phase's own; a claim about the engine is a run, not an argument; a new syntax is
 shown on real corpus programs with their answers computed before it is built; no estimate is written.
+
+**No backward compatibility is kept** (the user, 2026-11-19: *"There is still only a single user of ein - me, so I
+don't care about backward compatibility. Forget about it until I explicitely ask."*): a retired spelling gets no
+line of its own, and a saved file or a container of an older format is deleted and made again.

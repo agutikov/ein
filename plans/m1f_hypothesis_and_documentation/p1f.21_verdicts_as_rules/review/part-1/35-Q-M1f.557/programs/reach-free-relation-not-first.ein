@@ -1,9 +1,0 @@
-;; The same rule with the stored negation first, so that it binds the relation before the second premise reads it.
-;; Refused at load today, the same way.
-(p a)
-(not (p a))
-(rule clash-1 ()
-  :match  (and (not (?R ?a)) (?R ?a))
-  :assert (false)
-  :why    "{?R} of {?a}, and not")
-(solve :no-search)

@@ -33,7 +33,9 @@ And, with them:
 - **`std.core`**, the module every program gets, where the standard library's pages and the page on imports say what
   a program has without importing it.
 - **Each ruling of the first part as a decision**, one file under its id: Q-M1f.399, Q-M1f.550, Q-M1f.551,
-  Q-M1f.447, the choice of S1f.21.11's task 1.1, and the readings the stages took; a decision the part amends
+  Q-M1f.447 (the count check dropped, a relation overloaded by its count), Q-M1f.557 (the contradiction a module a
+  program imports), Q-M1f.559, Q-M1f.563 and Q-M1f.565 where the stage that builds one has not written it, and the
+  readings the stages took; a decision the part amends
   (Q-M1f.313, the agenda; Q-M1f.436, the kernel reads no theory's name) is rewritten in place.
 - **The sentence S1f.21.6 left for the pages**: `06-zebra-walkthrough.md`'s *a candidate is dead alone when assuming
   it … saturates to `(false)`*.

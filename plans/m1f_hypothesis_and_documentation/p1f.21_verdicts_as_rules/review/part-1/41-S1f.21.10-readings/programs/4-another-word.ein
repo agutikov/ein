@@ -1,6 +1,0 @@
-;; A word after :ein that is not the engine's.
-(p a)
-(rule r ()
-  :match  (p a)
-  :ein    dead
-  :why    "p of a")

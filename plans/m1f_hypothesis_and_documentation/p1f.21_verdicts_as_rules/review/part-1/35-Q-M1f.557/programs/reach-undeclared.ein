@@ -1,6 +1,0 @@
-;; The same pair of a relation no file declares: nothing activates a rule for it.
-(import std.contradiction)
-(p a)
-(not (p a))
-(clash-of-declared)
-(solve :no-search)

@@ -375,7 +375,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.444](#q-m1f444--what-the-renaming-test-keeps) | what the renaming test keeps | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), as built: the kernel's names, `:over`'s values, the grammar's words, module names and aliases; the read-out's text not compared |
 | [Q-M1f.445](#q-m1f445--the-renaming-tests-tier) | the renaming test's tier | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), per commit outside `tests/`, every program in the nightly |
 | [Q-M1f.446](#q-m1f446--the-forall-drawing-the-renaming-test-found) | the `forall` drawing the renaming test found | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.4): (a), S1f.23.1's, which dropped the read (Q-M1f.427); `READS` emptied on the merge |
-| [Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the loader's argument-count check, once `relation` is a convention: kept at load, a rule's verdict at run time, or dropped | **open, the user's, not ruled** (*"will think about it in p1f.21"*): no default taken; P1f.21's S1f.21.4 shows each option and does not choose |
+| [Q-M1f.447](#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the loader's argument-count check, once `relation` is a convention: kept at load, a rule's verdict at run time, or dropped | **ruled 2026-11-19 by the user: (c)**, the check is dropped: a relation may be written at any count, in silence, and a relation at two counts is **overloading in the one sense Ein has, by the count of arguments**, there being no types and never to be. P1f.21's S1f.21.11 builds it |
 | [Q-M1f.448](#q-m1f448----models-with-key-and-grid-gone) | `--models`, with `key` and `grid` gone | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), removed whole, from `ein solve` and `ein oracle` |
 | [Q-M1f.449](#q-m1f449----models-removed-or-retired) | `--models`: removed, or retired | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), removed, not retired: clap refuses it, exit 2 |
 | [Q-M1f.450](#q-m1f450----models-grids-reading-of-is-a-and-the-grids-names) | `--models grid`'s reading of `is-a`, and the grid's names | **ruled 2026-11-19: the default** (the user, *"accept all remain defaults in this phase"*); before, defaulted 2026-11-18 (S1f.23.2): (a), ended with the code: `grid.rs` deleted, P1f.23's R-1 and R-3 with it |
@@ -479,19 +479,19 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **answered in its main call 2026-11-19 by the user** (*"all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes"*): (b), every rung's candidates are facts `(open H)` the knowledge base holds; candidates proposed above root, dependent hypotheses, are **not this phase's** (the user: non-monotone by definition). Left open: the two uses, recommended declined for now. P1f.21's S1f.21.12 builds it, in the phase's second part |
 | [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **ruled 2026-11-19 by the user**, verbatim: *"Yes, :ein   inconsistent"*: the word is `inconsistent`, as proposed on the user's *"maybe propose better name here"* (Q-M1f.399's answer); P1f.21's S1f.21.10 builds the key on it, unblocked the same day |
-| [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) | The module every program gets: `std.core`, always loaded | **ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be customized"*: a module of the standard library loaded into every program with no import line, built by P1f.21's S1f.21.10; **how it is customised is left for later, the user's**, and nothing is built for it |
-| [Q-M1f.552](#q-m1f552--the-saturated-dumps-sections-for-the-rules-no-agenda-holds) | The saturated dump's sections for the rules no agenda holds | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 1): (a), a section each for the obligation rules and the hypothesis rules, the first heading saying it is the agenda's; the build added the count of a rule's activators beside it; built `8d8327ce` |
-| [Q-M1f.553](#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation) | The words for a state dead by a fact beside its negation | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 2): (a), *holds a contradiction*, wherever the sentence stood; built `c9ea9597`. S1f.21.10 reads it again beside the key's word, `inconsistent` |
-| [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open |
-| [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
-| [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
-| [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled**: put 2026-11-19 (P1f.21's review item 35), five ways. The user's remark of the same day reads it as no gap but a feature: the contradiction is the standard library's, on by import for declared relations; **proposed since: (d)**. S1f.21.11's task 2.1 waits on it |
+| [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) | The module every program gets: `std.core`, always loaded | **ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be customized"*: a module of the standard library loaded into every program with no import line, built by P1f.21's S1f.21.10; **how it is customised is left for later, the user's**, and nothing is built for it. **How it is customised, ruled 2026-11-19**: by `$EIN_STDLIB`, which may name a library with another `std.core` (Q-M1f.563) |
+| [Q-M1f.552](#q-m1f552--the-saturated-dumps-sections-for-the-rules-no-agenda-holds) | The saturated dump's sections for the rules no agenda holds | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 1): (a), a section each for the obligation rules and the hypothesis rules, the first heading saying it is the agenda's; the build added the count of a rule's activators beside it; built `8d8327ce`. **Ruled 2026-11-19 by the user: *"as built"*** |
+| [Q-M1f.553](#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation) | The words for a state dead by a fact beside its negation | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 2): (a), *holds a contradiction*, wherever the sentence stood; built `c9ea9597`. S1f.21.10 reads it again beside the key's word, `inconsistent`. **Ruled 2026-11-19 by the user: *"as built"*** |
+| [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open. **Ruled 2026-11-19 by the user: *"as built"*** |
+| [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise. **Ruled 2026-11-19 by the user: *"as built"*** |
+| [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4`. **Ruled 2026-11-19 by the user: *"as built"*** |
+| [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **ruled 2026-11-19 by the user: (d)**, in P1f.21's answers: a program that writes a negation and wants a state that holds P and not P dead imports `std.contradiction`; otherwise its theory has no contradiction, or defines its own (the user names Kleene's K3, Priest's LP, Belnap–Dunn FDE, relevant and paraconsistent logics). The kernel's own check goes. P1f.21's S1f.21.11 builds it |
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **ruled 2026-11-19 by the user, against both options**: nothing is refused; such a program loads, with a warning, and nothing is guaranteed of its output ([Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes)). The coordinator's proposal (b), to let *forbid* read the contradiction's rules, is withdrawn |
-| [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
+| [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **ruled 2026-11-19 by the user**, in P1f.21's answers: *"forbid becomes a warning, fix :hrulse activators syntax"*. The `:hrules` clause lists activators whole (Q-M1f.565), which frees the four programs; and, read as option (d), what the loader refuses for what a rule *could* derive becomes a warning. The elimination stays a module a program imports. P1f.21's S1f.21.16 builds the syntax and S1f.21.17 the warning |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
 | [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
-| [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41) |
-| [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **defaulted 2026-11-19** (P1f.21's S1f.21.10, four consequences of Q-M1f.551): an import of `std.core` is refused; a saved file written before no longer loads; an `$EIN_STDLIB` that names no library refuses every program; the container is `einb/2.2`; built `68c3d5d0`. For the user to revise (review item 41) |
+| [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41). **Stands 2026-11-19**: the user's answer to item 41 speaks of `std.core` alone and leaves these as built |
+| [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **ruled 2026-11-19 by the user**, in P1f.21's answers: an import of `std.core` works as a duplicated import, and is not refused; `$EIN_STDLIB` may replace `std.core`, and a library there without one is an error that says `std.core` was not found in it; no backward compatibility is kept, a saved file or a container that does not load is deleted and made again. P1f.21's S1f.21.17 builds the two that change |
 | [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, twice: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* and then *"Ok, I cancel those my listed decisions regarding absent -> false.  We allow to load non-monotone programs, but we don't claim about solution. That means - no tests validate the result of the solution of non-monotone programs. Remove this *forbid* from the code and docs completely."* The user's rulings of 2026-11-02 and 2026-11-04 behind Q-M1e2.5 are cancelled; every program loads, a flagged one under a loud warning, nothing claimed and nothing tested of its answer. P1f.21's S1f.21.15, started the same day |
 | [Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) | The `:hrules` clause lists activators as a rule's are written | **ruled 2026-11-19 by the user**: `(solve :hrules ((guess chosen Drink) (guess served Drink)))`, each activator a form headed by its hrule, where today the clause is `(guess (chosen Drink) guess (served Drink))`. P1f.21's S1f.21.16, planned, not started |
 
@@ -8922,6 +8922,19 @@ and does not choose ([`open_facts.md` § 9](p1f.21_verdicts_as_rules/open_facts.
 [V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count),
 a relation that only an activator names.
 
+**Ruled 2026-11-19 by the user: (c).** In P1f.21's answers file, item 36, verbatim:
+
+> (c) and I accept program may be not well-formed intensionally or occasionally and be silent while not binding relations with different args count. More than that - let's consider this as relations overloading but in only meaning possible in ein - in structural meaning, that means different number of args, because there is no types in ein and will not ever be.
+
+The loader holds no form to a declaration's count of labels. A program may write a relation at several counts, by
+intent or by a slip, and nothing says so: a fact of another count is a fact no pattern of the first count matches.
+And it is named: **overloading**, structural, by the count of arguments, the only kind Ein can have.
+
+**Read with it, and shown before it is built** (S1f.21.11): that a relation may then be **declared** at each count
+it is written at, a declaration a count, where today a second declaration of a name is refused as a duplicate; that
+a second declaration of the same count stays a duplicate; and what the blind enumerator, a `:why` and a goal's
+check, each of which reads a declaration, do with two.
+
 ### Q-M1f.448 — `--models`, with `key` and `grid` gone
 
 **Raised** 2026-11-18 by S1f.23.2's build, reading 1. **Put, not ruled.** The user ruled `--models key` and
@@ -10288,6 +10301,8 @@ obligation rule and a hypothesis rule were in no section.
 rule and a hypothesis rule with parameters it prints how many activators bind them, `no activator` for a rule
 loaded and not activated, so that a module imported for another of its names does not read as active.
 
+**Ruled 2026-11-19: as built.** The user, in P1f.21's answers file, item 40, of this and its four siblings: *"as built"*.
+
 ### Q-M1f.553 — The words for a state dead by a fact beside its negation
 
 **Raised** 2026-11-19 by P1f.21's [S1f.21.6](p1f.21_verdicts_as_rules/s1f.21.6_surfaces.md), reading 2, from the
@@ -10303,6 +10318,8 @@ eight region drawings); the stage's record lists them, and what was read and lef
 S1f.21.10: the key's word is `inconsistent` ([Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein)),
 and whether a surface says *is inconsistent* is that stage's reading.
 
+**Ruled 2026-11-19: as built.** The user, in P1f.21's answers file, item 40, of this and its four siblings: *"as built"*.
+
 ### Q-M1f.554 — A saved file for an owing node below a non-empty $R$
 
 **Raised** 2026-11-19 by P1f.21's [S1f.21.6](p1f.21_verdicts_as_rules/s1f.21.6_surfaces.md), reading 3. **Put, not
@@ -10314,6 +10331,8 @@ owing node below a non-empty $R$ gets none.
 
 **Default taken: (a).** The case, on `examples/lattice/05_owed_seats_bounded.ein`, is
 [V-9](p1f.21_verdicts_as_rules/findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file), open.
+
+**Ruled 2026-11-19: as built.** The user, in P1f.21's answers file, item 40, of this and its four siblings: *"as built"*.
 
 ### Q-M1f.555 — Where the rules of a stored negation live
 
@@ -10347,6 +10366,8 @@ Built: `b0ee99f4`, merged by `ca98dec2`. The third set of the stage, the require
 (`std.debts`, with its relations `debt-due`, `debt-paid` and `debts-discharged` and its fact `(debts-of-owed)`), is
 built and held on the stage's branch for the second part of the phase; its names are read again there.
 
+**Ruled 2026-11-19: as built.** The user, in P1f.21's answers file, item 40, of this and its four siblings: *"as built"*. **One fact of it is read the other way**: `(clash-of-declared)`, which the two modules were built with, goes, since the answer to item 35 of the same file says a program that wants the contradiction imports the module ([Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count)). The two answers differ on that fact alone; the coordinator took item 35's, the one that speaks of it, and said so to the user.
+
 ### Q-M1f.556 — The counts of arguments the negation's rules are written for
 
 **Raised** 2026-11-19 by P1f.21's [S1f.21.8](p1f.21_verdicts_as_rules/s1f.21.8_rules_the_standard_library_states.md),
@@ -10360,12 +10381,14 @@ record: stored negations only of facts of 0, 1 and 2 arguments, a negation of a 
 relations run to 10 labels, everything past six the calculator's, none negated at root. The census reads root
 only. A relation of seven arguments or more has no rule: it is the choice of S1f.21.11's task 1.1. Built: `b0ee99f4`.
 
+**Ruled 2026-11-19: as built.** The user, in P1f.21's answers file, item 40, of this and its four siblings: *"as built"*.
+
 ### Q-M1f.557 — How the contradiction's rules reach every relation and count
 
 **Raised** 2026-11-19 by the list of P1f.21's modifications (its third point) and planned as the first of
 [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md)'s examples; put to the user the same
-day with runs, [review item 35](p1f.21_verdicts_as_rules/review/part-1/35-Q-M1f.557/README.md). **Open: not ruled, and no
-default taken.**
+day with runs, review item 35 (out of the bundle since it is ruled; its page and programs are in `git log`, last at
+`bedbfbd4`). **Ruled 2026-11-19, below.**
 
 `not` is ruled a convention of the standard library (P1f.21's fourth instruction), its meaning the contradiction's
 rules. Those are written one a count of arguments, 0 to 6, and switched on a relation at a time by an activator
@@ -10393,10 +10416,27 @@ three modules of the standard library conclude a stored negation and would impor
 a negation and import nothing from the library. Three other readers of `not` in the kernel, the candidate root
 denies, licence L8, and the readers of what leads to a death, are sound only where the contradiction is on, and
 S1f.21.11's examples show what each becomes
-([review item 35](p1f.21_verdicts_as_rules/review/part-1/35-Q-M1f.557/README.md)).
+(review item 35).
 
 **What waits on it.** S1f.21.11's task 2.1, the contradiction as the module's rules. How many corpus programs (d)
 would move is counted by that stage's first task, with a build that has the check off.
+
+**Ruled 2026-11-19 by the user: (d).** In P1f.21's answers file, item 35, verbatim:
+
+> (d) if any program writes a negation and wants KB with P and not P dead - then it should also import std.contradiction. Otherwise in this program's theory there is no contradictions. Or it/they are defined different. For example: Kleene K3, Priest's LP, Belnap–Dunn FDE, Relevant logic, Paraconsistent logic.
+
+So the contradiction is no property of the knowledge base and no reading of the kernel's. It is a theory a program
+takes: `std.contradiction`, by importing it. A program that writes a negation and imports nothing of the kind has a
+theory in which a fact and its negation stand together, or one that says otherwise by rules of its own; the user's
+examples are the three- and four-valued and the paraconsistent logics. Options (a), (b), (c) and (e) are not taken,
+and nothing is added to the language.
+
+**Read with it, and shown before it is built**, by S1f.21.11's first task: that **the import is the switch**, on
+for the relations a program declares, which is what this sentence and the remark above both say (*"works only if we
+import std.contradiction and only for declared relations"*), so the fact `(clash-of-declared)` the module was built
+with goes; that the three modules of the standard library that conclude a negation import it, and a program that
+imports one of them has it; and that each corpus program that writes a negation, imports nothing and relies on the
+death gains the import, so that no corpus answer moves.
 
 ### Q-M1f.558 — *Forbid* and the contradiction as rules
 
@@ -10427,7 +10467,7 @@ wrong. (b) is withdrawn, and (a)'s outcome stands for another reason: there is n
 **Raised** 2026-11-19 by P1f.21's S1f.21.8, its finding
 [V-12](p1f.21_verdicts_as_rules/findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands);
 put to the user the same day with a program run four ways,
-[review item 38](p1f.21_verdicts_as_rules/review/part-1/38-Q-M1f.559/README.md). **Open: not ruled.**
+review item 38 (out of the bundle since it is ruled; in `git log`, last at `bedbfbd4`). **Ruled 2026-11-19, below.**
 
 The meaning of `not` is the contradiction and the elimination of a double negation. The elimination's rule
 concludes a fact whose relation is its parameter, and the loader refuses it beside a program that names a rule of
@@ -10445,6 +10485,27 @@ corpus programs, which import nothing. In a module every program gets it would r
   how coarse *could* is, by two defaults of 2026-11-09 (Q-M1f.41, Q-M1f.42 (a) and not its precise (c)).
 
 **What waits on it.** What S1f.21.11 adds to `std.core`.
+
+**Ruled 2026-11-19 by the user.** In P1f.21's answers file, item 38, verbatim:
+
+> forbid becomes a warning, fix :hrulse activators syntax
+
+Two things:
+
+- **The syntax of the clause is fixed**: [Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written),
+  ruled the same day, which is option (c) and frees the four programs.
+- ***Forbid becomes a warning*, read as option (d)**: the refusal this item is about, at load, of a program in which
+  a rule *could* derive an activator that puts a fact where a relation's name goes, becomes a warning, and the
+  program loads. **This is the coordinator's reading of the three words**, taken because the item is that refusal,
+  because the coordinator had asked twice whether they meant it and the answer was to process the file as written,
+  and because it is what the user ruled the same day of the refusal the word names elsewhere
+  ([Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes)). It reverses
+  [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), the user's of 2026-11-08. It is said
+  back to the user before anything is built.
+
+The elimination of a double negation stays a module a program imports, (a): no answer said otherwise, and it is
+what [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) rules of the
+contradiction.
 
 ### Q-M1f.560 — `std.debts`: with its stage, or with the second part
 
@@ -10516,8 +10577,8 @@ lists and the closure stand at their defaults, each *as it is*, by this ruling.
 ### Q-M1f.562 — The key's readings, as built
 
 **Raised** 2026-11-19 by the plan of P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md),
-its readings 1 and 3 to 7. **Put, not ruled**; each default taken and built, `68c3d5d0`, shown on programs in
-[review item 41](p1f.21_verdicts_as_rules/review/part-1/41-S1f.21.10-readings/README.md).
+its readings 1 and 3 to 7. Each default taken and built, `68c3d5d0`, shown on programs in review item 41 (out of the
+bundle since it is answered; in `git log`, last at `bedbfbd4`).
 
 1. **A rule's conclusion**: (a) `:assert` or `:ein`, never both, and a word that is not the engine's refused at
    load, **taken**; (b) a rule may state both.
@@ -10533,12 +10594,14 @@ its readings 1 and 3 to 7. **Put, not ruled**; each default taken and built, `68
 
 The word `false` in the grammar and `:expect (false)` are S1f.21.11's.
 
+**Stands as built, 2026-11-19.** The user's answer to item 41 of P1f.21's answers file rules on `std.core` ([Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings)) and says nothing of these five; an item's point left unanswered keeps its default.
+
 ### Q-M1f.563 — What a module every program gets brings
 
 **Raised** 2026-11-19 by the build of P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md).
 **Put, not ruled.** [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) ruled `std.core`
-always loaded. Four things follow in the build, each taken by default and shown in
-[review item 41](p1f.21_verdicts_as_rules/review/part-1/41-S1f.21.10-readings/README.md):
+always loaded. Four things follow in the build, each taken by default and shown in review item 41 (in `git log`,
+last at `bedbfbd4`):
 
 - **(a) an import of `std.core` is refused**, in a program or a module: the module stands in one place, last, under
   full names, so that a program and its container list the same rules in the same order;
@@ -10554,6 +10617,20 @@ the user's correction); the one natural declaration, of `false`, cannot be writt
 word, which is S1f.21.11's.
 
 Built: `68c3d5d0`.
+
+**Ruled 2026-11-19 by the user.** In P1f.21's answers file, item 41, verbatim:
+
+> import std.core works like duplicated import; $EIN_STDLIB allows to replace std.core is in $EIN_STDLIB there is no std.core - print error about std.core not found in $EIN_STDLIB; There is still only a single user of ein - me, so I don't care about backward compatibility. Forget about it until I explicitely ask. Containers not load - delete and create new.
+
+- **(a) is reversed**: `(import std.core)` is no refusal. It works as an import of a module the program already
+  has, one copy a program, the import's own form binding its names as any import does.
+- **(c) is ruled, and is how the module is customised**: `$EIN_STDLIB` may name a library whose `std.core` is
+  another, and that one is every program's. Where the library it names has no `std.core`, the error says that
+  `std.core` was not found in `$EIN_STDLIB`. This is the first answer to what
+  [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) left for later.
+- **(b) and (d) stand, and for a reason that outlasts them**: there is one user of Ein, and **backward compatibility
+  is not kept until the user asks for it**. A saved file or a container of an older format does not load; it is
+  deleted and written again.
 
 ### Q-M1f.564 — A non-monotone program loads, with a warning: *forbid*'s refusal goes
 

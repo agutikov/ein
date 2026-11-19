@@ -2,49 +2,35 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-The open questions of the phase's first part ([the order](../../README.md#the-order-two-parts)). An answer goes
-into [`ANSWERS.md`](ANSWERS.md) here; an item left blank keeps its default.
+**No question of this part is open.** You answered its six items on 2026-11-19; each answer is filed in your words
+under its question in [the ledger](../../../open_questions.md) and in
+[the phase's README](../../README.md#the-rulings-of-the-answers-file), and the items are out of the bundle.
 
-**What S1f.21.11 cannot take by itself.** No default; each is shown on programs here and on the corpus by that
-stage's examples.
+## Read off your answers, and said back
 
-| # | item | the question | state |
+Three things your answers do not say in so many words. Each is built only after you have seen it, and a word from
+you changes it.
+
+| # | your words | read as | where it waits |
 |---|---|---|---|
-| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed, since the user's remark that it may be a feature and no gap: (d), the contradiction is `std.contradiction`'s, on by import for the relations a program declares |
-| 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
+| 1 | item 38: *"forbid becomes a warning, fix :hrulse activators syntax"* | the first half is about **that item's refusal**, which is not *forbid*: the loader refuses a program in which a rule *could* derive an activator that puts a fact where a relation's name goes. Read as: it becomes a warning and the program loads, which reverses your *"Q1 - b"* of 2026-11-08 | [S1f.21.17](../../s1f.21.17_the_loader_warns_and_std_core_by_import.md)'s task 1, not built before your word |
+| 2 | item 35: *"… then it should also import std.contradiction"*; item 40: *"as built"* | the two differ on one fact: as built, a program writes `(clash-of-declared)` beside the import to ask for the rules. Read as: the import alone is the switch, and that fact goes. Also: the library's modules that conclude a negation import the module, and each corpus program that relies on the death gains the import, so no corpus answer moves | [S1f.21.11](../../s1f.21.11_kill_and_three_conventions.md)'s task 1.1, shown on the corpus first |
+| 3 | item 36: *"… relations overloading … different number of args"* | a relation may be **declared** once a count; today a second declaration of a name is refused as a duplicate | S1f.21.11's task 1.4, shown first |
 
-**A default is proposed or taken; an answer is wanted only where you would have it otherwise.**
+## What was ruled
 
-| # | item | the question | the default |
-|---|---|---|---|
-| 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | the refusal's last step is ruled away (Q-M1f.565: the `:hrules` clause lists activators whole); left: (a) the elimination stays a module a program imports, the default; and (d), whether anything is refused at load for what a rule could derive |
-| 40 | [Q-M1f.552 to .556](40-defaults-taken/README.md) | five readings the two finished stages took and built | as built; the fourth not as planned: two modules for the negation |
-| 41 | [S1f.21.10 as built](41-S1f.21.10-readings/README.md) | the key's five readings, and four consequences of a module every program gets: an import of it refused, older saved files no longer load, `$EIN_STDLIB`, the container's format | as built (Q-M1f.562, Q-M1f.563); shown on six programs |
-| 42 | [the open findings](42-findings/README.md) | what becomes of V-8, V-10, V-11, V-13, V-15, V-16 and V-17 | a disposition each |
+| item | question | ruled |
+|---|---|---|
+| 35 | Q-M1f.557 | (d): the contradiction is a theory a program imports; without `std.contradiction` a program has none, or its own |
+| 36 | Q-M1f.447 | (c): the argument-count check is dropped; a relation at several counts is overloading by count |
+| 38 | Q-M1f.559 | the `:hrules` clause lists activators whole (Q-M1f.565); the rest as row 1 above; the elimination stays a module a program imports |
+| 40 | Q-M1f.552 to .556 | as built |
+| 41 | Q-M1f.562, Q-M1f.563 | `(import std.core)` works as a duplicated import; `$EIN_STDLIB` may replace `std.core`, and a library there without one is an error that says so; no backward compatibility until you ask |
+| 42 | the findings | each disposition as proposed |
 
-**Left for later on the user's word, and not asked**: how `std.core` is customised (Q-M1f.551).
-**Out of the bundle, ruled**: item 33, the names (Q-M1f.399, with the key's word, Q-M1f.550), 2026-11-19; its page
-and programs are in `git log`, last at `984137bf`. Item 37, *forbid* once the contradiction is rules (Q-M1f.558), ruled the same day against both its options:
-nothing is refused, a non-monotone program loads under a warning (Q-M1f.564, S1f.21.15). Item 43, one way to say *must* and one to say *may* (Q-M1f.561), declined the same
-day: every existing way to control the hypotheses stays; its analysis and its programs are
-[`one_way_each.md`](../../one_way_each.md).
+## Out of the bundle
 
-**The binary.** Items 35 to 38 are run with `build/review-bin/ein-head-ca98dec2`, the gate build of master at the
-merge of S1f.21.6 and S1f.21.8, and its `stdlib/`. `tools/run.sh` in an item re-takes its runs into `runs/`; both
-are ignored, so they are on this machine only.
-
-## Found while building
-
-- **35**: the rules derive `(false)` from a pair of a declared relation of one argument and nothing from the same
-  pair of an undeclared relation or of one of seven arguments; both are dead today by the kernel's check alone.
-  `clash-of-0` fires on every declaration, since root holds `(relation p)` beside `(relation p Thing)`.
-  The user's rule, the relation a variable of the pattern with no parameter, is refused at load in either order of
-  its premises: *a relation is named by a name or by a parameter its activator binds*.
-- **36**: a fact and a rule's conclusion at another count than the declaration's are each refused at load, with the
-  declaration quoted; an undeclared relation at two counts loads, and each query answers its count.
-- **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
-  with it named twice; 16 with `std.contradiction` and it named twice.
-- **41**: a rule that concludes `(false)` and the same rule stating the key itself give the same dead root, the same
-  core and the same `refuted by`; `(think Ann (false))` is alive; `:ein dead`, both clauses on one rule and `(import
-  std.core)` are each refused with a line of their own; a state file dumped the day before no longer loads.
-
+Each item's page and programs are in `git log`: items 35, 36, 38, 40, 41 and 42, last at `bedbfbd4`; item
+33, the names (Q-M1f.399, Q-M1f.550), last at `984137bf`; item 37, *forbid* once the contradiction is rules
+(Q-M1f.558), ruled against both its options by Q-M1f.564; item 43, one way to say *must* and one to say *may*
+(Q-M1f.561), declined, its analysis and programs in [`one_way_each.md`](../../one_way_each.md).

@@ -1,5 +1,0 @@
-;; A declared relation written at another count than its declaration's.
-(relation owns Person Pet :why "{?3} owns {?4}")
-(owns Ann Rex)
-(owns Bob)
-(solve :no-search)

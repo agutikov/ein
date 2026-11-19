@@ -1,8 +1,0 @@
-;; A rule that concludes a declared relation at another count.
-(relation owns Person Pet :why "{?3} owns {?4}")
-(person Ann)
-(rule everyone-owns ()
-  :match  (person ?p)
-  :assert (owns ?p)
-  :why    "{?p} owns something")
-(solve :no-search)

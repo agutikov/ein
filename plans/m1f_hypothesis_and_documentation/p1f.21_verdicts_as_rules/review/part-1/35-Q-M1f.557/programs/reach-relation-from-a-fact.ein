@@ -1,9 +1,0 @@
-;; The relation taken from a fact that lists it, a declaration, and then written first in a pattern.
-(relation p Thing :why "p holds of {?3}")
-(p a)
-(not (p a))
-(rule clash-1 ()
-  :match  (and (relation ?R ?l) (?R ?a) (not (?R ?a)))
-  :assert (false)
-  :why    "{?R} of {?a}, and not")
-(solve :no-search)
