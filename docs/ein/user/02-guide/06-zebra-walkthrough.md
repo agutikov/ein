@@ -29,7 +29,7 @@ Each human step is one of three things in Ein.
   five relations for each value of its attribute and each house, and `ein show hyps examples/zebra2.ein` lists every
   candidate. A candidate is **dead alone** when
   assuming it, and nothing else, saturates to `(false)`. To see it, add the candidate to a copy of `zebra2.ein` as a
-  stated fact: `ein solve COPY --no-search` then reports `∅ dead — root's own fixpoint derives (false)`, and its
+  stated fact: `ein solve COPY --no-search` then reports `∅ dead — root's own fixpoint holds a contradiction`, and its
   `unsat core` lines name the facts one explanation of the contradiction rests on.
 - **Therefore**: what holds in the answer's one state. Dead is upward-closed, so no state holds a candidate that is
   dead alone; and where root *owes* something (House-2 a cigarette, the fox a house), the candidates that would pay it
@@ -174,7 +174,7 @@ Root owes `H_2` a cigarette, and three candidates are left to pay it: `(smoke-lo
 | supposed | **contradiction** | `surjective` | every Nationality is excluded at `H_2`, so `(false)` |
 
 The candidate is **dead alone**. Added as a fact to a copy of `zebra2.ein`, `ein solve COPY --no-search` reports
-`∅ dead — root's own fixpoint derives (false)` and an unsat core that names the human's argument: the Norwegian in
+`∅ dead — root's own fixpoint holds a contradiction` and an unsat core that names the human's argument: the Norwegian in
 `H_1`, the Englishman and red, the Spaniard and the horse, tea, Parliament, and the supposition itself. A core is one
 explanation of the contradiction, and the engine may close it through another value first, `total` instead of
 `surjective`: a value with no house left rather than a house with no value.
@@ -355,7 +355,7 @@ Both run through the same `ein solve`, and what the answer is decides which ques
   `(model …)` its commitment reaches.
 - [`ein-bugs/zebra2-bad.ein`](../../../../examples/ein-bugs/zebra2-bad.ein) adds `(color-loc Green House-1)`, which
   collides with condition (6): green is right of ivory, so it cannot be in the leftmost house. `ein solve` answers
-  that R is empty, `every node is dead — root's own fixpoint derives (false)`, with the unsat core. It lives under
+  that R is empty, `every node is dead — root's own fixpoint holds a contradiction`, with the unsat core. It lives under
   `ein-bugs/` because it is well formed: it is unsatisfiable, not malformed.
 
 Both are generated from `zebra2.ein`, so their shared ontology, rules, `:why` texts and `:goal-text` cannot drift from

@@ -125,7 +125,8 @@ pub fn is_to_quiescence() -> bool {
     TO_QUIESCENCE.with(std::cell::Cell::get)
 }
 
-/// The status bit of a node that derives `(false)`.
+/// The status bit of a node whose fixpoint holds a contradiction: `(false)`,
+/// or a fact beside its stored negation, which derives nothing.
 pub const DEAD: u8 = 1;
 /// The status bit of a node with an undischarged obligation.
 pub const OWING: u8 = 2;
@@ -318,7 +319,7 @@ pub struct Region {
     /// [`DEAD`] / [`OWING`] per mask.
     pub status: Vec<u8>,
     pub nodes: Vec<Node>,
-    /// Root's own fixpoint derives `(false)`.
+    /// Root's own fixpoint holds a contradiction.
     pub root_dead: bool,
     pub monotonicity: Monotonicity,
     pub topology: Topology,
@@ -360,7 +361,7 @@ pub struct RootStats {
     /// rung's. Empty where H gained nothing, so a surface that prints it
     /// prints what it printed on every such program.
     pub later: Vec<crate::oblgen::LaterDebtText>,
-    /// Root's own fixpoint derives `(false)`: root's standing, which
+    /// Root's own fixpoint holds a contradiction: root's standing, which
     /// `--no-search` reports and every run reaches first.
     pub dead: bool,
     /// The obligation instances root's fixpoint leaves undischarged, dead or
@@ -860,11 +861,11 @@ fn floor_of(candidates: &[Candidate], commit: &[String]) -> Result<Floor, SolveE
 /// [`crate::downset::compute`] (route 1) read every node against it.
 pub(crate) struct Prepared {
     pub snapshot: Snapshot,
-    /// Root's own fixpoint derives `(false)`, so every node does (L0, and on
+    /// Root's own fixpoint holds a contradiction, so every node does (L0, and on
     /// a monotone program L1). A saved file's run: its node's, on a monotone
     /// program, and the program root's on a flagged one ([`above`]).
     pub root_dead: bool,
-    /// ∅'s node derives `(false)`: [`Self::root_dead`], but on a flagged
+    /// ∅'s node holds a contradiction: [`Self::root_dead`], but on a flagged
     /// program's saved file, whose node can be dead under live nodes.
     pub node_dead: bool,
     /// The universe, config-free, in rendered-text order.

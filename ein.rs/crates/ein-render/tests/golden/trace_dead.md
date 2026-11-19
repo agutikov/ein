@@ -5,7 +5,7 @@
   states (k_s)      0
   commitments (k_c) 0
   exhausted         yes — every commitment is classified: this is all of R
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local

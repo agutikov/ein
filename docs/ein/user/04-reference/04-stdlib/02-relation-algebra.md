@@ -478,7 +478,7 @@ A violation kills root, and the read-out names the facts that collide and the ru
 
 <!-- output -->
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
 
   unsat core        (assigned Build Ann)
   unsat core        (assigned Build Bob)

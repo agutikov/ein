@@ -245,7 +245,7 @@ A value excluded from every slot is a contradiction:
 
 <!-- output -->
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
 
   unsat core        (instance Ann Who)
   unsat core        (not (co-loc Ann S1))

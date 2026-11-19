@@ -26,7 +26,7 @@ use crate::states::{self, StateRoute};
 /// Root, the commitment `∅`.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Root {
-    /// Root's own fixpoint does not derive `(false)`.
+    /// Root's own fixpoint holds no contradiction.
     pub alive: bool,
     /// The obligation instances root's fixpoint leaves undischarged.
     pub owes: u32,

@@ -106,7 +106,7 @@ fn solve_reports_root_and_says_r_was_not_searched() {
         ),
         (
             "tests/region/06_false.ein",
-            "dead — root's own fixpoint derives (false)",
+            "dead — root's own fixpoint holds a contradiction",
         ),
     ] {
         let r = ein(&["solve", file, "--no-search"]);

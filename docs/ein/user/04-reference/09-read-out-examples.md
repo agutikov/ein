@@ -809,7 +809,7 @@ solve · tests/stdlib/algebra/09_irreflexive_violated.ein
   states (k_s)      0
   commitments (k_c) 0
   exhausted         yes — every commitment is classified: this is all of R
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
@@ -1993,10 +1993,10 @@ exit 0
 
 ## X16 — `ein-bugs/zebra2-bad.ein`: a dead root's core, its sources and a cut search
 
-`zebra2.ein` with one clue added that contradicts the rest: root's own fixpoint derives `(false)`, so R is empty of the
-dead kind. Each fact of root's core is an `unsat core` row, a fact the program states with a `:source` gets a `source`
-row, and `refuted by` names the step the core's derivation takes for each fact of the contradiction, `(given)` for one
-the core holds.
+`zebra2.ein` with one clue added that contradicts the rest: root's own fixpoint holds a contradiction, so R is empty of
+the dead kind. Each fact of root's core is an `unsat core` row, a fact the program states with a `:source` gets a
+`source` row, and `refuted by` names the step the core's derivation takes for each fact of the contradiction, `(given)`
+for one the core holds.
 
 `ein solve examples/ein-bugs/zebra2-bad.ein`
 
@@ -2007,7 +2007,7 @@ solve · examples/ein-bugs/zebra2-bad.ein
   states (k_s)      0
   commitments (k_c) 0
   exhausted         yes — every commitment is classified: this is all of R
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
@@ -2042,7 +2042,7 @@ solve · examples/ein-bugs/wrong-answers/core-search-cut.ein
   states (k_s)      0
   commitments (k_c) 0
   exhausted         yes — every commitment is classified: this is all of R
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
@@ -2218,7 +2218,7 @@ the full run decides it, and root's core is printed as describe prints it.
 solve · --no-search tests/stdlib/algebra/09_irreflexive_violated.ein
 ──────────────────────────────────────────────────────────────
   asked             root alone — --no-search: root's fixpoint, and R is not searched
-  ∅                 dead — root's own fixpoint derives (false)
+  ∅                 dead — root's own fixpoint holds a contradiction
   R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate

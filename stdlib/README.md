@@ -688,7 +688,7 @@ contradiction as the next:
 
 ```text
   states (k_s)      0
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   unsat core        (add (n (n z 1) x) (n z 5))
   refuted by        std.math.decimal.not-decimal-is-false
 ```

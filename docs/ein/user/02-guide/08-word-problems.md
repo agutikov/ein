@@ -381,7 +381,7 @@ unsat core names what the contradiction rests on, each with its `:source`: the t
 what made the subtraction wanted, the calculator's table rows, and the model's assumption.
 
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
 
   unsat core        (asked (amount Bob apples t1))
   unsat core        (gave Bob Alice apples (n z 7) t0 t1)
@@ -657,7 +657,7 @@ This is [`equation_refuted.ein`](../../../../examples/beyond_arith/equation_refu
 is the request and the three rows of the table the walk passed through, and the trace is the proof in sentences:
 
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
 
   unsat core        (md 2 7 4 8 1)
   unsat core        (md 6 7 0 2 4)

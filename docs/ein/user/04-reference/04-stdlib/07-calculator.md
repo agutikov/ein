@@ -112,7 +112,7 @@ contradiction as the next. Root is dead, R is empty, every command exits 0, and 
 
 <!-- output -->
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   universe          no candidate: R is {∅} or empty, decided by root alone
 
   unsat core        (div (n z 7) z)
@@ -239,7 +239,7 @@ names the rule.
 
 <!-- output -->
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
   universe          no candidate: R is {∅} or empty, decided by root alone
 
   unsat core        (add (n (n z 1) x) (n z 5))

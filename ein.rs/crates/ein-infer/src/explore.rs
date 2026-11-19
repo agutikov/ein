@@ -977,7 +977,7 @@ impl<'a> Space<'a> {
         self.monotonicity.is_monotone()
     }
 
-    /// Root's own fixpoint derives `(false)`, so every node does (L0).
+    /// Root's own fixpoint holds a contradiction, so every node does (L0).
     pub(crate) fn root_is_dead(&self) -> bool {
         self.root_dead
     }
@@ -2735,7 +2735,7 @@ pub struct Checked {
     /// The universe, as every route has it: how many candidates.
     pub n: usize,
     pub monotonicity: Monotonicity,
-    /// Root's own fixpoint derives `(false)`.
+    /// Root's own fixpoint holds a contradiction.
     pub root_dead: bool,
     pub wall: Duration,
     /// What root's saturation and the universe's pass counted, as every route

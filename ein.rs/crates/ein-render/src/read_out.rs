@@ -1285,6 +1285,11 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
 /// describe found and how, before its licences.
 const TREE_CLASSES_ROUTE: &str = "the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance";
 
+/// What the `∅` row says of a dead root, and the `empty` row after *every
+/// node is*: a state is dead where its fixpoint holds a contradiction,
+/// `(false)` or a fact beside its stored negation.
+const ROOT_DEAD: &str = "dead — root's own fixpoint holds a contradiction";
+
 /// `--no-search`'s `route` row.
 const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it";
 
@@ -1326,7 +1331,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     if root.in_r() {
         out.row(Row::Root, "in R — root is alive and owes nothing");
     } else if !root.alive {
-        out.row(Row::Root, "dead — root's own fixpoint derives (false)");
+        out.row(Row::Root, ROOT_DEAD);
     } else {
         out.row(
             Row::Root,
@@ -1824,10 +1829,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     let root = &d.root;
     if k_s == 0 && d.exhausted {
         if !d.any_alive {
-            out.row(
-                Row::Empty,
-                "every node is dead — root's own fixpoint derives (false)",
-            );
+            out.row(Row::Empty, format!("every node is {ROOT_DEAD}"));
         } else {
             out.row(
                 Row::Empty,
@@ -1837,7 +1839,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     } else if root.in_r() {
         out.row(Row::Root, "in R — root is alive and owes nothing");
     } else if !root.alive {
-        out.row(Row::Root, "dead — root's own fixpoint derives (false)");
+        out.row(Row::Root, ROOT_DEAD);
     } else {
         out.row(
             Row::Root,

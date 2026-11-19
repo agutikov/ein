@@ -497,7 +497,7 @@ pub struct PairLayer {
     pub candidates: Vec<Candidate>,
     /// The static verdict: L1 and L3 hold, and decided the pairs they could.
     pub monotone: bool,
-    /// Root's own fixpoint derives `(false)`: every candidate is dead alone
+    /// Root's own fixpoint holds a contradiction: every candidate is dead alone
     /// without a visit, and no pair is read.
     pub root_dead: bool,
     /// Singles the layer stopped before. While it is not 0,
@@ -621,7 +621,7 @@ pub struct Hypotheses {
     pub candidates: Vec<Candidate>,
     /// The rung of the ladder that built it.
     pub rung: crate::oblgen::Mode,
-    /// Root's own fixpoint derives `(false)`. `H` is built all the same.
+    /// Root's own fixpoint holds a contradiction. `H` is built all the same.
     pub root_dead: bool,
 }
 

@@ -1055,7 +1055,7 @@ fn a_program_that_does_not_search_says_so() {
     assert!(
         d["says"][0]
             .as_str()
-            .is_some_and(|s| s.starts_with("root's own fixpoint derives (false)")),
+            .is_some_and(|s| s.starts_with("root's own fixpoint holds a contradiction")),
         "{}",
         d["says"]
     );

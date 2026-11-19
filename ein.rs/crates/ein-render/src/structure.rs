@@ -1375,7 +1375,7 @@ pub fn says(w: &Whole) -> Vec<String> {
     }
     if t.root.root_dead {
         out.push(
-            "root's own fixpoint derives (false): every candidate is dead alone, no pair is \
+            "root's own fixpoint holds a contradiction: every candidate is dead alone, no pair is \
              read, and R is empty"
                 .to_string(),
         );

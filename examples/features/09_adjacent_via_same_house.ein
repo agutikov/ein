@@ -22,7 +22,7 @@
 ;;; kinds, one `next-to` constraint between them, and both values placed in
 ;;; House-2.
 ;;;
-;;; Expected: **Contradiction** — root's own fixpoint derives (false), R is
+;;; Expected: **Contradiction** — root's own fixpoint holds a contradiction, R is
 ;;; empty. Put the guard back and R is 9 states, its maximal line 4, and
 ;;; `--single` says **Ambiguity**, Red and the Fox sharing House-2 in each.
 ;;; That flip is the regression this fixture exists to fail on.

@@ -2413,8 +2413,9 @@ fn a_stopped_run_does_not_report_r_empty() {
     assert_eq!(done.code, 0);
     assert_eq!(done.field("exhausted").as_deref(), Some("yes"));
     assert!(
-        done.out
-            .contains("empty             every node is dead — root's own fixpoint derives (false)"),
+        done.out.contains(
+            "empty             every node is dead — root's own fixpoint holds a contradiction"
+        ),
         "the exhausted arm moved:\n{}",
         done.out
     );

@@ -292,7 +292,7 @@ pub struct Debt {
 /// Why the whole node was not read.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NodeStop {
-    /// Root's own fixpoint derives `(false)`: there is no node to commit to.
+    /// Root's own fixpoint holds a contradiction: there is no node to commit to.
     RootDead,
     /// Root's singles were not all read, so which candidates are alive
     /// alone is not known.

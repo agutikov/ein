@@ -252,7 +252,7 @@ derived: no rule here is an obligation, so root owes nothing.
 
 <!-- output -->
 ```text
-  empty             every node is dead — root's own fixpoint derives (false)
+  empty             every node is dead — root's own fixpoint holds a contradiction
 
   unsat core        (wears Zed Red)
   refuted by        std.bijection.typecheck-arg-0

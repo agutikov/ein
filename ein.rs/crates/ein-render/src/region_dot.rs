@@ -839,7 +839,7 @@ fn legend(
             "R: alive and discharged (one colour per component)",
         ),
         (OWING_FILL, "owing: alive, an obligation unwitnessed"),
-        (DEAD_FILL, "dead: derives (false); dead+owing is both"),
+        (DEAD_FILL, "dead: holds a contradiction; dead+owing is both"),
     ] {
         key.push(format!(
             "<TR><TD BGCOLOR=\"{c}\"> </TD><TD ALIGN=\"LEFT\">{}</TD></TR>",

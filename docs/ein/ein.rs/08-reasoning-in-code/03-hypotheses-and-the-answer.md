@@ -391,7 +391,7 @@ order. **The document holds no clock and no job count**: it is a function of the
 |---|---|
 | `schema`, `program` | `ein-h-space/1`; the program as the command was given it |
 | `asked` | `region_budget` and `supports` |
-| `n`, `rung`, `monotone`, `root_dead` | how many candidates; which rung built H; the static verdict; whether root's own fixpoint derives `(false)` |
+| `n`, `rung`, `monotone`, `root_dead` | how many candidates; which rung built H; the static verdict; whether root's own fixpoint holds a contradiction |
 | `whole`, `unread` | whether nothing was stopped, cut or left unread; the sentences where something was |
 | `says` | what is true of the program that makes its structure small or empty |
 | `domain` | `pair_layer`, `cover`, `coupling`: each `null`, or on a flagged program the sentence that says what its statements are about |

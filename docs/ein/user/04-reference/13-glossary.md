@@ -185,8 +185,8 @@ the commitments of $k$ facts.
 
 ### State
 $\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when it holds
-`(false)`, **alive** otherwise; **owing $n$** with $n$ undischarged obligation instances; **discharged** when it owes
-nothing.
+a contradiction, `(false)` or a fact beside its stored negation, **alive** otherwise; **owing $n$** with $n$
+undischarged obligation instances; **discharged** when it owes nothing.
 
 ### Closure, state class
 $\operatorname{cl}(C)$, the candidates $C$'s state holds, so $C \subseteq \operatorname{cl}(C)$. The commitments that reach

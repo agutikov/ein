@@ -4,10 +4,10 @@ The answer to a program is not one assignment but a **region R**: every set of c
 and owes nothing ([Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)).
 The engine saturates the program to **root**, takes the facts it may assume, the **candidates** H
 ([hypotheses](09-hypotheses.md)), and judges every **commitment**, a set of candidates assumed together, by its
-**state**: root with those facts added, saturated again. A state is **dead** when it derives `(false)`, **owing**
-when an obligation is unpaid, and a **solution** when it is neither. Restrictions bound R from above, obligations from
-below, and R is everything in between: a puzzle with one answer is one where the two meet in one state. A **model**
-is what a solution adds to what the program said.
+**state**: root with those facts added, saturated again. A state is **dead** when it holds a contradiction, `(false)`
+or a fact beside its negation, **owing** when an obligation is unpaid, and a **solution** when it is neither.
+Restrictions bound R from above, obligations from below, and R is everything in between: a puzzle with one answer is
+one where the two meet in one state. A **model** is what a solution adds to what the program said.
 
 ## In Ein
 
@@ -216,7 +216,7 @@ context**: the same clues in another context have another region.
 | **candidate** | a fact the engine may assume; **H** is all of them, built once at root ([hypotheses](09-hypotheses.md)) |
 | **commitment** | a set of candidates assumed together; as a point of the lattice, a **node** |
 | **state** | root with the commitment's facts added and saturated to its fixpoint. It is never cut at the first contradiction |
-| **dead** · **alive** | the state holds `(false)` · it does not |
+| **dead** · **alive** | the state holds a contradiction, `(false)` or a fact beside its stored negation · it holds none |
 | **owing** · **discharged** | the state has an unpaid obligation instance · it has none ([obligations](08-obligations.md)) |
 | **solution** | a node of R: alive and discharged |
 | **state class** | the commitments that reach one state. Where saturation derives a candidate, several commitments have one state; the smallest that reach it are its **minimal generators**, how few guesses the solution needs |

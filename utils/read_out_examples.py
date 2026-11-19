@@ -401,10 +401,10 @@ add(block(["examples/features/01_not_and_absent.ein"]))
 
 add("""## X16 — `ein-bugs/zebra2-bad.ein`: a dead root's core, its sources and a cut search
 
-`zebra2.ein` with one clue added that contradicts the rest: root's own fixpoint derives `(false)`, so R is empty of the
-dead kind. Each fact of root's core is an `unsat core` row, a fact the program states with a `:source` gets a `source`
-row, and `refuted by` names the step the core's derivation takes for each fact of the contradiction, `(given)` for one
-the core holds.
+`zebra2.ein` with one clue added that contradicts the rest: root's own fixpoint holds a contradiction, so R is empty of
+the dead kind. Each fact of root's core is an `unsat core` row, a fact the program states with a `:source` gets a
+`source` row, and `refuted by` names the step the core's derivation takes for each fact of the contradiction, `(given)`
+for one the core holds.
 """)
 add(block(["examples/ein-bugs/zebra2-bad.ein"]))
 add("""**A core search cut at its budget** (`ein-bugs/wrong-answers/core-search-cut.ein`): the core

@@ -52,7 +52,7 @@
 <polygon fill="none" stroke="black" points="16,-670 16,-690.75 144.75,-690.75 144.75,-670 16,-670"/>
 <text xml:space="preserve" text-anchor="start" x="78.88" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
 <polygon fill="none" stroke="black" points="144.75,-670 144.75,-690.75 708.5,-690.75 708.5,-670 144.75,-670"/>
-<text xml:space="preserve" text-anchor="start" x="148.75" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">dead: derives (false); dead+owing is both</text>
+<text xml:space="preserve" text-anchor="start" x="148.75" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">dead: holds a contradiction; dead+owing is both</text>
 <polygon fill="none" stroke="black" points="16,-649.25 16,-670 144.75,-670 144.75,-649.25 16,-649.25"/>
 <text xml:space="preserve" text-anchor="start" x="20" y="-657.5" font-family="Helvetica,sans-Serif" font-style="italic" font-size="10.00">dashed outline</text>
 <polygon fill="none" stroke="black" points="144.75,-649.25 144.75,-670 708.5,-670 708.5,-649.25 144.75,-649.25"/>
@@ -388,4 +388,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: 24bf8659d72351f17ae9225afd260931d2bef0d41ff03c5fbde0694e26e88ad8 -->
+<!-- source sha256: e2b1c1eb247ee838c5b234d8e9e7b9e9c085509d339ea4a96d9176eeea377466 -->
