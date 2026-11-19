@@ -57,16 +57,22 @@ What follows, for S1f.21.4 to show on programs:
   to a control word under an arrow goes: `ein.kill` is read only held, and refused under an arrow as `open` is
   today.
 - **Who states `(false)` ⟹ `(ein.kill)`.** If it is a module a program imports, every program that writes
-  `(false)` and does not import it stops refuting anything: `(false)` is written 658 times in 278 programs (the
-  count in that § 12). So it is in a module every program gets with no import line, one `ein saturate --dump`
-  shows like any rule. Whether a program may leave it out or replace it (*"or from global (whatever)"*) is a
-  question.
+  `(false)` and does not import it stops refuting anything: `(false)` is written on 691 lines in 284 programs
+  (§ 10.7's command, re-taken 2026-11-19; that § 12 counted 658 in 278). So it is in a module every program gets
+  with no import line, one `ein saturate --dump` shows like any rule. Whether a program may leave it out or replace
+  it (*"or from global (whatever)"*) is a question.
 - **The kernel's own contradiction**, a fact beside its negation, becomes
   [`design.md` A.1](design.md#a1-the-contradiction-rule-set-contrainc)'s rule set (one rule a count of arguments)
   concluding `(false)`, in the same module. [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none)
   is settled first: with that set written as rules, *forbid* refuses seven corpus programs.
-- **The surfaces' words**: the read-out's *root's own fixpoint derives (false)* (V-2), `:expect (false)`, the
-  events' `kind: dead`.
+- **The surfaces' words**: the read-out's *root's own fixpoint holds a contradiction* (*derives (false)* until
+  S1f.21.6 re-worded it, V-2), `:expect (false)`, the events' `kind: dead`.
+- **Two surfaces read `(false)` by its name**, and move with the direction at the same $R$
+  ([review item 33 § 7](review/33-Q-M1f.399/README.md#7-found-while-building)): **the agenda's first half**, which
+  fires first a rule that concludes `(false)`, a stored negation or a fact whose negation can be concluded
+  (Q-M1f.313), so the refuting rule loses its place at the head of the queue once what it concludes is an ordinary
+  fact; and **the `refuted by` row**, which names the rule that concluded the contradiction, and would name the
+  module's rule in the place of the program's.
 
 ## 4. `(open F)`: the hypothesis itself
 
@@ -197,7 +203,9 @@ search?*
 - The names: `ein-core/src/terms.rs`' `Kernel`, the names interned before any program.
 - Who reads each: `grep -rlE 'kernel(\(\))?\.NAME\b'` over the crates' `src/`.
 - The counts in programs: `grep -rhoE '(\(|:)NAME( |\))' --include='*.ein' stdlib examples tests`, with the files
-  beside them.
+  beside them (`grep -rlE` with the same pattern). § 8.2's column was re-taken with it on 2026-11-19, by S1f.21.6, on
+  the tree at `c9ea9597`; `false`'s first figure is § 10.7's line count, as it always was, and is one less than on
+  the tree before that stage, which re-worded one comment that wrote `(false)`.
 
 ### 8.1 What the kernel reads, and what it decides with it
 
@@ -227,16 +235,16 @@ search?*
 
 | name | today | under the direction | counted |
 |---|---|---|---|
-| `false` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | 658 in 278 programs |
+| `false` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today the kernel's: a held one kills | a proposition; `(false)` ⟹ `(ein.kill)` a rule every program gets (§ 3) | `(false)` on 691 lines in 284 files, by § 10.7's `grep -c '(false)'`; § 8's command, which counts occurrences and `(false ` too, 775 in 288 files |
 | `not` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today the kernel's: beside its fact it kills; the agenda, *forbid* and the static check read it; a candidate root denies is not in $H$ ([`design.md` § 3.4](design.md#34-the-extent-an-owed-instance-a-hypothesis-and-openr)) | a relation of one argument whose meaning is two rules: the contradiction ([A.1](design.md#a1-the-contradiction-rule-set-contrainc)) and the elimination of a double negation (Q-M1f.391). Whatever read it for a decision then reads the rules that lead to `ein.kill`, which is V-1's fix. Leaving a denied candidate out of $H$, and § 5's move into *not*, become economies: committing a denied candidate gives a dead child | |
 | `relation` | **ruled 2026-11-18: a convention of the standard library, not the kernel's** ([the fourth instruction](README.md#the-fourth-instruction)). Today a position word: the declaration, the fact `(relation R A B)` rules match, the count of arguments, the `:why` | a convention for what rules read (Q-M1f.381: any head is a relation). The declaration keeps three uses: the count the loader holds a fact to, the `:why` a fact is read in (no longer since P1f.23's S1f.23.5: a `:why` reads the form it is written on, and a fact of the relation reads by the fallback), and the blind rung's guessing (which relations, which objects) until proposing is rules (§ 6, row 1) | |
 | `eq` | computed; binds a free side | **the kernel's, ruled 2026-11-18** (*"`eq` and `neq` stay kernel"*); **stays as it is**, on the user's word (*"Ok, so eq still required, leave as it is"*). Substitution at load would say most uses with one variable, but not `std.math`'s two `(neq ?v z) (eq ?v ?x)` (`decimal-arith.ein`'s `operand-undeclared`, binary's twin): *?x is a name, and not a fact*. `neq`'s free side ranges over names, and substituting `?x` for `?v` loses that. On nested facts both compare as they should (§ 8.4) | 146 in 40 files, 30 of them under `examples/ein-bugs/wrong-answers/` |
 | `neq` | computed; a free side ranges over the program's names | **the kernel's, ruled 2026-11-18** (*"`eq` and `neq` stay kernel"*): no rule says *differ* without it | 345 in 119 files |
 | `and`, `or`, `absent` | the `:match`'s syntax | stay. `absent` is the one premise the kernel orders (the boundary). `or` is one rule a disjunct, which the loader writes | |
 | `open` | the verdict, only as an obligation's whole `:assert` | the open facts the kernel writes and moves, `(open F J)` (§ 4, § 5), named beside `ein.kill` (§ 3) | |
-| `__closed__` | read by $H$ and the mechanisms' check | derived, once proposing is rules: a relation no rule proposes a fact of is closed, and *forbid* reads that off the rules as it reads the rest. Or the kernel's, `ein.closed` | 685 in 91 files |
-| `__symmetric__` | the saturation's native mirror | **dropped on the user's word, 2026-11-18** (*"let's drop also built-in symmetry"*, with the ruling that the kernel reads no theory's name): `std.algebra`'s `symmetric` rule alone, built by P1f.23's S1f.23.4 | 12 in 5 files |
-| `hrule` | a declarator, rung 1 | a rule that concludes `(open F)` (§ 4, § 6 row 1), still activated by `(solve :hrules …)` | 141 in 115 files |
+| `__closed__` | read by $H$ and the mechanisms' check | derived, once proposing is rules: a relation no rule proposes a fact of is closed, and *forbid* reads that off the rules as it reads the rest. Or the kernel's, `ein.closed` | 714 in 100 files |
+| `__symmetric__` | the saturation's native mirror | **dropped on the user's word, 2026-11-18** (*"let's drop also built-in symmetry"*, with the ruling that the kernel reads no theory's name): `std.algebra`'s `symmetric` rule alone, built by P1f.23's S1f.23.4 | in no file, since that stage; 12 in 5 files before it |
+| `hrule` | a declarator, rung 1 | a rule that concludes `(open F)` (§ 4, § 6 row 1), still activated by `(solve :hrules …)` | 143 in 117 files |
 | `rule`, `macro`, `import` | declarators | stay: the program's structure | |
 | `query`, `solve`, `config`, `trace` | declarators: questions about $R$, flags, a log | stay: none is a fact of a state. Of `solve`'s lists, `:hypothesis-relations` and `:no-hypothesis` filter what is proposed, and become rules if proposing does | |
 | `model`, `region`, `merged`, `owing` | position words of a claim | stay | |
@@ -295,7 +303,7 @@ conclusion. `eqn.ein`:
 | c2 | `neq`, both sides bound | 12 hits: the 15 pairs less those 3 |
 | c3 | a fact a rule built against the same one written | `(hit c3-derived-eq (f a) (f a))` |
 | c4 | a free side bound to a written fact | `(hit c4-bind (g (f a)) (g (f a)))` |
-| c6 | `neq` with a free side, the other `(f a)` | 18 hits, each an **atom** of the program: `a`, `b`, `f`, `g`, `p`, the labels `X`, `C`, `Y`, the cases' names… and no fact. The free side ranges over the program's names, as the reference says (*"`neq` over the program's names"*), so it never binds a nested fact. `std.math`'s test of a name rests on this |
+| c6 | `neq` with a free side, the other `(f a)` | 16 hits (`grep -c '^  (hit c6-free-neq '` over the dump; re-taken 2026-11-19 by S1f.21.6, where the page first said 18: the claim does not rest on the count), each an **atom** of the program: `a`, `b`, `f`, `g`, `p`, the labels `X`, `C`, `Y`, the cases' names… and no fact. The free side ranges over the program's names, as the reference says (*"`neq` over the program's names"*), so it never binds a nested fact. `std.math`'s test of a name rests on this |
 | c7 | `eq` as a conclusion, true | no `(false)`; `ein solve`: ∅ in $R$ |
 
 Two more:
@@ -698,9 +706,10 @@ logic writes $\bot$, the absurd. So the worry is sound: a reader who knows two-v
 
 `(abort)` says more than happens: one state is dropped and the search continues. `(dead)` is the word the pages
 already use for the *verdict* on a state, which P1f.21's design keeps apart from the fact that causes it (*dead
-from `(false)`*). The rename itself is mechanical and wide: `(false)` is written 658 times in 278 programs under
-`examples/`, `tests/` and `stdlib/` (`grep -c '(false)'` over the three, summed), and in the pages, the
-diagnostics and the goldens.
+from `(false)`*). The rename itself is mechanical and wide: `(false)` is written on 691 lines in 284 programs under
+`examples/`, `tests/` and `stdlib/` (`grep -rc '(false)' --include='*.ein'` over the three, the lines summed and the
+files with one counted; re-taken 2026-11-19, where P1f.22's page had 658 in 278), and in the pages, the diagnostics
+and the goldens.
 
 **What I would do.** Not rename in this phase. It is the same question as P1f.21's, what the kernel's verdicts
 are and how a program sees them, so it is put there as

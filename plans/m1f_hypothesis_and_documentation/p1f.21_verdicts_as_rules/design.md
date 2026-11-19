@@ -1041,7 +1041,7 @@ The measured agreement of the two counts includes dead nodes, stopped ones among
 | **the tree route**, choosing an owed instance | `axes.instances`, keyed `(rule, activator, bindings)` | the key is $j$ | the key is $j$ |
 | **the read-out** | `owed` rows, each instance through its rule's `:why` | unchanged; the term could stand beside the sentence | `-p` and the dumps list the facts; `outside` names the new relations (run: `outside  due, paid — no candidate: no obligation owes them`) |
 | **the events** | `owe`: `rule`, `activator`, `relation`, `bindings`, `why` | already there in three fields; one more could carry the term | `fire` lines for the requirement and the payment (4.2 (i)); `owe` as today (4.2 (ii)) |
-| **the answer dump** | the owing frontier and `root_owed`, as `:why` texts; each state a loadable file | the term beside the text | a state file would list them. Under 4.2 (ii) a dumped owing state then holds `(open R j)` lines, and a file that writes a debt writes a stale one: the loader refuses them or drops them |
+| **the answer dump** | the owing frontier and `root_owed`, as `:why` texts; each state a loadable file | the term beside the text | a saved file does not change: it holds the program, its modules and the choices, `(commit …)`, and no fact of the state (`ein-saved/1`; `ein solve examples/lattice/05_owed_seats_bounded.ein --dump-answer D`, whose `D/models/01.ein` ends `(commit (seats Ann C1) (seats Bob C2))`), so no file writes a debt and none is stale. What would list the facts is `-p` and the forms. **Corrected 2026-11-19** by S1f.21.6 ([review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building)): the cell first read a state file that lists facts, as one did before save and load were merged, and had a dumped owing state hold `(open R j)` lines the loader would refuse or drop |
 | **a claim** | `(owing (model …))`: that a state owes | unchanged | may name the facts, and so say **which** debts. Run, with `paid`: `claim1.ein` below |
 | **a core** | none: a node that is not dead has no core | none | the requirement has an ordinary derivation record: the rule, the activator, the bindings and the trigger's facts. Under 4.2 (ii) the record of `(open R j)` also holds the absence it rested on, as every fact admitted at a boundary does |
 
@@ -1089,10 +1089,10 @@ the one it does not list, which it owes.
 |---|---|---|---|
 | the stdlib's four rules | unchanged | unchanged in text; each is compiled to two more plans, its trigger and its trigger with its witness | unchanged |
 | a program's own obligations | unchanged | unchanged | unchanged |
-| `open` in the grammar | as today | as today; two relation names, or one with a marker, become the kernel's | `(open R j)` becomes a fact a state file and a claim may write, and stays refused in a `:match`, a conclusion and a written program |
+| `open` in the grammar | as today | as today; two relation names, or one with a marker, become the kernel's | `(open R j)` becomes a fact a claim may write, and stays refused in a `:match`, a conclusion and a written program. A saved file holds no fact of a state, so it writes none (**corrected 2026-11-19**, as § 4.4's row: the cell first had a state file write it) |
 | `:expect` | unchanged | a claim may name the two relations | a claim's `(owing (model …))` may list `(open R j)` |
 | `tests/stdlib/` | unchanged; `obligation_reports.rs` may assert the terms where it asserts counts | every fixture with an obligation holds more facts; the count the suite asserts is also a fact count | the owing fixtures may claim their debts |
-| the corpus's goldens | none moves unless a surface prints the term | the digests of every program with an obligation move: 78 of the 567 answered programs have an obligation plan at root, 63 of them owing (the summaries of [`sweep_clash.py`](#b1-sweep_clashpy)) | the dumps and `-p` of owing states move |
+| the corpus's goldens | none moves unless a surface prints the term | the digests of every program with an obligation move: 78 of the 567 answered programs have an obligation plan at root, 63 of them owing (the summaries of [`sweep_clash.py`](#b1-sweep_clashpy)) | `-p` of owing states moves; the saved files, which hold no fact of a state, do not (**corrected 2026-11-19**, as § 4.4's row: the cell first had the dumps move) |
 
 ### 4.6 What it costs and what it buys
 
@@ -1111,7 +1111,8 @@ the one it does not list, which it owes.
   optional beside it.
 - **`(open R j)` held where it is owed**: a part of a node that a fork does not copy and root's own forks do not
   see; the pass writes facts into it with a derivation record; the grammar and the loader take the fact in a
-  state file and a claim and refuse it elsewhere; the renderers and dumps list it; a test that no saturation
+  claim and refuse it elsewhere (no saved file writes one: § 4.4's row, corrected 2026-11-19); the renderers and `-p`
+  list it; a test that no saturation
   plan can match it. How the copy-on-write layers and the `.einb` container would carry such a part was not
   read closely enough to say what it touches.
 
