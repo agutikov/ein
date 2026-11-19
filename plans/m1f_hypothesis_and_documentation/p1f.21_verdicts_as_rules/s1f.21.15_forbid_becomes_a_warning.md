@@ -61,7 +61,7 @@ Of the 47 programs, the 20 and the 27. **What goes**:
 
 | what validates today | what becomes of it |
 |---|---|
-| an `:expect` a flagged program states of its answer | removed from the program; a program under `tests/`, which must state one, moves to `examples/` |
+| an `:expect` a flagged program states of its answer | **kept in the program**, on the user's correction of this row (*":expect claims can present in non-monotone programs - just don't put it into the test suite gate and CI."*): what goes is every reading of it by the suite, the gate and CI, the program's `test` run in `corpus/corpus.toml` and any sweep that runs `ein test` over it; a flagged program under `tests/`, which is the suite, moves to `examples/` with its claim |
 | a row of `corpus/regressions.toml` whose witness is one of the 47 | removed; the witness stays a program of the corpus. The rows are listed in the record, for M1n |
 | the shape golden's lines of an answer's kind for a flagged program (`read-out`, `cores`, `states`, `region-lattice`, `oracle`, `explain`, `explain-noalts`, `region-trace`) | not banked and not compared |
 | a test in a crate that asserts what a flagged program answers: a region, a count, a core, a model | the assertion goes; listed in the record |
@@ -91,7 +91,8 @@ claim of a flagged program is *not checked* is put to the user and not built.
 
 `grep -ri forbid` finds the word in no file of `ein.rs/`, `docs/`, `stdlib/`, `examples/`, `tests/`, `corpus/`,
 `README.md` or `AGENTS.md` in the sense of this check; each of the 20 loads, is flagged and prints the warning; no
-`:expect`, no regression row, no golden line of an answer's kind and no assertion is left on any of the 47.
+regression row, no golden line of an answer's kind and no assertion is left on any of the 47, and no step of the
+gate or of CI checks an `:expect` of one, which stays written in its program.
 
 ## Record
 

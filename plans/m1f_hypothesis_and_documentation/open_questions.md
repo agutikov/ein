@@ -10566,7 +10566,8 @@ Built: `68c3d5d0`.
 **Ruled: a non-monotone program loads; Ein prints a loud warning; nothing is guaranteed of what it prints after.**
 **The user's rulings of 2026-11-02 and 2026-11-04 on a refutation under an `absent` are cancelled by the user.
 No test validates the result of a non-monotone program's solution. *Forbid* is removed from the code and the pages,
-completely.**
+completely.** And of what *no test* means, the same day, verbatim: *":expect claims can present in non-monotone programs - just don't put it into the test suite gate and CI."* So a non-monotone program may
+state an `:expect`; the suite, the gate and CI do not check it.
 [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), under which a
 program whose refutation could rest on an `absent` a commitment can still fill is refused at load, is reversed. It
 is the standing policy on non-monotone programs, *detect, document, warn, decide nothing*, applied to the one place
