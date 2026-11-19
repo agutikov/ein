@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's answers to review items 38 and 41
-([the rulings](README.md#the-rulings-of-the-answers-file)); **started 2026-11-20** on the user's word (*"Start stages, if
+([the rulings](README.md#the-rulings-of-the-answers-file)); **done 2026-11-20** (in master as `24491e80`, which its record names `8acb1b55`, the same change on the stage's branch); started the same day on the user's word (*"Start stages, if
 anything can be done in parallel - do it."*), beside S1f.21.11 and the examples of S1f.21.12. **Built 2026-11-20**
 in `8acb1b55`, on the defaults Q-M1f.580 to Q-M1f.584 ([the record](#record)).
 **Waits on:** nothing. Task 1's reading is confirmed by the user, 2026-11-20: *"a - yes"*. In

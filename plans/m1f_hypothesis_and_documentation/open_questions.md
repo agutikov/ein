@@ -508,6 +508,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **ruled 2026-11-20 by the user: (a)**: `-P` leaves out the `(open …)` facts as it leaves out the `(not …)` |
 | [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **ruled 2026-11-20 by the user: (a), and more**: the three are the blind enumerator's configuration, a white list and a black list; the blind enumerator runs only where root's fixpoint holds no `open` fact, and never beside hypotheses a rule emits; beside `open` facts, a list or a closure that disagrees with them is an error, an invalid program |
 | [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **ruled 2026-11-20 by the user: (b)**: such an obligation never steps aside; it writes its guard's candidates at root and the program is flagged. `oblig-derived-domain.ein` is checked again once it is built: the user expects it still solvable, *"my expectation, not requirement"*, to be reviewed then |
+| [Q-M1f.580](#q-m1f580--the-warning-for-an-activator-a-rule-could-derive-its-words-and-when-it-is-printed) | The warning for an activator a rule could derive: its words, and when it is printed | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
+| [Q-M1f.581](#q-m1f581--the-regression-rows-of-the-two-derived-activator-witnesses-now-flagged) | The regression rows of the two derived-activator witnesses, now flagged | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
+| [Q-M1f.582](#q-m1f582--nested-fact-activatorein-states-solve-no-search) | `nested-fact-activator.ein` states `(solve :no-search)` | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
+| [Q-M1f.583](#q-m1f583--where-the-fixtures-that-load-now-are-kept) | Where the fixtures that load now are kept | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
+| [Q-M1f.584](#q-m1f584--how-stdcores-rule-prints-under-an-import-that-renames-it) | How `std.core`'s rule prints under an import that renames it | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
 | [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
@@ -11269,6 +11274,56 @@ is run again once this is built and shown to the user**, whatever it answers: th
 which is an expectation and no requirement of the build, and is reviewed then. The page of the question is
 [`q-m1f.579_an_obligation_that_steps_aside/`](p1f.21_verdicts_as_rules/q-m1f.579_an_obligation_that_steps_aside/README.md), where
 the stand-in of it answers an empty $R$.
+
+### Q-M1f.580 — The warning for an activator a rule could derive: its words, and when it is printed
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.17, built as `24491e80`
+([its record](p1f.21_verdicts_as_rules/s1f.21.17_the_loader_warns_and_std_core_by_import.md#record)). Each line the refusal printed is kept, its tail *a relation is named by a symbol, not a fact* followed by *, so such an activator activates nothing*; where a state holds such an activator, a line names the rule, the activator, the parameter and the fact. Every `warning:` line is printed when a command's run of the program ends, after a flagged program's `WARNING`: a load's line once a process, a run's line once a run.
+
+The other reading: each line printed where it arises, the load's before the run.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+
+### Q-M1f.581 — The regression rows of the two derived-activator witnesses, now flagged
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.17, built as `24491e80`
+([its record](p1f.21_verdicts_as_rules/s1f.21.17_the_loader_warns_and_std_core_by_import.md#record)). Four of the five programs the refusal stopped are flagged by the static check once they load. The rows `derived-activator/derived-activator` and `derived-activator-never` of `corpus/regressions.toml` held them to *refused*; they are removed, as S1f.21.15 removed the rows of flagged programs, and the witnesses stay in the corpus.
+
+The other reading: the rows rewritten to what the programs print, which no suite may hold of a flagged program (Q-M1f.564).
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+
+### Q-M1f.582 — `nested-fact-activator.ein` states `(solve :no-search)`
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.17, built as `24491e80`
+([its record](p1f.21_verdicts_as_rules/s1f.21.17_the_loader_warns_and_std_core_by_import.md#record)). `examples/ein-bugs/wrong-answers/nested-fact-activator.ein`, the one of the five that is monotone, now loads with a blind cube of 16 candidates, which put 2^16 saturations into every sweep that describes $R$ or runs the oracle. Its question is about root, so it gained `(solve :no-search)`: its $R$ is {∅} where the cube's would be 65 536 states.
+
+The other reading: the program left as written and marked slow in the corpus.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+
+### Q-M1f.583 — Where the fixtures that load now are kept
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.17, built as `24491e80`
+([its record](p1f.21_verdicts_as_rules/s1f.21.17_the_loader_warns_and_std_core_by_import.md#record)). `examples/broken/load/derived_activator.ein`, `derived_activator_never.ein` and `import_of_core.ein` are no load errors any more. They are `examples/features/19_derived_activator.ein`, `20_derived_activator_never.ein` and `21_import_of_core.ein`, the programs unchanged but for their headers; none states a claim.
+
+The other reading: deleted, their subjects being held by tests.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+
+### Q-M1f.584 — How `std.core`'s rule prints under an import that renames it
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.17, built as `24491e80`
+([its record](p1f.21_verdicts_as_rules/s1f.21.17_the_loader_warns_and_std_core_by_import.md#record)). Under `(import std.core :as c)` or `:symbols`, the module's rule prints as the import spells it, as any module's does, and stays the module's own (`Rule::implicit`), so `refuted by` reads through it as before; a container stores the names in full.
+
+The other reading: always the full name, whatever the import.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
 
 ### Q-M1f.595 — An `open` fact of a relation the white list leaves out
 

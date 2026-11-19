@@ -2,9 +2,16 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**No question of this part is open.** You answered its six items on 2026-11-19; each answer is filed in your words
-under its question in [the ledger](../../../open_questions.md) and in
-[the phase's README](../../README.md#the-rulings-of-the-answers-file), and the items are out of the bundle.
+**One item is open, 66: the defaults S1f.21.17 took**, for your review after the build, as you asked. The part's
+own questions are all ruled: you answered its six items on 2026-11-19, each answer filed in your words under its
+question in [the ledger](../../../open_questions.md) and in
+[the phase's README](../../README.md#the-rulings-of-the-answers-file).
+
+## What is left for you
+
+| # | what | the default |
+|---|---|---|
+| [**66**](66-S1f.21.17-defaults/README.md) | the five defaults S1f.21.17 took: the warning's words and when it prints; two regression rows removed; `nested-fact-activator.ein` given `(solve :no-search)`; where three fixtures moved; how `std.core`'s rule prints under a renaming import | each as built |
 
 ## The three readings, confirmed
 

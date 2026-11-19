@@ -42,6 +42,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
 | [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | open; S1f.21.11's task 1.4 reads it |
 | [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | open; S1f.21.2's |
+| [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | open; the user's call |
+| [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
+| [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | open; the user's call, with L-109 |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
@@ -653,6 +656,25 @@ puts what a second declaration is anew.
 
 **Found** at the merge. `stdlib/README.md`'s table of modules and the root `README.md`'s have no row for
 `std.core`, the module every program gets. **Open**; S1f.21.2's, with the pages of the first part.
+
+## V-32 — The load's warning is one line a site
+
+**Found** by S1f.21.17. The refusal for an activator a rule could derive printed one line a site and stopped; as a
+warning it prints them all. A program that names a rule of a copier's count beside `std.algebra` loads with
+seventeen lines, one a generic rule of the module (`converse`, `imply2-fwd`, …). Each line is true. **Open; the
+user's call**: whether a module's lines are gathered into one.
+
+## V-33 — The JSON summary carries no warning of the load or the run
+
+**Found** by S1f.21.17. `--json-summary` has `monotonicity.warning` for a flagged program and nothing for the
+`warning:` lines of the load or of the run, which are on stderr alone. **Open.**
+
+## V-34 — The milestone's L-109 program loads
+
+**Found** by S1f.21.17. `examples/zebra2.ein` with `about-1`, `(about-1 symmetric)` and its query appended, the
+program of the milestone's finding L-109 (*the user's call*), loads now: `ein saturate` exits 0 under one warning
+that names `std.algebra.imply1`, and root derives `(in-slice-1 symmetric next-to)`. The refusal L-109 met is gone;
+whether a slice is had by such a rule is still the user's. **Open; the user's call, with L-109.**
 
 ## V-40 — Two parse witnesses of `open` write no `:why`
 
