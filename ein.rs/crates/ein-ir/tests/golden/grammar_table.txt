@@ -136,6 +136,7 @@
     (rule x y :match (a) :assert (b))
 <row>:3:9: unexpected `y`: a name
   repair: Insert `(`, Insert `)`, Delete `y`
+  repair: Insert `(`, Insert `)`, Insert `:ein`
   repair: Delete `y`, Delete `:match`, Shift `(`, Delete `a`
 
 ## 23. a rule's parameters (was: rule-malformed)
@@ -1822,6 +1823,7 @@
     (relation box T) (relation tag T T)
     (hrule h () :match (p ?x) :assert (q ?x) :zz 1)
 <row>:3:42: unexpected `:zz`: a keyword this form does not take
+  repair: Insert `:ein`, Delete `:zz`
   repair: Delete `:zz`, Delete `1`
 
 ## 265. a fact's keyword (was: —)
@@ -2776,4 +2778,43 @@
   repair: Insert a variable, Delete `or`
   repair: Insert `and`, Delete `or`
   and 1 more repair
+
+## 405. a rule's :ein (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :ein (inconsistent))
+<row>:3:31: unexpected `(`
+  repair: Insert a name, Insert `:assert`
+  repair: Insert a name, Insert `:match`
+  repair: Delete `(`, Shift `inconsistent`, Delete `)`
+  and 1 more repair
+
+## 406. a rule's :ein (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :ein ?w)
+<row>:3:31: unexpected `?w`: a variable
+  repair: Insert a name, Delete `?w`
+
+## 407. a rule's :ein (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :ein "inconsistent")
+<row>:3:31: unexpected `"inconsistent"`: a string
+  note: "inconsistent" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"inconsistent"`
+  repair: Insert a name, Insert `:why`
+
+## 408. a rule's :ein (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :ein)
+<row>:3:30: unexpected `)`
+  repair: Insert a name
+
+## 409. a keyword of another form (was: —)
+    (query :goal (p ?x) :ein inconsistent)
+<row>:1:21: unexpected `:ein`
+  repair: Insert `:over`, Delete `:ein`
+  repair: Delete `:ein`, Delete `inconsistent`
 

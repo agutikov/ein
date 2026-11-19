@@ -187,7 +187,7 @@ and the firing, as `ein solve FILE --events F` writes it to `F`:
 
 <!-- output -->
 ```text
-{"e": "fire", "n": 17, "rule": "clash-2", "activator": ["seats"], "bindings": [["R", "seats"], ["a", "Ann"], ["b", "C1"]], "premises": ["(seats Ann C1)", "(not (seats Ann C1))"], "derived": ["(false)"], "redundant": false}
+{"e": "fire", "n": 18, "rule": "clash-2", "activator": ["seats"], "bindings": [["R", "seats"], ["a", "Ann"], ["b", "C1"]], "premises": ["(seats Ann C1)", "(not (seats Ann C1))"], "derived": ["(false)"], "redundant": false}
 ```
 
 With the line `(clash-2 seats)` taken out the answer is the same, R empty and the same core, no rule fires on the

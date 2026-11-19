@@ -279,7 +279,7 @@ impl Fixture {
     fn contradiction_witnesses(&self) -> Vec<FactId> {
         ein_infer::contradiction::detect(&self.kb, &self.terms)
             .iter()
-            .map(|c| c.witness())
+            .filter_map(|c| c.witness(&self.terms))
             .collect()
     }
 
@@ -1367,7 +1367,7 @@ fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
     f.saturate();
     let witnesses: Vec<FactId> = ein_infer::detect(&f.kb, &f.terms)
         .iter()
-        .map(|c| c.witness())
+        .filter_map(|c| c.witness(&f.terms))
         .collect();
     let budget = ExplanationBudget::default();
     let one =

@@ -1,0 +1,47 @@
+;;; `:ein inconsistent` — a rule that ends a state, stated over its own premises.
+;;;
+;;; A rule states what it concludes under `:assert`, facts, or a word to the
+;;; engine under `:ein`, which is no fact: no state holds it, no rule matches
+;;; it and it stands under no arrow (Q-M1f.399). There is one word,
+;;; `inconsistent` (Q-M1f.550): where a rule that states it fires, the
+;;; saturation of that state ends and the state is dead.
+;;;
+;;; ── The puzzle ─────────────────────────────────────────────────────────────
+;;;
+;;; Two people, and at most one of them is the king. `crown` supposes of each
+;;; that they are; `one-king` reads two kings and states the key. Nothing is
+;;; derived on the way: the rule's premises are the two commitments
+;;; themselves.
+;;;
+;;;   ∅                        alive: no king, and nothing says there is one
+;;;   {(king Ann)}             alive
+;;;   {(king Bob)}             alive
+;;;   {(king Ann) (king Bob)}  dead: `one-king` fires, and the state ends
+;;;
+;;; So R is the three states below, and the dead set is the pair: its core is
+;;; the two commitments, and it is refuted by `one-king`, the rule that
+;;; ended it. No `(false)` is written anywhere: the dead state holds the two
+;;; `king` facts and no other fact beyond root's.
+
+(relation person Person :why "{?3} is a person")
+(relation king   Person :why "{?3} is the king")
+
+(person Ann)
+(person Bob)
+
+(hrule crown ()
+  :match  (person ?p)
+  :assert (king ?p)
+  :why    "suppose {?p} is the king")
+
+(rule one-king ()
+  :match (and (king ?a) (king ?b) (neq ?a ?b))
+  :ein   inconsistent
+  :why   "{?a} and {?b} are both the king, and there is one king")
+
+(solve
+  :hrules (crown)
+  :expect (region
+            (model)
+            (model (king Ann))
+            (model (king Bob))))

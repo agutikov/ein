@@ -11,7 +11,10 @@ its own records, which no program writes, are
 
 **The reserved names are the surface between the engine's kernel and a theory written in Ein**
 ([Q-M1f.397](../../../decisions/docs/Q-M1f.397-the-reserved-words-are-mathematics.md)). They are where
-the kernel acts of its own accord: on a declaration, a stored negation, `(false)` and the marker of closure. What a fact
+the kernel acts of its own accord: on a declaration, a stored negation and the marker of closure, and on the
+word a rule states to it under `:ein`. `(false)` is shaped by the grammar and read by no part of the kernel: a state
+that holds it is dead by `std.core`'s rule, which every program gets
+([`04-stdlib/21-core.md`](04-stdlib/21-core.md)). What a fact
 of any other relation means is what rules make of it, the program's own or the standard library's. So of whether a
 fact inside a fact holds, the kernel reads one thing, a held `(not P)`; what `(claims Carol …)` or any other
 context says of the fact it points at is a theory's
@@ -36,7 +39,7 @@ program can be written without reading anything else.
 | match where a pattern is **absent**, negation as failure | `(absent P)` | [§ Rule-body primitives](#rule-body-primitives) |
 | match a **stored** negation | `(not P)` in a `:match` | [§ Rule-body primitives](#rule-body-primitives) |
 | require two objects to differ, or be one | `(neq ?a ?b)` / `(eq ?a ?b)` | [§ Computed relations](#computed-relations--eq-and-neq) |
-| say this state is contradictory | `:assert (false)` | [§ Rule-body primitives](#rule-body-primitives) |
+| say this state is contradictory | `:assert (false)`, or `:ein inconsistent` in the place of the `:assert` ([`02-syntax.md`](02-syntax.md#conclusion-forms-in-assert)) | [§ Rule-body primitives](#rule-body-primitives) |
 | say this state is unfinished | `:assert (open)` / `(open ?R)` | [§ The verdict](#the-verdict--open) |
 | say *P is undecided* | `(unknown P)`, imported from `std.macro` | [§ Pattern macros](#pattern-macros-forall-and-unknown--not-reserved) |
 | say *for every b with G, B holds* | `(forall ?b G B)`, imported from `std.macro` | [§ Pattern macros](#pattern-macros-forall-and-unknown--not-reserved) |
@@ -171,7 +174,7 @@ falls out of which slot the rule's own `absent` leaves free
 | name | arguments | meaning |
 |---|---|---|
 | `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied, which may itself be a stored negation. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
-| `false` | 0 | `(false)`: the state is contradictory. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)) |
+| `false` | 0 | `(false)`: the state is contradictory, by `std.core`'s rule, which matches it and states `:ein inconsistent`. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)) |
 | `and` | 1 or more | conjunction: every premise holds, or every conclusion is derived |
 | `or` | 1 or more | disjunction, in a `:match` only: a top-level `(or …)` is one rule per disjunct, and an `(or …)` anywhere else in a `:match` is refused at load |
 | `absent` | 1 | negation as failure on a pattern: a question asked of the state, never a stored fact, so no fact, argument or conclusion is headed by it, and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold ([Q-M1f.122](../../../decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)). It is asked once, at the closure boundary, against the positive fixpoint ([`02-syntax.md` § NAF evaluation timing](02-syntax.md#naf-evaluation-timing--the-closureworld-boundary)) |

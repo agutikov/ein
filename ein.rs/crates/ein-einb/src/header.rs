@@ -24,9 +24,10 @@ pub const FORMAT_MAJOR: u16 = 2;
 /// section kinds it does not know, which is what makes a minor bump additive.
 ///
 /// `1`: [`Kind::Commit`], a saved file's node, which a container stores so
-/// that it opens as that node (Q-M1f.413). Every other kind below,
+/// that it opens as that node (Q-M1f.413). `2`: [`Kind::Ended`], the firings
+/// that ended a saved state (Q-M1f.399). Every other kind below,
 /// [`Kind::Closure`] and [`Kind::Universal`] among them, is 2.0's.
-pub const FORMAT_MINOR: u16 = 1;
+pub const FORMAT_MINOR: u16 = 2;
 
 pub const HEADER_LEN: usize = 64;
 pub const ENTRY_LEN: usize = 32;
@@ -68,6 +69,12 @@ pub enum Kind {
     /// ([`ein_core::Program::commit`]); written where the program has one,
     /// and never for a root (Q-M1f.413). Format 2.1's.
     Commit = 13,
+    /// The firings that ended the state ([`ein_core::Kb::ended`]), each the
+    /// position of its record in `PROV`, in the order they fired; written
+    /// where a saved KB has any, which a saturated dead one does. No fact
+    /// stands for such a firing (Q-M1f.399), so no other section holds it.
+    /// Format 2.2's.
+    Ended = 14,
 }
 
 impl Kind {
@@ -86,6 +93,7 @@ impl Kind {
             11 => Kind::Closure,
             12 => Kind::Universal,
             13 => Kind::Commit,
+            14 => Kind::Ended,
             _ => return None,
         })
     }

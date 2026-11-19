@@ -32,6 +32,14 @@ parse error, read where the module is.
   after macro expansion, to the shapes the grammar gives a written rule, so `(eq ?x)` written in a macro's body is
   refused where the macro is called, the line placed at the macro's body; a macro no rule calls still loads
   ([Q-M1f.67](../../../docs/decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)).
+- **`:ein`, a rule's word to the engine**
+  ([Q-M1f.399](../../../docs/decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)): the
+  grammar takes one name after it, and the loader holds the rest, each line listing the engine's words.
+  `ein_word_unknown` writes `:ein dead`, a word that is none of the engine's; `ein_beside_assert` writes it beside
+  an `:assert`, where a rule states one or the other; `ein_on_hrule` writes it on an hrule, which proposes a fact.
+- **No import names `std.core`**, `import_of_core.ein`: the module every program gets with no import line
+  ([Q-M1f.551](../../../docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)) is refused
+  where a file imports it.
 - **`open` is no name**
   ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is
   written only as a rule's whole `:assert`, `(open)` or `(open ?R)`. `reserved_open_symbols` is refused at its own

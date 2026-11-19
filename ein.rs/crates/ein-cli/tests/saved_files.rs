@@ -267,6 +267,9 @@ fn a_saved_file_reads_no_other_file() {
     assert_eq!(
         modules,
         [
+            // The module every program gets, which the program does not
+            // import, is carried as the others are.
+            "std.core",
             "std.math.arith",
             "std.math.decimal",
             "std.math.decimal-arith",

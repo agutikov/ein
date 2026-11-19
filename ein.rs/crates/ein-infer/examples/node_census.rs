@@ -230,17 +230,12 @@ fn read(kb: &Kb, terms: &mut Terms, ast: &Ast, plans: &[Arc<Plan>], keep: bool) 
     let (stale, inexact) = stale_facts(kb, terms, ast, plans);
     let ids: Vec<FactId> = stale.iter().map(|s| s.0).collect();
     let rests = resting(kb, terms, &ids);
-    let dead_on_stale = cs.iter().any(|c| {
-        [c.positive, Some(c.negative)]
-            .into_iter()
-            .flatten()
-            .any(|f| rests.contains(&f))
-    });
+    let dead_on_stale = cs
+        .iter()
+        .any(|c| c.sides(terms).into_iter().any(|f| rests.contains(&f)));
     let mut refuted_by: Vec<String> = cs
         .iter()
-        .flat_map(|c| [c.positive, Some(c.negative)])
-        .flatten()
-        .filter_map(|f| kb.primary(f))
+        .flat_map(|c| c.first_steps(kb, terms))
         .map(|p| match terms.provs.get(p).rule {
             Some(r) => terms.sym(r).to_string(),
             None => "(given)".to_string(),

@@ -488,7 +488,9 @@ fn a_conflict_of_three_is_one_coupling() {
         assert_eq!(c.components, [vec![0, 1, 2]]);
         assert_eq!(c.edge_over(&[0, 1, 2]), Some(0));
         let node = c.node.expect("the node was read");
-        assert_eq!((node.saturations, node.applications), (1, 1));
+        // The conflict's rule, and the one that ends the state on its
+        // `(false)`.
+        assert_eq!((node.saturations, node.applications), (1, 2));
     }
 }
 

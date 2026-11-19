@@ -18,7 +18,9 @@
 //! static check's `D` ([`crate::monotone`]), the relations a commitment can
 //! change, followed through the rules root has no plan of
 //! (`monotone::through_activators`). A refutation is a
-//! saturation plan whose `:assert` writes `(false)` or a stored negative. It
+//! saturation plan of a rule that states `:ein inconsistent`, or whose
+//! `:assert` writes a fact such a rule matches, `(false)` in every program
+//! ([`monotone::refutes`]), or a stored negative. It
 //! is refused when it rests on such an `absent`:
 //!
 //! | cause | the plan… |
@@ -82,19 +84,15 @@ use ein_ir::{Ast, Node, NodeId};
 use crate::monotone::{self, Monotonicity, Rel};
 use crate::plan::Plan;
 
-/// What a refused rule concludes.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum Concludes {
-    False,
-    Not,
-}
+/// What makes a refused rule a refutation ([`monotone::Refutes`]).
+pub use crate::monotone::Refutes as Concludes;
 
-impl Concludes {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Concludes::False => "(false)",
-            Concludes::Not => "(not …)",
-        }
+/// `concludes (false)`, `concludes (not …)`, or `states :ein inconsistent`:
+/// what a refusal's line says the rule does.
+fn does(concludes: Concludes, terms: &Terms) -> String {
+    match concludes {
+        Concludes::Inconsistent => format!("states {}", concludes.text(terms)),
+        _ => format!("concludes {}", concludes.text(terms)),
     }
 }
 
@@ -267,7 +265,7 @@ impl Refusal {
             let a: Vec<String> = self.activator.iter().map(|&v| terms.display(v)).collect();
             format!(" [activator {}]", a.join(" "))
         };
-        let concl = self.concludes.as_str();
+        let concl = does(self.concludes, terms);
         let (from, rel) = match &self.cause {
             Cause::Direct { over, .. } => (Over::Rel(*over).text(terms), over.label(terms)),
             Cause::Via { premise, by, over } => (
@@ -337,7 +335,7 @@ impl Refusal {
             },
         };
         format!(
-            "rule '{rule}'{act}: concludes {concl} from {from} — so it calls a state that has not yet decided {rel} a \
+            "rule '{rule}'{act}: {concl} from {from} — so it calls a state that has not yet decided {rel} a \
              contradiction, and a commitment would lift it (dead is not upward-closed under \
              absent; Q-M1e2.5). Write what it means: {close}; state a \
              requirement as a decision or an obligation, a yes/no attribute that must be \
@@ -410,6 +408,11 @@ pub fn check(
     // node can compile that root never had, not `D` itself, whose
     // closure follows root's plans only.
     let bodies = bodies_of(kb, terms, ast);
+    // What a rule that states `:ein inconsistent` matches, `(false)` in
+    // every program: a rule that concludes a fact of it is a refutation, as
+    // the rule that states the key is, and its conclusion is not followed
+    // further.
+    let leads = &monotone::leads_to_an_end(saturation.iter().copied(), terms);
     let extendable = extendable_over(
         m.dynamic.iter().copied(),
         &saturation,
@@ -445,7 +448,7 @@ pub fn check(
     for (p, rs) in saturation.iter().zip(&reads) {
         if let Some((over, _)) = odd_d(rs) {
             for w in monotone::writes_of(p, terms) {
-                if w.name != terms.kernel.r#false {
+                if !leads.contains(&w) {
                     n.insert(w, p.rule, Over::Rel(over));
                 }
             }
@@ -469,7 +472,7 @@ pub fn check(
         });
         if let Some(over) = over {
             for &w in &body.writes {
-                if w.name != terms.kernel.r#false {
+                if !leads.contains(&w) {
                     n.insert(w, rule.name, over);
                 }
             }
@@ -489,7 +492,7 @@ pub fn check(
                 });
             if let Some((_, over)) = from {
                 for w in monotone::writes_of(p, terms) {
-                    if w.name != terms.kernel.r#false {
+                    if !leads.contains(&w) {
                         grew |= n.insert(w, p.rule, over);
                     }
                 }
@@ -507,7 +510,7 @@ pub fn check(
                 .or_else(|| n.get(pos(rule.name), terms));
             if let Some((_, over)) = from {
                 for &w in &body.writes {
-                    if w.name != terms.kernel.r#false {
+                    if !leads.contains(&w) {
                         grew |= n.insert(w, rule.name, over);
                     }
                 }
@@ -520,7 +523,7 @@ pub fn check(
 
     let mut out: Vec<Refusal> = Vec::new();
     for (p, rs) in saturation.iter().zip(&reads) {
-        let Some(concludes) = refutes(&monotone::writes_of(p, terms), terms) else {
+        let Some(concludes) = monotone::refutes(p, terms, leads) else {
             continue;
         };
         let cause = if let Some((over, depth)) = odd_d(rs) {
@@ -550,7 +553,7 @@ pub fn check(
         if out.iter().any(|r| r.rule == rule.name) {
             continue;
         }
-        let Some(concludes) = refutes(&body.writes, terms) else {
+        let Some(concludes) = refutes(&body.writes, rule, leads, ast, terms) else {
             continue;
         };
         let param = body.reads.iter().find_map(|&(r, d)| match r {
@@ -793,17 +796,33 @@ fn pos(name: Symbol) -> Rel {
     }
 }
 
-fn refutes(writes: &[Rel], terms: &Terms) -> Option<Concludes> {
-    if writes
-        .iter()
-        .any(|r| !r.negated && r.name == terms.kernel.r#false)
-    {
-        Some(Concludes::False)
-    } else if writes.iter().any(|r| r.negated) {
-        Some(Concludes::Not)
-    } else {
-        None
+/// [`monotone::refutes`] for a rule root compiled no plan of, read from its
+/// pattern: what makes `rule`, which writes `writes`, a refutation, if it is
+/// one.
+fn refutes(
+    writes: &[Rel],
+    rule: &Rule,
+    leads: &rustc_hash::FxHashSet<Rel>,
+    ast: &Ast,
+    terms: &Terms,
+) -> Option<Concludes> {
+    if rule.ein.is_some() {
+        return Some(Concludes::Inconsistent);
     }
+    if let Some(w) = writes.iter().find(|w| !w.negated && leads.contains(w)) {
+        // Whether the conclusion as written takes an argument, for the
+        // line's `(false)` against `(p …)`.
+        let with_arguments = rule.assert_.as_ref().is_some_and(|a| {
+            ast.conjuncts(NodeId(a.expr.0)).iter().any(|&c| {
+                ast.head_name(c) == Some(terms.sym(w.name)) && !ast.form_args(c).is_empty()
+            })
+        });
+        return Some(Concludes::Leads {
+            rel: w.name,
+            nullary: !with_arguments,
+        });
+    }
+    writes.iter().any(|r| r.negated).then_some(Concludes::Not)
 }
 
 /// `N`, in insertion order — the first derivation found is the one a message

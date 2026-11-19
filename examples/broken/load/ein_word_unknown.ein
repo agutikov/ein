@@ -1,0 +1,8 @@
+;; A word after `:ein` that is none of the engine's: refused at load, with the
+;; engine's words listed, so a misspelt word does not load in silence.
+(relation p T :why "p holds of {?3}")
+(rule r ()
+  :match (p ?x)
+  :ein   dead
+  :why   "p holds of {?x}, which cannot be")
+(p a)

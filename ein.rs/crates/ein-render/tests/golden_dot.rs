@@ -223,6 +223,7 @@ fn the_slice_golden_reproduces() {
         derived: Box::new([derived]),
         premises: premises.to_vec().into_boxed_slice(),
         redundant: false,
+        ends: false,
     };
     let firings = vec![
         firing(&mut terms, "symmetric", &[seed], mirror),

@@ -18,7 +18,7 @@ use crate::ast::{Ast, Node, NodeId, loc_repr};
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
 use ein_core::config::{FLAGS, SolverConfig};
-use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
+use ein_core::entities::{EngineWord, ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
     is_predicate, is_reserved,
@@ -240,7 +240,11 @@ pub fn load_query_by(
     // Imports resolve up front into one flat, import-free, qualified stream.
     // Resolution errors are **fatal** and return immediately: a half-resolved
     // program cannot be ingested.
-    let forms = resolver.resolve_imports(ast, forms, base_dir)?;
+    let forms = resolver.resolve_program(ast, forms, base_dir)?;
+    // The rules of the module every program gets, which no import line
+    // brought (Q-M1f.551): marked, for the readers that tell a rule a program
+    // wrote or imported from one it was given.
+    let implicit = resolver.implicit_names();
 
     let (mut relations, mut rules, mut macro_forms, mut facts) =
         (Vec::new(), Vec::new(), Vec::new(), Vec::new());
@@ -308,6 +312,7 @@ pub fn load_query_by(
         Declarations {
             macros: &declared_macros,
             counts: &declared,
+            implicit: &implicit,
         },
         opts,
         &mut errors,
@@ -1491,6 +1496,9 @@ fn ingest_relation(
 struct Declarations<'a> {
     macros: &'a BTreeMap<String, IrMacro>,
     counts: &'a Declared,
+    /// The names the module every program gets declares
+    /// ([`Resolver::implicit_names`]).
+    implicit: &'a [String],
 }
 
 fn ingest_rules(
@@ -1505,6 +1513,7 @@ fn ingest_rules(
     let Declarations {
         macros: declared_macros,
         counts: declared,
+        implicit,
     } = declarations;
     for &form in forms {
         let head = ast.head_name(form).expect("bucketed by head").to_string();
@@ -1540,9 +1549,18 @@ fn ingest_rules(
             continue;
         }
         let pairs = kw_pairs(ast, &args);
-        let (Some(match_node), Some(assert_node)) =
-            (kw_get(&pairs, "match"), kw_get(&pairs, "assert"))
-        else {
+        // A rule states what it concludes under `:assert`, facts, or a word
+        // to the engine under `:ein`, which is no fact (Q-M1f.399). The
+        // passes below read such a rule's conclusion as `()`, which writes
+        // nothing.
+        let Ok(ein) = engine_word(ast, &head, &name, &pairs, errors) else {
+            continue;
+        };
+        let concluded = match ein {
+            Some(_) => Some(ast.sform_named(ein_core::text::EMPTY_HEAD, &[], None)),
+            None => kw_get(&pairs, "assert"),
+        };
+        let (Some(match_node), Some(assert_node)) = (kw_get(&pairs, "match"), concluded) else {
             errors.push(format!(
                 "({head} {name}) missing :match or :assert at {loc}"
             ));
@@ -1683,7 +1701,12 @@ fn ingest_rules(
             name: name_sym,
             params: params.into_boxed_slice(),
             match_: Some(pattern_from_ir(ast, terms, match_node)?),
-            assert_: Some(pattern_from_ir(ast, terms, assert_node)?),
+            assert_: match ein {
+                Some(_) => None,
+                None => Some(pattern_from_ir(ast, terms, assert_node)?),
+            },
+            ein,
+            implicit: implicit.contains(&name),
             why,
             loc: core_loc(ast, form),
         };
@@ -1700,6 +1723,61 @@ fn ingest_rules(
         }
     }
     Ok(())
+}
+
+/// **The word a rule gives the engine under `:ein`** (Q-M1f.399), or `None`
+/// for a rule that states none. The grammar takes any name there (`ein.y`'s
+/// `RuleClause`), and this holds it to the engine's words
+/// ([`EngineWord::ALL`]), so that a misspelt word does not load in silence.
+///
+/// It refuses, each with one line that starts at the word's position and
+/// lists the engine's words:
+///
+/// - **a word that is none of the engine's**, `:ein dead`;
+/// - **`:ein` beside an `:assert`**: a rule states facts or a word to the
+///   engine, never both, since a state the firing ends takes no fact from it;
+/// - **`:ein` on an hrule**: an hrule proposes a fact, a commitment of its
+///   own, and what ends a state proposes none.
+fn engine_word(
+    ast: &Ast,
+    head: &str,
+    name: &str,
+    pairs: &[(String, NodeId)],
+    errors: &mut Vec<String>,
+) -> Result<Option<EngineWord>, ()> {
+    let Some(node) = kw_get(pairs, "ein") else {
+        return Ok(None);
+    };
+    let who = format!("{}{head} '{name}'", placed(ast, node));
+    let written = ast
+        .atom_name(node)
+        .expect(":ein takes a name (ein.y's RuleClause)");
+    let words = EngineWord::ALL.map(EngineWord::as_str).join(", ");
+    if head == "hrule" {
+        errors.push(format!(
+            "{who}: states :ein {written} — an hrule proposes a fact, which it states under \
+             :assert, and a word to the engine is a rule's (the engine's words: {words})"
+        ));
+        return Err(());
+    }
+    if kw_get(pairs, "assert").is_some() {
+        errors.push(format!(
+            "{who}: states :ein {written} beside an :assert — a rule states what it concludes \
+             under :assert, or a word to the engine under :ein, never both: write one rule for \
+             each (the engine's words: {words})"
+        ));
+        return Err(());
+    }
+    match EngineWord::of(written) {
+        Some(word) => Ok(Some(word)),
+        None => {
+            errors.push(format!(
+                "{who}: :ein {written} — {written} is no word of the engine's (the engine's \
+                 words: {words})"
+            ));
+            Err(())
+        }
+    }
 }
 
 /// **What no fact can hold, and what reads nothing, in a rule is refused**
@@ -5340,8 +5418,9 @@ mod tests {
             kb.program().obligations.contains(name),
             "an `open`-asserting rule belongs to the obligation pass"
         );
+        // The saturation's rules are those every program gets and no other.
         assert!(
-            kb.program().rules.is_empty() && kb.program().hrules.is_empty(),
+            kb.program().rules.values().all(|r| r.implicit) && kb.program().hrules.is_empty(),
             "…and to neither of the two that fire during a search"
         );
 
@@ -5365,6 +5444,71 @@ mod tests {
                 .rules
                 .contains(terms.syms.get("copy").expect("interned"))
                 && kb.program().obligations.is_empty()
+        );
+    }
+
+    /// **A rule states what it concludes under `:assert`, or a word to the
+    /// engine under `:ein`** (Q-M1f.399): the rule is registered among the
+    /// saturation's with no conclusion and the word, and the three shapes the
+    /// grammar takes and the loader holds are refused, each with the engine's
+    /// words listed.
+    #[test]
+    fn a_rule_states_a_word_to_the_engine_in_the_place_of_an_assert() {
+        const P: &str = "(relation p T :why \"p holds of {?3}\")\n";
+        let (terms, kb) = ok(&format!(
+            "{P}(rule no-p ()\n  :match (p ?x)\n  :ein inconsistent\n  :why \"p holds of {{?x}}, which cannot be\")\n"
+        ));
+        let rule = kb
+            .program()
+            .rules
+            .get(terms.syms.get("no-p").expect("interned"))
+            .expect("a saturation rule");
+        assert_eq!(rule.ein, Some(EngineWord::Inconsistent));
+        assert!(rule.assert_.is_none(), "it concludes no fact");
+        assert!(rule.match_.is_some());
+        assert!(kb.program().hrules.is_empty() && kb.program().obligations.is_empty());
+
+        // A word that is none of the engine's.
+        assert_eq!(
+            err(&format!(
+                "{P}(rule r ()\n  :match (p ?x)\n  :ein dead\n  :why \"x\")\n"
+            )),
+            "<string>:4:8: rule 'r': :ein dead — dead is no word of the engine's (the engine's \
+             words: inconsistent)"
+        );
+        // A word of the language is none either: `false` is a name here.
+        assert!(
+            err(&format!(
+                "{P}(rule r ()\n  :match (p ?x)\n  :ein false\n  :why \"x\")\n"
+            ))
+            .contains(":ein false — false is no word of the engine's"),
+        );
+        // Beside an `:assert`, in either order.
+        for clauses in [
+            ":assert (p ?x)\n  :ein inconsistent",
+            ":ein inconsistent\n  :assert (p ?x)",
+        ] {
+            let e = err(&format!(
+                "{P}(rule r ()\n  :match (p ?x)\n  {clauses}\n  :why \"x\")\n"
+            ));
+            assert!(
+                e.contains(
+                    "rule 'r': states :ein inconsistent beside an :assert — a rule states what \
+                     it concludes under :assert, or a word to the engine under :ein, never both"
+                ) && e.ends_with("(the engine's words: inconsistent)"),
+                "{e}"
+            );
+        }
+        // On an hrule, which proposes a fact.
+        let e = err(&format!(
+            "{P}(hrule h ()\n  :match (p ?x)\n  :ein inconsistent\n  :why \"x\")\n"
+        ));
+        assert!(
+            e.contains(
+                "hrule 'h': states :ein inconsistent — an hrule proposes a fact, which it \
+                 states under :assert, and a word to the engine is a rule's"
+            ),
+            "{e}"
         );
     }
 
@@ -6519,7 +6663,7 @@ mod tests {
             );
         }
         assert!(
-            kb.program().rules.is_empty(),
+            kb.program().rules.values().all(|r| r.implicit),
             "none of the four belongs to the saturation agenda"
         );
     }

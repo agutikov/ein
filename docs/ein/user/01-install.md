@@ -71,7 +71,7 @@ The toolchain is pinned by [`ein.rs/rust-toolchain.toml`](../../../ein.rs/rust-t
 $ ein --version
 ein 0.1.0
 protocol   ein-events/1
-container  einb/2.1
+container  einb/2.2
 features   einb, parallel, snmalloc
 stdlib     sha256:7592561c…60c5a3  checkout /path/to/ein/stdlib
 ```
@@ -116,8 +116,10 @@ first `(import std.…)` says so, naming the variable:
 kb load error: (import std.algebra) — $EIN_STDLIB names /tmp/x, which has no MANIFEST.sha256 — a directory is the stdlib only if it carries the marker, which is the same test the checkout walk applies (unset $EIN_STDLIB to use the checkout or the embedded copy, …) (None)
 ```
 
-The check is made at the **first `std.*` import**, so a program that imports nothing from the standard library is
-not refused for a variable it never reads. `ein --version` does not refuse either: it prints
+The check is made where a load first reads a module of the standard library, which every load does: every program
+gets `std.core` with no import line
+([Q-M1f.551](../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), so under an override that
+names no standard library every program is refused. `ein --version` does not refuse: it prints
 `stdlib     unreadable  $EIN_STDLIB <path>` and goes on.
 
 **The walk prefers whatever checkout it lands under.** A binary copied under an unrelated tree that holds a

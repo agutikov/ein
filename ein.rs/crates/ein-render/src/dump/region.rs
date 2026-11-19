@@ -154,7 +154,7 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
                         // The detector's reading of the site: additive, and
                         // on a flagged program only.
                         if let Some(stake) = m.detector.stakes.get(i) {
-                            site.push(("concludes", Json::str(stake.concludes.as_str())));
+                            site.push(("concludes", Json::str(&stake.concluded)));
                             site.push(("at_stake", Json::str(stake.at_stake.key())));
                         }
                         Json::obj(site)

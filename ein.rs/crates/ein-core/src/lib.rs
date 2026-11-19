@@ -39,7 +39,7 @@ pub use bitset::BitSet;
 pub use config::SolverConfig;
 pub use counters::Counters;
 pub use entities::{
-    ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule, Solve,
+    EngineWord, ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule, Solve,
 };
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};

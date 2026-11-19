@@ -74,7 +74,6 @@ use rustc_hash::FxHashSet;
 
 use crate::compile::{asserted_relation, naf_relation_refs, negated_relation};
 use crate::engine::Engine;
-use crate::plan::{Plan, Slot};
 
 /// One `(rule, activator)` pair's NAF dependency classification.
 ///
@@ -103,38 +102,12 @@ pub struct NafDep {
 /// fill — the shape `dead`'s upward-closure premise fails on.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Refutation {
-    /// What the `:assert` concludes: `"(false)"` or `"(not …)"`.
-    pub concludes: &'static str,
+    /// What makes the rule a refutation, as [`crate::monotone::Refutes::text`]
+    /// writes it: `(false)`, `(not …)`, or `:ein inconsistent`.
+    pub concludes: String,
     /// The watched relations the generator can still extend, sorted labels —
     /// a subset of `derived ∪ declared_only`, since it is the same walk.
     pub watching: Box<[String]>,
-}
-
-/// Does a plan's `:assert` conclude a **refutation** rather than a derivation?
-///
-/// Every conclusion is inspected, not only the first: a `:assert (and …)`
-/// means a rule can derive a fact *and* refute, and the refuting arm is what
-/// matters here. `asserted_relation` / `negated_relation` read
-/// `assert_template()` alone because they are the stratification map, which
-/// reads the first conclusion; this question reads every one.
-fn refuting_conclusion(plan: &Plan, terms: &Terms) -> Option<&'static str> {
-    let mut found = None;
-    for slot in plan.asserts.iter() {
-        let Slot::Nested { rel, .. } = slot else {
-            continue;
-        };
-        // An `eq` / `neq` conclusion, or `(not …)` over one, is `(false)`
-        // where it does not hold (Q-M1e2.26, `firing::build_conclusion`).
-        if *rel == terms.kernel.r#false || crate::firing::computed(terms, plan, *slot).is_some() {
-            // Direct ⊥ outranks a negative: it is the stronger claim, and the
-            // message's advice differs.
-            return Some("(false)");
-        }
-        if *rel == terms.kernel.not {
-            found = Some("(not …)");
-        }
-    }
-    found
 }
 
 fn label(terms: &Terms, rel: Symbol, negated: bool) -> String {
@@ -174,6 +147,10 @@ pub fn compute_naf_map(
         .filter_map(|i| negated_relation(engine.plan(i), terms))
         .collect();
 
+    // What a rule that states `:ein inconsistent` matches, `(false)` in
+    // every program: a rule that concludes a fact of it refutes.
+    let leads = crate::monotone::leads_to_an_end((0..engine.len()).map(|i| engine.plan(i)), terms);
+
     let mut deps: Vec<NafDep> = Vec::new();
     for i in 0..engine.len() {
         let plan = engine.plan(i);
@@ -189,7 +166,7 @@ pub fn compute_naf_map(
         // generator proposes is `R`, and adding an `R` cannot make a missing
         // `(not (R …))` appear. Only the positive read is a hazard.
         let mut exposed = FxHashSet::default();
-        let refutes = refuting_conclusion(plan, terms);
+        let refutes = crate::monotone::refutes(plan, terms, &leads).map(|r| r.text(terms));
         for (rel, neg) in refs {
             let pool = if neg { &negated } else { &producible };
             let bucket = if pool.contains(&rel) {

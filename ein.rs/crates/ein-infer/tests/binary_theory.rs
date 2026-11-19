@@ -854,7 +854,8 @@ fn the_circuit_of_each_operation() {
             ("123078 against 4567", (58, 24)),
             ("123 x 456", (140, 120)),
             ("127645 / 25", (274, 246)),
-            ("127645 / 0", (33, 21)),
+            // With the firing that ends the state on the `(false)`.
+            ("127645 / 0", (34, 21)),
         ],
         "(firings, depth)"
     );

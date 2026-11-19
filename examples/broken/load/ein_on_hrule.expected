@@ -1,0 +1,1 @@
+{DIR}/ein_on_hrule.ein:6:10: hrule 'h': states :ein inconsistent — an hrule proposes a fact, which it states under :assert, and a word to the engine is a rule's (the engine's words: inconsistent)

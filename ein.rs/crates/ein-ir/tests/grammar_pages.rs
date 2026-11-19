@@ -3054,6 +3054,24 @@ const TABLE: &[Row] = &[
         &[],
         "(hrule h () :match (n ?x) :assert (or (p ?x) (q ?x)))",
     ),
+    // ── A rule's word to the engine: `:ein` takes one name ──
+    row(
+        "a rule's :ein",
+        &[],
+        "(rule r () :match (p ?x) :ein (inconsistent))",
+    ),
+    row("a rule's :ein", &[], "(rule r () :match (p ?x) :ein ?w)"),
+    row(
+        "a rule's :ein",
+        &[],
+        "(rule r () :match (p ?x) :ein \"inconsistent\")",
+    ),
+    row("a rule's :ein", &[], "(rule r () :match (p ?x) :ein)"),
+    row(
+        "a keyword of another form",
+        &[],
+        "(query :goal (p ?x) :ein inconsistent)",
+    ),
 ];
 
 /// A row's program: a rule row's declarations before it.

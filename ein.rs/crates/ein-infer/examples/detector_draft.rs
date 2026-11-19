@@ -583,9 +583,8 @@ fn dead_on_stale(kb: &Kb, terms: &Terms, stale: &[FactId]) -> bool {
         v
     }
     contradiction::detect(kb, terms).iter().any(|c| {
-        [c.positive, Some(c.negative)]
+        c.sides(terms)
             .into_iter()
-            .flatten()
             .any(|f| rests(kb, terms, f, &mut memo))
     })
 }

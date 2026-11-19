@@ -1114,6 +1114,43 @@ and draws no line: a carried module of the standard library that is not the one 
 carried where the binary has no standard library to read, which is loaded as carried; a saved file compares nothing
 ([Q-M1f.401](../../../decisions/read-out/Q-M1f.401-a-saved-file-carries-its-program-and-modules.md)).
 
+### 2.31 A rule's word to the engine
+
+A rule states what it concludes under `:assert`, or a word to the engine under `:ein`
+([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert);
+[Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). The grammar takes
+one name after `:ein`, and anything else there is a parse error ([`01-grammar.md`](01-grammar.md)'s table). The
+loader holds the rest, one line each, at the command's load-error exit, placed at the word and ending with the
+engine's words, of which there is one
+([Q-M1f.550](../../../decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)):
+
+| the rule | the line |
+|---|---|
+| a word that is none of the engine's, `:ein dead` | `kb load error: F:6:10: rule 'r': :ein dead — dead is no word of the engine's (the engine's words: inconsistent)` |
+| `:ein` beside an `:assert` | `kb load error: F:8:11: rule 'r': states :ein inconsistent beside an :assert — a rule states what it concludes under :assert, or a word to the engine under :ein, never both: write one rule for each (the engine's words: inconsistent)` |
+| `:ein` on an hrule | `kb load error: F:6:10: hrule 'h': states :ein inconsistent — an hrule proposes a fact, which it states under :assert, and a word to the engine is a rule's (the engine's words: inconsistent)` |
+
+A misspelt word therefore does not load in silence, and a word of the language is none of the engine's: `:ein false`
+is refused as `:ein dead` is. The three are pinned by `ein_word_unknown`, `ein_beside_assert` and `ein_on_hrule` in
+[`examples/broken/load/`](../../../../examples/broken/load/).
+
+### 2.32 No import names the module every program gets
+
+`std.core` is brought into every program by the load, with no import line
+([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
+[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), so an import of it,
+in a program or in a module, is refused, one line, at the command's load-error exit:
+
+| the file | the line |
+|---|---|
+| `(import std.core)`, in any of an import's three shapes | `kb load error: F:3:9: (import std.core) — std.core is the module every program gets, with no import line: no import names it (Q-M1f.551)` |
+| a load that cannot read the module: an `$EIN_STDLIB` that names no standard library, a saved file that carries none | `kb load error: std.core, the module every program gets, cannot be read: …`, then the line the import of any module of the standard library would have drawn |
+
+The second row is every program's: a load reads `std.core` whatever the program imports, so an `$EIN_STDLIB` that
+names a directory which is no standard library refuses every program, and a saved file carries the module with its
+program ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)). The first is pinned by
+`import_of_core` in [`examples/broken/load/`](../../../../examples/broken/load/).
+
 ## See also
 
 - [`05-cli.md`](05-cli.md) — the commands, their options and every exit code.

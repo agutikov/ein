@@ -501,6 +501,11 @@ fn kb_section(
         for rule in p.rules.values() {
             let what = match strata.iter().find(|(r, _)| *r == rule.name) {
                 Some((_, Some(k))) => format!("stratum {k}"),
+                // A rule that states a word to the engine writes no fact,
+                // so it is of no stratum: the line says what it states.
+                _ if rule.ein.is_some() => {
+                    format!(":ein {}", rule.ein.map_or("", ein_core::EngineWord::as_str))
+                }
                 _ => "no plan compiled".to_string(),
             };
             let _ = writeln!(o, "{}", rule_line(terms, rule, &what));

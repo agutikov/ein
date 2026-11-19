@@ -7,8 +7,8 @@ from it, as a saved file's load sets it, so every command reads the container as
 prints what `ein solve F` prints, byte for byte but the path it echoes, with the same stderr and exit code; `ein
 saturate` and `ein render kb` read the node's state; `ein test` asks it nothing; `ein show hyps` and `ein render
 h-space` read the program's H. Saved again, the container is the same bytes. A root has no commitment, and its
-container holds no `COMMIT`, the container of a program's. The section is a kind the format adds, so the format is
-2.1, `einb/2.1`; what the kernel interns before a program's names is what `SYMBOLS` holds and not its layout, so a
+container holds no `COMMIT`, the container of a program's. The section is a kind the format added, its minor 1; the format is
+`einb/2.2` since the firings that ended a saved state took a kind of their own; what the kernel interns before a program's names is what `SYMBOLS` holds and not its layout, so a
 change there moves no version.
 
 **Why.** A saved file is a node of its program's lattice

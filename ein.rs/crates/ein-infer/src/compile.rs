@@ -471,6 +471,7 @@ impl<'a> Compiler<'a> {
             seed: self.seed.into_boxed_slice(),
             disjuncts: disjuncts.into_boxed_slice(),
             asserts: asserts.into_boxed_slice(),
+            ends: rule.ein == Some(ein_core::EngineWord::Inconsistent),
             why: rule.why,
             n_regs: self.plan_space.names.len() as Reg,
             reg_names: self.plan_space.names.into_boxed_slice(),

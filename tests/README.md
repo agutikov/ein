@@ -213,6 +213,16 @@ and which one the explanation is taken over is its tie-break, by the facts'
 text: `04_clash_3.ein`, whose relation is `between`, reads `refuted by
 (given)`, and its six siblings `refuted by clash-N`. No claim reads the row.
 
+### `stdlib/core/`: the rule every program gets
+
+`std.core` is in every program with no import line, so every program of this directory that derives `(false)`
+activates its one rule, `inconsistent`. Its own two programs say what the rule is for: `01_false_ends_the_state`,
+where a rule concludes `(false)` and the claim is `(solve :expect (false))`, and `02_loaded_and_alive`, where the
+module is loaded as in every program, nothing concludes `(false)`, and R is root. The rule's firing writes no fact, so
+no claim can name it: what a claim sees is that the state is dead.
+[`ein-infer/tests/search_semantics.rs`](../ein.rs/crates/ein-infer/tests/search_semantics.rs) holds the record of the
+firing, and that a held `(false)` no rule has run over is no contradiction.
+
 ### A module of facts has no rule to activate
 
 `std.math.digits` holds the calculator's digit tables as plain facts and no

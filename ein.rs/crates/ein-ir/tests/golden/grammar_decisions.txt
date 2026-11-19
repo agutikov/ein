@@ -1,17 +1,11 @@
 === "(rulex (?a) :match X :assert Y)"
   <string>:1:9: unexpected `?a`: a variable
-    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
-    and 4 more repairs
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Shift `X`, Delete `:assert`
 === "(rulex A)"
   ok (1 form(s))
 === "(hrulex (?a) :match X :assert Y)"
   <string>:1:10: unexpected `?a`: a variable
-    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
-    and 4 more repairs
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Shift `X`, Delete `:assert`
 === "(macrox (?a) B)"
   <string>:1:10: unexpected `?a`: a variable
     repair: Insert a name, Delete `?a`
@@ -76,10 +70,7 @@
   ok (1 form(s))
 === "(rule_x (?a) :match X :assert Y)"
   <string>:1:10: unexpected `?a`: a variable
-    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
-    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
-    and 4 more repairs
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Shift `X`, Delete `:assert`
 === "(not_a X)"
   ok (1 form(s))
 === "(neq_test X)"

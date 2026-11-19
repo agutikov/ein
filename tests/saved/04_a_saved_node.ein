@@ -41,5 +41,35 @@
        :expect (or (model) (model (flagged a))))
 
 )
+(module std.core
+;;; Ein stdlib — `std.core`: the rules every program gets.
+;;;
+;;; No program imports this module, and none may: the loader brings it into
+;;; every program, whole, after the program's own forms and those of the
+;;; modules it imports (Q-M1f.551). Its rule is then a rule of the program as
+;;; any other is: `ein saturate --dump` lists it under its full name,
+;;; `std.core.inconsistent`, and a trace shows its firing.
+;;;
+;;; ── `(false)` is a proposition ──────────────────────────────────────────────
+;;; `(false)` is a fact: a rule concludes it, a program states it, another
+;;; fact holds it under an arrow, `(think Ann (false))`. What makes a state
+;;; that holds it dead is no reading of its name. It is the rule below, which
+;;; matches a held `(false)` and states `:ein inconsistent`, a word to the
+;;; engine and no fact (Q-M1f.399, Q-M1f.550): where a rule that states it
+;;; fires, the saturation of the state ends and the state is dead. The firing
+;;; writes no fact.
+;;;
+;;; ── what an explanation says of it ──────────────────────────────────────────
+;;; A dead state's core is the frontier of what the firing matched, the
+;;; `(false)`, and `refuted by` names the rule that concluded that `(false)`:
+;;; an explanation names the rules a program wrote or imported, and reads
+;;; through a rule of this module to what its firing rests on.
+
+(rule inconsistent ()
+  :match (false)
+  :ein   inconsistent
+  :why   "a state that derives a contradiction is inconsistent")
+
+)
 (commit
   (note (bad a)))

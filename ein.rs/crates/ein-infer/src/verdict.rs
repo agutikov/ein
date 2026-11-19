@@ -114,6 +114,8 @@ pub fn goal_matches(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: Option<NodeId>)
             relation_names: Box::new([]),
         }),
         assert_: None,
+        ein: None,
+        implicit: false,
         why: None,
         loc: None,
     };
@@ -186,6 +188,8 @@ pub fn goal_plan_error(
             relation_names: Box::new([]),
         }),
         assert_: None,
+        ein: None,
+        implicit: false,
         why: None,
         loc: None,
     };

@@ -64,7 +64,8 @@
 //! nodes built by fork from root. Every relation in `D` is then derived only
 //! through positive reads of `D` and reads of static relations, which have the
 //! same extension at every node; so each node's fixpoint contains its subsets'
-//! (`dead` is upward-closed, `(false)` being a fact), and every obligation's
+//! (`dead` is upward-closed: `(false)` is a fact, and a rule that ends a
+//! state is matched wherever its premises are held), and every obligation's
 //! set of matches is fixed while its witnesses only grow (*discharged* is
 //! upward-closed). Both closures together leave `R` no holes, so its two lines
 //! describe it. That is a **sufficient** condition.
@@ -649,6 +650,96 @@ pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
         }
     }
     out
+}
+
+/// **What leads to the end of a state**: every relation a rule that states
+/// `:ein inconsistent` reads as a positive premise, outside every `absent`
+/// (Q-M1f.399). A rule that concludes a fact of one is one firing from such a
+/// rule's, and is read as a refutation by the agenda
+/// ([`crate::saturator::AGENDA`]) and by *forbid* ([`crate::forbid`]).
+pub fn leads_to_an_end<'a>(
+    plans: impl IntoIterator<Item = &'a Plan>,
+    terms: &Terms,
+) -> FxHashSet<Rel> {
+    // determinism-ok: a set asked for membership alone.
+    let mut out = FxHashSet::default();
+    for plan in plans {
+        if !plan.ends {
+            continue;
+        }
+        out.extend(
+            reads_of(plan, terms)
+                .into_iter()
+                .filter(|&(_, depth)| depth == 0)
+                .map(|(r, _)| r),
+        );
+    }
+    out
+}
+
+/// What makes a rule a **refutation**: a rule whose firing can make a state
+/// dead.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Refutes {
+    /// It states `:ein inconsistent`: its firing ends a state.
+    Inconsistent,
+    /// It concludes a fact of `rel`, which a rule that states
+    /// `:ein inconsistent` matches ([`leads_to_an_end`]): `(false)`, in
+    /// every program. `nullary` where the conclusion takes no argument.
+    Leads { rel: Symbol, nullary: bool },
+    /// It concludes a stored negation, one side of a fact beside its
+    /// negation.
+    Not,
+}
+
+impl Refutes {
+    /// `:ein inconsistent`, `(false)` or `(p …)`, `(not …)`: the conclusion
+    /// as a line names it.
+    pub fn text(self, terms: &Terms) -> String {
+        match self {
+            Refutes::Inconsistent => ":ein inconsistent".to_string(),
+            Refutes::Leads { rel, nullary: true } => format!("({})", terms.sym(rel)),
+            Refutes::Leads {
+                rel,
+                nullary: false,
+            } => format!("({} …)", terms.sym(rel)),
+            Refutes::Not => "(not …)".to_string(),
+        }
+    }
+}
+
+/// What makes `plan`'s rule a refutation, if it is one, the first of
+/// [`Refutes`]' three that holds. `leads` is [`leads_to_an_end`] of the
+/// plans `plan` runs beside. Every conclusion is read, not only the first:
+/// a rule can derive a fact and refute.
+pub fn refutes(plan: &Plan, terms: &Terms, leads: &FxHashSet<Rel>) -> Option<Refutes> {
+    if plan.ends {
+        return Some(Refutes::Inconsistent);
+    }
+    let mut negation = None;
+    for slot in plan.asserts.iter() {
+        // An `eq` / `neq` conclusion, or `(not …)` over one, is `(false)`
+        // where it does not hold (Q-M1e2.26, `firing::build_conclusion`).
+        if crate::firing::computed(terms, plan, *slot).is_some() {
+            let rel = terms.kernel.r#false;
+            if leads.contains(&Rel::pos(rel)) {
+                return Some(Refutes::Leads { rel, nullary: true });
+            }
+            continue;
+        }
+        let Slot::Nested { rel, slots } = slot else {
+            continue;
+        };
+        if *rel == terms.kernel.not {
+            negation = Some(Refutes::Not);
+        } else if leads.contains(&Rel::pos(*rel)) {
+            return Some(Refutes::Leads {
+                rel: *rel,
+                nullary: slots.is_empty(),
+            });
+        }
+    }
+    negation
 }
 
 /// Every relation `plan`'s `:assert` writes, `(false)` included — every

@@ -1,0 +1,12 @@
+digraph rule_inconsistent_lhs_rhs {
+  rankdir=TB;
+  label="inconsistent"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "false_L" [label="false", shape=box];
+    "h1_false_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "false_L" -> "h1_false_L" [xlabel="1", dir=back, color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="ein";
+    ein_R [shape=plaintext, label=":ein inconsistent"];
+  }
+}

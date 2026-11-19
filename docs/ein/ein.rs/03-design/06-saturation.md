@@ -142,10 +142,19 @@ and nothing else (the one exemption the configuration principle makes,
 
 ### 6.1 Contradiction
 
-A KB is contradictory when it holds `(false)` (a rule concluded it outright) or a pair `X` and `(not X)`, however
-either fact got there: a written clue, a commitment and a derivation are alike. The check is two bit tests per new
-fact, is `X` negated and is `X` present, and its result order is fixed, `(false)` first, then pairs in the order the
-KB holds them, because it reaches the core and the trace.
+A KB is contradictory when a rule that states `:ein inconsistent` fired on it, or it holds a pair `X` and
+`(not X)`, however either fact got there: a written clue, a commitment and a derivation are alike. The first is a
+record on the KB and no fact ([`Kb::ended`](../../../../ein.rs/crates/ein-core/src/kb.rs),
+[`firing::end`](../../../../ein.rs/crates/ein-infer/src/firing.rs)): the rule, the premises its match read, the
+absences it passed and what its universals read, as a derived fact's derivation is, so a core is taken over it. A
+held `(false)` is of this kind and the kernel reads it by its name nowhere: `std.core`'s rule, which every program
+gets, matches it and states the key
+([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A candidate of such a
+rule is before every other in the queue, under the agenda and under the written order alone, and a saturation
+stopped at its first contradiction fires what the facts written so far give such a rule before it returns, so a
+stopped state holds every contradiction its facts make. The pair's check is two bit tests per new fact, is `X`
+negated and is `X` present. The result order is fixed, the firings that ended the state in the order they fired,
+then pairs in the order the KB holds them, because it reaches the core and the trace.
 
 ### 6.2 Obligations
 

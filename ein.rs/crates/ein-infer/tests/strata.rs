@@ -85,9 +85,14 @@ fn an_absent_read_is_a_stratum_and_a_self_read_is_a_negative_cycle() {
         .into_iter()
         .map(|(r, k)| (terms.sym(r).to_string(), k))
         .collect();
+    // The rule every program gets writes no fact, so it is of no stratum.
     assert_eq!(
         rules,
-        [("one".to_string(), Some(0)), ("g".to_string(), Some(1))]
+        [
+            ("one".to_string(), Some(0)),
+            ("g".to_string(), Some(1)),
+            ("std.core.inconsistent".to_string(), None)
+        ]
     );
 }
 

@@ -1,0 +1,8 @@
+;; `:ein` on an hrule: an hrule proposes a fact, a commitment of its own, and a
+;; word to the engine is a rule's.
+(relation p T :why "p holds of {?3}")
+(hrule h ()
+  :match (p ?x)
+  :ein   inconsistent
+  :why   "suppose the state ends")
+(p a)

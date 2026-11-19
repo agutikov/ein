@@ -1075,8 +1075,9 @@ fn the_circuit_of_one_division() {
     // the call handed on, one row, its strip, the flag and the
     // contradiction. The call is flagged beside the request and is a
     // contradiction too: two firings more, no deeper; and the call's ask of
-    // its dividend, found held.
-    assert_eq!(div("127645", ""), (22, 11), "127645 / 0");
+    // its dividend, found held. Then the firing of the rule every program
+    // gets, which ends the state on the `(false)`: one more, one deeper.
+    assert_eq!(div("127645", ""), (23, 12), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────

@@ -24,11 +24,27 @@
 //! `seen` keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 —
 //! there is no enqueue/fire window left for a guard to go stale in.
 //!
-//! ### The agenda: what leads to `(false)` first
+//! ### A rule that ends a state
 //!
-//! Every saturation ranks its candidates in two halves, [`AGENDA`]: first
-//! those of a rule whose conclusion a contradiction can be made of, `(false)`,
-//! a stored negation `(not …)`, or a fact of a relation some plan concludes
+//! A rule that states `:ein inconsistent` (Q-M1f.399) concludes no fact:
+//! where it is applied, the application is recorded on the KB
+//! ([`ein_core::Kb::end`], [`crate::firing::end`]), which is then
+//! inconsistent, and nothing is written. The KB holds what the firing rests
+//! on as it would a derived fact's derivation, so a core is taken over it.
+//! **A candidate of such a rule is before every other in the queue**
+//! (`ORDINARY`), under the agenda below and under the written order alone,
+//! and among the parked ones at the boundary, so the state ends at the
+//! firing that concluded what the rule matched, one firing later. Every
+//! program has such a rule, `std.core`'s, which matches a held `(false)`
+//! (Q-M1f.551): the kernel reads `(false)` by its name nowhere.
+//!
+//! ### The agenda: what leads to the end of a state first
+//!
+//! Every saturation ranks its other candidates in two halves, [`AGENDA`]:
+//! first those of a rule whose conclusion a contradiction can be made of, a
+//! fact a rule that ends a state matches
+//! ([`crate::monotone::leads_to_an_end`]: `(false)`, in every program), a
+//! stored negation `(not …)`, or a fact of a relation some plan concludes
 //! the negation of or the KB holds a negation of (either side of a pair,
 //! [`FailFirst::Pairs`], read off the compiled plans by
 //! [`crate::monotone::writes_of`]); then the rest. Within each half the order
@@ -55,8 +71,12 @@
 //! `Saturator::stop_at_first_contradiction` makes [`Saturator::saturate`]
 //! return at the first point its KB holds a contradiction, before any firing
 //! where the facts written before it already do and otherwise after the
-//! firing whose conclusions make one, every conclusion of that firing
-//! written; the KB is then not marked saturated. It is how a route's node on
+//! firing that ends the state, or the one whose conclusions make a pair,
+//! every conclusion of that firing written; the KB is then not marked
+//! saturated. Before it returns it fires what the facts written so far give
+//! a rule that ends a state (`Saturator::end_step`), matching those rules'
+//! plans alone, so a stopped state holds every contradiction its facts make,
+//! as its fixpoint would over the same facts. It is how a route's node on
 //! a monotone program is saturated (`crate::region`'s § What a node is), and
 //! it is no agenda: which candidate fires first is the agenda's.
 //! [`stopping_at_first_contradiction`] is the same stop as a switch on the
@@ -81,17 +101,18 @@ use crate::firing::{BindingKey, Env, FireError, Firing, build_conclusion, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 
-/// Which rules a saturation fires first: those whose `:assert` writes, by
-/// [`crate::monotone::writes_of`]'s reading of the compiled plan, a fact a
-/// contradiction can be made of.
+/// Which rules a saturation fires first, after those that end a state: those
+/// whose `:assert` writes, by [`crate::monotone::writes_of`]'s reading of the
+/// compiled plan, a fact a contradiction can be made of.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FailFirst {
-    /// `(false)`, a stored negation `(not …)`, or a fact of a relation whose
-    /// negation some plan concludes or the KB holds: either side of a pair.
-    /// The engine's agenda, [`AGENDA`].
+    /// A fact a rule that ends a state matches, a stored negation `(not …)`,
+    /// or a fact of a relation whose negation some plan concludes or the KB
+    /// holds: either side of a pair. The engine's agenda, [`AGENDA`].
     Pairs,
-    /// `(false)` or a stored negation: the side of a pair a rule supplies
-    /// against a fact already there. A measurement's.
+    /// A fact a rule that ends a state matches, or a stored negation: the
+    /// side of a pair a rule supplies against a fact already there. A
+    /// measurement's.
     Negations,
 }
 
@@ -113,6 +134,16 @@ thread_local! {
 /// above every tiebreaker a run reaches, so it sorts after every candidate
 /// that is, and leaves FIFO within each half.
 const LATE: u64 = 1 << 62;
+
+/// The bit every candidate's rank carries but that of a rule that states
+/// `:ein inconsistent` (the module's § A rule that ends a state): above every
+/// tiebreaker a run reaches and below [`LATE`], so such a rule's candidate
+/// sorts before every other, in either half and under the written order
+/// alone.
+const ORDINARY: u64 = 1 << 61;
+
+/// The bits of a rank that are no tiebreaker.
+const BAND: u64 = ORDINARY | LATE;
 
 /// Run `f` with the agenda switch of this thread at `to`. Restored when `f`
 /// returns or unwinds.
@@ -402,6 +433,20 @@ pub struct Saturator {
     /// [`stopping_at_first_contradiction`] as it stood when this saturation
     /// was built, or `Saturator::stop_at_first_contradiction` since.
     stop_first: bool,
+    /// The plans of rules that state `:ein inconsistent`, in the engine's
+    /// order, and the relations each reads as a positive premise, as
+    /// [`Self::pos_index`] holds every plan's; read by
+    /// [`Saturator::match_ends`] alone, and computed at `ends_n` plans.
+    end_plans: Vec<usize>,
+    end_index: FxHashMap<Symbol, Vec<usize>>,
+    ends_n: usize,
+    /// Some rule that states `:ein inconsistent` has parameters, so a derived
+    /// activator can give it a plan.
+    open_ends: bool,
+    /// How much of the pending pass [`Saturator::match_ends`] has matched
+    /// for those plans: `None`, nothing; else the count of the delta's facts
+    /// it seeded them with.
+    ends_seeded: Option<usize>,
 
     // ── Observables ────────────────────────────────────────────────
     pub naf_rounds: u32,
@@ -555,6 +600,16 @@ impl Saturator {
             fail_first: is_fail_first(),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
+            end_plans: Vec::new(),
+            end_index: FxHashMap::default(),
+            ends_n: usize::MAX,
+            open_ends: s
+                .kb
+                .program()
+                .rules
+                .values()
+                .any(|r| r.ein.is_some() && !r.params.is_empty()),
+            ends_seeded: None,
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -660,6 +715,16 @@ impl Saturator {
             fail_first: AGENDA_SWITCH.with(Cell::get).unwrap_or(snapshot.fail_first),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
+            end_plans: Vec::new(),
+            end_index: FxHashMap::default(),
+            ends_n: usize::MAX,
+            open_ends: s
+                .kb
+                .program()
+                .rules
+                .values()
+                .any(|r| r.ein.is_some() && !r.params.is_empty()),
+            ends_seeded: None,
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -678,13 +743,13 @@ impl Saturator {
             let parked = std::mem::take(&mut sat.parked);
             sat.parked = parked
                 .into_iter()
-                .map(|(tb, e)| ((tb & !LATE) | sat.late(sat.entries.get(e).plan), e))
+                .map(|(tb, e)| ((tb & !BAND) | sat.band(sat.entries.get(e).plan), e))
                 .collect();
             let queue = std::mem::take(&mut sat.queue);
             sat.queue = queue
                 .into_iter()
                 .map(|Reverse((tb, e))| {
-                    Reverse(((tb & !LATE) | sat.late(sat.entries.get(e).plan), e))
+                    Reverse(((tb & !BAND) | sat.band(sat.entries.get(e).plan), e))
                 })
                 .collect();
         }
@@ -747,7 +812,14 @@ impl Saturator {
     ) -> Result<usize, SaturateError> {
         let mut i = 0;
         if self.stop_first && crate::contradiction::has_contradiction(s.kb, s.terms) {
-            return Ok(0);
+            // Before any firing, but those that end the state over the
+            // facts already written.
+            while let Some(firing) = self.end_step(s)? {
+                f(&firing);
+                self.last_firing = Some(firing);
+                i += 1;
+            }
+            return Ok(i);
         }
         loop {
             if max_steps.is_some_and(|m| i >= m) {
@@ -764,14 +836,26 @@ impl Saturator {
                 None => return Ok(i),
                 Some(firing) => {
                     f(&firing);
-                    let stop = self.stop_first
-                        && !firing.redundant
-                        && firing
-                            .derived
-                            .iter()
-                            .any(|&d| crate::contradiction::contradicts(s.kb, s.terms, d));
+                    let wrote = !firing.redundant && !firing.ends;
+                    let mut stop = self.stop_first
+                        && (firing.ends
+                            || (wrote
+                                && firing.derived.iter().any(|&d| {
+                                    crate::contradiction::contradicts(s.kb, s.terms, d)
+                                })));
                     self.last_firing = Some(firing);
                     i += 1;
+                    if self.stop_first && (stop || wrote) {
+                        // What the facts written so far give a rule that
+                        // states `:ein inconsistent` fires now, so the state
+                        // holds every contradiction its facts make.
+                        while let Some(firing) = self.end_step(s)? {
+                            f(&firing);
+                            self.last_firing = Some(firing);
+                            i += 1;
+                            stop = true;
+                        }
+                    }
                     if stop {
                         return Ok(i);
                     }
@@ -858,6 +942,7 @@ impl Saturator {
         // The FULL pass subsumes whatever the delta would have seeded, so
         // taking it loses nothing and leaves no stale seed behind.
         let _ = self.delta.take();
+        self.ends_seeded = None;
         self.enqueue_pass(s, None)?;
         self.needs_enqueue = false;
         let unfired = self
@@ -875,10 +960,30 @@ impl Saturator {
     fn closure_step(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
         if self.needs_enqueue {
             let delta = self.delta.take();
+            self.ends_seeded = None;
             self.enqueue_pass(s, delta)?;
             self.needs_enqueue = false;
         }
-        while let Some(Reverse((_, entry))) = self.queue.pop() {
+        self.fire_next(s, false)
+    }
+
+    /// Pop and apply the queue's next candidate that has not fired; with
+    /// `ends_only`, only while the next is of a rule that states
+    /// `:ein inconsistent`, which sorts before every other ([`ORDINARY`]).
+    fn fire_next(
+        &mut self,
+        s: &mut Session<'_>,
+        ends_only: bool,
+    ) -> Result<Option<Firing>, SaturateError> {
+        loop {
+            match self.queue.peek() {
+                None => return Ok(None),
+                Some(Reverse((rank, _))) if ends_only && rank & ORDINARY != 0 => return Ok(None),
+                Some(_) => {}
+            }
+            let Some(Reverse((_, entry))) = self.queue.pop() else {
+                return Ok(None);
+            };
             if self.engine.fired.contains(self.entry_key(entry)) {
                 continue;
             }
@@ -889,7 +994,7 @@ impl Saturator {
             if s.events.on() && (!firing.redundant || s.events.verbose()) {
                 emit_fire(s, &firing);
             }
-            if !firing.redundant {
+            if !firing.redundant && !firing.derived.is_empty() {
                 // A productive firing wrote a new fact; the next pass processes
                 // only what it derived (semi-naive), accumulated
                 // until consumed.
@@ -900,7 +1005,88 @@ impl Saturator {
             }
             return Ok(Some(firing));
         }
-        Ok(None)
+    }
+
+    /// The next firing of a rule that states `:ein inconsistent` over the
+    /// facts written so far, or `None` where none is left: what a saturation
+    /// stopped at its first contradiction fires before it returns (the
+    /// module's § A rule that ends a state).
+    ///
+    /// It matches such rules' plans alone, over the facts the pending pass
+    /// has still to read, and leaves them for that pass, so a saturation that
+    /// goes on ([`Self::run_to_quiescence`]) fires what it would have fired:
+    /// the candidates enqueued here are then already seen.
+    fn end_step(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
+        if self.needs_enqueue {
+            self.match_ends(s)?;
+        }
+        self.fire_next(s, true)
+    }
+
+    /// Enqueue what the pending pass would for the plans of rules that state
+    /// `:ein inconsistent`, each candidate once.
+    fn match_ends(&mut self, s: &mut Session<'_>) -> Result<(), SaturateError> {
+        if self.open_ends {
+            // Such a rule with parameters: a derived activator gives it a
+            // plan, as the pending pass would find.
+            self.engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
+        }
+        let n = self.engine.len();
+        if self.ends_n != n {
+            self.end_plans = (0..n).filter(|&at| self.engine.plan(at).ends).collect();
+            self.end_index.clear();
+            for &at in &self.end_plans {
+                let plan = self.engine.plan(at);
+                let mut rels: Vec<Symbol> = Vec::new();
+                for d in plan.disjuncts.iter() {
+                    for step in plan.steps(d.steps) {
+                        if let Step::Rel(r) = step
+                            && !rels.contains(&r.rel)
+                        {
+                            rels.push(r.rel);
+                        }
+                    }
+                }
+                for rel in rels {
+                    self.end_index.entry(rel).or_default().push(at);
+                }
+            }
+            self.ends_n = n;
+        }
+        if self.end_plans.is_empty() {
+            return Ok(());
+        }
+        self.matched_plans.resize(n, false);
+        let Some(delta) = self.delta.take() else {
+            // A full pass is pending: every such plan, whole, once.
+            if self.ends_seeded.is_none() {
+                for k in 0..self.end_plans.len() {
+                    let at = self.end_plans[k];
+                    self.full_match(s, at);
+                }
+                self.ends_seeded = Some(0);
+            }
+            return Ok(());
+        };
+        // A plan the pending pass would match whole, as it is new.
+        for k in 0..self.end_plans.len() {
+            let at = self.end_plans[k];
+            if !self.matched_plans[at] {
+                self.matched_plans[at] = true;
+                self.full_match(s, at);
+            }
+        }
+        for &fact in &delta[self.ends_seeded.unwrap_or(0)..] {
+            let rel = s.terms.facts.rel(fact);
+            if let Some(plans) = self.end_index.get(&rel).cloned() {
+                for at in plans {
+                    self.seed_match(s, at, fact);
+                }
+            }
+        }
+        self.ends_seeded = Some(delta.len());
+        self.delta = Some(delta);
+        Ok(())
     }
 
     /// Apply one popped candidate — productive or redundant.
@@ -918,6 +1104,27 @@ impl Saturator {
         let e = self.entries.get(entry);
         let (plan_at, disjunct) = (e.plan, e.disjunct);
         let plan = self.engine.plan_arc(plan_at);
+        if plan.ends {
+            // A rule that states `:ein inconsistent`: the application ends
+            // the state and writes no fact. Recorded with what it rests on,
+            // as a derivation is, so a core can be taken over it.
+            self.engine.fired.insert(key);
+            let guards = plan.disjuncts[disjunct].guards;
+            let absent = self.negative_premises(s, &plan, entry, guards);
+            let universal = self.universal_support(s, &plan, entry, guards);
+            if self.reading_universals {
+                self.last_universal = universal.clone();
+            }
+            let e = self.entries.get(entry);
+            let env = Env {
+                regs: &e.regs,
+                trail: &e.trail,
+                premises: &e.premises,
+            };
+            return Ok(Some(crate::firing::end(
+                s.kb, s.terms, &plan, env, absent, universal,
+            )));
+        }
         if plan.asserts.is_empty() {
             // Defensive — nothing to derive. Mark fired so the queue does not
             // churn on it forever.
@@ -982,6 +1189,7 @@ impl Saturator {
                 derived: tentative.into_boxed_slice(),
                 premises: e.premises.clone(),
                 redundant: true,
+                ends: false,
             }));
         }
         let absent = self.negative_premises(s, &plan, entry, guards);
@@ -1260,7 +1468,7 @@ impl Saturator {
             });
         }
         let entry = self.entries.len() as u32;
-        let rank = self.tiebreaker | self.late(at);
+        let rank = self.tiebreaker | self.band(at);
         self.entries.push(Entry {
             plan: at,
             disjunct,
@@ -1278,15 +1486,20 @@ impl Saturator {
         }
     }
 
-    /// [`LATE`] for a candidate of plan `at` whose rule is not among the
-    /// agenda's first; 0 otherwise, and always under the written order alone
+    /// The bits a candidate of plan `at` carries above its tiebreaker: none
+    /// for a rule that states `:ein inconsistent`, which fires before every
+    /// other; [`ORDINARY`] for any other, with [`LATE`] where its rule is not
+    /// among the agenda's first, never under the written order alone
     /// ([`fifo`]).
     #[inline]
-    fn late(&self, at: usize) -> u64 {
+    fn band(&self, at: usize) -> u64 {
+        if self.engine.plan(at).ends {
+            return 0;
+        }
         match self.fail_first {
-            None => 0,
-            Some(_) if self.first.get(at).copied().unwrap_or(false) => 0,
-            Some(_) => LATE,
+            None => ORDINARY,
+            Some(_) if self.first.get(at).copied().unwrap_or(false) => ORDINARY,
+            Some(_) => ORDINARY | LATE,
         }
     }
 
@@ -1301,10 +1514,14 @@ impl Saturator {
         if self.first.len() == n {
             return;
         }
-        let (not, falsum) = (s.terms.kernel.not, s.terms.kernel.r#false);
+        let not = s.terms.kernel.not;
         let writes: Vec<Vec<crate::monotone::Rel>> = (0..n)
             .map(|at| crate::monotone::writes_of(self.engine.plan(at), s.terms))
             .collect();
+        // What a rule that states `:ein inconsistent` matches: a rule that
+        // concludes a fact of it leads to the end of a state.
+        let leads =
+            crate::monotone::leads_to_an_end((0..n).map(|at| self.engine.plan(at)), s.terms);
         // The relations a stored negation can be of: those a plan concludes
         // the negation of, those the KB holds one of, and every relation
         // where a plan concludes `(not ?x)` of a fact it does not name.
@@ -1327,7 +1544,7 @@ impl Saturator {
             .iter()
             .map(|ws| {
                 ws.iter().any(|w| {
-                    w.name == falsum
+                    leads.contains(w)
                         || w.negated
                         || (which == FailFirst::Pairs && (every || negated.contains(&w.name)))
                 })
@@ -1448,7 +1665,7 @@ impl Saturator {
                         let rule = s.terms.sym(plan.rule).to_string();
                         let round = self.naf_rounds as i64;
                         s.events.emit("admit", |l| {
-                            l.num("tiebreaker", (tb & !LATE) as i64);
+                            l.num("tiebreaker", (tb & !BAND) as i64);
                             l.num("round", round);
                             l.str("rule", &rule);
                         });
@@ -1462,13 +1679,13 @@ impl Saturator {
                     retired.push(key);
                     self.naf_retired += 1;
                     if s.events.on() {
-                        emit_boundary(s, "retire", tb & !LATE, self.naf_rounds, &plan, guards, g);
+                        emit_boundary(s, "retire", tb & !BAND, self.naf_rounds, &plan, guards, g);
                     }
                 }
                 Some(g) => {
                     self.judged_at[entry as usize] = self.epoch;
                     if s.events.on() {
-                        emit_boundary(s, "park", tb & !LATE, self.naf_rounds, &plan, guards, g);
+                        emit_boundary(s, "park", tb & !BAND, self.naf_rounds, &plan, guards, g);
                     }
                 }
             }
@@ -1705,6 +1922,7 @@ fn emit_fire(s: &mut Session<'_>, firing: &Firing) {
     let premises = events::sexpr_facts(s.terms, &firing.premises);
     let derived = events::sexpr_facts(s.terms, &firing.derived);
     let redundant = firing.redundant;
+    let ends = firing.ends;
     s.events.emit("fire", |l| {
         l.str("rule", &rule);
         l.owned_strs("activator", activator);
@@ -1712,6 +1930,11 @@ fn emit_fire(s: &mut Session<'_>, firing: &Firing) {
         l.owned_strs("premises", premises);
         l.owned_strs("derived", derived);
         l.bool("redundant", redundant);
+        // The word the rule gave the engine, where it states one: the
+        // firing ended the state and derived nothing.
+        if ends {
+            l.str("ein", ein_core::EngineWord::Inconsistent.as_str());
+        }
     });
 }
 
@@ -1743,6 +1966,7 @@ fn emit_boundary(
 mod tests {
     use super::*;
     use ein_ir::{from_ir::load, parse};
+    use std::collections::BTreeSet;
 
     fn saturate(src: &str) -> (Terms, Kb, Vec<String>, u32) {
         let mut ast = Ast::new();
@@ -2067,5 +2291,167 @@ mod tests {
             ["(not (q a))", "(q a)"],
             "the pair, its negation first"
         );
+    }
+
+    /// The rules of one firing each, in the order they fired, with whether
+    /// the firing ended the state, and the saturated KB.
+    fn fired(src: &str) -> (Terms, Kb, Vec<(String, bool)>) {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let mut order: Vec<(Symbol, bool)> = Vec::new();
+        {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: SharedMemo::default(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |f| order.push((f.rule, f.ends)))
+                .expect("saturates");
+        }
+        let order = order
+            .into_iter()
+            .map(|(r, ends)| (terms.sym(r).to_string(), ends))
+            .collect();
+        (terms, kb, order)
+    }
+
+    const ENDS: &str = "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
+         (relation r T :why \"r holds of {?3}\")\n(relation s T :why \"s holds of {?3}\")\n\
+         (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\
+         (rule to-q ()\n  :match (p ?x)\n  :assert (q ?x) :why \"p holds of {?x}, so q does\")\n\
+         (rule to-s ()\n  :match (r ?x)\n  :assert (s ?x) :why \"r holds of {?x}, so s does\")\n\
+         (rule no-q ()\n  :match (q ?x)\n  :ein inconsistent :why \"q holds of {?x}, which cannot be\")\n\
+         (p a)\n";
+
+    /// A rule that states `:ein inconsistent` ends the state where it fires
+    /// and writes no fact; it fires before every other candidate, and the
+    /// rule that concludes what it matches before the rest (the module's § A
+    /// rule that ends a state).
+    #[test]
+    fn a_rule_that_states_the_key_ends_the_state_and_writes_no_fact() {
+        let (terms, kb, order) = fired(ENDS);
+        let names = |o: &[(String, bool)]| o.iter().map(|(r, _)| r.clone()).collect::<Vec<_>>();
+        // `to-q` leads to `no-q`, so it fires before `to-r`, written first;
+        // `no-q` fires as soon as `(q a)` is there.
+        assert_eq!(names(&order), ["to-q", "no-q", "to-r", "to-s"]);
+        assert_eq!(
+            order.iter().filter(|(_, ends)| *ends).count(),
+            1,
+            "{order:?}"
+        );
+        assert!(kb.is_inconsistent());
+        assert_eq!(kb.ended().len(), 1);
+        let record = terms.provs.get(kb.ended()[0]);
+        assert_eq!(record.rule.map(|r| terms.sym(r)), Some("no-q"));
+        assert_eq!(
+            record
+                .premises
+                .iter()
+                .map(|&f| events::sexpr(&terms, f))
+                .collect::<Vec<_>>(),
+            ["(q a)"]
+        );
+        // Root runs to its fixpoint, and the firing added no fact to it.
+        let facts: BTreeSet<String> = kb
+            .facts()
+            .filter(|&f| terms.sym(terms.facts.rel(f)) != "relation")
+            .map(|f| events::sexpr(&terms, f))
+            .collect();
+        assert_eq!(
+            facts,
+            ["(p a)", "(q a)", "(r a)", "(s a)"]
+                .map(str::to_string)
+                .into_iter()
+                .collect::<BTreeSet<_>>()
+        );
+        assert!(crate::contradiction::has_contradiction(&kb, &terms));
+        let found = crate::contradiction::detect(&kb, &terms);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert_eq!(found[0].kind(), crate::contradiction::Kind::Ended);
+
+        // Under the written order alone the rule still fires before every
+        // other candidate the queue holds.
+        let (_, _, written) = fifo(|| fired(ENDS));
+        assert_eq!(names(&written), ["to-r", "to-q", "no-q", "to-s"]);
+    }
+
+    /// A saturation stopped at its first contradiction stops at the firing
+    /// that ends the state: after the firing that concluded what the rule
+    /// matched, and that rule's, with nothing else fired.
+    #[test]
+    fn a_stopped_saturation_stops_at_the_firing_that_ends_the_state() {
+        let (_, kb, order) = stopping_at_first_contradiction(|| fired(ENDS));
+        assert_eq!(
+            order,
+            [("to-q".to_string(), false), ("no-q".to_string(), true)]
+        );
+        assert!(kb.is_inconsistent());
+        let (_, kb, order) = stopping_at_first_contradiction(|| fifo(|| fired(ENDS)));
+        assert_eq!(
+            order.iter().map(|(r, _)| r.as_str()).collect::<Vec<_>>(),
+            ["to-r", "to-q", "no-q"],
+            "in the written order, at the same firing"
+        );
+        assert!(kb.is_inconsistent());
+    }
+
+    /// A state a pair made dead holds every firing that ends it over the
+    /// facts it has: a saturation stopped at the pair fires the rule that
+    /// states the key before it returns, so the state's contradictions are
+    /// those its fixpoint would hold over the same facts.
+    #[test]
+    fn a_saturation_stopped_at_a_pair_fires_what_ends_the_state() {
+        let src = "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n\
+             (relation r T :why \"r holds of {?3}\")\n\
+             (rule both ()\n  :match (p ?x)\n  :assert (and (q ?x) (not (p ?x))) :why \"p holds of {?x}, so q does and p does not\")\n\
+             (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\
+             (rule no-q ()\n  :match (q ?x)\n  :ein inconsistent :why \"q holds of {?x}, which cannot be\")\n\
+             (p a)\n";
+        let (terms, kb, order) = stopping_at_first_contradiction(|| fired(src));
+        assert_eq!(
+            order,
+            [("both".to_string(), false), ("no-q".to_string(), true)]
+        );
+        let kinds: Vec<&str> = crate::contradiction::detect(&kb, &terms)
+            .iter()
+            .map(|c| c.kind().as_str())
+            .collect();
+        assert_eq!(kinds, ["ended", "pair"]);
+    }
+
+    /// The same application is one firing: a KB that already holds its
+    /// record keeps one, and a second saturation's firing is redundant.
+    #[test]
+    fn the_record_of_a_firing_that_ended_a_state_is_kept_once() {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, ENDS, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let mut redundant: Vec<bool> = Vec::new();
+        for _ in 0..2 {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: SharedMemo::default(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |f| {
+                if f.ends {
+                    redundant.push(f.redundant);
+                }
+            })
+            .expect("saturates");
+        }
+        assert_eq!(redundant, [false, true]);
+        assert_eq!(kb.ended().len(), 1);
     }
 }

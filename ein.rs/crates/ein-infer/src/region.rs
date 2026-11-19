@@ -125,8 +125,10 @@ pub fn is_to_quiescence() -> bool {
     TO_QUIESCENCE.with(std::cell::Cell::get)
 }
 
-/// The status bit of a node whose fixpoint holds a contradiction: `(false)`,
-/// or a fact beside its stored negation, which derives nothing.
+/// The status bit of a node whose fixpoint holds a contradiction: a rule
+/// that states `:ein inconsistent` fired in it, as the one every program gets
+/// does on a held `(false)`, or it holds a fact beside its stored negation,
+/// which derives nothing.
 pub const DEAD: u8 = 1;
 /// The status bit of a node with an undischarged obligation.
 pub const OWING: u8 = 2;
@@ -2094,13 +2096,8 @@ fn node_in_region(
     let dead = !contradictions.is_empty();
     let mut node = Node::default();
     if let Some(first) = contradictions.first() {
-        let first_steps: Vec<ein_core::ProvId> = [first.positive, Some(first.negative)]
-            .into_iter()
-            .flatten()
-            .filter_map(|f| fork.primary(f))
-            .collect();
-        node.first_rules = rules_of(terms, &first_steps);
-        node.absent_premises = absent_premises(&fork, terms, first.witness());
+        node.first_rules = rules_of(terms, &first.first_steps(&fork, terms));
+        node.absent_premises = absent_premises(&fork, terms, first);
     }
     let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut ev)?;
     node.owes = owes.total() as u32;
@@ -2355,10 +2352,25 @@ fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
 /// non-monotone detector reads this list for its status, and following the
 /// activator here would move that label on the `forbid-chain-*.ein`
 /// witnesses.
-fn absent_premises(kb: &Kb, terms: &Terms, witness: FactId) -> Vec<String> {
+fn absent_premises(
+    kb: &Kb,
+    terms: &Terms,
+    contradiction: &crate::contradiction::Contradiction,
+) -> Vec<String> {
     let mut seen: FxHashSet<FactId> = FxHashSet::default();
-    let mut stack = vec![witness];
     let mut out: Vec<String> = Vec::new();
+    // From the contradiction's witness; from the firing that ended the
+    // state, the absences it passed itself and every premise it matched.
+    let mut stack: Vec<FactId> = match contradiction.ended() {
+        Some(p) => {
+            let prov = terms.provs.get(p);
+            for r in prov.absent.iter() {
+                out.push(format!("(absent {})", naf_text(terms, r.rel, &r.args)));
+            }
+            prov.premises.to_vec()
+        }
+        None => contradiction.witness(terms).into_iter().collect(),
+    };
     while let Some(f) = stack.pop() {
         if !seen.insert(f) {
             continue;

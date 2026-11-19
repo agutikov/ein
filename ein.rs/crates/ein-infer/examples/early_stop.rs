@@ -371,7 +371,7 @@ impl Plain<'_> {
         let mut first: Option<(u64, usize)> = None;
         for (k, c) in cs.iter().enumerate() {
             let t = c
-                .sides()
+                .sides(terms)
                 .iter()
                 .map(|s| {
                     if root.contains(s) {
@@ -398,7 +398,7 @@ impl Plain<'_> {
                 } else {
                     terms.sym(firings[t as usize - 1].rule).to_string()
                 };
-                ((t, at), cs[k].kind.as_str().to_string(), by)
+                ((t, at), cs[k].kind().as_str().to_string(), by)
             }
         };
         let report = if read_report {

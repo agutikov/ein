@@ -184,10 +184,7 @@ fn activators_of(kb: &Kb, terms: &Terms, fact: FactId) -> Vec<FactId> {
 pub fn of(kb: &Kb, terms: &Terms, root: &FxHashSet<FactId>, d: &Dynamic, walk: Walk) -> Taint {
     let mut out = Taint::default();
     for c in ein_infer::contradiction::detect(kb, terms) {
-        let seeds: Vec<FactId> = [c.positive, Some(c.negative)]
-            .into_iter()
-            .flatten()
-            .collect();
+        let seeds: Vec<FactId> = c.sides(terms);
         let direct: FxHashSet<FactId> = seeds.iter().copied().collect();
         let mut seen: FxHashSet<FactId> = FxHashSet::default();
         // (fact, reached through an activator)

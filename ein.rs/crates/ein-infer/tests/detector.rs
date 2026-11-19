@@ -224,25 +224,27 @@ fn the_order_check_finds_every_fifo_race() {
 /// (`08-monotonicity.md` § 9's c2, c4, c5, c6).
 #[test]
 fn each_site_names_what_it_concludes_and_puts_at_stake() {
-    let cases: &[(&str, Concludes, AtStake)] = &[
+    // What the first fixture's rule concludes is `(false)`, a fact a rule
+    // that states `:ein inconsistent` matches; the others, by the word.
+    let cases: &[(&str, Option<Concludes>, AtStake)] = &[
         (
             "examples/ein-bugs/naf-upward-closure.ein",
-            Concludes::False,
+            None,
             AtStake::StateAndDead,
         ),
         (
             "examples/lattice/08_absent_witness_hole.ein",
-            Concludes::Positive,
+            Some(Concludes::Positive),
             AtStake::State,
         ),
         (
             "examples/lattice/04_obligation_trigger_hole.ein",
-            Concludes::Open,
+            Some(Concludes::Open),
             AtStake::Owes,
         ),
         (
             "examples/lattice/09_activator_hole.ein",
-            Concludes::NoRootPlan,
+            Some(Concludes::NoRootPlan),
             AtStake::OwesThroughPlan,
         ),
     ];
@@ -250,7 +252,24 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
         let (m, t) = file(rel);
         let sites: Vec<String> = m.sites.iter().map(|s| s.render(&t)).collect();
         assert_eq!(m.detector.stakes.len(), 1, "{rel}: {sites:?}");
-        assert_eq!(m.detector.stakes[0].concludes, *concludes, "{rel}");
+        let stake = &m.detector.stakes[0];
+        match concludes {
+            Some(c) => assert_eq!(stake.concludes, *c, "{rel}"),
+            None => {
+                assert!(
+                    matches!(
+                        stake.concludes,
+                        Concludes::Refutes(ein_infer::monotone::Refutes::Leads {
+                            nullary: true,
+                            ..
+                        })
+                    ),
+                    "{rel}: {:?}",
+                    stake.concludes
+                );
+                assert_eq!(stake.concluded, "(false)", "{rel}");
+            }
+        }
         assert_eq!(m.detector.stakes[0].at_stake, *at_stake, "{rel}");
     }
 }

@@ -318,6 +318,10 @@ impl Kept {
                 mark(b);
             }
         }
+        // The firings that ended the state, which no fact cites.
+        for &p in kb.ended() {
+            mark(p);
+        }
         Kept { count }
     }
 
@@ -733,14 +737,16 @@ pub fn load_program(
 ) -> Result<(Kb, Vec<NodeId>)> {
     let forms = ein_ir::parse(ast, section.text, Some(name))
         .map_err(|e| EinbError::Program(e.to_string()))?;
-    let mut kb = ein_ir::load_query_with(ast, terms, &forms, None, query, load)
+    let resolver = ein_ir::Resolver::new();
+    let mut kb = ein_ir::from_ir::load_query_by(&resolver, ast, terms, &forms, None, query, load)
         .map_err(|e| EinbError::Program(e.0))?;
     // What the load read: the stored program, resolved and import-flattened,
-    // and no module, which a state saved from the container carries
+    // and the one module it holds no form of, the module every program gets
+    // (Q-M1f.551), which a state saved from the container carries
     // (Q-M1f.401).
     kb.program_mut().sources = Some(std::sync::Arc::new(ein_core::Sources {
         program: section.text.to_string(),
-        modules: Vec::new(),
+        modules: resolver.modules_read(),
     }));
     Ok((kb, forms))
 }
@@ -855,6 +861,34 @@ pub fn write_closure(kb: &Kb, kept: &Kept) -> Vec<u8> {
     }
     w.align(crate::header::ALIGN);
     w.into_vec()
+}
+
+// ── ENDED ──────────────────────────────────────────────────────────
+
+/// The firings that ended the state ([`ein_core::Kb::ended`]): the position
+/// of each one's record in `PROV`, in the order they fired. Empty, and no
+/// section, for a KB no rule that states `:ein inconsistent` fired on.
+pub fn write_ended(kb: &Kb, kept: &Kept) -> Vec<u8> {
+    if kb.ended().is_empty() {
+        return Vec::new();
+    }
+    let mut w = Writer::new();
+    w.u32(kb.ended().len() as u32);
+    for &p in kb.ended() {
+        w.u32(kept.at(p));
+    }
+    w.align(crate::header::ALIGN);
+    w.into_vec()
+}
+
+pub fn read_ended(body: &[u8], kb: &mut Kb, terms: &Terms, maps: &Maps) -> Result<()> {
+    let mut r = Reader::new(body);
+    let n = r.count(4)?;
+    for _ in 0..n {
+        let prov = maps.prov(r.u32()?)?;
+        kb.end(terms, prov);
+    }
+    Ok(())
 }
 
 pub fn read_closure(body: &[u8], kb: &mut Kb, maps: &Maps) -> Result<()> {

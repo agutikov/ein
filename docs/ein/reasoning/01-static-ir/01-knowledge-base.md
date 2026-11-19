@@ -775,7 +775,10 @@ $$
 
 A set of facts that holds a contradiction is **dead**, and one that holds none is **alive**. Both are properties
 of the set: a set that includes a dead set is dead. This is all the two reserved relations mean, and it is what
-the reasoning reads them for.
+the reasoning reads them for. **A program's rules can call more sets dead.** A rule may *end* a state in the place
+of concluding a fact, and a state in which such a rule is satisfied is dead, with no fact standing for it
+([saturation](../02-kb-evolution/02-saturation.md)). $\bot$ is dead in this way and no other: every program holds the
+rule that ends a state on the one premise $\bot$. The pair needs no rule.
 
 **The fact $f$ may itself be a stored negation**, and the definitions read it as they read any fact. With
 $f = \lnot g$, the pair they compare is $\lnot g$ and $\lnot\lnot g$:

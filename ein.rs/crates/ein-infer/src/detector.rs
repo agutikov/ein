@@ -107,10 +107,10 @@ pub const ASSUMES: &str = "every node is a fork of root (root's fixpoint, its co
 /// What a site's rule concludes, as the warning names it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Concludes {
-    /// `(false)`: a refutation.
-    False,
-    /// A stored negative, `(not …)`: a refutation one edge up.
-    Negative,
+    /// A refutation ([`monotone::Refutes`]): the rule states
+    /// `:ein inconsistent`, or concludes `(false)`, which a rule that states
+    /// it matches, or a stored negative, `(not …)`, a refutation one edge up.
+    Refutes(monotone::Refutes),
     /// A positive fact.
     Positive,
     /// An obligation's debt, `(open …)`.
@@ -121,13 +121,12 @@ pub enum Concludes {
 }
 
 impl Concludes {
-    pub fn as_str(self) -> &'static str {
+    pub fn text(self, terms: &Terms) -> String {
         match self {
-            Concludes::False => "(false)",
-            Concludes::Negative => "(not …)",
-            Concludes::Positive => "a positive fact",
-            Concludes::Open => "(open …)",
-            Concludes::NoRootPlan => "root compiled no plan of it",
+            Concludes::Refutes(r) => r.text(terms),
+            Concludes::Positive => "a positive fact".to_string(),
+            Concludes::Open => "(open …)".to_string(),
+            Concludes::NoRootPlan => "root compiled no plan of it".to_string(),
         }
     }
 }
@@ -190,6 +189,8 @@ pub struct Stake {
     pub site: String,
     pub kind: SiteKind,
     pub concludes: Concludes,
+    /// [`Concludes::text`], as the row prints it.
+    pub concluded: String,
     pub at_stake: AtStake,
 }
 
@@ -198,16 +199,23 @@ impl Stake {
     /// stake.
     pub fn text(&self) -> String {
         let what = if self.kind == SiteKind::Activator && self.concludes == Concludes::NoRootPlan {
-            format!("; {}", self.concludes.as_str())
+            format!("; {}", self.concluded)
         } else if self.kind == SiteKind::Activator {
-            format!(
-                "; a plan root compiled of it concludes {}",
-                self.concludes.as_str()
-            )
+            format!("; a plan root compiled of it {}", self.concluded_as())
         } else {
-            format!(", concludes {}", self.concludes.as_str())
+            format!(", {}", self.concluded_as())
         };
         format!("{}{what} — at stake: {}", self.site, self.at_stake.words())
+    }
+
+    /// `concludes (false)`, or `states :ein inconsistent`.
+    fn concluded_as(&self) -> String {
+        match self.concludes {
+            Concludes::Refutes(monotone::Refutes::Inconsistent) => {
+                format!("states {}", self.concluded)
+            }
+            _ => format!("concludes {}", self.concluded),
+        }
     }
 
     /// `rule [activator …]`: the site's text before its colon, what a status
@@ -299,6 +307,9 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
         return Static::default();
     }
     let program = kb.program();
+    // What a rule that states `:ein inconsistent` matches, `(false)` in
+    // every program: a rule that concludes a fact of it refutes.
+    let leads = monotone::leads_to_an_end(plans.iter().map(|p| &**p), terms);
     let stakes = m
         .sites
         .iter()
@@ -310,8 +321,8 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
                 Concludes::NoRootPlan
             } else {
                 mine.iter()
-                    .find_map(|p| refutes(p, terms))
-                    .unwrap_or(Concludes::Positive)
+                    .find_map(|p| monotone::refutes(p, terms, &leads))
+                    .map_or(Concludes::Positive, Concludes::Refutes)
             };
             let at_stake = match s.kind {
                 SiteKind::Absent if concludes == Concludes::Positive => AtStake::State,
@@ -326,6 +337,7 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
                 site: s.render(terms),
                 kind: s.kind,
                 concludes,
+                concluded: concludes.text(terms),
                 at_stake,
             }
         })
@@ -335,20 +347,6 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
         stakes,
         cycles: cycles_over(kb, terms, plans, &dynamic),
         order: order(kb, terms, plans, &dynamic),
-    }
-}
-
-/// `(false)` or `(not …)` when one of `plan`'s conclusions refutes.
-fn refutes(plan: &Plan, terms: &Terms) -> Option<Concludes> {
-    let w = monotone::writes_of(plan, terms);
-    if w.iter()
-        .any(|r| !r.negated && r.name == terms.kernel.r#false)
-    {
-        Some(Concludes::False)
-    } else if w.iter().any(|r| r.negated) {
-        Some(Concludes::Negative)
-    } else {
-        None
     }
 }
 
@@ -928,11 +926,17 @@ fn dead_chain_sites(
         let Some(first) = crate::contradiction::detect(kb, terms).into_iter().next() else {
             return BTreeSet::new();
         };
-        let seeds: Vec<FactId> = [first.positive, Some(first.negative)]
-            .into_iter()
-            .flatten()
-            .collect();
-        chain_sites(sites, root, &chain_of(kb, terms, &seeds))
+        let mut chain = chain_of(kb, terms, &first.sides(terms));
+        // The firing that ended the state is on the chain as a derivation
+        // is: its rule, and the absences it passed.
+        if let Some(p) = first.ended() {
+            let prov = terms.provs.get(p);
+            chain.rules.extend(prov.rule);
+            for r in prov.absent.iter() {
+                chain.absent.insert(naf_rel_label(terms, r));
+            }
+        }
+        chain_sites(sites, root, &chain)
     })
 }
 

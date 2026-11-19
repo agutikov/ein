@@ -311,6 +311,36 @@ conclusion `(false)`, is asserted in-process, in
 the file a claim can tell the rules by is the one where all seven are
 activated and silent.
 
+## `std.core`: the rules every program gets
+
+[`core.ein`](core.ein) is the one module no program imports: the load brings it into every program, whole, after the
+program's own forms and those of the modules it imports, under its full names
+([Q-M1f.551](../docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). It holds one rule:
+
+```lisp
+(rule inconsistent ()
+  :match (false)
+  :ein   inconsistent
+  :why   "a state that derives a contradiction is inconsistent")
+```
+
+`(false)` is a fact, the library's word for a contradiction: a rule concludes it, a program states it, another fact
+holds it under an arrow. What makes a state that holds it dead is this rule. It states no `:assert`: `:ein
+inconsistent` is a word to the engine and no fact
+([Q-M1f.399](../docs/decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md),
+[Q-M1f.550](../docs/decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)), and where a rule that
+states it fires, the saturation of the state ends and the state is dead, with no fact written. The engine reads
+`(false)` by its name nowhere to judge a state.
+
+The rule is a rule of the program as any other: `ein saturate --dump` lists it as `std.core.inconsistent`, `ein
+render rules` draws it, and a trace shows its firing after the one that concluded the `(false)`. An explanation
+reads through it: a dead state's core is the frontier of the `(false)` it matched, and `refuted by` names the rule
+that concluded that `(false)`. An import of the module is refused, a saved file carries it with the program's other
+modules, and a `.einb` stores the program without it. A fact beside its stored negation is not this module's: the
+engine reads that contradiction itself, with no rule. Reference:
+[`21-core.md`](../docs/ein/user/04-reference/04-stdlib/21-core.md); its programs are
+[`tests/stdlib/core/`](../tests/stdlib/core/).
+
 ## `std.math.digits`: a library of facts
 
 A module of **facts and no rule**: the *ontology* half of

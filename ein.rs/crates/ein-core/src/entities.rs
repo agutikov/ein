@@ -93,6 +93,34 @@ pub struct Pattern {
     pub relation_names: Box<[Symbol]>,
 }
 
+/// A word a rule addresses to the engine under `:ein`, where another rule
+/// states what it concludes under `:assert` (Q-M1f.399). It is no fact: no
+/// knowledge base holds it, no rule matches it and it stands under no arrow.
+///
+/// There is one (Q-M1f.550): where a rule that states `inconsistent` fires,
+/// the saturation of the state ends and the state is dead.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum EngineWord {
+    Inconsistent,
+}
+
+impl EngineWord {
+    /// Every word of the engine, in the order a refusal lists them.
+    pub const ALL: [EngineWord; 1] = [EngineWord::Inconsistent];
+
+    /// The word as a program writes it after `:ein`.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            EngineWord::Inconsistent => "inconsistent",
+        }
+    }
+
+    /// The word `text` spells, or `None` where it is none of the engine's.
+    pub fn of(text: &str) -> Option<EngineWord> {
+        EngineWord::ALL.into_iter().find(|w| w.as_str() == text)
+    }
+}
+
 /// A rewrite rule — `(rule Name (?p1 ?p2 …) :match … :assert … …)`, or a
 /// hypothesis rule, which is a rule by shape and lives in its own registry so
 /// the saturator never fires it.
@@ -101,7 +129,17 @@ pub struct Rule {
     pub name: Symbol,
     pub params: Box<[Symbol]>,
     pub match_: Option<Pattern>,
+    /// What the rule concludes, its `:assert`; `None` for a rule that states
+    /// a word to the engine instead ([`Rule::ein`]).
     pub assert_: Option<Pattern>,
+    /// The word the rule gives the engine, its `:ein`, where it states one in
+    /// the place of an `:assert` (Q-M1f.399).
+    pub ein: Option<EngineWord>,
+    /// The rule is one of the module every program gets with no import line
+    /// (Q-M1f.551). An explanation names the rules a program wrote or
+    /// imported, so it reads through a firing of such a rule to what the
+    /// firing rests on.
+    pub implicit: bool,
     pub why: Option<Symbol>,
     pub loc: Option<Loc>,
 }

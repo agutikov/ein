@@ -1,0 +1,30 @@
+;;; std.core — loaded, and nothing for it to fire on.
+;;;
+;;; ── What the rule says ─────────────────────────────────────────────────────
+;;;
+;;;   (false)  ⟹  the state is inconsistent
+;;;
+;;; The twin of `01_false_ends_the_state.ein`: the same program with the
+;;; switch on and not off. `std.core.inconsistent` is loaded, as in every
+;;; program, and `on-and-off` is too; no state holds `(false)`, so neither
+;;; fires and root is alive.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Nothing is supposed, so R is root's one state, which holds what the
+;;; program states and no `(false)`: the claim lists the `on` fact, the one
+;;; relation it names. A rule that ended every state, whatever it held, would
+;;; leave R empty and fail the claim.
+
+(relation on  Switch :why "{?3} is on")
+(relation off Switch :why "{?3} is off")
+
+(on s1)
+
+(rule on-and-off ()
+  :match  (and (on ?s) (off ?s))
+  :assert (false)
+  :why    "{?s} is on and off at once")
+
+(solve :no-search
+       :expect (region (model (on s1))))

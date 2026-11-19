@@ -147,7 +147,8 @@ fn with_flag<T>(flag: &'static std::thread::LocalKey<Cell<bool>>, f: impl FnOnce
 
 /// **The relations a node can hold a fact of that neither root nor its
 /// commitment holds**: those a plan root compiled writes, an hrule's apart,
-/// and every kernel relation. Every other relation
+/// `(false)` among them where a rule concludes it, and the kernel's own,
+/// `not`, `open` and the closure marker. Every other relation
 /// is *unwritten*: a fact of it that root does not hold and that is no
 /// candidate is in no node's fixpoint, on a monotone program (the module's
 /// § L9).
@@ -163,8 +164,7 @@ impl Unwritten {
         let program = kb.program();
         let k = &terms.kernel;
         // determinism-ok: a set asked for membership alone.
-        let mut written: FxHashSet<Symbol> =
-            [k.not, k.r#false, k.open, k.closed].into_iter().collect();
+        let mut written: FxHashSet<Symbol> = [k.not, k.open, k.closed].into_iter().collect();
         for plan in crate::monotone::plans_of(memo) {
             // An hrule proposes candidates and runs at no node.
             if program.hrules.contains(plan.rule) && !program.rules.contains(plan.rule) {

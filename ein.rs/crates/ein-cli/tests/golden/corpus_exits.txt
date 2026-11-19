@@ -390,6 +390,15 @@
 1    examples/broken/load/derived_activator_never.ein :: render rules
 1    examples/broken/load/derived_activator_never.ein :: saturate
 1    examples/broken/load/derived_activator_never.ein :: solve
+1    examples/broken/load/ein_beside_assert.ein :: render rules
+1    examples/broken/load/ein_beside_assert.ein :: saturate
+1    examples/broken/load/ein_beside_assert.ein :: solve
+1    examples/broken/load/ein_on_hrule.ein :: render rules
+1    examples/broken/load/ein_on_hrule.ein :: saturate
+1    examples/broken/load/ein_on_hrule.ein :: solve
+1    examples/broken/load/ein_word_unknown.ein :: render rules
+1    examples/broken/load/ein_word_unknown.ein :: saturate
+1    examples/broken/load/ein_word_unknown.ein :: solve
 1    examples/broken/load/eq_in_a_macro_body.ein :: render rules
 1    examples/broken/load/eq_in_a_macro_body.ein :: saturate
 1    examples/broken/load/eq_in_a_macro_body.ein :: solve
@@ -420,6 +429,9 @@
 1    examples/broken/load/import_module_not_found.ein :: render rules
 1    examples/broken/load/import_module_not_found.ein :: saturate
 1    examples/broken/load/import_module_not_found.ein :: solve
+1    examples/broken/load/import_of_core.ein :: render rules
+1    examples/broken/load/import_of_core.ein :: saturate
+1    examples/broken/load/import_of_core.ein :: solve
 1    examples/broken/load/import_relative_not_found.ein :: render rules
 1    examples/broken/load/import_relative_not_found.ein :: saturate
 1    examples/broken/load/import_relative_not_found.ein :: solve
@@ -1337,6 +1349,13 @@
 0    examples/features/17_eq_neq_premise.ein :: saturate
 0    examples/features/17_eq_neq_premise.ein :: solve
 0    examples/features/17_eq_neq_premise.ein :: test
+0    examples/features/18_ein_inconsistent.ein :: render constraints
+0    examples/features/18_ein_inconsistent.ein :: render lattice
+0    examples/features/18_ein_inconsistent.ein :: render rules
+0    examples/features/18_ein_inconsistent.ein :: saturate
+0    examples/features/18_ein_inconsistent.ein :: saturate --dump
+0    examples/features/18_ein_inconsistent.ein :: solve
+0    examples/features/18_ein_inconsistent.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules
@@ -1780,6 +1799,10 @@
 0    stdlib/contradiction.ein :: render rules
 0    stdlib/contradiction.ein :: saturate
 0    stdlib/contradiction.ein :: solve
+0    stdlib/core.ein :: render constraints
+0    stdlib/core.ein :: render rules
+0    stdlib/core.ein :: saturate
+0    stdlib/core.ein :: solve
 0    stdlib/elim.ein :: render constraints
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
@@ -2182,6 +2205,17 @@
 0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: saturate
 0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: solve
 0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: test
+0    tests/stdlib/core/01_false_ends_the_state.ein :: render constraints
+0    tests/stdlib/core/01_false_ends_the_state.ein :: render rules
+0    tests/stdlib/core/01_false_ends_the_state.ein :: saturate
+0    tests/stdlib/core/01_false_ends_the_state.ein :: saturate --dump
+0    tests/stdlib/core/01_false_ends_the_state.ein :: solve
+0    tests/stdlib/core/01_false_ends_the_state.ein :: test
+0    tests/stdlib/core/02_loaded_and_alive.ein :: render constraints
+0    tests/stdlib/core/02_loaded_and_alive.ein :: render rules
+0    tests/stdlib/core/02_loaded_and_alive.ein :: saturate
+0    tests/stdlib/core/02_loaded_and_alive.ein :: solve
+0    tests/stdlib/core/02_loaded_and_alive.ein :: test
 0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
 0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
 0    tests/stdlib/elim/01_domain_elimination.ein :: saturate

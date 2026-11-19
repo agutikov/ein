@@ -71,12 +71,19 @@ pub struct RegionTrace {
 /// them**, each with its statement, `; ` between two: `Derives `(f)` —
 /// <statement>; `(g)`.`, so no conclusion is stored and nowhere named
 /// (Q-M1f.214). A rule of one conclusion prints one.
+///
+/// **A step that ended the state derives nothing**, and says so: `States
+/// `:ein inconsistent`: the state is inconsistent, and derives no fact.`
 fn derives_line(step: &TraceStep) -> String {
     let one = |label: String, says: &Option<String>| match says {
         Some(s) => format!("`{label}` — {}", md_text(s, "")),
         None => format!("`{label}`"),
     };
-    let mut parts = vec![one(step.derived_label(), &step.statement)];
+    let Some(derived) = &step.derived else {
+        let word = step.ein.as_deref().unwrap_or_default();
+        return format!("States `:ein {word}`: the state is {word}, and the step derives no fact.");
+    };
+    let mut parts = vec![one(derived.label(), &step.statement)];
     parts.extend(step.more.iter().map(|(f, says)| one(f.label(), says)));
     let last = step.more.last().map_or(&step.statement, |(_, says)| says);
     let stop = if last.is_some() { "" } else { "." };

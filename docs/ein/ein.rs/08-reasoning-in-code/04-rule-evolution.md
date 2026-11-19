@@ -148,9 +148,10 @@ ein saturate strata.ein --dump
 
 <!-- output -->
 ```text
-;; Rules — the saturation agenda's (2)
+;; Rules — the saturation agenda's (3)
 ;;   one  :params ()  stratum 0
 ;;   g  :params ()  stratum 1
+;;   std.core.inconsistent  :params ()  :ein inconsistent
 
 ;; Strata — stratified, 2 strata
 ```

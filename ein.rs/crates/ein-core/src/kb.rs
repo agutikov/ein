@@ -587,6 +587,17 @@ pub struct Kb {
     /// is content-neutral. A fork inherits the mark with the facts, so a
     /// branch of a saturated root starts clean and its commitment dirties it.
     saturated_facts: usize,
+    /// **The firings that ended this state**: the record of every
+    /// application of a rule that states `:ein inconsistent`, in the order
+    /// they fired (Q-M1f.399). A KB with one is **inconsistent**, and its
+    /// state is dead.
+    ///
+    /// No fact stands for it. A record is what a derived fact's primary is,
+    /// the rule, the premises its match read, the absences it passed and
+    /// what its universals read, kept here because no fact holds it. Like
+    /// the facts, the list only grows, and a fork inherits it: a state above
+    /// an inconsistent one holds what ended it.
+    ended: Vec<ProvId>,
 }
 
 /// **A copy of the KB**, as it stands: the registries copied, the sealed
@@ -608,6 +619,7 @@ impl Clone for Kb {
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
             saturated_facts: self.saturated_facts,
+            ended: self.ended.clone(),
         }
     }
 }
@@ -636,6 +648,7 @@ impl Kb {
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
             saturated_facts: 0,
+            ended: Vec::new(),
         }
     }
 
@@ -655,6 +668,7 @@ impl Kb {
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
             saturated_facts: 0,
+            ended: Vec::new(),
         }
     }
 
@@ -774,6 +788,7 @@ impl Kb {
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
             saturated_facts: self.saturated_facts,
+            ended: self.ended.clone(),
         }
     }
 
@@ -1445,6 +1460,40 @@ impl Kb {
         out
     }
 
+    // ── The end of a state ─────────────────────────────────────────
+
+    /// Record that a rule that states `:ein inconsistent` fired, with the
+    /// record of its application. `false` where the KB already holds the
+    /// same application ([`crate::prov::Prov::same_justification`]), which is then
+    /// recorded once: a state is ended by a firing, and the same rule over
+    /// the same premises is the same firing.
+    ///
+    /// The saturator's, and nothing else's: it is what the firing of such a
+    /// rule does in the place of writing a fact.
+    pub fn end(&mut self, terms: &Terms, prov: ProvId) -> bool {
+        let record = terms.provs.get(prov);
+        if self
+            .ended
+            .iter()
+            .any(|&p| terms.provs.get(p).same_justification(record))
+        {
+            return false;
+        }
+        self.ended.push(prov);
+        true
+    }
+
+    /// The record of every firing that ended this state, in the order they
+    /// fired; empty for a state no rule ended.
+    pub fn ended(&self) -> &[ProvId] {
+        &self.ended
+    }
+
+    /// Whether a rule that states `:ein inconsistent` fired on this KB.
+    pub fn is_inconsistent(&self) -> bool {
+        !self.ended.is_empty()
+    }
+
     // ── Provenance ─────────────────────────────────────────────────
 
     /// The first-recorded justification of a fact.
@@ -1544,10 +1593,17 @@ impl Kb {
             // determinism-ok: the same set through the third.
             cited.extend(l.best.values().copied().filter(|p| p.is_fork()));
         }
+        // …and the firings that ended the state, which no fact cites.
+        cited.extend(self.ended.iter().copied().filter(|p| p.is_fork()));
         if cited.is_empty() {
             return;
         }
         let map = terms.provs.promote(&cited);
+        for p in self.ended.iter_mut() {
+            if let Some(&to) = map.get(p) {
+                *p = to;
+            }
+        }
         for i in 0..self.sealed.len() {
             if !self.sealed[i].cites_fork_provenance() {
                 continue;
@@ -1562,7 +1618,7 @@ impl Kb {
     /// Always `false` on a KB the engine has finished with — which is the
     /// claim, of root and of every recorded solution.
     pub fn cites_fork_provenance(&self) -> bool {
-        self.layers().any(Layer::cites_fork_provenance)
+        self.layers().any(Layer::cites_fork_provenance) || self.ended.iter().any(|p| p.is_fork())
     }
 
     /// Believe an already-interned proposition, with the derivation a file
@@ -1650,7 +1706,11 @@ impl Kb {
     /// different `Arc` whose *contents* the fact set and the indexes already
     /// witness.
     pub fn diff(&self, other: &Kb) -> Result<(), String> {
-        self.materialise().diff(&other.materialise())
+        self.materialise().diff(&other.materialise())?;
+        if self.ended != other.ended {
+            return Err("the firings that ended the state differ".to_string());
+        }
+        Ok(())
     }
 
     /// Could `fact` still take an alternative justification over
@@ -1873,6 +1933,8 @@ mod tests {
                 relation_names: Box::new([co_located]),
             }),
             assert_: None,
+            ein: None,
+            implicit: false,
             why: None,
             loc: None,
         });

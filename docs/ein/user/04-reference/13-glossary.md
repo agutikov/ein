@@ -185,7 +185,9 @@ the commitments of $k$ facts.
 
 ### State
 $\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when it holds
-a contradiction, `(false)` or a fact beside its stored negation, **alive** otherwise; **owing $n$** with $n$
+a contradiction, `(false)` or a fact beside its stored negation, or when a rule that states `:ein inconsistent`
+fires in it, as `std.core`'s does on a held `(false)`
+([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)); **alive** otherwise; **owing $n$** with $n$
 undischarged obligation instances; **discharged** when it owes nothing.
 
 ### Closure, state class
@@ -238,7 +240,8 @@ restrictions, rules that assert `(false)`, set its maximal line. See
 ### Core, the smallest contradiction frontier
 Why a node is dead: the smallest set of given facts, and the facts its commitment adds, from which, with root's rules,
 saturation derives the contradiction, searched over every derivation the program records. **A contradiction is
-explained by its facts together**: `(false)`, or a fact `X` and its `(not X)` as one pair. Beside it, `refuted by`
+explained by its facts together**: `(false)`, a fact `X` and its `(not X)` as one pair, or what a rule that states
+`:ein inconsistent` matched where it fired. Beside it, `refuted by`
 names the rules of the last step of its derivation, the first derivation recorded whose premises it derives
 ([Q-M1e2.21](../../../decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)). A core rests
 on the activator a node derived or committed

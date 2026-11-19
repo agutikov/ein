@@ -1,11 +1,15 @@
 === (config :lattice-sanity-check true)
+  RULE std.core.inconsistent params=() why='a state that derives a contradiction is inconsistent' vars=() rels=(false)
   QUERY None
   CONFIG lattice-sanity-check=True
   CONFIG record-alternative-justifications=True
+  NAME std.core.inconsistent rule head=() arg=()
 === (config :lattice-sanity-check false)
+  RULE std.core.inconsistent params=() why='a state that derives a contradiction is inconsistent' vars=() rels=(false)
   QUERY None
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
+  NAME std.core.inconsistent rule head=() arg=()
 === (config :lattice-sanity-check "true")
   <IRParseError> <string>:1:31: unexpected `"true"`: a string
     note: "true" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
@@ -120,9 +124,11 @@
     repair: Insert `:record-alternative-justifications`, Delete `:nope`
     repair: Delete `:nope`, Delete `true`
 === (config)
+  RULE std.core.inconsistent params=() why='a state that derives a contradiction is inconsistent' vars=() rels=(false)
   QUERY None
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
+  NAME std.core.inconsistent rule head=() arg=()
 === (config :lattice-sanity-check true) (config :enable-path-nogoods false)
   <IRParseError> <string>:1:45: unexpected `:enable-path-nogoods`: a keyword this form does not take
     note: config flag :enable-path-nogoods is retired: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
@@ -130,6 +136,8 @@
     repair: Insert `:record-alternative-justifications`, Delete `:enable-path-nogoods`
     repair: Delete `:enable-path-nogoods`, Delete `false`
 === (config :lattice-sanity-check true :lattice-sanity-check false)
+  RULE std.core.inconsistent params=() why='a state that derives a contradiction is inconsistent' vars=() rels=(false)
   QUERY None
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
+  NAME std.core.inconsistent rule head=() arg=()

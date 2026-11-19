@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_inconsistent_lhs_rhs Pages: 1 -->
+<svg width="252pt" height="184pt"
+ viewBox="0.00 0.00 252.00 184.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 180.1)">
+<title>rule_inconsistent_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-180.1 248,-180.1 248,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="122" y="-158.8" font-family="Times,serif" font-size="14.00">inconsistent</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-142.85 78,-142.85 78,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-125.55" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="86,-65.6 86,-142.85 236,-142.85 236,-65.6 86,-65.6"/>
+<text xml:space="preserve" text-anchor="middle" x="161" y="-125.55" font-family="Times,serif" font-size="14.00">ein</text>
+</g>
+<!-- false_L -->
+<g id="node1" class="node">
+<title>false_L</title>
+<polygon fill="none" stroke="black" points="70,-109.6 16,-109.6 16,-73.6 70,-73.6 70,-109.6"/>
+<text xml:space="preserve" text-anchor="middle" x="43" y="-86.92" font-family="Times,serif" font-size="14.00">false</text>
+</g>
+<!-- h1_false_L -->
+<g id="node2" class="node">
+<title>h1_false_L</title>
+<polygon fill="none" stroke="#2ca02c" points="53.8,-22.33 53.8,-31.27 47.47,-37.6 38.53,-37.6 32.2,-31.27 32.2,-22.33 38.53,-16 47.47,-16 53.8,-22.33"/>
+</g>
+<!-- false_L&#45;&gt;h1_false_L -->
+<g id="edge1" class="edge">
+<title>false_L&#45;&gt;h1_false_L</title>
+<path fill="none" stroke="#2ca02c" d="M43,-61.85C43,-53.29 43,-44.47 43,-37.96"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="39.5,-61.59 43,-71.59 46.5,-61.59 39.5,-61.59"/>
+<text xml:space="preserve" text-anchor="middle" x="38.5" y="-59.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ein_R -->
+<g id="node3" class="node">
+<title>ein_R</title>
+<text xml:space="preserve" text-anchor="middle" x="161" y="-86.92" font-family="Times,serif" font-size="14.00">:ein inconsistent</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 4622548ed6b48212581b48b91d749470a4938b09291fd1644d558a0aaac6df8b -->

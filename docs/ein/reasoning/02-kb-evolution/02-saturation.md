@@ -183,6 +183,11 @@ later quiescence ([absence](03-absent-and-naf.md)).
 Every saturation, root's, each node's and that of any reading of a fixpoint, derives in one order, the
 **agenda**. It is a total order on the candidates that are enabled and not yet fired, defined by two keys.
 
+**A rule that ends a state fires first.** A rule may end a state in the place of concluding a fact: where it
+is applied, the saturation of the state stops and the state is dead. A candidate of such a rule is before every
+other in the agenda. Every program holds one, with the one premise $\bot$, and below $\bot \in \psi_\rho$ stands
+for *the conclusion holds a fact some such rule has for a premise*, which $\bot$ always is.
+
 **Leads to $\bot$.** A candidate leads to a contradiction when its rule's conclusion can make one:
 
 $$

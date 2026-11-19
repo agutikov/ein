@@ -339,7 +339,9 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
 
 - **That a form's keywords are written, and once.** The grammar states which keywords each form takes and refuses any
   other, but takes them in any order and number: a rule with no `:match`, or with two, parses, and the loader refuses
-  it, `(rule r) missing :match or :assert at None`. A query takes at least one clause of its four, any one
+  it, `(rule r) missing :match or :assert at None`, as it refuses a rule that states `:ein` beside an `:assert`, on
+  an hrule, or with a word that is none of the engine's
+  ([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-rules-word-to-the-engine)). A query takes at least one clause of its four, any one
   (`QueryClausesPlus`).
 - **What a claim names.** An expectation's facts have a fact's shape at the parse (`ClaimFact`); that the relations it
   names exist, and that it names the goal's, is the loader's.

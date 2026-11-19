@@ -77,7 +77,7 @@ declarators, and **anything whose head is not a declarator is a fact**. The set 
 | head | role | shape |
 |---|---|---|
 | `relation` | declare a relation and its signature | `(relation <name> <T1> <T2> … :why "…")` |
-| `rule` | a saturation rule | `(rule <name> (<param-vars>*) :match … :assert … :why "…")` |
+| `rule` | a saturation rule | `(rule <name> (<param-vars>*) :match … :assert … :why "…")`, or with `:ein inconsistent` in the place of its `:assert` |
 | `hrule` | a hypothesis rule: what may be guessed | the shape of a `rule` |
 | `query` | a question about the answer, and with `:expect` what the answer should be | `(query :goal … [:goal-text …] [:over …] [:expect …])`; several per file |
 | `solve` | the problem's lattice, stated once, and the expected region | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:no-search] [:expect …])`; at most one per file |
@@ -404,8 +404,30 @@ rule and the clause it is written in
 is `()` and whose conclusion is `(false)` makes root dead, its refutation resting on no fact, so root's core is the
 empty set, printed `∅` ([Q-M1f.48](../../../decisions/read-out/Q-M1f.48-a-text-surface-writes-the-empty-core.md)).
 
-**A rule concludes a conjunction of literals**: facts and stored negations `(not P)`, with `(false)` and checks
-(`eq`, `neq`, `(not (eq …))`) among them, or `()`, or an obligation, `(open)` or `(open ?R)`, as the whole `:assert`.
+**A rule states what it concludes under `:assert`, or a word to the engine under `:ein`**, never both
+([Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). The word is no
+fact: no state holds it, no rule matches it, and it stands under no arrow. There is one,
+`inconsistent` ([Q-M1f.550](../../../decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)): where a rule
+that states `:ein inconsistent` fires, the saturation of the state ends and the state is dead, and the firing writes
+no fact.
+
+```lisp
+(rule one-king ()
+  :match (and (king ?a) (king ?b) (neq ?a ?b))
+  :ein   inconsistent
+  :why   "{?a} and {?b} are both the king, and there is one king")
+```
+
+`(false)` is a fact like any other, and what makes a state that holds it dead is such a rule, `std.core`'s, which
+every program gets with no import line
+([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)):
+[`04-stdlib/21-core.md`](04-stdlib/21-core.md). The grammar takes one name after `:ein`; a word that is none of the
+engine's, `:ein` beside an `:assert`, and `:ein` on an hrule are refused at load, each line listing the engine's
+words ([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-rules-word-to-the-engine)).
+
+**Under `:assert` a rule concludes a conjunction of literals**: facts and stored negations `(not P)`, with `(false)`
+and checks (`eq`, `neq`, `(not (eq …))`) among them, or `()`, or an obligation, `(open)` or `(open ?R)`, as the whole
+`:assert`.
 An `(and …)` is read flat at any depth, as a premise's is, so `(and (r a) (and (p a) (q a)))` concludes what `(and (r
 a) (p a) (q a))` does. A rule concludes no disjunction, whole or inside an `(and …)`: *one of* is the hypothesis
 layer's, an hrule's proposals or an obligation and what discharges it, each alternative a state of the answer. Nor
@@ -840,7 +862,7 @@ provenance, `(rule, premises, source)`, is literally a `(step …)` form
 
 A rule's `:match` and `:assert` are written in a small pattern language: **positive and conjunctive**, with two
 computed relations, `eq` and `neq`, each written as a premise, `(neq ?a ?c)`, and negation as failure, `(absent …)`.
-A rule takes `:match`, `:assert` and `:why` and no other keyword; a term takes none, so a filter clause is written as a
+A rule takes `:match`, `:assert` or `:ein`, and `:why`, and no other keyword; a term takes none, so a filter clause is written as a
 premise beside the patterns, never as `:where`
 ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)). What a pattern
 means, as a graph and in words, is [`../03-syntax-and-semantics/05-rules.md`](../03-syntax-and-semantics/05-rules.md).

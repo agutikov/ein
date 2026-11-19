@@ -1,0 +1,1 @@
+{DIR}/ein_beside_assert.ein:8:11: rule 'r': states :ein inconsistent beside an :assert — a rule states what it concludes under :assert, or a word to the engine under :ein, never both: write one rule for each (the engine's words: inconsistent)

@@ -789,12 +789,23 @@ impl RuleRenderer {
 
 // ── field extraction ───────────────────────────────────────────────
 
-/// `(name, match-expr, assert-expr)` from a `(rule …)` form; a `(macro …)`'s
-/// body is its match, and it concludes nothing.
-fn extract(ast: &Ast, rule: NodeId) -> (String, Option<NodeId>, Option<NodeId>) {
+/// What a rule's drawing is made of.
+struct Parts {
+    name: String,
+    match_expr: Option<NodeId>,
+    assert_expr: Option<NodeId>,
+    /// The word a rule gives the engine under `:ein`, where it states one in
+    /// the place of an `:assert`.
+    ein: Option<String>,
+}
+
+/// The parts of a `(rule …)` form; a `(macro …)`'s body is its match, and it
+/// concludes nothing.
+fn extract(ast: &Ast, rule: NodeId) -> Parts {
     let mut name = "anon".to_string();
     let mut match_expr = None;
     let mut assert_expr = None;
+    let mut ein = None;
     let is_macro = ast.head_name(rule) == Some("macro");
     let mut positional_at = 0;
     for (i, arg) in ast.form_args(rule).to_vec().into_iter().enumerate() {
@@ -809,6 +820,8 @@ fn extract(ast: &Ast, rule: NodeId) -> (String, Option<NodeId>, Option<NodeId>) 
                     match_expr = Some(value);
                 } else if key == "assert" && is_sform(ast, value) {
                     assert_expr = Some(value);
+                } else if key == "ein" {
+                    ein = ast.atom_name(value).map(str::to_string);
                 }
             }
             // `(macro <name> (<params>) <body> …)`: the body is the third
@@ -822,7 +835,21 @@ fn extract(ast: &Ast, rule: NodeId) -> (String, Option<NodeId>, Option<NodeId>) 
             _ => {}
         }
     }
-    (name, match_expr, assert_expr)
+    Parts {
+        name,
+        match_expr,
+        assert_expr,
+        ein,
+    }
+}
+
+/// The node a rule's drawing gives the word it states to the engine: the
+/// word after its key, which is no fact and so no node of a knowledge base.
+fn ein_node(id: &str, word: &str) -> String {
+    format!(
+        "{id} [shape=plaintext, label={}];",
+        quote(&format!(":ein {word}"))
+    )
 }
 
 // ── public entry points ────────────────────────────────────────────
@@ -830,14 +857,14 @@ fn extract(ast: &Ast, rule: NodeId) -> (String, Option<NodeId>, Option<NodeId>) 
 /// One `(rule …)`, `(hrule …)` or `(macro …)` form as a DOT digraph, every
 /// pattern in the canonical form, or folded where `fold`.
 pub fn render_rule_form(ast: &Ast, rule: NodeId, mode: RuleMode, fold: bool) -> String {
-    let (name, match_expr, assert_expr) = extract(ast, rule);
-    let safe = name.replace(['-', ' ', '.'], "_");
+    let parts = extract(ast, rule);
+    let safe = parts.name.replace(['-', ' ', '.'], "_");
     if ast.head_name(rule) == Some("macro") {
-        return render_macro(ast, &safe, &name, match_expr, fold);
+        return render_macro(ast, &safe, &parts.name, parts.match_expr, fold);
     }
     match mode {
-        RuleMode::SideBySide => render_sidebyside(ast, &safe, &name, match_expr, assert_expr, fold),
-        RuleMode::Overlay => render_overlay(ast, &safe, &name, match_expr, assert_expr, fold),
+        RuleMode::SideBySide => render_sidebyside(ast, &safe, &parts, fold),
+        RuleMode::Overlay => render_overlay(ast, &safe, &parts, fold),
     }
 }
 
@@ -889,14 +916,8 @@ fn folded_ranksep(fold: bool) -> Option<String> {
     fold.then(|| format!("  {POLYGON_RANKSEP};"))
 }
 
-fn render_sidebyside(
-    ast: &Ast,
-    safe: &str,
-    name: &str,
-    match_expr: Option<NodeId>,
-    assert_expr: Option<NodeId>,
-    fold: bool,
-) -> String {
+fn render_sidebyside(ast: &Ast, safe: &str, parts: &Parts, fold: bool) -> String {
+    let (name, match_expr, assert_expr) = (&parts.name, parts.match_expr, parts.assert_expr);
     let mut r = RuleRenderer::default();
     // Each panel is a drawing of its own: what a pattern points at is read
     // in the panel it is drawn in.
@@ -915,15 +936,24 @@ fn render_sidebyside(
         ("lhs", "match", "_L"),
         "  ",
     ));
-    out.extend(cluster(
-        &mut r,
-        ast,
-        assert_expr,
-        true,
-        fold,
-        ("rhs", "assert", "_R"),
-        "  ",
-    ));
+    match &parts.ein {
+        // A rule that states a word to the engine concludes no fact: its
+        // right panel is the word.
+        Some(word) => out.extend([
+            format!("  subgraph cluster_rhs {{ label={};", quote("ein")),
+            format!("    {}", ein_node("ein_R", word)),
+            "  }".to_string(),
+        ]),
+        None => out.extend(cluster(
+            &mut r,
+            ast,
+            assert_expr,
+            true,
+            fold,
+            ("rhs", "assert", "_R"),
+            "  ",
+        )),
+    }
     out.push("}".to_string());
     out.join("\n")
 }
@@ -967,14 +997,8 @@ pub fn goal_cluster(ast: &Ast, goal: NodeId, n: usize, fold: bool) -> Vec<String
     )
 }
 
-fn render_overlay(
-    ast: &Ast,
-    safe: &str,
-    name: &str,
-    match_expr: Option<NodeId>,
-    assert_expr: Option<NodeId>,
-    fold: bool,
-) -> String {
+fn render_overlay(ast: &Ast, safe: &str, parts: &Parts, fold: bool) -> String {
+    let (name, match_expr, assert_expr) = (&parts.name, parts.match_expr, parts.assert_expr);
     let mut r = RuleRenderer::default();
     // The overlay is one drawing of both patterns: a conclusion that the
     // match points at is the node the match draws.
@@ -998,6 +1022,10 @@ fn render_overlay(
     out.extend(ctx_frames("o_", "  ", &framed));
     out.extend(m_body.iter().map(|ln| format!("  {ln}")));
     out.extend(a_body.iter().map(|ln| format!("  {ln}")));
+    // The word a rule states to the engine, in the place of a conclusion.
+    if let Some(word) = &parts.ein {
+        out.push(format!("  {}", ein_node("ein_o", word)));
+    }
     out.push("}".to_string());
     out.join("\n")
 }

@@ -1,13 +1,17 @@
 //! Contradiction detection — the two shapes, and the incremental check.
 //!
-//! 1. **pair** — an `(X, (not X))` pair. A rule asserted `(not X)` and `X` is
-//!    also in the KB.
-//! 2. **direct** — a `(false)` fact: a rule asserted contradiction outright
-//!    rather than through the self-negation idiom.
+//! 1. **ended** — a rule that states `:ein inconsistent` fired
+//!    ([`ein_core::Kb::ended`], Q-M1f.399): the record of its application,
+//!    which is no fact. A state that holds `(false)` is of this shape: the
+//!    fact is a proposition like any other, and what ends the state is the
+//!    rule every program gets, which matches it and states the key
+//!    (Q-M1f.551). The kernel reads `(false)` by its name nowhere.
+//! 2. **pair** — an `(X, (not X))` pair. A rule asserted `(not X)` and `X` is
+//!    also in the KB. The kernel's own check, of every fact, with no rule.
 //!
-//! Both encode a **branch failure** under the append-only KB: there is no way
-//! to retract a fact, so the only resolution is for whatever caused the
-//! conflict — typically a hypothesis fork — to be unwound.
+//! Each encodes a **branch failure** under the append-only KB: there is no
+//! way to retract a fact or a firing, so the only resolution is for whatever
+//! caused the conflict — typically a hypothesis fork — to be unwound.
 //!
 //! **How a fact got into the KB is irrelevant.** A KB holding both `X` and
 //! `(not X)` is inconsistent whether `X` is a stated clue, a background
@@ -17,71 +21,118 @@
 //!
 //! The lookup is two bit tests
 //! ([03-design/06-saturation.md § 6.1](../../../../docs/ein/ein.rs/03-design/06-saturation.md#61-contradiction)):
-//! is `X` negated, and is `X` in the KB. The result **order** is fixed —
-//! direct ⊥ first, then pairs in extent order — because it reaches the unsat
-//! core and the trace.
+//! is `X` negated, and is `X` in the KB. The result **order** is fixed — the
+//! firings that ended the state in the order they fired, then pairs in extent
+//! order — because it reaches the unsat core and the trace.
 
-use ein_core::{FactId, Kb, Terms};
+use ein_core::{FactId, Kb, ProvId, Terms};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Kind {
+    Ended,
     Pair,
-    Direct,
 }
 
 impl Kind {
     pub fn as_str(self) -> &'static str {
         match self {
+            Kind::Ended => "ended",
             Kind::Pair => "pair",
-            Kind::Direct => "direct",
         }
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct Contradiction {
-    /// The `X` fact, or `None` for a direct ⊥.
-    pub positive: Option<FactId>,
-    /// The `(not X)` wrapper, or the `(false …)` fact itself.
-    pub negative: FactId,
-    pub kind: Kind,
+pub enum Contradiction {
+    /// A rule that states `:ein inconsistent` fired: the record of the
+    /// application ([`ein_core::Kb::ended`]).
+    Ended(ProvId),
+    /// The fact `X` beside its stored negation `(not X)`.
+    Pair { positive: FactId, negative: FactId },
 }
 
 impl Contradiction {
+    pub fn kind(&self) -> Kind {
+        match self {
+            Contradiction::Ended(_) => Kind::Ended,
+            Contradiction::Pair { .. } => Kind::Pair,
+        }
+    }
+
     /// The fact that names the contradiction: for a pair the positive `X`,
-    /// for a direct ⊥ the `(false …)` fact. It is the core search's tie-break
-    /// and [`crate::explain::Explanation::target`], and the fact
-    /// `region::absent_premises` reads.
+    /// and for a firing that ended the state the first premise it matched,
+    /// the `(false)` of a state that holds one, `None` where it matched no
+    /// fact.
+    /// It is the core search's tie-break and
+    /// [`crate::explain::Explanation::target`].
     ///
     /// It is **not** what the core is the frontier of: that is
     /// [`Contradiction::sides`]. A core of this fact alone would leave out
     /// the derivation of a pair's `(not X)`, where a commitment typically is.
-    pub fn witness(&self) -> FactId {
-        self.positive.unwrap_or(self.negative)
+    pub fn witness(&self, terms: &Terms) -> Option<FactId> {
+        match *self {
+            Contradiction::Ended(p) => terms.provs.get(p).premises.first().copied(),
+            Contradiction::Pair { positive, .. } => Some(positive),
+        }
     }
 
-    /// The facts the contradiction rests on, which the core search explains
-    /// together ([`crate::explain::contradiction_frontier`]): a pair's `X`
-    /// and its `(not X)`, the witness first, or a direct ⊥'s `(false …)`
-    /// fact.
-    pub fn sides(&self) -> Vec<FactId> {
-        self.positive
-            .into_iter()
-            .chain(std::iter::once(self.negative))
-            .collect()
+    /// The facts the contradiction is made of, which the core search
+    /// explains together ([`crate::explain::contradiction_frontier`]): a
+    /// pair's `X` and its `(not X)`, the witness first, or the premises of
+    /// the firing that ended the state, in the order its plan matched them.
+    pub fn sides(&self, terms: &Terms) -> Vec<FactId> {
+        match *self {
+            Contradiction::Ended(p) => terms.provs.get(p).premises.to_vec(),
+            Contradiction::Pair { positive, negative } => vec![positive, negative],
+        }
+    }
+
+    /// The firing that ended the state, where the contradiction is one.
+    pub fn ended(&self) -> Option<ProvId> {
+        match *self {
+            Contradiction::Ended(p) => Some(p),
+            Contradiction::Pair { .. } => None,
+        }
+    }
+
+    /// **The last steps of the contradiction's first-recorded derivation**:
+    /// the primary of each fact it is made of, and for a firing that ended
+    /// the state the firing itself, or, where its rule is of the module
+    /// every program gets ([`ein_core::Rule::implicit`]), the primaries of
+    /// the premises it matched: an explanation names the rules a program
+    /// wrote or imported, and reads through such a rule to what its firing
+    /// rests on.
+    pub fn first_steps(&self, kb: &Kb, terms: &Terms) -> Vec<ProvId> {
+        match *self {
+            Contradiction::Ended(p) if !ended_by_an_implicit_rule(kb, terms, p) => vec![p],
+            _ => self
+                .sides(terms)
+                .into_iter()
+                .filter_map(|f| kb.primary(f))
+                .collect(),
+        }
     }
 }
 
-/// Every contradiction in the KB, direct ⊥ first.
+/// Whether the firing `prov` records is of a rule of the module every
+/// program gets ([`ein_core::Rule::implicit`]), which an explanation reads
+/// through.
+pub fn ended_by_an_implicit_rule(kb: &Kb, terms: &Terms, prov: ProvId) -> bool {
+    terms
+        .provs
+        .get(prov)
+        .rule
+        .and_then(|r| kb.program().rules.get(r))
+        .is_some_and(|r| r.implicit)
+}
+
+/// Every contradiction in the KB: the firings that ended it, then the pairs.
 pub fn detect(kb: &Kb, terms: &Terms) -> Vec<Contradiction> {
-    let mut out = Vec::new();
-    for false_fact in kb.facts_of(terms.kernel.r#false) {
-        out.push(Contradiction {
-            positive: None,
-            negative: false_fact,
-            kind: Kind::Direct,
-        });
-    }
+    let mut out: Vec<Contradiction> = kb
+        .ended()
+        .iter()
+        .map(|&p| Contradiction::Ended(p))
+        .collect();
     for negative in kb.facts_of(terms.kernel.not) {
         // Q40 / R9's widening: the inner of a `(not …)` is expected to be a
         // fact. A name leaves no positive proposition to match
@@ -91,10 +142,9 @@ pub fn detect(kb: &Kb, terms: &Terms) -> Vec<Contradiction> {
             continue;
         };
         if kb.contains(inner) {
-            out.push(Contradiction {
-                positive: Some(inner),
+            out.push(Contradiction::Pair {
+                positive: inner,
                 negative,
-                kind: Kind::Pair,
             });
         }
     }
@@ -103,7 +153,7 @@ pub fn detect(kb: &Kb, terms: &Terms) -> Vec<Contradiction> {
 
 /// Short-circuit yes/no — stops on the first contradiction found.
 pub fn has_contradiction(kb: &Kb, terms: &Terms) -> bool {
-    if kb.n_facts_of(terms.kernel.r#false) > 0 {
+    if kb.is_inconsistent() {
         return true;
     }
     kb.facts_of(terms.kernel.not).any(|negative| {
@@ -116,21 +166,20 @@ pub fn has_contradiction(kb: &Kb, terms: &Terms) -> bool {
     })
 }
 
-/// True iff `fact`, just written to `kb`, makes it inconsistent.
+/// True iff `fact`, just written to `kb`, makes a pair in it.
 ///
-/// The **incremental** dual of [`detect`]: the scan asks "does this KB hold a
-/// contradiction?", this asks "did *this fact* create one?". On a KB that was
-/// consistent before `fact` landed the two agree exactly, and that equivalence
-/// is what lets fork saturation fail fast: the KB is append-only,
-/// so a contradiction can only be *created* by an insertion and can never be
-/// retracted, so checking each derived fact as it lands finds every death a
-/// post-fixpoint scan would, and earlier: a dying fork stops at the firing
-/// that kills it, not at its fixpoint.
+/// The **incremental** dual of [`detect`]'s facts: the scan asks "does this
+/// KB hold a contradiction?", this asks "did *this fact* create one?". On a
+/// KB that was consistent before `fact` landed the two agree exactly, and
+/// that equivalence is what lets fork saturation fail fast: the KB is
+/// append-only, so a contradiction can only be *created* by an insertion and
+/// can never be retracted, so checking each derived fact as it lands finds
+/// every death a post-fixpoint scan would, and earlier: a dying fork stops at
+/// the firing that kills it, not at its fixpoint. A firing that ends a state
+/// writes no fact, and the saturator reads it off the firing
+/// ([`crate::firing::Firing::ends`]).
 pub fn contradicts(kb: &Kb, terms: &Terms, fact: FactId) -> bool {
     let rel = terms.facts.rel(fact);
-    if rel == terms.kernel.r#false {
-        return true; // direct ⊥
-    }
     if rel == terms.kernel.not {
         // `fact` is `(not X)` — dead iff the positive `X` is believed.
         return terms
@@ -157,35 +206,45 @@ mod tests {
         (terms, kb)
     }
 
+    /// A held `(false)` is a fact like any other: the kernel reads no
+    /// contradiction off it, and only a pair is one where no rule has fired.
+    /// What ends a state that holds it is the firing of the rule every
+    /// program gets, which `ein_infer::saturator`'s tests and
+    /// `tests/search_semantics.rs` hold.
     #[test]
-    fn a_pair_and_a_direct_are_both_found_direct_first() {
+    fn a_held_false_is_no_contradiction_by_its_name() {
         let (terms, kb) = kb_of(
             "(relation p Thing :why \"p holds of {?3}\")\n(p one)\n(not (p one))\n(false)\n(p two)\n(not (p three))\n",
         );
         let found = detect(&kb, &terms);
-        assert_eq!(found.len(), 2, "{found:?}");
-        assert_eq!(found[0].kind, Kind::Direct);
-        assert_eq!(found[0].positive, None);
-        assert_eq!(found[1].kind, Kind::Pair);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert_eq!(found[0].kind(), Kind::Pair);
         // `(not (p three))` has no positive to pair with, and `(p two)` has no
         // negation — neither is a contradiction on its own.
         assert!(has_contradiction(&kb, &terms));
+        let (terms, kb) = kb_of("(relation p Thing :why \"p holds of {?3}\")\n(p one)\n(false)\n");
+        assert!(detect(&kb, &terms).is_empty());
+        assert!(!has_contradiction(&kb, &terms));
+        for f in kb.facts() {
+            assert!(!contradicts(&kb, &terms, f));
+        }
     }
 
     #[test]
-    fn a_pairs_sides_are_both_its_facts_and_a_directs_its_one() {
+    fn a_pairs_sides_are_both_its_facts() {
         let (terms, kb) =
-            kb_of("(relation p Thing :why \"p holds of {?3}\")\n(p one)\n(not (p one))\n(false)\n");
+            kb_of("(relation p Thing :why \"p holds of {?3}\")\n(p one)\n(not (p one))\n");
         let found = detect(&kb, &terms);
-        let direct = found[0];
-        let pair = found[1];
-        assert_eq!(direct.sides(), vec![direct.negative]);
+        let pair = found[0];
+        let Contradiction::Pair { positive, negative } = pair else {
+            panic!("{pair:?}")
+        };
         assert_eq!(
-            pair.sides(),
-            vec![pair.positive.expect("a pair has one"), pair.negative],
+            pair.sides(&terms),
+            vec![positive, negative],
             "the witness first, then the negative"
         );
-        assert_eq!(pair.sides()[0], pair.witness());
+        assert_eq!(Some(pair.sides(&terms)[0]), pair.witness(&terms));
     }
 
     #[test]

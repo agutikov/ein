@@ -107,13 +107,15 @@ fn surfaces() -> Vec<Op> {
 
 /// The language's own names: the kernel's, what `Terms::new` interns
 /// (`ein_core::terms::Kernel`), and the names a keyword takes, `:over`'s
-/// (`ein_ir::expect::Over::NAMES`), which the loader reads in that one place
-/// as it reads a keyword.
+/// (`ein_ir::expect::Over::NAMES`) and `:ein`'s, the engine's words
+/// (`ein_core::EngineWord`), which the loader reads in that one place as it
+/// reads a keyword.
 fn kernel_names() -> BTreeSet<String> {
     let terms = Terms::new();
     (0..terms.syms.len() as u32)
         .map(|i| terms.syms.text(Symbol(i)).to_string())
         .chain(ein_ir::expect::Over::NAMES.map(str::to_string))
+        .chain(ein_core::EngineWord::ALL.map(|w| w.as_str().to_string()))
         .collect()
 }
 

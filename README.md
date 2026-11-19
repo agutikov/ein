@@ -95,7 +95,7 @@ the seam between what only grows and what a guess can retract
 | O2 saturation | fire rules to a least fixpoint, semi-naively | Datalog bottom-up evaluation, magic sets, differential dataflow |
 | O3 negation as failure | `(absent P)` judged once, at the closure's fixpoint ([`absent`](docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md)) | stratified Datalog, the closed-world assumption, stable models |
 | O4 equality | none of its own: equality is whatever relation a program states; `eq` and `neq` compare two objects as written | union-find, congruence closure, e-graphs |
-| O5 contradiction | `(false)`, or a fact beside its stored negation | clause violation, tableau clash |
+| O5 contradiction | `(false)`, a fact beside its stored negation, or a rule that states `:ein inconsistent` | clause violation, tableau clash |
 | O6 provenance and the core | every derivation recorded; the smallest set of givens and commitments a contradiction rests on ([cores](docs/ein/reasoning/02-kb-evolution/09-cores.md)) | ATMS / JTMS justifications, provenance semirings, MUS |
 | O7 the candidate set and the lattice | the undecided candidates read off root's fixpoint, commitments as subsets of them ([the hypothesis space](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)) | DPLL decisions, Apriori, ATMS environments |
 | O8 learning from a refutation | on a monotone program a superset of a dead commitment is dead, so one dead node decides every node above it ([finding R](docs/ein/reasoning/02-kb-evolution/07-finding-r.md)) | CDCL, backjumping, arc consistency |

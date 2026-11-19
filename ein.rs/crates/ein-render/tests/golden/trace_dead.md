@@ -12,7 +12,7 @@
   work              1 saturation · 0 facts beyond root · 1 layer
 ```
 
-## Root — 1 steps
+## Root — 2 steps
 
 ### Step 1 — `irreflexive`
 
@@ -21,6 +21,16 @@
 Premises: `loops(A, A)`
 
 Derives `false`.
+
+<dot>
+
+### Step 2 — `std.core.inconsistent`
+
+> a state that derives a contradiction is inconsistent
+
+Premises: `false`
+
+States `:ein inconsistent`: the state is inconsistent, and the step derives no fact.
 
 <dot>
 

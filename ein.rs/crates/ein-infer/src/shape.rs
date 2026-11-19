@@ -177,20 +177,26 @@ pub fn saturate_events(
         }
     }
 
-    // The detector's own output, on the saturated KB: direct ⊥ first, then
-    // pairs in extent order — an order that reaches the unsat core, so it is
+    // The detector's own output, on the saturated KB: the firings that
+    // ended it first, then pairs in extent order — an order that reaches the unsat core, so it is
     // compared rather than assumed.
     let clashes: String = crate::contradiction::detect(s.kb, s.terms)
         .iter()
         .map(|c| {
-            format!(
-                "CLASH {} {} {}\n",
-                c.kind.as_str(),
-                c.positive
-                    .map(|f| crate::events::sexpr(s.terms, f))
-                    .unwrap_or_else(|| "-".to_string()),
-                crate::events::sexpr(s.terms, c.negative),
-            )
+            use crate::contradiction::Contradiction;
+            let sexpr = |f| crate::events::sexpr(s.terms, f);
+            // A pair's two sides; of a firing that ended the state, its rule
+            // and what it matched.
+            let (first, rest) = match *c {
+                Contradiction::Pair { positive, negative } => (sexpr(positive), sexpr(negative)),
+                Contradiction::Ended(p) => {
+                    let prov = s.terms.provs.get(p);
+                    let rule = prov.rule.map_or("-", |r| s.terms.sym(r)).to_string();
+                    let matched: Vec<String> = prov.premises.iter().map(|&f| sexpr(f)).collect();
+                    (rule, matched.join(" "))
+                }
+            };
+            format!("CLASH {} {first} {rest}\n", c.kind().as_str())
         })
         .collect();
     let summary = format!(
@@ -344,7 +350,10 @@ pub fn explain_shape(
     // always has; the search's lines explain each contradiction's sides
     // together.
     let contradictions = crate::contradiction::detect(kb, terms);
-    let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
+    let witnesses: Vec<FactId> = contradictions
+        .iter()
+        .filter_map(|c| c.witness(terms))
+        .collect();
     let mut core = ein_core::walks::unsat_core(
         kb,
         terms,

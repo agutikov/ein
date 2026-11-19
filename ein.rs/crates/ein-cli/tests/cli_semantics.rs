@@ -380,7 +380,7 @@ fn the_injected_clash_is_refuted_at_root_saturation() {
     let found = ein_infer::detect(&kb, &terms);
     let pairs: BTreeSet<String> = found
         .iter()
-        .filter_map(|c| c.positive)
+        .filter_map(|c| c.witness(&terms))
         .map(|f| sexpr(&terms, f))
         .collect();
     assert!(
@@ -397,7 +397,8 @@ fn the_injected_clash_is_refuted_at_root_saturation() {
         "the canonical puzzle contradicts itself at root: {:?}",
         clean
             .iter()
-            .map(|c| sexpr(&terms, c.witness()))
+            .filter_map(|c| c.witness(&terms))
+            .map(|f| sexpr(&terms, f))
             .collect::<Vec<_>>()
     );
 }

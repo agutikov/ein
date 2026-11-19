@@ -65,7 +65,10 @@ fn describe(rel: &str, edit: impl Fn(String) -> String) -> (Described, Vec<serde
         .to_string_lossy()
         .lines()
         .map(|l| serde_json::from_str::<serde_json::Value>(l).expect("an event is a JSON line"))
-        .filter(|e| e["e"] == "fire")
+        // The firings that derive a fact: a firing that ends a state, the
+        // rule's every program gets on the `(false)`, carries the word it
+        // states and derives none.
+        .filter(|e| e["e"] == "fire" && e.get("ein").is_none())
         .collect();
     let described = *answer
         .described

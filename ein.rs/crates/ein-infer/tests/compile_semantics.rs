@@ -503,9 +503,12 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
         "…and the parameter list it cannot bind: {err}"
     );
 
+    // Nothing of the program compiles: the one plan is the rule's every
+    // program gets.
     let shape = l.shape(true).expect("with the filter on, nothing compiles");
     assert!(
-        shape.is_empty(),
+        !shape.contains("PLAN pairwise")
+            && shape.matches("PLAN ").count() == shape.matches("PLAN std.core.").count(),
         "the arity filter has to drop the activator before the compiler sees \
          it; any plan here is a vacuous one:\n{shape}"
     );

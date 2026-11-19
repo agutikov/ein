@@ -58,6 +58,13 @@ use crate::stdlib;
 const MODULE_SEP: char = '.';
 const STDLIB_ALIAS: &str = "std";
 
+/// **The module every program gets** (Q-M1f.551): no program imports it, and
+/// [`Resolver::resolve_program`] brings it into every program, whole, after
+/// the program's own forms and its imports', as a bare `(import std.core)`
+/// written last would. Its names keep their full names, and its rules are
+/// [`Resolver::implicit_names`].
+pub const CORE: &str = "std.core";
+
 /// The four heads that *bind* a name.
 const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 
@@ -118,6 +125,9 @@ pub struct Resolver {
     /// Every module read, `(name, text)`, in the order the imports reached
     /// them: what a saved file carries ([`Resolver::modules_read`]).
     read_log: std::cell::RefCell<Vec<(String, String)>>,
+    /// The full names [`CORE`] declares, as the last resolution read them
+    /// ([`Resolver::implicit_names`]).
+    implicit: std::cell::RefCell<Vec<String>>,
 }
 
 /// The modules a saved file carries, by name, and the name the file is read
@@ -133,6 +143,7 @@ impl Default for Resolver {
             stdlib: stdlib::resolve_default(),
             carried: None,
             read_log: Default::default(),
+            implicit: Default::default(),
         }
     }
 }
@@ -208,6 +219,7 @@ impl Resolver {
             stdlib,
             carried: None,
             read_log: Default::default(),
+            implicit: Default::default(),
         }
     }
 
@@ -224,6 +236,7 @@ impl Resolver {
                 modules: modules.iter().cloned().collect(),
             }),
             read_log: Default::default(),
+            implicit: Default::default(),
         }
     }
 
@@ -234,6 +247,15 @@ impl Resolver {
         let mut out = self.read_log.borrow().clone();
         out.sort_by(|a, b| a.0.cmp(&b.0));
         out
+    }
+
+    /// The full names the module every program gets ([`CORE`]) declares, as
+    /// the last [`Resolver::resolve_program`] read it: the loader marks a
+    /// rule declared under one [`ein_core::Rule::implicit`]. Empty before a
+    /// resolution, and after [`Resolver::resolve_imports`], which brings no
+    /// form of the module.
+    pub fn implicit_names(&self) -> Vec<String> {
+        self.implicit.borrow().clone()
     }
 
     fn stdlib_root(&self) -> Root {
@@ -344,16 +366,80 @@ impl Resolver {
     ///
     /// `base_dir` is the program file's directory: every file-relative module
     /// of the program is found from it.
+    ///
+    /// **It brings no form of [`CORE`]**, the module every program gets,
+    /// which no import names: the list is the program as its imports make
+    /// it, and the load that reads it brings that module as every load does
+    /// ([`Resolver::resolve_program`]). So the list written out is a program
+    /// that loads to what the program it was made from loads to, and a
+    /// container stores it (Q-M1f.401).
     pub fn resolve_imports(
         &self,
         ast: &mut Ast,
         forms: &[NodeId],
         base_dir: Option<&Path>,
     ) -> Result<Vec<NodeId>, LoadError> {
-        if !forms.iter().any(|&f| ast.head_name(f) == Some("import")) {
-            self.refuse_unbrought(ast, forms, base_dir)?;
-            return Ok(forms.to_vec());
+        self.resolve(ast, forms, base_dir, false)
+    }
+
+    /// **The program a load reads**: [`Resolver::resolve_imports`], and after
+    /// it the forms of [`CORE`], the module every program gets (Q-M1f.551),
+    /// read as a bare import of it written after the program's last form
+    /// would be: whole, with its own imports, under its full names. The
+    /// loader's; [`Resolver::implicit_names`] are then the names it declares.
+    pub fn resolve_program(
+        &self,
+        ast: &mut Ast,
+        forms: &[NodeId],
+        base_dir: Option<&Path>,
+    ) -> Result<Vec<NodeId>, LoadError> {
+        self.resolve(ast, forms, base_dir, true)
+    }
+
+    fn resolve(
+        &self,
+        ast: &mut Ast,
+        forms: &[NodeId],
+        base_dir: Option<&Path>,
+        with_core: bool,
+    ) -> Result<Vec<NodeId>, LoadError> {
+        self.implicit.borrow_mut().clear();
+        // A program that writes no import, and no name of the module every
+        // program gets, is its forms as it wrote them, a full name of a
+        // module no import brings refused (Q-M1f.238), and after them, for a
+        // load, that module's.
+        let own = forms.iter().any(|&f| ast.head_name(f) == Some("import"));
+        let names_core = self.refuse_unbrought(ast, forms, base_dir, own)?;
+        if !own && !names_core {
+            let mut out = forms.to_vec();
+            if with_core {
+                out.extend(self.resolve_files(ast, &[], base_dir, true, true)?);
+            }
+            return Ok(out);
         }
+        self.resolve_files(ast, forms, base_dir, with_core || names_core, with_core)
+    }
+
+    /// [`Resolver::resolve`] over every file of the program: `forms`, the
+    /// modules its imports reach, and, where `read_core`, [`CORE`], whose
+    /// forms are the list's last where `with_core` and left out otherwise.
+    fn resolve_files(
+        &self,
+        ast: &mut Ast,
+        forms: &[NodeId],
+        base_dir: Option<&Path>,
+        read_core: bool,
+        with_core: bool,
+    ) -> Result<Vec<NodeId>, LoadError> {
+        // The module every program gets, as an import no file writes: the
+        // main file's last form, so that the module's forms are the list's
+        // last.
+        let mut forms = forms.to_vec();
+        if read_core {
+            let core = ast.atom(CORE, None);
+            forms.push(ast.sform_named("import", &[core], None));
+        }
+        let forms = &forms[..];
         // Read every file of the program, once each.
         let main = File::new(None, String::new(), forms.to_vec(), ast, false);
         let mut files = vec![main];
@@ -385,6 +471,19 @@ impl Resolver {
         // import that reaches it, its own imports at theirs.
         let mut out = Vec::new();
         let mut done = vec![false; files.len()];
+        if let Some(&core) = by_name.get(CORE) {
+            if with_core {
+                *self.implicit.borrow_mut() = files[core]
+                    .declared
+                    .keys()
+                    .map(|short| files[core].full(short))
+                    .collect();
+            } else {
+                // Read for the names the program writes of it, and no form
+                // of it brought.
+                done[core] = true;
+            }
+        }
         emit(ast, &files, &rewritten, 0, &mut done, &mut out);
         let out = dedup_declarations(ast, &out)?;
 
@@ -442,6 +541,18 @@ impl Resolver {
             let spec = import_spec(ast, form)?;
             let loc = loc_repr(ast, ast.loc(form));
             let module = canonical(&spec.module, &loc)?;
+            // The module every program gets is brought by no import a file
+            // writes: the one import of it is the resolver's own, the main
+            // file's last form.
+            let own_import = i == 0 && ast.loc(form).is_none() && first_loc(ast, form).is_none();
+            if module == CORE && !own_import {
+                return Err(LoadError(format!(
+                    "{}: (import {}) — {CORE} is the module every program gets, with no import \
+                     line: no import names it (Q-M1f.551)",
+                    place(ast, form),
+                    spec.module
+                )));
+            }
             let is_std = module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
             if files[i].is_std && !is_std {
                 return Err(LoadError(format!(
@@ -466,7 +577,16 @@ impl Resolver {
                     j
                 }
                 None => {
-                    let (key, text) = self.locate(&spec.module, &module, base_dir, &loc)?;
+                    let (key, text) =
+                        self.locate(&spec.module, &module, base_dir, &loc)
+                            .map_err(|e| match own_import && module == CORE {
+                                // No import line to place the line at.
+                                true => LoadError(format!(
+                                    "{CORE}, the module every program gets, cannot be read: {}",
+                                    e.0
+                                )),
+                                false => e,
+                            })?;
                     let parsed = parse(ast, &text, Some(&key))?;
                     self.read_log.borrow_mut().push((module.clone(), text));
                     let file = File::new(Some(module.clone()), key, parsed, ast, is_std);
@@ -733,19 +853,35 @@ impl Resolver {
     /// no import brings (Q-M1f.238). A name it declares is its own, whatever
     /// its dots: a `--dump-answer` state file declares the full names it was
     /// loaded with and imports nothing (Q-M1f.239).
+    ///
+    /// `true` where the program writes a full name of [`CORE`], the one module
+    /// a program with no import has: the name is then read against the
+    /// module, as an importing program's names are.
     fn refuse_unbrought(
         &self,
         ast: &Ast,
         forms: &[NodeId],
         base_dir: Option<&Path>,
-    ) -> Result<(), LoadError> {
+        own: bool,
+    ) -> Result<bool, LoadError> {
         let declared: BTreeSet<String> = forms.iter().filter_map(|f| decl_name(ast, *f)).collect();
         let mut written: BTreeMap<String, NodeId> = BTreeMap::new();
         for &f in forms {
             atoms(ast, f, &mut written);
         }
+        let mut names_core = false;
         for (n, node) in written {
             if declared.contains(&n) {
+                continue;
+            }
+            if let Some((prefix, _)) = n.rsplit_once(MODULE_SEP)
+                && prefix == CORE
+            {
+                names_core = true;
+                continue;
+            }
+            // A program with imports has its names read against its modules.
+            if own {
                 continue;
             }
             if let Some((prefix, _)) = n.rsplit_once(MODULE_SEP)
@@ -759,7 +895,7 @@ impl Resolver {
                 )));
             }
         }
-        Ok(())
+        Ok(names_core)
     }
 }
 
@@ -1011,8 +1147,15 @@ fn fact_relation(ast: &Ast, form: NodeId) -> Option<String> {
     }
 }
 
+/// Whether a kw-pair's key is `:ein`, whose value is a word to the engine and
+/// no name (Q-M1f.399): no module declares it, and no import renames it.
+fn is_engine_word(ast: &Ast, key: NodeId) -> bool {
+    matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "ein")
+}
+
 /// Every `Atom` name under `node` — heads, arguments and kw-pair values —
-/// with the first node that writes it.
+/// with the first node that writes it. Not the word after `:ein`, which is no
+/// name.
 fn atoms(ast: &Ast, node: NodeId, out: &mut BTreeMap<String, NodeId>) {
     match ast.node(node) {
         Node::Atom(s) => {
@@ -1024,14 +1167,15 @@ fn atoms(ast: &Ast, node: NodeId, out: &mut BTreeMap<String, NodeId>) {
                 atoms(ast, a, out);
             }
         }
-        Node::KwPair { value, .. } => atoms(ast, value, out),
+        Node::KwPair { key, value } if !is_engine_word(ast, key) => atoms(ast, value, out),
         _ => {}
     }
 }
 
 /// Rewrite every `Atom` whose name is in `mapping` — head, args and kw-pair
 /// values alike, so references and `:rule` provenance refs follow the rename.
-/// A node no name of which is renamed is returned as it is.
+/// A node no name of which is renamed is returned as it is, and the word
+/// after `:ein`, which is no name, is never renamed.
 fn rename_atoms(ast: &mut Ast, node: NodeId, mapping: &BTreeMap<String, String>) -> NodeId {
     match ast.node(node) {
         Node::Atom(s) => match mapping.get(ast.sym(s)) {
@@ -1055,6 +1199,7 @@ fn rename_atoms(ast: &mut Ast, node: NodeId, mapping: &BTreeMap<String, String>)
             let loc = ast.loc(node);
             ast.sform(new_head, &new_args, loc)
         }
+        Node::KwPair { key, .. } if is_engine_word(ast, key) => node,
         Node::KwPair { key, value } => {
             let new_value = rename_atoms(ast, value, mapping);
             if new_value == value {

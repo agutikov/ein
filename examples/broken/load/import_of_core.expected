@@ -1,0 +1,1 @@
+{DIR}/import_of_core.ein:3:9: (import std.core) — std.core is the module every program gets, with no import line: no import names it (Q-M1f.551)

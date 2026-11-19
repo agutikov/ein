@@ -3,6 +3,6 @@ Rule =
     "(" , "rule" , DeclName , Params , RuleClauses , ")"
   | "(" , "hrule" , DeclName , Params , RuleClauses , ")" ;
 Params = "(" , Vars , ")" ;
-RuleClause = ":match" , Match | ":assert" , Assert | ":why" , Text ;
+RuleClause = ":match" , Match | ":assert" , Assert | ":ein" , Name | ":why" , Text ;
 RuleClauses = { RuleClause } ;
 @endebnf

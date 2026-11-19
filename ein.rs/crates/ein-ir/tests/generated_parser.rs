@@ -493,9 +493,18 @@ fn the_nesting_limit() {
 fn a_saved_file_carries_a_program_at_the_limit() {
     let fact = |d: usize| format!("{}a{}", "(p ".repeat(d), ")".repeat(d));
     let at = fact(NESTING_LIMIT);
+    // What every saved file carries: the module every program gets, as a
+    // load of any program reads it.
+    let core = {
+        let resolver = ein_ir::Resolver::new();
+        resolver
+            .resolve_program(&mut Ast::new(), &[], None)
+            .expect("the module every program gets");
+        resolver.modules_read()
+    };
     let sources = ein_core::Sources {
         program: format!("(relation p T :why \"{{?3}} is p\")\n{at}\n"),
-        modules: Vec::new(),
+        modules: core.clone(),
     };
     let saved = ein_ir::saved::write(&sources, &[]);
     let mut ast = Ast::new();
@@ -518,7 +527,7 @@ fn a_saved_file_carries_a_program_at_the_limit() {
             "(relation p T :why \"{{?3}} is p\")\n{}\n",
             fact(NESTING_LIMIT + 1)
         ),
-        modules: Vec::new(),
+        modules: core,
     };
     let saved = ein_ir::saved::write(&sources, &[]);
     let r = ein_ir::saved::load_text(

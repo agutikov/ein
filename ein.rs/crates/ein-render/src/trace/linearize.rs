@@ -73,8 +73,13 @@ fn step_from_firing(
     // `firing.derived` is a tuple: the step is headed by its first
     // conclusion, which names its section, and carries the others in
     // `more` (Q-M1f.214); the per-step slice renders the fan-out.
-    let derived = fact_ref(terms, firing.derived[0]);
+    // A firing that ended the state derived nothing: its step carries the
+    // word its rule gave the engine.
+    let derived = firing.derived.first().map(|&d| fact_ref(terms, d));
     let mut step = TraceStep::new(n, terms.sym(firing.rule).to_string(), derived);
+    step.ein = firing
+        .ends
+        .then(|| ein_core::EngineWord::Inconsistent.as_str().to_string());
     step.premises = firing
         .premises
         .iter()
@@ -95,10 +100,14 @@ fn step_from_firing(
             crate::sentence::rule_sentence(kb.program(), terms, firing.rule, &firing.bindings)
         })
         .unwrap_or_default();
-    step.statement =
-        kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, firing.derived[0]));
-    step.more = firing.derived[1..]
+    step.statement = firing
+        .derived
+        .first()
+        .and_then(|&d| kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, d)));
+    step.more = firing
+        .derived
         .iter()
+        .skip(1)
         .map(|d| {
             let says = kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, *d));
             (fact_ref(terms, *d), says)
@@ -109,7 +118,7 @@ fn step_from_firing(
         .iter()
         .filter_map(|p| source_of(prov_kb, terms, *p).map(str::to_string))
         .collect();
-    step.section = target_entity(&step.derived);
+    step.section = step.derived.as_ref().and_then(target_entity);
     step.conditional = conditional;
     if diagrams.drawn {
         step.diagram = Some(render_slice(

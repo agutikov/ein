@@ -314,6 +314,10 @@ pub struct Plan {
     /// One `:assert` conclusion template per conjunct, at any depth
     /// ([`ein_ir::Ast::conjuncts`]). Slots into [`Plan::slots`].
     pub asserts: Box<[Slot]>,
+    /// The rule states `:ein inconsistent` (Q-M1f.399): it has no `:assert`,
+    /// so no template, and where a match of it fires the saturation ends its
+    /// state and writes no fact ([`crate::firing::end`]).
+    pub ends: bool,
     pub why: Option<Symbol>,
     /// The plan's register-space size, seeds included.
     pub n_regs: u16,

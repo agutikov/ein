@@ -21,9 +21,11 @@
 //! smallest-closure arrival, which a full alternatives list keeps beside it),
 //! `UNIVERSAL` (the facts each derivation's universals read, which a core
 //! follows) and `COMMIT` (a saved file's node, so that the container of a
-//! node opens as that node, Q-M1f.413). The format is **2.1**: no time in
+//! node opens as that node, Q-M1f.413). The format is **2.2**: no time in
 //! `META`, so a save is a function of what was saved ([`Meta`], Q-M1f.110),
-//! no integer table (below), and `COMMIT` the kind 2.1 adds. This reader
+//! no integer table (below), `COMMIT` the kind 2.1 adds, and `ENDED`, the
+//! firings that ended a saved state, which no fact stands for, the kind 2.2
+//! adds. This reader
 //! opens 2.x alone, and refuses another major with the version line.
 //!
 //! **No integer table, and a value with the tag bits `0b01` is refused**
@@ -252,6 +254,10 @@ pub fn save_to_vec(
     if !closure.is_empty() {
         bodies.push((Kind::Closure, closure));
     }
+    let ended = sections::write_ended(kb, &kept);
+    if !ended.is_empty() {
+        bodies.push((Kind::Ended, ended));
+    }
     // A saved file's node, which a root has none of (Q-M1f.413).
     let commit = sections::write_commit(kb);
     if !commit.is_empty() {
@@ -420,7 +426,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         entries.push(Entry::read(&mut r)?);
     }
 
-    let mut found: [Option<&[u8]>; 14] = [None; 14];
+    let mut found: [Option<&[u8]>; 15] = [None; 15];
     for e in &entries {
         if e.flags != 0 || e.len != e.raw_len {
             return Err(EinbError::Compressed);
@@ -491,6 +497,9 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     )?;
     if let Some(body) = found[Kind::Closure as usize] {
         sections::read_closure(body, &mut kb, &maps)?;
+    }
+    if let Some(body) = found[Kind::Ended as usize] {
+        sections::read_ended(body, &mut kb, terms, &maps)?;
     }
     // The rebuild is from the file's fact list; the rules-by-relation snapshot
     // is not, and `loaded` is where a load-time one comes from.

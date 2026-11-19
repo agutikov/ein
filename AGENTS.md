@@ -223,7 +223,14 @@ constrained-reasoning research.
   activator. Their programs are under `tests/stdlib/negation/` and
   `tests/stdlib/contradiction/`, and `ein-infer/tests/contradiction_rules.rs`
   holds the firing, which no claim can see while the kernel judges a pair
-  itself. `std.logic` is left free for M1g.
+  itself. **`std.core` is the module every program gets**, with no import
+  line and under its full names, after the program's forms and its imports'
+  ([Q-M1f.551](docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)):
+  its one rule, `std.core.inconsistent`, matches a held `(false)` and states
+  `:ein inconsistent`, so `(false)` is the library's convention and no word
+  the kernel reads. No import names it (refused), a saved file carries it,
+  and a container stores the program without it. Its programs are under
+  `tests/stdlib/core/`. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each, and the
   reference a page for each family, usage apart from how a module works and
@@ -429,11 +436,14 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A string is natural-language text**, written only after `:why`, `:source`
   or `:goal-text`, never an object. Names are ASCII.
 - `_` and `?_` are refused everywhere. Keywords are closed per form.
-  `:priority` is gone: **the agenda fires first what leads to `(false)`** —
-  a rule concluding `(false)`, a stored negation, or a fact whose negation
-  can be concluded — then the rest, FIFO in written order within each half
-  (`saturator::AGENDA`, everywhere: root, every route's node, the oracle's,
-  every reader; [Q-M1f.313](docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
+  `:priority` is gone: **the agenda fires a rule that states
+  `:ein inconsistent` before every other, then what leads to one** — a rule
+  concluding a fact such a rule matches (`(false)`, in every program, by
+  `std.core`'s rule; read off the rules, `monotone::leads_to_an_end`), a
+  stored negation, or a fact whose negation can be concluded — then the rest,
+  FIFO in written order within each half (`saturator::AGENDA`, everywhere:
+  root, every route's node, the oracle's, every reader;
+  [Q-M1f.313](docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
   It decides no answer where no rule's `absent` reads a relation another
   rule derives at the same boundary; `ein-infer/tests/agenda.rs` holds it on
   the corpus's monotone programs. Of a flagged program the engine claims no
@@ -460,9 +470,25 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.
-- **A rule concludes a conjunction of literals** — facts and stored
-  negations, with `(false)` and checks among them — or `()`, or an obligation
-  as its whole `:assert`. An `(and …)` is read flat at any depth, by every
+- **A rule states what it concludes under `:assert`, or a word to the
+  engine under `:ein`**, never both
+  ([Q-M1f.399](docs/decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)).
+  The word is no fact: no state holds it, no rule matches it, it stands under
+  no arrow. There is one, `inconsistent`
+  ([Q-M1f.550](docs/decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)):
+  where a rule that states it fires, the state's saturation ends and the
+  state is dead, and no fact is written (`ein_core::Kb::ended` holds the
+  firing's record, which a core is taken over). A word that is none of the
+  engine's, `:ein` beside an `:assert` and `:ein` on an hrule are refused at
+  load. **The kernel reads `(false)` by its name nowhere to judge a state**:
+  a fact beside its stored negation is its own check
+  (`ein_infer::contradiction`), and a held `(false)` kills by `std.core`'s
+  rule. An explanation names the rules a program wrote or imported and reads
+  through a rule of `std.core` (`ein_core::Rule::implicit`), so
+  `refuted by` names the rule that concluded the `(false)`.
+- **Under `:assert` a rule concludes a conjunction of literals** — facts and
+  stored negations, with `(false)` and checks among them — or `()`, or an
+  obligation as its whole `:assert`. An `(and …)` is read flat at any depth, by every
   reader through one function, `ein_ir::Ast::conjuncts`. No disjunction and
   no compound fact: *one of* is the hypothesis layer's. **An hrule's
   conclusion is one fact**; one of more is refused.

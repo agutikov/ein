@@ -17,7 +17,10 @@ $$
 \operatorname{contr}(K) \;=\; \lbrace\, \lbrace \bot \rbrace \;:\; \bot \in K \,\rbrace \;\cup\; \lbrace\, \lbrace f, \lnot f \rbrace \;:\; f \in K \land \lnot f \in K \,\rbrace
 $$
 
-so a world is dead exactly where it has one:
+and, for each rule of the program that ends a state in the place of concluding a fact
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)), the facts a
+satisfied instance of it matched, as a set; $\lbrace \bot \rbrace$ is the instance of the rule every program
+holds. With those among $\operatorname{contr}(K)$, a world is dead exactly where it has one:
 
 $$
 \operatorname{dead}(K) \iff \operatorname{contr}(K) \neq \emptyset

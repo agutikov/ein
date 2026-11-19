@@ -1,0 +1,38 @@
+;;; std.core — a state that holds `(false)` is dead, by a rule.
+;;;
+;;; ── What the rule says ─────────────────────────────────────────────────────
+;;;
+;;;   (false)  ⟹  the state is inconsistent
+;;;
+;;; `std.core.inconsistent` is in every program, with no import line
+;;; (Q-M1f.551). It matches a held `(false)` and states `:ein inconsistent`, a
+;;; word to the engine and no fact (Q-M1f.399): where it fires, the saturation
+;;; of the state ends and the state is dead. `(false)` itself is a fact like
+;;; any other, which the rule below concludes.
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; A switch is on and off at once, which `on-and-off` calls `(false)`. Nothing
+;;; here is supposed: root derives the `(false)`, the module's rule fires on
+;;; it, and root is dead.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is empty: `(false)`, the claim's word for it. Take the module's rule
+;;; away and root would hold `(false)` as a fact and be alive, R root's one
+;;; state, and the claim would fail. The dead root's core is the two facts
+;;; `on-and-off` matched, and it is refuted by `on-and-off`: an explanation
+;;; reads through the module's rule to the rule that concluded the `(false)`.
+
+(relation on  Switch :why "{?3} is on")
+(relation off Switch :why "{?3} is off")
+
+(on  s1)
+(off s1)
+
+(rule on-and-off ()
+  :match  (and (on ?s) (off ?s))
+  :assert (false)
+  :why    "{?s} is on and off at once")
+
+(solve :expect (false))

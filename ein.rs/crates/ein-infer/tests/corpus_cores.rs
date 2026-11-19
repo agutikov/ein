@@ -401,7 +401,7 @@ fn last_steps(
     // Every fact below the contradictions, and who reads it.
     let mut below: BTreeSet<FactId> = BTreeSet::new();
     let mut readers: BTreeMap<FactId, BTreeSet<FactId>> = BTreeMap::new();
-    let mut stack: Vec<FactId> = contradictions.iter().flat_map(|c| c.sides()).collect();
+    let mut stack: Vec<FactId> = contradictions.iter().flat_map(|c| c.sides(terms)).collect();
     while let Some(f) = stack.pop() {
         if !below.insert(f) || !kb.contains(f) || frontier(f) {
             continue;
@@ -448,11 +448,22 @@ fn last_steps(
     };
     contradictions
         .iter()
-        .filter(|c| c.sides().iter().all(|f| d.contains(f)))
+        .filter(|c| c.sides(terms).iter().all(|f| d.contains(f)))
         .map(|c| {
+            // The firing that ended the state is the last step where its
+            // rule is the program's; one of the module every program gets
+            // is read through, to the steps of what it matched.
+            if let Some(p) = c.ended()
+                && !ein_infer::contradiction::ended_by_an_implicit_rule(kb, terms, p)
+            {
+                return (
+                    c.witness(terms) == target,
+                    vec![vec![name(terms.provs.get(p).rule)]],
+                );
+            }
             (
-                Some(c.witness()) == target,
-                c.sides()
+                c.witness(terms) == target,
+                c.sides(terms)
                     .into_iter()
                     .map(|f| {
                         if frontier(f) || !kb.contains(f) {

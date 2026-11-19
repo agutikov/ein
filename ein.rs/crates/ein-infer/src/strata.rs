@@ -341,7 +341,8 @@ pub fn graph(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>]) -> Graph {
 
 /// Every saturation rule of the program, in load order, with the highest
 /// stratum of what its plans write, or `None` where the run compiled no plan
-/// of it: what `ein saturate --dump` prints beside each rule.
+/// of it, or it writes no fact, a rule that states a word to the engine:
+/// what `ein saturate --dump` prints beside each rule.
 pub fn rule_strata(
     kb: &Kb,
     terms: &Terms,

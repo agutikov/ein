@@ -82,7 +82,7 @@ fact of the state: **the program unchanged, with the choices made**. Loaded, it 
 the rule that derived it, with the origin it had, and **it reads no other file**
 ([Q-M1f.392](../../../decisions/answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md)). The state
 `{(note (bad a))}` of [`tests/saved/02_a_choice_with_a_fact_inside_it.ein`](../../../../tests/saved/02_a_choice_with_a_fact_inside_it.ein),
-`models/02.ein`, the program's comments cut here:
+`models/02.ein`, the program's comments and the module's cut here:
 
 ```lisp
 ;;; ein-saved/1 — the program and every module it imports, each as written, and the choices made: this file reads no other.
@@ -111,6 +111,13 @@ the rule that derived it, with the origin it had, and **it reads no other file**
        :expect (or (model) (model (flagged a))))
 
 )
+(module std.core
+(rule inconsistent ()
+  :match (false)
+  :ein   inconsistent
+  :why   "a state that derives a contradiction is inconsistent")
+
+)
 (commit
   (note (bad a)))
 ```
@@ -119,10 +126,12 @@ the rule that derived it, with the origin it had, and **it reads no other file**
   run, no path and no state number, which a second save would not reproduce; those are `index.json`'s.
 - **`(program …)`** holds the program file's bytes as they were read, between a line break after `program` and one
   before `)`: its comments, its layout and its imports as written. A state of a `.einb` carries the program the
-  container stores, resolved and import-flattened, and no module
+  container stores, resolved and import-flattened, and the one module the container stores no form of, `std.core`
   ([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)).
 - **`(module NAME …)`**, one for each module the load read, each once, its bytes the same way, sorted by name: `std.x.y`,
-  or a path from the program's directory, a dot a directory, a module's own imports among them. Each import of the
+  or a path from the program's directory, a dot a directory, a module's own imports among them, and `std.core`,
+  which every program gets with no import line
+  ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). Each import of the
   program and of a module is read from these and **never from the disk**; a module of the standard library is the one
   the load read, from `$EIN_STDLIB`, the checkout or the binary's embedded copy. A load reads the file alone and
   compares nothing: a carried module is loaded as carried, whatever the standard library of the binary loading it
@@ -250,7 +259,7 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 |---|---|
 | `root.facts` | the facts of root's fixpoint, $\operatorname{sat}(\text{program})$: what `ein saturate FILE` prints as *facts (total)* after saturation, and what the file of state `∅` loads to when $\emptyset \in R$. No route writes into root, so it is root before any commitment and after every one |
 | `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
-| `root.dead` | root's own fixpoint holds a contradiction, `(false)` or a fact beside its stored negation: root's standing, which every run reaches first and `ein solve --no-search` reports. It is `region.root` = `dead` on every description |
+| `root.dead` | root's own fixpoint holds a contradiction, `(false)` or a fact beside its stored negation, or a rule that states `:ein inconsistent` fired in it: root's standing, which every run reaches first and `ein solve --no-search` reports. It is `region.root` = `dead` on every description |
 | `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as a node counts them: `region.root_owes` on every description. With `root.dead`, whether $\emptyset$ is in R |
 | `root.owed` | those instances, each through its rule's `:why` (the rule's name where it has none), in the order the rules report them: `region.root_owed`, and the read-out's `owed` rows |
 | `root.commit` | the candidates of H a saved file's `(commit …)` names, each as the file writes it, in H's order: the node the run is the part of R above, and whose standing `root.dead`, `root.owes` and `root.owed` are. `[]` for a program and for a saved file of root. The read-out's `commit` row under `universe` |

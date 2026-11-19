@@ -158,9 +158,13 @@ fn a_hypothesis_rule_is_listed_with_its_activators() {
         rules(&out, OBLIGATION),
         ["filled  :params (?R)  2 activators"]
     );
+    // The program's rule, and the one every program gets.
     assert_eq!(
         rules(&out, AGENDA),
-        ["every-relation-is-filled  :params ()  stratum 0"]
+        [
+            "every-relation-is-filled  :params ()  stratum 0",
+            "std.core.inconsistent  :params ()  :ein inconsistent"
+        ]
     );
 }
 
@@ -206,7 +210,14 @@ fn every_rule_stands_in_one_section() {
     let agenda = rules(&out, AGENDA);
     let obligation = rules(&out, OBLIGATION);
     let hypothesis = rules(&out, HYPOTHESIS);
-    assert_eq!(agenda, ["takes  :params ()  stratum 0"]);
+    // The program's rule, and the one every program gets.
+    assert_eq!(
+        agenda,
+        [
+            "takes  :params ()  stratum 0",
+            "std.core.inconsistent  :params ()  :ein inconsistent"
+        ]
+    );
     assert_eq!(
         obligation,
         ["seated  :params ()", "filled  :params (?R)  1 activator"]
@@ -222,5 +233,15 @@ fn every_rule_stands_in_one_section() {
         .map(|l| name(l))
         .collect();
     listed.sort_unstable();
-    assert_eq!(listed, ["filled", "guess", "guess-of", "seated", "takes"]);
+    assert_eq!(
+        listed,
+        [
+            "filled",
+            "guess",
+            "guess-of",
+            "seated",
+            "std.core.inconsistent",
+            "takes"
+        ]
+    );
 }

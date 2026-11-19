@@ -1,0 +1,5 @@
+;; An import of `std.core`: the module every program gets with no import line
+;; is named by no import, in a program or in a module (Q-M1f.551).
+(import std.core)
+(relation p T :why "p holds of {?3}")
+(p a)

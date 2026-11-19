@@ -134,12 +134,28 @@ fn primary_kind(kb: &Kb, terms: &Terms, f: FactId) -> Option<ProvKind> {
     kb.primary(f).map(|p| terms.provs.get(p).kind)
 }
 
+/// A pair's `X`, or `None` for a contradiction that is no pair.
+fn positive(c: &Contradiction) -> Option<FactId> {
+    match *c {
+        Contradiction::Pair { positive, .. } => Some(positive),
+        _ => None,
+    }
+}
+
+/// A pair's `(not X)`, or `None` for a contradiction that is no pair.
+fn negative(c: &Contradiction) -> Option<FactId> {
+    match *c {
+        Contradiction::Pair { negative, .. } => Some(negative),
+        _ => None,
+    }
+}
+
 /// The union of every contradiction witness's premise closure, under one
 /// reading of the OR-node.
 fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> {
     let w: Vec<FactId> = detect(kb, terms)
         .iter()
-        .map(Contradiction::witness)
+        .filter_map(|c| c.witness(terms))
         .collect();
     unsat_core(kb, terms, &w, how).into_iter().collect()
 }
@@ -175,20 +191,20 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
         found.len(),
         2,
         "{:?}",
-        sexprs(&terms, found.iter().map(|c| c.negative))
+        sexprs(&terms, found.iter().filter_map(negative))
     );
     assert_eq!(
-        sexprs(&terms, found.iter().filter_map(|c| c.positive)),
+        sexprs(&terms, found.iter().filter_map(positive)),
         ["(sits A S1)", "(sits B S1)"]
             .map(str::to_string)
             .into_iter()
             .collect::<BTreeSet<_>>()
     );
     for c in &found {
-        let positive = c.positive.expect("a pair");
-        assert_eq!(primary_kind(&kb, &terms, positive), Some(ProvKind::Source));
+        let (x, not_x) = (positive(c).expect("a pair"), negative(c).expect("a pair"));
+        assert_eq!(primary_kind(&kb, &terms, x), Some(ProvKind::Source));
         assert_eq!(
-            primary_rule(&kb, &terms, c.negative).as_deref(),
+            primary_rule(&kb, &terms, not_x).as_deref(),
             Some("one-per-seat"),
             "the negative is rule-derived"
         );
@@ -214,7 +230,7 @@ fn every_pair_is_reported_not_only_the_first() {
     let found = detect(&kb, &terms);
     assert_eq!(found.len(), 3);
     assert_eq!(
-        sexprs(&terms, found.iter().filter_map(|c| c.positive)),
+        sexprs(&terms, found.iter().filter_map(positive)),
         ["(r A B)", "(r C D)", "(r E F)"]
             .map(str::to_string)
             .into_iter()
@@ -240,10 +256,10 @@ fn a_nested_positive_pairs_through_structural_identity() {
     let found = detect(&kb, &terms);
     assert_eq!(found.len(), 1, "{found:?}");
     assert_eq!(
-        ein_infer::events::sexpr(&terms, found[0].positive.expect("a pair")),
+        ein_infer::events::sexpr(&terms, positive(&found[0]).expect("a pair")),
         "(hypothesis (co-located Norwegian House-2))"
     );
-    assert_eq!(found[0].kind, ein_infer::contradiction::Kind::Pair);
+    assert_eq!(found[0].kind(), ein_infer::contradiction::Kind::Pair);
 }
 
 /// A `(not 5)` — a negation whose argument is not a fact — yields no
@@ -271,41 +287,60 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     assert!(!ein_infer::has_contradiction(&kb, &terms));
 }
 
-/// `witness()` is the positive for a pair and the `(false)` fact for a direct
-/// ⊥ — in both shapes a fact the KB holds, so the unsat-core walk has a
+/// `witness()` is the positive for a pair, and for a firing that ended the
+/// state the first fact it matched: of a state that holds `(false)`, that
+/// fact — in both shapes a fact the KB holds, so the unsat-core walk has a
 /// derivation to seed from.
+///
+/// **A held `(false)` is a contradiction by a rule's firing and by nothing
+/// else**: the loaded KB, which no rule has run over, holds the fact and
+/// only the pair is one; saturated, the rule every program gets has matched
+/// it and ended the state.
 ///
 /// No ein.rs test called `witness()` before this one: every caller reaches it
 /// through a digest, where returning the *negative* of a pair would still
 /// produce a plausible-looking core (the negation's own premises) and would
 /// only be wrong in that it explains the rebuttal instead of the claim.
 #[test]
-fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
-    let (_ast, terms, kb) = kb_of(
+fn witness_is_the_positive_for_a_pair_and_the_matched_fact_for_an_end() {
+    let (ast, mut terms, mut kb) = kb_of(
         "(relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
          (false :source \"(3)\")\n",
     );
+    let loaded = detect(&kb, &terms);
+    assert_eq!(loaded.len(), 1, "{loaded:?}");
+    assert_eq!(loaded[0].kind(), ein_infer::contradiction::Kind::Pair);
+
+    saturate(&ast, &mut terms, &mut kb);
     let found = detect(&kb, &terms);
     assert_eq!(found.len(), 2, "{found:?}");
 
-    let direct = found
+    let ended = found
         .iter()
-        .find(|c| c.kind == ein_infer::contradiction::Kind::Direct)
-        .expect("a direct ⊥");
-    assert_eq!(direct.positive, None);
-    assert_eq!(direct.witness(), direct.negative);
+        .find(|c| c.kind() == ein_infer::contradiction::Kind::Ended)
+        .expect("the firing that ended the state");
+    assert_eq!(positive(ended), None);
+    let falsum = ended.witness(&terms).expect("the fact it matched");
+    assert_eq!(ein_infer::events::sexpr(&terms, falsum), "(false)");
+    assert_eq!(ended.sides(&terms), [falsum]);
+    let record = terms.provs.get(ended.ended().expect("its record"));
+    assert_eq!(
+        record.rule.map(|r| terms.sym(r)),
+        Some("std.core.inconsistent")
+    );
 
     let pair = found
         .iter()
-        .find(|c| c.kind == ein_infer::contradiction::Kind::Pair)
+        .find(|c| c.kind() == ein_infer::contradiction::Kind::Pair)
         .expect("a pair");
-    assert_eq!(pair.witness(), pair.positive.expect("a pair has one"));
-    assert_ne!(pair.witness(), pair.negative);
+    assert_eq!(pair.witness(&terms), positive(pair));
+    assert_ne!(pair.witness(&terms), negative(pair));
 
     for c in &found {
-        assert!(kb.contains(c.witness()), "the witness is believed");
+        let witness = c.witness(&terms).expect("a fact");
+        assert!(kb.contains(witness), "the witness is believed");
         assert!(
-            !smallest_contradiction_frontier(&kb, &terms, Some(&[c.witness()])).is_empty(),
+            !smallest_contradiction_frontier(&kb, &terms, Some(&[witness])).is_empty(),
             "and it seeds a frontier"
         );
     }

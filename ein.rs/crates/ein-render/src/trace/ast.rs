@@ -86,7 +86,12 @@ pub struct TraceStep {
     pub n: u64,
     pub rule: String,
     pub premises: Vec<FactRef>,
-    pub derived: FactRef,
+    /// The step's first conclusion; `None` for the firing of a rule that
+    /// states a word to the engine ([`Self::ein`]), which derives no fact.
+    pub derived: Option<FactRef>,
+    /// The word the rule gave the engine, `inconsistent`, where the firing
+    /// ended the state.
+    pub ein: Option<String>,
     /// Variable bindings in bind order — the order the matcher first bound
     /// each name.
     pub bindings: Vec<(String, String)>,
@@ -115,12 +120,13 @@ pub struct TraceStep {
 }
 
 impl TraceStep {
-    pub fn new(n: u64, rule: String, derived: FactRef) -> TraceStep {
+    pub fn new(n: u64, rule: String, derived: Option<FactRef>) -> TraceStep {
         TraceStep {
             n,
             rule,
             premises: Vec::new(),
             derived,
+            ein: None,
             bindings: Vec::new(),
             why: String::new(),
             statement: None,
@@ -133,15 +139,14 @@ impl TraceStep {
         }
     }
 
-    pub fn derived_label(&self) -> String {
-        self.derived.label()
-    }
-
-    /// Every conclusion's label, the first one first.
+    /// Every conclusion's label, the first one first; for a step that ended
+    /// the state, the word its rule gave the engine, after its key.
     pub fn derived_labels(&self) -> Vec<String> {
-        std::iter::once(&self.derived)
+        self.derived
+            .iter()
             .chain(self.more.iter().map(|(f, _)| f))
             .map(FactRef::label)
+            .chain(self.ein.iter().map(|word| format!(":ein {word}")))
             .collect()
     }
 

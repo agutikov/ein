@@ -409,6 +409,20 @@ pub fn render_slice(
                 "  {fnode} -> {did} [color=\"{colour}\", {DERIVATION_WIDTH}];"
             ));
         }
+        // An application that ended the state derived no fact: it points at
+        // the word its rule gave the engine, which is no node of the KB.
+        if firing.ends {
+            let word = quote(&format!(
+                ":ein {}",
+                ein_core::EngineWord::Inconsistent.as_str()
+            ));
+            steps.push(format!(
+                "  {word} [shape=plaintext, fontcolor=\"{colour}\", label={word}];"
+            ));
+            edges.push(format!(
+                "  {fnode} -> {word} [color=\"{colour}\", {DERIVATION_WIDTH}];"
+            ));
+        }
     }
 
     // Refuted branch → ⊥ tied to the unsat core, and the no-good it lifts

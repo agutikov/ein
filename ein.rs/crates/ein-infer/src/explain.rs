@@ -95,9 +95,13 @@
 //!
 //! ### What a contradiction rests on
 //!
-//! **Its facts, together** ([`contradiction_frontier`]): a direct ⊥'s
-//! `(false …)` fact, and a pair's `X` and `(not X)` as one AND-node, the
-//! smallest union over both sides' environments. A node's core is the
+//! **Its facts, together** ([`contradiction_frontier`]): a pair's `X` and
+//! `(not X)` as one AND-node, the smallest union over both sides'
+//! environments; and what the firing of a rule that states `:ein
+//! inconsistent` rests on, which is what a derivation rests on (above): the
+//! premises it matched, the activator a node derived or committed, and the
+//! facts its universals read. Of a state that holds `(false)`, that is the
+//! `(false)`, which `std.core`'s rule matched. A node's core is the
 //! smallest over its contradictions. A core of a pair's positive side alone
 //! would leave out the derivation of `(not X)`, where a commitment typically
 //! is: `pair-core-root-given.ein`'s dead `{(q a)}` would report
@@ -109,7 +113,13 @@
 //! for each fact of the contradiction the core was taken over, a recorded
 //! justification whose premises, activator and universal reads the core
 //! derives, the first in the store's order where there are several
-//! (Q-M1e2.21). A dead node's `refuted by` is those steps' rules, never the
+//! (Q-M1e2.21). Where the core was taken over a firing that ended the state,
+//! the step is that firing, its rule the one that refuted, unless the rule is
+//! of the module every program gets ([`ein_core::Rule::implicit`]): an
+//! explanation names the rules a program wrote or imported, so it reads
+//! through such a rule to the steps of what it matched, and a state dead by a
+//! `(false)` is refuted by the rule that concluded it.
+//! A dead node's `refuted by` is those steps' rules, never the
 //! first contradiction's primaries, which need not be a step the core's
 //! derivation takes: `examples/ein-bugs/alt-cap-core.ein` prints `refuted by
 //! wide` beside the core `(w1 X) (w2 X)`, which only `wide` refutes.
@@ -372,14 +382,16 @@ pub struct Explanation {
     pub rounds: usize,
     pub facts_considered: usize,
     /// The last step of the derivation [`Self::frontier`] was taken over:
-    /// for each fact of the winning group (a direct ⊥'s `(false …)` fact, a
-    /// pair's `X` then its `(not X)`, or [`explain`]'s target), the
+    /// for each fact of the winning group (a pair's `X` then its `(not X)`,
+    /// what a rule of the module every program gets matched where its firing
+    /// ended the state, or [`explain`]'s target), the
     /// justification through which the frontier derives it, the first the
     /// store records where it derives it through several (`steps_of`), or
     /// the primary of a fact the frontier holds itself (a given's or a
     /// hypothesis's). Past `max_facts`, each fact's primary, the walk's
-    /// derivation. What a dead node's `refuted by` names (Q-M1e2.21); empty
-    /// where no target got a label.
+    /// derivation. Where the group is the firing of a program's own rule that
+    /// ended the state, that firing alone. What a dead node's `refuted by`
+    /// names (Q-M1e2.21); empty where no target got a label.
     pub steps: Vec<ProvId>,
 }
 
@@ -766,14 +778,89 @@ pub fn explain(
     targets: &[FactId],
     budget: &ExplanationBudget,
 ) -> Explanation {
-    let groups: Vec<Vec<FactId>> = targets.iter().map(|&t| vec![t]).collect();
+    let groups: Vec<Group> = targets.iter().map(|&t| Group::of(vec![t])).collect();
     explain_groups(kb, terms, &groups, budget, Reach::Core)
+}
+
+/// What one contradiction rests on, as the search explains it: a
+/// conjunction of facts explained together, the first its target and its
+/// tie-break.
+struct Group {
+    /// `facts[..searched]` are folded over their whole labels, and each fact
+    /// after them at its smallest environment, as a justification's are
+    /// ([`AndNode`]).
+    facts: Vec<FactId>,
+    searched: usize,
+    /// The firing that ended the state, where the group is one's
+    /// ([`crate::contradiction::Contradiction::Ended`]).
+    ended: Option<ProvId>,
+}
+
+impl Group {
+    /// Facts explained together, each over its whole label.
+    fn of(facts: Vec<FactId>) -> Group {
+        Group {
+            searched: facts.len(),
+            facts,
+            ended: None,
+        }
+    }
+
+    /// A contradiction's: a pair's two sides, or what the
+    /// firing that ended the state rests on, which is what a derivation
+    /// rests on (the module's § What a derivation rests on): its premises,
+    /// the activator `reach` follows, and after them the facts its
+    /// universals read.
+    fn of_contradiction(
+        kb: &Kb,
+        terms: &Terms,
+        c: &crate::contradiction::Contradiction,
+        reach: Reach<'_>,
+    ) -> Group {
+        let Some(p) = c.ended() else {
+            return Group::of(c.sides(terms));
+        };
+        let prov = terms.provs.get(p);
+        let mut facts = prov.premises.to_vec();
+        let activator = match reach {
+            Reach::Core => ein_core::walks::node_activator(kb, prov),
+            Reach::Support(_) => prov.activator,
+        };
+        if let Some(a) = activator
+            && !facts.contains(&a)
+        {
+            facts.push(a);
+        }
+        let searched = facts.len();
+        for &u in prov.universal.iter() {
+            if !facts.contains(&u) {
+                facts.push(u);
+            }
+        }
+        Group {
+            facts,
+            searched,
+            ended: Some(p),
+        }
+    }
+}
+
+fn groups_of(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[crate::contradiction::Contradiction],
+    reach: Reach<'_>,
+) -> Vec<Group> {
+    contradictions
+        .iter()
+        .map(|c| Group::of_contradiction(kb, terms, c, reach))
+        .collect()
 }
 
 /// The smallest explanation of any of `contradictions` — **a contradiction's
 /// facts explained together**: a pair's `X` and its `(not X)` as one
-/// AND-node, the smallest union over both sides' environments, and a direct
-/// ⊥'s `(false …)` fact alone ([`crate::contradiction::Contradiction::sides`]).
+/// AND-node, the smallest union over both sides' environments, and what the
+/// firing that ended a state rests on (`Group::of_contradiction`).
 /// The smallest across contradictions wins, as in [`explain`], each one's
 /// [`crate::contradiction::Contradiction::witness`] its tie-break and the
 /// [`Explanation::target`].
@@ -789,7 +876,7 @@ pub fn contradiction_frontier(
     contradictions: &[crate::contradiction::Contradiction],
     budget: &ExplanationBudget,
 ) -> Explanation {
-    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    let groups = groups_of(kb, terms, contradictions, Reach::Core);
     explain_groups(kb, terms, &groups, budget, Reach::Core)
 }
 
@@ -821,7 +908,7 @@ pub fn support_frontier(
     budget: &ExplanationBudget,
     stated: &FxHashSet<FactId>,
 ) -> Explanation {
-    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    let groups = groups_of(kb, terms, contradictions, Reach::Support(stated));
     explain_groups(kb, terms, &groups, budget, Reach::Support(stated))
 }
 
@@ -830,7 +917,7 @@ pub fn support_frontier(
 fn explain_groups(
     kb: &Kb,
     terms: &Terms,
-    groups: &[Vec<FactId>],
+    groups: &[Group],
     budget: &ExplanationBudget,
     reach: Reach<'_>,
 ) -> Explanation {
@@ -840,32 +927,42 @@ fn explain_groups(
     // Every group's other facts, then the targets, in group order: the
     // closure is walked from the end, so the targets are expanded first, as
     // they were when each group was its target alone. Only `max_facts`
-    // truncation can see the order.
-    let mut roots: Vec<FactId> = groups.iter().flat_map(|g| g[1..].iter().copied()).collect();
-    roots.extend(groups.iter().map(|g| g[0]));
+    // truncation can see the order. A group of no fact, a firing that ended
+    // the state and matched none, has neither.
+    let mut roots: Vec<FactId> = groups
+        .iter()
+        .flat_map(|g| g.facts.iter().skip(1).copied())
+        .collect();
+    roots.extend(groups.iter().filter_map(|g| g.facts.first().copied()));
     let g = build_graph(kb, terms, &roots, budget, reach);
     let (labels, rounds, mut cut) = propagate(&g, budget);
 
     let mut best: Option<((usize, Env, u32), usize, Env)> = None;
     for (gi, group) in groups.iter().enumerate() {
-        let t = group[0];
-        let env = if let [one] = group.as_slice() {
-            let Some(label) = labels.get(one).filter(|l| !l.is_empty()) else {
-                continue;
-            };
-            label[0].clone() // smallest, already sorted
-        } else {
-            let (envs, folded) = fold(group, group.len(), &labels, budget);
-            cut.environments |= folded;
-            let Some(env) = envs.into_iter().next() else {
-                continue;
-            };
-            env
+        let env = match group.facts.as_slice() {
+            [one] if group.searched == 1 => {
+                let Some(label) = labels.get(one).filter(|l| !l.is_empty()) else {
+                    continue;
+                };
+                label[0].clone() // smallest, already sorted
+            }
+            facts => {
+                let (envs, folded) = fold(facts, group.searched, &labels, budget);
+                cut.environments |= folded;
+                let Some(env) = envs.into_iter().next() else {
+                    continue;
+                };
+                env
+            }
         };
         let key = (
             env.len(),
             env.clone(),
-            g.rank.get(&t).copied().unwrap_or(u32::MAX),
+            group
+                .facts
+                .first()
+                .and_then(|t| g.rank.get(t).copied())
+                .unwrap_or(u32::MAX),
         );
         if best.as_ref().is_none_or(|(b, _, _)| key < *b) {
             best = Some((key, gi, env));
@@ -893,10 +990,16 @@ fn explain_groups(
         .map(|&r| g.by_rank[r as usize])
         .filter(|&f| kb.contains(f))
         .collect();
-    let steps = steps_of(kb, &g, &groups[gi], &env);
+    let steps = match groups[gi].ended {
+        // The firing that ended the state is the derivation's last step,
+        // unless its rule is of the module every program gets, which an
+        // explanation reads through to the steps of what it matched.
+        Some(p) if !crate::contradiction::ended_by_an_implicit_rule(kb, terms, p) => vec![p],
+        _ => steps_of(kb, &g, &groups[gi].facts, &env),
+    };
     Explanation {
         frontier,
-        target: Some(groups[gi][0]),
+        target: groups[gi].facts.first().copied(),
         exhausted: !cut.any(),
         cut,
         rounds,
@@ -999,7 +1102,7 @@ pub fn recorded_fallback(
     rounds: usize,
     considered: usize,
 ) -> Explanation {
-    let groups: Vec<Vec<FactId>> = targets.iter().map(|&t| vec![t]).collect();
+    let groups: Vec<Group> = targets.iter().map(|&t| Group::of(vec![t])).collect();
     fallback_groups(kb, terms, &groups, rounds, considered)
 }
 
@@ -1012,24 +1115,30 @@ pub fn recorded_contradiction_fallback(
     terms: &Terms,
     contradictions: &[crate::contradiction::Contradiction],
 ) -> Explanation {
-    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    let groups = groups_of(kb, terms, contradictions, Reach::Core);
     fallback_groups(kb, terms, &groups, 0, 0)
 }
 
 fn fallback_groups(
     kb: &Kb,
     terms: &Terms,
-    groups: &[Vec<FactId>],
+    groups: &[Group],
     rounds: usize,
     considered: usize,
 ) -> Explanation {
     let mut best: Option<((usize, String), usize, Vec<FactId>)> = None;
     for (gi, group) in groups.iter().enumerate() {
-        let mut core =
-            ein_core::walks::unsat_core(kb, terms, group, ein_core::walks::Justifications::Primary);
+        let mut core = ein_core::walks::unsat_core(
+            kb,
+            terms,
+            &group.facts,
+            ein_core::walks::Justifications::Primary,
+        );
         core.sort_unstable();
         core.dedup();
-        if core.is_empty() {
+        // No frontier is no explanation, but of a firing that ended the
+        // state and matched no fact, whose core is the empty set.
+        if core.is_empty() && !(group.facts.is_empty() && group.ended.is_some()) {
             continue;
         }
         // The sorted whole-fact `repr`s joined by a space — not the id
@@ -1056,13 +1165,23 @@ fn fallback_groups(
         },
         Some((_, gi, frontier)) => Explanation {
             frontier,
-            target: Some(groups[gi][0]),
+            target: groups[gi].facts.first().copied(),
             exhausted: false,
             cut,
             rounds,
             facts_considered: considered,
-            // The walk's derivation is each fact's primary.
-            steps: groups[gi].iter().filter_map(|&f| kb.primary(f)).collect(),
+            // The walk's derivation is each fact's primary, after the firing
+            // that ended the state where its rule is the program's.
+            steps: match groups[gi].ended {
+                Some(p) if !crate::contradiction::ended_by_an_implicit_rule(kb, terms, p) => {
+                    vec![p]
+                }
+                _ => groups[gi]
+                    .facts
+                    .iter()
+                    .filter_map(|&f| kb.primary(f))
+                    .collect(),
+            },
         },
     }
 }

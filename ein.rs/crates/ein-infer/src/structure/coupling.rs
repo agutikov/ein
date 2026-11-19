@@ -677,6 +677,9 @@ struct Graph {
     steps: Vec<Vec<Step>>,
     /// The facts that are `(false)`.
     falsity: Vec<u32>,
+    /// The firings that ended the state, each as a step with no target:
+    /// what it read beyond root, and the statements root's side rests on.
+    ends: Vec<Step>,
     /// A fact beside its negation.
     pairs: Vec<(u32, u32)>,
     /// A fact root holds beside its negation beyond root, or the reverse:
@@ -902,21 +905,64 @@ impl Graph {
             of_one.sort_by(|a, b| a.premises.cmp(&b.premises));
         }
         let (mut falsity, mut pairs, mut half_pairs) = (Vec::new(), Vec::new(), Vec::new());
+        let mut ends: Vec<Step> = Vec::new();
         let contradictions = crate::contradiction::detect(kb, terms);
         for c in &contradictions {
-            match c.positive {
-                None => falsity.extend(index.get(&c.negative).copied()),
-                Some(x) => match (index.get(&x), index.get(&c.negative)) {
-                    (Some(&a), Some(&b)) => pairs.push((a, b)),
-                    (Some(&a), None) | (None, Some(&a)) => half_pairs.push(a),
-                    (None, None) => {}
-                },
+            use crate::contradiction::Contradiction;
+            match *c {
+                // A rule of the module every program gets is read through:
+                // what its firing matched is what the contradiction is.
+                Contradiction::Ended(p)
+                    if crate::contradiction::ended_by_an_implicit_rule(kb, terms, p) =>
+                {
+                    let prov = terms.provs.get(p);
+                    falsity.extend(prov.premises.iter().filter_map(|f| index.get(f).copied()));
+                }
+                Contradiction::Ended(p) => {
+                    let prov = terms.provs.get(p);
+                    let (mut premises, mut reasons) = (Vec::new(), Vec::new());
+                    let read = prov
+                        .premises
+                        .iter()
+                        .chain(prov.universal.iter())
+                        .copied()
+                        .chain(prov.activator.filter(|&a| kb.contains(a)));
+                    for f in read {
+                        match index.get(&f) {
+                            Some(&k) => premises.push(k),
+                            None => {
+                                if let Some(puzzle) = puzzle {
+                                    reasons =
+                                        union(&reasons, &puzzle.reasons(root, terms, f, &mut memo));
+                                }
+                            }
+                        }
+                    }
+                    premises.sort_unstable();
+                    premises.dedup();
+                    // A firing that read nothing beyond root is root's own.
+                    if !premises.is_empty() {
+                        ends.push(Step {
+                            target: u32::MAX,
+                            premises,
+                            reasons,
+                        });
+                    }
+                }
+                Contradiction::Pair { positive, negative } => {
+                    match (index.get(&positive), index.get(&negative)) {
+                        (Some(&a), Some(&b)) => pairs.push((a, b)),
+                        (Some(&a), None) | (None, Some(&a)) => half_pairs.push(a),
+                        (None, None) => {}
+                    }
+                }
             }
         }
         Graph {
             own,
             steps,
             falsity,
+            ends,
             pairs,
             half_pairs,
             work: NodeWork {
@@ -1210,6 +1256,16 @@ fn node_edges(
             );
             take(ways, &step.reasons, cut);
         }
+    }
+    for step in &g.ends {
+        let ways = g.ways(
+            &step.premises,
+            labels,
+            (To::Contradiction, false),
+            read,
+            cut,
+        );
+        take(ways, &step.reasons, cut);
     }
     for &(a, b) in &g.pairs {
         let ways = g.ways(&[a, b], labels, (To::Contradiction, true), read, cut);

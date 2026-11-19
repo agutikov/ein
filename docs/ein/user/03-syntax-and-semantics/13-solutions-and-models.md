@@ -216,7 +216,7 @@ context**: the same clues in another context have another region.
 | **candidate** | a fact the engine may assume; **H** is all of them, built once at root ([hypotheses](09-hypotheses.md)) |
 | **commitment** | a set of candidates assumed together; as a point of the lattice, a **node** |
 | **state** | root with the commitment's facts added and saturated to its fixpoint. It is never cut at the first contradiction |
-| **dead** · **alive** | the state holds a contradiction, `(false)` or a fact beside its stored negation · it holds none |
+| **dead** · **alive** | the state holds a contradiction, `(false)` or a fact beside its stored negation, or a rule that states `:ein inconsistent` fires in it · neither |
 | **owing** · **discharged** | the state has an unpaid obligation instance · it has none ([obligations](08-obligations.md)) |
 | **solution** | a node of R: alive and discharged |
 | **state class** | the commitments that reach one state. Where saturation derives a candidate, several commitments have one state; the smallest that reach it are its **minimal generators**, how few guesses the solution needs |

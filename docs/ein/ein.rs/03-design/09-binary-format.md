@@ -44,7 +44,7 @@ by default it banks the **loaded** KB, which is why a solve of the container sta
 claimed byte-identical, because root's derivations are already there when the run starts. A `.einb` handed to `ein kb
 save` is opened and saved again, keeping its sources, its state and its node. `ein kb` is registered only in a build
 with the `einb` feature, on by default; a build without it refuses a container with a `kb load error:` line. `ein
---version` prints the format a build reads on its `container` line, `einb/2.1`.
+--version` prints the format a build reads on its `container` line, `einb/2.2`.
 
 **A saved file's container is its node** ([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)).
 A saved file, the program, its modules and at most one `(commit …)`
@@ -109,12 +109,13 @@ to `header::ALIGN = 8`.
 | 4 | `FACTS` | always | the fact store in id order: the row count, the argument count, the rows as `cast::RawRow { rel, args_at, arity }`, then the flat argument arena as `Value` bits, a `Value` being the code's word for an object, an atom or a fact |
 | 5 | `PRESENT` | always | the believed facts in insertion order, as `FactId`s |
 | 6 | `PROV` | always | the derivation records the KB references, then the primary map `(fact, record)` and the alternative lists `(fact, [record…])` |
-| 7 | `PROGRAM` | always | the table of file names provenance positions refer to, then the resolved, import-flattened program as canonical text (`ein_ir::dump_canonical`) |
+| 7 | `PROGRAM` | always | the table of file names provenance positions refer to, then the resolved, import-flattened program as canonical text (`ein_ir::dump_canonical`), with no form of `std.core`, the module every program gets, which the load that opens the file brings as every load does ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)) |
 | 8 | `INDEXES` | never | known to the reader and skipped |
 | 10 | `SOLUTIONS` | when the caller supplies one | § 6 |
 | 11 | `CLOSURE` | when the KB has a closure entry | per believed fact with one: the fact, its closure, and its smallest-closure record if any |
 | 12 | `UNIVERSAL` | when a record has some | per derivation record whose universal guards read facts, ascending by the record's position: the position and the facts |
 | 13 | `COMMIT` | when the program is a saved file's node | the candidates of H its `(commit …)` names, each as the file writes it, in its order: a count, then the strings (`sections::write_commit`) |
+| 14 | `ENDED` | when a rule that states `:ein inconsistent` fired on the saved KB | the firings that ended the state, each the position of its record in `PROV`, in the order they fired (`sections::write_ended`): no fact stands for such a firing ([Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)), so a saturated dead KB opens as it was saved, and a saturation over it fires the rule again redundantly |
 
 Kinds 3 and 9 are retired and never reused, so a section of either kind is an unknown one and skipped. A reader
 requires `META`, `SYMBOLS`, `FACTS`, `PROV` and `PROGRAM`, and `PRESENT` wherever it keeps the file's facts.
@@ -224,8 +225,9 @@ skips a kind it does not know, which is what makes a minor additive. The numbers
 never reordered; a retired number is never reused. Format 2 has no integer table and no time in `META`
 ([Q-M1f.10](../../../decisions/engine/Q-M1f.10-a-einb-file-holds-no-integer-table.md),
 [Q-M1f.110](../../../decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)); 2.1 adds
-`COMMIT`, kind 13, which a root's container does not hold, so a root's container is 2.0's in every section
-([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)). **What a section holds
+`COMMIT`, kind 13, which a root's container does not hold
+([Q-M1f.413](../../../decisions/engine/Q-M1f.413-a-nodes-container-opens-as-the-node.md)), and 2.2 `ENDED`, kind 14,
+which a KB no such rule fired on does not hold, so the container of a loaded root is 2.0's in every section. **What a section holds
 is not its layout**: `SYMBOLS` is the interner in id order, whatever names the kernel interns before a program's, so
 a kernel that interns fewer writes a shorter file of the same layout, and a reader opening a file a kernel with
 other names wrote takes the remap of § 3 and answers the same.

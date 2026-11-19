@@ -94,7 +94,7 @@ asks for it alone. The corpus fixture that emits it is `examples/lattice/04_obli
 |---|---|---|
 | `compile` | `Engine::compile_for`, **on a miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
 | `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `tiebreaker` (the order it is queued in, which the agenda ranks within its half), `parked` |
-| `fire` | every firing the closure step yields | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
+| `fire` | every firing the closure step yields | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant`; and `ein`, the word, `inconsistent`, on the firing of a rule that states one, whose `derived` is empty: the firing ended the state and wrote no fact |
 | `park` / `retire` | the boundary round: the candidate waits for a later round, or is dead | `tiebreaker`, `round`, `rule`, `watched` (**the failing guard's** watch set, sorted) |
 | `admit` | the boundary round: the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`**: nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |

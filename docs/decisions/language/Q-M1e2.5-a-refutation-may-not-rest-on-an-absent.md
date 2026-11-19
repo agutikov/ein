@@ -1,6 +1,7 @@
 # Q-M1e2.5 — A refutation may not rest on an `absent` a commitment can still fill
 
-A rule that concludes `(false)` or a stored negation may not rest on an `(absent P)` over a relation whose held
+A rule that states `:ein inconsistent`, or concludes a fact a rule that states it matches, `(false)` in every
+program, or a stored negation, may not rest on an `(absent P)` over a relation whose held
 extent a commitment can still extend: directly, through a fact a rule derives resting on such an `absent`, or
 through its activator. A program that writes one is refused, one line per refusing rule, by every command that takes
 the universe, and the line names the forms that say what was meant: close the relation's held extent if no

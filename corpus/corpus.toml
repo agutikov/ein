@@ -314,6 +314,12 @@ runs   = ["solve", "test", "saturate", "render program"]
 note   = "`eq` and `neq` in a rule's premise, in any order (Q-M1e2.26): a guard before the premise that binds its variable, a fact as a guard's argument, and a guard whose variable no premise binds, ranging over the program's names; `(solve :hypothesis-relations ())` keeps R root's state, and `ein test` holds the four claims about it."
 
 [[entry]]
+path   = "examples/features/18_ein_inconsistent.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "`:ein inconsistent`, a rule that ends a state, stated over its own premises with no `(false)` between (Q-M1f.399, Q-M1f.550): two candidates, the state that holds both is dead by the rule's firing and holds no fact from it, and R is the other three. The pair's core is the two commitments and it is refuted by the rule that states the key."
+
+[[entry]]
 path   = "examples/arith/add.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/trace.md"]
@@ -3387,6 +3393,34 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "Two errors in one pass, in form order — `rule_missing_assert` and `rule_missing_match` pin each alone. It is also one of the eighteen node-kind syntax probes: the rule views draw a half-specified declarator from the parsed forms, and no loadable file contains one."
 
+# `:ein`, a rule's word to the engine (Q-M1f.399): the grammar takes one name
+# after it, and the loader holds it to the engine's words and to a rule that
+# states no `:assert`.
+
+[[entry]]
+path   = "examples/broken/load/ein_word_unknown.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`:ein dead`: a word that is none of the engine's, refused with the engine's words listed, so a misspelt word does not load in silence."
+
+[[entry]]
+path   = "examples/broken/load/ein_beside_assert.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`:ein` beside an `:assert` on one rule: a rule states facts or a word to the engine, never both."
+
+[[entry]]
+path   = "examples/broken/load/ein_on_hrule.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`:ein` on an hrule, which proposes a fact: a word to the engine is a rule's."
+
+[[entry]]
+path   = "examples/broken/load/import_of_core.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`(import std.core)`: the module every program gets with no import line is named by no import (Q-M1f.551)."
+
 [[entry]]
 path   = "examples/broken/load/rule_missing_assert.ein"
 group  = "load-negative"
@@ -3491,6 +3525,12 @@ path   = "stdlib/contradiction.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 note   = "a fact beside its stored negation, as rules that conclude `(false)`: `clash-0` to `clash-6`, one rule a count of arguments with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive each activator from a declaration where the program holds `(clash-of-declared)`. The kernel calls such a state dead with no rule; these add the fact and its derivation. The module alone activates nothing: R {∅}."
+
+[[entry]]
+path   = "stdlib/core.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "the module every program gets with no import line (Q-M1f.551): one rule, `inconsistent`, which matches a held `(false)` and states `:ein inconsistent`, so a state that holds `(false)` is dead by a rule and the kernel reads the fact by its name nowhere. Loaded as a program it is its own rule beside the one every program gets, and nothing concludes `(false)`: R {∅}."
 
 [[entry]]
 path   = "stdlib/math/digits.ein"
@@ -4382,6 +4422,18 @@ path   = "tests/stdlib/closure/02_closed_and_satisfied.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "the control half of the closed-and-owing pair. Closed by infer-closure, and the totality requirement met by the one authored edge."
+
+[[entry]]
+path   = "tests/stdlib/core/01_false_ends_the_state.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "saturate --dump", "render rules", "render constraints"]
+note   = "`std.core.inconsistent` fires: a rule of the program concludes `(false)`, the module's rule matches it and states `:ein inconsistent`, and root is dead. The claim is `(false)`; without the module's rule root would hold `(false)` and be alive, and the claim would fail. The core is what the program's rule matched, and it is refuted by that rule."
+
+[[entry]]
+path   = "tests/stdlib/core/02_loaded_and_alive.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "the twin: `std.core.inconsistent` is loaded, as in every program, and nothing concludes `(false)`, so it does not fire and root is alive, R root's one state. A rule that ended every state would leave R empty and fail the claim."
 
 [[entry]]
 path   = "tests/stdlib/contradiction/01_clash_0.ein"

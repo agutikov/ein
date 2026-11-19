@@ -660,6 +660,7 @@ fn a_derivation_is_drawn_at_three_levels() {
         derived: Box::new([ac]),
         premises: Box::new([ab, bc]),
         redundant: false,
+        ends: false,
     };
     let dot = render_slice(&terms, &[], &[firing], None, "step", None, None, false);
     let hue = derivation_hue("triangle");
@@ -729,6 +730,7 @@ fn a_redundant_firings_conclusion_is_not_drawn_as_added() {
         derived: Box::new([ab]),
         premises: Box::new([ba]),
         redundant: true,
+        ends: false,
     };
     let dot = render_slice(&terms, &[], &[firing], None, "step", None, None, false);
     let hue = derivation_hue("mirror");

@@ -175,7 +175,12 @@ fn main() {
             };
             let odd = odd_dynamic(p);
             if !odd.is_empty() {
-                direct.push((p.rule, p.activator_args.clone(), concludes, odd.join(", ")));
+                direct.push((
+                    p.rule,
+                    p.activator_args.clone(),
+                    concludes.to_string(),
+                    odd.join(", "),
+                ));
                 continue;
             }
             let mut pos: Vec<String> = monotone::reads_of(p, &terms)
@@ -186,7 +191,12 @@ fn main() {
             pos.sort();
             pos.dedup();
             if !pos.is_empty() {
-                via.push((p.rule, p.activator_args.clone(), concludes, pos.join(", ")));
+                via.push((
+                    p.rule,
+                    p.activator_args.clone(),
+                    concludes.to_string(),
+                    pos.join(", "),
+                ));
             }
         }
         let count = |k: SiteKind| m.sites.iter().filter(|s| s.kind == k).count();
@@ -210,7 +220,7 @@ fn main() {
             continue;
         }
 
-        let rows = |v: &[(Symbol, Box<[Value]>, &'static str, String)]| -> Vec<String> {
+        let rows = |v: &[(Symbol, Box<[Value]>, String, String)]| -> Vec<String> {
             let mut out: Vec<String> = v
                 .iter()
                 .map(|(r, a, c, w)| {

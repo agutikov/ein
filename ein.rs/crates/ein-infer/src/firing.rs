@@ -55,6 +55,10 @@ impl<'a> Env<'a> {
 /// `derived` holds the new facts, or (when `redundant`) the pre-existing ones
 /// the matcher would have re-derived. The matcher still produced the binding,
 /// which is pedagogically relevant for the trace; no second insertion happens.
+///
+/// **An application of a rule that states `:ein inconsistent` derives no
+/// fact** ([`Firing::ends`], Q-M1f.399): `derived` is empty, and what it did
+/// is end the state ([`end`]). Every other firing derives at least one.
 #[derive(Clone, Debug)]
 pub struct Firing {
     pub rule: Symbol,
@@ -63,6 +67,10 @@ pub struct Firing {
     pub derived: Box<[FactId]>,
     pub premises: Box<[FactId]>,
     pub redundant: bool,
+    /// The rule states `:ein inconsistent`: the firing ended the state and
+    /// wrote no fact; `redundant` where the KB already held the record of
+    /// the same application.
+    pub ends: bool,
 }
 
 /// What stops a firing that should never have been attempted.
@@ -338,7 +346,40 @@ pub fn fire(
         derived: derived.into_boxed_slice(),
         premises: env.premises.into(),
         redundant: false,
+        ends: false,
     }))
+}
+
+/// Apply a rule that states `:ein inconsistent` (Q-M1f.399): record the
+/// application on the KB, which is then inconsistent
+/// ([`ein_core::Kb::is_inconsistent`]), and write no fact.
+///
+/// The record is what a derived fact's would be, the rule, the premises the
+/// match read, `absent` and `universal` as [`fire`] takes them, so a core is
+/// taken over it as over a derivation ([`mod@crate::explain`]). A KB that already
+/// holds the record of this application keeps one, and the firing is
+/// redundant.
+pub fn end(
+    kb: &mut Kb,
+    terms: &mut Terms,
+    plan: &Plan,
+    env: Env<'_>,
+    absent: Box<[NafRef]>,
+    universal: Box<[FactId]>,
+) -> Firing {
+    debug_assert!(plan.ends, "only a rule that states the key ends a state");
+    let bindings: Box<[(Symbol, Value)]> = env.bindings(plan).collect();
+    let prov = new_prov(terms, plan, env, bindings.clone(), absent, universal);
+    let new = kb.end(terms, prov);
+    Firing {
+        rule: plan.rule,
+        activator: plan.activator_args.clone(),
+        bindings,
+        derived: Box::new([]),
+        premises: env.premises.into(),
+        redundant: !new,
+        ends: true,
+    }
 }
 
 /// One `Prov` per application, shared by every conclusion.

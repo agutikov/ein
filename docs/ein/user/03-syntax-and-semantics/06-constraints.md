@@ -127,7 +127,10 @@ $$
 \end{aligned}
 $$
 
-and **alive** otherwise. On a program whose rules read no `absent` a hypothesis can change, $\operatorname{sat}$ is
+and **alive** otherwise. $\bot$ makes a state dead by a rule, the one every program gets, which matches a held
+`(false)` and states `:ein inconsistent`, a word to the engine and no fact; a program's own rule may state it over
+other premises, and a state in which it fires is dead as well
+([syntax](../04-reference/02-syntax.md#conclusion-forms-in-assert)). On a program whose rules read no `absent` a hypothesis can change, $\operatorname{sat}$ is
 monotone, so a state that contains a dead one is dead:
 
 $$

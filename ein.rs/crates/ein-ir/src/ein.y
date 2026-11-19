@@ -183,6 +183,11 @@ Params -> b::Id: "(" Vars ")" { b::params(p, $2) } ;
 RuleClause -> b::Id:
     ":match" Match { b::pair(p, $lexer, $1, $2) }
   | ":assert" Assert { b::pair(p, $lexer, $1, $2) }
+  // What a rule tells the engine, where another states an `:assert`
+  // (Q-M1f.399): one word, a name and no fact. Which words are the engine's
+  // is the loader's to hold, so that a word it does not know is refused with
+  // the list of those it does.
+  | ":ein" Name { b::pair(p, $lexer, $1, $2) }
   | ":why" Text { b::pair(p, $lexer, $1, $2) }
   ;
 RuleClauses -> Vec<b::Id>: { b::none() } | RuleClauses RuleClause { b::push($1, $2) } ;

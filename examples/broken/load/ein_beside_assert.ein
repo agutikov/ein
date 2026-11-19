@@ -1,0 +1,10 @@
+;; `:ein` beside an `:assert`: a rule states what it concludes, facts, or a
+;; word to the engine, never both.
+(relation p T :why "p holds of {?3}")
+(relation q T :why "q holds of {?3}")
+(rule r ()
+  :match  (p ?x)
+  :assert (q ?x)
+  :ein    inconsistent
+  :why    "p holds of {?x}, so q does, and the state ends")
+(p a)

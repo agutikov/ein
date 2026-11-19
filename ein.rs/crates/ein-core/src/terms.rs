@@ -194,8 +194,9 @@ impl Clone for Terms {
 /// `open` is **not** here. It is reserved (it may not be bound by a
 /// declarator) but it is not a rule-body primitive: it appears only as an
 /// `:assert` conclusion, the compiler never meets it in a `:match`, and the
-/// contradiction detector does not read it. `(false)` is its dual and lives
-/// here because a stored `(false)` fact *is* read by the detector; an `open`
+/// contradiction detector does not read it. `(false)` lives here as a word
+/// the grammar shapes, a fact of no argument: the detector does not read it
+/// either, and a state that holds it is dead by a rule (Q-M1f.551); an `open`
 /// conclusion is never stored at all
 /// (`docs/ein/user/03-syntax-and-semantics/08-obligations.md`).
 pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];

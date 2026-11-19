@@ -47,7 +47,9 @@ anything more. That fixpoint is what a program means.
 ```
 
 `(rule NAME (PARAMETERS) :match PATTERN :assert CONCLUSION :why "REASON")`, and no other keyword
-([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)). `?a`, `?b` are
+([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)) but `:ein`, which
+a rule states in the place of its `:assert` where its firing ends a state
+([`02-syntax.md` § Conclusion forms in `:assert`](../04-reference/02-syntax.md#conclusion-forms-in-assert)). `?a`, `?b` are
 **variables**, bound by the match and local to the rule. `chain` has a **parameter**, `?r`, which stands for a
 relation: the rule fires once for each **activator** fact headed by its name, `(chain ancestor)`, with `?r` bound to
 `ancestor`. A rule with no parameter, `()`, fires wherever its pattern matches. `ein saturate --dump FILE` lists what
