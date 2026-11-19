@@ -1,7 +1,18 @@
 # 54 · Q-M1f.576: the union's edges: an obligation whose candidates cannot be read, and the blind enumerator
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 54 of part 2. Your answer, in the part's
+answers' file:
+
+> 1 - not exactly, "guard or trigger reads what a commitment can change" is not declined anymore, it is allowed,
+> detected as non-monotone programs, but allowed. 2 - (a); 3 - What? Explain in more details
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-52-to-55).
+Its first part is put back as review item 57, since *declined* may have been read as *refused*, and its third, which you asked to have explained, is review item 56. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/54-Q-M1f.576/`, as they were run.
 
 **From your answer to item 48**, 2026-11-20: *"Identical open facts deduplicate naturally. Exactly (b)."* So $H$
 is every `(open F)` root holds, whoever wrote it.
@@ -20,7 +31,7 @@ into `runs/` (both ignored, so on this machine only).
 An obligation's candidates are read off the guard inside its `absent`. Where that guard, or the trigger, reads a
 relation a commitment can change, the set could grow above root, so the rung declines and the blind enumerator
 builds $H$. A hypothesis rule overrides that today. Three corpus programs have both (an earlier census of this
-phase, on an older build, [`one_way_each/hr_census.tsv`](../../../one_way_each/hr_census.tsv)):
+phase, on an older build, [`one_way_each/hr_census.tsv`](../one_way_each/hr_census.tsv)):
 
 | program | candidates today, its rule's | candidates with the rule deleted, the blind enumerator's |
 |---|---:|---:|
@@ -50,7 +61,6 @@ The two lists of `(solve …)` and a closure bind every writer as they bind toda
 they take out is the conflict a hypothesis rule's is today, refused at root; an obligation's candidate of such a
 relation is counted and not written. **Default: so.**
 
-## 4. Your call
+## 4. The ruling
 
-For 1 and 2, a letter each; 3, yes or otherwise. In [`ANSWERS.md`](../ANSWERS.md) under item 54. Blank keeps the
-defaults.
+Ruled: the answer at the head of this page.

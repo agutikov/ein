@@ -1,7 +1,17 @@
 # 55 · Q-M1f.577: a view of a state without its `open` facts
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 55 of part 2. Your answer, in the part's
+answers' file:
+
+> (a)
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-52-to-55).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/55-Q-M1f.577/`, as they were run.
 
 **From your answer to item 50**, 2026-11-20: *"(a) hypotheses are valid part of the state; but now maybe we need
 separate flags/commands to show only positive facts of KB when we want to see only them."*
@@ -30,6 +40,6 @@ file. So a view that leaves out the stored negations exists, and none leaves out
   same on `ein saturate --dump` and on the drawing of a knowledge base.
 - **(c)** Nothing now: a state is listed whole, and a view is added when it is missed.
 
-## 3. Your call
+## 3. The ruling
 
-(a), (b) or (c), in [`ANSWERS.md`](../ANSWERS.md) under item 55. Blank keeps (a).
+Ruled: the answer at the head of this page.

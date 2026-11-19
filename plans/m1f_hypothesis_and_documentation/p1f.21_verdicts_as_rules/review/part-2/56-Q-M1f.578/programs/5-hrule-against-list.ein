@@ -1,0 +1,15 @@
+;;; Item 56: a hypothesis rule proposes facts of a relation a list takes out.
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+
+(hrule guess ()
+  :match  (and (person ?p) (food ?f))
+  :assert (likes ?p ?f)
+  :why    "does {?p} like {?f}?")
+(solve :hrules (guess) :no-hypothesis (likes))

@@ -469,6 +469,36 @@ removes the `hrule` form and the keyword `:hrules`. Neither is started.
 | 54 | [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | what an obligation that declines and the blind enumerator do beside a rule |
 | 55 | [Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts) | a view of a state without its `open` facts |
 
+## The answers to items 52 to 55
+
+The user, 2026-11-20 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, each under its question in
+[the ledger](../open_questions.md). The second part is not started by them.
+
+**Item 52**, [Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone), a hypothesis first held above root: *"1 - (c); 2 - (a) Warning shown immediately when detected, once;"*
+
+**Item 53**, [Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f), what one `:assert` holds: *"(a)"*
+
+**Item 54**, [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator), the union's edges:
+
+> 1 - not exactly, "guard or trigger reads what a commitment can change" is not declined anymore, it is allowed,
+> detected as non-monotone programs, but allowed. 2 - (a); 3 - What? Explain in more details
+
+**Item 55**, [Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts), a view without the `open` facts: *"(a)"*
+
+| what | ruled |
+|---|---|
+| a hypothesis first held above root | found two ways: a site of the static check, for a rule that concludes `(open F)` and reads what a commitment can change; and in flight. Found in flight, the answer stands, nothing is claimed, and the warning is shown at once, once |
+| one `:assert` | `(open R)` is a rule's whole `:assert`, as today; `(open F)` stands in a conjunction like any fact |
+| the blind enumerator | writes only where no rule concludes `(open F)` at root and no obligation is activated |
+| a view without the `open` facts | `-P` leaves them out as it leaves out the `(not …)` |
+
+**What they leave**, each a review item with a default ([part 2 of the bundle](review/part-2/README.md)):
+
+| item | question | what it asks |
+|---|---|---|
+| 56 | [Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | the two lists of `(solve …)` and a closure, once the hypotheses are `open` facts: the explanation the user asked for, and the question again |
+| 57 | [Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | an obligation whose guard or trigger reads what a commitment can change: the user's answer, put back, since *declined* is no refusal today and the answer to the letter takes a claim that holds from six corpus programs |
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -522,7 +552,7 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | **not run**: set aside 2026-11-19 by the user's answer to Q-M1f.390, no justification is written into Ein |
-| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | **planned again 2026-11-20** on the rulings Q-M1f.566 to Q-M1f.573, **not started**; four questions with defaults, Q-M1f.574 to Q-M1f.577; after part 1 |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | **planned again 2026-11-20** on the rulings Q-M1f.566 to Q-M1f.577, **not started**; two questions with defaults, Q-M1f.578 and Q-M1f.579; after part 1 |
 | [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) | H | **The `hrule` form and the keyword `:hrules` removed.** Every program, page and test written with a rule that concludes `(open F)` and its activators as facts; the form and the keyword deleted | planned 2026-11-20 on the ruling Q-M1f.567, **not started**; after S1f.21.12. In place of S1f.21.16 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; after S1f.21.12. Q-M1f.569 lets a rule read an `open` fact in a program that is then flagged, so its example may be written so |
 | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | **not run**: the user's answer to Q-M1f.566 keeps the obligation and its count as they are |
@@ -562,6 +592,9 @@ and the candidates that would pay it are held.
 The standing ones ([`AGENTS.md`](../../../AGENTS.md)): a stage per subagent; what a stage finds outside its scope
 goes to a findings page of the phase's own; a claim about the engine is a run, not an argument; a new syntax is
 shown on real corpus programs with their answers computed before it is built; no estimate is written.
+
+**Every subagent of the phase runs on Opus**, from 2026-11-20 to the phase's end (the user: *"till the end of this
+phase run subagents with Opus"*).
 
 **No backward compatibility is kept** (the user, 2026-11-19: *"There is still only a single user of ein - me, so I
 don't care about backward compatibility. Forget about it until I explicitely ask."*): a retired spelling gets no

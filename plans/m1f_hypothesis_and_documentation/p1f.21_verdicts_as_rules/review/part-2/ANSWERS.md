@@ -2,44 +2,27 @@
 
 [← the part](README.md) · [← the bundle](../README.md) · [← the phase](../../README.md)
 
-Your answers of 2026-11-20 to items 47 to 51 are filed in your words in
-[the phase's README](../../README.md#the-answers-to-items-47-to-51) and in the ledger. Four questions came out of
-them. Write your answer after **Your answer:** — a letter for each numbered question, *default*, or your own
-words. An item left blank keeps its defaults. This file is yours.
+Your answers of 2026-11-20 to items 52 to 55 are filed in your words in
+[the phase's README](../../README.md#the-answers-to-items-52-to-55) and in the ledger. Two questions came out of
+them. Write your answer after **Your answer:** — a letter, *default*, or your own words. An item left blank keeps
+its default. This file is yours.
 
-## 52 · Q-M1f.574: a hypothesis first held above root: how the program is found not monotone
+## 56 · Q-M1f.578: the two lists of `(solve …)` and a closure, once the hypotheses are `open` facts
 
-[The item](52-Q-M1f.574/README.md)
+[The item](56-Q-M1f.578/README.md), which is the explanation you asked for.
 
-Your *"right?"*: by your definition yes. Today's static check calls such a program monotone: a rule with no
-`absent` that concludes a hypothesis from a fact only a commitment brings is no site of it.
+In short: `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` each say that a relation is not
+something to suppose. Today they **filter** what the blind enumerator guesses; they filter **nothing** a
+hypothesis rule proposes; and a **clash is refused at load**: a rule that proposes facts of a relation a list
+takes out, or, with no hypothesis rule, an obligation that owes them. With both a rule and an obligation the
+rule overrides, so there is no clash. The union ends that override. What do they do to an `(open F)` fact?
 
-1. **How it is detected.**
-   - **(a)** Statically: a rule that concludes `(open F)` and reads a relation a commitment can change is a site
-     of the static check, as an obligation's trigger is today.
-   - **(b)** In flight: a state the run builds that holds an `(open F)` root does not.
-   - **(c)** Both. **Default.**
-2. **The run's answer, once found in flight.**
-   - **(a)** As computed, under the WARNING, nothing claimed. **Default.**
-   - **(b)** Computed again by the cube.
-
-**Your answer:**
-
-**Notes:**
-
----
-
-## 53 · Q-M1f.575: what one `:assert` holds beside `(open R)` and beside `(open F)`
-
-[The item](53-Q-M1f.575/README.md)
-
-Your sentence: *"It can assert (open R) - and then it works as before, plus it cant assert (open (fact)) with
-whatever other fact, in the same assert."* *cant* reads as *can* and as *can't*.
-
-- **(a)** `(open R)` is a rule's whole `:assert`, as today. `(open F)` is a conclusion like any fact: it stands in
-  a conjunction with facts and with other `(open F)`. **Default.**
-- **(b)** Both stand in any conjunction: one rule concludes `(open R)`, `(open F)` and facts together.
-- **(c)** Each is a rule's whole `:assert`.
+- **(a)** They refuse a clash, whoever proposes: a rule's `(open F)`, a written one, or an obligation's candidate,
+  of a relation they take out, is a load error. They filter the blind enumerator, as today. **Default.**
+- **(b)** They filter $H$ and refuse nothing: every writer writes its `(open F)` facts, and $H$ is those of the
+  relations they leave.
+- **(c)** They refuse what a program writes against its own list, a rule's or a written `(open F)`, and filter
+  an obligation's candidates.
 
 **Your answer:**
 
@@ -47,35 +30,22 @@ whatever other fact, in the same assert."* *cant* reads as *can* and as *can't*.
 
 ---
 
-## 54 · Q-M1f.576: the union's edges
+## 57 · Q-M1f.579: an obligation whose guard or trigger reads what a commitment can change
 
-[The item](54-Q-M1f.576/README.md)
+[The item](57-Q-M1f.579/README.md)
 
-1. **An obligation whose candidates cannot be read** (its guard or trigger reads what a commitment can change),
-   **beside a rule that concludes `(open F)`.**
-   - **(a)** It writes no candidate and calls no one; the rule's candidates stand. **Default.**
-   - **(b)** It calls the blind enumerator, as it does alone: `06_friends_tables.ein` goes from 19 candidates to
-     923 or more.
-2. **The blind enumerator.**
-   - **(a)** It writes its guesses only where no rule concludes `(open F)` at root and no obligation is activated,
-     as today. **Default.**
-   - **(b)** Always.
-3. **The two lists of `(solve …)` and a closure** bind every writer as they bind today. **Default: so.**
+Your answer to item 54: *"not declined anymore, it is allowed, detected as non-monotone programs, but allowed."*
+**Nothing is refused today**: *declines* means only that the obligation proposes nothing and the blind enumerator
+proposes every fact. Such a program loads, is answered and is not flagged; six of the eight in the corpus state a
+claim that holds.
 
-**Your answer:**
-
-**Notes:**
-
----
-
-## 55 · Q-M1f.577: a view of a state without its `open` facts
-
-[The item](55-Q-M1f.577/README.md)
-
-- **(a)** `-P` leaves out the `(open …)` facts as it leaves out the `(not …)`; `-p` lists everything. No new flag.
-  **Default.**
-- **(b)** A flag of its own, on `ein solve`, `ein saturate --dump` and the drawing of a knowledge base.
-- **(c)** Nothing now.
+- **(a)** As today where nothing else proposes: it steps aside, the blind enumerator proposes, and the program
+  stays answered and claimed. Beside a rule that concludes `(open F)` it writes nothing.
+- **(b)** Your answer to the letter: it never steps aside, writes its guard's candidates at root, and the program
+  is flagged. Six programs lose their claims; `oblig-derived-domain.ein` answers an empty $R$ under the warning
+  where today it answers `(likes Ann Pie)`. **Default: it is what you wrote.**
+- **(c)** It writes its guard's candidates and the blind enumerator writes its guesses too: nothing is missed and
+  the program need not be flagged for it.
 
 **Your answer:**
 

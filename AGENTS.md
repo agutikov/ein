@@ -377,8 +377,8 @@ paragraph, no register count, no measurement (the user's rule).
   Q-M1f.557 (d), Q-M1f.447 (c)) and the part's pages. S1f.21.16 (the
   `:hrules` clause's spelling, Q-M1f.565) is not started and is dropped
   once the second part removes `:hrules` (the user's word). Q-M1f.566 to
-  Q-M1f.573 are ruled, and the second part's two builds are planned on
-  them, S1f.21.12 and S1f.21.18; Q-M1f.574 to Q-M1f.577 wait with it. **No other stage of P1f.21 starts
+  Q-M1f.577 are ruled, and the second part's two builds are planned on
+  them, S1f.21.12 and S1f.21.18; Q-M1f.578 and Q-M1f.579 wait with it. **No other stage of P1f.21 starts
   without the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is

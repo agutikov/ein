@@ -1,7 +1,17 @@
 # 53 · Q-M1f.575: what one `:assert` holds beside `(open R)` and beside `(open F)`
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 53 of part 2. Your answer, in the part's
+answers' file:
+
+> (a)
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-52-to-55).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/53-Q-M1f.575/`, as they were run.
 
 **From your answer to item 48**, 2026-11-20: *"Rule can assert obligations (which imply hypotheses) and pure
 hypotheses independently. It can assert (open R) - and then it works as before, plus it cant assert (open (fact))
@@ -32,6 +42,6 @@ into `runs/` (both ignored); `runs/cells.txt` has one block a program.
 - **(c)** Each is a rule's whole `:assert`: a rule that concludes `(open F)` concludes that one hypothesis and
   nothing else, as a hypothesis rule concludes one fact today.
 
-## 3. Your call
+## 3. The ruling
 
-(a), (b) or (c), in [`ANSWERS.md`](../ANSWERS.md) under item 53. Blank keeps (a).
+Ruled: the answer at the head of this page.

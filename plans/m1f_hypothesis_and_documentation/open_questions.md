@@ -502,10 +502,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.571](#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) | What `absent` and `open` take, and what each is under an ordinary relation | **ruled 2026-11-20 by the user: every default**: `absent` takes a premise and the universal stays, only the direct `(absent (absent P))` refused; `(open (open P))` refused; under an ordinary relation `open` and `absent` are ordinary names; the rule of the item's § 4 is the rule |
 | [Q-M1f.572](#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) | Whether a state's `open` facts are shown and counted with its facts | **ruled 2026-11-20 by the user: (a)**: the `open` facts are part of a state, listed, drawn and counted with its facts. It leaves Q-M1f.577, a view without them |
 | [Q-M1f.573](#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates) | `open` as an obligation or as a hypothesis, and which hypotheses are candidates | **ruled 2026-11-20 by the user: the defaults**: a variable under `open` is read at load by what it is; a hypothesis root has decided is held and is no candidate; $H$ is root's `open` facts |
-| [Q-M1f.574](#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone) | A hypothesis first held above root: how the program is found not monotone | **open, defaults proposed**: put 2026-11-20 on the user's answer to Q-M1f.569 (*"we could detect non-monotonicity in-flight and WARN user"*). Today's static check calls such a program monotone. Default: both a site of the static check and a check in flight; the answer found in flight stands under the warning |
-| [Q-M1f.575](#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) | What one `:assert` holds beside `(open R)` and beside `(open F)` | **open, a default proposed**: put 2026-11-20 on the user's answer to Q-M1f.570, whose *"cant"* reads two ways. Default (a): `(open R)` is a rule's whole `:assert`, as today; `(open F)` stands in a conjunction like any fact |
-| [Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | The union's edges: an obligation whose candidates cannot be read, and the blind enumerator | **open, defaults proposed**: put 2026-11-20 on the user's answer to Q-M1f.570. Default: beside a rule, an obligation that declines writes nothing and calls no one; the blind enumerator writes only where no rule and no obligation does |
-| [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **open, a default proposed**: put 2026-11-20 on the user's answer to Q-M1f.572 (*"maybe we need separate flags/commands to show only positive facts"*). Default (a): `-P` leaves them out as it leaves out the `(not …)` |
+| [Q-M1f.574](#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone) | A hypothesis first held above root: how the program is found not monotone | **ruled 2026-11-20 by the user: both**, a site of the static check and a check in flight; found in flight, the answer stands under the warning, *"shown immediately when detected, once"* |
+| [Q-M1f.575](#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) | What one `:assert` holds beside `(open R)` and beside `(open F)` | **ruled 2026-11-20 by the user: (a)**: `(open R)` is a rule's whole `:assert`, as today; `(open F)` stands in a conjunction like any fact |
+| [Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) | The union's edges: an obligation whose candidates cannot be read, and the blind enumerator | **ruled in part 2026-11-20 by the user**: the blind enumerator writes only where no rule concludes `(open F)` at root and no obligation is activated. Of an obligation whose guard or trigger reads what a commitment can change, *"not declined anymore, it is allowed, detected as non-monotone"*, put back as Q-M1f.579; the lists and a closure, which the user asked to have explained, are Q-M1f.578 |
+| [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **ruled 2026-11-20 by the user: (a)**: `-P` leaves out the `(open …)` facts as it leaves out the `(not …)` |
+| [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **open, a default proposed**: put 2026-11-20 on the user's *"What? Explain in more details"*. Today they filter the blind enumerator and refuse a clash with a hypothesis rule or an obligation. Default (a): they refuse a clash, whoever proposes |
+| [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **open, a default proposed**: put 2026-11-20 on the user's answer to Q-M1f.576, since *declined* is no refusal today: such a program loads and is answered. Default (b), the answer as written: it writes its guard's candidates at root and the program is flagged; six corpus programs then lose a claim that holds |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11085,7 +11087,7 @@ search starts, we could detect non-monotonicity in-flight and WARN user (if it w
 **On *right?*.** By the user's definition, yes (a hypothesis proposed above root is non-monotone by definition,
 P1f.21's V-21). Today's static check does not say so: a rule with no `absent` that concludes a hypothesis from a
 fact only a commitment brings is no site of it, and two such programs are called monotone while 3 of 4 and 1 of 2
-of their states hold a hypothesis root does not ([review item 52](p1f.21_verdicts_as_rules/review/part-2/52-Q-M1f.574/README.md)).
+of their states hold a hypothesis root does not ([review item 52](p1f.21_verdicts_as_rules/q-m1f.574_a_hypothesis_first_held_above_root/README.md)).
 With $H$ root's the lattice stays a cube and finite; were such a hypothesis proposed it would be neither where a
 rule builds a new fact from the one supposed.
 
@@ -11095,7 +11097,15 @@ rule builds a new fact from the one supposed.
 2. **The run's answer once found in flight**: (a) as computed, under the warning; (b) computed again by the cube.
    **Default (a).**
 
-**Open.** P1f.21's second part's.
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled 2026-11-20 by the user: both, and the answer stands.** In P1f.21's answers' file of part 2, item 52:
+*"1 - (c); 2 - (a) Warning shown immediately when detected, once;"*
+
+So: a rule that concludes `(open F)` and reads a relation a commitment can change is a site of the static check;
+and a run that builds a state holding an `(open F)` root does not hold reports the program as not monotone, where
+it was not flagged. Found in flight, the answer is as computed, nothing is claimed of it, and the warning is shown
+at once when found, and once. The page of the question is [`q-m1f.574_a_hypothesis_first_held_above_root/`](p1f.21_verdicts_as_rules/q-m1f.574_a_hypothesis_first_held_above_root/README.md).
 
 ### Q-M1f.575 — What one `:assert` holds beside `(open R)` and beside `(open F)`
 
@@ -11103,12 +11113,17 @@ rule builds a new fact from the one supposed.
 ([Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union)): *"It can assert
 (open R) - and then it works as before, plus it cant assert (open (fact)) with whatever other fact, in the same
 assert."* *cant* reads as *can* and as *can't*, which are opposite. Today `(open R)` is a rule's whole `:assert`
-and a hypothesis rule concludes one fact ([review item 53](p1f.21_verdicts_as_rules/review/part-2/53-Q-M1f.575/README.md)).
+and a hypothesis rule concludes one fact ([review item 53](p1f.21_verdicts_as_rules/q-m1f.575_what_one_assert_holds/README.md)).
 
 (a) `(open R)` is a rule's whole `:assert`, as today, and `(open F)` stands in a conjunction like any fact. (b)
 Both stand in any conjunction. (c) Each is a rule's whole `:assert`. **Default (a).**
 
-**Open.** P1f.21's second part's.
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled 2026-11-20 by the user: (a).** In P1f.21's answers' file of part 2, item 53: *"(a)"*
+
+So `(open R)` is a rule's whole `:assert`, as today, and `(open F)` is a conclusion like any fact, in a conjunction
+with facts and with other `(open F)`. The page of the question is [`q-m1f.575_what_one_assert_holds/`](p1f.21_verdicts_as_rules/q-m1f.575_what_one_assert_holds/README.md).
 
 ### Q-M1f.576 — The union's edges: an obligation whose candidates cannot be read, and the blind enumerator
 
@@ -11117,7 +11132,7 @@ Both stand in any conjunction. (c) Each is a rule's whole `:assert`. **Default (
 ladder says two things the union does not: an obligation whose candidates cannot be read sends the whole call to
 the blind enumerator, and the blind enumerator proposes only where nothing else does. Three corpus programs have a
 hypothesis rule beside such an obligation, with 19, 2 and 3 candidates against the blind enumerator's 923, 30 and
-57 ([review item 54](p1f.21_verdicts_as_rules/review/part-2/54-Q-M1f.576/README.md)).
+57 ([review item 54](p1f.21_verdicts_as_rules/q-m1f.576_the_unions_edges/README.md)).
 
 1. **An obligation that declines, beside a rule that concludes `(open F)`**: (a) writes nothing and calls no one;
    (b) calls the blind enumerator. **Default (a).**
@@ -11125,7 +11140,23 @@ hypothesis rule beside such an obligation, with 19, 2 and 3 candidates against t
    activated; (b) always. **Default (a).**
 3. **The two lists and a closure** bind every writer as today. **Default: so.**
 
-**Open.** P1f.21's second part's.
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled in part 2026-11-20 by the user.** In P1f.21's answers' file of part 2, item 54, verbatim:
+
+> 1 - not exactly, "guard or trigger reads what a commitment can change" is not declined anymore, it is allowed,
+> detected as non-monotone programs, but allowed. 2 - (a); 3 - What? Explain in more details
+
+- **2, (a), ruled**: the blind enumerator writes its guesses only where no rule concludes `(open F)` at root and no
+  obligation is activated, as it proposes today.
+- **1, filed as written and put back**: the answer reads as if *declined* were a refusal, and it is none: such a
+  program loads and is answered today, the blind enumerator proposing. To the letter it makes such an obligation
+  write its guard's candidates at root and flags the program, with which six corpus programs lose a claim that
+  holds today. Put as [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change), the answer as written its default.
+- **3, not answered**: the user asked for the explanation, which was owed: the question's one sentence was wrong
+  in half. Put again, explained on runs, as [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts).
+
+The page of the question is [`q-m1f.576_the_unions_edges/`](p1f.21_verdicts_as_rules/q-m1f.576_the_unions_edges/README.md).
 
 ### Q-M1f.577 — A view of a state without its `open` facts
 
@@ -11133,9 +11164,52 @@ hypothesis rule beside such an obligation, with 19, 2 and 3 candidates against t
 ([Q-M1f.572](#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts)): *"but now maybe we
 need separate flags/commands to show only positive facts of KB when we want to see only them."* `ein solve` has
 `-p`, every fact beyond the program, `-P`, the same less the `(not …)`, and `-f`, the candidates' relations; none
-leaves out the hypotheses ([review item 55](p1f.21_verdicts_as_rules/review/part-2/55-Q-M1f.577/README.md)).
+leaves out the hypotheses ([review item 55](p1f.21_verdicts_as_rules/q-m1f.577_a_view_without_the_open_facts/README.md)).
 
 (a) `-P` leaves out the `(open …)` facts as it leaves out the `(not …)`. (b) A flag of its own, on `ein solve`,
 `ein saturate --dump` and the drawing of a knowledge base. (c) Nothing now. **Default (a).**
+
+**Ruled 2026-11-20, below.** P1f.21's second part's.
+
+**Ruled 2026-11-20 by the user: (a).** In P1f.21's answers' file of part 2, item 55: *"(a)"*
+
+So `-P` leaves out the `(open …)` facts as it leaves out the `(not …)`, `-p` lists everything, and no flag is
+added. The page of the question is [`q-m1f.577_a_view_without_the_open_facts/`](p1f.21_verdicts_as_rules/q-m1f.577_a_view_without_the_open_facts/README.md).
+
+### Q-M1f.578 — The two lists of `solve` and a closure, once the hypotheses are `open` facts
+
+**Raised** 2026-11-20 by the user, answering the third question of P1f.21's review item 54
+([Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)): *"What? Explain in more details"*. The question had said in one sentence that the lists *bind every
+writer as today*, and half of the sentence was wrong.
+
+**Today**, on runs ([review item 56](p1f.21_verdicts_as_rules/review/part-2/56-Q-M1f.578/README.md)): `:hypothesis-relations`,
+`:no-hypothesis` and `(__closed__ R)` filter what the blind enumerator guesses, 6 candidates to 2 in the item's
+program. They filter nothing a hypothesis rule proposes (*no list filters an hrule's candidates*), and a clash is
+a load error: a rule that proposes facts of a relation a list takes out, and, with no hypothesis rule, an
+obligation that owes them. With both a rule and an obligation the rule overrides, so an obligation that owes an
+excluded relation is no clash. The union ([Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union)) ends that override, and the hypothesis rule is now any rule
+that concludes `(open F)`.
+
+(a) They refuse a clash, whoever proposes, and filter the blind enumerator. (b) They filter $H$ and refuse
+nothing. (c) They refuse what a program writes against its own list and filter an obligation's candidates.
+**Default (a).**
+
+**Open.** P1f.21's second part's.
+
+### Q-M1f.579 — An obligation whose guard or trigger reads what a commitment can change
+
+**Raised** 2026-11-20 by the coordinator, on the user's answer to the first question of item 54 ([Q-M1f.576](#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)):
+*"not exactly, "guard or trigger reads what a commitment can change" is not declined anymore, it is allowed,
+detected as non-monotone programs, but allowed."* **Nothing is refused today.** Where an obligation's guard reads
+a relation a commitment can change, the obligations rung steps aside and the blind enumerator proposes every fact;
+the program loads, is answered, and is not flagged, since with every fact proposed at root no hypothesis is first
+held above it. Eight corpus programs do so, all witnesses under `examples/ein-bugs/wrong-answers/`; six of them
+are monotone and state a claim that holds. With the guard read at root in place of the stepping aside,
+`oblig-derived-domain.ein` has one candidate, dead, and an empty $R$, where today it answers `(likes Ann Pie)`
+([review item 57](p1f.21_verdicts_as_rules/review/part-2/57-Q-M1f.579/README.md)).
+
+(a) As today where nothing else proposes, and beside a rule it writes nothing. (b) The answer to the letter: it
+never steps aside, writes its guard's candidates at root, and the program is flagged. (c) It writes them and the
+blind enumerator writes its guesses too. **Default (b)**, the user's answer as written.
 
 **Open.** P1f.21's second part's.

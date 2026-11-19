@@ -1,0 +1,11 @@
+;;; Item 56: the same, with three relations closed: what is held of each is all of it.
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+
+(__closed__ person) (__closed__ food) (__closed__ knows)

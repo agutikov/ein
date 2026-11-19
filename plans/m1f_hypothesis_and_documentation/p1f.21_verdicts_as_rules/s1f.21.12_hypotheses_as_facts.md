@@ -2,13 +2,14 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*) and
-**planned again 2026-11-20 on the user's rulings** of [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) to [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates)
+**planned again 2026-11-20 on the user's rulings** of [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) to [Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts)
 ([the answers to items 44 to 46](README.md#the-answers-to-items-44-45-and-46),
-[to items 47 to 51](README.md#the-answers-to-items-47-to-51)). **Not started**: it starts on the user's word, after
+[to items 47 to 51](README.md#the-answers-to-items-47-to-51),
+[to items 52 to 55](README.md#the-answers-to-items-52-to-55)). **Not started**: it starts on the user's word, after
 part 1.
-**Waits on:** part 1; and four questions the last answers left, each with a default it can be built on:
-[Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone) (a hypothesis first held above root), [Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f) (what one `:assert` holds), [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) (the union's edges),
-[Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts) (a view without the `open` facts).
+**Waits on:** part 1; and two questions the last answers left, each with a default it can be built on:
+[Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) (the two lists and a closure), [Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) (an obligation whose guard or trigger reads what a commitment can
+change).
 **After it:** [S1f.21.18](s1f.21.18_the_hrule_form_removed.md), which removes the `hrule` form and the keyword
 `:hrules`; [S1f.21.14](s1f.21.14_the_pages_of_open.md), the pages.
 **Writes:** the grammar (`ein-ir/src/ein.y`) and the loader; `ein-core/src/terms.rs`; `ein-infer/src/`
@@ -25,7 +26,10 @@ part 1.
 | **The bare `(open)` is refused at load** ([Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)) | a refusal, a row of the grammar page's table; one corpus program rewritten (task 1.6) |
 | **A fork drops every `open` fact**, a written one among them, and they are made again at the fixpoint; every rule that concludes `(open …)` is read at every state; no rule deletes a fact ([Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open), [Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when)) | the `open` facts live where no fork inherits them, and one pass at each state's fixpoint writes them |
 | **$H$ is root's `open` facts**, less those root holds or denies; one first held above root is held and not proposed ([Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when), [Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates)) | $H$ read once, at root, off the facts |
-| **The union** ([Q-M1f.570](../open_questions.md#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union)): $H$ is every `(open F)` root holds, a rule's and an obligation's together, identical ones one fact | the ladder's override goes; what an obligation that declines and the blind enumerator do is [Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator) |
+| **The union** ([Q-M1f.570](../open_questions.md#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union)): $H$ is every `(open F)` root holds, a rule's and an obligation's together, identical ones one fact. **The blind enumerator** writes only where no rule concludes `(open F)` at root and no obligation is activated ([Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)) | the ladder's override goes; what an obligation whose guard or trigger reads what a commitment can change does is [Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change), and the two lists and a closure are [Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) |
+| **One `:assert`** ([Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f)): `(open R)` is a rule's whole `:assert`, as today; `(open F)` stands in a conjunction like any fact | the loader's checks on a conclusion |
+| **A hypothesis first held above root makes its program not monotone, found two ways** ([Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)): a site of the static check for a rule that concludes `(open F)` and reads what a commitment can change; and in flight, a state the run builds that holds an `(open F)` root does not. Found in flight, the answer stands, nothing is claimed, and the warning is *shown immediately when detected, once* | the site; the check at each state built; the warning's line on stderr at once, and the read-out's row |
+| **A view without the `open` facts** ([Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts)): `-P` leaves them out as it leaves out the `(not …)` | `-P` and its form of `--dump-answer` |
 | **A rule may read an `open` fact, and its program is then not monotone automatically** ([Q-M1f.569](../open_questions.md#q-m1f569--what-may-read-an-open-fact-and-when)): warned, nothing claimed, no test | a site of the static check for a `:match` that reads `open`; the pass's facts are there before such a rule fires |
 | **What nests in what** ([Q-M1f.568](../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users), [Q-M1f.571](../open_questions.md#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation)): the kernel reads `absent` at the head of a premise and `open` at the head of a written fact or of a conclusion; directly under one the other is refused, but `(absent (open P))`; `absent` takes a premise, `open` a relation's name or a fact; under an ordinary relation both are ordinary names | the grammar and the loader; three forms refused today load, and one that loads today is refused |
 | **Under `open`** ([Q-M1f.573](../open_questions.md#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates)): a relation's name, or a parameter that names one, is the obligation; a fact, or a variable the `:match` binds, a hypothesis | read at load |
@@ -43,7 +47,7 @@ today's binary and a stand-in relation where the parse refuses `open`, as the re
    moves are listed with the claim each states today and the claim it would state (8 expected, `zebra.ein` among
    them by its commitments). **Nothing is built until the user has read the list.**
 2. **Three programs in the spelling ruled**, as files the parse refuses today: the seats program, *zebra2*, and
-   one with a rule that concludes `(open F)` beside a fact (under [Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f)'s default).
+   one with a rule that concludes `(open F)` beside a fact ([Q-M1f.575](../open_questions.md#q-m1f575--what-one-assert-holds-beside-open-r-and-beside-open-f)).
 3. **A state with its `open` facts**, as `-p`, a dump and a drawing would show it, on the stand-in: one program
    of each writer, a rule's, an obligation's, the blind enumerator's.
 4. **A program whose rule reads an `open` fact**, flagged: the three of
@@ -53,6 +57,12 @@ today's binary and a stand-in relation where the parse refuses `open`, as the re
    at the nodes that owe and at no state of $R$.
 6. **The bare `(open)`**: `tests/stdlib/bijection/06_blind_enumeration.ein` uses it to make the obligations rung
    decline. Another way to the same claim is shown, or the claim it can no longer state is named.
+7. **The eight programs whose obligations rung steps aside today** ([Q-M1f.579](../open_questions.md#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change)), each as it answers today and as it
+   would under the answer taken: `oblig-derived-domain.ein` and its seven siblings, six of which state a claim
+   that holds today.
+8. **The lists and a closure** ([Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts)): the eight programs of
+   [review item 56](review/part-2/56-Q-M1f.578/README.md) and `examples/features/13_mixed_solution_and_open.ein`,
+   the one corpus program with a hypothesis rule, an obligation and a list.
 
 ## Task 2 — the build
 
@@ -63,12 +73,13 @@ today's binary and a stand-in relation where the parse refuses `open`, as the re
    `(open F)` for each hypothesis a rule concludes, an obligation's `absent` gives or the blind enumerator guesses,
    into a part of the state no fork inherits. The count of instances is as today.
 3. **$H$.** Read at root off those facts, less what root holds or denies; the union; the two lists and a closure
-   as today ([Q-M1f.576](../open_questions.md#q-m1f576--the-unions-edges-an-obligation-whose-candidates-cannot-be-read-and-the-blind-enumerator)).
+   under [Q-M1f.578](../open_questions.md#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts).
 4. **A rule that reads `open`.** Its facts are there before it fires: the pass, then such rules, until nothing
    changes. Its program is flagged by the static check, with a site of its own kind. No test holds a flagged
    program's answer (Q-M1f.564).
-5. **A hypothesis first held above root** ([Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone), its default): a site of the static check for a rule that
-   concludes `(open F)` and reads a relation a commitment can change; and the run reports one it meets.
+5. **A hypothesis first held above root** ([Q-M1f.574](../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)): a site of the static check for a rule that concludes
+   `(open F)` and reads a relation a commitment can change; and the run reports one it meets, the warning on
+   stderr at once, and once.
 6. **The surfaces.** The read-out's rows, `-p`, `-P` ([Q-M1f.577](../open_questions.md#q-m1f577--a-view-of-a-state-without-its-open-facts)), `-f`, the dumps, `ein saturate --dump`, the
    drawings, the events, the summary, `ein show hyps`; `08-read-out.md` in the same commit as any row that moves.
 7. **The `hrule` form**, read as a rule that concludes `(open F)` with the clause's activators, with no change to

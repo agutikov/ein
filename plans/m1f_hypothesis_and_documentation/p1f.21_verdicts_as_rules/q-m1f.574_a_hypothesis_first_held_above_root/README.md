@@ -1,7 +1,17 @@
 # 52 · Q-M1f.574: a hypothesis first held above root: how the program is found not monotone
 
-[← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
-[the ledger](../../../../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)
+[← part 2](../review/part-2/README.md) · [← the phase](../README.md) ·
+[the ledger](../../open_questions.md#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)
+
+**Ruled 2026-11-20, and out of the review bundle**, where it was item 52 of part 2. Your answer, in the part's
+answers' file:
+
+> 1 - (c); 2 - (a) Warning shown immediately when detected, once;
+
+It is filed under the question in the ledger and in [the phase's README](../README.md#the-answers-to-items-52-to-55).
+It leaves nothing open. The page is kept, with its programs, as the survey the second part's stages cite; where it says
+*the default*, read it as it stood before the answer. Its outputs and its tools (`runs/` and `tools/` below) are
+on this machine under `build/review-archive/p1f21-part-2/52-Q-M1f.574/`, as they were run.
 
 **From your answer to item 47**, 2026-11-20: *"Yes, monotone program step by step proves or refutes hypotheses, not
 adding new, right? If it does - then R is not upward-closed, search lattice is not hypercube, program is not
@@ -54,6 +64,6 @@ one supposed, as `above-root-chain.ein` does: each step supposed asks the next.
 The warning is the read-out's first row and stderr's first line today. Found in flight, the row is printed as it
 is, the read-out being written after the run; stderr's line comes when it is found.
 
-## 3. Your call
+## 3. The ruling
 
-For 1, (a), (b) or (c); for 2, (a) or (b). In [`ANSWERS.md`](../ANSWERS.md) under item 52. Blank keeps the defaults.
+Ruled: the answer at the head of this page.
