@@ -29,7 +29,7 @@ state that holds `(false)` is dead by this rule, and the engine reads `(false)` 
 | a state holds | the rule |
 |---|---|
 | `(false)`, concluded by a rule, stated by the program or committed | fires once, on that fact, and the state is dead |
-| no `(false)` | does not fire; the state is alive, unless it holds a fact beside its stored negation, which the engine reads itself, with no rule |
+| no `(false)` | does not fire; the state is alive, unless a program's own rule states the key. A fact beside its stored negation is a contradiction only by a rule that concludes `(false)` from the two, `std.contradiction`'s where a program imports it |
 | `(false)` only under an arrow, `(think Ann (false))` | does not fire: the rule matches a held `(false)` |
 
 A program's own rule may state the same word over other premises, with no `(false)` between

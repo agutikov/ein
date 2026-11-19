@@ -327,6 +327,7 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
     // What a rule that states `:ein inconsistent` matches, `(false)` in
     // every program: a rule that concludes a fact of it refutes.
     let leads = monotone::leads_to_an_end(plans.iter().map(|p| &**p), terms);
+    let pairs = crate::contradiction::Pairs::of(plans.iter().map(|p| &**p), terms);
     let stakes = m
         .sites
         .iter()
@@ -338,7 +339,7 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
                 Concludes::NoRootPlan
             } else {
                 mine.iter()
-                    .find_map(|p| monotone::refutes(p, terms, &leads))
+                    .find_map(|p| monotone::refutes(p, terms, &leads, &pairs))
                     .map_or(Concludes::Positive, Concludes::Refutes)
             };
             let at_stake = match s.kind {
@@ -1001,14 +1002,8 @@ fn chain_of(kb: &Kb, terms: &Terms, seeds: &[FactId]) -> Chain {
     Chain { rules, absent }
 }
 
-/// An `absent` premise's relation: `q`, `(not q)`, or `(not ?)`.
+/// An `absent` premise's relation, as [`monotone::Rel::label`] writes it.
 fn naf_rel_label(terms: &Terms, r: &NafRef) -> String {
-    if r.rel == terms.kernel.not {
-        return match r.args.first() {
-            Some(NafArg::Nested { rel, .. }) => format!("(not {})", terms.sym(*rel)),
-            _ => "(not ?)".to_string(),
-        };
-    }
     terms.sym(r.rel).to_string()
 }
 

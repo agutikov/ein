@@ -1,0 +1,58 @@
+;;; **The alternatives flag moves the core, and `refuted by` with it.**
+;;;
+;;; `(u a)` is derived twice: by `u-long` from three givens, `(h1 a) (h2 a)
+;;; (h3 a)`, and by `u-short` from two, `(g1 a) (g2 a)`. `u-long` is written
+;;; first, and the two are one kind of rule, so every order records its
+;;; derivation first. `k1` concludes `(false)` from `(u a)`; `v` and `w` derive
+;;; `(q a)` and `(not (q a))` from the two givens `u-short` reads, a fact beside
+;;; its negation, which is no contradiction here, the program importing no rule
+;;; that says so (Q-M1f.557).
+;;;
+;;; With every derivation recorded, `(false)`'s smallest frontier is `(g1 a)
+;;; (g2 a)` through `u-short`. With `:record-alternative-justifications false`
+;;; a fact keeps its first derivation alone, `(u a)`'s is `u-long`'s, and the
+;;; core is the three `h` facts: the flag's one exemption is the core
+;;; (Q-M1e2.11), and `refuted by` follows the core where it moved (Q-M1e2.21),
+;;; here to the same rule, `k1`, whichever order the rules are written in.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   ein solve FILE:
+;;;     as written, the flag off      unsat core (h1 a) (h2 a) (h3 a) · refuted by k1
+;;;     the config line taken out     unsat core (g1 a) (g2 a) · refuted by k1
+;;;
+;;; R is empty and exhausted either way, and `(solve :expect (false))` holds.
+
+(relation g1 T :why "{?3} has g1")
+(relation g2 T :why "{?3} has g2")
+(relation h1 T :why "{?3} has h1")
+(relation h2 T :why "{?3} has h2")
+(relation h3 T :why "{?3} has h3")
+(relation u  T :why "{?3} is used")
+(relation q  T :why "{?3} is a q")
+(g1 a) (g2 a) (h1 a) (h2 a) (h3 a)
+(rule u-long ()
+  :match  (and (h1 ?x) (h2 ?x) (h3 ?x))
+  :assert (u ?x)
+  :why    "{?x} has all three h")
+(rule u-short ()
+  :match  (and (g1 ?x) (g2 ?x))
+  :assert (u ?x)
+  :why    "{?x} has both g")
+(rule k1 ()
+  :match  (u ?x)
+  :assert (false)
+  :why    "{?x} is used")
+(rule v ()
+  :match  (and (g1 ?x) (g2 ?x))
+  :assert (q ?x)
+  :why    "{?x} is a q")
+(rule w ()
+  :match  (and (g2 ?x) (g1 ?x))
+  :assert (not (q ?x))
+  :why    "{?x} is not a q")
+
+(solve :expect (false))
+
+;; The flag: off, a fact keeps its first derivation alone.
+(config :record-alternative-justifications false)

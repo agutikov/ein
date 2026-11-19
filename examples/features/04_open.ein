@@ -32,6 +32,8 @@
 ;; the demo we use `rule` so the firings land in (reasoning).
 ;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
 
 (rule open-candidate ()
   :match  (and (is-a ?h House) (is-a ?c Color)

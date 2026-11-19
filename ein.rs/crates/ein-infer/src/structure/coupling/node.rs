@@ -206,6 +206,7 @@ pub(crate) fn node_coupling_in(
         // The relations L9's premise is read over, where a route's table
         // relies on it: the whole node is a node the route computes.
         let unheld: &[ein_core::Symbol] = table.map_or(&[], |t| &t.unheld_relations);
+        let refuted = crate::contradiction::Pairs::of(sp.plans().iter().map(|p| &**p), sp.terms());
         let (root_kb, _, _) = sp.parts();
         let read = sp.supported_within(
             &committed,
@@ -220,7 +221,7 @@ pub(crate) fn node_coupling_in(
                     None
                 };
                 (
-                    Graph::of(root_kb, kb, terms, firings, &facts, None),
+                    Graph::of(root_kb, kb, terms, firings, &facts, None, &refuted),
                     core,
                     breach,
                 )

@@ -200,55 +200,25 @@ pub struct Read {
 /// Every read of `plan`, in [`monotone::reads_of`]'s order and with its
 /// `(relation, depth)` — which this asserts, so the two walks cannot drift.
 pub fn reads(plan: &Plan, terms: &Terms) -> Vec<Read> {
-    fn walk(plan: &Plan, terms: &Terms, span: Span, depth: u32, out: &mut Vec<Read>) {
+    fn walk(plan: &Plan, span: Span, depth: u32, out: &mut Vec<Read>) {
         for step in plan.steps(span) {
             match step {
-                Step::Rel(r) if r.rel == terms.kernel.not => {
-                    let before = out.len();
-                    for slot in plan.slots(r.slots) {
-                        if let Slot::Nested { rel, .. } = slot {
-                            out.push(Read {
-                                rel: Rel {
-                                    name: *rel,
-                                    negated: true,
-                                },
-                                depth,
-                                step_rel: r.rel,
-                                slots: r.slots,
-                            });
-                        }
-                    }
-                    if out.len() == before {
-                        out.push(Read {
-                            rel: Rel {
-                                name: terms.kernel.not,
-                                negated: true,
-                            },
-                            depth,
-                            step_rel: r.rel,
-                            slots: r.slots,
-                        });
-                    }
-                }
                 Step::Rel(r) => out.push(Read {
-                    rel: Rel {
-                        name: r.rel,
-                        negated: false,
-                    },
+                    rel: Rel { name: r.rel },
                     depth,
                     step_rel: r.rel,
                     slots: r.slots,
                 }),
-                Step::Absent { sub } => walk(plan, terms, *sub, depth + 1, out),
+                Step::Absent { sub } => walk(plan, *sub, depth + 1, out),
                 Step::Guard { .. } => {}
             }
         }
     }
     let mut out = Vec::new();
     for d in plan.disjuncts.iter() {
-        walk(plan, terms, d.steps, 0, &mut out);
+        walk(plan, d.steps, 0, &mut out);
         for g in plan.guards(d.guards) {
-            walk(plan, terms, g.sub, 1, &mut out);
+            walk(plan, g.sub, 1, &mut out);
         }
     }
     let ours: Vec<(Rel, u32)> = out.iter().map(|r| (r.rel, r.depth)).collect();

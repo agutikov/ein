@@ -132,9 +132,7 @@ pub(crate) fn outside(
     let mut concluded: FxHashSet<Symbol> = FxHashSet::default();
     for p in plans.iter().filter(|p| program.rules.contains(p.rule)) {
         for w in crate::monotone::writes_of(p, s.terms) {
-            if !w.negated {
-                concluded.insert(w.name);
-            }
+            concluded.insert(w.name);
         }
     }
     let mut asked: FxHashSet<String> = FxHashSet::default();

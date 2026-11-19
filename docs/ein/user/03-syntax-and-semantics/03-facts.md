@@ -173,8 +173,8 @@ $$
 ## Where a fact came from
 
 The record of each fact partitions the knowledge base three ways. The partition is read, not stored, and only the
-presentation uses it: the engine treats every fact alike, and a fact and its negation contradict each other
-whatever their origins.
+presentation uses it: the engine treats every fact alike, and where a program imports `std.contradiction` a fact
+and its negation contradict each other whatever their origins.
 
 | a fact whose first justification is … | is | what it is |
 |---|---|---|

@@ -18,6 +18,9 @@
 ;;;   Six firings total: (Dog,Cat), (Dog,Bird), (Cat,Dog), (Cat,Bird),
 ;;;   (Bird,Dog), (Bird,Cat).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule type-exclusivity (?R)
   :match  (and (is-a ?a ?T)
                (is-a ?b ?T)

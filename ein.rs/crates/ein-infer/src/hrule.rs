@@ -103,17 +103,9 @@ impl Hrules {
     /// candidate is emitted.
     ///
     /// No caller writes the KB between two candidates: the one pass,
-    /// `hypgen::generate_config_free`, writes nothing. The walk's generator
-    /// wrote `(not h)` between one candidate and the next, through its kill
-    /// cache, and so where an hrule's `:match` reads `not` (`reads_negation`:
-    /// a stored negation, `(absent (not …))`, the stdlib's `unknown`),
-    /// **every** hrule is matched before any candidate is emitted, and no
-    /// write a caller makes is visible to the enumeration: an hrule that reads
-    /// `not` reads the state it was asked about. Where none reads it
-    /// the two orders agree, and each hrule is matched as it is reached, so a
-    /// caller that stops early matches no hrule it does not reach. A debug
-    /// build and a release build answer such a program alike, as `ein oracle`
-    /// does.
+    /// `hypgen::generate_config_free`, writes nothing. So each hrule is
+    /// matched as it is reached, against the state it was asked about, and a
+    /// caller that stops early matches no hrule it does not reach.
     pub fn candidates(
         &self,
         s: &mut Session<'_>,
@@ -139,27 +131,11 @@ impl Hrules {
                 && crate::firing::computed(s.terms, plan, template).is_none())
             .then_some(template)
         };
-        let mut ahead: Option<Vec<Envs>> = self
-            .plans
-            .iter()
-            .any(|p| reads_negation(p, s.terms))
-            .then(|| {
-                self.plans
-                    .iter()
-                    .map(|plan| match proposes(s, plan) {
-                        Some(_) => matches(s, plan),
-                        None => Vec::new(),
-                    })
-                    .collect()
-            });
-        for (i, plan) in self.plans.iter().enumerate() {
+        for plan in self.plans.iter() {
             let Some(template) = proposes(s, plan) else {
                 continue;
             };
-            let envs = match &mut ahead {
-                Some(all) => std::mem::take(&mut all[i]),
-                None => matches(s, plan),
-            };
+            let envs = matches(s, plan);
             for (regs, trail) in &envs {
                 let env = Env {
                     regs,
@@ -188,25 +164,6 @@ impl Hrules {
         }
         ControlFlow::Continue(())
     }
-}
-
-/// True iff any premise or guard of `plan` reads the `not` relation, under an
-/// `(absent …)` too: what [`Hrules::candidates`] matches ahead for.
-fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
-    fn walk(plan: &Plan, terms: &ein_core::Terms, span: crate::plan::Span) -> bool {
-        plan.steps(span).iter().any(|step| match step {
-            crate::plan::Step::Rel(r) => r.rel == terms.kernel.not,
-            crate::plan::Step::Absent { sub } => walk(plan, terms, *sub),
-            crate::plan::Step::Guard { .. } => false,
-        })
-    }
-    plan.disjuncts.iter().any(|d| {
-        walk(plan, terms, d.steps)
-            || plan
-                .guards(d.guards)
-                .iter()
-                .any(|g| walk(plan, terms, g.sub))
-    })
 }
 
 /// Activator argument-tuples per hrule name, read from the

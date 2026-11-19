@@ -2,10 +2,17 @@
 ;;;
 ;;; `03_liar_denial.ein` with one more fact: the program itself states that
 ;;; five is not two plus two. The rule `distrust` then concludes the negation
-;;; of that very fact, `(not (not (= 5 (+ 2 2))))`, and **a fact held with its
-;;; negation is a contradiction, whatever the fact is**: here the fact is the
-;;; stored negation `(not (= 5 (+ 2 2)))`, and its negation is the negation of
-;;; a negation. Root is dead and R is empty.
+;;; of that very fact, `(not (not (= 5 (+ 2 2))))`: a fact held with its
+;;; negation, where the fact is the stored negation `(not (= 5 (+ 2 2)))` and
+;;; its negation the negation of a negation.
+;;;
+;;; A fact beside its negation is a contradiction by a rule that says so, and
+;;; the kernel has none (Q-M1f.557). `std.contradiction`'s rules reach the
+;;; relations a program declares, and `not` is no declared relation, so this
+;;; program states its own rule for the one shape it writes,
+;;; `denial-denied`: a stored negation of an equation beside its own negation
+;;; is `(false)`. Root is dead and R is empty, and `refuted by` names the
+;;; rules that derived the two sides.
 
 (relation liar  Person       :why "{?3} lies")
 (relation think Person Claim :why "{?3} thinks that {?4}")
@@ -18,5 +25,10 @@
   :match  (and (liar ?p) (think ?p ?f))
   :assert (not ?f)
   :why    "{?p} lies and thinks {?f}")
+
+(rule denial-denied ()
+  :match  (and (not (= ?a ?b)) (not (not (= ?a ?b))))
+  :assert (false)
+  :why    "it is denied that {?a} = {?b}, and that denial is denied")
 
 (solve :no-search :expect (false))

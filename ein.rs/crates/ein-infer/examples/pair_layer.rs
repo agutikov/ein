@@ -558,6 +558,7 @@ fn small_kb_over(
     let other = Stated {
         root: p.root,
         terms: p.terms,
+        pairs: p.pairs,
         candidates: p.candidates,
         hypothesised,
         objects,

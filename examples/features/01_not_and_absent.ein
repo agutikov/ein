@@ -23,6 +23,9 @@
 ;;; Three person pairs, three states, three distinct outcomes.
 
 ;; Stored-neg-fact match: `(not …)` is now an ordinary pattern.
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule see-stored-neg ()
   :match  (not (likes ?a ?b))
   :assert (explicitly-dislikes ?a ?b)

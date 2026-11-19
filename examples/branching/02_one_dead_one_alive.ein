@@ -21,6 +21,9 @@
 ;;; refutes them: R is 20 states and its maximal line 4. A typed signature
 ;;; keeps them out (`03_five_hyps_one_alive.ein`).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)

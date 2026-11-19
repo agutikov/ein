@@ -1,0 +1,38 @@
+;;; `std.contradiction` — `clash-of-0` to `clash-of-6`, **what the import
+;;; does not reach**: a relation no declaration names.
+;;;
+;;; The seven rules that derive the contradiction's activators read the
+;;; program's declarations. `loose` is written and not declared, so no rule
+;;; derives an activator for it, and its fact beside its negation is no
+;;; contradiction: root is alive and holds both. `r1` is declared, and holds
+;;; a fact and no denial, so its activated rules are silent.
+;;;
+;;; A program that wants the contradiction for a relation it does not declare
+;;; writes the activator itself, `(clash-1 loose)`, as `01_clash_0.ein` does
+;;; for one it declares.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Each query closes the held extent of one rule's activators: `r1`'s at
+;;; counts 0 and 1, every declaration also stating `(relation R)`, and none of
+;;; `loose`. Root is alive and holds `(loose a)` beside `(not (loose a))`.
+
+(import std.contradiction :symbols (clash-0 clash-1))
+
+(relation r1 T1 :why "{?3} is r1")
+
+(r1 b)
+(loose a)
+(not (loose a))                   ; no rule over the two: no contradiction
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (clash-0 ?R)
+  :expect (model (clash-0 r1)))
+(query :goal (clash-1 ?R)
+  :expect (model (clash-1 r1)))
+(query :goal (loose ?x)
+  :expect (model (loose a)))
+(query :goal (r1 ?x)
+  :expect (model (r1 b)))

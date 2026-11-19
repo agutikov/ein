@@ -3,10 +3,9 @@
 ;;;
 ;;; ── What this program does to the seven ────────────────────────────────────
 ;;;
-;;; It writes the one fact that asks for them, `(clash-of-declared)`, and
-;;; declares a relation at each count of labels, `r0` to `r6`. Each rule reads
-;;; the declarations of its count and concludes the activator of the
-;;; contradiction rule of that count:
+;;; The import alone asks for them: the program declares a relation at each
+;;; count of labels, `r0` to `r6`, and each rule reads the declarations of its
+;;; count and concludes the activator of the contradiction rule of that count:
 ;;;
 ;;;   clash-of-2   (relation r2 T T)   ⟹   (clash-2 r2)
 ;;;
@@ -40,8 +39,6 @@
   :why "{?3}, {?4}, {?5}, {?6}, {?7} and {?8} are r6")
 (relation r7 T1 T2 T3 T4 T5 T6 T7
   :why "{?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9} are r7")
-
-(clash-of-declared)
 
 (r2 a b)
 (not (r2 b a))

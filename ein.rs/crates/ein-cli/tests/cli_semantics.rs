@@ -727,11 +727,11 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     assert_eq!(all.field("total firings").as_deref(), Some("1"));
     assert_eq!(one.field("total firings").as_deref(), Some("1"));
     // A redundant last firing re-derived what the KB held.
-    let (_, l) = limit(&["--max-steps", "5", "tests/stdlib/algebra/03_boolean.ein"]);
+    let (_, l) = limit(&["--max-steps", "15", "tests/stdlib/algebra/03_boolean.ein"]);
     assert_eq!(
         l,
         [
-            "--max-steps 5 stopped saturation after 5 firings, before it checked for a fixpoint. \
+            "--max-steps 15 stopped saturation after 15 firings, before it checked for a fixpoint. \
              The last firing: (join-r owns rents either) with ?R1 = owns · ?R2 = rents · \
              ?R3 = either · ?a = Ann · ?b = Car re-derived (either Ann Car) from (rents Ann Car), \
              which the KB already held"

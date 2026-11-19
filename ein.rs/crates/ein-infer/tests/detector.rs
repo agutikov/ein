@@ -136,7 +136,7 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     assert_eq!(
         found_cycles,
         [
-            "examples/ein-bugs/d3-unsat-core.ein odd: fire-1: (not r1) →¬ r1",
+            "examples/ein-bugs/d3-unsat-core.ein odd: fire-1: not →¬ r1",
             "examples/ein-bugs/wrong-answers/f07-fpoff.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
             "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
             "examples/features/07_unstratifiable.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
@@ -172,7 +172,7 @@ fn a_cycle_through_an_absent_is_found_with_its_parity() {
         );
     }
     let (m, _) = file("examples/ein-bugs/d3-unsat-core.ein");
-    assert_eq!(cycles(&m.detector), ["odd: fire-1: (not r1) →¬ r1"]);
+    assert_eq!(cycles(&m.detector), ["odd: fire-1: not →¬ r1"]);
 }
 
 /// **Order sensitivity has no false negative** on the programs whose state or

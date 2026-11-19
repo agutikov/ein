@@ -20,6 +20,9 @@
 ;;;
 ;;; R is ∅ and {(co-located Blue H3)}: ?h = H3 in its one maximal state.
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)

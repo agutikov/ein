@@ -233,28 +233,8 @@ fn heads(ast: &Ast, terms: &Terms, node: NodeId, out: &mut Vec<Rel>) {
         let Node::SForm { head, .. } = ast.node(c) else {
             continue;
         };
-        match ast.atom_name(head) {
-            Some("not") => {
-                for &a in ast.form_args(c) {
-                    if let Some(name) = ast.head_name(a).and_then(|n| terms.syms.get(n)) {
-                        out.push(Rel {
-                            name,
-                            negated: true,
-                        });
-                    } else {
-                        out.push(Rel {
-                            name: terms.kernel.not,
-                            negated: true,
-                        });
-                    }
-                }
-            }
-            Some(name) => {
-                if let Some(name) = terms.syms.get(name) {
-                    out.push(Rel::pos(name));
-                }
-            }
-            None => {}
+        if let Some(name) = ast.atom_name(head).and_then(|n| terms.syms.get(n)) {
+            out.push(Rel::pos(name));
         }
     }
 }

@@ -27,8 +27,7 @@ use ein_ir::{Ast, node_repr};
 use rustc_hash::FxHashMap;
 
 use crate::compile::{
-    CompileError, SharedMemo, activators_for, asserted_relation, naf_relation_refs,
-    negated_relation, plan_key,
+    CompileError, SharedMemo, activators_for, asserted_relation, naf_relation_refs, plan_key,
 };
 use crate::match_::{Match, Matcher};
 use crate::plan::{GuardArgKind, NafGuard, Plan, Slot, Span, Step};
@@ -531,16 +530,12 @@ fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[S
         ));
     }
     out.push_str(&format!(
-        "  ASSERTED {} NEGATED {}\n",
+        "  ASSERTED {}\n",
         opt_name(terms, asserted_relation(plan, terms)),
-        opt_name(terms, negated_relation(plan, terms)),
     ));
     let refs = naf_relation_refs(plan, terms);
     if !refs.is_empty() {
-        let rendered: Vec<String> = refs
-            .iter()
-            .map(|(r, neg)| format!("({}, {})", repr_str(terms.sym(*r)), bool_word(*neg)))
-            .collect();
+        let rendered: Vec<String> = refs.iter().map(|r| repr_str(terms.sym(*r))).collect();
         out.push_str(&format!("  NAFREFS [{}]\n", rendered.join(", ")));
     }
 }

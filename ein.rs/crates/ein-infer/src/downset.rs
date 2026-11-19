@@ -355,7 +355,7 @@ pub(crate) fn compute_prepared(
         out.cost.root = t_root.elapsed();
         return Ok(out);
     }
-    let mut axes = Axes::new(root, &out.candidates, hypothesised, false)
+    let mut axes = Axes::new(root, terms, &plans, &out.candidates, hypothesised, false)
         .narrating(events.narration())
         .taking_cores(opts.cores.visited);
     // A flagged program reaches here only with a dead root (L0): the detector

@@ -184,9 +184,9 @@ A subset of the universe: a node of the lattice. Without merging, the lattice is
 the commitments of $k$ facts.
 
 ### State
-$\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when it holds
-a contradiction, `(false)` or a fact beside its stored negation, or when a rule that states `:ein inconsistent`
-fires in it, as `std.core`'s does on a held `(false)`
+$\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when a
+rule that states `:ein inconsistent` fires in it, as `std.core`'s does on a held `(false)`, which
+`std.contradiction`'s rules conclude from a fact beside its stored negation where a program imports the module
 ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)); **alive** otherwise; **owing $n$** with $n$
 undischarged obligation instances; **discharged** when it owes nothing.
 

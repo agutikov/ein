@@ -164,18 +164,15 @@ impl Unwritten {
         let program = kb.program();
         let k = &terms.kernel;
         // determinism-ok: a set asked for membership alone.
-        let mut written: FxHashSet<Symbol> = [k.not, k.open, k.closed].into_iter().collect();
+        let mut written: FxHashSet<Symbol> = [k.open, k.closed].into_iter().collect();
         for plan in crate::monotone::plans_of(memo) {
             // An hrule proposes candidates and runs at no node.
             if program.hrules.contains(plan.rule) && !program.rules.contains(plan.rule) {
                 continue;
             }
+            // A stored negation is a fact of `not`, which is written; the
+            // relation it denies is not.
             for w in crate::monotone::writes_of(&plan, terms) {
-                // A stored negation is a fact of `not`, which is written
-                // already; the relation it denies is not.
-                if w.negated {
-                    continue;
-                }
                 written.insert(w.name);
             }
         }

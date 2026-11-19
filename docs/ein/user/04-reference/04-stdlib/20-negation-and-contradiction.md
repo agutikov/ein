@@ -5,9 +5,9 @@ Two things about a stored negation that Ein leaves to a rule, each a module:
 - **the elimination of a double negation**, `std.negation`. `(not (not g))` is a fact, and nothing concludes `g`
   from it ([constraints § The negation of a negation](../../03-syntax-and-semantics/06-constraints.md#the-negation-of-a-negation));
   the module's rules do, for the relations a program names;
-- **the contradiction, as a rule that concludes `(false)`**, `std.contradiction`. A state that holds a fact and its
-  negation is dead with no rule, and need hold no `(false)`; the module's rules conclude it, so the state holds the
-  fact, with its derivation.
+- **the contradiction, as a rule that concludes `(false)`**, `std.contradiction`. The kernel has no check of its
+  own: a state that holds a fact and its negation is dead where the program imports the module, whose rules conclude
+  `(false)` from the two, and alive where it imports no rule that says so.
 
 Both are written the same way. A pattern fixes its fact's count of arguments, and its relation may be a parameter
 ([Q-M1f.393](../../../../decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)), so *any fact* is one
@@ -125,11 +125,10 @@ among them, are read the same way and warn of the same program.
 ## Using `std.contradiction` — a fact beside its negation concludes `(false)`
 
 ```lisp
-(import std.contradiction :symbols (clash-2))
-(clash-2 seats)                ; one relation
+(import std.contradiction)     ; every declared relation
 
-(import std.contradiction)
-(clash-of-declared)            ; every declared relation
+(import std.contradiction :symbols (clash-1))
+(clash-1 loose)                ; one relation, declared or not
 ```
 
 With $R$ the relation an activator names and $n$ the rule's count:
@@ -140,18 +139,20 @@ $$
 
 | a program writes | it produces |
 |---|---|
+| `(import std.contradiction)` | for each declaration `(relation R L1 … LN)`, `N` from none to six, the activators `(clash-N R)` and `(clash-0 R)`, and so `(false)` wherever a state holds a fact of a declared relation beside its negation |
 | `(clash-N R)`, `N` the count of arguments of `R`'s facts | `(false)`, wherever the state holds a fact of `R` beside its negation |
-| `(clash-of-declared)` | for each declaration `(relation R L1 … LN)`, `N` from none to six, the activators `(clash-N R)` and `(clash-0 R)` |
 
-A program lists the `clash-N` it writes. `clash-of-declared` is a relation the module reads and does not declare, so
-a program writes it as it is, with nothing to list. The import brings nothing else: no relation and no fact.
+A program lists the `clash-N` it writes. The import brings nothing else: no relation and no fact.
 
-**The verdict is the kernel's, with the rule or without it.** A state that holds a fact and its negation is dead
-whatever the program imports. What the rule adds is the fact `(false)` in that state, derived, with the pair as its
-premises: a trace shows the firing, and the state's refutation can be read as a rule's.
+**The contradiction is the module's, and the import is the switch**
+([Q-M1f.557](../../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). The kernel
+has no check of its own: a program that imports no rule over a fact and its negation may hold both, and the state is
+alive. With the module imported, the rule concludes `(false)` with the pair as its premises, and the rule every
+program gets ends the state. `std.algebra`, `std.bijection` and `std.slots` conclude stored negations, and import the
+module, so a program that imports one of them has it.
 
 ```lisp
-(import std.contradiction :symbols (clash-2))
+(import std.contradiction)
 
 (relation seats   Guest Chair :why "{?3} is seated at {?4}")
 (relation invited Guest       :why "{?3} is invited")
@@ -169,8 +170,6 @@ premises: a trace shows the firing, and the state's refutation can be read as a 
 (invited Ann)
 (barred Ann)
 
-(clash-2 seats)
-
 (solve :no-search)
 (query :goal (seats ?g ?c))
 ```
@@ -180,7 +179,7 @@ premises: a trace shows the firing, and the state's refutation can be read as a 
   …
   unsat core        (barred Ann)
   unsat core        (invited Ann)
-  refuted by        clash-2
+  refuted by        the-barred-do-not, the-invited-sit
 
   (false)
   …
@@ -190,23 +189,19 @@ and the firing, as `ein solve FILE --events F` writes it to `F`:
 
 <!-- output -->
 ```text
-{"e": "fire", "n": 18, "rule": "clash-2", "activator": ["seats"], "bindings": [["R", "seats"], ["a", "Ann"], ["b", "C1"]], "premises": ["(seats Ann C1)", "(not (seats Ann C1))"], "derived": ["(false)"], "redundant": false}
+{"e": "fire", "n": 35, "rule": "std.contradiction.clash-2", "activator": ["seats"], "bindings": [["R", "seats"], ["a", "Ann"], ["b", "C1"]], "premises": ["(seats Ann C1)", "(not (seats Ann C1))"], "derived": ["(false)"], "redundant": false}
 ```
 
-With the line `(clash-2 seats)` taken out the answer is the same, R empty and the same core, no rule fires on the
-pair, and the row reads `refuted by the-barred-do-not, the-invited-sit`.
+With the import line taken out, root is alive and holds both facts, and the query's one class is
+`(model (seats Ann C1))`.
 
-**The `refuted by` row names `clash-N`, or what derived the pair.** A state the rule calls dead holds two
-contradictions over one core, the pair and the `(false)` derived from it. The row names the last rules of the
-derivation of the one the core was taken over
-([Q-M1e2.21](../../../../decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)): `clash-N`
-for `(false)`, and for the pair the rules that derived its two facts, `(given)` for a fact the program wrote. Which
-of the two it is, is the explanation's choice, and a core is an explanation
-([Q-M1f.6](../../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)): of two explanations of one size, the
-one whose fact comes first as text, so the pair for a relation named `between`, which sorts before `false`, and
-`(false)` for `seats`, which sorts after it.
+**The `refuted by` row names what derived the pair.** An explanation reads through `clash-N` to the pair, as it
+reads through the rule every program gets to the `(false)` it matched: the core is the frontier of the fact and its
+negation, explained together, and the row names the last rules of their derivations
+([Q-M1e2.21](../../../../decisions/read-out/Q-M1e2.21-refuted-by-names-the-first-recorded-derivation.md)),
+`(given)` for a fact the program wrote.
 
-### Every declared relation: `(clash-of-declared)`
+### Every declared relation, by the import
 
 The program lists three of the rules only to ask which relations each was activated for:
 
@@ -220,8 +215,6 @@ The program lists three of the rules only to ask which relations each was activa
 (invited Ann)
 (seats Ann C1)
 (not (seats Ann C2))
-
-(clash-of-declared)
 
 (solve :no-search)
 (query :goal (clash-0 ?R))
@@ -260,8 +253,8 @@ declaration states `(relation R)` beside `(relation R LABEL…)`, and `clash-0` 
 on `invited` and `seats` it is silent. No fact here stands beside its negation, the denial is of another chair, and
 root is alive.
 
-What `(clash-of-declared)` does not reach is a relation nothing declares, which has no declaration to read: it takes
-its activator written, `(clash-1 guest)`.
+What the import does not reach is a relation nothing declares, which has no declaration to read: it takes its
+activator written, `(clash-1 loose)`, and without one a fact of it beside its negation is no contradiction.
 
 ## How it works
 
@@ -366,8 +359,8 @@ A fact of no argument.
 ### `std.contradiction`
 
 Seven rules that conclude `(false)`, one a count, each with the relation a parameter; and seven with no parameter
-that derive their activators, each from the declarations of one count, where the program holds
-`(clash-of-declared)`. A rule that concludes `(false)` is in the first half of the agenda
+that derive their activators, each from the declarations of one count, so the import is the switch. A rule that
+concludes `(false)` is in the first half of the agenda
 ([Q-M1f.313](../../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)), so a pair is
 refuted as soon as it is matched.
 
@@ -471,7 +464,7 @@ Reads the fact `(relation R)` every declaration states, so it names every declar
 <!-- rule std.contradiction clash-of-0 -->
 ```lisp
 (rule clash-of-0 ()
-  :match  (and (clash-of-declared) (relation ?R))
+  :match  (relation ?R)
   :assert (clash-0 ?R)
   :why    "{?R} is declared.")
 ```
@@ -486,7 +479,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-1 -->
 ```lisp
 (rule clash-of-1 ()
-  :match  (and (clash-of-declared) (relation ?R ?A))
+  :match  (relation ?R ?A)
   :assert (clash-1 ?R)
   :why    "{?R} is declared with one argument.")
 ```
@@ -499,7 +492,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-2 -->
 ```lisp
 (rule clash-of-2 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B))
+  :match  (relation ?R ?A ?B)
   :assert (clash-2 ?R)
   :why    "{?R} is declared with two arguments.")
 ```
@@ -512,7 +505,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-3 -->
 ```lisp
 (rule clash-of-3 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C))
+  :match  (relation ?R ?A ?B ?C)
   :assert (clash-3 ?R)
   :why    "{?R} is declared with three arguments.")
 ```
@@ -525,7 +518,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-4 -->
 ```lisp
 (rule clash-of-4 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D))
+  :match  (relation ?R ?A ?B ?C ?D)
   :assert (clash-4 ?R)
   :why    "{?R} is declared with four arguments.")
 ```
@@ -538,7 +531,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-5 -->
 ```lisp
 (rule clash-of-5 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D ?E))
+  :match  (relation ?R ?A ?B ?C ?D ?E)
   :assert (clash-5 ?R)
   :why    "{?R} is declared with five arguments.")
 ```
@@ -551,7 +544,7 @@ Reads a declaration of one label; and so each rule after it, at its count.
 <!-- rule std.contradiction clash-of-6 -->
 ```lisp
 (rule clash-of-6 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D ?E ?F))
+  :match  (relation ?R ?A ?B ?C ?D ?E ?F)
   :assert (clash-6 ?R)
   :why    "{?R} is declared with six arguments.")
 ```

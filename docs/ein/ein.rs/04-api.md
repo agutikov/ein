@@ -257,7 +257,7 @@ one state: 25 facts over H
   who_water = Norwegian
   who_zebra = Japanese
 saturations: 7, R listed whole: true
-trace: 581 steps
+trace: 599 steps
 ```
 
 `one state` counts the state's `(model …)`, the positive facts over H's relations and root's own, which is what

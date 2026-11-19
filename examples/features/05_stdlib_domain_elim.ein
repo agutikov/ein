@@ -30,6 +30,8 @@
 (import std.macro :symbols (forall))
 (import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
                            domain-elimination no-room-left))
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
 
 (relation color-of House Color :why "{?3} is painted {?4}")
 (relation is-a    T T           :why "{?3} is a {?4}")

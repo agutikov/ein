@@ -7,11 +7,12 @@
 //! any depth (`ein.y`'s `NegFact` and `NegPattern`), and a rule's conclusion
 //! `(not ?x)` builds one where `?x` is bound to a stored negation.
 //!
-//! The kernel reads it as it reads any fact: a fact held with its negation is
-//! a contradiction, so `(not g)` beside `(not (not g))` is dead and `g`
-//! beside `(not (not g))` is alive, and nothing concludes `g` from it. That
-//! step is a rule a program states, one rule a count of arguments with the
-//! relation a parameter.
+//! A rule over a fact and its negation reads it as it reads any fact. The
+//! kernel has no such rule (Q-M1f.557), and the programs here state theirs,
+//! for the shapes they write: `(not g)` beside `(not (not g))` is dead by it,
+//! and `g` beside `(not (not g))` is alive, and nothing concludes `g` from
+//! it. That step is a rule a program states, one rule a count of arguments
+//! with the relation a parameter.
 //!
 //! **The claim is held by an invariance**, not by a banked output: a program
 //! in which a rule builds the fact and the same program with the fact written
@@ -82,6 +83,11 @@ fn held(dump: &str) -> Vec<String> {
 }
 
 const G: &str = "(= 5 (+ 2 2))";
+
+/// The programs' own contradiction for the one shape they deny twice: a
+/// stored negation of an equation beside its own negation.
+const DENIED: &str = "(rule denied-twice () :match (and (not (= ?a ?b)) (not (not (= ?a ?b)))) \
+                      :assert (false) :why \"a denial beside its denial\")";
 
 /// Every place a file writes a negation, with a negation under it.
 const WRITTEN: [(&str, &str); 12] = [
@@ -209,7 +215,7 @@ fn a_rule_matches_one_and_concludes_one() {
 /// and the same program with that fact written in the file and no rule.
 fn pair(extra: &str, expect: &str) -> (String, String) {
     let head = format!(
-        "(think Alice (not {G}))\n(liar Alice)\n{extra}\n(solve :no-search :expect {expect})\n"
+        "(think Alice (not {G}))\n(liar Alice)\n{extra}\n(solve :no-search :expect {expect})\n{DENIED}\n"
     );
     let built = format!(
         "{head}(rule distrust () :match (and (liar ?p) (think ?p ?f)) :assert (not ?f) \
@@ -287,6 +293,10 @@ fn a_search_reaches_the_same_region_by_a_variable_and_by_shape() {
                 &format!(
                     "(person Ann)\n(person Bob)\n(think Ann (not (ok a)))\n(think Bob (ok b))\n\
                      {extra}\n\
+                     (rule ok-denied () :match (and (ok ?x) (not (ok ?x))) :assert (false) \
+                     :why \"a fact beside its denial\")\n\
+                     (rule denial-denied () :match (and (not (ok ?x)) (not (not (ok ?x)))) \
+                     :assert (false) :why \"a denial beside its denial\")\n\
                      (hrule guess () :match (person ?p) :assert (liar ?p) \
                      :why \"suppose {{?p}} lies\")\n{text}\n"
                 ),

@@ -41,14 +41,17 @@
 ;;; matches DIRECTLY or via the hierarchy (`is-a*`, the transitive closure).
 ;;;
 ;;; Dependencies are **self-imported** (one copy per program): `forall`
-;;; (std.macro) for the elimination quantifiers, and the cardinality rules
+;;; (std.macro) for the elimination quantifiers, the cardinality rules
 ;;; (std.algebra) the bodies guard on (`functional`/`total`/…) or a puzzle
-;;; activates (`bijective-properties`). An import brings this module whole, and
+;;; activates (`bijective-properties`), and the contradiction
+;;; (std.contradiction), which makes the negations `functional-negative` and
+;;; `injective-negative` conclude a death beside the fact (Q-M1f.557). An import brings this module whole, and
 ;;; std.algebra and std.macro with it (Q-M1f.247): a puzzle's
 ;;; `(import std.bijection :symbols (bijective-setup typecheck-setup))` holds the
 ;;; whole working stack, and lists from std.algebra what it writes of it
 ;;; (`bijective-properties`, a rule of std.algebra's, is std.algebra's to list).
 (import std.macro   :symbols (forall))
+(import std.contradiction)
 (import std.algebra :symbols (functional injective total surjective bijective-properties
                               total-owed surjective-owed))
 

@@ -315,11 +315,7 @@ fn typing_row(root: &Root, kb: &Kb, terms: &Terms) -> Json {
                 .plans
                 .iter()
                 .filter(|p| kb.program().rules.contains(p.rule))
-                .any(|p| {
-                    monotone::writes_of(p, terms)
-                        .iter()
-                        .any(|w| !w.negated && w.name == rel)
-                });
+                .any(|p| monotone::writes_of(p, terms).iter().any(|w| w.name == rel));
             alone.push(json!({
                 "relation": terms.sym(rel),
                 "candidates": root.proposed.iter().filter(|&&f| terms.facts.get(f).0 == rel).count(),

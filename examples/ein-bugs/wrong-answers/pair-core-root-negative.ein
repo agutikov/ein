@@ -23,6 +23,9 @@
 ;;; either way, which is why this file is a boundary and not a row.
 ;;;
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (relation p T :why "p holds of {?3}") (relation q T :why "q holds of {?3}") (relation seed T :why "{?3} is a seed")
 
 (seed a)

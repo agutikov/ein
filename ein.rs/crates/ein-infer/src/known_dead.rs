@@ -13,10 +13,11 @@
 //!
 //! - **a death**: a route saturated `S ∪ {b}` and its fixpoint derived a
 //!   contradiction (`KnownDead::died`);
-//! - **a denial**: `S` is an alive state whose own fixpoint stores
-//!   `(not b)`, which the node function reports beside its closure
-//!   (`crate::region::NodeOut::denied`, `KnownDead::denies`). No
-//!   saturation is spent on `S ∪ {b}`.
+//! - **a denial**: `S` is an alive state whose own fixpoint holds a fact a
+//!   rule refutes `b` beside alone, `(not b)` where the program imports
+//!   `std.contradiction` ([`crate::contradiction::Pairs`]), which the node
+//!   function reports beside its closure (`crate::region::NodeOut::denied`,
+//!   `KnownDead::denies`). No saturation is spent on `S ∪ {b}`.
 //!
 //! Whatever its source, a set known dead prunes every set that holds it
 //! (**L1**, *dead is upward-closed*): `KnownDead::extension` and
@@ -26,11 +27,13 @@
 //! ### L8, what a state denies is dead above it
 //!
 //! **The licence.** On a program the static check calls monotone, let `S` be
-//! an alive state whose fixpoint holds `(not b)` for a candidate `b`. Then the
-//! node of `S ∪ {b}` is dead, and by L1 so is every node above it.
+//! an alive state whose fixpoint holds `(N b)` for a candidate `b`, where a
+//! compiled rule refutes a fact of `b`'s relation and count beside the fact
+//! `N` holds it in, alone: `(not b)`, under `std.contradiction`'s `clash-N`.
+//! Then the node of `S ∪ {b}` is dead, and by L1 so is every node above it.
 //!
-//! **The argument**, under Q-M1e.2. Three facts, none of them about `b`'s relation, a closure or how
-//! the negation came to be stored:
+//! **The argument**, under Q-M1e.2. Three facts, none of them about a closure
+//! or how `(N b)` came to be held:
 //!
 //! 1. *A node's fixpoint holds its commitment.* The node function writes the
 //!    commitment's facts into root's fork before it saturates
@@ -38,14 +41,16 @@
 //!    `S ∪ {b}`.
 //! 2. *The state is monotone.* A program with no site has a monotone state:
 //!    each node's fixpoint contains its subsets' ([`crate::monotone`], § The
-//!    theorem). A stored negation is a fact of the fixpoint like any other,
-//!    so `(not b)`, which the fixpoint of `S` holds, is in the fixpoint of
-//!    `S ∪ {b}`.
-//! 3. *A fact beside its stored negation is a contradiction*, the engine's
-//!    first shape of one, whatever the relation and however either fact got
-//!    there ([`crate::contradiction`]).
+//!    theorem). `(N b)` is a fact of the fixpoint like any other, so the
+//!    fixpoint of `S ∪ {b}` holds it.
+//! 3. *The rule fires on the two alone*: its match is `b` and `(N b)` and
+//!    nothing else, and its firing ends the state, by stating
+//!    `:ein inconsistent` or by concluding what a rule that states it matches
+//!    alone, `(false)` under `std.core`'s ([`crate::contradiction::Pairs`]).
 //!
-//! So the fixpoint of `S ∪ {b}` holds `b` and `(not b)`: the node is dead. ∎
+//! So the fixpoint of `S ∪ {b}` holds `b` and `(N b)`, and the rule ends it:
+//! the node is dead. ∎ Where no such rule is compiled, a state denies
+//! nothing, and a fact beside its negation is alive.
 //!
 //! **It is not L1.** L1 needs a dead node below the set, and there is none
 //! here: `S` is alive and `{b}` may be. L8 is a second corollary of the same
@@ -68,8 +73,9 @@
 //! the denial sits one derivation away from the candidate asked about.
 //!
 //! **What it does not read.** A rule that concludes `(false)` from two facts
-//! and stores no negation denies nothing, so the same exclusion is spent on
-//! one program and not on another according to how its rules are written.
+//! of which neither holds the other denies nothing, so the same exclusion is
+//! spent on one program and not on another according to how its rules are
+//! written.
 //!
 //! ### The premise, enforced
 //!
@@ -173,7 +179,8 @@ impl KnownDead {
         }
     }
 
-    /// The alive state `state` denies `b`: its own fixpoint stores `(not b)`,
+    /// The alive state `state` denies `b`: its own fixpoint holds `(not b)`,
+    /// beside which a rule refutes `b`,
     /// so `state ∪ {b}` is dead (L8). `false`, and nothing is learned, where
     /// denials are not read or a set already known dead lies inside
     /// `state ∪ {b}`.

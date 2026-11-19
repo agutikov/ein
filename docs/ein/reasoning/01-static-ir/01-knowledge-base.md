@@ -764,28 +764,36 @@ In the graph the four are the four ways two nodes can be held or not: $f$, and t
 points at it. A negated fact is not merely missing: a stored negation is a fact the set holds, and *open* is
 that it holds neither.
 
-**A contradiction** is a contradicted fact, or the fact of falsity:
+**A contradiction** is what a rule says is one. A rule may *end* a state in the place of concluding a fact,
+and a set in which such a rule is satisfied is **dead**, with no fact standing for it
+([saturation](../02-kb-evolution/02-saturation.md)); one in which none is, is **alive**. Every program holds the
+rule that ends a state on the one premise $\bot$, so the fact of falsity is one:
 
 $$
 \begin{aligned}
-\operatorname{dead}(K) &\iff \bot \in K \;\lor\; \exists f.\ \ f \in K \land \lnot f \in K \\
+\bot \in K &\implies \operatorname{dead}(K) \\
 \operatorname{alive}(K) &\iff \lnot \operatorname{dead}(K)
 \end{aligned}
 $$
 
-A set of facts that holds a contradiction is **dead**, and one that holds none is **alive**. Both are properties
-of the set: a set that includes a dead set is dead. This is all the two reserved relations mean, and it is what
-the reasoning reads them for. **A program's rules can call more sets dead.** A rule may *end* a state in the place
-of concluding a fact, and a state in which such a rule is satisfied is dead, with no fact standing for it
-([saturation](../02-kb-evolution/02-saturation.md)). $\bot$ is dead in this way and no other: every program holds the
-rule that ends a state on the one premise $\bot$. The pair needs no rule.
+Both are properties of the set: a set that includes a dead set is dead. **A contradicted fact is no contradiction by
+itself.** It is one where the program takes the theory of the contradiction, whose rules conclude $\bot$ from a
+fact of a relation the program declares beside its stored negation
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)):
 
-**The fact $f$ may itself be a stored negation**, and the definitions read it as they read any fact. With
-$f = \lnot g$, the pair they compare is $\lnot g$ and $\lnot\lnot g$:
+$$
+f \in K \;\land\; \lnot f \in K \implies \bot \in \operatorname{sat}(K)
+$$
+
+A program that takes no such rule holds the two in a set that is alive, as a three- or four-valued or a
+paraconsistent logic would have it; one that wants another reading states rules of its own.
+
+**The fact $f$ may itself be a stored negation**, and a rule over a fact and its negation reads it as it reads
+any fact. With $f = \lnot g$, the pair such a rule compares, where it reaches the relation $\mathsf{not}$, is
+$\lnot g$ and $\lnot\lnot g$:
 
 $$
 \begin{aligned}
-\lnot g \in K \ \land\ \lnot\lnot g \in K &\implies \operatorname{dead}(K) \\
 g \in K \ \land\ \lnot\lnot g \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
 \lnot\lnot g \in K &\ \not\Longrightarrow\ g \in K
 \end{aligned}

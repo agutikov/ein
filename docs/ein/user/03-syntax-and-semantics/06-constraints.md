@@ -1,8 +1,10 @@
 # Constraints
 
 A **constraint** says what cannot be. In Ein it is written two ways: a rule that concludes `(false)` where its
-pattern matches, and a **stored negation** `(not P)`, a fact that denies `P`. A state that derives `(false)`, or that
-holds both a fact and its negation, is **dead**: it is no answer, and nothing it would add counts. Constraints are
+pattern matches, and a **stored negation** `(not P)`, a fact that denies `P`, where the program imports
+`std.contradiction`, whose rules conclude `(false)` from a fact beside its negation: the kernel has no such check of
+its own, and a program that imports no such rule may hold both. A state that derives `(false)` is **dead**: it is no
+answer, and nothing it would add counts. Constraints are
 the upper bound of the answer, what a state may not hold; [obligations](08-obligations.md) are the lower bound, what a
 state still has to find.
 
@@ -118,13 +120,17 @@ $$
 $$
 
 Let $\operatorname{sat}(S)$ be the fixpoint of a state $S$ under the program's rules ([rules](05-rules.md)). $S$ is
-**dead** when its fixpoint holds the contradiction, or a fact beside its negation:
+**dead** when its fixpoint holds the contradiction:
 
 $$
-\begin{aligned}
-\operatorname{dead}(S) \iff\ & \bot \in \operatorname{sat}(S) \\
-\lor\ & \exists f.\ f \in \operatorname{sat}(S) \land \lnot f \in \operatorname{sat}(S)
-\end{aligned}
+\operatorname{dead}(S) \iff \bot \in \operatorname{sat}(S)
+$$
+
+With `std.contradiction` imported, its rules put $\bot$ in every fixpoint that holds a fact $f$ beside $\lnot f$,
+for every relation the program declares:
+
+$$
+f \in \operatorname{sat}(S) \land \lnot f \in \operatorname{sat}(S) \implies \bot \in \operatorname{sat}(S)
 $$
 
 and **alive** otherwise. $\bot$ makes a state dead by a rule, the one every program gets, which matches a held

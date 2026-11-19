@@ -53,7 +53,7 @@ note   = "The negation of a negation, built by a rule: Alice lies and thinks `(n
 path   = "examples/beliefs/04_liar_denial_contradicted.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "`03_liar_denial.ein` with the denial itself stated, `(not (= 5 (+ 2 2)))`: the rule concludes the negation of that fact, and a fact held with its negation is a contradiction whatever the fact, here a stored negation beside the negation of a negation. Root is dead: `(solve :no-search :expect (false))`."
+note   = "`03_liar_denial.ein` with the denial itself stated, `(not (= 5 (+ 2 2)))`: the rule concludes the negation of that fact: a stored negation beside the negation of a negation. A pair is a contradiction by a rule, and `std.contradiction`'s reach declared relations, which `not` is not, so the program states its own, `denial-denied`, for the one shape it writes. Root is dead: `(solve :no-search :expect (false))`, `refuted by (given), distrust`."
 
 [[entry]]
 path   = "examples/beliefs/05_liar_denial_beside_the_fact.ein"
@@ -1546,6 +1546,18 @@ path   = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "`pair-core-root-given`: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core is `(p a) (q a)`: a pair rests on both its sides."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "`alt-flag-refuted-by`: three pigeons in two holes, root dead by `no-room`'s `(false)`, under `:record-alternative-justifications false`. A fact beside its negation the program derives is no contradiction, the program importing none, so the core is taken over the `(false)` with the flag and without it: the same five facts, `refuted by no-room`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "`alt-flag-two-derivations`: `(u a)` from three givens and from two, `k1` concluding `(false)` from it. Under `:record-alternative-justifications false` the core is the first derivation's three `h` facts, with every derivation recorded the two `g` facts, and `refuted by k1` both ways: the flag moves the core, its one exemption, and `refuted by` follows it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
@@ -3530,7 +3542,7 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/contradiction.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "a fact beside its stored negation, as rules that conclude `(false)`: `clash-0` to `clash-6`, one rule a count of arguments with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive each activator from a declaration where the program holds `(clash-of-declared)`. The kernel calls such a state dead with no rule; these add the fact and its derivation. The module alone activates nothing: R {∅}."
+note   = "the contradiction, a theory a program imports (Q-M1f.557): `clash-0` to `clash-6`, one rule a count of arguments with the relation a parameter, each concluding `(false)` from a fact beside its stored negation, and `clash-of-0` to `clash-of-6`, which derive each activator from a declaration, so the import is the switch for every relation the program declares. The kernel has no check of its own. The module alone declares nothing: R {∅}."
 
 [[entry]]
 path   = "stdlib/core.ein"
@@ -4451,7 +4463,7 @@ note   = "the twin: `std.core.inconsistent` is loaded, as in every program, and 
 path   = "tests/stdlib/contradiction/01_clash_0.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`clash-0` fires: a fact of no argument beside its negation. The claim, `(false)`, holds with the rule and without it, since the kernel calls the pair dead by itself; the file is the program in which the rule fires, and `ein-infer/tests/contradiction_rules.rs` holds the firing, its premises the pair and its conclusion `(false)`. One rule a file, as its six siblings."
+note   = "`clash-0` fires: a fact of no argument beside its negation. The claim, `(false)`, holds by the rule, the kernel having no check of its own (Q-M1f.557): without it root would be alive. `ein-infer/tests/contradiction_rules.rs` holds the firing, its premises the pair and its conclusion `(false)`. One relation declared a file, so one rule of the seven fires, as in its six siblings; `refuted by` reads through the rule to the pair, `(given)`."
 
 [[entry]]
 path   = "tests/stdlib/contradiction/02_clash_1.ein"
@@ -4467,7 +4479,6 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/contradiction/04_clash_3.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "as its siblings, and the one of the seven whose read-out says `refuted by (given)`: root holds two contradictions over one core, the pair and the `(false)` the rule derived, and the explanation's tie-break is the witnesses' order by text, `(between …)` before `(false)`."
 
 [[entry]]
 path   = "tests/stdlib/contradiction/05_clash_4.ein"
@@ -4494,13 +4505,13 @@ note   = "all seven `clash-N` loaded, activated and silent: each relation holds 
 path   = "tests/stdlib/contradiction/09_clash_of_declared.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`clash-of-0` to `clash-of-6`: with `(clash-of-declared)` written, each derives the activator of its count from the declarations, and `clash-of-0` one for every declared relation. An undeclared relation gets none, and a relation of seven labels none at its own count. Eight claims close the activators' held extents."
+note   = "`clash-of-0` to `clash-of-6`: the import alone, each derives the activator of its count from the declarations, and `clash-of-0` one for every declared relation. An undeclared relation gets none, and a relation of seven labels none at its own count. Eight claims close the activators' held extents."
 
 [[entry]]
-path   = "tests/stdlib/contradiction/10_clash_of_not_asked.ein"
+path   = "tests/stdlib/contradiction/10_undeclared_not_reached.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`09` without `(clash-of-declared)`: the module imported and one activator written by hand. Nothing derives an activator, `(model)` at every count but the written one's."
+note   = "what the import does not reach: `loose`, written and not declared, gets no activator, so its fact beside its negation is no contradiction and root is alive and holds both; the declared `r1` gets its two. Four claims close the activators' and the facts' held extents."
 
 [[entry]]
 path   = "tests/stdlib/debts/01_total_due_paid.ein"

@@ -6821,3 +6821,71 @@ models    = [
   ["(likes B A)", "(near A B)", "(near B A)"],
   ["(near A B)", "(near B A)"],
 ]
+
+[[case]]
+id       = "alt-flag-refuted-by"
+title    = "the alternatives flag leaves `refuted by` where the core is"
+settings = "lever: (config :record-alternative-justifications false) in the file"
+decisions = ["Q-M1e2.11", "Q-M1e2.21", "Q-M1f.557"]
+witness  = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
+refuted_by = ["no-room"]
+
+[case.now]
+run        = "solve"
+line       = "all"
+exhausted  = true
+k          = 0
+empty      = "dead"
+relations  = []
+models     = []
+core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
+refuted_by = ["no-room"]
+
+[[case]]
+id       = "alt-flag-two-derivations"
+title    = "the alternatives flag moves the core, and `refuted by` with it"
+settings = "lever: (config :record-alternative-justifications false) in the file"
+decisions = ["Q-M1e2.11", "Q-M1e2.21", "Q-M1f.557"]
+witness  = "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(h1 a)", "(h2 a)", "(h3 a)"]
+refuted_by = ["k1"]
+
+[case.now]
+run        = "solve"
+line       = "all"
+exhausted  = true
+k          = 0
+empty      = "dead"
+relations  = []
+models     = []
+core       = ["(h1 a)", "(h2 a)", "(h3 a)"]
+refuted_by = ["k1"]

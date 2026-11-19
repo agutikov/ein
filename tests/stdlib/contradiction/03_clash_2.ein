@@ -1,11 +1,10 @@
 ;;; `std.contradiction/clash-2` — a fact of two arguments beside its
 ;;; negation: the rule concludes `(false)`.
 ;;;
-;;; One rule a file: `clash-2` is activated for the one relation, and no
-;;; other rule of the module is. The claim, `(false)`, holds of this program
-;;; with the rule and without it, since the kernel calls the pair dead by
-;;; itself; `01_clash_0.ein` says what the file gives the rule all the same,
-;;; and where its firing is asserted.
+;;; One rule a file: the one relation is declared at this count, so of the
+;;; module's rules only `clash-2` can fire. The claim, `(false)`, holds by the
+;;; rule: with no rule over the pair, root would be alive. `01_clash_0.ein`
+;;; says where its firing is asserted.
 
 (import std.contradiction :symbols (clash-2))
 

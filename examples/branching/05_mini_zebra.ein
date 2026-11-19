@@ -21,6 +21,9 @@
 ;;; hypotheses contradict via the same chain demonstrated in
 ;;; demos 2 and 3.
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)

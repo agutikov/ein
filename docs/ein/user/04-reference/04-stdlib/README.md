@@ -138,7 +138,7 @@ step of a module's own, `std.math.decimal-arith.strip`.
   the module's: list it.
 - **A relation a module reads or writes and does not declare is no module's**, and a program writes it as it is:
   `bijective`, `join`, `bijection-hierarchy`, `typecheck-hierarchy`, `slot-partition`, `slot-spatial`,
-  `type-hierarchy`, `reflexive`, `std.elim`'s positional markers, `std.contradiction`'s `clash-of-declared`, and
+  `type-hierarchy`, `reflexive`, `std.elim`'s positional markers, and
   `std.debts`' `debts-of-owed`, `debt-due`, `debt-paid`, `debts-discharged` and its four instance relations.
 - **A module's entry rule may be listed** and brings nothing a whole import does not
   ([Q-M1f.240](../../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md)).

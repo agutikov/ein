@@ -71,15 +71,14 @@
 use ein_core::{Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
 
-use crate::compile::{asserted_relation, naf_relation_refs, negated_relation};
+use crate::compile::{asserted_relation, naf_relation_refs};
 use crate::engine::Engine;
 
 /// One `(rule, activator)` pair's NAF dependency classification.
 ///
-/// `derived` and `declared_only` are sorted **labels**, not names: a negated
-/// watch `(absent (not (R …)))` is labelled `"(not R)"` to keep it distinct
-/// from the positive `"R"`. Both, and the record order, are stable, so a
-/// golden diffs cleanly.
+/// `derived` and `declared_only` are sorted relation names, a watch
+/// `(absent (not (R …)))` the relation `not`'s, as any other. Both, and the
+/// record order, are stable, so a golden diffs cleanly.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafDep {
     pub rule: Symbol,
@@ -108,12 +107,8 @@ pub struct Refutation {
     pub watching: Box<[String]>,
 }
 
-fn label(terms: &Terms, rel: Symbol, negated: bool) -> String {
-    if negated {
-        format!("(not {})", terms.sym(rel))
-    } else {
-        terms.sym(rel).to_string()
-    }
+fn label(terms: &Terms, rel: Symbol) -> String {
+    terms.sym(rel).to_string()
 }
 
 /// The static map over a compile cache: one record per plan carrying at least
@@ -134,20 +129,16 @@ pub fn compute_naf_map(
     terms: &Terms,
     eligible: &FxHashSet<Symbol>,
 ) -> Vec<NafDep> {
+    // The relation each plan concludes first, `not` among them where one
+    // concludes a stored negation.
     let producible: FxHashSet<Symbol> = (0..engine.len())
         .filter_map(|i| asserted_relation(engine.plan(i), terms))
-        .collect();
-    // Scope B — `forall` / `total` / domain-elimination desugar to
-    // `(absent (… (absent (not (R …)))))`. The literal head there is `not`,
-    // but the watched fact is the *derived* `(not (R …))`, so a negated ref is
-    // classified against the rules that assert one.
-    let negated: FxHashSet<Symbol> = (0..engine.len())
-        .filter_map(|i| negated_relation(engine.plan(i), terms))
         .collect();
 
     // What a rule that states `:ein inconsistent` matches, `(false)` in
     // every program: a rule that concludes a fact of it refutes.
     let leads = crate::monotone::leads_to_an_end((0..engine.len()).map(|i| engine.plan(i)), terms);
+    let pairs = crate::contradiction::Pairs::of((0..engine.len()).map(|i| engine.plan(i)), terms);
 
     let mut deps: Vec<NafDep> = Vec::new();
     for i in 0..engine.len() {
@@ -159,22 +150,19 @@ pub fn compute_naf_map(
         // Each bucket is a set, sorted on the way out, so a relation watched
         // twice is one entry — and a relation watched both ways is two.
         let (mut derived, mut declared) = (FxHashSet::default(), FxHashSet::default());
-        // The third bucket, filled from the *same* walk. A negated watch
-        // `(absent (not (R …)))` is deliberately **not** exposure: what the
-        // generator proposes is `R`, and adding an `R` cannot make a missing
-        // `(not (R …))` appear. Only the positive read is a hazard.
+        // The third bucket, filled from the *same* walk: a watched relation
+        // the generator can still propose a fact of.
         let mut exposed = FxHashSet::default();
-        let refutes = crate::monotone::refutes(plan, terms, &leads).map(|r| r.text(terms));
-        for (rel, neg) in refs {
-            let pool = if neg { &negated } else { &producible };
-            let bucket = if pool.contains(&rel) {
+        let refutes = crate::monotone::refutes(plan, terms, &leads, &pairs).map(|r| r.text(terms));
+        for rel in refs {
+            let bucket = if producible.contains(&rel) {
                 &mut derived
             } else {
                 &mut declared
             };
-            bucket.insert(label(terms, rel, neg));
-            if refutes.is_some() && !neg && eligible.contains(&rel) {
-                exposed.insert(label(terms, rel, neg));
+            bucket.insert(label(terms, rel));
+            if refutes.is_some() && eligible.contains(&rel) {
+                exposed.insert(label(terms, rel));
             }
         }
         deps.push(NafDep {

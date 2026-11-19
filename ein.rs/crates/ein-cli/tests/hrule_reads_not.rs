@@ -4,8 +4,8 @@
 //! `Hrules::candidates` holds no `debug_assert!` that no hrule's `:match`
 //! reads `not`: nothing writes a `not` mid-enumeration, so such an assertion
 //! would guard a write no path makes and stop a debug build, exit 101, on a
-//! program a release build answers as `ein oracle` does. Where an hrule
-//! reads `not`, every hrule is matched before any candidate is emitted.
+//! program a release build answers as `ein oracle` does. Nothing is written
+//! between two candidates, so every hrule reads the state it was asked about.
 //!
 //! `cargo test` builds with debug assertions, so this file is the debug
 //! build's run of the three shapes: a stored negation read under `(absent
@@ -110,14 +110,16 @@ fn an_hrule_that_reads_not_is_answered_as_the_oracle_answers() {
 /// Two hrules, of which the second reads the negation the first could be
 /// asked about: both are matched against the state as it was asked, so the
 /// second proposes of Bob alone, and `ein solve` counts what `ein oracle`
-/// counts.
+/// counts. The program imports the contradiction, so the candidate root
+/// denies, `(paid Bob)`, is not in H.
 #[test]
 fn every_hrule_reads_the_state_it_was_asked_about() {
     let scratch = Scratch::new("ein-hrule-reads-not-two");
     let file = scratch.path().join("two.ein");
     std::fs::write(
         &file,
-        "(relation paid Guest :why \"{?3} has paid\")\n\
+        "(import std.contradiction)\n\
+         (relation paid Guest :why \"{?3} has paid\")\n\
          (relation owes Guest :why \"{?3} owes\")\n\
          (is-a Ann Guest) (is-a Bob Guest)\n\
          (not (paid Bob))\n\

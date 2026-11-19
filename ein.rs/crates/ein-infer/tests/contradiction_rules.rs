@@ -1,20 +1,19 @@
-//! **`std.contradiction`'s rules fire on a fact beside its negation, and what
-//! their firing adds is the fact `(false)`, never the verdict.**
+//! **`std.contradiction`'s rules fire on a fact beside its negation, and
+//! their firing is the contradiction: the kernel has no check of its own**
+//! (Q-M1f.557).
 //!
-//! A state that holds a fact and its stored negation is dead by the kernel's
-//! own reading, with no rule. `clash-0` to `clash-6` state that contradiction
-//! as a rule, one a count of arguments
-//! ([the module](../../../../stdlib/contradiction.ein)). So the claim their
-//! firing fixtures carry, `(solve … :expect (false))`, holds with the rule
-//! and without it, and no claim made of facts can tell the two apart: a dead
-//! state has no model to list. What a fixture cannot state is asserted here,
-//! in-process, as [`obligation_reports.rs`](obligation_reports.rs) does for
-//! the owe counts:
+//! `clash-0` to `clash-6` state the contradiction as a rule, one a count of
+//! arguments ([the module](../../../../stdlib/contradiction.ein)), and the
+//! import activates them for every declared relation. The claim their firing
+//! fixtures carry, `(solve … :expect (false))`, holds by the rule; a dead
+//! state has no model to list, so what a fixture cannot state is asserted
+//! here, in-process, as [`obligation_reports.rs`](obligation_reports.rs) does
+//! for the owe counts:
 //!
 //! - **the firing**: each rule fires once on its fixture, its premises the
 //!   pair and its conclusion `(false)`, a fact root then holds;
-//! - **the verdict is not the rule's**: the same seven programs with the
-//!   activator's line left out are dead all the same, and nothing fires;
+//! - **the verdict is the rule's**: the same seven programs without the
+//!   module are alive, and nothing fires;
 //! - **silence**: where no fact meets its negation, all seven rules are
 //!   activated and none fires;
 //! - **a derived activator acts** as a written one does.
@@ -95,13 +94,23 @@ fn texts(v: &serde_json::Value) -> Vec<String> {
 /// **Each rule fires once on its fixture: the pair is its premises, `(false)`
 /// its conclusion.**
 ///
-/// One rule a file, so the one firing of the run is the rule's.
+/// One relation a file, declared at the rule's count, so the one firing of
+/// the module's seven contradiction rules is the rule's; the rules that derive
+/// activators fire beside it.
 #[test]
 fn each_clash_rule_fires_once_and_its_premises_are_the_pair() {
     for n in 0..=6 {
         let rel = fixture(n);
         let rule = format!("clash-{n}");
         let (d, fires) = describe(&rel, |t| t);
+        let fires: Vec<serde_json::Value> = fires
+            .into_iter()
+            .filter(|f| {
+                f["rule"]
+                    .as_str()
+                    .is_some_and(|r| r.contains("clash-") && !r.contains("clash-of-"))
+            })
+            .collect();
         assert_eq!(fires.len(), 1, "{rel}: one firing, the rule's: {fires:?}");
         let fire = &fires[0];
         assert_eq!(fire["rule"], rule.as_str(), "{rel}");
@@ -122,37 +131,31 @@ fn each_clash_rule_fires_once_and_its_premises_are_the_pair() {
             "{rel}: a fact and its negation"
         );
         assert!(!d.root.alive, "{rel}: root is dead");
-        // Root now holds two contradictions over one core, the pair and the
-        // `(false)` the rule derived from it, and which of them the
-        // explanation is taken over is the explanation's choice: its
-        // tie-break is the witnesses' rank, a fact's text against `(false)`.
-        // So the row reads the rule or `(given)`, and nothing else.
-        assert!(
-            d.root.refuted_by == [rule.clone()] || d.root.refuted_by == ["(given)"],
-            "{rel}: refuted by the rule, or by the pair as given: {:?}",
-            d.root.refuted_by
+        // An explanation reads through the rule to the pair, both sides
+        // given.
+        assert_eq!(
+            d.root.refuted_by,
+            ["(given)"],
+            "{rel}: refuted by the pair as given"
         );
     }
 }
 
-/// **The verdict is the kernel's: without the activator the same root is
-/// dead, and no rule fires.**
+/// **The verdict is the rule's: without the module the same root is alive,
+/// and no rule fires.**
 ///
-/// Each fixture with its `(clash-N …)` line left out. The module is still
-/// imported, so its rules are loaded and none is activated.
+/// Each fixture with its import and its `(clash-N …)` line left out: the
+/// pair is two facts, and nothing makes them a contradiction.
 #[test]
-fn without_the_activator_the_pair_is_dead_all_the_same_and_nothing_fires() {
+fn without_the_module_the_pair_is_alive_and_nothing_fires() {
     for n in 0..=6 {
         let rel = fixture(n);
         let activator = format!("(clash-{n} ");
-        let (d, fires) = describe(&rel, |t| without(&t, &activator));
+        let (d, fires) = describe(&rel, |t| {
+            without(&without(&t, &activator), "(import std.contradiction")
+        });
         assert!(fires.is_empty(), "{rel}: nothing fires: {fires:?}");
-        assert!(!d.root.alive, "{rel}: root is dead by the kernel's reading");
-        assert!(
-            d.root.refuted_by.iter().all(|r| !r.contains("clash")),
-            "{rel}: no rule of the module refutes it: {:?}",
-            d.root.refuted_by
-        );
+        assert!(d.root.alive, "{rel}: root is alive and holds the pair");
     }
 }
 
@@ -162,12 +165,18 @@ fn without_the_activator_the_pair_is_dead_all_the_same_and_nothing_fires() {
 fn no_clash_rule_fires_where_no_fact_meets_its_negation() {
     let rel = "tests/stdlib/contradiction/08_clash_satisfied.ein";
     let (d, fires) = describe(rel, |t| t);
+    // The rules that derive the activators fire on the declarations; no
+    // contradiction rule does.
+    let fires: Vec<&serde_json::Value> = fires
+        .iter()
+        .filter(|f| !f["rule"].as_str().is_some_and(|r| r.contains("clash-of-")))
+        .collect();
     assert!(fires.is_empty(), "{rel}: nothing fires: {fires:?}");
     assert!(d.root.in_r(), "{rel}: root is alive and owes nothing");
 }
 
-/// **A derived activator acts: under `(clash-of-declared)` a declared
-/// relation's pair is refuted by the rule of its count.**
+/// **A derived activator acts: by the import alone a declared relation's
+/// pair is refuted by the rule of its count.**
 ///
 /// `09_clash_of_declared.ein` as written is alive, and only the rules that
 /// derive activators fire. With the denial of the fact it holds written in,

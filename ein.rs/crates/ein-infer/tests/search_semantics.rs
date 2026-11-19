@@ -30,7 +30,7 @@ use ein_core::{
     FactId, Justifications, Kb, ProvKind, SolverConfig, Symbol, Terms, Value, unsat_core,
 };
 use ein_infer::canon::state_key;
-use ein_infer::contradiction::{Contradiction, contradicts, detect};
+use ein_infer::contradiction::{Contradiction, detect};
 use ein_infer::explain::{
     ExplanationBudget, minimal_contradiction_frontier, smallest_contradiction_frontier,
 };
@@ -162,7 +162,8 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
 
 // ── Contradiction detection ────────────────────────────────────────
 
-/// A pair is a contradiction however each side entered the KB.
+/// A pair is a contradiction however each side entered the KB, where the
+/// program imports the rules that say so (`std.contradiction`, Q-M1f.557).
 ///
 /// `(sits A S1)` and `(sits B S1)` are both authored clues; `one-per-seat`
 /// derives the negation of each from the other. A detector that skipped a
@@ -176,7 +177,8 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
 #[test]
 fn mutual_negation_is_detected_whatever_either_sides_origin() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(relation sits Person Seat :why \"{?3} sits in seat {?4}\")\n(relation is-a Thing Thing :why \"{?3} is a {?4}\")\n\
+        "(import std.contradiction)\n\
+         (relation sits Person Seat :why \"{?3} sits in seat {?4}\")\n(relation is-a Thing Thing :why \"{?3} is a {?4}\")\n\
          (is-a A Person) (is-a B Person)\n\
          (rule one-per-seat ()\n\
          \x20 :match  (and (sits ?p1 ?s) (is-a ?p2 Person) (neq ?p1 ?p2))\n\
@@ -221,10 +223,11 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
 #[test]
 fn every_pair_is_reported_not_only_the_first() {
     let (terms, kb) = {
-        let (_ast, terms, kb) = kb_of(
-            "(relation r T T :why \"r holds of {?3} and {?4}\")\n\
+        let (ast, mut terms, mut kb) = kb_of(
+            "(import std.contradiction)\n(relation r T T :why \"r holds of {?3} and {?4}\")\n\
              (r A B) (not (r A B))\n(r C D) (not (r C D))\n(r E F) (not (r E F))\n",
         );
+        saturate(&ast, &mut terms, &mut kb);
         (terms, kb)
     };
     let found = detect(&kb, &terms);
@@ -248,11 +251,13 @@ fn every_pair_is_reported_not_only_the_first() {
 /// pointer-equality or top-level-only comparison would get wrong.
 #[test]
 fn a_nested_positive_pairs_through_structural_identity() {
-    let (_ast, terms, kb) = kb_of(
-        "(relation hypothesis T :why \"{?3} is hypothesised\")\n(relation co-located T T :why \"{?3} is co-located with {?4}\")\n\
+    let (ast, mut terms, mut kb) = kb_of(
+        "(import std.contradiction)\n\
+         (relation hypothesis T :why \"{?3} is hypothesised\")\n(relation co-located T T :why \"{?3} is co-located with {?4}\")\n\
          (hypothesis (co-located Norwegian House-2))\n\
          (not (hypothesis (co-located Norwegian House-2)))\n",
     );
+    saturate(&ast, &mut terms, &mut kb);
     let found = detect(&kb, &terms);
     assert_eq!(found.len(), 1, "{found:?}");
     assert_eq!(
@@ -263,13 +268,11 @@ fn a_nested_positive_pairs_through_structural_identity() {
 }
 
 /// A `(not 5)` — a negation whose argument is not a fact — yields no
-/// contradiction and no panic, from either the scan or the incremental check.
+/// contradiction and no panic.
 ///
 /// Neither the loader nor the matcher produces this shape, which is exactly
-/// why it needs a test: the `else` branch of
-/// `args.first().and_then(|v| v.as_fact())` is unreachable from any corpus
-/// input, so nothing but a hand-built fact exercises it, and the tolerant
-/// reading is a decision (Q40 / R9) rather than an accident.
+/// why it needs a test: nothing but a hand-built fact exercises it, and the
+/// tolerant reading is a decision (Q40 / R9) rather than an accident.
 #[test]
 fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     let (_ast, mut terms, mut kb) =
@@ -283,7 +286,6 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
 
     assert!(kb.contains(malformed), "the fixture is in the KB");
     assert!(detect(&kb, &terms).is_empty());
-    assert!(!contradicts(&kb, &terms, malformed));
     assert!(!ein_infer::has_contradiction(&kb, &terms));
 }
 
@@ -292,10 +294,12 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
 /// fact — in both shapes a fact the KB holds, so the unsat-core walk has a
 /// derivation to seed from.
 ///
-/// **A held `(false)` is a contradiction by a rule's firing and by nothing
-/// else**: the loaded KB, which no rule has run over, holds the fact and
-/// only the pair is one; saturated, the rule every program gets has matched
-/// it and ended the state.
+/// **A held `(false)` and a pair are contradictions by a rule's firing and
+/// by nothing else**: the loaded KB, which no rule has run over, holds both
+/// and no contradiction; saturated, `std.contradiction`'s `clash-2` has
+/// concluded `(false)` from the pair, and the rule every program gets has
+/// matched it and ended the state: of a stated `(false)` the firing is read
+/// as itself, and of one the pair gave as the pair.
 ///
 /// No ein.rs test called `witness()` before this one: every caller reaches it
 /// through a digest, where returning the *negative* of a pair would still
@@ -304,22 +308,20 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
 #[test]
 fn witness_is_the_positive_for_a_pair_and_the_matched_fact_for_an_end() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
+        "(import std.contradiction)\n\
+         (relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
          (false :source \"(3)\")\n",
     );
     let loaded = detect(&kb, &terms);
-    assert_eq!(loaded.len(), 1, "{loaded:?}");
-    assert_eq!(loaded[0].kind(), ein_infer::contradiction::Kind::Pair);
+    assert!(loaded.is_empty(), "{loaded:?}");
 
     saturate(&ast, &mut terms, &mut kb);
     let found = detect(&kb, &terms);
-    assert_eq!(found.len(), 2, "{found:?}");
+    assert_eq!(found.len(), 1, "{found:?}");
 
-    let ended = found
-        .iter()
-        .find(|c| c.kind() == ein_infer::contradiction::Kind::Ended)
-        .expect("the firing that ended the state");
-    assert_eq!(positive(ended), None);
+    let ended = found[0];
+    assert_eq!(ended.kind(), ein_infer::contradiction::Kind::Ended);
+    assert_eq!(positive(&ended), None);
     let falsum = ended.witness(&terms).expect("the fact it matched");
     assert_eq!(ein_infer::events::sexpr(&terms, falsum), "(false)");
     assert_eq!(ended.sides(&terms), [falsum]);
@@ -329,12 +331,26 @@ fn witness_is_the_positive_for_a_pair_and_the_matched_fact_for_an_end() {
         Some("std.core.inconsistent")
     );
 
-    let pair = found
-        .iter()
-        .find(|c| c.kind() == ein_infer::contradiction::Kind::Pair)
-        .expect("a pair");
-    assert_eq!(pair.witness(&terms), positive(pair));
-    assert_ne!(pair.witness(&terms), negative(pair));
+    // The same pair with no `(false)` stated: the death is the pair's.
+    let (ast2, mut terms2, mut kb2) = kb_of(
+        "(import std.contradiction)\n\
+         (relation r T T :why \"r holds of {?3} and {?4}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n",
+    );
+    saturate(&ast2, &mut terms2, &mut kb2);
+    let pairs = detect(&kb2, &terms2);
+    assert_eq!(pairs.len(), 1, "{pairs:?}");
+    let pair = pairs[0];
+    assert_eq!(pair.kind(), ein_infer::contradiction::Kind::Pair);
+    assert_eq!(pair.witness(&terms2), positive(&pair));
+    assert_ne!(pair.witness(&terms2), negative(&pair));
+    for c in &pairs {
+        let witness = c.witness(&terms2).expect("a fact");
+        assert!(kb2.contains(witness), "the witness is believed");
+        assert!(
+            !smallest_contradiction_frontier(&kb2, &terms2, Some(&[witness])).is_empty(),
+            "and it seeds a frontier"
+        );
+    }
 
     for c in &found {
         let witness = c.witness(&terms).expect("a fact");
@@ -346,18 +362,19 @@ fn witness_is_the_positive_for_a_pair_and_the_matched_fact_for_an_end() {
     }
 }
 
-/// Replaying a saturation firing by firing, the incremental check flips true
-/// at exactly the firing at which a full scan first becomes non-empty.
+/// Replaying a saturation firing by firing, the first firing that ends the
+/// state is exactly the firing at which a full scan first becomes non-empty.
 ///
 /// This is the equivalence the fail-fast fork rests on, and it is a
-/// claim about a *running* saturation rather than a static KB: a
-/// `contradicts` that only consulted the KB's own indexes would agree with
-/// `detect` on any settled state and still be a firing late during the run —
-/// which is the one moment at which the answer is used.
+/// claim about a *running* saturation rather than a static KB: the stop
+/// reads the firing, and a firing that ended no state while a scan found a
+/// contradiction would be a firing late during the run — which is the one
+/// moment at which the answer is used.
 #[test]
 fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 holds of {?x}, so x holds of {?x}\")\n\
+        "(import std.contradiction)\n\
+         (rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 holds of {?x}, so x holds of {?x}\")\n\
          (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 holds of {?x}, so x does not\")\n\
          (relation h1 T :why \"h1 holds of {?3}\") (relation h2 T :why \"h2 holds of {?3}\") (relation x T :why \"x holds of {?3}\")\n(is-a a T)\n(h1 a) (h2 a)\n",
     );
@@ -369,13 +386,7 @@ fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
             if scan.is_none() && !detect(s.kb, s.terms).is_empty() {
                 scan = Some(i);
             }
-            if incremental.is_none()
-                && !firing.redundant
-                && firing
-                    .derived
-                    .iter()
-                    .any(|&d| contradicts(s.kb, s.terms, d))
-            {
+            if incremental.is_none() && !firing.redundant && firing.ends {
                 incremental = Some(i);
             }
         }

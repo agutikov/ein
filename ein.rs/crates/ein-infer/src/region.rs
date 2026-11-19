@@ -127,8 +127,7 @@ pub fn is_to_quiescence() -> bool {
 
 /// The status bit of a node whose fixpoint holds a contradiction: a rule
 /// that states `:ein inconsistent` fired in it, as the one every program gets
-/// does on a held `(false)`, or it holds a fact beside its stored negation,
-/// which derives nothing.
+/// does on a held `(false)`.
 pub const DEAD: u8 = 1;
 /// The status bit of a node with an undischarged obligation.
 pub const OWING: u8 = 2;
@@ -541,8 +540,15 @@ pub(crate) fn compute_prepared(
     }
     let cost_root = t_root.elapsed();
 
-    let mut axes = Axes::new(root, &candidates, hypothesised, opts.keep_states)
-        .taking_cores(opts.cores.visited);
+    let mut axes = Axes::new(
+        root,
+        terms,
+        &plans,
+        &candidates,
+        hypothesised,
+        opts.keep_states,
+    )
+    .taking_cores(opts.cores.visited);
     // The detector reads every node on a flagged program, and none on a
     // monotone one (`crate::detector`'s zero-work argument).
     let flagged = !monotonicity.is_monotone();
@@ -1273,11 +1279,16 @@ pub(crate) struct Axes {
     /// Saturate a dead node only as far as its first contradiction, root's
     /// excepted ([`Axes::stopping_at_first_contradiction`]).
     stop: bool,
+    /// What root's rules refute beside a fact: a candidate a node holds the
+    /// other side of is one it denies (L8, [`crate::known_dead`]).
+    pairs: Arc<crate::contradiction::Pairs>,
 }
 
 impl Axes {
     pub(crate) fn new(
         root: &Kb,
+        terms: &Terms,
+        plans: &[Arc<Plan>],
         candidates: &[Candidate],
         hypothesised: FxHashSet<ein_core::Symbol>,
         keep_states: bool,
@@ -1293,6 +1304,10 @@ impl Axes {
             instances: None,
             cores: true,
             stop: false,
+            pairs: Arc::new(crate::contradiction::Pairs::of(
+                plans.iter().map(|p| &**p),
+                terms,
+            )),
         }
     }
 
@@ -1369,8 +1384,10 @@ pub(crate) struct NodeOut {
     pub state: Box<[FactId]>,
     /// The candidates its fixpoint holds, as bit indices.
     pub closure: Vec<u32>,
-    /// The candidates its fixpoint **denies**, as bit indices: those whose
-    /// `(not b)` it stores. On a monotone program an alive node's denial of
+    /// The candidates its fixpoint **denies**, as bit indices: those beside
+    /// which it holds a fact a rule refutes `b` with alone, `(not b)` under
+    /// `std.contradiction` ([`crate::contradiction::Pairs`]). On a monotone
+    /// program an alive node's denial of
     /// `b` makes every node above it that holds `b` dead
     /// ([`crate::known_dead`], L8). At any `n`, where [`Node::excluded`] is a
     /// mask.
@@ -2108,7 +2125,7 @@ fn node_in_region(
                 node.closure |= 1 << b;
             }
         }
-        if fork.is_negated(c) {
+        if axes.pairs.denies(&fork, terms, c) {
             denied.push(b as u32);
             if masks {
                 node.excluded |= 1 << b;

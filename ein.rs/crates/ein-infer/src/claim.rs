@@ -600,7 +600,15 @@ fn fixpoints(
         return Ok(Vec::new());
     }
     let prepared = prepare(root, terms, ast)?;
-    let axes = Axes::new(root, candidates, prepared.hypothesised.clone(), true).taking_cores(false);
+    let axes = Axes::new(
+        root,
+        terms,
+        &prepared.plans,
+        candidates,
+        prepared.hypothesised.clone(),
+        true,
+    )
+    .taking_cores(false);
     let facts: Vec<Vec<FactId>> = sets
         .iter()
         .map(|s| s.iter().map(|&b| candidates[b as usize].fact).collect())

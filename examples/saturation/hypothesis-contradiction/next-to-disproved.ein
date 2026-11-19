@@ -17,6 +17,9 @@
 ;;;   (hypothesis (next-to X Y)) + (contradiction-under (next-to X Y))
 ;;;   ⇒ (not (next-to X Y)).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule hypothesis-contradiction ()
   :match  (and (hypothesis ?h)
                (contradiction-under ?h))

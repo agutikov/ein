@@ -350,7 +350,8 @@ pub enum Licence {
     /// L7: every node of the cube, nothing skipped.
     TheCube,
     /// L8: what a state denies is dead above it — an alive state whose own
-    /// fixpoint stores `(not b)` has a dead extension by `b`, known without
+    /// fixpoint holds `(not b)`, where a rule refutes `b` beside it
+    /// ([`crate::contradiction::Pairs`]), has a dead extension by `b`, known without
     /// its saturation, and L1 closes that set upward
     /// ([`crate::known_dead`]). Named when an answer rested on a denial.
     Denied,
@@ -908,7 +909,7 @@ impl<'a> Space<'a> {
             root_owes,
         } = prepared;
         let flagged = !monotonicity.is_monotone();
-        let mut axes = Axes::new(root, &candidates, hypothesised, false)
+        let mut axes = Axes::new(root, terms, &plans, &candidates, hypothesised, false)
             .narrating(events.narration())
             .taking_cores(opts.cores.visited);
         if flagged {

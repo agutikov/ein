@@ -23,6 +23,9 @@
 ;;; states and its maximal line 8; where a state places Blue in a house,
 ;;; ?h = H3.
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)

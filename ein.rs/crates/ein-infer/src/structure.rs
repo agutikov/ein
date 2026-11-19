@@ -326,7 +326,7 @@
 //! of one question or a pair root excludes, is no state's and is not read,
 //! but for the pair's own contradiction. The node's edges are then the
 //! cover of its ways to a contradiction, an application that concludes
-//! `(false)` or a fact beside its negation; the cover of its ways to each
+//! `(false)` or ends the state; the cover of its ways to each
 //! committed candidate; and every other fact's label ([`NodeTies`]).
 //!
 //! **An edge names the puzzle's statements it rests on** ([`Edge::stated`]):
@@ -1046,6 +1046,8 @@ pub struct Stated<'a> {
     /// Root's fixpoint.
     pub root: &'a Kb,
     pub terms: &'a Terms,
+    /// What root's rules refute beside a fact, which [`subject`] reads.
+    pub pairs: &'a crate::contradiction::Pairs,
     /// `H`, in the universe's order.
     pub candidates: &'a [Candidate],
     /// **The candidates' relations**: the relations a candidate of `H` is
@@ -1081,10 +1083,9 @@ pub struct Stated<'a> {
 }
 
 impl Stated<'_> {
-    /// The relation `fact` is of; a stored negation's is the relation of
-    /// the fact it denies.
+    /// The relation `fact` is about ([`subject`]).
     pub fn relation(&self, fact: FactId) -> Symbol {
-        subject(self.terms, fact)
+        subject(self.terms, self.pairs, fact)
     }
 
     /// Every name among `fact`'s arguments, at any depth, once each, in the
@@ -1109,11 +1110,15 @@ impl Stated<'_> {
     }
 }
 
-/// The relation `fact` is of, through a negation.
-pub fn subject(terms: &Terms, fact: FactId) -> Symbol {
+/// The relation `fact` is about: its own, but for a fact `(N X)` holding
+/// `X` as its one argument beside which a rule refutes `X`
+/// ([`crate::contradiction::Pairs`]), a stored negation where the program
+/// imports the contradiction, which is about `X`'s.
+pub fn subject(terms: &Terms, pairs: &crate::contradiction::Pairs, fact: FactId) -> Symbol {
     let (rel, args) = terms.fact(fact);
-    if rel == terms.kernel.not
-        && let Some(inner) = args.first().and_then(|a| a.as_fact())
+    if let [inner] = args
+        && let Some(inner) = inner.as_fact()
+        && pairs.pairs(rel, terms.fact(inner).0)
     {
         return terms.fact(inner).0;
     }
@@ -1625,6 +1630,9 @@ fn theory_in(
             held_at_root,
         )
     };
+    // What root's rules refute beside a fact, which a witness root so
+    // denies is read by.
+    let pairs = crate::contradiction::Pairs::of(sp.plans().iter().map(|p| &**p), sp.terms());
     // The space is not asked again: the rest reads root's fixpoint, sealed,
     // and builds its programs over the space's terms.
     let (root, terms, ast) = sp.parts();
@@ -1633,7 +1641,7 @@ fn theory_in(
     let mut hypothesised: FxHashSet<Symbol> = root_layer
         .candidates
         .iter()
-        .map(|c| subject(terms, c.fact))
+        .map(|c| subject(terms, &pairs, c.fact))
         .collect();
     let declared = matches!(
         read.rung,
@@ -1681,6 +1689,7 @@ fn theory_in(
     let view = Stated {
         root,
         terms,
+        pairs: &pairs,
         candidates: &root_layer.candidates,
         hypothesised,
         objects,
@@ -1711,7 +1720,8 @@ fn theory_in(
             origin,
             kept: verdict.kept,
             clause: verdict.clause,
-            read_absent: origin == Origin::Fact && view.read_absent.contains(&subject(terms, fact)),
+            read_absent: origin == Origin::Fact
+                && view.read_absent.contains(&subject(terms, &pairs, fact)),
         });
     }
     let rules_naming_objects: Vec<String> = {
@@ -1941,6 +1951,7 @@ fn theory_in(
     let owed = Owed::read(
         root,
         terms,
+        &pairs,
         &candidate,
         root_layer.monotone,
         root_owes,
@@ -2810,6 +2821,7 @@ impl Owed {
     fn read(
         root: &Kb,
         terms: &Terms,
+        pairs: &crate::contradiction::Pairs,
         candidate: &FxHashMap<FactId, u32>,
         monotone: bool,
         root_owes: u32,
@@ -2868,7 +2880,7 @@ impl Owed {
                                     Some(f) if candidate.contains_key(&f) => {
                                         WitnessIs::Candidate(candidate[&f])
                                     }
-                                    Some(f) if root.is_negated(f) => WitnessIs::Denied,
+                                    Some(f) if pairs.denies(root, terms, f) => WitnessIs::Denied,
                                     _ => WitnessIs::Unproposed,
                                 },
                                 held_at_root: held(&held_at_root, w),

@@ -22,6 +22,9 @@
 ;;; `debug_assert!`), on every solve question, `ein oracle` and `ein test`. Now
 ;;; one answer from both builds.
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (not (paid Bob))

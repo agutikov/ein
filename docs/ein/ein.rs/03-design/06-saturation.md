@@ -45,9 +45,10 @@ its first contradiction (§ 5), and is left by running the same saturator on.
 ## 2. The agenda
 
 Every saturation ranks its candidates in two halves, `saturator::AGENDA`: first those of a rule whose conclusion a
-contradiction can be made of, `(false)`, a stored negation `(not …)`, or a fact of a relation some plan concludes the
-negation of or the KB holds a negation of (either side of a pair, `FailFirst::Pairs`, read off the compiled plans by
-`monotone::writes_of`); then the rest. **Within each half the order is FIFO**, the written and arrival order, kept by
+contradiction can be made of, `(false)`, or either side of a pair a rule refutes (`contradiction::Pairs`): the side
+that holds the other, a stored negation `(not …)` where the program imports `std.contradiction`, or a fact of a
+relation the holding side of which some plan concludes or the KB holds (`FailFirst::Pairs`, read off the compiled
+plans); then the rest. **Within each half the order is FIFO**, the written and arrival order, kept by
 a monotone tiebreaker: no rule has a priority. The boundary walks its parked candidates in the same order. Root's
 saturation, every node a route or the oracle computes, and every reader of a fixpoint take it
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
@@ -142,8 +143,10 @@ and nothing else (the one exemption the configuration principle makes,
 
 ### 6.1 Contradiction
 
-A KB is contradictory when a rule that states `:ein inconsistent` fired on it, or it holds a pair `X` and
-`(not X)`, however either fact got there: a written clue, a commitment and a derivation are alike. The first is a
+A KB is contradictory when a rule that states `:ein inconsistent` fired on it, and in no other way: a pair `X` and
+`(not X)` is one where a rule says so, `std.contradiction`'s `clash-N`, which concludes `(false)` from the two
+wherever the program imports the module, however either fact got there
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). The firing is a
 record on the KB and no fact ([`Kb::ended`](../../../../ein.rs/crates/ein-core/src/kb.rs),
 [`firing::end`](../../../../ein.rs/crates/ein-infer/src/firing.rs)): the rule, the premises its match read, the
 absences it passed and what its universals read, as a derived fact's derivation is, so a core is taken over it. A
@@ -151,10 +154,17 @@ held `(false)` is of this kind and the kernel reads it by its name nowhere: `std
 gets, matches it and states the key
 ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A candidate of such a
 rule is before every other in the queue, under the agenda and under the written order alone, and a saturation
-stopped at its first contradiction fires what the facts written so far give such a rule before it returns, so a
-stopped state holds every contradiction its facts make. The pair's check is two bit tests per new fact, is `X`
-negated and is `X` present. The result order is fixed, the firings that ended the state in the order they fired,
-then pairs in the order the KB holds them, because it reaches the core and the trace.
+stopped at its first contradiction fires what the facts written so far give such a rule before it returns. An
+explanation reads through the rule every program gets to what it matched, and through a firing whose premises are a
+fact and a fact holding it as its one argument to that pair (`contradiction::detect`). The result order is fixed,
+the firings that ended the state in the order they fired, each followed by the pairs it is read through to, because
+it reaches the core and the trace.
+
+What a rule refutes beside a fact is read off the compiled plans, with no name (`contradiction::Pairs`): a plan whose
+disjunct is a fact of distinct variables and a fact holding it as its one argument, and whose firing ends a state.
+Where one is compiled, its candidate is before every other in the queue, as a rule that states the key is, so a
+state ends at the firing that completes the pair; a candidate root holds the other side of is not in `H`; a
+candidate an alive state so denies is dead above it (L8); and the agenda fires either side first.
 
 ### 6.2 Obligations
 

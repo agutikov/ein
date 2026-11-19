@@ -8,6 +8,9 @@
 ;;; answer ?h = H1.
 
 ;; ── Bijection property expansion: (bijective R) ⟹ the four markers.
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule bijective-properties ()
   :match  (bijective ?R)
   :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))

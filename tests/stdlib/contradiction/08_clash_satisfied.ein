@@ -3,12 +3,11 @@
 ;;;
 ;;; ── Why this is the file that tests the seven ──────────────────────────────
 ;;;
-;;; `01_clash_0.ein` to `07_clash_6.ein` show each rule firing, and their
-;;; claim cannot tell the rule from the kernel, which calls a fact beside its
-;;; negation dead by itself. Here it is the other way round: nothing is a
-;;; contradiction, the kernel says so, and a rule that fired would turn the
-;;; model below into `(false)`. So this is where a guard that admits too much
-;;; is caught.
+;;; `01_clash_0.ein` to `07_clash_6.ein` show each rule firing, a fact beside
+;;; its negation, where the rule's claim `(false)` is the rule's alone. Here it
+;;; is the other way round: nothing is a contradiction, and a rule that fired
+;;; would turn the model below into `(false)`. So this is where a guard that
+;;; admits too much is caught.
 ;;;
 ;;; ── What this program does to them ─────────────────────────────────────────
 ;;;

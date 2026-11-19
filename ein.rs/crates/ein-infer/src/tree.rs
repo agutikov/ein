@@ -21,7 +21,8 @@
 //! `S ⊆ S′` is known. **What is known dead is one memory**,
 //! [`crate::known_dead`], which the state route asks too: a set a saturation
 //! found dead, and the set `S ∪ {b}` of every state `S` met whose own
-//! fixpoint denies `b`, a stored `(not b)`, which is dead with no saturation
+//! fixpoint denies `b`, `(not b)` where a rule refutes the two, which is
+//! dead with no saturation
 //! (**L8**, argued there). Every step asks it before it saturates: an
 //! extension, a transversal of the dualisation, a subset a shrink tries; and
 //! a state met alive on a set it holds refuses the run. An alive extension of
@@ -496,8 +497,8 @@ impl Search {
         for &b in seen.denied.iter() {
             if bits.contains(b) {
                 return Err(refuse(
-                    "an alive fixpoint holds a candidate it denies (a fact beside its negation \
-                     is a contradiction)",
+                    "an alive fixpoint holds a candidate it denies (a rule refutes the fact \
+                     beside its negation)",
                 ));
             }
             self.dead.denies(&bits, b);

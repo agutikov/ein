@@ -71,10 +71,9 @@ pub mod verdict;
 pub use canon::{state_digest, state_key};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation,
-    binds_a_relation_to_a_fact, compile_rule, naf_relation_refs, negated_relation, plan_key,
-    take_inert_activators,
+    binds_a_relation_to_a_fact, compile_rule, naf_relation_refs, plan_key, take_inert_activators,
 };
-pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
+pub use contradiction::{Contradiction, Pairs, detect, has_contradiction};
 pub use engine::Engine;
 pub use error::SolveError;
 pub use events::{Events, Level};

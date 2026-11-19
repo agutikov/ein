@@ -70,7 +70,7 @@ files are modules.
 | `std.typing` | [`typing.ein`](typing.ein) | `(type-hierarchy ?isR*)`, a converse-typecheck driver named once, and the `(reflexive R)` closure; pairs with `std.algebra`'s `converse-illtyped-*` | none |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
 | `std.negation` | [`negation.ein`](negation.ein) | the elimination of a double negation, `(not (not g))` ⟹ `g`: `eliminate-0` to `eliminate-6`, one rule a count of arguments with the relation a parameter, each activated a relation ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
-| `std.contradiction` | [`contradiction.ein`](contradiction.ein) | a fact beside its negation as a rule that concludes `(false)`: `clash-0` to `clash-6`, one rule a count with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive those activators from the declarations where the program holds `(clash-of-declared)` ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
+| `std.contradiction` | [`contradiction.ein`](contradiction.ein) | the contradiction, a theory a program imports: `clash-0` to `clash-6` conclude `(false)` from a fact beside its negation, one rule a count with the relation a parameter, and `clash-of-0` to `clash-of-6` derive those activators from every declaration, so the import is the switch; `std.algebra`, `std.bijection` and `std.slots` import it ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
 | `std.debts` | [`debts.ein`](debts.ein) | what an obligation requires and what pays it, as facts: for each of the library's four obligations a rule that concludes `(debt-due R J)` from its trigger and one that concludes `(debt-paid R J)` from the trigger with its witness (`total-due` and `total-paid`, `surjective-`, `room-`, `fill-`); `debts-of-total`, `-surjective`, `-room` and `-fill`, which activate a pair from the obligation's activator where the program holds `(debts-of-owed)`; and `discharged-from-nothing-unpaid`, `(debts-discharged)` ([§](#stddebts-the-requirement-and-the-payment-as-facts)) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
@@ -263,12 +263,18 @@ that says a denial does not hold, and the kernel concludes nothing from it
 ([Q-M1f.391](../docs/decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md));
 `eliminate-N`, activated for a relation, concludes `g`.
 
-**`std.contradiction`** concludes `(false)` from a fact beside its negation.
-The kernel calls such a state dead with no rule, and the state need hold no
-`(false)`; `clash-N`, activated for a relation, derives the fact, with the pair
-as its premises. The verdict of no state changes. `clash-of-N` derives the
-activators from the declarations, where the program holds the fact
-`(clash-of-declared)`.
+**`std.contradiction`** concludes `(false)` from a fact beside its negation,
+and is the only thing that does: the contradiction is a theory a program
+imports
+([Q-M1f.557](../docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)),
+and the kernel has no check of its own, so a program that imports no such rule
+may hold a fact beside its negation in a state that is alive. `clash-N`,
+activated for a relation, derives `(false)` with the pair as its premises, and
+`clash-of-N` derives the activators from every declaration, so the import alone
+switches the contradiction on for the relations a program declares. A relation
+no declaration names takes its activator written, `(clash-1 loose)`. The
+modules that conclude a stored negation and mean a death by it,
+`std.algebra`, `std.bijection` and `std.slots`, import it.
 
 **One rule a count of arguments.** A pattern writes its fact's count, and its
 relation may be a parameter
@@ -289,21 +295,20 @@ nothing. `clash-N` concludes `(false)` and `clash-of-N` an
 activator whose argument is a relation's name, so `std.contradiction` loads
 wherever the program does.
 
-**No rule of either acts on an import alone.** `eliminate-N` and `clash-N`
-have a parameter, and `clash-of-N`, which has none, reads the fact
-`(clash-of-declared)`, a relation the module does not declare, as
-`std.algebra` reads `(bijective R)`. Neither module declares a relation or
-writes a fact, so a program that imports one and asks for nothing holds what
-it held.
+**What an import alone does.** `eliminate-N` has a parameter and acts on
+nothing an import brings: a program that imports `std.negation` and activates
+nothing holds what it held. `clash-of-N` has none, and reads every declaration,
+so an import of `std.contradiction` holds `(clash-N R)` at root for each
+declared relation, and `clash-N` refutes a fact of it beside its negation.
+Neither module declares a relation.
 
 **What holds them.** [`tests/stdlib/negation/`](../tests/stdlib/negation/) and
-[`tests/stdlib/contradiction/`](../tests/stdlib/contradiction/). A claim
-cannot tell `clash-N` firing from the kernel's own verdict, since a dead state
-has no model to list, so the firing itself, its premises the pair and its
-conclusion `(false)`, is asserted in-process, in
+[`tests/stdlib/contradiction/`](../tests/stdlib/contradiction/). A firing
+program's claim `(false)` holds by the rule alone; the firing itself, its
+premises the pair and its conclusion `(false)`, is asserted in-process, in
 [`ein-infer/tests/contradiction_rules.rs`](../ein.rs/crates/ein-infer/tests/contradiction_rules.rs);
-the file a claim can tell the rules by is the one where all seven are
-activated and silent.
+the file where a claim sees the seven silent is the one where all seven are
+activated over facts and denials that do not meet.
 
 ## `std.core`: the rules every program gets
 
@@ -331,8 +336,8 @@ render rules` draws it, and a trace shows its firing after the one that conclude
 reads through it: a dead state's core is the frontier of the `(false)` it matched, and `refuted by` names the rule
 that concluded that `(false)`. A file may import the module as any module, which brings no second copy and moves
 it from nowhere, a library `$EIN_STDLIB` names brings its own in its place, a saved file carries it with the
-program's other modules, and a `.einb` stores the program without it. A fact beside its stored negation is not this module's: the
-engine reads that contradiction itself, with no rule. Reference:
+program's other modules, and a `.einb` stores the program without it. A fact beside its stored negation is not this
+module's: it is a contradiction by `std.contradiction`'s rules, where a program imports them. Reference:
 [`21-core.md`](../docs/ein/user/04-reference/04-stdlib/21-core.md); its programs are
 [`tests/stdlib/core/`](../tests/stdlib/core/).
 

@@ -313,6 +313,10 @@ fn generate_with(
     let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
     let mut ctx = Ctx {
         seen: FxHashSet::default(),
+        pairs: crate::contradiction::Pairs::of(
+            crate::monotone::plans_of(&s.memo).iter().map(|p| &**p),
+            s.terms,
+        ),
     };
 
     if rung == Rung::Hrules {
@@ -362,6 +366,10 @@ fn generate_with(
 /// What a pass carries across candidates but not across calls.
 struct Ctx {
     seen: FxHashSet<FactId>,
+    /// What the state's rules refute beside a fact
+    /// ([`crate::contradiction::Pairs`]): a candidate the state holds the
+    /// other side of is dead alone.
+    pairs: crate::contradiction::Pairs,
 }
 
 /// Count the candidate, run the pipeline, narrate, hand it on.
@@ -403,8 +411,9 @@ fn apply_filters(
     stats: &mut HypGenStats,
     fact: FactId,
 ) -> Option<Drop> {
-    // negated_fact — one bit test on the negated index.
-    if s.kb.is_negated(fact) {
+    // negated_fact — the state holds a fact that, beside this one, a rule
+    // refutes: committed, it gives a dead state.
+    if ctx.pairs.denies(s.kb, s.terms, fact) {
         stats.bump(Drop::NegatedFact);
         return Some(Drop::NegatedFact);
     }

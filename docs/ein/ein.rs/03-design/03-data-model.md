@@ -135,7 +135,7 @@ copy that interns from where the original stood, so it hands out the ids the ori
 
 `size_of::<Value>() == 4` and `size_of::<Option<Value>>() == 8`, held by `value.rs`'s `a_value_is_four_bytes`. The
 nested shape is what makes `(not (color-loc Red House-1))` one fact whose single argument is a `FactId`, so the
-negation index is a bit set over `FactId` and a contradiction test is a bit test (§ 6).
+negation index is a bit set over `FactId` (§ 6).
 
 `Value` has no `Ord`, so `.sort()` cannot reach for the wrong order. `Value::cmp_identity` is a total order over
 bits, correct where any total order is (a sorted state key, a canonical form). `Terms::cmp_semantic` is the

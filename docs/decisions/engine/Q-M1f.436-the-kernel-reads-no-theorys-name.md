@@ -9,7 +9,13 @@ arguments is `std.algebra`'s rule `(symmetric R)`, and `__symmetric__` is an ord
 and a fact of which derives nothing. The relations every program has, beside those it writes, are the kernel's
 computed `eq` and `neq`; a goal or a claim over `is-a` in a program that writes none is refused as one over any
 relation the program lacks. No drawing reads a theory's name either
-([Q-M1f.421](../cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)).
+([Q-M1f.421](../cli/Q-M1f.421-no-view-draws-a-relation-otherwise-than-another.md)). Of the kernel's own names,
+`not` and `false` judge no state: a held `(false)` ends a state by `std.core`'s rule
+([Q-M1f.551](../stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), a fact beside its stored negation by
+`std.contradiction`'s where a program imports it
+([Q-M1f.557](../stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)), and what reads a denial
+for an economy, the agenda, the candidates root denies and L8, reads the rules that refute a pair, with no name;
+the two remain the grammar's words and the shape a false `eq` or `neq` conclusion writes.
 
 **Why.** A name such as `is-a` or `symmetric` belongs to one theory, and a kernel that reads it gives that theory's
 reading to every program, which the program cannot change by writing other rules. Ein has no types

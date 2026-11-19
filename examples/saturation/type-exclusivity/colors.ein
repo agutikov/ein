@@ -18,6 +18,9 @@
 ;;;   (is-a Red Color) + (is-a Blue Color) + (neq Red Blue)
 ;;;   ⇒ (not (co-located Red Blue)).  [Fires twice — also (Blue, Red).]
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule type-exclusivity (?R)
   :match  (and (is-a ?a ?T)
                (is-a ?b ?T)

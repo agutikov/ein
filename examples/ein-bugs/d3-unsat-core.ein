@@ -22,6 +22,9 @@
 ;;;
 
 ;;; case 6710 (seed 20260820) of the engine fuzzer
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (relation r0 T T :why "r0 holds of {?3} and {?4}")
 (relation r1 T T :why "r1 holds of {?3} and {?4}")
 (relation is-a T T :why "{?3} is a {?4}")

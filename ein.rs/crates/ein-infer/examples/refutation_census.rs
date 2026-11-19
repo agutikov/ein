@@ -39,19 +39,13 @@ use ein_infer::naf_deps::compute_naf_map;
 use ein_infer::plan::Plan;
 use serde_json::json;
 
-/// `R ∈ set`, the wildcard negative `(not ?)` read both ways — `monotone`'s
-/// own membership test.
+/// `R ∈ set` — `monotone`'s own membership test, every relation alike.
 fn member(set: &BTreeSet<(String, bool)>, r: Rel, terms: &Terms) -> bool {
-    if r.negated && r.name == terms.kernel.not {
-        return set.iter().any(|(_, neg)| *neg);
-    }
-    let name = terms.sym(r.name).to_string();
-    set.contains(&(name, r.negated))
-        || (r.negated && set.contains(&(terms.sym(terms.kernel.not).to_string(), true)))
+    set.contains(&key(r, terms))
 }
 
 fn key(r: Rel, terms: &Terms) -> (String, bool) {
-    (terms.sym(r.name).to_string(), r.negated)
+    (terms.sym(r.name).to_string(), false)
 }
 
 fn main() {

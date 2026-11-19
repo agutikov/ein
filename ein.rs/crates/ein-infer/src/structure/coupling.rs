@@ -172,7 +172,8 @@ impl PairTies {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct NodeTies {
     /// Ways to a contradiction: an application that concludes `(false)`,
-    /// or a fact beside its negation.
+    /// a fact beside its negation where a rule refutes the two, or one that
+    /// ends the state.
     pub conflicts: u32,
     /// Derived facts that are no candidate, one of whose derivations needs
     /// a member of each of the edge's questions.
@@ -821,6 +822,7 @@ impl Graph {
         firings: &[Supported],
         committed: &FxHashMap<FactId, u32>,
         puzzle: Option<&Puzzle<'_>>,
+        refuted: &crate::contradiction::Pairs,
     ) -> Graph {
         let mut index: FxHashMap<FactId, u32> = FxHashMap::default();
         let mut own: Vec<Option<u32>> = Vec::new();
@@ -906,7 +908,9 @@ impl Graph {
         }
         let (mut falsity, mut pairs, mut half_pairs) = (Vec::new(), Vec::new(), Vec::new());
         let mut ends: Vec<Step> = Vec::new();
-        let contradictions = crate::contradiction::detect(kb, terms);
+        // Every pair the rules refute, and not the ones the store's records
+        // name: the reading does not depend on what the store keeps.
+        let contradictions = crate::contradiction::detect_all(kb, terms, refuted);
         for c in &contradictions {
             use crate::contradiction::Contradiction;
             match *c {
@@ -1510,9 +1514,11 @@ impl Coupling {
                     .iter()
                     .map(|&b| (cover.candidates[b as usize].fact, b))
                     .collect();
+                let refuted =
+                    crate::contradiction::Pairs::of(sp.plans().iter().map(|p| &**p), sp.terms());
                 let (root_kb, _, _) = sp.parts();
                 let read = sp.supported(&committed, NODE_APPLICATIONS, |kb, terms, firings| {
-                    Graph::of(root_kb, kb, terms, firings, &facts, Some(&puzzle))
+                    Graph::of(root_kb, kb, terms, firings, &facts, Some(&puzzle), &refuted)
                 })?;
                 match read {
                     None => node_stopped = Some(NodeStop::Applications),

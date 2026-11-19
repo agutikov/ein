@@ -497,11 +497,15 @@ pub(crate) fn generate(
         // commitment can add are those of the candidates the call would emit
         // with every switch off, which is `H`'s pass: a fact this state
         // neither holds nor denies.
+        let pairs = crate::contradiction::Pairs::of(compiled.iter().map(|p| &**p), s.terms);
         let mut seed: Vec<Symbol> = Vec::new();
         for b in scans.iter().flat_map(|scan| scan.branches.iter()) {
             for &fact in &b.candidates {
                 let rel = s.terms.facts.get(fact).0;
-                if !seed.contains(&rel) && !s.kb.is_negated(fact) && !s.kb.contains(fact) {
+                if !seed.contains(&rel)
+                    && !pairs.denies(s.kb, s.terms, fact)
+                    && !s.kb.contains(fact)
+                {
                     seed.push(rel);
                 }
             }
@@ -1022,6 +1026,10 @@ pub(crate) fn alternatives(
     let plans = crate::obligations::plans_for(kb, terms, ast, memo)?;
     let terms: &ein_core::Terms = terms;
     let unwritten = crate::unheld::Unwritten::of(kb, terms, memo);
+    let pairs = crate::contradiction::Pairs::of(
+        crate::monotone::plans_of(memo).iter().map(|p| &**p),
+        terms,
+    );
     let mut matcher = Matcher::new();
     let mut guards = Matcher::new();
     for plan in plans {
@@ -1047,6 +1055,7 @@ pub(crate) fn alternatives(
                         &regs,
                         candidates,
                         &unwritten,
+                        &pairs,
                     ) {
                         Ok(read) => read.verdicts(),
                         Err(why) => (Err(why), 0, None),
@@ -1308,6 +1317,7 @@ fn witnesses(
     regs: &[Value],
     candidates: &rustc_hash::FxHashMap<FactId, u32>,
     unwritten: &crate::unheld::Unwritten,
+    pairs: &crate::contradiction::Pairs,
 ) -> Result<Read, String> {
     let (gi, at) = p.witness[disjunct];
     let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
@@ -1345,7 +1355,7 @@ fn witnesses(
             alts.push(b);
             continue;
         }
-        if fact.is_some_and(|f| kb.is_negated(f)) {
+        if fact.is_some_and(|f| pairs.denies(kb, terms, f)) {
             excluded += 1;
             continue;
         }

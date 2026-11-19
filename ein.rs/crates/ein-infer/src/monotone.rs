@@ -13,9 +13,10 @@
 //!
 //! Let `H` be the relations of the root candidate list — what a commitment
 //! can add — and `D` the relations a commitment can **change**: `H`, closed
-//! under *a saturation plan that reads a relation in `D` asserts into `D`*. A
-//! stored negative `(not (R …))` is its own pseudo-relation `¬R`, because what
-//! the generator proposes is `R`, and a `¬R` changes only if a rule derives it.
+//! under *a saturation plan that reads a relation in `D` asserts into `D`*.
+//! Every relation is read alike, `not` among them: a stored negation
+//! `(not (R …))` is a fact of `not`, the standard library's convention, and
+//! the check reads no name.
 //!
 //! Every relation a plan reads, at every `absent` depth, is then one of:
 //!
@@ -106,44 +107,21 @@ use rustc_hash::FxHashSet;
 use crate::compile::SharedMemo;
 use crate::plan::{Plan, PlanId, Slot, Span, Step};
 
-/// A relation as the check sees it: `R`, or the stored negatives of `R`.
-///
-/// `name == kernel.not` with `negated` is the **wildcard** negative — a
-/// `(not ?x)` pattern, which reads or writes every `¬R` at once.
+/// A relation as the check sees it: the atom under a fact's first arrow,
+/// whatever its arguments are.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct Rel {
     pub name: Symbol,
-    pub negated: bool,
 }
 
 impl Rel {
-    pub(crate) fn pos(name: Symbol) -> Rel {
-        Rel {
-            name,
-            negated: false,
-        }
+    pub fn pos(name: Symbol) -> Rel {
+        Rel { name }
     }
 
-    fn neg(name: Symbol) -> Rel {
-        Rel {
-            name,
-            negated: true,
-        }
-    }
-
-    fn is_any_negative(self, terms: &Terms) -> bool {
-        self.negated && self.name == terms.kernel.not
-    }
-
-    /// `R`, `(not R)`, or `(not ?)` for the wildcard.
+    /// The relation's name.
     pub fn label(self, terms: &Terms) -> String {
-        if self.is_any_negative(terms) {
-            "(not ?)".to_string()
-        } else if self.negated {
-            format!("(not {})", terms.sym(self.name))
-        } else {
-            terms.sym(self.name).to_string()
-        }
+        terms.sym(self.name).to_string()
     }
 }
 
@@ -332,41 +310,29 @@ impl Monotonicity {
     /// Is `rel` in `D` — a relation some commitment can change? A relation
     /// outside it is static: complete at root, and the same at every node.
     /// L5's premise reads it (`crate::oblgen::alternatives`).
-    pub fn changes(&self, rel: Rel, terms: &Terms) -> bool {
-        if rel.is_any_negative(terms) {
-            return self.dynamic.iter().any(|x| x.negated);
-        }
+    pub fn changes(&self, rel: Rel, _terms: &Terms) -> bool {
         self.dynamic.contains(&rel)
-            || (rel.negated && self.dynamic.contains(&Rel::neg(terms.kernel.not)))
     }
 }
 
 /// Every relation `span` of `plan` reads, nested `absent`s included, less the
 /// top-level step at `skip` — the reads a guard makes beside its witness
 /// (L5's).
-pub fn reads_in(plan: &Plan, span: Span, skip: Option<usize>, terms: &Terms) -> Vec<Rel> {
-    let mut out = Vec::new();
-    for (i, step) in plan.steps(span).iter().enumerate() {
-        if skip == Some(i) {
-            continue;
-        }
-        match step {
-            Step::Rel(r) if r.rel == terms.kernel.not => {
-                let before = out.len();
-                for slot in plan.slots(r.slots) {
-                    if let Slot::Nested { rel, .. } = slot {
-                        out.push(Rel::neg(*rel));
-                    }
-                }
-                if out.len() == before {
-                    out.push(Rel::neg(terms.kernel.not));
-                }
+pub fn reads_in(plan: &Plan, span: Span, skip: Option<usize>, _terms: &Terms) -> Vec<Rel> {
+    fn walk(plan: &Plan, span: Span, skip: Option<usize>, out: &mut Vec<Rel>) {
+        for (i, step) in plan.steps(span).iter().enumerate() {
+            if skip == Some(i) {
+                continue;
             }
-            Step::Rel(r) => out.push(Rel::pos(r.rel)),
-            Step::Absent { sub } => out.extend(reads_in(plan, *sub, None, terms)),
-            Step::Guard { .. } => {}
+            match step {
+                Step::Rel(r) => out.push(Rel::pos(r.rel)),
+                Step::Absent { sub } => walk(plan, *sub, None, out),
+                Step::Guard { .. } => {}
+            }
         }
     }
+    let mut out = Vec::new();
+    walk(plan, span, skip, &mut out);
     out
 }
 
@@ -607,14 +573,9 @@ fn close(
     dynamic
 }
 
-/// Is `r` in `set`, the wildcard negative read both ways? `set` is a `D`
-/// [`dynamic`] returned.
-pub(crate) fn in_set(set: &FxHashSet<Rel>, r: Rel, terms: &Terms) -> bool {
-    if r.is_any_negative(terms) {
-        // determinism-ok: `any` — the answer is the same in every order.
-        return set.iter().any(|x| x.negated);
-    }
-    set.contains(&r) || (r.negated && set.contains(&Rel::neg(terms.kernel.not)))
+/// Is `r` in `set`, a `D` [`dynamic`] returned?
+pub(crate) fn in_set(set: &FxHashSet<Rel>, r: Rel, _terms: &Terms) -> bool {
+    set.contains(&r)
 }
 
 /// Every relation `plan` reads, with the `absent` depth it is read at.
@@ -622,32 +583,21 @@ pub(crate) fn in_set(set: &FxHashSet<Rel>, r: Rel, terms: &Terms) -> bool {
 /// Top-level `absent`s are the disjunct's [`crate::plan::NafGuard`]s (depth
 /// 1); a nested one is a [`Step::Absent`] inside a guard (depth + 1), which is
 /// what `forall` desugars to. Built-in predicates read no relation.
-pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
-    fn walk(plan: &Plan, terms: &Terms, span: Span, depth: u32, out: &mut Vec<(Rel, u32)>) {
+pub fn reads_of(plan: &Plan, _terms: &Terms) -> Vec<(Rel, u32)> {
+    fn walk(plan: &Plan, span: Span, depth: u32, out: &mut Vec<(Rel, u32)>) {
         for step in plan.steps(span) {
             match step {
-                Step::Rel(r) if r.rel == terms.kernel.not => {
-                    let before = out.len();
-                    for slot in plan.slots(r.slots) {
-                        if let Slot::Nested { rel, .. } = slot {
-                            out.push((Rel::neg(*rel), depth));
-                        }
-                    }
-                    if out.len() == before {
-                        out.push((Rel::neg(terms.kernel.not), depth));
-                    }
-                }
                 Step::Rel(r) => out.push((Rel::pos(r.rel), depth)),
-                Step::Absent { sub } => walk(plan, terms, *sub, depth + 1, out),
+                Step::Absent { sub } => walk(plan, *sub, depth + 1, out),
                 Step::Guard { .. } => {}
             }
         }
     }
     let mut out = Vec::new();
     for d in plan.disjuncts.iter() {
-        walk(plan, terms, d.steps, 0, &mut out);
+        walk(plan, d.steps, 0, &mut out);
         for g in plan.guards(d.guards) {
-            walk(plan, terms, g.sub, 1, &mut out);
+            walk(plan, g.sub, 1, &mut out);
         }
     }
     out
@@ -689,9 +639,12 @@ pub enum Refutes {
     /// `:ein inconsistent` matches ([`leads_to_an_end`]): `(false)`, in
     /// every program. `nullary` where the conclusion takes no argument.
     Leads { rel: Symbol, nullary: bool },
-    /// It concludes a stored negation, one side of a fact beside its
-    /// negation.
-    Not,
+    /// It concludes the side of a pair that holds the other, `(N (R …))`
+    /// or `(N ?x)`, beside which a fact of `R` a rule refutes
+    /// ([`crate::contradiction::Pairs`]): one side of a fact beside its
+    /// negation, where `N` is `not` and the program imports the
+    /// contradiction.
+    Holding { wrapper: Symbol },
 }
 
 impl Refutes {
@@ -705,16 +658,22 @@ impl Refutes {
                 rel,
                 nullary: false,
             } => format!("({} …)", terms.sym(rel)),
-            Refutes::Not => "(not …)".to_string(),
+            Refutes::Holding { wrapper } => format!("({} …)", terms.sym(wrapper)),
         }
     }
 }
 
 /// What makes `plan`'s rule a refutation, if it is one, the first of
 /// [`Refutes`]' three that holds. `leads` is [`leads_to_an_end`] of the
-/// plans `plan` runs beside. Every conclusion is read, not only the first:
-/// a rule can derive a fact and refute.
-pub fn refutes(plan: &Plan, terms: &Terms, leads: &FxHashSet<Rel>) -> Option<Refutes> {
+/// plans `plan` runs beside, and `pairs` what they refute beside a fact.
+/// Every conclusion is read, not only the first: a rule can derive a fact
+/// and refute.
+pub fn refutes(
+    plan: &Plan,
+    terms: &Terms,
+    leads: &FxHashSet<Rel>,
+    pairs: &crate::contradiction::Pairs,
+) -> Option<Refutes> {
     if plan.ends {
         return Some(Refutes::Inconsistent);
     }
@@ -732,8 +691,8 @@ pub fn refutes(plan: &Plan, terms: &Terms, leads: &FxHashSet<Rel>) -> Option<Ref
         let Slot::Nested { rel, slots } = slot else {
             continue;
         };
-        if *rel == terms.kernel.not {
-            negation = Some(Refutes::Not);
+        if let Some((wrapper, _)) = pairs.holding_side(plan, *slot) {
+            negation = Some(Refutes::Holding { wrapper });
         } else if leads.contains(&Rel::pos(*rel)) {
             return Some(Refutes::Leads {
                 rel: *rel,
@@ -757,20 +716,7 @@ pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
             out.push(Rel::pos(terms.kernel.r#false));
             continue;
         }
-        let Slot::Nested { rel, slots } = slot else {
-            continue;
-        };
-        if *rel == terms.kernel.not {
-            let before = out.len();
-            for s in plan.slots(*slots) {
-                if let Slot::Nested { rel, .. } = s {
-                    out.push(Rel::neg(*rel));
-                }
-            }
-            if out.len() == before {
-                out.push(Rel::neg(terms.kernel.not));
-            }
-        } else {
+        if let Slot::Nested { rel, .. } = slot {
             out.push(Rel::pos(*rel));
         }
     }

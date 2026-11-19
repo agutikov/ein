@@ -181,7 +181,7 @@ fn every_real_solve_reproduces_its_golden() {
 fn the_root_section_comes_first_and_each_state_is_derived_from_its_commitment() {
     let uncond = real_trace("examples/domain_elim/ab.ein", "");
     assert!(
-        uncond.contains("## Root — 23 steps"),
+        uncond.contains("## Root — 27 steps"),
         "a program solved at root stopped narrating root's derivation:\n{uncond}"
     );
     assert!(

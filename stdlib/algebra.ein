@@ -41,7 +41,13 @@
 ;; with `forall` (std.macro), imported here, so any import of std.algebra brings
 ;; std.macro too; one copy per program, so a puzzle that also imports `forall`
 ;; is fine.
+;; The contradiction: `symmetric-negative` and the `compose-negative` pair
+;; conclude a stored negation, and a fact beside its negation is a death only
+;; where `std.contradiction`'s rules are imported (Q-M1f.557). Imported here,
+;; so a program that imports std.algebra has them, for every relation it
+;; declares.
 (import std.macro :symbols (forall))
+(import std.contradiction)
 
 ;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
 ;; Mirrors each R1-edge into R2 with the endpoints swapped. `right-of`/`left-of`

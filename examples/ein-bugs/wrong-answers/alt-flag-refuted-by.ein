@@ -1,0 +1,81 @@
+;;; **The alternatives flag leaves `refuted by` where the core is.**
+;;;
+;;; `examples/features/12_expect_false.ein` with another `:why` on `instance`
+;;; and `:record-alternative-justifications false` set in the file. Under that
+;;; flag a fact keeps its first derivation alone, and the flag's one exemption
+;;; is the core (Q-M1e2.11); `refuted by` may follow the core only where it
+;;; moved (Q-M1e2.21).
+;;;
+;;; ── The shape ──────────────────────────────────────────────────────────────
+;;;
+;;; Three pigeons, two holes, P1 in H1 and P2 not. `occupied` and `forced`
+;;; place P2 in H2 and exclude P3 from both holes, so `no-room` concludes
+;;; (false). `forced`, reading the same exclusions, also places P3 where
+;;; `occupied` says it is not: a fact beside its negation, which is no
+;;; contradiction here, the program importing no rule that says so
+;;; (Q-M1f.557). So the state's one contradiction is `no-room`'s `(false)`, and
+;;; the core search takes the core over it with the flag on and off alike.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   ein solve FILE, as written and with the config line taken out alike:
+;;;     unsat core (in P1 H1) (instance H2 Hole) (instance P2 Pigeon)
+;;;                (instance P3 Pigeon) (not (in P2 H1)) · refuted by no-room
+;;;
+;;; R is empty and exhausted either way, and `(solve :expect (false))` holds.
+
+(relation instance Thing Type :why "{?3} is a {?4}")
+(relation in       Pigeon Hole :why "{?3} is in {?4}")
+
+(instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
+(instance H1 Hole)   (instance H2 Hole)
+
+(import std.macro :symbols (forall))
+
+;; A hole with an occupant admits no other pigeon.
+(rule occupied (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?b Pigeon) (neq ?b ?a))
+  :assert (not (?R ?b ?h))
+  :why    "{?h} is taken by {?a}, so not by {?b}")
+
+;; A pigeon in one hole is in no other.
+(rule elsewhere (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?h_other Hole) (neq ?h_other ?h))
+  :assert (not (?R ?a ?h_other))
+  :why    "{?a} is in {?h}, so not in {?h_other}")
+
+;; Survivor forcing: every hole but one excluded for a pigeon ⟹ it is in that
+;; one.
+(rule forced (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (?isa ?h Hole)
+               (forall ?h_other
+                 (and (?isa ?h_other Hole) (neq ?h_other ?h))
+                 (not (?R ?a ?h_other))))
+  :assert (?R ?a ?h)
+  :why    "every hole but {?h} is excluded for {?a}")
+
+;; …and a pigeon with every hole excluded has nowhere to go.
+(rule no-room (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (forall ?h (?isa ?h Hole) (not (?R ?a ?h))))
+  :assert (false)
+  :why    "{?a} has every hole excluded")
+
+(occupied  in instance)
+(elsewhere in instance)
+(forced    in instance)
+(no-room   in instance)
+
+(in P1 H1)
+(not (in P2 H1))
+
+(solve
+  :no-hypothesis (in instance)
+  :expect (false))
+
+(query
+  :goal   (in ?who ?hole))
+
+;; The flag: off, a fact keeps its first derivation alone.
+(config :record-alternative-justifications false)

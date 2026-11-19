@@ -1305,8 +1305,9 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
 const TREE_CLASSES_ROUTE: &str = "the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance";
 
 /// What the `∅` row says of a dead root, and the `empty` row after *every
-/// node is*: a state is dead where its fixpoint holds a contradiction,
-/// `(false)` or a fact beside its stored negation.
+/// node is*: a state is dead where its fixpoint holds a contradiction, a
+/// rule that states `:ein inconsistent` fired, as the rule every program gets
+/// does on a held `(false)`.
 const ROOT_DEAD: &str = "dead — root's own fixpoint holds a contradiction";
 
 /// `--no-search`'s `route` row.

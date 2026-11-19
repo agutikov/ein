@@ -1,14 +1,17 @@
-;;; Ein stdlib — `std.contradiction`: a fact beside its negation, as a rule
-;;; that concludes `(false)`.
+;;; Ein stdlib — `std.contradiction`: a fact beside its negation is a
+;;; contradiction, by rules that conclude `(false)`.
 ;;;
-;;; A state that holds a fact and its stored negation is dead, and the kernel
-;;; says so by itself, of every fact, with no rule: such a state need hold no
-;;; `(false)`. These rules state the same contradiction as a rule,
+;;; The contradiction is a theory a program takes, by importing this module
+;;; (Q-M1f.557). The kernel has no check of its own: a program that imports
+;;; no rule of this shape has no contradiction of a fact beside its stored
+;;; negation, and a state that holds both is alive; one that wants another
+;;; logic, three- or four-valued or paraconsistent, writes rules of its own.
+;;; With the module imported, the rules conclude
 ;;;
 ;;;     f  ∧  ¬f   ⟹   ⊥
 ;;;
-;;; so that the state holds `(false)`, derived, with the pair as its premises:
-;;; a trace shows the firing, and a rule of the program can read it.
+;;; for every relation the program declares, and the rule every program gets
+;;; ends a state that holds the `(false)` (Q-M1f.551).
 ;;;
 ;;; ── one rule a count of arguments ───────────────────────────────────────────
 ;;; Ein has no variable for a whole fact in a premise: a pattern writes its
@@ -19,48 +22,44 @@
 ;;;     (import std.contradiction :symbols (clash-2))
 ;;;     (clash-2 seats)          ; (seats Ann C1) ∧ (not (seats Ann C1))  ⟹  (false)
 ;;;
-;;; ── every declared relation at once ─────────────────────────────────────────
+;;; ── every declared relation, by the import ──────────────────────────────────
 ;;; `clash-of-0` to `clash-of-6` derive those activators from the program's
-;;; declarations, one rule a count of labels, where the program writes the
-;;; fact `(clash-of-declared)`:
+;;; declarations, one rule a count of labels, so the import alone is the
+;;; switch:
 ;;;
 ;;;     (import std.contradiction)
-;;;     (clash-of-declared)
 ;;;
-;;; `clash-of-declared` is a relation the module reads and does not declare,
-;;; so a program writes it as it is, with nothing to list. Every declaration
-;;; states `(relation R)` beside `(relation R LABEL…)`, so every declared
-;;; relation gets a `clash-0` activator too, which matches only a fact of no
-;;; argument. What the pair of rules does not reach: a relation nothing
-;;; declares, which has no declaration to read and takes its activator
-;;; written, and a fact of more than six arguments.
+;;; Every declaration states `(relation R)` beside `(relation R LABEL…)`, so
+;;; every declared relation gets a `clash-0` activator too, which matches
+;;; only a fact of no argument. What the rules do not reach: a relation
+;;; nothing declares, which takes its activator written, and a fact of more
+;;; than six arguments.
 ;;;
-;;; ── what it changes ─────────────────────────────────────────────────────────
-;;; The verdict of no state: a state the rule calls dead, the kernel calls
-;;; dead already. What changes is what a dead state holds and how it reads:
-;;; `(false)` with a derivation, and `clash-N` as the rule that refuted it.
+;;; ── what an explanation says of it ──────────────────────────────────────────
+;;; A state `clash-N` refutes is read as the pair: its core is the frontier of
+;;; the fact and its negation, explained together, and `refuted by` names the
+;;; rules that derived the two, not `clash-N`.
+;;;
+;;; ── who imports it ──────────────────────────────────────────────────────────
+;;; A module of the standard library that concludes a stored negation and
+;;; means a death by it: `std.algebra`, `std.bijection` and `std.slots`. A
+;;; program that imports one of them has the contradiction.
 ;;;
 ;;; **A rule that refutes is read by the static check as any other is.**
 ;;; `clash-N` concludes `(false)` from a fact of `R` beside its negation, so
 ;;; a program in which a rule derives a fact of `R` resting on an
 ;;; `(absent …)` over a relation whose held extent a commitment can still
-;;; extend has, once `clash-N` is activated for `R`, a refutation resting on
-;;; that `absent`. Such a program is one the static check flags as it
-;;; stands, with the rule or without it, and of a flagged program nothing is
-;;; claimed (Q-M1f.564).
-;;;
-;;;
-;;;
+;;; extend has a refutation resting on that `absent`. Such a program is one
+;;; the static check flags as it stands, with the rule or without it, and of
+;;; a flagged program nothing is claimed (Q-M1f.564).
 ;;;
 ;;; ── what an import brings ───────────────────────────────────────────────────
-;;; Fourteen rules and nothing else: no relation and no fact. `clash-N` acts
-;;; under its activator and `clash-of-N` where the program holds
-;;; `(clash-of-declared)`, so a program that imports the module and writes
-;;; neither holds what it held, and loads where it loaded.
+;;; Fourteen rules and nothing else: no relation and no fact. `clash-of-N`
+;;; derives an activator `(clash-N R)` at root for each relation the program
+;;; declares with N labels.
 ;;;
 ;;; ── The names this module occupies ──────────────────────────────────────────
-;;; `clash-0` to `clash-6` and `clash-of-0` to `clash-of-6`. It reads
-;;; `clash-of-declared`, which is no module's.
+;;; `clash-0` to `clash-6` and `clash-of-0` to `clash-of-6`.
 
 ;; ── the contradiction, one rule a count ──────────────────────────────────────
 ;; Each concludes `(false)`, so the agenda takes its firing in its first half
@@ -101,39 +100,38 @@
   :why    "({?R} {?a} {?b} {?c} {?d} {?e} {?f}) holds beside its negation.")
 
 ;; ── the activators, from the declarations ────────────────────────────────────
-;; No parameter: each reads the fact `(clash-of-declared)`, which a program
-;; writes to ask for all of them, and one declaration.
+;; No parameter: each reads one declaration.
 (rule clash-of-0 ()
-  :match  (and (clash-of-declared) (relation ?R))
+  :match  (relation ?R)
   :assert (clash-0 ?R)
   :why    "{?R} is declared.")
 
 (rule clash-of-1 ()
-  :match  (and (clash-of-declared) (relation ?R ?A))
+  :match  (relation ?R ?A)
   :assert (clash-1 ?R)
   :why    "{?R} is declared with one argument.")
 
 (rule clash-of-2 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B))
+  :match  (relation ?R ?A ?B)
   :assert (clash-2 ?R)
   :why    "{?R} is declared with two arguments.")
 
 (rule clash-of-3 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C))
+  :match  (relation ?R ?A ?B ?C)
   :assert (clash-3 ?R)
   :why    "{?R} is declared with three arguments.")
 
 (rule clash-of-4 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D))
+  :match  (relation ?R ?A ?B ?C ?D)
   :assert (clash-4 ?R)
   :why    "{?R} is declared with four arguments.")
 
 (rule clash-of-5 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D ?E))
+  :match  (relation ?R ?A ?B ?C ?D ?E)
   :assert (clash-5 ?R)
   :why    "{?R} is declared with five arguments.")
 
 (rule clash-of-6 ()
-  :match  (and (clash-of-declared) (relation ?R ?A ?B ?C ?D ?E ?F))
+  :match  (relation ?R ?A ?B ?C ?D ?E ?F)
   :assert (clash-6 ?R)
   :why    "{?R} is declared with six arguments.")

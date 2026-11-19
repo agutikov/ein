@@ -281,10 +281,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
         if rule.params.is_empty() {
             continue;
         }
-        let rel = Rel {
-            name: rule.name,
-            negated: false,
-        };
+        let rel = Rel { name: rule.name };
         if m.changes(rel, &terms) {
             stat.act.insert(terms.sym(rule.name).to_string());
         } else if extendable.contains(&rel) {
@@ -296,7 +293,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
             .iter()
             .any(|&(r, _)| m.changes(r, &terms));
         for w in monotone::writes_of(plan, &terms) {
-            if !w.negated && program.obligations.contains(w.name) {
+            if program.obligations.contains(w.name) {
                 stat.armers.insert(format!(
                     "{}>{}{}",
                     terms.sym(plan.rule),

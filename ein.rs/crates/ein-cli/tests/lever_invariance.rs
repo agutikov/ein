@@ -46,13 +46,6 @@
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
-//! **And one known gap**: on `features/12` that flag moves `refuted by`
-//! beside the same core, which the exemption does not cover. It is a wrong
-//! answer, and the program is compared less that row until it is fixed
-//! ([`REFUTED_BY_MOVES`]);
-//! [`the_refuted_by_gap_still_has_its_program`] holds the difference
-//! there.
-//!
 //! **Byte for byte, cost counters included**, because no route reads a lever
 //! today. The day one does, its `work` row and block may move, and this file
 //! is where that is relaxed, on purpose (`jobs_invariance.rs`'s stance).
@@ -528,13 +521,6 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 /// changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
-/// The corpus programs on which [`CORE_FLAG`] moves `refuted by` beside a
-/// core that did not move: a known wrong answer, since the exemption covers
-/// `refuted by` only where the core moved. Each is compared less the `refuted
-/// by` row and `region.refuted_by` under that flag, and nothing else; an
-/// entry leaves with the fix.
-const REFUTED_BY_MOVES: [&str; 1] = ["examples/features/12_expect_false.ein"];
-
 /// The rows that name a dead node's core: the read-out's `unsat core` and
 /// `source`, and its `core search` row, which says the
 /// core's search was cut: off, each fact's first derivation is all the search
@@ -800,8 +786,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                // `refuted by` too, on a program where it moves alone.
-                let moved = core_moved(want, got) || REFUTED_BY_MOVES.contains(&rel.as_str());
+                let moved = core_moved(want, got);
                 (without_core(want, moved), without_core(got, moved))
             } else {
                 (want.clone(), got.clone())
@@ -928,45 +913,6 @@ fn the_librarys_question_does_the_binarys_work() {
         ein_infer::region::Cores::READ_OUT,
         "the library's default cores are the read-out's"
     );
-}
-
-/// **The `refuted by` gap still has its program.**
-///
-/// On each [`REFUTED_BY_MOVES`] program, [`CORE_FLAG`] still moves the
-/// `refuted by` row beside a core that did not move, on some question, and
-/// nothing else. The day it stops, the gap is closed there and the entry goes.
-#[test]
-fn the_refuted_by_gap_still_has_its_program() {
-    for witness in REFUTED_BY_MOVES {
-        let path = repo_root().join(witness);
-        let Reach::Known(k) = reach(&path) else {
-            panic!("{witness}: R is not known");
-        };
-        let flipped_text = with_block(&k.text, &flipped(&k.resolved, CORE_FLAG));
-        let mut moved = 0usize;
-        for (flags, mode) in &k.questions {
-            let want = printed(&k.path, &k.text, flags, *mode);
-            let got = printed(&k.path, &flipped_text, flags, *mode);
-            let at = flags.join(" ");
-            assert!(
-                !core_moved(&want, &got),
-                "{witness} {at}: the core moved, which the flag's own exemption covers"
-            );
-            assert_eq!(
-                without_core(&want, true),
-                without_core(&got, true),
-                "{witness} {at}: :{CORE_FLAG} moved more than `refuted by`"
-            );
-            if want != got {
-                moved += 1;
-            }
-        }
-        assert!(
-            moved >= 1,
-            "{witness}: :{CORE_FLAG} no longer moves `refuted by` — the gap is closed \
-             here: take its entry out of REFUTED_BY_MOVES"
-        );
-    }
 }
 
 /// **The core exemption is one flag and the core rows** (Q-M1e2.11).

@@ -19,6 +19,9 @@
 ;;;   + (neq Norwegian Spaniard)
 ;;;   ⇒ (not (co-located Norwegian Spaniard)).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule type-exclusivity (?R)
   :match  (and (is-a ?a ?T)
                (is-a ?b ?T)

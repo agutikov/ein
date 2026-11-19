@@ -199,7 +199,7 @@ only through a licence.
 | **L4** the lines are local | $s \in R \land \forall b \notin s.\; \operatorname{dead}(s \cup \lbrace b \rbrace) \implies s \in \max R$; and $s \in R \land \forall b \in s.\; \operatorname{owes}(s \setminus \lbrace b \rbrace) > 0 \implies s \in \min R$ | everything above, or below, a member of a line: a member is certified from at most $n$ nodes |
 | **L5** an owed instance's alternatives are exhaustive | for $C$ alive, owing a licensed instance $I$ with alternatives $\operatorname{alt}(I)$: $\;D \in R \land C \subseteq D \implies \exists a \in \operatorname{alt}(I).\; a \in \operatorname{cl}(D)$ | every extension of $C$ by a candidate that is not an alternative of $I$. An alive node owing an instance whose every alternative is dead has no member of $R$ above it |
 | **L7** the cube | the definition | nothing: $2^{n}$ evaluations decide everything. The oracle, and every question on a flagged program |
-| **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(s) \implies \operatorname{dead}(s \cup \lbrace b \rbrace)$ | the extension of a state by a candidate the state's own rules have already denied |
+| **L8** what a state denies is dead above it | $\lnot b \in \operatorname{st}(s) \implies \operatorname{dead}(s \cup \lbrace b \rbrace)$, where a rule refutes $b$ beside $\lnot b$ | the extension of a state by a candidate the state's own rules have already denied |
 | **L9** a fact nothing proposes and nothing writes is in no state | a witness $w$ of $I$ with $w \notin H$, $w \notin \mathrm{root}$, of a relation of which no rule concludes a fact, is in no $\operatorname{st}(C)$; so where every other witness of $I$ is a candidate or denied at root, L5 holds of $I$ with $\operatorname{alt}(I) = H \cap \operatorname{witnesses}(I)$ | what L5 decides, for an instance L5 alone does not license |
 
 There is no licence numbered six.
@@ -239,7 +239,8 @@ paid by a fact already in $C$.
 Why an obligation's alternatives are jointly exhaustive in general is [Satisfiability § 4](10-satisfiability.md).
 
 *L8.* $\operatorname{st}(s \cup \lbrace b \rbrace) \supseteq \operatorname{st}(s) \ni \lnot b$, and it holds $b$: a
-fact beside its stored negation.
+fact beside its stored negation, which a rule of the program refutes alone, the theory of the contradiction's where
+the program takes it. Where no rule refutes the two, a state denies nothing, and L8 grants nothing.
 
 *L9.* A fact enters a state only by being committed, by being in root, or by a rule concluding it. A witness that
 is no candidate, is not in root, and is a fact of a relation of which no rule concludes a fact enters none, so the

@@ -181,7 +181,7 @@ fn cut_of(c: &Option<Cut>) -> Json {
 
 /// The relation candidate `fact` is of, as text: a label for the reader.
 fn relation_of(terms: &Terms, fact: FactId) -> String {
-    terms.sym(structure::subject(terms, fact)).to_string()
+    terms.sym(terms.fact(fact).0).to_string()
 }
 
 // ── The lists of each object ──────────────────────────────────────────
@@ -1608,7 +1608,7 @@ fn declared(w: &Whole, terms: &Terms) -> Json {
     // The candidates' relations, in the order of their first candidates.
     let mut relations: Vec<(Symbol, Vec<u32>)> = Vec::new();
     for (b, c) in t.root.candidates.iter().enumerate() {
-        let rel = structure::subject(terms, c.fact);
+        let rel = terms.fact(c.fact).0;
         match relations.iter_mut().find(|(r, _)| *r == rel) {
             Some((_, of)) => of.push(b as u32),
             None => relations.push((rel, vec![b as u32])),

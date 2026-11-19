@@ -22,6 +22,9 @@
 ;;; claim is FAILED, exit 1 (`ein solve FILE` at `dc4c0bdc`, release and debug
 ;;; alike).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (relation p Node :why "{?3} is a node")
 (not (p a))
 (not (p b))

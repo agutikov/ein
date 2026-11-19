@@ -10,24 +10,26 @@ what a refutation tells a search. The symbols are those of [firing a rule](01-fi
 
 A contradiction, and *dead* and *alive*, are those of
 [the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither): a world $K$ holds a
-contradiction when it holds $\bot$, which a rule concludes to say a state is impossible, or a fact beside its
-stored negation. This page needs the contradictions of $K$ as sets of facts,
+contradiction when a rule that ends a state in the place of concluding a fact is satisfied in it, as the rule every
+program holds is on $\bot$, which a rule concludes to say a state is impossible. This page needs the contradictions
+of $K$ as sets of facts: for each such rule, the facts a satisfied instance of it matched, as a set, of which
+$\lbrace \bot \rbrace$ is the instance of the rule every program holds, read as what $\bot$ was concluded from
+where a rule concluded it from a fact $f$ and its negation alone,
 
 $$
-\operatorname{contr}(K) \;=\; \lbrace\, \lbrace \bot \rbrace \;:\; \bot \in K \,\rbrace \;\cup\; \lbrace\, \lbrace f, \lnot f \rbrace \;:\; f \in K \land \lnot f \in K \,\rbrace
+\operatorname{contr}(K) \ni \lbrace f, \lnot f \rbrace \quad \text{where} \quad \bot \in K \text{ was concluded from } f \text{ and } \lnot f
 $$
 
-and, for each rule of the program that ends a state in the place of concluding a fact
-([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)), the facts a
-satisfied instance of it matched, as a set; $\lbrace \bot \rbrace$ is the instance of the rule every program
-holds. With those among $\operatorname{contr}(K)$, a world is dead exactly where it has one:
+as the theory of the contradiction concludes it, where a program takes it
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). A world is
+dead exactly where it has one:
 
 $$
 \operatorname{dead}(K) \iff \operatorname{contr}(K) \neq \emptyset
 $$
 
-A fact's origin plays no part: $f$ and $\lnot f$ are a contradiction whether each was given, derived or
-committed.
+A fact's origin plays no part: where a rule refutes $f$ beside $\lnot f$, they are a contradiction whether each was
+given, derived or committed.
 
 A world never loses a fact, so a contradiction once derived is never retracted,
 

@@ -17,6 +17,9 @@
 ;;;   (hypothesis (right-of A B)) + (contradiction-under (right-of A B))
 ;;;   ⇒ (not (right-of A B)).
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (rule hypothesis-contradiction ()
   :match  (and (hypothesis ?h)
                (contradiction-under ?h))

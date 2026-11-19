@@ -335,7 +335,7 @@ fn the_universe_and_the_trace() {
     for want in [
         "# Region trace",
         "  states (k_s)      5",
-        "## Root — 24 steps",
+        "## Root — 28 steps",
         "## State 5 of 5 — 3 candidates · maximal · 4 commitments, 3 minimal",
         "Assuming **(co-located Bob Coffee), (co-located Bob Dog)**.",
         "## N — 6 minimal dead sets",

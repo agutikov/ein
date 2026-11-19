@@ -95,7 +95,7 @@ the seam between what only grows and what a guess can retract
 | O2 saturation | fire rules to a least fixpoint, semi-naively | Datalog bottom-up evaluation, magic sets, differential dataflow |
 | O3 negation as failure | `(absent P)` judged once, at the closure's fixpoint ([`absent`](docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md)) | stratified Datalog, the closed-world assumption, stable models |
 | O4 equality | none of its own: equality is whatever relation a program states; `eq` and `neq` compare two objects as written | union-find, congruence closure, e-graphs |
-| O5 contradiction | `(false)`, a fact beside its stored negation, or a rule that states `:ein inconsistent` | clause violation, tableau clash |
+| O5 contradiction | a rule that states `:ein inconsistent`: `std.core`'s on a held `(false)`, which `std.contradiction` concludes from a fact beside its stored negation where a program imports it | clause violation, tableau clash |
 | O6 provenance and the core | every derivation recorded; the smallest set of givens and commitments a contradiction rests on ([cores](docs/ein/reasoning/02-kb-evolution/09-cores.md)) | ATMS / JTMS justifications, provenance semirings, MUS |
 | O7 the candidate set and the lattice | the undecided candidates read off root's fixpoint, commitments as subsets of them ([the hypothesis space](docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)) | DPLL decisions, Apriori, ATMS environments |
 | O8 learning from a refutation | on a monotone program a superset of a dead commitment is dead, so one dead node decides every node above it ([finding R](docs/ein/reasoning/02-kb-evolution/07-finding-r.md)) | CDCL, backjumping, arc consistency |
@@ -124,7 +124,7 @@ tests/` runs them all. The per-symbol reference is [`04-stdlib/`](docs/ein/user/
 | `std.closure` | a total function closed: `functional ∧ total ⇒ (__closed__ R)` |
 | `std.typing` | a membership hierarchy, named once |
 | `std.negation` | the elimination of a double negation, `(not (not g))` ⟹ `g`, one rule a count of arguments, activated a relation |
-| `std.contradiction` | a fact beside its negation as a rule that concludes `(false)`, for one relation or for every declared one |
+| `std.contradiction` | the contradiction, a theory a program imports: a fact beside its negation concludes `(false)`, for every declared relation, or one an activator names |
 | `std.debts` | what an obligation requires and what pays it, as facts, and `(debts-discharged)` where nothing required is unpaid |
 | `std.macro` | the `forall` and `unknown` pattern macros |
 | `std.math.*` | the calculator: decimal and binary numerals, natural numbers, integers, rationals, gcd and lcm, conversion between bases, computed by saturation over digit tables. Ein has no numbers of its own |

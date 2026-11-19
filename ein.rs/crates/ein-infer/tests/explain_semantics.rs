@@ -1385,7 +1385,7 @@ fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
         .expect("a witness");
     assert_eq!(
         (witnesses.len(), union.len(), smallest, largest),
-        (126, 39, 1, 22),
+        (10, 15, 1, 9),
         "witnesses / union / smallest / largest single frontier"
     );
 }

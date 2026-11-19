@@ -64,7 +64,7 @@ solve · examples/branching/05_mini_zebra.ein
   universe          9 candidates, 6 dead alone
     outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              13 saturations · 45 facts beyond root · 4 layers
+  work              13 saturations · 51 facts beyond root · 4 layers
 
   (region
     ;; state 1 of 5 — ∅, root itself · minimal
@@ -1200,7 +1200,7 @@ solve · examples/zebra2.ein
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              120 saturations · 5 409 facts beyond root
+  work              120 saturations · 5 411 facts beyond root
 
   ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
   ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1292,7 +1292,7 @@ solve · examples/zebra2.ein
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              120 saturations · 5 409 facts beyond root
+  work              120 saturations · 5 411 facts beyond root
 
   (region
     ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal

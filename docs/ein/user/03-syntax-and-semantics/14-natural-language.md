@@ -147,7 +147,7 @@ program's `(relation nation-loc Nationality House :why "the {?3} lives in {?4}")
 
 <!-- trace: examples/zebra2.ein -->
 ```text
-### Step 9 — `includes`
+### Step 27 — `includes`
 
 > is-a* includes is-a: from House →is-a→ Attribute, derive House →is-a*→ Attribute.
 
@@ -155,7 +155,7 @@ Premises: `is-a(House, Attribute)`
 
 Derives `is-a*(House, Attribute)`.
 
-### Step 231 — `std.bijection.domain-elimination`
+### Step 249 — `std.bijection.domain-elimination`
 
 > every House except House-1 excluded for Norwegian → (nation-loc Norwegian House-1).
 
@@ -163,7 +163,7 @@ Premises: `std.algebra.functional(nation-loc)`, `std.algebra.total(nation-loc)`,
 
 Derives `nation-loc(Norwegian, House-1)`.
 
-### Step 235 — `adjacent-via-fwd`
+### Step 253 — `adjacent-via-fwd`
 
 > (nation-loc Norwegian House-1) and unique-next-to neighbour House-2 ⟹ (color-loc Blue House-2).
 

@@ -10,6 +10,9 @@
 ;;;
 ;;;
 
+;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).
+(import std.contradiction)
+
 (relation p T T :why "p holds of {?3} and {?4}")
 (relation q T T :why "q holds of {?3} and {?4}")
 (relation seen T :why "{?3} is seen")

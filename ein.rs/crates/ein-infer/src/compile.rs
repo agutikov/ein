@@ -1749,55 +1749,32 @@ impl<'a> Compiler<'a> {
 
 // ── Plan introspection (pure walks; no KB) ─────────────────────────
 
-/// The positive relation a plan's `:assert` concludes, or `None`.
+/// The relation a plan's `:assert` concludes, its first conclusion's, or
+/// `None` where it concludes no fact.
 ///
-/// A plan whose assert template is `(R …)` with head not `not` proves `R` is
-/// rule-derivable.
-pub fn asserted_relation(plan: &Plan, terms: &Terms) -> Option<Symbol> {
+/// A plan whose assert template is `(R …)` proves `R` is rule-derivable:
+/// `not` among them, a relation as any other.
+pub fn asserted_relation(plan: &Plan, _terms: &Terms) -> Option<Symbol> {
     match plan.assert_template()? {
-        Slot::Nested { rel, .. } if rel != terms.kernel.not => Some(rel),
+        Slot::Nested { rel, .. } => Some(rel),
         _ => None,
     }
 }
 
-/// The relation `R` a plan's `:assert` *negates* via `(not (R …))`, or `None`.
-///
-/// The dual of [`asserted_relation`]: it answers "does some rule derive a
-/// `(not (R …))` fact?", which is what an `(absent (not (R …)))` guard — a
-/// `forall` / totality NAF — watches.
-pub fn negated_relation(plan: &Plan, terms: &Terms) -> Option<Symbol> {
-    match plan.assert_template()? {
-        Slot::Nested { rel, slots } if rel == terms.kernel.not => {
-            plan.slots(slots).iter().find_map(|s| match s {
-                Slot::Nested { rel, .. } => Some(*rel),
-                _ => None,
-            })
-        }
-        _ => None,
-    }
-}
-
-/// `(relation, negated)` for every relation the plan's guards watch, in walk
-/// order, duplicates included — the caller dedupes.
+/// Every relation the plan's guards watch, in walk order, duplicates
+/// included — the caller dedupes.
 ///
 /// Recurses through nested guards (the `forall` macro expands to
 /// `(absent (and G (absent B)))`, and Q-S1.7.4.B says enter both levels). A
-/// `(not (R …))` sub-pattern yields `(R, true)`: the genuine watched relation
-/// is the nested one. Activator-bound head vars are already substituted, so
-/// the names here are concrete and per-activator.
-pub fn naf_relation_refs(plan: &Plan, terms: &Terms) -> Vec<(Symbol, bool)> {
-    fn walk(plan: &Plan, terms: &Terms, span: Span, out: &mut Vec<(Symbol, bool)>) {
+/// relation is the atom under a fact's first arrow, `not` as any other.
+/// Activator-bound head vars are already substituted, so the names here are
+/// concrete and per-activator.
+pub fn naf_relation_refs(plan: &Plan, _terms: &Terms) -> Vec<Symbol> {
+    fn walk(plan: &Plan, span: Span, out: &mut Vec<Symbol>) {
         for step in plan.steps(span) {
             match step {
-                Step::Rel(r) if r.rel == terms.kernel.not => {
-                    for slot in plan.slots(r.slots) {
-                        if let Slot::Nested { rel, .. } = slot {
-                            out.push((*rel, true));
-                        }
-                    }
-                }
-                Step::Rel(r) => out.push((r.rel, false)),
-                Step::Absent { sub } => walk(plan, terms, *sub, out),
+                Step::Rel(r) => out.push(r.rel),
+                Step::Absent { sub } => walk(plan, *sub, out),
                 Step::Guard { .. } => {}
             }
         }
@@ -1805,7 +1782,7 @@ pub fn naf_relation_refs(plan: &Plan, terms: &Terms) -> Vec<(Symbol, bool)> {
     let mut out = Vec::new();
     for d in plan.disjuncts.iter() {
         for g in plan.guards(d.guards) {
-            walk(plan, terms, g.sub, &mut out);
+            walk(plan, g.sub, &mut out);
         }
     }
     out
@@ -2221,23 +2198,18 @@ mod tests {
             asserted_relation(&plan, &terms).map(|s| terms.sym(s)),
             Some("b")
         );
-        assert_eq!(
-            negated_relation(&plan, &terms),
-            None,
-            "the first is not a `not`"
-        );
     }
 
+    /// A stored negation is a fact of `not`, a relation as any other.
     #[test]
-    fn a_negated_assert_names_the_relation_it_negates() {
+    fn a_negated_assert_concludes_a_fact_of_not() {
         let (_, terms, plan) = compile(
             "(relation a Thing :why \"a holds of {?3}\")\n\
              (rule r ()\n  :match (a ?x)\n  :assert (not (a ?x)) :why \"a holds of {?x}, so a does not hold of {?x}\")\n",
         );
-        assert_eq!(asserted_relation(&plan, &terms), None);
         assert_eq!(
-            negated_relation(&plan, &terms).map(|s| terms.sym(s)),
-            Some("a")
+            asserted_relation(&plan, &terms).map(|s| terms.sym(s)),
+            Some("not")
         );
     }
 

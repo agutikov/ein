@@ -305,7 +305,7 @@ fn the_fact_dumps_headers_say_what_they_print() {
     );
     assert_eq!(
         header(&root, "state 1 of 20"),
-        format!("final-state facts (beyond the program as loaded: {BEYOND}; 7 facts):"),
+        format!("final-state facts (beyond the program as loaded: {BEYOND}; 11 facts):"),
         "∅'s block is root's own derivations"
     );
     for r in [&f, &p, &pp, &root] {

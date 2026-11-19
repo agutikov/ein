@@ -139,14 +139,15 @@ pub fn root_of<T>(
     ))
 }
 
-/// `(false)` or `(not …)`, from every conclusion, `(false)` outranking.
+/// `(false)` or `(not …)`, from every conclusion, `(false)` outranking: a
+/// fact of either relation, which `std.core` and `std.contradiction` read,
+/// as the measurement reads them.
 pub fn refutes(plan: &Plan, terms: &Terms) -> Option<&'static str> {
     let w = monotone::writes_of(plan, terms);
-    if w.iter()
-        .any(|r| !r.negated && r.name == terms.kernel.r#false)
-    {
+    let named = |r: &monotone::Rel, name: &str| terms.sym(r.name) == name;
+    if w.iter().any(|r| named(r, "false")) {
         Some("(false)")
-    } else if w.iter().any(|r| r.negated) {
+    } else if w.iter().any(|r| named(r, "not")) {
         Some("(not …)")
     } else {
         None

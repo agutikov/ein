@@ -1,31 +1,31 @@
 ;;; `std.contradiction/clash-0` — a fact of no argument beside its negation:
 ;;; the rule concludes `(false)`.
 ;;;
-;;; ── What this file and its six siblings can and cannot say ─────────────────
+;;; ── What this file and its six siblings say ────────────────────────────────
 ;;;
-;;; A state that holds a fact and its stored negation is dead, and the kernel
-;;; says so of every fact with no rule. `clash-0` to `clash-6` state the same
-;;; contradiction as a rule, one a count of arguments, and what the rule adds
-;;; is not the verdict: it is the fact `(false)`, derived, with the pair as
-;;; its premises.
+;;; A state that holds a fact and its stored negation is dead only by a rule
+;;; that says so: the kernel has no check of its own (Q-M1f.557).
+;;; `clash-0` to `clash-6` are that rule, one a count of arguments, each
+;;; concluding `(false)` with the pair as its premises, and the rule every
+;;; program gets ends the state that holds it.
 ;;;
 ;;; So the claim below, `(false)`, *every node is dead*, holds of this program
-;;; with the rule and without it, and no claim made of facts can tell the two
-;;; apart: a dead state has no model to list. What the file gives the rule is
-;;; a program in which it **fires**, which is what the coverage gate asks
-;;; (`ein-infer/tests/stdlib_coverage.rs`), and the firing itself, its
-;;; premises the pair and its conclusion `(false)`, a fact root then holds,
-;;; is asserted in-process, in `ein-infer/tests/contradiction_rules.rs`.
+;;; by the rule: without it, root would be alive and hold both facts. The
+;;; firing itself, its premises the pair and its conclusion `(false)`, a fact
+;;; root then holds, is asserted in-process, in
+;;; `ein-infer/tests/contradiction_rules.rs`.
 ;;;
-;;; The file where a claim *can* see these rules is
-;;; `08_clash_satisfied.ein`: all seven loaded, activated, and silent, over
-;;; facts and denials that do not meet. A rule that fired there would turn a
-;;; model into a contradiction.
+;;; The file where a claim sees the rules silent is `08_clash_satisfied.ein`:
+;;; all seven loaded, activated, over facts and denials that do not meet. A
+;;; rule that fired there would turn a model into a contradiction.
 ;;;
 ;;; ── One rule a file ────────────────────────────────────────────────────────
 ;;;
-;;; Seven rules reach one verdict, so each firing file activates one of them
-;;; and no other: here `clash-0`, for the one relation.
+;;; The import alone activates the rules for what the program declares
+;;; (`clash-of-0` to `clash-of-6`), so each firing file declares one relation,
+;;; and only the rule of its count can fire: here `clash-0`, for `raining`.
+;;; The activator is written as well, which is how a program asks for the rule
+;;; for a relation it does not declare.
 
 (import std.contradiction :symbols (clash-0))
 

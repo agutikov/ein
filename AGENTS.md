@@ -215,15 +215,19 @@ constrained-reasoning research.
   one lists it. **The two rules of a stored negation are modules a program
   imports**: `std.negation`, the elimination of a double negation
   (`eliminate-0` to `eliminate-6`, one rule a count of arguments, the relation
-  its parameter), and `std.contradiction`, `clash-0` to `clash-6`, which
-  conclude `(false)` from a fact beside its stored negation, with `clash-of-0`
-  to `clash-of-6`, which activate them from the declarations where a program
-  writes `(clash-of-declared)`; neither declares a relation, and a rule with
-  no parameter reads a fact the program writes, since it can have no
-  activator. Their programs are under `tests/stdlib/negation/` and
+  its parameter), and `std.contradiction`, **the contradiction, a theory a
+  program imports** ([Q-M1f.557](docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)):
+  `clash-0` to `clash-6` conclude `(false)` from a fact beside its stored
+  negation, and `clash-of-0` to `clash-of-6` activate them from every
+  declaration, so the import is the switch, for the relations a program
+  declares; one it does not declare takes its activator written. The kernel
+  has no check of its own: without such a rule a state that holds a fact
+  beside its negation is alive. `std.algebra`, `std.bijection` and
+  `std.slots` conclude negations and import it, and so does every corpus
+  program that relies on the death. Neither module declares a relation.
+  Their programs are under `tests/stdlib/negation/` and
   `tests/stdlib/contradiction/`, and `ein-infer/tests/contradiction_rules.rs`
-  holds the firing, which no claim can see while the kernel judges a pair
-  itself. **What an obligation requires and what pays it are facts a program
+  holds the firing. **What an obligation requires and what pays it are facts a program
   asks for**: `std.debts`, for each of the library's four obligations a rule
   that concludes `(debt-due R J)` from its trigger and one that concludes
   `(debt-paid R J)` from the trigger with its witness (`total-due` and
@@ -462,10 +466,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   or `:goal-text`, never an object. Names are ASCII.
 - `_` and `?_` are refused everywhere. Keywords are closed per form.
   `:priority` is gone: **the agenda fires a rule that states
-  `:ein inconsistent` before every other, then what leads to one** — a rule
+  `:ein inconsistent`, and one that refutes a fact beside one holding it
+  alone, before every other, then what leads to one** — a rule
   concluding a fact such a rule matches (`(false)`, in every program, by
-  `std.core`'s rule; read off the rules, `monotone::leads_to_an_end`), a
-  stored negation, or a fact whose negation can be concluded — then the rest,
+  `std.core`'s rule; read off the rules, `monotone::leads_to_an_end`), or
+  either side of a pair a rule refutes, a fact beside one holding it as its
+  one argument (a stored negation, where the program imports
+  `std.contradiction`; read off the rules, `contradiction::Pairs`) — then the rest,
   FIFO in written order within each half (`saturator::AGENDA`, everywhere:
   root, every route's node, the oracle's, every reader;
   [Q-M1f.313](docs/decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
@@ -505,12 +512,14 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   state is dead, and no fact is written (`ein_core::Kb::ended` holds the
   firing's record, which a core is taken over). A word that is none of the
   engine's, `:ein` beside an `:assert` and `:ein` on an hrule are refused at
-  load. **The kernel reads `(false)` by its name nowhere to judge a state**:
-  a fact beside its stored negation is its own check
-  (`ein_infer::contradiction`), and a held `(false)` kills by `std.core`'s
-  rule. An explanation names the rules a program wrote or imported and reads
-  through a rule of `std.core` (`ein_core::Rule::implicit`), so
-  `refuted by` names the rule that concluded the `(false)`.
+  load. **The kernel reads `(false)` and `not` by name nowhere to judge a
+  state**: a held `(false)` kills by `std.core`'s rule, and a fact beside its
+  stored negation by `std.contradiction`'s, where a program imports it. An
+  explanation names the rules a program wrote or imported and reads through
+  a rule of `std.core` (`ein_core::Rule::implicit`), and through a firing
+  whose premises are a fact and one holding it to the pair
+  (`ein_infer::contradiction::detect`), so `refuted by` names the rule that
+  concluded the `(false)`, or the rules that derived the pair's two sides.
 - **Under `:assert` a rule concludes a conjunction of literals** — facts and
   stored negations, with `(false)` and checks among them — or `()`, or an
   obligation as its whole `:assert`. An `(and …)` is read flat at any depth, by every

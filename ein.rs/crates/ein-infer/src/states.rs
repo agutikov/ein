@@ -31,7 +31,8 @@
 //!   taken by size, so every state under `S'` has been extended before `S'`
 //!   is, and the dead extensions it would inherit are all known.
 //! - **What a state denies is dead above it (L8).** When `S`'s own fixpoint
-//!   stores `(not b)`, the node of `S ∪ {b}` holds `b` beside its negation:
+//!   holds `(not b)` and a rule refutes `b` beside it
+//!   ([`crate::contradiction::Pairs`]), the node of `S ∪ {b}` holds the two:
 //!   it is dead, and is not saturated. The route keeps it as a dead node it
 //!   met ([`Dead::denied`]), so everything read off the dead nodes, `N`'s
 //!   members a partial run met and the candidates dead alone among them, is
@@ -320,7 +321,7 @@ pub(crate) fn compute_resumable(
         hypothesised,
         monotonicity,
         memo,
-        plans: _,
+        plans,
         root: _,
         root_owes: _,
     } = prepared;
@@ -354,7 +355,7 @@ pub(crate) fn compute_resumable(
     }
     // A dead extension stops at its first contradiction (`region`'s § What a
     // node is): no step of the walk reads more of it than its dead bit.
-    let axes = Axes::new(root, &out.candidates, hypothesised, false)
+    let axes = Axes::new(root, terms, &plans, &out.candidates, hypothesised, false)
         .narrating(events.narration())
         .taking_cores(opts.cores.visited)
         .stopping_at_first_contradiction();
@@ -813,7 +814,7 @@ fn push_child(s: &mut State, t: u32) -> bool {
 /// for a state `P` under `S`, and the parents' are the largest of them. It is
 /// dead when two of the states it holds, `S` and such a `U` or two such `U`,
 /// meet in a candidate one holds and the other denies: the fact is beside
-/// its negation (L8, through L3).
+/// what a rule refutes it with (L8, through L3).
 fn denied_through(
     st: &State,
     b: u32,
