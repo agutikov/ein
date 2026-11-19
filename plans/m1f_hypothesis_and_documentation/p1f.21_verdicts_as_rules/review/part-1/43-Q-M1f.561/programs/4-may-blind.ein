@@ -1,0 +1,7 @@
+;; MAY, said by saying nothing: no hypothesis rule and no obligation, so every fact of a declared relation
+;; over every guessable atom is a candidate, s of c among them.
+(relation s Thing :why "s holds of {?3}")
+(thing a) (thing b)
+(other c)
+(solve :hypothesis-relations (s))
+(query :goal (s ?x))

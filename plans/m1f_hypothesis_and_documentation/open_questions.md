@@ -489,6 +489,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
+| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's sixth instruction; analysed with runs (`one_way_each.md`, review item 43): an obligation is a hypothesis rule plus a requirement, so the rules can go, *must* to obligations and *may* to the filtering way, whose one mechanism would be the closure; proposed A (a), B (a), C (a) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10355,7 +10356,12 @@ alone, and alive without it.
 - **(a)** an activator for every head a program writes, at every count, made at load;
 - **(b)** one rule for every fact, a premise that is a variable for a whole fact, which Q-M1f.393 refuses today;
 - **(c)** the kernel keeps its check, as its way of running the module's rule, which leaves it reading `not`;
-- **(d)** a relation is checked where a program asks: what is declared or activated by hand, and nothing else.
+- **(d)** a relation is checked where a program asks: what is declared or activated by hand, and nothing else;
+- **(e)** one rule a count with the relation a variable of the pattern and no activator, the user's, 2026-11-19
+  (*"why not just (rule () :match (and (?R ?a) (not (?R ?a))) :assert (false) ) ?"*). Refused at load today, *a
+  relation is named by a name or by a parameter its activator binds*; it asks the loader to admit a relation
+  variable that another premise of the match binds, which is the walk the kernel's own check makes. Every relation
+  is reached, declared or not, at every count the rules are written for. **Proposed** once it was asked.
 
 **What waits on it.** S1f.21.11's task 2.1, the contradiction as the module's rules. How many corpus programs (d)
 would move is counted by that stage's first task, with a build that has the check off.
@@ -10410,4 +10416,44 @@ neither of the second part's questions.
 - **(a)** held for the second part, where its names are read again under the rulings of Q-M1f.390 and Q-M1f.549.
   **The default, and what stands**: the stage reported before an answer, and its first commit alone was merged.
 - **(b)** merged now.
+
+### Q-M1f.561 — One way to say *must* and one to say *may*: hypothesis rules removed?
+
+**Raised** 2026-11-19 by the user, [P1f.21's sixth instruction](p1f.21_verdicts_as_rules/README.md#the-sixth-instruction),
+verbatim:
+
+> Also, still in Part 1, analyze semantic of hrules and obligation rules, I think they are 100% equivalent, so we
+> can remove hrules completely from kernel, syntax, docs, everything; And replace them with obligation rules. Can
+> we? Then we still have 2 approaches to hypotheses generation - positive and negative, the second one is blind
+> generator with filters. Let's leave only one valid way for each. Obligations is positive way, what would be the
+> negative (filtering) one?
+
+**Open: not ruled.** The analysis is [`one_way_each.md`](p1f.21_verdicts_as_rules/one_way_each.md), on runs of the
+gate build of master at `ca98dec2`; [review item 43](p1f.21_verdicts_as_rules/review/part-1/43-Q-M1f.561/README.md)
+has its six programs.
+
+**What it found.** As a way to build $H$ an obligation is a hypothesis rule: its payments are what the rule
+*trigger, no witness yet, domain ⟹ witness* proposes. As a judge it adds a requirement, *at least one of these*,
+and a hypothesis rule adds none: with one $H$ of two candidates, the rule's $R$ is four states with `∅`, the
+obligation's three without it. So they are not equivalent, and the difference is *may* against *must*. Of the 80
+corpus programs with a hypothesis rule that are answered, 12 answer the same with it deleted (an obligation owes
+the same facts), `zebra.ein` keeps its state over a universe twice the size, 8 change or are refused, and 59 owe
+nothing at root: the rule is their only *may*, and 23 of those answer the same from the blind enumerator, with or
+without a list of relations. A list of `(solve …)` replaced by closure facts gives the same $H$ and $R$ in 99 of
+100 programs.
+
+Three calls:
+
+- **A, the hypothesis rules**: (a) removed, *must* to obligations and *may* to the filtering way, 66 corpus
+  programs rewritten; (b) kept; (c) left for the second part, where a candidate may become a fact a rule concludes
+  ([Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)).
+- **B, the filtering way's mechanism**: (a) the closure alone, the two lists removed and written as closures, a
+  single fact taken out by a rule that denies it; (b) the lists stay.
+- **C, *may* beside *must* in one program**: (a) one way a program, as the ladder has it
+  ([Q-M1f.243](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)), a
+  *may* there written as a decision that is owed; (b) the two ways add up.
+
+**Proposed**, if one way each is wanted: A (a), B (a), C (a).
+
+**What waits on it.** Nothing running. A ruling for A (a) or B (a) is planned as a stage of part 1 when given.
 

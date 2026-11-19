@@ -35,6 +35,57 @@ first task. What is counted: at root, the corpus negates facts of 0, 1 and 2 arg
 (S1f.21.8's census), so the count of arguments bites no corpus program today, and the undeclared relation is the
 case to count.
 
+## Why not just one rule with the relation a variable
+
+Your question, 2026-11-19, verbatim: *"why not just (rule () :match (and (?R ?a) (not (?R ?a))) :assert (false) ) ?"*
+
+**Because today's loader refuses it; and it is a good answer if that refusal is lifted for this shape.**
+
+[`reach-free-relation.ein`](programs/reach-free-relation.ein) is the rule as you wrote it, with a name and a
+`:why`, beside `(p a)` and `(not (p a))`; [`reach-free-relation-not-first.ein`](programs/reach-free-relation-not-first.ein)
+is the same with the stored negation written first. Both are refused the same way:
+
+```text
+kb load error: rule 'clash-1': its :match writes (?R ?a) with ?R as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds
+```
+
+In Ein today a variable may stand first in a pattern only where it is a **parameter** of the rule, which an
+activator fills before anything is matched: `(rule clash-1 (?R) …)` with `(clash-1 p)`. That is why the standard
+library's rule set needs an activator a relation, and why an undeclared relation is not reached: nothing writes
+its activator. Two things stand behind the refusal:
+
+- **The matcher.** A plan is compiled a premise at a time from the premise's relation: the relation says which
+  held extent to walk and which index to use. A premise whose relation is a variable is one of the *shapes no plan
+  can be compiled for*
+  ([Q-M1f.72](../../../../../../docs/decisions/diagnostics/Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md)).
+- **The analyses.** The strata, the monotonicity check, *forbid* and the invariant that a state names no relation
+  the program lacks each ask which relations a rule reads and concludes, and read them off the rule's text or off
+  the activator that fills a parameter
+  ([Q-M1f.393](../../../../../../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md)).
+
+**Neither bites this rule hard.** Its two premises share the variable, and the one under `not` binds it: walk the
+stored negations, take the fact each denies, read its relation and its argument off it, and ask whether that fact
+is held. That is the kernel's own check today, line for line (`contradiction::detect`), so the plan exists; what
+is missing is the loader letting a relation be a variable **that another premise of the same match binds**, and
+the compiler ordering the two premises so. And for the analyses, *this rule reads every relation of one argument*
+is simply true of a contradiction: it reads them positively and concludes only `(false)`, so the monotonicity
+check has nothing to flag, and what *forbid* makes of it is item [37](../37-Q-M1f.558/README.md) either way.
+
+**What it would take, and what it leaves.**
+
+- A change to the language: a relation may be a variable of the pattern where another premise of the match binds
+  it; the loader's refusal stays for a relation variable nothing binds. One row of the grammar page's table and of
+  the diagnostics; the matcher reads the relation at match time for such a premise; each analysis reads such a
+  premise as reading every relation of its count.
+- **No activator, no declaration, no fact the loader makes**: the rule reaches every relation a program writes,
+  declared or not. `clash-of-N`, `(clash-of-declared)` and the activators go.
+- **It is still one rule a count of arguments.** The pattern spells its arguments, `(?R ?a)`, `(?R ?a ?b)`, …, so
+  a relation of more arguments than the rules are written for has no contradiction. The corpus negates facts of 0,
+  1 and 2 arguments at root and nothing wider, and its widest declared relation has 10 labels.
+
+It is option (e) below. Of the five it is the one that takes nothing from the ruling on `not`, makes the loader
+write nothing, and reaches the undeclared relation.
+
 ## The options
 
 - **(a) An activator for every head, made at load.** The loader knows every atom a program writes first in a
@@ -50,6 +101,14 @@ case to count.
 - **(d) A relation is checked where a program asks.** The rules reach what is declared, or activated by hand, and
   the rest has no contradiction: a program that wants one of an undeclared relation writes its activator. The
   simplest; it changes what some programs mean, and how many is the count above.
+- **(e) One rule a count, the relation a variable of the pattern**, your rule:
+  `(and (?R ?a) (not (?R ?a)))` ⟹ `(false)`, and its siblings of 0 and of 2 to 6 arguments. Refused at load today;
+  it asks the loader to admit a relation variable that another premise of the match binds
+  ([above](#why-not-just-one-rule-with-the-relation-a-variable)). Every relation is reached at every count the
+  rules are written for, with no activator and nothing made at load.
 
-**No default is taken.** (c) undoes part of your ruling, (b) reopens a decision, (a) and (d) differ in whether a
-contradiction is something every fact has or something a program asks for.
+**No default was taken when the item was put. With (e) in it, (e) is what I would propose**: it is the smallest
+change that leaves the kernel reading no `not`, and its one cost is a shape the loader refuses today and the
+matcher already runs for the kernel's own check. (c) undoes part of your ruling, (b) reopens a decision for more
+than is needed, (a) makes the loader write a module's word, and (d) changes what programs with an undeclared
+relation mean.

@@ -1,0 +1,9 @@
+;; The contradiction of one argument with the relation a variable of the pattern: no parameter, no activator,
+;; no declaration. Refused at load today.
+(p a)
+(not (p a))
+(rule clash-1 ()
+  :match  (and (?R ?a) (not (?R ?a)))
+  :assert (false)
+  :why    "{?R} of {?a}, and not")
+(solve :no-search)

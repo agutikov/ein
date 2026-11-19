@@ -1,0 +1,12 @@
+;; MUST, a debt a thing: s of each thing is owed, and a debt has one way to be paid.
+(relation s Thing :why "s holds of {?3}")
+(thing a) (thing b)
+(other c)
+(rule each-s-owed (?R)
+  :match  (and (relation ?R ?T)
+               (thing ?x)
+               (absent (?R ?x)))
+  :assert (open ?R)
+  :why    "{?R} owes {?x}.")
+(each-s-owed s)
+(query :goal (s ?x))

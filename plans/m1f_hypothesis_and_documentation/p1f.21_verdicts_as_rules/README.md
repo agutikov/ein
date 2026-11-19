@@ -235,6 +235,29 @@ for the user's word or for part 2.
 The pages' stage is cut along the same line: [S1f.21.2](s1f.21.2_the_pages.md) closes part 1, and
 [S1f.21.14](s1f.21.14_the_pages_of_open.md) part 2.
 
+## The sixth instruction
+
+The user, 2026-11-19, verbatim:
+
+> Also, still in Part 1, analyze semantic of hrules and obligation rules, I think they are 100% equivalent, so we
+> can remove hrules completely from kernel, syntax, docs, everything; And replace them with obligation rules. Can
+> we? Then we still have 2 approaches to hypotheses generation - positive and negative, the second one is blind
+> generator with filters. Let's leave only one valid way for each. Obligations is positive way, what would be the
+> negative (filtering) one?
+
+Analysed in [`one_way_each.md`](one_way_each.md), on runs, with three censuses of the corpus kept beside it:
+
+- **Not equivalent, by one thing**: an obligation is a hypothesis rule plus a requirement, *at least one of these*.
+  A hypothesis rule says *may*, an obligation *must*.
+- **Can we**: yes, but not into obligations alone. *Must* is the obligation's; *may* is the filtering way, the
+  blind enumerator with what is not meant taken out. 12 corpus programs need only the rule deleted, 66 say *may*
+  with it and are rewritten.
+- **The filtering way's one mechanism**: the closure, the fact `(__closed__ R)`; the two lists of `(solve …)` are
+  the same statement written twice more, and give the same answer as closures in 99 of 100 programs.
+
+Put as [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed),
+[review item 43](review/part-1/43-Q-M1f.561/README.md), not ruled; nothing is planned or built on it yet.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:

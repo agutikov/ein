@@ -10,8 +10,9 @@ stage's examples.
 
 | # | item | the question | state |
 |---|---|---|---|
-| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **no default**; four ways |
+| 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed (e), the user's rule: one rule a count with the relation a variable of the pattern, which the loader refuses today |
 | 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
+| 43 | [Q-M1f.561](43-Q-M1f.561/README.md) | one way to say *must* and one to say *may*: are hypothesis rules removed, and what is the one filter | **not ruled**; analysed: [`one_way_each.md`](../../one_way_each.md); proposed: removed, the closure the one filter, one way a program |
 
 **A default is proposed or taken; an answer is wanted only where you would have it otherwise.**
 
@@ -36,6 +37,8 @@ are ignored, so they are on this machine only.
 - **35**: the rules derive `(false)` from a pair of a declared relation of one argument and nothing from the same
   pair of an undeclared relation or of one of seven arguments; both are dead today by the kernel's check alone.
   `clash-of-0` fires on every declaration, since root holds `(relation p)` beside `(relation p Thing)`.
+  The user's rule, the relation a variable of the pattern with no parameter, is refused at load in either order of
+  its premises: *a relation is named by a name or by a parameter its activator binds*.
 - **36**: a fact and a rule's conclusion at another count than the declaration's are each refused at load, with the
   declaration quoted; an undeclared relation at two counts loads, and each query answers its count.
 - **37**: the soup program loads without the rules, 4 states, flagged by the static check, and is refused with
@@ -43,3 +46,7 @@ are ignored, so they are on this machine only.
   rows of the wrong-answer register.
 - **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
   with it named twice; 16 with `std.contradiction` and it named twice.
+- **43**: with one $H$ of two candidates a hypothesis rule's $R$ is four states with `∅` and an obligation's three
+  without it; the literal twin of a hypothesis rule, each match owing its own fact, is refused at load; the blind
+  enumerator proposes `s` of an atom that is no thing, and a rule that denies it gives the hypothesis rule's
+  answer. The oracle agrees with `ein solve` on each.
