@@ -128,7 +128,9 @@ The block is the binary's output, held to it by a test ([§ 2.6](#26-what-holds-
 - **stderr holds one `note:`**, which rung built H and how many candidates it holds:
   ``note: FILE: H, built by the rung `hrules`: …``. An empty H prints nothing on stdout and exits 0, and the note says
   why in the words of the read-out's `universe` row: *no candidate*, and *the program states :no-search* where it
-  does.
+  does. On a program the static check flags, the warning's line comes before the note,
+  `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: …`: H is what the routes search over, and nothing is claimed of what
+  they answer ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 - **Exit codes**: 0 for every H, empty or not, a dead root's among them. A program the loader refuses, or the engine
   refuses to read, exits 1 with the line every command gives it.
 - It takes no option but `--no-require-why`

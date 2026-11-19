@@ -20,7 +20,7 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
 use ein_infer::described::{Described, TreePartial};
-use ein_infer::detector::{ASSUMES, Paths, State, Status, Warning};
+use ein_infer::detector::{ASSUMES, Paths, State, Status, WARNING, WARNING_MORE, Warning};
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
@@ -92,6 +92,9 @@ macro_rules! rows {
 }
 
 rows! {
+    /// On a program the static check flags: that it is not monotone and that
+    /// nothing is claimed of the answer (Q-M1f.564), in capitals, first.
+    Warning => "WARNING", Row;
     /// The question.
     Asked => "asked", Row;
     /// R's size in states.
@@ -241,6 +244,7 @@ impl Row {
         (
             "describe",
             &[
+                Row::Warning,
                 Row::Asked,
                 Row::StatesKs,
                 Row::CommitmentsKc,
@@ -266,6 +270,7 @@ impl Row {
         (
             "mode",
             &[
+                Row::Warning,
                 Row::Asked,
                 Row::Verdict,
                 Row::StatesOfR,
@@ -293,6 +298,7 @@ impl Row {
         (
             "no-search",
             &[
+                Row::Warning,
                 Row::Asked,
                 Row::Root,
                 Row::Owed,
@@ -652,6 +658,18 @@ fn set_facts(cands: &[String], set: &[u32]) -> Vec<String> {
     v
 }
 
+/// **The loud warning** (Q-M1f.564): on a program the static check flags, the
+/// read-out's first row, in capitals, and the first stderr line. Every
+/// read-out that answers about a commitment prints it, under the header and
+/// before `asked`; `--monotone`, whose answer is the verdict itself, does not.
+fn loud_warning(out: &mut Out, m: &Monotonicity, o: &Options) {
+    if m.is_monotone() {
+        return;
+    }
+    out.row(Row::Warning, format!("{WARNING}.\n{WARNING_MORE}"));
+    out.stderr.push(ein_infer::detector::warning_line(o.file));
+}
+
 /// Print `r` as `ein solve` (or `ein oracle`) does.
 pub fn render(r: &ReadOut, o: &Options) -> Text {
     let mut out = Out {
@@ -681,6 +699,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
     };
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
+    loud_warning(&mut out, &a.monotonicity, o);
     out.row(Row::Asked, asked);
 
     match r.described() {
@@ -1312,6 +1331,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     let a = &r.answer;
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
+    loud_warning(&mut out, &a.monotonicity, o);
     out.row(
         Row::Asked,
         "root alone — --no-search: root's fixpoint, and R is not searched",

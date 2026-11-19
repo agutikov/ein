@@ -246,10 +246,10 @@ changes the drawing and nothing else.
 | `ein render rules FILE`, `rule FILE --name R` | one digraph per rule, or one rule by name |
 | `ein render constraints FILE` | the facts about relations: every fact root holds at its fixpoint with a relation of the program under an argument arrow, with what it points at ([Q-M1f.530](../../../decisions/cli/Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md)) |
 | `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE` that loads to its state, so a solution draws the way root does. `--goal GOAL`, or `--query N` for the program's `N`-th query, draws the slice of a goal instead: the facts of that knowledge base that answer it, with what they point at ([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md)) |
-| `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red |
+| `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red; on a flagged program the warning's line on stderr ([`08-read-out.md` § 5.1](08-read-out.md#51-under-lattice-and-monotone-the-warning)) |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
 | `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([what the structure is](../../reasoning/02-kb-evolution/05-hypothesis-space.md); [the command, its read-out and `h-space.json`](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command)) |
-| `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which rung built H and how many it holds ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
+| `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which rung built H and how many it holds, after the warning's line on a flagged program ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
 
 ### 2.6 `ein kb`
 
@@ -290,7 +290,10 @@ one whose relations, rules, hrules or macros lack a `:why` ([`06-config.md` § 3
 **An answer is never an exit code**
 ([Q-M1e2.33](../../../decisions/cli/Q-M1e2.33-every-answer-exits-0.md)): R empty, one state or many, a run the budget
 stopped with a part of R, each of `--single`'s four words, every `--monotone` verdict — each exits 0. A run the
-budget stopped writes one `note:` to stderr. A claim `ein solve` could not check is a `note:` on stderr and exits 0;
+budget stopped writes one `note:` to stderr. **On a program the static check flags, the first line on stderr is the
+warning**, in capitals, that the program is not monotone and that nothing is claimed of the answer: every command
+that answers about a commitment writes it, and a read-out opens with it as its `WARNING` row
+([`08-read-out.md` § 5.1](08-read-out.md#51-under-lattice-and-monotone-the-warning)). A claim `ein solve` could not check is a `note:` on stderr and exits 0;
 a claim it refutes exits 1, with its block on stdout under the claim and one line on stderr that names the file and
 the first disagreement:
 

@@ -155,6 +155,7 @@ every row is a field some run writes; the test suite holds the table to the bina
 | field | what |
 |---|---|
 | `monotone` | the static verdict: no site |
+| `warning` | on a flagged program, the sentence every surface prints in capitals, that the program is not monotone and nothing is claimed of the answer ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)); `null` on a monotone one |
 | `hypothesised` | `H`, the candidates' relations, sorted |
 | `dynamic` | `D`, the relations a commitment can change, sorted; `¬R` for a stored negative |
 | `plans.saturation` | how many saturation plans the check read |

@@ -7,7 +7,9 @@
 //!
 //! 1. **stdout is the facts and nothing else**: one candidate a line, every
 //!    candidate, uncut, so it pipes, and what is said about them is one
-//!    `note:` on stderr, the rung and the count;
+//!    `note:` on stderr, the rung and the count (after the warning's line on
+//!    a program the static check flags, which `non_monotone_warning.rs`
+//!    holds);
 //! 2. **an empty `H` prints nothing and exits 0**, and the note says why in
 //!    the words of the read-out's `universe` row;
 //! 3. **a program that is refused is refused** as every command refuses it,

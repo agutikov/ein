@@ -112,7 +112,8 @@ the same either way ([Q-M1f.224](../../../decisions/read-out/Q-M1f.224-a-run-tak
 <!-- rows: describe -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `asked` | every run, first | the question: all of R, described, or how many states and commitments it holds | — | `asked.n` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
+| `WARNING` | on a program the static check flags, before every other row | in capitals: the program is not monotone and nothing is claimed of this answer, not that it is right, sound or complete; the `lattice` rows name the sites (§ 5.1; [Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | — | — | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
+| `asked` | every run, first or under `WARNING` | the question: all of R, described, or how many states and commitments it holds | — | `asked.n` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 | `states (k_s)` | describe, `--count`, `ein oracle` | R's size in states; on a run that did not exhaust, a lower bound, and how far it is complete | R | `region.k_s` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X11](09-read-out-examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `commitments (k_c)` | as `states (k_s)` | R's size in commitments, qualified the same way, and exact where R is decided as the whole cube. **Counted exactly and reported up to $2^{63} - 1$**: at that value the row reads *9 223 372 036 854 775 807 or more   (2^63 − 1: the run counts no further)*, the run having classified every commitment, and `region.k_c` is that number, which is then a floor. The same *or more* stands wherever a count of commitments is printed: a component's size, a listed state's *n commitments*, the `(merged …)` comment, `index.json`'s `commitments`, `ein test -v`'s `k_c` ([Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)) | R | `region.k_c` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X11](09-read-out-examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `exhausted` | as `states (k_s)` | whether the run classified every commitment, so that these are all of R; when not, why: the state route's, the tree and the classes' or route 1's budget, with the facts spent and what the next step projects, and for the tree and the classes the part it was finding (R's states, the candidates dead alone, or the classes and how many were found), or a flagged program past `--region-limit` | the run | `region.exhausted`, `region.stopped.spent`, `region.stopped.projected`, `region.stopped.commitments`, `region.stopped.n`, `region.stopped.limit` | [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), [X11](09-read-out-examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
@@ -175,7 +176,8 @@ and nowhere else.
 <!-- rows: mode -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `asked` | every run, first | the question: which part of R, and every state on it, N of them (`-n N`), or whether it is one (`--single`) | — | `asked.n` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
+| `WARNING` | on a program the static check flags, before every other row | in capitals: the program is not monotone and nothing is claimed of this answer, not that it is right, sound or complete; the `lattice` rows name the sites (§ 5.1; [Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | — | — | [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
+| `asked` | every run, first or under `WARNING` | the question: which part of R, and every state on it, N of them (`-n N`), or whether it is one (`--single`) | — | `asked.n` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
 | `verdict` | `--single` | the word, `Solution`, `Ambiguity`, `Contradiction` or `Open`, and why; *not decided* when the run stopped first. On the minimal line where $\emptyset$ is in R, `Solution` after one saturation, on every program and at every limit | R | `verdict.word` | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X6](09-read-out-examples.md#x6--testsregion04_owingein-r-empty-alive-nodes-owe), [X7](09-read-out-examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) |
 | `states of R` | `-n N` over all of R | how many states are listed, and whether they are all of R, as many as asked, or a lower bound | R | — | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X11](09-read-out-examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `minimal line` | `--minimal`, alone or with `-n N` | as `states of R`, of the minimal line: where $\emptyset$ is in R, $\emptyset$ alone and all of the line, after one saturation, on every program and at every limit; otherwise, past `--region-limit` on a flagged program, describe's `minimal line` row, from the same description | R | — | [X2](09-read-out-examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
@@ -283,7 +285,8 @@ states :no-search*.
 <!-- rows: no-search -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `asked` | first | the question: root alone, and R not searched | — | `asked.ask` | [X18](09-read-out-examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `WARNING` | on a program the static check flags, before every other row | in capitals: the program is not monotone and nothing is claimed of this answer, not that it is right, sound or complete; the `lattice` rows name the sites (§ 5.1; [Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | — | — | [X19](09-read-out-examples.md#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) |
+| `asked` | first or under `WARNING` | the question: root alone, and R not searched | — | `asked.ask` | [X18](09-read-out-examples.md#x18--testsregion04_owingein---no-search-root-alone) |
 | `∅` | always | where root stands: in R, not in R and how many instances it owes, or dead | R | `root.owes` | [X18](09-read-out-examples.md#x18--testsregion04_owingein---no-search-root-alone), [X19](09-read-out-examples.md#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) |
 | `owed` | under `∅`, where root is alive and owes, up to four | an instance root owes, through its rule's `:why`, as describe's | around R | `root.owed[k]` | [X18](09-read-out-examples.md#x18--testsregion04_owingein---no-search-root-alone) |
 | `R` | always | *not searched*: no node past root was built, and a bare `ein solve FILE` describes R | — | — | [X18](09-read-out-examples.md#x18--testsregion04_owingein---no-search-root-alone) |
@@ -300,8 +303,16 @@ states :no-search*.
 
 ### 5.1 Under `lattice` and `monotone`: the warning
 
-A monotone program prints `lattice`'s one row, and `paths` under it with `-y`. A flagged program prints what is
-assumed, what each site puts at stake, and whether it bit, the status and the state apart, because the cube reads only
+A monotone program prints `lattice`'s one row, and `paths` under it with `-y`. **A flagged program is warned of
+twice.** First, loudly: the read-out's first row, `WARNING`, says in capitals that the program is not monotone and
+that nothing is claimed of this answer, not that it is right, sound or complete; the same sentence is the first line
+on stderr, `WARNING: FILE: …` (§ 10), and the summary's `monotonicity.warning`, `null` on a monotone program
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)). Every read-out
+that answers about a commitment prints the row: `ein solve` under every question, `--count` and `--no-search` among
+them, and `ein oracle`. `ein test`, `ein show hyps` and `ein render lattice`, which print no read-out, write the
+stderr line; `--monotone`, whose answer is the verdict itself, prints neither. Then, in detail, under `lattice`:
+what is assumed, what each site puts at stake, and whether it bit, the status and the state apart, because the cube
+reads only
 the status. At most four `site` and four `stale` rows are printed, each then a `…` row; `--dump-answer`'s `answer.txt`
 has them all. The block does not take the listings' 100 lines. Its JSON is the summary's `monotonicity` block,
 [`11-region-dump.md`](11-region-dump.md#monotonicity--the-static-check)'s.
@@ -512,6 +523,7 @@ every error's line.
 
 | line | when | exit |
 |---|---|---|
+| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1) | 0 |
 | `note: FILE: partial — …` | a run the budget or `--region-limit` stopped. Under describe and `--count` stopped by the budget the note says, by default and not only under `-v`, the forecast (the next step's projection, on top of what was spent, against `--region-budget`: the state route's next layer, or the tree and the classes' next step), what the run established and what it did not, and the options: `--region-budget` larger (the state route: at least the spent and projected facts, which takes the next layer), and the other route where the program has one | 0 |
 | `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, every claim root does not decide under `--no-search`, and every claim of a saved file with a `(commit …)`, whose claims are its program's ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)) | 0 |
 | `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |

@@ -102,6 +102,15 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
     };
     let mut pairs = vec![
         ("monotone", Json::Bool(m.is_monotone())),
+        // The sentence every surface prints of a flagged program (Q-M1f.564).
+        (
+            "warning",
+            if m.is_monotone() {
+                Json::Null
+            } else {
+                Json::str(ein_infer::detector::WARNING)
+            },
+        ),
         (
             "hypothesised",
             Json::Array(

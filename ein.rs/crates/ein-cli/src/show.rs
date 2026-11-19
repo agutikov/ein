@@ -23,7 +23,8 @@ use crate::common::load_program;
 /// and the generator's pass, and no node.
 ///
 /// An empty `H` prints nothing and exits 0. A `note:` on stderr says which
-/// rung built `H` and how many candidates it holds. A program the loader
+/// rung built `H` and how many candidates it holds, after the `WARNING:` line
+/// where the static check flags the program (Q-M1f.564). A program the loader
 /// refuses is refused as every command refuses it, exit 1, and so is one the
 /// engine refuses to read.
 pub fn cmd_hyps(file: &str, load: &ein_ir::LoadOptions) -> i32 {
@@ -40,6 +41,9 @@ pub fn cmd_hyps(file: &str, load: &ein_ir::LoadOptions) -> i32 {
             return 1;
         }
     };
+    if !h.monotone {
+        eprintln!("{}", ein_infer::detector::warning_line(file));
+    }
     eprintln!(
         "note: {file}: {}",
         ein_render::structure::hypotheses_note(&h)

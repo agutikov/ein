@@ -104,6 +104,23 @@ use crate::strata;
 pub const ASSUMES: &str = "every node is a fork of root (root's fixpoint, its commitment added, \
                            saturated); what a node is on this program is not decided: Q-M1e2.2";
 
+/// **What every surface says, in capitals, of a program the static check
+/// flags** (Q-M1f.564): the sentence of the read-out's `WARNING` row, of the
+/// stderr line ([`warning_line`]) and of the summary's
+/// `monotonicity.warning`.
+pub const WARNING: &str = "THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER";
+
+/// What the read-out's `WARNING` row adds under the sentence: what is not
+/// claimed, and where the sites are named.
+pub const WARNING_MORE: &str = "IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).\n\
+                                THE `lattice` ROWS BELOW NAME THE SITES.";
+
+/// The one stderr line a command that answers about a commitment writes on a
+/// flagged program, before any other: `WARNING: FILE: ` and [`WARNING`].
+pub fn warning_line(file: &str) -> String {
+    format!("WARNING: {file}: {WARNING} (Q-M1f.564)")
+}
+
 /// What a site's rule concludes, as the warning names it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Concludes {

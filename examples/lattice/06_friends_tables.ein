@@ -23,18 +23,18 @@
 ;;; static check flags the rule, and its nodes are forks of root (Q-M1e2.2).
 ;;;
 ;;; A bare `ein solve` stops at the default --region-limit, 2^16 nodes, with
-;;; a lower bound, since a flagged program's R needs the whole cube. With it,
+;;; a lower bound, since a flagged program is answered by its whole cube, and
 ;;;   ein solve examples/lattice/06_friends_tables.ein --region-limit 19
-;;; R is 21 nodes (k_s = k_c = 21), each its own component:
-;;;   L0  ∅                                  everyone elsewhere
-;;;   L2  8: the pair alone                  2 at the small table, 6 at the big
-;;;   L3  4: the trio alone                  at the big table, Eve off B1
-;;;   L5  8: both                            pair small, trio big
-;;; 166 holes: every partly seated group. Minimal line {∅}; maximal line 14 —
-;;; the pair alone at the big table (6, since the trio cannot then sit) and
-;;; both groups seated (8). The everyone-sits twin,
-;;; 06_friends_tables_everyone_sits.ein, has R = the both-seated eight, and
-;;; no holes.
+;;; reads all of it. What either prints is not this file's question: nothing
+;;; is claimed of a flagged program's answer (Q-M1f.564).
+;;;
+;;; The file is here for its shape: a debt a commitment adds, so that a
+;;; partly seated group owes and a group seated whole does not, in a cube
+;;; large enough that the default limit stops the run. The read-out's rows
+;;; of a flagged program past the limit are shown on it.
+;;;
+;;; The everyone-sits twin, 06_friends_tables_everyone_sits.ein, owes every
+;;; friend a seat at root, and is monotone.
 
 (import std.algebra :symbols (functional injective))
 

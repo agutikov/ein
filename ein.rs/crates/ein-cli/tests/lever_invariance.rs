@@ -766,8 +766,15 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             continue;
         };
         let shown: BTreeSet<&str> = out[d].lines().collect();
-        for l in out[c].lines().skip(3).take_while(|l| !l.is_empty()) {
-            if !l.starts_with("    paths ") && !shown.contains(l) {
+        // The rows: after the header and the rule, up to the listing or the
+        // end of stdout. A flagged program's first row is the warning, which
+        // describe prints too, so `asked` is found by its label.
+        for l in out[c]
+            .lines()
+            .skip(2)
+            .take_while(|l| !l.is_empty() && *l != "--- stderr")
+        {
+            if !l.starts_with("  asked ") && !l.starts_with("    paths ") && !shown.contains(l) {
                 bad.push(format!(
                     "{}: --count prints a row describe does not: {l}",
                     k.path.display()

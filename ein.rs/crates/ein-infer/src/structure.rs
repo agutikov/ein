@@ -623,6 +623,8 @@ pub struct Hypotheses {
     pub rung: crate::oblgen::Mode,
     /// Root's own fixpoint holds a contradiction. `H` is built all the same.
     pub root_dead: bool,
+    /// The static check's verdict over root's plans and this `H`.
+    pub monotone: bool,
 }
 
 /// [`Hypotheses`] of `root`, a **freshly loaded, unsaturated** program
@@ -645,6 +647,7 @@ pub fn hypotheses_with(
     Ok(Hypotheses {
         rung: prepared.root.hypgen.rung.mode,
         root_dead: prepared.root_dead,
+        monotone: prepared.monotonicity.is_monotone(),
         candidates: prepared.candidates,
     })
 }

@@ -380,7 +380,7 @@ program:
 
 - **A program whose rules read under `absent` what a hypothesis can change is flagged.** Adding a fact can then
   retract a conclusion, or bring a state a contradiction called dead back to life; the answer's region may have
-  holes, and the read-out warns of it and names the sites under its `lattice` row. Such a program loads and is
+  holes, and the read-out opens with a warning in capitals and names the sites under its `lattice` row. Such a program loads and is
   answered, and of its answer the engine claims nothing
   ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md);
   [solutions and models](13-solutions-and-models.md)).

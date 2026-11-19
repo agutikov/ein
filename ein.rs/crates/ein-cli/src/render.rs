@@ -139,6 +139,9 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
             return 1;
         }
     };
+    if !answer.monotonicity.is_monotone() {
+        eprintln!("{}", ein_infer::detector::warning_line(file));
+    }
     let v = visits.lock().expect("the run is done").clone();
     let candidates: Vec<String> = answer.candidates.iter().map(|c| c.text.clone()).collect();
     emit(&dot(

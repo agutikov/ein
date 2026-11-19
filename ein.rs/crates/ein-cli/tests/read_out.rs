@@ -523,11 +523,18 @@ fn count_prints_describes_rows_and_reads_no_state() {
                             partial = usize::from(!cr.answer.exhausted);
                             let shown: std::collections::BTreeSet<&str> =
                                 dt.stdout.lines().collect();
-                            for l in ct.stdout.lines().skip(3) {
+                            // After the header and the rule: a flagged
+                            // program's first row is the warning, which
+                            // describe prints too, so `asked` is found by
+                            // its label.
+                            for l in ct.stdout.lines().skip(2) {
                                 if l.is_empty() {
                                     break;
                                 }
-                                if !l.starts_with("    paths ") && !shown.contains(l) {
+                                if !l.starts_with("  asked ")
+                                    && !l.starts_with("    paths ")
+                                    && !shown.contains(l)
+                                {
                                     bad.push(format!("a row describe does not print: {l}"));
                                 }
                             }

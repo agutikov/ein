@@ -17,7 +17,7 @@
 //!
 //! ### Its readers
 //!
-//! - [`derivable_activators`]: which activators of an obligation rule a
+//! - `derivable_activators`: which activators of an obligation rule a
 //!   commitment can derive, so that H holds what a debt root does not owe
 //!   would propose ([`crate::oblgen`]). Its `D⁺` is seeded with the relations
 //!   of what the obligations rung proposes.

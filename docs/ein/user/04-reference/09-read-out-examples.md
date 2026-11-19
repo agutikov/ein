@@ -871,6 +871,9 @@ and then each minimal hole with why it is out. The `E` row is the cube's alone.
 ```text
 solve · examples/lattice/04_obligation_trigger_hole.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      3
   commitments (k_c) 3
@@ -911,6 +914,8 @@ solve · examples/lattice/04_obligation_trigger_hole.ein
   as :expect        (or (model)
                         (model (meal Ann Soup)))
 
+stderr: WARNING: examples/lattice/04_obligation_trigger_hole.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
+
 exit 0
 ```
 
@@ -930,6 +935,9 @@ and checks no parent path, because the read-out prints no state of two commitmen
 ```text
 solve · examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
   commitments (k_c) 21   (a lower bound: the run stopped before R was exhausted)
@@ -1048,6 +1056,7 @@ solve · examples/lattice/06_friends_tables.ein
                       ?p = Eve · ?s = B2
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
+stderr: WARNING: examples/lattice/06_friends_tables.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
@@ -1061,6 +1070,9 @@ printed whole, since it qualifies them. Its `paths` row says the spot check was 
 ```text
 solve · --count examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             how many states and commitments R holds (--count)
   states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
   commitments (k_c) 21   (a lower bound: the run stopped before R was exhausted)
@@ -1076,6 +1088,7 @@ solve · --count examples/lattice/06_friends_tables.ein
   route             2, the cube — no licence: the static check flags the program
   work              65 299 saturations · 455 247 facts beyond root
 
+stderr: WARNING: examples/lattice/06_friends_tables.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
@@ -1089,6 +1102,9 @@ on it, decided at root though the program is flagged and past the limit.
 ```text
 solve · --minimal examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             the minimal line — every state on it
   minimal line      1 state — all of them
   exhausted         yes — this is all of the minimal line
@@ -1110,6 +1126,8 @@ solve · --minimal examples/lattice/06_friends_tables.ein
     class 1 of 1    1 state (1) — the goal has no row: undetermined here
   as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
+stderr: WARNING: examples/lattice/06_friends_tables.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
+
 exit 0
 ```
 
@@ -1121,6 +1139,9 @@ The 21 members met are counted and in `--dump-answer`.
 ```text
 solve · --maximal examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             the maximal line — every state on it
   maximal line      not known — without a licence it needs the whole cube
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
@@ -1140,6 +1161,7 @@ solve · --maximal examples/lattice/06_friends_tables.ein
   over              the 0 states listed — 0 states → 0 projection classes  (a lower bound)
   as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
+stderr: WARNING: examples/lattice/06_friends_tables.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
@@ -1874,6 +1896,9 @@ stands: the rows are diagnostics.
 ```text
 solve · examples/features/07_unstratifiable.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      2
   commitments (k_c) 2
@@ -1907,6 +1932,8 @@ solve · examples/features/07_unstratifiable.ein
     (model)
     ;; state 2 of 2 — 1 candidate · maximal · from {(q one)}
     (model (q one)))
+
+stderr: WARNING: examples/features/07_unstratifiable.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 
 exit 0
 ```
@@ -1945,6 +1972,9 @@ the listings' 100 lines.
 ```text
 solve · examples/features/01_not_and_absent.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      65 299   (a lower bound: the run stopped before R was exhausted)
   commitments (k_c) 65 299   (a lower bound: the run stopped before R was exhausted)
@@ -1986,6 +2016,7 @@ solve · examples/features/01_not_and_absent.ein
                       ?a = Carol · ?b = Bob
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
+stderr: WARNING: examples/features/01_not_and_absent.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 stderr: note: examples/features/01_not_and_absent.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
@@ -2077,6 +2108,9 @@ and whether the static verdict held. On X8's flagged program the status is not m
 ```text
 oracle · examples/lattice/04_obligation_trigger_hole.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      3
   commitments (k_c) 3
@@ -2118,6 +2152,8 @@ oracle · examples/lattice/04_obligation_trigger_hole.ein
                         (model (meal Ann Soup)))
 
 the cube   0 dead nodes with an alive superset · 1 discharged node with an owing superset — the status is not monotone here, by total-owed [activator meal is-a]
+
+stderr: WARNING: examples/lattice/04_obligation_trigger_hole.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 
 exit 0
 ```
@@ -2311,6 +2347,9 @@ prints them; the cube's `status` is not known, since no node past root was built
 ```text
 solve · --no-search examples/features/07_unstratifiable.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             root alone — --no-search: root's fixpoint, and R is not searched
   ∅                 in R — root is alive and owes nothing
   R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
@@ -2329,6 +2368,8 @@ solve · --no-search examples/features/07_unstratifiable.ein
   route             none — --no-search: root's node, and no node past it
   work              1 saturation · 0 facts beyond root
 
+stderr: WARNING: examples/features/07_unstratifiable.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
+
 exit 0
 ```
 
@@ -2346,6 +2387,9 @@ activator's relation being one a commitment can add a fact of, so the cube answe
 ```text
 solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
 ──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
   asked             all of R — describe
   states (k_s)      1
   commitments (k_c) 1
@@ -2373,6 +2417,8 @@ solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
   (region
     ;; state 1 of 1 — 2 candidates · minimal and maximal · from {(drinks Ann Tea), (likes Ann Soup)}
     (model (drinks Ann Tea) (likes Ann Soup)))
+
+stderr: WARNING: examples/ein-bugs/wrong-answers/oblig-derived-activator.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 
 exit 0
 ```

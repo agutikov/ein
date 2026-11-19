@@ -345,7 +345,9 @@ Everything above holds of a **monotone** program, and the read-out's `lattice` r
 fails that check
 is **flagged**: R is still the set of alive, discharged nodes, each built as root with its commitment added, and every
 command agrees on it, but the engine claims nothing more of it, not soundness and not completeness
-([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Such a region may have
+([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)), and every read-out
+of it opens with a `WARNING` row, in capitals, that says so
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)). Such a region may have
 holes, and the engine answers it by visiting every node, within a limit. What a flagged program is, and how to write
 one that is not, is [monotonicity](../../reasoning/02-kb-evolution/08-monotonicity.md).
 

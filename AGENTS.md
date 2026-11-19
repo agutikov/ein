@@ -541,8 +541,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   ([Q-M1f.564](docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
   No command refuses a program for an `absent`, whatever its rules conclude
   from it. A program the static check flags (`ein_infer::monotone`) is
-  answered by the cube, with no licence, under the warning that it is not
-  monotone; no page, comment or test says what it answers is right, sound or
+  answered by the cube, with no licence, and **every command that answers
+  about a commitment says in capitals that the program is not monotone and
+  that nothing is claimed of the answer**: the read-out's first row,
+  `WARNING`, stderr's first line and the summary's `monotonicity.warning`
+  (`ein_infer::detector::WARNING`; `ein-cli/tests/non_monotone_warning.rs`
+  holds the three on every flagged corpus program and none on a monotone
+  one); no page, comment or test says what it answers is right, sound or
   complete. `ein-infer/tests/non_monotone_loads.rs` holds the corpus programs
   whose refutation rests on an `absent` a commitment can still fill to
   *flagged, and no licence*. **No suite validates a flagged program's

@@ -834,6 +834,14 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         Ok(run) => run,
         Err(why) => return failed(tally, why),
     };
+    // A flagged program: the loud warning, once a file (Q-M1f.564). Its
+    // claims are checked as any program's are.
+    if !first.r.answer.monotonicity.is_monotone() {
+        eprintln!(
+            "{}",
+            ein_infer::detector::warning_line(&path.display().to_string())
+        );
+    }
     // The read-out answers the queries that have a :goal, in order.
     let mut answered: Vec<Option<usize>> = Vec::with_capacity(n_queries);
     let mut next = 0usize;
