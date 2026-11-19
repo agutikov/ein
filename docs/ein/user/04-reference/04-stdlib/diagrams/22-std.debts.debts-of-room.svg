@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_debts_of_room_lhs_rhs Pages: 1 -->
+<svg width="1212pt" height="256pt"
+ viewBox="0.00 0.00 1212.00 256.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 252.1)">
+<title>rule_debts_of_room_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-252.1 1208,-252.1 1208,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="602" y="-230.8" font-family="Times,serif" font-size="14.00">debts&#45;of&#45;room</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-214.85 598,-214.85 598,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="303" y="-197.55" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="606,-8 606,-214.85 1196,-214.85 1196,-8 606,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="901" y="-197.55" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- debts&#45;of&#45;owed_L -->
+<g id="node1" class="node">
+<title>debts&#45;of&#45;owed_L</title>
+<polygon fill="none" stroke="black" points="153.5,-181.6 38.5,-181.6 38.5,-145.6 153.5,-145.6 153.5,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="96" y="-158.92" font-family="Times,serif" font-size="14.00">debts&#45;of&#45;owed</text>
+</g>
+<!-- h1_debts&#45;of&#45;owed_L -->
+<g id="node8" class="node">
+<title>h1_debts&#45;of&#45;owed_L</title>
+<polygon fill="none" stroke="#ff7f0e" points="106.8,-94.33 106.8,-103.27 100.47,-109.6 91.53,-109.6 85.2,-103.27 85.2,-94.33 91.53,-88 100.47,-88 106.8,-94.33"/>
+</g>
+<!-- debts&#45;of&#45;owed_L&#45;&gt;h1_debts&#45;of&#45;owed_L -->
+<g id="edge1" class="edge">
+<title>debts&#45;of&#45;owed_L&#45;&gt;h1_debts&#45;of&#45;owed_L</title>
+<path fill="none" stroke="#ff7f0e" d="M96,-133.85C96,-125.29 96,-116.47 96,-109.96"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="92.5,-133.59 96,-143.59 99.5,-133.59 92.5,-133.59"/>
+<text xml:space="preserve" text-anchor="middle" x="91.5" y="-131.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- slot&#45;owed&#45;room_L -->
+<g id="node2" class="node">
+<title>slot&#45;owed&#45;room_L</title>
+<polygon fill="none" stroke="black" points="317.75,-181.6 192.25,-181.6 192.25,-145.6 317.75,-145.6 317.75,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="255" y="-158.92" font-family="Times,serif" font-size="14.00">slot&#45;owed&#45;room</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L -->
+<g id="node9" class="node">
+<title>h2_slot&#45;owed&#45;room_L</title>
+<polygon fill="none" stroke="#8c564b" points="265.8,-94.33 265.8,-103.27 259.47,-109.6 250.53,-109.6 244.2,-103.27 244.2,-94.33 250.53,-88 259.47,-88 265.8,-94.33"/>
+</g>
+<!-- slot&#45;owed&#45;room_L&#45;&gt;h2_slot&#45;owed&#45;room_L -->
+<g id="edge2" class="edge">
+<title>slot&#45;owed&#45;room_L&#45;&gt;h2_slot&#45;owed&#45;room_L</title>
+<path fill="none" stroke="#8c564b" d="M255,-133.85C255,-125.29 255,-116.47 255,-109.96"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="251.5,-133.59 255,-143.59 258.5,-133.59 251.5,-133.59"/>
+<text xml:space="preserve" text-anchor="middle" x="250.5" y="-131.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_L -->
+<g id="node3" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="50,-52 16.27,-34 50,-16 83.73,-34 50,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="50" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?isa_L -->
+<g id="node4" class="node">
+<title>?isa_L</title>
+<polygon fill="none" stroke="black" points="145,-52 101.6,-34 145,-16 188.4,-34 145,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="145" y="-29.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- ?sub_L -->
+<g id="node5" class="node">
+<title>?sub_L</title>
+<polygon fill="none" stroke="black" points="255,-52 206.39,-34 255,-16 303.61,-34 255,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="255" y="-29.32" font-family="Times,serif" font-size="14.00">?sub</text>
+</g>
+<!-- ?super_L -->
+<g id="node6" class="node">
+<title>?super_L</title>
+<polygon fill="none" stroke="black" points="385,-52 321.51,-34 385,-16 448.49,-34 385,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="385" y="-29.32" font-family="Times,serif" font-size="14.00">?super</text>
+</g>
+<!-- ?index_L -->
+<g id="node7" class="node">
+<title>?index_L</title>
+<polygon fill="none" stroke="black" points="528,-52 466,-34 528,-16 590,-34 528,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="528" y="-29.32" font-family="Times,serif" font-size="14.00">?index</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L&#45;&gt;?R_L -->
+<g id="edge3" class="edge">
+<title>h2_slot&#45;owed&#45;room_L&#45;&gt;?R_L</title>
+<path fill="none" stroke="#8c564b" d="M243.88,-95.07C217.46,-88.49 148.93,-70.91 93,-52 88.38,-50.44 83.53,-48.66 78.82,-46.86"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="80.26,-43.66 69.67,-43.25 77.69,-50.17 80.26,-43.66"/>
+<text xml:space="preserve" text-anchor="middle" x="150.8" y="-75.28" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L&#45;&gt;?isa_L -->
+<g id="edge4" class="edge">
+<title>h2_slot&#45;owed&#45;room_L&#45;&gt;?isa_L</title>
+<path fill="none" stroke="#8c564b" d="M245.62,-92.45C229.6,-83.3 196.38,-64.33 172.49,-50.69"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="174.31,-47.7 163.89,-45.79 170.84,-53.78 174.31,-47.7"/>
+<text xml:space="preserve" text-anchor="middle" x="199.31" y="-72.53" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L&#45;&gt;?sub_L -->
+<g id="edge5" class="edge">
+<title>h2_slot&#45;owed&#45;room_L&#45;&gt;?sub_L</title>
+<path fill="none" stroke="#8c564b" d="M255,-87.71C255,-81.13 255,-72.19 255,-63.54"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="258.5,-63.69 255,-53.69 251.5,-63.69 258.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="250.5" y="-73.99" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L&#45;&gt;?super_L -->
+<g id="edge6" class="edge">
+<title>h2_slot&#45;owed&#45;room_L&#45;&gt;?super_L</title>
+<path fill="none" stroke="#8c564b" d="M264.77,-93.08C283.07,-84.24 323.27,-64.82 352.15,-50.87"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="353.38,-54.16 360.86,-46.66 350.33,-47.86 353.38,-54.16"/>
+<text xml:space="preserve" text-anchor="middle" x="308.7" y="-73.64" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- h2_slot&#45;owed&#45;room_L&#45;&gt;?index_L -->
+<g id="edge7" class="edge">
+<title>h2_slot&#45;owed&#45;room_L&#45;&gt;?index_L</title>
+<path fill="none" stroke="#8c564b" d="M265.96,-95.36C296.33,-88.6 384.16,-68.98 457,-52 465.77,-49.96 475.13,-47.74 484.09,-45.6"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="484.76,-49.04 493.67,-43.31 483.13,-42.23 484.76,-49.04"/>
+<text xml:space="preserve" text-anchor="middle" x="375.89" y="-73.57" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- room&#45;due_R -->
+<g id="node10" class="node">
+<title>room&#45;due_R</title>
+<polygon fill="none" stroke="black" points="939.75,-181.6 856.25,-181.6 856.25,-145.6 939.75,-145.6 939.75,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="898" y="-158.92" font-family="Times,serif" font-size="14.00">room&#45;due</text>
+</g>
+<!-- h3_room&#45;due_R -->
+<g id="node17" class="node">
+<title>h3_room&#45;due_R</title>
+<polygon fill="none" stroke="#8c564b" stroke-dasharray="5,2" points="924.8,-94.33 924.8,-103.27 918.47,-109.6 909.53,-109.6 903.2,-103.27 903.2,-94.33 909.53,-88 918.47,-88 924.8,-94.33"/>
+</g>
+<!-- room&#45;due_R&#45;&gt;h3_room&#45;due_R -->
+<g id="edge8" class="edge">
+<title>room&#45;due_R&#45;&gt;h3_room&#45;due_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M905.25,-134.14C907.45,-125.49 909.73,-116.55 911.41,-109.96"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="901.91,-133.09 902.83,-143.64 908.69,-134.81 901.91,-133.09"/>
+<text xml:space="preserve" text-anchor="middle" x="902.51" y="-131.18" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_R -->
+<g id="node11" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="934,-52 900.27,-34 934,-16 967.73,-34 934,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="934" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?isa_R -->
+<g id="node12" class="node">
+<title>?isa_R</title>
+<polygon fill="none" stroke="black" points="1029,-52 985.6,-34 1029,-16 1072.4,-34 1029,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1029" y="-29.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- ?sub_R -->
+<g id="node13" class="node">
+<title>?sub_R</title>
+<polygon fill="none" stroke="black" points="1139,-52 1090.39,-34 1139,-16 1187.61,-34 1139,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="1139" y="-29.32" font-family="Times,serif" font-size="14.00">?sub</text>
+</g>
+<!-- ?super_R -->
+<g id="node14" class="node">
+<title>?super_R</title>
+<polygon fill="none" stroke="black" points="677,-52 613.51,-34 677,-16 740.49,-34 677,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="677" y="-29.32" font-family="Times,serif" font-size="14.00">?super</text>
+</g>
+<!-- ?index_R -->
+<g id="node15" class="node">
+<title>?index_R</title>
+<polygon fill="none" stroke="black" points="820,-52 758,-34 820,-16 882,-34 820,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="820" y="-29.32" font-family="Times,serif" font-size="14.00">?index</text>
+</g>
+<!-- room&#45;paid_R -->
+<g id="node16" class="node">
+<title>room&#45;paid_R</title>
+<polygon fill="none" stroke="black" points="1046,-181.6 958,-181.6 958,-145.6 1046,-145.6 1046,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="1002" y="-158.92" font-family="Times,serif" font-size="14.00">room&#45;paid</text>
+</g>
+<!-- h4_room&#45;paid_R -->
+<g id="node18" class="node">
+<title>h4_room&#45;paid_R</title>
+<polygon fill="none" stroke="#bcbd22" stroke-dasharray="5,2" points="980.8,-94.33 980.8,-103.27 974.47,-109.6 965.53,-109.6 959.2,-103.27 959.2,-94.33 965.53,-88 974.47,-88 980.8,-94.33"/>
+</g>
+<!-- room&#45;paid_R&#45;&gt;h4_room&#45;paid_R -->
+<g id="edge14" class="edge">
+<title>room&#45;paid_R&#45;&gt;h4_room&#45;paid_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M987.87,-134.88C983.27,-125.85 978.46,-116.4 974.99,-109.59"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="984.74,-136.44 992.4,-143.76 990.98,-133.26 984.74,-136.44"/>
+<text xml:space="preserve" text-anchor="middle" x="979.48" y="-131.18" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h3_room&#45;due_R&#45;&gt;?R_R -->
+<g id="edge9" class="edge">
+<title>h3_room&#45;due_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M917.21,-87.71C919.56,-80.33 922.86,-69.99 925.91,-60.41"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="929.14,-61.78 928.84,-51.19 922.47,-59.66 929.14,-61.78"/>
+<text xml:space="preserve" text-anchor="middle" x="918.8" y="-72.54" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h3_room&#45;due_R&#45;&gt;?isa_R -->
+<g id="edge10" class="edge">
+<title>h3_room&#45;due_R&#45;&gt;?isa_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M923.41,-92.66C940.12,-83.54 975.58,-64.17 1000.79,-50.4"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="1002.46,-53.48 1009.56,-45.62 999.1,-47.34 1002.46,-53.48"/>
+<text xml:space="preserve" text-anchor="middle" x="962.77" y="-72.66" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h3_room&#45;due_R&#45;&gt;?sub_R -->
+<g id="edge11" class="edge">
+<title>h3_room&#45;due_R&#45;&gt;?sub_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M925.3,-94.73C957.71,-85.92 1050.63,-60.61 1081,-52 1087.74,-50.09 1094.91,-48.02 1101.83,-46"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="1102.69,-49.39 1111.3,-43.22 1100.72,-42.68 1102.69,-49.39"/>
+<text xml:space="preserve" text-anchor="middle" x="1014.62" y="-73.07" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h3_room&#45;due_R&#45;&gt;?super_R -->
+<g id="edge12" class="edge">
+<title>h3_room&#45;due_R&#45;&gt;?super_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M902.89,-94.86C870.61,-86.3 775.61,-61.13 719.62,-46.29"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="720.66,-42.95 710.1,-43.77 718.87,-49.72 720.66,-42.95"/>
+<text xml:space="preserve" text-anchor="middle" x="801.24" y="-73.06" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- h3_room&#45;due_R&#45;&gt;?index_R -->
+<g id="edge13" class="edge">
+<title>h3_room&#45;due_R&#45;&gt;?index_R</title>
+<path fill="none" stroke="#8c564b" stroke-dasharray="5,2" d="M905.33,-92C892.34,-83.33 867.27,-66.58 847.66,-53.48"/>
+<polygon fill="#8c564b" stroke="#8c564b" points="849.78,-50.69 839.52,-48.04 845.89,-56.51 849.78,-50.69"/>
+<text xml:space="preserve" text-anchor="middle" x="867.1" y="-73.42" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- h4_room&#45;paid_R&#45;&gt;?R_R -->
+<g id="edge15" class="edge">
+<title>h4_room&#45;paid_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M964.69,-88.53C960.11,-80.55 953.31,-68.68 947.27,-58.15"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="950.36,-56.5 942.35,-49.56 944.29,-59.98 950.36,-56.5"/>
+<text xml:space="preserve" text-anchor="middle" x="948.71" y="-72.46" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h4_room&#45;paid_R&#45;&gt;?isa_R -->
+<g id="edge16" class="edge">
+<title>h4_room&#45;paid_R&#45;&gt;?isa_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M977.23,-90.1C985.26,-81.56 998.53,-67.43 1009.63,-55.62"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="1011.89,-58.33 1016.18,-48.64 1006.79,-53.53 1011.89,-58.33"/>
+<text xml:space="preserve" text-anchor="middle" x="992.67" y="-72.83" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h4_room&#45;paid_R&#45;&gt;?sub_R -->
+<g id="edge17" class="edge">
+<title>h4_room&#45;paid_R&#45;&gt;?sub_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M980.83,-93.78C1005.36,-84.66 1066.05,-62.11 1104.72,-47.74"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="1105.9,-51.04 1114.05,-44.27 1103.46,-44.47 1105.9,-51.04"/>
+<text xml:space="preserve" text-anchor="middle" x="1043.34" y="-72.82" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h4_room&#45;paid_R&#45;&gt;?super_R -->
+<g id="edge18" class="edge">
+<title>h4_room&#45;paid_R&#45;&gt;?super_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M958.7,-94.5C951.64,-92.49 942.33,-89.94 934,-88 852.42,-68.99 830.89,-69.63 749,-52 739.89,-50.04 730.17,-47.83 720.91,-45.66"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="721.92,-42.3 711.39,-43.41 720.31,-49.12 721.92,-42.3"/>
+<text xml:space="preserve" text-anchor="middle" x="829.84" y="-72.19" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- h4_room&#45;paid_R&#45;&gt;?index_R -->
+<g id="edge19" class="edge">
+<title>h4_room&#45;paid_R&#45;&gt;?index_R</title>
+<path fill="none" stroke="#bcbd22" stroke-dasharray="5,2" d="M959.69,-93.48C938.43,-84.58 888.86,-63.83 854.87,-49.6"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="856.41,-46.45 845.84,-45.82 853.71,-52.91 856.41,-46.45"/>
+<text xml:space="preserve" text-anchor="middle" x="897.49" y="-73.28" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 392308bfc0f9fc8f52de0052172244866258dbd2143a1333260c0a152e997de7 -->

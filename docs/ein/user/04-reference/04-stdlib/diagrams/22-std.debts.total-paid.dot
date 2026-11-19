@@ -1,0 +1,53 @@
+digraph rule_total_paid_lhs_rhs {
+  rankdir=TB;
+  label="total-paid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "relation_L" [label="relation", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+    "h2_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?isa_L" -> "h2_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h2_isa_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
+    "h2_isa_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h3_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?isa_L" -> "h3_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h3_isa_L" -> "?b_L" [xlabel="2", color="#bcbd22"];
+    "h3_isa_L" -> "?B_L" [xlabel="3", color="#bcbd22"];
+    "h4_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "?R_L" -> "h4_R_L" [xlabel="1", dir=back, color="#1f77b4"];
+    "h4_R_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
+    "h4_R_L" -> "?b_L" [xlabel="3", color="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "debt-paid_R" [label="debt-paid", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "total-owed-of_R" [label="total-owed-of", shape=box];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?A_R" [label="?A", shape=diamond];
+    "?B_R" [label="?B", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="debt-paid ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(total-owed-of ?R ?isa ?A ?B ?a)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    }
+    "h5_debt-paid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "debt-paid_R" -> "h5_debt-paid_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h5_debt-paid_R" -> "?R_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h5_debt-paid_R" -> "(total-owed-of ?R ?isa ?A ?B ?a)_R" [xlabel="3", color="#8c564b", style=dashed];
+    "total-owed-of_R" -> "(total-owed-of ?R ?isa ?A ?B ?a)_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "(total-owed-of ?R ?isa ?A ?B ?a)_R" -> "?R_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "(total-owed-of ?R ?isa ?A ?B ?a)_R" -> "?isa_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "(total-owed-of ?R ?isa ?A ?B ?a)_R" -> "?A_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "(total-owed-of ?R ?isa ?A ?B ?a)_R" -> "?B_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "(total-owed-of ?R ?isa ?A ?B ?a)_R" -> "?a_R" [xlabel="6", color="#7f7f7f", style=dashed];
+  }
+}

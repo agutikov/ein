@@ -1,0 +1,102 @@
+;;; `std.debts` — `debts-of-total`, `debts-of-surjective`, `debts-of-room` and
+;;; `debts-of-fill`: one fact restates every obligation the program
+;;; activates.
+;;;
+;;; ── What this program does to the four ─────────────────────────────────────
+;;;
+;;; All four obligations of the library are activated, `std.algebra`'s pair
+;;; over `likes` and `std.slots`' pair over `co-loc`, and the program writes
+;;; `(debts-of-owed)` and no activator of this module. Each of the four rules
+;;; reads that fact beside one obligation's activator and concludes the
+;;; activators of its pair, with the obligation's own arguments:
+;;;
+;;;   (total-owed likes is-a)   ⟹   (total-due likes is-a)  (total-paid likes is-a)
+;;;
+;;; So the eight rules of `01` to `04` run with nothing here naming them.
+;;;
+;;; Everything is paid. Ann and Bob each like one food and each food is
+;;; liked; each person and each pet has a seat, and each seat has a person
+;;; and a pet. `co-loc` is written both ways round, member first and seat
+;;; first, since `slot-owed-room` reads it one way and `slot-owed-fill` the
+;;; other. So root owes nothing, by the kernel's own reading of the four
+;;; obligations, and it is R's one state; and the rules say the same of it:
+;;; twelve requirements (two people a food, two foods a person, four members
+;;; a seat, two seats a person and a pet each), a payment for each, and
+;;; `(debts-discharged)`.
+;;;
+;;; `08_debts_not_asked.ein` is this file without `(debts-of-owed)`, and
+;;; `09_debts_owing.ein` is a state the kernel says owes.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The eight queries over the rules' names close each rule's activators:
+;;; exactly the one its obligation's activator gives. A rule that read an
+;;; obligation's activator, or wrote its own, with two arguments exchanged
+;;; would conclude another. Then `(debts-discharged)` is held, and the region
+;;; claim says root is in R with the facts written.
+
+(import std.algebra :symbols (total-owed surjective-owed))
+(import std.slots   :symbols (slot-owed-room slot-owed-fill))
+(import std.debts
+  :symbols (total-due total-paid surjective-due surjective-paid
+            room-due room-paid fill-due fill-paid))
+
+(relation is-a     T T         :why "{?3} is a {?4}")
+(relation likes    Person Food :why "{?3} likes {?4}")
+(relation type     T T         :why "{?3} is a subtype of {?4}")
+(relation instance T T         :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(total-owed      likes is-a)
+(surjective-owed likes is-a)
+(slot-owed-room  co-loc instance type Attribute Seat)
+(slot-owed-fill  co-loc instance type Attribute Seat)
+
+(debts-of-owed)
+
+(likes Ann Soup) (likes Bob Stew)
+
+(co-loc Ann S1) (co-loc Cat S1)      ; member first: what `slot-owed-room` reads
+(co-loc Bob S2) (co-loc Dog S2)
+(co-loc S1 Ann) (co-loc S1 Cat)      ; seat first: what `slot-owed-fill` reads
+(co-loc S2 Bob) (co-loc S2 Dog)
+
+;; Root alone (Q-M1f.254): the question is root's saturation and root's
+;; verdict, and root owes nothing, so R is root alone.
+(solve
+  :no-search
+  :expect (region (model (likes Ann Soup) (likes Bob Stew)
+                         (co-loc Ann S1) (co-loc Cat S1)
+                         (co-loc Bob S2) (co-loc Dog S2)
+                         (co-loc S1 Ann) (co-loc S1 Cat)
+                         (co-loc S2 Bob) (co-loc S2 Dog)
+                         (debts-discharged))))
+
+(query :goal (total-due ?R ?isa)
+  :expect (model (total-due likes is-a)))
+(query :goal (total-paid ?R ?isa)
+  :expect (model (total-paid likes is-a)))
+(query :goal (surjective-due ?R ?isa)
+  :expect (model (surjective-due likes is-a)))
+(query :goal (surjective-paid ?R ?isa)
+  :expect (model (surjective-paid likes is-a)))
+(query :goal (room-due ?R ?isa ?sub ?super ?index)
+  :expect (model (room-due co-loc instance type Attribute Seat)))
+(query :goal (room-paid ?R ?isa ?sub ?super ?index)
+  :expect (model (room-paid co-loc instance type Attribute Seat)))
+(query :goal (fill-due ?R ?isa ?sub ?super ?index)
+  :expect (model (fill-due co-loc instance type Attribute Seat)))
+(query :goal (fill-paid ?R ?isa ?sub ?super ?index)
+  :expect (model (fill-paid co-loc instance type Attribute Seat)))
+(query :goal (debts-discharged)
+  :expect (model (debts-discharged)))

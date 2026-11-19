@@ -1,0 +1,57 @@
+;;; `std.debts` — `total-due` and `total-paid`: what `std.algebra`'s
+;;; `total-owed` requires, and what pays it, as facts.
+;;;
+;;; ── What this program does to the pair ─────────────────────────────────────
+;;;
+;;; `algebra/23_total_owed.ein`'s world, two people, two foods and one arrow,
+;;; with the obligation itself left out and its restatement activated by
+;;; hand:
+;;;
+;;;   (likes Bob Stew)     stated: Bob's requirement is paid
+;;;   Ann                  nothing at all: required, and not paid
+;;;
+;;; So `total-due` concludes two requirements, one a person, and `total-paid`
+;;; one payment, Bob's. The difference is Ann, which is what `total-owed`
+;;; owes in `23`: the two rules are the obligation's trigger, and its trigger
+;;; with the witness its `absent` looks for. Soup and Stew are required
+;;; nothing: that is the other obligation's, `02_surjective_due_paid.ein`.
+;;;
+;;; The obligation is not activated, on purpose. With it root would owe and
+;;; be no state of R, and a query's claim reads R; without it the kernel
+;;; says nothing of `likes`, root is R's one state, and the claims below read
+;;; what the two rules concluded there. `07_debts_of_owed.ein` and
+;;; `09_debts_owing.ein` are the files where the obligation stands beside
+;;; them.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Each query closes one relation's held extent. The instance names the
+;;; relation, the membership relation, the declaration's two labels and the
+;;; member, so a rule that read a membership or the arrow the wrong way round
+;;; concludes no fact here, and one that wrote its conclusion the wrong way
+;;; round concludes another. Nothing concludes `(debts-discharged)`: the fact
+;;; `(debts-of-owed)` is not written, and Ann is unpaid besides.
+
+(import std.debts :symbols (total-due total-paid))
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-due  likes is-a)
+(total-paid likes is-a)
+
+(likes Bob Stew)
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (debt-due ?R ?j)
+  :expect (model (debt-due likes (total-owed-of likes is-a Person Food Ann))
+                 (debt-due likes (total-owed-of likes is-a Person Food Bob))))
+(query :goal (debt-paid ?R ?j)
+  :expect (model (debt-paid likes (total-owed-of likes is-a Person Food Bob))))
+(query :goal (debts-discharged)
+  :expect (model))

@@ -1,0 +1,55 @@
+;;; `std.debts/discharged-from-nothing-unpaid` — **loaded, asked for, and
+;;; silent**: a requirement is unpaid, and `(debts-discharged)` is not
+;;; concluded.
+;;;
+;;; `05_discharged.ein` without the line `(likes Ann Soup)`, and the only
+;;; difference between the two files is that line. Four requirements still,
+;;; and two payments: Bob has Stew and Stew has Bob, Ann has no food and Soup
+;;; nobody. There the rule concludes; here it must not.
+;;;
+;;; ── Why this is the half that matters ──────────────────────────────────────
+;;;
+;;; A rule that concluded `(debts-discharged)` wherever it is asked for,
+;;; its `absent` dropped or reading the payments the wrong way, passes `05`.
+;;; What it cannot pass is a state with a debt in it. Discharged is a verdict
+;;; a rule may store only because it stays true as a state grows, and that
+;;; holds only if it is never concluded early: this file is the claim that
+;;; it is not.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The goal has no variable and root does not hold it: its one class is the
+;;; empty one, `(model)`. The other two claims pin the state the rule read:
+;;; the four requirements, and the two payments.
+
+(import std.debts
+  :symbols (total-due total-paid surjective-due surjective-paid))
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-due       likes is-a)
+(total-paid      likes is-a)
+(surjective-due  likes is-a)
+(surjective-paid likes is-a)
+
+(debts-of-owed)
+
+(likes Bob Stew)             ; Ann has no food, and nobody likes Soup
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (debts-discharged)
+  :expect (model))
+(query :goal (debt-due ?R ?j)
+  :expect (model (debt-due likes (total-owed-of likes is-a Person Food Ann))
+                 (debt-due likes (total-owed-of likes is-a Person Food Bob))
+                 (debt-due likes (surjective-owed-of likes is-a Person Food Soup))
+                 (debt-due likes (surjective-owed-of likes is-a Person Food Stew))))
+(query :goal (debt-paid ?R ?j)
+  :expect (model (debt-paid likes (total-owed-of likes is-a Person Food Bob))
+                 (debt-paid likes (surjective-owed-of likes is-a Person Food Stew))))

@@ -1,0 +1,203 @@
+;;; Ein stdlib — `std.debts`: what an obligation requires and what pays it, as
+;;; facts, and `(debts-discharged)` where nothing required is unpaid.
+;;;
+;;; An obligation says what a state still **owes**: `std.algebra`'s
+;;; `total-owed` owes each member of a relation's first label a partner, for
+;;; as long as the state holds none. What it concludes is the verdict
+;;; `(open R)`, which is no fact: a debt a state held would outlive its own
+;;; payment in the state that paid it (Q-M1d.2). So no rule can read what is
+;;; owed.
+;;;
+;;; This module states the two halves of a debt that **can** be facts, because
+;;; each stays true as a state grows:
+;;;
+;;;     (debt-due  R J)     the requirement: the obligation's trigger holds for J
+;;;     (debt-paid R J)     the payment: the trigger holds, and a witness is held
+;;;
+;;; `J` is the instance, a fact no state holds, which names the obligation,
+;;; its activator's arguments and what its trigger bound:
+;;; `(total-owed-of seats is-a Guest Chair Ann)` is *`seats` owes Ann a
+;;; Chair, by `total-owed` over `is-a`*. What a state owes is then a
+;;; difference, the requirements with no payment beside them, and a rule can
+;;; read both sides. Of the two verdicts over them, the one that stays true
+;;; as the state grows is a fact too:
+;;;
+;;;     (debts-discharged)  no requirement is unpaid
+;;;
+;;; A requirement is never retracted and a payment never withdrawn, so where a
+;;; state holds `(debts-discharged)` every larger state holds it. It is to
+;;; *discharged* what `(false)` is to *dead*: the verdict that can be stored.
+;;;
+;;; ── the four obligations of the library, restated ───────────────────────────
+;;; Each obligation has a rule for its requirement and one for its payment,
+;;; with the obligation's own parameters:
+;;;
+;;;   std.algebra  total-owed       total-due,       total-paid       (?R ?isa)
+;;;   std.algebra  surjective-owed  surjective-due,  surjective-paid  (?R ?isa)
+;;;   std.slots    slot-owed-room   room-due,        room-paid        (?R ?isa ?sub ?super ?index)
+;;;   std.slots    slot-owed-fill   fill-due,        fill-paid        (?R ?isa ?sub ?super ?index)
+;;;
+;;; None of the eight reads an `absent`: a requirement is the obligation's
+;;; trigger, and a payment is the trigger with the witness the obligation's
+;;; `absent` looks for.
+;;;
+;;; ── usage ───────────────────────────────────────────────────────────────────
+;;; One fact asks for all of it:
+;;;
+;;;     (import std.debts)
+;;;     (debts-of-owed)
+;;;
+;;; Where the program holds `(debts-of-owed)`, `debts-of-total`,
+;;; `debts-of-surjective`, `debts-of-room` and `debts-of-fill` each read an
+;;; obligation's activator, `(total-owed seats is-a)`, written or derived, and
+;;; activate its pair of rules with the same arguments; and
+;;; `discharged-from-nothing-unpaid` concludes `(debts-discharged)`. A program
+;;; can also activate a pair by hand, `(total-due seats is-a)` and
+;;; `(total-paid seats is-a)`, listing the two names; nothing then concludes
+;;; `(debts-discharged)`.
+;;;
+;;; **`(debts-discharged)` is about the requirements that are stated.** It
+;;; agrees with what the engine says a state owes where every obligation the
+;;; program activates is one of the four. An obligation of the program's own
+;;; is restated by two rules of the program's own that conclude `debt-due`
+;;; and `debt-paid`; one left unstated is owed by the state and unknown to
+;;; `(debts-discharged)`.
+;;;
+;;; `discharged-from-nothing-unpaid` reads an `absent` inside an `absent`, a
+;;; *for every requirement, a payment*, which a larger state can only turn
+;;; from failing to holding, so the static check keeps calling the program
+;;; monotone. It is judged at the boundary, when the closure is at its
+;;; fixpoint, as every `absent` is.
+;;;
+;;; ── the relations are no module's ───────────────────────────────────────────
+;;; `debt-due`, `debt-paid`, `debts-discharged`, the four instance relations
+;;; and `debts-of-owed` are relations the module writes or reads and does not
+;;; declare, so a program writes each as it is, with nothing to list, as it
+;;; writes `(bijective R)` for `std.algebra`. A declaration would bring its
+;;; labels to every program that imports the module, as names, and a relation
+;;; of two labels would need its held extent closed against the blind
+;;; enumerator, a fact a program's rule can read: an import would then move
+;;; what a program that asked for nothing holds. Undeclared, none of the
+;;; relations is one the blind enumerator guesses about.
+;;;
+;;; ── what an import brings ───────────────────────────────────────────────────
+;;; `std.algebra` and `std.slots`, whole (Q-M1f.247): the obligations' names
+;;; are theirs. Of its own, thirteen rules and nothing else: no relation and
+;;; no fact. Each rule acts under its activator or where the program holds
+;;; `(debts-of-owed)`, so a program that imports the module beside those two
+;;; and asks for nothing holds what it held.
+;;;
+;;; ── The names this module occupies ──────────────────────────────────────────
+;;; The rules `total-due`, `total-paid`, `surjective-due`, `surjective-paid`,
+;;; `room-due`, `room-paid`, `fill-due`, `fill-paid`, `debts-of-total`,
+;;; `debts-of-surjective`, `debts-of-room`, `debts-of-fill` and
+;;; `discharged-from-nothing-unpaid`. It writes `debt-due`, `debt-paid`,
+;;; `debts-discharged`, `total-owed-of`, `surjective-owed-of`,
+;;; `slot-owed-room-of` and `slot-owed-fill-of`, and reads `debts-of-owed`,
+;;; which are no module's: a program that uses one of those eight words for a
+;;; relation of its own shares it with these rules.
+
+(import std.algebra :symbols (total-owed surjective-owed))
+(import std.slots   :symbols (slot-owed-room slot-owed-fill))
+
+;; ── std.algebra's pair ───────────────────────────────────────────────────────
+;; `total-owed` is
+;;   (relation ?R ?A ?B) ∧ (?isa ?a ?A) ∧ absent((?isa ?b ?B) ∧ (?R ?a ?b)):
+;; the requirement is what stands before the `absent`, and the payment is that
+;; with what the `absent` looks for. The instance is written under
+;; `total-owed-of`, the obligation's parameters and then what its trigger
+;; binds, so that no fact stands under the obligation rule's own name.
+(rule total-due (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A))
+  :assert (debt-due ?R (total-owed-of ?R ?isa ?A ?B ?a))
+  :why    "{?R} is required to give {?a} a {?B}.")
+
+(rule total-paid (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?a ?A)
+               (?isa ?b ?B)
+               (?R ?a ?b))
+  :assert (debt-paid ?R (total-owed-of ?R ?isa ?A ?B ?a))
+  :why    "{?R} gives {?a} the {?B} {?b}.")
+
+(rule surjective-due (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B))
+  :assert (debt-due ?R (surjective-owed-of ?R ?isa ?A ?B ?b))
+  :why    "{?R} is required to give {?b} a preimage in {?A}.")
+
+(rule surjective-paid (?R ?isa)
+  :match  (and (relation ?R ?A ?B)
+               (?isa ?b ?B)
+               (?isa ?a ?A)
+               (?R ?a ?b))
+  :assert (debt-paid ?R (surjective-owed-of ?R ?isa ?A ?B ?b))
+  :why    "{?R} gives {?b} the preimage {?a}.")
+
+;; ── std.slots' pair ──────────────────────────────────────────────────────────
+;; `slot-owed-room` owes each member of a kind under `?super`, the index kind
+;; apart, a slot; `slot-owed-fill` owes each slot a member of each such kind.
+(rule room-due (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index))
+  :assert (debt-due ?R (slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta))
+  :why    "{?a} is required to be in some {?index}.")
+
+(rule room-paid (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (?isa ?i ?index)
+               (?R ?a ?i))
+  :assert (debt-paid ?R (slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta))
+  :why    "{?a} is in {?i}.")
+
+(rule fill-due (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index))
+  :assert (debt-due ?R (slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv))
+  :why    "slot {?i} is required to have a {?Tv}.")
+
+(rule fill-paid (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (?isa ?v ?Tv)
+               (?R ?i ?v))
+  :assert (debt-paid ?R (slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv))
+  :why    "slot {?i} has the {?Tv} {?v}.")
+
+;; ── every activated obligation at once ───────────────────────────────────────
+;; No parameter: each reads the fact `(debts-of-owed)`, which a program writes
+;; to ask for all of them, and one obligation's activator.
+(rule debts-of-total ()
+  :match  (and (debts-of-owed) (total-owed ?R ?isa))
+  :assert (and (total-due ?R ?isa) (total-paid ?R ?isa))
+  :why    "{?R} owes each member a partner over {?isa}: its requirements and payments are stated.")
+
+(rule debts-of-surjective ()
+  :match  (and (debts-of-owed) (surjective-owed ?R ?isa))
+  :assert (and (surjective-due ?R ?isa) (surjective-paid ?R ?isa))
+  :why    "{?R} owes each member a preimage over {?isa}: its requirements and payments are stated.")
+
+(rule debts-of-room ()
+  :match  (and (debts-of-owed) (slot-owed-room ?R ?isa ?sub ?super ?index))
+  :assert (and (room-due ?R ?isa ?sub ?super ?index) (room-paid ?R ?isa ?sub ?super ?index))
+  :why    "{?R} owes each member a {?index}: its requirements and payments are stated.")
+
+(rule debts-of-fill ()
+  :match  (and (debts-of-owed) (slot-owed-fill ?R ?isa ?sub ?super ?index))
+  :assert (and (fill-due ?R ?isa ?sub ?super ?index) (fill-paid ?R ?isa ?sub ?super ?index))
+  :why    "{?R} owes each {?index} a member of each kind: its requirements and payments are stated.")
+
+;; ── discharged ───────────────────────────────────────────────────────────────
+;; For every requirement, a payment: the `absent` of a requirement that has no
+;; payment. It holds of a state that requires nothing.
+(rule discharged-from-nothing-unpaid ()
+  :match  (and (debts-of-owed)
+               (absent (and (debt-due ?R ?j) (absent (debt-paid ?R ?j)))))
+  :assert (debts-discharged)
+  :why    "every requirement is paid.")

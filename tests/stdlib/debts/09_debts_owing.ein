@@ -1,0 +1,55 @@
+;;; `std.debts` — the requirements and the payments of a state that
+;;; **owes**: what the obligation owes is what is required and not paid.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;; `algebra/23_total_owed.ein`, the obligation activated as it is there, with
+;;; the module imported and `(debts-of-owed)` written. Root owes Ann a food,
+;;; by the kernel's reading of `total-owed`, so it is no state of R. Beside
+;;; that verdict root now holds, as facts:
+;;;
+;;;   two requirements    Ann a food, Bob a food
+;;;   one payment         Bob's
+;;;
+;;; and the requirement with no payment is Ann's, the instance the kernel
+;;; owes. The debt itself is still no fact; its two halves are, and a rule
+;;; could read them.
+;;;
+;;; ── What the expectation can and cannot observe ────────────────────────────
+;;;
+;;; Root is not in R, so no query's claim reads it; the claim is the region
+;;; claim's `(owing …)`, which names root's state and closes the three
+;;; relations it names: `likes`, the requirements and the payments. That a
+;;; state which owes does **not** hold `(debts-discharged)` is not something
+;;; this claim can say, since a claim names a relation by a fact of it; it is
+;;; `06_discharged_unpaid.ein`'s, where the same rules run with no obligation
+;;; beside them, and `ein-infer/tests/debts_rules.rs` holds it at every node
+;;; of a search. How much root owes is asserted there too.
+
+(import std.algebra :symbols (total-owed))
+(import std.debts)
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-owed likes is-a)
+
+(debts-of-owed)
+
+(likes Bob Stew)
+
+;; Root alone (Q-M1f.254): the question is what root holds and owes, so
+;; nothing is guessed. R is empty, and root, which owes, is the owing node
+;; it stops at.
+(solve
+  :no-search
+  :expect (region (owing (model (likes Bob Stew)
+                                (debt-due  likes (total-owed-of likes is-a Person Food Ann))
+                                (debt-due  likes (total-owed-of likes is-a Person Food Bob))
+                                (debt-paid likes (total-owed-of likes is-a Person Food Bob))))))
+
+(query
+  :goal (likes ?who ?what))

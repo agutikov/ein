@@ -1,0 +1,45 @@
+digraph rule_debts_of_room_lhs_rhs {
+  rankdir=TB;
+  label="debts-of-room"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "debts-of-owed_L" [label="debts-of-owed", shape=box];
+    "slot-owed-room_L" [label="slot-owed-room", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "?sub_L" [label="?sub", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "h1_debts-of-owed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "debts-of-owed_L" -> "h1_debts-of-owed_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h2_slot-owed-room_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+    "slot-owed-room_L" -> "h2_slot-owed-room_L" [xlabel="1", dir=back, color="#8c564b"];
+    "h2_slot-owed-room_L" -> "?R_L" [xlabel="2", color="#8c564b"];
+    "h2_slot-owed-room_L" -> "?isa_L" [xlabel="3", color="#8c564b"];
+    "h2_slot-owed-room_L" -> "?sub_L" [xlabel="4", color="#8c564b"];
+    "h2_slot-owed-room_L" -> "?super_L" [xlabel="5", color="#8c564b"];
+    "h2_slot-owed-room_L" -> "?index_L" [xlabel="6", color="#8c564b"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "room-due_R" [label="room-due", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?sub_R" [label="?sub", shape=diamond];
+    "?super_R" [label="?super", shape=diamond];
+    "?index_R" [label="?index", shape=diamond];
+    "room-paid_R" [label="room-paid", shape=box];
+    "h3_room-due_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "room-due_R" -> "h3_room-due_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h3_room-due_R" -> "?R_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h3_room-due_R" -> "?isa_R" [xlabel="3", color="#8c564b", style=dashed];
+    "h3_room-due_R" -> "?sub_R" [xlabel="4", color="#8c564b", style=dashed];
+    "h3_room-due_R" -> "?super_R" [xlabel="5", color="#8c564b", style=dashed];
+    "h3_room-due_R" -> "?index_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h4_room-paid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "room-paid_R" -> "h4_room-paid_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h4_room-paid_R" -> "?R_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h4_room-paid_R" -> "?isa_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h4_room-paid_R" -> "?sub_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h4_room-paid_R" -> "?super_R" [xlabel="5", color="#bcbd22", style=dashed];
+    "h4_room-paid_R" -> "?index_R" [xlabel="6", color="#bcbd22", style=dashed];
+  }
+}

@@ -125,6 +125,7 @@ tests/` runs them all. The per-symbol reference is [`04-stdlib/`](docs/ein/user/
 | `std.typing` | a membership hierarchy, named once |
 | `std.negation` | the elimination of a double negation, `(not (not g))` ⟹ `g`, one rule a count of arguments, activated a relation |
 | `std.contradiction` | a fact beside its negation as a rule that concludes `(false)`, for one relation or for every declared one |
+| `std.debts` | what an obligation requires and what pays it, as facts, and `(debts-discharged)` where nothing required is unpaid |
 | `std.macro` | the `forall` and `unknown` pattern macros |
 | `std.math.*` | the calculator: decimal and binary numerals, natural numbers, integers, rationals, gcd and lcm, conversion between bases, computed by saturation over digit tables. Ein has no numbers of its own |
 | `std.bool.*` | the sixteen Boolean functions of two inputs, what is known of them, circuits, and a circuit's inputs as hypotheses |

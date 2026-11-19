@@ -85,6 +85,7 @@ ein-infer/tests/acceptance.rs
 ein-infer/tests/agenda.rs
 ein-infer/tests/coupling.rs
 ein-infer/tests/cover.rs
+ein-infer/tests/debts_rules.rs
 ein-infer/tests/exactly_one.rs
 ein-infer/tests/explain_semantics.rs
 ein-infer/tests/first_contradiction.rs

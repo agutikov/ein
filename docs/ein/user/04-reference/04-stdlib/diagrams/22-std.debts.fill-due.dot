@@ -1,0 +1,48 @@
+digraph rule_fill_due_lhs_rhs {
+  rankdir=TB;
+  label="fill-due"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?isa_L" [label="?isa", shape=diamond];
+    "?i_L" [label="?i", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "?sub_L" [label="?sub", shape=diamond];
+    "?Tv_L" [label="?Tv", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "h1_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?isa_L" -> "h1_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_isa_L" -> "?i_L" [xlabel="2", color="#bcbd22"];
+    "h1_isa_L" -> "?index_L" [xlabel="3", color="#bcbd22"];
+    "h2_sub_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "?sub_L" -> "h2_sub_L" [xlabel="1", dir=back, color="#9467bd"];
+    "h2_sub_L" -> "?Tv_L" [xlabel="2", color="#9467bd"];
+    "h2_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
+    "?Tv_L" -> "?index_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+  }
+  subgraph cluster_rhs { label="assert";
+    "debt-due_R" [label="debt-due", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "slot-owed-fill-of_R" [label="slot-owed-fill-of", shape=box];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?sub_R" [label="?sub", shape=diamond];
+    "?super_R" [label="?super", shape=diamond];
+    "?index_R" [label="?index", shape=diamond];
+    "?i_R" [label="?i", shape=diamond];
+    "?Tv_R" [label="?Tv", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="debt-due ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    }
+    "h3_debt-due_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "debt-due_R" -> "h3_debt-due_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h3_debt-due_R" -> "?R_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h3_debt-due_R" -> "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "slot-owed-fill-of_R" -> "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?R_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?isa_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?sub_R" [xlabel="4", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?super_R" [xlabel="5", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?index_R" [xlabel="6", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?i_R" [xlabel="7", color="#ff7f0e", style=dashed];
+    "(slot-owed-fill-of ?R ?isa ?sub ?super ?index ?i ?Tv)_R" -> "?Tv_R" [xlabel="8", color="#ff7f0e", style=dashed];
+  }
+}

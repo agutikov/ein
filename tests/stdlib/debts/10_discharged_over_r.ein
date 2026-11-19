@@ -1,0 +1,53 @@
+;;; `std.debts` — under a **search**: every state of R holds
+;;; `(debts-discharged)`.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;; `examples/lattice/05_owed_seats_bounded.ein`'s seating, two guests and two
+;;; chairs under `total-owed`, `surjective-owed`, `functional` and
+;;; `injective`, with the module imported and `(debts-of-owed)` written. It
+;;; is the one program of this directory that searches: the obligations
+;;; propose the four seatings, and R is the two matchings.
+;;;
+;;; A state is in R where it is alive and owes nothing. The rule for
+;;; `(debts-discharged)` reads the requirements and the payments the module
+;;; states for the same two obligations, so it concludes the fact exactly
+;;; where the kernel says nothing is owed, and every state of R holds it.
+;;; The requirements are root's and every state's, four of them; a state of
+;;; R holds a payment for each.
+;;;
+;;; The module changes nothing of R: the same two matchings as without it.
+;;; What it adds is in the states, and a fact that is concluded at a
+;;; boundary in one state and not in the one below it is the kind a fork
+;;; must not inherit wrongly; `(debts-discharged)` is safe to inherit,
+;;; because a larger state only adds payments.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The region claim lists R's two states, each with its seating and with
+;;; `(debts-discharged)`: naming the fact in a model says that state holds
+;;; it. The query over `seats` closes each state's seating.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+(import std.debts)
+
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(debts-of-owed)
+
+(solve
+  :expect (region (model (seats Ann C1) (seats Bob C2) (debts-discharged))
+                  (model (seats Ann C2) (seats Bob C1) (debts-discharged))))
+
+(query :goal (seats ?g ?c)
+  :expect (or (model (seats Ann C1) (seats Bob C2))
+              (model (seats Ann C2) (seats Bob C1))))

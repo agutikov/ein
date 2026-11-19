@@ -1804,6 +1804,10 @@
 0    stdlib/core.ein :: render rules
 0    stdlib/core.ein :: saturate
 0    stdlib/core.ein :: solve
+0    stdlib/debts.ein :: render constraints
+0    stdlib/debts.ein :: render rules
+0    stdlib/debts.ein :: saturate
+0    stdlib/debts.ein :: solve
 0    stdlib/elim.ein :: render constraints
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
@@ -2215,6 +2219,56 @@
 0    tests/stdlib/core/02_loaded_and_alive.ein :: saturate
 0    tests/stdlib/core/02_loaded_and_alive.ein :: solve
 0    tests/stdlib/core/02_loaded_and_alive.ein :: test
+0    tests/stdlib/debts/01_total_due_paid.ein :: render constraints
+1    tests/stdlib/debts/01_total_due_paid.ein :: render rules
+0    tests/stdlib/debts/01_total_due_paid.ein :: saturate
+0    tests/stdlib/debts/01_total_due_paid.ein :: solve
+0    tests/stdlib/debts/01_total_due_paid.ein :: test
+0    tests/stdlib/debts/02_surjective_due_paid.ein :: render constraints
+1    tests/stdlib/debts/02_surjective_due_paid.ein :: render rules
+0    tests/stdlib/debts/02_surjective_due_paid.ein :: saturate
+0    tests/stdlib/debts/02_surjective_due_paid.ein :: solve
+0    tests/stdlib/debts/02_surjective_due_paid.ein :: test
+0    tests/stdlib/debts/03_room_due_paid.ein :: render constraints
+1    tests/stdlib/debts/03_room_due_paid.ein :: render rules
+0    tests/stdlib/debts/03_room_due_paid.ein :: saturate
+0    tests/stdlib/debts/03_room_due_paid.ein :: solve
+0    tests/stdlib/debts/03_room_due_paid.ein :: test
+0    tests/stdlib/debts/04_fill_due_paid.ein :: render constraints
+1    tests/stdlib/debts/04_fill_due_paid.ein :: render rules
+0    tests/stdlib/debts/04_fill_due_paid.ein :: saturate
+0    tests/stdlib/debts/04_fill_due_paid.ein :: solve
+0    tests/stdlib/debts/04_fill_due_paid.ein :: test
+0    tests/stdlib/debts/05_discharged.ein :: render constraints
+1    tests/stdlib/debts/05_discharged.ein :: render rules
+0    tests/stdlib/debts/05_discharged.ein :: saturate
+0    tests/stdlib/debts/05_discharged.ein :: solve
+0    tests/stdlib/debts/05_discharged.ein :: test
+0    tests/stdlib/debts/06_discharged_unpaid.ein :: render constraints
+1    tests/stdlib/debts/06_discharged_unpaid.ein :: render rules
+0    tests/stdlib/debts/06_discharged_unpaid.ein :: saturate
+0    tests/stdlib/debts/06_discharged_unpaid.ein :: solve
+0    tests/stdlib/debts/06_discharged_unpaid.ein :: test
+0    tests/stdlib/debts/07_debts_of_owed.ein :: render constraints
+1    tests/stdlib/debts/07_debts_of_owed.ein :: render rules
+0    tests/stdlib/debts/07_debts_of_owed.ein :: saturate
+0    tests/stdlib/debts/07_debts_of_owed.ein :: solve
+0    tests/stdlib/debts/07_debts_of_owed.ein :: test
+0    tests/stdlib/debts/08_debts_not_asked.ein :: render constraints
+1    tests/stdlib/debts/08_debts_not_asked.ein :: render rules
+0    tests/stdlib/debts/08_debts_not_asked.ein :: saturate
+0    tests/stdlib/debts/08_debts_not_asked.ein :: solve
+0    tests/stdlib/debts/08_debts_not_asked.ein :: test
+0    tests/stdlib/debts/09_debts_owing.ein :: render constraints
+1    tests/stdlib/debts/09_debts_owing.ein :: render rules
+0    tests/stdlib/debts/09_debts_owing.ein :: saturate
+0    tests/stdlib/debts/09_debts_owing.ein :: solve
+0    tests/stdlib/debts/09_debts_owing.ein :: test
+0    tests/stdlib/debts/10_discharged_over_r.ein :: render constraints
+1    tests/stdlib/debts/10_discharged_over_r.ein :: render rules
+0    tests/stdlib/debts/10_discharged_over_r.ein :: saturate
+0    tests/stdlib/debts/10_discharged_over_r.ein :: solve
+0    tests/stdlib/debts/10_discharged_over_r.ein :: test
 0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
 0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
 0    tests/stdlib/elim/01_domain_elimination.ein :: saturate

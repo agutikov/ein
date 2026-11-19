@@ -315,6 +315,10 @@ once it cannot be met. Their reference is the standard library's:
 [`total-owed` and `surjective-owed`](../04-reference/04-stdlib/02-relation-algebra.md#obligations-total-owed-and-surjective-owed),
 [`std.slots`](../04-reference/04-stdlib/05-slots.md#where-root-owes-the-search).
 
+What one of the four owes is no fact, and no rule reads it. Its two halves are facts where a program asks for them:
+[`std.debts`](../04-reference/04-stdlib/22-debts.md) states what each requires and what pays it, `(debt-due R J)`
+and `(debt-paid R J)`, and `(debts-discharged)` where nothing required is unpaid.
+
 ## Saying how many
 
 Ein has no numbers ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)), so a

@@ -1,0 +1,30 @@
+digraph rule_debts_of_surjective_lhs_rhs {
+  rankdir=TB;
+  label="debts-of-surjective"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "debts-of-owed_L" [label="debts-of-owed", shape=box];
+    "surjective-owed_L" [label="surjective-owed", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "h1_debts-of-owed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "debts-of-owed_L" -> "h1_debts-of-owed_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h2_surjective-owed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf"];
+    "surjective-owed_L" -> "h2_surjective-owed_L" [xlabel="1", dir=back, color="#17becf"];
+    "h2_surjective-owed_L" -> "?R_L" [xlabel="2", color="#17becf"];
+    "h2_surjective-owed_L" -> "?isa_L" [xlabel="3", color="#17becf"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "surjective-due_R" [label="surjective-due", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "?isa_R" [label="?isa", shape=diamond];
+    "surjective-paid_R" [label="surjective-paid", shape=box];
+    "h3_surjective-due_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "surjective-due_R" -> "h3_surjective-due_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h3_surjective-due_R" -> "?R_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h3_surjective-due_R" -> "?isa_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h4_surjective-paid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "surjective-paid_R" -> "h4_surjective-paid_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h4_surjective-paid_R" -> "?R_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h4_surjective-paid_R" -> "?isa_R" [xlabel="3", color="#7f7f7f", style=dashed];
+  }
+}

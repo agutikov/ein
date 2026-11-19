@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_total_due_lhs_rhs Pages: 1 -->
+<svg width="803pt" height="343pt"
+ viewBox="0.00 0.00 803.00 343.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 338.5)">
+<title>rule_total_due_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-338.5 799,-338.5 799,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="397.5" y="-317.2" font-family="Times,serif" font-size="14.00">total&#45;due</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-80 8,-301.25 341,-301.25 341,-80 8,-80"/>
+<text xml:space="preserve" text-anchor="middle" x="174.5" y="-283.95" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="349,-8 349,-301.25 787,-301.25 787,-8 349,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="568" y="-283.95" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_ctx_R_0</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M492,-87.2C492,-87.2 573,-87.2 573,-87.2 579,-87.2 585,-93.2 585,-99.2 585,-99.2 585,-138.05 585,-138.05 585,-144.05 579,-150.05 573,-150.05 573,-150.05 492,-150.05 492,-150.05 486,-150.05 480,-144.05 480,-138.05 480,-138.05 480,-99.2 480,-99.2 480,-93.2 486,-87.2 492,-87.2"/>
+<text xml:space="preserve" text-anchor="middle" x="532.5" y="-132.75" font-family="Times,serif" font-size="14.00" fill="#888888">debt&#45;due ctx</text>
+</g>
+<!-- relation_L -->
+<g id="node1" class="node">
+<title>relation_L</title>
+<polygon fill="none" stroke="black" points="170.75,-268 99.25,-268 99.25,-232 170.75,-232 170.75,-268"/>
+<text xml:space="preserve" text-anchor="middle" x="135" y="-245.32" font-family="Times,serif" font-size="14.00">relation</text>
+</g>
+<!-- h1_relation_L -->
+<g id="node7" class="node">
+<title>h1_relation_L</title>
+<polygon fill="none" stroke="#bcbd22" points="145.8,-173.53 145.8,-182.47 139.47,-188.8 130.53,-188.8 124.2,-182.47 124.2,-173.53 130.53,-167.2 139.47,-167.2 145.8,-173.53"/>
+</g>
+<!-- relation_L&#45;&gt;h1_relation_L -->
+<g id="edge1" class="edge">
+<title>relation_L&#45;&gt;h1_relation_L</title>
+<path fill="none" stroke="#bcbd22" d="M135,-220.21C135,-209.1 135,-197.14 135,-188.98"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="131.5,-220.18 135,-230.18 138.5,-220.18 131.5,-220.18"/>
+<text xml:space="preserve" text-anchor="middle" x="130.5" y="-214.16" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_L -->
+<g id="node2" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="135,-124 101.27,-106 135,-88 168.73,-106 135,-124"/>
+<text xml:space="preserve" text-anchor="middle" x="135" y="-101.33" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?A_L -->
+<g id="node3" class="node">
+<title>?A_L</title>
+<polygon fill="none" stroke="black" points="220,-124 187.01,-106 220,-88 252.99,-106 220,-124"/>
+<text xml:space="preserve" text-anchor="middle" x="220" y="-101.33" font-family="Times,serif" font-size="14.00">?A</text>
+</g>
+<!-- ?B_L -->
+<g id="node4" class="node">
+<title>?B_L</title>
+<polygon fill="none" stroke="black" points="50,-124 16.27,-106 50,-88 83.73,-106 50,-124"/>
+<text xml:space="preserve" text-anchor="middle" x="50" y="-101.33" font-family="Times,serif" font-size="14.00">?B</text>
+</g>
+<!-- ?isa_L -->
+<g id="node5" class="node">
+<title>?isa_L</title>
+<polygon fill="none" stroke="black" points="261,-268 217.6,-250 261,-232 304.4,-250 261,-268"/>
+<text xml:space="preserve" text-anchor="middle" x="261" y="-245.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- h2_isa_L -->
+<g id="node8" class="node">
+<title>h2_isa_L</title>
+<polygon fill="none" stroke="#bcbd22" points="271.8,-173.53 271.8,-182.47 265.47,-188.8 256.53,-188.8 250.2,-182.47 250.2,-173.53 256.53,-167.2 265.47,-167.2 271.8,-173.53"/>
+</g>
+<!-- ?isa_L&#45;&gt;h2_isa_L -->
+<g id="edge5" class="edge">
+<title>?isa_L&#45;&gt;h2_isa_L</title>
+<path fill="none" stroke="#bcbd22" d="M261,-220.21C261,-209.1 261,-197.14 261,-188.98"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="257.5,-220.18 261,-230.18 264.5,-220.18 257.5,-220.18"/>
+<text xml:space="preserve" text-anchor="middle" x="256.5" y="-214.16" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?a_L -->
+<g id="node6" class="node">
+<title>?a_L</title>
+<polygon fill="none" stroke="black" points="302,-124 270.5,-106 302,-88 333.5,-106 302,-124"/>
+<text xml:space="preserve" text-anchor="middle" x="302" y="-101.33" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- h1_relation_L&#45;&gt;?R_L -->
+<g id="edge2" class="edge">
+<title>h1_relation_L&#45;&gt;?R_L</title>
+<path fill="none" stroke="#bcbd22" d="M135,-166.97C135,-158.81 135,-146.87 135,-135.78"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="138.5,-135.83 135,-125.83 131.5,-135.83 138.5,-135.83"/>
+<text xml:space="preserve" text-anchor="middle" x="130.5" y="-149.71" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h1_relation_L&#45;&gt;?A_L -->
+<g id="edge3" class="edge">
+<title>h1_relation_L&#45;&gt;?A_L</title>
+<path fill="none" stroke="#bcbd22" d="M144.66,-171.83C153.68,-166.8 167.3,-158.68 178,-150.05 186.53,-143.17 195.12,-134.7 202.29,-127.09"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="204.78,-129.57 208.95,-119.83 199.61,-124.84 204.78,-129.57"/>
+<text xml:space="preserve" text-anchor="middle" x="175.5" y="-152.36" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h1_relation_L&#45;&gt;?B_L -->
+<g id="edge4" class="edge">
+<title>h1_relation_L&#45;&gt;?B_L</title>
+<path fill="none" stroke="#bcbd22" d="M125.34,-171.83C116.32,-166.8 102.7,-158.68 92,-150.05 83.47,-143.17 74.88,-134.7 67.71,-127.09"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="70.39,-124.84 61.05,-119.83 65.22,-129.57 70.39,-124.84"/>
+<text xml:space="preserve" text-anchor="middle" x="85.5" y="-152.36" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- h2_isa_L&#45;&gt;?A_L -->
+<g id="edge7" class="edge">
+<title>h2_isa_L&#45;&gt;?A_L</title>
+<path fill="none" stroke="#bcbd22" d="M255.47,-167.56C249.81,-157.9 240.81,-142.53 233.29,-129.7"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="236.51,-128.27 228.44,-121.41 230.47,-131.8 236.51,-128.27"/>
+<text xml:space="preserve" text-anchor="middle" x="237.06" y="-147.77" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h2_isa_L&#45;&gt;?a_L -->
+<g id="edge6" class="edge">
+<title>h2_isa_L&#45;&gt;?a_L</title>
+<path fill="none" stroke="#bcbd22" d="M266.53,-167.56C272.19,-157.9 281.19,-142.53 288.71,-129.7"/>
+<polygon fill="#bcbd22" stroke="#bcbd22" points="291.53,-131.8 293.56,-121.41 285.49,-128.27 291.53,-131.8"/>
+<text xml:space="preserve" text-anchor="middle" x="275.94" y="-147.77" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- debt&#45;due_R -->
+<g id="node9" class="node">
+<title>debt&#45;due_R</title>
+<polygon fill="none" stroke="black" points="486.5,-268 407.5,-268 407.5,-232 486.5,-232 486.5,-268"/>
+<text xml:space="preserve" text-anchor="middle" x="447" y="-245.32" font-family="Times,serif" font-size="14.00">debt&#45;due</text>
+</g>
+<!-- h3_debt&#45;due_R -->
+<g id="node17" class="node">
+<title>h3_debt&#45;due_R</title>
+<polygon fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" points="457.8,-173.53 457.8,-182.47 451.47,-188.8 442.53,-188.8 436.2,-182.47 436.2,-173.53 442.53,-167.2 451.47,-167.2 457.8,-173.53"/>
+</g>
+<!-- debt&#45;due_R&#45;&gt;h3_debt&#45;due_R -->
+<g id="edge8" class="edge">
+<title>debt&#45;due_R&#45;&gt;h3_debt&#45;due_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M447,-220.21C447,-209.1 447,-197.14 447,-188.98"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="443.5,-220.18 447,-230.18 450.5,-220.18 443.5,-220.18"/>
+<text xml:space="preserve" text-anchor="middle" x="442.5" y="-214.16" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_R -->
+<g id="node10" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="391,-52 357.27,-34 391,-16 424.73,-34 391,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="391" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- total&#45;owed&#45;of_R -->
+<g id="node11" class="node">
+<title>total&#45;owed&#45;of_R</title>
+<polygon fill="none" stroke="black" points="587.5,-196 478.5,-196 478.5,-160 587.5,-160 587.5,-196"/>
+<text xml:space="preserve" text-anchor="middle" x="533" y="-173.32" font-family="Times,serif" font-size="14.00">total&#45;owed&#45;of</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R -->
+<g id="node16" class="node">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R</title>
+<polygon fill="none" stroke="#7f7f7f" points="543.8,-101.53 543.8,-110.47 537.47,-116.8 528.53,-116.8 522.2,-110.47 522.2,-101.53 528.53,-95.2 537.47,-95.2 543.8,-101.53"/>
+</g>
+<!-- total&#45;owed&#45;of_R&#45;&gt;(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R -->
+<g id="edge11" class="edge">
+<title>total&#45;owed&#45;of_R&#45;&gt;(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M533,-148.21C533,-137.1 533,-125.14 533,-116.98"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="529.5,-148.18 533,-158.18 536.5,-148.18 529.5,-148.18"/>
+<text xml:space="preserve" text-anchor="middle" x="528.5" y="-142.16" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?isa_R -->
+<g id="node12" class="node">
+<title>?isa_R</title>
+<polygon fill="none" stroke="black" points="486,-52 442.6,-34 486,-16 529.4,-34 486,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="486" y="-29.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- ?A_R -->
+<g id="node13" class="node">
+<title>?A_R</title>
+<polygon fill="none" stroke="black" points="580,-52 547.01,-34 580,-16 612.99,-34 580,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="580" y="-29.32" font-family="Times,serif" font-size="14.00">?A</text>
+</g>
+<!-- ?B_R -->
+<g id="node14" class="node">
+<title>?B_R</title>
+<polygon fill="none" stroke="black" points="665,-52 631.27,-34 665,-16 698.73,-34 665,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="665" y="-29.32" font-family="Times,serif" font-size="14.00">?B</text>
+</g>
+<!-- ?a_R -->
+<g id="node15" class="node">
+<title>?a_R</title>
+<polygon fill="none" stroke="black" points="748,-52 716.5,-34 748,-16 779.5,-34 748,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="748" y="-29.32" font-family="Times,serif" font-size="14.00">?a</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?R_R -->
+<g id="edge12" class="edge">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M529.05,-95.05C526.57,-89.92 522.9,-83.93 518,-80 487.3,-55.38 470.98,-65.46 434,-52 429.42,-50.33 424.59,-48.5 419.89,-46.67"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="421.32,-43.48 410.74,-43.06 418.75,-49.99 421.32,-43.48"/>
+<text xml:space="preserve" text-anchor="middle" x="466.08" y="-64.51" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?isa_R -->
+<g id="edge13" class="edge">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?isa_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M527.61,-95.63C524.83,-90.89 521.32,-85.08 518,-80 513.09,-72.5 507.5,-64.47 502.38,-57.31"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="505.38,-55.48 496.68,-49.43 499.71,-59.58 505.38,-55.48"/>
+<text xml:space="preserve" text-anchor="middle" x="508" y="-75.72" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?A_R -->
+<g id="edge14" class="edge">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?A_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M538.95,-96.13C545.49,-86.4 556.23,-70.4 565.08,-57.21"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="567.88,-59.34 570.54,-49.08 562.06,-55.43 567.88,-59.34"/>
+<text xml:space="preserve" text-anchor="middle" x="550.59" y="-76.05" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?B_R -->
+<g id="edge15" class="edge">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?B_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M542.49,-99.97C562.39,-89.41 609.09,-64.65 638.74,-48.93"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="640.28,-52.07 647.47,-44.29 637,-45.89 640.28,-52.07"/>
+<text xml:space="preserve" text-anchor="middle" x="591.33" y="-75.63" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- (total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?a_R -->
+<g id="edge16" class="edge">
+<title>(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R&#45;&gt;?a_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M544.19,-102.06C572.14,-94.63 647.12,-74.08 708,-52 712.07,-50.52 716.32,-48.86 720.48,-47.15"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="721.79,-50.4 729.64,-43.28 719.06,-43.95 721.79,-50.4"/>
+<text xml:space="preserve" text-anchor="middle" x="634.13" y="-78.97" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- h3_debt&#45;due_R&#45;&gt;?R_R -->
+<g id="edge9" class="edge">
+<title>h3_debt&#45;due_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M442.97,-166.79C434.22,-144.59 413.24,-91.39 400.77,-59.78"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="404.09,-58.64 397.16,-50.62 397.57,-61.21 404.09,-58.64"/>
+<text xml:space="preserve" text-anchor="middle" x="415.22" y="-111.79" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h3_debt&#45;due_R&#45;&gt;(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R -->
+<g id="edge10" class="edge">
+<title>h3_debt&#45;due_R&#45;&gt;(total&#45;owed&#45;of ?R ?isa ?A ?B ?a)_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M454.56,-170.11C458.81,-166.58 464.38,-162.51 470,-160 489.89,-151.11 501.62,-164.42 518,-150.05 524.32,-144.51 527.98,-136.15 530.1,-128.27"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="533.51,-129.07 531.98,-118.58 526.64,-127.73 533.51,-129.07"/>
+<text xml:space="preserve" text-anchor="middle" x="490.9" y="-143.78" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: bafc6609ece510390ab2a8253e090465a5c4d555c09e6bab1aff47ee71ef07d4 -->

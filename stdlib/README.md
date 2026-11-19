@@ -71,6 +71,7 @@ files are modules.
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
 | `std.negation` | [`negation.ein`](negation.ein) | the elimination of a double negation, `(not (not g))` ⟹ `g`: `eliminate-0` to `eliminate-6`, one rule a count of arguments with the relation a parameter, each activated a relation ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
 | `std.contradiction` | [`contradiction.ein`](contradiction.ein) | a fact beside its negation as a rule that concludes `(false)`: `clash-0` to `clash-6`, one rule a count with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive those activators from the declarations where the program holds `(clash-of-declared)` ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
+| `std.debts` | [`debts.ein`](debts.ein) | what an obligation requires and what pays it, as facts: for each of the library's four obligations a rule that concludes `(debt-due R J)` from its trigger and one that concludes `(debt-paid R J)` from the trigger with its witness (`total-due` and `total-paid`, `surjective-`, `room-`, `fill-`); `debts-of-total`, `-surjective`, `-room` and `-fill`, which activate a pair from the obligation's activator where the program holds `(debts-of-owed)`; and `discharged-from-nothing-unpaid`, `(debts-discharged)` ([§](#stddebts-the-requirement-and-the-payment-as-facts)) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
 | `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and the check an operation asks of one it takes ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `decimal` |
@@ -332,6 +333,62 @@ modules, and a `.einb` stores the program without it. A fact beside its stored n
 engine reads that contradiction itself, with no rule. Reference:
 [`21-core.md`](../docs/ein/user/04-reference/04-stdlib/21-core.md); its programs are
 [`tests/stdlib/core/`](../tests/stdlib/core/).
+
+## `std.debts`: the requirement and the payment as facts
+
+An obligation's conclusion is a verdict and no fact, because a debt a state
+held would outlive its own payment in the state that paid it
+([Q-M1d.2](../docs/decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)).
+The two halves of a debt have no such trouble: the **requirement**, an
+obligation's trigger, and the **payment**, the trigger with the witness the
+obligation's `absent` looks for, each stay true as a state grows. `std.debts`
+states them for the library's four obligations
+([`04-stdlib/22-debts.md`](../docs/ein/user/04-reference/04-stdlib/22-debts.md)
+is the reference):
+
+| obligation | requirement | payment | parameters |
+|---|---|---|---|
+| `std.algebra`'s `total-owed` | `total-due` | `total-paid` | `?R ?isa` |
+| `std.algebra`'s `surjective-owed` | `surjective-due` | `surjective-paid` | `?R ?isa` |
+| `std.slots`' `slot-owed-room` | `room-due` | `room-paid` | `?R ?isa ?sub ?super ?index` |
+| `std.slots`' `slot-owed-fill` | `fill-due` | `fill-paid` | `?R ?isa ?sub ?super ?index` |
+
+Each concludes `(debt-due R J)` or `(debt-paid R J)`, `J` the instance: a
+fact no state holds, of a relation named for the obligation
+(`total-owed-of`), whose arguments are the obligation's parameters and then
+what its trigger bound. None of the eight reads an `absent`. What a state
+owes is then a difference, the requirements with no payment beside them, and
+`discharged-from-nothing-unpaid` concludes `(debts-discharged)` where the
+difference is empty: an `absent` inside an `absent`, which a larger state can
+only turn from failing to holding, so the static check keeps calling the
+program monotone.
+
+**One fact asks for all of it.** Where a program holds `(debts-of-owed)`, the
+four `debts-of-…` rules activate each pair from its obligation's activator,
+written or derived, and `(debts-discharged)` is judged. A pair can be
+activated by hand instead.
+
+**`(debts-discharged)` is about the requirements that are stated.** It agrees
+with what the engine says a state owes where every obligation the program
+activates is one of the four; a program restates an obligation of its own by
+two rules that conclude `debt-due` and `debt-paid`.
+
+**The relations are not declared**, and that is what lets an import move
+nothing. A declaration's labels are names of every program that imports the
+module, which a goal that binds over the program's names reads; and a
+declared relation of one or two labels is one the blind enumerator guesses
+about unless its held extent is closed, by a `(__closed__ R)` a program's rule
+can read. So `debt-due`, `debt-paid`, `debts-discharged`, the four instance
+relations and `debts-of-owed` are no module's, as `bijective` is: a program
+writes each as it is, and one that uses one of those words for a relation of
+its own shares it with these rules.
+
+**What holds it.** [`tests/stdlib/debts/`](../tests/stdlib/debts/), and
+[`ein-infer/tests/debts_rules.rs`](../ein.rs/crates/ein-infer/tests/debts_rules.rs),
+which reads nodes both ways, the kernel's pass and the module's facts: the
+requirements with no payment are what the node owes, and `(debts-discharged)`
+is held exactly where it owes nothing, at every node of a small search's cube
+and at every node a description of `examples/zebra2-obligations.ein` enters.
 
 ## `std.math.digits`: a library of facts
 

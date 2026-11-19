@@ -1,0 +1,86 @@
+;;; `std.debts` — the module **loaded and not asked for**: an import by
+;;; itself restates nothing.
+;;;
+;;; `07_debts_of_owed.ein` without its line `(debts-of-owed)`, and the only
+;;; difference between the two files is that line. The four obligations are
+;;; activated and paid as there, so root owes nothing and is R's one state.
+;;; The four rules that restate an obligation read `(debts-of-owed)` beside
+;;; its activator, and so does the rule for `(debts-discharged)`; nothing
+;;; holds that fact here, so none of the five concludes anything, and with
+;;; no activator the eight rules under them are silent too.
+;;;
+;;; That is what lets a program import the module, or a module that imports
+;;; it, and hold what it held.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Every query's one class is the empty one, `(model)`: no activator of the
+;;; eight rules, no requirement, no payment, and no `(debts-discharged)`,
+;;; though nothing is owed. The region claim is `07`'s without that fact.
+
+(import std.algebra :symbols (total-owed surjective-owed))
+(import std.slots   :symbols (slot-owed-room slot-owed-fill))
+(import std.debts
+  :symbols (total-due total-paid surjective-due surjective-paid
+            room-due room-paid fill-due fill-paid))
+
+(relation is-a     T T         :why "{?3} is a {?4}")
+(relation likes    Person Food :why "{?3} likes {?4}")
+(relation type     T T         :why "{?3} is a subtype of {?4}")
+(relation instance T T         :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(total-owed      likes is-a)
+(surjective-owed likes is-a)
+(slot-owed-room  co-loc instance type Attribute Seat)
+(slot-owed-fill  co-loc instance type Attribute Seat)
+
+(likes Ann Soup) (likes Bob Stew)
+
+(co-loc Ann S1) (co-loc Cat S1)
+(co-loc Bob S2) (co-loc Dog S2)
+(co-loc S1 Ann) (co-loc S1 Cat)
+(co-loc S2 Bob) (co-loc S2 Dog)
+
+;; Root alone (Q-M1f.254): the question is root's saturation and root's
+;; verdict, and root owes nothing, so R is root alone.
+(solve
+  :no-search
+  :expect (region (model (likes Ann Soup) (likes Bob Stew)
+                         (co-loc Ann S1) (co-loc Cat S1)
+                         (co-loc Bob S2) (co-loc Dog S2)
+                         (co-loc S1 Ann) (co-loc S1 Cat)
+                         (co-loc S2 Bob) (co-loc S2 Dog))))
+
+(query :goal (total-due ?R ?isa)
+  :expect (model))
+(query :goal (total-paid ?R ?isa)
+  :expect (model))
+(query :goal (surjective-due ?R ?isa)
+  :expect (model))
+(query :goal (surjective-paid ?R ?isa)
+  :expect (model))
+(query :goal (room-due ?R ?isa ?sub ?super ?index)
+  :expect (model))
+(query :goal (room-paid ?R ?isa ?sub ?super ?index)
+  :expect (model))
+(query :goal (fill-due ?R ?isa ?sub ?super ?index)
+  :expect (model))
+(query :goal (fill-paid ?R ?isa ?sub ?super ?index)
+  :expect (model))
+(query :goal (debt-due ?R ?j)
+  :expect (model))
+(query :goal (debt-paid ?R ?j)
+  :expect (model))
+(query :goal (debts-discharged)
+  :expect (model))

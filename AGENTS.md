@@ -223,7 +223,20 @@ constrained-reasoning research.
   activator. Their programs are under `tests/stdlib/negation/` and
   `tests/stdlib/contradiction/`, and `ein-infer/tests/contradiction_rules.rs`
   holds the firing, which no claim can see while the kernel judges a pair
-  itself. **`std.core` is the module every program gets**, with no import
+  itself. **What an obligation requires and what pays it are facts a program
+  asks for**: `std.debts`, for each of the library's four obligations a rule
+  that concludes `(debt-due R J)` from its trigger and one that concludes
+  `(debt-paid R J)` from the trigger with its witness (`total-due` and
+  `total-paid`, `surjective-`, `room-`, `fill-`), `J` the instance, a fact no
+  state holds; and, where a program writes `(debts-of-owed)`, `debts-of-total`,
+  `-surjective`, `-room` and `-fill`, which activate a pair from the
+  obligation's activator, and `discharged-from-nothing-unpaid`, which
+  concludes `(debts-discharged)` where no requirement lacks its payment. It
+  imports `std.algebra` and `std.slots`, declares no relation and writes no
+  fact, and the eight words it writes or reads are no module's. Its programs
+  are under `tests/stdlib/debts/`, and `ein-infer/tests/debts_rules.rs` holds
+  the requirements with no payment to what the kernel owes, node by node,
+  which no claim can say. **`std.core` is the module every program gets**, with no import
   line and under its full names, after the program's forms and its imports'
   ([Q-M1f.551](docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)):
   its one rule, `std.core.inconsistent`, matches a held `(false)` and states

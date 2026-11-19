@@ -1,0 +1,45 @@
+digraph rule_debts_of_fill_lhs_rhs {
+  rankdir=TB;
+  label="debts-of-fill"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "debts-of-owed_L" [label="debts-of-owed", shape=box];
+    "slot-owed-fill_L" [label="slot-owed-fill", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    "?isa_L" [label="?isa", shape=diamond];
+    "?sub_L" [label="?sub", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "h1_debts-of-owed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "debts-of-owed_L" -> "h1_debts-of-owed_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h2_slot-owed-fill_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "slot-owed-fill_L" -> "h2_slot-owed-fill_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h2_slot-owed-fill_L" -> "?R_L" [xlabel="2", color="#ff7f0e"];
+    "h2_slot-owed-fill_L" -> "?isa_L" [xlabel="3", color="#ff7f0e"];
+    "h2_slot-owed-fill_L" -> "?sub_L" [xlabel="4", color="#ff7f0e"];
+    "h2_slot-owed-fill_L" -> "?super_L" [xlabel="5", color="#ff7f0e"];
+    "h2_slot-owed-fill_L" -> "?index_L" [xlabel="6", color="#ff7f0e"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "fill-due_R" [label="fill-due", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?sub_R" [label="?sub", shape=diamond];
+    "?super_R" [label="?super", shape=diamond];
+    "?index_R" [label="?index", shape=diamond];
+    "fill-paid_R" [label="fill-paid", shape=box];
+    "h3_fill-due_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "fill-due_R" -> "h3_fill-due_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h3_fill-due_R" -> "?R_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h3_fill-due_R" -> "?isa_R" [xlabel="3", color="#8c564b", style=dashed];
+    "h3_fill-due_R" -> "?sub_R" [xlabel="4", color="#8c564b", style=dashed];
+    "h3_fill-due_R" -> "?super_R" [xlabel="5", color="#8c564b", style=dashed];
+    "h3_fill-due_R" -> "?index_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h4_fill-paid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "fill-paid_R" -> "h4_fill-paid_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "h4_fill-paid_R" -> "?R_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h4_fill-paid_R" -> "?isa_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h4_fill-paid_R" -> "?sub_R" [xlabel="4", color="#ff7f0e", style=dashed];
+    "h4_fill-paid_R" -> "?super_R" [xlabel="5", color="#ff7f0e", style=dashed];
+    "h4_fill-paid_R" -> "?index_R" [xlabel="6", color="#ff7f0e", style=dashed];
+  }
+}

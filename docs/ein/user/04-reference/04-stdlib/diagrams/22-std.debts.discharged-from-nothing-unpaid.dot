@@ -1,0 +1,32 @@
+digraph rule_discharged_from_nothing_unpaid_lhs_rhs {
+  rankdir=TB;
+  label="discharged-from-nothing-unpaid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "debts-of-owed_L" [label="debts-of-owed", shape=box];
+    "h1_debts-of-owed_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "debts-of-owed_L" -> "h1_debts-of-owed_L" [xlabel="1", dir=back, color="#ff7f0e"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "debt-due_L" [label="debt-due", shape=box];
+      "?R_L" [label="?R", shape=diamond];
+      "?j_L" [label="?j", shape=diamond];
+      "h2_debt-due_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+      "debt-due_L" -> "h2_debt-due_L" [xlabel="1", dir=back, color="#7f7f7f"];
+      "h2_debt-due_L" -> "?R_L" [xlabel="2", color="#7f7f7f"];
+      "h2_debt-due_L" -> "?j_L" [xlabel="3", color="#7f7f7f"];
+      subgraph cluster_absent_L_0_0 {
+        label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+        "debt-paid_L" [label="debt-paid", shape=box];
+        "h3_debt-paid_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b"];
+        "debt-paid_L" -> "h3_debt-paid_L" [xlabel="1", dir=back, color="#8c564b"];
+        "h3_debt-paid_L" -> "?R_L" [xlabel="2", color="#8c564b"];
+        "h3_debt-paid_L" -> "?j_L" [xlabel="3", color="#8c564b"];
+      }
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "debts-discharged_R" [label="debts-discharged", shape=box];
+    "h4_debts-discharged_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "debts-discharged_R" -> "h4_debts-discharged_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
+  }
+}

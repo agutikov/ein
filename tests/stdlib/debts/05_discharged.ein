@@ -1,0 +1,67 @@
+;;; `std.debts/discharged-from-nothing-unpaid` — every requirement paid:
+;;; `(debts-discharged)` is concluded.
+;;;
+;;; ── What this program does to the rule ─────────────────────────────────────
+;;;
+;;; Two people, two foods, and both pairs of `std.algebra`'s obligations
+;;; restated by hand, so four requirements: Ann and Bob each a food, Soup and
+;;; Stew each somebody who likes it. Two arrows pay all four,
+;;;
+;;;   (likes Ann Soup)   pays Ann, and Soup
+;;;   (likes Bob Stew)   pays Bob, and Stew
+;;;
+;;; and the fact `(debts-of-owed)` is written, which is what the rule waits
+;;; for. It reads *no requirement without its payment*, an `absent` over the
+;;; requirements with an `absent` over the payments inside it, at the
+;;; boundary, when the closure holds every requirement and every payment
+;;; there is to hold.
+;;;
+;;; `06_discharged_unpaid.ein` is this file without Ann's arrow, and
+;;; concludes nothing. The pair is the rule's two directions, and the second
+;;; is the one a guard that admitted too much would fail.
+;;;
+;;; No obligation is activated here: the question is the rule's, over the
+;;; requirements the four rules state, and root is R's one state either way.
+;;; `(debts-of-owed)` also lets `debts-of-total` and its three siblings read
+;;; an obligation's activator, and there is none to read.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The goal has no variable: its one class is *held*, `(model
+;;; (debts-discharged))`. The requirements and the payments are counted by
+;;; closing both relations: four of each, the same four instances.
+
+(import std.debts
+  :symbols (total-due total-paid surjective-due surjective-paid))
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-due       likes is-a)
+(total-paid      likes is-a)
+(surjective-due  likes is-a)
+(surjective-paid likes is-a)
+
+(debts-of-owed)
+
+(likes Ann Soup)             ; the line `06` does not have
+(likes Bob Stew)
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (debts-discharged)
+  :expect (model (debts-discharged)))
+(query :goal (debt-due ?R ?j)
+  :expect (model (debt-due likes (total-owed-of likes is-a Person Food Ann))
+                 (debt-due likes (total-owed-of likes is-a Person Food Bob))
+                 (debt-due likes (surjective-owed-of likes is-a Person Food Soup))
+                 (debt-due likes (surjective-owed-of likes is-a Person Food Stew))))
+(query :goal (debt-paid ?R ?j)
+  :expect (model (debt-paid likes (total-owed-of likes is-a Person Food Ann))
+                 (debt-paid likes (total-owed-of likes is-a Person Food Bob))
+                 (debt-paid likes (surjective-owed-of likes is-a Person Food Soup))
+                 (debt-paid likes (surjective-owed-of likes is-a Person Food Stew))))

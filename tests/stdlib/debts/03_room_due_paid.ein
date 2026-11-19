@@ -1,0 +1,60 @@
+;;; `std.debts` — `room-due` and `room-paid`: what `std.slots`'
+;;; `slot-owed-room` requires, and what pays it, as facts.
+;;;
+;;; ── What this program does to the pair ─────────────────────────────────────
+;;;
+;;; `slots/09_owed_room.ein`'s world, two seats, two people and two pets, with
+;;; the obligation left out and its restatement activated by hand. Every
+;;; member of a kind under `Attribute` is required to be in some seat, the
+;;; seats themselves apart:
+;;;
+;;;   Ann                  `(co-loc Ann S1)`: required, and paid
+;;;   Bob, Cat, Dog        required, and in no seat
+;;;   S1, S2               seats, and required nothing: a seat owes itself no
+;;;                        seat, which is the rule's `(neq ?Ta ?index)`
+;;;
+;;; So four requirements and one payment, and the difference is the three
+;;; `slot-owed-room` owes in `09`. A rule without the guard would require the
+;;; two seats a seat as well, and the claim, which lists every requirement,
+;;; would fail.
+;;;
+;;; The payment's rule carries the same guard, and `(co-loc S1 S2)` is here
+;;; to tempt it: a seat linked to a seat, as a clue may link any two
+;;; members. It pays nothing, since a seat is required nothing; a payment
+;;; rule without the guard would conclude a payment of a requirement nobody
+;;; stated, and the claim lists every payment.
+;;;
+;;; The claims close the two relations' held extents. The instance names the
+;;; activator's five arguments, the member and its kind.
+
+(import std.debts :symbols (room-due room-paid))
+
+(relation type     T T :why "{?3} is a subtype of {?4}")
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+
+(room-due  co-loc instance type Attribute Seat)
+(room-paid co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(co-loc Ann S1)              ; Bob, Cat and Dog are in no seat
+(co-loc S1 S2)               ; a seat beside a seat: pays nothing
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (debt-due ?R ?j)
+  :expect (model (debt-due co-loc (slot-owed-room-of co-loc instance type Attribute Seat Ann Who))
+                 (debt-due co-loc (slot-owed-room-of co-loc instance type Attribute Seat Bob Who))
+                 (debt-due co-loc (slot-owed-room-of co-loc instance type Attribute Seat Cat Pet))
+                 (debt-due co-loc (slot-owed-room-of co-loc instance type Attribute Seat Dog Pet))))
+(query :goal (debt-paid ?R ?j)
+  :expect (model (debt-paid co-loc (slot-owed-room-of co-loc instance type Attribute Seat Ann Who))))
+(query :goal (debts-discharged)
+  :expect (model))

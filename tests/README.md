@@ -125,6 +125,7 @@ these programs give each rule one.
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/negation/`](stdlib/negation/) | `std.negation`, the elimination of a double negation: one program, the seven rules each activated for a relation of its count, every argument a different name; and three relations the rules leave alone, one nobody activates, one activated at counts its facts do not have, one that holds a single negation |
 | [`stdlib/contradiction/`](stdlib/contradiction/) | `std.contradiction`, a fact beside its negation as a rule that concludes `(false)`: a firing program for each `clash-N`, one rule a file; all seven loaded, activated and silent over facts and denials that do not meet; the activators `clash-of-N` derives from the declarations, and the same program without the fact that asks for them. See [below](#stdlibcontradiction-rules-that-restate-the-kernels-verdict) |
+| [`stdlib/debts/`](stdlib/debts/) | `std.debts`, an obligation's requirements and payments as facts: each obligation's pair activated by hand with no obligation beside it, the requirements and the payments claimed whole; `(debts-discharged)` concluded and, with one arrow less, not; the four rules that activate a pair from an obligation's activator, asked for and not asked for; a state that owes, its two halves under `(owing …)`; and a search, every state of R discharged. See [below](#stdlibdebts-claims-over-a-verdict-that-is-no-fact) |
 | [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | `std.math.decimal-arith`, school arithmetic computed by saturation alone: addition, subtraction and comparison, multiplication, division, and the faults of an operand and a `let`: one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but those that divide by zero and those that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/math/decimal/`](stdlib/math/decimal/) | `std.math.decimal`, the numeral and the check an operation asks of one it takes: a well-formed numeral in every place a file writes one, labelled where an operation takes or makes it; a malformed one in a `let` nobody asks about, in a fact of the program's own and in a rule's conclusion that never fires, each unchecked, and one a rule hands to a request, checked; what stays silent; and a program's own `(named z)`. `std.math.arith`, whose two rules the division-by-zero programs activate, has none of its own; see [below](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it) |
 | [`stdlib/math/num9/`](stdlib/math/num9/) | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules: a program a rule or tight family: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
@@ -227,6 +228,46 @@ module is loaded as in every program, nothing concludes `(false)`, and R is root
 no claim can name it: what a claim sees is that the state is dead.
 [`ein-infer/tests/search_semantics.rs`](../ein.rs/crates/ein-infer/tests/search_semantics.rs) holds the record of the
 firing, and that a held `(false)` no rule has run over is no contradiction.
+
+### `stdlib/debts/`: claims over a verdict that is no fact
+
+`std.debts` states an obligation's two halves as facts, `(debt-due R J)` and
+`(debt-paid R J)`, and what the obligation owes is their difference. The
+kernel's side of that sentence is a verdict, so the programs here are written
+around what a claim can read.
+
+**The pairs are tested with no obligation beside them.** A query's claim reads
+R, and a root that owes is no state of R. So `01` to `04` activate one
+obligation's pair by hand and leave the obligation itself out: the kernel says
+nothing, root is R's one state, and the claims close `debt-due` and
+`debt-paid` there. Each is built on the world of the obligation's own fixture
+(`algebra/23`, `25`, `slots/09`, `11`), so what is required and not paid is
+what that fixture owes. `03` and `04` hold `(co-loc S1 S2)`, a seat beside a
+seat, for the payment rules' `neq`: it pays nothing, and a rule without the
+guard concludes a payment of a requirement nobody stated.
+
+**`05` and `06` are the two directions of the one `absent`.** All paid, and
+`(debts-discharged)` is held; one arrow less, and it is not. The second is
+where a guard that admitted too much would show.
+
+**`07` and `08` are the four rules that read an obligation's activator**, with
+all four obligations activated and paid, so root is in R: the fact
+`(debts-of-owed)` written, and the claims close each pair's activators; the
+fact left out, and every claim is `(model)`.
+
+**`09` is the state that owes**, under `(owing (model …))`, which names root's
+requirements and its one payment. **`10` searches**: the seating of
+`examples/lattice/05_owed_seats_bounded.ein` with the module asked for, R the
+same two matchings, each holding `(debts-discharged)`.
+
+What no claim here can say is the sentence the module is for, *the
+requirements with no payment are what the state owes, and
+`(debts-discharged)` is held exactly where it owes nothing*, since most of the
+states it is about are outside R.
+[`ein-infer/tests/debts_rules.rs`](../ein.rs/crates/ein-infer/tests/debts_rules.rs)
+holds it in-process, reading each node both ways: the sixteen nodes of `10`'s
+cube, every node a description of `examples/zebra2-obligations.ein` enters
+with the module asked for, and the roots of the eight obligation fixtures.
 
 ### A module of facts has no rule to activate
 

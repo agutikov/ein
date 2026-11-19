@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: rule_debts_of_surjective_lhs_rhs Pages: 1 -->
+<svg width="584pt" height="256pt"
+ viewBox="0.00 0.00 584.00 256.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 252.1)">
+<title>rule_debts_of_surjective_lhs_rhs</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-252.1 580,-252.1 580,4 -4,4"/>
+<text xml:space="preserve" text-anchor="middle" x="288" y="-230.8" font-family="Times,serif" font-size="14.00">debts&#45;of&#45;surjective</text>
+<g id="clust1" class="cluster">
+<title>cluster_lhs</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-214.85 286,-214.85 286,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="147" y="-197.55" font-family="Times,serif" font-size="14.00">match</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_rhs</title>
+<polygon fill="none" stroke="black" points="294,-8 294,-214.85 568,-214.85 568,-8 294,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="431" y="-197.55" font-family="Times,serif" font-size="14.00">assert</text>
+</g>
+<!-- debts&#45;of&#45;owed_L -->
+<g id="node1" class="node">
+<title>debts&#45;of&#45;owed_L</title>
+<polygon fill="none" stroke="black" points="131.5,-181.6 16.5,-181.6 16.5,-145.6 131.5,-145.6 131.5,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="74" y="-158.92" font-family="Times,serif" font-size="14.00">debts&#45;of&#45;owed</text>
+</g>
+<!-- h1_debts&#45;of&#45;owed_L -->
+<g id="node5" class="node">
+<title>h1_debts&#45;of&#45;owed_L</title>
+<polygon fill="none" stroke="#ff7f0e" points="84.8,-94.33 84.8,-103.27 78.47,-109.6 69.53,-109.6 63.2,-103.27 63.2,-94.33 69.53,-88 78.47,-88 84.8,-94.33"/>
+</g>
+<!-- debts&#45;of&#45;owed_L&#45;&gt;h1_debts&#45;of&#45;owed_L -->
+<g id="edge1" class="edge">
+<title>debts&#45;of&#45;owed_L&#45;&gt;h1_debts&#45;of&#45;owed_L</title>
+<path fill="none" stroke="#ff7f0e" d="M74,-133.85C74,-125.29 74,-116.47 74,-109.96"/>
+<polygon fill="#ff7f0e" stroke="#ff7f0e" points="70.5,-133.59 74,-143.59 77.5,-133.59 70.5,-133.59"/>
+<text xml:space="preserve" text-anchor="middle" x="69.5" y="-131.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- surjective&#45;owed_L -->
+<g id="node2" class="node">
+<title>surjective&#45;owed_L</title>
+<polygon fill="none" stroke="black" points="278.25,-181.6 149.75,-181.6 149.75,-145.6 278.25,-145.6 278.25,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="214" y="-158.92" font-family="Times,serif" font-size="14.00">surjective&#45;owed</text>
+</g>
+<!-- h2_surjective&#45;owed_L -->
+<g id="node6" class="node">
+<title>h2_surjective&#45;owed_L</title>
+<polygon fill="none" stroke="#17becf" points="224.8,-94.33 224.8,-103.27 218.47,-109.6 209.53,-109.6 203.2,-103.27 203.2,-94.33 209.53,-88 218.47,-88 224.8,-94.33"/>
+</g>
+<!-- surjective&#45;owed_L&#45;&gt;h2_surjective&#45;owed_L -->
+<g id="edge2" class="edge">
+<title>surjective&#45;owed_L&#45;&gt;h2_surjective&#45;owed_L</title>
+<path fill="none" stroke="#17becf" d="M214,-133.85C214,-125.29 214,-116.47 214,-109.96"/>
+<polygon fill="#17becf" stroke="#17becf" points="210.5,-133.59 214,-143.59 217.5,-133.59 210.5,-133.59"/>
+<text xml:space="preserve" text-anchor="middle" x="209.5" y="-131.77" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_L -->
+<g id="node3" class="node">
+<title>?R_L</title>
+<polygon fill="none" stroke="black" points="129,-52 95.27,-34 129,-16 162.73,-34 129,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="129" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?isa_L -->
+<g id="node4" class="node">
+<title>?isa_L</title>
+<polygon fill="none" stroke="black" points="224,-52 180.6,-34 224,-16 267.4,-34 224,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="224" y="-29.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- h2_surjective&#45;owed_L&#45;&gt;?R_L -->
+<g id="edge3" class="edge">
+<title>h2_surjective&#45;owed_L&#45;&gt;?R_L</title>
+<path fill="none" stroke="#17becf" d="M205.54,-91.55C193.14,-82.39 169.58,-64.98 151.86,-51.89"/>
+<polygon fill="#17becf" stroke="#17becf" points="154.06,-49.17 143.94,-46.04 149.91,-54.8 154.06,-49.17"/>
+<text xml:space="preserve" text-anchor="middle" x="169.79" y="-72.41" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h2_surjective&#45;owed_L&#45;&gt;?isa_L -->
+<g id="edge4" class="edge">
+<title>h2_surjective&#45;owed_L&#45;&gt;?isa_L</title>
+<path fill="none" stroke="#17becf" d="M215.61,-87.71C216.7,-80.86 218.19,-71.46 219.62,-62.48"/>
+<polygon fill="#17becf" stroke="#17becf" points="223.07,-63.11 221.18,-52.69 216.15,-62.01 223.07,-63.11"/>
+<text xml:space="preserve" text-anchor="middle" x="213.98" y="-73.62" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- surjective&#45;due_R -->
+<g id="node7" class="node">
+<title>surjective&#45;due_R</title>
+<polygon fill="none" stroke="black" points="419.62,-181.6 302.38,-181.6 302.38,-145.6 419.62,-145.6 419.62,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="361" y="-158.92" font-family="Times,serif" font-size="14.00">surjective&#45;due</text>
+</g>
+<!-- h3_surjective&#45;due_R -->
+<g id="node11" class="node">
+<title>h3_surjective&#45;due_R</title>
+<polygon fill="none" stroke="#2ca02c" stroke-dasharray="5,2" points="392.8,-94.33 392.8,-103.27 386.47,-109.6 377.53,-109.6 371.2,-103.27 371.2,-94.33 377.53,-88 386.47,-88 392.8,-94.33"/>
+</g>
+<!-- surjective&#45;due_R&#45;&gt;h3_surjective&#45;due_R -->
+<g id="edge5" class="edge">
+<title>surjective&#45;due_R&#45;&gt;h3_surjective&#45;due_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M370.42,-134.43C373.34,-125.69 376.37,-116.62 378.6,-109.96"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="367.18,-133.08 367.33,-143.67 373.82,-135.3 367.18,-133.08"/>
+<text xml:space="preserve" text-anchor="middle" x="368.25" y="-131.4" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- ?R_R -->
+<g id="node8" class="node">
+<title>?R_R</title>
+<polygon fill="none" stroke="black" points="382,-52 348.27,-34 382,-16 415.73,-34 382,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="382" y="-29.32" font-family="Times,serif" font-size="14.00">?R</text>
+</g>
+<!-- ?isa_R -->
+<g id="node9" class="node">
+<title>?isa_R</title>
+<polygon fill="none" stroke="black" points="477,-52 433.6,-34 477,-16 520.4,-34 477,-52"/>
+<text xml:space="preserve" text-anchor="middle" x="477" y="-29.32" font-family="Times,serif" font-size="14.00">?isa</text>
+</g>
+<!-- surjective&#45;paid_R -->
+<g id="node10" class="node">
+<title>surjective&#45;paid_R</title>
+<polygon fill="none" stroke="black" points="559.88,-181.6 438.12,-181.6 438.12,-145.6 559.88,-145.6 559.88,-181.6"/>
+<text xml:space="preserve" text-anchor="middle" x="499" y="-158.92" font-family="Times,serif" font-size="14.00">surjective&#45;paid</text>
+</g>
+<!-- h4_surjective&#45;paid_R -->
+<g id="node12" class="node">
+<title>h4_surjective&#45;paid_R</title>
+<polygon fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" points="487.8,-94.33 487.8,-103.27 481.47,-109.6 472.53,-109.6 466.2,-103.27 466.2,-94.33 472.53,-88 481.47,-88 487.8,-94.33"/>
+</g>
+<!-- surjective&#45;paid_R&#45;&gt;h4_surjective&#45;paid_R -->
+<g id="edge8" class="edge">
+<title>surjective&#45;paid_R&#45;&gt;h4_surjective&#45;paid_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M489.13,-134.43C486.07,-125.69 482.89,-116.62 480.56,-109.96"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="485.76,-135.4 492.37,-143.68 492.37,-133.08 485.76,-135.4"/>
+<text xml:space="preserve" text-anchor="middle" x="482.19" y="-131.4" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- h3_surjective&#45;due_R&#45;&gt;?R_R -->
+<g id="edge6" class="edge">
+<title>h3_surjective&#45;due_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M382,-87.71C382,-81.13 382,-72.19 382,-63.54"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="385.5,-63.69 382,-53.69 378.5,-63.69 385.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="377.5" y="-73.99" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h3_surjective&#45;due_R&#45;&gt;?isa_R -->
+<g id="edge7" class="edge">
+<title>h3_surjective&#45;due_R&#45;&gt;?isa_R</title>
+<path fill="none" stroke="#2ca02c" stroke-dasharray="5,2" d="M390.77,-92C404.36,-83.02 431.06,-65.37 451.16,-52.08"/>
+<polygon fill="#2ca02c" stroke="#2ca02c" points="453.02,-55.05 459.43,-46.61 449.16,-49.21 453.02,-55.05"/>
+<text xml:space="preserve" text-anchor="middle" x="421.26" y="-72.82" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- h4_surjective&#45;paid_R&#45;&gt;?R_R -->
+<g id="edge9" class="edge">
+<title>h4_surjective&#45;paid_R&#45;&gt;?R_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M468.23,-92C454.24,-82.76 426.39,-64.34 406.11,-50.94"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="408.12,-48.07 397.85,-45.48 404.26,-53.91 408.12,-48.07"/>
+<text xml:space="preserve" text-anchor="middle" x="428.1" y="-55.15" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- h4_surjective&#45;paid_R&#45;&gt;?isa_R -->
+<g id="edge10" class="edge">
+<title>h4_surjective&#45;paid_R&#45;&gt;?isa_R</title>
+<path fill="none" stroke="#7f7f7f" stroke-dasharray="5,2" d="M477,-87.71C477,-81.13 477,-72.19 477,-63.54"/>
+<polygon fill="#7f7f7f" stroke="#7f7f7f" points="480.5,-63.69 477,-53.69 473.5,-63.69 480.5,-63.69"/>
+<text xml:space="preserve" text-anchor="middle" x="472.5" y="-73.99" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+</g>
+</svg>
+<!-- source sha256: 91513378f61f823f2bd54962fe5a0d4a21b0be47a0221d9a4c555f793a2dfe85 -->

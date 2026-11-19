@@ -3539,6 +3539,12 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 note   = "the module every program gets with no import line (Q-M1f.551): one rule, `inconsistent`, which matches a held `(false)` and states `:ein inconsistent`, so a state that holds `(false)` is dead by a rule and the kernel reads the fact by its name nowhere. Loaded as a program it is its own rule beside the one every program gets, and nothing concludes `(false)`: R {∅}."
 
 [[entry]]
+path   = "stdlib/debts.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "what an obligation requires and what pays it, as facts: `(debt-due R J)` from the trigger of each of the library's four obligations, `(debt-paid R J)` from the trigger with its witness, and `(debts-discharged)` where no requirement lacks its payment. A pair of rules an obligation, activated by hand or, where the program holds `(debts-of-owed)`, from the obligation's own activator. It imports `std.algebra` and `std.slots`, declares no relation and writes no fact. The module alone activates nothing: R {∅}."
+
+[[entry]]
 path   = "stdlib/math/digits.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
@@ -4495,6 +4501,66 @@ path   = "tests/stdlib/contradiction/10_clash_of_not_asked.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "`09` without `(clash-of-declared)`: the module imported and one activator written by hand. Nothing derives an activator, `(model)` at every count but the written one's."
+
+[[entry]]
+path   = "tests/stdlib/debts/01_total_due_paid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`total-due` and `total-paid`, activated by hand with no obligation beside them: two requirements, one a person, and one payment, Bob's; the difference is what `total-owed` owes in `algebra/23`."
+
+[[entry]]
+path   = "tests/stdlib/debts/02_surjective_due_paid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`surjective-due` and `surjective-paid`: `01` from the other end, two requirements, one a food, and one payment."
+
+[[entry]]
+path   = "tests/stdlib/debts/03_room_due_paid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`room-due` and `room-paid` on `slots/09`'s world: four requirements, one payment, and no seat required a seat, which is the rule's `neq`."
+
+[[entry]]
+path   = "tests/stdlib/debts/04_fill_due_paid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`fill-due` and `fill-paid` on `slots/11`'s world: four requirements, one a seat and a kind, and one payment."
+
+[[entry]]
+path   = "tests/stdlib/debts/05_discharged.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`discharged-from-nothing-unpaid` concludes: four requirements, four payments, `(debts-of-owed)` written."
+
+[[entry]]
+path   = "tests/stdlib/debts/06_discharged_unpaid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`05` without one arrow: two requirements unpaid, and `(debts-discharged)` is not concluded. The half a guard that admitted too much would fail."
+
+[[entry]]
+path   = "tests/stdlib/debts/07_debts_of_owed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`debts-of-total`, `debts-of-surjective`, `debts-of-room` and `debts-of-fill`: all four obligations activated and paid, `(debts-of-owed)` written and no activator of the module. Each rule derives its pair's activators from an obligation's; twelve requirements, a payment for each, `(debts-discharged)`, and root in R."
+
+[[entry]]
+path   = "tests/stdlib/debts/08_debts_not_asked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`07` without `(debts-of-owed)`: the module imported and nothing asked. No activator, no requirement, no payment, no `(debts-discharged)`, `(model)` each."
+
+[[entry]]
+path   = "tests/stdlib/debts/09_debts_owing.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "a state that owes, `algebra/23` with the module asked for: under `(owing …)` root holds two requirements and one payment, and the one with no payment is the instance the kernel owes. `ein-infer/tests/debts_rules.rs` holds the count."
+
+[[entry]]
+path   = "tests/stdlib/debts/10_discharged_over_r.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "the one program of the directory that searches: `examples/lattice/05_owed_seats_bounded.ein`'s seating with the module asked for. R is the same two matchings, and each state holds `(debts-discharged)`. `ein-infer/tests/debts_rules.rs` reads its whole cube, sixteen nodes, both ways."
 
 [[entry]]
 path   = "tests/stdlib/math/digits/01_tables.ein"

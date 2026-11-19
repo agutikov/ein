@@ -1,0 +1,41 @@
+;;; `std.debts` — `surjective-due` and `surjective-paid`: what `std.algebra`'s
+;;; `surjective-owed` requires, and what pays it, as facts.
+;;;
+;;; `01_total_due_paid.ein` read from the other end. The same two people, two
+;;; foods and one arrow, and the other pair activated by hand:
+;;;
+;;;   (likes Bob Stew)     stated: Stew has a preimage
+;;;   Soup                 nobody likes it: required, and not paid
+;;;
+;;; So `surjective-due` concludes two requirements, one a food, and
+;;; `surjective-paid` one payment, Stew's. The difference is Soup, which is
+;;; what `surjective-owed` owes in `algebra/25_surjective_owed.ein`. Ann and
+;;; Bob are required nothing here: that is `total-due`'s, which this file
+;;; does not activate, so the two pairs are told apart by what each closes.
+;;;
+;;; The claims close the two relations' held extents, as `01`'s do, and
+;;; nothing concludes `(debts-discharged)`.
+
+(import std.debts :symbols (surjective-due surjective-paid))
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(surjective-due  likes is-a)
+(surjective-paid likes is-a)
+
+(likes Bob Stew)
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (debt-due ?R ?j)
+  :expect (model (debt-due likes (surjective-owed-of likes is-a Person Food Soup))
+                 (debt-due likes (surjective-owed-of likes is-a Person Food Stew))))
+(query :goal (debt-paid ?R ?j)
+  :expect (model (debt-paid likes (surjective-owed-of likes is-a Person Food Stew))))
+(query :goal (debts-discharged)
+  :expect (model))

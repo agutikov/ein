@@ -1,0 +1,58 @@
+digraph rule_room_paid_lhs_rhs {
+  rankdir=TB;
+  label="room-paid"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?isa_L" [label="?isa", shape=diamond];
+    "?a_L" [label="?a", shape=diamond];
+    "?Ta_L" [label="?Ta", shape=diamond];
+    "?sub_L" [label="?sub", shape=diamond];
+    "?super_L" [label="?super", shape=diamond];
+    "?index_L" [label="?index", shape=diamond];
+    "?i_L" [label="?i", shape=diamond];
+    "?R_L" [label="?R", shape=diamond];
+    "h1_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?isa_L" -> "h1_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_isa_L" -> "?a_L" [xlabel="2", color="#bcbd22"];
+    "h1_isa_L" -> "?Ta_L" [xlabel="3", color="#bcbd22"];
+    "h2_sub_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "?sub_L" -> "h2_sub_L" [xlabel="1", dir=back, color="#9467bd"];
+    "h2_sub_L" -> "?Ta_L" [xlabel="2", color="#9467bd"];
+    "h2_sub_L" -> "?super_L" [xlabel="3", color="#9467bd"];
+    "?Ta_L" -> "?index_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    "h3_isa_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?isa_L" -> "h3_isa_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h3_isa_L" -> "?i_L" [xlabel="2", color="#bcbd22"];
+    "h3_isa_L" -> "?index_L" [xlabel="3", color="#bcbd22"];
+    "h4_R_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "?R_L" -> "h4_R_L" [xlabel="1", dir=back, color="#1f77b4"];
+    "h4_R_L" -> "?a_L" [xlabel="2", color="#1f77b4"];
+    "h4_R_L" -> "?i_L" [xlabel="3", color="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "debt-paid_R" [label="debt-paid", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "slot-owed-room-of_R" [label="slot-owed-room-of", shape=box];
+    "?isa_R" [label="?isa", shape=diamond];
+    "?sub_R" [label="?sub", shape=diamond];
+    "?super_R" [label="?super", shape=diamond];
+    "?index_R" [label="?index", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?Ta_R" [label="?Ta", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="debt-paid ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    }
+    "h5_debt-paid_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "debt-paid_R" -> "h5_debt-paid_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h5_debt-paid_R" -> "?R_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h5_debt-paid_R" -> "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" [xlabel="3", color="#8c564b", style=dashed];
+    "slot-owed-room-of_R" -> "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?R_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?isa_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?sub_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?super_R" [xlabel="5", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?index_R" [xlabel="6", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?a_R" [xlabel="7", color="#2ca02c", style=dashed];
+    "(slot-owed-room-of ?R ?isa ?sub ?super ?index ?a ?Ta)_R" -> "?Ta_R" [xlabel="8", color="#2ca02c", style=dashed];
+  }
+}

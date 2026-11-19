@@ -43,6 +43,7 @@ output is what `ein` printed for the program above it; a line `…` in one stand
 | [19. The Boolean modules' rules](19-boolean-rules.md) | the same four | how it works |
 | [20. Negation as rules](20-negation-and-contradiction.md) | `std.negation`, `std.contradiction` | the elimination of a double negation, and a fact beside its negation as a rule that concludes `(false)`; their rules at the end |
 | [21. The rule every program gets](21-core.md) | `std.core` | the rule that makes a state that holds `(false)` dead, loaded into every program with no import line |
+| [22. Requirements and payments](22-debts.md) | `std.debts` | what an obligation requires and what pays it, as facts, and `(debts-discharged)`; its rules at the end |
 
 The concepts the relation-algebra modules build on are
 [Properties and operators](../../03-syntax-and-semantics/07-properties-and-operators.md); the import form itself is
@@ -137,7 +138,8 @@ step of a module's own, `std.math.decimal-arith.strip`.
   the module's: list it.
 - **A relation a module reads or writes and does not declare is no module's**, and a program writes it as it is:
   `bijective`, `join`, `bijection-hierarchy`, `typecheck-hierarchy`, `slot-partition`, `slot-spatial`,
-  `type-hierarchy`, `reflexive`, `std.elim`'s positional markers, and `std.contradiction`'s `clash-of-declared`.
+  `type-hierarchy`, `reflexive`, `std.elim`'s positional markers, `std.contradiction`'s `clash-of-declared`, and
+  `std.debts`' `debts-of-owed`, `debt-due`, `debt-paid`, `debts-discharged` and its four instance relations.
 - **A module's entry rule may be listed** and brings nothing a whole import does not
   ([Q-M1f.240](../../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md)).
 - **No module reserves its names**
@@ -212,6 +214,7 @@ kb load error: import-clash.ein:2:9: 'domain-elimination' is bound to two full n
 | `std.negation` | the elimination of a double negation, one rule a count of arguments | none | nothing more | [20](20-negation-and-contradiction.md#using-stdnegation--eliminating-a-double-negation), rules [20](20-negation-and-contradiction.md#stdnegation) |
 | `std.contradiction` | a fact beside its negation, as a rule that concludes `(false)` | none | nothing more | [20](20-negation-and-contradiction.md#using-stdcontradiction--a-fact-beside-its-negation-concludes-false), rules [20](20-negation-and-contradiction.md#stdcontradiction) |
 | `std.core` | the rule from `(false)` to the engine's word, `:ein inconsistent`; in every program, and imported by none | none | nothing more | [21](21-core.md), rule [21](21-core.md#stdcore) |
+| `std.debts` | an obligation's requirements and payments as facts, and `(debts-discharged)` | none | `std.algebra`, `std.slots` and what they bring | [22](22-debts.md), rules [22](22-debts.md#how-it-works) |
 | `std.math.digits` | the decimal digit tables, facts and no rule | none | nothing more | [8](08-natural-numbers.md#using-stdmathdigits--the-digit-tables) |
 | `std.math.arith` | `z`, zero; the division by zero's flag and its rule | `arith` | nothing more | [8](08-natural-numbers.md#using-stdmatharith--zero-and-the-division-by-zero), rules [9](09-natural-numbers-rules.md#stdmatharith) |
 | `std.math.decimal` | the decimal numeral `(n PREFIX DIGIT)` and its check | `decimal` | `arith`, `digits` | [8](08-natural-numbers.md#using-stdmathdecimal--the-decimal-numeral), rules [9](09-natural-numbers-rules.md#stdmathdecimal) |
