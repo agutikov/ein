@@ -6,6 +6,10 @@ Items 58 to 65 are the examples of S1f.21.12, its task 1, which stops for you be
 answer after **Your answer:** — a letter for each question, *default*, or your own words. An item left blank keeps
 its defaults. This file is yours.
 
+**The build runs on each item's default**, on your word of 2026-11-20 (*"pick defaults, implement the phase to the
+end but not close … I will review questions after"*). The sections below are left blank for that review; once the
+phase is built, each item's page has its renders on the final engine.
+
 ## 58 · The corpus under the rulings: every program that would move
 
 [The item](58-the-corpus-under-the-rulings/README.md)

@@ -534,6 +534,25 @@ by them.
 | an obligation whose guard or trigger reads what a commitment can change | never steps aside: it writes its guard's candidates at root, and the program is flagged |
 | `oblig-derived-domain.ein` | run again once that is built, and shown: the user expects it still solvable, *"my expectation, not requirement. Let's review it after implementation."* |
 
+## The word to run to the end
+
+The user, 2026-11-20, of the examples of S1f.21.12 (review items 58 to 65), verbatim:
+
+> plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after.
+
+So:
+
+- **Each of the eight items takes its default**, and the six questions among them, Q-M1f.595 to Q-M1f.600, theirs.
+  A default taken so is no ruling: the items stay in the bundle, with their sections of the answers' file blank,
+  for the user to review after the build.
+- **Every stage left is run, to the phase's end, with no further word**: S1f.21.17 and S1f.21.11, running;
+  then S1f.21.2, S1f.21.12's build, S1f.21.18, S1f.21.13 and S1f.21.14; with their gates.
+- **The phase is not closed**: its findings are not handed on, its folder is not deleted, and nothing of the
+  milestone's close is resumed.
+- **Once everything is built, the review items gain their renders on the final engine**
+  ([S1f.21.19](s1f.21.19_the_review_items_on_the_built_engine.md)): each program in the spelling ruled, run on the
+  built binary, with its drawings, beside what the stand-in showed.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -587,11 +606,12 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | **not run**: set aside 2026-11-19 by the user's answer to Q-M1f.390, no justification is written into Ein |
-| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | planned again 2026-11-20 on the rulings Q-M1f.566 to Q-M1f.579; **its task 1, the examples, done 2026-11-20** (`f529cde2`, `bfeedc50`, `ace51632`): review items 58 to 65, six questions with defaults (Q-M1f.595 to .600), three findings (V-40 to V-42). **Its build waits on the user's reading of them** and on part 1 |
+| [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **`open` facts: the hypotheses held, and the obligation's verdict a fact.** `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written by a pass at each state's fixpoint and dropped at a fork; $H$ root's `open` facts, the union of the writers; a rule that reads one makes its program not monotone; the nesting rule; the `open` facts part of a state. Its examples first | planned again 2026-11-20 on the rulings Q-M1f.566 to Q-M1f.579; **its task 1, the examples, done 2026-11-20** (`f529cde2`, `bfeedc50`, `ace51632`): review items 58 to 65. **Its build is unblocked**: the user, *"pick defaults, implement the phase to the end"*; it starts when part 1's two builds are merged, on the defaults of Q-M1f.595 to .600 |
 | [S1f.21.18](s1f.21.18_the_hrule_form_removed.md) | H | **The `hrule` form and the keyword `:hrules` removed.** Every program, page and test written with a rule that concludes `(open F)` and its activators as facts; the form and the keyword deleted | planned 2026-11-20 on the ruling Q-M1f.567, **not started**; after S1f.21.12. In place of S1f.21.16 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; after S1f.21.12. Q-M1f.569 lets a rule read an `open` fact in a program that is then flagged, so its example may be written so |
 | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | **not run**: the user's answer to Q-M1f.566 keeps the obligation and its count as they are |
 | [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | planned, **not started**; after S1f.21.12, S1f.21.18 and S1f.21.13 |
+| [S1f.21.19](s1f.21.19_the_review_items_on_the_built_engine.md) | | **The review items on the built engine.** Items 58 to 65 run again on the final binary, in the spelling ruled, with their renders, for the user's review of the questions | planned 2026-11-20 on the user's word (*"after implementation complete add renders with the final ein version"*); after every build of the phase |
 | S1f.21.5 | | **The close.** | last |
 
 Folded, their ids kept:

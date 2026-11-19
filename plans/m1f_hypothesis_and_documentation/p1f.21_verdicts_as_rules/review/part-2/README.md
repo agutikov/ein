@@ -8,6 +8,11 @@ and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the 
 point, on the corpus at `669d7d43`; where a ruled form cannot be written today, a stand-in runs (`question` for
 `open`) and the page says what stands for what. Each item's `tools/run.sh` re-takes its `runs/` (ignored by git).
 
+**Built on the defaults, on your word of 2026-11-20**: *"pick defaults, implement the phase to the end but not close;
+after implementation complete add renders with the final ein version. I will review questions after."* So nothing
+here blocks the build; each item below stays for your review, and once everything is built each gains a section
+*On the built engine*, with its renders on the final binary ([S1f.21.19](../../s1f.21.19_the_review_items_on_the_built_engine.md)).
+
 ## What is left for you
 
 | # | what it shows | what it asks | the default |

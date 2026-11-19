@@ -378,9 +378,12 @@ paragraph, no register count, no measurement (the user's rule).
   with the examples that open S1f.21.12; then the part's pages. S1f.21.16 (the
   `:hrules` clause's spelling, Q-M1f.565) is not started and is dropped
   once the second part removes `:hrules` (the user's word). Q-M1f.566 to
-  Q-M1f.579 are ruled, no question of the second part is open, and its two
-  builds are planned on them, S1f.21.12 and S1f.21.18. **No other stage of P1f.21 starts
-  without the user's word.**
+  Q-M1f.579 are ruled and the second part's builds are planned on them,
+  S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to
+  the phase's end, on the defaults of the open review items, and the phase
+  is not closed**; the items are reviewed by the user after the build, with
+  their renders on the final engine (S1f.21.19). **The phase's close waits for
+  the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is
   paused.
