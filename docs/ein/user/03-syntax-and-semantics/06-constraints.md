@@ -205,8 +205,18 @@ $$
 $$
 
 So `(not P)` beside `(not (not P))` is a contradiction, a fact with its own negation, and `P` beside
-`(not (not P))` is not one. **That `P` then holds is a rule a program states**, one rule for a count of arguments
-with the relation a parameter, turned on for the relations it is meant for:
+`(not (not P))` is not one. **That `P` then holds is a rule a program asks for**, one rule for a count of arguments
+with the relation a parameter, turned on for the relations it is meant for. The standard library has it,
+[`std.negation`](../04-reference/04-stdlib/20-negation-and-contradiction.md#using-stdnegation--eliminating-a-double-negation),
+and `eliminate-2` is its rule for a fact of two arguments:
+
+```lisp
+(import std.negation :symbols (eliminate-2))
+(eliminate-2 =)
+```
+
+With those two forms added the second question answers `?a = 5 · ?b = (+ 2 2)`. The rule is three lines, and a
+program may write it for itself, as it must for a double negation that stands inside another fact:
 
 ```lisp
 (rule eliminate (?R)
@@ -216,10 +226,9 @@ with the relation a parameter, turned on for the relations it is meant for:
 (eliminate =)
 ```
 
-With those two forms added the second question answers `?a = 5 · ?b = (+ 2 2)`. What `not` may not deny is
-unchanged: an atom, an equality, and a bare variable anywhere but as a conclusion of its own, `(not ?f)`. The
-programs are under [`examples/beliefs/`](../../../../examples/beliefs/), `03_liar_denial.ein` to
-`06_double_negation.ein`.
+What `not` may not deny is unchanged: an atom, an equality, and a bare variable anywhere but as a conclusion of its
+own, `(not ?f)`. The programs are under [`examples/beliefs/`](../../../../examples/beliefs/), `03_liar_denial.ein`
+to `06_double_negation.ein`.
 
 ## What a constraint is not
 

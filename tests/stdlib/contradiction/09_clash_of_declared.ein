@@ -1,0 +1,69 @@
+;;; `std.contradiction` — `clash-of-0` to `clash-of-6`: the activators of the
+;;; contradiction rule, derived from the program's declarations.
+;;;
+;;; ── What this program does to the seven ────────────────────────────────────
+;;;
+;;; It writes the one fact that asks for them, `(clash-of-declared)`, and
+;;; declares a relation at each count of labels, `r0` to `r6`. Each rule reads
+;;; the declarations of its count and concludes the activator of the
+;;; contradiction rule of that count:
+;;;
+;;;   clash-of-2   (relation r2 T T)   ⟹   (clash-2 r2)
+;;;
+;;; A declaration states `(relation R)` beside `(relation R LABEL…)`, so
+;;; `clash-of-0` reads every declared relation, whatever its count: seven
+;;; `clash-0` activators, of which only `r0`'s can match a fact.
+;;;
+;;; Two relations are what the rules must leave alone. `loose` is not
+;;; declared: it has a fact, `(loose a)`, and no declaration to read, so no
+;;; rule names it. `r7` is declared with seven labels, one more than the
+;;; rules are written for: it gets its `clash-0` activator, as every
+;;; declaration does, and none at its own count.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Each query closes the held extent of one rule's activators: exactly the
+;;; relations declared at that count. A rule that read a declaration with its
+;;; relation and a label exchanged would name the label. Root is alive, since
+;;; no fact stands beside its negation: the activated rules are silent.
+
+(import std.contradiction
+  :symbols (clash-0 clash-1 clash-2 clash-3 clash-4 clash-5 clash-6))
+
+(relation r0                  :why "r0 holds")
+(relation r1 T1               :why "{?3} is r1")
+(relation r2 T1 T2            :why "{?3} and {?4} are r2")
+(relation r3 T1 T2 T3         :why "{?3}, {?4} and {?5} are r3")
+(relation r4 T1 T2 T3 T4      :why "{?3}, {?4}, {?5} and {?6} are r4")
+(relation r5 T1 T2 T3 T4 T5   :why "{?3}, {?4}, {?5}, {?6} and {?7} are r5")
+(relation r6 T1 T2 T3 T4 T5 T6
+  :why "{?3}, {?4}, {?5}, {?6}, {?7} and {?8} are r6")
+(relation r7 T1 T2 T3 T4 T5 T6 T7
+  :why "{?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9} are r7")
+
+(clash-of-declared)
+
+(r2 a b)
+(not (r2 b a))
+(loose a)
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (clash-0 ?R)
+  :expect (model (clash-0 r0) (clash-0 r1) (clash-0 r2) (clash-0 r3)
+                 (clash-0 r4) (clash-0 r5) (clash-0 r6) (clash-0 r7)))
+(query :goal (clash-1 ?R)
+  :expect (model (clash-1 r1)))
+(query :goal (clash-2 ?R)
+  :expect (model (clash-2 r2)))
+(query :goal (clash-3 ?R)
+  :expect (model (clash-3 r3)))
+(query :goal (clash-4 ?R)
+  :expect (model (clash-4 r4)))
+(query :goal (clash-5 ?R)
+  :expect (model (clash-5 r5)))
+(query :goal (clash-6 ?R)
+  :expect (model (clash-6 r6)))
+(query :goal (r2 ?a ?b)
+  :expect (model (r2 a b)))

@@ -1,0 +1,56 @@
+;;; `std.contradiction` — `clash-of-0` to `clash-of-6`, **loaded and not
+;;; asked for**: an import by itself activates nothing.
+;;;
+;;; `09_clash_of_declared.ein` without its line `(clash-of-declared)`, and
+;;; with one activator written by hand. The seven rules that derive the
+;;; activators read that fact beside a declaration, and here nothing holds
+;;; it, so none of them concludes anything: the only activator the program
+;;; holds is the one it wrote, `(clash-2 r2)`.
+;;;
+;;; That is what lets a program import the module for one relation, or for
+;;; none, and hold what it held: the contradiction rule is asked for a
+;;; relation at a time, or for every declared relation by one fact, and
+;;; never by the import.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Each query closes the held extent of one rule's activators: none, `(model)`,
+;;; at every count but two, and at two the one written. Root is alive: the
+;;; denial beside `(r2 a b)` is of the other order.
+
+(import std.contradiction
+  :symbols (clash-0 clash-1 clash-2 clash-3 clash-4 clash-5 clash-6))
+
+(relation r0                  :why "r0 holds")
+(relation r1 T1               :why "{?3} is r1")
+(relation r2 T1 T2            :why "{?3} and {?4} are r2")
+(relation r3 T1 T2 T3         :why "{?3}, {?4} and {?5} are r3")
+(relation r4 T1 T2 T3 T4      :why "{?3}, {?4}, {?5} and {?6} are r4")
+(relation r5 T1 T2 T3 T4 T5   :why "{?3}, {?4}, {?5}, {?6} and {?7} are r5")
+(relation r6 T1 T2 T3 T4 T5 T6
+  :why "{?3}, {?4}, {?5}, {?6}, {?7} and {?8} are r6")
+
+(clash-2 r2)                      ; written: the one activator there is
+
+(r2 a b)
+(not (r2 b a))
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes.
+(solve :no-search)
+
+(query :goal (clash-0 ?R)
+  :expect (model))
+(query :goal (clash-1 ?R)
+  :expect (model))
+(query :goal (clash-2 ?R)
+  :expect (model (clash-2 r2)))
+(query :goal (clash-3 ?R)
+  :expect (model))
+(query :goal (clash-4 ?R)
+  :expect (model))
+(query :goal (clash-5 ?R)
+  :expect (model))
+(query :goal (clash-6 ?R)
+  :expect (model))
+(query :goal (r2 ?a ?b)
+  :expect (model (r2 a b)))

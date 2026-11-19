@@ -1,0 +1,25 @@
+digraph rule_clash_of_2_lhs_rhs {
+  rankdir=TB;
+  label="clash-of-2"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "clash-of-declared_L" [label="clash-of-declared", shape=box];
+    "relation_L" [label="relation", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "h1_clash-of-declared_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    "clash-of-declared_L" -> "h1_clash-of-declared_L" [xlabel="1", dir=back, color="#1f77b4"];
+    "h2_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h2_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h2_relation_L" -> "?R_L" [xlabel="2", color="#bcbd22"];
+    "h2_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h2_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "clash-2_R" [label="clash-2", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "h3_clash-2_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "clash-2_R" -> "h3_clash-2_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
+    "h3_clash-2_R" -> "?R_R" [xlabel="2", color="#17becf", style=dashed];
+  }
+}

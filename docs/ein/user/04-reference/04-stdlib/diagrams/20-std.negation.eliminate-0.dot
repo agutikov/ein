@@ -1,0 +1,24 @@
+digraph rule_eliminate_0_lhs_rhs {
+  rankdir=TB;
+  label="eliminate-0"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "not_L" [label="not", shape=box];
+    "?R_L" [label="?R", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(not (?R))_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+      "(?R)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    }
+    "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "not_L" -> "h1_not_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_not_L" -> "(not (?R))_L" [xlabel="2", color="#d62728"];
+    "not_L" -> "(not (?R))_L" [xlabel="1", dir=back, color="#d62728"];
+    "(not (?R))_L" -> "(?R)_L" [xlabel="2", color="#d62728"];
+    "?R_L" -> "(?R)_L" [xlabel="1", dir=back, color="#1f77b4"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R_R" [label="?R", shape=diamond];
+    "h2_R_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4", style=dashed];
+    "?R_R" -> "h2_R_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
+  }
+}

@@ -1776,6 +1776,10 @@
 0    stdlib/closure.ein :: render rules
 0    stdlib/closure.ein :: saturate
 0    stdlib/closure.ein :: solve
+0    stdlib/contradiction.ein :: render constraints
+0    stdlib/contradiction.ein :: render rules
+0    stdlib/contradiction.ein :: saturate
+0    stdlib/contradiction.ein :: solve
 0    stdlib/elim.ein :: render constraints
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
@@ -1836,6 +1840,10 @@
 0    stdlib/math/rat.ein :: render rules
 0    stdlib/math/rat.ein :: saturate
 0    stdlib/math/rat.ein :: solve
+0    stdlib/negation.ein :: render constraints
+0    stdlib/negation.ein :: render rules
+0    stdlib/negation.ein :: saturate
+0    stdlib/negation.ein :: solve
 0    stdlib/slots.ein :: render constraints
 0    stdlib/slots.ein :: render rules
 0    stdlib/slots.ein :: saturate
@@ -2124,6 +2132,56 @@
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: saturate
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: solve
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: test
+0    tests/stdlib/contradiction/01_clash_0.ein :: render constraints
+1    tests/stdlib/contradiction/01_clash_0.ein :: render rules
+0    tests/stdlib/contradiction/01_clash_0.ein :: saturate
+0    tests/stdlib/contradiction/01_clash_0.ein :: solve
+0    tests/stdlib/contradiction/01_clash_0.ein :: test
+0    tests/stdlib/contradiction/02_clash_1.ein :: render constraints
+1    tests/stdlib/contradiction/02_clash_1.ein :: render rules
+0    tests/stdlib/contradiction/02_clash_1.ein :: saturate
+0    tests/stdlib/contradiction/02_clash_1.ein :: solve
+0    tests/stdlib/contradiction/02_clash_1.ein :: test
+0    tests/stdlib/contradiction/03_clash_2.ein :: render constraints
+1    tests/stdlib/contradiction/03_clash_2.ein :: render rules
+0    tests/stdlib/contradiction/03_clash_2.ein :: saturate
+0    tests/stdlib/contradiction/03_clash_2.ein :: solve
+0    tests/stdlib/contradiction/03_clash_2.ein :: test
+0    tests/stdlib/contradiction/04_clash_3.ein :: render constraints
+1    tests/stdlib/contradiction/04_clash_3.ein :: render rules
+0    tests/stdlib/contradiction/04_clash_3.ein :: saturate
+0    tests/stdlib/contradiction/04_clash_3.ein :: solve
+0    tests/stdlib/contradiction/04_clash_3.ein :: test
+0    tests/stdlib/contradiction/05_clash_4.ein :: render constraints
+1    tests/stdlib/contradiction/05_clash_4.ein :: render rules
+0    tests/stdlib/contradiction/05_clash_4.ein :: saturate
+0    tests/stdlib/contradiction/05_clash_4.ein :: solve
+0    tests/stdlib/contradiction/05_clash_4.ein :: test
+0    tests/stdlib/contradiction/06_clash_5.ein :: render constraints
+1    tests/stdlib/contradiction/06_clash_5.ein :: render rules
+0    tests/stdlib/contradiction/06_clash_5.ein :: saturate
+0    tests/stdlib/contradiction/06_clash_5.ein :: solve
+0    tests/stdlib/contradiction/06_clash_5.ein :: test
+0    tests/stdlib/contradiction/07_clash_6.ein :: render constraints
+1    tests/stdlib/contradiction/07_clash_6.ein :: render rules
+0    tests/stdlib/contradiction/07_clash_6.ein :: saturate
+0    tests/stdlib/contradiction/07_clash_6.ein :: solve
+0    tests/stdlib/contradiction/07_clash_6.ein :: test
+0    tests/stdlib/contradiction/08_clash_satisfied.ein :: render constraints
+1    tests/stdlib/contradiction/08_clash_satisfied.ein :: render rules
+0    tests/stdlib/contradiction/08_clash_satisfied.ein :: saturate
+0    tests/stdlib/contradiction/08_clash_satisfied.ein :: solve
+0    tests/stdlib/contradiction/08_clash_satisfied.ein :: test
+0    tests/stdlib/contradiction/09_clash_of_declared.ein :: render constraints
+1    tests/stdlib/contradiction/09_clash_of_declared.ein :: render rules
+0    tests/stdlib/contradiction/09_clash_of_declared.ein :: saturate
+0    tests/stdlib/contradiction/09_clash_of_declared.ein :: solve
+0    tests/stdlib/contradiction/09_clash_of_declared.ein :: test
+0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: render constraints
+1    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: render rules
+0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: saturate
+0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: solve
+0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: test
 0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
 0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
 0    tests/stdlib/elim/01_domain_elimination.ein :: saturate
@@ -3129,6 +3187,11 @@
 0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: saturate
 0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: solve
 0    tests/stdlib/math/rat/35_natural_numerator_malformed.ein :: test
+0    tests/stdlib/negation/01_eliminate.ein :: render constraints
+1    tests/stdlib/negation/01_eliminate.ein :: render rules
+0    tests/stdlib/negation/01_eliminate.ein :: saturate
+0    tests/stdlib/negation/01_eliminate.ein :: solve
+0    tests/stdlib/negation/01_eliminate.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

@@ -118,6 +118,8 @@ these programs give each rule one.
 | [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a relation whose held extent is closed is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
 | [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
+| [`stdlib/negation/`](stdlib/negation/) | `std.negation`, the elimination of a double negation: one program, the seven rules each activated for a relation of its count, every argument a different name; and three relations the rules leave alone, one nobody activates, one activated at counts its facts do not have, one that holds a single negation |
+| [`stdlib/contradiction/`](stdlib/contradiction/) | `std.contradiction`, a fact beside its negation as a rule that concludes `(false)`: a firing program for each `clash-N`, one rule a file; all seven loaded, activated and silent over facts and denials that do not meet; the activators `clash-of-N` derives from the declarations, and the same program without the fact that asks for them. See [below](#stdlibcontradiction-rules-that-restate-the-kernels-verdict) |
 | [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | `std.math.decimal-arith`, school arithmetic computed by saturation alone: addition, subtraction and comparison, multiplication, division, and the faults of an operand and a `let`: one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but those that divide by zero and those that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/math/decimal/`](stdlib/math/decimal/) | `std.math.decimal`, the numeral and the check an operation asks of one it takes: a well-formed numeral in every place a file writes one, labelled where an operation takes or makes it; a malformed one in a `let` nobody asks about, in a fact of the program's own and in a rule's conclusion that never fires, each unchecked, and one a rule hands to a request, checked; what stays silent; and a program's own `(named z)`. `std.math.arith`, whose two rules the division-by-zero programs activate, has none of its own; see [below](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it) |
 | [`stdlib/math/num9/`](stdlib/math/num9/) | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules: a program a rule or tight family: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
@@ -176,6 +178,40 @@ call to the blind enumerator
 So the file is also the corpus's one `mode=declined` fixture, and the
 obligation it adds is *satisfied* on purpose: the decline must not depend on
 the KB happening to owe something.
+
+### `stdlib/contradiction/`: rules that restate the kernel's verdict
+
+`std.contradiction`'s `clash-0` to `clash-6` conclude `(false)` from a fact
+beside its stored negation, and the kernel calls such a state dead by itself,
+of every fact, with no rule. So these seven are the one family here whose
+firing **no claim can see**: `(solve … :expect (false))` holds of each firing
+program with the rule and without it, and a dead state has no model to list.
+Three things stand in for the claim.
+
+| what | where |
+|---|---|
+| each rule **fires** on its program, one rule a file, which is what the coverage gate asks | `01_clash_0.ein` to `07_clash_6.ein`, each activating one rule for one relation |
+| the firing's premises are the pair and its conclusion `(false)`; with the activator's line left out the same root is dead and nothing fires | [`ein-infer/tests/contradiction_rules.rs`](../ein.rs/crates/ein-infer/tests/contradiction_rules.rs), in-process |
+| **silence**: all seven activated over facts and denials that do not meet, where a rule that fired would turn a model into `(false)` | `08_clash_satisfied.ein`: the file a claim can tell the rules by. It holds a pair in the other order, as `09` and `10` do, which is what kills `clash-2` with a premise's two arguments exchanged |
+
+`08` is *a refutation rule gets two files* with the weight on the second:
+the satisfied half is the only half a claim reads. Its pairs are chosen for
+what a wrong rule would join: `(left-of A B)` beside `(not (left-of B A))`,
+the same two names in the other order, and an undeclared relation held at two
+counts, `(mixed A)` beside `(not (mixed A B))`.
+
+`09_clash_of_declared.ein` and `10_clash_of_not_asked.ein` are the pair for
+the seven rules that derive the activators from a program's declarations.
+Those conclude ordinary facts, `(clash-2 r2)`, so their claims close each
+rule's activators: the relations declared at its count with the fact
+`(clash-of-declared)` written, none without it. A file reads an activator by
+its rule's name, which it lists.
+
+**The read-out of a firing program names the rule or `(given)`.** Root holds
+two contradictions over one core, the pair and the `(false)` derived from it,
+and which one the explanation is taken over is its tie-break, by the facts'
+text: `04_clash_3.ein`, whose relation is `between`, reads `refuted by
+(given)`, and its six siblings `refuted by clash-N`. No claim reads the row.
 
 ### A module of facts has no rule to activate
 
@@ -666,7 +702,8 @@ forces a value against a stored negative, and both end in ⊥; the fixture picks
 one by declaring only its activator. Five files do this — `elim/02`,
 `elim/03`, `elim/04`, `slots/05`, `slots/06` — and each says so in its header,
 because a reader who does not know why `slot-partition-setup` is absent will
-put it back.
+put it back. The seven firing files of `contradiction/` are written the same
+way, one `clash-N` a file, where the verdict is one the kernel reaches too.
 
 **A verdict word is not what an expectation claims.** All `:expect` forms are
 assertions about **facts** ([`02-syntax.md` § Query](../docs/ein/user/04-reference/02-syntax.md#query)),

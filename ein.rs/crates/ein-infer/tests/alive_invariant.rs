@@ -142,6 +142,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `beliefs/01` to `11` write a belief's, a claim's or a thought's content
 ///   only as another fact's argument, or under a stored negation, so its
 ///   names are no top-level argument.
+/// - `tests/stdlib/negation/01_eliminate.ein` and
+///   `tests/stdlib/contradiction/08_clash_satisfied.ein` write names only
+///   under a stored negation: the arguments of the double negations, each
+///   listed where it is first written, and the one name by which a denial
+///   differs from the fact beside it.
 /// - a name the program writes first in a tuple is a relation of the
 ///   program, which the names index holds through the registry
 ///   (Q-M1f.522), so it is no seed: `syntax/wrappers.ein`'s `r`, an argument
@@ -155,7 +160,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 149] = [
+const SEEDED: [(&str, &[&str]); 151] = [
     (
         "examples/arith/int.ein",
         &[
@@ -491,6 +496,15 @@ const SEEDED: [(&str, &[&str]); 149] = [
     (
         "tests/stdlib/algebra/22_symmetric_negative.ein",
         &["`C`, in (not (sits-with A C))"],
+    ),
+    (
+        "tests/stdlib/contradiction/08_clash_satisfied.ein",
+        &[
+            "`Dusk`, in (not (lesson Ann Bob Latin Hall Monday Dusk))",
+            "`Path`, in (not (wet Path))",
+            "`Tuesday`, in (not (trade Ann Bob Wool Tuesday))",
+            "`Weir`, in (not (between Inn Mill Weir))",
+        ],
     ),
     (
         "tests/stdlib/elim/03_typecheck_arg0_violated.ein",
@@ -1133,6 +1147,17 @@ const SEEDED: [(&str, &[&str]); 149] = [
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`x`, in (rat-add (rat (n z x) (n z 2)) (rat (int (n z 1) z) (n z 2)))",
+        ],
+    ),
+    (
+        "tests/stdlib/negation/01_eliminate.ein",
+        &[
+            "`a`, in (not (not (r1 a)))",
+            "`b`, in (not (not (r2 a b)))",
+            "`c`, in (not (not (r3 a b c)))",
+            "`d`, in (not (not (r4 a b c d)))",
+            "`e`, in (not (not (r5 a b c d e)))",
+            "`f`, in (not (not (r6 a b c d e f)))",
         ],
     ),
 ];

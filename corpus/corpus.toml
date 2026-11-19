@@ -65,7 +65,7 @@ note   = "`03_liar_denial.ein` with `(= 5 (+ 2 2))` stated: root holds the fact 
 path   = "examples/beliefs/06_double_negation.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "The elimination of a double negation as a rule the program states: `eliminate`, one rule for facts of two arguments with the relation a parameter, activated for `=` and not for `likes`; and `eliminate-in`, the same rule wrapped in `(think ?p …)`, which concludes a fact Bob thinks and nothing held. `(solve :no-search)`. Three claims, computed by hand: `(= 5 (+ 2 2))` concluded; no fact of `likes`, though its double negation is held alike; `(think Bob (= 7 (+ 3 4)))`."
+note   = "The elimination of a double negation as a rule the program asks for: `std.negation`'s `eliminate-2`, one rule for facts of two arguments with the relation a parameter, activated for `=` and not for `likes`; and `eliminate-in`, the same rule wrapped in `(think ?p …)`, written by the program, which concludes a fact Bob thinks and nothing held. `(solve :no-search)`. Three claims, computed by hand: `(= 5 (+ 2 2))` concluded; no fact of `likes`, though its double negation is held alike; `(think Bob (= 7 (+ 3 4)))`."
 
 [[entry]]
 path   = "examples/beliefs/07_three_cases.ein"
@@ -3487,6 +3487,12 @@ group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "stdlib/contradiction.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "a fact beside its stored negation, as rules that conclude `(false)`: `clash-0` to `clash-6`, one rule a count of arguments with the relation a parameter, and `clash-of-0` to `clash-of-6`, which derive each activator from a declaration where the program holds `(clash-of-declared)`. The kernel calls such a state dead with no rule; these add the fact and its derivation. The module alone activates nothing: R {∅}."
+
+[[entry]]
 path   = "stdlib/math/digits.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
@@ -3513,6 +3519,12 @@ note   = "integers as a positive and a negative part, `(int P N)`, over the natu
 path   = "stdlib/macro.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "stdlib/negation.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "the elimination of a double negation: `eliminate-0` to `eliminate-6`, one rule a count of arguments with the relation a parameter, each concluding a fact from the negation of its negation. Activated a relation; the kernel concludes nothing from a double negation by itself. The module alone activates nothing: R {∅}."
 
 [[entry]]
 path   = "stdlib/math/num9.ein"
@@ -4372,6 +4384,61 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "the control half of the closed-and-owing pair. Closed by infer-closure, and the totality requirement met by the one authored edge."
 
 [[entry]]
+path   = "tests/stdlib/contradiction/01_clash_0.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`clash-0` fires: a fact of no argument beside its negation. The claim, `(false)`, holds with the rule and without it, since the kernel calls the pair dead by itself; the file is the program in which the rule fires, and `ein-infer/tests/contradiction_rules.rs` holds the firing, its premises the pair and its conclusion `(false)`. One rule a file, as its six siblings."
+
+[[entry]]
+path   = "tests/stdlib/contradiction/02_clash_1.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/contradiction/03_clash_2.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/contradiction/04_clash_3.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "as its siblings, and the one of the seven whose read-out says `refuted by (given)`: root holds two contradictions over one core, the pair and the `(false)` the rule derived, and the explanation's tie-break is the witnesses' order by text, `(between …)` before `(false)`."
+
+[[entry]]
+path   = "tests/stdlib/contradiction/05_clash_4.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/contradiction/06_clash_5.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/contradiction/07_clash_6.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/contradiction/08_clash_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "all seven `clash-N` loaded, activated and silent: each relation holds a fact and the denial of another fact, `(left-of A B)` beside `(not (left-of B A))` among them, and an undeclared relation is held at two counts. A rule that fired would turn the model into `(false)`: the file a claim can tell the rules by."
+
+[[entry]]
+path   = "tests/stdlib/contradiction/09_clash_of_declared.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`clash-of-0` to `clash-of-6`: with `(clash-of-declared)` written, each derives the activator of its count from the declarations, and `clash-of-0` one for every declared relation. An undeclared relation gets none, and a relation of seven labels none at its own count. Eight claims close the activators' held extents."
+
+[[entry]]
+path   = "tests/stdlib/contradiction/10_clash_of_not_asked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`09` without `(clash-of-declared)`: the module imported and one activator written by hand. Nothing derives an activator, `(model)` at every count but the written one's."
+
+[[entry]]
 path   = "tests/stdlib/math/digits/01_tables.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
@@ -4718,6 +4785,12 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/macro/02_unknown.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/negation/01_eliminate.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`eliminate-0` to `eliminate-6`: seven relations, one a count, each with a double negation written and its rule activated, every argument a different name. Three relations the rules leave alone: one nobody activates, one activated at counts its facts do not have, and one that holds a single negation."
 
 [[entry]]
 path   = "tests/stdlib/math/num9/01_add.ein"

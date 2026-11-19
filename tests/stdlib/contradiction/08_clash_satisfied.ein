@@ -1,0 +1,96 @@
+;;; `std.contradiction` — `clash-0` to `clash-6`, **loaded, activated, and
+;;; silent**: facts and denials that do not meet.
+;;;
+;;; ── Why this is the file that tests the seven ──────────────────────────────
+;;;
+;;; `01_clash_0.ein` to `07_clash_6.ein` show each rule firing, and their
+;;; claim cannot tell the rule from the kernel, which calls a fact beside its
+;;; negation dead by itself. Here it is the other way round: nothing is a
+;;; contradiction, the kernel says so, and a rule that fired would turn the
+;;; model below into `(false)`. So this is where a guard that admits too much
+;;; is caught.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Every rule is activated for a relation of its count, and each relation
+;;; holds a fact and a denial of **another** fact:
+;;;
+;;;   raining, snowing   no argument: one holds, the other is denied
+;;;   wet                the lawn is wet, the path is not
+;;;   left-of            `(left-of A B)` beside `(not (left-of B A))`: the same
+;;;                      two names in the other order. A rule that read either
+;;;                      side with its arguments exchanged would fire
+;;;   between … lesson   three to six arguments: the denial differs from the
+;;;                      fact in its last argument alone
+;;;   mixed              not declared, and held at two counts: `(mixed A)`
+;;;                      beside `(not (mixed A B))`. A rule matches a fact with
+;;;                      as many arguments as its pattern writes, so neither
+;;;                      `clash-1` nor `clash-2` joins the two
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; A model exists and it is the written one: root is alive, and each relation
+;;; holds the one fact the file wrote for it. Stored negations are not closed
+;;; by a claim, and need not be: none can be concluded here.
+
+(import std.contradiction
+  :symbols (clash-0 clash-1 clash-2 clash-3 clash-4 clash-5 clash-6))
+
+(relation raining :why "it is raining")
+(relation snowing :why "it is snowing")
+(relation wet     Thing :why "{?3} is wet")
+(relation left-of Place Place :why "{?3} is left of {?4}")
+(relation between Place Place Place :why "{?3} is between {?4} and {?5}")
+(relation trade   Seller Buyer Good Day :why "{?3} sells {?4} {?5} on {?6}")
+(relation route   From To By Day Driver :why "{?7} drives from {?3} to {?4} by {?5} on {?6}")
+(relation lesson  Teacher Pupil Subject Room Day Hour
+  :why "{?3} teaches {?4} {?5} in {?6} on {?7} at {?8}")
+
+(clash-0 raining) (clash-0 snowing)
+(clash-1 wet)
+(clash-2 left-of)
+(clash-3 between)
+(clash-4 trade)
+(clash-5 route)
+(clash-6 lesson)
+(clash-1 mixed) (clash-2 mixed)
+
+(raining)
+(not (snowing))
+
+(wet Lawn)
+(not (wet Path))
+
+(left-of A B)
+(not (left-of B A))               ; the other order: no contradiction
+
+(between Inn Mill Ford)
+(not (between Inn Mill Weir))
+
+(trade Ann Bob Wool Monday)
+(not (trade Ann Bob Wool Tuesday))
+
+(route Inn Mill Cart Monday Ann)
+(not (route Inn Mill Cart Monday Bob))
+
+(lesson Ann Bob Latin Hall Monday Noon)
+(not (lesson Ann Bob Latin Hall Monday Dusk))
+
+(mixed A)
+(not (mixed A B))                 ; another count: another fact
+
+;; Root alone (Q-M1f.254): the question is root's verdict.
+(solve
+  :no-search
+  :expect (region (model (raining)
+                         (wet Lawn)
+                         (left-of A B)
+                         (between Inn Mill Ford)
+                         (trade Ann Bob Wool Monday)
+                         (route Inn Mill Cart Monday Ann)
+                         (lesson Ann Bob Latin Hall Monday Noon)
+                         (mixed A))))
+
+(query
+  :goal (snowing)
+  :expect (model))
