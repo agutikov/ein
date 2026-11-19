@@ -249,9 +249,10 @@ Analysed in [`one_way_each.md`](one_way_each.md), on runs, with three censuses o
 
 - **Not equivalent, by one thing**: an obligation is a hypothesis rule plus a requirement, *at least one of these*.
   A hypothesis rule says *may*, an obligation *must*.
-- **Can we**: yes, but not into obligations alone. *Must* is the obligation's; *may* is the filtering way, the
-  blind enumerator with what is not meant taken out. 12 corpus programs need only the rule deleted, 66 say *may*
-  with it and are rewritten.
+- **Can we**: not into obligations alone. *Must* is the obligation's; *may* is the hypothesis rule's, or the
+  filtering way's, the blind enumerator with what is not meant taken out. 12 corpus programs need only the rule
+  deleted, 66 say *may* with it. The user, on reading it: *"Yes, true, hrules and obligations are not the same, easy there could be the program that has obligations, restrictions, but is not solvable without hrules because nothing generate "MAY" hypotheses"*; `examples/lattice/13_witness_of_two.ein`
+  is one, and the proposal is now that the hypothesis rule stays.
 - **The filtering way's one mechanism**: the closure, the fact `(__closed__ R)`; the two lists of `(solve …)` are
   the same statement written twice more, and give the same answer as closures in 99 of 100 programs.
 

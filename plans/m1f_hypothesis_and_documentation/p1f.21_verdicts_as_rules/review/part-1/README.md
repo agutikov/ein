@@ -12,7 +12,7 @@ stage's examples.
 |---|---|---|---|
 | 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed (e), the user's rule: one rule a count with the relation a variable of the pattern, which the loader refuses today |
 | 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
-| 43 | [Q-M1f.561](43-Q-M1f.561/README.md) | one way to say *must* and one to say *may*: are hypothesis rules removed, and what is the one filter | **not ruled**; analysed: [`one_way_each.md`](../../one_way_each.md); proposed: removed, the closure the one filter, one way a program |
+| 43 | [Q-M1f.561](43-Q-M1f.561/README.md) | one way to say *must* and one to say *may*: are hypothesis rules removed, and what is the one filter | **not ruled**; analysed: [`one_way_each.md`](../../one_way_each.md); proposed, since the user's remark: the hypothesis rule kept as the way to say *may*, the closure the one filter |
 
 **A default is proposed or taken; an answer is wanted only where you would have it otherwise.**
 

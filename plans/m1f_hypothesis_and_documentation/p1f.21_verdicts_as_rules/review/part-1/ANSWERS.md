@@ -143,11 +143,13 @@ re-render of the bundle rewrites the READMEs and never this file.
 **Three calls:**
 
 - **A, the hypothesis rules**: **(a)** removed, *must* to obligations and *may* to the filtering way, 66 corpus
-  programs rewritten (**proposed**); **(b)** kept; **(c)** left for the second part.
+  programs rewritten; **(b)** kept, the way to say *may* beside a *must* or alone (**proposed**, since your remark
+  that a program with obligations may not be solvable without them: `examples/lattice/13_witness_of_two.ein` is
+  one); **(c)** left for the second part.
 - **B, the filtering way's mechanism**: **(a)** the closure alone, the two lists of `(solve …)` written as closures
   (**proposed**); **(b)** the lists stay.
-- **C, *may* beside *must* in one program**: **(a)** one way a program, a *may* there written as a decision that is
-  owed (**proposed**); **(b)** the two ways add up.
+- **C, *may* beside *must* in one program**: nothing to decide under A (b); under A (a), **(a)** one way a program,
+  a *may* there written as a decision that is owed, or **(b)** the two ways add up.
 - **No default is taken**: nothing is planned or built until you answer.
 
 **Your answer:** 

@@ -48,6 +48,19 @@ thing.
 And every program that states a list of `(solve …)`, with the list replaced by closure facts: 80 of 81 for
 `:no-hypothesis`, 19 of 19 for `:hypothesis-relations`, the same $H$ and $R$.
 
+## Your remark, and the program that is it
+
+*"Yes, true, hrules and obligations are not the same, easy there could be the program that has obligations, restrictions, but is not solvable without hrules because nothing generate "MAY" hypotheses"*
+
+`examples/lattice/13_witness_of_two.ein` is that program in the corpus. Ann owes a dish (`total-owed fed is-a`), and
+the one fact that pays her, `(fed Ann Soup)`, is derived: by one rule from `(orders Ann)`, by another from
+`(cooks Bob)` and `(shops Cat)` together. Those three are what may be supposed, and only its three hypothesis rules
+propose them. As written: 3 candidates, 5 states. With the hypothesis rules deleted the obligations rung proposes
+the one thing the debt names, the derived fact itself: 1 candidate, 1 state, `(fed Ann Soup)` supposed outright and
+the four ways of earning it gone ([`hr_census.tsv`](../../../one_way_each/hr_census.tsv)).
+
+It is one of the eight programs of call C below. It changes what is proposed for call A.
+
 ## The options
 
 Three calls, each with what is proposed.
@@ -56,9 +69,11 @@ Three calls, each with what is proposed.
 
 - **(a) Removed**: the declarator, the clause, the first rung. *Must* is an obligation; *may* is the filtering way.
   66 corpus programs that say *may* with a rule are rewritten, each against the shape it was written to have, and
-  the guide's Zebra program loses its rule. **Proposed**, if one way each is wanted: it is what your sentence asks,
-  and the count says what it costs.
-- **(b) Kept**, as the one way to say *may* of facts picked by a pattern.
+  the guide's Zebra program loses its rule. First proposed; **withdrawn on your remark**: a program whose debt is
+  paid by a derived fact has nothing left to suppose.
+- **(b) Kept**, as the way to say *may* of facts picked by a pattern, beside a *must* or alone. **Proposed now.**
+  The positive way is then two words, *must* by an obligation and *may* by a hypothesis rule, and the filtering
+  way one.
 - **(c) Left for the second part**, where a candidate may become a fact a rule concludes (Q-M1f.549), which is a
   hypothesis rule again with no declarator.
 
@@ -71,8 +86,9 @@ Three calls, each with what is proposed.
 **C. *May* beside *must* in one program** (8 corpus programs today, by a hypothesis rule beside an obligation).
 
 - **(a) One way a program**: under an activated obligation $H$ is what the debts ask for, as today; such a program
-  writes its *may* as a decision that is owed (program 6). **Proposed**: it keeps the reason the ladder takes one
-  rung (Q-M1f.243).
+  writes its *may* as a decision that is owed (program 6). It keeps the reason the ladder takes one rung
+  (Q-M1f.243). **Under A (b) there is nothing to decide here**: a hypothesis rule beside an obligation is how such a
+  program is written today, and stays.
 - **(b) The two ways add up**: $H$ is the debts' payments and every unsettled fact of a relation that is not closed.
 
 **What waits on it.** Nothing of S1f.21.10 or S1f.21.11. A ruling for A (a) or B (a) is a stage of its own in

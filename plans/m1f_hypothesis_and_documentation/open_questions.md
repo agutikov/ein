@@ -489,7 +489,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
-| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's sixth instruction; analysed with runs (`one_way_each.md`, review item 43): an obligation is a hypothesis rule plus a requirement, so the rules can go, *must* to obligations and *may* to the filtering way, whose one mechanism would be the closure; proposed A (a), B (a), C (a) |
+| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's sixth instruction; analysed with runs (`one_way_each.md`, review item 43): an obligation is a hypothesis rule plus a requirement, so the rules can go, *must* to obligations and *may* to the filtering way, whose one mechanism would be the closure; proposed, since the user's remark that a program with obligations may be unsolvable without hypothesis rules: A (b), the rule kept as the way to say *may*; B (a), the closure the one filter |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10453,7 +10453,14 @@ Three calls:
   ([Q-M1f.243](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)), a
   *may* there written as a decision that is owed; (b) the two ways add up.
 
-**Proposed**, if one way each is wanted: A (a), B (a), C (a).
+**Proposed** at first, if one way each is wanted: A (a), B (a), C (a).
+
+**The user, the same day**, verbatim: *"Yes, true, hrules and obligations are not the same, easy there could be the program that has obligations, restrictions, but is not solvable without hrules because nothing generate "MAY" hypotheses"*.
+`examples/lattice/13_witness_of_two.ein` is such a program: its debt is paid by a derived fact, and what derives
+it is supposed only by its hypothesis rules; without them the obligations rung proposes the derived fact itself,
+1 candidate and 1 state where there were 3 and 5. **Not filed as a ruling of the three calls; the proposal is
+changed by it: A (b), the hypothesis rule kept as the way to say *may*; B (a), the closure the one filter; C then
+has nothing to decide.**
 
 **What waits on it.** Nothing running. A ruling for A (a) or B (a) is planned as a stage of part 1 when given.
 

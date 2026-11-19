@@ -169,6 +169,15 @@ decides). A hypothesis rule is today the only way to have candidates beside the 
 whose $R$ changes, and `features/13`. Without it they are written with a decision that is owed, or the two ways
 are made to add up, which is that decision reopened.
 
+**The user on this, 2026-11-19**, verbatim: *"Yes, true, hrules and obligations are not the same, easy there could be the program that has obligations, restrictions, but is not solvable without hrules because nothing generate "MAY" hypotheses"*. `examples/lattice/13_witness_of_two.ein` is that program in the corpus. Ann owes a dish (`total-owed fed is-a`), and
+the one fact that pays her, `(fed Ann Soup)`, is derived: by one rule from `(orders Ann)`, by another from
+`(cooks Bob)` and `(shops Cat)` together. Those three are what may be supposed, and only its three hypothesis rules
+propose them. As written: 3 candidates, 5 states. With the hypothesis rules deleted the obligations rung proposes
+the one thing the debt names, the derived fact itself: 1 candidate, 1 state, `(fed Ann Soup)` supposed outright and
+the four ways of earning it gone ([`hr_census.tsv`](one_way_each/hr_census.tsv)).
+So call A of the question is not (a) as first proposed here: the hypothesis rule is what says *may* beside a
+*must*, and it stays unless the two ways are made to add up.
+
 **On the pages**: the guide builds the Zebra program with a hypothesis rule, and
 [`09-hypotheses.md`](../../../docs/ein/user/03-syntax-and-semantics/09-hypotheses.md) and the reasoning page teach
 three rungs.
