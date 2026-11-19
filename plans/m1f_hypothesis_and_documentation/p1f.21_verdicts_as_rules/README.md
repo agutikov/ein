@@ -16,8 +16,8 @@ idea, hypotheses as ordinary facts, is put as
 [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
 with runs ([review item 34](review/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
-its word open as Q-M1f.550; and **started S1f.21.6 and S1f.21.8** (*"start s1f.21.6 and s1f.21.8"*). No other
-stage is started.
+its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
+(*"start s1f.21.6 and s1f.21.8"*). No other stage is started.
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
@@ -180,11 +180,13 @@ It rules [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-t
   contradiction's among them.
 - **What ends a state is a rule's key**: `:ein` *word* where another rule states `:assert`, the word the engine's
   and no fact.
-- **The word is open**, [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein). On the user's *"maybe propose better name"*: `inconsistent`, the
+- **The word**, [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein): on the user's *"maybe propose better name"*, `inconsistent` was proposed, the
   property of a set of premises that derives $\bot$, which is what a state is; the page the answer names sorts
   `false` with a formula in a model and `inconsistent` with a set of premises, and asks that they not be mixed.
+  **Ruled the same day**, verbatim: *"Yes, :ein   inconsistent"*, and with it *"unblock S1f.21.10"*.
 
-In the plan: S1f.21.10 is not run, and S1f.21.11 builds the key where it planned the fact.
+In the plan: [S1f.21.10](s1f.21.10_the_kernels_prefix.md), planned as the prefix, is re-planned to build the key and
+waits on no decision; S1f.21.11 keeps the rest of its group, the contradiction as rules and `relation`.
 
 ## What it is
 
@@ -221,8 +223,8 @@ The rows are in the order the stages would run, which is by what each waits on.
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **started 2026-11-19** on the user's word (*"start s1f.21.6 and s1f.21.8"*), in the main tree |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation, the contradiction, and the requirement, the payment and `discharged`, each a module a program imports | **started 2026-11-19** on the user's word, in a worktree on its own branch, merged back when done; its readings take their defaults |
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
-| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The kernel's prefix.** | **not run: ruled away 2026-11-19** by the user's answer to Q-M1f.399: no word is renamed and no prefix is reserved; the key the answer puts in its place is S1f.21.11's |
-| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **The engine's key `:ein`, and `false`, `not` and `relation` as conventions.** Its examples, then the build in five commits, the key first | planned, re-planned 2026-11-19 on the answer to Q-M1f.399, **not started**; waits on S1f.21.8, Q-M1f.550, V-1, Q-M1f.447 |
+| [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | re-planned and **unblocked 2026-11-19** on the user's word, **not started**; waits on no decision; in order, after S1f.21.6 and S1f.21.8 are merged |
+| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.10, S1f.21.8, V-1 and a choice with no default (how the rules reach every relation), Q-M1f.447 |
 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; waits on Q-M1f.549, S1f.21.7 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages.** The verdicts as rules on the reasoning pages and in Ein on the user's, the phase's rulings as decisions | planned, **not started**; after every build: a page states the kernel as built |

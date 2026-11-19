@@ -340,8 +340,9 @@ paragraph, no register count, no measurement (the user's rule).
   One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   with its survey done, its stages planned, S1f.21.6 and S1f.21.8 started on
-  the user's word, and its open questions Q-M1f.390, Q-M1f.447, Q-M1f.549 and
-  Q-M1f.550. **No other stage of P1f.21 starts without the user's word.**
+  the user's word, S1f.21.10 unblocked, and its open questions Q-M1f.390,
+  Q-M1f.447 and Q-M1f.549. **No other stage of P1f.21 starts without the
+  user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is
   paused.

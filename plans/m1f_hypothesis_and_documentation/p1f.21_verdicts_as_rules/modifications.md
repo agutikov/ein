@@ -237,7 +237,8 @@ The user's directions are (a) with (d): the word `false` stays, and the kernel's
 They take neither 21 nor 22.
 
 **Ruled 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), the user's answer): (a), and not (d). No prefix is reserved, so
-item 23 is not built either, and [S1f.21.10](s1f.21.10_the_kernels_prefix.md) is not run.
+item 23 is not built either; [S1f.21.10](s1f.21.10_the_kernels_prefix.md) builds what the answer puts in its place,
+the key of items 24 and 25.
 
 ## G. The verdict as a rule's conclusion: `(ein.kill)`, and three names as conventions
 
@@ -249,7 +250,8 @@ conventions and not the kernel's; `eq` and `neq` stay the kernel's. **Not run**:
 programs ([§ 9](open_facts.md#9-what-s1f214-answers), items 1 and 6).
 
 **Ruled 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)): in items 24 and 25 the fact `(ein.kill)` is replaced by **a rule's key,
-`:ein` *word***, the word the engine's and no fact; its word is [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein). Where an item below says
+`:ein` *word***, the word the engine's and no fact; the word is `inconsistent` ([Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), ruled),
+and S1f.21.10 builds it. Where an item below says
 `(ein.kill)` or `ein.kill`, read *a rule with the key*.
 
 24. **The kernel reads one fact in a saturation, `(ein.kill)`**, read only where it is held and refused under an

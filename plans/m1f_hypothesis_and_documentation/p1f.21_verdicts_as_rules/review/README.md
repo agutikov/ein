@@ -18,7 +18,7 @@ symmetry and every read of `is-a` (Q-M1f.436).
 | # | item | the question | state |
 |---|---|---|---|
 | 32 | [Q-M1f.390](32-Q-M1f.390/README.md) | what an obligation emits: the verdict, with its justification, or as a fact | not ruled; `design.md` recommends (b); the user's `(open F J)` beside (d) |
-| 33 | [Q-M1f.399](33-Q-M1f.399/README.md) | the names of what controls the search, `false` and `open` | **ruled 2026-11-19** but for one word: no prefix, `false` kept, a rule's key `:ein`; open, the key's word ([Q-M1f.550](../../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein)), proposed `inconsistent` |
+| 33 | [Q-M1f.399](33-Q-M1f.399/README.md) | the names of what controls the search, `false` and `open` | **ruled 2026-11-19**, the word with it (Q-M1f.550, `inconsistent`): no prefix, `false` kept, a rule's key `:ein inconsistent`. The item leaves the bundle when S1f.21.6 is in: that stage is editing a page that links it |
 | 34 | [Q-M1f.549](34-Q-M1f.549/README.md) | hypotheses as facts: held, in which reading, and how far the search goes into rules | not ruled; recommended (b), held as *asked* |
 
 ## Found while building

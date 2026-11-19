@@ -478,7 +478,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.547](#q-m1f547--a-concentric-layout-the-layers-drawn-as-rings) | A concentric layout: the layers drawn as rings | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), no ring layout, nothing built; the review bundle's item 61, examples by S1f.23.11, task 2, its page and programs in `git log` (`7c39c671`); not `--layout radial`, `--layout rings` or a documented recipe |
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
-| [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **open, the user's, not ruled**: raised 2026-11-19 by the user's answer to Q-M1f.399 (*"it can remain even the same word `false` but see … ideas2.md and maybe propose better name here"*); proposed `inconsistent`, the property of a set of premises that derives $\bot$; P1f.21's S1f.21.11 builds the key on it |
+| [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **ruled 2026-11-19 by the user**, verbatim: *"Yes, :ein   inconsistent"*: the word is `inconsistent`, as proposed on the user's *"maybe propose better name here"* (Q-M1f.399's answer); P1f.21's S1f.21.10 builds the key on it, unblocked the same day |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7878,8 +7878,8 @@ Read:
 - **The word is open**: `false` may stay, and the user asks for a proposal:
   [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein).
 
-**What it changes in P1f.21's plan.** S1f.21.10, the prefix, is not run: its one item left was the prefix.
-S1f.21.11 builds the key in place of `(ein.kill)`. `open` is not ruled by it: what an obligation emits is
+**What it changes in P1f.21's plan.** S1f.21.10, planned as the prefix, builds the key in place of `(ein.kill)`
+(re-planned on the user's *"unblock S1f.21.10"*, once the word was ruled), and S1f.21.11 the rest of its group. `open` is not ruled by it: what an obligation emits is
 [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)'s and whether the
 candidates are facts [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)'s.
 
@@ -10182,7 +10182,8 @@ would pay it are held. The candidate's name is [Q-M1f.399](#q-m1f399--the-names-
 **Raised** 2026-11-19 by the user's answer to [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open):
 the engine's control is a rule's key, `:ein false`, *"which argument is not a fact, it can remain even the same
 word `false` but see plans/m1g_logic/p1g.40_proof_theory/ideas2.md and maybe propose better name here"*.
-**Open: not ruled.** What follows is the proposal asked for.
+**Ruled 2026-11-19 by the user**, on the proposal below, verbatim: *"Yes, :ein   inconsistent"*. **The word is
+`inconsistent`.** What follows is the proposal as it was put.
 
 The page the answer names sorts the words by what each is a property of: *true* and *false* of a formula in a
 model, *provable* and *refutable* of a formula in a calculus, **consistent and inconsistent of a set of premises**,
@@ -10212,8 +10213,8 @@ inconsistent one, an alive one a state the program's rules derive no `(false)` i
 
 **Beside it, not asked and not ruled.** The key is the form of every word a rule addresses to the engine, and there
 are two more today: an obligation's whole `:assert`, `(open ?R)`, and an `hrule`'s candidate. Whether they move
-under the key is Q-M1f.390's and Q-M1f.549's, and S1f.21.11 builds the key for the one word.
+under the key is Q-M1f.390's and Q-M1f.549's, and S1f.21.10 builds the key for the one word.
 
-**What waits on it.** P1f.21's [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md),
-its first build step.
+**What it unblocks.** P1f.21's [S1f.21.10](p1f.21_verdicts_as_rules/s1f.21.10_the_kernels_prefix.md), re-planned
+to build the key, with the user's *"unblock S1f.21.10"* of the same message: it waits on no decision.
 

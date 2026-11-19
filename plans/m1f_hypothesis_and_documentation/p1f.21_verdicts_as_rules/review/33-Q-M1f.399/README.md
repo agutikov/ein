@@ -3,8 +3,8 @@
 **Ruled 2026-11-19, but for one word.** The user's answer in [`../ANSWERS.md`](../ANSWERS.md): no prefix `ein.` is
 reserved; `(false)` stays, a convention of the standard library that rules infer, the contradiction's among them;
 and what ends a state is a rule's key, `:ein` *word*, the word no fact. The reading is the ledger's
-([Q-M1f.399](../../../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)). **What is left open is the word**, on the user's *"maybe propose better name"*:
-[Q-M1f.550](../../../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), proposed `inconsistent`. The page below is as it was put, with `(ein.kill)` where the
+([Q-M1f.399](../../../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)). **The word was ruled the same day**, *"Yes, :ein   inconsistent"*, on the user's *"maybe propose better name"*:
+[Q-M1f.550](../../../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), `inconsistent`. Nothing of the item is open. The page below is as it was put, with `(ein.kill)` where the
 key now stands; its runs hold, since the emulation's stand-in fact is the key's stand-in as well.
 
 ## 1. The question
