@@ -1,5 +1,5 @@
-;;; `oblig-fresh-name.ein` on the shipped obligation rule — regression
-;;; `oblig-stdlib-total-owed` (`corpus/regressions.toml`).
+;;; `oblig-fresh-name.ein` on the shipped obligation rule.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -16,25 +16,25 @@
 ;;; no refutation here rests on one.
 ;;;
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
 ;;; `{(likes Ann Z)}` saturates to `(is-a Z Food)`, which witnesses Ann's
-;;; debt. Over the rung's candidates with `(is-a Z Food)` declared at root
-;;; (`oblig-stdlib-total-owed-declared.ein`) R is that one state. With the
-;;; rung declined, the blind enumerator, which is untyped (Q-M1e.12),
-;;; proposes `likes` over Ann, Soup and Z, and the four with a non-Person
-;;; subject, which no rule refutes, are free: R is sixteen states. The second
-;;; holds (Q-M1e2.10): a guard over a relation in D declines the rung, and the
-;;; control declines with it.
+;;; debt. A guard over a relation in D declines the obligations rung
+;;; (Q-M1e2.10), here `is-a`, so the blind enumerator, which is untyped
+;;; (Q-M1e.12), builds H: `likes` over Ann, Soup and Z. The control,
+;;; `oblig-stdlib-total-owed-declared.ein`, declines with it.
 ;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
+;;; The program is flagged, so the cube answers it, and nothing is claimed of
+;;; its answer (Q-M1f.564). It states an `:expect`, which `ein test FILE`
+;;; checks for whoever asks; no suite of the project does.
 ;;;
-;;; At `338b5892` (`ein solve FILE`, route 2, the cube, since the program is
-;;; flagged), H was 1 candidate, dead alone, and R was empty, root owing Ann's
-;;; Food, `(region (owing (model)))`. The rung declines on `is-a`, a relation
-;;; in D, the blind enumerator builds H, six candidates, and R is the sixteen
-;;; states the `:expect` below states. The regression
-;;; `oblig-stdlib-total-owed` is fixed.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

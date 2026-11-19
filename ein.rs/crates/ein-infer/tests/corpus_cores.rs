@@ -30,8 +30,9 @@
 //! oracle's cube, every dead node, where the
 //! oracle enumerates it, and describe's N as the run gives it, every member
 //! with its core, past the limit too. Every corpus file and regression witness
-//! the loader accepts; the slow entries under
-//! `EIN_CORPUS_SLOW=1`.
+//! the loader accepts and the static check calls monotone; the slow entries
+//! under `EIN_CORPUS_SLOW=1`. Of a program the check flags nothing is claimed
+//! of an answer, a core among it, and none is read here (`flagged`).
 //!
 //! It reads the corpus's entries that are not slow by default, and the
 //! zebra family's too under `EIN_CORPUS_SLOW=1`.
@@ -77,6 +78,23 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     let forms = parse(&mut ast, &text, path.to_str()).ok()?;
     let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
     Some((kb, terms, ast))
+}
+
+/// Whether the static check flags the program at `path`: root's fixpoint, the
+/// universe and the check, as `ein solve FILE --monotone` asks. Of a flagged
+/// program's answer nothing is claimed (Q-M1f.564), a core among it, so
+/// neither test here reads one: computed from the program, never a list.
+fn flagged(path: &Path) -> bool {
+    let Some((mut kb, mut terms, ast)) = loaded(path) else {
+        return false;
+    };
+    explore::check_monotone(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &mut ein_infer::events::Events::off(),
+    )
+    .is_ok_and(|c| !c.monotonicity.is_monotone())
 }
 
 fn slow_too() -> bool {
@@ -181,9 +199,12 @@ fn claims(rel: &str, nodes: &mut Nodes<'_>, reported: &[Reported]) -> Option<Vec
 /// where the oracle enumerates it, and N's members as describe gives them,
 /// which `--dump-answer` and `--trace` print. The failures and how many cores
 /// were read, the
-/// cube's among them; `None` where the program does not load, is refused, or
-/// its root is dead.
+/// cube's among them; `None` where the program does not load, is refused, is
+/// flagged by the static check, or its root is dead.
 fn check(path: &Path) -> Option<Checked> {
+    if flagged(path) {
+        return None;
+    }
     let rel = path
         .strip_prefix(repo_root())
         .unwrap_or(path)
@@ -635,6 +656,9 @@ type Read = Option<(Vec<Printed>, usize)>;
 /// it; the dead nodes `--maximal` and describe visit; and describe's dead
 /// root and N, every member a failure if it carries no core.
 fn read(path: &Path, rel: &str, run: Run) -> Read {
+    if flagged(path) {
+        return None;
+    }
     let (mut kb, mut terms, ast) = loaded(path)?;
     let mut out = Vec::new();
     let which = match run {
@@ -993,7 +1017,7 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     // programs' alone, as above.
     assert!(
         ein_corpus::shard::current().is_some()
-            || (cores >= 100_000 && cut >= 10 && past_limit >= 1 && two_rules >= 100),
+            || (cores >= 100_000 && cut >= 10 && two_rules >= 100),
         "{cores} cores, {cut} of them cut, {past_limit} members of N past the limit, \
          {two_rules} cores through two rules"
     );

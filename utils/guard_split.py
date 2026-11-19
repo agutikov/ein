@@ -396,8 +396,8 @@ def ein_bin(arg: str | None) -> str:
 def oracle(path: Path, bin: str, limit: int | None = None) -> tuple[dict | None, str]:
     """`ein oracle --dump`'s `region.json`, or `None` and why there is none:
     the command's exit and its first stderr line, which says whether the
-    program did not load or loaded and was refused, by *forbid* say (M1f
-    S1f.5.28's item 8: this said *does not load* of both)."""
+    program did not load or loaded and was refused (M1f S1f.5.28's item 8:
+    this said *does not load* of both)."""
     with tempfile.TemporaryDirectory(prefix="guard-split-") as d:
         cmd = [bin, "oracle", str(path), "--dump", d] + (["--region-limit", str(limit)] if limit is not None else [])
         p = subprocess.run(cmd, capture_output=True, text=True)

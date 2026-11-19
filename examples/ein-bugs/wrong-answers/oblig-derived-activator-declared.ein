@@ -1,11 +1,11 @@
-;;; The control of `oblig-derived-activator.ein` — regression
-;;; `oblig-derived-activator`'s control.
+;;; The control of `oblig-derived-activator.ein`.
 ;;;
 ;;; The same program with the derived activator also stated,
-;;; `(total-owed drinks is-a)`: root owes both debts, the obligations rung
-;;; proposes `(likes Ann Soup)` and `(drinks Ann Tea)`, and R is the one state
-;;; that holds both, the witness's right answer (`ein solve FILE` and
-;;; `ein oracle FILE` at `94c75204`, release and debug alike).
+;;; `(total-owed drinks is-a)`: root owes both debts, and the obligations rung
+;;; proposes `(likes Ann Soup)` and `(drinks Ann Tea)`. Flagged as that file
+;;; is, and nothing is claimed of its answer (Q-M1f.564).
+;;;
+;;;
 
 (import std.algebra :symbols (total-owed))
 (relation is-a   T T :why "{?3} is a {?4}")

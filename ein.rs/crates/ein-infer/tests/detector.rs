@@ -3,7 +3,11 @@
 //!
 //! What a program the static check flags is warned of, held to the corpus:
 //! the static half ([`ein_infer::detector::Static`]) on every corpus program,
-//! with each cycle and each order finding pinned by name.
+//! with each cycle and each order finding pinned by name. The dynamic half,
+//! what the cube of a flagged program shows (its status, its stale facts,
+//! its parent paths), is an answer of a flagged program and is held to
+//! nothing (Q-M1f.564); on a monotone program it has nothing to find, which
+//! the sweeps at the end hold.
 
 use std::path::Path;
 
@@ -11,9 +15,8 @@ use ein_core::{FactId, Kb, Prov, Terms};
 use ein_corpus::{corpus_files, repo_root};
 use ein_infer::canon::state_key;
 use ein_infer::compile::SharedMemo;
-use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
+use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static};
 use ein_infer::events::Events;
-use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::monotone::Monotonicity;
 use ein_infer::region::{self, Nodes, Options, Outcome};
 use ein_infer::saturator::{Saturator, Session};
@@ -39,19 +42,6 @@ const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?3} is a thing\") (rel
      (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :why \"a and b hold of {?x} and q does not, so p holds of {?x}\")
      (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :why \"a holds of {?x} and z does not, so q holds of {?x}\")
      (query :goal (p ?x))";
-
-/// A flagged program whose root is dead, over 17 candidates: an obligation's
-/// trigger is its site, and `dead` fires at root.
-const ROOT_DEAD_PAST_THE_LIMIT: &str = "
-     (relation thing T :why \"{?3} is a thing\") (relation h T :why \"h holds of {?3}\") (relation need T T :why \"h holding of {?4} pays debt {?3}\")
-     (thing A) (thing B) (thing C) (thing D) (thing E) (thing F) (thing G) (thing H)
-     (thing I) (thing J) (thing K) (thing L) (thing M) (thing N) (thing O) (thing P)
-     (thing Q)
-     (need K1 A)
-     (hrule guess () :match (thing ?x) :assert (h ?x) :why \"guess that h holds of {?x}, a thing\")
-     (rule dead () :match (thing A) :assert (false) :why \"A is a thing, which cannot be\")
-     (rule owe () :match (and (h ?x) (absent (and (need K1 ?y) (h ?y)))) :assert (open h) :why \"h holds of {?x}, and of nothing that pays debt K1: one such is still owed\")
-     (query :goal (h ?x))";
 
 /// The static check of `text` (read from `at`), through the oracle's own
 /// preparation — the cube is refused past the limit and the check still runs.
@@ -267,287 +257,6 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
             }
         }
         assert_eq!(m.detector.stakes[0].at_stake, *at_stake, "{rel}");
-    }
-}
-
-/// The warning a run of `mode` gives on `rel`, read-out and all — `limit` is
-/// `--region-limit`.
-fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
-    let path = repo_root().join(rel);
-    let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("parses");
-    let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
-    let mut opts = explore::Options::new(mode);
-    opts.limit = limit;
-    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
-        .unwrap_or_else(|e| panic!("{rel}: {e}"));
-    *r.answer
-        .warning
-        .unwrap_or_else(|| panic!("{rel}: no warning"))
-}
-
-const DESCRIBE: Mode = Mode {
-    which: Which::All,
-    ask: Ask::Describe,
-};
-
-fn stale(w: &Warning) -> Vec<String> {
-    w.state
-        .stale
-        .iter()
-        .map(|s| format!("{} {}: {}", s.node, s.class.as_str(), s.facts.join(" · ")))
-        .collect()
-}
-
-/// **The stale check reads every node the run computes**: on
-/// `stale-naf-fork.ein` the stale fact is in a dead node no run lists. One
-/// per kind: dead, in R, and the FIFO gap's node of R; none where the state
-/// never breaks.
-#[test]
-fn the_stale_check_reads_every_node_the_run_computes() {
-    let cases: &[(&str, &[&str])] = &[
-        (
-            "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
-            &["{(q one)} dead: (p one) ← derive-p (absent (q one))"],
-        ),
-        (
-            "examples/features/07_unstratifiable.ein",
-            &["{(q one)} R: (p one) ← derive-p (absent (q one))"],
-        ),
-        (
-            "examples/lattice/10_fifo_gap.ein",
-            &["{(a one), (b one)} R: (p one) ← r2 (absent (q one))"],
-        ),
-        ("examples/ein-bugs/naf-upward-closure.ein", &[]),
-        ("examples/lattice/08_absent_witness_hole.ein", &[]),
-    ];
-    for (rel, want) in cases {
-        let w = warned(rel, DESCRIBE, region::DEFAULT_LIMIT);
-        assert!(w.state.cube, "{rel}");
-        assert_eq!(stale(&w), *want, "{rel}");
-    }
-    // A question decided early reads what it computed, and says how many.
-    let w = warned(
-        "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
-        Mode {
-            which: Which::All,
-            ask: Ask::Find(1),
-        },
-        region::DEFAULT_LIMIT,
-    );
-    assert_eq!(w.state.nodes, 1);
-    assert!(!w.state.cube);
-    assert_eq!(w.state.stale, []);
-}
-
-/// **The status, attributed** — the cube's half, with the sites its
-/// violations are attributed to; and *not known* where
-/// the run did not read the cube, said three ways.
-#[test]
-fn the_status_names_the_sites_its_violations_are_attributed_to() {
-    let exercised = |by: &[&str], holes, dead, discharged| Status::Exercised {
-        by: by.iter().map(|s| s.to_string()).collect(),
-        holes,
-        dead_not_upward_closed: dead,
-        discharged_not_upward_closed: discharged,
-    };
-    let cases: &[(&str, Status)] = &[
-        (
-            "examples/ein-bugs/naf-upward-closure.ein",
-            exercised(&["bad"], 1, 1, 0),
-        ),
-        (
-            "examples/lattice/08_absent_witness_hole.ein",
-            exercised(&["soup-unless-allergic"], 1, 0, 1),
-        ),
-        (
-            "examples/lattice/04_obligation_trigger_hole.ein",
-            exercised(&["total-owed [activator meal is-a]"], 1, 0, 1),
-        ),
-        (
-            "examples/lattice/09_activator_hole.ein",
-            exercised(&["total-owed"], 1, 0, 1),
-        ),
-        (
-            "examples/lattice/synth/trigger_hole.ein",
-            exercised(&["dead-1", "owe-2"], 7, 3, 4),
-        ),
-        // Where the attribution names no site, the
-        // derivation followed through each plan's activator. `lattice/12`'s
-        // `total-owed` activator is derived by a plan of `serves`, which root
-        // never compiled; the `activator-chain-*` programs die through
-        // `r2`, `r3` or `bad`, compiled at a node, none of them a site.
-        (
-            "examples/lattice/12_activator_chain_hole.ein",
-            exercised(&["serves"], 1, 0, 1),
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/activator-chain-1.ein",
-            exercised(&["q"], 1, 1, 0),
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/activator-chain-2.ein",
-            exercised(&["q"], 1, 1, 0),
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein",
-            exercised(&["q"], 1, 1, 0),
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/activator-chain-param-absent.ein",
-            exercised(&["watch"], 1, 1, 0),
-        ),
-        // ... and where that names none either, the row says so: `chk`'s death
-        // rests on `(absent (x a))`, no site reads `x`, and no rule on the
-        // derivation is an activator site.
-        (
-            "examples/ein-bugs/wrong-answers/activator-chain-node-writes.ein",
-            exercised(&[], 1, 1, 0),
-        ),
-        (
-            "examples/branching/13_lookahead_naf_world.ein",
-            Status::Conservative,
-        ),
-        ("examples/lattice/10_fifo_gap.ein", Status::Conservative),
-    ];
-    for (rel, want) in cases {
-        assert_eq!(
-            warned(rel, DESCRIBE, region::DEFAULT_LIMIT).status,
-            *want,
-            "{rel}"
-        );
-    }
-    assert_eq!(
-        ein_infer::detector::by_words(&[]),
-        "by no site: the violation's derivation, each plan's activator followed, reaches none"
-    );
-    assert_eq!(
-        ein_infer::detector::by_words(&["q".to_string(), "r".to_string()]),
-        "by q, r"
-    );
-    let rel = "examples/ein-bugs/naf-upward-closure.ein";
-    assert_eq!(
-        warned(rel, DESCRIBE, 1).status,
-        Status::PastLimit { n: 2, limit: 1 }
-    );
-    // `-n 1` stops at ∅, a node of R, so it read one node of four.
-    let first = Mode {
-        which: Which::All,
-        ask: Ask::Find(1),
-    };
-    assert_eq!(
-        warned(rel, first, region::DEFAULT_LIMIT).status,
-        Status::NotRead { n: 2 }
-    );
-    // `--single` on `stale-naf-fork` reads both of its nodes: what the cube
-    // says, from a question decided early.
-    let single = Mode {
-        which: Which::All,
-        ask: Ask::Single,
-    };
-    let w = warned(
-        "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
-        single,
-        region::DEFAULT_LIMIT,
-    );
-    assert_eq!(w.status, Status::Conservative);
-    assert!(w.state.cube);
-    // A dead root kills every node (L0), and the route reads root alone.
-    // A written program, an obligation's trigger beside a refutation root
-    // fires, holds the status.
-    let path = repo_root().join("written.ein");
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let forms = parse(&mut ast, ROOT_DEAD_PAST_THE_LIMIT, path.to_str()).expect("parses");
-    let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
-    let mut opts = explore::Options::new(DESCRIBE);
-    opts.limit = region::DEFAULT_LIMIT;
-    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).expect("it answers");
-    assert_eq!(
-        r.answer.warning.expect("a warning").status,
-        Status::RootDead { n: 17, limit: 16 }
-    );
-}
-
-/// **The parent-path spot check**, at ≤ 3 parents of each printed state of
-/// two commitments or more — the proposal's § 5 table, every row of it on
-/// the corpus. A dead parent is skipped, as `-y` skipped one.
-#[test]
-fn the_spot_check_reads_three_parents_of_each_printed_state() {
-    // (states, parents, dead parents, saturations, the paths that differ)
-    type Row<'a> = (&'a str, u64, u64, u64, u64, &'a [&'a str]);
-    let cases: &[Row] = &[
-        ("examples/ein-bugs/naf-upward-closure.ein", 1, 1, 1, 3, &[]),
-        (
-            "examples/lattice/08_absent_witness_hole.ein",
-            3,
-            7,
-            0,
-            14,
-            &[
-                "{(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)",
-            ],
-        ),
-        (
-            "examples/lattice/04_obligation_trigger_hole.ein",
-            1,
-            2,
-            0,
-            4,
-            &[],
-        ),
-        ("examples/lattice/09_activator_hole.ein", 1, 2, 0, 4, &[]),
-        (
-            "examples/ein-bugs/d3-unsat-core.ein",
-            14,
-            34,
-            0,
-            68,
-            &[
-                "{(r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)",
-                "{(is-a o2 o3), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)",
-                "{(is-a o3 o2), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)",
-            ],
-        ),
-        (
-            "examples/lattice/10_fifo_gap.ein",
-            1,
-            2,
-            0,
-            4,
-            &["{(a one), (b one)} by way of its parent without (b one)"],
-        ),
-        ("examples/lattice/synth/trigger_hole.ein", 8, 21, 1, 43, &[]),
-        (
-            "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
-            0,
-            0,
-            0,
-            0,
-            &[],
-        ),
-        (
-            "examples/branching/13_lookahead_naf_world.ein",
-            0,
-            0,
-            0,
-            0,
-            &[],
-        ),
-    ];
-    for &(rel, states, parents, dead, saturations, differ) in cases {
-        let p = warned(rel, DESCRIBE, region::DEFAULT_LIMIT)
-            .paths
-            .unwrap_or_else(|| panic!("{rel}: no spot check"));
-        assert_eq!(
-            (p.states, p.parents, p.dead, p.saturations),
-            (states, parents, dead, saturations),
-            "{rel}"
-        );
-        assert_eq!(p.differ, differ, "{rel}");
-        assert_eq!(p.unprinted, None, "{rel}");
     }
 }
 

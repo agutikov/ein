@@ -644,12 +644,12 @@ The files the three commands write are the region dump
 
 | claim | test |
 |---|---|
-| $R$ as defined: every node's status and $R$ on the fixtures, `lattice/02_genuine_3set_death.ein` and `owed-seats.ein` among them | `ein-infer/tests/region.rs`: `the_seven_programs_have_the_tables_regions` |
+| $R$ as defined: every node's status and $R$ on the fixtures, `lattice/02_genuine_3set_death.ein` and `owed-seats.ein` among them | `ein-infer/tests/region.rs`: `the_six_monotone_programs_have_the_tables_regions` |
 | every way of computing $R$ gives the oracle's, which computes every node whole | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
 | a node's state is root's fork with the commitment written in, and owes what its fixpoint owes and nothing the computation wrote | `ein-infer/tests/region.rs`: `a_commitment_owes_what_its_fixpoint_owes_and_nothing_the_search_wrote`, `a_dead_node_still_says_what_it_owes` |
 | a node and its closure are one state; on a monotone program saturation is a closure operator on every cube within the oracle's limit | `ein-infer/tests/region.rs`: `a_node_and_its_closure_are_one_state`, `a_monotone_verdict_makes_saturation_a_closure_operator` |
 | a monotone program's cube shows no dead node with an alive superset and no discharged node with an owing one; the static check flags the non-monotone fixtures | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
-| the duality holds without holes and fails on the hole; across a hole the local test misreads the lines | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes_and_fails_on_the_hole`, `across_a_hole_the_one_fact_test_misreads_the_lines` |
+| the duality holds without holes | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes` |
 | each `synth/` program has the region it was written for | `ein-infer/tests/region.rs`: `every_synthetic_program_has_the_region_it_was_written_for` |
 | every name of the program is a guessable atom, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
 | a dunder is not guessable, and a held extent closed to hypotheses by a rule answers what one closed by a fact answers | `ein-infer/tests/dunder_objects.rs` |
@@ -800,6 +800,6 @@ tooltips and the legend the command writes are left out here.
 | each claim a program states is decided alike by the question `ein test` asks, by describe and by the oracle | `ein-infer/tests/claim_routes.rs`: `every_claim_is_decided_as_the_oracle_decides_it` |
 | a run a budget stopped says what it established and no more | `ein-infer/tests/tree_classes.rs`: `a_stopped_run_says_what_it_established_and_no_more` |
 | no lever, option or flag changes $R$ | `ein-cli/tests/lever_invariance.rs` |
-| where ∅ is in $R$ every minimal question stops at root, on a flagged program too | `ein-cli/tests/region_modes.rs`: `where_empty_is_in_r_every_minimal_question_stops_at_root` |
+| where ∅ is in $R$ every minimal question stops at root, on a flagged program too | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle`, its ∅ rule |
 | past the limit a line question certifies what describe certifies | `ein-render/tests/line_modes_past_the_limit.rs`: `past_the_limit_a_line_mode_certifies_what_describe_does` |
 | the oracle refuses past its limit | `ein-cli/tests/region_modes.rs`: `the_oracle_refuses_past_its_limit` |

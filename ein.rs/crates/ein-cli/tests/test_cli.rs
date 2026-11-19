@@ -1196,15 +1196,15 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
 /// out (`outside the universe: …`, Q-M1e2.3), and every row carries
 /// `outside`, the summary's `root.hypgen` field under its name and in its
 /// shape, `null` where no run checked the row's claim:
-/// `tests/region/07_cube.ein` prints `outside the universe: is-a …`, and its
-/// row carries it.
+/// `examples/lattice/13_witness_of_two.ein` prints `outside the universe: fed
+/// …`, and its row carries it.
 #[test]
 fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     let d = Dir::new("report-scope");
     let out = d.0.join("r.json");
     let r = ein(&[
         "test",
-        "tests/region/07_cube.ein",
+        "examples/lattice/13_witness_of_two.ein",
         "-v",
         "--json-report",
         &out.to_string_lossy(),
@@ -1226,11 +1226,11 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     let cube = row("solve", 0);
     assert_eq!(
         cube["outside"],
-        serde_json::json!([{"relation": "is-a", "arity": 2, "why": "no-hrule"}]),
+        serde_json::json!([{"relation": "fed", "arity": 2, "why": "no-hrule"}]),
         "{cube}"
     );
     assert!(
-        r.out.contains("    outside the universe: is-a — "),
+        r.out.contains("    outside the universe: fed — "),
         "{}",
         r.out
     );

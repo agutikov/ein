@@ -1,43 +1,43 @@
-;;; The line modes past `--region-limit` — regressions
-;;; `past-limit-lines-minimal` and `past-limit-lines-maximal`
-;;; (`corpus/regressions.toml`), under Q-M1e2.19: the smallest program the
+;;; The line modes past `--region-limit` (Q-M1e2.19): the smallest program the
 ;;; static check flags whose cube is past the default limit of 16, so a bare
-;;; `ein solve` and its two line modes stop there with every member of R
-;;; met.
+;;; `ein solve` and its two line modes stop there.
+;;;
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; tests/region/07_cube.ein's seating, with fifteen more chairs, each broken:
-;;; seating Ann makes her a diner, a diner owes a meal (`total-owed`), and a
+;;; lattice/17_flagged_region_claim.ein's seating, with fifteen more chairs, each
+;;; broken: seating Ann makes her a diner, a diner owes a meal (`total-owed`), and a
 ;;; seat on a broken chair is dead. 17 candidates, the 16 seats and the one
 ;;; meal. The obligation's trigger reads `is-a`, which a commitment changes
-;;; (`seated-dines`), so the static check flags the program and R is the
-;;; cube's, every node a fork of root.
+;;; (`seated-dines`), so the static check flags the program and its routes
+;;; are the cube's, every node a fork of root.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; Every seat on C2–C16 is dead, alone and in any set. Of the rest: ∅ is in
-;;; R (Ann is no diner yet), {(meal Ann Soup)} is, {(seats Ann C1)} owes a
-;;; meal, and {(seats Ann C1), (meal Ann Soup)} is in R. So R is three states;
-;;; the minimal line is {∅} and the maximal line {(meal Ann Soup), (seats Ann
-;;; C1)}, which `ein oracle --region-limit 17` gives (2^17 nodes).
+;;; Past the limit a run visits the cube in layer order, 2^16 of its 2^17
+;;; nodes. A member met with no member of R met below it is certified
+;;; minimal, since every subset was met first; the maximal line needs the
+;;; whole cube. A line mode answers from describe's description: it lists
+;;; what is certified, says where a line is not known, and counts the members
+;;; met (Q-M1e2.19). `ein oracle --region-limit 17` reads the whole cube.
 ;;;
-;;; Past the limit the run visits the cube in layer order, 2^16 of its 2^17
-;;; nodes: layers 0 to 8, every member of R among them. A member met with no
-;;; member of R met below it is certified minimal, since every subset was met
-;;; first, so the minimal line is certified {∅}; the maximal line needs the
-;;; whole cube. That is what describe (`ein solve FILE`) says.
+;;; Nothing is claimed of a flagged program's answer (Q-M1f.564): what is
+;;; held of this file is that each line mode says what describe says, a run
+;;; against a run.
 ;;;
-;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
-;;; At `d05d7c83`, release and debug, `ein solve FILE --minimal` labelled all
-;;; three members met `· minimal`, and `--maximal` all three `· maximal`, ∅
-;;; among them (`minimal line 3 states (a lower bound: the run stopped
-;;; first)`): past the limit `explore::flagged` asked the cube for every
-;;; member and labelled each with the mode's line. Today a line mode answers
-;;; from describe's description: `--minimal` lists ∅, certified, and every
-;;; `--maximal` question lists none, the maximal line not known, and counts
-;;; the three members met (Q-M1e2.19).
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 
 (import std.algebra :symbols (total-owed))

@@ -1,7 +1,7 @@
-;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the activator is the commitment itself — regression
-;;; `core-activator-committed` (`corpus/regressions.toml`), found by
-;;; probing `activator-chain-no-absent.ein`'s mechanism.
+;;; A refutation that rests on an activator which is the commitment itself:
+;;; `activator-chain-no-absent.ein`'s mechanism, one step shorter.
+;;;
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,25 +9,25 @@
 ;;; plan of `r2` it compiles concludes `(false)` from `(seed a)`. Root holds
 ;;; neither candidate, so it compiles no plan of `r2`.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; R is two states, ∅ and {(p2 a)}; N is {(r2 a)}. Its refutation rests on
-;;; `(seed a)`, which the plan matched, and on `(r2 a)`, the activator the
-;;; plan was compiled from: the core is `(r2 a) (seed a)`, which names the
-;;; commitment. `(seed a)` alone is root's, and root is alive.
+;;; The refutation rests on `(seed a)`, which the plan matched, and on
+;;; `(r2 a)`, the activator the plan was compiled from. A derivation records
+;;; the premises its plan matched; a firing records the activator too, and a
+;;; core follows an activator a node derives or commits (Q-M1e2.12), so the
+;;; commitment is reached and not `(seed a)` alone, which is root's.
 ;;;
-;;; ── What the engine answered, and what holds ───────────────────────────
+;;; Not monotone: the static check flags the program, and nothing is claimed
+;;; of its answer (Q-M1f.564).
 ;;;
-;;; R as above, exit 0; and N's core `(seed a)` alone, by
-;;; `r2`, in `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s
-;;; `nodes.json`, `--events`' `enter` line, `--trace` and `ein oracle
-;;; --dump` (`ein solve FILE --dump-answer DIR` at `a41eb76e`, release and
-;;; debug). A derivation recorded the premises its plan matched, not the
-;;; activator the plan was compiled from, so the core search never reached
-;;; the commitment. A core follows an activator a node derives or commits
-;;; (Q-M1e2.12), so N's core is `(r2 a) (seed a)`, in either build; the
-;;; narrower reading, *only an activator that is itself derived*, would
-;;; still leave this one, a commitment, out.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

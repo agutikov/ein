@@ -113,7 +113,7 @@ no command reaches it.
 | [`lattice/synth/maximal_not_top.ein`](../../examples/lattice/synth/maximal_not_top.ein) | 3 | 8 | 0 | 0 |
 | [`lattice/synth/three_components.ein`](../../examples/lattice/synth/three_components.ein) | 7 | 128 | 0 | 0 |
 | [`lattice/synth/trigger_hole.ein`](../../examples/lattice/synth/trigger_hole.ein) | 5 | 32 | 0 | 0 |
-| [`tests/region/07_cube.ein`](../../tests/region/07_cube.ein) | 2 | 4 | 0 | 0 |
+| [`examples/lattice/17_flagged_region_claim.ein`](../../examples/lattice/17_flagged_region_claim.ein) (then `tests/region/07_cube.ein`) | 2 | 4 | 0 | 0 |
 
 **Every node where the two differ**, with the facts that differ and the rule
 that derived each:

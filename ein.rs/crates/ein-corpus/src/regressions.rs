@@ -1906,25 +1906,90 @@ refuted_by = ["v", "w"]
         );
     }
 
+    /// A maximal line past the limit: the members met, not listed.
+    const LINE_PAST_THE_LIMIT: &str = r##"
+[[case]]
+id       = "line-past-the-limit"
+title    = "a line mode labels every member met as on its line"
+settings = "default"
+witness  = "examples/branching/01_saturate_only.ein"
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+k         = 0
+exhausted = false
+others    = 3
+closes    = ["meal", "seats"]
+models    = []
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = false
+k         = 0
+relations = ["meal", "seats"]
+outside   = ["is-a"]
+models    = []
+others    = 3
+"##;
+
+    /// A minimal line past the limit, decided at root: it meets no other
+    /// member.
+    const LINE_DECIDED_AT_ROOT: &str = r##"
+[[case]]
+id       = "line-decided-at-root"
+title    = "a line mode labels every member met as on its line"
+settings = "default"
+witness  = "examples/branching/01_saturate_only.ein"
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+k         = 1
+exhausted = true
+others    = 0
+closes    = ["meal", "seats"]
+models    = [[]]
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["meal", "seats"]
+outside   = ["is-a"]
+models    = [
+  [],
+]
+others    = 0
+"##;
+
     /// The members a line mode past the limit meets and does not list are
     /// compared where `right` states them, and such a right states `k`,
     /// `exhausted = false` and no verdict; a minimal line decided at root
     /// meets none, `others = 0`, and is exhausted.
     #[test]
     fn a_line_past_the_limit_counts_what_it_does_not_list() {
-        let file = regressions();
-        let row = file
-            .case
-            .iter()
-            .find(|r| r.right.others.is_some_and(|o| o > 0))
-            .expect("a maximal line past the limit states the members met and not listed")
-            .clone();
-        let decided = file
-            .case
-            .iter()
-            .find(|r| r.right.others == Some(0))
-            .expect("a minimal line past the limit is decided at root")
-            .clone();
+        // Two rows written for the format: a line mode stops past the limit
+        // only on a program the static check flags, and no row of the
+        // regressions holds such a program to an answer.
+        let row = row(LINE_PAST_THE_LIMIT);
+        let decided = self::row(LINE_DECIDED_AT_ROOT);
         assert!(
             defects(&row, Held::Right).is_empty(),
             "{:?}",

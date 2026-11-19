@@ -9,5 +9,5 @@ four seatings of three facts, and all four facts. The two matchings are R's mini
 twice is a restriction's question, `functional`'s, and a program that means it states it. The count of R is the
 count of its nodes, read without a preference for the smaller ones.
 
-**Held by.** `ein-infer/tests/region.rs`: `the_seven_programs_have_the_tables_regions`, which holds
+**Held by.** `ein-infer/tests/region.rs`: `the_six_monotone_programs_have_the_tables_regions`, which holds
 `examples/ein-bugs/wrong-answers/owed-seats.ein` to `|R| 7` with its two minimal and one maximal member.

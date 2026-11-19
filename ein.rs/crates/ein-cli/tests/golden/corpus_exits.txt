@@ -1058,9 +1058,8 @@
 0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein :: test
 0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/oblig-fresh-name.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein :: test
-0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein :: solve
+0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein :: solve --count
 1    examples/ein-bugs/wrong-answers/open-claim-fact-head.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-claim-fact-head.ein :: solve
 1    examples/ein-bugs/wrong-answers/open-claim-value.ein :: saturate
@@ -1466,6 +1465,8 @@
 0    examples/lattice/16_pair_through_closure.ein :: saturate
 0    examples/lattice/16_pair_through_closure.ein :: solve
 0    examples/lattice/16_pair_through_closure.ein :: solve --maximal
+0    examples/lattice/17_flagged_region_claim.ein :: saturate
+0    examples/lattice/17_flagged_region_claim.ein :: solve --count
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate
@@ -1900,8 +1901,6 @@
 0    tests/region/05_empty.ein :: test
 0    tests/region/06_false.ein :: saturate
 0    tests/region/06_false.ein :: test
-0    tests/region/07_cube.ein :: saturate
-0    tests/region/07_cube.ein :: test
 0    tests/region/08_query_classes.ein :: saturate
 0    tests/region/08_query_classes.ein :: test
 0    tests/region/09_query_over_maximal.ein :: saturate

@@ -29,8 +29,14 @@ never run it, which reads as coverage nobody has.
 
 Each program states its expected region on `(solve … :expect …)`, or a query's
 classes over a part of R, and `ein test` checks it against R as `ein solve`
-describes it: by the routes on a monotone program, by the cube on one the
-static check flags ([finding R](../docs/ein/reasoning/02-kb-evolution/07-finding-r.md)).
+describes it ([finding R](../docs/ein/reasoning/02-kb-evolution/07-finding-r.md)).
+**Every program under `tests/` is one the static check calls monotone**: of a
+flagged program's answer nothing is claimed, so no suite checks a claim of one
+([Q-M1f.564](../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md));
+a flagged program that states a claim is an example,
+[`examples/lattice/17_flagged_region_claim.ein`](../examples/lattice/17_flagged_region_claim.ein),
+and the corpus manifest's `a_flagged_program_declares_no_run_that_checks_a_claim`
+holds the rule.
 The claims were rendered from each program's computed R, the way
 [`12-query.md`](../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)'s
 were.
@@ -43,7 +49,6 @@ were.
 | `04_owing.ein` | `(owing …)`: R empty, root owes |
 | `05_empty.ein` | `(region)`: R empty, either kind |
 | `06_false.ein` | `(false)`: every node dead |
-| `07_cube.ein` | a flagged program, checked against the cube |
 | `08_query_classes.ein` | a query's claim: the goal's classes over all of R, `(model)` among them, on `01_states.ein`'s program |
 | `09_query_over_maximal.ein` | a query's claim `:over maximal`: the seatings nothing can be added to, where over all of R the same goal has a class per state |
 | `10_denied_extensions.ein` | a query's classes over R, on a bijection whose rules store what a seating excludes: the fixture of *what a state denies is not saturated* (`ein-infer/tests/known_dead.rs`) |
@@ -779,7 +784,7 @@ invents a debt takes a discharged state out of R where the claim lists it.
 
 | mutant | killed by |
 |---|---|
-| `algebra.ein::total-owed::swap-premise::(?isa ?a ?A)` | `region/04_owing`, `region/05_empty`, `region/07_cube`, `stdlib/algebra/23_total_owed` |
+| `algebra.ein::total-owed::swap-premise::(?isa ?a ?A)` | `region/04_owing`, `region/05_empty`, `stdlib/algebra/23_total_owed` |
 | `algebra.ein::surjective-owed::swap-premise::(?isa ?b ?B)` | `stdlib/algebra/25_surjective_owed` |
 | `slots.ein::slot-owed-room::swap-premise::(?isa ?a ?Ta)` | `stdlib/slots/09_owed_room` |
 | `slots.ein::slot-owed-room::swap-premise::(?sub ?Ta ?super)` | `stdlib/slots/09_owed_room` |

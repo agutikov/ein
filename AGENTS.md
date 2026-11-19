@@ -389,8 +389,9 @@ paragraph, no register count, no measurement (the user's rule).
   and the fixed ones are the project's regressions (`corpus/regressions.toml`).
   `python3 utils/wrong_answers.py`, a gate step, holds every row to what the
   binary answers today. Every open row is owned by a followup ([F22](plans/followups/f22_exact_core_past_the_cap.md),
-  [F24](plans/followups/f24_written_provenance.md)) or by a stage of a plan: the
-  non-monotone rows by [M1n](plans/m1n_non_monotone_programs/README.md)'s S1n.2.1.
+  [F24](plans/followups/f24_written_provenance.md)). **No row is of a program the
+  static check flags**: nothing is claimed of such a program's answer, so none is
+  held to one (Q-M1f.564).
 - **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
   algebra and geometry are its P1g.10 and P1g.11);
   [M1h](plans/m1h_beyond_word_problems/README.md);
@@ -400,8 +401,10 @@ paragraph, no register count, no measurement (the user's rule).
   [M1k](plans/m1k_notations_as_facts/README.md), other notations read as Ein
   facts: a labelled graph as a knowledge base (P1k.10, from M1f's P1f.30) and
   S-expressions as facts (P1k.20); [M1n](plans/m1n_non_monotone_programs/README.md),
-  non-monotone programs (F21, moved into it, with its probes and the register's
-  `W8` rows); each phase **run only on the user's word**.
+  non-monotone programs (F21, moved into it, with its probes; the register
+  holds no row of a flagged program, and the witnesses of the rows it once held
+  stay in the corpus and under `plans/wrong_answers/witnesses/`); each phase
+  **run only on the user's word**.
 
 ## Standing rules
 
@@ -542,7 +545,15 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   monotone; no page, comment or test says what it answers is right, sound or
   complete. `ein-infer/tests/non_monotone_loads.rs` holds the corpus programs
   whose refutation rests on an `absent` a commitment can still fill to
-  *flagged, and no licence*.
+  *flagged, and no licence*. **No suite validates a flagged program's
+  answer**: it may state an `:expect`, which `ein test FILE` checks for
+  whoever asks, but no program under `tests/` is flagged, a flagged corpus
+  entry declares no `test` run and no run that checks a claim it states
+  (`ein-corpus`'s `a_flagged_program_declares_no_run_that_checks_a_claim`),
+  the shape golden banks none of its answers (`Op::is_answer`,
+  `Unit::flagged`), and no regression row, register row or assertion holds
+  one to what it answers. What compares a run with a run stays on it: one R
+  on every command and mode, under every invariance.
 - **Every answer exits 0.** Only a refuted claim exits 1; a load error takes
   each command's load-error exit (2 under `ein test`). A count of commitments
   is exact in the engine and reported up to 2^63 − 1, which every surface

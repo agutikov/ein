@@ -120,10 +120,17 @@ from a stale argv.
 whatever `:expect` the file carries and exits 1 when one of them is refuted, so
 a `test` cell in the exit golden is banking a claim the *program* makes, not
 one the engine happens to render. It is declared on every entry that carries
-an `:expect` — the `examples/features/1{0,1,2,3}_*.ein` fixtures among them,
-and every program under [`tests/stdlib/`](../tests/) — and on anything else it
-would exit 2 with "nothing to check", which is the right answer and not a
-useful cell. Adding one to a file that grows an `:expect` is the growth rule
+an `:expect` and that the static check does not flag — the
+`examples/features/1{0,1,2,3}_*.ein` fixtures among them, and every program
+under [`tests/stdlib/`](../tests/) — and on anything else it would exit 2 with
+"nothing to check", which is the right answer and not a useful cell. **A
+flagged program's claim is checked by no run**: nothing is claimed of what such
+a program answers
+([Q-M1f.564](../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)),
+so a flagged entry declares no `test` run, and one whose program states an
+`:expect` declares only runs that check no claim (`saturate`, a `render` view,
+`solve --count`); the manifest's `a_flagged_program_declares_no_run_that_checks_a_claim`
+holds it, the flag computed from each program. Adding one to a file that grows an `:expect` is the growth rule
 below, applied.
 
 ## Groups

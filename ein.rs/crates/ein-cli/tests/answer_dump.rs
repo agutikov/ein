@@ -261,14 +261,15 @@ fn every_recorded_state_loads_to_its_own_state() {
     }
     runs.sort();
     runs.dedup();
-    // The `heavy_dump` entries' runs are the nightly's.
+    // The `heavy_dump` entries' runs are the nightly's. No recorded run is
+    // one today: each of those entries is a program the static check flags,
+    // and no row holds a flagged program to an answer.
     let heavy: std::collections::BTreeSet<String> = ein_corpus::corpus()
         .entry
         .into_iter()
         .filter(|e| e.heavy_dump)
         .map(|e| e.path)
         .collect();
-    let left_out = runs.iter().filter(|(f, _, _)| heavy.contains(f)).count();
     if !slow_too() {
         runs.retain(|(f, _, _)| !heavy.contains(f));
     }
@@ -307,13 +308,6 @@ fn every_recorded_state_loads_to_its_own_state() {
         }
     }
     assert!(states > runs.len(), "no state file was checked");
-    // The cut is a real one: a regression still records a heavy dump, so a
-    // per-commit run leaves something to the nightly, which reads it.
-    assert!(
-        left_out > 0,
-        "no recorded run is a heavy_dump entry's: the nightly's half of this test reads \
-         nothing the per-commit half does not"
-    );
     assert!(
         bad.is_empty(),
         "{} state files:\n{}",

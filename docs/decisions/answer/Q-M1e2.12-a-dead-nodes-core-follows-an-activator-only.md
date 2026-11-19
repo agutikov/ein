@@ -9,6 +9,9 @@ are the program's, as the plans root compiles from them are its rules, and no co
 core without it names root's facts for a contradiction root does not have. Root's plans are what the program says,
 and a core explains a node against the program, not the program against itself.
 
-**Held by.** `ein-infer/tests/region.rs`: `a_dead_nodes_core_follows_an_activator_only_a_node_derives`, the
-witnesses whose activator a node commits or derives and the two whose activator is root's, stated
-(`core-activator-given.ein`) or derived (`core-activator-root-derived.ein`).
+**Held by.** `ein_core::walks::node_activator`, which a core's walk follows. `ein-infer/tests/region.rs`:
+`a_dead_nodes_core_follows_no_activator_of_roots`, the two programs whose activator is root's, stated
+(`core-activator-given.ein`) or derived (`core-activator-root-derived.ein`). The other half is held by no test: a
+program in which a node derives or commits an activator has an activator site, the static check flags it, and
+nothing is claimed of its answer
+([Q-M1f.564](Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).

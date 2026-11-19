@@ -251,7 +251,7 @@ note   = "same shape as 04: the demo is the stdlib elimination rules, and the hy
 path   = "examples/features/07_unstratifiable.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "`p ← absent q; q ← absent p`. Both guards pass against the empty world, so a batch boundary admission derives both; the fixture pins that exactly one is derived and the loser is retired."
+note   = "`p ← absent q; q ← absent p`. Both guards pass against the empty world, so a batch boundary admission would derive both: the boundary admits one candidate a round, and which one is the order the two rules are written in. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/features/08_disjunct_guard_sets.ein"
@@ -640,7 +640,7 @@ note   = "two commitments that share a `state_key` — the merge path."
 path   = "examples/lattice/04_obligation_trigger_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "a hole in the solution region with no `absent` in any saturation rule: an obligation's trigger grows with the commitment."
+note   = "no `absent` in any saturation rule, and still not monotone: an obligation's trigger grows with the commitment, the second of the three causes. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/05_owed_seats_bounded.ein"
@@ -654,7 +654,7 @@ group  = "positive"
 runs   = ["solve", "saturate", "render lattice"]
 slow   = true
 cost_ms = 5198
-note   = "the user's seating example: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes. 19 candidates: the `solve` cell records route 2 stopping at --region-limit 16 with all 21 found, and there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2). Slow: bare `solve` describes R and its cells run to the default --region-budget."
+note   = "the user's seating example: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger), and nothing is claimed of its answer (Q-M1f.564). 19 candidates: the `solve` cell is route 2 stopping at --region-limit 16, and there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2). Slow: bare `solve` describes R and its cells run to the default --region-budget."
 
 [[entry]]
 path   = "examples/lattice/06_friends_tables_everyone_sits.ein"
@@ -674,19 +674,19 @@ note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 compone
 path   = "examples/lattice/08_absent_witness_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "the first of the three causes of a non-monotone program, an `absent` at odd depth in a saturation rule, here one that concludes a positive fact: being allergic takes the soup that paid Ann's meal away, so {seats, allergic} owes between {seats} and the top. It concludes no refutation: what is at stake is the state and what it owes."
+note   = "the first of the three causes of a non-monotone program, an `absent` at odd depth in a saturation rule, here one that concludes a positive fact: being allergic takes away the soup that paid Ann's meal. It concludes no refutation: what is at stake is the state and what it owes. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/09_activator_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)` once the kitchen opens, so a commitment compiles the stdlib rule root never had. lattice/04's cube by another mechanism, and the corpus's exercised activator site."
+note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)` once the kitchen opens, so a commitment compiles the stdlib rule root never had. lattice/04's mechanism by another route, and the corpus's activator site of an obligation. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/10_fifo_gap.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region", "solve --minimal --region-limit 1", "solve --maximal --region-limit 1"]
-note   = "the FIFO gap, the counter-example of docs/ein/reasoning/02-kb-evolution/08-monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative. The two line modes at `--region-limit 1` (`fifo-gap-limit-1-minimal`, `-maximal`), held against labelling every member met as on its line: past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}."
+note   = "the FIFO gap, the counter-example of docs/ein/reasoning/02-kb-evolution/08-monotonicity.md § 8.3: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, a stratified program. A node built at once and one built by way of a smaller commitment can hold different facts, so the state depends on the path. The two line modes at `--region-limit 1` are run past the limit. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/11_fifo_gap_static.ein"
@@ -698,7 +698,7 @@ note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, th
 path   = "examples/lattice/12_activator_chain_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "lattice/09's owing hole one activator further from root: opening the kitchen derives `(serves K1)`, whose plan derives `(total-owed meal is-a)`, so a commitment compiles two plans root never had. `serves` is an activator site and `total-owed` is none, its activator relation written only by `serves`'s plan: the status's attribution follows the owed instance's activator to the plan that derived it, and names `serves`, where the obligation's own activator site would name none."
+note   = "lattice/09 one activator further from root: opening the kitchen derives `(serves K1)`, whose plan derives `(total-owed meal is-a)`, so a commitment compiles two plans root never had. `serves` is an activator site and `total-owed` is none, its activator relation written only by `serves`'s plan. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/13_witness_of_two.ein"
@@ -725,16 +725,22 @@ runs   = ["solve", "saturate", "render lattice", "solve --maximal", "oracle --du
 note   = "a pair the coupling reads over commitments, met through a closure: p with r brings q, and one rule forbids p with q. Every label of the whole node is one class; the tree's reading makes the conflict of the two candidates a pair and no edge, so {p, r}, dead because it derives q, meets no pair, no edge through p and no question with p. The same claim as 15_union_label_dead, broken with no union label (`ein-infer/tests/no_edge.rs`). R is five states, the oracle's."
 
 [[entry]]
+path   = "examples/lattice/17_flagged_region_claim.ein"
+group  = "positive"
+runs   = ["solve --count", "saturate"]
+note   = "a flagged program that states a region claim: 04_obligation_trigger_hole.ein's program with a `(solve … :expect (region …))`. Nothing is claimed of a flagged program's answer (Q-M1f.564), so no run here checks the claim: `solve --count` reads no state, and no `test` run is declared; `ein test FILE` checks it for whoever asks."
+
+[[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "the lines decided locally and globally: A and B together or not at all, so ∅ and {A,B} are in R with a hole on each side, and the one-fact test calls ∅ maximal and {A,B} minimal; generated for its region, not edited by hand."
+note   = "the lines decided locally and globally: a program written for the region *A and B together or not at all*; generated for its region, not edited by hand. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/synth/maximal_not_top.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "Q-M1e2.7 (f)'s non-monotone half: obligations and nothing dead, and a trigger that grows makes the maximal line {A,B} while the top owes; generated for its region, not edited by hand."
+note   = "Q-M1e2.7 (f)'s non-monotone half: a program written for a region of obligations and nothing dead, with a trigger that grows; generated for its region, not edited by hand. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/lattice/synth/merged_states.ein"
@@ -1358,14 +1364,14 @@ note   = "The control for oblig-derived-domain.ein: the same program plus `(food
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
 group  = "regression"
-runs   = ["solve"]
-note   = "`oblig-stdlib-total-owed`, on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`), so it takes route 2, the cube. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too."
+runs   = ["solve --count"]
+note   = "on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`), so it takes route 2, the cube; the rung declines on a guard over a relation in D (Q-M1e2.10 (a)) and the blind enumerator builds H. It states an `:expect`, and no run here checks it: nothing is claimed of a flagged program's answer (Q-M1f.564), so the run is `solve --count`, which reads no state."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
 group  = "regression"
-runs   = ["solve", "test"]
-note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
+runs   = ["solve --count"]
+note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)). Flagged as its witness is: its `:expect` is checked by no run here, `solve --count` reading no state and no `test` run declared."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/activator-chain-1.ein"
@@ -1389,7 +1395,7 @@ note   = "activator-chain-1.ein one link shorter, `q` concluding (false) itself;
 path   = "examples/ein-bugs/wrong-answers/activator-chain-no-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "the loading control of activator-chain-1.ein: that program with no `absent` in `mk`. The chain concludes (false) at a node, but nothing rests on an `absent`: R two states, ∅ and {(p2 a)}. Its regression (`activator-chain-no-absent`) holds the core: N {(p a)}'s core is `(p a) (seed a)`, the refutation resting on `(p a)` through the activators `(q a)` and `(r2 a)`, which a core must not leave out."
+note   = "activator-chain-1.ein with no `absent` in `mk`: the chain concludes (false) at a node, and nothing rests on an `absent`. Flagged for `q`'s activator site. A refutation here rests on `(p a)` through the activators `(q a)` and `(r2 a)`, which a core follows (Q-M1e2.12). Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/activator-chain-node-absent.ein"
@@ -1443,13 +1449,13 @@ note   = "`str-in-hrule`: the hrule's template `(tag ?x \"lbl\")`, a string as a
 path   = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`core-activator-committed`: the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`. R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core is `(r2 a) (seed a)`: the core follows an activator a node derived or committed (Q-M1e2.12 (c))."
+note   = "the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`: a core follows an activator a node derived or committed (Q-M1e2.12 (c)). Flagged for the activator site. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-guard-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`core-activator-guard-only`: `mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise. R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is `(p a)`, the refutation resting on it through the activator."
+note   = "`mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise: the refutation rests on `(p a)` through the activator. Flagged for the activator site. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-given.ein"
@@ -1617,13 +1623,13 @@ note   = "The twin of `kw-neq-in-match.ein`: `neqw` renamed `nneqw`, a name that
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`kw-neq-in-absent`: `(absent (neqw ?x))`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three candidates, the twin's answer (Q-M1e2.17)."
+note   = "`(absent (neqw ?x))`. A keyword is a whole word (`01-grammar.md` § 1, fact 1), so `neqw` is a name, and the program answers as its twin does (Q-M1e2.17), which `ein-cli/tests/cli_semantics.rs` holds, a run against a run. Flagged, the `absent` reading a relation a commitment can extend. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "The twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit a)`, R eight states over three."
+note   = "The twin of `kw-neq-in-absent.ein`: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. The witness answers as this file does. Flagged as the witness is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
@@ -1785,25 +1791,25 @@ note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R`
 path   = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`features/07` with `derive-q` written before `derive-p`. The boundary admits the two rules in the order they are written, so root derives `(q one)` and R is `{∅, {(p one)}}`, the mirror of `features/07`'s `{∅, {(q one)}}`: R is not a function of the program, a known wrong answer on a flagged program, whose answer the engine claims nothing of."
+note   = "`features/07` with `derive-q` written before `derive-p`. The boundary admits the two rules in the order they are written, so root derives `(q one)` where `features/07`'s derives `(p one)`: on this flagged program the answer moves with the written order of the rules, and nothing is claimed of it (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`oblig-derived-activator`: a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`. The obligations rung reads the activator off the rule and proposes at root what the debt it brings would (Q-M1e.11), so H holds `(drinks Ann Tea)` beside `(likes Ann Soup)` and R is the control's one state."
+note   = "a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`. The obligations rung reads the activator off the rule and proposes at root what the debt it brings would (Q-M1e.11), so H holds `(drinks Ann Tea)` beside `(likes Ann Soup)`; `ein-infer/tests/later_debts.rs` holds H. Flagged for the activator site. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "The control of regression `oblig-derived-activator`: `oblig-derived-activator.ein` with the activator also stated, so root owes both debts and R is `{(drinks Ann Tea), (likes Ann Soup)}`, the witness's right answer."
+note   = "The control of `oblig-derived-activator.ein`: that program with the activator also stated, so root owes both debts. Flagged as it is."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
 group  = "regression"
 runs   = ["solve --region-limit 8", "saturate", "solve --minimal --region-limit 8", "solve --maximal --region-limit 8"]
-note   = "`past-limit-lines-minimal`, `-maximal` (Q-M1e2.19): a flagged program of 17 candidates, past the default --region-limit, whose R is three states (`ein oracle --region-limit 17`): minimal line {∅}, maximal line {(meal Ann Soup), (seats Ann C1)}. Past the limit describe certifies {∅} minimal and says the maximal line is not known, where a line mode would label every member met as on its line. The runs go past the limit at `--region-limit 8`, where every member is met by layer 2 and a run costs 2^8 saturations; the regressions ask the default limit."
+note   = "a flagged program of 17 candidates, past the default --region-limit (Q-M1e2.19): past the limit describe certifies what the members met certify and says where a line is not known, and a line mode does the same. The runs go past the limit at `--region-limit 8`, where a run costs 2^8 saturations; `ein-render/tests/line_modes_past_the_limit.rs` holds each line mode to describe and to the oracle, a run against a run. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
@@ -5292,12 +5298,6 @@ path   = "tests/region/06_false.ein"
 group  = "positive"
 runs   = ["test", "saturate"]
 note   = "`(false)` on (solve …): every node dead."
-
-[[entry]]
-path   = "tests/region/07_cube.ein"
-group  = "positive"
-runs   = ["test", "saturate"]
-note   = "a flagged program, its claim checked against the cube (route 2): an obligation trigger makes a hole."
 
 [[entry]]
 path   = "tests/region/08_query_classes.ein"

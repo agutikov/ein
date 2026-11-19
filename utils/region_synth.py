@@ -28,10 +28,11 @@ Boolean functions of the n bits (owing is free on dead nodes, and both are
 free on nodes saturation moves). Each is cut into prime implicants
 (Quine–McCluskey, then a greedy cover). A dead implicant is a rule asserting
 `(false)` whose premises are its literals: `(h X)` for a 1, `(absent (h X))`
-for a 0. **Since M1e2 S1e2.2.5 a 0 never reaches a dead rule**: *forbid*
-refuses a refutation resting on an `absent` over a relation the hrule
-proposes, so a target's dead node with a non-dead superset is written owing
-(`owing_holes`), what is dead is upward-closed, and every hole is owing.
+for a 0. **Since M1e2 S1e2.2.5 a 0 never reaches a dead rule**: a
+refutation resting on an `absent` over a relation the hrule proposes takes
+`dead` out of what a larger commitment keeps, so a target's dead node with a
+non-dead superset is written owing (`owing_holes`), what is dead is
+upward-closed, and every hole is owing.
 An owing implicant is an obligation `(open h)` whose positive
 literals are its trigger and whose 0-literals are the witnesses that discharge
 it: `(absent (and (need Kj ?x) (h ?x)))` with `(need Kj X)` given per 0-literal.
@@ -134,7 +135,7 @@ def owing_holes(status: list[str], n: int) -> list[str]:
 
     Such a node is a dead hole, or below one, and the only rule that writes it
     is a refutation resting on an `(absent (h X))` over a relation the hrule
-    proposes, which *forbid* refuses (ruled 2026-11-02). Owing is the form that
+    proposes, under which `dead` is not upward-closed. Owing is the form that
     says what was meant: the node owes the commitment that lifts it, as
     `s1e2.4.1_probes/three_components_owe.ein` writes it. What is left dead is
     upward-closed, so its rules read no `absent` and every hole is owing.
@@ -379,8 +380,8 @@ def oracle(path: Path, bin: str) -> dict:
 
 
 def check(path: Path, bin: str) -> list[str]:
-    """Every node's class, the oracle against the header; and the static check
-    against the target's monotonicity."""
+    """The static check against the target's monotonicity; and, where it says
+    monotone, every node's class, the oracle against the header."""
     spec, want = header(path)
     region = oracle(path, bin)
     cands = region["candidates"]
@@ -389,11 +390,14 @@ def check(path: Path, bin: str) -> list[str]:
         return [f"candidates {cands} ≠ {expect}"]
     got = "".join({"R": "R", "owing": "o", "dead": "x", "dead+owing": "x"}[x["status"]]
                   for x in region["region"]["nodes"])
-    bad = [f"{name_of(m, spec['candidates'])}: want {w}, oracle {g}"
-           for m, (w, g) in enumerate(zip(want, got)) if w != g]
     topo = topology(len(spec["candidates"]), [{"R": "R", "o": "owing", "x": "dead"}[c] for c in want])
     mono = topo["monotone"]
     static = region["monotonicity"]["monotone"]
+    # Of a program the static check flags nothing is claimed of an answer
+    # (Q-M1f.564): its nodes are not compared, only its verdict.
+    bad = [] if not static else [
+        f"{name_of(m, spec['candidates'])}: want {w}, oracle {g}"
+        for m, (w, g) in enumerate(zip(want, got)) if w != g]
     if mono != static:
         bad.append(f"the target is {'' if mono else 'not '}monotone and the static check says "
                    f"{'monotone' if static else 'not monotone'}")

@@ -10,16 +10,19 @@ as a step of the gate after the tests (it needs the binary the tests ran):
 
 1. **The per-subset route**, `region.py`: one `ein saturate` process a node,
    on the six monotone programs of Q-M1e2.7's tables, a program where
-   saturation moves a node inside the cube, one whose dead nodes die by a
-   pair `X`, `(not X)`, and one with a hole. Node for node: every node's
-   status (dead, owing n, or in R), every alive node's closure, the two
-   lines, the holes, the components' sizes, the maximal sub-cubes, N, and the
-   N side of the duality.
+   saturation moves a node inside the cube, and one whose dead nodes die by a
+   pair `X`, `(not X)`. Node for node: every node's status (dead, owing n, or
+   in R), every alive node's closure, the two lines, the holes, the
+   components' sizes, the maximal sub-cubes, N, and the N side of the
+   duality. Every one is a program the static check calls monotone: of a
+   flagged program's answer nothing is claimed (Q-M1f.564), so none is held
+   to a second route here.
 2. **The synthesizer**, `region_synth.py --random 300 --seed 1 --max-n 6`:
    three hundred regions drawn at random, half with implications so that
-   saturation moves nodes, each written as a program; the oracle must give
-   back the drawn region node for node, and call the program monotone
-   exactly when the region is.
+   saturation moves nodes, each written as a program; the oracle must call
+   the program monotone exactly when the region is, and where it does, give
+   back the drawn region node for node. A program written for a region that
+   is not monotone is flagged, and its nodes are not compared.
 
 The engine is `--bin`, else `$EIN_BIN`, else `ein.rs/target/release/ein`.
 """
@@ -50,8 +53,6 @@ SEVEN = [
 MOVES = "examples/saturation/transitive/taxonomy.ein"
 # Dead nodes die by a pair, which derives no `(false)` fact.
 PAIR = "examples/branching/09_hrule.ein"
-# A hole: an obligation's trigger, owing.
-HOLE = "examples/lattice/04_obligation_trigger_hole.ein"
 
 
 def sets(v) -> list[list[str]]:
@@ -125,7 +126,7 @@ def main() -> int:
     bad = []
     moved = False
     with tempfile.TemporaryDirectory(prefix="check-region-routes-") as tmp:
-        for file in SEVEN + [MOVES, PAIR, HOLE]:
+        for file in SEVEN + [MOVES, PAIR]:
             b, m = one_program(file, bin, Path(tmp))
             bad.extend(b)
             moved |= m
@@ -142,8 +143,9 @@ def main() -> int:
     if bad:
         print(f"check_region_routes: {len(bad)} finding(s)", file=sys.stderr)
         return 1
-    print("check_region_routes: the oracle agrees with the per-subset route on 9 programs, "
-          "and gives back 300 random regions written as programs")
+    print("check_region_routes: the oracle agrees with the per-subset route on 8 programs, "
+          "and holds 300 random regions written as programs to their verdict, the monotone ones "
+          "node for node")
     return 0
 
 

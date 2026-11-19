@@ -9,26 +9,26 @@
 ;;; `examples/features/07_unstratifiable.ein` with `derive-q` written before
 ;;; `derive-p`, and nothing else: `p ← ¬q`, `q ← ¬p`.
 ;;;
-;;; ── What the engine answers, and why it is wrong ───────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
 ;;; The boundary admits candidates of the same half of the agenda in the order
 ;;; their rules are written (Q-M1f.313), so root derives `(q one)` here where
-;;; `features/07` derives `(p one)`, the universe is `{(p one)}` where it is
-;;; `{(q one)}`, and R is `{∅, {(p one)}}` where it is `{∅, {(q one)}}` (`ein
-;;; solve FILE` and `ein oracle FILE` at `94c75204`, release and debug alike).
-;;; The answer is not a function of the program: the config principle's *stable*
+;;; `features/07` derives `(p one)`, and the universe is `{(p one)}` where it is
+;;; `{(q one)}`. The answer is not a function of the program: the config
+;;; principle's *stable*
 ;;; (`docs/ein/reasoning/02-kb-evolution/08-monotonicity.md` § 11.1, *it does not
 ;;; depend … on rule order*), which today's node, a fork of root, breaks on this
 ;;; program and its twin.
 ;;;
+;;; What a node's state is on a flagged program is not decided (Q-M1e2.2
+;;; states today's assumption), and nothing is claimed of this program's
+;;; answer (Q-M1f.564).
 ;;;
-;;; ── The right answer, by reading ───────────────────────────────────────
 ;;;
-;;; Which is right is what a node's state is on a flagged program, which is not
-;;; decided (Q-M1e2.2 states today's assumption). Only refusing a cycle through
-;;; an `absent` settles the order: this program would be refused at load. Under
-;;; today's fork, R is the mirror of `features/07`'s; under a node built from
-;;; scratch, both orders keep both stable models under different universes.
+;;;
+;;;
+;;;
+;;;
 ;;;
 
 (relation thing Thing :why "{?3} is a thing")

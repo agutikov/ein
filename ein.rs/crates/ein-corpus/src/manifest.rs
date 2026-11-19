@@ -549,6 +549,101 @@ mod tests {
         }
     }
 
+    /// Does `text` state a claim: `:expect` outside every comment and string?
+    fn states_a_claim(text: &str) -> bool {
+        let (mut in_string, mut in_comment, mut escaped) = (false, false, false);
+        let mut code = String::new();
+        for c in text.chars() {
+            if in_comment {
+                in_comment = c != '\n';
+            } else if in_string {
+                in_string = escaped || c != '"';
+                escaped = !escaped && c == '\\';
+            } else if c == ';' {
+                in_comment = true;
+            } else if c == '"' {
+                in_string = true;
+            } else {
+                code.push(c);
+                continue;
+            }
+            code.push(' ');
+        }
+        code.contains(":expect")
+    }
+
+    /// Whether the static check flags the program at `rel`: root's fixpoint,
+    /// the universe and the check, as `ein solve FILE --monotone` asks.
+    /// `None` where the program does not load or root does not saturate.
+    fn flagged(rel: &str) -> Option<bool> {
+        let path = repo_root().join(rel);
+        let mut ast = ein_ir::Ast::new();
+        let mut terms = ein_core::Terms::new();
+        let mut kb = ein_ir::load_file(&mut ast, &mut terms, &path).ok()?;
+        let checked = ein_infer::explore::check_monotone(
+            &mut kb,
+            &mut terms,
+            &ast,
+            &mut ein_infer::events::Events::off(),
+        )
+        .ok()?;
+        Some(!checked.monotonicity.is_monotone())
+    }
+
+    /// **No suite checks a claim of a program that is not monotone**
+    /// (Q-M1f.564). Of a program the static check flags nothing is claimed,
+    /// so the corpus holds none to a claim it states: no flagged program is
+    /// under `tests/`, whose programs are each a claim `ein test tests/`
+    /// checks; no flagged entry declares the `test` run; and a flagged entry
+    /// whose program states an `:expect` declares only runs that check no
+    /// claim: `saturate`, a `render` view, `solve --count` and
+    /// `solve --monotone`. The claim stays in the file, where `ein test FILE`
+    /// checks it for whoever asks. Computed from each program, never a list.
+    #[test]
+    fn a_flagged_program_declares_no_run_that_checks_a_claim() {
+        let checks_no_claim = |run: &str| {
+            run.starts_with("saturate")
+                || run.starts_with("render ")
+                || run == "solve --count"
+                || run == "solve --monotone"
+        };
+        let (mut bad, mut seen, mut claiming) = (Vec::new(), 0usize, 0usize);
+        for e in &corpus().entry {
+            if flagged(&e.path) != Some(true) {
+                continue;
+            }
+            seen += 1;
+            if e.path.starts_with("tests/") {
+                bad.push(format!(
+                    "{}: flagged, and under tests/, whose programs `ein test tests/` checks",
+                    e.path
+                ));
+            }
+            let runs = e.all_runs();
+            if runs.iter().any(|r| r == "test") {
+                bad.push(format!("{}: flagged, and declares the `test` run", e.path));
+            }
+            let text = std::fs::read_to_string(repo_root().join(&e.path)).expect("an entry's file");
+            if !states_a_claim(&text) {
+                continue;
+            }
+            claiming += 1;
+            for run in runs.iter().filter(|r| !checks_no_claim(r)) {
+                bad.push(format!(
+                    "{}: flagged and states an `:expect`, and its run `{run}` checks a claim",
+                    e.path
+                ));
+            }
+        }
+        assert!(bad.is_empty(), "{}", bad.join("\n"));
+        // Floors under what the sweep finds: one that read no flagged program,
+        // or none that states a claim, would pass the loop above.
+        assert!(
+            seen >= 40 && claiming >= 3,
+            "{seen} flagged, {claiming} of them stating a claim"
+        );
+    }
+
     #[test]
     fn levers_become_extra_solve_runs() {
         let e = Entry {

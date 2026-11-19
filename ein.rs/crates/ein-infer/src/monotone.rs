@@ -85,8 +85,9 @@
 //! derived from candidates, can match its pattern, is sufficient too, and is
 //! not what this check reads
 //! ([`08-monotonicity.md` § 3.3](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#33-the-grain)).
-//! The prototype, `ein-infer/examples/shared/fact_grain.rs`, and its two tests
-//! in `tests/region.rs` hold that reading to the cube; no route reads them.
+//! The prototype is `ein-infer/examples/shared/fact_grain.rs`, whose verdicts
+//! two tests in `tests/region.rs` hold on the programs written for it and on
+//! every monotone cube; no route reads it.
 //!
 //! ### What it does not touch
 //!

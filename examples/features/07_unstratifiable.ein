@@ -17,25 +17,25 @@
 ; The one-at-a-time discipline is a soundness requirement, not a throttle, and
 ; the argument for it is a fixture rather than a comment.
 ;
-; ── What the search answers ─────────────────────────────────────────────────
+; ── What a node is, here ────────────────────────────────────────────────────
 ;
 ; Saturation derives `(p one)` alone. The search then commits the one
 ; candidate, `(q one)`, in a node built by fork from root, so that node holds
 ; `(p one)`, derived under `(absent (q one))`, beside `(q one)`: the `{p, q}`
-; above. `ein solve` in each mode and `ein oracle`, every one exiting 0:
-; R is two states, ∅ (root) and
-; `{(q one)}` (the fork, holding both). `--maximal` prints `(q one)`,
-; `--minimal` ∅, `--single` `Ambiguity`, and the oracle the same R. Every
-; read-out carries the detector's verdict: not monotone, two `absent` sites in
-; an even cycle, and the stale fact, `(p one) ← derive-p (absent (q one))`, in R.
+; above, a stale fact. Every read-out carries the detector's verdict: not
+; monotone, two `absent` sites in an even cycle.
 ;
 ; Whether that is wrong, what a node holds when a guard's witness arrives in
-; its commitment, is not decided: a node is a fork of root, an assumption on a flagged program (Q-M1e2.2), and
-; the engine claims nothing of a flagged program's answer. Under *guards are premises* the
-; maximal state is `{(q one)}` alone; under *refuse what cannot be stratified*
-; this file is a load error; under *append-only* R stands as it is. Which
-; reading holds is not decided, and the row stays `open` until it is; of a
-; flagged program the engine claims nothing.
+; its commitment, is not decided: a node is a fork of root, an assumption on a
+; flagged program (Q-M1e2.2). Under *guards are premises* the commitment
+; withdraws `(p one)`; under *append-only* the node stands as it is. Which
+; reading holds is not decided, and nothing is claimed of this program's
+; answer (Q-M1f.564).
+;
+;
+;
+;
+;
 ;
 ; Both rules conclude a positive fact, so nothing here refutes: the `absent`
 ; sites put the state at stake, not `dead`. No `:expect`

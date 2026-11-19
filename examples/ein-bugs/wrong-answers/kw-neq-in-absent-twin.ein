@@ -1,8 +1,8 @@
-;;; The twin of `kw-neq-in-absent.ein`, a control of regression `kw-neq-in-absent`: the same program
+;;; The twin of `kw-neq-in-absent.ein`: the same program
 ;;; with `neqw` renamed `nneqw`, its first letter doubled: a name that starts
-;;; with no keyword and sorts where `neqw` does. Its answer is the witness's
-;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and
-;;; debug).
+;;; with no keyword and sorts where `neqw` does. The witness answers as this
+;;; file does, the name read back. Flagged as the witness is, and nothing is
+;;; claimed of its answer (Q-M1f.564).
 
 (relation p Node :why "p holds of {?3}") (relation nneqw Node :why "nneqw holds of {?3}") (relation hit Node :why "{?3} is a hit")
 (p a) (nneqw b)

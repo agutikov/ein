@@ -21,8 +21,7 @@
 //! reached **through an activator** or not. A node is **untainted** when some
 //! contradiction of it has no premise in `D`.
 //!
-//! Example code, read by `taint_census` and by `ein-infer/tests/region.rs`. No
-//! route reads it.
+//! Example code, read by `taint_census`. No route reads it.
 
 use std::collections::BTreeSet;
 

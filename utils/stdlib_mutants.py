@@ -14,7 +14,9 @@ negative case lowers it and nothing says so.
 numbers are not the same measurement: 217 mutants against 51, and 157 killed
 on 2026-08-31, 165 on 2026-11-03 (eight obligation-rule mutants killed by
 M1e2's region claim) and 167 on 2026-11-08 (two `bijective-setup` mutants
-refused by *forbid*); `tests/README.md` says which program kills each. The
+killed by a load refusal, which M1f S1f.21.15 removed on 2026-11-19, so the
+two survive: 518 of the 637 mutants of that day killed); `tests/README.md`
+says which program kills each. The
 survivors are banked as a *set* in `tests/mutation_survivors.txt`, and 42 of
 the 50 are in `slots.ein` — the module with the most parameterised,
 direction-sensitive rules and the fewest programs per rule.

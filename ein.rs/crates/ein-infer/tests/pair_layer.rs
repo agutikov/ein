@@ -424,10 +424,6 @@ fn a_flagged_program_gets_no_licence() {
         (l.pairs.dead_member, l.pairs.implied, l.pairs.left),
         (0, 0, 0)
     );
-    assert!(
-        !l.implies.is_empty(),
-        "it has implications, and reads their pairs all the same"
-    );
     assert_eq!(l.work.saturations, 1 + l.n() as u64 + l.pairs.all);
 
     assert_eq!(instance("examples/zebra2-hints.ein").domain(), None);

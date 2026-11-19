@@ -9,6 +9,7 @@ says the line is all of it.
 licence of its own describes it; the cube's own licence and the rows under it say what happened without a label
 added to the vocabulary.
 
-**Held by.** `ein-cli/tests/region_modes.rs`: `where_empty_is_in_r_every_minimal_question_stops_at_root`, one
-saturation and the line's rows under `--minimal`, `-n` and `--single`. The `route` row on such a run:
-[09-read-out-examples.md](../../ein/user/04-reference/09-read-out-examples.md), written by the binary.
+**Held by.** `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle`, whose ∅ rule holds every minimal question
+of every program where ∅ is in R, the flagged ones among them, to one saturation and to the oracle's cube. The
+`route` row on such a run: [09-read-out-examples.md](../../ein/user/04-reference/09-read-out-examples.md), written
+by the binary.

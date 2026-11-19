@@ -1278,81 +1278,15 @@ fn one_verdict_on_every_corpus_program() {
     );
 }
 
-/// `past-limit-lines.ein`: a flagged program of 17 candidates, past the default
-/// `--region-limit`, whose R the oracle gives at 17 (three states, minimal line
-/// {∅}).
-const PAST: &str = "examples/ein-bugs/wrong-answers/past-limit-lines.ein";
-
-/// **Where ∅ is in R, every minimal question stops at root, and says only ∅**
-/// (Q-M1f.23): ∅ is below every commitment, so where it is in R the minimal
-/// line is {∅}, decided after one saturation, on any program and at any
-/// limit. Three rows, through the binary, on `past-limit-lines.ein` past the limit,
-/// where describe certifies {∅}: `--single`, `-n N` and `--minimal` each
-/// decide it after one saturation, not *not decided*, *as asked* or
-/// *exhausted no* after 2^16.
-#[test]
-fn where_empty_is_in_r_every_minimal_question_stops_at_root() {
-    let d = ein(&["solve", PAST]);
-    assert_eq!(d.code, 0, "{}", d.err);
-    assert_eq!(
-        line(&d.out, "∅"),
-        "in R — root is alive and owes nothing",
-        "{}",
-        d.out
-    );
-    assert!(
-        line(&d.out, "exhausted").starts_with("no — not monotone"),
-        "{}",
-        d.out
-    );
-    let line_rows = [
-        ("minimal line", "1 state — all of them"),
-        ("exhausted", "yes — this is all of the minimal line"),
-    ];
-    let single_rows = [
-        ("verdict", "Solution — the minimal line is one state"),
-        ("decided", "yes — the minimal line holds no other state"),
-    ];
-    for (args, rows) in [
-        (&["--minimal", "-n", "1"][..], line_rows),
-        (&["--minimal", "-n", "2"][..], line_rows),
-        (&["--minimal", "--single"][..], single_rows),
-        (&["--minimal"][..], line_rows),
-    ] {
-        let mut argv = vec!["solve", PAST];
-        argv.extend_from_slice(args);
-        let r = ein(&argv);
-        let tag = args.join(" ");
-        assert_eq!(r.code, 0, "{tag}: {}", r.err);
-        // Decided, so no `note: … partial` on stderr.
-        assert!(r.err.is_empty(), "{tag}: {}", r.err);
-        for (k, v) in rows {
-            assert_eq!(line(&r.out, k), v, "{tag}:\n{}", r.out);
-        }
-        assert_eq!(
-            line(&r.out, "work"),
-            "1 saturation · 0 facts beyond root",
-            "{tag}"
-        );
-        assert_eq!(r.out.matches(";; state ").count(), 1, "{tag}:\n{}", r.out);
-        assert!(
-            r.out.contains(";; state 1 of 1 — ∅, root itself · minimal"),
-            "{tag}:\n{}",
-            r.out
-        );
-    }
-}
-
 /// **The minimal-line row says no clause beside ∅**: no `∅, the trivial
 /// line: no obligation is stated`, which would be false on the
-/// `tests/stdlib/` programs that state an obligation their root discharges,
-/// and would come and go with the limit on `past-limit-lines`. Where ∅ is in R
-/// the row reads `1 state — ∅` on every program and at every limit, the `∅`
-/// row above it saying why, and `region.minimal.trivial` reads *∅ is in R*.
+/// `tests/stdlib/` programs that state an obligation their root discharges.
+/// Where ∅ is in R the row reads `1 state — ∅`, the `∅` row above it saying
+/// why, and `region.minimal.trivial` reads *∅ is in R*.
 #[test]
 fn the_minimal_line_row_names_empty_and_no_clause() {
     let dir = scratch("minimal-line-row");
-    let mut cases: Vec<(String, Vec<&str>)> = [
+    let cases: Vec<(String, Vec<&str>)> = [
         "tests/stdlib/algebra/24_total_owed_satisfied.ein",
         "tests/stdlib/algebra/26_surjective_owed_satisfied.ein",
         "tests/stdlib/bijection/06_blind_enumeration.ein",
@@ -1367,8 +1301,6 @@ fn the_minimal_line_row_names_empty_and_no_clause() {
     .into_iter()
     .map(|f| (f.to_string(), Vec::new()))
     .collect();
-    cases.push((PAST.to_string(), vec!["--region-limit", "1"]));
-    cases.push((PAST.to_string(), vec!["--region-limit", "2"]));
     for (i, (file, extra)) in cases.iter().enumerate() {
         let json = dir.join(format!("s{i}.json"));
         let json = json.to_str().expect("utf-8");

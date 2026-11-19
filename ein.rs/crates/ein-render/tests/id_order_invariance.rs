@@ -12,7 +12,13 @@
 //! oracle's cube, every DOT view, and the shapes behind them — is digested
 //! against a checked-in manifest, `tests/golden/corpus_shapes.md5`, one line
 //! per pair: sixteen hex digits of its md5, its line count and its name
-//! (`corpus_ops::manifest_line`). The lines whose rendering quotes a
+//! (`corpus_ops::manifest_line`). **No answer of a program the static check
+//! flags is banked** (`Op::is_answer`, `Unit::flagged`, both computed): the
+//! read-outs, the region trace, the states, the lattice, the cores, the
+//! oracle's cube and the explain shapes of such a program have no line, since
+//! nothing is claimed of what it answers (Q-M1f.564); its other renderings,
+//! the program's and root's saturation's, are banked as any program's, and
+//! its answers are still rendered and held to the permuted run's. The lines whose rendering quotes a
 //! *resolved path* are banked with the checkout root replaced by `<repo>`
 //! (`corpus_ops::portable`): the prefix is the blessing machine's directory,
 //! never the engine's answer.
@@ -334,9 +340,13 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
             let unit = loads.unit(f);
             let plain = unit.run(op, 1);
             let text = plain.0.as_deref();
+            // An answer of a flagged program is not banked: nothing is
+            // claimed of it. It is still rendered, and the permuted runs
+            // below are held to it.
+            let banked = corpus && !(op.is_answer() && unit.flagged());
             let out = Rendered {
                 line: text
-                    .filter(|_| corpus)
+                    .filter(|_| banked)
                     .map(|t| manifest_line(&pair_name(&rel(f), op), &portable(&root_str, t))),
                 bytes: text.map_or(0, str::len),
                 loaded: matches!(op, Op::Load) && text.is_some_and(|t| !t.starts_with("<refused>")),

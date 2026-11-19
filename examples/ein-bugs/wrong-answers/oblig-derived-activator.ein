@@ -1,7 +1,7 @@
-;;; An obligation a node is told about that root was not —
-;;; regression `oblig-derived-activator` (`corpus/regressions.toml`;
-;;; Q-M1e.11). Its control is `oblig-derived-activator-declared.ein`, which
-;;; states the activator.
+;;; An obligation a node is told about that root was not (Q-M1e.11). Its
+;;; control is `oblig-derived-activator-declared.ein`, which states the
+;;; activator.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,27 +9,27 @@
 ;;; whose activator `(total-owed drinks is-a)` the rule `arm` derives from any
 ;;; `likes` fact: an obligation's activator that only a commitment derives.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; Ann owes a Food and, once she likes one, a Drink. `{(likes Ann Soup),
-;;; (drinks Ann Tea)}` pays both debts, so R holds it, as the control's R is
-;;; that one state.
+;;; Ann owes a Food and, once she likes one, a Drink. The obligations rung
+;;; reads the activator off `arm`'s `:assert` and proposes at root what the
+;;; debt it brings would (Q-M1e.11, by the static reading), so H is
+;;; `{(drinks Ann Tea), (likes Ann Soup)}`, and the read-out's `later debt`
+;;; row says which candidate is there for which activator.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; `total-owed`'s activator relation is one a commitment can change, so the
+;;; static check flags the program, the cube answers it, and nothing is
+;;; claimed of its answer (Q-M1f.564).
 ;;;
-;;; The by-hand answer (Q-M1e.11, by the static
-;;; reading): the obligations rung reads the activator
-;;; off `arm`'s `:assert` and proposes at root what the debt it brings would,
-;;; so H is `{(drinks Ann Tea), (likes Ann Soup)}`, the read-out's
-;;; `later debt` row says which candidate is there for which activator, and R
-;;; is the one state that holds both. The static check flags the program
-;;; (`total-owed`'s activator relation is one a commitment can change), so
-;;; the cube answers it.
 ;;;
-;;; At `94c75204` (`ein solve FILE` and `ein oracle FILE`, release and debug
-;;; alike) the rung built H from the debts root owes alone: H was
-;;; `{(likes Ann Soup)}`, the one node that holds it owed `drinks`, and R was
-;;; empty, every alive node owing.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 

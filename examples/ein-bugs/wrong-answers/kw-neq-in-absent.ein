@@ -1,6 +1,6 @@
-;;; An `absent` splits a name that starts with `neq` — regression
-;;; `kw-neq-in-absent` (`corpus/regressions.toml`): a reserved word is a
+;;; A name that starts with `neq`, under an `absent`: a reserved word is a
 ;;; keyword only as a whole token (Q-M1e2.17).
+;;;
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
@@ -8,25 +8,25 @@
 ;;; Two facts, `(p a)` and `(neqw b)`, and one rule, `r`, concluding `(hit
 ;;; ?x)` from `(p ?x)` where `(neqw ?x)` is absent.
 ;;;
-;;; ── The answer, by hand ───────────────────────────────────────────────
+;;; ── What is said of it ────────────────────────────────────────────────
 ;;;
 ;;; A keyword is a whole word: `01-grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
-;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. No `(neqw
-;;; a)` holds, so `r` fires and root holds `(hit a)`. The blind enumerator
-;;; proposes `(hit b)`, `(neqw a)` and `(p b)`, and R is eight states, each
-;;; holding `(hit a)`: the answer of `kw-neq-in-absent-twin.ein`.
+;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other, and
+;;; `(absent (neqw ?x))` is an `absent` over the relation `neqw`, not over a
+;;; guard `(neq w ?x)`. No `(neqw a)` holds, so `r` fires and root holds
+;;; `(hit a)`. The program answers as `kw-neq-in-absent-twin.ein` does, the
+;;; name read back, which a test holds, a run against a run.
 ;;;
-;;; ── What the engine answered, and why it does not any more ────────────
+;;; The blind enumerator proposes `(neqw a)`, which the `absent` reads, so
+;;; the program is not monotone: the static check flags it, and nothing is
+;;; claimed of its answer (Q-M1f.564).
 ;;;
-;;; At `35186bc0` the parser read a reserved word as a prefix of a name, and
-;;; this program answered wrong. The parser read `(absent (neqw ?x))` as an
-;;; `absent` over the guard `(neq w ?x)`, which held of `a`, so the `absent`
-;;; failed and `r` never fired: root held no `hit`. `w` became a name of the
-;;; program, H was seven candidates and R 96 states. (`ein solve FILE` at
-;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.) A
-;;; keyword is a whole word now, at the boundary `01-grammar.md` § 1 states
-;;; (Q-M1e2.17), and the program answers its twin's R.
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 
 (relation p Node :why "p holds of {?3}") (relation neqw Node :why "neqw holds of {?3}") (relation hit Node :why "{?3} is a hit")

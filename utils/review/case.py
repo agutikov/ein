@@ -193,7 +193,7 @@ def oracle_code(r: RunResult) -> str:
 def now_differences(want: dict, got: dict | None, run: RunResult | None = None) -> list[str]:
     """Every field where the run disagrees with the row's `[case.now]` —
     the runner's `differences`, which the gate holds. A refused `now`
-    (M1e2 S1e2.2.5, *forbid*) is exit 1, its stderr's first line, and no
+    (a load refusal) is exit 1, its stderr's first line, and no
     summary; so is one that ends in an error (M1e2 S1e2.2.18, W18)."""
     field = "refused" if want.get("refused") else "error" if want.get("error") else None
     if field:
@@ -483,8 +483,8 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
                 f"{recorded_answer(right)}; the runner (`ein-cli/tests/held/`) holds `[case.now]` to it, and this build re-ran it "
                 "(§ 3, § 4).", ""]
     if now.get("refused"):
-        # A refusal (M1e2 S1e2.2.5, *forbid*): the program is refused, which
-        # is the register's `right`.
+        # A refusal: the program is refused at load, which is the
+        # register's `right`.
         return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
                 f"*{answer_words(w)}* "
                 f"(`ein {w['run']}`{won}, the register's `wrong`). `ein {now['run']}`{on} now **refuses the program**, "

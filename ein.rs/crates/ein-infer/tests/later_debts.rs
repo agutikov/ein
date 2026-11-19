@@ -384,10 +384,12 @@ fn the_universe_is_the_static_readings_on_every_probe() {
 }
 
 /// **R over that universe is the oracle's.** The cube classifies every
-/// commitment over H; its members are the ones written for the probe, the
-/// over- and under-cases as the reading gives them; a bare describe counts
-/// the same R, in states and in commitments; and `--single` says the word
-/// that R makes.
+/// commitment over H; a bare describe counts the same R, in states and in
+/// commitments; and `--single` says the word that R makes: a run against a
+/// run, on every probe. R's members are held to the ones written for the
+/// probe only where the static check calls the probe monotone: a probe in
+/// which a commitment derives an activator is flagged, and of a flagged
+/// program's answer nothing is claimed (Q-M1f.564).
 #[test]
 fn r_over_the_readings_universe_is_the_oracles() {
     for p in PROBES {
@@ -418,8 +420,10 @@ fn r_over_the_readings_universe_is_the_oracles() {
                     .collect()
             })
             .collect();
-        let want: BTreeSet<Vec<&str>> = want.iter().map(|c| c.to_vec()).collect();
-        assert_eq!(members, want, "{}: R's commitments, by the cube", p.name);
+        if r.monotonicity.is_monotone() {
+            let want: BTreeSet<Vec<&str>> = want.iter().map(|c| c.to_vec()).collect();
+            assert_eq!(members, want, "{}: R's commitments, by the cube", p.name);
+        }
         let states: BTreeSet<u64> = (0..1u64 << n)
             .filter(|&m| r.in_r(m))
             .map(|m| r.nodes[m as usize].class)

@@ -438,15 +438,15 @@ fn a_node_of_the_part_asked_that_no_state_holds_is_missing() {
     );
 }
 
-/// **A hole, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
-/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. Its
-/// directories are written by [`studied`], a library-level fixture. The
-/// region run takes the cube (route 2), visits every node and reports the
-/// alive superset — the hole carries its repair edge, and nothing is missing
-/// or read otherwise than the cube. A run that pruned above the dead `{(p
-/// A)}`, as licence L1 would on a monotone program, is drawn with the
-/// exclusion named unsound and the alive node it
-/// left unvisited.
+/// **A hole, drawn as the cube's dump has it.** `naf-nowb` is not monotone,
+/// and nothing is claimed of its answer: what is held here is the drawing
+/// against the dump it draws, a surface against a surface. Its directories
+/// are written by [`studied`], a library-level fixture. Whichever node the
+/// dump marks a dead hole is drawn as one, with a repair edge to an alive
+/// node one fact above it; every node of the cube is visited, and nothing is
+/// missing or read otherwise than the cube. A run that pruned above the dead
+/// hole, as licence L1 would on a monotone program, is drawn with the
+/// exclusion named unsound and the alive node it left unvisited.
 #[test]
 fn the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
     let root = scratch("hole");
@@ -454,23 +454,64 @@ fn the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
     let cube = root.join("region");
     let run = root.join("run");
     studied(file, &cube, &run);
-    let pa = mask_of(&cube, &["(p A)"]);
-    let both = mask_of(&cube, &["(p A)", "(q A)"]);
+    // The hole and an alive node one fact above it, read off the dump.
+    let region = json(&cube.join("region.json"));
+    let nodes = region["region"]["nodes"].as_array().expect("nodes");
+    let facts_of = |n: &J| -> Vec<String> {
+        n["facts"]
+            .as_array()
+            .expect("facts")
+            .iter()
+            .map(|f| f.as_str().expect("text").to_string())
+            .collect()
+    };
+    let hole = nodes
+        .iter()
+        .find(|n| n["hole"] == true && n["status"].as_str().is_some_and(|s| s.starts_with("dead")))
+        .expect("the fixture's cube has a dead hole: it is what this drawing is held on");
+    let hole_facts = facts_of(hole);
+    let above = nodes
+        .iter()
+        .find(|n| {
+            let f = facts_of(n);
+            n["status"] == "R"
+                && f.len() == hole_facts.len() + 1
+                && hole_facts.iter().all(|h| f.contains(h))
+        })
+        .expect("a hole has an alive node above it");
+    let above_facts = facts_of(above);
+    let added = above_facts
+        .iter()
+        .find(|f| !hole_facts.contains(f))
+        .expect("one fact more");
+    let hole_strs: Vec<&str> = hole_facts.iter().map(String::as_str).collect();
+    let above_strs: Vec<&str> = above_facts.iter().map(String::as_str).collect();
+    let pa = mask_of(&cube, &hole_strs);
+    let both = mask_of(&cube, &above_strs);
+    let named = |v: &[String]| format!("{{{}}}", v.join(", "));
     let dot = render_with(&cube, Some(&run), "full");
-    assert!(dot.contains("label=\"+(q A)\""), "the repair edge:\n{dot}");
+    assert!(
+        dot.contains(&format!("label=\"+{added}\"")),
+        "the repair edge:\n{dot}"
+    );
     assert!(node_line(&dot, pa).contains("hole"), "{dot}");
-    assert!(node_line(&dot, both).contains("state 1"), "{dot}");
+    assert!(node_line(&dot, both).contains("state "), "{dot}");
     assert!(
         !dot.contains("\\nMISSING") && !dot.contains("\\n≠ the cube"),
         "{dot}"
     );
     let table = render_with(&cube, Some(&run), "table");
-    assert!(table.contains("- **visited** 4 of 4 nodes"), "{table}");
+    let n = nodes.len();
+    assert!(
+        table.contains(&format!("- **visited** {n} of {n} nodes")),
+        "{table}"
+    );
 
-    // The run had pruned above the dead singleton.
+    // The run had pruned above the dead hole.
+    let pruned = serde_json::json!(above_facts);
     doctor(&run.join("lattice/nodes.json"), |j| {
         let nodes = j["nodes"].as_array_mut().expect("nodes");
-        nodes.retain(|n| n["commitment"] != serde_json::json!(["(p A)", "(q A)"]));
+        nodes.retain(|n| n["commitment"] != pruned);
     });
     let dot = render_with(&cube, Some(&run), "full");
     assert!(node_line(&dot, pa).contains("✗ unsound exclusion"), "{dot}");
@@ -483,8 +524,10 @@ fn the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
     let table = render_with(&cube, Some(&run), "table");
     assert!(
         table.contains(&format!(
-            "1 of them alive in the cube: **unsound** [`{{(p A)}}`](#m{pa}) visited dead, \
-             [`{{(p A), (q A)}}`](#m{both}) above it alive"
+            "1 of them alive in the cube: **unsound** [`{}`](#m{pa}) visited dead, \
+             [`{}`](#m{both}) above it alive",
+            named(&hole_facts),
+            named(&above_facts)
         )),
         "{table}"
     );

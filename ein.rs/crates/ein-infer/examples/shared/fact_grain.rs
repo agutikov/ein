@@ -40,8 +40,10 @@
 //! node**: whatever matches it is in root or in no node. So it is static, and
 //! the module docs' theorem in `monotone.rs` applies at this grain: no
 //! dynamic read at non-monotone polarity, no violation. `region.rs`'s
-//! `fact_grain_never_calls_a_violated_cube_monotone` checks it on every cube
-//! the oracle enumerates.
+//! `fact_grain_never_calls_a_violated_cube_monotone` reads every cube of a
+//! program the shipped check calls monotone, where the two grains agree. On
+//! a program the shipped check flags the prototype's verdict is held to no
+//! cube: nothing is claimed of a flagged program's answer (Q-M1f.564).
 //!
 //! ### Which node
 //!

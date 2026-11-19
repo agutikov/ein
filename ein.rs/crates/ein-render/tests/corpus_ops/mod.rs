@@ -211,6 +211,21 @@ impl std::fmt::Display for Op {
 }
 
 impl Op {
+    /// **Whether the op renders an answer**: what a program answers about a
+    /// commitment, or about root's contradiction: the read-outs, the region
+    /// trace, the states, the lattice, the cores, the oracle's cube and the
+    /// explain shapes. The others render the program and root's saturation:
+    /// the frontend dumps, the loaded KB, the plan, the match, the NAF map,
+    /// root's event stream and the DOT views.
+    ///
+    /// Of a program the static check flags nothing is claimed of an answer
+    /// (Q-M1f.564), so the golden banks no rendering of this kind for one
+    /// ([`Unit::flagged`]); the permuted run and the run at another job count
+    /// are still held to the plain one, a run against a run.
+    pub fn is_answer(self) -> bool {
+        matches!(self, Op::Explain(_)) || self.takes_jobs()
+    }
+
     /// **Whether the op takes a job count**: the ones [`run_with`] hands to a
     /// region route, which fans a step's nodes out — the five read-outs, the
     /// region trace, the states, the lattice, the five core sets and the
@@ -446,6 +461,7 @@ struct Slot {
     left: AtomicUsize,
     loaded: Mutex<Option<Arc<Loaded>>>,
     searches: OnceLock<bool>,
+    flagged: OnceLock<bool>,
 }
 
 /// **Each program loaded once, for every op a sweep runs over it**: the
@@ -481,6 +497,7 @@ impl Loads {
                     left: AtomicUsize::new(n),
                     loaded: Mutex::new(None),
                     searches: OnceLock::new(),
+                    flagged: OnceLock::new(),
                 })
                 .collect(),
         }
@@ -550,6 +567,32 @@ impl Unit<'_> {
                 return false;
             };
             searches(ast, &mut terms.clone(), &mut kb.clone())
+        })
+    }
+
+    /// **Whether the static check flags the program**: root's fixpoint, the
+    /// universe and the check, which `ein solve FILE --monotone` asks
+    /// (`explore::check_monotone`). Computed from the program, never a list,
+    /// and asked once a program. A program that does not load, or whose root
+    /// does not saturate, is not flagged.
+    pub fn flagged(&self) -> bool {
+        *self.slot().flagged.get_or_init(|| {
+            let loaded = self.loaded();
+            let Some(Parsed {
+                ast,
+                terms,
+                kb: Ok(kb),
+            }) = &*loaded
+            else {
+                return false;
+            };
+            ein_infer::explore::check_monotone(
+                &mut kb.clone(),
+                &mut terms.clone(),
+                ast,
+                &mut ein_infer::events::Events::off(),
+            )
+            .is_ok_and(|c| !c.monotonicity.is_monotone())
         })
     }
 }

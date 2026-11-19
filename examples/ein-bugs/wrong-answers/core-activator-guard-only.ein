@@ -1,7 +1,7 @@
-;;; A dead node's core leaves out the activator its refutation rests on, where
-;;; the refuting plan matches no fact — regression
-;;; `core-activator-guard-only` (`corpus/regressions.toml`), found by
-;;; probing `activator-chain-no-absent.ein`'s mechanism.
+;;; A refutation whose plan matches no fact, compiled from an activator a
+;;; node derives: `activator-chain-no-absent.ein`'s mechanism with a guard
+;;; and no pattern.
+;;;
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,22 +10,22 @@
 ;;; pattern, `(eq a a)`, which holds, so it concludes `(false)` with no
 ;;; premise. Root holds no `p`, so it compiles no plan of `w`.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
+;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; R is two states, ∅ and {(p2 a)}; N is {(p a)}. Its refutation rests on
-;;; the activator `(w a)`, which rests on `(p a)`: the core is `(p a)`.
+;;; The derivation of `(false)` records no premise: the refutation rests on
+;;; the activator `(w a)`, which rests on `(p a)`. A firing records the
+;;; activator its plan was compiled from, and a core follows one the node
+;;; derived (Q-M1e2.12).
 ;;;
-;;; ── What the engine answered, and what holds ───────────────────────────
+;;; Not monotone: the static check flags the program, and nothing is claimed
+;;; of its answer (Q-M1f.564).
 ;;;
-;;; R as above, exit 0; and N's core empty, by `w`, in
-;;; `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s `nodes.json`,
-;;; `--events`' `enter` line, `--trace` and `ein oracle --dump` (`ein solve
-;;; FILE --dump-answer DIR` at `a41eb76e`, release and debug): a dead node
-;;; with a 0-fact core, which a census of root cores had said no region
-;;; run reports. The derivation of `(false)` recorded no premise, so the
-;;; core search read it as an engine write, derivable from nothing. A firing
-;;; records the activator its plan was compiled from, and the core follows
-;;; one the node derived (Q-M1e2.12): N's core is `(p a)`, in either build.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;;
 ;;;

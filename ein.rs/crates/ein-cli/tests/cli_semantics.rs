@@ -2818,27 +2818,27 @@ fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
 /// nor on `past-limit-lines.ein`.
 ///
 /// `past-limit-lines.ein` is the control: past the default
-/// limit its run stops with the 15 members of N met, and with
-/// `--region-limit 17` it exhausts and prints the same 15 with the same
+/// limit its run stops with the members of N it met, and with
+/// `--region-limit 17` it exhausts and prints the same members with the same
 /// cores, statuses and rules, which are the cores `--dump-lattice` writes for
-/// the same sets, every node's core taken as the walk visits it.
+/// the same sets, every node's core taken as the walk visits it. Both
+/// programs are flagged, so what N holds is not stated here: a run is held to
+/// its own surfaces and to another run.
 #[test]
 fn every_member_of_n_has_its_core_past_the_limit_too() {
     let scratch = ein_corpus::Scratch::new("ein-core-n-after-the-walk");
     let mut printed: BTreeMap<bool, BTreeMap<String, J>> = BTreeMap::new();
-    for (i, (file, limit, stopped, members)) in [
-        ("examples/lattice/06_friends_tables.ein", None, true, 68),
+    for (i, (file, limit, stopped)) in [
+        ("examples/lattice/06_friends_tables.ein", None, true),
         (
             "examples/ein-bugs/wrong-answers/past-limit-lines.ein",
             None,
             true,
-            15,
         ),
         (
             "examples/ein-bugs/wrong-answers/past-limit-lines.ein",
             Some("17"),
             false,
-            15,
         ),
     ]
     .into_iter()
@@ -2865,7 +2865,7 @@ fn every_member_of_n_has_its_core_past_the_limit_too() {
         assert_eq!(region["exhausted"], !stopped, "{run}: exhausted");
         let nogoods = json_at(&format!("{answer}/nogoods.json"));
         let n = nogoods.as_array().expect("nogoods.json is an array");
-        assert_eq!(n.len(), members, "{run}: the members of N met");
+        assert!(!n.is_empty(), "{run}: the run met no member of N");
         for m in n {
             let (core, status, rules) = (&m["core"], &m["core_status"], &m["refuted_by"]);
             assert!(
@@ -2879,7 +2879,7 @@ fn every_member_of_n_has_its_core_past_the_limit_too() {
         let t = read(&trace);
         assert_eq!(
             t.matches("Core: `").count(),
-            members,
+            n.len(),
             "{run}: --trace's N gives every member its core"
         );
         assert!(!t.contains("not kept"), "{run}: --trace");
@@ -2916,7 +2916,11 @@ fn every_member_of_n_has_its_core_past_the_limit_too() {
             }
         }
     }
-    assert_eq!(eager, 15, "past-limit-lines: N's members in nodes.json");
+    assert_eq!(
+        eager,
+        printed[&true].len(),
+        "past-limit-lines: N's members in nodes.json"
+    );
 }
 
 /// **A goal's empty row says whether the goal has a variable**: *the goal
