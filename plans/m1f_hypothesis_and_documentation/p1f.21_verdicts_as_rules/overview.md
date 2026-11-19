@@ -207,7 +207,7 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | | stage | group | items | what | waits on |
 |---|---|---|---|---|---|
 | 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | **done** |
-| 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | modules of the standard library, additive | **done**; `std.negation` and `std.contradiction` merged, `std.debts` held for part 2 |
+| 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | modules of the standard library, additive | **done**, merged whole: `std.negation`, `std.contradiction` and, on the user's ruling, `std.debts` (`edbe6c3b`) |
 | 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | **done** |
 | 4 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | | *forbid* removed; a non-monotone program loads, warned, nothing claimed or tested of its answer (Q-M1f.564, the user's ruling) | **done** |
 | | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | | the `:hrules` clause lists activators as a rule's are written (Q-M1f.565, the user's ruling) | nothing; after S1f.21.15 |

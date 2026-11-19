@@ -38,6 +38,10 @@ without a path is in [`design.md`](design.md), whole.
 | [V-25](#v-25--ein-render-h-space-prints-no-warning-on-stderr) | `ein render h-space` prints no warning on stderr for a flagged program | S1f.21.15 | open; with S1f.21.11's surfaces |
 | [V-26](#v-26--three-censuses-and-two-measurement-examples-still-describe-the-refusal) | the hole, node and taint censuses and two measurement examples still describe the refusal | S1f.21.15 | open; re-taken at the phase's close |
 | [V-27](#v-27--a-test-may-still-pin-what-a-flagged-program-written-inline-answers) | a test may still pin what a flagged program written inline in it answers: those were not swept | S1f.21.15 | open |
+| [V-28](#v-28--stddebts-says-debts-discharged-is-kept-by-every-larger-state) | `std.debts`' header, its page and the library's README say every larger state keeps `(debts-discharged)`; it holds only where no commitment adds a requirement | the merge of `std.debts` | open; with the second part, where it bears on Q-M1f.566 |
+| [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
+| [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | open; S1f.21.11's task 1.4 reads it |
+| [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | open; S1f.21.2's |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -614,3 +618,35 @@ measurements kept beside their tools and are re-taken, not edited. **Open**; re-
 written inline in a crate's test was read only where the test named a flagged corpus file or failed once the
 refusal went; the others were not swept one by one. **Open**: a sweep that loads each inline program and reads the
 static check would close it.
+
+## V-28 — `std.debts` says `(debts-discharged)` is kept by every larger state
+
+**Found** at the merge of `std.debts`. The module's header, its reference page and `stdlib/README.md` say that
+where a state holds `(debts-discharged)`, every larger state holds it. That is so only where no commitment adds a
+requirement. In a probe where a hypothesis makes a new guest, the static check flags
+`std.debts.discharged-from-nothing-unpaid` beside `total-owed`'s own trigger site, and the fact is stale at the
+larger node. No corpus program is newly flagged by asking for the module's rules. **Open**: the three sentences
+are to say what is true. It is the same thing [`open_and_owe.md` § 2](open_and_owe.md#2-how-a-requirement-is-counted-and-how-it-could-be-emitted)
+says of *still owed*: what is read off an absence is read at the fixpoint and is stale once stored. With the
+second part, where it bears on Q-M1f.566.
+
+## V-29 — The static check reads a rule of `std.debts` nothing asks for
+
+**Found** at the merge. In three programs that are flagged already and in which a commitment derives
+`(total-owed …)` (`oblig-derived-activator.ein`, its `-declared` twin and `lattice/09_activator_hole.ein`), an
+import of `std.debts` adds two static sites, `std.debts.total-due` and `std.debts.total-paid`, with the same $R$,
+queries and root: the check takes `debts-of-total`'s conclusion as reachable though no state holds
+`(debts-of-owed)`. It over-reads; it flags no program that was not flagged. **Open.**
+
+## V-30 — A duplicated declaration loads once an import is appended
+
+**Found** at the merge, sweeping the corpus with an import appended. `examples/broken/load/relation_duplicate.ein`
+is refused for declaring one relation twice, and loads once any import line is appended, `(import std.macro)`
+being enough; the binary before the merge does the same. **Open.** S1f.21.11's task 1.4 reads it, since the user's
+ruling on the argument count ([Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention))
+puts what a second declaration is anew.
+
+## V-31 — The module tables have no row for `std.core`
+
+**Found** at the merge. `stdlib/README.md`'s table of modules and the root `README.md`'s have no row for
+`std.core`, the module every program gets. **Open**; S1f.21.2's, with the pages of the first part.

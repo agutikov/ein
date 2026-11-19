@@ -17,8 +17,8 @@ idea, hypotheses as ordinary facts, is put as
 with runs ([review item 34](review/part-2/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
 its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
-(*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6, S1f.21.8 and S1f.21.10 are done** (the same day), the second merged but
-for `std.debts`, held for part 2. **S1f.21.11 is next, on the user's word.**
+(*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6, S1f.21.8 and S1f.21.10 are done** (the same day), the second merged, its
+`std.debts` later the same day on the user's ruling (`edbe6c3b`). **S1f.21.11 is next, on the user's word.**
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
@@ -229,8 +229,8 @@ So the phase runs in two parts ([§ Stages](#stages)):
 [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md), the requirement, the payment and `discharged` as rules a
 program imports (`std.debts`). It is additive, read by nothing unless a program imports and activates it, and it
 decides neither question. Whether it is merged with the stage was put to the user; with no answer when the stage
-reported, **it is held**: the stage's first commit is merged, and `std.debts` waits on its branch, built and tested,
-for the user's word or for part 2.
+reported, it was held: the stage's first commit merged, and `std.debts` on its branch. **Merged 2026-11-19**, the user's
+answer being (b), *merged now*: `edbe6c3b`.
 
 **The user on part 2, the same day**, verbatim: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."* So Q-M1f.549's main call is answered, (b): every rung
 emits its candidates as facts `(open H)` the knowledge base holds. A candidate proposed above root is parked, not
@@ -351,7 +351,7 @@ The user, 2026-11-19 (*"process …/review/part-2/ANSWERS.md"*), each verbatim, 
 | what an obligation emits | **ruled**: `(open H)`, no justification in it; the engine's record of where it was emitted is its own; `absent` reads it as any fact. S1f.21.7 is not run |
 | the table of `absent`, `open` and `not` | **drawn**, on runs: [`absent_open_not.md`](absent_open_not.md). Its open cells are Q-M1f.568 |
 | `open` is *may*, an obligation is *must* | **ruled**; the four questions asked with it are answered on runs in [`open_and_owe.md`](open_and_owe.md), and leave Q-M1f.566 (how the *must* is emitted) and Q-M1f.567 (the `hrule` form dropped), each with a default |
-| `std.debts` | **ruled (b)**, merged now; the merge is made on S1f.21.15's last commit, that stage having the same files open |
+| `std.debts` | **ruled (b)**, merged now, and **merged**: `edbe6c3b`, on S1f.21.15's close; no program it adds is flagged, and no other program's answer moves |
 
 ## What it is
 
@@ -392,7 +392,7 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **done 2026-11-19**: `d35408cb`, `8d8327ce`, `c9ea9597`, `d1c9d4b3`, `984137bf`; V-2, V-3 and V-4 fixed, V-9 entered; its three readings took their defaults (Q-M1f.552 to .554); no answer moved. The batch's container gate is the coordinator's, with S1f.21.8's merge |
-| [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation and the contradiction, each a module a program imports; and the requirement, the payment and `discharged` | **done 2026-11-19; merged in part**: `std.negation` and `std.contradiction` (`b0ee99f4`) by the merge `ca98dec2`; `std.debts` (`6b76c164`) built and **held on the stage's branch for part 2**. Its readings: Q-M1f.555 (two modules for the negation, not the default), Q-M1f.556. The batch's container gate runs on the merge |
+| [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation and the contradiction, each a module a program imports; and the requirement, the payment and `discharged` | **done 2026-11-19, and merged whole**: `std.negation` and `std.contradiction` (`b0ee99f4`) by the merge `ca98dec2`; `std.debts` (`6b76c164`) as `edbe6c3b`, on the user's ruling Q-M1f.560 (b). Its readings: Q-M1f.555, Q-M1f.556, each ruled *as built* |
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **done 2026-11-19**: `68c3d5d0`, `946ee788`; no answer moved over the 913 corpus files; its readings and the four consequences of an always-loaded module are Q-M1f.562 and Q-M1f.563, review item 41. **The gate in the runner's image is green on `946ee788`** (165 test binaries) **and the nightly there on `901f9fa3`**, the same code under plan commits (82 steps, exit 0) |
 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | ***Forbid* is removed, and nothing validates a non-monotone program's answer.** The check and its words go from the code and the pages; a non-monotone program loads under a loud warning; no `:expect`, regression row, golden line of an answer or assertion is left on a flagged program | **done 2026-11-19**: `1f063ed9` (*forbid* gone), `15689488` (nothing validates a flagged program's answer), `1b9f87f0` (the warning), record `e2c95caf`. Six findings, V-22 to V-27, two of them the user's calls. The gate and the nightly in the runner's image are run on the batch's last commit |
 | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | **The `:hrules` clause lists activators as a rule's are written.** `(solve :hrules ((guess chosen Drink) (guess served Drink)))`; every program that writes the clause re-spelled, no answer moving | planned 2026-11-19 on the user's ruling (Q-M1f.565), **not started**; after S1f.21.15 |

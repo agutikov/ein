@@ -28,7 +28,7 @@ with their part: nothing of part 1 needs them.
 |---|---|---|
 | 32 | Q-M1f.390 | an obligation emits `(open H)`, no justification in it; the engine records where it was emitted for itself; `absent` reads it as any fact |
 | 34 | Q-M1f.549 | `(open …)` is the context for hypotheses, *may*; an obligation is *must*, emitted another way |
-| 39 | Q-M1f.560 | (b): `std.debts` is merged now. **Owed**: the merge is made on S1f.21.15's last commit, that stage having the same files open in the tree |
+| 39 | Q-M1f.560 | (b): `std.debts` is merged now. **Done**: `edbe6c3b`; none of its programs is flagged, and no other program's answer moves |
 
 Items [32](32-Q-M1f.390/README.md) and [34](34-Q-M1f.549/README.md) stay here for their runs, which the two
 pages above cite; item 39's page and programs are in `git log`.

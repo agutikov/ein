@@ -4,9 +4,10 @@
 **Status:** **done 2026-11-19**, on the user's word to start it (*"start s1f.21.6 and s1f.21.8"*); planned the
 same day. **Merged in part**: its first commit, `std.negation` and `std.contradiction` (`b0ee99f4`), is on master by
 the merge `ca98dec2`, the shape golden re-banked on the merged tree. **Its second commit, `std.debts` (`6b76c164`),
-is held on the branch `worktree-agent-a8ead811ae8dbe86c`**: it is what a state owes written as rules, which the
-user left for the second part of the phase ([the order](README.md#the-order-two-parts)); it is built and tested,
-and is merged on the user's word or with part 2. Reading 1 was not taken as its default reads: three modules, and
+is on master as `edbe6c3b`**, merged 2026-11-19 on the user's ruling
+([Q-M1f.560](../open_questions.md#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) (b), *merged now*),
+after being held on its branch while the user left what a state owes to the second part
+([§ The merge of `std.debts`](#the-merge-of-stddebts)). Reading 1 was not taken as its default reads: three modules, and
 `std.debts`' relations renamed and not declared ([§ Record](#the-readings)); the readings are in the ledger,
 Q-M1f.555 and Q-M1f.556. Below, a file of `std.debts` is named and not linked: it is not on master.
 **Group:** [D](modifications.md#d-rules-the-standard-library-could-state-today), items 17 to 19.
@@ -744,3 +745,31 @@ print(dst)
 ```
 
 </details>
+
+### The merge of `std.debts`
+
+`edbe6c3b`, 2026-11-19, by an agent of its own on the coordinator's brief, on top of S1f.21.15's close: the one
+commit `6b76c164` taken with `git cherry-pick -n`, the branch's record commit left.
+
+- **The rules are the commit's, byte for byte**: `stdlib/debts.ein`, its ten programs, `debts_rules.rs` and the 26
+  drawing sources. **No added program is flagged**: each is `lattice  monotone`, and describe, `--count` and the
+  oracle agree on each.
+- **Fitted to master**: the page is `22-debts.md`, after `21-core.md`, no other page moving; its drawings renamed
+  with it and its regions written again by the generator; the page's one flagged example shows the WARNING row; a
+  sentence on the module in `AGENTS.md`'s paragraph on the standard library. Seven conflicts, the generated files
+  each resolved by its generator.
+- **Goldens**: `corpus_exits.txt` +54 lines, the commit's own; `corpus_shapes.md5` +440, 40 a program, no other
+  line moving; `tests/mutation_survivors.txt` unmoved (676 mutants, 557 killed, the module's 39 all killed).
+- **Old against new**: `ein solve FILE --json-summary` over the 921 paths that existed before, identical in exit,
+  stdout, stderr and summary on every one.
+- **What an import of it changes** is what its own two imports change: appended to each of 902 programs, the
+  import moves 11 of them, each the same way `(import std.algebra) (import std.slots)` alone moves it (V-14 and V-16
+  again). Three programs already flagged list two more static sites.
+- **Checks, the agent's**: the workspace's tests, 166 of 167 binaries; the 167th, `int_theory`, was killed for
+  memory with 13 GB of the session's scratch on the machine's tmpfs and passes 12 of 12 with that freed; the slow
+  sweeps, fmt, clippy, rustdoc and the process's checks pass; `ein test tests/` holds 594 of 596 expectations, 2
+  not checked, 0 failed.
+- **Found outside it**: [V-28](findings.md#v-28--stddebts-says-debts-discharged-is-kept-by-every-larger-state) to
+  [V-31](findings.md#v-31--the-module-tables-have-no-row-for-stdcore).
+- **The gate and the nightly in the runner's image** on this commit are the coordinator's, with S1f.21.15's.
+
