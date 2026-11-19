@@ -76,11 +76,18 @@ malformed form is a parse error too.
 
 **Declared names are the program's, with one guard**: a `(rule …)`, `(hrule …)`, `(relation …)` or `(macro …)` may
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
-vocabulary is the structural primitives `absent` and `false`, the verdict `open`, the computed relations `eq` and
-`neq`, `relation`, and the dunder `__closed__`, which a program uses and never binds
+vocabulary is the connectives `and`, `or` and `absent`, the verdict `open`, the computed relations `eq` and `neq`,
+`relation`, and the dunder `__closed__`, which a program uses and never binds
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
 `<forced-positive>`, `<monotonic-unconditional>` and `<lookahead-dies-immediately>`, are refused wherever a program
-writes them. The guard is about *binding* a name: a fact may still carry a reserved head, a stored `(not X)`.
+writes them. The guard is about *binding* a name: a fact may still carry a reserved head. **`false` and `not` are the
+standard library's names**, which a relation, a rule, an hrule and an alias may bind and a macro may not: `(false)`
+is the fact `std.core`'s rule reads, and `(not X)` the fact `std.contradiction`'s rules read beside `X`
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)), so
+`(relation not Claim)` declares the negation of a claim, and `std.core` may declare either. Each is a position word,
+a name wherever a name goes, `(clash-1 not)` among them. The grammar still gives each its shape where it heads a
+form: `(false)` takes no argument, and `(not X)` one fact. A macro named after either would make every `(false)` or
+`(not X)` its call, `std.core`'s among them, so it is refused as the vocabulary is.
 `unknown` and `forall` are deliberately *not* reserved: they are macros of the `std.macro` module.
 
 **The guard holds through every import route.** A reserved name declared by a module is refused whether the module is
@@ -92,10 +99,10 @@ Two sets answer two questions, and neither contains the other:
 
 | | the question it answers | its members | how it fails |
 |---|---|---|---|
-| the vocabulary | what may a declarator **bind**? | `__closed__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
-| the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` | a **parse** error, wherever a name goes |
+| the vocabulary | what may a declarator **not bind**? | `__closed__` `absent` `and` `eq` `neq` `open` `or` `relation` | a **load** error, at the declaration |
+| the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` | a **parse** error, wherever a name goes |
 
-Five names are in both. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
+Four names are in both, `and`, `neq`, `open` and `or`. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
 ?A ?B)` is a pattern rules match, so it is a position word, a token of its own that the grammar takes wherever a name
 goes. `open` is a reserved word, never a name: the grammar takes it in the one place it is written
 ([§ The verdict](#the-verdict--open)).
@@ -173,7 +180,7 @@ falls out of which slot the rule's own `absent` leaves free
 
 | name | arguments | meaning |
 |---|---|---|
-| `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied, which may itself be a stored negation. In a `:match` it matches a stored negation, and with `X` it is a contradiction |
+| `not` | 1 | the negation of one fact: `(not X)` is a stored fact whose argument is the fact denied, which may itself be a stored negation. In a `:match` it matches a stored negation, and beside `X` it is a contradiction where a rule refutes the pair, `std.contradiction`'s where the program imports it |
 | `false` | 0 | `(false)`: the state is contradictory, by `std.core`'s rule, which matches it and states `:ein inconsistent`. It takes no argument, as a fact, an argument of a fact, a premise and a conclusion: `(false k)` is refused ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)) |
 | `and` | 1 or more | conjunction: every premise holds, or every conclusion is derived |
 | `or` | 1 or more | disjunction, in a `:match` only: a top-level `(or …)` is one rule per disjunct, and an `(or …)` anywhere else in a `:match` is refused at load |

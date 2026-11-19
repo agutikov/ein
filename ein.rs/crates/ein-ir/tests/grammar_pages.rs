@@ -477,16 +477,20 @@ fn lexed() -> Vec<Lexed> {
             .to_string()
     };
     let grm = grammar();
-    // The words `Name` takes: its productions of one token.
+    // The words `Name` takes: its productions of one token, and theirs of
+    // a rule it takes whole (`HeadName`).
     let name_rule = grm.rule_idx("Name").expect("ein.y has the rule Name");
-    let names_too: Vec<&str> = grm
-        .rule_to_prods(name_rule)
-        .iter()
-        .filter_map(|&p| match grm.prod(p) {
-            [Symbol::Token(t)] => grm.token_name(*t),
-            _ => None,
-        })
-        .collect();
+    let mut names_too: Vec<&str> = Vec::new();
+    let mut rules = vec![name_rule];
+    while let Some(rule) = rules.pop() {
+        for &p in grm.rule_to_prods(rule) {
+            match grm.prod(p) {
+                [Symbol::Token(t)] => names_too.extend(grm.token_name(*t)),
+                [Symbol::Rule(r)] => rules.push(*r),
+                _ => {}
+            }
+        }
+    }
     let mut own_text: Vec<Lexed> = Vec::new();
     let mut classes: Vec<Lexed> = Vec::new();
     for r in def.iter_rules() {

@@ -9,7 +9,7 @@
 //! **A refused file reports every error recovery reaches** ([`ParseError`]),
 //! each with its true position, what was found there, its notes, and at most
 //! three of the repairs CPCT+ ranked, the first being the one the parse went
-//! on with, then a count of the rest. Where a place takes a name, the thirteen
+//! on with, then a count of the rest. Where a place takes a name, the fourteen
 //! words a position gives a meaning to ([`POSITION_WORDS`]) are names there
 //! too, so the repairs that differ only in which of them, or which name, they
 //! insert are one repair, *Insert a name*. Recovery is deterministic: `lrpar`
@@ -55,23 +55,26 @@ pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 /// rest.
 pub const REPAIRS_SHOWN: usize = 3;
 
-/// The thirteen words that are never a name: tokens of their own in `ein.l`,
+/// The twelve words that are never a name: tokens of their own in `ein.l`,
 /// each a declarator, a kernel connective, or `open`, the verdict, which is
 /// written only as a rule's whole `:assert`, `(open)` or `(open ?R)` (`ein.y`'s
 /// `Assert`; Q-M1f.66). `ein_core::text::LEXER_KEYWORDS` is the printer's copy, which
 /// `the_reserved_words_are_the_printers` holds to this one.
-pub const RESERVED_WORDS: [&str; 13] = [
-    "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
-    "import", "open",
+pub const RESERVED_WORDS: [&str; 12] = [
+    "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
+    "open",
 ];
 
-/// The thirteen words a position gives a meaning to: tokens of their own in
+/// The fourteen words a position gives a meaning to: tokens of their own in
 /// `ein.l`, and names wherever a name goes (`ein.y`'s `Name`), so `(p model)`
 /// is a fact and `(relation step T)` a declaration. The last three head a
-/// saved file's wrappers at the top of a file (Q-M1f.401).
-pub const POSITION_WORDS: [&str; 13] = [
+/// saved file's wrappers at the top of a file (Q-M1f.401). `not` heads a stored
+/// negation, `(not X)`, and is the standard library's name of one
+/// (`ein_core::LIBRARY_NAMES`): an argument, `(clash-1 not)`, and a declared
+/// relation, `(relation not Claim)`.
+pub const POSITION_WORDS: [&str; 14] = [
     "relation", "step", "eq", "absent", "false", "true", "model", "region", "merged", "owing",
-    "program", "module", "commit",
+    "program", "module", "commit", "not",
 ];
 
 /// What a parse error found at an `open` says (Q-M1f.88): the one place it is

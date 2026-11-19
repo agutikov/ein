@@ -438,12 +438,13 @@ fn an_import_brings_the_module_whole_with_its_own_imports() {
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
 ///
-/// **Only the kernel's dunder, `__closed__`, reaches the guard** (Q-M1f.7):
-/// the other names of [`ein_core::RESERVED`] a program can
-/// write, `and`, `neq`, `not`, `or`, `absent`, `eq`, `false`, `open` and
-/// `relation`, are tokens of their own that no declarator takes, so
-/// `(hrule not …)` is a parse error, refused where a declarator binds one,
-/// and never a load error.
+/// **The kernel's dunder, `__closed__`, reaches the guard** (Q-M1f.7), and
+/// is refused there; the other names of [`ein_core::RESERVED`] a program can
+/// write, `and`, `neq`, `or`, `absent`, `eq`, `open` and `relation`, are
+/// tokens of their own that no declarator takes, so `(hrule eq …)` is a parse
+/// error, refused where a declarator binds one, and never a load error.
+/// `false` and `not`, the standard library's names, are bound by a relation,
+/// a rule and an hrule ([`ein_core::LIBRARY_NAMES`]).
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) =
@@ -478,8 +479,8 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
         ),
         (
             "hrule",
-            "(hrule false () :match (x ?a) :assert (y ?a) :why \"w\")",
-            "1:8: unexpected `false`",
+            "(hrule open () :match (x ?a) :assert (y ?a) :why \"w\")",
+            "1:8: unexpected `open`",
         ),
     ] {
         let e = parse(&mut Ast::new(), source, None).expect_err(declarator);

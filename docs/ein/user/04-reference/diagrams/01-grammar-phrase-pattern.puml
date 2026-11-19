@@ -1,6 +1,6 @@
 @startebnf
 Pattern = "(" , ValueHead , Terms , ")" | "(" , Var , Terms , ")" | "(" , "false" , ")" ;
-AnyHead = Name | Var ;
+AnyHead = HeadName | Var ;
 Term = Name | Var | Pattern | NegPattern ;
 NegPattern = "(" , "not" , Pattern , ")" | "(" , "not" , NegPattern , ")" ;
 Terms = { Term } ;

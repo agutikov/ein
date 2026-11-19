@@ -1,10 +1,10 @@
 @startebnf
 punctuation = "(" | ")" ;
 reserved-word =
-    "not" | "and" | "or" | "neq" | "rule" | "hrule" | "query" | "solve" | "config" | "trace"
-  | "macro" | "import" | "open" ;
+    "and" | "or" | "neq" | "rule" | "hrule" | "query" | "solve" | "config" | "trace" | "macro"
+  | "import" | "open" ;
 position-word =
-    "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
+    "not" | "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
   | "owing" | "program" | "module" | "commit" ;
 known-keyword =
     ":why" | ":source" | ":goal-text" | ":match" | ":assert" | ":ein" | ":rule" | ":using" | ":goal"

@@ -1130,7 +1130,7 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
             .atom_name(v)
             .expect(":as takes a name (ein.y's ImportClause)")
         {
-            name if ein_core::is_reserved(name) => {
+            name if !ein_core::binds_no_reserved(name) => {
                 return Err(LoadError(format!(
                     "(import {module} :as {name}) — alias '{name}' shadows a reserved kernel \
                      name at {loc}"

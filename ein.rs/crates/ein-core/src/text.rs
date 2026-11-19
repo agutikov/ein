@@ -4,7 +4,7 @@
 //! A fact argument is a name (a [`crate::Symbol`]) or a nested fact. A name
 //! prints **bare** where its text reads back as one name under the name rule
 //! (Q-M1e2.24, and `ein.l`'s `NAME`): a run of
-//! [name characters](is_name_char), not a bare `_`, not one of the thirteen
+//! [name characters](is_name_char), not a bare `_`, not one of the twelve
 //! words that are never a name ([`LEXER_KEYWORDS`]) and not one of the
 //! engine's three writeback names. So `1`, `07`, `-7`, `1..5`, `it's` and
 //! `[a]` print bare, and `(p 1) (p 01)` print as two facts. Anything else
@@ -26,7 +26,7 @@
 
 use std::borrow::Cow;
 
-/// The thirteen words that are never a name (`ein-ir`'s
+/// The twelve words that are never a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, tokens of their own in `ein.l`): a name that is
 /// one of them prints quoted. A longer run (`not-red`, `rule.x`, `neq-1`) is
 /// the name it spells, a reserved word being a whole token. `open`, the
@@ -34,8 +34,8 @@ use std::borrow::Cow;
 /// program can write a name `open`, and a form headed `open` is the verdict,
 /// which [`head`] prints bare.
 pub const LEXER_KEYWORDS: &[&str] = &[
-    "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
-    "import", "open",
+    "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
+    "open",
 ];
 
 /// A character of a name, under the name rule (`ein.l`'s `NAME`): ASCII
@@ -73,9 +73,9 @@ pub fn is_name_char(ch: char) -> bool {
 
 /// Does `s`, written bare, read back as one name? A run of
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
-/// thirteen words that are never a name ([`LEXER_KEYWORDS`]), and not one of
+/// twelve words that are never a name ([`LEXER_KEYWORDS`]), and not one of
 /// the engine's three writeback names (`ein.l`'s `WRITEBACK`). The
-/// thirteen words a position gives a meaning to (`relation`, `model`, …) are
+/// fourteen words a position gives a meaning to (`relation`, `model`, `not`, …) are
 /// names wherever a name goes, so they print bare.
 pub fn is_symbol(s: &str) -> bool {
     !s.is_empty()
@@ -227,13 +227,14 @@ mod tests {
             "{}",
             "$x",
             "a/b",
+            "not",
         ] {
             assert_eq!(symbol(s), s, "{s}");
         }
         for (s, want) in [
             ("x y", "\"x y\""),
             ("", "\"\""),
-            ("not", "\"not\""),
+            ("and", "\"and\""),
             ("open", "\"open\""),
             ("?x", "\"?x\""),
             ("_", "\"_\""),

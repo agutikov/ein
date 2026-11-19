@@ -8,14 +8,17 @@
 ;;;
 ;;; A fact beside its negation is a contradiction by a rule that says so, and
 ;;; the kernel has none (Q-M1f.557). `std.contradiction`'s rules reach the
-;;; relations a program declares, and `not` is no declared relation, so this
-;;; program states its own rule for the one shape it writes,
-;;; `denial-denied`: a stored negation of an equation beside its own negation
-;;; is `(false)`. Root is dead and R is empty, and `refuted by` names the
-;;; rules that derived the two sides.
+;;; relations a program declares, so this program declares `not` as the
+;;; relation of a claim's denial, `not` being the standard library's name and
+;;; no word of the kernel's: its `clash-1` reads `(not (= 5 (+ 2 2)))` beside
+;;; `(not (not (= 5 (+ 2 2))))` and concludes `(false)`. Root is dead and R
+;;; is empty, and `refuted by` names the rules that derived the two sides.
+
+(import std.contradiction)
 
 (relation liar  Person       :why "{?3} lies")
 (relation think Person Claim :why "{?3} thinks that {?4}")
+(relation not   Claim        :why "it is not so that {?3}")
 
 (think Alice (not (= 5 (+ 2 2))))
 (liar Alice)
@@ -25,10 +28,5 @@
   :match  (and (liar ?p) (think ?p ?f))
   :assert (not ?f)
   :why    "{?p} lies and thinks {?f}")
-
-(rule denial-denied ()
-  :match  (and (not (= ?a ?b)) (not (not (= ?a ?b))))
-  :assert (false)
-  :why    "it is denied that {?a} = {?b}, and that denial is denied")
 
 (solve :no-search :expect (false))

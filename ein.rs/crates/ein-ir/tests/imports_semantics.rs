@@ -373,12 +373,15 @@ fn an_unreserved_name_still_qualifies_through_all_four_routes() {
 /// disagree, and it fails naming the name.
 ///
 /// Two outcomes count as reserved, and the split is the grammar's rather than
-/// the loader's. Every name of the list that is a token of its own is refused
-/// at the parse where a declarator binds it, the four words that are never a
-/// name (`and`, `neq`, `not`, `or`) and the five a position gives a meaning to
-/// and no declarator takes (`absent`, `eq`, `false`, `open`, `relation`); the
-/// two kernel dunders, names the grammar reads, reach the loader and are
-/// refused there (Q-M1f.7). What no name may do is **load**.
+/// the loader's. Every name of the list that is a token of its own and that
+/// no declarator takes is refused at the parse where a declarator binds it
+/// (`absent`, `and`, `eq`, `neq`, `open`, `or`, `relation`); the kernel's
+/// dunder, a name the grammar reads, reaches the loader and is refused there
+/// (Q-M1f.7), as are `false` and `not`, the standard library's names, which
+/// a relation, a rule, an hrule and an alias may bind and a macro may not
+/// (a macro named after either would turn every `(false)` or `(not X)`,
+/// `std.core`'s among them, into its call). What no name may do is **load**
+/// as a macro.
 #[test]
 fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     let m = Modules::new("all-names");
@@ -406,11 +409,25 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     );
     assert_eq!(
         refused_at_parse,
-        [
-            "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation"
-        ],
+        ["absent", "and", "eq", "neq", "open", "or", "relation"],
         "the grammar's refusals are not every token of the list"
     );
+}
+
+/// **`false` and `not` are the standard library's names**
+/// ([`ein_core::LIBRARY_NAMES`]): a module declares a relation, a rule and an
+/// hrule under either, and a program loads it through a qualified import,
+/// each under the name itself, which no import qualifies.
+#[test]
+fn the_librarys_two_names_are_bound_by_a_relation_a_rule_and_an_hrule() {
+    let m = Modules::new("library-names");
+    for name in ein_core::LIBRARY_NAMES {
+        for decl in ["relation", "rule", "hrule"] {
+            let module = declaration(decl, name);
+            m.load(&module, "(import m)\n")
+                .unwrap_or_else(|e| panic!("{decl} {name}: must load: {e}"));
+        }
+    }
 }
 
 // ── The third resolution tier ──────────────────────────────────────

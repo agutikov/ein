@@ -499,6 +499,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `ein-render/tests/renaming_invariance.rs` holds every corpus program to
   its answer with every other name renamed
   ([Q-M1f.436](docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
+- **`false` and `not` are the standard library's names**
+  ([Q-M1f.557](docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)):
+  position words, names wherever a name goes but a head, where the grammar
+  gives `(false)` and `(not X)` their shapes; a relation, a rule, an hrule
+  and an alias may bind either (`ein_core::LIBRARY_NAMES`), a macro not. A
+  declarator binds none of `eq`, `neq`, `and`, `or`, `absent`, `open`,
+  `relation` and `__closed__`.
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.

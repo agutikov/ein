@@ -1437,7 +1437,7 @@ fn ingest_relation(
         .iter()
         .filter_map(|&a| ast.atom_name(a).map(str::to_string))
         .collect();
-    if is_reserved(&name) {
+    if !ein_core::binds_no_reserved(&name) {
         errors.push(format!(
             "relation '{name}' shadows a reserved kernel name at {loc}"
         ));
@@ -1529,7 +1529,7 @@ fn ingest_rules(
         // A rule named `absent` / `false` / `eq` / `relation` would never
         // fire — the compiler reads those as primitives — so it is rejected
         // rather than registered dead.
-        if is_reserved(&name) {
+        if !ein_core::binds_no_reserved(&name) {
             errors.push(format!(
                 "{head} '{name}' shadows a reserved kernel name at {loc}"
             ));

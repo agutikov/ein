@@ -204,22 +204,23 @@ pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 /// The built-in computed predicates.
 pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 
-/// Names a declarator — `rule` / `hrule` / `relation` / `macro` — may not
-/// **bind**.
+/// **The kernel's own words**: no import qualifies one, and a declarator
+/// binds none but `false` and `not`, as a relation, a rule, an hrule or an
+/// alias ([`binds_no_reserved`]).
 ///
-/// The grammar never reads thirteen words as a name (`ein-ir`'s
+/// The grammar never reads twelve words as a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, and the printer's copy,
-/// [`crate::text::LEXER_KEYWORDS`]): `not` / `and` / `or` / `neq` / `rule` /
+/// [`crate::text::LEXER_KEYWORDS`]): `and` / `or` / `neq` / `rule` /
 /// `hrule` / `query` / `solve` / `config` / `trace` / `macro` / `import` /
 /// `open`. So what still reaches the loader as a declared name is the
-/// structural primitives a position gives a meaning to (`absent`, `false`),
-/// the predicate `eq`, `relation` — a name wherever a name goes, so
+/// structural primitives a position gives a meaning to (`absent`, `false`,
+/// `not`), the predicate `eq`, `relation` — a name wherever a name goes, so
 /// `(relation ?R ?A ?B)` stays a legal pattern — and the kernel's dunder. This is
 /// about *binding* a name: a fact may still have a reserved head, such as a
 /// stored `(not X)` octagon.
 ///
-/// **That set is not this one.** The two overlap in five names (`and`,
-/// `neq`, `not`, `open`, `or`) and neither contains the other. `open` is in
+/// **That set is not this one.** The two overlap in four names (`and`,
+/// `neq`, `open`, `or`) and neither contains the other. `open` is in
 /// both (Q-M1f.66): the grammar reads it only as the
 /// verdict a rule's `:assert` writes, `(open)` or `(open ?R)`, and never as a
 /// name, so no program binds it and none writes it as a value.
@@ -242,6 +243,22 @@ pub fn is_predicate(name: &str) -> bool {
 
 pub fn is_reserved(name: &str) -> bool {
     RESERVED.contains(&name)
+}
+
+/// The two of [`RESERVED`] that are the standard library's names
+/// (Q-M1f.557): `false`, whose fact `std.core`'s rule reads, and `not`, whose
+/// facts `std.contradiction`'s rules read. A declarator may bind either, as a
+/// relation a program or a module declares, a rule's or an hrule's name, or
+/// an import's `:as`; a macro may not, since its calls would then be every
+/// `(false)` and `(not X)`, `std.core`'s among them. The grammar and the
+/// loader still give each its shape.
+pub const LIBRARY_NAMES: [&str; 2] = ["false", "not"];
+
+/// Whether a declarator may bind `name`: it is none of [`RESERVED`] but
+/// [`LIBRARY_NAMES`], so `eq`, `neq`, the connectives, `absent`, `open`,
+/// `relation` and the kernel's dunder.
+pub fn binds_no_reserved(name: &str) -> bool {
+    !is_reserved(name) || LIBRARY_NAMES.contains(&name)
 }
 
 /// **Whether a name that heads a tuple is a relation of the program**

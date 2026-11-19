@@ -49,8 +49,15 @@ Form -> b::Id:
 // ── Names ────────────────────────────────────────────────────────────
 // A name, wherever any name goes: a fact's argument, a pattern's, a list's.
 // Not `open`, the verdict, which `Assert` alone takes (Q-M1f.66): no
-// relation, value or name is `open`.
+// relation, value or name is `open`. `not` is a name here, the standard
+// library's name of a negation, `(clash-1 not)`, and not where a form's
+// head is read (`HeadName`), where `(not X)` is the stored negation.
 Name -> b::Id:
+    HeadName { $1 }
+  | "not" { b::name(p, $lexer, $1) }
+  ;
+// A name that heads a macro's template or an obligation's `(open …)`.
+HeadName -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
   | "eq" { b::name(p, $lexer, $1) } | "absent" { b::name(p, $lexer, $1) }
@@ -62,9 +69,12 @@ Name -> b::Id:
   | "commit" { b::name(p, $lexer, $1) }
   ;
 // A name a declarator binds: a relation's, a rule's, a macro's, an alias.
-// Not one of the kernel's reserved names (`ein_core::RESERVED`).
+// Not one of the kernel's reserved names (`ein_core::RESERVED`) but the
+// standard library's two, `false` and `not` (`ein_core::LIBRARY_NAMES`),
+// which a declarator may bind.
 DeclName -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
+  | "false" { b::name(p, $lexer, $1) } | "not" { b::name(p, $lexer, $1) }
   | "step" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
   | "model" { b::name(p, $lexer, $1) } | "region" { b::name(p, $lexer, $1) }
   | "merged" { b::name(p, $lexer, $1) } | "owing" { b::name(p, $lexer, $1) }
@@ -248,7 +258,7 @@ Pattern -> b::Id:
   | "(" Var Terms ")" { b::list(p, $2, $3) }
   | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   ;
-AnyHead -> b::Id: Name { $1 } | Var { $1 } ;
+AnyHead -> b::Id: HeadName { $1 } | Var { $1 } ;
 Term -> b::Id: Name { $1 } | Var { $1 } | Pattern { $1 } | NegPattern { $1 } ;
 // The stored negation of a pattern, or of the negation of one, at any depth
 // (Q-M1f.391). Never of a variable: `(not ?x)` is a conclusion's own

@@ -159,15 +159,16 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `reserved-macro-names-beyond-absent` — the loader's shadowing check covers
 /// the whole kernel vocabulary, not just `absent`.
 ///
-/// [`ein_core::RESERVED`] is **eleven** names, and four of them (`not` /
-/// `and` / `or` / `neq`) cannot even be *written* as a macro name — the
-/// grammar stops them first (see
-/// `a_reserved_keyword_cannot_be_written_as_a_macro_name`). Five more,
-/// `absent`, `eq`, `false`, `open` (the verdict atom) and `relation`, are
-/// words a position gives a meaning to, tokens of their own that no
-/// declarator takes, so a macro named one is refused at the parse, at the
-/// name, as `not` is. The kernel's dunder, `__closed__`, is used and never
-/// bound (Q-M1f.7): it is a name the grammar reads, so nothing but this check
+/// [`ein_core::RESERVED`] is **ten** names, and three of them (`and` / `or`
+/// / `neq`) cannot even be *written* as a macro name — the grammar stops them
+/// first (see `a_reserved_keyword_cannot_be_written_as_a_macro_name`). Four
+/// more, `absent`, `eq`, `open` (the verdict atom) and `relation`, are words
+/// a position gives a meaning to, tokens of their own that no declarator
+/// takes, so a macro named one is refused at the parse, at the name. `false`
+/// and `not`, the standard library's names, are names a declarator takes, and
+/// the loader refuses either as a macro's: its calls would be every `(false)`
+/// and `(not X)`. The kernel's dunder, `__closed__`, is used and never bound
+/// (Q-M1f.7): it is a name the grammar reads, so nothing but this check
 /// stands between a puzzle and a
 /// macro called `__closed__` silently shadowing the kernel's marker in every
 /// rule that mentions it. The last half of the test is what makes the
@@ -176,7 +177,7 @@ fn a_macro_body_may_invoke_another_macro() {
 /// its own.
 #[test]
 fn the_kernel_names_a_macro_may_not_shadow() {
-    for name in ["absent", "eq", "false", "open", "relation"] {
+    for name in ["absent", "eq", "open", "relation"] {
         let src = format!("(macro {name} (?p) (rel ?p))");
         let e = rejected(&src);
         assert_eq!(
@@ -185,8 +186,7 @@ fn the_kernel_names_a_macro_may_not_shadow() {
             "{src}"
         );
     }
-    {
-        let name = "__closed__";
+    for name in ["__closed__", "false", "not"] {
         let src = format!("(macro {name} (?p) (rel ?p) :why \"rel holds of {{?p}}\")");
         let err = load_macro_names(&src).expect_err("reserved names are rejected at load");
         assert!(
@@ -205,14 +205,14 @@ fn the_kernel_names_a_macro_may_not_shadow() {
 /// *parse* time, one layer earlier than `(macro __closed__ …)`.
 ///
 /// The two failures look alike from a terminal and are not alike at all:
-/// `not` / `and` / `or` / `neq` are never a name, so the `macro` production
+/// `and` / `or` / `neq` are never a name, so the `macro` production
 /// never gets one and the form is not ein-lang; `__closed__` is a perfectly
 /// good name that the loader then refuses. `absent` is no contrast: it is a
 /// token of its own that no declarator takes, refused at the parse too (the
 /// test above).
 #[test]
 fn a_reserved_keyword_cannot_be_written_as_a_macro_name() {
-    for name in ["not", "and", "or", "neq"] {
+    for name in ["and", "or", "neq"] {
         let src = format!("(macro {name} (?p) (rel ?p))");
         let e = rejected(&src);
         assert_eq!(
@@ -223,6 +223,7 @@ fn a_reserved_keyword_cannot_be_written_as_a_macro_name() {
     }
     // …whereas a name the grammar reads gets all the way to the loader.
     assert!(accepts("(macro __closed__ (?p) (rel ?p))"));
+    assert!(accepts("(macro not (?p) (rel ?p))"));
 }
 
 // ── Lowering ───────────────────────────────────────────────────────

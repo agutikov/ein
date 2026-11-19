@@ -105,14 +105,17 @@ The exclusive start conditions are `AFTER_WORD`: a rule that names no condition 
 
 Six facts about the terminals that the diagrams state and do not explain:
 
-1. **A reserved word is a token only as a whole word.** The thirteen reserved words, `not`, `and`, `or`, `neq`,
-   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the thirteen position
-   words, `relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a saved
-   file's `program`, `module` and `commit`, are rules written
+1. **A reserved word is a token only as a whole word.** The twelve reserved words, `and`, `or`, `neq`,
+   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the fourteen position
+   words, `not`, `relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a
+   saved file's `program`, `module` and `commit`, are rules written
    before `NAME`, and `NAME` is longest match: `neq` is the token `'neq'`, a tie the earlier rule wins, while `neqw`,
    `neq_test`, `neq-1`, `rule-x`, `rule.x`, `not-a` and `open-slot` are each the one `NAME` they spell, wherever they
    are written ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)).
-   A reserved word is never a name. A position word is a token of its own and a name too, wherever §2's `Name` goes.
+   A reserved word is never a name. A position word is a token of its own and a name too, wherever §2's `Name` goes:
+   `not` heads a stored negation, `(not X)`, and is the standard library's name of one, `(clash-1 not)` and
+   `(relation not Claim)`
+   ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)).
    - **`open` is written only as a rule's verdict**: §2's `Assert` is the one production that takes it, a rule's
      whole `:assert`, `(open)` or `(open ?R)`
      ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)). An error found
@@ -190,7 +193,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-names.puml`](diagrams/01-grammar-phrase-names.puml):
-`Name`, `DeclName`, `FactHead`, `ValueHead`, `PremiseHead`, `ConclusionHead`.
+`Name`, `HeadName`, `DeclName`, `FactHead`, `ValueHead`, `PremiseHead`, `ConclusionHead`.
 
 ![Names, and the name a form is headed by, as a railroad diagram](diagrams/01-grammar-phrase-names.svg)
 

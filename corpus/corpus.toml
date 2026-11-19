@@ -53,7 +53,7 @@ note   = "The negation of a negation, built by a rule: Alice lies and thinks `(n
 path   = "examples/beliefs/04_liar_denial_contradicted.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "render kb"]
-note   = "`03_liar_denial.ein` with the denial itself stated, `(not (= 5 (+ 2 2)))`: the rule concludes the negation of that fact: a stored negation beside the negation of a negation. A pair is a contradiction by a rule, and `std.contradiction`'s reach declared relations, which `not` is not, so the program states its own, `denial-denied`, for the one shape it writes. Root is dead: `(solve :no-search :expect (false))`, `refuted by (given), distrust`."
+note   = "`03_liar_denial.ein` with the denial itself stated, `(not (= 5 (+ 2 2)))`: the rule concludes the negation of that fact: a stored negation beside the negation of a negation. A pair is a contradiction by a rule, and `std.contradiction`'s reach declared relations, so the program imports the module and declares `not`, the library's name, as a claim's denial. Root is dead: `(solve :no-search :expect (false))`, `refuted by (given), distrust`."
 
 [[entry]]
 path   = "examples/beliefs/05_liar_denial_beside_the_fact.ein"

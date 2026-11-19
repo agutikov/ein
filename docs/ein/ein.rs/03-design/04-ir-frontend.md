@@ -127,11 +127,11 @@ of a text is therefore fixed by the rules, and `ein.l` leans on that:
 
 - **A reserved word is a whole token.** `not` is the word; `not-a`, `nota` and `neq-1` are longer, so they are names
   ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)). The
-  thirteen `grammar::RESERVED_WORDS` (`not`, `and`, `or`, `neq`, `rule`, `hrule`, `query`, `solve`, `config`,
-  `trace`, `macro`, `import` and `open`) are never names. The thirteen
-  `grammar::POSITION_WORDS` (`relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`,
-  `owing`, and a saved file's `program`, `module` and `commit`) are tokens of their own that `ein.y`'s `Name` takes
-  wherever a name goes.
+  twelve `grammar::RESERVED_WORDS` (`and`, `or`, `neq`, `rule`, `hrule`, `query`, `solve`, `config`, `trace`,
+  `macro`, `import` and `open`) are never names. The fourteen `grammar::POSITION_WORDS` (`not`, `relation`, `step`,
+  `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a saved file's `program`, `module` and
+  `commit`) are tokens of their own that `ein.y`'s `Name` takes wherever a name goes; `not` no head but its own
+  stored negation (`HeadName`).
 - **A keyword a form takes is a token of its own**; any other `:word` is `KEYWORD`, which no production uses, so an
   unknown keyword is a parse error where it stands
   ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
