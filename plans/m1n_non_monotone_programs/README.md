@@ -30,9 +30,21 @@ deferred are taken, each on the user's word.
   user's answer of 2026-11-19 and the idea it carries). The name F21 is kept for the document.
 - [`f21_probes/`](f21_probes/): its fourteen probe programs, which the hole, node and taint censuses
   (`utils/censuses/`) run.
-- **The register's rows**: the five rows of `W8` that F21 owned are owned by **S1n.2.1**
-  ([`register.toml`](../wrong_answers/register.toml), `owner = "S1n.2.1"`; `python3 utils/wrong_answers.py` holds
-  each to what the binary answers today).
+- **The register's rows**: of the five rows of `W8` that F21 owned, **one is left, `W8/fifo-gap-root`**, owned by
+  **S1n.2.1** ([`register.toml`](../wrong_answers/register.toml), `owner = "S1n.2.1"`; `python3
+  utils/wrong_answers.py` holds it to what the binary answers today). Its program is not flagged: it has no
+  candidate, so the static check finds no site, and the engine claims its answer with no warning.
+- **Handed over on 2026-11-19 by M1f's S1f.21.15**, when the user ruled that a non-monotone program loads under a
+  warning and that no test validates what one answers (Q-M1f.564). They are this milestone's material, each with
+  its witness kept, and nothing in the gate holds them now:
+  - the four other `W8` rows, out of the register: `W8/features-07`, `W8/f07-rules-swapped`, `W8/fifo-gap` and
+    `W8/corner-house` (`git show 15689488^:plans/wrong_answers/register.toml` has each as it stood);
+  - the 27 rows of `corpus/regressions.toml` whose witness is a flagged program or whose right answer was the
+    refusal, and the 20 programs the refusal kept from loading, which load now;
+  - the lists, by file, in
+    [that stage's record](../m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/s1f.21.15_forbid_becomes_a_warning.md#task-2-what-no-longer-validates-a-flagged-programs-answer);
+  - and what it found: **a program with no candidate is never flagged**, whatever its rules read by `absent`
+    (P1f.21's finding V-22).
 
 **Read here, owned elsewhere** (each stays where it is; M1n reads the named part):
 

@@ -62,8 +62,8 @@ and bounded:
   cover and which they do not, and does not try to prove completeness.
 - **The closed-world caveat, tested:** `complement`, `difference` and `connex` read by failure. One program
   each showing the answer where the operand is determined by saturation, and one where it is decided by a
-  hypothesis, with what *forbid*'s refusal
-  ([§ 2.7](../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) says of the second.
+  hypothesis, with what the static check and its warning
+  ([Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) say of the second: it loads, flagged, and nothing is claimed of its answer.
 
 **4. Properties detected from facts.** F1b's TODO: *"properties detection - are rules able to detect
 properties from facts?"* A rule that derives `(symmetric R)` from R's extent has to say *every* edge has its

@@ -32,10 +32,16 @@ without a path is in [`design.md`](design.md), whole.
 | [V-19](#v-19--a-saved-files-first-line-speaks-of-the-modules-it-imports) | a saved file's first line says *every module it imports*, and it carries `std.core` too | S1f.21.10 | open |
 | [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | open; S1f.21.2's |
 | [V-21](#v-21--dependent-hypotheses-a-candidate-proposed-above-root) | dependent hypotheses: once a rule concludes `(open H)`, a candidate can be proposed above root, and the search space is a lattice that is no cube | the user, 2026-11-19 | parked on the user's word: not this phase's; M1n's at the close |
+| [V-22](#v-22--a-program-with-no-candidate-is-never-flagged) | a program with no candidate is never flagged, whatever its rules read by `absent`: `W8/fifo-gap-root` answers wrong at root, unwarned | S1f.21.15 | **the user's call**; the register's row, which the stage removed with the other `W8` rows, is back by default |
+| [V-23](#v-23--regression-rows-that-went-with-a-flagged-witness-and-record-another-defect) | regression rows that went because their witness is flagged, though the defect each records is not about monotonicity | S1f.21.15 | open; a monotone witness for each, or left |
+| [V-24](#v-24--the-read-outs-examples-page-holds-flagged-programs-read-outs-to-the-binary) | the read-out's examples page holds ten read-outs of five flagged programs to the binary | S1f.21.15 | **the user's call**; left by default: it is where the warning is shown, and it calls no answer right |
+| [V-25](#v-25--ein-render-h-space-prints-no-warning-on-stderr) | `ein render h-space` prints no warning on stderr for a flagged program | S1f.21.15 | open; with S1f.21.11's surfaces |
+| [V-26](#v-26--three-censuses-and-two-measurement-examples-still-describe-the-refusal) | the hole, node and taint censuses and two measurement examples still describe the refusal | S1f.21.15 | open; re-taken at the phase's close |
+| [V-27](#v-27--a-test-may-still-pin-what-a-flagged-program-written-inline-answers) | a test may still pin what a flagged program written inline in it answers: those were not swept | S1f.21.15 | open |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
-**What.** [Q-M1e2.5](../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) refuses
+**What.** Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) refuses
 a rule that concludes `(false)` or a stored negation where it rests on an `(absent …)` over a relation a
 commitment can still extend, *directly, through a fact a rule derives resting on such an `absent`, or through its
 activator*. The kernel's contradiction, a fact beside its stored negation, is the same refutation and is no rule,
@@ -558,3 +564,53 @@ stated on it would be restated.
 keeps $H$ root's: an `(open H)` derived above root is held and is no candidate, and the read-out says how many a
 run met. It goes to [M1n](../../m1n_non_monotone_programs/README.md) at the phase's close, with the user's words.
 
+## V-22 — A program with no candidate is never flagged
+
+**Found** by S1f.21.15, removing the register's rows of non-monotone programs. `W8/fifo-gap-root`'s witness and its
+two twins state `:no-search` and have no candidate, so the static check, which looks for an `absent` a commitment
+can change, finds no site: the read-out says `lattice  monotone` and prints no warning. The defect is at root:
+two rules that wait on an `absent` are admitted in written order, and root holds a fact its own fixpoint's
+premises deny. So the user's ruling (*a non-monotone program loads under a huge warning, and nothing is claimed*)
+does not reach this program: the engine claims its answer, and the answer is wrong.
+
+**The stage removed the row** with the other four of `W8`, as its brief named them. **The coordinator put it back**
+(the register's rule: a known wrong answer still open is a row; this program is not flagged, so nothing else says
+its answer is not to be trusted). **The user's call**: (a) it stays a row, a wrong answer of a program the engine
+claims, M1n's to fix; (b) it goes, the program counted non-monotone, and what is owed is a detection that warns of
+it, M1n's too.
+
+## V-23 — Regression rows that went with a flagged witness, and record another defect
+
+**Found** by S1f.21.15. Of the 11 rows of `corpus/regressions.toml` removed because their witness is a flagged
+program, several record a defect that has nothing to do with monotonicity, the flagged program being only where
+it was met: `kw-neq-in-absent`, `class-label-04-open`, the two rows of `past-limit-lines`, the two of
+`fifo-gap-limit-1`, and three rows about cores. Nothing holds those fixes now. Each could be held again by a
+monotone witness written for it. **Open**; the rows are in
+[the stage's record](s1f.21.15_forbid_becomes_a_warning.md#task-2-what-no-longer-validates-a-flagged-programs-answer).
+
+## V-24 — The read-out's examples page holds flagged programs' read-outs to the binary
+
+**Found** by S1f.21.15. `docs/ein/user/04-reference/09-read-out-examples.md` is written by the binary and held to
+it by a gate step and a test. Ten of its read-outs are of five flagged programs. It is the one place the warning's
+rows are shown, and a row only a flagged program prints has no other example; the page calls no answer right. It is
+all the same a golden of what a flagged program prints. **The user's call**: left, the default; or those blocks
+shown and not held; or one flagged example kept, for the warning, and the rest replaced by monotone programs.
+
+## V-25 — `ein render h-space` prints no warning on stderr
+
+**Found** by S1f.21.15. Every other command that answers about a commitment prints the warning's line on stderr
+for a flagged program; `ein render h-space` does not, its read-out saying in its `domain` rows that the static
+check flags the program. **Open**; with S1f.21.11's surfaces.
+
+## V-26 — Three censuses and two measurement examples still describe the refusal
+
+**Found** by S1f.21.15. `utils/censuses/hole-census.md`, `node-census.md` and `taint-census.md`, and the examples
+`hole_census.rs` and `node_census.rs` that take them, still speak of programs as refused. The pages are
+measurements kept beside their tools and are re-taken, not edited. **Open**; re-taken at the phase's close.
+
+## V-27 — A test may still pin what a flagged program written inline answers
+
+**Found** by S1f.21.15. The corpus's sweeps compute the flag, so none holds a flagged program's answer. A program
+written inline in a crate's test was read only where the test named a flagged corpus file or failed once the
+refusal went; the others were not swept one by one. **Open**: a sweep that loads each inline program and reads the
+static check would close it.

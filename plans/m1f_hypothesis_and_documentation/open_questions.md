@@ -10505,7 +10505,7 @@ the witnesses of three open rows of the wrong-answer register.
   2026-11-19, when the user asked what is decided of non-monotone programs: that reason argues from the answers of
   flagged programs, which the standing ruling sets aside, and it makes one module's rules special to *forbid*.
 - **(b)** *forbid* reads the rules as written: the seven are refused where the contradiction is on. **Proposed
-  now**: it is [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) as it
+  now**: it is Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) as it
   stands, the kernel's own contradiction having escaped it only by being no rule.
 - **(c)** left until M1n rules what *forbid* covers, the contradiction staying the kernel's until then.
 
@@ -10709,7 +10709,7 @@ Built: `68c3d5d0`.
 No test validates the result of a non-monotone program's solution. *Forbid* is removed from the code and the pages,
 completely.** And of what *no test* means, the same day, verbatim: *":expect claims can present in non-monotone programs - just don't put it into the test suite gate and CI."* So a non-monotone program may
 state an `:expect`; the suite, the gate and CI do not check it.
-[Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), under which a
+Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)), under which a
 program whose refutation could rest on an `absent` a commitment can still fill is refused at load, is reversed. It
 is the standing policy on non-monotone programs, *detect, document, warn, decide nothing*, applied to the one place
 that refused where the policy says warn.

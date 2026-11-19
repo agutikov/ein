@@ -529,7 +529,7 @@ from that the static check sees: F2 took `via` following each plan's
 activator, and F3 reads root's plans and every rule with parameters whose
 activator relation is in D, at load. No program that loads has a death a
 route could carry past its node on the corpus, the probes or the written
-programs ([`refutation_under_absent.rs`](../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs),
+programs (`refutation_under_absent.rs`, removed with the refusal on 2026-11-19, Q-M1f.564,
 `region.rs::an_untainted_death_is_dead_in_every_superset`, which studies the
 refused shapes past the refusal). F18 closes with it. Until then: (a). F18
 closes without being done once the refusal covers

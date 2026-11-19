@@ -22,7 +22,7 @@ up: they were not cut, they were given an M-number.
 M1e2** (2026-10-14): S1f.10.3's acceptance is
 *not one model moved*, which means something only against a lattice that
 records the right models, and M1e2 also takes S1f.10.8's ruling if the user
-agrees ([Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
+agrees (Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md))).
 Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.

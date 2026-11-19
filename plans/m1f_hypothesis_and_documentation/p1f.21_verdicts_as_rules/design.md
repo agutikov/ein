@@ -360,7 +360,7 @@ verdict, the monotone verdict and the number of saturations
 The seven: `examples/features/07_unstratifiable.ein`, `examples/lattice/08_absent_witness_hole.ein`,
 `examples/lattice/10_fifo_gap.ein`, and `f07-fpoff`, `f07-rules-swapped`, `kw-neq-in-absent`,
 `kw-neq-in-absent-twin` under `examples/ein-bugs/wrong-answers/`. Each is refused by *forbid*
-([Q-M1e2.5](../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)), for example:
+(Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md))), for example:
 
 ```text
 rule 'clash-0' [activator meal]: concludes (false) from meal, which rule 'soup-unless-allergic' derives resting on (absent …) over allergic, a relation a commitment can still extend — so it calls a state that has not yet decided allergic a contradiction, and a commitment would lift it (dead is not upward-closed under absent; Q-M1e2.5). …
@@ -452,7 +452,7 @@ this added:
 ```
 
 Root derives `(alive)`; the node `{(locked front)}` is a fork of root, inherits it, and derives `(false)` and
-`(dead)` beside it. It is not refused: [Q-M1e2.5](../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)
+`(dead)` beside it. It is not refused: Q-M1e2.5 (cancelled 2026-11-19, [Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md))
 refuses a *refutation* that rests on an absence a commitment can fill, and `(alive)` is a positive conclusion, so
 the program loads and is flagged, and of a flagged program the engine claims nothing. *Alive* is true of a state
 and false of a larger one, so no fork can inherit it: it is a verdict read on each state, as the kernel reads it.

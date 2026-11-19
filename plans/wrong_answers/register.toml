@@ -51,6 +51,98 @@
 schema = "ein-regressions/1"
 
 [[case]]
+id       = "W8/fifo-gap-root"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "S1n.2.1"
+question = ["Q-M1e2.2", "Q-M1f.313"]
+witness  = "plans/wrong_answers/witnesses/fifo-gap-root.ein"
+status   = "open"
+open_because = "F21's D2, its stratum-order sub-question, as W8/fifo-gap: the program is stratified, but the boundary admits the two rules that wait on an absent in the order they are written within the agenda's half, so r2 derives (p one) under (absent (q one)) before r1 derives (q one), and root holds a fact its own fixpoint's guard refutes; its perfect model is (a one) (b one) (q one). Here nothing is committed: a and b are given, the race is root's own, and the static check, which is of what a commitment can change and takes root as given, calls the program monotone and reports no order finding"
+look_at  = ["root", "trace", "summary"]
+note     = "Filed at the close of M1f's documentation phase, P1f.20 (2026-11-17), from its finding L-61 (the kb-evolution lane, writing the saturation page; reproduced on the gate binary), which proposed the row and left it the user's call; filed under the standing rule that a wrong answer is a row, by the reading W8/fifo-gap takes. It is W8/fifo-gap (examples/lattice/10_fifo_gap.ein, a and b candidates, flagged) and examples/lattice/11_fifo_gap_static.ein (a given, b a candidate, monotone, no answer wrong since every node is a fork of root) moved one step down: with a and b both given the stale fact is root's, and every answer is built on root. The title is the case's; what falsifies the guard here is root's own later derivation, not a commitment. p and q are outside the universe (the program states :no-search, so nothing is a candidate), so the run's one state lists nothing and what root holds is read off the query's rows. No read-out row, summary field or warning names the stale fact: `monotonicity.order` and `monotonicity.state` are empty on a program the check calls monotone. The answer is not a function of the program: the first twin differs in the written order of two rules, the second in a conclusion nothing reads, and both answer the perfect model. Not reviewed: no review bundle was built for it"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate profile's binary built at 78a5fadd (2026-11-17) and again at 186b248e: R {∅}, root in R, `lattice monotone (the static check)`, and the query (p ?x) answers ?x = one; `ein saturate --dump` prints (p one :rule r2) beside (q one :rule r1)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+
+[[case.twin]]
+witness   = "plans/wrong_answers/witnesses/fifo-gap-root-r1-first.ein"
+run       = "solve"
+by        = "region"
+why       = "r1 written before r2 and nothing else, at 78a5fadd: the boundary admits r1 first, root derives (q one), r2's guard fails, and the query has no row; `ein saturate --dump` prints (q one :rule r1) and no p"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+
+[[case.twin]]
+witness   = "plans/wrong_answers/witnesses/fifo-gap-root-negation.ein"
+run       = "solve"
+by        = "region"
+why       = "the witness's order, r2 first, with r1 concluding (and (q ?x) (not (w ?x))) for a declared w nothing reads, at 78a5fadd: a rule that concludes a stored negation is in the agenda's first half (Q-M1f.313), so r1 is admitted before r2, root derives (q one), and the query has no row"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "F21 D2, admission in stratum order (its sub-question), the reading W8/fifo-gap's row takes"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+printed   = [{ file = "stdout", label = "as :expect", line = "  as :expect        (model)" }]
+derived   = "the program is stratified: r2 reads q under an absent and r1 concludes it, r1 reads z under an absent and nothing concludes z, and nothing reads p, so r1's stratum comes first. r1 derives (q one), and r2's guard then fails: the perfect model is (a one) (b one) (q one), the query (p ?x) has no row, and both twins answer it. Stratum order is the one reading of D2's under which the three programs, which differ in nothing a stratified program's meaning depends on, have one answer"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (A) fork, today's node, or (B) scratch, each admitting in FIFO order: at root the two are one node"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+derived   = "today's answer: r2 is written before r1, and both wait in the agenda's second half. Under it the answer moves with the written order of the rules (the first twin) and with a conclusion nothing reads (the second), on a program the check calls monotone"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (C) guards are premises, over (A)"
+derived   = "root holds the stale (p one), so root is no solution; the program states :no-search, so root is the only node and R is empty. Not stable under rule order either: the first twin's root holds no stale fact and is in R"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (D) refuse a cycle through an absent"
+derived   = "not refused: the program has no cycle; (D) composes with (A), (B) or (C), as above"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+printed   = [{ file = "stdout", label = "as :expect", line = "  as :expect        (model (p one))" }]
+
+[[case]]
 id       = "W10/alt-cap-shared"
 case     = "W10"
 title    = "the alternatives cap decides which core is reported"

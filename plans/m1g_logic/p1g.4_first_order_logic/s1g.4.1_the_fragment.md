@@ -37,7 +37,7 @@ its program**.
 | → | the rule | `:match` to `:assert` | native, one level; an implication as a premise or a conclusion is not a form |
 | ↔ | | two rules | derived |
 | ¬ | stored | `(not P)`: a fact of its own, derived or written, matched as a pattern; `P` and `(not P)` together are a contradiction by the kernel's pair check | native: explicit negation |
-| ¬ | by failure | `(absent P)`: a premise's test of the state at the closure boundary; refused where a refutation would rest on one a commitment can fill ([§ 2.7](../../../docs/ein/user/04-reference/07-diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) | native: non-monotone |
+| ¬ | by failure | `(absent P)`: a premise's test of the state at the closure boundary; where a commitment can fill one a refutation rests on, the program is not monotone: it loads under a warning and nothing is claimed of its answer ([Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | native: non-monotone |
 | ⊥ | head | `(false)` | native: an integrity constraint |
 | =, ≠ | body, head | `eq`, `neq`: identity of values, computed, never stored; a false one concluded is `(false)` | native; no equational theory |
 | function symbols | terms | a nested fact of an ordinary relation, under the value rule ([§ 2.22](../../../docs/ein/user/04-reference/07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)): a free constructor | native since nested facts; uninterpreted |

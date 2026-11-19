@@ -29,7 +29,9 @@ a per-fact choice cannot see the saving.
 (S1e2.2.11, 2026-11-04), and since M1e2
 S1e2.2.25
 (2026-11-05) `W10/fork-delta-order`, `W10/closure-shared-given`,
-`W10/second-preparation` and `W25/guard-only-second`
+`W10/second-preparation` and `W25/guard-only-second`; the last left the register on 2026-11-19, its witness
+being a program the static check flags, of whose answer nothing is claimed or held (Q-M1f.564), and is in
+`git show 15689488^:plans/wrong_answers/register.toml`
 ([§ Handed over by M1e2's inventory](#handed-over-by-m1e2s-inventory-2026-11-05)).
 The milestone's acceptance, amended by the user on 2026-11-03 for exactly
 this kind of row, names each at M1e2's close beside F21's. W23's residual,

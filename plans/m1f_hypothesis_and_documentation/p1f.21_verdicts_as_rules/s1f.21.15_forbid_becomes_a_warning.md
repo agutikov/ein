@@ -455,3 +455,17 @@ On `1b9f87f0`, unless a commit is named:
   fixpoint depends on the agenda's order.
 - **Not run**: `./run_tests.sh`, `./run_tests.sh --nightly`, `utils/ci_container.sh`, as the stage was told. The
   plan asks the gate and the nightly on the stage's last commit; they are the coordinator's.
+
+### The coordinator's part
+
+- **The nine links** are re-aimed: the six to the removed decision's file now say that Q-M1e2.5 is cancelled and
+  link Q-M1f.564's; M1g's two lines say what is true now, that such a program loads flagged; M1n's names the
+  removed test in words.
+- **`W8/fifo-gap-root` is back in the register**, by default and for the user to overrule
+  ([V-22](findings.md#v-22--a-program-with-no-candidate-is-never-flagged)): its program is not flagged, so the
+  engine claims its answer, and the register's rule is that a known wrong answer still open is a row. The register
+  has 11 rows. The other five that went stay out; M1n's page and F22's say where each is.
+- **The findings** of § *Not done, and found outside the scope* are V-22 to V-27 of the phase's page.
+- **The gate, the nightly and the container gate** are run on the batch's last commit, after `std.debts` is merged
+  (Q-M1f.560, ruled the same day), and their results are written here.
+
