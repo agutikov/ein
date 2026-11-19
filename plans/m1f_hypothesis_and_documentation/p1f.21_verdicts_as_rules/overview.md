@@ -82,7 +82,7 @@ ids of the facts some `(not …)` denies (`Layer::negated`), which makes the con
 **So yes: a denied fact is hidden in the `not` context, as a fact Ann thinks is hidden in `think`**
 ([Q-M1f.394](../../../docs/decisions/language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)). **What is
 not yet a convention is the kernel's own reading of it.** The code reads `not` by its name on 29 lines of 13 files
-and `false` on 15 of 9 ([item 33's census](review/33-Q-M1f.399/README.md#22-the-census-the-kernels-names-and-the-code-that-reads-each)),
+and `false` on 15 of 9 (the census of the kernel's names, taken for the question of the names; [`open_facts.md` § 8](open_facts.md#8-the-reserved-names-that-are-left-and-what-the-kernel-reads) has its commands),
 for six decisions: a fact beside its negation is dead; the agenda fires first what leads there; *forbid*; the
 static check; a candidate root denies is not in $H$; and a candidate a state denies is dead above it (licence
 L8). That is group G.
@@ -203,7 +203,7 @@ the groups' letters.
 
 | | stage | group | items | what | waits on |
 |---|---|---|---|---|---|
-| 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | nothing |
+| 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | **done** |
 | 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | three modules of the standard library, additive | where each lives |
 | 3 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | 14 to 16 | a debt's instance as a term | Q-M1f.390 |
 | 4 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | nothing: unblocked |

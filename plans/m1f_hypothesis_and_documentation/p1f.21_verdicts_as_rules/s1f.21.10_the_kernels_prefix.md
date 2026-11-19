@@ -69,7 +69,7 @@ shown at its end; the second is the user's ruling and no default. **It stops onl
    always loaded - ok now, later will decide how it could be customized"*
    ([Q-M1f.551](../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)). It adds a notion to the language, a module no file
    imports; the other reading, a program imports the convention, leaves every program that writes `(false)` and
-   imports nothing unable to refute: `(false)` is on 692 lines of 284 files. **How a program customises it is not
+   imports nothing unable to refute: `(false)` is on 691 lines of 284 files. **How a program customises it is not
    this stage's**: the stage builds no way to leave the module out, to replace it or to add to it, and builds
    nothing that would have to be undone for one.
 3. **A program's own rule may state the key**, from whatever it matches, with no `(false)` between; *forbid* reads
@@ -80,6 +80,10 @@ shown at its end; the second is the user's ruling and no default. **It stops onl
    after the firing that concluded `(false)`, with one firing more, the key's.
 6. **`:expect (false)`**, a claim's word for an empty $R$, and the grammar's reading of `false` are not this
    stage's: the reserved words are S1f.21.11's (item 29).
+7. **The surfaces' words for a dead state stay *holds a contradiction*** (S1f.21.6 put them there the same day,
+   [Q-M1f.553](../open_questions.md#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation)): the
+   sentence is true of a state the rule calls inconsistent, and a read-out row that moved would move 147 dead-root
+   programs' goldens again. The other reading, *is inconsistent* on the surfaces, is shown at the stage's end.
 
 ## What must hold
 

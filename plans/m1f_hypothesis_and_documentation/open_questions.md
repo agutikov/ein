@@ -480,6 +480,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
 | [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **ruled 2026-11-19 by the user**, verbatim: *"Yes, :ein   inconsistent"*: the word is `inconsistent`, as proposed on the user's *"maybe propose better name here"* (Q-M1f.399's answer); P1f.21's S1f.21.10 builds the key on it, unblocked the same day |
 | [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) | The module every program gets: `std.core`, always loaded | **ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be customized"*: a module of the standard library loaded into every program with no import line, built by P1f.21's S1f.21.10; **how it is customised is left for later, the user's**, and nothing is built for it |
+| [Q-M1f.552](#q-m1f552--the-saturated-dumps-sections-for-the-rules-no-agenda-holds) | The saturated dump's sections for the rules no agenda holds | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 1): (a), a section each for the obligation rules and the hypothesis rules, the first heading saying it is the agenda's; the build added the count of a rule's activators beside it; built `8d8327ce` |
+| [Q-M1f.553](#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation) | The words for a state dead by a fact beside its negation | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 2): (a), *holds a contradiction*, wherever the sentence stood; built `c9ea9597`. S1f.21.10 reads it again beside the key's word, `inconsistent` |
+| [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10241,4 +10244,45 @@ out, replace its rule (the earlier direction's *"or from global (whatever)"*) or
 in S1f.21.10, and nothing that would have to be undone for it. It is to be put again when a program wants another
 core: [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md) adds the meaning of `not` to
 the same module and meets it first.
+
+### Q-M1f.552 — The saturated dump's sections for the rules no agenda holds
+
+**Raised** 2026-11-19 by P1f.21's [S1f.21.6](p1f.21_verdicts_as_rules/s1f.21.6_surfaces.md), reading 1, from the
+phase's finding V-4. **Put, not ruled.** `;; Rules (N)` of `ein saturate --dump` listed the agenda's rules; an
+obligation rule and a hypothesis rule were in no section.
+
+- **(a)** a section for each kind, `;; Obligation rules (N)` and `;; Hypothesis rules (N)`, in the dump's form for a
+  rule, and the first heading says it is the agenda's, `;; Rules — the saturation agenda's (N)`. **Default.**
+- **(b)** the heading's words alone.
+
+**Default taken: (a).** Built: `8d8327ce`. The build went one column past the default's words: beside an obligation
+rule and a hypothesis rule with parameters it prints how many activators bind them, `no activator` for a rule
+loaded and not activated, so that a module imported for another of its names does not read as active.
+
+### Q-M1f.553 — The words for a state dead by a fact beside its negation
+
+**Raised** 2026-11-19 by P1f.21's [S1f.21.6](p1f.21_verdicts_as_rules/s1f.21.6_surfaces.md), reading 2, from the
+phase's finding V-2. **Put, not ruled.** The read-out, the answer dump's page, the region's legend and a comment
+said such a state *derives `(false)`*; it holds none.
+
+- **(a)** *holds a contradiction*, true of a held `(false)` and of a pair. **Default.**
+- **(b)** left until the contradiction is a rule that concludes `(false)`, when the old words are literally true.
+
+**Default taken: (a).** Built: `c9ea9597`, in the four places named and wherever the same sentence stood (the `∅` row
+of a dead root, the h-space's sentence, the pages that quote the rows, the one-clause definitions of *dead*, the
+eight region drawings); the stage's record lists them, and what was read and left. **To be read again** by
+S1f.21.10: the key's word is `inconsistent` ([Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein)),
+and whether a surface says *is inconsistent* is that stage's reading.
+
+### Q-M1f.554 — A saved file for an owing node below a non-empty $R$
+
+**Raised** 2026-11-19 by P1f.21's [S1f.21.6](p1f.21_verdicts_as_rules/s1f.21.6_surfaces.md), reading 3. **Put, not
+ruled.** `--dump-answer` writes a file for each state of $R$ and, where $R$ is empty, for the owing frontier; an
+owing node below a non-empty $R$ gets none.
+
+- **(a)** not built; the case stays a finding. **Default.**
+- **(b)** `--dump-answer` writes the owing frontier whether $R$ is empty or not.
+
+**Default taken: (a).** The case, on `examples/lattice/05_owed_seats_bounded.ein`, is
+[V-9](p1f.21_verdicts_as_rules/findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file), open.
 

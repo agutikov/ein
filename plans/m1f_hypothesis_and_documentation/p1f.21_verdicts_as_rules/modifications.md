@@ -8,7 +8,8 @@ pages. It rules nothing, builds nothing and runs no stage: the phase is not star
 **What it read.** The [README](README.md) with the user's four instructions; [`design.md`](design.md), the survey
 and the four options of Q-M1f.390; [`open_facts.md`](open_facts.md), the second and third instructions worked out;
 [`findings.md`](findings.md), V-1 to V-7; [the stage record](s1f.21.1_the_survey_and_the_design.md); the two review
-items, [32](review/32-Q-M1f.390/README.md) and [33](review/33-Q-M1f.399/README.md), and
+items, [32](review/32-Q-M1f.390/README.md) and 33 (out of the bundle since its question was ruled, 2026-11-19; its
+page and programs are in `git log`, last at `984137bf`), and
 [`review/ANSWERS.md`](review/ANSWERS.md), which is blank; and the three questions in the ledger,
 [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
 [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) and
@@ -78,10 +79,16 @@ found or put with nothing proposed or no default.
    [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), item 6, names V-7 beside the argument-count check
    and not beside the contradiction.
 4. **Three findings can be fixed with no ruling**: items 1 to 3. Each still shows on today's build.
+   **Fixed 2026-11-19** by [S1f.21.6](s1f.21.6_surfaces.md): none shows any more.
 
 ---
 
 ## A. Surfaces: no answer and no word of the language moves
+
+**Done 2026-11-19** by [S1f.21.6](s1f.21.6_surfaces.md): items 1 to 3 are fixed (`d35408cb`, `8d8327ce`,
+`c9ea9597`), item 4 is not built and is [V-9](findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file),
+item 5 is made (`d1c9d4b3`); the goldens that held a line are in the stage's record. The items below are as they
+were listed.
 
 Independent of every ruling. A change to what `ein solve` prints changes
 [`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md) in the same commit, the standing rule; which
@@ -113,10 +120,10 @@ goldens hold a line these touch was not looked up.
    found, with no change proposed.
 5. **The plan's own pages, where a later run moved a number or a premise.** No project file.
    - [`open_facts.md` § 8.4](open_facts.md#84-eq-and-neq-on-nested-facts): case c6 gives 16 hits, not 18; the claim
-     holds ([item 33 § 7](review/33-Q-M1f.399/README.md#7-found-while-building)).
+     holds (item 33 § 7).
    - [§ 8.2](open_facts.md#82-each-name-under-this-phases-direction)'s counts of names in programs. Re-taken
      2026-11-19 with § 8's command over `stdlib`, `examples` and `tests`, and § 10.7's `grep -c '(false)'` for the
-     first: `(false)` on 692 lines in 284 files (the page: 658 in 278); `hrule` 143 in 117 (141 in 115);
+     first: `(false)` on 692 lines in 284 files (691 since S1f.21.6 re-worded a comment that wrote it; the page: 658 in 278); `hrule` 143 in 117 (141 in 115);
      `__closed__` 714 in 100 (685 in 91); `eq` 146 in 40 and `neq` 345 in 119, as the page has them;
      `__symmetric__` in none (12 in 5).
    - [`design.md` § 4.4](design.md#44-what-reads-it) and [§ 4.5](design.md#45-what-changes-for-a-program), the
@@ -125,7 +132,7 @@ goldens hold a line these touch was not looked up.
      ([item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building)).
    - [`open_facts.md` § 3](open_facts.md#3-who-kills-a-dead-node-einkill)'s list of surfaces lacks two that read
      `(false)` by its name: the agenda's first half, and the `refuted by` row
-     ([item 33 § 7](review/33-Q-M1f.399/README.md#7-found-while-building)).
+     (item 33 § 7).
 
 ## B. The pages: today's kernel stated as rules
 
@@ -220,7 +227,7 @@ rule. **Where each lives is not ruled.**
 ## F. Q-M1f.399: a word of the language renamed
 
 [`open_facts.md` § 10.7](open_facts.md#107-the-kernels-surface-false-and-open-control-the-search),
-[item 33 § 3](review/33-Q-M1f.399/README.md#3-the-options). **Not ruled, and no default taken.** Option (a), keep
+item 33 § 3. **Not ruled, and no default taken.** Option (a), keep
 `false`, is item 12.
 
 21. **(b) A word for the proposition**: `(contradiction)`, `(impossible)` or `(absurd)`. A rename of every program
@@ -261,7 +268,7 @@ and S1f.21.10 builds it. Where an item below says
     `(false)` ⟹ `(ein.kill)` is a rule of a module every program gets with no import line, shown by `ein saturate
     --dump` as any rule is. No page names the module; the review's mock calls it `ein.core`
     (`review/33-Q-M1f.399/programs/ein.core.MOCK.ein`). The readers of `false` today: 15 lines in 9 files, by
-    [item 33's census](review/33-Q-M1f.399/README.md#22-the-census-the-kernels-names-and-the-code-that-reads-each).
+    item 33's census.
     **State: ruled** that `false` is a convention; **open**, whether a program may leave the rule out or replace
     it (*"or from global (whatever)"*).
 26. **The kernel's own contradiction becomes item 18's rules, in that module**, and `not` a relation of one
@@ -273,7 +280,7 @@ and S1f.21.10 builds it. Where an item below says
     - Leaving a candidate that root denies out of $H$ becomes an economy: committing one gives a dead child.
     - **V-1 first**: written as rules, the contradiction is a refutation *forbid* reads, and seven corpus programs
       that load today are refused ([V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none)).
-    - **What the emulation moved**, at the same $R$ ([item 33 § 3](review/33-Q-M1f.399/README.md#3-the-options),
+    - **What the emulation moved**, at the same $R$ (item 33 § 3,
       `kill-falsum.emu.ein`): the program's refuting rule loses its place at the head of the queue, since it no
       longer concludes the fact the agenda reads by name; `refuted by` names the module's `kill` and not the
       program's rule; the node holds two more facts.

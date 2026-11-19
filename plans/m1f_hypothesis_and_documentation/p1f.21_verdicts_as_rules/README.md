@@ -17,7 +17,8 @@ idea, hypotheses as ordinary facts, is put as
 with runs ([review item 34](review/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
 its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
-(*"start s1f.21.6 and s1f.21.8"*). No other stage is started.
+(*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6 is done** (the same day); S1f.21.8 runs; S1f.21.10 starts when it is
+merged.
 **Depends on:** nothing now. Its second stage writes into pages of `docs/ein/reasoning/02-kb-evolution/` that
 S1f.20.10, the last stage of P1f.20, was still moving (the diagrams into files, the formulas onto several
 lines); that stage is done and P1f.20 is closed (2026-11-17), so the pages stand as S1f.21.2 will find them. What
@@ -224,7 +225,7 @@ The rows are in the order the stages would run, which is by what each waits on.
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | | **The survey and the design.** What the kernel does for each verdict; each verdict as a rule; `(open R)` as a fact; `(open R <justification>)` designed; the question | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
-| [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **started 2026-11-19** on the user's word (*"start s1f.21.6 and s1f.21.8"*), in the main tree |
+| [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **done 2026-11-19**: `d35408cb`, `8d8327ce`, `c9ea9597`, `d1c9d4b3`, `984137bf`; V-2, V-3 and V-4 fixed, V-9 entered; its three readings took their defaults (Q-M1f.552 to .554); no answer moved. The batch's container gate is the coordinator's, with S1f.21.8's merge |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation, the contradiction, and the requirement, the payment and `discharged`, each a module a program imports | **started 2026-11-19** on the user's word, in a worktree on its own branch, merged back when done; its readings take their defaults |
 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | re-planned and **unblocked 2026-11-19** on the user's word; **to start when S1f.21.6 and S1f.21.8 are merged**, on the user's word (*"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*); `std.core` always loaded, ruled (Q-M1f.551) |

@@ -28,27 +28,6 @@ re-render of the bundle rewrites the READMEs and never this file.
 
 ---
 
-## 33 · Q-M1f.399: the names of what controls the search, `false` and `open`
-
-[The item](33-Q-M1f.399/README.md)
-
-**Options:**
-
-- **(a)** keep `false`; the pages say once that it is no truth value and what the kernel does with it.
-- **(b)** a word for the proposition: `(contradiction)`, `(impossible)`, `(absurd)`.
-- **(c)** a word for the search's act: `(dead)`, `(abort)`, `(refute)`.
-- **(d)** the kernel's surface under one prefix, `ein.…`.
-- **Your directions**: `false` stays and becomes a proposition; the kernel reads one verb, **`(ein.kill)`** (or
-  `(ein.die)`, `(ein.saturation.kill)`, `(ein.contradiction)`), concluded by a rule of a module every program gets;
-  `open` becomes the hypotheses, `(open F J)`.
-- **No default taken**; the leanings are (b) if renamed at all (§ 10.7), and `(ein.kill)` under the direction (§ 3).
-
-**Your answer:** 
-
-**Notes:** 
-
----
-
 ## 34 · Q-M1f.549: hypotheses as facts
 
 [The item](34-Q-M1f.549/README.md) · [the overview](../overview.md)

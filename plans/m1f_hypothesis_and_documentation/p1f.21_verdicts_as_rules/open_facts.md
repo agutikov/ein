@@ -37,6 +37,12 @@ the state, not to the search.
 
 ## 3. Who kills a dead node: `(ein.kill)`
 
+**Ruled since, 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open),
+[Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein)): no fact
+and no prefix. What ends a state is a rule's key, `:ein inconsistent`, built by
+[S1f.21.10](s1f.21.10_the_kernels_prefix.md). The section below is as it was worked out, with the fact where the key
+now stands.
+
 V-5's direction had the kernel read `(ein.contradiction)`, derived by a rule from a global `(false)`. The note
 makes it a verb. The three names, beside V-5's:
 
@@ -68,7 +74,7 @@ What follows, for S1f.21.4 to show on programs:
 - **The surfaces' words**: the read-out's *root's own fixpoint holds a contradiction* (*derives (false)* until
   S1f.21.6 re-worded it, V-2), `:expect (false)`, the events' `kind: dead`.
 - **Two surfaces read `(false)` by its name**, and move with the direction at the same $R$
-  ([review item 33 § 7](review/33-Q-M1f.399/README.md#7-found-while-building)): **the agenda's first half**, which
+  (review item 33 § 7): **the agenda's first half**, which
   fires first a rule that concludes `(false)`, a stored negation or a fact whose negation can be concluded
   (Q-M1f.313), so the refuting rule loses its place at the head of the queue once what it concludes is an ordinary
   fact; and **the `refuted by` row**, which names the rule that concluded the contradiction, and would name the

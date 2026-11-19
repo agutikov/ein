@@ -60,7 +60,7 @@
 <polygon fill="none" stroke="black" points="16,-540.75 16,-561.5 144.75,-561.5 144.75,-540.75 16,-540.75"/>
 <text xml:space="preserve" text-anchor="start" x="78.88" y="-547.75" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
 <polygon fill="none" stroke="black" points="144.75,-540.75 144.75,-561.5 708.5,-561.5 708.5,-540.75 144.75,-540.75"/>
-<text xml:space="preserve" text-anchor="start" x="148.75" y="-547.75" font-family="Helvetica,sans-Serif" font-size="10.00">dead: derives (false); dead+owing is both</text>
+<text xml:space="preserve" text-anchor="start" x="148.75" y="-547.75" font-family="Helvetica,sans-Serif" font-size="10.00">dead: holds a contradiction; dead+owing is both</text>
 <polygon fill="none" stroke="black" points="16,-520 16,-540.75 144.75,-540.75 144.75,-520 16,-520"/>
 <text xml:space="preserve" text-anchor="start" x="20" y="-528.25" font-family="Helvetica,sans-Serif" font-style="italic" font-size="10.00">dashed outline</text>
 <polygon fill="none" stroke="black" points="144.75,-520 144.75,-540.75 708.5,-540.75 708.5,-520 144.75,-520"/>

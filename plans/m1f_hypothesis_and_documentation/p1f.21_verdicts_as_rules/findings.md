@@ -20,6 +20,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-7](#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count) | a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count among its own, and the invariant's sweep calls it a breach | P1f.22's S1f.22.3 (its N-22), handed over at that phase's close, 2026-11-18 | open: **the user's call**, with § 8's `relation` |
 | [V-8](#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum) | the search written as rules answers wrong at its third stratum: a rule over a second absence fires before the first absence's facts are derived, under `lattice monotone` | the reading of 2026-11-19, [review item 34](review/34-Q-M1f.549/README.md) | open; M1n's ground, handed over at the close |
 | [V-9](#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file) | an owing node below a non-empty $R$ has no saved file: `--dump-answer` saves the states of $R$, and the owing frontier only where $R$ is empty | [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), entered by S1f.21.6 | open, not built by S1f.21.6's default |
+| [V-10](#v-10--the-saturated-dump-says-1-facts) | the saturated dump says `(1 facts)` | S1f.21.6 | open |
+| [V-11](#v-11--a-skip-in-the-hypothesis-rules-reader-that-no-file-reaches) | a skip in the hypothesis rules' reader that no file reaches | S1f.21.6 | open |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -390,4 +392,18 @@ empty $R$ it is the maximal alive states, each of which owes
 can have an extension in $R$, as each single seating here has, and is then no maximal alive state.
 
 **State.** Open, **not built** by S1f.21.6's default.
+
+## V-10 — The saturated dump says `(1 facts)`
+
+**Found** 2026-11-19 by S1f.21.6, outside its tasks, and left. `ein saturate --dump` heads a section of one fact
+`;; ── GIVEN (1 facts) ──`: the count is printed with the plural whatever it is. A wording; no answer and no
+golden's meaning rests on it, though the goldens that hold a dump hold the line.
+
+## V-11 — A skip in the hypothesis rules' reader that no file reaches
+
+**Found** 2026-11-19 by S1f.21.6, task 2, reading `ein-infer/src/hrule.rs` to count a hypothesis rule's activators.
+`Hrules::new` skips a tuple of `(solve :hrules …)` whose count is not its rule's count of parameters. The loader
+refuses such a tuple at load, so the skip cannot be reached from a file; the stage made it one function, shared
+with the new count, and did not remove it. Whether it goes, or stays for a caller that builds a program without the
+loader, is not said anywhere.
 
