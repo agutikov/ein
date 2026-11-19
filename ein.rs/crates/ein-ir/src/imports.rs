@@ -58,11 +58,12 @@ use crate::stdlib;
 const MODULE_SEP: char = '.';
 const STDLIB_ALIAS: &str = "std";
 
-/// **The module every program gets** (Q-M1f.551): no program imports it, and
-/// [`Resolver::resolve_program`] brings it into every program, whole, after
-/// the program's own forms and its imports', as a bare `(import std.core)`
-/// written last would. Its names keep their full names, and its rules are
-/// [`Resolver::implicit_names`].
+/// **The module every program gets** (Q-M1f.551): [`Resolver::resolve_program`]
+/// brings it into every program, whole, after the program's own forms and its
+/// imports', as a bare `(import std.core)` written last would. Its names keep
+/// their full names, and its rules are [`Resolver::implicit_names`]. A file
+/// may import it as it imports any module, for its names: the import binds
+/// them, brings no second copy and moves the module from nowhere.
 pub const CORE: &str = "std.core";
 
 /// The four heads that *bind* a name.
@@ -249,9 +250,10 @@ impl Resolver {
         out
     }
 
-    /// The full names the module every program gets ([`CORE`]) declares, as
-    /// the last [`Resolver::resolve_program`] read it: the loader marks a
-    /// rule declared under one [`ein_core::Rule::implicit`]. Empty before a
+    /// The names the module every program gets ([`CORE`]) declares, as the
+    /// last [`Resolver::resolve_program`] read it and as they print: in full,
+    /// or as the main file's import of the module spells them. The loader
+    /// marks a rule declared under one [`ein_core::Rule::implicit`]. Empty before a
     /// resolution, and after [`Resolver::resolve_imports`], which brings no
     /// form of the module.
     pub fn implicit_names(&self) -> Vec<String> {
@@ -368,11 +370,11 @@ impl Resolver {
     /// of the program is found from it.
     ///
     /// **It brings no form of [`CORE`]**, the module every program gets,
-    /// which no import names: the list is the program as its imports make
-    /// it, and the load that reads it brings that module as every load does
-    /// ([`Resolver::resolve_program`]). So the list written out is a program
-    /// that loads to what the program it was made from loads to, and a
-    /// container stores it (Q-M1f.401).
+    /// whether or not a file imports it: the list is the program as its
+    /// imports make it, and the load that reads it brings that module as
+    /// every load does ([`Resolver::resolve_program`]). So the list written
+    /// out is a program that loads to what the program it was made from loads
+    /// to, and a container stores it (Q-M1f.401).
     pub fn resolve_imports(
         &self,
         ast: &mut Ast,
@@ -433,12 +435,14 @@ impl Resolver {
     ) -> Result<Vec<NodeId>, LoadError> {
         // The module every program gets, as an import no file writes: the
         // main file's last form, so that the module's forms are the list's
-        // last.
+        // last, whatever import of it a file writes.
         let mut forms = forms.to_vec();
-        if read_core {
+        let given = read_core.then(|| {
             let core = ast.atom(CORE, None);
-            forms.push(ast.sform_named("import", &[core], None));
-        }
+            let form = ast.sform_named("import", &[core], None);
+            forms.push(form);
+            form
+        });
         let forms = &forms[..];
         // Read every file of the program, once each.
         let main = File::new(None, String::new(), forms.to_vec(), ast, false);
@@ -471,24 +475,43 @@ impl Resolver {
         // import that reaches it, its own imports at theirs.
         let mut out = Vec::new();
         let mut done = vec![false; files.len()];
-        if let Some(&core) = by_name.get(CORE) {
-            if with_core {
-                *self.implicit.borrow_mut() = files[core]
-                    .declared
-                    .keys()
-                    .map(|short| files[core].full(short))
-                    .collect();
-            } else {
-                // Read for the names the program writes of it, and no form
-                // of it brought.
-                done[core] = true;
-            }
+        // The full names the module every program gets declares.
+        let of_core: BTreeSet<String> = by_name.get(CORE).map_or_else(BTreeSet::new, |&core| {
+            files[core]
+                .declared
+                .keys()
+                .map(|short| files[core].full(short))
+                .collect()
+        });
+        if let Some(&core) = by_name.get(CORE)
+            && !with_core
+        {
+            // Read for the names the program writes of it, and no form of it
+            // brought.
+            done[core] = true;
         }
-        emit(ast, &files, &rewritten, 0, &mut done, &mut out);
+        let splice = Splice {
+            core: by_name.get(CORE).copied(),
+            given,
+        };
+        emit(ast, &files, &rewritten, 0, &splice, &mut done, &mut out);
         let out = dedup_declarations(ast, &out)?;
 
-        // What prints: the main file's spelling.
-        let display = display_names(ast, &files, &tables[0], &out);
+        // What prints: the main file's spelling. A list that brings no form
+        // of the module every program gets keeps that module's names in
+        // full, which the load that reads the list resolves against it; a
+        // short one would be the program's own there.
+        let mut display = display_names(ast, &files, &tables[0], &out);
+        if with_core {
+            // Its names as they print: the main file may import the module
+            // under an alias or list a name short.
+            *self.implicit.borrow_mut() = of_core
+                .iter()
+                .map(|full| display.get(full).cloned().unwrap_or_else(|| full.clone()))
+                .collect();
+        } else {
+            display.retain(|full, _| !of_core.contains(full));
+        }
         if display.is_empty() {
             return Ok(out);
         }
@@ -541,18 +564,10 @@ impl Resolver {
             let spec = import_spec(ast, form)?;
             let loc = loc_repr(ast, ast.loc(form));
             let module = canonical(&spec.module, &loc)?;
-            // The module every program gets is brought by no import a file
-            // writes: the one import of it is the resolver's own, the main
-            // file's last form.
+            // The resolver's own import of the module every program gets, the
+            // main file's last form, which no file writes and no line can
+            // place; a file may import the module too, as any module.
             let own_import = i == 0 && ast.loc(form).is_none() && first_loc(ast, form).is_none();
-            if module == CORE && !own_import {
-                return Err(LoadError(format!(
-                    "{}: (import {}) — {CORE} is the module every program gets, with no import \
-                     line: no import names it (Q-M1f.551)",
-                    place(ast, form),
-                    spec.module
-                )));
-            }
             let is_std = module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
             if files[i].is_std && !is_std {
                 return Err(LoadError(format!(
@@ -579,13 +594,17 @@ impl Resolver {
                 None => {
                     let (key, text) =
                         self.locate(&spec.module, &module, base_dir, &loc)
-                            .map_err(|e| match own_import && module == CORE {
-                                // No import line to place the line at.
-                                true => LoadError(format!(
-                                    "{CORE}, the module every program gets, cannot be read: {}",
-                                    e.0
-                                )),
-                                false => e,
+                            .map_err(|e| {
+                                // No import line to place the line at, but the
+                                // line that says the library has none.
+                                if own_import && module == CORE && !e.0.starts_with(CORE_MISSING) {
+                                    LoadError(format!(
+                                        "{CORE}, the module every program gets, cannot be read: {}",
+                                        e.0
+                                    ))
+                                } else {
+                                    e
+                                }
                             })?;
                     let parsed = parse(ast, &text, Some(&key))?;
                     self.read_log.borrow_mut().push((module.clone(), text));
@@ -661,6 +680,19 @@ impl Resolver {
         let (display, text) = self.read(&root, &rel);
         let text = match text {
             Ok(text) => text,
+            // The library `$EIN_STDLIB` names replaces the module every
+            // program gets, and is to hold it.
+            Err(Unread::Missing)
+                if module == CORE
+                    && let stdlib::Source::Override(dir) = &self.stdlib =>
+            {
+                return Err(LoadError(format!(
+                    "{CORE_MISSING}: {} holds no core.ein — every program gets {CORE}, and a \
+                     library $EIN_STDLIB names is where it is read from (Q-M1f.551): write \
+                     core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy",
+                    dir.display()
+                )));
+            }
             Err(Unread::Missing) => {
                 return Err(LoadError(format!(
                     "(import {written}) — module not found at {display} ({loc})"
@@ -970,13 +1002,28 @@ fn canonical(module: &str, loc: &str) -> Result<String, LoadError> {
     Ok(module.to_string())
 }
 
+/// The first words of the line where the library `$EIN_STDLIB` names holds
+/// no [`CORE`], as the user ruled them: *std.core not found in $EIN_STDLIB*.
+const CORE_MISSING: &str = "std.core was not found in $EIN_STDLIB";
+
+/// Where [`emit`] splices the module every program gets: `core`, its file,
+/// and `given`, the resolver's own import of it, the one that splices it.
+struct Splice {
+    core: Option<usize>,
+    given: Option<NodeId>,
+}
+
 /// Splice file `i`'s forms into `out`: a module's in place of the first
-/// import that reaches it, and a module's [`DIRECTIVES`] left out.
+/// import that reaches it, and a module's [`DIRECTIVES`] left out. The
+/// module every program gets is spliced by the resolver's own import of it
+/// alone, the main file's last form, so that a file's import of it moves it
+/// from nowhere (Q-M1f.551).
 fn emit(
     ast: &Ast,
     files: &[File],
     rewritten: &[Vec<NodeId>],
     i: usize,
+    splice: &Splice,
     done: &mut [bool],
     out: &mut Vec<NodeId>,
 ) {
@@ -985,8 +1032,11 @@ fn emit(
     for &f in &rewritten[i] {
         if ast.head_name(f) == Some("import") {
             let (_, _, j) = next.next().expect("one entry per import form");
+            if Some(*j) == splice.core && Some(f) != splice.given {
+                continue;
+            }
             if !done[*j] {
-                emit(ast, files, rewritten, *j, done, out);
+                emit(ast, files, rewritten, *j, splice, done, out);
             }
             continue;
         }

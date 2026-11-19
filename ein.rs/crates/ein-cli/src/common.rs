@@ -130,6 +130,7 @@ pub fn load_held(
             )
             .map_err(|e| e.to_string())?;
             let (parse, loading) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
+            keep_warnings(path, &loaded.kb.program().warnings);
             judge_mechanisms(ast, terms, &loaded.kb, |ast, terms| {
                 ein_ir::saved::load_text(
                     ast,
@@ -177,6 +178,51 @@ fn say_notes(notes: &[String]) {
             eprintln!("note: {note}");
             said.push(note.clone());
         }
+    }
+}
+
+/// **What the load warned of and did not refuse**: each line of
+/// [`ein_core::Program::warnings`], as `warning: FILE: <line>`, kept for
+/// [`say_warnings`], since every command that loads a program loads it
+/// through [`load_held`]: an activator a rule could derive, or a fact
+/// writes, that binds a relation parameter to a fact, which activates
+/// nothing (Q-M1f.1). A command may load one file several times, so a line
+/// is kept the first time the process meets it and never again.
+fn keep_warnings(path: &Path, warnings: &[String]) {
+    let mut w = WARNINGS.lock().unwrap_or_else(|e| e.into_inner());
+    for line in warnings {
+        let line = format!("warning: {}: {line}", path.display());
+        if !w.said.contains(&line) {
+            w.said.push(line.clone());
+            w.pending.push(line);
+        }
+    }
+}
+
+/// The load's warning lines: every one met, and those not yet printed.
+struct Warnings {
+    said: Vec<String>,
+    pending: Vec<String>,
+}
+
+static WARNINGS: std::sync::Mutex<Warnings> = std::sync::Mutex::new(Warnings {
+    said: Vec::new(),
+    pending: Vec::new(),
+});
+
+/// **The warnings, said when a command's run of a program ends**: the
+/// load's ([`keep_warnings`]), then each activator a state of the run held
+/// that binds a relation parameter to a fact, placed at its rule
+/// (`ein_infer::compile::note_inert_activators`), one `warning:` line each
+/// (Q-M1f.1). At the end, so that a flagged program's `WARNING` line stays
+/// stderr's first (Q-M1f.564). No answer and no exit code moves.
+pub fn say_warnings() {
+    let pending = std::mem::take(&mut WARNINGS.lock().unwrap_or_else(|e| e.into_inner()).pending);
+    for line in pending {
+        eprintln!("{line}");
+    }
+    for line in ein_infer::take_inert_activators() {
+        eprintln!("warning: {line}");
     }
 }
 
@@ -319,6 +365,7 @@ fn open_einb(
     };
     let opened =
         ein_einb::open_bytes(bytes, terms, &opts()).map_err(|e| format!("kb load error: {e}"))?;
+    keep_warnings(path, &opened.kb.program().warnings);
     judge_mechanisms(&opened.ast, terms, &opened.kb, |ast, terms| {
         let again = ein_einb::open_bytes(bytes, terms, &opts()).ok()?;
         *ast = again.ast;

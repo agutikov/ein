@@ -1,0 +1,23 @@
+;;; A derived activator, where no run derives it: `19_derived_activator.ein`
+;;; without `(item (a b))`.
+;;;
+;;; No fact puts a fact in `item`, and a candidate is a name, so no state
+;;; derives an activator that binds `?R` to a fact. A rule *could* derive
+;;; one, `item` being declared, and a declared relation's argument is any
+;;; object, a fact among them (Q-M1f.41): the load says so in the warning
+;;; its twin's load prints, and the program loads (Q-M1f.1). No run prints
+;;; the second warning, since no state holds such an activator. The static
+;;; check flags the program, as it flags its twin, so nothing is claimed of
+;;; its answer (Q-M1f.564).
+(relation box Node :why "{?3} is in the box")
+(relation hit Node :why "{?3} is hit")
+(relation item Node :why "{?3} is an item")
+(box (a b))
+(rule r (?R)
+  :match (box (?R b))
+  :assert (hit z)
+  :why "a box holds a {?R} of b")
+(rule mk ()
+  :match (item ?f)
+  :assert (r ?f)
+  :why "{?f} is an item, so r is asked of it")

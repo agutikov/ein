@@ -140,6 +140,13 @@ pub struct Rule {
     /// imported, so it reads through a firing of such a rule to what the
     /// firing rests on.
     pub implicit: bool,
+    /// **The parameters that name a relation**, by position: each heads a
+    /// form of the rule's `:match` or `:assert`, `(?R …)` or `(p (?R …))`,
+    /// a name written twice at its last position, which is the one an
+    /// activator binds it from. An activator that binds one to a fact
+    /// activates nothing, since a relation is named by a symbol and a fact
+    /// names none (Q-M1f.1). The loader's.
+    pub relation_params: Box<[usize]>,
     pub why: Option<Symbol>,
     pub loc: Option<Loc>,
 }

@@ -37,9 +37,6 @@ parse error, read where the module is.
   grammar takes one name after it, and the loader holds the rest, each line listing the engine's words.
   `ein_word_unknown` writes `:ein dead`, a word that is none of the engine's; `ein_beside_assert` writes it beside
   an `:assert`, where a rule states one or the other; `ein_on_hrule` writes it on an hrule, which proposes a fact.
-- **No import names `std.core`**, `import_of_core.ein`: the module every program gets with no import line
-  ([Q-M1f.551](../../../docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)) is refused
-  where a file imports it.
 - **`open` is no name**
   ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is
   written only as a rule's whole `:assert`, `(open)` or `(open ?R)`. `reserved_open_symbols` is refused at its own
@@ -47,19 +44,10 @@ parse error, read where the module is.
   `reserved_open_*` keep the module's parse error, with its note, *open is reserved: …*. `open_compound_witness`,
   the one verdict fixture the loader refuses, starts its line with where its `(open ?R)` is written.
 - **A relation variable no parameter binds**, `unbound_head.ein`, `(?R ?x)` with `?R` no parameter: the loader
-  refuses it where the rule is written, so it never reaches the compiler.
-- **A derived activator that binds a relation parameter to a fact**, `derived_activator.ein` and
-  `derived_activator_never.ein`: a rule, `mk`, derives `r`'s activator `(r ?f)` from `item`'s argument, and `r`'s
-  parameter names a relation. `item` is declared, so its argument holds any object, a fact among them, and the
-  loader refuses the program whether or not a fact puts one there
-  ([Q-M1f.1](../../../docs/decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)), one line
-  naming the deriving rule, the activated rule and the parameter
-  ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). A marker's
-  argument, `(bijective ?R)`, passes a relation name on and loads: the loader reads what the program does with it
-  ([Q-M1f.41](../../../docs/decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)). A relation
-  parameter bound to a nested fact where the activator is written is refused the same way: a relation is named by a
-  symbol, not a fact
-  ([`07-diagnostics.md` § 2.6](../../../docs/ein/user/04-reference/07-diagnostics.md#26-a-relation-named-by-a-number)).
+  refuses it where the rule is written, so it never reaches the compiler. A relation parameter an activator binds to
+  a fact is no refusal: the program loads under a warning, and the activator activates nothing
+  ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing);
+  [`features/19_derived_activator.ein`](../../features/19_derived_activator.ein)).
 - **Imports**: a module not found, a relative path not found, a bare `std`, `:as` and `:symbols` together, a short
   name listed that the module does not provide, two definitions of one short name, and a cycle.
   `import_cycle.ein` and `import_cycle_b.ein` import each other. Both are fixtures: the reported chain is the

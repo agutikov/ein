@@ -440,8 +440,8 @@ hrule per conclusion.
 
 **An activator binds each parameter to its argument, any object**: an atom, or a nested fact, `(act (f a))` binding
 `?y` to `(f a)`, which the rule's patterns match and its conclusions write as they would an atom. A parameter that
-stands for a relation, `?rel` above, binds an atom: an activator that binds one to a fact is refused at load, where the
-activator is written and where a rule could derive it
+stands for a relation, `?rel` above, binds an atom: an activator that binds one to a fact activates nothing, and the
+load says so in a `warning:`, where the activator is written and where a rule could derive it
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). One that can be
 bound to `eq` heads premises and conclusions of two arguments only
 ([Q-M1f.46](../../../decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)): `(?R ?x)`

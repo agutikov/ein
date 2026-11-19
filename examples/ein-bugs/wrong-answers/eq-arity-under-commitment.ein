@@ -15,9 +15,7 @@
 ;;; `mk` can bind `?R` to `eq`, which `(mark eq)` writes where `mk` reads it,
 ;;; and `(?R ?x)` is then `(eq ?x)`, which holds no fact of equality: the
 ;;; program is refused at load (Q-M1f.46), whether or not a state derives the
-;;; activator, as a derived activator that can bind a relation parameter to a
-;;; fact is refused (Q-M1f.1), and every command that loads it exits 1 (`ein
-;;; test`: 2).
+;;; activator, and every command that loads it exits 1 (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;

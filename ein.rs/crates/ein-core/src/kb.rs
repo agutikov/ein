@@ -1935,6 +1935,7 @@ mod tests {
             assert_: None,
             ein: None,
             implicit: false,
+            relation_params: Box::new([]),
             why: None,
             loc: None,
         });

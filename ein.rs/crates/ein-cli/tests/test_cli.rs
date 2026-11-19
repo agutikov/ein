@@ -249,7 +249,7 @@ fn a_query_with_no_expectation_is_never_solved() {
         r.out
     );
     assert!(
-        r.summary().contains("20 held") && r.summary().contains("8 files state no expectations"),
+        r.summary().contains("20 held") && r.summary().contains("11 files state no expectations"),
         "{}",
         r.summary()
     );

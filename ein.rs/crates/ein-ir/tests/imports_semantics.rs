@@ -1011,3 +1011,144 @@ fn a_diamond_of_flat_imports_yields_each_fact_once() {
         ])
     );
 }
+
+/// **An import of `std.core` is an import like any other** (Q-M1f.551): in
+/// each of its three shapes, first in the program or last, it binds the
+/// module's names as an import does, brings no second copy, and leaves the
+/// module where every load puts it, after the program's forms and its
+/// imports'. The program resolves to the one with no such line, but for how
+/// the shape spells the module's one rule, and the loader reads that rule as
+/// the module's under the spelling (`Resolver::implicit_names`). A module
+/// the program imports may import it too, and a list a container stores
+/// (`resolve_imports`) brings none of it either way.
+#[test]
+fn an_import_of_the_module_every_program_gets_is_an_import_like_any_other() {
+    let scratch = Scratch::new("ein-import-core");
+    std::fs::write(
+        scratch.path().join("m.ein"),
+        "(import std.core)\n(relation q T :why \"q holds of {?3}\")\n",
+    )
+    .expect("written");
+    let base = "(relation p T :why \"p holds of {?3}\")\n(p a)\n";
+    let resolve = |src: &str, load: bool| -> (Vec<String>, Vec<String>) {
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, src, Some("<program>")).expect("parses");
+        let r = Resolver::new();
+        let out = match load {
+            true => r.resolve_program(&mut ast, &forms, Some(scratch.path())),
+            false => r.resolve_imports(&mut ast, &forms, Some(scratch.path())),
+        }
+        .unwrap_or_else(|e| panic!("{src}: {}", e.0));
+        (
+            out.iter()
+                .map(|&n| ein_ir::dump::dump_compact(&ast, n))
+                .collect(),
+            r.implicit_names(),
+        )
+    };
+    let (want, implicit) = resolve(base, true);
+    assert_eq!(implicit, ["std.core.inconsistent"]);
+    assert!(
+        want.last()
+            .is_some_and(|l| l.starts_with("(rule std.core.inconsistent ")),
+        "{want:?}"
+    );
+    for (line, spelt) in [
+        ("(import std.core)", "std.core.inconsistent"),
+        ("(import std.core :as c)", "c.inconsistent"),
+        ("(import std.core :symbols (inconsistent))", "inconsistent"),
+    ] {
+        let respelt: Vec<String> = want
+            .iter()
+            .map(|l| l.replace("std.core.inconsistent", spelt))
+            .collect();
+        for src in [format!("{line}\n{base}"), format!("{base}{line}\n")] {
+            assert_eq!(
+                resolve(&src, true),
+                (respelt.clone(), vec![spelt.to_string()]),
+                "{src}"
+            );
+            // What a container stores: the program, and none of the module.
+            assert_eq!(resolve(&src, false).0, resolve(base, false).0, "{src}");
+        }
+    }
+    // A module that imports it: the module's forms, then the program's, then
+    // the one copy, last.
+    let (got, implicit) = resolve(&format!("(import m)\n{base}"), true);
+    assert_eq!(implicit, ["std.core.inconsistent"]);
+    assert_eq!(
+        got.iter().filter(|l| l.contains("inconsistent")).count(),
+        1,
+        "{got:?}"
+    );
+    assert!(
+        got.last()
+            .is_some_and(|l| l.starts_with("(rule std.core.inconsistent ")),
+        "{got:?}"
+    );
+}
+
+/// **A library `$EIN_STDLIB` names, with no `std.core`, is refused in the
+/// user's words** (Q-M1f.551): *std.core was not found in $EIN_STDLIB*, with
+/// the directory, wherever the module is read from it, by the load that
+/// brings it to every program and by a file's import of it. The library is
+/// held to its marker first: a directory with no `MANIFEST.sha256` keeps its
+/// own line. And a `core.ein` there is the module every program gets.
+///
+/// Driven through `with_stdlib`, as the marker's test is.
+#[test]
+fn a_library_with_no_std_core_is_refused_and_one_with_another_is_read() {
+    let dir = Scratch::new("ein-stdlib-no-core");
+    std::fs::write(dir.join("MANIFEST.sha256"), "").expect("write");
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.to_path_buf()));
+    for src in ["(relation p T)\n(p A)\n", "(import std.core)\n(p A)\n"] {
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, src, Some("<probe>")).expect("parses");
+        let err = resolver
+            .resolve_program(&mut ast, &forms, None)
+            .expect_err("no std.core in the library");
+        assert_eq!(
+            err.0,
+            format!(
+                "std.core was not found in $EIN_STDLIB: {} holds no core.ein — every program \
+                 gets std.core, and a library $EIN_STDLIB names is where it is read from \
+                 (Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or \
+                 the embedded copy",
+                dir.path().display()
+            ),
+            "{src}"
+        );
+    }
+    // Another std.core, read in the place of the library's own.
+    std::fs::write(
+        dir.join("core.ein"),
+        "(rule absurd () :match (absurd) :ein inconsistent :why \"a state that holds (absurd) \
+         is inconsistent\")\n",
+    )
+    .expect("write");
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(p A)\n", Some("<probe>")).expect("parses");
+    let out = resolver
+        .resolve_program(&mut ast, &forms, None)
+        .expect("a library with a std.core");
+    assert!(
+        out.last().is_some_and(
+            |&f| ein_ir::dump::dump_compact(&ast, f).starts_with("(rule std.core.absurd ")
+        ),
+        "the library's std.core is not the one read"
+    );
+    assert_eq!(resolver.implicit_names(), ["std.core.absurd"]);
+    // No marker: the marker's own line, first.
+    let bare = Scratch::new("ein-stdlib-no-marker");
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(bare.to_path_buf()));
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(p A)\n", Some("<probe>")).expect("parses");
+    let err = resolver
+        .resolve_program(&mut ast, &forms, None)
+        .expect_err("no marker");
+    assert!(
+        err.0.contains("MANIFEST.sha256") && !err.0.contains("was not found"),
+        "{}",
+        err.0
+    );
+}

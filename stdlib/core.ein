@@ -1,10 +1,12 @@
 ;;; Ein stdlib — `std.core`: the rules every program gets.
 ;;;
-;;; No program imports this module, and none may: the loader brings it into
-;;; every program, whole, after the program's own forms and those of the
-;;; modules it imports (Q-M1f.551). Its rule is then a rule of the program as
-;;; any other is: `ein saturate --dump` lists it under its full name,
-;;; `std.core.inconsistent`, and a trace shows its firing.
+;;; Every program gets this module with no import line: the loader brings it
+;;; into every program, whole, after the program's own forms and those of
+;;; the modules it imports (Q-M1f.551). A file may import it as it imports
+;;; any module, which binds its names and brings no second copy, and a
+;;; library `$EIN_STDLIB` names brings its own. Its rule is then a rule of
+;;; the program as any other is: `ein saturate --dump` lists it under its
+;;; full name, `std.core.inconsistent`, and a trace shows its firing.
 ;;;
 ;;; ── `(false)` is a proposition ──────────────────────────────────────────────
 ;;; `(false)` is a fact: a rule concludes it, a program states it, another

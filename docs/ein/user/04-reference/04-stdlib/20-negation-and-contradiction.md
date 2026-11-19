@@ -82,15 +82,15 @@ state is alive either way, since a fact beside the negation of its negation cont
   [`examples/beliefs/06_double_negation.ein`](../../../../../examples/beliefs/06_double_negation.ein) writes it for
   `think` beside the library's rule.
 
-### A program the import refuses
+### A program the import warns of
 
 Each rule concludes `(?R …)`, a fact of whichever relation its activator names, and its arguments are whatever the
 double negation held, a fact among them. The loader reads such a conclusion as writing into every rule of that count
 of parameters whose name the program writes as an argument
-([Q-M1f.42](../../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and refuses it
-where one of those parameters names a relation, whether or not any run would derive the activator
-([diagnostics § 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). This program names its hypothesis
-rule twice in `:hrules`, and the rule's first parameter stands first in a pattern:
+([Q-M1f.42](../../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and warns of it
+where one of those parameters names a relation, whether or not any run would derive the activator, which would
+activate nothing ([diagnostics § 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). This program names
+its hypothesis rule twice in `:hrules`, and the rule's first parameter stands first in a pattern:
 
 ```lisp
 (import std.negation)
@@ -111,13 +111,16 @@ rule twice in `:hrules`, and the rule's first parameter stands first in a patter
 (query :goal (chosen ?x))
 ```
 
+Saved as `t.ein`, `ein solve t.ein` loads it, answers, exit 0, and prints one line on stderr:
+
 <!-- output -->
 ```text
-kb load error: rule 'std.negation.eliminate-2': its :assert writes (?R ?a ?b), whose ?a is rule 'guess''s parameter ?R, which names a relation, and (not (not (?R ?a ?b))) can bind ?a to a fact, as an argument of (?R ?a ?b) — a relation is named by a symbol, not a fact
+warning: t.ein: rule 'std.negation.eliminate-2': its :assert writes (?R ?a ?b), whose ?a is rule 'guess''s parameter ?R, which names a relation, and (not (not (?R ?a ?b))) can bind ?a to a fact, as an argument of (?R ?a ?b) — a relation is named by a symbol, not a fact, so such an activator activates nothing
 ```
 
-Without the import the program loads. `std.algebra`'s copiers, `converse` and `imply2-fwd` among them, are read the
-same way and refuse the same program.
+Nothing activates `eliminate-2` with `guess`, so no state derives such an activator, and R is the one the program
+has without the import, `states (k_s) 16` in both read-outs. `std.algebra`'s copiers, `converse` and `imply2-fwd`
+among them, are read the same way and warn of the same program.
 
 ## Using `std.contradiction` — a fact beside its negation concludes `(false)`
 

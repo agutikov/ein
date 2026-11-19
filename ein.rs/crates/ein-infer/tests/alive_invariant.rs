@@ -160,7 +160,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 151] = [
+const SEEDED: [(&str, &[&str]); 156] = [
     (
         "examples/arith/int.ein",
         &[
@@ -321,6 +321,14 @@ const SEEDED: [(&str, &[&str]); 151] = [
         &["`w`, asserted by rule `r`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/derived-activator.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/dump-selection-library.ein",
         &[
             "`Green`, asserted by rule `palette`",
@@ -359,6 +367,10 @@ const SEEDED: [(&str, &[&str]); 151] = [
         &["`Z`, in (not (q Z A))"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/nested-fact-activator.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein",
         &["`Z`, asserted by rule `special`"],
     ),
@@ -381,6 +393,14 @@ const SEEDED: [(&str, &[&str]); 151] = [
     (
         "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein",
         &["`w`, asserted by rule `r`"],
+    ),
+    (
+        "examples/features/19_derived_activator.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
+    ),
+    (
+        "examples/features/20_derived_activator_never.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",

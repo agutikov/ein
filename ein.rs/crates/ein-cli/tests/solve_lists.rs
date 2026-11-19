@@ -317,7 +317,7 @@ fn a_list_naming_what_the_program_has_loads() {
     // parameter that names a relation. `functional` is listed: a name the
     // program writes and does not list is its own. `injective` is not
     // listed: with `std.algebra` whole, its generic `imply1` could write
-    // `(injective <fact>)`, and the loader refuses that program (Q-M1f.1).
+    // `(injective <fact>)`, and the loader warns of that program (Q-M1f.1).
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional))\n\

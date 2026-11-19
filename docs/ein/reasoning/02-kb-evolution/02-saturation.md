@@ -426,8 +426,9 @@ and it has three clauses:
    saturation $P$ and $\operatorname{names}(P)$ are constant and a knowledge base grows by facts alone.
 3. **Hypotheses connect names.** $h \in H \implies \operatorname{names}(h) \subseteq \operatorname{names}(P)$: a
    candidate's arguments are atoms of the program or facts built of them. A parameter written in a relation's
-   place and bound to a fact, an object that is no relation, is refused where it is written or where a rule
-   could derive it.
+   place and bound to a fact, an object that is no relation, names none: the activator that binds it activates
+   nothing, wherever it is written or derived
+   ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)).
 
 Three readings of the invariant, each stronger than the one before:
 

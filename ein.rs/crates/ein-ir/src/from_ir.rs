@@ -214,6 +214,8 @@ pub fn load_query_by(
     let mut kb = Kb::new(Program::new());
     kb.program_mut().active_query = active_query;
     let mut errors: Vec<String> = Vec::new();
+    // What the load notices and does not refuse (`Program::warnings`).
+    let mut warnings: Vec<String> = Vec::new();
 
     // A saved file, its first form its `(program …)`: its program against
     // the modules it carries, with its choices (`crate::saved`). Its
@@ -338,11 +340,20 @@ pub fn load_query_by(
         &mut errors,
     );
     // A rule parameter that names a relation, bound to a nested fact by an
-    // activator the program writes down.
-    validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
+    // activator the program writes down: a warning.
+    validate_relation_parameters(ast, terms, &kb, &facts, &mut warnings);
     // …and one a rule could derive, read off the program (Q-M1f.1).
-    let relation_places =
-        refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
+    let relation_places = warn_derived_relation_activators(
+        ast,
+        terms,
+        &kb,
+        &facts,
+        &solve_blocks,
+        Lines {
+            errors: &mut errors,
+            warnings: &mut warnings,
+        },
+    );
     // A conclusion `(not ?x)` whose variable the program shows can hold a
     // name.
     refuse_negated_names(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
@@ -469,10 +480,24 @@ pub fn load_query_by(
     }
 
     if errors.is_empty() {
+        kb.program_mut().warnings = warnings;
         Ok(kb)
     } else {
         Err(KbLoadError(errors.join("; ")))
     }
+}
+
+/// **What a warning of an activator that binds a relation parameter to a
+/// fact says after its finding** (Q-M1f.1): why it names no relation, and
+/// what such an activator does.
+const NAMED: &str =
+    "a relation is named by a symbol, not a fact, so such an activator activates nothing";
+
+/// Where a check that refuses some shapes and warns of others writes its
+/// lines: [`KbLoadError`]'s, and [`Program::warnings`](ein_core::Program::warnings).
+struct Lines<'a> {
+    errors: &'a mut Vec<String>,
+    warnings: &'a mut Vec<String>,
 }
 
 /// Intern every name a **rule** or the `(query …)` block mentions, so that
@@ -499,10 +524,9 @@ pub fn load_query_by(
 /// reads, kept in a different file.
 ///
 /// A *seeded* head — `(?rel ?a ?b)` — names the relation its activator binds,
-/// which is a name the program has or a nested fact, refused
-/// (`validate_relation_parameters` where the activator is written down, the
-/// compiler where a rule derives it). A run of digits is a name, interned here
-/// like any other.
+/// which is a name the program has; an activator that binds it to a nested
+/// fact activates nothing (`ein_infer::activators_for`), and no plan is
+/// compiled for it. A run of digits is a name, interned here like any other.
 fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
         match ast.node(node) {
@@ -653,7 +677,7 @@ fn validate_solve(
 }
 
 /// Where a program holds relation names, as
-/// [`refuse_derived_relation_activators`] reads them off it.
+/// [`warn_derived_relation_activators`] reads them off it.
 #[derive(Default)]
 struct RelationPlaces {
     /// `(name, index)`: a rule's or an hrule's parameter, or a marker's
@@ -1697,16 +1721,33 @@ fn ingest_rules(
         // ordinary AST on ONE rule, which keeps its source name; the compiler
         // lowers them to several plans and templates, an `(and …)` read flat at
         // any depth (`Ast::conjuncts`).
+        let match_ = pattern_from_ir(ast, terms, match_node)?;
+        let assert_ = match ein {
+            Some(_) => None,
+            None => Some(pattern_from_ir(ast, terms, assert_node)?),
+        };
+        // The parameters that head a form: a name written twice counts at its
+        // last position, whose value the compiler seeds it with.
+        let relation_params: Box<[usize]> = param_names
+            .iter()
+            .enumerate()
+            .filter(|&(i, p)| {
+                !param_names[i + 1..].contains(p)
+                    && [Some(&match_), assert_.as_ref()]
+                        .into_iter()
+                        .flatten()
+                        .any(|pat| names_relation(ast, NodeId(pat.expr.0), p))
+            })
+            .map(|(i, _)| i)
+            .collect();
         let rule = Rule {
             name: name_sym,
             params: params.into_boxed_slice(),
-            match_: Some(pattern_from_ir(ast, terms, match_node)?),
-            assert_: match ein {
-                Some(_) => None,
-                None => Some(pattern_from_ir(ast, terms, assert_node)?),
-            },
+            match_: Some(match_),
+            assert_,
             ein,
             implicit: implicit.contains(&name),
+            relation_params,
             why,
             loc: core_loc(ast, form),
         };
@@ -2763,24 +2804,25 @@ fn expand_goal(
 /// `(rule mirror (?R) :match (q ?a ?b) :assert (?R ?b ?a))` names the relation
 /// it matches and asserts by its parameter, and the activator binds it:
 /// `(mirror q)` asserts `q` facts. An activator that binds it to a **nested
-/// fact**, `(mirror (p a))`, names no relation: a nested fact binds no
-/// parameter (Q-M1e2.18), so it is refused.
+/// fact**, `(mirror (p a))`, names no relation, and activates nothing
+/// (`ein_infer::activators_for`, Q-M1e2.18): the load says so in one
+/// `warning:` line and goes on.
 ///
 /// **Here, where the activator is written down**: a fact, or a literal in a
 /// rule's `:assert`. An activator a rule derives through a variable is known
-/// only to a run; the loader refuses a program in which a rule could derive
-/// one, [`refuse_derived_relation_activators`], below, and
-/// the compiler's refusal (`ein_infer::compile`) is the backstop behind both,
-/// which a direct caller of `compile_rule` reaches. An activator of the wrong arity activates nothing
-/// (`activators_for`'s filter), so it is not checked. A run of digits is a
-/// name of the program, so `(mirror 3)` names the relation `3`, a name the
-/// program has (Q-M1e.21: a rule brings in no name).
+/// only to a run; the loader warns of a program in which a rule could derive
+/// one, [`warn_derived_relation_activators`], below, and the run of a state
+/// that does derive one (`ein_infer::compile::note_inert_activators`). An
+/// activator of the wrong arity activates nothing (`activators_for`'s
+/// filter), so it is not checked. A run of digits is a name of the program,
+/// so `(mirror 3)` names the relation `3`, a name the program has (Q-M1e.21:
+/// a rule brings in no name).
 fn validate_relation_parameters(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
     facts: &[NodeId],
-    errors: &mut Vec<String>,
+    warnings: &mut Vec<String>,
 ) {
     // Each rule with a parameter that names a relation: its name, its arity,
     // and those parameters with their positions.
@@ -2840,9 +2882,9 @@ fn validate_relation_parameters(
             // A nested fact binds no parameter (`ein_infer::compile`), so
             // the relation it would name is none (Q-M1e2.18).
             if let Node::SForm { .. } = ast.node(args[i]) {
-                errors.push(format!(
+                warnings.push(format!(
                     "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
-                     fact {} — a relation is named by a symbol, not a fact",
+                     fact {} — {NAMED}",
                     terms.sym(*rule),
                     terms.sym(param),
                     crate::dump::dump_compact(ast, form),
@@ -2874,15 +2916,18 @@ fn validate_relation_parameters(
 }
 
 /// **A rule could derive an activator that binds a relation parameter to a
-/// fact** (Q-M1f.1): a derived activator, refused at load by a static
-/// check, whether or not a run derives it.
+/// fact** (Q-M1f.1): a derived activator, said at load in a `warning:` by a
+/// static check, whether or not a run derives it. The program loads, and
+/// such an activator, where a state holds one, activates nothing
+/// (`ein_infer::activators_for`).
 ///
-/// [`validate_relation_parameters`] refuses a relation parameter bound to a
+/// [`validate_relation_parameters`] warns of a relation parameter bound to a
 /// fact where the activator is written down. An activator a rule
 /// derives, `(rule mk () :match (item ?f) :assert (r ?f))`, binds `r`'s
-/// parameter to whatever `?f` holds, which only a run knows: a check where
-/// `r`'s plan is compiled would stop one run and let another, which never
-/// derives it, answer. This check reads the program instead.
+/// parameter to whatever `?f` holds, which only a run knows; the run says so
+/// where a state derives one (`ein_infer::compile::note_inert_activators`),
+/// and this check reads the program, so that a program that could is said
+/// to before any run.
 ///
 /// **Which positions hold relation names** (Q-M1f.41). A rule's parameter
 /// that heads a form,
@@ -2897,13 +2942,16 @@ fn validate_relation_parameters(
 /// fan-outs load, `bijective-properties` passing `(bijective ?R)`'s `?R` to
 /// `functional`.
 ///
-/// **What is refused**, one line per site, in Ein's spelling:
+/// **What is warned of**, one line per site, in Ein's spelling:
 /// - a conclusion that writes, where a relation name is held, a variable no
 ///   premise binds where a name is held, the deriving rule, the conclusion,
 ///   the parameter and the premise named;
 /// - a conclusion or a fact that writes a fact where an inferred position holds
 ///   a relation name (a rule's own activator is
 ///   [`validate_relation_parameters`]'s, above).
+///
+/// **What is refused**: `eq`, `absent` and `false` where a relation name
+/// passes at another arity (`refuse_eq_at_another_arity`).
 ///
 /// A conclusion written `(?T …)` writes into the relation its activator
 /// names: it is read as writing into every rule of its arity whose name the
@@ -2915,14 +2963,15 @@ fn validate_relation_parameters(
 /// and every name the program writes at one, in a fact or a conclusion — the
 /// relations a program names only by passing them to a rule, which
 /// [`refuse_solve_names`] reads.
-fn refuse_derived_relation_activators(
+fn warn_derived_relation_activators(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
     facts: &[NodeId],
     solve_blocks: &[NodeId],
-    errors: &mut Vec<String>,
+    lines: Lines<'_>,
 ) -> RelationPlaces {
+    let Lines { errors, warnings } = lines;
     /// A position: a relation's name and an argument's index.
     type Pos = (String, usize);
     /// Why a position holds relation names.
@@ -3282,7 +3331,6 @@ fn refuse_derived_relation_activators(
         }
     }
 
-    const NAMED: &str = "a relation is named by a symbol, not a fact";
     for s in &sites {
         if !rp.contains_key(&s.to) {
             continue;
@@ -3296,7 +3344,7 @@ fn refuse_derived_relation_activators(
                 let written_as_activator = relation_of(ast, positive(ast, s.conclusion)).is_some()
                     && matches!(rp[&s.to], Holds::Param { .. });
                 if !written_as_activator {
-                    errors.push(format!(
+                    warnings.push(format!(
                         "{} '{}': its :assert writes {conclusion}, whose {arg} is {} — {NAMED}",
                         s.head,
                         s.rule,
@@ -3339,7 +3387,7 @@ fn refuse_derived_relation_activators(
                         .collect();
                     format!(" where its :match holds through {}", arms.join(" or "))
                 };
-                errors.push(format!(
+                warnings.push(format!(
                     "{} '{}': its :assert writes {conclusion}, whose {arg} is {}, and {how}{place} — {NAMED}",
                     s.head,
                     s.rule,
@@ -3362,7 +3410,7 @@ fn refuse_derived_relation_activators(
             if matches!(rp.get(&pos), Some(Holds::Passed { .. }))
                 && matches!(ast.node(a), Node::SForm { .. })
             {
-                errors.push(format!(
+                warnings.push(format!(
                     "the fact {} writes {} as {} — {NAMED}",
                     crate::dump::dump_compact(ast, f),
                     crate::dump::dump_compact(ast, a),
@@ -5382,6 +5430,13 @@ mod tests {
         kb.expect_err("must fail").0
     }
 
+    /// What the load of `text`, which must load, warns of, `; `-joined as a
+    /// refusal's lines are.
+    fn warned(text: &str) -> String {
+        let (_terms, kb) = ok(text);
+        kb.program().warnings.join("; ")
+    }
+
     fn facts(terms: &Terms, kb: &Kb) -> Vec<String> {
         kb.facts().map(|f| terms.fact_text(f)).collect()
     }
@@ -5540,9 +5595,10 @@ mod tests {
     /// premise (Q-M1e2.22), a keyword pair as a guard's argument or inside a
     /// pattern (Q-M1e2.28), a name, a variable or a string as a premise. The
     /// loader keeps what a context-free grammar does not see: a form that
-    /// holds a variable as a guard's argument (Q-M1f.30), a relation variable
-    /// no parameter binds, and an activator binding a relation parameter to a
-    /// nested fact.
+    /// holds a variable as a guard's argument (Q-M1f.30) and a relation
+    /// variable no parameter binds. An activator binding a relation
+    /// parameter to a nested fact loads, under a warning: it activates
+    /// nothing (Q-M1f.1).
     ///
     /// **Two shapes load** (Q-M1e2.26): a fact that holds no variable as a
     /// guard's argument, a value, and a guard on a variable no premise before
@@ -5608,16 +5664,18 @@ mod tests {
             assert_eq!(err(&format!("{pre}{rule}")), want, "{rule}");
         }
         // A relation parameter its activator binds to a nested fact, where the
-        // activator is written: a fact, or a literal in an `:assert`.
+        // activator is written: a fact, or a literal in an `:assert`. It
+        // loads, and the load warns.
         let mirror = "(rule mirror (?R) :match (box (?R a)) :assert (hit a) :why \"box holds of ({?R} a), so hit holds of a\")";
         for activator in [
             "(mirror (p a))".to_string(),
             "(rule mk () :match (q ?x) :assert (mirror (p a)) :why \"q holds of {?x}, so rule mirror is switched on for (p a)\")".to_string(),
         ] {
             assert_eq!(
-                err(&format!("{pre}{mirror}\n{activator}")),
+                warned(&format!("{pre}{mirror}\n{activator}")),
                 "rule 'mirror': its parameter ?R names a relation, and (mirror (p a)) binds it \
-                 to the fact (p a) — a relation is named by a symbol, not a fact",
+                 to the fact (p a) — a relation is named by a symbol, not a fact, so such an \
+                 activator activates nothing",
                 "{activator}"
             );
         }
@@ -6244,15 +6302,15 @@ mod tests {
     }
 
     /// **A rule that could derive an activator binding a relation parameter
-    /// to a fact is refused at load** (Q-M1f.1,
-    /// [`refuse_derived_relation_activators`]): a variable from a value
+    /// to a fact is warned of at load, and the program loads** (Q-M1f.1,
+    /// [`warn_derived_relation_activators`]): a variable from a value
     /// position and a fact written where a relation is held, and the ones the
-    /// reading of
-    /// Q-M1f.41 and Q-M1f.42 adds; and what loads, the zebra2 and
-    /// stdlib fan-outs among them.
+    /// reading of Q-M1f.41 and Q-M1f.42 adds, one line each; and what loads
+    /// with no warning, the zebra2 and stdlib fan-outs among them.
     #[test]
-    fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
-        const NAMED: &str = "a relation is named by a symbol, not a fact";
+    fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load() {
+        const NAMED: &str =
+            "a relation is named by a symbol, not a fact, so such an activator activates nothing";
         let r = "(rule r (?R) :match (box (?R b)) :assert (hit z) :why \"box holds of ({?R} b), so hit holds of z\")";
         let r_param = "rule 'r''s parameter ?R, which names a relation";
         let pre = "(relation box Node :why \"box holds of {?3}\") (relation hit Node :why \"hit holds of {?3}\") (relation item Node :why \"{?3} is an item\") (relation q T T :why \"q holds of {?3} and {?4}\")\n";
@@ -6372,9 +6430,9 @@ mod tests {
                 ),
             ),
         ] {
-            assert_eq!(err(&src), want, "{src}");
+            assert_eq!(warned(&src), want, "{src}");
         }
-        // What loads: a relation signature's name, a rule's relation
+        // What loads with no warning: a relation signature's name, a rule's relation
         // parameter (zebra2's `co-located-fanout`), a marker that passes a
         // name on and is written with names (the stdlib's
         // `bijective-properties`), an `eq` guard, and a value parameter.
@@ -6399,7 +6457,7 @@ mod tests {
                  (rule mk () :match (item ?f) :assert (v ?f) :why \"{{?f}} is an item, so rule v is switched on for {{?f}}\")\n(item (a b))"
             ),
         ] {
-            ok(&src);
+            assert_eq!(warned(&src), "", "{src}");
         }
     }
 

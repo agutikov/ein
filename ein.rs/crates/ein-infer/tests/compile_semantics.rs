@@ -516,15 +516,17 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
 
 // ── A relation named by a fact ────────────────────────────────────
 
-/// **A relation parameter bound to a nested fact is refused, wherever the
-/// binding is made** (Q-M1e2.18); where a rule derives the binding, at
-/// load (Q-M1f.1), and by the compiler behind it.
+/// **A relation parameter bound to a nested fact activates nothing, wherever
+/// the binding is made** (Q-M1e2.18, Q-M1f.1): the load warns where a rule
+/// could derive the binding, the run where a state holds it, and no plan is
+/// compiled for it; the compiler's refusal stays behind both, for a caller
+/// that hands it such an activator.
 ///
 /// `mirror` names the relation it matches and asserts by its parameter. A run
 /// of digits is a name, so `(mirror 3)` names the relation `3` as
 /// `(mirror q)` names `q`.
 #[test]
-fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
+fn a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing() {
     const MIRROR: &str = "(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a) :why \"{?R} holds of {?a} and {?b}, so it holds of {?b} and {?a}\")";
     // Digits are a name: `3` is the relation `mirror` matches, which holds
     // `(3 A B)`, so the rule concludes `(3 B A)`.
@@ -536,28 +538,45 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     assert_eq!(digits.facts_under("3"), ["(3 A B)", "(3 B A)"]);
 
     // A nested fact, derived the same way, names no relation either
-    // (Q-M1e2.18). The loader refuses the program (Q-M1f.1): `src` is a marker
-    // whose argument `make` passes to `mirror`'s relation parameter, so the fact
-    // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41), and
-    // the run never reaches the compile of `mirror`'s plan.
+    // (Q-M1e2.18). The load warns (Q-M1f.1): `src` is a marker whose argument
+    // `make` passes to `mirror`'s relation parameter, so the fact
+    // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41).
+    // Root derives the activator `(mirror (q A B))`, which activates nothing:
+    // no plan of `mirror`, no `hit`, and the run's line names it.
     for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
         let rule = format!(
             "(rule mirror (?R) :match {pattern} :assert (hit a) :why \"a fact of {{?R}} matches the pattern, so hit holds of a\")"
         );
-        let err = load_error(&format!(
-            "(relation q T T :why \"q holds of {{?3}} and {{?4}}\") (relation hit T :why \"hit holds of {{?3}}\") (relation box T :why \"box holds of {{?3}}\")\n(q A B) (src (q A B))\n\
+        let mut l = load_text(&format!(
+            "(relation q T T :why \"q holds of {{?3}} and {{?4}}\") (relation hit T :why \"hit holds of {{?3}}\") (relation box T :why \"box holds of {{?3}}\")\n(q A B) (box (q A B)) (src (q A B))\n\
              (rule make () :match (src ?f) :assert (mirror ?f) :why \"src holds of {{?f}}, so mirror runs over the relation {{?f}}\")\n{rule}"
         ));
         assert_eq!(
-            err,
-            "the fact (src (q A B)) writes (q A B) as ?f of (src ?f), which rule 'make' passes \
-             to rule 'mirror''s parameter ?R, which names a relation — a relation is named by a \
-             symbol, not a fact",
+            l.kb.program().warnings,
+            [
+                "the fact (src (q A B)) writes (q A B) as ?f of (src ?f), which rule 'make' passes \
+              to rule 'mirror''s parameter ?R, which names a relation — a relation is named by a \
+              symbol, not a fact, so such an activator activates nothing"
+            ],
             "{pattern}"
         );
+        l.saturate();
+        assert_eq!(l.facts_under("mirror"), ["(mirror (q A B))"], "{pattern}");
+        assert!(l.facts_under("hit").is_empty(), "{pattern}: mirror fired");
+        // Other tests of this binary may record lines of their own.
+        let said = ein_infer::take_inert_activators();
+        assert!(
+            said.iter().any(|w| w.starts_with("<fixture>:4:")
+                && w.ends_with(
+                    "rule 'mirror': its activator (mirror (q A B)) binds its parameter ?R, which \
+                     names a relation, to the fact (q A B), and activates nothing — a relation is \
+                     named by a symbol, not a fact"
+                )),
+            "{pattern}: the run names the rule and the activator: {said:?}"
+        );
     }
-    // The compiler's refusal stays behind the loader's, for a caller that hands
-    // it such an activator: no program the loader accepts reaches it.
+    // The compiler's refusal stays behind the filter, for a caller that hands
+    // it such an activator: no program reaches it.
     for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
         let mut l = load_text(&format!(
             "(relation q T T :why \"q holds of {{?3}} and {{?4}}\") (relation hit T :why \"hit holds of {{?3}}\") (relation box T :why \"box holds of {{?3}}\")\n(q A B)\n\

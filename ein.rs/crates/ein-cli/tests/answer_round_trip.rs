@@ -190,8 +190,8 @@ fn by_the_binary(file: &str, path: &Path, again: &Path, whole: &str, bad: &mut V
 /// **A node's container opens as the node** (Q-M1f.413): `ein kb save F
 /// X.einb` of the saved file `path`, a node, then `ein solve` of each: the
 /// container's stdout and stderr are the file's, byte for byte, but for the
-/// path each echoes, and its exit code is the file's. A load's `note:` names
-/// a position in the text the load read, which in a container is the
+/// path each echoes, and its exit code is the file's. A load's `note:` or
+/// `warning:` names a position in the text the load read, which in a container is the
 /// program it stores, resolved and import-flattened, so a note's position
 /// is compared as `<position>` (Q-M1f.15). Whether the container answered as
 /// the file; a failure goes to `bad`.
@@ -212,9 +212,10 @@ fn by_its_container(file: &str, path: &Path, scratch: &Path, bad: &mut Vec<Strin
         path.as_os_str(),
         einb.as_os_str(),
     ]);
+    // What a load says and does not refuse: its notes and its warnings.
     let notes_only = String::from_utf8_lossy(&saved.stderr)
         .lines()
-        .all(|l| l.starts_with("note: "));
+        .all(|l| l.starts_with("note: ") || l.starts_with("warning: "));
     if !saved.status.success() || !notes_only {
         bad.push(format!(
             "{file}: {name}: `ein kb save` of a node (exit {:?}): {}",

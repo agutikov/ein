@@ -384,12 +384,6 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
-1    examples/broken/load/derived_activator.ein :: render rules
-1    examples/broken/load/derived_activator.ein :: saturate
-1    examples/broken/load/derived_activator.ein :: solve
-1    examples/broken/load/derived_activator_never.ein :: render rules
-1    examples/broken/load/derived_activator_never.ein :: saturate
-1    examples/broken/load/derived_activator_never.ein :: solve
 1    examples/broken/load/ein_beside_assert.ein :: render rules
 1    examples/broken/load/ein_beside_assert.ein :: saturate
 1    examples/broken/load/ein_beside_assert.ein :: solve
@@ -429,9 +423,6 @@
 1    examples/broken/load/import_module_not_found.ein :: render rules
 1    examples/broken/load/import_module_not_found.ein :: saturate
 1    examples/broken/load/import_module_not_found.ein :: solve
-1    examples/broken/load/import_of_core.ein :: render rules
-1    examples/broken/load/import_of_core.ein :: saturate
-1    examples/broken/load/import_of_core.ein :: solve
 1    examples/broken/load/import_relative_not_found.ein :: render rules
 1    examples/broken/load/import_relative_not_found.ein :: saturate
 1    examples/broken/load/import_relative_not_found.ein :: solve
@@ -731,10 +722,10 @@
 0    examples/ein-bugs/wrong-answers/count-past-2-128.ein :: solve
 0    examples/ein-bugs/wrong-answers/count-past-2-64.ein :: saturate
 0    examples/ein-bugs/wrong-answers/count-past-2-64.ein :: solve
-1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
-1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
-1    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
-1    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
+0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
+0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
+0    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
+0    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
 0    examples/ein-bugs/wrong-answers/dump-selection-library.ein :: saturate
 0    examples/ein-bugs/wrong-answers/dump-selection-library.ein :: solve
 0    examples/ein-bugs/wrong-answers/dump-selection.ein :: saturate
@@ -1006,8 +997,8 @@
 0    examples/ein-bugs/wrong-answers/negative-only-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/negative-only-declared.ein :: test
 0    examples/ein-bugs/wrong-answers/negative-only.ein :: solve
-1    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: saturate
-1    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: solve
+0    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: saturate
+0    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: solve
 1    examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein :: saturate
 1    examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein :: solve
 1    examples/ein-bugs/wrong-answers/nested-or-goal.ein :: saturate
@@ -1355,6 +1346,16 @@
 0    examples/features/18_ein_inconsistent.ein :: saturate --dump
 0    examples/features/18_ein_inconsistent.ein :: solve
 0    examples/features/18_ein_inconsistent.ein :: test
+0    examples/features/19_derived_activator.ein :: render rules
+0    examples/features/19_derived_activator.ein :: saturate
+0    examples/features/19_derived_activator.ein :: saturate --dump
+0    examples/features/19_derived_activator.ein :: solve
+0    examples/features/20_derived_activator_never.ein :: render rules
+0    examples/features/20_derived_activator_never.ein :: saturate
+0    examples/features/20_derived_activator_never.ein :: solve
+0    examples/features/21_import_of_core.ein :: saturate
+0    examples/features/21_import_of_core.ein :: saturate --dump
+0    examples/features/21_import_of_core.ein :: solve
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

@@ -44,7 +44,7 @@
 ;;; these rules:** a rule's name written as an argument, `(arith-rule
 ;;; add-end)`, makes every parameterised conclusion of the rule's arity a
 ;;; possible activator that binds a parameter to a fact, which the loader
-;;; refuses (Q-M1f.1). So a base's closing rule
+;;; warns of on every program (Q-M1f.1). So a base's closing rule
 ;;; names its own rules, and these are named by their activators.
 ;;;
 ;;; ── What it holds ──────────────────────────────────────────────────────────

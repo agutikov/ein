@@ -2515,18 +2515,35 @@ refused = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein:33:38: unexpected
 
 [[case]]
 id       = "nested-fact-activator"
-title    = "a rule shape that reads nothing, in silence"
+title    = "an activator that binds a relation parameter to a nested fact stops the run or reads something"
 settings = "default"
-decisions = ["Q-M1e2.18"]
+decisions = ["Q-M1e2.18", "Q-M1f.1"]
 witness  = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
 
 [case.now]
-run     = "solve --minimal"
-line    = "all"
-refused = "kb load error: rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
 
 [[case]]
 id       = "claim-int-name"
@@ -3800,36 +3817,6 @@ relations = ["hit"]
 models    = [
   ["(hit (f a))"],
 ]
-
-[[case]]
-id       = "derived-activator/derived-activator"
-title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
-settings = "default"
-decisions = ["Q-M1f.1"]
-witness  = "examples/ein-bugs/wrong-answers/derived-activator.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact"
-
-[[case]]
-id       = "derived-activator-never"
-title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
-settings = "default"
-decisions = ["Q-M1f.1"]
-witness  = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "solve"
-line    = "all"
-refused = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact"
 
 [[case]]
 id       = "eq-arity-premise"

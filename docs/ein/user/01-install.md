@@ -122,6 +122,16 @@ gets `std.core` with no import line
 names no standard library every program is refused. `ein --version` does not refuse: it prints
 `stdlib     unreadable  $EIN_STDLIB <path>` and goes on.
 
+**The library `$EIN_STDLIB` names brings its own `std.core`.** The module every program gets is read from the
+standard library the load resolves, like any other, so a library there with another `core.ein` gives every program
+that module's rules in the place of the checkout's; [the page of
+`std.core`](04-reference/04-stdlib/21-core.md#replacing-it) runs a program under one. A library there with no
+`core.ein` refuses every program, naming the variable and the directory:
+
+```text
+kb load error: std.core was not found in $EIN_STDLIB: /tmp/x holds no core.ein — every program gets std.core, and a library $EIN_STDLIB names is where it is read from (Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy
+```
+
 **The walk prefers whatever checkout it lands under.** A binary copied under an unrelated tree that holds a
 `stdlib/MANIFEST.sha256` reads *that* standard library. No warning is given when the resolved manifest differs from
 the copy compiled into the binary, because that difference is the normal state of editing the standard library: a

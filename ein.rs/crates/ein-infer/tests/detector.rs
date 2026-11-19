@@ -132,7 +132,7 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // Every corpus program the static check flags. A program the check flags
     // moves this count when it joins the corpus, and one it no longer flags
     // when it changes.
-    assert_eq!(flagged, 47, "the flagged corpus programs");
+    assert_eq!(flagged, 51, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

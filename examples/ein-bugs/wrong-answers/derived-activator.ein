@@ -1,23 +1,15 @@
 ;;; An activator a rule derives binds a relation parameter to a fact, and the
-;;; run stopped where its plan is compiled — regression
-;;; `derived-activator/derived-activator` (`corpus/regressions.toml`).
+;;; run stopped where its plan is compiled; the witness of a regression row
+;;; that is gone, since the static check flags the program and no row holds
+;;; a flagged program's answer (Q-M1f.564).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; A rule `r` whose parameter `?R` names a relation, `(box (?R b))`, and a
 ;;; rule `mk` that derives `r`'s activator from `item`'s argument, `(r ?f)`.
-;;; `item` is a declared relation, so its argument holds any value, a fact
+;;; `item` is a declared relation, so its argument holds any object, a fact
 ;;; among them, and `(item (a b))` is one: `mk` derives `(r (a b))`, which
 ;;; binds `?R` to the fact `(a b)`.
-;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
-;;;
-;;; A program in which some rule could derive an activator binding a
-;;; relation parameter to a fact is refused at load, by a static check,
-;;; whether or not a run derives it (Q-M1f.1). `mk` writes `(r ?f)`, `?f`
-;;; is `r`'s relation parameter `?R`, and `(item ?f)` can bind `?f` to a fact,
-;;; so every command that loads the program exits 1 with the loader's line
-;;; (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
@@ -25,17 +17,17 @@
 ;;; stopped where `r`'s plan is compiled, exit 1, with the compiler's line, *the relation
 ;;; head ?R of (?R b) at Loc(…) is bound to the fact (a b) — a relation is
 ;;; named by a symbol, not a fact.*, on every command (`ein solve FILE` at
-;;; `8249e872`, release and debug alike). Without `(item (a b))` it answered:
-;;; `derived-activator-never.ein`, the regression `derived-activator-never`.
+;;; `8249e872`, release and debug alike). The loader then refused it, exit
+;;; 1. Without `(item (a b))` it answered: `derived-activator-never.ein`.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The loader refuses the program: every command
-;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
-;;; test`: 2), in either build. The regression's `now` is that
-;;; refusal; the section above is the record of the answer it replaced.
-;;;
-;;;
+;;; Every command loads the program, exit 0, and says on stderr, in a
+;;; `warning:`, that `mk` could derive an activator binding `?R` to a fact,
+;;; which activates nothing (Q-M1f.1). Root derives `(r (a b))`, holds it as
+;;; the fact it is, compiles no plan of `r` for it, and a second `warning:`
+;;; names `r` and the activator. No run stops. The static check flags the
+;;; program, so nothing is claimed of its answer.
 ;;;
 
 (relation box Node :why "{?3} is in the box")

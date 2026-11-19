@@ -205,6 +205,12 @@ view refuses what the loader refuses
 **A program's answer is never an error.** A refuted claim exits 1, every answer exits 0, and `ein test`'s codes are
 its own: [`05-cli.md`](05-cli.md) has the table, and [`08-read-out.md`](08-read-out.md) the lines a run prints.
 
+**What the load warns of, it loads.** An activator that binds a relation parameter to a fact names no relation and
+activates nothing; a program that writes one, or in which a rule could derive one, is not refused. Every command
+that loads it prints a `warning:` line for each on stderr when its run of the program ends, and one more for each
+such activator a state of the run holds ([§ 2.9](#29-a-rule-shape-that-reads-nothing)). No answer and no exit code
+moves.
+
 ### 2.1 A query's, a solve's and a claim's refusals
 
 A `(query …)`, a `(solve …)` and the claims they state are read as the rest of a program is, and a malformed one is
@@ -354,26 +360,30 @@ so a rule that names the relation it matches or asserts by a parameter, `(rule m
 has, and there is no refusal to meet. A rule brings in no name the program does not have
 ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)).
 
-What is refused is a parameter that stands for a relation bound to a **fact**, `(mirror (a b))`: a relation is an
-atom, and that is [§ 2.9](#29-a-rule-shape-that-reads-nothing)'s line, at load where the activator is written and
-where a rule could derive it. An activator of the wrong arity activates nothing and is not checked.
+A parameter that stands for a relation bound to a **fact**, `(mirror (a b))`, names none: a relation is an atom, so
+the activator activates nothing, and the load says so in [§ 2.9](#29-a-rule-shape-that-reads-nothing)'s warning,
+where the activator is written and where a rule could derive it. An activator of the wrong arity activates nothing
+and is not checked.
 
-### 2.7 No import names the module every program gets
+### 2.7 The module every program gets cannot be read
 
-`std.core` is brought into every program by the load, with no import line
-([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
-[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)), so an import of it,
-in a program or in a module, is refused, one line, at the command's load-error exit:
+`std.core` is brought into every program by the load, with no import line, from the standard library the load
+resolves ([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
+[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A file may import it as
+it imports any module, which brings no second copy, and is no refusal. A load that cannot read the module refuses
+the program, one line, at the command's load-error exit:
 
-| the file | the line |
+| the load | the line |
 |---|---|
-| `(import std.core)`, in any of an import's three shapes | `kb load error: F:3:9: (import std.core) — std.core is the module every program gets, with no import line: no import names it (Q-M1f.551)` |
-| a load that cannot read the module: an `$EIN_STDLIB` that names no standard library, a saved file that carries none | `kb load error: std.core, the module every program gets, cannot be read: …`, then the line the import of any module of the standard library would have drawn |
+| a library `$EIN_STDLIB` names, its `MANIFEST.sha256` there and no `core.ein` | `kb load error: std.core was not found in $EIN_STDLIB: <dir> holds no core.ein — every program gets std.core, and a library $EIN_STDLIB names is where it is read from (Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy` |
+| an `$EIN_STDLIB` that names no standard library, a saved file that carries no `std.core` | `kb load error: std.core, the module every program gets, cannot be read: …`, then the line the import of any module of the standard library would have drawn |
 
-The second row is every program's: a load reads `std.core` whatever the program imports, so an `$EIN_STDLIB` that
-names a directory which is no standard library refuses every program, and a saved file carries the module with its
-program ([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)). The first is pinned by
-`import_of_core` in [`examples/broken/load/`](../../../../examples/broken/load/).
+Both rows are every program's: a load reads `std.core` whatever the program imports, so a library `$EIN_STDLIB`
+names with no `core.ein`, or a directory which is no standard library, refuses every program, and a file that
+imports `std.core` meets the same line where the import is the first read of the module. A library `$EIN_STDLIB`
+names with a `core.ein` of its own is read, and that module is every program's
+([`04-stdlib/21-core.md`](04-stdlib/21-core.md#replacing-it)). A saved file carries the module with its program
+([§ 2.30](#230-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)).
 
 ### 2.8 `_` and `?_` are refused wherever they are written
 
@@ -409,22 +419,50 @@ one line per slot, `; `-joined with every other loader line
 | a form that holds a variable as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)) |
 | a premise that is not a form, where a macro's body puts it: `(macro id (?x) ?x)` called as `(id foo)` | `rule '<r>': its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes foo as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `rule '<r>': its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
-| an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
-| the same activator, which a rule could derive through a variable | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `hrule '<d>'` for an hrule; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
-| a fact, or a literal fact in an `:assert`, written where a relation name is passed on | `the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' passes to rule '<r>''s parameter ?<p>, which names a relation — a relation is named by a symbol, not a fact` (`rule '<d>': its :assert writes (marker (a b)), whose (a b) is ?m of …` for the literal) |
+`unbound_head.ein` in [`examples/broken/load/`](../../../../examples/broken/load/) is the witness of the relation
+variable no parameter binds.
 
-**A derived activator is refused whether or not a run derives it**
-([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). *Could* is read
-off the program ([Q-M1f.41](../../../decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)): a
-rule's parameter that heads a form holds relation names, and so does every argument of `(relation …)`; an argument of
-a **declared** relation holds any object, a fact among them, as does an argument inside a fact pattern and
-one of a relation a parameter names; and an argument of an **undeclared** relation, a marker such as
-`(bijective color-loc)`, or a rule's own parameter, holds relation names where the program passes a variable bound
-there on to a position that does, to a fixpoint, so the stdlib's fan-outs load and a fact written there is refused. A
-conclusion written `(?T …)` is read as writing into every rule of its arity whose name the program writes as an
-argument ([Q-M1f.42](../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)). The
-witnesses are `derived_activator.ein`, `derived_activator_never.ein` and `unbound_head.ein` in
-[`examples/broken/load/`](../../../../examples/broken/load/).
+**A relation parameter bound to a fact reads nothing, and the load says so**
+([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). An activator that
+binds a parameter standing for a relation to a fact names no relation: a state holds it as the fact it is, and it
+activates nothing, no plan of its rule compiled for it. A program in which one is written, or in which a rule could
+derive one, loads; every command that loads it prints, on stderr, one line per site, `warning: <file>: ` and the
+line below, and where a state of its run holds such an activator, one line placed at the rule's `:match`, behind
+`warning: ` alone. They come when the command's run of the program ends, after a flagged program's `WARNING` line,
+and no answer and no exit code moves:
+
+| what the program holds | the line |
+|---|---|
+| an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact, so such an activator activates nothing` |
+| the same activator, which a rule could derive through a variable, whether or not a run derives it | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `hrule '<d>'` for an hrule; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
+| a fact, or a literal fact in an `:assert`, written where a relation name is passed on | `the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' passes to rule '<r>''s parameter ?<p>, which names a relation — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`rule '<d>': its :assert writes (marker (a b)), whose (a b) is ?m of …` for the literal) |
+| a state of the run that holds such an activator | `<file>:<line>:<col>: rule '<r>': its activator (r (a b)) binds its parameter ?<p>, which names a relation, to the fact (a b), and activates nothing — a relation is named by a symbol, not a fact` |
+
+*Could* is read off the program
+([Q-M1f.41](../../../decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)): a rule's parameter
+that heads a form holds relation names, and so does every argument of `(relation …)`; an argument of a **declared**
+relation holds any object, a fact among them, as does an argument inside a fact pattern and one of a relation a
+parameter names; and an argument of an **undeclared** relation, a marker such as `(bijective color-loc)`, or a rule's
+own parameter, holds relation names where the program passes a variable bound there on to a position that does, to
+a fixpoint, so the stdlib's fan-outs load with no warning and a fact written there is warned of. A conclusion written
+`(?T …)` is read as writing into every rule of its arity whose name the program writes as an argument
+([Q-M1f.42](../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)). The witnesses are
+[`examples/features/19_derived_activator.ein`](../../../../examples/features/19_derived_activator.ein), whose root
+derives `(r (a b))`, and `20_derived_activator_never.ein` beside it, where no run derives one, and
+[`examples/ein-bugs/wrong-answers/nested-fact-activator.ein`](../../../../examples/ein-bugs/wrong-answers/nested-fact-activator.ein),
+which writes it. On the first, stderr reads:
+
+<!-- output -->
+```text
+$ ein solve examples/features/19_derived_activator.ein 2>&1 >/dev/null
+WARNING: examples/features/19_derived_activator.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
+warning: examples/features/19_derived_activator.ein: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing
+warning: examples/features/19_derived_activator.ein:24:11: rule 'r': its activator (r (a b)) binds its parameter ?R, which names a relation, to the fact (a b), and activates nothing — a relation is named by a symbol, not a fact
+```
+
+The static check flags that program, a commitment deriving an activator of `r` that root has no plan of, so nothing
+is claimed of its answer
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 **A guard's variable needs no binder before it.** A guard waits for the relation premise that binds its variable, so
 its place among the relation premises does not change what the premise means; one whose variable nothing else binds

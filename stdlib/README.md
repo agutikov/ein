@@ -283,8 +283,9 @@ loader reads such a conclusion as writing into every rule of that count of
 parameters whose name the program writes as an argument
 ([Q-M1f.42](../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)):
 a program that names such a rule, one whose parameter stands first in a
-pattern, is refused with `std.negation` imported, as it is with `std.algebra`
-at the counts of its copiers. `clash-N` concludes `(false)` and `clash-of-N` an
+pattern, is warned of with `std.negation` imported, as it is with
+`std.algebra` at the counts of its copiers: such an activator would activate
+nothing. `clash-N` concludes `(false)` and `clash-of-N` an
 activator whose argument is a relation's name, so `std.contradiction` loads
 wherever the program does.
 
@@ -306,8 +307,8 @@ activated and silent.
 
 ## `std.core`: the rules every program gets
 
-[`core.ein`](core.ein) is the one module no program imports: the load brings it into every program, whole, after the
-program's own forms and those of the modules it imports, under its full names
+[`core.ein`](core.ein) is the one module every program gets with no import line: the load brings it into every
+program, whole, after the program's own forms and those of the modules it imports, under its full names
 ([Q-M1f.551](../docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). It holds one rule:
 
 ```lisp
@@ -328,8 +329,9 @@ states it fires, the saturation of the state ends and the state is dead, with no
 The rule is a rule of the program as any other: `ein saturate --dump` lists it as `std.core.inconsistent`, `ein
 render rules` draws it, and a trace shows its firing after the one that concluded the `(false)`. An explanation
 reads through it: a dead state's core is the frontier of the `(false)` it matched, and `refuted by` names the rule
-that concluded that `(false)`. An import of the module is refused, a saved file carries it with the program's other
-modules, and a `.einb` stores the program without it. A fact beside its stored negation is not this module's: the
+that concluded that `(false)`. A file may import the module as any module, which brings no second copy and moves
+it from nowhere, a library `$EIN_STDLIB` names brings its own in its place, a saved file carries it with the
+program's other modules, and a `.einb` stores the program without it. A fact beside its stored negation is not this module's: the
 engine reads that contradiction itself, with no rule. Reference:
 [`21-core.md`](../docs/ein/user/04-reference/04-stdlib/21-core.md); its programs are
 [`tests/stdlib/core/`](../tests/stdlib/core/).

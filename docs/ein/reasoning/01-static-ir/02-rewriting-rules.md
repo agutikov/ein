@@ -598,8 +598,8 @@ $$
   ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)). So an
   instance $\psi[a]\theta$ is always defined, and is a set of facts with no variable.
 - **A variable in a relation's place is a parameter**, so only an activator gives a relation's place its atom.
-  An activator that would put a fact there is no activator of a program, whether the text writes it or some
-  rule's conclusion could make it
+  An activator that would put a fact there names no relation, and activates nothing: it is a fact of the state,
+  with no instance of its rule, whether the text writes it or some rule's conclusion makes it
   ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)).
 - **A fact pattern of a declared relation has the declared count**
   ([Q-M1f.315](../../../decisions/language/Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md)). One whose

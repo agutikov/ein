@@ -665,6 +665,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     for path in &files {
         tally.files += 1;
         check_file(path, m, volume, &mut tally, &mut rows);
+        // What its load and its runs warned of, after the file's rows.
+        crate::common::say_warnings();
     }
     if let Some(out) = m.get_one::<String>("json-report")
         && let Err(e) = write_report(out, &tally, &rows)

@@ -241,9 +241,11 @@ constrained-reasoning research.
   ([Q-M1f.551](docs/decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)):
   its one rule, `std.core.inconsistent`, matches a held `(false)` and states
   `:ein inconsistent`, so `(false)` is the library's convention and no word
-  the kernel reads. No import names it (refused), a saved file carries it,
-  and a container stores the program without it. Its programs are under
-  `tests/stdlib/core/`. `std.logic` is left free for M1g.
+  the kernel reads. A file may import it as any module (no second copy, the
+  module stays last), a library `$EIN_STDLIB` names replaces it (one with no
+  `core.ein` is refused: *std.core was not found in $EIN_STDLIB*), a saved
+  file carries it, and a container stores the program without it. Its
+  programs are under `tests/stdlib/core/`. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each, and the
   reference a page for each family, usage apart from how a module works and

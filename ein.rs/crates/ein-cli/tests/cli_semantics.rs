@@ -1231,16 +1231,17 @@ fn a_run_of_digits_is_a_name_in_every_place() {
 /// a premise dropped, a pattern that matches nothing). Three are the
 /// grammar's, each a parse error at the place with the file, line and column
 /// (`_` as a guard's argument and as a premise; `foo` as a premise; a keyword
-/// pair as a guard's argument), and two, which a context-free grammar does
-/// not see, are the loader's line. A
-/// parameter a rule binds to a nested fact through a variable is the
-/// compiler's (`ein-infer/tests/compile_semantics.rs`).
+/// pair as a guard's argument), and one, which a context-free grammar does
+/// not see, is the loader's line.
 ///
-/// **Two of the seven load** (Q-M1e2.26): `form-in-guard`, a fact that holds no
+/// **Three of the seven load** (Q-M1e2.26): `form-in-guard`, a fact that holds no
 /// variable as a guard's argument, which is a value, and
 /// `guard-before-binder`, a guard written before the premise that binds its
 /// variable, which waits for it. A form that holds a variable stays refused
-/// (Q-M1f.30), with its own line.
+/// (Q-M1f.30), with its own line. And `nested-fact-activator`, an activator
+/// that binds a relation parameter to a nested fact, loads under a
+/// `warning:` and activates nothing (Q-M1f.1), so it reads nothing, and says
+/// so.
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
@@ -1282,20 +1283,12 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             }
         }
     }
-    let at_load: [(&str, String); 2] = [
-        (
-            "nested-unbound-head",
-            "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
-             binds — a relation is named by a name or by a parameter its activator binds"
-                .to_string(),
-        ),
-        (
-            "nested-fact-activator",
-            "rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact \
-             (a b) — a relation is named by a symbol, not a fact"
-                .to_string(),
-        ),
-    ];
+    let at_load: [(&str, String); 1] = [(
+        "nested-unbound-head",
+        "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
+         binds — a relation is named by a name or by a parameter its activator binds"
+            .to_string(),
+    )];
     for (name, line) in &at_load {
         let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
         let want = format!("kb load error: {line}");
@@ -1310,6 +1303,34 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
+        }
+    }
+    // A relation parameter its activator binds to a nested fact: the program
+    // loads, and the load and the run say what the activator does.
+    let file = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein";
+    for cmd in ["saturate", "solve", "oracle"] {
+        let r = ein(&[cmd, file]);
+        assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
+        for want in [
+            format!(
+                "warning: {file}: rule 'r': its parameter ?R names a relation, and (r (a b)) binds \
+                 it to the fact (a b) — a relation is named by a symbol, not a fact, so such an \
+                 activator activates nothing"
+            ),
+            format!(
+                "warning: {file}:37:22: rule 'r': its activator (r (a b)) binds its parameter ?R, \
+                 which names a relation, to the fact (a b), and activates nothing — a relation is \
+                 named by a symbol, not a fact"
+            ),
+        ] {
+            assert!(
+                r.err.lines().any(|l| l == want),
+                "ein {cmd} {file}: no line {want:?}:\n{}",
+                r.err
+            );
+        }
+        for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
+            assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
         }
     }
     // The two shapes Q-M1e2.26 answers load, on every command.
@@ -1540,44 +1561,67 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
 }
 
 /// **A rule that could derive an activator binding a relation parameter to a
-/// fact is refused at load, by every command, with one line** (Q-M1f.1).
+/// fact is warned of at load, by every command, with one line, and the
+/// program loads** (Q-M1f.1).
 ///
-/// The two `g14` programs, as refusal fixtures under `examples/broken/load/`
-/// and as the witnesses of the regressions `derived-activator/derived-activator` and
-/// `derived-activator-never`, each on every command that loads a program: exit 1
-/// (`ein test`: 2) and the loader's line, naming the deriving rule, the
+/// The two `g14` programs, `examples/features/19_derived_activator.ein` and
+/// `20_derived_activator_never.ein`, and their twins with a query under
+/// `examples/ein-bugs/wrong-answers/`, each on every command that loads a
+/// program: exit 0 and the loader's `warning:`, naming the deriving rule, the
 /// activated rule and the parameter, never the compiler's line where a plan
-/// was compiled. What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
+/// was compiled. Where root derives the activator, `(item (a b))` written,
+/// the run's `warning:` names the rule and the activator, which activates
+/// nothing; where no state derives one, no run says so. The static check
+/// flags the four, and nothing here reads what they answer. What loads with
+/// no warning: the zebra2 fan-out and the stdlib's, which pass a relation's
 /// name on through a rule's parameter and through a marker.
 #[test]
-fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
-    let want = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s \
-                parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an \
-                argument of the declared relation item — a relation is named by a symbol, not a \
-                fact";
+fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load() {
+    let warned = "rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which \
+                  names a relation, and (item ?f) can bind ?f to a fact, as an argument of the \
+                  declared relation item — a relation is named by a symbol, not a fact, so such an \
+                  activator activates nothing";
+    let inert = "rule 'r': its activator (r (a b)) binds its parameter ?R, which names a relation, \
+                 to the fact (a b), and activates nothing — a relation is named by a symbol, not a \
+                 fact";
     let scratch = ein_corpus::Scratch::new("ein-derived-activator");
     let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
-    for file in [
-        "examples/broken/load/derived_activator.ein",
-        "examples/broken/load/derived_activator_never.ein",
-        "examples/ein-bugs/wrong-answers/derived-activator.ein",
-        "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
+    for (file, derived) in [
+        ("examples/features/19_derived_activator.ein", true),
+        ("examples/features/20_derived_activator_never.ein", false),
+        (
+            "examples/ein-bugs/wrong-answers/derived-activator.ein",
+            true,
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
+            false,
+        ),
     ] {
-        for (args, code) in [
-            (vec!["saturate", "--dump", file], 1),
-            (vec!["solve", file], 1),
-            (vec!["solve", "--minimal", file], 1),
-            (vec!["oracle", file], 1),
-            (vec!["test", file], 2),
-            (vec!["render", "lattice", file], 1),
-            (vec!["render", "kb", file], 1),
-            (vec!["kb", "save", file, &einb], 1),
+        let want = format!("warning: {file}: {warned}");
+        for (args, saturates) in [
+            (vec!["saturate", "--dump", file], true),
+            (vec!["solve", file], true),
+            (vec!["solve", "--minimal", file], true),
+            (vec!["oracle", file], true),
+            (vec!["render", "lattice", file], true),
+            (vec!["render", "kb", file], true),
+            (vec!["render", "rules", file], false),
+            (vec!["kb", "save", file, &einb], false),
         ] {
             let r = ein(&args);
-            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
             assert!(
-                r.err.lines().any(|l| l.trim() == want),
+                r.err.lines().any(|l| l == want),
                 "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            assert_eq!(
+                r.err
+                    .lines()
+                    .any(|l| l.starts_with("warning: ") && l.ends_with(inert)),
+                derived && saturates,
+                "ein {args:?}: the run's line, where a state derives the activator:\n{}",
                 r.err
             );
             assert!(
@@ -1599,6 +1643,7 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load
     ] {
         let r = ein(&args);
         assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+        assert!(!r.err.contains("warning:"), "ein {args:?}:\n{}", r.err);
     }
 }
 
@@ -2453,6 +2498,78 @@ fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
         &["solve", "examples/features/10_expect.ein"],
     );
     assert_eq!(ok.code, 0, "{}{}", ok.out, ok.err);
+}
+
+/// **`$EIN_STDLIB` replaces `std.core`, and a library there without one is
+/// refused in the user's words** (Q-M1f.551).
+///
+/// A copy of the standard library, its manifest kept: with its `core.ein`
+/// removed, every program is refused, `std.core was not found in
+/// $EIN_STDLIB` and the directory, the program that imports nothing and the
+/// one that imports `std.core` alike; with a `core.ein` whose one rule reads
+/// `(absurd)`, that rule is every program's, so `(false)` kills no state and
+/// `01_false_ends_the_state.ein`'s claim that R is empty is refuted.
+#[test]
+fn ein_stdlib_replaces_std_core_and_a_library_without_one_is_refused() {
+    let scratch = Scratch::new("stdlib-core");
+    let copy = scratch.0.join("stdlib");
+    let real = repo_root().join("stdlib");
+    let mut stack = vec![real.clone()];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).expect("the stdlib") {
+            let from = entry.expect("an entry").path();
+            let to = copy.join(from.strip_prefix(&real).expect("under stdlib/"));
+            if from.is_dir() {
+                std::fs::create_dir_all(&to).expect("a subdirectory");
+                stack.push(from);
+            } else {
+                std::fs::create_dir_all(to.parent().expect("a parent")).expect("a directory");
+                std::fs::copy(&from, to).expect("copy");
+            }
+        }
+    }
+    let env = [("EIN_STDLIB", copy.to_str().expect("utf-8"))];
+    std::fs::remove_file(copy.join("core.ein")).expect("the copy's core.ein");
+    let want = format!(
+        "kb load error: std.core was not found in $EIN_STDLIB: {} holds no core.ein — every \
+         program gets std.core, and a library $EIN_STDLIB names is where it is read from \
+         (Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or the \
+         embedded copy",
+        copy.display()
+    );
+    for args in [
+        vec!["solve", "tests/stdlib/core/02_loaded_and_alive.ein"],
+        vec!["saturate", "examples/features/21_import_of_core.ein"],
+    ] {
+        let r = ein_env(&env, &args);
+        assert_eq!(r.code, 1, "ein {args:?}: {}{}", r.out, r.err);
+        assert_eq!(r.err.lines().next(), Some(want.as_str()), "ein {args:?}");
+    }
+    // Another std.core: its rule is every program's.
+    std::fs::write(
+        copy.join("core.ein"),
+        "(rule absurd ()\n  :match (absurd)\n  :ein   inconsistent\n  :why   \"a state that \
+         holds (absurd) is inconsistent\")\n",
+    )
+    .expect("another core.ein");
+    let file = "tests/stdlib/core/01_false_ends_the_state.ein";
+    let dump = ein_env(&env, &["saturate", "--dump", file]);
+    assert_eq!(dump.code, 0, "{}", dump.err);
+    assert!(
+        dump.out
+            .contains(";;   std.core.absurd  :params ()  :ein inconsistent")
+            && !dump.out.contains("std.core.inconsistent"),
+        "{}",
+        dump.out
+    );
+    let solved = ein_env(&env, &["solve", file]);
+    assert_eq!(
+        solved.code, 1,
+        "the claim (false) is refuted: {}",
+        solved.out
+    );
+    let ours = ein(&["solve", file]);
+    assert_eq!(ours.code, 0, "{}{}", ours.out, ours.err);
 }
 
 // ── The container sniff, in either feature set ───────────────────────

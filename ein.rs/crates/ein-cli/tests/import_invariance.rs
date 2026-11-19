@@ -39,6 +39,12 @@
 //! that rule written out take the same rung, the same H and the same R
 //! ([`a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`]).
 //!
+//! **And an import of the module every program gets changes nothing.** A
+//! program with `(import std.core)` added, in each of an import's three
+//! shapes, first or last, has the answer and the rules of the program as
+//! written, the module's one rule last
+//! ([`an_import_of_the_module_every_program_gets_changes_no_answer`]).
+//!
 //! The forms are written into a scratch directory beside links to the
 //! program's directory's modules, since a module is found from the program
 //! file's directory. `EIN_CORPUS_SLOW=1` adds the slow entries, as
@@ -446,4 +452,93 @@ fn a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out() {
         };
         assert_eq!(r(&a), r(&b), "{imported} and {written}: R");
     }
+}
+
+/// The rules `ein saturate --dump FILE`, run in `dir`, lists, one a line, in
+/// its order: the program's and its modules', the module every program
+/// gets among them.
+fn rules_of(dir: &Path, file: &str) -> Vec<String> {
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(["saturate", "--dump", file])
+        .current_dir(dir)
+        .output()
+        .expect("the `ein` binary runs");
+    String::from_utf8_lossy(&out.stdout)
+        .lines()
+        .skip_while(|l| !l.starts_with(";; Rules"))
+        .skip(1)
+        .take_while(|l| l.starts_with(";;   "))
+        .map(str::to_string)
+        .collect()
+}
+
+/// **An import of the module every program gets changes no answer**
+/// (Q-M1f.551). `(import std.core)` is an import like any other: in each of
+/// an import's three shapes, written first or last, it binds the module's
+/// names, brings no second copy and leaves the module after the program's
+/// forms and its imports', so the program lists the same rules in the same
+/// order, the module's last, and answers what it answers with no such line:
+/// R, the queries, the claims, root's verdict, and the rule `refuted by`
+/// names, every module prefix and the alias taken off. The programs: the
+/// module's own two, which import nothing, a dead root and an alive one; a
+/// rule that states the engine's word itself; and three that import another
+/// module.
+#[test]
+fn an_import_of_the_module_every_program_gets_changes_no_answer() {
+    let root = repo_root();
+    let mut compared = 0;
+    for file in [
+        "tests/stdlib/core/01_false_ends_the_state.ein",
+        "tests/stdlib/core/02_loaded_and_alive.ein",
+        "examples/features/18_ein_inconsistent.ein",
+        "examples/features/12_expect_false.ein",
+        "examples/features/13_mixed_solution_and_open.ein",
+        "examples/beliefs/06_double_negation.ein",
+    ] {
+        let path = root.join(file);
+        let text = std::fs::read_to_string(&path).expect("readable");
+        let dir = path.parent().expect("a directory");
+        let name = path.file_name().expect("a name").to_str().expect("utf-8");
+        let want = summary(dir, name).unwrap_or_else(|code| panic!("{file}: exit {code}"));
+        let rules = rules_of(dir, name);
+        assert!(
+            rules
+                .last()
+                .is_some_and(|r| r.contains("std.core.inconsistent ")),
+            "{file}: {rules:?}"
+        );
+        for (line, alias) in [
+            ("(import std.core)", None),
+            ("(import std.core :as c)", Some("c")),
+            ("(import std.core :symbols (inconsistent))", None),
+        ] {
+            let mut prefixes = module_prefixes(dir);
+            prefixes.extend(alias.map(str::to_string));
+            prefixes.sort_by_key(|p| std::cmp::Reverse(p.len()));
+            let chars: Vec<Vec<char>> = prefixes.iter().map(|p| p.chars().collect()).collect();
+            let refuted =
+                |v: &serde_json::Value| strip(&v["region"]["refuted_by"].to_string(), &chars);
+            for written in [format!("{line}\n{text}"), format!("{text}\n{line}\n")] {
+                let scratch = beside_its_modules(&path, &written);
+                let got = summary(scratch.path(), name)
+                    .unwrap_or_else(|code| panic!("{file} with {line}: exit {code}"));
+                assert_eq!(
+                    signature(&got, &prefixes),
+                    signature(&want, &prefixes),
+                    "{file} with {line}"
+                );
+                assert_eq!(refuted(&got), refuted(&want), "{file} with {line}");
+                let strip_all = |rs: &[String]| -> Vec<String> {
+                    rs.iter().map(|r| strip(r, &chars)).collect()
+                };
+                assert_eq!(
+                    strip_all(&rules_of(scratch.path(), name)),
+                    strip_all(&rules),
+                    "{file} with {line}: the rules, in their order"
+                );
+                compared += 1;
+            }
+        }
+    }
+    assert_eq!(compared, 6 * 3 * 2);
 }

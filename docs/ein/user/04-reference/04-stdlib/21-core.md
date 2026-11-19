@@ -1,8 +1,8 @@
 # The rule every program gets: `std.core`
 
-`std.core` is the one module of the standard library that no program imports. The load brings it into every
-program, whole, after the program's own forms and those of the modules it imports, and its one rule is then a rule
-of the program under its full name, `std.core.inconsistent`
+`std.core` is the one module of the standard library that every program gets with no import line. The load brings
+it into every program, whole, after the program's own forms and those of the modules it imports, and its one rule is
+then a rule of the program under its full name, `std.core.inconsistent`
 ([Q-M1f.551](../../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)).
 
 ## What it says
@@ -98,14 +98,65 @@ or imported:
 [`02_loaded_and_alive.ein`](../../../../../tests/stdlib/core/02_loaded_and_alive.ein) is the same program with the
 switch on and not off: the rule is loaded, no state holds `(false)`, and root is alive.
 
-## What a program cannot do with it
+## Importing it
 
-- **Import it.** `(import std.core)`, in a program or in a module, is refused
-  ([`07-diagnostics.md` § 2.7](../07-diagnostics.md#27-no-import-names-the-module-every-program-gets)).
-- **Leave it out, replace it or add to it.** Every load brings the module as the standard library holds it. A saved
-  file carries it beside the program's other modules
-  ([`10-answer-dump.md`](../10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made)), and a `.einb`
-  stores the program without it.
+A file may import the module as it imports any module, in a program or in a module, in any of an import's three
+shapes. The import binds the module's names: `:symbols (inconsistent)` writes and prints its rule `inconsistent`, and
+`:as c` prints it `c.inconsistent`. It brings no second copy, and the module stays where every load puts it, after
+the program's forms and its imports', so a program lists the same rules in the same order, and answers what it
+answers, with the line and without
+([`examples/features/21_import_of_core.ein`](../../../../../examples/features/21_import_of_core.ein) imports it
+bare). No import leaves it out: every load brings it. A saved file carries it beside the program's other modules
+([`10-answer-dump.md`](../10-answer-dump.md#a-state-file-is-its-program-and-the-choices-made)), and a `.einb` stores
+the program without it.
+
+## Replacing it
+
+The module is read from the standard library the load resolves
+([`01-install.md`](../../01-install.md#point-it-at-a-different-stdlib)), so a library `$EIN_STDLIB` names brings its
+own `core.ein` into every program, in the place of the checkout's or the copy built into the binary. Take a copy of
+the library whose `core.ein` reads `(absurd)` where the library's reads `(false)`:
+
+```lisp
+(rule absurd ()
+  :match (absurd)
+  :ein   inconsistent
+  :why   "a state that holds (absurd) is inconsistent")
+```
+
+With `$EIN_STDLIB` naming the copy, `ein saturate --dump tests/stdlib/core/01_false_ends_the_state.ein` lists its rule
+as a rule of the program, and the `(false)` the program concludes is a fact no rule reads:
+
+<!-- output -->
+```text
+;; Rules — the saturation agenda's (2)
+;;   on-and-off  :params ()  stratum 0
+;;   std.core.absurd  :params ()  :ein inconsistent
+```
+
+so `ein solve` on the same program finds root alive, where the library's own module finds it dead:
+
+<!-- output -->
+```text
+  ∅                 in R — root is alive and owes nothing
+```
+
+and refutes the program's claim that R is empty, exit 1:
+
+<!-- output -->
+```text
+  (solve :expect)   FAILED
+                    (false) says every node is dead, and R has 1 state
+```
+
+The library's `MANIFEST.sha256` is what makes the directory a standard library, and nothing compares the module with
+it. A library there with no `core.ein` refuses every program, with the directory it names
+([`07-diagnostics.md` § 2.7](../07-diagnostics.md#27-the-module-every-program-gets-cannot-be-read)):
+
+<!-- output -->
+```text
+kb load error: std.core was not found in $EIN_STDLIB: /path/to/lib holds no core.ein — every program gets std.core, and a library $EIN_STDLIB names is where it is read from (Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy
+```
 
 ## The rule
 

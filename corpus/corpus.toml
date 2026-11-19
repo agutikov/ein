@@ -320,6 +320,24 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "rende
 note   = "`:ein inconsistent`, a rule that ends a state, stated over its own premises with no `(false)` between (Q-M1f.399, Q-M1f.550): two candidates, the state that holds both is dead by the rule's firing and holds no fact from it, and R is the other three. The pair's core is the two commitments and it is refuted by the rule that states the key."
 
 [[entry]]
+path   = "examples/features/19_derived_activator.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "saturate --dump", "render rules"]
+note   = "a derived activator that binds a relation parameter to a fact (Q-M1f.1): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. It loads under the load's `warning:`, one line naming `mk`, `r` and `?R`, and root's `(r (a b))` activates nothing, which the run's `warning:` names. Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+
+[[entry]]
+path   = "examples/features/20_derived_activator_never.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`19_derived_activator.ein` without `(item (a b))`, so no run derives the activator: the load's `warning:` all the same, the run's none (Q-M1f.1). Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+
+[[entry]]
+path   = "examples/features/21_import_of_core.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "`(import std.core)`, the module every program gets, imported as any module is (Q-M1f.551): no second copy, the module's rule last in `saturate --dump`'s list, and the answer the program has without the line."
+
+[[entry]]
 path   = "examples/arith/add.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/trace.md"]
@@ -1785,7 +1803,7 @@ note   = "`kwpair-in-guard`: `(eq ?x :k a)`, a keyword pair as a guard's argumen
 path   = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18): refused at load where the activator is written, both runs exit 1 with the loader's line."
+note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18, Q-M1f.1): the program loads, both runs exit 0, and the activator activates nothing, so root holds no `hit`; the load's `warning:` names it where it is written and the run's names `r` and the activator. `(solve :no-search)`: R is root alone."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
@@ -2127,13 +2145,13 @@ note   = "`parameter-nested-assert`: a value parameter its activator binds to a 
 path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`derived-activator/derived-activator`: a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here. Refused at load, every command, one line naming `mk`, `r` and `?R` (Q-M1f.1 (b)), where a program that loaded would stop where `r`'s plan is compiled, exit 1."
+note   = "a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, where a run once stopped as `r`'s plan was compiled. It loads, every command exit 0, under the load's `warning:` naming `mk`, `r` and `?R` (Q-M1f.1), and the run's naming `r` and `(r (a b))`, which activates nothing. Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`derived-activator-never`: `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Refused at load with `derived-activator.ein`'s line, as the user ruled knowing it (Q-M1f.1 (b))"
+note   = "`derived-activator.ein` with no `item` fact, so no run derives the activator. It loads under `derived-activator.ein`'s load `warning:` (Q-M1f.1), and no run says more. Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
@@ -3359,18 +3377,6 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
-path   = "examples/broken/load/derived_activator.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "a derived activator (Q-M1f.1 (b)): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. Refused at load, one line naming `mk`, `r` and `?R`."
-
-[[entry]]
-path   = "examples/broken/load/derived_activator_never.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "`derived_activator.ein` without `(item (a b))`, so no run derives the activator. Refused at load with the same line (Q-M1f.1 (b)), which chose the refusal for a program no run would reach."
-
-[[entry]]
 path   = "examples/broken/load/unbound_head.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
@@ -3420,12 +3426,6 @@ path   = "examples/broken/load/ein_on_hrule.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "`:ein` on an hrule, which proposes a fact: a word to the engine is a rule's."
-
-[[entry]]
-path   = "examples/broken/load/import_of_core.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "`(import std.core)`: the module every program gets with no import line is named by no import (Q-M1f.551)."
 
 [[entry]]
 path   = "examples/broken/load/rule_missing_assert.ein"

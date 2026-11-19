@@ -1,0 +1,13 @@
+;;; `(import std.core)`: the module every program gets, imported as any
+;;; module is.
+;;;
+;;; Every program gets `std.core` with no import line (Q-M1f.551). A file
+;;; may import it all the same, in a program or in a module, in any of an
+;;; import's three shapes: the import binds the module's names as an import
+;;; does and brings no second copy, and the module stays where every load
+;;; puts it, after the program's forms and its imports'. So this program
+;;; lists the rules it lists without the line, `std.core.inconsistent`
+;;; last, and answers what it answers without it.
+(import std.core)
+(relation p T :why "p holds of {?3}")
+(p a)

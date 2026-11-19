@@ -1,7 +1,7 @@
 ;;; A rule that could derive an activator binding a relation parameter to a
-;;; fact loaded and answered, since no run derives it —
-;;; regression `derived-activator-never` (`corpus/regressions.toml`). The
-;;; refusal Q-M1f.1 states refuses this program, knowingly.
+;;; fact, where no run derives one; the witness of a regression row that is
+;;; gone, since the static check flags the program and no row holds a flagged
+;;; program's answer (Q-M1f.564).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -10,29 +10,19 @@
 ;;; hold a fact, and `?f` is `r`'s parameter `?R`, which names a relation. No
 ;;; fact and no candidate puts a fact in `item`, so no run derives one.
 ;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
-;;;
-;;; Some rule *could* derive an activator binding a relation parameter to a
-;;; fact, which a static check sees at load (Q-M1f.1), so the program is
-;;; refused, as `derived-activator.ein` is: every command that loads it exits
-;;; 1 with the loader's line (`ein test`: 2).
-;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The program loaded and answered, exit 0: H was six candidates, `(box b)`,
-;;; `(box z)`, `(hit b)`, `(hit z)`, `(item b)` and `(item z)`, and R their
-;;; cube, 64 states, the minimal line {∅} (`ein solve FILE` at `8249e872`,
-;;; release and debug alike). A commitment to `(item b)` derives `(r b)`, a
-;;; name, which binds `?R` as a relation parameter is bound.
+;;; The program loaded and answered, exit 0, in silence (`ein solve FILE` at
+;;; `8249e872`, release and debug alike). The loader then refused it, as it
+;;; refused `derived-activator.ein`, exit 1.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The loader refuses the program: every command
-;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
-;;; test`: 2), in either build. The regression's `now` is that
-;;; refusal; the section above is the record of the answer it replaced.
-;;;
-;;;
+;;; Every command loads the program, exit 0, and says on stderr, in a
+;;; `warning:`, that `mk` could derive an activator binding `?R` to a fact,
+;;; which activates nothing (Q-M1f.1); no state derives one, so no run says
+;;; more. The static check flags the program, so nothing is claimed of its
+;;; answer.
 ;;;
 
 (relation box Node :why "{?3} is in the box")

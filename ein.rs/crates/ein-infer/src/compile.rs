@@ -79,6 +79,12 @@ pub const GUARD_VALUES: &str = "a guard compares two values, each a variable, a 
 /// not authorise anything. Passing it through left every parameter-headed
 /// premise with an unbound head var, which the compiler then dropped —
 /// silently, and in the vacuous direction.
+///
+/// **An activator that binds a relation parameter to a fact is filtered out
+/// too** ([`binds_a_relation_to_a_fact`]): it is held as the fact it is and
+/// activates nothing, since a relation is named by a symbol and a fact names
+/// none (Q-M1f.1). The loader warns of a program in which a rule could derive
+/// one, and [`note_inert_activators`] of a state that does.
 pub fn activators_for(kb: &Kb, terms: &Terms, rule: &Rule) -> Vec<Option<FactId>> {
     let mut out = Vec::new();
     activators_into(kb, terms, rule, &mut out);
@@ -97,9 +103,95 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
     let n = rule.params.len();
     out.extend(
         kb.rule_apps_by_rule(rule.name)
-            .filter(|&f| terms.facts.arity(f) == n)
+            .filter(|&f| {
+                terms.facts.arity(f) == n && binds_a_relation_to_a_fact(terms, rule, f).is_none()
+            })
             .map(Some),
     );
+}
+
+/// **The parameter `activator` binds to a fact where `rule` names a
+/// relation by it**, by position, or `None`: the first of
+/// [`Rule::relation_params`](ein_core::Rule::relation_params) whose argument
+/// is a fact. Such an activator activates nothing ([`activators_for`]); it
+/// is what the compiler would meet as a relation written as a fact
+/// (`head_not_a_name`).
+pub fn binds_a_relation_to_a_fact(terms: &Terms, rule: &Rule, activator: FactId) -> Option<usize> {
+    if rule.relation_params.is_empty() {
+        return None;
+    }
+    let args = terms.facts.args(activator);
+    rule.relation_params
+        .iter()
+        .copied()
+        .find(|&i| args.get(i).is_some_and(|v| v.as_fact().is_some()))
+}
+
+/// What the runs of this process met that activates nothing: one line per
+/// activator a state held that binds a relation parameter to a fact, said
+/// once ([`note_inert_activators`], [`take_inert_activators`]).
+static INERT: std::sync::Mutex<std::collections::BTreeSet<String>> =
+    std::sync::Mutex::new(std::collections::BTreeSet::new());
+
+/// **Record every activator of `rule` that `kb` holds and that binds a
+/// relation parameter to a fact** (Q-M1f.1): a state derived it, or the
+/// program wrote it, and it activates nothing. One line each, placed at the
+/// rule, which a command reads back with [`take_inert_activators`] and
+/// prints as a `warning:`. Called where a state's activators get their plans
+/// (`Engine::compile_all`, the obligations' tally); a rule that names no
+/// relation by a parameter costs nothing.
+pub fn note_inert_activators(ast: &Ast, terms: &Terms, kb: &Kb, rule: &Rule) {
+    if rule.relation_params.is_empty() {
+        return;
+    }
+    let n = rule.params.len();
+    for f in kb.rule_apps_by_rule(rule.name) {
+        if terms.facts.arity(f) != n {
+            continue;
+        }
+        let Some(i) = binds_a_relation_to_a_fact(terms, rule, f) else {
+            continue;
+        };
+        let line = format!(
+            "{}rule '{}': its activator {} binds its parameter ?{}, which names a relation, to \
+             the fact {}, and activates nothing — a relation is named by a symbol, not a fact",
+            rule_place(ast, rule),
+            terms.sym(rule.name),
+            crate::events::sexpr(terms, f),
+            terms.sym(rule.params[i]),
+            crate::events::sexpr_value(terms, terms.facts.args(f)[i]),
+        );
+        INERT.lock().unwrap_or_else(|e| e.into_inner()).insert(line);
+    }
+}
+
+/// Where `rule` is written, `<file>:<line>:<col>: `, at its own position or,
+/// where the parser gave the form none, at its first clause's; nothing where
+/// neither has one.
+fn rule_place(ast: &Ast, rule: &Rule) -> String {
+    let at = rule
+        .loc
+        .map(|l| (ast.file(ein_ir::FileId(l.file)).to_string(), l.line, l.col))
+        .or_else(|| {
+            [rule.match_.as_ref(), rule.assert_.as_ref()]
+                .into_iter()
+                .flatten()
+                .find_map(|p| ast.loc(NodeId(p.expr.0)))
+                .map(|l| (ast.file(l.file).to_string(), l.line, l.col))
+        });
+    match at {
+        Some((file, line, col)) => format!("{file}:{line}:{col}: "),
+        None => String::new(),
+    }
+}
+
+/// **The lines [`note_inert_activators`] recorded since the last call**,
+/// sorted, so that their order is not the order parallel workers met them
+/// in; each is a `warning:` a command prints.
+pub fn take_inert_activators() -> Vec<String> {
+    std::mem::take(&mut *INERT.lock().unwrap_or_else(|e| e.into_inner()))
+        .into_iter()
+        .collect()
 }
 
 // ── The compile cache key ──────────────────────────────────────────
@@ -899,18 +991,16 @@ impl<'a> Compiler<'a> {
     /// A relation head written as a parameter, bound by the activator to a
     /// value that is not a name: a nested `Fact`, which names no relation
     /// (Q-M1e2.18). The parameter is seeded with the fact, as a value
-    /// parameter is, and the head meets it there. The loader refuses the
-    /// activators it can read, a fact or a literal in an `:assert`; this is
-    /// the one a rule derives through a variable, which only a run binds.
+    /// parameter is, and the head meets it there.
     ///
     /// Ein has no int kind: a run of digits is a name, which binds like any
     /// other, so a `Value` is an atom or a fact and this is a fact.
     ///
-    /// **No program reaches it**: the loader refuses every activator a
-    /// program writes or a rule could derive that binds a relation parameter
-    /// to a fact, and a candidate is a name. A direct caller of
-    /// [`compile_rule`] with such an activator does, and reads the line in
-    /// Ein's words (Q-M1f.75).
+    /// **No program reaches it**: such an activator activates nothing, and
+    /// [`activators_for`] hands no plan's driver one (Q-M1f.1), whether the
+    /// program wrote it or a state derived it; an hrule's activator is a
+    /// name. A direct caller of [`compile_rule`] with one does, and reads the
+    /// line in Ein's words (Q-M1f.75).
     fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
         debug_assert!(v.as_fact().is_some(), "a value that is no name is a fact");
         CompileError(format!(

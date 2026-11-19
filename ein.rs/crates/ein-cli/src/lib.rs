@@ -42,7 +42,9 @@ pub fn run() -> ExitCode {
     let argv: Vec<String> = std::env::args().skip(1).collect();
     // The delegated subcommand owns its own flag parsing.
     if argv.first().map(String::as_str) == Some("saturate") {
-        return code(saturate::main(&argv[1..]));
+        let status = saturate::main(&argv[1..]);
+        common::say_warnings();
+        return code(status);
     }
     // `--version` is intercepted for the same reason `saturate` is, and only
     // in first position: the top-level parser requires a subcommand, so
@@ -54,7 +56,10 @@ pub fn run() -> ExitCode {
         return ExitCode::SUCCESS;
     }
     let m = cmdline::command().get_matches_from(std::iter::once("ein".to_string()).chain(argv));
-    code(dispatch(&m))
+    let status = dispatch(&m);
+    // What the load and the run warned of; `ein test` says it per file.
+    common::say_warnings();
+    code(status)
 }
 
 fn code(status: i32) -> ExitCode {

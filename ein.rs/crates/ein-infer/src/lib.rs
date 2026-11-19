@@ -70,8 +70,9 @@ pub mod verdict;
 
 pub use canon::{state_digest, state_key};
 pub use compile::{
-    CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation, compile_rule,
-    naf_relation_refs, negated_relation, plan_key,
+    CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation,
+    binds_a_relation_to_a_fact, compile_rule, naf_relation_refs, negated_relation, plan_key,
+    take_inert_activators,
 };
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
