@@ -1,0 +1,62 @@
+;;; Item 44's example of the program's own `owed`: examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein, whole and as it is,
+;;; with the block at the end, which states the same requirement the two written ways.
+
+;;; An obligation's guard splits a name that starts with `or` —
+;;; regression `kw-or-in-obligation` (`corpus/regressions.toml`): a
+;;; reserved word is a keyword only as a whole token (Q-M1e2.17).
+;;;
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two items, `a` and `b`, one fact `(orz a)`, and an obligation, `owed`,
+;;; activated on `tag`: each `orz` value owes a `tag` fact.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `01-grammar.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. `a` owes a
+;;; `tag` fact that no candidate pays, so every alive node owes and R is
+;;; empty, owing: the answer of `kw-or-in-obligation-twin.ein`.
+;;;
+;;; ── What the engine answered, and why it does not any more ────────────
+;;;
+;;; At `35186bc0` the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the guard `(orz ?a)` as the
+;;; disjunction `(or z ?a)`, nested in the `:match`, which the compiler refused:
+;;; `ein solve` and `ein oracle` exited 1 with
+;;; *ein.inference.compile.CompileError: nested `(or …)` in a `:match` premise:
+;;; …*, a Python spelling. `ein saturate`, which reads no obligation, exited 0.
+;;; (`ein solve FILE` at `35186bc0`, release and debug; every mode the same.) A
+;;; keyword is a whole word now, at the boundary `01-grammar.md` § 1 states
+;;; (Q-M1e2.17), and the program answers its twin's R.
+;;;
+
+(relation item Node :why "{?3} is an item") (relation orz Node :why "orz holds of {?3}") (relation tag Node Node :why "{?3} has the tag {?4}")
+(item a) (item b) (orz a)
+(rule owed (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a) (absent (?R ?a ?b)))
+  :assert (open ?R) :why "orz holds of {?a}, and {?a} has no {?R} yet: one is still owed")
+(owed tag)
+
+;; ── (b) of Q-M1f.566: the requirement as the question it asks, and what answers it
+(rule need-any (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a))
+  :assert (owe ?R ?a ?B)
+  :why    "{?R} owes {?a} something.")
+(rule answer-any (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a) (?R ?a ?b))
+  :assert (answered ?R ?a ?B)
+  :why    "{?R} gives {?a} {?b}.")
+(need-any tag) (answer-any tag)
+
+;; ── (c) of Q-M1f.566: the requirement as the rule's instance, and what pays it
+(rule any-due (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a))
+  :assert (debt-due ?R (owed-of ?R ?A ?B ?a))
+  :why    "{?R} owes {?a} something.")
+(rule any-paid (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a) (?R ?a ?b))
+  :assert (debt-paid ?R (owed-of ?R ?A ?B ?a))
+  :why    "{?R} gives {?a} {?b}.")
+(any-due tag) (any-paid tag)

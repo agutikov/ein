@@ -1,0 +1,74 @@
+;;; Item 44's example of the program's own `owes-food`: examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein, whole and as it is,
+;;; with the block at the end, which states the same requirement the two written ways.
+
+;;; The **control** for [`oblig-derived-domain.ein`](oblig-derived-domain.ein)
+;;; — that file plus one fact, `(food Pie)`.
+;;;
+;;; With `(food Pie)` at root the obligations rung's `(food ?b)` scan would
+;;; find Pie, H `(likes Ann Soup)` and `(likes Ann Pie)`, and R one state,
+;;; `{(likes Ann Pie)}`. The rung declines on a guard over a relation in D,
+;;; `food` among them here too, so
+;;; the blind enumerator builds H, six candidates, five dead alone; R is the
+;;; same one state, which the `:expect` below states.
+;;;
+
+(relation person T :why "{?3} is a person")
+(relation food   T :why "{?3} is a food")
+(relation dish   T :why "{?3} is a dish")
+(relation likes  T T :why "{?3} likes {?4}")
+
+(person Ann)
+(food Soup)
+(dish Pie)
+(food Pie)   ; the one addition: Pie is a food at root
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food")
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (and (likes ?p ?f) (dish ?d))
+  :assert (food ?d)
+  :why    "once {?p} likes {?f}, the dish {?d} is on the menu")
+
+(solve
+  :no-hypothesis (person food dish)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
+  :expect (region
+            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Pie)}
+            (model (likes Ann Pie))))
+
+(query
+  :goal   (likes ?p ?f))
+
+;; ── (b) of Q-M1f.566: the requirement as the question it asks, and what answers it
+(rule need-food ()
+  :match  (person ?a)
+  :assert (owe likes ?a food)
+  :why    "{?a} is owed a food to like.")
+(rule answer-food ()
+  :match  (and (person ?a) (food ?b) (likes ?a ?b))
+  :assert (answered likes ?a food)
+  :why    "{?a} likes the food {?b}.")
+
+;; ── (c) of Q-M1f.566: the requirement as the rule's instance, and what pays it
+(rule food-due ()
+  :match  (person ?a)
+  :assert (debt-due likes (owes-food-of ?a))
+  :why    "{?a} is owed a food to like.")
+(rule food-paid ()
+  :match  (and (person ?a) (food ?b) (likes ?a ?b))
+  :assert (debt-paid likes (owes-food-of ?a))
+  :why    "{?a} likes the food {?b}.")

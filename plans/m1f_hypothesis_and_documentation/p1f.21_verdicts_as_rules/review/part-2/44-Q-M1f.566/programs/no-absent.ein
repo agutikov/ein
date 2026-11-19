@@ -1,0 +1,12 @@
+;;; A probe, not a corpus program: an obligation with no `absent`. The corpus
+;;; writes one, `o` of examples/ein-bugs/wrong-answers/macro-eq-obligation.ein,
+;;; in a file that is refused for another reason.
+;;; It loads. Every state that holds (a K) owes, and nothing can pay: there is
+;;; no witness to find. A requirement that asks no question.
+
+(relation a T :why "{?3} is an a")
+(a K)
+(rule o ()
+  :match  (a ?x)
+  :assert (open)
+  :why    "{?x} is an a, so the state owes")
