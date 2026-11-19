@@ -7,6 +7,9 @@ are stored in kb under (not ...) context or they are stored somehow outside of t
 hypotheses"*. **For review.** It is a reading of the phase's pages and of the engine at `e4a5f8fb`; it rules
 nothing, builds nothing and runs no stage: the phase is not started without the user's word.
 
+**Since it was written** (2026-11-19): the user ruled Q-M1f.399, and the rows it touches are brought to the ruling
+in place, § 1's *kill*, § 3's `:ein` and § 5's order; S1f.21.6 and S1f.21.8 were started on the user's word.
+
 **What it stands on.** [`modifications.md`](modifications.md), the 37 items, which this page distils and does not
 repeat; [`open_facts.md`](open_facts.md) and [`design.md`](design.md); the code named in § 2; and the runs of
 [review item 34](review/34-Q-M1f.549/README.md), today's engine on the programs kept there.
@@ -32,7 +35,7 @@ state.*
 
 | the word | says of a state | stays true above | so | read |
 |---|---|---|---|---|
-| *kill* | it is contradictory | yes | a held fact, concluded in the agenda | in the saturation |
+| *kill* | it is contradictory | yes | it could be a held fact, and is **ruled** a rule's key and no fact ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)) | in the saturation, as the rule fires |
 | *asked* | F is a candidate of the program | yes | a held fact, root's | once, at root's fixpoint |
 | *owes* | a requirement has no witness | no: a larger state pays | never held; a pass counts it | on each quiescent state |
 | *still open* | F is neither held nor denied | no: a larger state decides | never held; a reading | on each quiescent state |
@@ -109,8 +112,7 @@ not ruled. The stage is where [§ 5](#5-the-stages) plans it.
 | `false` | the kernel's: a held one kills | an ordinary proposition, held or under an arrow; a rule concludes the kernel's verb from it | ruled | S1f.21.11 |
 | `not` | a context the kernel reads | a relation of one argument whose meaning is two rules: the contradiction, and the elimination of a double negation | ruled | S1f.21.8, S1f.21.11 |
 | `relation` | a position word; the loader holds a fact to its declaration's count | a convention; any head is a relation (built, Q-M1f.522); the count check [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | ruled; the check open | S1f.21.11 |
-| `ein.…` | nothing: `(ein.kill)` loads today as an ordinary fact | a reserved prefix for what the kernel reads and writes; no declarator binds under it | direction | S1f.21.10 |
-| `(ein.kill)` | | the one fact that ends a saturation and makes the state dead; read only held | leaning; the name [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | S1f.21.11 |
+| `:ein` | nothing | **a key of a rule**, beside `:assert`: its argument is a word addressed to the engine and no fact. A rule that states the word and fires ends the saturation, and the state is dead. No prefix is reserved | **ruled** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)); the word open, [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), proposed `inconsistent` | S1f.21.11 |
 | `open` | the verdict, an obligation's whole `:assert`; refused anywhere else | beside the verdict, the candidates as facts a rule may conclude and match ([§ 4](#4-hypotheses-as-facts)) | open: [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | S1f.21.12 |
 | `hrule`, `(solve :hrules …)` | a declarator and its clause | a rule that concludes a candidate | direction | S1f.21.12 |
 | `:hypothesis-relations`, `:no-hypothesis`, `__closed__` | two lists and a reserved relation | rules and facts over what is proposed | direction | S1f.21.12 |
@@ -125,8 +127,8 @@ a rule into a context.
 
 | what it decides | reads today | after | stage |
 |---|---|---|---|
-| a state is dead | a held `(false)`; a fact beside its `(not …)`, with no rule | a held `(ein.kill)`, and nothing else | S1f.21.11 |
-| what the agenda fires first, *forbid*, the static check | the rules that conclude `(false)` or a `(not …)`, by those names | the rules that lead to `(ein.kill)` | S1f.21.11 |
+| a state is dead | a held `(false)`; a fact beside its `(not …)`, with no rule | a rule that states `:ein` *word* fired, and nothing else | S1f.21.11 |
+| what the agenda fires first, *forbid*, the static check | the rules that conclude `(false)` or a `(not …)`, by those names | the rules that lead to a rule with the key | S1f.21.11 |
 | what a state owes | each obligation's guard, by a pass; a count | the same pass; each debt carries its instance as a term | S1f.21.7 |
 | $H$ | three rungs: the `hrule`s under `solve`'s clause; what root's obligations owe, read off their guards; the blind enumerator, over the declarations; then the two lists, `__closed__` and what root holds or denies | **the facts root holds under one relation, less what root has decided** | S1f.21.12 |
 | the mechanisms' conflicts | `mechanisms.rs`, five mechanisms against one another | what is left of them once proposing is one form | S1f.21.12 |
@@ -136,15 +138,15 @@ a rule into a context.
 **What no stage touches**: the knowledge base only grows, and a fork inherits; $R$, its definition and every
 answer; the oracle; the routes and their licences; `absent`'s boundary; a rule's activator; `eq` and `neq`.
 
-**What it then reads from a state**: one verb held; one relation's extent at root; each obligation's guard;
-`absent`'s boundary; a rule's activator.
+**What it then reads from a state**: one relation's extent at root; each obligation's guard; `absent`'s boundary;
+a rule's activator. What kills a state is read from no fact: it is a rule's key.
 
 ### 3.3 The standard library
 
 | what | today | after | state | stage |
 |---|---|---|---|---|
 | the meaning of `not` | the kernel's | the contradiction as rules, `clash-0` to `clash-6` with their activators, and the elimination of a double negation, one rule a count | designs that run; where they live open | S1f.21.8 |
-| the module every program gets | none | holds `(false)` ⟹ `(ein.kill)` and the meaning of `not`, with no import line, shown by `ein saturate --dump` as any rule is | open: its name, and whether a program may leave it out | S1f.21.11 |
+| the module every program gets | none | holds the rule from `(false)` to the key's word, and the meaning of `not`, with no import line, shown by `ein saturate --dump` as any rule is | open: its name, and whether a program may leave it out | S1f.21.11 |
 | the requirement, the payment, `discharged` | no rule: the pass | a module of three ordinary rules a program may import, beside the pass | a design that runs | S1f.21.8 |
 | `std.algebra`'s and `std.slots`' four obligations | conclude `(open ?R)` | unchanged: the debt's term is the kernel's ([item 16](modifications.md#c-q-m1f390-a-and-b-the-verdict-stays-a-verdict)) | | |
 | proposing | the kernel's rungs | the standard library's rules, where a rule can say it; the kernel's rungs write the same facts | direction | S1f.21.12 |
@@ -203,13 +205,13 @@ the groups' letters.
 | 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | nothing |
 | 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | three modules of the standard library, additive | where each lives |
 | 3 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | 14 to 16 | a debt's instance as a term | Q-M1f.390 |
-| 4 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 23 | the prefix `ein.` reserved; no rename | Q-M1f.399 |
-| 5 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 24 to 29 | `(ein.kill)`; `false`, `not` and `relation` as conventions | S1f.21.8, S1f.21.10; V-1; Q-M1f.447 |
-| 6 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | the candidates as facts | Q-M1f.549; S1f.21.7, S1f.21.10 |
-| 7 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | 36, 37 | the search and rules: what is kept, and what is declined | Q-M1f.549; S1f.21.12 |
-| 8 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6 to 13 | the pages of `docs/ein/` | every build before it |
+| | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 23 | the prefix `ein.` reserved; no rename | **not run: ruled away** by the answer to Q-M1f.399 |
+| 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 24 to 29 | the engine's key `:ein`; `false`, `not` and `relation` as conventions | S1f.21.8; Q-M1f.550; V-1; Q-M1f.447 |
+| 5 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | the candidates as facts | Q-M1f.549; S1f.21.7 |
+| 6 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | 36, 37 | the search and rules: what is kept, and what is declined | Q-M1f.549; S1f.21.12 |
+| 7 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6 to 13 | the pages of `docs/ein/` | every build before it |
 | | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | 20 | the requirement and the payment as the kernel's facts | **run only on a ruling for Q-M1f.390 (c)** |
-| 9 | S1f.21.5 | | | the close | |
+| 8 | S1f.21.5 | | | the close | |
 
 ## 6. What is the user's to rule
 
@@ -217,7 +219,8 @@ the groups' letters.
 |---|---|---|
 | [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules), new | whether the candidates are held, in which reading, and how far the search goes into rules | recommended (b): held as *asked*; (c), (d) and both uses declined for now |
 | [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact) | what an obligation emits | default (b): the verdict stays a verdict and carries its instance. It fits Q-M1f.549 (b): the debt is counted, the candidates are held |
-| [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names | no default; the user's directions are `false` kept, the prefix `ein.`, `(ein.kill)`; one name more is wanted now, the candidate's |
+| [Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names | **ruled 2026-11-19**: `false` kept, a convention of the standard library; no prefix; what ends a state is a rule's key, `:ein` |
+| [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein), new | the key's word | open; proposed `inconsistent`, on the user's *"maybe propose better name"* |
 | [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) | the argument-count check | no default |
 | [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* and the contradiction as rules | open; its ground is M1n's |
 | the stages' own | where the new rules live and the module every program gets; whether `hrule` stays as a spelling | each a question of its stage, with a default |

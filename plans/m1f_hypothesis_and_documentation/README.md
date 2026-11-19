@@ -27,10 +27,11 @@ Since 2026-11-08 it also holds M1e2's no-owner items, as P1f.5's first
 thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
 **Phase left** (2026-11-19): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
-2026-11-17 on the user's instruction: its survey is done, its questions put (Q-M1f.390, Q-M1f.399, Q-M1f.447 and,
-since the user's fifth instruction of 2026-11-19, Q-M1f.549, hypotheses as facts), and its stages planned, a stage a
-group of its list of modifications, S1f.21.6 the first; [its overview](p1f.21_verdicts_as_rules/overview.md) is for
-the user's review; **it is not started without the user's word**.
+2026-11-17 on the user's instruction: its survey is done, its stages planned, a stage a group of its list of
+modifications, and **S1f.21.6 and S1f.21.8 started 2026-11-19 on the user's word**; Q-M1f.399 is ruled (a rule's key
+`:ein`, no prefix), and Q-M1f.390, Q-M1f.447, Q-M1f.549 (hypotheses as facts) and Q-M1f.550 (the key's word) are
+open; [its overview](p1f.21_verdicts_as_rules/overview.md) is for the user's review; **no other stage starts without
+the user's word**.
 P1f.30, the inverse of `ein render`, created 2026-11-18, **moved to M1k as P1k.10** on the user's word (*"M1k: p1f.30 -> p1k.10"*), [`../m1k_notations_as_facts/`](../m1k_notations_as_facts/README.md).
 **P1f.23, the review's rulings, built, is closed** (2026-11-19, run to its end on the user's word, *"Go with all
 defaults to the end of this phase p1f.23 and stop"*) and its folder deleted, with the review bundle, every item of

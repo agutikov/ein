@@ -8,8 +8,9 @@
 which decides what the stage is. Under (a) it is not run. **It is planned here under (b), the recommendation**:
 the candidates held as *asked*. Under (c) it is the design of
 [`open_facts.md` § 5](open_facts.md#5-the-move-open-held-not) and [§ 6](open_facts.md#6-what-rules-can-do-with-open-facts)
-instead, and is planned again. Also [S1f.21.7](s1f.21.7_the_debts_term.md), the term a candidate carries, and
-[S1f.21.10](s1f.21.10_the_kernels_prefix.md), its name.
+instead, and is planned again. Also [S1f.21.7](s1f.21.7_the_debts_term.md), the term a candidate carries. Its name
+is this stage's own question since Q-M1f.399's ruling: no prefix `ein.` is reserved, so the fact is a word of the
+standard library's that the generator is told, or what a rule states under the key `:ein`.
 **Writes:** the grammar and the loader, `ein-infer/src/` (`hypgen.rs`, `hrule.rs`, `oblgen.rs`, `region.rs`,
 `mechanisms.rs`), `ein show hyps`, the read-out, the drawings, the corpus where a spelling goes.
 

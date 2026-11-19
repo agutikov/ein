@@ -327,7 +327,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.396](#q-m1f396--where-the-explanation-stands-and-which-example-it-uses) | where the explanation of nested facts stands in `docs/ein/reasoning/`, and which example it is told on | **ruled 2026-11-17: (a)**, sections of the two pages of `01-static-ir/` (*"Q-M1f.396 sections"*); the example not named, so the default stands, the user's example beside the page's `says` |
 | [Q-M1f.397](#q-m1f397--the-reserved-words-in-the-three-perspectives) | the reserved words in the three perspectives of the documentation | **ruled 2026-11-17** by the user's note: in `docs/ein/reasoning/` they are conceptual mathematical objects; in `docs/ein/user/` and `docs/ein/ein.rs/` they are the surface between the reasoning kernel and a theory in pure Ein; P1f.22's `contexts.md` § 8 |
 | [Q-M1f.398](#q-m1f398--how-the-graph-is-drawn-to-show-the-global-context-and-a-facts-context) | how the graph is drawn to show that a fact is in the global context, in a fact's context, or both, every object drawn once | **ruled 2026-11-17**, in two looks at the trial's figures: *"I would like to see frame around facts in contexts rather than around global facts"*, then *"label contexts `<relation name> cts` instead of `in context`"*. So: a fact is **filled** where held, and **inside a dashed frame labelled with the context's relation**, `think ctx`, where it is in a context; a fact that facts of two relations point at is in one frame that names both; frames stand side by side; S1f.22.2 drew so. **Re-ruled 2026-11-18**: *"let's draw a frame around objects that are in context only"*, and *"drop the filling"*: a frame around what is in a context only, a held object in no frame, no octagon filled; **built** by S1f.22.7 (`58b91dc3`) |
-| [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **put 2026-11-17, not ruled; P1f.21's**, entered there as its V-5, with **the user's direction** of the same day: `(false)` stays a fact that rules infer, in a context or globally, and a state is dead only where a rule infers `(ein.contradiction)` from the global `(false)` or from whatever a theory chooses; *"both (false) renaming and (open) facts belongs to p1f.21"*. Nothing is renamed or built in P1f.22 |
+| [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open) | the names of what controls the search, `(false)` and `(open)`: the user's *"Maybe word `false` is too heavy loaded with classical binary logic and not expose its actual function in ein? Maybe (abort) or (dead) is more clear? Or some common search control interface accessible from ein? Like (ein.search.state.refute)?"* | **ruled 2026-11-19 by the user** (P1f.21's answers, item 33): no prefix `ein.` is reserved, `(false)` is a convention of the standard library that rules infer, the contradiction among them, and what ends a state is a rule's own key, `:ein`, whose argument is no fact; the argument's word is [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein). Before: put 2026-11-17, P1f.21's, entered there as its V-5, with **the user's direction** of the same day: `(false)` stays a fact that rules infer, in a context or globally, and a state is dead only where a rule infers `(ein.contradiction)` from the global `(false)` or from whatever a theory chooses; *"both (false) renaming and (open) facts belongs to p1f.21"*. Nothing is renamed or built in P1f.22 |
 | [Q-M1f.400](#q-m1f400--how-a-saved-file-states-the-choices-made) | how a saved file states the choices made: no form does today, and a choice typed as a fact reads as given and is `written` | **ruled 2026-11-18: (a)** (*"Q-M1f.400 (a), Q-M1f.401 (a), Q-M1f.402 (C), Q-M1f.403 (a)"*): a form of its own, `(commit F …)`, committed after root's fixpoint as a node commits it; its three points as defaulted. **Built** by S1f.22.5 |
 | [Q-M1f.401](#q-m1f401--how-the-program-and-its-modules-are-in-one-file-unchanged) | how the program and its modules are in one file, unchanged: inlining rewrites the program, and the import lines alone need the modules | **ruled 2026-11-18: (a)**: `(program …)` and `(module NAME …)` around each file's bytes as read; a saved file reads no other file; its four points as defaulted. **Built** by S1f.22.5. Point 2 amended the same day by the user's ruling on F23's D-24: no note, nothing compared; built by S1f.23.8 |
 | [Q-M1f.402](#q-m1f402--what-save-and-load-are-as-commands-the-dump-they-are-held-to-and-a-files-first-lines) | what *save* and *load* are as commands, the dump the second invariance compares, what a save of a loaded file is, and a file's first lines | **ruled 2026-11-18: (C)** for a save of a loaded file, a saved file a node of its program's lattice; the defaults for the rest: no new command, the dump `ein saturate --dump`'s KB section, one fixed first line. **Built** by S1f.22.5 |
@@ -478,6 +478,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.547](#q-m1f547--a-concentric-layout-the-layers-drawn-as-rings) | A concentric layout: the layers drawn as rings | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), no ring layout, nothing built; the review bundle's item 61, examples by S1f.23.11, task 2, its page and programs in `git log` (`7c39c671`); not `--layout radial`, `--layout rings` or a documented recipe |
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
+| [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **open, the user's, not ruled**: raised 2026-11-19 by the user's answer to Q-M1f.399 (*"it can remain even the same word `false` but see … ideas2.md and maybe propose better name here"*); proposed `inconsistent`, the property of a set of premises that derives $\bot$; P1f.21's S1f.21.11 builds the key on it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -7855,6 +7856,33 @@ saturation, right? if we have dead node then somebody has to kill it, maybe (ein
 ([`open_facts.md` § 2 and § 3](p1f.21_verdicts_as_rules/open_facts.md#3-who-kills-a-dead-node-einkill)). S1f.21.4
 puts it on programs, with the reserved names that are left (§ 8 there).
 
+**Ruled 2026-11-19** by the user, in P1f.21's answers file (`review/ANSWERS.md`, item 33), verbatim:
+
+> no need to reserver `ein.` prefix; make (false) an stdlib convention; add rules detecting contradictions infereing
+> (false) and then - we can make another key, not :assert, but special engine control key `:ein false` which
+> argument is not a fact, it can remain even the same word `false` but see
+> plans/m1g_logic/p1g.40_proof_theory/ideas2.md and maybe propose better name here;
+
+Read:
+
+- **No prefix.** Option (d) is not taken: no name under `ein.` is reserved, and no fact is the kernel's. The two
+  directions above, a fact `(ein.contradiction)` or `(ein.kill)` that a rule concludes, are replaced.
+- **`false` is not renamed**, (a): `(false)` is a proposition and a convention of the standard library, as
+  [P1f.21's fourth instruction](p1f.21_verdicts_as_rules/README.md#the-fourth-instruction) ruled; the kernel reads
+  no fact of it.
+- **The contradiction is rules that infer `(false)`**, the standard library's: built as a module by P1f.21's
+  S1f.21.8, and given to every program by S1f.21.11.
+- **What ends a state is a rule's key and no fact**: a rule states `:ein` *word* where another states `:assert`,
+  and its argument is a word of the engine's, held by no knowledge base and matched by no rule. The module every
+  program gets has the one rule that goes from `(false)` to it.
+- **The word is open**: `false` may stay, and the user asks for a proposal:
+  [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein).
+
+**What it changes in P1f.21's plan.** S1f.21.10, the prefix, is not run: its one item left was the prefix.
+S1f.21.11 builds the key in place of `(ein.kill)`. `open` is not ruled by it: what an obligation emits is
+[Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)'s and whether the
+candidates are facts [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)'s.
+
 ### Q-M1f.400 — How a saved file states the choices made
 
 **Raised** 2026-11-18 by S1f.22.5's first task, on
@@ -10148,3 +10176,44 @@ under (b), and [S1f.21.13](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rul
 recommendation. It stands beside [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact):
 under that question's default the debt stays a verdict that is counted, and under (b) here the candidates that
 would pay it are held. The candidate's name is [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open)'s.
+
+### Q-M1f.550 — The word a rule gives the engine to end a state: the argument of `:ein`
+
+**Raised** 2026-11-19 by the user's answer to [Q-M1f.399](#q-m1f399--the-names-of-what-controls-the-search-false-and-open):
+the engine's control is a rule's key, `:ein false`, *"which argument is not a fact, it can remain even the same
+word `false` but see plans/m1g_logic/p1g.40_proof_theory/ideas2.md and maybe propose better name here"*.
+**Open: not ruled.** What follows is the proposal asked for.
+
+The page the answer names sorts the words by what each is a property of: *true* and *false* of a formula in a
+model, *provable* and *refutable* of a formula in a calculus, **consistent and inconsistent of a set of premises**,
+*sound* and *complete* of a system; and it asks that `false`, `refuted`, `inconsistent` and `unknown` not be mixed.
+What the rule tells the engine is about a state, which is a set of premises closed under the program's rules, root's
+facts and a commitment's: that it derives $\bot$.
+
+| | the word | what it is a property of | as the key's argument |
+|---|---|---|---|
+| (a) | `false` | a formula in a model | the same word as the proposition the rule reads: `:match (false) … :ein false`. It says twice what the key was made to say apart |
+| **(b)** | **`inconsistent`** | **a set of premises: $T \vdash \bot$** | **the state is exactly that set, at root and above it; the module's rule reads as the definition, *a state that derives `(false)` is inconsistent*. Proposed** |
+| (c) | `dead` | nothing in logic: the engine's word for a state's status | the word the read-out, the events' `kind` and the pages use already; it would pair with `owing`, the other status. It names what the engine does with the state and not what the rule found |
+| (d) | `contradiction` | a formula no model satisfies; or the event, $\bot$ derived | `(false)` is already that formula, so the rule would go from the contradiction to *contradiction* |
+| (e) | `refuted` | a formula whose negation is proved; in a refutation, the assumption | right of a commitment, and of nothing at root, where no commitment is refuted and the program's own facts are inconsistent |
+
+**Proposed: (b), `:ein inconsistent`.**
+
+```lisp
+(rule inconsistent ()
+  :match (false)
+  :ein   inconsistent
+  :why   "a state that derives a contradiction is inconsistent")
+```
+
+The pages keep *dead* and *alive* as the search's words for a node, and say once that a dead state is an
+inconsistent one, an alive one a state the program's rules derive no `(false)` in.
+
+**Beside it, not asked and not ruled.** The key is the form of every word a rule addresses to the engine, and there
+are two more today: an obligation's whole `:assert`, `(open ?R)`, and an `hrule`'s candidate. Whether they move
+under the key is Q-M1f.390's and Q-M1f.549's, and S1f.21.11 builds the key for the one word.
+
+**What waits on it.** P1f.21's [S1f.21.11](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md),
+its first build step.
+

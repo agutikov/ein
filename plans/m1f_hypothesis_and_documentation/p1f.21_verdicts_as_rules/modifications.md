@@ -236,6 +236,9 @@ rule. **Where each lives is not ruled.**
 The user's directions are (a) with (d): the word `false` stays, and the kernel's own fact goes under the prefix.
 They take neither 21 nor 22.
 
+**Ruled 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open), the user's answer): (a), and not (d). No prefix is reserved, so
+item 23 is not built either, and [S1f.21.10](s1f.21.10_the_kernels_prefix.md) is not run.
+
 ## G. The verdict as a rule's conclusion: `(ein.kill)`, and three names as conventions
 
 The second, third and fourth instructions, worked out in
@@ -244,6 +247,10 @@ The second, third and fourth instructions, worked out in
 [the fourth](README.md#the-fourth-instruction): `not`, `relation` and `false` are the standard library's
 conventions and not the kernel's; `eq` and `neq` stay the kernel's. **Not run**: S1f.21.4 is to take it onto
 programs ([§ 9](open_facts.md#9-what-s1f214-answers), items 1 and 6).
+
+**Ruled 2026-11-19** ([Q-M1f.399](../open_questions.md#q-m1f399--the-names-of-what-controls-the-search-false-and-open)): in items 24 and 25 the fact `(ein.kill)` is replaced by **a rule's key,
+`:ein` *word***, the word the engine's and no fact; its word is [Q-M1f.550](../open_questions.md#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein). Where an item below says
+`(ein.kill)` or `ein.kill`, read *a rule with the key*.
 
 24. **The kernel reads one fact in a saturation, `(ein.kill)`**, read only where it is held and refused under an
     arrow, as `open` is today. The names beside it: `(ein.die)`, `(ein.saturation.kill)`, and V-5's
