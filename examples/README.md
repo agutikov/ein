@@ -79,6 +79,7 @@ ein-cli/tests/show_hyps.rs
 ein-corpus/benches/engine.rs
 ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs
+ein-einb/tests/open_budget.rs
 ein-einb/tests/roundtrip.rs
 ein-infer/tests/acceptance.rs
 ein-infer/tests/agenda.rs
