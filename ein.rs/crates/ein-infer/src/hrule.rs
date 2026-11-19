@@ -19,7 +19,8 @@ use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use ein_core::entities::Rule;
-use ein_core::{FactId, Symbol, Value};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_ir::Ast;
 use rustc_hash::FxHashMap;
 
 use crate::compile::CompileError;
@@ -38,7 +39,7 @@ impl Hrules {
     /// activator of a generic one. With no matching activator a generic hrule
     /// contributes nothing.
     pub fn new(s: &mut Session<'_>) -> Result<Hrules, CompileError> {
-        let activators = hrule_activators(s);
+        let activators = hrule_activators(s.kb, s.terms, s.ast);
         let hrules: Vec<Rule> = s.kb.program().hrules.values().cloned().collect();
         let mut plans = Vec::new();
         for h in &hrules {
@@ -48,14 +49,7 @@ impl Hrules {
                 )?));
                 continue;
             }
-            for argtuple in activators.get(&h.name).map_or(&[][..], |v| &v[..]) {
-                // An arity-mismatched activator cannot bind the
-                // parameters, so every parameter-headed premise would compile
-                // with an unbound head var. `Engine::activators_for` skips
-                // these for ordinary rules; the same skip belongs here.
-                if argtuple.len() != h.params.len() {
-                    continue;
-                }
+            for argtuple in binding(h, &activators) {
                 let args: Vec<Value> = argtuple.iter().map(|&a| Value::sym(a)).collect();
                 // The activator is a synthetic `(h.name argtuple…)` fact that
                 // is deliberately **not** written to the KB — a throwaway.
@@ -222,42 +216,42 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 /// name, and each remaining item is one argument tuple binding that hrule's
 /// parameters once. Unlike the relation-set keywords, **every** `:hrules` pair
 /// contributes — they accumulate rather than the first one winning.
-fn hrule_activators(s: &Session<'_>) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
+fn hrule_activators(kb: &Kb, terms: &Terms, ast: &Ast) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
     let mut out: FxHashMap<Symbol, Vec<Vec<Symbol>>> = FxHashMap::default();
-    let Some(solve) = s.kb.program().solve() else {
+    let Some(solve) = kb.program().solve() else {
         return out;
     };
     for &pair in solve.kw_pairs.iter() {
-        let ein_ir::Node::KwPair { key, value } = s.ast.node(ein_ir::NodeId(pair.0)) else {
+        let ein_ir::Node::KwPair { key, value } = ast.node(ein_ir::NodeId(pair.0)) else {
             continue;
         };
-        let ein_ir::Node::Keyword(name) = s.ast.node(key) else {
+        let ein_ir::Node::Keyword(name) = ast.node(key) else {
             continue;
         };
-        if s.ast.sym(name) != "hrules" {
+        if ast.sym(name) != "hrules" {
             continue;
         }
-        let ein_ir::Node::SForm { head, args } = s.ast.node(value) else {
+        let ein_ir::Node::SForm { head, args } = ast.node(value) else {
             continue;
         };
-        let Some(hrule_name) = s.ast.atom_name(head) else {
+        let Some(hrule_name) = ast.atom_name(head) else {
             continue;
         };
-        let Some(hrule_sym) = s.terms.syms.get(hrule_name) else {
+        let Some(hrule_sym) = terms.syms.get(hrule_name) else {
             continue;
         };
-        for &item in s.ast.args(args) {
+        for &item in ast.args(args) {
             let ein_ir::Node::SForm {
                 head: ihead,
                 args: iargs,
-            } = s.ast.node(item)
+            } = ast.node(item)
             else {
                 continue;
             };
             let mut argtuple = Vec::new();
-            for node in std::iter::once(ihead).chain(s.ast.args(iargs).iter().copied()) {
-                if let Some(text) = s.ast.atom_name(node)
-                    && let Some(sym) = s.terms.syms.get(text)
+            for node in std::iter::once(ihead).chain(ast.args(iargs).iter().copied()) {
+                if let Some(text) = ast.atom_name(node)
+                    && let Some(sym) = terms.syms.get(text)
                 {
                     argtuple.push(sym);
                 }
@@ -266,4 +260,40 @@ fn hrule_activators(s: &Session<'_>) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
         }
     }
     out
+}
+
+/// The `:hrules` activators that bind `h`'s parameters: the tuples written
+/// for its name with as many arguments as it has parameters.
+///
+/// An activator of another count cannot bind the parameters, so every
+/// parameter-headed premise would compile with an unbound head var.
+/// [`crate::compile::activators_for`] skips these for ordinary rules; the
+/// same skip belongs here.
+fn binding<'a>(
+    h: &Rule,
+    activators: &'a FxHashMap<Symbol, Vec<Vec<Symbol>>>,
+) -> impl Iterator<Item = &'a Vec<Symbol>> {
+    let n = h.params.len();
+    activators
+        .get(&h.name)
+        .map_or(&[][..], |v| &v[..])
+        .iter()
+        .filter(move |argtuple| argtuple.len() == n)
+}
+
+/// **How many `:hrules` activators bind each hrule**, in load order: the
+/// plans [`Hrules::new`] compiles of an hrule with parameters, none where no
+/// activator of its count is written, and `None` for an hrule without
+/// parameters, which needs no activator and is compiled once. What `ein
+/// saturate --dump` prints beside each hypothesis rule.
+pub fn activator_counts(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<(Symbol, Option<usize>)> {
+    let activators = hrule_activators(kb, terms, ast);
+    kb.program()
+        .hrules
+        .values()
+        .map(|h| {
+            let n = (!h.params.is_empty()).then(|| binding(h, &activators).count());
+            (h.name, n)
+        })
+        .collect()
 }

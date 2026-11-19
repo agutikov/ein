@@ -449,9 +449,11 @@ fn dump_kb(
     print!("{}", kb_section(ast, terms, kb, graph, strata));
 }
 
-/// **The KB section `--dump` prints**: the relations, the rules and their
-/// strata, every fact by origin ([`facts_section`]), and the query, from
-/// the `=  SATURATED KB DUMP` banner to its closing rule.
+/// **The KB section `--dump` prints**: the relations, the rules of each kind
+/// (the saturation agenda's with their strata, the obligation rules and the
+/// hypothesis rules, [`rule_line`]), every fact by origin
+/// ([`facts_section`]), and the query, from the `=  SATURATED KB DUMP` banner
+/// to its closing rule.
 fn kb_section(
     ast: &Ast,
     terms: &Terms,
@@ -495,23 +497,13 @@ fn kb_section(
 
     if !p.rules.is_empty() {
         let _ = writeln!(o);
-        let _ = writeln!(o, ";; Rules ({})", p.rules.len());
+        let _ = writeln!(o, ";; Rules — the saturation agenda's ({})", p.rules.len());
         for rule in p.rules.values() {
-            let params: Vec<String> = rule
-                .params
-                .iter()
-                .map(|&s| format!("?{}", terms.sym(s)))
-                .collect();
-            let _ = writeln!(
-                o,
-                ";;   {}  :params ({})  {}",
-                terms.sym(rule.name),
-                params.join(" "),
-                match strata.iter().find(|(r, _)| *r == rule.name) {
-                    Some((_, Some(k))) => format!("stratum {k}"),
-                    _ => "no plan compiled".to_string(),
-                }
-            );
+            let what = match strata.iter().find(|(r, _)| *r == rule.name) {
+                Some((_, Some(k))) => format!("stratum {k}"),
+                _ => "no plan compiled".to_string(),
+            };
+            let _ = writeln!(o, "{}", rule_line(terms, rule, &what));
         }
         // Whether a stratification exists, and where not,
         // each negative cycle by its relations and the rules on its edges.
@@ -534,6 +526,34 @@ fn kb_section(
             for c in &graph.cycles {
                 let _ = writeln!(o, ";;   negative cycle  {}", c.stratum_text());
             }
+        }
+    }
+
+    // The two kinds of rule no agenda holds, each in the form of a rule
+    // above: an obligation rule is read on the fixpoint and derives nothing,
+    // a hypothesis rule proposes the candidates and is read by no
+    // saturation. Beside one with parameters, how many activators bind them:
+    // the facts headed by an obligation rule's name that this knowledge base
+    // holds, and the tuples `(solve :hrules …)` writes for a hypothesis rule.
+    if !p.obligations.is_empty() {
+        let _ = writeln!(o);
+        let _ = writeln!(o, ";; Obligation rules ({})", p.obligations.len());
+        for rule in p.obligations.values() {
+            let n = (!rule.params.is_empty())
+                .then(|| ein_infer::compile::activators_for(kb, terms, rule).len());
+            let _ = writeln!(o, "{}", rule_line(terms, rule, &activators_text(n)));
+        }
+    }
+    if !p.hrules.is_empty() {
+        let _ = writeln!(o);
+        let _ = writeln!(o, ";; Hypothesis rules ({})", p.hrules.len());
+        let counts = ein_infer::hrule::activator_counts(kb, terms, ast);
+        for rule in p.hrules.values() {
+            let n = counts
+                .iter()
+                .find(|(name, _)| *name == rule.name)
+                .and_then(|(_, n)| *n);
+            let _ = writeln!(o, "{}", rule_line(terms, rule, &activators_text(n)));
         }
     }
 
@@ -561,6 +581,35 @@ fn kb_section(
     let _ = writeln!(o);
     let _ = writeln!(o, "{}", "=".repeat(70));
     o
+}
+
+/// **The dump's form for a rule**, of every kind: its name, its parameters,
+/// and what the dump knows of it, its stratum or its activators; nothing
+/// after the parameters where `what` is empty.
+fn rule_line(terms: &Terms, rule: &ein_core::entities::Rule, what: &str) -> String {
+    let params: Vec<String> = rule
+        .params
+        .iter()
+        .map(|&s| format!("?{}", terms.sym(s)))
+        .collect();
+    let line = format!(
+        ";;   {}  :params ({})  {what}",
+        terms.sym(rule.name),
+        params.join(" ")
+    );
+    line.trim_end().to_string()
+}
+
+/// How many activators bind a rule's parameters, as the dump prints it
+/// beside an obligation rule and a hypothesis rule: nothing for a rule
+/// without parameters, which no activator binds.
+fn activators_text(n: Option<usize>) -> String {
+    match n {
+        None => String::new(),
+        Some(0) => "no activator".to_string(),
+        Some(1) => "1 activator".to_string(),
+        Some(n) => format!("{n} activators"),
+    }
 }
 
 /// **A KB's facts by origin**, as `--dump` prints them: the background, the

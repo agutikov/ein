@@ -148,7 +148,7 @@ ein saturate strata.ein --dump
 
 <!-- output -->
 ```text
-;; Rules (2)
+;; Rules — the saturation agenda's (2)
 ;;   one  :params ()  stratum 0
 ;;   g  :params ()  stratum 1
 
@@ -162,8 +162,8 @@ ein saturate strata.ein --dump
   unique. A `negative cycle` row under it names each cycle: its relations, the rules on its negative edges, and
   what its parity allows. (`cycle`, without *negative*, is the monotonicity check's word for its own cycles.) The
   rows are [`08-read-out.md`](../../user/04-reference/08-read-out.md)'s.
-- **`ein saturate --dump`** prints each rule's stratum beside it, and one `;; Strata` line: *stratified, k strata*,
-  or *not stratifiable* with the same cycles.
+- **`ein saturate --dump`** prints the stratum of each rule of the saturation agenda beside it, and one
+  `;; Strata` line: *stratified, k strata*, or *not stratifiable* with the same cycles.
 - A stratified program prints no `strata` row.
 
 The even cycle of the page is [`examples/features/07_unstratifiable.ein`](../../../../examples/features/07_unstratifiable.ein):

@@ -576,6 +576,7 @@ its § 2.3 are in the catalogue:
 | claim | test |
 |---|---|
 | an obligation rule derives nothing and never reaches the firing stream; a state that owes is not a solution | `ein-infer/tests/obligation_reports.rs`: `an_obligation_rule_never_reaches_the_firing_stream`, `a_state_that_owes_is_open_and_not_a_solution` |
+| `ein saturate --dump` lists every rule of a program in the section of its kind: the saturation agenda's with its stratum, an obligation rule and a hypothesis rule with how many activators bind its parameters | `ein-cli/tests/saturate_dump_rules.rs`: `an_obligation_rule_is_listed_in_a_section_of_its_own`, `an_obligation_rule_nothing_activates_says_so`, `a_hypothesis_rule_is_listed_with_its_activators`, `every_rule_stands_in_one_section` |
 | no option, lever or flag changes what is derived or which states are in R | `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode` |
 | no order of the search, interning order or number of workers moves an answer | `ein-infer/tests/explore.rs`: `every_order_of_the_tree_is_the_oracle`; `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`; `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
 | a claim that names a relation states the whole of its held extent in every state it lists | `ein-infer/tests/claim_semantics.rs`: `naming_a_relation_closes_it_in_every_model` |
