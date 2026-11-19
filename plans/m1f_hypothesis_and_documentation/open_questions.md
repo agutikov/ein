@@ -492,7 +492,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
 | [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41) |
 | [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **defaulted 2026-11-19** (P1f.21's S1f.21.10, four consequences of Q-M1f.551): an import of `std.core` is refused; a saved file written before no longer loads; an `$EIN_STDLIB` that names no library refuses every program; the container is `einb/2.2`; built `68c3d5d0`. For the user to revise (review item 41) |
-| [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, verbatim: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* Q-M1e2.5's refusal at load is reversed: every program loads, a flagged one under a loud warning, and nothing is claimed of it. 20 corpus programs are refused today. Built by P1f.21's S1f.21.15, planned, not started |
+| [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, twice: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* and then *"Ok, I cancel those my listed decisions regarding absent -> false.  We allow to load non-monotone programs, but we don't claim about solution. That means - no tests validate the result of the solution of non-monotone programs. Remove this *forbid* from the code and docs completely."* The user's rulings of 2026-11-02 and 2026-11-04 behind Q-M1e2.5 are cancelled; every program loads, a flagged one under a loud warning, nothing claimed and nothing tested of its answer. P1f.21's S1f.21.15, started the same day |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10557,7 +10557,16 @@ Built: `68c3d5d0`.
 > I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!
 > Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?
 
+**And then, once the history below was read back**, verbatim:
+
+> Ok, I cancel those my listed decisions regarding absent -> false.  We allow to load non-monotone programs, but we
+> don't claim about solution. That means - no tests validate the result of the solution of non-monotone programs.
+> Remove this *forbid* from the code and docs completely.
+
 **Ruled: a non-monotone program loads; Ein prints a loud warning; nothing is guaranteed of what it prints after.**
+**The user's rulings of 2026-11-02 and 2026-11-04 on a refutation under an `absent` are cancelled by the user.
+No test validates the result of a non-monotone program's solution. *Forbid* is removed from the code and the pages,
+completely.**
 [Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), under which a
 program whose refutation could rest on an `absent` a commitment can still fill is refused at load, is reversed. It
 is the standing policy on non-monotone programs, *detect, document, warn, decide nothing*, applied to the one place
@@ -10585,8 +10594,9 @@ put as *forbid or respect*; that *forbid* means **refused at load and not warned
 other answer then on the table, *respect*, is what the user now says is expected: the program loads, the search
 learns from no such death, and the read-out warns.
 
-**What it takes**, planned as P1f.21's [S1f.21.15](p1f.21_verdicts_as_rules/s1f.21.15_forbid_becomes_a_warning.md),
-not started: the refusal removed and a warning in its place; the 20 corpus programs it refuses today load and are
+**What it takes**, P1f.21's [S1f.21.15](p1f.21_verdicts_as_rules/s1f.21.15_forbid_becomes_a_warning.md),
+**started 2026-11-19 on the user's word**, its scope the second ruling's (the stage file has the count of what it
+touches: 20 programs refused today, 27 flagged, and what validates their results). As first planned: the refusal removed and a warning in its place; the 20 corpus programs it refuses today load and are
 answered as any flagged program is, by the cube, with nothing claimed; that each of them is a program the static
 check flags, shown, since a route's licences rest on it; Q-M1e2.5's decision, the standing rule in `AGENTS.md`, the
 diagnostics' section and the tests rewritten; and the rows of the regressions whose right answer is that refusal
