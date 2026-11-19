@@ -497,6 +497,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.566](#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open) | How a requirement is emitted: the *must* beside `open` | **open, a default proposed**: put 2026-11-19 on the user's answer to P1f.21's item 34 (*"Maybe something like (owe (?R ?a ?_x)) … the emitted thing is actually a query"*). A requirement held as a fact, `(owe …)`, *discharged* read at the fixpoint. Default (b): the question written with the hole's domain in its place, `(owe seats Ann Chair)` |
 | [Q-M1f.567](#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f) | The `hrule` form dropped for a rule that concludes `(open F)` | **open, a default proposed**: put 2026-11-19 on the user's question in the same answer. It can: two programs answer byte for byte the same that way today. Default (b): the form goes, its activators stay in `(solve :hrules …)`; it revises Q-M1f.561's *as is* |
 | [Q-M1f.568](#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users) | `absent`, `open` and `not` nested: the cells that are the user's | **open, defaults proposed**: put 2026-11-19 with the table the user asked for. The direct `(absent (absent P))` refused; `(open (open P))` refused until dependent hypotheses are taken up; `(not (open P))`, `(open (not P))` and a written `(open P)` legal |
+| [Q-M1f.569](#q-m1f569--what-may-read-an-open-fact-and-when) | What may read an `open` fact, and when | **open, defaults proposed**: put 2026-11-19 on the user's answer to P1f.21's item 44 (*"fork removes all open facts from KB"*). A fork keeps what a rule concluded from a dropped fact. Default: a rule may read them, they are written by a pass at each state's fixpoint, and a program whose rule reads `(open R)` or an obligation's candidate is flagged as not monotone; a written `(open P)` is there in every state |
+| [Q-M1f.570](#q-m1f570--a-rule-that-concludes-open-f-beside-an-obligation-override-or-union) | A rule that concludes `(open F)` beside an obligation: override or union | **open, a default proposed**: put 2026-11-19 on the user's answers to items 44 and 45. Default (a): override, as a hypothesis rule does today; no answer moves |
+| [Q-M1f.571](#q-m1f571--what-absent-and-open-take-and-what-each-is-under-an-ordinary-relation) | What `absent` and `open` take, and what each is under an ordinary relation | **open, defaults proposed**: put 2026-11-19 on the user's answers to items 44 and 46, whose reason and whose verdicts differ in three cells. Default: `absent` takes a premise and the universal stays; `(open (open P))` refused; under an ordinary relation both are ordinary names |
+| [Q-M1f.572](#q-m1f572--whether-a-states-open-facts-are-shown-and-counted-with-its-facts) | Whether a state's `open` facts are shown and counted with its facts | **open, a default proposed**: put 2026-11-19 on the user's answer to item 44. Default (b): held, and shown apart; a state's listing, counts and identity are of its other facts |
+| [Q-M1f.573](#q-m1f573--open-as-an-obligation-or-as-a-hypothesis-and-which-hypotheses-are-candidates) | `open` as an obligation or as a hypothesis, and which hypotheses are candidates | **open, defaults proposed**: put 2026-11-19 on the user's answers to items 44 and 45. Default: a variable under `open` is read at load by what it is; a hypothesis root has decided is no candidate, as today; $H$ is root's. The user's *"Activate anywhere … in program"* filed with it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10854,3 +10859,85 @@ under none; a fact's argument is a fact a state could hold. Each cell on program
 4. **`(open P)` as a fact a program writes**: **default: legal**, a candidate given by hand.
 
 **Open.** P1f.21's second part's, with S1f.21.12.
+
+### Q-M1f.569 — What may read an `open` fact, and when
+
+**Raised** 2026-11-19 by the coordinator, on the user's answer to P1f.21's review item 44 (in the part's answers'
+file, not filed as a ruling yet): *"So lit's pick option when fork removes all open facts from KB."*; and of item
+32, ruled: *"btw, absent see it the same way as other facts."* A fork starts from root's fixpoint, so dropping the
+`open` facts there leaves what a rule concluded from them. Shown on runs in
+[review item 47](p1f.21_verdicts_as_rules/review/part-2/47-Q-M1f.569/README.md): with `(unfinished seats)` standing for `(open seats)` and a rule
+that reads it, both facts are held today at all 7 of the seats cube's nodes that owe nothing, and the fork rule
+takes out the first of the two only.
+
+1. **May a rule's `:match` read an `open` fact?** (a) Not in this phase. (b) Yes: the `open` facts are written by a
+   pass at each state's fixpoint, the rules that read them run after it, and a program whose rule reads
+   `(open R)`, an obligation's candidate or the absence of either is flagged as not monotone. (c) Yes, and the
+   kernel drops at the fork what was concluded from a dropped fact. **Default (b).**
+2. **A written `(open P)` at a fork**: (a) there in every state; (b) dropped. **Default (a).**
+3. **Every rule that concludes `(open …)` is read at every state**, a hypothesis rule among them, and $H$ stays
+   root's. **Default: so.**
+
+**Open.** P1f.21's second part's.
+
+### Q-M1f.570 — A rule that concludes `(open F)` beside an obligation: override or union
+
+**Raised** 2026-11-19 by the coordinator, on the user's answers to items 44 and 45: *"All hypotheses generated by
+obligation rules also go into (open ...) context. Here for obligations everythin remain as is."*; *"now it can do
+any rule that assert open facts."* Today a declared hypothesis rule overrides the obligations as a source of
+candidates. If both write `(open F)` and $H$ is what root holds, $H$ is their union. On runs,
+[review item 48](p1f.21_verdicts_as_rules/review/part-2/48-Q-M1f.570/README.md): `14_seats_nothing_proposes.ein` goes from 4 states of $R$ to 8,
+`13_witness_of_two.ein` from 5 to 8, and `zebra.ein`'s commitments from 261 982 to 68 719 459 314.
+
+(a) Override, as today: where a rule concludes `(open F)` at root the obligations write none. (b) Union. (c) Union,
+and a flag of `(solve …)` turns the obligations' proposals off. **Default (a)**: no answer moves.
+
+**Open.** P1f.21's second part's.
+
+### Q-M1f.571 — What `absent` and `open` take, and what each is under an ordinary relation
+
+**Raised** 2026-11-19 by the coordinator, on the user's answers to item 46, *"their argument must be a fact,
+(absent P) is not a fact, while (open P) is"*, and to item 44, *"The same with `absent` - it is allowed but doesn't
+work in context it became simple fact."* The reason gives three results the verdicts do not: it refuses
+`(absent (and G W))`, which 18 of the corpus's 20 loading obligation rules write, and the universal; it does not
+refuse `(open (open P))`; and the two answers differ on `(absent P)` as an argument. On runs,
+[review item 49](p1f.21_verdicts_as_rules/review/part-2/49-Q-M1f.571/README.md).
+
+1. **`absent`'s argument**: (a) a premise, a pattern or a conjunction that may hold an `absent`, only the direct
+   `(absent (absent P))` refused; (b) no `absent` inside an `absent`. **Default (a).**
+2. **`(open (open P))`**: (a) refused, by *directly under `open`, neither kernel word*; (b) legal. **Default (a)**,
+   the user's verdict.
+3. **Under an ordinary relation**: (a) both are ordinary names, plain facts; (b) `open` is, and `absent` stays
+   refused as an argument, as today. **Default (a)**, the user's word in item 44.
+
+**Open.** P1f.21's second part's.
+
+### Q-M1f.572 — Whether a state's `open` facts are shown and counted with its facts
+
+**Raised** 2026-11-19 by the coordinator, on the user's answer to item 44: *"(open R) also saved as fact. … they
+are ordinary facts"*. Held as ordinary facts they are in every listing of a state, every count, and in what makes
+two commitments one state. On runs, [review item 50](p1f.21_verdicts_as_rules/review/part-2/50-Q-M1f.572/README.md): with the candidates held as
+facts under a stand-in, `ein solve`, `ein show hyps` and `ein oracle` print the same and `-p`, `ein saturate --dump`
+and `--dump-answer` do not.
+
+(a) Like any fact. (b) Held, and shown apart: a state's listing, counts and identity are of its other facts, and a
+saved file leaves them out. (c) Held, and shown only by `ein show hyps` and to a rule. **Default (b).**
+
+**Open.** P1f.21's second part's.
+
+### Q-M1f.573 — `open` as an obligation or as a hypothesis, and which hypotheses are candidates
+
+**Raised** 2026-11-19 by the coordinator, on the user's answers to item 44, *"(open R) is obligation and (open
+(fact)) is an explicit hypothesis"*, and to item 45, *"we just activate hypotheses generating rules anywhere"*,
+which the user clarified the same day: *"by "Activate anywhere" I meant in program, not necessary in :hrules
+list"*. On runs, [review item 51](p1f.21_verdicts_as_rules/review/part-2/51-Q-M1f.573/README.md).
+
+1. **A variable under `open`**: (a) read at load by what it is, a relation's parameter the obligation, a variable
+   the `:match` binds a hypothesis; (b) a hypothesis is always written with its fact. **Default (a).**
+2. **A hypothesis root has decided**: (a) held and no candidate, as today; (b) a candidate. **Default (a).**
+3. **$H$ is root's `open` facts**; one first concluded above root is held and not proposed. **Default: so.**
+
+**Filed with it**, the clarification: an activator of a rule that concludes `(open F)` is a fact the program
+writes, anywhere in it. A rule that could derive one is the loader's check on what a rule could derive, unchanged.
+
+**Open.** P1f.21's second part's.

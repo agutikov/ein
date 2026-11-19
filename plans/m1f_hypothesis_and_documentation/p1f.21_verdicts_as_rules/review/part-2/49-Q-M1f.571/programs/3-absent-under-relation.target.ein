@@ -1,0 +1,4 @@
+;;; Item 49, cell 3: `absent` under an ordinary relation, as a written fact.
+;;; Refused today at the parse.
+
+(think Ann (absent (p A)))

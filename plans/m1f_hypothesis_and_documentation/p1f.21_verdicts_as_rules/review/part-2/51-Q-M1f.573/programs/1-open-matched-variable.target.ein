@@ -1,0 +1,9 @@
+;;; Item 51, question 1: `(open ?f)` where ?f is bound by the :match to a fact.
+;;; As it would be written for a hypothesis; what today's loader says of it is
+;;; in the runs.
+
+(candidate (p A)) (candidate (p B))
+(rule propose ()
+  :match  (candidate ?f)
+  :assert (open ?f)
+  :why    "{?f} may be supposed.")

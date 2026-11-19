@@ -211,7 +211,7 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | modules of the standard library, additive | **done**, merged whole: `std.negation`, `std.contradiction` and, on the user's ruling, `std.debts` (`edbe6c3b`) |
 | 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | **done** |
 | 4 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | | *forbid* removed; a non-monotone program loads, warned, nothing claimed or tested of its answer (Q-M1f.564, the user's ruling) | **done** |
-| | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | | the `:hrules` clause lists activators as a rule's are written (Q-M1f.565, the user's ruling) | nothing; after S1f.21.15 |
+| | [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | | the `:hrules` clause lists activators as a rule's are written (Q-M1f.565, the user's ruling). **Not started, and not to be**: the user drops it once `:hrules` is removed | |
 | | [S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md) | | | a warning where the loader refused for what a rule could derive (review item 38's answer, as read); `std.core` by import and by `$EIN_STDLIB` (item 41's) | the user's word on the reading; after S1f.21.16 |
 | 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | its questions **ruled** (Q-M1f.557 (d), Q-M1f.447 (c)); after S1f.21.15, .16 and .17 |
 | 5 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6, 7, 9, 12, half of 10 | the pages of the first part | every build of the part |

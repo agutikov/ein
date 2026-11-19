@@ -1,7 +1,9 @@
 # S1f.21.16 — the `:hrules` clause lists activators as a rule's are written
 
 **Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
-**Status:** planned 2026-11-19 on the user's ruling; **not started**: it starts on the user's word.
+**Status:** planned 2026-11-19 on the user's ruling; **not started, and not to be**: the user, the same day, *"not start
+S1f.21.16, will drop it after :hrules removed"*. The user's answer to review item 45 removes the `hrule` form and the
+keyword `:hrules`, so the clause this stage spells again goes. The stage is dropped once that is built.
 **Waits on:** no decision: [Q-M1f.565](../open_questions.md#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written).
 In order it runs after [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md), which moves the same goldens, and before
 [S1f.21.11](s1f.21.11_kill_and_three_conventions.md).

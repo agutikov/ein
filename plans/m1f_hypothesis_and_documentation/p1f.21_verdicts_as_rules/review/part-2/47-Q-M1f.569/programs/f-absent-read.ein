@@ -1,0 +1,31 @@
+;;; Item 47: a rule that reads the absence of a *may*.
+;;; Only `chosen` is asked here; `not-asked` holds of each drink of which
+;;; `served` is not asked.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (question (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink)
+
+(hrule ask (?R)
+  :match  (question (?R ?x))
+  :assert (?R ?x)
+  :why    "suppose ({?R} {?x}): it is asked")
+(solve :hrules (ask (chosen)))
+
+(rule not-asked ()
+  :match  (and (is-a ?x Drink) (absent (question (served ?x))))
+  :assert (not-asked ?x)
+  :why    "whether {?x} is served is not asked.")

@@ -1,0 +1,14 @@
+;;; Item 49, cell 1: an `absent` inside an `absent`, a conjunction between:
+;;; the universal, "every member of the group is a p". It is how the standard
+;;; library's `forall` and std.debts' `discharged-from-nothing-unpaid` are written.
+
+(q-of G1 A) (q-of G1 B) (p A) (p B)
+(q-of G2 C) (q-of G2 D) (p C)
+(group G1) (group G2)
+(rule all-p ()
+  :match  (and (group ?g) (absent (and (q-of ?g ?x) (absent (p ?x)))))
+  :assert (all-p ?g)
+  :why    "every member of {?g} is a p")
+
+;; root alone: the question is what root derives
+(solve :no-search)

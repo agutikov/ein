@@ -1,0 +1,18 @@
+;;; Item 50: the hypotheses proposed and held by no state, which is today.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+(solve :hrules (guess (chosen Drink) (served Drink)))

@@ -1,0 +1,11 @@
+;;; Item 49, cell 3 with today's engine, `question` standing for `open`:
+;;; (think Ann (question (p A))) is a fact with a fact inside. Nothing reads
+;;; the inner one: (p A) is not asked, and only (p B) is a candidate.
+
+(think Ann (question (p A)))
+(question (p B))
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))

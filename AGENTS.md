@@ -372,11 +372,12 @@ paragraph, no register count, no measurement (the user's rule).
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   run in two parts on the user's word, what does not touch `open` or the
   hypotheses first: S1f.21.6, S1f.21.8, S1f.21.10 and S1f.21.15 done, then
-  S1f.21.16 (the `:hrules` clause lists activators whole, Q-M1f.565),
   S1f.21.17 (a warning where the loader refused for what a rule could
   derive; `std.core` by import and by `$EIN_STDLIB`), S1f.21.11 (ruled:
-  Q-M1f.557 (d), Q-M1f.447 (c)) and the part's pages; Q-M1f.566 to
-  Q-M1f.568 wait with the second part. **No other stage of P1f.21 starts
+  Q-M1f.557 (d), Q-M1f.447 (c)) and the part's pages. S1f.21.16 (the
+  `:hrules` clause's spelling, Q-M1f.565) is not started and is dropped
+  once the second part removes `:hrules` (the user's word). Q-M1f.566 to
+  Q-M1f.573 wait with the second part. **No other stage of P1f.21 starts
   without the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is

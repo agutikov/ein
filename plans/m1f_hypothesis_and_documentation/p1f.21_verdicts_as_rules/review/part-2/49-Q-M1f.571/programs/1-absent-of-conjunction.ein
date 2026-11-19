@@ -1,0 +1,14 @@
+;;; Item 49, cell 1: `absent` over a conjunction, a guard and a fact.
+;;; It is how 18 of the corpus's 20 loading obligation rules are written.
+
+(relation is-a  T T         :why "{?3} is a {?4}")
+(relation seats Guest Chair :why "{?3} is seated at {?4}")
+(is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair)
+(seats Ann C1)
+(rule unseated ()
+  :match  (and (is-a ?a Guest) (absent (and (is-a ?b Chair) (seats ?a ?b))))
+  :assert (unseated ?a)
+  :why    "{?a} has no chair.")
+
+;; root alone: the question is what root derives
+(solve :no-search)
