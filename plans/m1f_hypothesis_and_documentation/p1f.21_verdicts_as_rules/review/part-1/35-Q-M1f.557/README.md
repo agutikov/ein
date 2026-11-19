@@ -126,6 +126,29 @@ rule that loads and silently reads nothing. The smallest change that keeps it:
 
 That is option (e) below, said as a change to the language.
 
+## And a quantifier over the relation
+
+Your question, 2026-11-19, verbatim: *"foreach ?R also wouldn't work, right?"*
+
+**Right, it would not.** There is no `foreach` in Ein; the nearest things are a premise that takes the relation
+from a fact that lists it, and `std.macro`'s `forall`. Both are refused with the same line, since each still writes
+`?R` first in a pattern, and the loader asks only whether `?R` is a parameter:
+
+| program | how the relation is reached | `ein solve` |
+|---|---|---|
+| [`reach-relation-from-a-fact.ein`](programs/reach-relation-from-a-fact.ein) | `(and (relation ?R ?l) (?R ?a) (not (?R ?a)))`: `?R` bound by a declaration, then written first | refused: *its :match writes (?R ?a) with ?R as its relation, which no parameter binds* |
+| [`reach-forall-relation.ein`](programs/reach-forall-relation.ein) | `(forall ?R (relation ?R ?l) (absent (and (?R ?a) (not (?R ?a)))))` | refused, the same line |
+
+`forall` is no loop either: it is the macro `(absent (and G (absent B)))`, *nothing satisfies the guard and not the
+body*, one premise of one rule.
+
+**What Ein has for *each relation* today is a rule that derives an activator**: `clash-of-1` matches a declaration
+`(relation ?R ?l)` and concludes `(clash-1 ?R)`, and `clash-1` is then compiled once for that `?R`. That is the
+loop, and it shows where the gap is: it runs over what some fact lists, and nothing lists a relation no file
+declares. So a quantifier over declarations, were it allowed, would reach exactly what `clash-of-N` reaches and no
+more. Only a relation read off the denied fact itself, option (e), reaches every relation, since every stored
+negation carries the relation of what it denies.
+
 ## The options
 
 - **(a) An activator for every head, made at load.** The loader knows every atom a program writes first in a
