@@ -1,0 +1,25 @@
+;;; Item 61: the *may* held as a fact, and a rule that reads it, in the spelling ruled: `guess` concludes
+;;; `(open (?R ?x))`, activated by two facts, and `asked` reads the hypotheses of `chosen`. Refused at the parse today.
+;;; The page of Q-M1f.569 ran its stand-in, f-held-and-read.ein, with `question` for `open`.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (open (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink) (guess served Drink)
+
+(rule asked ()
+  :match  (open (chosen ?x))
+  :assert (asked ?x)
+  :why    "whether {?x} is chosen is asked.")

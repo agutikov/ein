@@ -1,0 +1,11 @@
+;;; Item 60, the blind enumerator writes: one person, one food, four relations, and no rule that proposes, so
+;;; the blind enumerator guesses a fact of every relation over every name. The page of Q-M1f.578 ran it as
+;;; 1-blind-no-list.ein.
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)

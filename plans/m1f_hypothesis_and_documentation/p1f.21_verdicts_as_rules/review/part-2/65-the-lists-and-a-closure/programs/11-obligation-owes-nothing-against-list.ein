@@ -1,0 +1,19 @@
+;;; Item 65: 6-obligation-against-list.ein of the page of Q-M1f.578 with Ann's debt paid at root: she likes Soup.
+;;; The obligation is activated and owes nothing, so root holds no `open` fact. Today the list's conflict with the
+;;; obligation is judged on what the program declares, and the program is refused; judged on the `open` facts root
+;;; holds, as the ruling's words read, nothing disagrees (Q-M1f.597).
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+(likes Ann Soup)
+
+(rule owes-food ()
+  :match  (and (person ?a) (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} is owed a food to like.")
+(solve :no-hypothesis (likes))

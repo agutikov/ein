@@ -1,0 +1,21 @@
+;;; Item 59, the stand-in for with-a-fact.target.ein: `question` stands for `open`, and one hypothesis rule, `ask-p`,
+;;; supposes what is asked. The page of Q-M1f.575 ran it as question-with-a-fact.ein.
+
+(relation thing T :why "{?3} is a thing")
+(relation seen  T :why "{?3} is seen")
+(relation p     T :why "{?3} is a p")
+
+(thing A) (thing B)
+
+(rule propose ()
+  :match  (thing ?x)
+  :assert (and (question (p ?x)) (seen ?x))
+  :why    "{?x} is seen, and may be a p.")
+
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))
+
+(query :goal (p ?x))

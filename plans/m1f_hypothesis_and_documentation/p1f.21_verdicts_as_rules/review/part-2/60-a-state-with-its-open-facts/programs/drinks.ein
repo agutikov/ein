@@ -1,0 +1,19 @@
+;;; Item 60, a rule writes: two drinks, each may be chosen and may be served, one chosen at most. The hypothesis
+;;; rule as it is written today (the page of Q-M1f.572 ran it as a-drinks-hrule.ein).
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+(solve :hrules (guess (chosen Drink) (served Drink)))

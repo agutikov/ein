@@ -117,4 +117,45 @@ condition of the build: whatever it answers is reported, and the review is the u
 
 ## Record
 
-Nothing yet.
+**Task 1, the examples: done 2026-11-20**, in a subagent of its own beside part 1's two builds; it changed no code,
+no stdlib, no corpus file and no page of `docs/`. Its items are 58 to 65 of [part 2 of the bundle](review/part-2/README.md),
+each a page and its programs; every run is the gate build of the engine at `669d7d43`'s branch point
+(`build/review-bin/ein-head-edbe6c3b`) with the checkout's `stdlib/`, on the corpus at `669d7d43`, which the two
+builds beside it do not touch here. Each item's `tools/run.sh` re-takes its `runs/`; both are ignored by git and
+mirrored under `build/review-incoming/p1f21-s12-examples/`.
+
+| task 1 | item | what it found |
+|---|---|---|
+| 1, and the corpus lists of 6, 7 and 8 | [58](review/part-2/58-the-corpus-under-the-rulings/README.md) | taken again on today's corpus (931 entries): 15 programs that load today move (the union 5, of which `13_witness_of_two` and `14_seats_nothing_proposes` lose their claim; an obligation that no longer steps aside 8, 6 newly flagged, each read by a `test` run or a regression row; `13_mixed_solution_and_open` an error; `06_blind_enumeration` refused); no program under `tests/` becomes flagged; no new flag from Q-M1f.574's site (its three programs are flagged today); no rule reads an `open` fact or could; 20 of the 30 regression witnesses of Q-M1f.66 and Q-M1f.86 would load (15 by the rulings, 5 by Q-M1f.596's default) |
+| 2 | [59](review/part-2/59-three-programs-as-ruled/README.md) | *zebra2* as ruled answers as today on the stand-in; the seats answer 16 candidates and 8 states by the union; a hypothesis beside a fact loads |
+| 3 | [60](review/part-2/60-a-state-with-its-open-facts/README.md) | a state's `open` facts, one program a writer, root and one state above, `-p` composed, a dump and a drawing on the stand-in |
+| 4 | [61](review/part-2/61-a-rule-that-reads-open/README.md) | the three programs of Q-M1f.569's page in the spelling ruled, refused today, each flagged once built; the warning's rows are today's, the site's row composed |
+| 5 | [62](review/part-2/62-what-a-fork-drops/README.md) | on the seats cube, by two readings that agree at every node: `(open seats)` at the nine nodes that owe, at neither state of $R$ |
+| 6 | [63](review/part-2/63-the-bare-open/README.md) | `06_blind_enumeration.ein`: its claim kept two ways; its Rust test's check on names kept by a program with no obligation activated; the check on activator facts can no longer be asked; once built no corpus program steps aside |
+| 7 | [64](review/part-2/64-an-obligation-that-no-longer-steps-aside/README.md) | the eight on the stand-in (the guard read at root): four answer an empty $R$; `oblig-derived-domain.ein` answers an empty $R$, and `(likes Ann Pie)` if Pie is a food at root or a rule proposes it, flagged either way |
+| 8 | [65](review/part-2/65-the-lists-and-a-closure/README.md) | of the ruling's page's eight, program 7 becomes an error; in the corpus `13_mixed_solution_and_open` alone |
+
+**Questions put, each on its item with a default; ids reserved for the coordinator to file:**
+
+| id | item | question | default |
+|---|---|---|---|
+| Q-M1f.595 | 65 | an `open` fact of a relation `:hypothesis-relations` leaves out: an error too? | (a) yes: a white list beside `open` facts names exactly their relations |
+| Q-M1f.596 | 58 | where `open` may be written once it is the kernel's relation, in the places the rulings do not name | (a) a name where a name stands, a macro's body may write `(open ?R)`; refused where a program would declare it, write `(open x)` with `x` no fact, make an obligation owe it, or name it in a list |
+| Q-M1f.597 | 65 | whether the lists and a closure are judged against the `open` facts root holds or what the program declares | (a) the `open` facts root holds, as the ruling's words |
+| Q-M1f.598 | 62 | whether the pass writes at a dead state | (a) yes, as at any state, where it owes |
+| Q-M1f.599 | 58 | the blind enumerator beside a rule that concludes nothing at root | (a) it runs where root holds no `open` fact and no obligation is activated |
+| Q-M1f.600 | 63 | what becomes of `06_blind_enumeration.ein` | (a) rewritten with no obligation activated, the blind enumerator running |
+
+Q-M1f.601 to Q-M1f.604 are not used.
+
+**Findings outside the task, for the coordinator to file (V-40 to V-42; V-43 and V-44 not used):**
+
+- **V-40.** `examples/broken/open_in_match.ein` and `examples/broken/open_mixed_assert.ein`, parse-negative
+  witnesses of Q-M1f.66, write no `:why`. Once `open` parses where they write it, both are refused for the missing
+  `:why` before reaching what their corpus notes say they witness; the first's subject, a rule that reads `open`, is
+  legal by Q-M1f.569.
+- **V-41.** `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form.
+  S1f.21.18's sweep, which writes every program's hypothesis rules again, has to reach a saved file's forms too.
+- **V-42.** `examples/syntax/query-full.ein`'s goal names `drinks`, which only its two hypothesis rules write. Once
+  they conclude `(open (drinks …))`, the loader's check that a goal names a relation of the program has to read
+  under `open`, or the program is refused, as it is today with the hypothesis rules deleted.

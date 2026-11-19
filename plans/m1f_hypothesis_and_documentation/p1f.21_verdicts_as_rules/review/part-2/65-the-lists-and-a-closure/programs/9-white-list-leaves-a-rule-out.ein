@@ -1,0 +1,21 @@
+;;; Item 65, the white list's other direction: a rule proposes `likes` and `knows`, and `:hypothesis-relations`
+;;; lists `likes` alone. Every relation the list names has an `open` fact, which is the direction ruled; an `open`
+;;; fact of `knows`, which the list leaves out, is the direction not named (Q-M1f.595).
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+
+(hrule guess ()
+  :match  (and (person ?p) (food ?f))
+  :assert (likes ?p ?f)
+  :why    "does {?p} like {?f}?")
+(hrule meet ()
+  :match  (and (person ?p) (food ?f))
+  :assert (knows ?p ?f)
+  :why    "does {?p} know {?f}?")
+(solve :hrules (guess meet) :hypothesis-relations (likes))

@@ -1,0 +1,45 @@
+;;; Item 64: examples/ein-bugs/wrong-answers/oblig-derived-domain.ein with a rule that says what Ann may like, in
+;;; the spelling ruled (Q-M1f.566, Q-M1f.567): `may-like` concludes `(open (likes ?a ?d))` for every dish, beside the
+;;; obligation, which writes its guard's candidates at root (Q-M1f.579); H is the two together (Q-M1f.570). Refused
+;;; at the parse today: `open` over a fact. Its stand-in is oblig-derived-domain.a-rule-proposes.ein.
+
+(relation person T :why "{?3} is a person")
+(relation food   T :why "{?3} is a food")
+(relation dish   T :why "{?3} is a dish")
+(relation likes  T T :why "{?3} likes {?4}")
+
+(person Ann)
+(food Soup)
+(dish Pie)
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food")
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (and (likes ?p ?f) (dish ?d))
+  :assert (food ?d)
+  :why    "once {?p} likes {?f}, the dish {?d} is on the menu")
+
+(rule may-like ()
+  :match  (and (person ?a) (dish ?d))
+  :assert (open (likes ?a ?d))
+  :why    "{?a} may like the dish {?d}")
+
+(solve
+  :no-hypothesis (person food dish))
+
+(query
+  :goal   (likes ?p ?f))

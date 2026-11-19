@@ -1,0 +1,45 @@
+;;; Item 63: what tests/stdlib/bijection/06_blind_enumeration.ein checks, with no obligation activated, so that
+;;; the blind enumerator runs where nothing proposes, as the rulings let it (Q-M1f.576, Q-M1f.578).
+;;;
+;;; The file's own activators, `bijective-setup`'s, are written here by hand, every one but `total-owed` and
+;;; `surjective-owed`, which would activate an obligation and switch the blind enumerator off. `std.algebra` and
+;;; `std.slots` are imported whole, so the four obligation rules of the library are loaded and none is activated:
+;;; the blind enumerator runs with their names in the program, which is the half of the Rust test's check that can
+;;; still be made (the name of an obligation rule is no candidate object). The other half, *the enumerator never
+;;; proposes an activator fact of an obligation*, cannot be put: where one is held, its obligation is activated
+;;; and the enumerator does not run.
+
+(import std.algebra)
+(import std.bijection)
+(import std.slots)
+
+(relation is-a  T T           :why "{?3} is a {?4}")
+(relation is-a* T T           :why "{?3} is a {?4} (transitively)")
+(relation seats Guest Chair   :why "{?3} sits on {?4}")
+(relation sort  T T           :why "{?3} is a declared sort of {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(sort Guest Sortal) (sort Chair Sortal)
+
+(std.algebra.includes is-a is-a*)
+
+;; bijective-setup's activators, but the two obligations'
+(std.algebra.functional seats) (std.algebra.injective seats)
+(std.algebra.total seats) (std.algebra.surjective seats)
+(std.algebra.total seats is-a) (std.algebra.surjective seats is-a)
+(std.bijection.domain-elimination seats is-a) (std.bijection.range-elimination seats is-a)
+(std.bijection.functional-negative seats is-a) (std.bijection.injective-negative seats is-a)
+;; typecheck-setup's
+(std.bijection.typecheck-arg-0 seats is-a* Guest) (std.bijection.typecheck-arg-1 seats is-a* Chair)
+
+(seats Ann C1)
+
+(solve
+  :no-hypothesis (is-a is-a* sort)
+  :expect (region (model (seats Ann C1) (seats Bob C2)
+                         (not (seats Ann C2)) (not (seats Bob C1)))))
+
+(query
+  :goal (seats ?who ?where))

@@ -1,0 +1,27 @@
+;;; Item 60, the stand-in for drinks.ein: `guess` is an ordinary rule that concludes each candidate under
+;;; `question`, which stands for `open` (the parse reads `open` nowhere but as an obligation's whole `:assert`
+;;; today); one hypothesis rule supposes what is asked, which is what the kernel would do itself, H being root's
+;;; `open` facts. Its activators are facts, as the ruling writes them (Q-M1f.567).
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (question (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink) (guess served Drink)
+
+(hrule ask (?R)
+  :match  (question (?R ?x))
+  :assert (?R ?x)
+  :why    "suppose ({?R} {?x}): it is asked")
+(solve :hrules (ask (chosen) (served)))

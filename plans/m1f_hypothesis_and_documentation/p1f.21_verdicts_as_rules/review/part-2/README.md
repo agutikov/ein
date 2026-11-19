@@ -2,17 +2,34 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**No question of this part is open.** Every item is ruled, each answer in your words in
-[the phase's README](../../README.md) and under its question in the ledger. This folder holds an item again when a
-stage of the part puts a question.
+**Eight items are open, 58 to 65: the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), its task 1,
+which stops for you before anything is built.** Each is a folder with its page and its programs; each has a default
+and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
+point, on the corpus at `669d7d43`; where a ruled form cannot be written today, a stand-in runs (`question` for
+`open`) and the page says what stands for what. Each item's `tools/run.sh` re-takes its `runs/` (ignored by git).
+
+## What is left for you
+
+| # | what it shows | what it asks | the default |
+|---|---|---|---|
+| [**58**](58-the-corpus-under-the-rulings/README.md) | **the corpus under your rulings**: every program whose candidates, answer, claim or flag would change. 15 that load today move (5 by the union, 8 by an obligation that no longer steps aside, 1 an error under the lists, 1 refused for its bare `(open)`), 6 of them newly flagged, none under `tests/`; 20 regression witnesses of `open` would load | is this the list to build to; **Q-M1f.596**: where `open` may be written as a name; **Q-M1f.599**: the blind enumerator beside a rule that concludes nothing at root | (a) yes; Q-M1f.596 (a): a name where a name stands, refused where a program would declare it; Q-M1f.599 (a): it runs where root holds no `open` fact and no obligation is activated |
+| [**59**](59-three-programs-as-ruled/README.md) | three programs in the spelling ruled: *zebra2* answers as today; the seats answer otherwise, by the union; a hypothesis beside a fact loads | nothing new | (a) as written |
+| [**60**](60-a-state-with-its-open-facts/README.md) | a state with its `open` facts, one program of each writer: what `-p`, a dump and a drawing would show | nothing new | (a) as shown |
+| [**61**](61-a-rule-that-reads-open/README.md) | a rule that reads an `open` fact: the three programs of Q-M1f.569's page, all flagged once built, and the warning's rows | nothing new | (a) as shown |
+| [**62**](62-what-a-fork-drops/README.md) | what a fork drops, on the seats cube, node by node: `(open seats)` at every node that owes, at neither state of $R$ | **Q-M1f.598**: the pass at a dead state | (a) it writes there as at any state |
+| [**63**](63-the-bare-open/README.md) | `06_blind_enumeration.ein`, refused once built: its claim two other ways, and the half of its Rust test no run can ask | **Q-M1f.600**: what becomes of the file | (a) rewritten with no obligation activated, the blind enumerator running |
+| [**64**](64-an-obligation-that-no-longer-steps-aside/README.md) | the eight programs whose obligation steps aside today, and `oblig-derived-domain.ein`: on the stand-in its $R$ is empty; it answers `(likes Ann Pie)` if Pie is a food at root or a rule proposes it | build as ruled | (a) as ruled, the program shown again after the build |
+| [**65**](65-the-lists-and-a-closure/README.md) | the two lists and a closure against root's `open` facts: one corpus program becomes an error | **Q-M1f.595**: the white list's other direction; **Q-M1f.597**: what the check reads | Q-M1f.595 (a): an error too; Q-M1f.597 (a): the `open` facts root holds |
+
+Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
 
 ## The stages your rulings plan
 
-Neither is started; each starts on your word, after part 1.
+Neither is built; each starts on your word, after part 1.
 
 | stage | what it builds |
 |---|---|
-| [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md) | `open` facts: `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written at each state's fixpoint and dropped at a fork; $H$ root's, the union; the blind enumerator only where root holds no `open` fact, the two lists and a closure its configuration; a rule that reads an `open` fact, or a hypothesis first held above root, makes its program not monotone; the nesting rule; the `open` facts part of a state. **Its examples first**, on the corpus, and they stop for you. After the build, `oblig-derived-domain.ein` is shown to you, as you asked |
+| [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md) | `open` facts: `(open R)` held where a state owes, `(open F)` a hypothesis any rule may conclude, written at each state's fixpoint and dropped at a fork; $H$ root's, the union; the blind enumerator only where root holds no `open` fact, the two lists and a closure its configuration; a rule that reads an `open` fact, or a hypothesis first held above root, makes its program not monotone; the nesting rule; the `open` facts part of a state. **Its examples are items 58 to 65.** After the build, `oblig-derived-domain.ein` is shown to you, as you asked |
 | [S1f.21.18](../../s1f.21.18_the_hrule_form_removed.md) | the `hrule` form and the keyword `:hrules` removed: 119 program files written again, each answering as before, then the form deleted |
 
 ## Ruled, and out of the bundle
