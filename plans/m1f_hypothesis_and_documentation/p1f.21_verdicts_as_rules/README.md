@@ -193,6 +193,14 @@ And on the module that holds the rule from `(false)` to the key, the same day, v
 ok now, later will decide how it could be customized"* ([Q-M1f.551](../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)); and
 on the order: *"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*.
 
+And, when the coordinator briefed S1f.21.10 that `std.core` must declare nothing, verbatim: *"there is no
+requirement "std.core must declare nothing" - it may declare; The elimination rule cannot go into the always-loaded
+module as it stands - what is it about, wrong std.core? examples?"*. The brief was corrected: `std.core` may
+declare, and a claim that a declaration moves is shown and not re-banked
+([V-14](findings.md#v-14--a-declaration-an-import-brings-is-not-inert)). The second is answered with a program run
+four ways in [V-12](findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands): it is nothing
+about `std.core`, it is what S1f.21.11 would add to it.
+
 ## The order: two parts
 
 The user, 2026-11-19, verbatim:

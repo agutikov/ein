@@ -10311,8 +10311,10 @@ does: over the 606 corpus programs swept, importing it and asking for nothing mo
 - **A rule with no parameter reads a fact the program writes.** It can have no activator, so `clash-of-0` to
   `clash-of-6`, which activate the contradiction's rules from the declarations, each read `(clash-of-declared)`; in
   the design they fired on every program that held them.
-- **No module declares a relation.** A declaration an import brings is not inert
-  ([V-14](p1f.21_verdicts_as_rules/findings.md#v-14--a-declaration-an-import-brings-is-not-inert)).
+- **None of the modules built declares a relation**: a choice of the build and no rule, since a declaration an
+  import brings is not inert
+  ([V-14](p1f.21_verdicts_as_rules/findings.md#v-14--a-declaration-an-import-brings-is-not-inert)). A module may
+  declare; the user said so of `std.core` the same day.
 
 Built: `b0ee99f4`, merged by `ca98dec2`. The third set of the stage, the requirement, the payment and `discharged`
 (`std.debts`, with its relations `debt-due`, `debt-paid` and `debts-discharged` and its fact `(debts-of-owed)`), is

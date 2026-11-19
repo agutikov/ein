@@ -52,10 +52,11 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    each shown: the elimination stays a module a program imports, and `not`'s meaning in the module every program
    gets is the contradiction alone; the check reads the rule as it is; the rule is written another way. Default:
    the first, which changes no program.
-7. **What the module every program gets may hold**
-   ([V-14](findings.md#v-14--a-declaration-an-import-brings-is-not-inert)): no declaration and no name a program's
-   rule can reach, as S1f.21.10 holds `std.core` to; the contradiction's rules are checked against it before they
-   are added.
+7. **What the module every program gets brings with a declaration**
+   ([V-14](findings.md#v-14--a-declaration-an-import-brings-is-not-inert)). `std.core` may declare, as any module
+   (the user: *"there is no requirement "std.core must declare nothing" - it may declare"*). A declaration there is
+   then every program's: its labels are names a free `neq` binds over. So what the stage adds to the module is run
+   over the corpus first, and a claim that moves by a declaration is shown, with the program, and not re-banked.
 
 ## Task 2 — the build, on the rulings, in this order
 

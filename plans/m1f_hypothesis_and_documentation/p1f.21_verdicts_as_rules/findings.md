@@ -423,10 +423,52 @@ programs that import nothing are refused on importing it: `examples/lattice/02_g
 `03_state_hash_collision.ein`, `15_union_label_dead.ein` and `16_pair_through_closure.ein`, each naming its hrule
 `guess (?R ?T)` more than once in `(solve :hrules …)`.
 
-**What it decides.** [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) gives every program the meaning of `not`,
-the contradiction and the elimination, in the module every program gets. The contradiction's rules load wherever a
-program does (`clash-N` concludes `(false)`). The elimination's do not, so as written it stays a module a program
-imports, or the check, the rule or the four programs change: S1f.21.11's to show.
+**It is nothing about `std.core`**, which S1f.21.10 builds with one rule, from `(false)` to the key, and which loads
+beside every program. It is about what a later stage would add to it.
+[S1f.21.11](s1f.21.11_kill_and_three_conventions.md) planned to give every program the meaning of `not`, the
+contradiction and the elimination, in that module. The contradiction's rules load wherever a program does
+(`clash-N` concludes `(false)`). The elimination's do not: as the rule is written and as the loader's check reads
+it, putting it in a module every program gets would refuse those four programs, which import nothing.
+
+**The smallest program that shows it**, run four ways on the build of S1f.21.8's branch:
+
+```lisp
+(import std.negation)                       ; (1) no import · (2), (3) this line · (4) (import std.contradiction)
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+(is-a Tea Drink) (is-a Milk Drink)
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x)
+  :why    "guess: is {?x} {?R}?")
+(solve :hrules (guess (chosen Drink) guess (served Drink)))    ; (2): (solve :hrules (guess (chosen Drink)))
+```
+
+| | the program | `ein solve` |
+|---|---|---|
+| 1 | no import, `guess` named twice | `states (k_s) 16` |
+| 2 | `std.negation` imported, `guess` named once | `states (k_s) 4` |
+| 3 | `std.negation` imported, `guess` named twice | **refused** |
+| 4 | `std.contradiction` imported, `guess` named twice | `states (k_s) 16` |
+
+The refusal: *kb load error: rule 'std.negation.eliminate-2': its :assert writes (?R ?a ?b), whose ?a is rule
+'guess''s parameter ?R, which names a relation, and (not (not (?R ?a ?b))) can bind ?a to a fact, as an argument of
+(?R ?a ?b) — a relation is named by a symbol, not a fact*.
+
+**Why the loader says so.** `eliminate-2` concludes `(?R ?a ?b)`, a fact of two arguments of whatever relation its
+activator names. `guess` is a rule of two parameters, so a fact `(guess a b)` would be an activator of `guess`,
+binding its first parameter, which names a relation, to `a`; and `a` comes out of a double negation, where it may
+be a fact. The check does not ask whether anything activates `eliminate-2` with `guess`: nothing does here, and
+nothing can. It reads the conclusion as able to write into every rule of that count whose name the program writes
+as an argument (Q-M1f.42), and the second `guess` of the `:hrules` list counts as one
+([V-13](#v-13--the-check-on-a-parameters-conclusion-counts-an-hrule-from-its-second-naming)), which is why row 2
+loads and row 3 does not. So the refusal is of something no run could reach: the check is sound and coarse.
+
+**The ways out**, S1f.21.11's to show, each on the corpus (its task 1.6): the elimination stays a module a program
+imports, and `not`'s meaning in the module every program gets is the contradiction alone, the default, which
+changes no program; the check reads what an activator can name, and no longer refuses these; the `:hrules` list is
+read as a list (V-13), which frees these four and not a program that names a rule as an argument elsewhere.
 
 ## V-13 — The check on a parameter's conclusion counts an hrule from its second naming
 
@@ -445,8 +487,11 @@ programs' claims list every name of the program (`examples/features/16_eq_neq_go
 (`tests/stdlib/closure/02_closed_and_satisfied.ein`): each fails with any module imported that declares a relation,
 the calculator's among them (importing `std.math.arith` alone is enough).
 
-**What it decides.** A module every program gets must declare no relation and add no name a program's rule can
-reach: S1f.21.10's `std.core` is briefed so, and S1f.21.11's additions to it are held to the same.
+**What it decides: nothing by itself.** It is no rule that a module every program gets declare nothing. The user,
+2026-11-19, verbatim: *"there is no requirement "std.core must declare nothing" - it may declare"*; S1f.21.10's
+agent, briefed the other way by the coordinator, was corrected the same hour. What the finding leaves is a thing to
+show: a declaration in `std.core` is every program's, so a stage that adds one runs the corpus with it and shows any
+claim that moves, the four above the first to look at.
 [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md)'s two reserved relations meet it too.
 
 ## V-15 — `refuted by` names one of two contradictions by the relation's name
