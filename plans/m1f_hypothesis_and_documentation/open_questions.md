@@ -486,12 +486,13 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
 | [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
 | [Q-M1f.557](#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) | How the contradiction's rules reach every relation and count | **open, the user's, not ruled**: put 2026-11-19 (P1f.21's review item 35), five ways. The user's remark of the same day reads it as no gap but a feature: the contradiction is the standard library's, on by import for declared relations; **proposed since: (d)**. S1f.21.11's task 2.1 waits on it |
-| [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; proposed (b)** since 2026-11-19: *forbid* reads the contradiction's rules as any rule, which is the standing decision Q-M1e2.5 with nothing added; the seven corpus programs, each one the static check flags, are refused where the contradiction is on. Put 2026-11-19 (P1f.21's review item 37, its finding V-1), first with (a) proposed |
+| [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **ruled 2026-11-19 by the user, against both options**: nothing is refused; such a program loads, with a warning, and nothing is guaranteed of its output ([Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes)). The coordinator's proposal (b), to let *forbid* read the contradiction's rules, is withdrawn |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
 | [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
 | [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41) |
 | [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **defaulted 2026-11-19** (P1f.21's S1f.21.10, four consequences of Q-M1f.551): an import of `std.core` is refused; a saved file written before no longer loads; an `$EIN_STDLIB` that names no library refuses every program; the container is `einb/2.2`; built `68c3d5d0`. For the user to revise (review item 41) |
+| [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, verbatim: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* Q-M1e2.5's refusal at load is reversed: every program loads, a flagged one under a loud warning, and nothing is claimed of it. 20 corpus programs are refused today. Built by P1f.21's S1f.21.15, planned, not started |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10399,7 +10400,7 @@ would move is counted by that stage's first task, with a build that has the chec
 ### Q-M1f.558 — *Forbid* and the contradiction as rules
 
 **Raised** 2026-11-17 as P1f.21's finding [V-1](p1f.21_verdicts_as_rules/findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none);
-put to the user 2026-11-19 with runs, [review item 37](p1f.21_verdicts_as_rules/review/part-1/37-Q-M1f.558/README.md).
+put to the user 2026-11-19 with runs, review item 37.
 **Open: not ruled.**
 
 *Forbid* reads rules, and the kernel's contradiction is none. Written as the standard library's rules it is read,
@@ -10415,7 +10416,10 @@ the witnesses of three open rows of the wrong-answer register.
   stands, the kernel's own contradiction having escaped it only by being no rule.
 - **(c)** left until M1n rules what *forbid* covers, the contradiction staying the kernel's until then.
 
-**What waits on it.** S1f.21.11's task 2.1.
+**Ruled 2026-11-19 by the user, against both (a) and (b)**: nothing is refused. The seven load, as every program does,
+under a warning, and nothing is guaranteed of their output: [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes).
+The coordinator had proposed (b) an hour before, reading Q-M1e2.5 as standing; the user's answer is that Q-M1e2.5 is
+wrong. (b) is withdrawn, and (a)'s outcome stands for another reason: there is no refusal to exempt anything from.
 
 ### Q-M1f.559 — The elimination and the module every program gets
 
@@ -10544,4 +10548,47 @@ the user's correction); the one natural declaration, of `false`, cannot be writt
 word, which is S1f.21.11's.
 
 Built: `68c3d5d0`.
+
+### Q-M1f.564 — A non-monotone program loads, with a warning: *forbid*'s refusal goes
+
+**Raised and ruled** 2026-11-19 by the user, on P1f.21's review item 37, where the coordinator had proposed that
+*forbid* refuse seven more programs. Verbatim:
+
+> I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!
+> Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?
+
+**Ruled: a non-monotone program loads; Ein prints a loud warning; nothing is guaranteed of what it prints after.**
+[Q-M1e2.5](../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), under which a
+program whose refutation could rest on an `absent` a commitment can still fill is refused at load, is reversed. It
+is the standing policy on non-monotone programs, *detect, document, warn, decide nothing*, applied to the one place
+that refused where the policy says warn.
+
+**What *forbid* is.** A check after root's fixpoint (`ein_infer::forbid`), on every command that asks about a
+commitment: it refuses a program in which a rule that ends a state, or concludes `(false)` or a stored negation,
+rests on an `(absent P)` over a relation a commitment can still extend, directly, through a fact derived under
+such an `absent`, or through an activator.
+
+**Where it came from**, from the records of the milestone that built it (in `git log`, the stage records of
+`plans/m1e2_correctness/` at the parent of `1eff75e2`):
+
+| when | what | who decided |
+|---|---|---|
+| 2026-11-01 | A family of wrong answers: a rule that concludes `(false)` from an `(absent P)` where a commitment can still add `P`. Such a state is dead until a larger commitment adds `P`, so *dead* is not upward-closed, and the search of that time learned from the death and skipped states that were alive. The question was put as **forbid or respect**: refuse a program that writes the shape, or load it and never learn from such a death | put by the coordinator, as Q-M1e2.5 |
+| 2026-11-02 | **Ruled *forbid*.** The record has two sentences of the user's: *"That is exactly what I meant (absent q ?x) => false - this is incorrect form of obligation, isn't it?"*, and then *"forbid, and bank dual_rail.ein in the docs"*. What was ruled on is the direct shape: an `absent` and a `(false)` or a `(not …)` in one rule | the user |
+| 2026-11-04 | **Widened to the derived case**, *via*: a refutation that reads a fact some other rule derived under an `absent` | the user, on the question put with its evidence |
+| 2026-11-04 | **Refusal, and not a warning.** The stage that built it listed *refusal or warning, and where* among its open points and took *a refusal, at load* as its default; the record says the user *saw them in the hand-back's summary and may still override one*. The flag that until then **warned** of the derived case, `:warn-derived-naf`, was retired the same day, its text becoming the refusal's | **a stage's default** |
+| 2026-11-04 | **Widened again**, to a refutation reached through a chain of activators that first appears at a node, after five programs slipped past | a stage, as a fix: *the ruling is unchanged, what moved is how "extendable" is computed* |
+| 2026-11-19 | Proposed to widen it a third time, to the standard library's contradiction rules, in this item | the coordinator; **refused by the user** |
+
+So the direct shape and the derived case were the user's rulings of 2026-11-02 and 2026-11-04, each on a question
+put as *forbid or respect*; that *forbid* means **refused at load and not warned of** was a stage's default; and the
+other answer then on the table, *respect*, is what the user now says is expected: the program loads, the search
+learns from no such death, and the read-out warns.
+
+**What it takes**, planned as P1f.21's [S1f.21.15](p1f.21_verdicts_as_rules/s1f.21.15_forbid_becomes_a_warning.md),
+not started: the refusal removed and a warning in its place; the 20 corpus programs it refuses today load and are
+answered as any flagged program is, by the cube, with nothing claimed; that each of them is a program the static
+check flags, shown, since a route's licences rest on it; Q-M1e2.5's decision, the standing rule in `AGENTS.md`, the
+diagnostics' section and the tests rewritten; and the rows of the regressions whose right answer is that refusal
+re-filed.
 

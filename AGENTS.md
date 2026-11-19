@@ -358,9 +358,10 @@ paragraph, no register count, no measurement (the user's rule).
   One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   run in two parts on the user's word, what does not touch `open` or the
-  hypotheses first: S1f.21.6, S1f.21.8 and S1f.21.10 done, then S1f.21.11
-  and the part's pages; Q-M1f.390 and Q-M1f.549 wait with the second part,
-  Q-M1f.447 and Q-M1f.557 with S1f.21.11. **No other stage of P1f.21 starts
+  hypotheses first: S1f.21.6, S1f.21.8 and S1f.21.10 done, then S1f.21.15
+  (*forbid* becomes a warning, ruled as Q-M1f.564), S1f.21.11 and the
+  part's pages; Q-M1f.390 waits with the second part, Q-M1f.447 and
+  Q-M1f.557 with S1f.21.11. **No other stage of P1f.21 starts
   without the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is

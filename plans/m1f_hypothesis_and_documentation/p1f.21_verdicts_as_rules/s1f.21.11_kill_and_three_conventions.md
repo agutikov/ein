@@ -39,9 +39,10 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    importing the module, for the relations it declares. Under that reading this task counts the corpus programs
    whose answer moves with the kernel's check off and the module imported where a negation is written, and shows
    what the candidate root denies and licence L8 become where the rule is not on.
-2. **V-1**: the seven corpus programs *forbid* refuses once the contradiction is a rule it reads. Default: *forbid*
-   reads the module's contradiction as it reads the kernel's today, that is, not as a refutation resting on an
-   absence; what *forbid* should read is M1n's, and stays there.
+2. **V-1 is answered**: nothing is refused. The user ruled that a non-monotone program loads under a warning
+   ([Q-M1f.564](../open_questions.md#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes)), and
+   [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md), which runs before this stage, takes *forbid*'s refusal out. So
+   the seven programs load with the contradiction a rule, as flagged programs, and this stage re-aims no *forbid*.
 3. **What moves at the same $R$** when a pair's death is a rule's: the firing that concludes `(false)`, which a
    state dead by a pair does not hold today; `refuted by` and the core, which name both sides' rules today.
    Defaults: as S1f.21.10's readings 4 and 5, the module's rules left out of an explanation. Today's engine shows

@@ -16,7 +16,7 @@ one of the questions above is listed with its item and not again.
 | [V-17](../../../findings.md#v-17--the-stdlib-censuss---check-exits-1-on-a-saved-file) | `utils/stdlib_census.py --check` exits 1 on a saved file | fixed in the tool, a small commit of its own, at the phase's close | fixed now |
 
 **With an item of their own**: [V-1](../../../findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none),
-item [37](../37-Q-M1f.558/README.md); [V-9](../../../findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file),
+answered by your ruling Q-M1f.564, nothing is refused; [V-9](../../../findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file),
 item [40](../40-defaults-taken/README.md), row 3;
 [V-12](../../../findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands), item
 [38](../38-Q-M1f.559/README.md); [V-14](../../../findings.md#v-14--a-declaration-an-import-brings-is-not-inert), which

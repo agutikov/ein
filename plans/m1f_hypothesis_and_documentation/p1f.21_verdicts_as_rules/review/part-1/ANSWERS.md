@@ -48,25 +48,6 @@ re-render of the bundle rewrites the READMEs and never this file.
 
 ---
 
-## 37 · Q-M1f.558: *forbid*, once the contradiction is rules
-
-[The item](37-Q-M1f.558/README.md)
-
-**Options:**
-
-- **(a)** *forbid* reads the module's contradiction as it reads the kernel's today; the seven corpus programs load
-  as now. First proposed; withdrawn.
-- **(b)** *forbid* reads the rules as written; the seven are refused where the contradiction is on. **Proposed**: it
-  is what the standing decision on a refutation under an `absent` says, with nothing added, and all seven are
-  programs the engine claims nothing of.
-- **(c)** left until M1n rules what *forbid* covers; the contradiction stays the kernel's until then.
-
-**Your answer:** 
-
-**Notes:**
-
----
-
 ## 38 · Q-M1f.559: the elimination, and the module every program gets
 
 [The item](38-Q-M1f.559/README.md)

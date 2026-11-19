@@ -69,7 +69,7 @@ is held. That is the kernel's own check today, line for line (`contradiction::de
 is missing is the loader letting a relation be a variable **that another premise of the same match binds**, and
 the compiler ordering the two premises so. And for the analyses, *this rule reads every relation of one argument*
 is simply true of a contradiction: it reads them positively and concludes only `(false)`, so the monotonicity
-check has nothing to flag, and what *forbid* makes of it is item [37](../37-Q-M1f.558/README.md) either way.
+check has nothing to flag, and *forbid* refuses nothing since your ruling of 2026-11-19 (Q-M1f.564).
 
 **What it would take, and what it leaves.**
 
@@ -113,7 +113,7 @@ match is something the engine does not do.
 |---|---|---|
 | no plan can be compiled for it | Q29, Q-M1f.72 | true of the engine as built, and a property of the engine, not of the language. For this rule the plan is short: under `not` the pattern meets a fact, and a fact carries its relation, so `?R` and `?a` are read off it; the other premise is then one whole fact, asked for by membership. It is the loop `contradiction::detect` runs today |
 | otherwise it matches nothing in silence | Q-M1e2.18 | the reason for refusing **at load** rather than letting it load. It is a reason to keep refusing what cannot be run, and none against running what can |
-| the analyses read a rule's relations off its text or its activator | Q-M1f.393 | such a premise reads *every relation of its count*, which each analysis can take as it stands: the strata and the monotonicity check see a positive read of everything, and this rule concludes only `(false)`; what *forbid* makes of it is item [37](../37-Q-M1f.558/README.md). It costs precision only for a rule that concludes facts from such a premise. A **conclusion** whose relation is a variable of the match is another matter, since it could write any relation, an activator among them ([Q-M1f.42](../../../../../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and nothing here asks for it |
+| the analyses read a rule's relations off its text or its activator | Q-M1f.393 | such a premise reads *every relation of its count*, which each analysis can take as it stands: the strata and the monotonicity check see a positive read of everything, and this rule concludes only `(false)`; *forbid* refuses nothing since Q-M1f.564. It costs precision only for a rule that concludes facts from such a premise. A **conclusion** whose relation is a variable of the match is another matter, since it could write any relation, an activator among them ([Q-M1f.42](../../../../../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and nothing here asks for it |
 | a premise of no fixed relation has no held extent to be matched in | Q-M1f.393 | true of such a premise **alone**: `(?R ?a)` with nothing else would walk every fact of one argument. Not true once another premise has bound the relation |
 
 **So you are right: nothing says we must have it.** What has to stay is the thing the refusal was made for, no
@@ -191,7 +191,8 @@ more than killing, and each of these is sound only where the contradiction is on
   root denies, or stays for the relations the rule is on for;
 - **what a state denies is dead above it** (licence L8): the same;
 - **the agenda's first half, *forbid* and the static check** read the rules that lead to a death: with the
-  contradiction a rule, they read it as any rule ([item 37](../37-Q-M1f.558/README.md)).
+  contradiction a rule, they read it as any rule; *forbid* refuses nothing since your ruling of 2026-11-19
+  (Q-M1f.564), so what is left of it is the warning's reading of the same rules.
 
 **One thing to say with it**: whether importing the module is the switch, or the fact `(clash-of-declared)` beside
 the import, as built. Under *works only if we import*, the import is the switch and the fact goes; an import is

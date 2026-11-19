@@ -17,7 +17,6 @@ stage's examples.
 
 | # | item | the question | the default |
 |---|---|---|---|
-| 37 | [Q-M1f.558](37-Q-M1f.558/README.md) | *forbid*, once the contradiction is rules: seven corpus programs would be refused | proposed now (b): *forbid* reads the contradiction's rules as any rule, which is what the standing decision on refutations under an `absent` already says; the seven are refused where the contradiction is on |
 | 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | (a) it stays a module a program imports; `std.core` gets the contradiction alone |
 | 40 | [Q-M1f.552 to .556](40-defaults-taken/README.md) | five readings the two finished stages took and built | as built; the fourth not as planned: two modules for the negation |
 | 41 | [S1f.21.10 as built](41-S1f.21.10-readings/README.md) | the key's five readings, and four consequences of a module every program gets: an import of it refused, older saved files no longer load, `$EIN_STDLIB`, the container's format | as built (Q-M1f.562, Q-M1f.563); shown on six programs |
@@ -25,7 +24,8 @@ stage's examples.
 
 **Left for later on the user's word, and not asked**: how `std.core` is customised (Q-M1f.551).
 **Out of the bundle, ruled**: item 33, the names (Q-M1f.399, with the key's word, Q-M1f.550), 2026-11-19; its page
-and programs are in `git log`, last at `984137bf`. Item 43, one way to say *must* and one to say *may* (Q-M1f.561), declined the same
+and programs are in `git log`, last at `984137bf`. Item 37, *forbid* once the contradiction is rules (Q-M1f.558), ruled the same day against both its options:
+nothing is refused, a non-monotone program loads under a warning (Q-M1f.564, S1f.21.15). Item 43, one way to say *must* and one to say *may* (Q-M1f.561), declined the same
 day: every existing way to control the hypotheses stays; its analysis and its programs are
 [`one_way_each.md`](../../one_way_each.md).
 
@@ -42,9 +42,6 @@ are ignored, so they are on this machine only.
   its premises: *a relation is named by a name or by a parameter its activator binds*.
 - **36**: a fact and a rule's conclusion at another count than the declaration's are each refused at load, with the
   declaration quoted; an undeclared relation at two counts loads, and each query answers its count.
-- **37**: the soup program loads without the rules, 4 states, flagged by the static check, and is refused with
-  them, by `clash-0` and `clash-2` over `meal`. Of the seven corpus programs, four are the witnesses of three open
-  rows of the wrong-answer register.
 - **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
   with it named twice; 16 with `std.contradiction` and it named twice.
 - **41**: a rule that concludes `(false)` and the same rule stating the key itself give the same dead root, the same

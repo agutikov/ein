@@ -13,7 +13,7 @@ the page to read first. Each part has its index and its own answers file; an ite
 
 | part | what | items | answers |
 |---|---|---|---|
-| [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Running now | 35 and 36, **no default**: how the contradiction's rules reach every relation and count, and the argument-count check; 37, 38, 40, 41 and 42, each with a default | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
+| [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Running now | 35 and 36, **no default**: how the contradiction's rules reach every relation and count, and the argument-count check; 38, 40, 41 and 42, each with a default | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
 | [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | 32, what an obligation emits; 34, hypotheses as facts; 39, `std.debts`, held for this part | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

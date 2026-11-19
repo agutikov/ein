@@ -264,6 +264,21 @@ Put as [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to
 and **ruled the same day: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* Every existing way to control the
 hypotheses stays, and nothing is planned or built on it.
 
+## The ruling on *forbid*
+
+The user, 2026-11-19, verbatim:
+
+> I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!
+> Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?
+
+Said of review item 37, where the coordinator had proposed that *forbid* refuse seven more programs once the
+contradiction is rules. Filed as [Q-M1f.564](../open_questions.md#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes):
+**a non-monotone program loads, under a loud warning, and nothing is guaranteed of its output**; Q-M1e2.5's refusal
+at load is reversed. The ledger's entry has where *forbid* came from: the direct shape and the derived case were
+ruled by the user on 2026-11-02 and 2026-11-04, on a question put as *forbid or respect*; that it refuses and does
+not warn was a stage's default; and it was widened once more by a stage as a fix.
+[S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) builds the reversal, planned and not started.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -305,7 +320,8 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **done 2026-11-19**: `d35408cb`, `8d8327ce`, `c9ea9597`, `d1c9d4b3`, `984137bf`; V-2, V-3 and V-4 fixed, V-9 entered; its three readings took their defaults (Q-M1f.552 to .554); no answer moved. The batch's container gate is the coordinator's, with S1f.21.8's merge |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation and the contradiction, each a module a program imports; and the requirement, the payment and `discharged` | **done 2026-11-19; merged in part**: `std.negation` and `std.contradiction` (`b0ee99f4`) by the merge `ca98dec2`; `std.debts` (`6b76c164`) built and **held on the stage's branch for part 2**. Its readings: Q-M1f.555 (two modules for the negation, not the default), Q-M1f.556. The batch's container gate runs on the merge |
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **done 2026-11-19**: `68c3d5d0`, `946ee788`; no answer moved over the 913 corpus files; its readings and the four consequences of an always-loaded module are Q-M1f.562 and Q-M1f.563, review item 41; the gate in the runner's image and the nightly are run on its last commit |
-| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.10, S1f.21.8, V-1 and a choice with no default (how the rules reach every relation), Q-M1f.447 |
+| [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | ***Forbid* becomes a warning.** A non-monotone program loads under a loud warning and nothing is guaranteed of its output; the refusal at load of a refutation resting on an `absent` goes; the 20 corpus programs it refuses load as flagged programs | planned 2026-11-19 on the user's ruling (Q-M1f.564), **not started**; waits on no decision; before S1f.21.11 |
+| [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.15, Q-M1f.557 (how the rules reach every relation; proposed (d)) and Q-M1f.447 |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | planned, **not started**; after S1f.21.8, S1f.21.10 and S1f.21.11 |
 
 **Part 2 — `open`: what a state owes, and the hypotheses.** Not started before part 1 is done; its two questions,

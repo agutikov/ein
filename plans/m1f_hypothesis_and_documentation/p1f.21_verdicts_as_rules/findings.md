@@ -11,7 +11,7 @@ without a path is in [`design.md`](design.md), whole.
 
 | id | what | found by | state |
 |---|---|---|---|
-| [V-1](#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* reads rules, and the kernel's contradiction is none: seven corpus programs that load are refused once the contradiction is written as a rule | S1f.21.1 | open |
+| [V-1](#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* reads rules, and the kernel's contradiction is none: seven corpus programs that load are refused once the contradiction is written as a rule | S1f.21.1 | **answered 2026-11-19** by the user's ruling Q-M1f.564: nothing is refused; *forbid*'s refusal goes (S1f.21.15) |
 | [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | **fixed** by `c9ea9597` (S1f.21.6): the words are *holds a contradiction* |
 | [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | **fixed** by `d35408cb` (S1f.21.6): one printer |
 | [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | **fixed** by `8d8327ce` (S1f.21.6): a section for each kind of rule |
