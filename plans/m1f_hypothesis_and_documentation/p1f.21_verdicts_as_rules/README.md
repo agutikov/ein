@@ -25,6 +25,10 @@ on the user's word; it resumes when this phase is done.
 
 **Review material:** [`review/`](review/README.md), moved here from the milestone's review bundle on the user's word (2026-11-18): Q-M1f.390 and Q-M1f.399, each with runs on real programs, mocks of each option, and `review/ANSWERS.md` for the user's answers.
 
+**The modifications, listed:** [`modifications.md`](modifications.md), written 2026-11-19 on the user's word:
+every modification the phase's pages propose, 37 items in nine groups, the simplest and least affecting first,
+each with the page it is from, its state and what it waits on. A reading; it rules nothing and runs no stage.
+
 ## The instruction
 
 The user, 2026-11-17, verbatim:
