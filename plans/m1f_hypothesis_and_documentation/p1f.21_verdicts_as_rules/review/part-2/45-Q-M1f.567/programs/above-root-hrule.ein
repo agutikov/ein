@@ -1,0 +1,19 @@
+;;; What a hypothesis rule does today with a premise only a commitment brings:
+;;; it is read once, over root's fixpoint, so `with-extra` proposes nothing.
+;;; H is the two drinks.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation with   D E :why "{?3} comes with {?4}")
+
+(is-a Tea Drink) (is-a Milk Drink) (is-a Sugar Extra)
+
+(hrule a-drink ()
+  :match  (is-a ?d Drink)
+  :assert (chosen ?d)
+  :why    "is {?d} chosen?")
+(hrule with-extra ()
+  :match  (and (chosen ?d) (is-a ?e Extra))
+  :assert (with ?d ?e)
+  :why    "{?d} is chosen: does it come with {?e}?")
+(solve :hrules (a-drink with-extra))

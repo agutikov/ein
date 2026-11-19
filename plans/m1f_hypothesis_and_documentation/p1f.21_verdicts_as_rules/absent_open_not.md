@@ -91,7 +91,8 @@ facts."* With that, and `not` an ordinary relation
 
 ### What is yours to rule
 
-Put as [Q-M1f.568](../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users).
+Put as [Q-M1f.568](../open_questions.md#q-m1f568--absent-open-and-not-nested-the-cells-that-are-the-users), and shown
+cell by cell on programs in [review item 46](review/part-2/46-Q-M1f.568/README.md).
 
 1. **`(absent (absent P))` written directly.** (a) Refused at the parse, as you expect, the form with a conjunction
    between kept, since it is the universal. (b) Left: it means *P is held*, binding nothing outside. **Default

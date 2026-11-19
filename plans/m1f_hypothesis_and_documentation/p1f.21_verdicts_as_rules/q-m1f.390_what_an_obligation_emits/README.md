@@ -1,8 +1,11 @@
 # 32 — Q-M1f.390: what an obligation emits
 
-**Answered 2026-11-19.** Your answer rules it: an obligation emits `(open H)` with no justification. It is in
-[the phase's README](../../../README.md#the-answers-to-part-2s-items); the table it asks for is
-[`absent_open_not.md`](../../../absent_open_not.md). This page stays for its runs.
+**Answered 2026-11-19, and out of the review bundle**, where it was item 32 of part 2. Your answer rules it: an
+obligation emits `(open H)` with no justification. It is in
+[the phase's README](../README.md#the-answers-to-part-2s-items); the table it asks for is
+[`absent_open_not.md`](../absent_open_not.md). The page is kept, with its programs, as the survey the second
+part's stages cite. Its outputs and its tools (`runs/`, `renders/`, `tools/` below) are no longer beside it: they
+are on this machine under `build/review-archive/p1f21-part-2/32-Q-M1f.390/`, as they were run.
 
 ## 1. The question
 
@@ -18,10 +21,10 @@ recommends (b). Your second instruction (*"instead of emitting (open ?R) emit (o
 hypothesis"*) stands beside (d): the open facts are the hypotheses themselves, `(open F J)`, moved out of *open*
 per node as a state decides them.
 
-Recorded in [`open_questions.md` § Q-M1f.390](../../../../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
-(**put, not ruled**); the page to rule from is [`design.md` § 5](../../../../p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation);
-your form is [`open_facts.md` § 4](../../../../p1f.21_verdicts_as_rules/open_facts.md#4-open-f-the-hypothesis-itself) and
-[§ 5](../../../../p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not).
+Recorded in [`open_questions.md` § Q-M1f.390](../../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
+(**put, not ruled**); the page to rule from is [`design.md` § 5](../../p1f.21_verdicts_as_rules/design.md#5-the-question-and-a-recommendation);
+your form is [`open_facts.md` § 4](../../p1f.21_verdicts_as_rules/open_facts.md#4-open-f-the-hypothesis-itself) and
+[§ 5](../../p1f.21_verdicts_as_rules/open_facts.md#5-the-move-open-held-not).
 
 Every run below is today's binary, `build/review-bin/ein-head-17085b27`, every P1f.23 stage merged
 (`runs/ein-version.txt`); `tools/run.sh` makes every file.
@@ -240,7 +243,7 @@ at zebra2's, 3 and 2 at {(seats Ann C1)}; a debt is a disjunction of open facts,
 
 ## 4. The default
 
-**(b)**, recommended in [`design.md` § 5](../../../../p1f.21_verdicts_as_rules/design.md#the-recommendation-b): it is all of
+**(b)**, recommended in [`design.md` § 5](../../p1f.21_verdicts_as_rules/design.md#the-recommendation-b): it is all of
 the *maybe* that can be had (the duplicate goes; the removal is what a verdict is, as *alive* is), it moves no
 licence, check, golden or state, and it does not close (c). The ledger's own strongest argument against it: the
 debt stays outside the knowledge base, so no rule and no claim reads one; (c) makes owed and discharged ordinary
@@ -299,7 +302,7 @@ and S1f.21.4 is to put it again on programs.
 From the repo root, with `E=build/review-bin/ein-head-17085b27` (the scripts name it by its absolute path):
 
 ```sh
-bash plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/32-Q-M1f.390/tools/run.sh
+bash build/review-archive/p1f21-part-2/32-Q-M1f.390/tools/run.sh   # written for the item's old place: its paths are of that
 ```
 
 It runs, from the item's folder, every command below and then the three scripts and Graphviz. The engine commands, for each program `P`:

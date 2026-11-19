@@ -8,7 +8,7 @@ pages. It rules nothing, builds nothing and runs no stage: the phase is not star
 **What it read.** The [README](README.md) with the user's four instructions; [`design.md`](design.md), the survey
 and the four options of Q-M1f.390; [`open_facts.md`](open_facts.md), the second and third instructions worked out;
 [`findings.md`](findings.md), V-1 to V-7; [the stage record](s1f.21.1_the_survey_and_the_design.md); the two review
-items, [32](review/part-2/32-Q-M1f.390/README.md) and 33 (out of the bundle since its question was ruled, 2026-11-19; its
+items, [32](q-m1f.390_what_an_obligation_emits/README.md) and 33 (out of the bundle since its question was ruled, 2026-11-19; its
 page and programs are in `git log`, last at `984137bf`), and
 the answers' file of the bundle, then one file and blank (now one a part, [`review/`](review/README.md)); and the three questions in the ledger,
 [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact),
@@ -115,7 +115,7 @@ goldens hold a line these touch was not looked up.
    *every node is dead — root's own fixpoint derives (false)*, and `ein saturate --dump c1.ein` ends `DERIVED (2
    facts)`, the pair and no `(false)`. **State: open**, a wording to settle with the pages of group B.
 4. **An owing node below a non-empty $R$ has no saved file**
-   ([item 32 § 7](review/part-2/32-Q-M1f.390/README.md#7-found-while-building)). `--dump-answer` writes a file for each
+   ([item 32 § 7](q-m1f.390_what_an_obligation_emits/README.md#7-found-while-building)). `--dump-answer` writes a file for each
    state of $R$ and, where $R$ is empty, for the owing frontier; the review cut one by hand. **State: open**,
    found, with no change proposed.
 5. **The plan's own pages, where a later run moved a number or a premise.** No project file.
@@ -129,7 +129,7 @@ goldens hold a line these touch was not looked up.
    - [`design.md` § 4.4](design.md#44-what-reads-it) and [§ 4.5](design.md#45-what-changes-for-a-program), the
      column for (d), read a state file that lists facts. A saved file today holds the program and its `(commit …)`
      and no fact, so under item 30 or 31 it need not change
-     ([item 32 § 7](review/part-2/32-Q-M1f.390/README.md#7-found-while-building)).
+     ([item 32 § 7](q-m1f.390_what_an_obligation_emits/README.md#7-found-while-building)).
    - [`open_facts.md` § 3](open_facts.md#3-who-kills-a-dead-node-einkill)'s list of surfaces lacks two that read
      `(false)` by its name: the agenda's first half, and the `refuted by` row
      (item 33 § 7).
@@ -314,7 +314,7 @@ and S1f.21.10 built it, 2026-11-19 (`68c3d5d0`): items 24 and 25 are done. Where
 Q-M1f.390's option (d), and the user's form that takes it further
 ([`open_facts.md` § 4](open_facts.md#4-open-f-the-hypothesis-itself) to
 [§ 6](open_facts.md#6-what-rules-can-do-with-open-facts)). **Not ruled, and not run** but as mocks and stand-ins
-([item 32 § 3](review/part-2/32-Q-M1f.390/README.md#3-the-options)).
+([item 32 § 3](q-m1f.390_what_an_obligation_emits/README.md#3-the-options)).
 
 30. **(d) alone: `(open R j)` is a fact of the state that owes it**, written by the pass after the fixpoint into a
     part of the node no fork inherits, and matched by no rule. The build

@@ -1,0 +1,11 @@
+;;; Cell 3 of Q-M1f.568, the same with the question and its negation both
+;;; written. Today that is a fact beside its stored negation, and root is dead:
+;;; "asked" and "not asked" contradict as any fact and its negation do.
+
+(question (p A))
+(not (question (p A)))
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))

@@ -1,0 +1,45 @@
+;;; (b) of Q-M1f.566, written with today's rules: the requirement is a held
+;;; fact, the question with the hole's domain in its place.
+;;;   (owe seats Ann Chair)    seats owes Ann a Chair     : (seats Ann ?)
+;;;   (owe seats Guest C1)     seats owes C1 a Guest      : (seats ? C1)
+;;; and what answers one is a held fact too, (answered ...). Nothing stores
+;;; "still owed": it is the owe facts with no answered fact, read off a state.
+;;; The kernel's own obligations are kept, so both are read on the same states.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(relation owe      R X Y :why "{?3} owes {?4} with {?5}")
+(relation answered R X Y :why "{?3} has {?4} with {?5}")
+
+(rule need-each-left (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A))
+  :assert (owe ?R ?a ?B)
+  :why    "{?R} owes {?a} a {?B}.")
+(rule answer-each-left (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A) (?isa ?b ?B) (?R ?a ?b))
+  :assert (answered ?R ?a ?B)
+  :why    "{?R} gives {?a} the {?B} {?b}.")
+(rule need-each-right (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?b ?B))
+  :assert (owe ?R ?A ?b)
+  :why    "{?R} owes {?b} a {?A}.")
+(rule answer-each-right (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?b ?B) (?isa ?a ?A) (?R ?a ?b))
+  :assert (answered ?R ?A ?b)
+  :why    "{?R} gives {?b} the {?A} {?a}.")
+
+(need-each-left  seats is-a) (answer-each-left  seats is-a)
+(need-each-right seats is-a) (answer-each-right seats is-a)
+
+(query :goal (seats ?g ?c))

@@ -1,0 +1,11 @@
+;;; Cell 3 of Q-M1f.568 with today's engine, `question` standing for `open`:
+;;; (not (question (p B))) is a fact like any other. Nothing reads it: (p A)
+;;; is asked and proposed, (p B) is not asked and not proposed.
+
+(question (p A))
+(not (question (p B)))
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))

@@ -1,0 +1,12 @@
+;;; (d) of Q-M1f.566, the user's form: the requirement as a fact with a hole,
+;;;   (owe (seats Ann ?_x))
+;;; a variable no premise binds, left in the conclusion. Refused today.
+
+(relation is-a T T :why "{?3} is a {?4}")
+(is-a Ann Guest) (is-a C1 Chair)
+
+(rule need (?R)
+  :match  (is-a ?a Guest)
+  :assert (owe (?R ?a ?_x))
+  :why    "{?R} owes {?a} something.")
+(need seats)

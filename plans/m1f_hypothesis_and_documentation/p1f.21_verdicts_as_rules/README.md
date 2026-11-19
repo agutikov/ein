@@ -14,7 +14,7 @@ take it onto programs, **not started**; S1f.21.2 and S1f.21.3 wait on it, and th
 folded into them, [`overview.md`](overview.md) is the distilled overview **for review**, and the instruction's
 idea, hypotheses as ordinary facts, is put as
 [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
-with runs ([review item 34](review/part-2/34-Q-M1f.549/README.md)). The same day the user ruled Q-M1f.399
+with runs ([review item 34](q-m1f.549_hypotheses_as_facts/README.md)). The same day the user ruled Q-M1f.399
 ([below](#the-answer-on-the-names)): no prefix, `(false)` a convention, and what ends a state a rule's key `:ein`,
 its word ruled `inconsistent` (Q-M1f.550), S1f.21.10 unblocked to build it; and **started S1f.21.6 and S1f.21.8**
 (*"start s1f.21.6 and s1f.21.8"*). **S1f.21.6, S1f.21.8 and S1f.21.10 are done** (the same day), the second merged, its
@@ -167,7 +167,7 @@ Each part, and where it is answered:
 - **Hypotheses as ordinary facts**: it runs today at no change of answer in the reading *asked*, and cannot in the
   reading *still open*; put as [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
   with the recommendation to establish that foundation here and to decline the two uses for now, each for a reason
-  a run gives ([review item 34](review/part-2/34-Q-M1f.549/README.md)).
+  a run gives ([review item 34](q-m1f.549_hypotheses_as_facts/README.md)).
 
 ## The answer on the names
 
@@ -223,7 +223,8 @@ So the phase runs in two parts ([§ Stages](#stages)):
 - **Part 2, `open`**: the debt's term, hypotheses as facts, the search and rules, and their pages.
   [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
   and [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
-  wait with it, and review items 32 and 34.
+  waited with it and are answered; what they left is review items 44, 45 and 46
+  ([part 2 of the bundle](review/part-2/README.md)).
 
 **One thing of the second part was built in the first**: the third module of
 [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md), the requirement, the payment and `discharged` as rules a

@@ -1,0 +1,10 @@
+;;; Cell 4 of Q-M1f.568 with today's engine, `question` standing for `open`:
+;;; two candidates written by hand, no rule concluding them.
+
+(question (p A))
+(question (p B))
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-p))

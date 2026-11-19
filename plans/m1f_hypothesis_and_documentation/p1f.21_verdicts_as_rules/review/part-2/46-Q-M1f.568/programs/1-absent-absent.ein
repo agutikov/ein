@@ -1,0 +1,9 @@
+;;; Cell 1 of Q-M1f.568: an absence of an absence, written directly.
+;;; It loads today, and is true where the inner fact is held: A is hit, B is not.
+
+(q A) (q B)
+(p A)
+(rule r ()
+  :match  (and (q ?x) (absent (absent (p ?x))))
+  :assert (hit ?x)
+  :why    "there is no absence of (p {?x})")

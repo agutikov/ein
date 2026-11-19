@@ -1,0 +1,4 @@
+;;; Cell 3 of Q-M1f.568 as it would be written: a hypothesis that a negation
+;;; holds. Refused today at the parse.
+
+(open (not (p A)))

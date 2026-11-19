@@ -31,7 +31,8 @@
 
 Two questions come out of it, [Q-M1f.566](../open_questions.md#q-m1f566--how-a-requirement-is-emitted-the-must-beside-open)
 and [Q-M1f.567](../open_questions.md#q-m1f567--the-hrule-form-dropped-for-a-rule-that-concludes-open-f), each
-with a default.
+with a default. Each is an item of the review bundle with its options as programs and their runs:
+[44](review/part-2/44-Q-M1f.566/README.md) and [45](review/part-2/45-Q-M1f.567/README.md).
 
 ## 1. What an obligation rule emits today
 
@@ -58,7 +59,7 @@ relation is not finished*.
 ## 2. How a requirement is counted, and how it could be emitted
 
 **Today's count** is of instances with no witness at a state's fixpoint. The seats program owes four at root: each
-of two guests a chair, each of two chairs a guest ([review item 32](review/part-2/32-Q-M1f.390/README.md), § 2).
+of two guests a chair, each of two chairs a guest ([review item 32](q-m1f.390_what_an_obligation_emits/README.md), § 2).
 
 **Your form**, `(owe (?R ?a ?_x))` with `?_x` left unbound, is refused today:
 
@@ -129,7 +130,7 @@ lives: in a requirement.
   :why    "guess: is {?x} {?R}?")                 :why    "guess: is {?x} {?R}?")
 ```
 
-**It runs today, with another word for `open`.** [Review item 34](review/part-2/34-Q-M1f.549/README.md)'s
+**It runs today, with another word for `open`.** [Review item 34](q-m1f.549_hypotheses_as_facts/README.md)'s
 `seats-asked.ein` and its *zebra2* twin derive each candidate by an ordinary rule as a fact, `(question F)`, and
 propose what is asked by one generic hypothesis rule: the read-out is byte for byte the program's own.
 

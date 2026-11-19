@@ -1,0 +1,15 @@
+;;; Cell 2 of Q-M1f.568 with today's engine, `question` standing for `open`:
+;;; the program asks whether (p A) is asked. The one candidate is
+;;; (question (p A)). In the state that supposes it, (p A) is asked and is
+;;; not proposed: H is read at root. A hypothesis that depends on another.
+
+(question (question (p A)))
+(hrule ask-question ()
+  :match  (question (question (p ?x)))
+  :assert (question (p ?x))
+  :why    "suppose (p {?x}) is asked")
+(hrule ask-p ()
+  :match  (question (p ?x))
+  :assert (p ?x)
+  :why    "suppose (p {?x}): it is asked")
+(solve :hrules (ask-question ask-p))

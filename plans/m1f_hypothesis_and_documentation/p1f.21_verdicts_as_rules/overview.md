@@ -13,7 +13,7 @@ and S1f.21.8 were started on the user's word, and S1f.21.10 unblocked.
 
 **What it stands on.** [`modifications.md`](modifications.md), the 37 items, which this page distils and does not
 repeat; [`open_facts.md`](open_facts.md) and [`design.md`](design.md); the code named in § 2; and the runs of
-[review item 34](review/part-2/34-Q-M1f.549/README.md), today's engine on the programs kept there.
+[review item 34](q-m1f.549_hypotheses_as_facts/README.md), today's engine on the programs kept there.
 
 ## 1. The phase in one sentence
 
@@ -30,7 +30,7 @@ Today three kinds of rule speak to the kernel, each by its own road:
 
 They differ in two things only: **when the kernel reads the conclusion, and whether a state may hold it.** The
 second follows from one property, which [`design.md` § 2.4](design.md#24-the-verdicts-together-which-may-be-a-fact)
-found for the verdicts and [item 34](review/part-2/34-Q-M1f.549/README.md#3-what-a-rule-can-read-of-them-rows-3-and-4)
+found for the verdicts and [item 34](q-m1f.549_hypotheses_as_facts/README.md#3-what-a-rule-can-read-of-them-rows-3-and-4)
 finds again for the candidates: *a conclusion may be a held fact exactly when it stays true in every larger
 state.*
 
@@ -59,9 +59,10 @@ facts held, a stack of append-only layers; a fork adds a layer and nothing is ev
 | **a debt**, `(open R)` | never a fact. An obligation rule is in no agenda (`Program::obligations`); a pass counts its matches on each quiescent state, into the node's record | no | [`design.md` § 1.3](design.md#13-owed-and-discharged) |
 | **a saved state** | the program and its `(commit …)`; no fact | | `runs/seats.dump-answer/models/01.ein` |
 
-(`runs/` is [item 34](review/part-2/34-Q-M1f.549/README.md)'s, written by its `tools/run.sh` and ignored.)
+(`runs/` is [item 34](q-m1f.549_hypotheses_as_facts/README.md)'s, written by its tool; on this machine, under
+`build/review-archive/p1f21-part-2/34-Q-M1f.549/`.)
 
-**Negations: in the knowledge base, under `not`.** [`programs/negation.ein`](review/part-2/34-Q-M1f.549/programs/negation.ein)
+**Negations: in the knowledge base, under `not`.** [`programs/negation.ein`](q-m1f.549_hypotheses_as_facts/programs/negation.ein)
 writes `(not (p two))` and derives `(not (p one))`. `ein saturate --dump`:
 
 ```text
@@ -168,7 +169,7 @@ to all facts … 1. search control from inside ein 2. implement search with rule
 artefeacts seen by rules and infer facts from search. … we can establish the foundation for this in this phase or
 can decline it for some pragmatic reason."*
 
-**The answer, from five runs on today's engine** ([item 34](review/part-2/34-Q-M1f.549/README.md)):
+**The answer, from five runs on today's engine** ([item 34](q-m1f.549_hypotheses_as_facts/README.md)):
 
 1. **It works today, at no change of answer, in one reading.** *zebra2* with its candidates concluded by an
    ordinary rule as held facts, and one generic hrule that supposes what root holds under that relation, prints the

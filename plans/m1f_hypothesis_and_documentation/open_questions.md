@@ -10191,7 +10191,7 @@ verbatim:
 **Open: not ruled.** Today a candidate is a tuple in a list the generator keeps beside root, and no knowledge base
 holds it until a commitment does; a stored negation is a held fact that points at a fact not held
 ([`overview.md` § 2](p1f.21_verdicts_as_rules/overview.md#2-where-things-are-held-today)). The runs are
-[review item 34](p1f.21_verdicts_as_rules/review/part-2/34-Q-M1f.549/README.md)'s, on today's engine:
+[review item 34](p1f.21_verdicts_as_rules/q-m1f.549_hypotheses_as_facts/README.md)'s, on today's engine:
 
 - *zebra2* and the seats program, with their candidates concluded by an ordinary rule as held facts and one generic
   hrule that supposes what root holds so, answer as before, the read-out the same byte for byte;
@@ -10223,7 +10223,7 @@ step `not` took, one more context, and adds no mechanism; (c) adds a part of a n
 for a gain (b) shows is not needed; use 1 is what the tree route does already (the owed instance with the fewest
 alternatives, licence L5), no program is known to want another order, and it can be added on (b)'s facts; use 2 and
 (d) wait on M1n's stratum-order admission (V-8), and (d) is the cube. The reasons at length are
-[item 34 § 6](p1f.21_verdicts_as_rules/review/part-2/34-Q-M1f.549/README.md#6-the-recommendation-and-its-reasons).
+[item 34 § 6](p1f.21_verdicts_as_rules/q-m1f.549_hypotheses_as_facts/README.md#6-the-recommendation-and-its-reasons).
 
 **Answered in its main call, 2026-11-19, by the user**, verbatim: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."*
 
@@ -10791,7 +10791,8 @@ control the hypotheses stays).
 ([Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)):
 *"How we can count the exact obligations and how we can define and emit them? Maybe in form of questions? How to
 define them? Maybe something like (owe (?R ?a ?_x)) where ?R and ?a binded and ?_x not - so the emitted thing is
-actually a query."* The analysis and its runs are [`open_and_owe.md` § 2](p1f.21_verdicts_as_rules/open_and_owe.md#2-how-a-requirement-is-counted-and-how-it-could-be-emitted).
+actually a query."* The analysis and its runs are [`open_and_owe.md` § 2](p1f.21_verdicts_as_rules/open_and_owe.md#2-how-a-requirement-is-counted-and-how-it-could-be-emitted);
+the options as programs, [review item 44](p1f.21_verdicts_as_rules/review/part-2/44-Q-M1f.566/README.md).
 
 What the runs give: *required* only grows, so a requirement can be a held fact and be counted as facts; *still owed*
 shrinks, so it is read at the fixpoint and never stored (stored, it is stale in 15 of the seats lattice's 16 nodes).
@@ -10816,7 +10817,8 @@ is planned again on the answer.
 **Raised** 2026-11-19 by the user, in the same answer: *"If we will emit (open H) facts as pure hypotheses, and
 obligations would be emitted different way, can we then drop hrules as special form according to
 …/one_way_each.md and use rules that emit open facts in :hrules?"* The analysis is
-[`open_and_owe.md` § 4](p1f.21_verdicts_as_rules/open_and_owe.md#4-can-the-hrule-form-go).
+[`open_and_owe.md` § 4](p1f.21_verdicts_as_rules/open_and_owe.md#4-can-the-hrule-form-go); the options as programs,
+[review item 45](p1f.21_verdicts_as_rules/review/part-2/45-Q-M1f.567/README.md).
 
 It can. A hypothesis rule is a rule whose conclusion stands under `open`, read at root, and two programs written
 that way with another word for `open` answer byte for byte the same today. It is not what
@@ -10840,7 +10842,8 @@ answer.
 **Raised** 2026-11-19 with the table the user asked for
 ([`absent_open_not.md`](p1f.21_verdicts_as_rules/absent_open_not.md), under [Q-M1f.390](#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)).
 Two rules Ein already has give every cell but these, once `(open P)` is a fact: `absent` is no fact and stands
-under none; a fact's argument is a fact a state could hold.
+under none; a fact's argument is a fact a state could hold. Each cell on programs:
+[review item 46](p1f.21_verdicts_as_rules/review/part-2/46-Q-M1f.568/README.md).
 
 1. **`(absent (absent P))` written directly**: (a) refused at the parse, the form with a conjunction between kept,
    being the universal; (b) left, meaning *P is held*. The user: *"probably compilation error"*. **Default (a).**

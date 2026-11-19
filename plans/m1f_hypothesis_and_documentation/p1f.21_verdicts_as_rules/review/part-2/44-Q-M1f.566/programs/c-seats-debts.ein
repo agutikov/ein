@@ -1,0 +1,24 @@
+;;; (c) of Q-M1f.566, which a program can ask for today: std.debts. The
+;;; requirement is a held fact whose second argument is the instance as a term,
+;;;   (debt-due seats (total-owed-of seats is-a Guest Chair Ann))
+;;; and (debt-paid ...) what pays it; (debts-discharged) is concluded where no
+;;; requirement lacks its payment. One fact, (debts-of-owed), asks for the
+;;; rules of every obligation the program activates.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(import std.debts)
+(debts-of-owed)
+
+(query :goal (seats ?g ?c))

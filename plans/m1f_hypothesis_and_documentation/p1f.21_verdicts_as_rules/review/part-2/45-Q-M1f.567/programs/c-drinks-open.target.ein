@@ -1,0 +1,20 @@
+;;; (c) of Q-M1f.567 as it would be written. Refused today, at the parse.
+;;; The form `hrule` is gone and the clause with it: `guess` is a rule whose
+;;; conclusion stands under `open`, activated by ordinary facts.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (open (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink) (guess served Drink)

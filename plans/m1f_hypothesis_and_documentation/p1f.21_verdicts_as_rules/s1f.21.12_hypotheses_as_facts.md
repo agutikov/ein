@@ -27,7 +27,7 @@ standard library's that the generator is told, or what a rule states under the k
 Written `(open F)` below, whatever its name becomes. A fork inherits it and nothing removes it: in a state that
 holds F it says *asked, and held*, beside `(not F)` *asked, and denied*, alone *still open*, and that last is a
 reading the kernel makes per state and stores nowhere
-([item 34 § 3](review/part-2/34-Q-M1f.549/README.md#3-what-a-rule-can-read-of-them-rows-3-and-4)). Of
+([item 34 § 3](q-m1f.549_hypotheses_as_facts/README.md#3-what-a-rule-can-read-of-them-rows-3-and-4)). Of
 [`modifications.md`](modifications.md#h-open-facts)'s items: 31 and 33 are built in this reading; 30, 32 and 34,
 the part of a node, the move and the stratum, are not needed; of 35's rules, *propose* is built and *report* is
 any rule, and the others are [S1f.21.13](s1f.21.13_the_search_and_rules.md)'s.

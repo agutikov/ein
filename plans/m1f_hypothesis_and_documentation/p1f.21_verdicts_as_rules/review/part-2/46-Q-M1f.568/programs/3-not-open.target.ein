@@ -1,0 +1,4 @@
+;;; Cell 3 of Q-M1f.568 as it would be written: the stored negation of a
+;;; hypothesis. Refused today at the parse.
+
+(not (open (p A)))

@@ -1,0 +1,45 @@
+;;; Where (b) and (c) of Q-M1f.566 count differently: two obligation rules that
+;;; ask one question. `total-owed` is std.algebra's; `seated-owed` is this
+;;; program's and asks the same of each guest: a chair.
+;;;   the kernel today, and (c): two instances for a guest, so two debts;
+;;;   (b): one question, (owe seats Ann Chair), concluded twice and held once.
+;;; Nothing is seated, so root owes every one of them.
+
+(import std.algebra :symbols (total-owed))
+(import std.debts   :symbols (total-due total-paid))
+
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+;; the two obligations
+(total-owed seats is-a)
+(rule seated-owed (?R)
+  :match  (and (is-a ?g Guest) (absent (and (is-a ?c Chair) (?R ?g ?c))))
+  :assert (open ?R)
+  :why    "{?g} is not seated.")
+(seated-owed seats)
+
+;; (b): each rule's requirement as the question it asks
+(relation owe R X Y :why "{?3} owes {?4} with {?5}")
+(rule need-of-total (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A))
+  :assert (owe ?R ?a ?B)
+  :why    "{?R} owes {?a} a {?B}.")
+(rule need-of-seated (?R)
+  :match  (is-a ?g Guest)
+  :assert (owe ?R ?g Chair)
+  :why    "{?g} is to be seated.")
+(need-of-total seats is-a) (need-of-seated seats)
+
+;; (c): each rule's requirement as its instance. std.debts states the library's
+;; rule's; this program states its own rule's the same way.
+(rule seated-due (?R)
+  :match  (is-a ?g Guest)
+  :assert (debt-due ?R (seated-owed-of ?R ?g))
+  :why    "{?g} is to be seated.")
+(total-due seats is-a) (total-paid seats is-a) (seated-due seats)
+
+(solve :no-search)

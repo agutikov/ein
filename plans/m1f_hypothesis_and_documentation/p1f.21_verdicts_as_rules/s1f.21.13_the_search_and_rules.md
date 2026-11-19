@@ -14,7 +14,7 @@ folder's pages.
 
 ## What is kept
 
-1. **The lattice written as rules, as an example**: [item 34](review/part-2/34-Q-M1f.549/README.md#4-the-lattice-written-as-rules-row-5)'s
+1. **The lattice written as rules, as an example**: [item 34](q-m1f.549_hypotheses_as_facts/README.md#4-the-lattice-written-as-rules-row-5)'s
    `two-worlds.ein` without its last rule. A world is a fact naming its commitment, `(in W F)` says it holds F,
    the program's rule is written under `(in ?w …)`, and `in-R` is a rule over the absence of `(in ?w (false))`. It
    states an `:expect` for `in-R`, for the dead world and for `possible`, which today's engine answers as the

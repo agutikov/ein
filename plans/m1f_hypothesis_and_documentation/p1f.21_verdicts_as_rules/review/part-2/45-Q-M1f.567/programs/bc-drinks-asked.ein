@@ -1,0 +1,29 @@
+;;; (b) and (c) of Q-M1f.567 with today's engine: `guess` is an ordinary rule.
+;;; It concludes each candidate as a held fact under `question`, which stands
+;;; here for `open` (the parse reads `open` nowhere but as an obligation's
+;;; verdict), and one generic hypothesis rule supposes what is asked, which is
+;;; what the kernel would do itself: H is the facts root holds under `open`.
+;;; The rule's activators are ordinary facts, as (c) writes them.
+
+(relation is-a   X T :why "{?3} is a {?4}")
+(relation chosen D   :why "{?3} is chosen")
+(relation served D   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule one-choice ()
+  :match  (and (chosen ?a) (chosen ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both chosen.")
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (question (?R ?x))
+  :why    "guess: is {?x} {?R}?")
+(guess chosen Drink) (guess served Drink)
+
+(hrule ask (?R)
+  :match  (question (?R ?x))
+  :assert (?R ?x)
+  :why    "suppose ({?R} {?x}): it is asked")
+(solve :hrules (ask (chosen) (served)))
