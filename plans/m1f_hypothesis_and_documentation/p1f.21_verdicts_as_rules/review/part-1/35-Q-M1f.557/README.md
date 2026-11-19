@@ -86,6 +86,46 @@ check has nothing to flag, and what *forbid* makes of it is item [37](../37-Q-M1
 It is option (e) below. Of the five it is the one that takes nothing from the ruling on `not`, makes the loader
 write nothing, and reaches the undeclared relation.
 
+## Where the refusal comes from
+
+Your question, 2026-11-19, verbatim: *"explain (in readme) where this bahaviour came from? what feature, what
+decision, maybe what were the reasons to refuse this at load. Because now I don't see why we must have it."*
+
+**Nobody decided that a relation may not be a variable of a pattern. The refusal follows from how a rule is run,
+and it was put at load to end a silent wrong answer.** In order:
+
+| when | what | where it is |
+|---|---|---|
+| the engine's design | **A rule is compiled, once per activator.** The activator's arguments are written into the plan before any match, so a premise's relation is a constant of its plan: it says which held extent to walk and which index to use. The one variable a relation can be is a parameter, which is a name by the time the plan exists. The reason given: *the plan is a pure function of that binding; a matcher that walked the rule's tree would rediscover the binding at every match* | [Q29](../../../../../../docs/decisions/engine/Q29-a-rule-compiles-once-per-activator.md); `ein-infer/src/plan.rs`, a pattern's `rel` is a `Symbol` |
+| 2026-08-20 | The engine's fuzzer writes `(?R ?x)` with `?R` no parameter. The compiler had no plan for it and rejected the rule, *unbound relation head ?R* | [`unbound-relation-head.ein`](../../../../../../examples/ein-bugs/unbound-relation-head.ein) |
+| 2026-11-05 | **The same shape inside a pattern, `(box (?r b))`, was not rejected.** The compiler left the inner pattern as a slot that unifies with nothing, so the program loaded, the rule never fired, and nothing said so: a wrong answer, *a rule shape that reads nothing, in silence*. Fixed that day on your ruling: such shapes are refused at load, each with a line in Ein's words, today's line among them (`3ab9a231`) | [`nested-unbound-head.ein`](../../../../../../examples/ein-bugs/wrong-answers/nested-unbound-head.ein); its row of [`corpus/regressions.toml`](../../../../../../corpus/regressions.toml); [Q-M1e2.18](../../../../../../docs/decisions/language/Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md), the ruling's page for the sibling shapes: *each shape loads and matches nothing in silence otherwise* |
+| 2026-11-10 | The compiler's own rejection of the top-level shape, and of a goal's, become the loader's lines too, in the same spelling: *shapes no plan can be compiled for* | [Q-M1f.72](../../../../../../docs/decisions/diagnostics/Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md), [Q-M1f.121](../../../../../../docs/decisions/diagnostics/Q-M1f.121-a-goals-relation-variable-is-refused-with.md) |
+| 2026-11-17 | Nested facts. *A rule unpacks a fact by its count*: the count is fixed by the text and **the relation may be a parameter**. It is the first page that gives a reason of the language's and not of the engine's: *every reading of a rule set asks which relations a rule reads and which it concludes … each reads the relation off the text, or off the activator that fills a parameter … a premise of no fixed relation has no held extent to be matched in* | [Q-M1f.393](../../../../../../docs/decisions/language/Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) |
+
+So the feature is **the activator**: Ein's one way to write a rule over many relations is a parameter that a fact
+headed by the rule's name fills, and everything the engine does with a rule starts after that filling. The refusal
+is the loader saying, in place of the matcher saying nothing, that a relation it would have to find *during* a
+match is something the engine does not do.
+
+**The reasons, and what each is worth against your rule.**
+
+| the reason given | where | against `(and (?R ?a) (not (?R ?a)))` |
+|---|---|---|
+| no plan can be compiled for it | Q29, Q-M1f.72 | true of the engine as built, and a property of the engine, not of the language. For this rule the plan is short: under `not` the pattern meets a fact, and a fact carries its relation, so `?R` and `?a` are read off it; the other premise is then one whole fact, asked for by membership. It is the loop `contradiction::detect` runs today |
+| otherwise it matches nothing in silence | Q-M1e2.18 | the reason for refusing **at load** rather than letting it load. It is a reason to keep refusing what cannot be run, and none against running what can |
+| the analyses read a rule's relations off its text or its activator | Q-M1f.393 | such a premise reads *every relation of its count*, which each analysis can take as it stands: the strata and the monotonicity check see a positive read of everything, and this rule concludes only `(false)`; what *forbid* makes of it is item [37](../37-Q-M1f.558/README.md). It costs precision only for a rule that concludes facts from such a premise. A **conclusion** whose relation is a variable of the match is another matter, since it could write any relation, an activator among them ([Q-M1f.42](../../../../../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and nothing here asks for it |
+| a premise of no fixed relation has no held extent to be matched in | Q-M1f.393 | true of such a premise **alone**: `(?R ?a)` with nothing else would walk every fact of one argument. Not true once another premise has bound the relation |
+
+**So you are right: nothing says we must have it.** What has to stay is the thing the refusal was made for, no
+rule that loads and silently reads nothing. The smallest change that keeps it:
+
+- in a `:match`, a relation may be a variable **that another premise of the match binds**, by standing first in a
+  pattern under an arrow of that premise, as `?R` does under `not`; the compiler orders the premises so, whatever
+  order they are written in;
+- a relation variable nothing binds stays refused, with today's line, and so does one in a conclusion.
+
+That is option (e) below, said as a change to the language.
+
 ## The options
 
 - **(a) An activator for every head, made at load.** The loader knows every atom a program writes first in a
