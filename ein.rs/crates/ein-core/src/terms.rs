@@ -615,17 +615,6 @@ impl Terms {
         }
     }
 
-    /// `({rel} {args…})` — the compact form the loader's derivation-cycle
-    /// message and the derivation DAG's labels both build.
-    ///
-    /// The space after the relation name is unconditional, so a nullary fact
-    /// renders as `(q )`; both sites build it the same way.
-    pub fn compact(&self, id: FactId) -> String {
-        let (rel, args) = self.facts.get(id);
-        let args: Vec<String> = args.iter().map(|a| self.display(*a)).collect();
-        format!("({} {})", self.sym(rel), args.join(" "))
-    }
-
     /// A value as Ein text the loader reads back to the same value — **the
     /// one printer** ([`crate::text`]): a name bare where it lexes as itself
     /// and quoted elsewhere, and a `Fact` as [`Terms::fact_text`]. Every

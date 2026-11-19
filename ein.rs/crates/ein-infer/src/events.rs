@@ -473,12 +473,8 @@ impl Write for Buffer {
 
 /// A fact as its canonical s-expression: [`Terms::fact_text`], the one
 /// printer, so a name prints bare only where it lexes back as
-/// itself and the text loads to the same fact.
-///
-/// Note the nullary case: `(q)`, with no trailing space. `Terms::compact`
-/// spells the same fact `(q )`, because the loader's error messages build it
-/// with an unconditional separator; the two renderers are deliberately
-/// distinct rather than one approximating the other.
+/// itself and the text loads to the same fact. A fact of no argument is
+/// `(q)`, with no space inside, on every surface.
 pub fn sexpr(terms: &Terms, id: FactId) -> String {
     terms.fact_text(id)
 }

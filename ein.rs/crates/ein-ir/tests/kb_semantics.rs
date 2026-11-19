@@ -60,18 +60,18 @@ fn load_error(text: &str) -> String {
 
 /// The one fact rendering `(rel arg arg)` names, or a panic naming what is
 /// there — an assertion on a missing fact should say which facts exist.
-fn fact(terms: &Terms, kb: &Kb, compact: &str) -> FactId {
+fn fact(terms: &Terms, kb: &Kb, text: &str) -> FactId {
     kb.facts()
-        .find(|&f| terms.compact(f) == compact)
+        .find(|&f| terms.fact_text(f) == text)
         .unwrap_or_else(|| {
-            let all: Vec<String> = kb.facts().map(|f| terms.compact(f)).collect();
-            panic!("no {compact} among {all:?}")
+            let all: Vec<String> = kb.facts().map(|f| terms.fact_text(f)).collect();
+            panic!("no {text} among {all:?}")
         })
 }
 
 /// Every fact of the KB, rendered and sorted — the readable shape of a model.
 fn rendered(terms: &Terms, ids: impl Iterator<Item = FactId>) -> Vec<String> {
-    let mut out: Vec<String> = ids.map(|f| terms.compact(f)).collect();
+    let mut out: Vec<String> = ids.map(|f| terms.fact_text(f)).collect();
     out.sort();
     out
 }

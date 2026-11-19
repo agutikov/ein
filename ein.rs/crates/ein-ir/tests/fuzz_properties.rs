@@ -992,7 +992,7 @@ fn wrong_count(text: &str) -> Option<String> {
     fn fact(kb: &Kb, terms: &Terms, id: FactId) -> Option<String> {
         let (rel, args) = terms.fact(id);
         if declared(kb, rel).is_some_and(|n| n != args.len()) {
-            return Some(format!("the fact {}", terms.compact(id)));
+            return Some(format!("the fact {}", terms.fact_text(id)));
         }
         args.iter()
             .filter_map(|a| a.as_fact())

@@ -1,7 +1,7 @@
 ;;; Syntax probe — nullary.
 ;;;
 ;;; An arity-0 relation: the declaration, the fact, and the fact with a
-;;; `:source`. `(z)` has no trailing space where `Terms::compact` would put one.
+;;; `:source`. `(z)` prints with no space inside, on every surface.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

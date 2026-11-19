@@ -459,7 +459,7 @@ pub fn load_query_by(
     // derivation walk; reject them with the rendered path.
     let cycles = detect_provenance_cycles(&kb, terms);
     if let Some(cycle) = cycles.first() {
-        let path: Vec<String> = cycle.iter().map(|&f| terms.compact(f)).collect();
+        let path: Vec<String> = cycle.iter().map(|&f| terms.fact_text(f)).collect();
         errors.push(format!("derivation cycle: {}", path.join(" -> ")));
     }
 
@@ -5305,7 +5305,7 @@ mod tests {
     }
 
     fn facts(terms: &Terms, kb: &Kb) -> Vec<String> {
-        kb.facts().map(|f| terms.compact(f)).collect()
+        kb.facts().map(|f| terms.fact_text(f)).collect()
     }
 
     /// The parser's errors on `text`, which it must refuse, each `line:col:
@@ -6658,7 +6658,7 @@ mod tests {
         let derived = kb.facts().last().expect("a fact");
         let prov = terms.provs.get(kb.primary(derived).expect("recorded"));
         assert_eq!(prov.kind, ProvKind::Rule);
-        assert_eq!(terms.compact(prov.premises[0]), "(r a b)");
+        assert_eq!(terms.fact_text(prov.premises[0]), "(r a b)");
     }
 
     /// A `:source` must be a string and a `:rule` a name. **Each keyword's

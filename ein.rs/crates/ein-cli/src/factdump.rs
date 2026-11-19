@@ -1,8 +1,8 @@
 //! `ein solve --print-final-*` — a listed state's KB as canonical
 //! s-expressions.
 //!
-//! A fact is *not* rendered here: the event protocol's fact renderer,
-//! `ein_infer::events::sexpr`, is reused rather than duplicated.
+//! A fact is *not* rendered here: each line is the one printer's text of
+//! its fact, `ein_infer::events::sexpr`, as every other surface prints it.
 
 use ein_core::{Kb, Symbol, Terms};
 
@@ -87,11 +87,8 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
         "final-state facts ({label}; {n} {}):",
         if n == 1 { "fact" } else { "facts" }
     )];
-    for (rel, args, _) in &keyed {
-        // Note the unconditional separator: a nullary fact prints `(rel )`
-        // here, where `sexpr` would spell it `(rel)`. This line has its own
-        // join, and the difference is observable.
-        out.push(format!("  ({rel} {})", args.join(" ")));
+    for &(_, _, f) in &keyed {
+        out.push(format!("  {}", ein_infer::events::sexpr(terms, f)));
     }
     out
 }
