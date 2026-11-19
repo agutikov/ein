@@ -4547,7 +4547,8 @@ S1f.6.31 moves the modules and renames no relation.
 
 ### Q-M1f.201 — What a bare `(relation R)` declares of its count
 
-**Decision file:** [`docs/decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md`](../../docs/decisions/language/Q-M1f.201-a-bare-relation-r-declares-no-argument.md)
+**Decision file:** none of its own any more. Q-M1f.201's file goes with the argument-count check (P1f.21's S1f.21.11, on the
+user's ruling of Q-M1f.447 (c)); what is decided of a relation's count is carried by Q-M1f.447's decision file.
 
 **Raised** 2026-11-12 by S1f.6.23, whose T1 names it: the ruling holds a form to *the count declared*, and a
 declaration with no type atom, `(relation flag)`, is legal
@@ -4566,7 +4567,8 @@ relation a misspelt count passes.
 
 ### Q-M1f.202 — A relation written through a parameter, and the declared count
 
-**Decision file:** [`docs/decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md`](../../docs/decisions/language/Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md)
+**Decision file:** none of its own any more. Q-M1f.202's file goes with the argument-count check (P1f.21's S1f.21.11, on the
+user's ruling of Q-M1f.447 (c)); what is decided of a relation's count is carried by Q-M1f.447's decision file.
 
 **Raised** 2026-11-12 by S1f.6.23, whose T1 names it. `(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`
 writes its relation as a variable, and `(mirror likes)` binds it.
@@ -4586,7 +4588,8 @@ declared relation at another count, `build/s1f.6.23/p/param3.ein`: E-35 of the p
 
 ### Q-M1f.203 — The kernel's own relations, and an activator's count
 
-**Decision file:** [`docs/decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md`](../../docs/decisions/language/Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md)
+**Decision file:** none of its own any more. Q-M1f.203's file goes with the argument-count check (P1f.21's S1f.21.11, on the
+user's ruling of Q-M1f.447 (c)); what is decided of a relation's count is carried by Q-M1f.447's decision file.
 
 **Raised** 2026-11-12 by S1f.6.23, whose T1 names both. No program declares `__closed__`, `__symmetric__` or
 `relation`, each reserved, and an activator `(functional r)` is a fact headed by a rule's name, held to the
@@ -4604,7 +4607,8 @@ leaves is E-34 and E-35 of the phase's `findings.md`, each with its probe:
 
 ### Q-M1f.204 — Which written places the declared count is held in
 
-**Decision file:** [`docs/decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md`](../../docs/decisions/language/Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md)
+**Decision file:** none of its own any more. Q-M1f.204's file goes with the argument-count check (P1f.21's S1f.21.11, on the
+user's ruling of Q-M1f.447 (c)); what is decided of a relation's count is carried by Q-M1f.447's decision file.
 
 **Raised** 2026-11-12 by S1f.6.23. The ruling's *in a fact, a rule or a query* leaves four places to decide.
 
