@@ -18,7 +18,8 @@ Today's engine, `build/review-bin/ein-head-edbe6c3b`, with the checkout's `stdli
 run into `runs/` (ignored by git; mirrored under `build/review-incoming/p1f21-s12-examples/59-three-programs-as-ruled/`):
 each target's refusal, and for each stand-in and each corpus program its read-out, `-p`, `--single`, `ein show hyps`,
 `ein saturate --dump`, the events, the summary and the knowledge base drawn; the oracle where H has 16 candidates or
-fewer. `tools/gen.py` wrote the *zebra2* and seats files from the corpus files.
+fewer. The seats stand-in's events are left out: its cube is described node by node, and the stream is hundreds of
+MB. `tools/gen.py` wrote the *zebra2* and seats files from the corpus files.
 
 **What stands for what.** In each stand-in, `question` stands for `open`: the rule concludes `(question F)` where the
 spelling ruled concludes `(open F)`, and one hypothesis rule, `ask`, supposes what is asked, which is what the kernel
