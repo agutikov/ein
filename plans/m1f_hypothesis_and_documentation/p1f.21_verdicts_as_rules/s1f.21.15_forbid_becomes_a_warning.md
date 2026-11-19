@@ -466,6 +466,9 @@ On `1b9f87f0`, unless a commit is named:
   engine claims its answer, and the register's rule is that a known wrong answer still open is a row. The register
   has 11 rows. The other five that went stay out; M1n's page and F22's say where each is.
 - **The findings** of § *Not done, and found outside the scope* are V-22 to V-27 of the phase's page.
-- **The gate, the nightly and the container gate** are run on the batch's last commit, after `std.debts` is merged
-  (Q-M1f.560, ruled the same day), and their results are written here.
+- **The gate and the nightly, in the runner's image**, on the batch's last commits, after `std.debts` was merged
+  (Q-M1f.560, ruled the same day): `utils/ci_container.sh` on `edbe6c3b`, the last commit that changes code,
+  **exit 0**; `utils/ci_container.sh --nightly` on `c125113f`, the same code with the merge's record, **exit 0**.
+  The logs are `build/ci-logs/gate-edbe6c3b.log` and `build/ci-logs/nightly-c125113f.log`, on this machine. No
+  second run was made outside the container.
 

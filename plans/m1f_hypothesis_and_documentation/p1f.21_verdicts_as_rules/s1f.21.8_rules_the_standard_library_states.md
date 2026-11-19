@@ -771,5 +771,6 @@ commit `6b76c164` taken with `git cherry-pick -n`, the branch's record commit le
   not checked, 0 failed.
 - **Found outside it**: [V-28](findings.md#v-28--stddebts-says-debts-discharged-is-kept-by-every-larger-state) to
   [V-31](findings.md#v-31--the-module-tables-have-no-row-for-stdcore).
-- **The gate and the nightly in the runner's image** on this commit are the coordinator's, with S1f.21.15's.
+- **The gate and the nightly in the runner's image**, run by the coordinator with S1f.21.15's: `utils/ci_container.sh`
+  on `edbe6c3b`, **exit 0**; `utils/ci_container.sh --nightly` on `c125113f`, the same code, **exit 0**.
 
