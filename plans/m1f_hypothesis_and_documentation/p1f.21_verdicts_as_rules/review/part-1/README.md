@@ -17,7 +17,7 @@ stage's examples.
 
 | # | item | the question | the default |
 |---|---|---|---|
-| 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | (a) it stays a module a program imports; `std.core` gets the contradiction alone |
+| 38 | [Q-M1f.559](38-Q-M1f.559/README.md) | the elimination of a double negation, and the module every program gets: it is refused beside four corpus programs | the refusal's last step is ruled away (Q-M1f.565: the `:hrules` clause lists activators whole); left: (a) the elimination stays a module a program imports, the default; and (d), whether anything is refused at load for what a rule could derive |
 | 40 | [Q-M1f.552 to .556](40-defaults-taken/README.md) | five readings the two finished stages took and built | as built; the fourth not as planned: two modules for the negation |
 | 41 | [S1f.21.10 as built](41-S1f.21.10-readings/README.md) | the key's five readings, and four consequences of a module every program gets: an import of it refused, older saved files no longer load, `$EIN_STDLIB`, the container's format | as built (Q-M1f.562, Q-M1f.563); shown on six programs |
 | 42 | [the open findings](42-findings/README.md) | what becomes of V-8, V-10, V-11, V-13, V-15, V-16 and V-17 | a disposition each |

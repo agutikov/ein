@@ -493,6 +493,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.562](#q-m1f562--the-keys-readings-as-built) | The key's readings, as built | **defaulted 2026-11-19** (P1f.21's S1f.21.10, readings 1, 3, 4, 5 and 7): a rule states `:assert` or `:ein`, never both; any rule may state the key; `refuted by` names the program's rules; a rule with the key fires first; the surfaces keep *holds a contradiction*; built `68c3d5d0`. For the user to revise (review item 41) |
 | [Q-M1f.563](#q-m1f563--what-a-module-every-program-gets-brings) | What a module every program gets brings | **defaulted 2026-11-19** (P1f.21's S1f.21.10, four consequences of Q-M1f.551): an import of `std.core` is refused; a saved file written before no longer loads; an `$EIN_STDLIB` that names no library refuses every program; the container is `einb/2.2`; built `68c3d5d0`. For the user to revise (review item 41) |
 | [Q-M1f.564](#q-m1f564--a-non-monotone-program-loads-with-a-warning-forbids-refusal-goes) | A non-monotone program loads, with a warning: *forbid*'s refusal goes | **ruled 2026-11-19 by the user**, twice: *"I tell you what I expect - it loads, ein print huge WARNING, and then we guarantee nothing about it's output. NO!  Q-M1e2.5 IS WRONG! What the hell this `forbid` is? Where did it came from?"* and then *"Ok, I cancel those my listed decisions regarding absent -> false.  We allow to load non-monotone programs, but we don't claim about solution. That means - no tests validate the result of the solution of non-monotone programs. Remove this *forbid* from the code and docs completely."* The user's rulings of 2026-11-02 and 2026-11-04 behind Q-M1e2.5 are cancelled; every program loads, a flagged one under a loud warning, nothing claimed and nothing tested of its answer. P1f.21's S1f.21.15, started the same day |
+| [Q-M1f.565](#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written) | The `:hrules` clause lists activators as a rule's are written | **ruled 2026-11-19 by the user**: `(solve :hrules ((guess chosen Drink) (guess served Drink)))`, each activator a form headed by its hrule, where today the clause is `(guess (chosen Drink) guess (served Drink))`. P1f.21's S1f.21.16, planned, not started |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10607,4 +10608,41 @@ answered as any flagged program is, by the cube, with nothing claimed; that each
 check flags, shown, since a route's licences rest on it; Q-M1e2.5's decision, the standing rule in `AGENTS.md`, the
 diagnostics' section and the tests rewritten; and the rows of the regressions whose right answer is that refusal
 re-filed.
+
+### Q-M1f.565 — The `:hrules` clause lists activators as a rule's are written
+
+**Raised and ruled** 2026-11-19 by the user, reading why a program was refused at load
+([Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets)). Verbatim:
+
+> :hrules argument looks bad. How do we activate rules normally? (rule R (?args) ....)  then somewhere (R args)
+> right? So why :hrules look different? it has to be (solve :hrules ((guess chosen Drink) (guess served Drink)))
+
+**Ruled: the clause is a list of activators, each written as a rule's activator is, `(NAME argument …)`.**
+
+| | today | ruled |
+|---|---|---|
+| two activators of one hrule | `(solve :hrules (guess (chosen Drink) (served Drink)))` | `(solve :hrules ((guess chosen Drink) (guess served Drink)))` |
+| two hrules | `(solve :hrules (guess (chosen Drink) pick (Ann)))` | `(solve :hrules ((guess chosen Drink) (pick Ann)))` |
+| an hrule with no parameter | `(solve :hrules (guess))` | `(solve :hrules ((guess)))` |
+
+**Why it looks different today.** It is the first spelling, of 2026-05-22 (`9fd8d631`, *generic hrules*): *"Activators
+live in a `:hrules` keyword of (query …) — `:hrules (NAME (args…) (args…) …)` — search control kept out of (ontology
+…)"*. That an hrule's activators are in a clause and are no facts has that reason, a hypothesis rule being the
+search's and not the knowledge base's. That the clause groups argument lists under a name, and does not write each
+activator whole, has none on record: the two decisions about the clause since
+([Q-M1f.115](../../docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md),
+[Q-M1f.116](../../docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)) say what
+its names must be and take the shape as given.
+
+**What the grouped form costs.** The grammar reads it as one form headed by its first name, so every later name
+of an hrule is an argument of that form. That is P1f.21's finding V-13, and it is the last step by which four
+corpus programs are refused beside `std.negation`: an hrule named a second time counts as *a rule named as an
+argument*. In the ruled form each name heads its own activator and none is an argument.
+
+**What it takes**, P1f.21's [S1f.21.16](p1f.21_verdicts_as_rules/s1f.21.16_hrules_lists_activators.md), planned, not
+started: the grammar and the loader; every program that writes the clause, 52 under `examples/`, 4 under `tests/`
+and 1 in `stdlib/`, re-spelled with no answer moving; the pages, 32 of them, and the tests that write a program
+inline; the generator of the zebra variants. The clause stays where it is, in `(solve …)`, and what it does is not
+changed ([Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed): every way to
+control the hypotheses stays).
 

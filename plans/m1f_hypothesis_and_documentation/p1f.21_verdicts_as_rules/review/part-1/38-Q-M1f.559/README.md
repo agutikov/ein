@@ -1,5 +1,11 @@
 # 38 · Q-M1f.559: the elimination of a double negation, and the module every program gets
 
+**Option (c) is ruled, 2026-11-19, as a matter of syntax**: you, on reading why the program is refused: *":hrules argument looks bad. How do we activate rules normally? (rule R (?args) ....)  then somewhere (R args) right? So why :hrules look different? it has to be (solve :hrules ((guess chosen Drink) (guess served Drink)))"*
+The clause is to list each activator whole ([Q-M1f.565](../../../../open_questions.md#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written),
+S1f.21.16, planned). Each hrule then heads its own form and is no argument, so the four corpus programs load beside
+`std.negation`. **What is left of this item**: whether the elimination goes to every program or stays a module a
+program imports, its default; and option (d), whether anything is refused at load for what a rule could derive.
+
 [← the topic](../README.md) · [← the phase](../../../README.md) ·
 [the ledger](../../../../open_questions.md#q-m1f559--the-elimination-and-the-module-every-program-gets) ·
 [V-12](../../../findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands)

@@ -283,6 +283,14 @@ The two rulings behind Q-M1e2.5 are cancelled by the user who gave them; no test
 result; *forbid* goes from the code and the pages. [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) builds it,
 **started the same day**.
 
+## The ruling on `:hrules`
+
+The user, 2026-11-19, verbatim: *":hrules argument looks bad. How do we activate rules normally? (rule R (?args) ....)  then somewhere (R args) right? So why :hrules look different? it has to be (solve :hrules ((guess chosen Drink) (guess served Drink)))"*
+
+Filed as [Q-M1f.565](../open_questions.md#q-m1f565--the-hrules-clause-lists-activators-as-a-rules-are-written): the clause is a list of
+activators, each a form headed by its hrule. The grouped form is the first spelling, of 2026-05-22, and nothing on
+record gives a reason for it. [S1f.21.16](s1f.21.16_hrules_lists_activators.md) builds it, planned and not started.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -325,6 +333,7 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation and the contradiction, each a module a program imports; and the requirement, the payment and `discharged` | **done 2026-11-19; merged in part**: `std.negation` and `std.contradiction` (`b0ee99f4`) by the merge `ca98dec2`; `std.debts` (`6b76c164`) built and **held on the stage's branch for part 2**. Its readings: Q-M1f.555 (two modules for the negation, not the default), Q-M1f.556. The batch's container gate runs on the merge |
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | **done 2026-11-19**: `68c3d5d0`, `946ee788`; no answer moved over the 913 corpus files; its readings and the four consequences of an always-loaded module are Q-M1f.562 and Q-M1f.563, review item 41. **The gate in the runner's image is green on `946ee788`** (165 test binaries) **and the nightly there on `901f9fa3`**, the same code under plan commits (82 steps, exit 0) |
 | [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) | | ***Forbid* is removed, and nothing validates a non-monotone program's answer.** The check and its words go from the code and the pages; a non-monotone program loads under a loud warning; no `:expect`, regression row, golden line of an answer or assertion is left on a flagged program | **started 2026-11-19** on the user's word (*"Remove this *forbid* from the code and docs completely"*), Q-M1f.564; in the main tree; before S1f.21.11 |
+| [S1f.21.16](s1f.21.16_hrules_lists_activators.md) | | **The `:hrules` clause lists activators as a rule's are written.** `(solve :hrules ((guess chosen Drink) (guess served Drink)))`; every program that writes the clause re-spelled, no answer moving | planned 2026-11-19 on the user's ruling (Q-M1f.565), **not started**; after S1f.21.15 |
 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.15, Q-M1f.557 (how the rules reach every relation; proposed (d)) and Q-M1f.447 |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | planned, **not started**; after S1f.21.8, S1f.21.10 and S1f.21.11 |
 
