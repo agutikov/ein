@@ -13,9 +13,9 @@ library's conventions, `eq` and `neq` stay the kernel's.
 ([the rulings](README.md#the-rulings-of-the-answers-file)): [Q-M1f.557](../open_questions.md#q-m1f557--how-the-contradictions-rules-reach-every-relation-and-count) **(d)**,
 the contradiction is a theory a program imports, and
 [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) **(c)**, the
-argument-count check is dropped. In order it runs after [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md),
-[S1f.21.16](s1f.21.16_hrules_lists_activators.md) and
-[S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md), and **starts on the user's word**.
+argument-count check is dropped. In order it runs after [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) and
+[S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md), and **starts on the user's word**
+([S1f.21.16](s1f.21.16_hrules_lists_activators.md), which stood between them, is dropped).
 **Built on:** [S1f.21.10](s1f.21.10_the_kernels_prefix.md), the key and the module every program gets, done: the
 kernel reads no `(false)` to judge a state, a rule of `std.core` is read through in an explanation (`Rule::implicit`),
 and `monotone::leads_to_an_end` is what the agenda and the detector read;
@@ -69,7 +69,7 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
 6. **The elimination stays a module a program imports** (review item 38's default, which no answer changed, and
    what Q-M1f.557 rules of the contradiction): `std.core` gets neither. The refusal that stood beside it
    ([V-12](findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands)) goes before this stage,
-   by S1f.21.16 and S1f.21.17. Nothing is shown here.
+   by S1f.21.17; what S1f.21.16 would have taken of it goes with the `hrule` form, in S1f.21.18. Nothing is shown here.
 7. **What the module every program gets brings with a declaration**
    ([V-14](findings.md#v-14--a-declaration-an-import-brings-is-not-inert)). `std.core` may declare, as any module
    (the user: *"there is no requirement "std.core must declare nothing" - it may declare"*). A declaration there is

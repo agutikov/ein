@@ -4,8 +4,8 @@
 **Status:** planned 2026-11-19 on the user's answers to review items 38 and 41
 ([the rulings](README.md#the-rulings-of-the-answers-file)); **not started**: it starts on the user's word.
 **Waits on:** for task 1, **the user's word that the reading below is theirs**; for tasks 2 and 3, nothing. In
-order it runs after [S1f.21.16](s1f.21.16_hrules_lists_activators.md) and before
-[S1f.21.11](s1f.21.11_kill_and_three_conventions.md).
+order it is the next stage of part 1, before [S1f.21.11](s1f.21.11_kill_and_three_conventions.md);
+[S1f.21.16](s1f.21.16_hrules_lists_activators.md), which stood before it, is dropped.
 **Writes:** the loader's check on an activator a rule could derive and the compiler's reading of such an
 activator; the loader's reading of `(import std.core)` and of `$EIN_STDLIB`; the diagnostics' page, the page of
 `std.core`, the install page; the decisions it amends; `AGENTS.md` where it states either.
@@ -17,7 +17,8 @@ The user, 2026-11-19, in part 1's answers file, verbatim.
 - Item 38 ([Q-M1f.559](../open_questions.md#q-m1f559--the-elimination-and-the-module-every-program-gets)): *"forbid becomes a warning, fix :hrulse activators syntax"*
 - Item 41 ([Q-M1f.563](../open_questions.md#q-m1f563--what-a-module-every-program-gets-brings)): *"import std.core works like duplicated import; $EIN_STDLIB allows to replace std.core is in $EIN_STDLIB there is no std.core - print error about std.core not found in $EIN_STDLIB; There is still only a single user of ein - me, so I don't care about backward compatibility. Forget about it until I explicitely ask. Containers not load - delete and create new."*
 
-The second half of item 38's is [S1f.21.16](s1f.21.16_hrules_lists_activators.md). The rest is here.
+The second half of item 38's was [S1f.21.16](s1f.21.16_hrules_lists_activators.md)'s, which is dropped: the user's
+later ruling removes the clause it spelled (Q-M1f.567). The rest is here.
 
 ## Task 1 — the refusal for what a rule could derive becomes a warning
 
