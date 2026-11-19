@@ -489,7 +489,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.558](#q-m1f558--forbid-and-the-contradiction-as-rules) | *Forbid* and the contradiction as rules | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 37, its finding V-1): *forbid* reads the module's contradiction as it reads the kernel's today, so the seven corpus programs it would refuse load as now |
 | [Q-M1f.559](#q-m1f559--the-elimination-and-the-module-every-program-gets) | The elimination and the module every program gets | **open, not ruled; default proposed (a)**: put 2026-11-19 (P1f.21's review item 38, its finding V-12): the elimination stays a module a program imports, and what every program gets of `not` is the contradiction alone |
 | [Q-M1f.560](#q-m1f560--stddebts-with-its-stage-or-with-the-second-part) | `std.debts`: with its stage, or with the second part | **open, not ruled; held, the default (a)**: put 2026-11-19 (P1f.21's review item 39): built by S1f.21.8 and held on its branch for the second part of the phase, the user having left `open` for it |
-| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's sixth instruction; analysed with runs (`one_way_each.md`, review item 43): an obligation is a hypothesis rule plus a requirement, so the rules can go, *must* to obligations and *may* to the filtering way, whose one mechanism would be the closure; proposed, since the user's remark that a program with obligations may be unsolvable without hypothesis rules: A (b), the rule kept as the way to say *may*; B (a), the closure the one filter |
+| [Q-M1f.561](#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed) | One way to say *must* and one to say *may*: hypothesis rules removed? | **ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are; nothing is built. Raised the same day by P1f.21's sixth instruction and analysed on runs (`one_way_each.md`): an obligation is a hypothesis rule plus a requirement, *must* against *may* |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10428,9 +10428,14 @@ verbatim:
 > generator with filters. Let's leave only one valid way for each. Obligations is positive way, what would be the
 > negative (filtering) one?
 
-**Open: not ruled.** The analysis is [`one_way_each.md`](p1f.21_verdicts_as_rules/one_way_each.md), on runs of the
-gate build of master at `ca98dec2`; [review item 43](p1f.21_verdicts_as_rules/review/part-1/43-Q-M1f.561/README.md)
-has its six programs.
+**Ruled 2026-11-19 by the user: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."*
+**Every existing way to control the hypotheses stays**: the hypothesis rules and their clause, `:hypothesis-relations`,
+`:no-hypothesis`, the closure, `:no-search`, and the ladder that reads them. Nothing is planned or built on this
+question, and the three calls below are closed with it: A (b), B (b), and C with nothing to decide.
+
+The analysis the ruling was given on is [`one_way_each.md`](p1f.21_verdicts_as_rules/one_way_each.md), on runs of
+the gate build of master at `ca98dec2`, its six programs and its censuses beside it; it was item 43 of the phase's
+review bundle and left it with the ruling.
 
 **What it found.** As a way to build $H$ an obligation is a hypothesis rule: its payments are what the rule
 *trigger, no witness yet, domain ⟹ witness* proposes. As a judge it adds a requirement, *at least one of these*,
@@ -10462,5 +10467,6 @@ it is supposed only by its hypothesis rules; without them the obligations rung p
 changed by it: A (b), the hypothesis rule kept as the way to say *may*; B (a), the closure the one filter; C then
 has nothing to decide.**
 
-**What waits on it.** Nothing running. A ruling for A (a) or B (a) is planned as a stage of part 1 when given.
+**What follows from it.** No stage. In the second part, S1f.21.12's readings on the declarator `hrule` and on the
+lists and the closure stand at their defaults, each *as it is*, by this ruling.
 

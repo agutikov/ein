@@ -12,7 +12,6 @@ stage's examples.
 |---|---|---|---|
 | 35 | [Q-M1f.557](35-Q-M1f.557/README.md) | how the contradiction's rules reach every relation and count: an undeclared relation, and one of seven arguments, have none once the kernel's check goes | **not ruled**; five ways; proposed (e), the user's rule: one rule a count with the relation a variable of the pattern, which the loader refuses today |
 | 36 | [Q-M1f.447](36-Q-M1f.447/README.md) | the argument-count check, once `relation` is a convention: kept at load, a rule's verdict, or dropped | **no default**; yours to think about |
-| 43 | [Q-M1f.561](43-Q-M1f.561/README.md) | one way to say *must* and one to say *may*: are hypothesis rules removed, and what is the one filter | **not ruled**; analysed: [`one_way_each.md`](../../one_way_each.md); proposed, since the user's remark: the hypothesis rule kept as the way to say *may*, the closure the one filter |
 
 **A default is proposed or taken; an answer is wanted only where you would have it otherwise.**
 
@@ -26,7 +25,9 @@ stage's examples.
 
 **Left for later on the user's word, and not asked**: how `std.core` is customised (Q-M1f.551).
 **Out of the bundle, ruled**: item 33, the names (Q-M1f.399, with the key's word, Q-M1f.550), 2026-11-19; its page
-and programs are in `git log`, last at `984137bf`.
+and programs are in `git log`, last at `984137bf`. Item 43, one way to say *must* and one to say *may* (Q-M1f.561), declined the same
+day: every existing way to control the hypotheses stays; its analysis and its programs are
+[`one_way_each.md`](../../one_way_each.md).
 
 **The binary.** Items 35 to 38 are run with `build/review-bin/ein-head-ca98dec2`, the gate build of master at the
 merge of S1f.21.6 and S1f.21.8, and its `stdlib/`. `tools/run.sh` in an item re-takes its runs into `runs/`; both
@@ -46,7 +47,3 @@ are ignored, so they are on this machine only.
   rows of the wrong-answer register.
 - **38**: one program, four forms: 16 states with no import; 4 with `std.negation` and the hrule named once; refused
   with it named twice; 16 with `std.contradiction` and it named twice.
-- **43**: with one $H$ of two candidates a hypothesis rule's $R$ is four states with `∅` and an obligation's three
-  without it; the literal twin of a hypothesis rule, each match owing its own fact, is refused at load; the blind
-  enumerator proposes `s` of an atom that is no thing, and a rule that denies it gives the hypothesis rule's
-  answer. The oracle agrees with `ein solve` on each.

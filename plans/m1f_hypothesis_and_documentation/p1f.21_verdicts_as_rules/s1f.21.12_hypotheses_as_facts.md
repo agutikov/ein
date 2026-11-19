@@ -52,6 +52,10 @@ corpus, with today's binary and a stand-in relation where the parse refuses `ope
    knowledge base's views and `ein saturate --dump` show them as any fact, since they are; the read-out's states
    list them no more than they list root's other facts.
 
+**Ruled since, on readings 5 and 6** ([Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed),
+2026-11-19): *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* So the declarator `hrule`, the two lists
+and the closure stay as they are, which is each reading's default, and no other reading of the two is put.
+
 ## Task 2 — the build, on the rulings
 
 1. The grammar admits the fact as a premise and as a rule's conclusion; the loader holds it to a fact a state

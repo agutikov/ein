@@ -256,8 +256,9 @@ Analysed in [`one_way_each.md`](one_way_each.md), on runs, with three censuses o
 - **The filtering way's one mechanism**: the closure, the fact `(__closed__ R)`; the two lists of `(solve …)` are
   the same statement written twice more, and give the same answer as closures in 99 of 100 programs.
 
-Put as [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed),
-[review item 43](review/part-1/43-Q-M1f.561/README.md), not ruled; nothing is planned or built on it yet.
+Put as [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed)
+and **ruled the same day: declined**, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."* Every existing way to control the
+hypotheses stays, and nothing is planned or built on it.
 
 ## What it is
 

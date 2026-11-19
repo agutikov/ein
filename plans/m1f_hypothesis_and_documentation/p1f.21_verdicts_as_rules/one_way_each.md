@@ -7,9 +7,14 @@ them with obligation rules. Can we? Then we still have 2 approaches to hypothese
 negative, the second one is blind generator with filters. Let's leave only one valid way for each. Obligations is
 positive way, what would be the negative (filtering) one?"*
 
+**Ruled 2026-11-19: declined.** The user, on reading it, verbatim: *"Ok, just decline this proposal - we leave all existing options to control hypotheses as is."*
+The hypothesis rules, the two lists of `(solve …)`, the closure and the ladder stay as they are, and nothing here is
+built. The page is kept as the analysis the ruling was given on; where it says *proposed*, read *proposed and
+declined*.
+
 **An analysis. It rules nothing and builds nothing.** The question it ends in is
 [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed),
-[review item 43](review/part-1/43-Q-M1f.561/README.md).
+review item 43 of the phase's bundle, which left it when the question was ruled.
 
 **The runs** are the gate build of master at `ca98dec2` (`build/review-bin/ein-head-ca98dec2`, with that commit's
 `stdlib/`) on that commit's corpus. The three censuses are scripts kept beside this page, with the tables they
@@ -58,17 +63,17 @@ turn into a debt; and its literal twin, *each match owes its own fact*, is no ob
 
 ## 2. Six programs
 
-[`review/part-1/43-Q-M1f.561/programs/`](review/part-1/43-Q-M1f.561/programs/). Two things, `a` and `b`, and an atom
+[`one_way_each/programs/`](one_way_each/programs/). Two things, `a` and `b`, and an atom
 `c` that is no thing; `s` is the relation in question. `ein solve` and `ein oracle` agree on each.
 
 | | program | how it is said | $H$ | $R$ |
 |---|---|---|---|---|
-| 1 | [`1-may-hrule.ein`](review/part-1/43-Q-M1f.561/programs/1-may-hrule.ein) | a hypothesis rule: of each thing, `s` may be supposed | `(s a)`, `(s b)` | **4 states**, `∅` among them: `{}`, `{a}`, `{b}`, `{a, b}` |
-| 2 | [`2-must-one.ein`](review/part-1/43-Q-M1f.561/programs/2-must-one.ein) | an obligation: `s` of some thing is owed | the same two | **3 states**: `∅` is out, *root owes 1 instance* |
-| 3 | [`3-must-each.ein`](review/part-1/43-Q-M1f.561/programs/3-must-each.ein) | the literal twin of 1: each thing owes its own `s` | | **refused at load**: *`(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge* |
-| 4 | [`4-may-blind.ein`](review/part-1/43-Q-M1f.561/programs/4-may-blind.ein) | nothing: no rule proposes, `s` is declared | `(s a)`, `(s b)`, **`(s c)`** | 8 states: the enumerator fills the place with every guessable atom |
-| 5 | [`5-may-blind-denied.ein`](review/part-1/43-Q-M1f.561/programs/5-may-blind-denied.ein) | the same, and a rule that denies `s` of what is no thing | `(s a)`, `(s b)` | **4 states, program 1's** |
-| 6 | [`6-may-as-must-decide.ein`](review/part-1/43-Q-M1f.561/programs/6-may-as-must-decide.ein) | *may* written as a *must*: each thing owes a decision, yes or no | four decisions | 4 states, each a whole decision; `∅` is out |
+| 1 | [`1-may-hrule.ein`](one_way_each/programs/1-may-hrule.ein) | a hypothesis rule: of each thing, `s` may be supposed | `(s a)`, `(s b)` | **4 states**, `∅` among them: `{}`, `{a}`, `{b}`, `{a, b}` |
+| 2 | [`2-must-one.ein`](one_way_each/programs/2-must-one.ein) | an obligation: `s` of some thing is owed | the same two | **3 states**: `∅` is out, *root owes 1 instance* |
+| 3 | [`3-must-each.ein`](one_way_each/programs/3-must-each.ein) | the literal twin of 1: each thing owes its own `s` | | **refused at load**: *`(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge* |
+| 4 | [`4-may-blind.ein`](one_way_each/programs/4-may-blind.ein) | nothing: no rule proposes, `s` is declared | `(s a)`, `(s b)`, **`(s c)`** | 8 states: the enumerator fills the place with every guessable atom |
+| 5 | [`5-may-blind-denied.ein`](one_way_each/programs/5-may-blind-denied.ein) | the same, and a rule that denies `s` of what is no thing | `(s a)`, `(s b)` | **4 states, program 1's** |
+| 6 | [`6-may-as-must-decide.ein`](one_way_each/programs/6-may-as-must-decide.ein) | *may* written as a *must*: each thing owes a decision, yes or no | four decisions | 4 states, each a whole decision; `∅` is out |
 
 1 against 2 is the difference. 1 against 5 is *may* said the other way, with the same answer. 6 shows that *may*
 can be written as an obligation, by owing the decision instead of the fact; its states are not program 1's: none
@@ -190,7 +195,7 @@ carries.
 ## 6. The question
 
 [Q-M1f.561](../open_questions.md#q-m1f561--one-way-to-say-must-and-one-to-say-may-hypothesis-rules-removed), in
-[review item 43](review/part-1/43-Q-M1f.561/README.md): whether the hypothesis rules go; whether the two lists go
+review item 43 of the phase's bundle, which left it when the question was ruled: whether the hypothesis rules go; whether the two lists go
 with them, leaving the closure; and what becomes of *may* beside *must*.
 
 It touches the second part of the phase at one point and no more. There, under
