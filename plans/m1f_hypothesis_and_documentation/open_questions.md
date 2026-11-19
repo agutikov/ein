@@ -477,7 +477,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.546](#q-m1f546--the-reasoning-pages-hand-drawings-of-a-derivation) | The reasoning pages' hand drawings of a derivation | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): restyled by the same rule, a given fact a derivation also concludes plain. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
 | [Q-M1f.547](#q-m1f547--a-concentric-layout-the-layers-drawn-as-rings) | A concentric layout: the layers drawn as rings | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), no ring layout, nothing built; the review bundle's item 61, examples by S1f.23.11, task 2, its page and programs in `git log` (`7c39c671`); not `--layout radial`, `--layout rings` or a documented recipe |
 | [Q-M1f.548](#q-m1f548--a-derivations-three-levels-as-built) | A derivation's three levels, as built | **ruled 2026-11-19: the default** (the user, *"Go with all defaults to the end of this phase p1f.23 and stop"*): (a), as built, with Q-M1f.539 to .544; the review bundle's item 62; not one width, the premises as explanation, or a redundant firing's conclusion bright. Built by S1f.23.11, task 1 (`21728654`, merged by `9f5c0487`) |
-| [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **open, the user's, not ruled**: raised 2026-11-19 by P1f.21's fifth instruction; recommended (b), a candidate is a fact root holds, in the reading *asked*, nothing removed; (c) the move, (d) the search as rules and both uses declined for now; P1f.21's S1f.21.12 and S1f.21.13 are planned on it |
+| [Q-M1f.549](#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules) | Hypotheses as facts: held, in which reading, and how far the search goes into rules | **answered in its main call 2026-11-19 by the user** (*"all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes"*): (b), every rung's candidates are facts `(open H)` the knowledge base holds; candidates proposed above root, dependent hypotheses, are **not this phase's** (the user: non-monotone by definition). Left open: the two uses, recommended declined for now. P1f.21's S1f.21.12 builds it, in the phase's second part |
 | [Q-M1f.550](#q-m1f550--the-word-a-rule-gives-the-engine-to-end-a-state-the-argument-of-ein) | The word a rule gives the engine to end a state: the argument of `:ein` | **ruled 2026-11-19 by the user**, verbatim: *"Yes, :ein   inconsistent"*: the word is `inconsistent`, as proposed on the user's *"maybe propose better name here"* (Q-M1f.399's answer); P1f.21's S1f.21.10 builds the key on it, unblocked the same day |
 | [Q-M1f.551](#q-m1f551--the-module-every-program-gets-stdcore-always-loaded) | The module every program gets: `std.core`, always loaded | **ruled 2026-11-19 by the user**, verbatim: *"std.core always loaded - ok now, later will decide how it could be customized"*: a module of the standard library loaded into every program with no import line, built by P1f.21's S1f.21.10; **how it is customised is left for later, the user's**, and nothing is built for it |
 | [Q-M1f.552](#q-m1f552--the-saturated-dumps-sections-for-the-rules-no-agenda-holds) | The saturated dump's sections for the rules no agenda holds | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 1): (a), a section each for the obligation rules and the hypothesis rules, the first heading saying it is the agenda's; the build added the count of a rule's activators beside it; built `8d8327ce` |
@@ -10183,6 +10183,24 @@ for a gain (b) shows is not needed; use 1 is what the tree route does already (t
 alternatives, licence L5), no program is known to want another order, and it can be added on (b)'s facts; use 2 and
 (d) wait on M1n's stratum-order admission (V-8), and (d) is the cube. The reasons at length are
 [item 34 § 6](p1f.21_verdicts_as_rules/review/part-2/34-Q-M1f.549/README.md#6-the-recommendation-and-its-reasons).
+
+**Answered in its main call, 2026-11-19, by the user**, verbatim: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."*
+
+Read:
+
+- **(b), and by every rung.** Whatever builds $H$, the hypothesis rules, the obligations rung or the blind
+  enumerator, emits each candidate as a fact `(open H)` and the knowledge base holds it. The word is the user's,
+  `open`. The knowledge base only grows, so the fact stays in the states above root, where it reads *asked*: this
+  is the reading recommended above, and the one thing of it the user's sentence does not say in so many words.
+- **Dependent hypotheses are not this phase's.** A rule that concludes `(open H)` may fire in a state above root
+  and so propose a candidate that exists only above some commitment: the search space is then a lattice that is
+  no cube. The user: it is a non-monotone program by definition, and not to be decided here. So in this phase $H$
+  is root's, as today, and an `(open H)` a state above root derives is no candidate. It is entered as P1f.21's
+  finding V-21 and goes to M1n at the phase's close. On today's engine nothing proposes above root: a hypothesis
+  rule is read on root's fixpoint alone, and what a commitment can bring a state to owe is read off the rules at
+  root.
+- **Not answered**: the two uses, search control from inside Ein and search artefacts seen by rules, recommended
+  declined for now; and (c) and (d), which (b) sets aside.
 
 **What waits on it.** P1f.21's [S1f.21.12](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md), planned
 under (b), and [S1f.21.13](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md), planned under the

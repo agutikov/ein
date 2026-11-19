@@ -1,5 +1,11 @@
 # 34 · Q-M1f.549: hypotheses as facts — held, in which reading, and how far the search goes into rules
 
+**Answered in its main call, 2026-11-19.** You: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."*
+Read as (b) of § 5, by every rung, the fact written `(open H)` and held by the knowledge base; a candidate proposed
+above root is not this phase's ([V-21](../../../findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)).
+What is left of the item is the two uses of § 5, each recommended declined for now, and one thing to confirm: that
+nothing is removed, so an `(open H)` stays in the states that have decided H.
+
 [← the topic](../README.md) · [← the phase](../../../README.md) · [the overview](../../../overview.md) ·
 [the ledger](../../../../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
 

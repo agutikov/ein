@@ -4,8 +4,9 @@
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started**.
 **Group:** [H](modifications.md#h-open-facts), items 30 to 35.
-**Waits on:** [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
-which decides what the stage is. Under (a) it is not run. **It is planned here under (b), the recommendation**:
+**Waits on:** the first part of the phase, which runs before it. [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
+**is answered in its main call** (the user, 2026-11-19: *"all hypotheses generation engines should emit (open H) facts
+and add them into KB? I think yes"*): (b), every rung, the fact written `(open H)`. **It was planned here under (b)**:
 the candidates held as *asked*. Under (c) it is the design of
 [`open_facts.md` § 5](open_facts.md#5-the-move-open-held-not) and [§ 6](open_facts.md#6-what-rules-can-do-with-open-facts)
 instead, and is planned again. Also [S1f.21.7](s1f.21.7_the_debts_term.md), the term a candidate carries. Its name
@@ -37,9 +38,11 @@ corpus, with today's binary and a stand-in relation where the parse refuses `ope
 2. **The form**: `(open F)` or `(open F J)`, and J for each rung: the debt's term for the obligations rung, the
    rule's instance for an hrule, none for the blind rung. Default: `(open F J)` where a debt or a rule proposed it,
    one fact a candidate and reason, as the user's form has it.
-3. **$H$ is root's.** A rule that concludes a candidate is a rule and may fire above root. Default: what a state
-   above root asks is no candidate, since $R$ is a region of one lattice; the read-out says how many such facts a
-   run met. The other reading, a lattice that grows, changes what $R$ is and is not this phase's.
+3. **$H$ is root's.** A rule that concludes a candidate is a rule and may fire above root. What a state above root
+   asks is no candidate, since $R$ is a region of one lattice; the read-out says how many such facts a run met.
+   **Ruled by the user, 2026-11-19**: candidates proposed above root, *dependent hypotheses*, make the search space a
+   lattice that is no cube and the program non-monotone by definition, *"so not to be decided in this phase"*
+   ([V-21](findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)).
 4. **When the kernel's rungs write theirs.** The obligations rung reads an absence at root, and the blind rung the
    program's names. Default: one pass on root's fixpoint, as today; its facts written; root's saturation resumed,
    since a rule may read them; $H$ read then, once.

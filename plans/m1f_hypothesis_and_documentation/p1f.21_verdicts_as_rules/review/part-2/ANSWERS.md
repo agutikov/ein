@@ -44,8 +44,9 @@ re-render of the bundle rewrites the READMEs and never this file.
 - **And your two uses**, on (b) or (c): **1** search control from inside Ein; **2** search artefacts seen by rules,
   facts inferred from the search. Recommended: both declined for now, 1 because the tree route already does it and
   no program is known to want another order, 2 because its second absence answers wrong today (M1n).
-- **No default is taken**: the stages that wait on it, S1f.21.12 and S1f.21.13, are planned on the recommendation
-  and run on your answer.
+- **Answered in its main call, 2026-11-19** (*"all hypotheses generation engines should emit (open H) facts and add
+  them into KB? I think yes"*): (b), by every rung; dependent hypotheses above root not this phase's. **Left for
+  you here**: the two uses, each recommended declined; and whether an `(open H)` stays once H is decided, read so.
 
 **Your answer:** 
 

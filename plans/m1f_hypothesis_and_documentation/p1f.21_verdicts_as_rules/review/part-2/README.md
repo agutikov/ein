@@ -8,7 +8,7 @@ their part: nothing of part 1 needs them. An answer goes into [`ANSWERS.md`](ANS
 | # | item | the question | state |
 |---|---|---|---|
 | 32 | [Q-M1f.390](32-Q-M1f.390/README.md) | what an obligation emits: the verdict, with its justification, or as a fact | not ruled; default (b); `(open F J)` beside (d) |
-| 34 | [Q-M1f.549](34-Q-M1f.549/README.md) | hypotheses as facts: held, in which reading, and how far the search goes into rules | not ruled; recommended (b), held as *asked* |
+| 34 | [Q-M1f.549](34-Q-M1f.549/README.md) | hypotheses as facts: held, in which reading, and how far the search goes into rules | **answered in its main call**: (b), every rung emits `(open H)` facts the knowledge base holds; dependent hypotheses above root not this phase's. Left: the two uses, recommended declined |
 | 39 | [Q-M1f.560](39-Q-M1f.560/README.md) | `std.debts`, built by S1f.21.8: merged with its stage, or with the second part | (a) held on its branch for part 2, as now |
 
 Item 39 stands between the parts: `std.debts` was built in the first and is of the second; held is its default,

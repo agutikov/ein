@@ -232,6 +232,10 @@ decides neither question. Whether it is merged with the stage was put to the use
 reported, **it is held**: the stage's first commit is merged, and `std.debts` waits on its branch, built and tested,
 for the user's word or for part 2.
 
+**The user on part 2, the same day**, verbatim: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."* So Q-M1f.549's main call is answered, (b): every rung
+emits its candidates as facts `(open H)` the knowledge base holds. A candidate proposed above root is parked, not
+this phase's ([V-21](findings.md#v-21--dependent-hypotheses-a-candidate-proposed-above-root)).
+
 The pages' stage is cut along the same line: [S1f.21.2](s1f.21.2_the_pages.md) closes part 1, and
 [S1f.21.14](s1f.21.14_the_pages_of_open.md) part 2.
 

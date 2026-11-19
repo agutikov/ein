@@ -31,6 +31,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-18](#v-18--the-measurement-examples-read-a-refutation-by-false) | the measurement examples read a refutation as a rule that writes `(false)` or a negation, and not one that states the key | S1f.21.10 | open |
 | [V-19](#v-19--a-saved-files-first-line-speaks-of-the-modules-it-imports) | a saved file's first line says *every module it imports*, and it carries `std.core` too | S1f.21.10 | open |
 | [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | open; S1f.21.2's |
+| [V-21](#v-21--dependent-hypotheses-a-candidate-proposed-above-root) | dependent hypotheses: once a rule concludes `(open H)`, a candidate can be proposed above root, and the search space is a lattice that is no cube | the user, 2026-11-19 | parked on the user's word: not this phase's; M1n's at the close |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -539,4 +540,21 @@ that stage it carries `std.core` as well, which nothing imports. Engine output, 
 **Found** 2026-11-19 by S1f.21.10. `docs/ein/user/03-syntax-and-semantics/10-theory.md` shows two steps of a dead
 root's trace, the second ending *Derives `false`*; the trace now has a third, the module's rule stating the key.
 The page does not say the two are the last, so it is not false; it is S1f.21.2's to show the whole.
+
+## V-21 — Dependent hypotheses: a candidate proposed above root
+
+**Raised** 2026-11-19 by the user, on the second part of the phase, verbatim: *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in this phase."*
+
+**What.** Today $H$ is root's: a hypothesis rule is read once, on root's fixpoint, a match only a node's state
+would have proposes nothing, and what a commitment can bring a state to owe is read off the rules at root. Once
+every rung emits its candidates as facts `(open H)` and a rule may conclude one
+([Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)),
+a rule can fire in a state above root and conclude an `(open H)` root does not hold: a hypothesis that exists only
+above some commitment. The commitments are then no longer the subsets of one set, and the search space is a lattice
+that is not a cube; $R$ as a region of the cube over root's candidates, the oracle's $2^{n}$ and each licence
+stated on it would be restated.
+
+**Parked, on the user's word**: not to be decided in this phase. [S1f.21.12](s1f.21.12_hypotheses_as_facts.md)
+keeps $H$ root's: an `(open H)` derived above root is held and is no candidate, and the read-out says how many a
+run met. It goes to [M1n](../../m1n_non_monotone_programs/README.md) at the phase's close, with the user's words.
 
