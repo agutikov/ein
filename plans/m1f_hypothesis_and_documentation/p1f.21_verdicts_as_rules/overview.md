@@ -207,8 +207,8 @@ hypotheses, then those that do. Within a part the rows are in the order the stag
 | | stage | group | items | what | waits on |
 |---|---|---|---|---|---|
 | 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | **done** |
-| 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | three modules of the standard library, additive | where each lives |
-| 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | nothing: unblocked |
+| 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | modules of the standard library, additive | **done**; `std.negation` and `std.contradiction` merged, `std.debts` held for part 2 |
+| 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | **started** |
 | 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | S1f.21.10, S1f.21.8; V-1 and a choice with no default; Q-M1f.447 |
 | 5 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6, 7, 9, 12, half of 10 | the pages of the first part | every build of the part |
 

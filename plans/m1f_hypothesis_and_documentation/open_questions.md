@@ -483,6 +483,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.552](#q-m1f552--the-saturated-dumps-sections-for-the-rules-no-agenda-holds) | The saturated dump's sections for the rules no agenda holds | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 1): (a), a section each for the obligation rules and the hypothesis rules, the first heading saying it is the agenda's; the build added the count of a rule's activators beside it; built `8d8327ce` |
 | [Q-M1f.553](#q-m1f553--the-words-for-a-state-dead-by-a-fact-beside-its-negation) | The words for a state dead by a fact beside its negation | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 2): (a), *holds a contradiction*, wherever the sentence stood; built `c9ea9597`. S1f.21.10 reads it again beside the key's word, `inconsistent` |
 | [Q-M1f.554](#q-m1f554--a-saved-file-for-an-owing-node-below-a-non-empty-r) | A saved file for an owing node below a non-empty $R$ | **defaulted 2026-11-19** (P1f.21's S1f.21.6, reading 3): (a), not built; the case is P1f.21's finding V-9, open |
+| [Q-M1f.555](#q-m1f555--where-the-rules-of-a-stored-negation-live) | Where the rules of a stored negation live | **defaulted 2026-11-19, not as the default read** (P1f.21's S1f.21.8, reading 1): two modules, `std.negation` (the elimination) and `std.contradiction`, where one was planned, since the elimination's conclusion is refused beside four corpus programs and an import is whole; a rule with no parameter reads a fact the program writes, `(clash-of-declared)`; built `b0ee99f4`, merged `ca98dec2`. For the user to revise |
+| [Q-M1f.556](#q-m1f556--the-counts-of-arguments-the-negations-rules-are-written-for) | The counts of arguments the negation's rules are written for | **defaulted 2026-11-19** (P1f.21's S1f.21.8, reading 2): (a), 0 to 6 for the contradiction and for the elimination; the corpus negates facts of 0, 1 and 2 arguments at root and nothing past 2; built `b0ee99f4` |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -10285,4 +10287,47 @@ owing node below a non-empty $R$ gets none.
 
 **Default taken: (a).** The case, on `examples/lattice/05_owed_seats_bounded.ein`, is
 [V-9](p1f.21_verdicts_as_rules/findings.md#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file), open.
+
+### Q-M1f.555 — Where the rules of a stored negation live
+
+**Raised** 2026-11-19 by P1f.21's [S1f.21.8](p1f.21_verdicts_as_rules/s1f.21.8_rules_the_standard_library_states.md),
+reading 1. **Put, not ruled.** The elimination of a double negation and the contradiction are rules the standard
+library can state today, each a module a program imports.
+
+- **(a)** one module, `std.negation`, for both. **The default as planned.**
+- **(b)** two modules, `std.negation` for the elimination and `std.contradiction` for the contradiction.
+- **(c)** `std.logic`, which is kept free for M1g.
+
+**Taken: (b), not the default**, for what the rules showed when run. `eliminate-N` concludes a fact whose relation
+is its parameter, and the loader refuses such a conclusion beside a program that names a rule of that count of
+parameters as an argument
+([Q-M1f.42](../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)): four corpus
+programs are refused on importing it, `examples/lattice/02`, `03`, `15` and `16`. An import is whole, so in one
+module the contradiction's rules would be refused with them. Apart, `std.contradiction` loads wherever the program
+does: over the 606 corpus programs swept, importing it and asking for nothing moves no answer and no fact of root.
+
+**With it, two things the design did not have**, each taken for a reason a run gave and each the user's to revise:
+
+- **A rule with no parameter reads a fact the program writes.** It can have no activator, so `clash-of-0` to
+  `clash-of-6`, which activate the contradiction's rules from the declarations, each read `(clash-of-declared)`; in
+  the design they fired on every program that held them.
+- **No module declares a relation.** A declaration an import brings is not inert
+  ([V-14](p1f.21_verdicts_as_rules/findings.md#v-14--a-declaration-an-import-brings-is-not-inert)).
+
+Built: `b0ee99f4`, merged by `ca98dec2`. The third set of the stage, the requirement, the payment and `discharged`
+(`std.debts`, with its relations `debt-due`, `debt-paid` and `debts-discharged` and its fact `(debts-of-owed)`), is
+built and held on the stage's branch for the second part of the phase; its names are read again there.
+
+### Q-M1f.556 — The counts of arguments the negation's rules are written for
+
+**Raised** 2026-11-19 by P1f.21's [S1f.21.8](p1f.21_verdicts_as_rules/s1f.21.8_rules_the_standard_library_states.md),
+reading 2. **Put, not ruled.** A rule is written for one count of arguments, its relation a parameter.
+
+- **(a)** 0 to 6, as the survey's rule set has it, for the contradiction and the elimination. **Default.**
+- **(b)** what the corpus needs and no more.
+
+**Default taken: (a).** The census of root's fixpoint over the corpus's programs that saturate, in the stage's
+record: stored negations only of facts of 0, 1 and 2 arguments, a negation of a negation only at 2; declared
+relations run to 10 labels, everything past six the calculator's, none negated at root. The census reads root
+only. A relation of seven arguments or more has no rule: it is the choice of S1f.21.11's task 1.1. Built: `b0ee99f4`.
 

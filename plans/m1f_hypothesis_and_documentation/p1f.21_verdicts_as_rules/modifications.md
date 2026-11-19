@@ -175,6 +175,11 @@ comes after S1f.21.4's rulings, and after S1f.21.3 where they change the kernel
 
 ## D. Rules the standard library could state today
 
+**Built 2026-11-19** by [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md): item 17 is `std.negation`, item 18
+`std.contradiction` (both merged, `ca98dec2`), item 19 `std.debts`, its relations `debt-due`, `debt-paid` and
+`debts-discharged`, built and held on the stage's branch for the second part of the phase. The items below are as
+they were listed.
+
 Each loads and runs on today's engine. A module is additive: a program that does not import it answers as it did.
 A rule added to `stdlib/` needs its program under `tests/stdlib/` and its region on a rules page, the standing
 rule. **Where each lives is not ruled.**

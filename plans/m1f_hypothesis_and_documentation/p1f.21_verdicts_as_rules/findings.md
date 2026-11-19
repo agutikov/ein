@@ -22,6 +22,12 @@ without a path is in [`design.md`](design.md), whole.
 | [V-9](#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file) | an owing node below a non-empty $R$ has no saved file: `--dump-answer` saves the states of $R$, and the owing frontier only where $R$ is empty | [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), entered by S1f.21.6 | open, not built by S1f.21.6's default |
 | [V-10](#v-10--the-saturated-dump-says-1-facts) | the saturated dump says `(1 facts)` | S1f.21.6 | open |
 | [V-11](#v-11--a-skip-in-the-hypothesis-rules-reader-that-no-file-reaches) | a skip in the hypothesis rules' reader that no file reaches | S1f.21.6 | open |
+| [V-12](#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands) | the elimination of a double negation cannot be given to every program as it stands: it is refused beside a program that names a rule of its count of parameters | S1f.21.8 | open; S1f.21.11's |
+| [V-13](#v-13--the-check-on-a-parameters-conclusion-counts-an-hrule-from-its-second-naming) | the check on a parameter's conclusion counts an hrule named in `(solve :hrules …)` only from its second naming | S1f.21.8 | open |
+| [V-14](#v-14--a-declaration-an-import-brings-is-not-inert) | a declaration an import brings is not inert: its labels are names of the importing program | S1f.21.8 | open; bears on every module a program gets |
+| [V-15](#v-15--refuted-by-names-one-of-two-contradictions-by-the-relations-name) | `refuted by` names one of two contradictions over one core by the relation's name | S1f.21.8 | open; S1f.21.11's task 1.3 |
+| [V-16](#v-16--importing-stdalgebra-moves-a-program-that-uses-bijective-for-itself) | importing `std.algebra` moves a program that uses `bijective` for itself | S1f.21.8 | open |
+| [V-17](#v-17--the-stdlib-censuss---check-exits-1-on-a-saved-file) | the stdlib census's `--check` exits 1 on a saved file | S1f.21.8 | open |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -406,4 +412,65 @@ golden's meaning rests on it, though the goldens that hold a dump hold the line.
 refuses such a tuple at load, so the skip cannot be reached from a file; the stage made it one function, shared
 with the new count, and did not remove it. Whether it goes, or stays for a caller that builds a program without the
 loader, is not said anywhere.
+
+## V-12 — The elimination cannot be given to every program as it stands
+
+**Found** 2026-11-19 by S1f.21.8 (its record, reading 1 and the first point found outside its scope).
+`std.negation`'s `eliminate-N` concludes `(?R …)`, a fact whose relation is its parameter, and the loader reads such
+a conclusion as able to write into every rule of N parameters whose name the program writes as an argument
+([Q-M1f.42](../../../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)). Four corpus
+programs that import nothing are refused on importing it: `examples/lattice/02_genuine_3set_death.ein`,
+`03_state_hash_collision.ein`, `15_union_label_dead.ein` and `16_pair_through_closure.ein`, each naming its hrule
+`guess (?R ?T)` more than once in `(solve :hrules …)`.
+
+**What it decides.** [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) gives every program the meaning of `not`,
+the contradiction and the elimination, in the module every program gets. The contradiction's rules load wherever a
+program does (`clash-N` concludes `(false)`). The elimination's do not, so as written it stays a module a program
+imports, or the check, the rule or the four programs change: S1f.21.11's to show.
+
+## V-13 — The check on a parameter's conclusion counts an hrule from its second naming
+
+**Found** 2026-11-19 by S1f.21.8. Beside `std.negation`, `(solve :hrules (guess (chosen Drink)))` loads and
+`(solve :hrules (guess (chosen Drink) guess (served Drink)))` is refused: the list is read as one form, whose first
+name is its head and no argument, so an hrule named there counts as *a rule named as an argument* only from its
+second naming. The two programs are the same by what a run could derive. No answer is known wrong by it.
+
+## V-14 — A declaration an import brings is not inert
+
+**Found** 2026-11-19 by S1f.21.8, running `std.debts` over the corpus in three forms. A declared relation's labels
+are names of the importing program, so a free `neq` or `eq` binds over them and the blind enumerator may guess
+about them, and a `(__closed__ R)` a module writes or derives is a fact a program's rule reads. Three corpus
+programs' claims list every name of the program (`examples/features/16_eq_neq_goal.ein`, `17_eq_neq_premise.ein`,
+`examples/ein-bugs/wrong-answers/goal-neq-free.ein`) and one reads every closure
+(`tests/stdlib/closure/02_closed_and_satisfied.ein`): each fails with any module imported that declares a relation,
+the calculator's among them (importing `std.math.arith` alone is enough).
+
+**What it decides.** A module every program gets must declare no relation and add no name a program's rule can
+reach: S1f.21.10's `std.core` is briefed so, and S1f.21.11's additions to it are held to the same.
+[S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md)'s two reserved relations meet it too.
+
+## V-15 — `refuted by` names one of two contradictions by the relation's name
+
+**Found** 2026-11-19 by S1f.21.8. A state that `clash-N` refutes holds two contradictions over one core, the pair
+and the `(false)` derived from it. The explanation's tie-break is the witnesses' rank by text, the pair's fact
+against `(false)`. So `tests/stdlib/contradiction/04_clash_3.ein`, whose relation is `between`, reads `refuted by
+(given)`, and its six siblings, whose relations sort after `false`, read `refuted by clash-N`. It is deterministic,
+kept by the renaming sweep, and an explanation, which may vary ([F22](../../followups/f22_exact_core_past_the_cap.md)
+makes it canonical). It is what S1f.21.11's task 1.3 asks, seen on today's engine: which rules the row names once a
+pair's death is a rule's.
+
+## V-16 — Importing `std.algebra` moves a program that uses `bijective` for itself
+
+**Found** 2026-11-19 by S1f.21.8. `examples/domain_elim/ab.ein`, `b_branch.ein` and `b_only.ein` write `(bijective
+color-loc)` for a rule of their own; with `std.algebra` imported, its `bijective-properties` derives its four markers
+beside theirs, and their answers move. It is known of a relation a module reads and does not declare: a property is
+a fact, and the module's rule fires on it whoever wrote it. The words a module shares this way are part of what
+importing it means; no page lists them per module.
+
+## V-17 — The stdlib census's `--check` exits 1 on a saved file
+
+**Found** 2026-11-19 by S1f.21.8, in a tool it did not touch. `python3 utils/stdlib_census.py --check` counts
+`tests/saved/04_a_saved_node.ein [test]` as a failure, *exit 0 and no event file*: a saved file's claims are not
+checked, and `ein test` writes no events for it. The census itself is whole, every rule of the standard library
+activated. It is a dev-host step, so no gate reads it.
 

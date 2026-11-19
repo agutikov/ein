@@ -38,12 +38,24 @@ and 6 of [`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers), which were
    absence; what *forbid* should read is M1n's, and stays there.
 3. **What moves at the same $R$** when a pair's death is a rule's: the firing that concludes `(false)`, which a
    state dead by a pair does not hold today; `refuted by` and the core, which name both sides' rules today.
-   Defaults: as S1f.21.10's readings 4 and 5, the module's rules left out of an explanation.
+   Defaults: as S1f.21.10's readings 4 and 5, the module's rules left out of an explanation. Today's engine shows
+   the question already, with the rules imported
+   ([V-15](findings.md#v-15--refuted-by-names-one-of-two-contradictions-by-the-relations-name)).
 4. **The argument-count check**, Q-M1f.447's three options, each on the corpus programs the check refuses or that
    write a relation at two counts, with [V-7](findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count).
    Shown and not chosen.
 5. **The cost**: the bench set by `utils/bench_env.sh`, the pair check against the rules. A measurement, shown; no
    estimate is written.
+6. **The elimination, in a module every program gets**
+   ([V-12](findings.md#v-12--the-elimination-cannot-be-given-to-every-program-as-it-stands)): `eliminate-N` is
+   refused beside a program that names a rule of N parameters as an argument, four corpus programs today. The ways,
+   each shown: the elimination stays a module a program imports, and `not`'s meaning in the module every program
+   gets is the contradiction alone; the check reads the rule as it is; the rule is written another way. Default:
+   the first, which changes no program.
+7. **What the module every program gets may hold**
+   ([V-14](findings.md#v-14--a-declaration-an-import-brings-is-not-inert)): no declaration and no name a program's
+   rule can reach, as S1f.21.10 holds `std.core` to; the contradiction's rules are checked against it before they
+   are added.
 
 ## Task 2 — the build, on the rulings, in this order
 
