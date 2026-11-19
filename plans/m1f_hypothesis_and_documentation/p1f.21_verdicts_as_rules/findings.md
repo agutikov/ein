@@ -12,13 +12,14 @@ without a path is in [`design.md`](design.md), whole.
 | id | what | found by | state |
 |---|---|---|---|
 | [V-1](#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* reads rules, and the kernel's contradiction is none: seven corpus programs that load are refused once the contradiction is written as a rule | S1f.21.1 | open |
-| [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | open |
-| [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | open |
-| [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | open |
+| [V-2](#v-2--the-surfaces-say-derives-false-of-a-state-that-holds-none) | the surfaces say *derives (false)* of a state that holds none | S1f.21.1 | **fixed** by `c9ea9597` (S1f.21.6): the words are *holds a contradiction* |
+| [V-3](#v-3---p-prints-a-fact-of-no-argument-with-a-space-inside) | `-p` prints a fact of no argument with a space inside, `(alive )` | S1f.21.1 | **fixed** by `d35408cb` (S1f.21.6): one printer |
+| [V-4](#v-4--the-saturated-dump-lists-no-obligation-rule) | the saturated dump lists no obligation rule | S1f.21.1 | **fixed** by `8d8327ce` (S1f.21.6): a section for each kind of rule |
 | [V-5](#v-5--the-users-notes-from-p1f22-questions-as-facts-the-two-negation-rules-and-the-names) | the user's notes from P1f.22 that are this phase's: `(open q)` as a fact that is a question; the elimination of a double negation as a rule beside the contradiction's; the names of `(false)` and `(open)` | the user, 2026-11-17, at P1f.22 | open: for the ruling of Q-M1f.390 and for Q-M1f.399; taken further by the user's second instruction, [`open_facts.md`](open_facts.md), for S1f.21.4 |
 | [V-6](#v-6--the-read-out-reads-is-a-by-its-name) | the read-out reads `is-a` by its name, for its `types` row, though `is-a` is no name the language reserves | the user, 2026-11-18 | **fixed** by `5a3f2979`: ruled (a) 2026-11-18, Q-M1f.412 |
 | [V-7](#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count) | a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count among its own, and the invariant's sweep calls it a breach | P1f.22's S1f.22.3 (its N-22), handed over at that phase's close, 2026-11-18 | open: **the user's call**, with § 8's `relation` |
 | [V-8](#v-8--the-search-written-as-rules-answers-wrong-at-its-third-stratum) | the search written as rules answers wrong at its third stratum: a rule over a second absence fires before the first absence's facts are derived, under `lattice monotone` | the reading of 2026-11-19, [review item 34](review/34-Q-M1f.549/README.md) | open; M1n's ground, handed over at the close |
+| [V-9](#v-9--an-owing-node-below-a-non-empty-r-has-no-saved-file) | an owing node below a non-empty $R$ has no saved file: `--dump-answer` saves the states of $R$, and the owing frontier only where $R$ is empty | [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), entered by S1f.21.6 | open, not built by S1f.21.6's default |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -85,6 +86,18 @@ The same words: [`10-answer-dump.md`](../../../docs/ein/user/04-reference/10-ans
 as a rule, which is what the phase's second stage states; whether the surfaces keep the words on that ground or
 say *holds a contradiction* is a wording to settle with those pages.
 
+**Fixed 2026-11-19** by S1f.21.6, `c9ea9597`, on its Reading 2's default: the words are *holds a contradiction*, the
+reasoning pages' own, true of a held `(false)` and of a pair. `ein solve c1.ein` now prints
+
+```text
+  empty             every node is dead — root's own fixpoint holds a contradiction
+```
+
+and `--no-search` its `∅` row in the same words; the legend of `ein render region` reads *dead: holds a
+contradiction; dead+owing is both*; `ein render h-space`'s sentence of a dead root, `10-answer-dump.md`'s
+`root.dead` and the comment on `DEAD` say the same. The stage's [record](s1f.21.6_surfaces.md#record) lists every
+other place it re-worded and those it left.
+
 ## V-3 — `-p` prints a fact of no argument with a space inside
 
 **What.** The text of a fact of no argument is `(r)`
@@ -101,6 +114,11 @@ final-state facts (beyond the program as loaded: root's derivations, the commitm
 ```
 
 The same run's `stale` row prints `(alive)`, as `ein saturate --dump` and `ein oracle --dump DIR --states` do.
+
+**Fixed 2026-11-19** by S1f.21.6, `d35408cb`: the form's lines are the one printer's text, and `ein solve v1.ein -p`
+ends `  (alive)`. A second printer with the same space, behind the loader's refusal of a written derivation cycle
+(`derivation cycle: (p ) -> (q ) -> (p )`), is gone with it. `ein-cli/tests/fact_of_no_argument.rs` holds the
+surfaces to one text.
 
 ## V-4 — the saturated dump lists no obligation rule
 
@@ -122,6 +140,22 @@ obligation.
 
 `ein saturate --dump examples/zebra2.ein` lists `;; Rules (60)` and no hypothesis rule either, so the section is
 of the agenda's rules; what the dump leaves unsaid is that it is.
+
+**Fixed 2026-11-19** by S1f.21.6, `8d8327ce`, on its Reading 1's default: a section for each kind of rule, in the
+dump's form for a rule, and the first heading says whose it is. `ein saturate --dump
+examples/lattice/05_owed_seats_bounded.ein` now has
+
+```text
+;; Rules — the saturation agenda's (38)
+…
+;; Obligation rules (2)
+;;   total-owed  :params (?R ?isa)  1 activator
+;;   surjective-owed  :params (?R ?isa)  1 activator
+```
+
+and `examples/zebra2.ein`'s `;; Hypothesis rules (1)`, `;;   guess  :params (?R ?T1 ?T2)  5 activators`. Beside an
+obligation rule and a hypothesis rule with parameters stands how many activators bind them, `no activator` for a
+rule the program loads and nothing activates. `ein-cli/tests/saturate_dump_rules.rs` holds it.
 
 ## V-5 — The user's notes from P1f.22: questions as facts, the two negation rules, and the names
 
@@ -307,4 +341,53 @@ in every state of $R$: `(w (s b))` does not hold `(s a)`. The right answer has n
 
 **What it decides here.** That *facts inferred from the search*, the second of the fifth instruction's two uses,
 waits on M1n: [S1f.21.13](s1f.21.13_the_search_and_rules.md) keeps the program as an example without `always`.
+
+## V-9 — An owing node below a non-empty $R$ has no saved file
+
+**Found** by [review item 32 § 7](review/32-Q-M1f.390/README.md#7-found-while-building), which cut such a file by
+hand; shown on a program and entered here by S1f.21.6, its task 4, 2026-11-19, on the gate build of the main tree
+at `c9ea9597`.
+
+**What.** `ein solve FILE --dump-answer DIR` saves a node as a file that loads to it
+([`10-answer-dump.md`](../../../docs/ein/user/04-reference/10-answer-dump.md)): one for each state of $R$
+(`DIR/models/NN.ein`); where $R$ is empty of the owing kind, one for each node of the owing frontier
+(`DIR/owing/NN.ein`); and under `--no-search`, root (`DIR/root.ein`). An owing node other than root, below a
+non-empty $R$, is in none of the three: no command writes its file.
+
+**Shown by.** `examples/lattice/05_owed_seats_bounded.ein`. Its $R$ is the two matchings, and the five nodes below
+them owe: root 4 instances, each single seating 2 (`ein oracle FILE --dump C`, the table *Every node* of
+`C/region.md`). `ein solve examples/lattice/05_owed_seats_bounded.ein --dump-answer D`, then `find D -type f`:
+
+```text
+D/answer.json
+D/answer.txt
+D/index.json
+D/models/01.ein
+D/models/02.ein
+D/nogoods.json
+```
+
+The two files are the two states of $R$; `{(seats Ann C1)}` has none. Where $R$ is empty the frontier is saved:
+`ein solve tests/region/04_owing.ein --dump-answer E` writes `E/owing/01.ein`. The node is a file all the same,
+written by hand: `D/models/01.ein` with its `(commit (seats Ann C1) (seats Bob C2))` cut to `(commit (seats Ann
+C1))` loads as the node, and `ein solve` on it prints
+
+```text
+  ∅                 not in R — root owes 2 instances
+    owed            seats owes Bob a Chair.
+    owed            seats owes C2 a preimage in Guest.
+  …
+    commit          1 candidate of H, the node this saved file names: R is the part of its program's R above it, and the universe is the rest of H — (seats Ann C1)
+```
+
+**What it is not.** No wrong answer, and nothing a page promises and the binary does not do: the answer dump's
+page says `owing/` holds *the frontier of an empty R whose nodes all owe*.
+
+**The two readings**, S1f.21.6's Reading 3: the node is not saved, the default; or `--dump-answer` writes the
+owing frontier whether $R$ is empty or not. Under the second, what the frontier is has to be said first: of an
+empty $R$ it is the maximal alive states, each of which owes
+([finding R](../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md)); where $R$ is not empty an owing node
+can have an extension in $R$, as each single seating here has, and is then no maximal alive state.
+
+**State.** Open, **not built** by S1f.21.6's default.
 
