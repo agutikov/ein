@@ -1,6 +1,6 @@
 # S1f.21.11 — `not` and `relation` as conventions: the contradiction as rules
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 re-planned twice the same day, on the answer to Q-M1f.399 and then when the user unblocked
 [S1f.21.10](s1f.21.10_the_kernels_prefix.md), which now builds the engine's key and takes `false` out of the

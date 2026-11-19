@@ -1,6 +1,6 @@
 # S1f.21.12 — hypotheses as facts
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started**.
 **Group:** [H](modifications.md#h-open-facts), items 30 to 35.

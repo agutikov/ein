@@ -1,6 +1,6 @@
 # S1f.21.7 — the debt's term
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started**.
 **Group:** [C](modifications.md#c-q-m1f390-a-and-b-the-verdict-stays-a-verdict), items 14 to 16.

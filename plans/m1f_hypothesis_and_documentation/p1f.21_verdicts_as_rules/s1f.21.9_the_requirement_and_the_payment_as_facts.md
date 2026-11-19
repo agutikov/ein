@@ -1,6 +1,6 @@
 # S1f.21.9 — the requirement and the payment as the kernel's facts
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started, and run only on a ruling for (c)** of
 [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact).

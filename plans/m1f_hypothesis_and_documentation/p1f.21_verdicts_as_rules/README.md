@@ -193,6 +193,34 @@ And on the module that holds the rule from `(false)` to the key, the same day, v
 ok now, later will decide how it could be customized"* ([Q-M1f.551](../open_questions.md#q-m1f551--the-module-every-program-gets-stdcore-always-loaded)); and
 on the order: *"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*.
 
+## The order: two parts
+
+The user, 2026-11-19, verbatim:
+
+> what else stages not related to `open` and hypotheses? I want to leave open facts and hypotheses to the second
+> part of the phase and finishe everything else before
+
+So the phase runs in two parts ([§ Stages](#stages)):
+
+- **Part 1, the verdict *dead***: the surfaces (done), the rules the standard library states, the engine's key
+  `:ein inconsistent`, `not` and `relation` as conventions with the contradiction as rules, and the pages of all
+  that. What it still needs of the user is S1f.21.11's: the choice of how the contradiction's rules reach every
+  relation and count, which has no default, and
+  [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention), each
+  shown on the corpus by that stage's examples before it is asked.
+- **Part 2, `open`**: the debt's term, hypotheses as facts, the search and rules, and their pages.
+  [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact)
+  and [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules)
+  wait with it, and review items 32 and 34.
+
+**One thing of the second part is in the first, and running**: the third module of
+[S1f.21.8](s1f.21.8_rules_the_standard_library_states.md), the requirement, the payment and `discharged` as rules a
+program imports (`std.debts`). It is additive, read by nothing unless a program imports and activates it, and it
+decides neither question; whether it is merged with the stage or held for part 2 is put to the user.
+
+The pages' stage is cut along the same line: [S1f.21.2](s1f.21.2_the_pages.md) closes part 1, and
+[S1f.21.14](s1f.21.14_the_pages_of_open.md) part 2.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -219,22 +247,40 @@ goes; what then becomes of (2) is the design.
 ## Stages
 
 Planned 2026-11-19 on the fifth instruction: each group of [`modifications.md`](modifications.md) is a stage.
-The rows are in the order the stages would run, which is by what each waits on.
-[`overview.md` § 5](overview.md#5-the-stages) has the same table with the items.
+**In two parts since the same day**, on the user's word ([§ The order: two parts](#the-order-two-parts)): the
+stages that do not touch `open` or the hypotheses first, and those that do after. Within a part the rows are in
+the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the same tables with the items.
 
 | stage | group | what | state |
 |---|---|---|---|
 | [S1f.21.1](s1f.21.1_the_survey_and_the_design.md) | | **The survey and the design.** What the kernel does for each verdict; each verdict as a rule; `(open R)` as a fact; `(open R <justification>)` designed; the question | **done**: [`design.md`](design.md), [Q-M1f.390](../open_questions.md#q-m1f390--what-an-obligation-emits-the-verdict-with-its-justification-or-as-a-fact), [`findings.md`](findings.md) |
+
+**Part 1 — the verdict *dead*: `false`, `not`, `relation`, the key.**
+
+| stage | group | what | state |
+|---|---|---|---|
 | [S1f.21.6](s1f.21.6_surfaces.md) | A | **The surfaces.** `-p`'s printer, the dump's rule sections, *derives (false)*, the plan's own numbers | **done 2026-11-19**: `d35408cb`, `8d8327ce`, `c9ea9597`, `d1c9d4b3`, `984137bf`; V-2, V-3 and V-4 fixed, V-9 entered; its three readings took their defaults (Q-M1f.552 to .554); no answer moved. The batch's container gate is the coordinator's, with S1f.21.8's merge |
 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | **Rules the standard library states.** The elimination of a double negation, the contradiction, and the requirement, the payment and `discharged`, each a module a program imports | **started 2026-11-19** on the user's word, in a worktree on its own branch, merged back when done; its readings take their defaults |
-| [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | **The engine's key, `:ein inconsistent`.** A rule states `:assert` or `:ein`; a rule with the key that fires ends the state; `(false)` a proposition, and one rule of a module every program gets from it to the key; no prefix, no word renamed | re-planned and **unblocked 2026-11-19** on the user's word; **to start when S1f.21.6 and S1f.21.8 are merged**, on the user's word (*"start s1f.21.10 after s1f.21.6 and s1f.21.8 merged"*); `std.core` always loaded, ruled (Q-M1f.551) |
 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | planned, **not started**; waits on S1f.21.10, S1f.21.8, V-1 and a choice with no default (how the rules reach every relation), Q-M1f.447 |
+| [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | planned, **not started**; after S1f.21.8, S1f.21.10 and S1f.21.11 |
+
+**Part 2 — `open`: what a state owes, and the hypotheses.** Not started before part 1 is done; its two questions,
+Q-M1f.390 and Q-M1f.549, wait with it.
+
+| stage | group | what | state |
+|---|---|---|---|
+| [S1f.21.7](s1f.21.7_the_debts_term.md) | C | **The debt's term.** An obligation's instance written as one fact, on the `owe` event and in the lattice dump | planned, **not started**; waits on Q-M1f.390 |
 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | **Hypotheses as facts.** Planned under Q-M1f.549 (b): a candidate is a fact root holds, and $H$ that extent less what root decides | planned, **not started**; waits on Q-M1f.549, S1f.21.7 |
 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | **The search and rules.** Planned under the recommendation: the lattice as rules kept as an example, the engine's search not changed, what is declined and why | planned, **not started**; waits on Q-M1f.549, S1f.21.12 |
-| [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages.** The verdicts as rules on the reasoning pages and in Ein on the user's, the phase's rulings as decisions | planned, **not started**; after every build: a page states the kernel as built |
 | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | **The requirement and the payment as the kernel's facts.** | planned, **run only on a ruling for Q-M1f.390 (c)** |
+| [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | planned, **not started**; after S1f.21.7, S1f.21.12 and S1f.21.13 |
 | S1f.21.5 | | **The close.** | last |
+
+Folded, their ids kept:
+
+| stage | | what | state |
+|---|---|---|---|
 | S1f.21.3 | | *The engine*, as planned 2026-11-17 | **folded** 2026-11-19 into S1f.21.7 to S1f.21.13, a stage a group |
 | S1f.21.4 | | *Open facts and `(ein.kill)`: the design on programs*, as planned 2026-11-18 | **folded** 2026-11-19: its seven questions ([`open_facts.md` § 9](open_facts.md#9-what-s1f214-answers)) are the examples tasks of the stages that build them: 1 and 6 S1f.21.11's, 2 to 4 S1f.21.12's, 5 S1f.21.13's, 7 the ledger's (Q-M1f.390, Q-M1f.399, with Q-M1f.549) |
 

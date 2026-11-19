@@ -1,6 +1,6 @@
 # S1f.21.13 — the search and rules
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 **not started**.
 **Group:** [I](modifications.md#i-the-search-as-rules), items 36 and 37, with the three rules of item 35 that

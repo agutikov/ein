@@ -28,8 +28,9 @@ thirteen stages, so M1e2 closes without them.
 **Blocks:** nothing.
 **Phase left** (2026-11-19): [P1f.21](p1f.21_verdicts_as_rules/README.md), the kernel's verdicts as rules, created
 2026-11-17 on the user's instruction: its survey is done, its stages planned, a stage a group of its list of
-modifications, **S1f.21.6 done and S1f.21.8 running** (started 2026-11-19 on the user's word), S1f.21.10 to start
-when S1f.21.8 is merged; Q-M1f.399 and Q-M1f.550 are
+modifications and run **in two parts** on the user's word, what does not touch `open` or the hypotheses first:
+**S1f.21.6 done and S1f.21.8 running** (started 2026-11-19 on the user's word), S1f.21.10 to start when S1f.21.8 is
+merged; Q-M1f.399 and Q-M1f.550 are
 ruled (a rule's key, `:ein inconsistent`, no prefix), S1f.21.10 is unblocked to build it, and Q-M1f.390, Q-M1f.447
 and Q-M1f.549 (hypotheses as facts) are open; [its overview](p1f.21_verdicts_as_rules/overview.md) is for the user's review; **no other stage starts without
 the user's word**.

@@ -1,6 +1,6 @@
 # S1f.21.10 — the engine's key, `:ein inconsistent`
 
-**Phase:** [P1f.21](README.md)
+**Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 as *the kernel's prefix*; **re-planned the same day on the user's two rulings and
 unblocked on the user's word** (*"Yes, :ein inconsistent"*, *"unblock S1f.21.10"*). **Not started**: it waits on
 no decision, and starts on the user's word. The file keeps its first name; a stage's id and file are not moved.

@@ -198,21 +198,30 @@ can decline it for some pragmatic reason."*
 ## 5. The stages
 
 Each group of [`modifications.md`](modifications.md#the-list-at-a-glance) is a stage, planned 2026-11-19 on the
-user's word, **none started**. The table is in the order they would run, which is by what each waits on and not by
-the groups' letters.
+user's word. **In two parts**, on the user's word of the same day (*"leave open facts and hypotheses to the second
+part of the phase and finishe everything else before"*): first the stages that do not touch `open` or the
+hypotheses, then those that do. Within a part the rows are in the order the stages run.
+
+**Part 1 — the verdict *dead*.**
 
 | | stage | group | items | what | waits on |
 |---|---|---|---|---|---|
 | 1 | [S1f.21.6](s1f.21.6_surfaces.md) | A | 1 to 5 | the surfaces: a printer, the dump's rule sections, a wording, the plan's own numbers | **done** |
 | 2 | [S1f.21.8](s1f.21.8_rules_the_standard_library_states.md) | D | 17 to 19 | three modules of the standard library, additive | where each lives |
-| 3 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | 14 to 16 | a debt's instance as a term | Q-M1f.390 |
-| 4 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | nothing: unblocked |
-| 5 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | S1f.21.10, S1f.21.8; V-1 and a choice with no default; Q-M1f.447 |
-| 6 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | the candidates as facts | Q-M1f.549; S1f.21.7 |
-| 7 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | 36, 37 | the search and rules: what is kept, and what is declined | Q-M1f.549; S1f.21.12 |
-| 8 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6 to 13 | the pages of `docs/ein/` | every build before it |
+| 3 | [S1f.21.10](s1f.21.10_the_kernels_prefix.md) | F | 21 to 25 | the engine's key, `:ein inconsistent`; `(false)` out of the kernel's reading; no prefix, no rename | nothing: unblocked |
+| 4 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | 26 to 29 | `not` and `relation` as conventions: the contradiction as rules | S1f.21.10, S1f.21.8; V-1 and a choice with no default; Q-M1f.447 |
+| 5 | [S1f.21.2](s1f.21.2_the_pages.md) | B | 6, 7, 9, 12, half of 10 | the pages of the first part | every build of the part |
+
+**Part 2 — `open`, what a state owes, and the hypotheses.**
+
+| | stage | group | items | what | waits on |
+|---|---|---|---|---|---|
+| 6 | [S1f.21.7](s1f.21.7_the_debts_term.md) | C | 14 to 16 | a debt's instance as a term | Q-M1f.390 |
+| 7 | [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) | H | 30 to 35 | the candidates as facts | Q-M1f.549; S1f.21.7 |
+| 8 | [S1f.21.13](s1f.21.13_the_search_and_rules.md) | I | 36, 37 | the search and rules: what is kept, and what is declined | Q-M1f.549; S1f.21.12 |
 | | [S1f.21.9](s1f.21.9_the_requirement_and_the_payment_as_facts.md) | E | 20 | the requirement and the payment as the kernel's facts | **run only on a ruling for Q-M1f.390 (c)** |
-| 9 | S1f.21.5 | | | the close | |
+| 9 | [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | 8, 11, 13, half of 10 | the pages of the second part | every build of the part |
+| 10 | S1f.21.5 | | | the close | |
 
 ## 6. What is the user's to rule
 
@@ -226,4 +235,5 @@ the groups' letters.
 | [V-1](findings.md#v-1--forbid-reads-rules-and-the-kernels-contradiction-is-none) | *forbid* and the contradiction as rules | open; its ground is M1n's |
 | the stages' own | where the new rules live and the module every program gets; whether `hrule` stays as a spelling | each a question of its stage, with a default |
 
-The answers' file is [`review/ANSWERS.md`](review/ANSWERS.md).
+Q-M1f.390 and Q-M1f.549 are the second part's and wait with it; the first part asks only what S1f.21.11's examples
+show. The answers' file is [`review/ANSWERS.md`](review/ANSWERS.md).
