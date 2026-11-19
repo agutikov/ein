@@ -3,7 +3,8 @@
 **Phase:** [P1f.21](README.md), part 1 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's answers to review items 38 and 41
 ([the rulings](README.md#the-rulings-of-the-answers-file)); **started 2026-11-20** on the user's word (*"Start stages, if
-anything can be done in parallel - do it."*), beside S1f.21.11 and the examples of S1f.21.12.
+anything can be done in parallel - do it."*), beside S1f.21.11 and the examples of S1f.21.12. **Built 2026-11-20**
+in `8acb1b55`, on the defaults Q-M1f.580 to Q-M1f.584 ([the record](#record)).
 **Waits on:** nothing. Task 1's reading is confirmed by the user, 2026-11-20: *"a - yes"*. In
 order it is the next stage of part 1, before [S1f.21.11](s1f.21.11_kill_and_three_conventions.md);
 [S1f.21.16](s1f.21.16_hrules_lists_activators.md), which stood before it, is dropped.
@@ -107,4 +108,155 @@ last commit.
 
 ## Record
 
-Nothing yet.
+The stage ran on 2026-11-20 in its own worktree, branched from `master` at `669d7d43`, beside S1f.21.11 and the
+examples of S1f.21.12, in two commits: the three tasks in one, since their edits share the corpus manifest, the
+goldens, the diagnostics page and two READMEs, and this record.
+
+| commit | what |
+|---|---|
+| `8acb1b55` | tasks 1, 2 and 3 |
+| this one | the record |
+
+### Task 1.1: the five programs, loaded, before anything was banked
+
+Taken on the build of task 1 alone (the gate profile): `ein solve FILE`, exit 0, and `saturate`, `oracle`, `show
+hyps`, `render rules`, `render h-space` and `kb save` exit 0 too (`ein test` exits 2: none states a claim, *nothing
+to check*). The refusal before it, on `669d7d43`'s build, was the line the plan quotes, at each command's load-error
+exit. **Four of the five are flagged
+by the static check**, one site each, *r: its activator relation is one a commitment can change; root compiled no
+plan of it*: a commitment to a candidate `(item b)` derives `(r b)`, a name, an activator root has no plan of.
+Nothing is claimed of what those four answer (Q-M1f.564); the counts below are what the run printed.
+
+| program | static check | `ein solve` | stderr |
+|---|---|---|---|
+| `examples/broken/load/derived_activator.ein` (now `examples/features/19_derived_activator.ein`) | flagged | `states (k_s) 64`, the cube of 6 candidates, root alive | the `WARNING` line, the load's warning (`mk`, `(r ?f)`, `?R`, `(item ?f)`), the run's (`r`, `(r (a b))`) |
+| `examples/broken/load/derived_activator_never.ein` (now `examples/features/20_derived_activator_never.ein`) | flagged | `states (k_s) 64`, root alive | the `WARNING` line, the load's warning; no run's: no state derives the activator |
+| `examples/ein-bugs/wrong-answers/derived-activator.ein` | flagged | `states (k_s) 64`, root alive, the query's goal `(hit ?x)` no row in root | as `19` |
+| `examples/ein-bugs/wrong-answers/derived-activator-never.ein` | flagged | `states (k_s) 64`, root alive | as `20` |
+| `examples/ein-bugs/wrong-answers/nested-fact-activator.ein` | monotone | as written, `states (k_s) 65 536`, the cube of 16 candidates, root holding no `hit`; with `(solve :no-search)` added (below), `states (k_s) 1`, R = {∅} | the load's warning (`r`, `?R`, `(r (a b))`), the run's (`r`, `(r (a b))`) |
+
+### Task 1: the refusal is a warning, and such an activator activates nothing
+
+**Reading 1**, the plan's default, taken: an activator that binds a relation parameter to a fact is held as the
+fact it is and activates nothing.
+
+- **The loader** (`ein-ir`'s `from_ir`): the lines of `validate_relation_parameters` (where the activator is
+  written) and of `refuse_derived_relation_activators`, renamed `warn_derived_relation_activators` (where a rule
+  could derive it), go to `Program::warnings` instead of the refusal; `eq` at another arity, which the second
+  function also checks, stays a refusal. Each line keeps its text and its tail is now *— a relation is named by a
+  symbol, not a fact, so such an activator activates nothing*.
+- **The engine** (`ein-infer`'s `compile`): `Rule::relation_params`, the parameters that head a form (the loader's,
+  a name written twice at its last position, the one the compiler seeds); `activators_for` filters an activator
+  that binds one of them to a fact, as it filters one of another arity, so no plan is compiled for it and the
+  compiler's line (`head_not_a_name`) is reached by a direct caller of `compile_rule` alone;
+  `note_inert_activators`, called where a state's activators get plans (`Engine::compile_all`, the obligations'
+  plans), records one line per such activator a state holds, placed at the rule's `:match`.
+- **The CLI**: every command prints the load's lines as `warning: FILE: <line>` and the run's as
+  `warning: <place>: <line>`, when its run of the program ends (`ein test`: after each file), so that a flagged
+  program's `WARNING` line stays stderr's first (`non_monotone_warning.rs`). No exit code moves. The read-out page's
+  § 10, the lines on stderr, has a row for each.
+- **What expected the refusal**: the two fixtures moved out of `examples/broken/load/` to
+  `examples/features/19_derived_activator.ein` and `20_derived_activator_never.ein`, their `.expected` deleted,
+  headers rewritten, their corpus entries now `positive`; the regression rows `derived-activator/derived-activator`
+  and `derived-activator-never` **removed**, their witnesses flagged (below); `nested-fact-activator`'s row rewritten
+  to the program loading, `solve --minimal`, root with no `hit`; the decisions Q-M1f.1 (its title too), Q-M1f.41,
+  Q-M1f.42 and Q-M1e2.18 rewritten in place; the diagnostics' § 2.6 and § 2.9 (the three rows of the refusal's table
+  became the warning's table, with the run's line and a run shown), a paragraph in § 2's head; the syntax page, the
+  reasoning pages `02-rewriting-rules.md` and `02-saturation.md`, the `std.negation` page's section (now *A
+  program the import warns of*, its output re-taken), the reasoning-in-code tables, `examples/broken/load/README.md`,
+  `examples/README.md`; comments in `stdlib/negation.ein`, `stdlib/README.md`, `std.math.positional`,
+  `std.math.decimal-arith` (the manifest regenerated) and three tests. The grammar's table has no row of the shape.
+  The tests: `ein-ir`'s and `ein-cli`'s `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load`,
+  `compile_semantics.rs`' `a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing`,
+  `cli_semantics.rs`' `a_rule_shape_that_reads_nothing_is_refused_at_load` (the nested fact now loads, its two lines
+  read); `answer_round_trip.rs` lets `ein kb save`'s stderr carry a load's `warning:` beside its `note:`. Moved by
+  the programs that now load, each read before re-banking: the exit-code golden and the shape golden (only the
+  five programs' lines and the moved fixtures'; the four flagged bank no answer op), `alive_invariant.rs`' list of
+  seeded names (five programs, `b` and `z` each), `detector.rs`' count of flagged corpus programs (47 → 51), and
+  `test_cli.rs`' count of `examples/features/` files with no expectation (8 → 11, with task 2's file).
+
+### Task 2: `(import std.core)` is an import like any other
+
+The refusal is gone from `ein_ir::imports`. **Reading 2**, the default, taken: the module is spliced only by the
+resolver's own import of it, the main file's last form, so an import a file writes binds the names and moves the
+module from nowhere. Two things the shapes needed: the names the loader marks `Rule::implicit` are the ones that
+print (`c.inconsistent` under `:as c`, `inconsistent` under `:symbols (inconsistent)`), so `refuted by` still reads
+through the rule; and the list a container stores keeps the module's names in full, since it holds none of its
+forms. `examples/broken/load/import_of_core.ein` moved to `examples/features/21_import_of_core.ein`, its
+`.expected` deleted. Held by `ein-ir/tests/imports_semantics.rs`'
+`an_import_of_the_module_every_program_gets_is_an_import_like_any_other` (three shapes, first and last, a module
+that imports it, what a container stores) and `ein-cli/tests/import_invariance.rs`'
+`an_import_of_the_module_every_program_gets_changes_no_answer` (six programs, three shapes, first and last: R, the
+queries, the claims, `refuted by` and the rule list of `saturate --dump`). Q-M1f.551 rewritten in place; the
+`std.core` page, the diagnostics' § 2.7 (retitled, *The module every program gets cannot be read*), `stdlib/core.ein`'s
+header and the `stdlib/README.md` section, `AGENTS.md`'s sentence; `tests/saved/04_a_saved_node.ein` saved again,
+since it carries the module's header.
+
+### Task 3: `$EIN_STDLIB` replaces `std.core`
+
+Replacing already worked (the plan's first row). New: a library `$EIN_STDLIB` names, its manifest there and no
+`core.ein`, refuses every program, and a file's import of the module, with *std.core was not found in $EIN_STDLIB:
+DIR holds no core.ein — every program gets std.core, and a library $EIN_STDLIB names is where it is read from
+(Q-M1f.551): write core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy*. **Reading 3**,
+the default, taken: the manifest stays what identifies the library, so a directory with no `MANIFEST.sha256` keeps
+its own line, checked first. The `std.core` page (*Replacing it*, a run of `tests/stdlib/core/01_false_ends_the_state.ein`
+under a copy whose `core.ein` reads `(absurd)`: root alive, the claim refuted, exit 1), the install page and the
+configuration reference say so. Held by `imports_semantics.rs`' `a_library_with_no_std_core_is_refused_and_one_with_another_is_read`
+and `cli_semantics.rs`' `ein_stdlib_replaces_std_core_and_a_library_without_one_is_refused`.
+
+### Defaults taken
+
+- **Q-M1f.580** — the warning's text: each line the refusal printed, its tail *a relation is named by a symbol, not
+  a fact* followed by *, so such an activator activates nothing*; the run's line names the rule, the activator, the
+  parameter and the fact, placed at the rule's `:match` (a top-level form has no position, diagnostics § 1.5). All
+  `warning:` lines are printed when a command's run of the program ends, after a flagged program's `WARNING`, each
+  load line once a process, each run line once a run (`ein test`: a file).
+- **Q-M1f.581** — the two regression rows whose witnesses the static check now flags,
+  `derived-activator/derived-activator` and `derived-activator-never`, are removed, not rewritten: no row holds a
+  flagged program's answer (Q-M1f.564), as S1f.21.15 removed eleven. The witnesses stay in the corpus.
+- **Q-M1f.582** — `nested-fact-activator.ein` states `(solve :no-search)`: its question is root's, and as written its
+  blind cube of 16 candidates put 2^16 saturations into every sweep that describes R or runs the oracle.
+- **Q-M1f.583** — the moved fixtures' place: `examples/features/19_…`, `20_…` and `21_import_of_core.ein`, the
+  programs unchanged but for their headers; none states a claim, so `ein test examples/features` counts eleven files
+  with no expectation.
+- **Q-M1f.584** — under `(import std.core :as c)` or `:symbols`, the module's rule prints as the import spells it,
+  as any module's does, and stays the module's (`Rule::implicit`); a container stores those names in full.
+
+### Found outside the stage's scope
+
+- **V-32 — The load's warning is one line per site.** A program that names a rule of a copier's count beside
+  `std.algebra` now loads with seventeen lines, one per generic rule of the module (`converse`, `imply2-fwd`, …;
+  the `std.negation` page's program with `std.algebra` in the import's place). Each says something true; whether a
+  module's lines are to be gathered is open.
+- **V-33 — The JSON summary carries no warning of the load or the run.** `--json-summary` has
+  `monotonicity.warning` for a flagged program and nothing for these lines, which are on stderr alone.
+- **V-34 — L-109's program loads.** `examples/zebra2.ein` with `about-1`, `(about-1 symmetric)` and its query
+  appended (the milestone's L-109, *the user's call*): `ein saturate` exits 0 under one warning, naming
+  `std.algebra.imply1`, and root derives `(in-slice-1 symmetric next-to)`. The refusal L-109 met is gone; whether a
+  slice is had by such a rule is still the user's.
+
+### For the user
+
+- Four of the five programs Q-M1f.1 refused are flagged by the static check once they load; nothing is claimed of
+  their answers, and their two regression rows went (Q-M1f.581).
+- `nested-fact-activator.ein` gained `(solve :no-search)` (Q-M1f.582).
+
+### The gate
+
+`./run_tests.sh` on `63aff226` (this record before its gate paragraph; the project's tree is `8acb1b55`'s), at the
+default job counts, exit 0: the ten static checks (the manifest, hash-map iteration, the link check, 0 findings, the
+release voice, the gate steps, the tool mirrors, the doc blocks, `cargo fmt`, `clippy -D warnings`, `cargo doc -D
+warnings`), `cargo test --profile gate --workspace` (1 375 tests passed, 0 failed, by the sum of its `test result`
+lines), `check_test_scratch.py`, `check_generated.py`, `check_region_routes.py`, `wrong_answers.py`, the review
+bundle's smoke (0 DOTs refused, its link check exit 0) and the bench smoke. Its last lines:
+
+```text
+Testing region_n1/zebra2
+Success
+
+Testing region_single/zebra2
+Success
+```
+
+Not run, as the brief said: `--nightly`, `--dev-host`, `utils/ci_container.sh`. This stage changes no DOT writer,
+no review bundle and nothing CI installs.
