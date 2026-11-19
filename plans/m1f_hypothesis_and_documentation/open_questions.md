@@ -508,6 +508,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **ruled 2026-11-20 by the user: (a)**: `-P` leaves out the `(open …)` facts as it leaves out the `(not …)` |
 | [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **ruled 2026-11-20 by the user: (a), and more**: the three are the blind enumerator's configuration, a white list and a black list; the blind enumerator runs only where root's fixpoint holds no `open` fact, and never beside hypotheses a rule emits; beside `open` facts, a list or a closure that disagrees with them is an error, an invalid program |
 | [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **ruled 2026-11-20 by the user: (b)**: such an obligation never steps aside; it writes its guard's candidates at root and the program is flagged. `oblig-derived-domain.ein` is checked again once it is built: the user expects it still solvable, *"my expectation, not requirement"*, to be reviewed then |
+| [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 65 |
+| [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 58 |
+| [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 65 |
+| [Q-M1f.598](#q-m1f598--whether-the-pass-writes-open-facts-at-a-dead-state) | Whether the pass writes `open` facts at a dead state | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 62 |
+| [Q-M1f.599](#q-m1f599--the-blind-enumerator-beside-a-rule-that-concludes-nothing-at-root) | The blind enumerator beside a rule that concludes nothing at root | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 58 |
+| [Q-M1f.600](#q-m1f600--what-becomes-of-06_blind_enumerationein) | What becomes of `06_blind_enumeration.ein` | **open, a default proposed**: put 2026-11-20 by the examples of P1f.21's S1f.21.12, review item 63 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11263,3 +11269,57 @@ is run again once this is built and shown to the user**, whatever it answers: th
 which is an expectation and no requirement of the build, and is reviewed then. The page of the question is
 [`q-m1f.579_an_obligation_that_steps_aside/`](p1f.21_verdicts_as_rules/q-m1f.579_an_obligation_that_steps_aside/README.md), where
 the stand-in of it answers an empty $R$.
+
+### Q-M1f.595 — An `open` fact of a relation the white list leaves out
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 65](p1f.21_verdicts_as_rules/review/part-2/65-the-lists-and-a-closure/README.md). The user's ruling of Q-M1f.578 names one direction of a disagreement with `:hypothesis-relations`, a relation it lists that no `open` fact is of. The other direction, an `open` fact of a relation the list leaves out, is not named.
+
+(a) An error too: a white list beside `open` facts names exactly their relations. (b) No error: the fact is held and is no candidate. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.
+
+### Q-M1f.596 — Where `open` may be written once it is the kernel's relation
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 58](p1f.21_verdicts_as_rules/review/part-2/58-the-corpus-under-the-rulings/README.md). Thirty corpus witnesses under `examples/ein-bugs/wrong-answers/` are refused today because `open` is a reserved word. The rulings say where 15 of them would load. Fifteen write `open` in a place the rulings do not name: as a value, in a macro, in a list.
+
+(a) `open` is a name where a name stands, and a macro's body may write `(open ?R)`; it is refused where a program would declare it, write `(open x)` with `x` no fact and no relation, make an obligation owe it, or name it in a list. Five more of the thirty then load and ten stay refused. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.
+
+### Q-M1f.597 — Whether the lists and a closure are judged against the `open` facts root holds or the declarations
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 65](p1f.21_verdicts_as_rules/review/part-2/65-the-lists-and-a-closure/README.md). The ruling of Q-M1f.578 says *open facts*. Today the conflicts are read off what the program declares and root's fixpoint.
+
+(a) Against the `open` facts root holds, as the ruling's words. (b) Against what could be proposed, read off the rules. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.
+
+### Q-M1f.598 — Whether the pass writes `open` facts at a dead state
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 62](p1f.21_verdicts_as_rules/review/part-2/62-what-a-fork-drops/README.md). A dead state's saturation ends where it dies. On the seats cube four dead nodes owe one instance each today.
+
+(a) Yes, as at any state, where it owes: the count at a dead node is as today. (b) No: a dead state holds no `open` fact. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.
+
+### Q-M1f.599 — The blind enumerator beside a rule that concludes nothing at root
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 58](p1f.21_verdicts_as_rules/review/part-2/58-the-corpus-under-the-rulings/README.md). The ruling of Q-M1f.578: the blind enumerator runs only where root's fixpoint holds no `open` fact. A program may write a rule that concludes `(open F)` and that fires nowhere at root.
+
+(a) It runs where root holds no `open` fact and no obligation is activated, whatever rules the program writes. No corpus program moves by it. (b) A rule that could conclude `(open F)` switches it off, fired or not. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.
+
+### Q-M1f.600 — What becomes of `06_blind_enumeration.ein`
+
+**Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
+[review item 63](p1f.21_verdicts_as_rules/review/part-2/63-the-bare-open/README.md). `tests/stdlib/bijection/06_blind_enumeration.ein` writes the bare `(open)`, which is refused once built, to make the obligations rung decline so that the blind enumerator runs. Its claim holds two other ways. One half of its Rust test, that the blind enumerator never proposes an obligation's activator, can no longer be asked: a held activator switches the blind enumerator off.
+
+(a) Rewritten with no obligation activated, the blind enumerator running; the half of the test that can no longer be asked is dropped. (b) Rewritten with a named `(open R)`, so the obligation proposes and the file tests another thing. **Default (a).**
+
+**Open.** P1f.21's second part's; S1f.21.12 is built on the default.

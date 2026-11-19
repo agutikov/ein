@@ -42,6 +42,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
 | [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | open; S1f.21.11's task 1.4 reads it |
 | [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | open; S1f.21.2's |
+| [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
+| [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
+| [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -650,3 +653,24 @@ puts what a second declaration is anew.
 
 **Found** at the merge. `stdlib/README.md`'s table of modules and the root `README.md`'s have no row for
 `std.core`, the module every program gets. **Open**; S1f.21.2's, with the pages of the first part.
+
+## V-40 — Two parse witnesses of `open` write no `:why`
+
+**Found** by the examples of S1f.21.12 ([item 58](review/part-2/58-the-corpus-under-the-rulings/README.md)).
+`examples/broken/open_in_match.ein` and `examples/broken/open_mixed_assert.ein`, parse-negative witnesses of the
+rule that `open` is written only as a rule's verdict, write no `:why`. Once `open` parses where they write it, both
+are refused for the missing `:why` before they reach what their corpus notes say they witness; and the first's
+subject, a rule that reads `open`, is legal by Q-M1f.569. **Open**; S1f.21.12's build, which moves or rewrites them.
+
+## V-41 — A saved file holds a hypothesis rule inside its program form
+
+**Found** by the same examples. `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's
+`(program …)` form, so a sweep that reads only a file's top-level forms misses it. **Open**; S1f.21.18's sweep
+reaches a saved file's forms too.
+
+## V-42 — A goal names a relation only hypothesis rules write
+
+**Found** by the same examples. `examples/syntax/query-full.ein`'s goal names `drinks`, which only its two
+hypothesis rules write. Once they conclude `(open (drinks …))`, the loader's check that a goal names a relation of
+the program has to read under `open`, or the program is refused, as it is today with its hypothesis rules deleted.
+**Open**; S1f.21.12's build.
