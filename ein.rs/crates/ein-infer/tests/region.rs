@@ -2024,7 +2024,10 @@ fn a_witness_two_candidates_derive_together_is_a_candidate_itself() {
             names(&r, &[m])
         );
     }
-    assert!(r.in_r(cooks | shops), "{rel}: the pair that derives it is in R");
+    assert!(
+        r.in_r(cooks | shops),
+        "{rel}: the pair that derives it is in R"
+    );
 }
 
 /// **A dead node's core follows the activator its refutation rests on, where

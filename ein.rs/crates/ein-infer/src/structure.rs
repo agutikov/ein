@@ -1664,14 +1664,15 @@ fn theory_in(
         if declared {
             hypothesised.extend(crate::hypgen::eligible_relations(&mut s)?);
         }
-        let rules = |s: &mut crate::saturator::Session<'_>| -> Result<FxHashSet<Symbol>, SolveError> {
-            Ok(crate::hrule::Hrules::new(s)?
-                .plans()
-                .iter()
-                .flat_map(|p| crate::monotone::reads_of(p, s.terms))
-                .map(|(r, _)| r.name)
-                .collect())
-        };
+        let rules =
+            |s: &mut crate::saturator::Session<'_>| -> Result<FxHashSet<Symbol>, SolveError> {
+                Ok(crate::hrule::Hrules::new(s)?
+                    .plans()
+                    .iter()
+                    .flat_map(|p| crate::monotone::reads_of(p, s.terms))
+                    .map(|(r, _)| r.name)
+                    .collect())
+            };
         match read.rung {
             crate::oblgen::Mode::Hrules => rules(&mut s)?,
             crate::oblgen::Mode::Obligations => read.obligation_reads,

@@ -451,18 +451,9 @@ const ACCEPTED: [(&str, &str); 26] = [
     ),
     // `absent` under an ordinary relation, under `not` and in `:using` is a
     // name, the kernel reading nothing of it (Q-M1f.571).
-    (
-        "absent-nested",
-        "(q (absent k))",
-    ),
-    (
-        "absent-negated",
-        "(not (absent k))",
-    ),
-    (
-        "absent-using",
-        "(q a :rule r :using ((absent k)))",
-    ),
+    ("absent-nested", "(q (absent k))"),
+    ("absent-negated", "(not (absent k))"),
+    ("absent-using", "(q a :rule r :using ((absent k)))"),
     (
         "absent-concluded-value",
         "(rule r () :match (p ?x) :assert (q (absent ?x)) :why \"w\")",

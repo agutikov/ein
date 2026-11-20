@@ -170,7 +170,11 @@ fn every_shape_a_rule_concludes() {
         // relation no closure closes: root holds both, and the hypothesis,
         // held, is no candidate.
         ("()", &[], "alive"),
-        ("(and (s a) (open (s a)))", &["(s a)", "(open (s a))"], "alive"),
+        (
+            "(and (s a) (open (s a)))",
+            &["(s a)", "(open (s a))"],
+            "alive",
+        ),
     ];
     for &(assert, facts, status) in rows {
         let text = program(assert);

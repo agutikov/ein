@@ -1065,15 +1065,11 @@ fn prepare_as(
                 (owes, None)
             }
             None => {
-                let (writers, owes) = crate::open::at_root(
-                    &mut s,
-                    &mut sat,
-                    &mut root_stats.hypgen,
-                    &mut |f| {
+                let (writers, owes) =
+                    crate::open::at_root(&mut s, &mut sat, &mut root_stats.hypgen, &mut |f| {
                         proposed.push(f);
                         std::ops::ControlFlow::Continue(())
-                    },
-                )?;
+                    })?;
                 (owes, Some(writers))
             }
         };
@@ -1133,8 +1129,7 @@ fn prepare_as(
         .as_ref()
         .map(|w| w.rules.plans().to_vec())
         .unwrap_or_default();
-    let monotonicity =
-        crate::monotone::classify(root, terms, &plans, &hypotheses, &hypothesised);
+    let monotonicity = crate::monotone::classify(root, terms, &plans, &hypotheses, &hypothesised);
     if !monotonicity.is_monotone()
         && let Some(w) = &writers
     {
@@ -2030,8 +2025,7 @@ fn fixpoint_firing(
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Kb, SolveError> {
-    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink)
-        .map(|(fork, _, _)| fork)
+    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink).map(|(fork, _, _)| fork)
 }
 
 /// Root's fork with `facts` written and the saturation resumed, with the

@@ -5165,18 +5165,16 @@ fn write_open_facts(
 /// the name `open`. `open` is the kernel's relation, of what a state owes and
 /// of its hypotheses, and no obligation owes it: refused, one line per
 /// activator, placed where it is written.
-fn refuse_open_owed(
-    ast: &Ast,
-    terms: &Terms,
-    kb: &Kb,
-    facts: &[NodeId],
-    errors: &mut Vec<String>,
-) {
+fn refuse_open_owed(ast: &Ast, terms: &Terms, kb: &Kb, facts: &[NodeId], errors: &mut Vec<String>) {
     for &form in facts {
         let Some(head) = ast.head_name(form) else {
             continue;
         };
-        let Some(rule) = terms.syms.get(head).and_then(|s| kb.program().obligations.get(s)) else {
+        let Some(rule) = terms
+            .syms
+            .get(head)
+            .and_then(|s| kb.program().obligations.get(s))
+        else {
             continue;
         };
         let Some(open) = rule.assert_.as_ref().map(|a| NodeId(a.expr.0)) else {

@@ -852,7 +852,7 @@ impl Kb {
     }
 
     /// Base + delta as a single layer, by concatenation: the stack
-    /// ([`Kb::stack`]), the `open` facts aside.
+    /// (`Kb::stack`), the `open` facts aside.
     pub fn materialise(&self) -> Layer {
         let mut out = Layer::default();
         for layer in self.stack() {
@@ -1196,13 +1196,15 @@ impl Kb {
         *self.n_by_rel.entry(rel).or_default() += 1;
         let is_rule_app = self.is_rule_app(rel);
         let relations = &self.program.relations;
-        index_into(&mut self.top, terms, id, is_rule_app, |n| relations.contains(n));
+        index_into(&mut self.top, terms, id, is_rule_app, |n| {
+            relations.contains(n)
+        });
     }
 
     // ── The state's `open` facts ───────────────────────────────────
 
     /// The state's `open` facts, in the order written: the program's at
-    /// root, then the pass's ([`Kb::open`]'s field).
+    /// root, then the pass's (`Kb::open`'s field).
     pub fn open_facts(&self) -> &[FactId] {
         &self.open.facts
     }
@@ -1238,7 +1240,9 @@ impl Kb {
             let rel = terms.facts.rel(id);
             let is_rule_app = self.is_rule_app(rel);
             let relations = &self.program.relations;
-            index_into(&mut self.open, terms, id, is_rule_app, |n| relations.contains(n));
+            index_into(&mut self.open, terms, id, is_rule_app, |n| {
+                relations.contains(n)
+            });
             wrote = true;
         }
         if clean {
@@ -1315,7 +1319,6 @@ fn index_into(
 }
 
 impl Kb {
-
     /// Recompute every reverse index from the registries and the fact list.
     ///
     /// Called once after batch ingest. It collapses the layer stack, because

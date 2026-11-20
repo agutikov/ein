@@ -15,7 +15,7 @@
 //!   of a rule that concludes one, an hrule among them, whether or not the
 //!   state holds or denies `F`, since a rule concludes what its match gives;
 //!   the facts that would pay what the state owes, read off each activated
-//!   obligation's guard ([`crate::oblgen::payments`]), those the state
+//!   obligation's guard (`crate::oblgen::payments`), those the state
 //!   neither holds nor denies; and, where root held no `open` fact and
 //!   activated no obligation, the blind enumerator's guesses, the facts still
 //!   undecided. Identical facts are one (Q-M1f.570).
@@ -25,7 +25,7 @@
 //!
 //! **Root's `open` facts are $H$'s source**: $H$ is the hypotheses root holds,
 //! less those root holds or denies ([`crate::hypgen`] builds it through the
-//! one filter pipeline, and [`write_root`] writes what each writer wrote
+//! one filter pipeline, and [`at_root`] writes what each writer wrote
 //! there). The program's own `(open …)` facts are root's alone.
 //!
 //! **What a state above root holds that root does not** is the in-flight
@@ -43,9 +43,8 @@
 //!
 //! **A rule that reads an `open` fact** (Q-M1f.569) sees them: the pass
 //! writes, then the saturation resumes over what it wrote, and the two repeat
-//! until neither adds anything ([`Writers::reads_open`]). Such a program is
+//! until neither adds anything (`Writers::reads_open`). Such a program is
 //! one the static check flags ([`crate::monotone`]'s `open-read` site).
-
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
@@ -169,7 +168,11 @@ pub fn at_root(
     } else {
         None
     };
-    let later: Box<[FactId]> = stats.later.iter().flat_map(|l| l.added.iter().copied()).collect();
+    let later: Box<[FactId]> = stats
+        .later
+        .iter()
+        .flat_map(|l| l.added.iter().copied())
+        .collect();
     let mut writers = writers_at_root(s, &written, blind, later)?;
     // What the writers give at root by the one reading every state takes,
     // beside what $H$'s pass recorded: root's hypotheses, which the in-flight
@@ -276,11 +279,11 @@ fn writers_at_root(
     // is one of root's, and every `(open R)` one of a relation an obligation
     // activated at root owes: numbered here, so a worker's pass finds each
     // numbered.
+    // determinism-ok: sorted below, before anything is interned.
     let mut kinds: Vec<FactId> = at_root.iter().copied().collect();
     if let Some(raw) = &blind {
         kinds.extend(raw.iter().copied());
     }
-    // determinism-ok: numbering order; a fact's id is never observed.
     kinds.sort_unstable();
     for f in kinds {
         let _ = s.terms.intern_fact(open, &[Value::fact(f)]);

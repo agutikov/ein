@@ -387,9 +387,7 @@ fn generate_with(
         f(fact)
     };
     for focal in by_count {
-        if raw_candidates(s, &mut ctx, stats, focal, &objects, &relations, &mut keep)?
-            .is_break()
-        {
+        if raw_candidates(s, &mut ctx, stats, focal, &objects, &relations, &mut keep)?.is_break() {
             return Ok(());
         }
     }

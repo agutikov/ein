@@ -136,8 +136,14 @@ fn named_places() -> Vec<(&'static str, String)> {
     vec![
         ("a nested fact's relation", "(p (open x))\n".into()),
         ("a stored negation's relation", "(not (open k))\n".into()),
-        ("a nested negation's relation", "(p (not (open k)))\n".into()),
-        ("a fact's :using", "(p k :rule copy :using ((open k)))\n".into()),
+        (
+            "a nested negation's relation",
+            "(p (not (open k)))\n".into(),
+        ),
+        (
+            "a fact's :using",
+            "(p k :rule copy :using ((open k)))\n".into(),
+        ),
         (
             "a pattern's relation in a premise",
             rule("(and (a ?x) (p (open ?x)))", "(q ?x)"),
@@ -150,7 +156,10 @@ fn named_places() -> Vec<(&'static str, String)> {
             "a guard's value, a pattern",
             rule("(and (a ?x) (neq ?x (open k)))", "(q ?x)"),
         ),
-        ("a conclusion's argument, a pattern", rule("(a ?x)", "(q (open ?x))")),
+        (
+            "a conclusion's argument, a pattern",
+            rule("(a ?x)", "(q (open ?x))"),
+        ),
         ("a goal's pattern", "(query :goal (p (open ?x)))\n".into()),
         (
             "a claim's nested fact",
@@ -159,13 +168,22 @@ fn named_places() -> Vec<(&'static str, String)> {
         ("an activator's argument", format!("{COPY}(copy open)\n")),
         ("a fact's argument", "(p open)\n".into()),
         ("a nested fact's argument", "(q (p open))\n".into()),
-        ("a declaration's type", "(relation t open :why \"{?3} is a t\")\n".into()),
+        (
+            "a declaration's type",
+            "(relation t open :why \"{?3} is a t\")\n".into(),
+        ),
         ("an is-a's object", "(is-a open Thing)\n".into()),
-        ("a premise's argument", rule("(and (a ?x) (p open))", "(q ?x)")),
+        (
+            "a premise's argument",
+            rule("(and (a ?x) (p open))", "(q ?x)"),
+        ),
         ("an eq's value", rule("(and (a ?x) (eq ?y open))", "(q ?y)")),
         ("a conclusion's argument", rule("(a ?x)", "(p open)")),
         ("a fact's :rule", "(p k :rule open)\n".into()),
-        ("a trace step's name", "(trace (step open :derives (a k)))\n".into()),
+        (
+            "a trace step's name",
+            "(trace (step open :derives (a k)))\n".into(),
+        ),
         (
             "a macro call's argument in a :match",
             format!("{PP}{}", rule("(and (a ?x) (pp open))", "(q ?x)")),
@@ -178,14 +196,23 @@ fn named_places() -> Vec<(&'static str, String)> {
             ),
         ),
         ("a macro's body no rule calls", OWE.into()),
-        ("a premise headed open", rule("(and (a ?x) (open (p ?x)))", "(q ?x)")),
+        (
+            "a premise headed open",
+            rule("(and (a ?x) (open (p ?x)))", "(q ?x)"),
+        ),
         (
             "an absent of a premise headed open",
             rule("(and (a ?x) (absent (open (p ?x))))", "(q ?x)"),
         ),
         ("a written hypothesis", "(open (p k))\n".into()),
-        ("a written hypothesis of a negation", "(open (not (p k)))\n".into()),
-        ("a hypothesis beside a fact", rule("(a ?x)", "(and (open (p ?x)) (q ?x))")),
+        (
+            "a written hypothesis of a negation",
+            "(open (not (p k)))\n".into(),
+        ),
+        (
+            "a hypothesis beside a fact",
+            rule("(a ?x)", "(and (open (p ?x)) (q ?x))"),
+        ),
     ]
 }
 

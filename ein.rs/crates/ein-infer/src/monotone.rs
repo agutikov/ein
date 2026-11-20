@@ -475,7 +475,11 @@ pub fn classify(
     // A read of `open`, in any rule's `:match` (Q-M1f.569): a site wherever
     // it stands.
     let open = terms.kernel.open;
-    for plan in kinded.iter().map(|(_, p)| *p).chain(hypotheses.iter().map(|p| &**p)) {
+    for plan in kinded
+        .iter()
+        .map(|(_, p)| *p)
+        .chain(hypotheses.iter().map(|p| &**p))
+    {
         for (rel, depth) in reads_of(plan, terms) {
             if rel.name == open {
                 out.sites.push(Site {

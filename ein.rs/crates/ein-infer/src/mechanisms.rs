@@ -157,19 +157,18 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
             })
             .collect()
     };
-    let open: Vec<Open> = s
-        .kb
-        .open_facts()
-        .iter()
-        .filter_map(|&fact| {
-            let arg = *s.terms.facts.args(fact).first()?;
-            let relation = match arg.as_fact() {
-                Some(f) => s.terms.facts.rel(f),
-                None => arg.as_sym()?,
-            };
-            Some(Open { fact, relation })
-        })
-        .collect();
+    let open: Vec<Open> =
+        s.kb.open_facts()
+            .iter()
+            .filter_map(|&fact| {
+                let arg = *s.terms.facts.args(fact).first()?;
+                let relation = match arg.as_fact() {
+                    Some(f) => s.terms.facts.rel(f),
+                    None => arg.as_sym()?,
+                };
+                Some(Open { fact, relation })
+            })
+            .collect();
     let obligation_rules: Vec<Symbol> = program.obligations.iter().map(|(n, _)| n).collect();
     let obligations = obligation_plans(s)?
         .iter()
@@ -611,9 +610,14 @@ impl Words<'_> {
     /// that concludes a hypothesis, an hrule among them.
     fn assert_of(&self, rule: Symbol) -> Option<String> {
         let program = self.kb.program();
-        let r = program.hrules.get(rule).or_else(|| program.hypotheses.get(rule))?;
+        let r = program
+            .hrules
+            .get(rule)
+            .or_else(|| program.hypotheses.get(rule))?;
         let a = r.assert_.as_ref()?;
-        self.ast.loc(NodeId(a.expr.0)).map(|_| self.at(NodeId(a.expr.0)))
+        self.ast
+            .loc(NodeId(a.expr.0))
+            .map(|_| self.at(NodeId(a.expr.0)))
     }
 
     /// An `open` fact root holds, and what wrote it: `(open (p a)), which
@@ -653,7 +657,6 @@ impl Words<'_> {
             },
         }
     }
-
 }
 
 /// `(solve …)`'s `:KEY` value, where `pair` is that keyword's pair.

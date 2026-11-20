@@ -156,7 +156,8 @@ fn programs(slow_too: bool) -> Vec<PathBuf> {
 /// `13_mixed_solution_and_open.ein` `(choice Ann)` implies `(likes Ann Soup)`,
 /// a candidate beside it under the union (Q-M1f.570). The saturations are no
 /// more on these, and the read-out is one.
-const COMMITS_AN_IMPLIED_CANDIDATE: [&str; 1] = ["examples/features/13_mixed_solution_and_open.ein"];
+const COMMITS_AN_IMPLIED_CANDIDATE: [&str; 1] =
+    ["examples/features/13_mixed_solution_and_open.ein"];
 
 /// The first line on which two texts differ.
 fn first_difference(a: &str, b: &str) -> String {

@@ -99,9 +99,15 @@ fn the_seats_hold_what_they_owe_where_they_owe_it() {
     for (m, facts) in open.iter().enumerate() {
         let owes = r.status[m] & OWING != 0;
         let held = facts.iter().any(|f| f == "(open seats)");
-        assert_eq!(held, owes, "node {m}: (open seats) is held where the node owes: {facts:?}");
+        assert_eq!(
+            held, owes,
+            "node {m}: (open seats) is held where the node owes: {facts:?}"
+        );
         if r.in_r(m as u64) {
-            assert!(facts.is_empty(), "a state of R holds no open fact: {facts:?}");
+            assert!(
+                facts.is_empty(),
+                "a state of R holds no open fact: {facts:?}"
+            );
         }
         owing += usize::from(owes);
     }
@@ -132,7 +138,11 @@ fn a_fork_drops_every_open_fact_a_written_one_among_them() {
         .find(|c| c.text == "(q a)")
         .expect("(q a) is a candidate")
         .fact;
-    let mut at_root: Vec<String> = kb.open_facts().iter().map(|&f| terms.fact_text(f)).collect();
+    let mut at_root: Vec<String> = kb
+        .open_facts()
+        .iter()
+        .map(|&f| terms.fact_text(f))
+        .collect();
     at_root.sort();
     assert_eq!(
         at_root,
@@ -171,7 +181,10 @@ fn the_blind_enumerator_writes_only_where_nothing_else_does() {
     let (ast, mut terms, mut kb) = load_text(blind);
     let r = cube(&ast, &mut terms, &mut kb);
     assert_eq!(
-        r.candidates.iter().map(|c| c.text.as_str()).collect::<Vec<_>>(),
+        r.candidates
+            .iter()
+            .map(|c| c.text.as_str())
+            .collect::<Vec<_>>(),
         ["(p a)"],
         "nothing else writes: the blind enumerator's, over `a`, `thing` being a relation"
     );
@@ -182,7 +195,10 @@ fn the_blind_enumerator_writes_only_where_nothing_else_does() {
     let (ast, mut terms, mut kb) = load_text(&ruled);
     let r = cube(&ast, &mut terms, &mut kb);
     assert_eq!(
-        r.candidates.iter().map(|c| c.text.as_str()).collect::<Vec<_>>(),
+        r.candidates
+            .iter()
+            .map(|c| c.text.as_str())
+            .collect::<Vec<_>>(),
         ["(q a)"],
         "a rule writes, and the blind enumerator does not"
     );
@@ -215,10 +231,9 @@ fn a_hypothesis_first_held_above_root_is_found() {
     let (ast, mut terms, mut kb) = load_text(text);
     let r = cube(&ast, &mut terms, &mut kb);
     assert!(
-        r.monotonicity
-            .sites
-            .iter()
-            .any(|s| s.render(&terms).starts_with("ask-extra: hypothesis reads chosen")),
+        r.monotonicity.sites.iter().any(|s| s
+            .render(&terms)
+            .starts_with("ask-extra: hypothesis reads chosen")),
         "the static check: {:?}",
         r.monotonicity.sites
     );
@@ -244,7 +259,10 @@ fn the_kernels_words_nest_as_ruled() {
         ),
     ] {
         let e = refused(&text);
-        assert!(e.contains("unexpected"), "{shape} is refused at the parse: {e}");
+        assert!(
+            e.contains("unexpected"),
+            "{shape} is refused at the parse: {e}"
+        );
     }
     for text in [
         format!("{pre}(think a (open (p a)))"),

@@ -87,7 +87,12 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
         ),
         (
             "o-hr",
-            program(&[OWED, DECL, OWE_AT, "(solve :hypothesis-relations (near at))\n"]),
+            program(&[
+                OWED,
+                DECL,
+                OWE_AT,
+                "(solve :hypothesis-relations (near at))\n",
+            ]),
             "solve: its :hypothesis-relations names near, and root holds no open fact of near",
         ),
         (
