@@ -260,4 +260,11 @@ None is cited by a project file; each is what the build does until the user rule
 subject); V-48 (zebra's structure under the union); the defaults Q-M1f.606 to Q-M1f.620, Q-M1f.618 above all
 (`absent` and `open` as names under `not`).
 
-**The gate**: the next commit records it.
+**The gate.** After the record, `2788c84d` (the code formatted, the doc links to private items written as code, the
+determinism note on the line that iterates) and `247dd3c3` (`utils/region_synth.py` writes a debt nothing pays with no
+witness for its guard, so the obligation writes no payment beside the hrule's candidates, and the detector's two
+hundred random programs are written again from it). `./run_tests.sh` on `247dd3c3`, rebased on `b4c29759`: exit 0, its
+last step `cargo bench --bench engine -- --test`. `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test
+dot_wellformed` on the same commit: 5 passed; `STRUCTURE_SKIPPING` gained `zebra.ein`'s four graphs, and the views'
+`SKIPPING` nothing. Not run, as the brief says: the nightly and `utils/ci_container.sh`, which a change to the DOT
+writers' input (a state's `open` facts drawn) and a large engine change owe.
