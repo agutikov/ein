@@ -602,6 +602,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.676](#q-m1f676--whether-the-snapshot-keeps-its-set-of-facts) | Whether the snapshot keeps its set of facts | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
 | [Q-M1f.677](#q-m1f677--what-a-knowledge-base-that-did-not-grow-from-the-snapshots-gets) | What a knowledge base that did not grow from the snapshot's gets | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
 | [Q-M1f.678](#q-m1f678--where-a-layers-stamp-comes-from) | Where a layer's stamp comes from | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
+| [Q-M1f.680](#q-m1f680--a-stand-in-program-and-its-built-spelling-in-a-review-item) | A stand-in program and its built spelling in a review item | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
+| [Q-M1f.681](#q-m1f681--how-a-states-open-facts-are-read-where-no-command-prints-them) | How a state's open facts are read where no command prints them | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
+| [Q-M1f.682](#q-m1f682--what-counts-as-a-program-that-moved-in-the-reviews-list) | What counts as a program that moved in the review's list | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
+| [Q-M1f.683](#q-m1f683--how-a-drawing-an-option-would-give-is-composed) | How a drawing an option would give is composed | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
+| [Q-M1f.684](#q-m1f684--which-variants-and-dumps-a-review-item-keeps) | Which variants and dumps a review item keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
+| [Q-M1f.685](#q-m1f685--a-rule-that-concludes-a-hypothesis-reads-its-absent-premises) | A rule that concludes a hypothesis reads its `absent` premises | **defaulted 2026-11-20** by the coordinator: it does, as every rule; a wrong answer found by S1f.21.19 and fixed by S1f.21.24 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12128,3 +12134,39 @@ The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/7
 **The default taken**: a process-wide atomic counter, relaxed: two draws where a KB branches, one where a layer is sealed; a stamp is compared and nothing else, and its debug form is a constant, so no output reads the number. The other reading: a counter per thread with the thread's id; or the stamps kept by the KB beside each `Arc`.
 
 The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+
+### Q-M1f.680 — A stand-in program and its built spelling in a review item
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.19 ([its record](p1f.21_verdicts_as_rules/s1f.21.19_the_review_items_on_the_built_engine.md#record)), a default about how the review items show a thing and no decision about Ein. The question: how a stand-in is given to the built engine. **The default taken**: kept unchanged with its runs, and written again beside it as `NAME.built.ein` only where the built spelling is no program the item already runs (a `*.target.ein`, a corpus file); the built runs in `runs/built/`, the tool `tools/run-built.sh`. The other reading: each stand-in rewritten in place, its old runs then of a file that is gone.
+
+### Q-M1f.681 — How a state's open facts are read where no command prints them
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.19 ([its record](p1f.21_verdicts_as_rules/s1f.21.19_the_review_items_on_the_built_engine.md#record)), a default about how the review items show a thing and no decision about Ein. The question: how the `open` facts of a state above root are read where no command prints them (items 60, 62). **The default taken**: two readings beside what the commands print: the state made a root (its commitment written as facts) and a saved state with its `(commit …)` replaced, each by `ein saturate --dump`. The other reading: the commands' own surfaces alone, which show none outside $R$ (V-91).
+
+### Q-M1f.682 — What counts as a program that moved in the review's list
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.19 ([its record](p1f.21_verdicts_as_rules/s1f.21.19_the_review_items_on_the_built_engine.md#record)), a default about how the review items show a thing and no decision about Ein. The question: what counts as a move in item 58's census. **The default taken**: loading or refused, $H$ as a set of facts, the flag, $R$'s counts and states, a claim's verdict; a refusal reworded only in its position or the word *hrule* is not a move (16); a writer's name alone is listed and is not (`hrules` read as `hypothesis-rules`, Q-M1f.626); programs added, removed or moved apart listed apart. The other reading: every changed refusal line a move (27).
+
+### Q-M1f.683 — How a drawing an option would give is composed
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.19 ([its record](p1f.21_verdicts_as_rules/s1f.21.19_the_review_items_on_the_built_engine.md#record)), a default about how the review items show a thing and no decision about Ein. The question: how item 77's options (b) and (c) are composed. **The default taken**: by a script that reads today's DOT back into facts and draws it again by the drawing's own rules, frames and layers computed again, the first line of each file saying it is composed and not drawn by the binary; the second program `05_mini_zebra.ein`, and all nine composed. The other reading: deleting the `open` lines from the DOT, which leaves frames and layers as they were.
+
+### Q-M1f.684 — Which variants and dumps a review item keeps
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.19 ([its record](p1f.21_verdicts_as_rules/s1f.21.19_the_review_items_on_the_built_engine.md#record)), a default about how the review items show a thing and no decision about Ein. The question: what an item runs beyond its page's programs, and what it keeps. **The default taken**: a variant where it shows why a figure moved or what an option would do (79's negation variants, 81's smallest and both-imports programs, 82's `bijective` twin, 84's rewrites of `zebra.ein`, 85's probe and `is-a` variants, 62's probe); an event stream or a dump past about 50 MB is not kept, and a drawing Graphviz did not lay out within 600 s is kept as its `.dot` alone, each said on its page. The other reading: the item's programs alone, every artefact kept.
+
+### Q-M1f.685 — A rule that concludes a hypothesis reads its absent premises
+
+**Raised** 2026-11-20 by P1f.21's S1f.21.19, its finding V-89, and checked by the coordinator on the probe: a
+rule `(and (p ?x) (absent (q ?x)))` that concludes a fact concludes it of the one `?x` the match holds of, and the
+same match under a rule that concludes `(open (r ?x))` writes a hypothesis for every `?x` of `p`: the `absent`
+premise is not read. The program is monotone by the static check, so the engine claims its answer: $H$ two
+candidates and $R$ four states, where the match gives one and two. `ein oracle` builds $H$ the same way and agrees.
+The engine before the phase did the same with an `hrule`.
+
+**Default taken** by the coordinator, under the user's word to run the phase on defaults: the `absent` is read, as
+a rule's is. It is what the syntax reference says of a hypothesis rule's `:match`, what the user's ruling of
+Q-M1f.567 makes a hypothesis rule, a rule that concludes `(open F)` and nothing apart, and by the rules of the
+wrong answers a wrong answer is filed and fixed. [S1f.21.24](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md)
+files it and fixes it. The other reading: a hypothesis rule's `absent` is no part of what it proposes, and the
+pages say so.

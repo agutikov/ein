@@ -93,6 +93,12 @@ without a path is in [`design.md`](design.md), whole.
 | [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call**, review item 78 of part 2 |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
+| [V-89](#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises) | a rule that concludes a hypothesis reads none of its absent premises | S1f.21.19 | **a wrong answer; S1f.21.24 files it and fixes it** (the coordinator's default, Q-M1f.685) |
+| [V-90](#v-90--the-agendas-first-half-reads-the-contradictions-activators-as-written-not-as-derived) | the agenda's first half reads the contradiction's activators as written, not as derived | S1f.21.19 | open; of the register's case W8, with review item 79 of part 1 |
+| [V-91](#v-91--no-command-prints-the-open-facts-of-a-state-above-root-outside-r) | no command prints the open facts of a state above root outside R | S1f.21.19 | open; **S1f.21.24 builds it** for the oracle's listing |
+| [V-92](#v-92--what-the-runs-correct-in-the-findings-the-review-items-were-written-from) | what the runs correct in the findings the review items were written from | S1f.21.19 | **closed**: corrected on the items' pages |
+| [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | open; the help texts are **S1f.21.24's**, the two pictures go with the nine of review item 77 |
+| [V-94](#v-94--a-test-of-the-obligations-reports-checks-proposals-by-short-names-only) | a test of the obligations' reports checks proposals by short names only | S1f.21.19 | open; **S1f.21.24 fixes it** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -993,3 +999,27 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-88 — An obligation's relation is never absent
 
 **Found** by S1f.21.23. `Owed::relation` is an `Option` whose `None` no program reaches: an activator that binds an obligation's parameter to a fact activates nothing, so every instance has a relation, and the paths that handle `None` are dead code. **Open.**
+
+## V-89 — A rule that concludes a hypothesis reads none of its absent premises
+
+**Found** by S1f.21.19, running the review items on the final engine. The function that reads a hypothesis rule's candidates runs the matcher and resolves each match's `(open F)` without the `absent` guards the plan lifts out of the match, which the saturator checks for a rule that concludes a fact. On the probe of review item 62, with `(q a)` written, `(and (p ?x) (absent (q ?x)))` holds of `b` alone: the rule that concludes a fact concludes `(s b)` alone, and the rule that concludes a hypothesis writes `(open (r a))` and `(open (r b))`. $H$ is two candidates and $R$ four states where the match gives one and two. The program is monotone, so the engine claims that answer, and the oracle, which builds $H$ the same way, agrees with it. The engine before the phase proposed the same two from an `hrule`. Checked by the coordinator on the final binary. ****a wrong answer; S1f.21.24 files it and fixes it (the coordinator's default, Q-M1f.685).**
+
+## V-90 — The agenda's first half reads the contradiction's activators as written, not as derived
+
+**Found** by S1f.21.19, running the review items on the final engine. With the bare `(import std.contradiction)` the activators of the pair's rules are derived at root after the rules that wait on an `absent` are enqueued, so a rule that concludes a stored negation is not admitted first; with the activator written it is. On the negation twin of the register's `W8/fifo-gap-root`, monotone by the static check and `:no-search`, root holds `(p one)` in the first case and not in the second. The twin's file imports nothing since S1f.21.11, so it no longer answers what its row's record says, and the two witnesses' headers still say which rule is admitted first; the gate's step holds each row's own answer and stays green. **Open; of the register's case W8, with review item 79 of part 1.**
+
+## V-91 — No command prints the open facts of a state above root outside R
+
+**Found** by S1f.21.19, running the review items on the final engine. `-p` and the answer's dumps print the states of $R$. The oracle's `--states` keeps a node's facts beyond root's, so it lists no `open` fact root also holds, and cannot show one the node has dropped. The user ruled the `open` facts a part of a state every listing shows (Q-M1f.572). **Open; S1f.21.24 builds it for the oracle's listing.**
+
+## V-92 — What the runs correct in the findings the review items were written from
+
+**Found** by S1f.21.19, running the review items on the final engine. V-47: one of its three pieces is still given, on 81 instances of 15 programs under `tests/`, each `:no-search` with an empty $H$, so it steers no search. V-48: the mirror orientation of the classic zebra's placements is written by a second obligation of the library and not against the program's rule, so the program with its rule deleted still has 112 candidates; folding two candidates that imply each other gives 53, folding a fact with its mirror 56. V-58: its probe misspelt an argument, not the rule's name or its count. V-85: one of the nine programs holds 22 `open` facts at root, not 21. Each is on its review item's page. ****closed: corrected on the items' pages.**
+
+## V-93 — Pages and help texts that say what the binary does not
+
+**Found** by S1f.21.19, running the review items on the final engine. The guide's `02-co-located-fired` picture notes two derived facts with the other rule than the binary draws; the reasoning pages' `01-instance-of-instance` lacks four activators of the contradiction's rules; `08-read-out.md` says of one licence that its relation is one *the kernel does not mirror*, and the kernel mirrors none; `ein show --help` and `ein show hyps --help` still say *rung*. **Open; the help texts are S1f.21.24's, the two pictures go with the nine of review item 77.**
+
+## V-94 — A test of the obligations' reports checks proposals by short names only
+
+**Found** by S1f.21.19, running the review items on the final engine. `ein-infer/tests/obligation_reports.rs` compares what an obligation proposes against short names, so a proposal printed under a full name would pass unseen. **Open; S1f.21.24 fixes it.**
