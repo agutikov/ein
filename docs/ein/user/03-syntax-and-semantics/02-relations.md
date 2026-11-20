@@ -225,12 +225,16 @@ show.
 
 ## Relations the kernel gives meaning to
 
-A few atoms are relations whose meaning is the engine's: `not` (a stored negation, [constraints](06-constraints.md)),
-`false` (a contradiction), `relation` (the declarations' facts above), `open` (what a state owes, `(open R)`, and a
-hypothesis, `(open F)`, facts the state holds, [obligations](08-obligations.md),
+A few atoms are relations whose meaning is the engine's: `relation` (the declarations' facts above), `open` (what a
+state owes, `(open R)`, and a hypothesis, `(open F)`, facts the state holds, [obligations](08-obligations.md),
 [hypotheses](09-hypotheses.md)) and `__closed__` (its one argument a relation no fact of which is proposed as a
-hypothesis), and the computed relations `eq` and `neq`, whose facts are never stored. No other relation is the
-engine's: a symmetric relation is one the standard library's `symmetric` rule closes, a rule like any other.
+hypothesis), and the computed relations `eq` and `neq`, whose facts are never stored. `not` (a stored negation) and
+`false` (a contradiction) are the standard library's: the language fixes the shape of a fact of each, and the
+library's rules give them their meaning, `std.core`'s ending a state that holds `(false)` and `std.contradiction`'s
+concluding it from a fact beside its negation where a program imports the module ([constraints](06-constraints.md),
+[Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). No other
+relation is the engine's: a symmetric relation is one the standard library's `symmetric` rule closes, a rule like
+any other.
 [Reserved names](../04-reference/03-reserved-names.md) lists each and what may be written with it.
 
 ## See also

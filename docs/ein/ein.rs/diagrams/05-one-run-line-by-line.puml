@@ -1,7 +1,7 @@
 @startuml
 participant "ein-cli" as cli
 participant "root's saturation" as sat
-participant "the generator" as gen
+participant "the writers of H" as gen
 participant "the route\n(a node's saturation,\nreplayed in visit order)" as route
 participant "OUT.jsonl" as out
 
@@ -9,28 +9,31 @@ cli -> out : 0 run (version, level, impl, file, argv, config)
 cli -> out : 1 load (the counts and the names)
 == root ==
 sat -> out : 2 compile one-drink
-sat -> out : 3 quiesce (nothing to fire: no likes fact yet)
-gen -> out : 4 hyp (likes Ann Tea), emitted
-gen -> out : 5 hyp (likes Ann Coffee), emitted
+sat -> out : 3 compile std.core.inconsistent
+sat -> out : 4 quiesce (nothing to fire: no likes fact yet)
+gen -> out : 5 hyp (likes Ann Tea), emitted
+gen -> out : 6 hyp (likes Ann Coffee), emitted
 == layer 0: the empty commitment ==
-route -> out : 6 quiesce
-route -> out : 7 enter [ ], in-r
-route -> out : 8 layer 0
+route -> out : 7 quiesce
+route -> out : 8 enter [ ], in-r
+route -> out : 9 layer 0
 == layer 1: each candidate alone ==
-route -> out : 9 quiesce
-route -> out : 10 enter [(likes Ann Coffee)], in-r
-route -> out : 11 quiesce
-route -> out : 12 enter [(likes Ann Tea)], in-r
-route -> out : 13 layer 1
+route -> out : 10 quiesce
+route -> out : 11 enter [(likes Ann Coffee)], in-r
+route -> out : 12 quiesce
+route -> out : 13 enter [(likes Ann Tea)], in-r
+route -> out : 14 layer 1
 == layer 2: the pair ==
-route -> out : 14 enqueue one-drink, p = Ann
-route -> out : 15 fire one-drink, derived (false)
+route -> out : 15 enqueue one-drink, p = Ann
+route -> out : 16 fire one-drink, derived (false)
+route -> out : 17 enqueue std.core.inconsistent
+route -> out : 18 fire std.core.inconsistent, ein: inconsistent
 note right of route
-  stopped at its first contradiction:
+  the state ends at the firing:
   no quiesce line
 end note
-route -> out : 16 enter [both], dead, its core both candidates
-route -> out : 17 layer 2
+route -> out : 19 enter [both], dead, its core both candidates
+route -> out : 20 layer 2
 == the end ==
-cli -> out : 18 region (asked, region, verdict, work)
+cli -> out : 21 region (asked, region, verdict, work)
 @enduml

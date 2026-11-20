@@ -59,7 +59,8 @@ parse error, read where the module is.
   name listed that the module does not provide, two definitions of one short name, and a cycle.
   `import_cycle.ein` and `import_cycle_b.ein` import each other. Both are fixtures: the reported chain is the
   resolution stack, so entering the cycle from either side is a different message.
-- **Duplicates and missing parts**: a relation, a rule or a hypothesis rule declared twice, a macro twice, two `(solve …)`
+- **Duplicates and missing parts**: a rule declared twice under one name, a rule that concludes a hypothesis among
+  them (`hrule_duplicate_name.ein`), a macro twice, two `(solve …)`
   forms, a rule with no `:match` or no `:assert`, the two half-specified declarators (`rule_half_declarators.ein`,
   a node-kind probe too), a macro called with the wrong count, a `std` macro used without its import, and a
   derivation cycle in written provenance (`derivation_cycle.ein`, `:using ((r c d))`).

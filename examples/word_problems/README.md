@@ -106,7 +106,8 @@ every state of R names the reading its answer rests on. [`listed_is_all.ein`](li
 assumption, not a theory of words: by `absent` over `has`, for every holder and kind the `has` sentences name at
 a moment with no amount listed, `(assumed (amount WHO KIND MOMENT) z)`, resting on `(adopted listed-is-all has)`.
 It does not hold of every relation: in the Zebra puzzle an empty house is one whose owner is not known yet. A
-problem that adopts it states that `has` is no hypothesis relation, `(solve :no-hypothesis (has))`.
+problem that adopts it guesses no fact of `has`: the closure `words` derives of `has` already keeps it out, and
+`kinds_listed.ein`'s `(solve :no-hypothesis (has))` says so again, which every command notes on stderr.
 
 Each module has one entry rule, as `std.math.decimal-arith` has `decimal-arith`: `(import words :symbols (words))`, `(import gaps
 :symbols (gaps))`, `(import readings :symbols (readings))`, `(import listed_is_all :symbols (listed-is-all))`. A

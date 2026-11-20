@@ -58,8 +58,9 @@ Norwegian House-1)`. You declare it once, with a name for each of its slots:
   each of its facts.
 - **English:** "a nationality lives in a house."
 
-The declaration does two things. It fixes **how many arguments** a `nation-loc` fact has, two, and Ein refuses a
-program that writes one with another count. And it gives each slot a **label**, `Nationality` and `House`. A label
+The declaration does two things. It says **how many arguments** a `nation-loc` fact has, two; a fact written with
+another count loads too, a fact of its own that no pattern of two arguments matches, since a relation's facts may be
+of several counts. And it gives each slot a **label**, `Nationality` and `House`. A label
 is an ordinary atom, the same node the `is-a` facts above point at, and Ein checks no argument against it:
 `(nation-loc House-1 Norwegian)` loads. A label means what the rules that read the stored declaration make it
 mean, and the standard library's rules in Chapter 3 read it to know which atoms a slot is filled from. Ein itself

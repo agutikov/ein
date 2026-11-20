@@ -29,7 +29,8 @@ of the relation, held or not, makes it a property of the relation alone, the sam
 **Held by.** The page: [the knowledge base](../../ein/reasoning/01-static-ir/01-knowledge-base.md), § The relation,
 its extent, a fact of it, whose drawing has a fact of the extent that is not held. `ein_ir::from_ir`'s unit test
 `a_declaration_stores_itself_as_facts_so_rules_can_read_signatures`, a declaration as facts about the relation;
-`ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_is_refused_on_every_command`, the count a declaration
-fixes for every fact of the relation; `tests/stdlib/algebra/21_transitive.ein`, one fact about a relation read by a
+`ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_loads_on_every_command`, a fact of another count than
+a declaration's a fact of the relation all the same
+([Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)); `tests/stdlib/algebra/21_transitive.ein`, one fact about a relation read by a
 rule over its facts; `ein-core/src/kb.rs`'s unit test `a_rebuild_reconstructs_the_extent_counts`, the size of a held
 extent.

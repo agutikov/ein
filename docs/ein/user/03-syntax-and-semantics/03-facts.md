@@ -331,7 +331,9 @@ ordinary relation, a stored negation `(not F)` of such a fact or of a stored neg
 `and`, `or`, and `false` with an argument never head a nested form, since none of them is a fact any state holds,
 and each is refused where it is written
 ([Q-M1f.113](../../../decisions/language/Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md)).
-The refusal's line says `where a value goes`: *value* is the engine's word for an object in an argument's place.
+Written in a file, each is a parse error at its word, *unexpected `eq`*, with a note that says *(eq a b) is no
+value*; written by a macro's expansion, the load's line says it is *written where a value goes*. *Value* is the
+engine's word for an object in an argument's place.
 **Under an ordinary relation `absent` and `open` are names**: `(think Ann (absent (p A)))` and
 `(think Ann (open (p A)))` are facts whose inner relation is so called, of which the kernel reads nothing, and a
 premise `(think ?w (absent (p ?x)))` matches such a fact and tests no absence
