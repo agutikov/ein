@@ -274,19 +274,14 @@ most worth your eye:
 
 [The item](74-S1f.21.21-defaults/README.md), which has the six and the instructions executed.
 
-The contradiction's rules are cheap again and no firing moved. One question is yours:
+The contradiction's rules are cheap again and no firing moved. **The first of the six is ruled**: the pair's rule
+of no argument stays, your word of 2026-11-20, *"this cost is absolutely acceptable"* (Q-M1f.658). Five are left
+for your review, the two most worth your eye:
 
-- **1, Q-M1f.658: the pair's rule of no argument**, which every declared relation gets from its membership fact.
-  It is kept, and still costs 0.5 to 8.6 % of the instructions.
-  - **(a)** Kept. **Default.**
-  - **(b)** The membership fact `(relation R)` is not stored: the language changes.
-  - **(c)** `clash-of-0` is guarded by `absent`s over `relation`: a program whose rule concludes a declaration
-    is flagged.
-  - **(d)** It is not activated for a relation declared with labels: `(R)` beside `(not (R))` is then no
-    contradiction for such a relation.
-
-Also worth your eye: **5, Q-M1f.662**, two cost fixes built beyond the plan; **2, Q-M1f.659**, the set of negated
-facts and the dump's rows that printed it are gone.
+- **5, Q-M1f.662**: two cost fixes built beyond the plan, a watermark for the plan never matched and a shared
+  list of plans.
+- **2, Q-M1f.659**: the set of negated facts and the rows of the shape dump that printed it are gone; a pair's
+  probe asks the fact store.
 
 **Your answer:**
 

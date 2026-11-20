@@ -10,14 +10,9 @@ the six defaults it took.
 
 ## What you should know first
 
-- **The pair's rule of no argument stays** (default 1), as planned: it comes from the membership fact every
-  declaration stores. Measured, it still costs 0.5 to 8.6 % of the instructions, as a plan held at every state and
-  not as a match. **Yours to call**, three ways to take it away:
-  1. the membership fact `(relation R)` not stored: the language changes;
-  2. `clash-of-0` guarded by six `absent`s over `relation`: the library gains them, and a program whose rule
-     concludes a declaration is flagged;
-  3. not activated for a relation declared with labels: `(R)` beside `(not (R))` is then no contradiction for
-     such a relation. No corpus answer moves; the two tests of `clash-0` itself stop loading.
+- **The pair's rule of no argument stays, and you have ruled it** (default 1, Q-M1f.658): *"this cost is
+  absolutely acceptable"*. It comes from the membership fact every declaration stores, and still costs 0.5 to
+  8.6 % of the instructions, as a plan held at every state and not as a match. Nothing more is built for cost.
 - **Two things built beyond the plan** (default 5): a pass no longer scans every plan for one never matched, and a
   resumed state no longer copies its engine's list of plans. On `equation_two_unknowns.ein` they saved more than
   the probe and the index together.
@@ -25,7 +20,8 @@ the six defaults it took.
   asks the fact store, which reads no name the kernel knows.
 - **The largest cost at a state that is left is not the contradiction's**
   ([V-78](../../../findings.md#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new)): a resumed
-  state walks every fact it holds to find what is new, about 17 % of `send_more_money.ein`. Not built.
+  state walks every fact it holds to find what is new, about 17 % of `send_more_money.ein`. Not built: the
+  cost that is left is accepted.
 
 ## Instructions executed
 
@@ -55,4 +51,5 @@ The stage's own counts, user space, one worker, pinned, each engine on the corpu
 
 ## Your call
 
-A number and what you want otherwise, in [`ANSWERS.md`](../ANSWERS.md) under item 74. Blank keeps the six as built.
+The first is ruled. A number and what you want otherwise for the other five, in [`ANSWERS.md`](../ANSWERS.md)
+under item 74. Blank keeps them as built.

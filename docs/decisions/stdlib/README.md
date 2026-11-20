@@ -11,3 +11,4 @@ in [`math/`](math/README.md), Boolean functions' in [`bool/`](bool/README.md).
 - [Q-M1f.556](Q-M1f.556-the-rules-of-a-stored-negation-are-written-for.md) — The rules of a stored negation are written for counts of none to six
 - [Q-M1f.557](Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md) — The contradiction is a theory a program imports
 - [Q-M1f.559](Q-M1f.559-the-elimination-of-a-double-negation-is-a-module.md) — The elimination of a double negation is a module a program imports
+- [Q-M1f.658](Q-M1f.658-a-declared-relation-takes-the-contradictions.md) — A declared relation takes the contradiction's rule of no argument too

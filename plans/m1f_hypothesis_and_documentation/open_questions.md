@@ -584,7 +584,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
-| [Q-M1f.658](#q-m1f658--the-pairs-rule-of-no-argument-for-a-relation-declared-with-labels) | The pair's rule of no argument for a relation declared with labels | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.658](#q-m1f658--the-pairs-rule-of-no-argument-for-a-relation-declared-with-labels) | The pair's rule of no argument for a relation declared with labels | **ruled 2026-11-20 by the user**: the instance stays, its cost accepted; [the decision](../../docs/decisions/stdlib/Q-M1f.658-a-declared-relation-takes-the-contradictions.md) |
 | [Q-M1f.659](#q-m1f659--how-a-pairs-probe-asks-whether-the-state-holds-the-other-side) | How a pair's probe asks whether the state holds the other side | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
 | [Q-M1f.660](#q-m1f660--which-rules-take-the-probe) | Which rules take the probe | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
 | [Q-M1f.661](#q-m1f661--the-key-of-a-nested-facts-relation) | The key of a nested fact's relation | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
@@ -11977,10 +11977,17 @@ with what each costs.
 
 ### Q-M1f.658 — The pair's rule of no argument for a relation declared with labels
 
-**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: `clash-0`'s instance for a relation declared with labels.
+**Raised** 2026-11-20, and defaulted, by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: `clash-0`'s instance for a relation declared with labels.
 **The default taken**: stays, made free; measured, the three ways shown (§ 3). The other reading: one of the three ways.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+**Ruled 2026-11-20 by the user**, in the session, on the coordinator's report that the instance still costs 0.5
+to 8.6 % of the instructions and that a resumed state's walk of its facts is the largest cost at a state that is
+left, verbatim:
+
+> this cost is absolutely acceptable
+
+So the instance stays, as the default had it, and nothing more is built for cost in the phase. **Decision file**:
+[Q-M1f.658](../../docs/decisions/stdlib/Q-M1f.658-a-declared-relation-takes-the-contradictions.md).
 
 ### Q-M1f.659 — How a pair's probe asks whether the state holds the other side
 
