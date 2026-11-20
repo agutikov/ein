@@ -2,12 +2,13 @@
 ;;; a world, the whole lattice in one saturation, and no search.
 ;;;
 ;;; A world is a fact naming its commitment, `(w)`, `(w (s a))`, `(w (s a) (s b))`, and
-;;; `(in W F)` says that world W holds F. The candidates are the hypotheses root holds, written
-;;; here as the object program's root holds them, `(open (s a))` and `(open (s b))`, and
-;;; `split-1` and `split-2` make a world of each set of them, in the order `before` gives, so a
-;;; set has one name. The object program's rule is written again under `(in ?w …)` by hand,
-;;; `clash-in`; its requirement and what pays it are `paid-in`. Each verdict is then a fact about
-;;; a world:
+;;; `(in W F)` says that world W holds F. The candidates are written as facts of the program,
+;;; `(question (s a))` and `(question (s b))`: the hypotheses the object program's root holds
+;;; as `(open (s a))` and `(open (s b))`. A rule that read those `open` facts themselves would
+;;; make the program one the static check flags (Q-M1f.569). `split-1` and `split-2` make a
+;;; world of each set of candidates, in the order `before` gives, so a set has one name. The
+;;; object program's rule is written again under `(in ?w …)` by hand, `clash-in`; its
+;;; requirement and what pays it are `paid-in`. Each verdict is then a fact about a world:
 ;;;
 ;;;   - `(in W (false))`: W is dead, the object program's minimal dead set;
 ;;;   - `(owes W)`: W is alive and pays nothing, as the object program's root;
@@ -17,14 +18,11 @@
 ;;; :no-search)` makes root the whole lattice, so the answer is root's facts, and the claims
 ;;; below state them as `ein oracle` answers the object program.
 ;;;
-;;; The split rules read an `open` fact, so the static check flags the program (two
-;;; `open-read` sites) and nothing is claimed of its answer (Q-M1f.564, Q-M1f.569): `ein test
-;;; FILE` checks the claims below for whoever asks, and no suite does.
-;;;
 ;;; Not written here: what holds in every state of R, which reads `in-R` under a second
 ;;; `absent`, one stratum above it.
 
 (relation s        Thing       :why "s holds of {?3}")
+(relation question Fact        :why "{?3} is a candidate")
 (relation world    World       :why "{?3} is a world")
 (relation in       World Fact  :why "{?3} holds {?4}")
 (relation paid     World       :why "{?3} pays what is owed")
@@ -32,18 +30,18 @@
 (relation in-R     World       :why "{?3} is alive and owes nothing")
 (relation possible Fact        :why "{?3} holds in some state of R")
 
-;; the hypotheses root holds, and an order on them
-(open (s a)) (open (s b))
+;; the candidates, and an order on them
+(question (s a)) (question (s b))
 (before (s a) (s b))
 
 ;; the worlds: root, and one for each set of candidates
 (world (w))
 (rule split-1 ()
-  :match  (open ?f)
+  :match  (question ?f)
   :assert (and (world (w ?f)) (in (w ?f) ?f))
   :why    "the world that supposes {?f}")
 (rule split-2 ()
-  :match  (and (open ?f) (open ?g) (before ?f ?g))
+  :match  (and (question ?f) (question ?g) (before ?f ?g))
   :assert (and (world (w ?f ?g)) (in (w ?f ?g) ?f) (in (w ?f ?g) ?g))
   :why    "the world that supposes {?f} and {?g}")
 

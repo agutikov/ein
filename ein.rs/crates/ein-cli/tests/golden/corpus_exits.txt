@@ -1481,7 +1481,8 @@
 0    examples/lattice/18_two_candidates_as_rules.ein :: render kb
 0    examples/lattice/18_two_candidates_as_rules.ein :: saturate
 0    examples/lattice/18_two_candidates_as_rules.ein :: saturate --dump
-0    examples/lattice/18_two_candidates_as_rules.ein :: solve --count
+0    examples/lattice/18_two_candidates_as_rules.ein :: solve
+0    examples/lattice/18_two_candidates_as_rules.ein :: test
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate

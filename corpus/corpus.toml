@@ -765,8 +765,8 @@ note   = "two candidates, a clash and a requirement, the program whose lattice 1
 [[entry]]
 path   = "examples/lattice/18_two_candidates_as_rules.ein"
 group  = "positive"
-runs   = ["saturate", "saturate --dump", "render kb", "solve --count"]
-note   = "18_two_candidates.ein's lattice written as rules: every state a world, `(in W F)` what it holds, the whole lattice in one saturation under `(solve :no-search)`, and each verdict a fact about a world; its claims state the dead world, the one that owes and R's two as the oracle answers the object program. Its split rules read the `open` facts root holds, so the static check flags it (`open-read`, Q-M1f.569) and nothing is claimed of its answer (Q-M1f.564): no run here checks its claims, `saturate` asks its question, and `ein test FILE` checks them for whoever asks."
+runs   = ["solve", "test", "saturate", "saturate --dump", "render kb"]
+note   = "18_two_candidates.ein's lattice written as rules: every state a world, `(in W F)` what it holds, the whole lattice in one saturation under `(solve :no-search)`, and each verdict a fact about a world. The candidates are facts the program writes, `(question F)`, so it is monotone; its claims, the dead world, the one that owes, R's two and what holds in some state of R, are what the oracle answers of the object program, held by `test`. `saturate --dump` prints its two strata."
 
 [[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
