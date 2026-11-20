@@ -175,19 +175,27 @@ oracle counts; the dead nodes that owe nothing hold `(false)` and no `open` fact
 (`runs/built/nodes/saved-03.saturate-dump.txt` and its kin). A dead node is read here as a saved state, where the
 pass runs; no command prints a dead node of the search with its `open` facts.
 
-**The stand-in in built spelling does not agree above root.**
+**The stand-in in built spelling agrees at all 16 nodes, since a wrong answer these runs found was fixed.**
 [`seats-asked.built.ein`](programs/seats-asked.built.ein) loads, is monotone by the static check, and answers as the
 seats program: $H$ the same four candidates, from `union`, and $R$ the same two states
-(`runs/built/seats-asked.built.show-hyps.txt`, `seats-asked.built.solve.txt`). At root it holds the same five `open`
-facts. Above root it holds all four candidates at every node, at $R$'s two states too, where the stand-in's
-`question` facts were none (`runs/built/nodes.md`, column *the built stand-in*; `runs/built/nodes/asked-06.saturate-dump.txt`
-lists `(open (seats Ann C1) :rule asked-total)` beside the four `debt-paid` facts that pay every debt). The reason is
-not the fork: its rules `asked-total` and `asked-surjective` read `(absent (debt-paid …))`, and on the built engine a
-rule that concludes `(open F)` writes its hypothesis for every match of its other premises, its `(absent …)` premise
-not read. The probe shows it alone (V-89, a finding of this stage, in its record): `(q a)` is written, so the match
-`(and (p ?x) (absent (q ?x)))` holds of `b` alone; the rule that concludes a fact concludes `(s b)` alone, and the
-rule that concludes a hypothesis writes `(open (r a))` and `(open (r b))`
-(`runs/built/probe-hypothesis-rule-absent.saturate-dump.txt`), so $H$ is two candidates and $R$ four states
-(`.show-hyps.txt`, `.solve.txt`). The stand-in engine of edbe6c3b, the rule written as an `hrule`, proposes the same
-two (`runs/built/probe-standin/probe-hypothesis-rule-absent.hrule.show-hyps.txt`): the behaviour is older than the
-build.
+(`runs/built/seats-asked.built.show-hyps.txt`, `seats-asked.built.solve.txt`). At every node it holds the `open`
+facts the stand-in's `question` facts were (`runs/built/nodes.md`, column *the built stand-in*: *yes* at all 16).
+
+**As first run it did not**, and that is how the wrong answer was found (V-89; `runs/built-before-the-fix/` has
+those runs). Above root it held all four candidates at every node, at $R$'s two states too: its rules
+`asked-total` and `asked-surjective` read `(absent (debt-paid …))`, and a rule that concludes `(open F)` wrote its
+hypothesis for every match of its other premises, its `(absent …)` premise not read. The probe shows it alone,
+[`probe-hypothesis-rule-absent.ein`](programs/probe-hypothesis-rule-absent.ein): `(q a)` is written, so the match
+`(and (p ?x) (absent (q ?x)))` holds of `b` alone, and the rule that concludes a fact concludes `(s b)` alone.
+
+| the probe | before the fix | since |
+|---|---|---|
+| what the rule that concludes a hypothesis writes | `(open (r a))` and `(open (r b))` | `(open (r b))` |
+| $H$ | 2 candidates | 1 |
+| $R$ | 4 states, the program monotone, so claimed | 2 states |
+| the runs | `runs/built-before-the-fix/probe-hypothesis-rule-absent.*` | `runs/built/probe-hypothesis-rule-absent.*` |
+
+The engine before the phase, the rule written as an `hrule`, proposed the same two
+(`runs/built/probe-standin/probe-hypothesis-rule-absent.hrule.show-hyps.txt`): the wrong answer was older than the
+build. [S1f.21.24](../../../s1f.21.24_a_hypothesis_rule_reads_its_absent.md) filed it and fixed it; what it took
+by default is [item 86](../86-a-hypothesis-rule-reads-its-absent/README.md).

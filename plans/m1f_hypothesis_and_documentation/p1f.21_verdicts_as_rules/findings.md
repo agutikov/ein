@@ -93,12 +93,15 @@ without a path is in [`design.md`](design.md), whole.
 | [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call**, review item 78 of part 2 |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
-| [V-89](#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises) | a rule that concludes a hypothesis reads none of its absent premises | S1f.21.19 | **a wrong answer; S1f.21.24 files it and fixes it** (the coordinator's default, Q-M1f.685) |
+| [V-89](#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises) | a rule that concludes a hypothesis reads none of its absent premises | S1f.21.19 | **a wrong answer, filed and fixed** by S1f.21.24 on the coordinator's default (Q-M1f.685): a hypothesis rule's `absent` premises are read; the row is a regression, its witness in the corpus; $H$ and $R$ moved on no corpus program; review item 86 of part 2 |
 | [V-90](#v-90--the-agendas-first-half-reads-the-contradictions-activators-as-written-not-as-derived) | the agenda's first half reads the contradiction's activators as written, not as derived | S1f.21.19 | open; of the register's case W8, with review item 79 of part 1 |
-| [V-91](#v-91--no-command-prints-the-open-facts-of-a-state-above-root-outside-r) | no command prints the open facts of a state above root outside R | S1f.21.19 | open; **S1f.21.24 builds it** for the oracle's listing |
+| [V-91](#v-91--no-command-prints-the-open-facts-of-a-state-above-root-outside-r) | no command prints the open facts of a state above root outside R | S1f.21.19 | **fixed** by S1f.21.24: the oracle's listing of a node lists every `open` fact it holds |
 | [V-92](#v-92--what-the-runs-correct-in-the-findings-the-review-items-were-written-from) | what the runs correct in the findings the review items were written from | S1f.21.19 | **closed**: corrected on the items' pages |
-| [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | open; the help texts are **S1f.21.24's**, the two pictures go with the nine of review item 77 |
-| [V-94](#v-94--a-test-of-the-obligations-reports-checks-proposals-by-short-names-only) | a test of the obligations' reports checks proposals by short names only | S1f.21.19 | open; **S1f.21.24 fixes it** |
+| [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | the help texts and the read-out page's sentence **fixed** by S1f.21.24; the two pictures go with the nine of review item 77 |
+| [V-94](#v-94--a-test-of-the-obligations-reports-checks-proposals-by-short-names-only) | a test of the obligations' reports checks proposals by short names only | S1f.21.19 | **fixed** by S1f.21.24 |
+| [V-95](#v-95--a-review-items-stand-in-program-moved-with-the-fix-of-the-hypothesis-rules-absent) | a review item's stand-in program moved with the fix of the hypothesis rule's absent | S1f.21.24 | **closed**: the coordinator ran the item again on the fixed engine and kept the runs from before beside them |
+| [V-96](#v-96--a-comment-of-a-test-still-says-rung) | a comment of a test still says rung | S1f.21.24 | open |
+| [V-97](#v-97--a-site-through-a-nested-absent-flagged-a-read-the-engine-did-not-make) | a site through a nested absent flagged a read the engine did not make | S1f.21.24 | **closed**: the fix makes the site true |
 | [V-100](#v-100--two-mutants-of-the-bijections-setup-were-caught-by-a-load-error-alone) | two mutants of the bijection's setup were caught by a load error alone, and survived once the file that gave it was rewritten: the container's nightly failed on them | the coordinator, the container's nightly | **fixed**: a test that claims the two activators, `tests/stdlib/bijection/07_setup_owed_activators.ein` |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
@@ -1024,6 +1027,18 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-94 — A test of the obligations' reports checks proposals by short names only
 
 **Found** by S1f.21.19, running the review items on the final engine. `ein-infer/tests/obligation_reports.rs` compares what an obligation proposes against short names, so a proposal printed under a full name would pass unseen. **Open; S1f.21.24 fixes it.**
+
+## V-95 — A review item's stand-in program moved with the fix of the hypothesis rule's absent
+
+**Found** by S1f.21.24. Review item 62's stand-in in the built spelling, `seats-asked.built.ein`, has the same $H$ and $R$, and its two states of $R$ hold four `open` facts fewer since the fix: the item's page and runs were of the engine before it. ****closed: the coordinator ran the item again on the fixed engine and kept the runs from before beside them.**
+
+## V-96 — A comment of a test still says rung
+
+**Found** by S1f.21.24. A module comment in `ein-infer/tests/later_debts.rs` still says *which rung built H*. **Open.**
+
+## V-97 — A site through a nested absent flagged a read the engine did not make
+
+**Found** by S1f.21.24. Before the fix a `hypothesis` site of the static check, found through a nested `absent`, flagged a read the engine never made, since a hypothesis rule's guards were not judged. The read is made now, and a program flagged so is found in flight too. ****closed: the fix makes the site true.**
 
 ## V-100 — Two mutants of the bijection's setup were caught by a load error alone
 

@@ -391,3 +391,25 @@ about 47 % of `send_more_money.ein`'s instructions as the engine stands, about 1
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 86 · A hypothesis rule reads its `absent` premises: a wrong answer, fixed
+
+[The item](86-a-hypothesis-rule-reads-its-absent/README.md). **Built without asking, on a default: say here if it
+was the wrong reading.**
+
+A rule that concludes `(open F)` was matched without its `absent` premises: on a monotone program $H$ held
+candidates the match excludes and $R$ was wrong, and the oracle agreed. It is fixed; $H$ and $R$ moved on no corpus
+program.
+
+1. **Q-M1f.685**: the `absent` is read, as every rule's. Other: it is no part of what a hypothesis rule proposes.
+2. **Q-M1f.686**: a hypothesis rule's read under one `absent` of a relation a commitment can change is no site of
+   the static check: it takes hypotheses away above root and adds none. Other: a site at every depth.
+3. **Q-M1f.687**: the oracle's listing of a node lists every `open` fact the node holds.
+4. **Q-M1f.688**: Q-M1f.685 has its decision file now, written on the default.
+5. **Q-M1f.689**: the witness, moved into the corpus, states the right answer as a claim.
+
+**Your answer:**
+
+**Notes:**

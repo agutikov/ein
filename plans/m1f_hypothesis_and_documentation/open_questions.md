@@ -607,7 +607,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.682](#q-m1f682--what-counts-as-a-program-that-moved-in-the-reviews-list) | What counts as a program that moved in the review's list | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.683](#q-m1f683--how-a-drawing-an-option-would-give-is-composed) | How a drawing an option would give is composed | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.684](#q-m1f684--which-variants-and-dumps-a-review-item-keeps) | Which variants and dumps a review item keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
-| [Q-M1f.685](#q-m1f685--a-rule-that-concludes-a-hypothesis-reads-its-absent-premises) | A rule that concludes a hypothesis reads its `absent` premises | **defaulted 2026-11-20** by the coordinator: it does, as every rule; a wrong answer found by S1f.21.19 and fixed by S1f.21.24 |
+| [Q-M1f.685](#q-m1f685--a-rule-that-concludes-a-hypothesis-reads-its-absent-premises) | A rule that concludes a hypothesis reads its `absent` premises | **defaulted 2026-11-20** by the coordinator: it does, as every rule; a wrong answer found by S1f.21.19, filed and fixed by S1f.21.24; review item 86 of part 2 |
+| [Q-M1f.686](#q-m1f686--whether-a-hypothesis-rules-read-under-one-absent-is-a-site-of-the-static-check) | Whether a hypothesis rule's read under one absent is a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
+| [Q-M1f.687](#q-m1f687--what-the-oracles-listing-of-a-node-shows) | What the oracle's listing of a node shows | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
+| [Q-M1f.688](#q-m1f688--whether-a-defaults-decision-file-is-written-before-the-user-rules-it) | Whether a default's decision file is written before the user rules it | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
+| [Q-M1f.689](#q-m1f689--what-the-moved-witness-of-the-hypothesis-rules-absent-states) | What the moved witness of the hypothesis rule's absent states | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12170,3 +12174,35 @@ Q-M1f.567 makes a hypothesis rule, a rule that concludes `(open F)` and nothing 
 wrong answers a wrong answer is filed and fixed. [S1f.21.24](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md)
 files it and fixes it. The other reading: a hypothesis rule's `absent` is no part of what it proposes, and the
 pages say so.
+
+**Built 2026-11-20** by S1f.21.24: the row filed, the fix, the row moved to the regressions. **Decision file**,
+written on the default: [Q-M1f.685](../../docs/decisions/hypotheses/Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md).
+The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+
+### Q-M1f.686 — Whether a hypothesis rule's read under one absent is a site of the static check
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: is a site owed for a hypothesis rule that reads, under an odd number of `absent`s, a relation a commitment can change.
+**The default taken**: no: such a read takes a hypothesis away above root and adds none, so nothing is first held above root (Q-M1f.574), and R, over root's H, reads nothing a state above root proposes; the check is left as it is. The other reading: a site, `hypothesis` at every depth: a program whose states above root propose other than root did is flagged, and nothing is claimed of its answer.
+
+The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+
+### Q-M1f.687 — What the oracle's listing of a node shows
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: what the oracle's listing of a node shows, and `-P` beside it.
+**The default taken**: `--states` lists the node's facts beyond root's and every `open` fact it holds, root's node included; `-P` keeps leaving them out of the states of R it lists, and no positive form of `--states` is added. The other reading: the listing keeps to what is beyond root, an `open` fact listed only where root does not hold it; or `-P` beside `--states` drops the `open` and `(not …)` facts from every node's listing.
+
+The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+
+### Q-M1f.688 — Whether a default's decision file is written before the user rules it
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: whether Q-M1f.685, a default, gets a decision file now.
+**The default taken**: yes, in the fixing commit, as Q-M1f.590, a default, has one: the regression's `decisions`, a code comment and the pages cite it, and a decision taken by default and one ruled are alike (the decisions' README). The other reading: it stays in `open_questions.md` until the user rules it, and the project cites Q-M1f.129 and Q-M1f.567 alone.
+
+The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+
+### Q-M1f.689 — What the moved witness of the hypothesis rule's absent states
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: what the moved witness states.
+**The default taken**: a `(solve :expect (region (model) (model (r b))))`, the row's answer, with a `test` run; none while the row was open, so the register's `solve` run exited 0. The other reading: no `:expect`, the row alone holding the answer.
+
+The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
