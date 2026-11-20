@@ -6,6 +6,8 @@
 **What it shows.** Task 1.4 of the stage. You ruled that a rule may read an `open` fact, and that its program is then
 not monotone automatically: warned, nothing claimed, no test (Q-M1f.569). Here are the three programs of the ruling's
 page in the spelling ruled, their stand-ins as they run today, and the warning's rows as they would read once built.
+[On the built engine](#on-the-built-engine), at the foot of the page, shows the rows the final binary prints for
+each, beside the composed ones.
 
 **The answer, short.** Once built all three load and **all three are flagged**: a rule that reads the *must*,
 `(open ?R)`; one that reads a *may*, `(open (chosen ?x))`; one that reads the absence of a *may*,
@@ -78,3 +80,64 @@ Nothing new is asked: this is your ruling Q-M1f.569 on its own three programs.
 
 - **(a)** As shown: each is flagged by a site of its own kind, and the warning's rows are today's. **Default.**
 - **(b)** Something here is not what you meant: say which.
+
+## On the built engine
+
+**How it was taken.** The final binary, the release build of `7b72bd84` (`build/review-bin/ein-final-7b72bd84`),
+with the checkout's `stdlib/`; its `--version` is `runs/built/version.txt`. `tools/run-built.sh` re-takes every run
+into `runs/built/` (ignored by git; the stand-in's `runs/` stay as they were). The three targets are run as they
+are written, and each is also its stand-in in the built spelling: the two *may* stand-ins with `question` read as
+`open` and their `ask` gone (the kernel supposes each `(open F)` root holds itself), the *must*'s with
+`(unfinished seats)` gone, since the kernel holds `(open seats)` where the seats owe. So no `.built.ein` file is
+written. For each target: the read-out, its stdout and its stderr apart, `-p`, `--monotone`, `ein show hyps`,
+`ein saturate --dump`, the oracle with every node's state and `-p`, the events, the summary and its
+`monotonicity`, `--dump-lattice` and `--dump-answer`, and the knowledge base, the lattice (as visited and in full)
+and the region drawn. `runs/built/warnings.txt` sets the warning's rows of every program side by side. The ruling
+page's stand-ins, given to the built engine: the two *may* stand-ins are refused at the parse, for their `hrule`
+and `:hrules` (`runs/built/f-held-and-read.stand-in.solve.txt`, `runs/built/f-absent-read.stand-in.solve.txt`);
+the *must*'s writes neither, and runs as it ran (`runs/built/r-held-and-read.stand-in.*`).
+
+**Every program is flagged, by the site the page composed.** The three rows the built engine prints are § 2's
+composed rows word for word:
+
+<!-- output -->
+```text
+  site            noted: open-read reads open at absent depth 0, concludes a positive fact — at stake: the state
+  site            asked: open-read reads open at absent depth 0, concludes a positive fact — at stake: the state
+  site            not-asked: open-read reads open at absent depth 1, concludes a positive fact — at stake: the state
+```
+
+(`runs/built/r-held-and-read.target.monotone.txt`, `runs/built/f-held-and-read.target.monotone.txt`,
+`runs/built/f-absent-read.target.monotone.txt`; in each summary, a site of kind `open-read`, relation `open`,
+`runs/built/*.target.monotonicity.json`). Each program also prints the warning's three rows of § 2, unchanged:
+the read-out's `WARNING` row first (`runs/built/*.target.solve-stdout.txt`), stderr's first line
+*WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)*
+(`runs/built/*.target.solve-stderr.txt`), and the summary's `monotonicity.warning`,
+`"THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER"`. Being flagged, each is answered by the cube,
+with no licence, and nothing is claimed of its answer.
+
+| program | the stand-in, on edbe6c3b | the page, once built | the built engine | why they differ |
+|---|---|---|---|---|
+| the *must*, read | **flagged**: `unfinished: absent reads debt-paid at absent depth 1` (`runs/r-held-and-read.stand-in.monotone.txt`); 2 states | flagged, `noted` reads `open` | **flagged**: `noted: open-read …` at depth 0; 2 states (`runs/built/r-held-and-read.target.solve.txt`) | — |
+| a *may*, read | not flagged; 12 states (`runs/f-held-and-read.stand-in.solve.txt`) | flagged, `asked` reads `open` | **flagged**: `asked: open-read …` at depth 0; 12 states (`runs/built/f-held-and-read.target.solve.txt`) | as the page said: the stand-in's `question` facts were facts no commitment changes; an `open` fact is read by a site of its own |
+| a *may*'s absence, read | not flagged; 3 states (`runs/f-absent-read.stand-in.solve.txt`) | flagged, `not-asked` reads `open` under `absent` | **flagged**: `not-asked: open-read …` at depth 1; 3 states (`runs/built/f-absent-read.target.solve.txt`) | as for the *may* |
+| the warning's three rows | the read-out's `WARNING`, stderr's first line, `monotonicity.warning` (`runs/r-held-and-read.stand-in.*`) | today's, word for word | the same, for each of the three (`runs/built/warnings.txt`) | — |
+| the site rows | `unfinished`'s, today's (`runs/r-held-and-read.stand-in.monotone.txt`) | three rows composed | the three composed rows, word for word | — |
+| the *must*'s stand-in itself | flagged by `unfinished`; 2 states | — | the same: flagged by `unfinished`; 2 states (`runs/built/r-held-and-read.stand-in.monotone.txt`, `.solve.txt`) | — |
+| corpus programs that read `open` | none could (§ 2) | `open-derived-activator.ein` would | **two**: `open-derived-activator.ein`, flagged by `copy [activator open]: open-read reads open at absent depth 0 …`, and `examples/features/23_a_rule_reads_open.ein`, flagged by `noted: open-read …` (`runs/built/corpus.*.monotone.txt`, the warning's rows in `runs/built/warnings.txt`) | the second is the old parse-negative fixture `open_in_match.ein`, moved, default 9 of [item 69](../69-S1f.21.12-defaults/README.md) (Q-M1f.614) |
+
+**What a fork drops, on the *must*.** The page's § 1 said the ruling's page took it node by node: where the seats
+owe nothing, `(open seats)` is dropped and `(noted seats)`, concluded from it at root, is held. The built engine
+prints it at the two states of $R$, each of which owes nothing: each holds `(noted seats)` and no `open` fact at all
+(`runs/built/r-held-and-read.target.solve-p.txt`). The other five nodes that owe nothing are dead, and no command
+prints a dead node's state beyond what root holds: the oracle's `--states` keeps a node's facts beyond root's, and
+`(noted seats)` is root's (`runs/built/r-held-and-read.target.oracle/region.json`).
+
+**`noted` reads more than the *must*** (a finding of this stage, in its record). In a `:match`, `(open ?R)` binds
+`?R` to the argument of every `open` fact the state holds, what it owes and the hypotheses it holds alike, which is
+what the language reference says a rule that reads `open` matches
+([`05-rules.md`](../../../../../../docs/ein/user/03-syntax-and-semantics/05-rules.md)). At root the seats hold
+`(open seats)` and the four `(open (seats …))` their obligations propose, so `noted` concludes five facts:
+`(noted seats)` and `(noted (seats Ann C1))` to `(noted (seats Bob C2))`
+(`runs/built/r-held-and-read.target.saturate-dump.txt`), and both states of $R$ hold all five. The stand-in's
+`(unfinished seats)` stood for the *must* alone. The program is flagged either way, by the same site.

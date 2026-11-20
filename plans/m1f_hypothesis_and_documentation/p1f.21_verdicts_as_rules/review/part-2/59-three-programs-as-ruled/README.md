@@ -4,7 +4,9 @@
 [your answers](../ANSWERS.md)
 
 **What it shows.** Task 1.2 of the stage: three programs written as your rulings write them, each a file today's
-parse refuses, and beside each its stand-in, which runs today, `question` standing for `open`.
+parse refuses, and beside each its stand-in, which runs today, `question` standing for `open`. The three now run
+on the built engine: [On the built engine](#on-the-built-engine), at the foot of the page, sets each number below
+beside what the final binary gives.
 
 **The answer, short.** *zebra2* written with a rule that concludes `(open (?R ?a ?b))` and five activator facts
 answers as today on the stand-in, byte for byte: 56 candidates, one state, 261 982 commitments. The seats program
@@ -109,3 +111,51 @@ Nothing here is new: the three files are your rulings written out.
 
 - **(a)** The spelling stands as written here; S1f.21.18 writes the corpus's hypothesis rules this way. **Default.**
 - **(b)** Something in it is not what you meant: say which.
+
+## On the built engine
+
+**How it was taken.** The final binary, the release build of `7b72bd84` (`build/review-bin/ein-final-7b72bd84`),
+with the checkout's `stdlib/`; its `--version` is `runs/built/version.txt`. `tools/run-built.sh` re-takes every run
+into `runs/built/` (ignored by git, as `runs/` is; the stand-in's runs stay where they are). The three targets are
+run as they are written: each is also its stand-in in the built spelling (`question` read as `open`, the stand-in's
+`ask` gone, since the kernel supposes each `(open F)` root holds itself, and the `hrule` form and `:hrules` gone), so
+no `.built.ein` file is written. For each target and each corpus program the page compares with: the read-out,
+`-p`, `--single`, `ein show hyps`, `ein saturate --dump`, the events and the summary, `--dump-lattice` and
+`--dump-answer` (with `-p`, so every state's facts are kept uncut), and the knowledge base and the lattice drawn.
+Where $H$ has 16 candidates or fewer (the seats, the hypothesis beside a fact) also the oracle with every node's
+state, the lattice in full and the region drawn; *zebra2*'s 56 candidates are past the oracle's limit, so it has
+neither. Each stand-in, given to the built engine, is refused at the parse (`runs/built/*.asked.solve.txt`: the
+`hrule` form and `:hrules` are gone).
+
+| | the stand-in, on edbe6c3b | the built engine | why they differ |
+|---|---|---|---|
+| *zebra2*: candidates | 56 (`runs/zebra2.asked.solve.txt`) | 56, $H$ from `union` (`runs/built/zebra2.target.show-hyps.txt`) | — |
+| *zebra2*: states of $R$, commitments | 1, 261 982 | 1, 261 982 (`runs/built/zebra2.target.solve.txt`) | — |
+| *zebra2*: `--single` | 7 saturations (`runs/zebra2.asked.solve-single.txt`) | 7 saturations (`runs/built/zebra2.target.solve-single.txt`) | — |
+| *zebra2*: against the corpus's `zebra2.ein` | the same, the file's name apart (`runs/zebra2-pair.diff.txt`) | the same, the file's name apart, `-p` too (`runs/built/zebra2-pair.diff.txt`) | — |
+| *zebra2*: `open` facts the one state of $R$ lists | 125 `question` facts (`runs/zebra2.asked.solve-p.txt`) | 125 `(open …)` (`runs/built/zebra2.target.solve-p.txt`; `runs/built/open-per-state.txt`) | — |
+| *zebra2*: `open` facts root holds | — | 130: the 125 and five `(open R)`, one for each `*-loc` relation root owes (`runs/built/zebra2.target.saturate-dump.txt`) | a state of $R$ owes nothing, so it holds no `(open R)` |
+| the seats: candidates | 16 (`runs/seats.asked.solve.txt`) | 16, $H$ from `union` (`runs/built/seats.target.show-hyps.txt`) | — |
+| the seats: states of $R$, commitments | 8, 8 | 8, 8 (`runs/built/seats.target.solve.txt`) | — |
+| the seats: the static check | **flagged**, one site, `owed-seat` | **not flagged**: `monotone (the static check)` (`runs/built/seats.target.solve.txt`) | as § 3 said: the obligation is no rule, and its guard reads `is-a` |
+| the seats: the work of describing $R$ | 65 536 saturations, the cube (`runs/seats.asked.solve.txt`) | 149 saturations (`runs/built/seats.target.solve.txt`) | the program is not flagged, so the tree and the classes are licensed; the oracle's cube is still 65 536 (`runs/built/seats.target.oracle.txt`) |
+| the seats: `open` facts a state of $R$ lists | 16 `question` facts in state 1 (`runs/seats.asked.solve-p.txt`) | 12 in each of the 8, `seat`'s (`runs/built/open-per-state.txt`) | a fork drops every `open` fact and the pass writes them again (Q-M1f.566): the rule's 12 are written at every state, the obligation's only where something is owed, and a state of $R$ owes nothing |
+| the seats: `open` facts root holds | — | 17: `(open sits)`, 12 by `seat` and 4 by `total-owed`, Cat's and Dan's at the small table (`runs/built/seats.target.saturate-dump.txt`) | — |
+| `14_seats_nothing_proposes.ein` | 12 candidates, 4 states, 4 commitments, its claim holds (`runs/seats.solve.txt`) | 16, 8, 8, and its claim, now the 8 states, holds (`runs/built/seats.solve.txt`) | the corpus file is written in the spelling ruled (S1f.21.18): it is the target with its comments and an `:expect` of the 8 states |
+| a hypothesis beside a fact: root | `(seen A)` `(seen B)` and two `question` facts (`runs/with-a-fact.asked.saturate-dump.txt`) | `(seen A)` `(seen B)` `(open (p A))` `(open (p B))` (`runs/built/with-a-fact.target.saturate-dump.txt`) | — |
+| a hypothesis beside a fact: $H$, $R$ | `(p A)` `(p B)`; 4 states (`runs/with-a-fact.asked.solve.txt`) | `(p A)` `(p B)`, from `hypothesis-rules` (`runs/built/with-a-fact.target.show-hyps.txt`); 4 states, each listing the two `open` facts (`runs/built/with-a-fact.target.solve-p.txt`) | — |
+| the form that stays refused | `examples/broken/open_mixed_assert.ein` | `examples/broken/load/open_mixed_assert.ein`, refused at load: *`(open ?R)` stands beside another conclusion* (`runs/built/open_mixed_assert.solve.txt`) | moved, default 9 of [item 69](../69-S1f.21.12-defaults/README.md) (Q-M1f.614) |
+
+**What a state holds, built.** As § 2 said, *zebra2*'s one state lists its 125 `open` facts beside its other facts,
+and a fact it supposes beside its own `open` fact: `(color-loc Blue House-2)` and `(open (color-loc Blue House-2))`
+(`runs/built/zebra2.target.solve-p.txt`). That holds of a hypothesis a **rule** writes, since the rule concludes it
+again at every state. It does not hold of one only the **obligation** proposed: the seats' state 1 holds
+`(sits Cat S1)` and no `(open (sits Cat S1))` (`runs/built/seats.target.dump-answer/forms/print-final-state.txt`),
+because the fork dropped it and the obligation, owed nothing there, writes nothing; [item 60](../60-a-state-with-its-open-facts/README.md)
+shows the same on its seats. So the sentence of § 2, *a state that supposes F holds both*, is true of a rule's
+hypotheses, not of every hypothesis.
+
+**Where the `open` facts of a state above root are printed.** `ein solve -p` and `ein oracle -p` list them
+(`runs/built/seats.target.oracle.txt`); the oracle's `--states` does not, since it keeps a node's facts beyond
+root's and root holds the same `open` facts (`runs/built/with-a-fact.target.oracle/region.json`: the state of
+`{(p A)}` is `(p A)` alone).
