@@ -360,6 +360,7 @@ impl Pairs {
     /// Every `N` some plan refutes a fact beside `(N fact)` of, in no
     /// order: for a reader that collects into a set.
     pub fn wrappers(&self) -> impl Iterator<Item = Symbol> + '_ {
+        // determinism-ok: the one caller collects what it reads into a set.
         self.by_wrapper.keys().copied()
     }
 
