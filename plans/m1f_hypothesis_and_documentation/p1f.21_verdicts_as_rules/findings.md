@@ -65,7 +65,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-52](#v-52--one-more-program-costs-past-a-second) | one more program costs past a second | S1f.21.12's build | **owed by the coordinator**, with the corpus's costs |
 | [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | **fixed** by S1f.21.18 |
 | [V-54](#v-54--one-shape-of-absent-as-a-value-stays-refused) | one shape of absent as a value stays refused | S1f.21.12's build | open; with Q-M1f.618 |
-| [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | open; S1f.21.14's |
+| [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | **fixed** by S1f.21.14, as its class: twelve decision files renamed, ids kept, every reference moved |
 | [V-56](#v-56--a-negated-hypothesis-held-in-a-variable-cannot-be-written) | a negated hypothesis held in a variable cannot be written | S1f.21.18 | open |
 | [V-57](#v-57--an-open-of-a-variable-bound-to-a-name-writes-nothing-in-silence) | an open of a variable bound to a name writes nothing in silence | S1f.21.18 | open |
 | [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | open; **the user's call**: whether a note says that a rule that concludes a hypothesis has no activator |
@@ -77,13 +77,13 @@ without a path is in [`design.md`](design.md), whole.
 | [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655, Q-M1f.656) and **built** by S1f.21.20: the pass runs at root and at a printed or saved state, and everywhere under `--in-flight` |
 | [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | **fixed** by S1f.21.20: a debug check that walked every rule at every step; the gate's build of the program goes from 4.4 to 1.4 times the release |
 | [V-66](#v-66--the-outside-row-does-not-see-a-programs-written-hypotheses) | the outside row does not see a program's written hypotheses | S1f.21.20 | open; **S1f.21.22 fixes it** |
-| [V-67](#v-67--the-hypothesis-generation-page-defines-stuck-by-the-obligations-share) | the hypothesis generation page defines stuck by the obligations' share | S1f.21.20 | open; **S1f.21.14 fixes it when it is resumed** |
-| [V-68](#v-68--the-streams-diagram-has-no-fire-after-roots-obligation-pass) | the stream's diagram has no fire after root's obligation pass | S1f.21.20 | open; **S1f.21.14 fixes it when it is resumed** |
+| [V-67](#v-67--the-hypothesis-generation-page-defines-stuck-by-the-obligations-share) | the hypothesis generation page defines stuck by the obligations' share | S1f.21.20 | **fixed** by S1f.21.14: *stuck* is a root that owes with $H$ empty, as the engine reads it |
+| [V-68](#v-68--the-streams-diagram-has-no-fire-after-roots-obligation-pass) | the stream's diagram has no fire after root's obligation pass | S1f.21.20 | **fixed** by S1f.21.14: the stream's diagram has the resumed saturation |
 | [V-72](#v-72--the-kb-and-constraints-renders-draw-no-open-fact-root-holds) | the kb and constraints renders draw no open fact root holds | S1f.21.14 | open; **S1f.21.22 fixes it** |
 | [V-73](#v-73--a-written-open-fact-is-not-judged-against-the-lists-and-a-closure) | a written open fact is not judged against the lists and a closure | S1f.21.14 | open; **S1f.21.22 fixes it** |
 | [V-74](#v-74--a-querys-printed-claim-over-open-does-not-read-back) | a query's printed claim over open does not read back | S1f.21.14 | open; **S1f.21.22 fixes it** |
 | [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | open; **S1f.21.22 rewords them** |
-| [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | open; **S1f.21.14 fixes them when it is resumed** |
+| [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | **fixed** by S1f.21.14 on its resume |
 | [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | open; **S1f.21.22 runs it and fixes it if it does** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none

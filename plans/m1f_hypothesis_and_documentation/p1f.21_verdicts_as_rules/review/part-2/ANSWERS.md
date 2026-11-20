@@ -247,3 +247,23 @@ worth your eye:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 73 · The defaults S1f.21.14 took
+
+[The item](73-S1f.21.14-defaults/README.md), which has the ten, and where each of the four items is written.
+
+The pages of the second part are written, and every page of `docs/ein/` was read against the binary. The defaults
+most worth your eye:
+
+- **2, Q-M1f.646**: a fact held neither way is *unknown* on every page, so that *open* names the facts of `open`
+  alone. Other: *open* kept for the status on the reasoning pages.
+- **1, Q-M1f.645**: twelve decision files whose names said what is no longer true are renamed, ids kept, the
+  ledger's link targets moved. Other: one file alone, or no rename that touches the ledger.
+- **4, Q-M1f.648**: *stuck* is a root that owes with $H$ empty, as the engine reads it.
+- **7, Q-M1f.651**: Q-M1f.549's decision carries your main call and no decline.
+
+**Your answer:**
+
+**Notes:**

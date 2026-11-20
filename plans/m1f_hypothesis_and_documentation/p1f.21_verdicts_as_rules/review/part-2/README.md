@@ -2,8 +2,9 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Twelve items are open: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
-defaults its build took, 70, those of S1f.21.13, 71, those of S1f.21.18, and 72, those of S1f.21.20. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
+**Thirteen items are open: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
+defaults its build took, 70, those of S1f.21.13, 71, those of S1f.21.18, 72, those of S1f.21.20, and 73, those of
+S1f.21.14. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
 and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
 point, on the corpus at `669d7d43`; where a ruled form cannot be written today, a stand-in runs (`question` for
 `open`) and the page says what stands for what. Each item's `tools/run.sh` re-takes its `runs/` (ignored by git).
@@ -29,6 +30,7 @@ here blocks the build; each item below stays for your review, and once everythin
 | [**70**](70-S1f.21.13-defaults/README.md) | the three defaults S1f.21.13 took: the example of the lattice as rules is a pair under `examples/lattice/`, monotone and held by `ein test` | whether the example is written with `open`, flagged and held by no suite | as built: not with `open` |
 | [**71**](71-S1f.21.18-defaults/README.md) | the ten defaults S1f.21.18 took, removing the `hrule` form: 120 programs written again, each answering as before | whether a misspelt activator, which now loads in silence, gets a note | as built: no note |
 | [**72**](72-S1f.21.20-defaults/README.md) | the nine defaults S1f.21.20 took: the three defects fixed, the pass where a state is used with its flag `--in-flight`, the agenda's tables kept | the flag's name and its commands; whether a printed state's finding in flight is the run's | as built |
+| [**73**](73-S1f.21.14-defaults/README.md) | the ten defaults S1f.21.14 took, writing the part's pages: every page of `docs/ein/` read against the binary | the word *unknown* for a fact held neither way; twelve decision files renamed | as written |
 
 Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
 

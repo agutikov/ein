@@ -571,6 +571,16 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.642](#q-m1f642--how-what-a-printed-state-finds-in-flight-reaches-the-surfaces) | How what a printed state finds in flight reaches the surfaces | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
 | [Q-M1f.643](#q-m1f643--which-states-are-printed-or-saved) | Which states are printed or saved | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
 | [Q-M1f.644](#q-m1f644--the-cheaper-form-of-the-check-the-gates-build-made-at-every-step) | The cheaper form of the check the gate's build made at every step | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.645](#q-m1f645--which-decision-files-are-renamed-for-a-name-that-is-no-longer-true) | Which decision files are renamed for a name that is no longer true | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.646](#q-m1f646--the-word-for-a-fact-held-neither-way-once-open-names-the-facts-of-open) | The word for a fact held neither way, once open names the facts of open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.647](#q-m1f647--where-the-remark-on-what-a-state-owes-stands-and-how-it-is-worded) | Where the remark on what a state owes stands and how it is worded | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.648](#q-m1f648--what-stuck-means-under-the-union) | What stuck means under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.649](#q-m1f649--where-r-with-no-search-is-written) | Where R with no search is written | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.650](#q-m1f650--where-open-is-shown-four-ways-on-the-users-pages) | Where open is shown four ways on the user's pages | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.651](#q-m1f651--what-the-decision-of-the-hypotheses-as-facts-carries) | What the decision of the hypotheses as facts carries | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.652](#q-m1f652--which-program-shows-the-requirement-and-the-payment-as-facts) | Which program shows the requirement and the payment as facts | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.653](#q-m1f653--two-decisions-written-to-the-rulings-on-where-the-pass-runs) | Two decisions written to the rulings on where the pass runs | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.654](#q-m1f654--the-reserved-names-pages-heading-for-open) | The reserved names page's heading for open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
@@ -11843,6 +11853,66 @@ The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/7
 **The default taken**: count the rules' facts by relation, and walk only where the count moved: no call the full walk would refuse passes, where `Kb::n_facts_of` agrees with the rule-application index, which `Kb::index_fact` keeps together. The other reading: ask the full walk once a state, at the state's fixpoint, which misses a skip a later walk repairs.
 
 The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.645 — Which decision files are renamed for a name that is no longer true
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: V-55 read as its class: every decision file whose name the part made untrue is renamed, twelve, and every reference moves with it, the ledger's link targets among them. The other reading: Q-M1f.66's file alone; or no rename that touches the ledger.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.646 — The word for a fact held neither way, once open names the facts of open
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the status of a fact neither held nor negated is *unknown*, as the library's `unknown` tests it, on every page and in Q-M1f.394, so that *open* names the facts of `open`. The other reading: *open* kept for the status on the reasoning pages, the user's page saying *unknown*.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.647 — Where the remark on what a state owes stands and how it is worded
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the remark on `(open R)` (item 11) on satisfiability § 1.1, hypothesis generation § 4.1 and the obligations page, worded under Q-M1f.390: one fact however many instances, the count beside it, the instance the engine's record; held by the state alone, no rule removing it. The other reading: the remark on one page; or worded as a property of a verdict that is no fact.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.648 — What stuck means under the union
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: *stuck* on hypothesis generation § 4.5 is what the engine reads since S1f.21.20 (its Q-M1f.637): root owes and $H$ is empty, whoever the writers; beside it, as a proposition, an owed instance whose payments root all settles empties $R$ whatever another writer proposes. The first wording of this stage, the second alone, was replaced after the merge (V-67). The other reading: $H_{\mathrm{ob}} = \emptyset$ kept, which the union makes false: `18_two_candidates.ein` has it and a non-empty $R$.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.649 — Where R with no search is written
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: $R$ with no search is solution semantics § 2.6, with a pointer from finding R § 2; its example drawn as four worlds, its program named on no reasoning page, since no user page spells it. The other reading: a page of its own, renumbering the folder.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.650 — Where open is shown four ways on the user's pages
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: `open` as a core notion is a section of the user's hypotheses page, its graph drawn by hand from `ein saturate --dump`'s facts, since `ein render kb` draws none (V-72). The other reading: a page of its own under `03-syntax-and-semantics/`, renumbering the folder.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.651 — What the decision of the hypotheses as facts carries
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: Q-M1f.549's file states the user's main call and what Q-M1f.566, .570, .573 and .574 carry; the two uses, search control from inside Ein and facts inferred from the search, declined by S1f.21.13 under the recommendation, are a default and no decision. The other reading: the declines written into the decision.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.652 — Which program shows the requirement and the payment as facts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: item 10's program restates the page's own obligation by three rules of the program, in `std.debts`' words, rather than importing `std.debts` beside a library obligation, which its page already shows. The other reading: the library's `total-owed` with `(import std.debts)`.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.653 — Two decisions written to the rulings on where the pass runs
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: Q-M1f.566 and Q-M1f.574 rewritten to the relayed rulings on where the pass runs, without the ids, as the pages are. The other reading: left to S1f.21.20, whose build amends them.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+
+### Q-M1f.654 — The reserved names page's heading for open
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the reserved-names heading *The verdict — `open`* is *`open` — what a state owes and supposes*, its links moved. The other reading: the heading kept, since `open` is more than a verdict.
+
+The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
 
 ### Q-M1f.655 — Where the pass that writes a state's open facts runs
 
