@@ -16,7 +16,6 @@
 use std::path::Path;
 
 use ein_core::{Kb, Terms};
-use ein_infer::SharedMemo;
 use ein_ir::{Ast, NodeId};
 
 use crate::ir_dot::{DotOpts, TraceView, to_dot, to_dot_form};
@@ -148,19 +147,10 @@ fn kb_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<Stri
     })
 }
 
+/// Root's state, as `ein render kb` and `ein render constraints` draw it:
+/// its fixpoint, and the `open` facts the pass writes there (Q-M1f.572).
 fn saturate(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<(), String> {
-    let mut events = ein_infer::events::Events::off();
-    let mut s = ein_infer::saturator::Session {
-        kb,
-        terms,
-        ast,
-        events: &mut events,
-        memo: SharedMemo::default(),
-    };
-    let mut sat = ein_infer::saturator::Saturator::new(&mut s).map_err(|e| e.to_string())?;
-    sat.saturate(&mut s, None, &mut |_| {})
-        .map_err(|e| e.to_string())?;
-    Ok(())
+    ein_infer::open::root_state(ast, terms, kb).map_err(|e| e.to_string())
 }
 
 /// Render one view of a parsed program. No view runs a search, so none

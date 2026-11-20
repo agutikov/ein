@@ -116,7 +116,8 @@ that holds no fact and that nothing points at just above its names. No name is r
 alone, and where the arrows go round, a fact of a relation whose own name is under its arrows, the view writes no
 layers and `dot` finds its own. Under `--fold` a folded arrow is no node and ranks nothing, `constraint=false`: its
 arguments stand in the layer where the fact's octagon would put them, and the arrow runs within that layer, so the
-folded drawing keeps the canonical one's layers of objects, the folded facts' ranks gone. This program:
+folded drawing keeps the canonical one's layers of objects, the folded facts' ranks gone. This program, which
+states its lattice is root alone, so that root holds no hypothesis the blind enumerator would guess:
 
 ```lisp
 (relation owns Person Pet :why "{?3} owns {?4}")
@@ -126,6 +127,7 @@ folded drawing keeps the canonical one's layers of objects, the folded facts' ra
 (owns Bob Cat)
 (lives-in Alice House-1)
 (lives-in Bob House-2)
+(solve :no-search)
 ```
 
 is drawn by `ein render kb` in its five layers:
@@ -272,8 +274,8 @@ every fact root holds with a relation of the program directly under one of its a
 of the knowledge base, the facts a selection keeps, drawn by the KB view's code with what they point at
 ([§ The KB](#the-kb--ein-render-kb)): *co-located is symmetric*, *color-loc is a bijection*, each declaration
 `(relation co-located Attribute Attribute)` and the fact `(relation co-located)` the loader stores beside it, a
-closure `(__closed__ person)`, and a fact a rule derives about a relation, given and derived, the program's and an
-imported module's alike.
+closure `(__closed__ person)`, what root owes, `(open seats)`, and a fact a rule derives about a relation, given and
+derived, the program's and an imported module's alike.
 
 $$
 \operatorname{about}(K) = \lbrace\, f \in K \mid \exists\, i \ge 2:\ \operatorname{arg}_i(f) \in \operatorname{Rel}(P) \,\rbrace
@@ -303,7 +305,9 @@ node, `// the slice keeps no fact`.
 
 `ein render kb FILE` loads `FILE`, saturates it, and draws the result as **one graph**, every fact the knowledge
 base holds and every atom one node across the facts that name it: `Norwegian` appears **once**, under the arrows of
-its facts of `is-a`, of the given fact and of every derived fact that names it.
+its facts of `is-a`, of the given fact and of every derived fact that names it. The state's `open` facts are among
+them, what it owes and its hypotheses, written at its fixpoint
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)).
 
 | element | DOT shape and style |
 |---|---|
@@ -314,6 +318,7 @@ its facts of `is-a`, of the given fact and of every derived fact that names it.
 | the layers | under the comment `// layers`, last: an invisible anchor a rank, `"layer 0" [style=invis, …]`, the anchors chained by invisible arrows, and a `{ rank=same; "layer N"; … }` group a rank, top first ([§ Layers](#layers--a-relation-above-its-facts-a-fact-above-its-arguments)) |
 | a fact that a drawn fact points at, held or not | that octagon, under `// facts in a context`: inside `subgraph cluster_ctx_…`, its frame, where the knowledge base does not hold it, and outside every frame where it does ([§ A fact under an arrow](#a-fact-under-an-arrow--every-object-once)) |
 | a stored negation, `(not g)` | a fact of `not`: an octagon whose arrow `2` is at `g`'s node, in the frame `not ctx` where `g` is not held |
+| an `open` fact, `(open r)` or `(open g)` | a fact of `open`: an octagon whose arrow `2` is at `r`, the relation the state owes, or at `g`'s node, a hypothesis, in the frame `open ctx` where `g` is not held |
 | a fact that applies a rule, `(symmetric co-located)` | a fact like any other: an octagon whose arrow `1` is at the rule's name |
 | a declaration, `(relation co-located Attribute Attribute)` | the fact it is stored as, and beside it the fact `(relation co-located)` the loader adds |
 | a background fact | `style=solid` |

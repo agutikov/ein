@@ -381,6 +381,71 @@ fn render_constraints_draws_roots_facts_about_relations() {
     }
 }
 
+/// **A drawing of root draws the `open` facts root holds** (Q-M1f.572):
+/// `render kb` and `render constraints` run the pass at root, as every
+/// command that shows root's state does. Each is a fact whose arrow `1` is at
+/// `open`: of the seats program, `(open seats)`, what root owes, its arrow `2`
+/// at the relation, and the four facts that would pay it, `(open (seats …))`,
+/// each arrow `2` at a fact root does not hold; the constraint view keeps the
+/// one about a relation. A saved ∅, a file with no `(commit …)`, is root, and
+/// draws the hypotheses its program writes; a state above it holds none.
+#[test]
+fn a_drawing_of_root_draws_the_open_facts_root_holds() {
+    let seats = "examples/lattice/05_owed_seats_bounded.ein";
+    let r = ein(&["render", "kb", seats]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    dot_accepts("render kb", &r.out);
+    assert_eq!(facts_of(&r.out, "open"), 5, "{}", r.out);
+    // Each `open` fact's node, and where its arrow 2 points.
+    let opens: Vec<&str> = r
+        .out
+        .lines()
+        .filter_map(|l| l.strip_prefix("  \"open\" -> "))
+        .filter_map(|l| l.split(' ').next())
+        .collect();
+    let second = |node: &str| -> Vec<String> {
+        let head = format!("  {node} -> ");
+        r.out
+            .lines()
+            .filter_map(|l| l.strip_prefix(&head))
+            .filter(|l| l.contains("[xlabel=\"2\""))
+            .filter_map(|l| l.split(' ').next().map(str::to_string))
+            .collect()
+    };
+    let targets: Vec<String> = opens.iter().flat_map(|&o| second(o)).collect();
+    assert_eq!(targets.len(), 5, "one arrow 2 an open fact:\n{}", r.out);
+    assert_eq!(
+        targets.iter().filter(|t| *t == "\"seats\"").count(),
+        1,
+        "(open seats)'s arrow 2 at the relation:\n{}",
+        r.out
+    );
+    assert_eq!(
+        targets.iter().filter(|t| t.starts_with("f_")).count(),
+        4,
+        "four hypotheses, each arrow 2 at a fact:\n{}",
+        r.out
+    );
+    let r = ein(&["render", "constraints", seats]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert_eq!(facts_of(&r.out, "open"), 1, "{}", r.out);
+
+    let tmp = scratch("open-root");
+    let dir = tmp.join("answer");
+    let written = "examples/features/24_written_hypotheses.ein";
+    let r = ein(&["solve", written, "--dump-answer", &dir.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    for (drawn, want) in [
+        (written.to_string(), 2),
+        (dir.join("models/01.ein").to_string_lossy().into_owned(), 2),
+        (dir.join("models/02.ein").to_string_lossy().into_owned(), 0),
+    ] {
+        let r = ein(&["render", "kb", &drawn]);
+        assert_eq!(r.code, 0, "{drawn}: {}", r.err);
+        assert_eq!(facts_of(&r.out, "open"), want, "{drawn}:\n{}", r.out);
+    }
+}
+
 /// **One program in both forms, through every door that draws facts**
 /// (Q-M1f.419): by default a fact of three arrows is an octagon with no name
 /// in it, its arrow `1` at the relation's atom, and under `--fold` it is one

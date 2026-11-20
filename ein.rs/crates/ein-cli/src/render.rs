@@ -85,20 +85,32 @@ pub fn cmd_rule(
 /// root at its fixpoint (Q-M1f.530): every fact root holds with a relation of
 /// the program directly under an argument arrow
 /// ([`ein_infer::slice::about_relations`], Q-M1f.523), drawn by the KB view's
-/// code with what each points at ([`render_constraints`]). A saved file's
-/// root is its program's, the choices it states not committed.
+/// code with what each points at ([`render_constraints`]). Root holds its
+/// `open` facts (Q-M1f.572), so `(open R)`, what root owes, is one such
+/// fact. A saved file's root is its program's, the choices it states not
+/// committed.
 pub fn cmd_constraints(file: &str, fold: bool, load: &ein_ir::LoadOptions) -> i32 {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(file), load) else {
         return 1;
     };
-    if let Err(e) = ein_infer::saturate_events(&ast, &mut terms, &mut kb) {
-        eprintln!("{}", crate::common::saturate_error_line(&e));
+    if let Err(e) = ein_infer::open::root_state(&ast, &mut terms, &mut kb) {
+        eprintln!("{}", root_error_line(&e));
         return 1;
     }
     emit(&render_constraints(&kb, &terms, "constraints", fold));
     0
+}
+
+/// The line a root that does not saturate, or whose `open` facts cannot be
+/// written, is refused with: the line `ein saturate` and `ein solve` print,
+/// not behind the file's name.
+fn root_error_line(e: &ein_infer::error::SolveError) -> String {
+    match e {
+        ein_infer::error::SolveError::Saturate(e) => crate::common::saturate_error_line(e),
+        e => e.to_string(),
+    }
 }
 
 /// `ein render lattice FILE` — the nodes a describing `ein solve` run visits,
@@ -203,7 +215,8 @@ pub struct KbArgs<'a> {
 }
 
 /// `ein render kb` — one KB as one digraph, by [`ein_render::kb_to_dot`]:
-/// `file` loaded and saturated (Q-M1e.20).
+/// `file` loaded and saturated (Q-M1e.20), its state's `open` facts with it
+/// (Q-M1f.572).
 ///
 /// **A goal's slice** (Q-M1f.529): under `--goal` or `--query N`, the facts
 /// of the knowledge base that answer the goal
@@ -312,6 +325,17 @@ fn loaded_and_saturated(
     load: &ein_ir::LoadOptions,
 ) -> Option<ein_core::Kb> {
     let mut kb = load_program(ast, terms, Path::new(file), load)?;
+    // A file with no `(commit …)`: root's state, its fixpoint and the `open`
+    // facts the pass writes there (Q-M1f.572).
+    if kb.program().commit.is_none() {
+        return match ein_infer::open::root_state(ast, terms, &mut kb) {
+            Ok(()) => Some(kb),
+            Err(e) => {
+                eprintln!("{}", root_error_line(&e));
+                None
+            }
+        };
+    }
     // The line `ein saturate` and `ein solve` print, not behind the file's
     // name.
     if let Err(e) = ein_infer::saturate_events(ast, terms, &mut kb) {
@@ -319,7 +343,7 @@ fn loaded_and_saturated(
         return None;
     }
     // A saved file's state: its node, committed and saturated by the node
-    // function (Q-M1f.402); root's fixpoint for a file with no `(commit …)`.
+    // function, its `open` facts written at its fixpoint (Q-M1f.402).
     match ein_infer::region::saved_node(&mut kb, terms, ast) {
         Ok(Some(node)) => Some(node.kb),
         Ok(None) => Some(kb),

@@ -254,6 +254,37 @@ pub fn at_root(
     }
 }
 
+/// **Root's state as every command shows it** (Q-M1f.572, Q-M1f.655): `kb`,
+/// freshly loaded, saturated to its fixpoint and its `open` facts written
+/// there by the pass, as `ein saturate --dump` lists them and a saved ∅
+/// holds them. What `ein render kb` draws of a program, and `ein render
+/// constraints` of any file's root. Nothing is narrated.
+pub fn root_state(
+    ast: &ein_ir::Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+) -> Result<(), crate::error::SolveError> {
+    let mut events = crate::events::Events::off();
+    let mut s = Session {
+        kb,
+        terms,
+        ast,
+        events: &mut events,
+        memo: crate::compile::SharedMemo::default(),
+    };
+    let mut sat = Saturator::new(&mut s)?;
+    sat.saturate(&mut s, None, &mut |_| {})?;
+    let mut stats = HypGenStats::default();
+    at_root(
+        &mut s,
+        &mut sat,
+        &mut stats,
+        &mut |_| std::ops::ControlFlow::Continue(()),
+        &mut |_| {},
+    )?;
+    Ok(())
+}
+
 /// **A state's `open` facts above root**, at the fixpoint `sat` reached:
 /// what it owes is read ([`crate::obligations::tally`], narrated into
 /// `s.events`), and, but under [`Pass::Tally`], the pass writes what
