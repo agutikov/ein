@@ -221,8 +221,8 @@ pub struct Report {
 
 /// **Could two mechanisms meet in this program?** Read off the loaded
 /// program, before any saturation, so that a program declaring at most one
-/// pays nothing: a rule that concludes a hypothesis, an obligation rule,
-/// `:hypothesis-relations` and
+/// pays nothing: a rule that concludes a hypothesis, an obligation rule, an
+/// `(open …)` fact the program writes, `:hypothesis-relations` and
 /// `:no-hypothesis` are each present or not as written, and a closure is
 /// possible wherever `__closed__` is written, a fact's head or argument or
 /// any word of a rule's `:assert`. Two of them, or one and a possible
@@ -240,6 +240,7 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
     let present = [
         !program.hypotheses.is_empty(),
         !program.obligations.is_empty(),
+        !kb.open_facts().is_empty(),
         lists(crate::hypgen::HYPOTHESIS_RELATIONS),
         lists(crate::hypgen::NO_HYPOTHESIS),
         lists(crate::hypgen::NO_SEARCH),
@@ -366,9 +367,11 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         }
         if m.closed.contains(&o.relation) {
             // Placed where the closure is written, else where what writes the
-            // `open` fact is: an obligation's activator, a rule's `:assert`.
+            // `open` fact is: an obligation's activator, a rule's `:assert`,
+            // the program's own `(open …)`.
             let at = w
                 .written(w.closure_fact(o.relation))
+                .or_else(|| w.written(Some(o.fact)))
                 .or_else(|| {
                     m.obligations
                         .iter()
@@ -534,35 +537,52 @@ impl Words<'_> {
     /// position of its own
     /// ([07-diagnostics.md § 1.5](../../../../docs/ein/user/04-reference/07-diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none))
     /// while its form's
-    /// words carry theirs. `None` for a fact with a nested argument.
+    /// words carry theirs. A nested argument, `(open (q b))`'s, is matched
+    /// as its form at any depth.
     fn form_of(&self, fact: FactId) -> Option<NodeId> {
-        let (rel, args) = self.terms.facts.get(fact);
-        let rel = self.terms.sym(rel);
-        let args: Vec<&str> = args
-            .iter()
-            .map(|v| v.as_sym().map(|s| self.terms.sym(s)))
-            .collect::<Option<_>>()?;
         (0..self.ast.arena_sizes().0 as u32)
             .map(NodeId)
             .find_map(|node| {
                 let Node::SForm { head, .. } = self.ast.node(node) else {
                     return None;
                 };
-                let a = self.ast.form_args(node);
-                (self.ast.atom_name(head) == Some(rel)
-                    && a.len() == args.len()
-                    && a.iter()
-                        .zip(&args)
-                        .all(|(&n, &want)| self.ast.atom_name(n) == Some(want)))
-                .then(|| {
-                    if self.ast.loc(node).is_some() {
-                        node
-                    } else {
-                        head
-                    }
-                })
-                .filter(|&at| self.ast.loc(at).is_some())
+                self.writes(node, Value::fact(fact))
+                    .then(|| {
+                        if self.ast.loc(node).is_some() {
+                            node
+                        } else {
+                            head
+                        }
+                    })
+                    .filter(|&at| self.ast.loc(at).is_some())
             })
+    }
+
+    /// Does `node` write `value`: an atom its name, a form a fact's relation
+    /// and arguments, at any depth?
+    fn writes(&self, node: NodeId, value: Value) -> bool {
+        if let Some(s) = value.as_sym() {
+            return self.ast.atom_name(node) == Some(self.terms.sym(s));
+        }
+        let Some(fact) = value.as_fact() else {
+            return false;
+        };
+        let Node::SForm { head, .. } = self.ast.node(node) else {
+            return false;
+        };
+        let (rel, args) = self.terms.facts.get(fact);
+        let a = self.ast.form_args(node);
+        self.ast.atom_name(head) == Some(self.terms.sym(rel))
+            && a.len() == args.len()
+            && a.iter().zip(args).all(|(&n, &want)| self.writes(n, want))
+    }
+
+    /// Where the program writes `fact`, `written at FILE:L:C`; `None` for a
+    /// fact its text does not show.
+    fn written_at(&self, fact: FactId) -> Option<String> {
+        let node = self.form_of(fact)?;
+        let l = self.ast.loc(node)?;
+        Some(format!("written at {}", ein_ir::loc_repr(self.ast, Some(l))))
     }
 
     /// A fact, and where it comes from: `, which rule 'r' derives,` or
@@ -640,7 +660,10 @@ impl Words<'_> {
                         })
                     )
                 ),
-                None => format!("{text}, which the program writes"),
+                None => match self.written_at(fact) {
+                    Some(at) => format!("{text}, {at}"),
+                    None => format!("{text}, which the program writes"),
+                },
             },
         }
     }

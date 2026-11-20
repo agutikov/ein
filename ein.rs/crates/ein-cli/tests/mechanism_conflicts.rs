@@ -158,8 +158,34 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
             ]),
             "solve: its :hypothesis-relations names at, and (__closed__ at), written at ",
         ),
+        // The `open` facts the program writes are root's as a rule's are,
+        // each named where it is written.
+        (
+            "w-hr",
+            program(&[DECL, WRITTEN, "(solve :hypothesis-relations ())\n"]),
+            "solve: its :hypothesis-relations leaves out at, and root holds (open (at Red H1)), \
+             written at ",
+        ),
+        (
+            "w-nh",
+            program(&[DECL, WRITTEN, "(solve :no-hypothesis (at))\n"]),
+            "solve: its :no-hypothesis names at, and root holds (open (at Red H1)), written at ",
+        ),
+        (
+            "w-c",
+            program(&[DECL, WRITTEN, "(__closed__ at)\n(solve)\n"]),
+            "root holds (open (at Red H1)), written at ",
+        ),
+        (
+            "w-owed-nh",
+            program(&[DECL, "(open at)\n(solve :no-hypothesis (at))\n"]),
+            "solve: its :no-hypothesis names at, and root holds (open at), written at ",
+        ),
     ]
 }
+
+/// A hypothesis the program writes.
+const WRITTEN: &str = "(open (at Red H1))\n";
 
 /// `(shape, the program, the one note it prints, after its position)`; an
 /// empty note is a program that prints none.
@@ -206,6 +232,11 @@ fn accepted() -> Vec<(&'static str, String, String)> {
         (
             "h-nh-other",
             program(&[DECL, GUESS, h, " :no-hypothesis (near))\n"]),
+            "",
+        ),
+        (
+            "w-hr-agrees",
+            program(&[DECL, WRITTEN, "(solve :hypothesis-relations (at))\n"]),
             "",
         ),
         // A hypothesis rule no clause activates writes nothing: the list is the blind
