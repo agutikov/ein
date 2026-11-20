@@ -50,7 +50,7 @@ coordinator runs it once on the phase's last commit.
 ## Record
 
 Run 2026-11-20 in a worktree fast-forwarded to `master` at `0a6e6e3b`, then rebased onto `master` at `fc9173c6`
-(a plans-only commit; no golden moved with it). Six tasks: the plan's five, and V-66, which the brief added from
+and again at `cde9ac4c` (plans, pages, READMEs and one generator; no code, and no golden moved with either). Six tasks: the plan's five, and V-66, which the brief added from
 S1f.21.20's record. Scratch named `build/s22/…` is the worktree's, not the tree's. The machine was shared with
 other stages throughout (load average 20 to 24 at its peak), so no time below is a measurement.
 
@@ -58,14 +58,18 @@ other stages throughout (load average 20 to 24 at its peak), so no time below is
 
 | commit | task | what |
 |---|---|---|
-| `c9723367` | 4 | the hypothesis found in flight is the first in the nodes' order; `jobs_invariance.rs` holds it |
-| `8efdb6fd` | 6 | the `outside` row reads the hypotheses a program writes |
-| `d1c5d6a4` | 2 | a written `(open …)` judged against the two lists and a closure |
-| `faed6c9f` | 3 | a class that lists an `open` fact: its `as :expect` is not printed |
-| `f7c7f61e` | 1 | `ein render kb` and `ein render constraints` draw the `open` facts root holds |
-| `93d7d13c` | 5 | the comments, the library's two files and its manifest |
-| `257c358b` | 4 | `open.rs`' module doc on where a worker's finding is recorded |
+| `f73e4fe1` | 4 | the hypothesis found in flight is the first in the nodes' order; `jobs_invariance.rs` holds it |
+| `ffba2a8f` | 6 | the `outside` row reads the hypotheses a program writes |
+| `60ddcdca` | 2 | a written `(open …)` judged against the two lists and a closure |
+| `af52d610` | 3 | a class that lists an `open` fact: its `as :expect` is not printed |
+| `8eafcc0c` | 1 | `ein render kb` and `ein render constraints` draw the `open` facts root holds |
+| `d62cfe45` | 5 | the comments, the library's two files and its manifest |
+| `c72e388a` | 4 | `open.rs`' module doc on where a worker's finding is recorded |
+| `f7c0285d` | | this record's first version, plans only |
+| `0cd68f13` | 4 | `fan_out`'s speculated nodes under a type alias: the gate's clippy refused the tuple type |
 | this record | | plans only |
+
+The hashes are the branch's after its rebase onto `master` at `cde9ac4c`.
 
 ### Task 4 first: the hypothesis found in flight (V-77)
 
@@ -209,3 +213,33 @@ development.
   words above; its scratch is `build/s22/survey/`.
 
 V-86 to V-89 are not used.
+
+### The gate
+
+`./run_tests.sh` on `0cd68f13`, the branch rebased onto `master` at `cde9ac4c`, with the default 16 test workers:
+**exit 0**, every step: the ten static checks, `cargo test --profile gate --workspace` (168 test binaries, 1 388
+tests, none failed, by the sum of their `test result` lines, `corpus_cli`'s cost check among them), the process's
+checks (`check_generated.py`: 9 generators, every file as written) and the bench smoke. Load average 21.5 when it
+started and 5.1 when it ended. Two runs before it: the first, on the tip before the second rebase, stopped at
+`cargo clippy -D warnings` (`type_complexity` on `fan_out`'s tuple type, fixed in `0cd68f13`); the second, on
+`fb561f3b`, that tip with the fix, exited 0 with the same counts.
+
+On `0cd68f13`, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: 5 passed, Graphviz accepting every view of every corpus program; and `… --test id_order_invariance`: 4 passed, the shape golden as banked on every corpus file, `tests/` among them.
+
+Not run, as the brief says: the nightly, `--dev-host` and `utils/ci_container.sh`; a DOT writer moved (`ein render
+kb` and `ein render constraints` draw root's `open` facts), so the container's gate is the coordinator's, on the
+phase's last commit.
+
+### What the user must see
+
+- **Every drawing of root now draws root's `open` facts** (Q-M1f.572 as ruled), and for a program with declared
+  relations and no other writer that includes **every guess of the blind enumerator**: the guide's four-line
+  `tiny.ein` draws five hypotheses beside its five facts, `zebra2.ein`'s KB view 130 `open` facts. Nine pictures of
+  the pages are no longer what the binary draws (V-85); the stage changed none of them, and `12-rendering.md`'s
+  layers picture was kept true by giving its program `(solve :no-search)` (Q-M1f.672). Whether a drawing should
+  draw the blind enumerator's guesses, or a page's picture be redrawn with them, is the user's to say.
+- Task 4's race was real: `--jobs 16` named another hypothesis in flight than `--jobs 1` in two runs of six on a
+  probe; never on X9; never on stderr, whose line names no hypothesis.
+- A written `(open …)` beside a list or a closure that disagrees with it is now refused at load (Q-M1f.578); no corpus
+  program was.
+- The `as :expect` row says *not printed* for a class listing an `open` fact (Q-M1f.666).
