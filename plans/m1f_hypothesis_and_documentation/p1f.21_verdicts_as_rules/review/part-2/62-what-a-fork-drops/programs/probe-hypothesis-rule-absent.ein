@@ -1,0 +1,23 @@
+;;; Item 62, a probe written for this item on the built engine: two rules with one `:match`, which reads an
+;;; `(absent …)` of a relation other than the one supposed. `plain` concludes a fact, `guess` a hypothesis.
+;;; `(q a)` is written, so the match holds of `b` alone: `plain` concludes `(s b)`, and the one hypothesis the
+;;; match gives `guess` is `(r b)`. The built stand-in `seats-asked.built.ein` reads its debts the same way,
+;;; through `(absent (debt-paid …))`.
+
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(relation r T :why "{?3} is r")
+(relation s T :why "{?3} is s")
+
+(p a) (p b)
+(q a)
+
+(rule guess ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (open (r ?x))
+  :why    "suppose {?x} is r: it is not q")
+
+(rule plain ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (s ?x)
+  :why    "{?x} is s: it is not q")

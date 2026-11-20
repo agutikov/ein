@@ -1,0 +1,26 @@
+;;; Item 65: program 7 of the page of Q-M1f.578 (`7-hrule-and-obligation-against-list.ein`, kept there unchanged) in
+;;; the spelling the built engine reads. What changed: the `(hrule meet () … :assert (knows ?p ?f))` is a rule that
+;;; concludes `(open (knows ?p ?f))`, active with no activator since it has no parameter, and `(solve :hrules (meet)
+;;; …)` loses its `:hrules`, which no form takes. Nothing else.
+;;;
+;;; Item 56: a hypothesis rule proposes `knows`, an obligation owes `likes`,
+;;; and a list takes `likes` out. Today the rule overrides the obligation as a
+;;; source of candidates, so nothing proposes `likes`.
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+
+(rule owes-food ()
+  :match  (and (person ?a) (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} is owed a food to like.")
+(rule meet ()
+  :match  (and (person ?p) (food ?f))
+  :assert (open (knows ?p ?f))
+  :why    "does {?p} know {?f}?")
+(solve :no-hypothesis (likes))

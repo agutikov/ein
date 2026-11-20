@@ -1,0 +1,53 @@
+;;; Item 62: `seats-asked.ein`, kept beside it unchanged, in the spelling the built engine reads. What changed: the
+;;; three rules conclude `(open …)` where the stand-in concluded `(question …)`: `asked-owed` `(open ?R)`,
+;;; `asked-total` and `asked-surjective` `(open (seats ?a ?b))`: each concludes an `open` fact beside the ones the
+;;; pass writes for the program's obligations. Nothing else; the stand-in's text follows as it was.
+;;;
+;;; Item 62, the stand-in: examples/lattice/05_owed_seats_bounded.ein, whole, with what the pass would write at a
+;;; state's fixpoint concluded by ordinary rules, under `question`, which stands for `open` (today the parse reads
+;;; `open` nowhere but as an obligation's whole `:assert`):
+;;;
+;;;   (question seats)              stands for (open seats): an instance of `seats` is owed here
+;;;   (question (seats ?g ?c))      stands for (open (seats ?g ?c)): a fact that would pay an instance owed here
+;;;
+;;; `std.debts` states the requirement and its payment as facts, `debt-due` and `debt-paid`; a debt is owed where
+;;; the one has no other. The candidates of an owed instance are the obligation's guard read at the state, as the
+;;; obligations rung reads it. A stand-in fact a rule concludes is inherited by every fork, where the pass's would be
+;;; dropped; so the tools run it once a node, the node's commitment written as facts, and read what it holds then.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+
+(relation is-a   T T         :why "{?3} is a {?4}")
+(relation seats  Guest Chair :why "{?3} is seated at {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(import std.debts)
+(debts-of-owed)
+
+(rule asked-owed ()
+  :match  (and (debt-due ?R ?j) (absent (debt-paid ?R ?j)))
+  :assert (open ?R)
+  :why    "{?R} is owed here: (open {?R})")
+
+(rule asked-total ()
+  :match  (and (debt-due seats (total-owed-of seats is-a ?A ?B ?a))
+               (absent (debt-paid seats (total-owed-of seats is-a ?A ?B ?a)))
+               (is-a ?b ?B))
+  :assert (open (seats ?a ?b))
+  :why    "{?a} is owed a {?B}, and ({?a} {?b}) would pay it: (open (seats {?a} {?b}))")
+
+(rule asked-surjective ()
+  :match  (and (debt-due seats (surjective-owed-of seats is-a ?A ?B ?b))
+               (absent (debt-paid seats (surjective-owed-of seats is-a ?A ?B ?b)))
+               (is-a ?a ?A))
+  :assert (open (seats ?a ?b))
+  :why    "{?b} is owed a {?A}, and ({?a} {?b}) would pay it: (open (seats {?a} {?b}))")
+
+(query :goal (seats ?g ?c))

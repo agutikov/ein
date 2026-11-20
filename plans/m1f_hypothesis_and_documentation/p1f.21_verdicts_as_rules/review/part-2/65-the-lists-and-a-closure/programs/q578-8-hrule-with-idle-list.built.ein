@@ -1,0 +1,21 @@
+;;; Item 65: program 8 of the page of Q-M1f.578 (`8-hrule-with-idle-list.ein`, kept there unchanged) in the spelling
+;;; the built engine reads. What changed: the `(hrule guess () … :assert (likes ?p ?f))` is a rule that concludes
+;;; `(open (likes ?p ?f))`, active with no activator since it has no parameter, and `(solve :hrules (guess) …)` loses
+;;; its `:hrules`, which no form takes. Nothing else.
+;;;
+;;; Item 56: a hypothesis rule proposes `likes`, and a list names `likes` as
+;;; what may be supposed: the list filters nothing.
+
+(relation person T   :why "{?3} is a person")
+(relation food   T   :why "{?3} is a food")
+(relation likes  T T :why "{?3} likes {?4}")
+(relation knows  T T :why "{?3} knows {?4}")
+
+(person Ann)
+(food Soup)
+
+(rule guess ()
+  :match  (and (person ?p) (food ?f))
+  :assert (open (likes ?p ?f))
+  :why    "does {?p} like {?f}?")
+(solve :hypothesis-relations (likes))
