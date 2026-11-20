@@ -314,7 +314,9 @@ stderr line; `--monotone`, whose answer is the verdict itself, prints neither. T
 what is assumed, what each site puts at stake, and whether it bit, the status and the state apart, because the cube
 reads only
 the status. **A program the run finds not monotone in flight**, a state it built holding a hypothesis root does not
-([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), prints the same
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), where it checks:
+every state under `--in-flight`, and every state of a program a rule of which reads `open`
+([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)), prints the same
 warning, its stderr line said at once, when the state was built, and an `in flight` row under `lattice`; where the
 static check found no site, the `lattice` row says *not monotone: found in flight (Q-M1f.574)*, and the summary's
 `monotonicity.in_flight` holds the hypothesis. At most four `site` and four `stale` rows are printed, each then a `…` row; `--dump-answer`'s `answer.txt`
@@ -528,7 +530,7 @@ every error's line.
 
 | line | when | exit |
 |---|---|---|
-| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1); and, on one it does not, at once, once, where a run first builds a state that holds a hypothesis root does not (§ 5.1) | 0 |
+| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1); and, on one it does not, at once, once, where a run that checks first builds a state that holds a hypothesis root does not (§ 5.1) | 0 |
 | `note: FILE: partial — …` | a run the budget or `--region-limit` stopped. Under describe and `--count` stopped by the budget the note says, by default and not only under `-v`, the forecast (the next step's projection, on top of what was spent, against `--region-budget`: the state route's next layer, or the tree and the classes' next step), what the run established and what it did not, and the options: `--region-budget` larger (the state route: at least the spent and projected facts, which takes the next layer), and the other route where the program has one | 0 |
 | `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, every claim root does not decide under `--no-search`, and every claim of a saved file with a `(commit …)`, whose claims are its program's ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)) | 0 |
 | `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |

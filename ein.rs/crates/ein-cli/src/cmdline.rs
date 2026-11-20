@@ -177,6 +177,27 @@ fn fold() -> Arg {
         )
 }
 
+/// `--in-flight`, on every command that builds the states of a search:
+/// `solve`, `test`, `oracle` and `render lattice`. The pass that writes a
+/// state's `open` facts runs at root, and above it only where a state is
+/// printed, saved or uses them (Q-M1f.655); the option runs it at every state
+/// the run builds, so that a hypothesis first held above root is found in
+/// flight wherever it is (Q-M1f.656). It changes no R and no printed state,
+/// only what the run checks and what it costs. One builder, so the four
+/// commands describe it alike.
+pub fn in_flight() -> Arg {
+    Arg::new("in-flight")
+        .long("in-flight")
+        .action(ArgAction::SetTrue)
+        .help(
+            "write every state's open facts, not only root's and those of the \
+             states printed or saved, and check at each whether it holds a \
+             hypothesis root does not, which makes the program not monotone, \
+             found in flight. It changes no R and no printed state; it costs \
+             the pass at every state",
+        )
+}
+
 /// `--no-require-why`, on every command that loads a program. A `:why` is
 /// optional in the grammar and required by the loader by default, and this
 /// option, the CLI's spelling of a negative (`--no-search`, `--no-diagrams`),
@@ -431,7 +452,8 @@ fn render_command() -> Command {
                         .num_args(1)
                         .value_parser(clap::value_parser!(String)),
                 )
-                .arg(no_require_why()),
+                .arg(no_require_why())
+                .arg(in_flight()),
         )
         // The hypothesis space: `ein_infer::structure` reads it and
         // `ein_render::structure` spells it, the command's name among what it
@@ -559,6 +581,7 @@ fn solve_command() -> Command {
         )
         .arg(Arg::new("file").required(true))
         .arg(no_require_why())
+        .arg(in_flight())
         // ── the question: which part of R, and what is asked of it ──
         .arg(
             Arg::new("solutions")
@@ -966,6 +989,7 @@ fn test_command() -> Command {
                 .help("a .ein file, or a directory to walk for them"),
         )
         .arg(no_require_why())
+        .arg(in_flight())
         .arg(
             Arg::new("region-budget")
                 .long("region-budget")
@@ -1094,6 +1118,7 @@ fn oracle_command() -> Command {
         .about("the solution region by brute force: every subset of the root candidates saturated")
         .arg(Arg::new("file").required(true))
         .arg(no_require_why())
+        .arg(in_flight())
         // Refused with a sentence (`crate::oracle::REFUSED`), as a retired
         // option of `solve` is: the oracle's one question is R (Q-M1f.258).
         .arg(

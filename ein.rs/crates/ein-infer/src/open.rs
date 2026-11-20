@@ -45,6 +45,18 @@
 //! writes, then the saturation resumes over what it wrote, and the two repeat
 //! until neither adds anything (`Writers::reads_open`). Such a program is
 //! one the static check flags ([`crate::monotone`]'s `open-read` site).
+//!
+//! **Where the pass runs** (Q-M1f.655): at root, where it makes $H$; and
+//! above root only at a state that is printed or saved, or that uses its
+//! `open` facts, which is every state the search builds where a rule reads
+//! one. Elsewhere a state's verdict is read as at every state, what it owes
+//! by the obligations' tally, and the writing is left out: nothing reads
+//! it. **The check in flight is made at every state a run builds where the
+//! pass runs for use**: on a program a rule of which reads `open`, and under
+//! [`at_every_state`], the command line's `--in-flight` (Q-M1f.656), which
+//! runs the pass at every state.
+
+use std::cell::Cell;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
@@ -131,6 +143,48 @@ pub fn set_in_flight_hook(hook: Option<Hook>) {
     *HOOK.lock().expect("no hook panicked") = hook;
 }
 
+thread_local! {
+    static AT_EVERY_STATE: Cell<bool> = const { Cell::new(false) };
+}
+
+/// **Run `f` with the pass at every state** where `on` (Q-M1f.656): every
+/// route opened on this thread writes each node's `open` facts and makes the
+/// check in flight there, where by default a node of the search writes none
+/// (Q-M1f.655). It is read when a route builds its axes, so the nodes it
+/// hands to workers follow it. It changes what a run checks and what it
+/// costs, never $R$ or a printed state. `ein`'s `--in-flight`. Restored when
+/// `f` returns or unwinds.
+pub fn at_every_state<T>(on: bool, f: impl FnOnce() -> T) -> T {
+    struct Restore(bool);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            AT_EVERY_STATE.with(|s| s.set(self.0));
+        }
+    }
+    let _restore = Restore(AT_EVERY_STATE.with(|s| s.replace(on)));
+    f()
+}
+
+/// Whether [`at_every_state`] is on for this thread.
+pub fn is_at_every_state() -> bool {
+    AT_EVERY_STATE.with(Cell::get)
+}
+
+/// **What the pass does at a state above root**, which the node function
+/// chooses (Q-M1f.655).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) enum Pass {
+    /// What the state owes alone, the obligations' tally: the state is
+    /// neither printed nor saved, and nothing of it reads an `open` fact.
+    Tally,
+    /// The tally and the writing: a state printed or saved.
+    Write,
+    /// The tally, the writing and the check in flight: a state of the
+    /// search where the pass runs for use, under [`at_every_state`] or on a
+    /// program a rule of which reads `open`.
+    Check,
+}
+
 /// **Root's `open` facts**, at root's fixpoint, which `sat` reached: $H$'s
 /// writers run, each candidate handed to `f` as
 /// [`crate::hypgen::generate_config_free`] hands it, with `stats` its
@@ -203,20 +257,25 @@ pub fn at_root(
 
 /// **A state's `open` facts above root**, at the fixpoint `sat` reached:
 /// what it owes is read ([`crate::obligations::tally`], narrated into
-/// `s.events`), and the pass writes what `writers` write there. Where a rule
-/// reads `open`, the saturation resumes over them and the two repeat until
-/// neither adds anything, each firing handed to `sink`. Returns what the
-/// state owes.
+/// `s.events`), and, but under [`Pass::Tally`], the pass writes what
+/// `writers` write there, the check in flight made under [`Pass::Check`].
+/// Where a rule reads `open`, the saturation resumes over them and the two
+/// repeat until neither adds anything, each firing handed to `sink`.
+/// Returns what the state owes.
 pub(crate) fn at_state(
     s: &mut Session<'_>,
     sat: &mut Saturator,
     writers: &Writers,
+    pass: Pass,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Owes, crate::error::SolveError> {
     let memo = s.memo.clone();
     let mut owes = crate::obligations::tally(s.kb, s.terms, s.ast, &memo, s.events)?;
+    if pass == Pass::Tally {
+        return Ok(owes);
+    }
     loop {
-        let wrote = write(s, writers, &owes, true)?;
+        let wrote = write(s, writers, &owes, pass == Pass::Check)?;
         if !writers.reads_open || wrote.is_empty() {
             return Ok(owes);
         }

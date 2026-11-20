@@ -38,24 +38,26 @@ const EXPECTED: [(&str, usize); 12] = [
     // ([`05-cli.md`](../../../../docs/ein/user/04-reference/05-cli.md)), `--monotone`,
     // `--count`, `--no-require-why`, as every command that loads a program
     // takes it, `--no-search`, root alone, R not searched, and
-    // `--describe-route`, describe's two routes, one R, and `--fold`, the
-    // trace's drawings folded (Q-M1f.419). The retired options
+    // `--describe-route`, describe's two routes, one R, `--fold`, the
+    // trace's drawings folded (Q-M1f.419), and `--in-flight`, the pass at
+    // every state (Q-M1f.656). The retired options
     // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
     // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
-    ("COMMAND ein solve\n", 35),
+    ("COMMAND ein solve\n", 36),
     // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
     // `--stats`; the four from `solve`, `-T`, `--json-summary`, `-p` and
-    // `-P`; and `--no-require-why`.
-    ("COMMAND ein oracle\n", 10),
+    // `-P`; `--no-require-why` and `--in-flight`.
+    ("COMMAND ein oracle\n", 11),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
     // Every view that loads a program takes `--no-require-why`, the three that
     // draw it as written since they read it through the loader first
-    // (Q-M1f.71), and every view that draws facts takes `--fold` (Q-M1f.419).
+    // (Q-M1f.71), every view that draws facts takes `--fold` (Q-M1f.419), and
+    // the lattice, which runs a search, `--in-flight` (Q-M1f.656).
     ("COMMAND ein render rules\n", 3),
     ("COMMAND ein render rule\n", 4),
     ("COMMAND ein render constraints\n", 2),
-    ("COMMAND ein render lattice\n", 3),
+    ("COMMAND ein render lattice\n", 4),
     // The two doors: `--fold` and `--rule-mode`; `--since`,
     // `--colour-by`, `--fold`, and `--no-require-why`.
     ("COMMAND ein render program\n", 3),
@@ -67,18 +69,20 @@ const EXPECTED: [(&str, usize); 12] = [
 
 /// `ein test`'s parser
 /// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
-/// **Eleven**, and the number is the design: the two that decide whether a
+/// **Twelve**, and the number is the design: the two that decide whether a
 /// run can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
 /// `solve`'s), the two that decide how much of a passing run to print (`-v`,
 /// `-q`), `--diff`, which explains each claim, its models against what the
 /// run found, and decides nothing, the three file-only artefact ones
 /// (`--events`, `--events-level`, `--json-summary`), `--json-report`,
-/// `--no-require-why`, which every command that loads a program takes, and
-/// `--no-search`, which asks each file root alone: no question about R. There is deliberately no `-n`, no
+/// `--no-require-why`, which every command that loads a program takes,
+/// `--no-search`, which asks each file root alone: no question about R, and
+/// `--in-flight`, the pass at every state, which every command that runs a
+/// search takes and which changes no R. There is deliberately no `-n`, no
 /// line flag and no `--exhaustive`: a claim says what it is about, and `ein
 /// test` runs the mode that decides it, so a *missing* option is exactly the
 /// kind of thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 11)];
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 12)];
 
 /// The container's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
@@ -110,10 +114,10 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        75 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        78 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "75 options across the twelve parsers of `ein`, `solve`, `oracle`, \
-         `saturate` and `render`, plus `ein test`'s eleven and `ein kb save`'s two"
+        "78 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s twelve and `ein kb save`'s two"
     );
 }
 

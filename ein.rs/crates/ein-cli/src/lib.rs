@@ -56,7 +56,9 @@ pub fn run() -> ExitCode {
         return ExitCode::SUCCESS;
     }
     let m = cmdline::command().get_matches_from(std::iter::once("ein".to_string()).chain(argv));
-    let status = dispatch(&m);
+    // `--in-flight`: the pass at every state the command's runs build
+    // (Q-M1f.656), read by each route as it builds its axes on this thread.
+    let status = ein_infer::open::at_every_state(in_flight(&m), || dispatch(&m));
     // What the load and the run warned of; `ein test` says it per file.
     common::say_warnings();
     code(status)
@@ -64,6 +66,19 @@ pub fn run() -> ExitCode {
 
 fn code(status: i32) -> ExitCode {
     ExitCode::from(status.clamp(0, 255) as u8)
+}
+
+/// Whether the command, or the subcommand under it, was given `--in-flight`
+/// ([`cmdline::in_flight`]).
+fn in_flight(m: &clap::ArgMatches) -> bool {
+    let mut at = m;
+    while let Some((_, sm)) = at.subcommand() {
+        if matches!(sm.try_get_one::<bool>("in-flight"), Ok(Some(true))) {
+            return true;
+        }
+        at = sm;
+    }
+    false
 }
 
 fn dispatch(m: &clap::ArgMatches) -> i32 {

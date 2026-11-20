@@ -16,7 +16,7 @@ command does is [`05-cli.md`](05-cli.md); what a run prints is [`08-read-out.md`
 | surface | how many | where the list is |
 |---|---:|---|
 | `(config …)` flags | **2** | § [2](#2-config---the-two-solver-flags) |
-| CLI options | **95** | `ein <command> --help`, and § [3](#3-the-cli) |
+| CLI options | **99** | `ein <command> --help`, and § [3](#3-the-cli) |
 | `EIN_*` environment | **2** read by the shipped binary | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -175,19 +175,19 @@ not a lever: it decides whether a program loads, and a program loads to what it 
 **`ein <command> --help`.** Each option's long name, short key, metavar, arity, default, choices, group and help
 string is fixed, and the test suite holds the help of every command to a checked-in rendering of it; what is free
 is `clap`'s layout ([Q-M1a.13](../../../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md),
-[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **95** options across eighteen parsers, in the
+[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **99** options across eighteen parsers, in the
 default build (the `einb`, `parallel` and `snmalloc` features, which `ein --version` names).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 35 |
-| `ein test` | 11 |
-| `ein oracle` | 10 |
+| `ein solve` | 36 |
+| `ein test` | 12 |
+| `ein oracle` | 11 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
 | `ein render kb` | 6 |
+| `ein render lattice` | 4 |
 | `ein render rule` | 4 |
-| `ein render lattice` | 3 |
 | `ein render region` | 3 |
 | `ein render program` | 3 |
 | `ein render rules` | 3 |
@@ -229,7 +229,7 @@ it leaves out `-j`. A `(config :lattice-sanity-check true)` form sets the same f
 
 ### 3.3 What an option can do to the answer
 
-Ten classes. Only the first touches the answer, and then only by asking a different question about R or by
+Eleven classes. Only the first touches the answer, and then only by asking a different question about R or by
 stopping early and saying so; the second declines to ask about R at all; the third chooses how a description finds
 R and never R; the fourth and fifth ask about the hypothesis set and not about R; the last decides whether there is
 a program to answer about.
@@ -288,6 +288,17 @@ a program to answer about.
   candidates `ein solve -H` lists and the document of `ein render h-space` lists.
 - **The check** — `-y`, § [3.2](#32-the-option-that-shadows-a-flag): its own row, and on a monotone program a
   mismatch is an engine error, exit 2; never a different answer.
+- **The check in flight** — `--in-flight`, on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`.
+  **Does it change the answer: no** ([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)).
+  The pass that writes a state's `open` facts runs at root, where it makes H, and above root only at a state that
+  is printed or saved, or that reads them, every state of a program a rule of which reads an `open` fact
+  ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)); a state's
+  verdict, what it owes, is read at every state either way. `--in-flight` runs the pass at every state the run
+  builds, and checks at each whether it holds a hypothesis root does not, which makes the program not monotone,
+  found in flight ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)):
+  what that check finds is the one thing it can add, the `in flight` row, its stderr line and the summary's
+  `monotonicity.in_flight`. R, every printed state, every count and every other row are the same with it and
+  without; it costs the pass at every state.
 - **Execution** — `-j`/`--jobs N`, or `--jobs auto`: the same read-out, byte for byte, at every job count
   ([Q-M1a.7](../../../decisions/engine/Q-M1a.7-a-job-count-moves-nothing-a-run-prints.md)). The default is 1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`, `--layer-progress`, `ein test`'s `-v`,

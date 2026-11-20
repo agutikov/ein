@@ -1244,6 +1244,7 @@ fn above(
             &p.memo,
             &[],
             false,
+            crate::open::Pass::Write,
             &mut Events::off(),
             &mut |_| {},
         )?;
@@ -1298,6 +1299,11 @@ pub(crate) struct Axes {
     hypothesised: FxHashSet<ein_core::Symbol>,
     /// Render each node's facts beyond root's — [`Options::keep_states`].
     keep_states: bool,
+    /// Run the pass that writes a node's `open` facts at every node, and
+    /// make the check in flight there ([`crate::open::at_every_state`],
+    /// Q-M1f.656); else a node writes them only where it is printed or uses
+    /// them (Q-M1f.655).
+    in_flight: bool,
     /// Narrate each node into a worker stream the caller replays in order.
     narration: Option<Level>,
     /// Read each node's stale facts: on a flagged program only.
@@ -1331,6 +1337,7 @@ impl Axes {
             is_candidate: candidates.iter().map(|c| c.fact).collect(),
             hypothesised,
             keep_states,
+            in_flight: crate::open::is_at_every_state(),
             narration: None,
             stale: None,
             instances: None,
@@ -1876,7 +1883,13 @@ impl<'a> Nodes<'a> {
         let mut sat = Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
         if let Some(writers) = self.snapshot.open() {
-            crate::open::at_state(&mut s, &mut sat, writers, &mut |_| {})?;
+            crate::open::at_state(
+                &mut s,
+                &mut sat,
+                writers,
+                crate::open::Pass::Write,
+                &mut |_| {},
+            )?;
         }
         Ok(Some(crate::canon::state_key(&kb)))
     }
@@ -2031,7 +2044,19 @@ fn fixpoint_firing(
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Kb, SolveError> {
-    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink).map(|(fork, _, _)| fork)
+    saturated(
+        root,
+        snapshot,
+        terms,
+        ast,
+        memo,
+        facts,
+        false,
+        crate::open::Pass::Write,
+        events,
+        sink,
+    )
+    .map(|(fork, _, _)| fork)
 }
 
 /// **Root's fork with the commitment `facts` written**, a saved file's
@@ -2066,9 +2091,9 @@ fn fork_of(root: &Kb, snapshot: &Snapshot, terms: &mut Terms, facts: &[FactId]) 
 /// saturator, which can go on: to quiescence, or where `stop`, to the
 /// fork's first contradiction (the module's § What a node is), a route's
 /// node on a monotone program and nothing else. At the end what the fork
-/// owes is read, narrated into `events`, and the pass writes its `open`
-/// facts ([`crate::open::at_state`]), a dead fork's as any fork's
-/// (Q-M1f.566), where root's writers were read.
+/// owes is read, narrated into `events`, and, as `pass` says, the pass
+/// writes its `open` facts ([`crate::open::at_state`]), a dead fork's as any
+/// fork's (Q-M1f.566), where root's writers were read.
 #[allow(clippy::too_many_arguments)]
 fn saturated(
     root: &Kb,
@@ -2078,6 +2103,7 @@ fn saturated(
     memo: &SharedMemo,
     facts: &[FactId],
     stop: bool,
+    pass: crate::open::Pass,
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<(Kb, Saturator, crate::obligations::Owes), SolveError> {
@@ -2097,7 +2123,7 @@ fn saturated(
         }
         sat.saturate(&mut s, None, sink)?;
         let owes = match snapshot.open() {
-            Some(writers) => crate::open::at_state(&mut s, &mut sat, writers, sink)?,
+            Some(writers) => crate::open::at_state(&mut s, &mut sat, writers, pass, sink)?,
             None => {
                 let memo = s.memo.clone();
                 crate::obligations::tally(s.kb, s.terms, s.ast, &memo, s.events)?
@@ -2143,6 +2169,17 @@ fn node_in_region(
     // A route's dead node on a monotone program, root's excepted, as far as
     // its first contradiction (the module's § What a node is).
     let stop = axes.stop && !facts.is_empty();
+    // What the pass does here (Q-M1f.655, Q-M1f.656): its `open` facts are
+    // written, and the check in flight made, where the run asks the check of
+    // every node or a rule reads them; written for the state's text alone
+    // where the node is printed; else its verdict alone is read.
+    let pass = if axes.in_flight || snapshot.open().is_some_and(|w| w.reads_open) {
+        crate::open::Pass::Check
+    } else if axes.keep_states {
+        crate::open::Pass::Write
+    } else {
+        crate::open::Pass::Tally
+    };
     let (mut fork, mut sat, owes) = saturated(
         root,
         snapshot,
@@ -2151,6 +2188,7 @@ fn node_in_region(
         memo,
         facts,
         stop,
+        pass,
         &mut ev,
         &mut |_| {},
     )?;

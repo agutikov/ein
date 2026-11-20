@@ -952,7 +952,6 @@ solve · examples/lattice/06_friends_tables.ein
   sub-cubes         not known
   N                 ≥ 68 minimal dead sets — those met in layer order
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
@@ -1083,7 +1082,6 @@ solve · --count examples/lattice/06_friends_tables.ein
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
@@ -1151,7 +1149,6 @@ solve · --maximal examples/lattice/06_friends_tables.ein
   maximal line      not known — without a licence it needs the whole cube
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
-    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16

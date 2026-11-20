@@ -68,8 +68,14 @@ search.
 
 **Every state holds what the writers give at its fixpoint**: the pass of `open.rs` writes `(open R)` once for each
 relation the state owes and `(open F)` for each hypothesis there, into the part of the state no fork inherits
-(`ein_core::Kb::write_open`), root's at root and a node's at the node's own fixpoint. A node above root that holds
-a hypothesis root does not makes the program not monotone, found in flight (§ 7).
+(`ein_core::Kb::write_open`), root's at root and a node's at the node's own fixpoint. **It runs where a state is
+used** ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)): at
+root, at a node read through `region::Nodes`, which every surface that prints or saves a state reads it with, and at
+every node of a program a rule of which reads `open`; at any other node of a search `open::Pass::Tally` reads what
+the node owes and writes nothing, since no surface reads it. `--in-flight` runs it at every node
+(`open::at_every_state`,
+[Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). A node above root
+that holds a hypothesis root does not makes the program not monotone, found in flight (§ 7).
 
 ## 2. The node
 
@@ -236,9 +242,10 @@ one, or a rule whose activator a commitment can derive. Three more sites let a n
 lacks: a rule that reads `open` (`open-read`), a rule that concludes `(open F)` and reads a relation a commitment
 changes at even depth (`hypothesis`), and an obligation whose guard reads one beside its witness
 (`obligation-guard`). A program with no site is monotone, and its routes take every licence of § 3; a program with a
-site is **flagged**, and gets the cube alone. A run that builds a node holding a hypothesis root does not finds the
-program not monotone **in flight** (`open::Writers::first_above`, `Monotonicity::in_flight`): the warning is said
-at once, once, and the answer stands
+site is **flagged**, and gets the cube alone. A run that builds a node holding a hypothesis root does not, where
+the pass runs for the search (`open::Pass::Check`: every node under `--in-flight`, and every node of a program that
+reads `open`), finds the program not monotone **in flight** (`open::Writers::first_above`,
+`Monotonicity::in_flight`): the warning is said at once, once, and the answer stands
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 ![The static check: root's plans classified monotone or flagged, and what a flagged program is reported with](diagrams/07-static-check.svg)

@@ -38,3 +38,4 @@ Decisions on the `ein` commands: their options, their exit codes, and the views 
 - [Q-M1f.529](Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md) — `ein render kb` draws the slice of a goal
 - [Q-M1f.530](Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md) — `ein render constraints` draws root's facts about relations
 - [Q-M1f.531](Q-M1f.531-the-constraint-view-draws-no-written-check.md) — The constraint view draws no written check
+- [Q-M1f.656](Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md) — A flag runs the pass at every state and checks each in flight

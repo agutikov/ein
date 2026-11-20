@@ -306,7 +306,8 @@ and the status says it was cut. A core is taken only where a surface prints one 
 
 A rule whose `:assert` is `(open ?R)` is in no agenda. `obligations::tally` runs once over a KB after its
 saturation returns and reports what the KB still owes, and the pass of `open.rs` writes `(open R)` once for each
-relation owed, into the part of the state no fork inherits
+relation owed, into the part of the state no fork inherits, where the state is used
+([Q-M1f.655](../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md))
 ([`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)).
 
 ![The obligation pass as a flow over a saturated knowledge base](diagrams/02-obligation-pass.svg)

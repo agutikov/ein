@@ -173,7 +173,8 @@ A rule whose `:assert` is `(open ?R)` derives nothing and is not in the agenda: 
 a node's debts, the pass of [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once
 for each relation owed, into the part of the state no fork inherits
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), beside the
-hypotheses `(open F)` the rules that conclude one give there. Where a rule reads an `open` fact, the saturation
+hypotheses `(open F)` the rules that conclude one give there, at root and where a state is used
+([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). Where a rule reads an `open` fact, the saturation
 resumes over what the pass wrote, and the two repeat until neither adds anything. Its event is `owe`.
 
 ## 7. `is_stalled` is not a read

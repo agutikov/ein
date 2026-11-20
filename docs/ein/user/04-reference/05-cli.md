@@ -102,7 +102,7 @@ The options beside the two axes — the budgets, the presentation forms, the art
 
 ```text
 ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECONDS]
-                 [-s] [--json-summary FILE] [-p] [-P]
+                 [-s] [--json-summary FILE] [-p] [-P] [--in-flight]
 ```
 
 - **What it does:** saturates every subset of H, the program's candidates, with no licence and no pruning. It
@@ -120,7 +120,7 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
 ### 2.3 `ein test`
 
 ```text
-ein test PATH…  [-v | -q] [--diff [stats | full]] [--region-budget FACTS] [-T SECONDS] [--no-search]
+ein test PATH…  [-v | -q] [--diff [stats | full]] [--region-budget FACTS] [-T SECONDS] [--no-search] [--in-flight]
                 [--json-report FILE] [--json-summary FILE] [--events FILE]
 ```
 

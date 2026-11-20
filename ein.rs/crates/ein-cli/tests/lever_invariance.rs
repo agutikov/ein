@@ -37,6 +37,14 @@
 //!   which [`the_librarys_question_does_the_binarys_work`] holds on the cell
 //!   that once ran for most of an hour.
 //!
+//! **`--in-flight`** (Q-M1f.656) is swept beside the flags, in-process, on
+//! the same programs and questions: it runs the pass that writes a state's
+//! `open` facts at every state a run builds, where by default only root, a
+//! printed state and a state that reads them run it (Q-M1f.655), and makes
+//! the check in flight at each. It may add what that check finds, the
+//! `in flight` row and the summary's `monotonicity.in_flight`, and nothing
+//! else: one R, one printed state ([`IN_FLIGHT`], [`without_in_flight`]).
+//!
 //! **One exemption** (Q-M1e2.11, Q-M1e2.30): `:record-alternative-justifications
 //! false` makes the proof a tree, and may change which core a dead node's
 //! refutation names, the read-out's `unsat core` and `source` rows and the
@@ -513,6 +521,33 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
     )
 }
 
+/// The option that runs the pass at every state (Q-M1f.656), swept as a
+/// setting beside the `(config …)` flags: `ein solve --in-flight`, asked in
+/// process under [`ein_infer::open::at_every_state`].
+const IN_FLIGHT: &str = "--in-flight";
+
+/// [`printed`] less what the check in flight finds, the one thing
+/// [`IN_FLIGHT`] may add: the `in flight` row and the summary's
+/// `monotonicity.in_flight`.
+fn without_in_flight(text: &str) -> String {
+    let (head, summary) = text.split_once("--- summary\n").unwrap_or((text, ""));
+    let head: String = head
+        .lines()
+        .filter(|l| !l.starts_with("    in flight "))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    let summary = match serde_json::from_str::<J>(summary.trim_end()) {
+        Ok(mut j) => {
+            if let Some(m) = j.get_mut("monotonicity").and_then(J::as_object_mut) {
+                m.remove("in_flight");
+            }
+            serde_json::to_string_pretty(&j).expect("serialises")
+        }
+        Err(_) => summary.trim_end().to_string(),
+    };
+    format!("{head}--- summary\n{summary}\n")
+}
+
 /// The one flag the core is exempt under (Q-M1e2.11):
 /// off, a re-derivation is dropped rather than recorded, the explanation
 /// search is offered each fact's first derivation alone, and the core it
@@ -674,6 +709,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     for (i, _) in known.iter().enumerate() {
         items.push((i, None));
         items.extend(FLAGS.iter().map(|(f, _)| (i, Some(*f))));
+        items.push((i, Some(IN_FLIGHT)));
     }
     // One unit per (program, setting, question), so that the questions of a
     // program with a large R run side by side rather than one after another
@@ -703,11 +739,16 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         |&(n, q)| {
             let (i, flag) = items[n];
             let k = &known[i];
+            let (flags, mode) = &k.questions[q];
+            if flag == Some(IN_FLIGHT) {
+                return ein_infer::open::at_every_state(true, || {
+                    printed(&k.path, &k.text, flags, *mode)
+                });
+            }
             let text = match flag {
                 None => k.text.clone(),
                 Some(f) => with_block(&k.text, &flipped(&k.resolved, f)),
             };
-            let (flags, mode) = &k.questions[q];
             printed(&k.path, &text, flags, *mode)
         },
     )
@@ -728,6 +769,9 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         }
     }
     let (mut cells, mut bad, mut exempt) = (0usize, Vec::new(), BTreeSet::new());
+    // The programs on which `--in-flight` found what the default did not:
+    // the evidence that the option reached the run.
+    let mut found: BTreeSet<String> = BTreeSet::new();
     // `--count` at the default budget prints describe's rows, but `asked` and
     // the warning's `paths` (Q-M1f.218): one tool, one count, on every
     // program whose R is known. `read_out.rs` holds the same at a small
@@ -780,7 +824,12 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         for (((flags, _), want), got) in k.questions.iter().zip(defaults[&i]).zip(out) {
             cells += 1;
             // `:lattice-sanity-check true` is `-y`: its row is its own.
-            let (want, got) = if flag == "lattice-sanity-check" {
+            let (want, got) = if flag == IN_FLIGHT {
+                if want != got {
+                    found.insert(rel.clone());
+                }
+                (without_in_flight(want), without_in_flight(got))
+            } else if flag == "lattice-sanity-check" {
                 (printed_without_spot(want), printed_without_spot(got))
             } else if flag == CORE_FLAG {
                 if want != got {
@@ -816,6 +865,13 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     );
     // A floor, so that a sweep that compared few programs cannot pass.
     assert!(known.len() >= 180, "{} programs compared", known.len());
+    // `--in-flight` reached the runs: it found what the default does not on
+    // at least one program.
+    assert!(
+        !found.is_empty(),
+        "--in-flight found nothing in flight the default does not, on any program"
+    );
+    eprintln!("--in-flight found what the default does not on {found:?}");
 }
 
 /// **The library's question does the binary's work**, on the cell

@@ -479,8 +479,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   ([Q-M1f.566](docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
   [Q-M1f.573](docs/decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)):
   `(open R)`, once for each relation the state owes, and `(open F)`, a
-  hypothesis. A pass writes them at each state's fixpoint into a layer no
-  fork inherits, and a written `(open F)` is held at root alone. `open` is a
+  hypothesis. A pass writes them at a state's fixpoint into a layer no
+  fork inherits, at root and where a state is printed, saved or reads them,
+  every state under `--in-flight`
+  ([Q-M1f.655](docs/decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md),
+  [Q-M1f.656](docs/decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md));
+  a written `(open F)` is held at root alone, and the empty commitment's
+  state is root's. `open` is a
   position word, read by the kernel at the head of a written fact, a premise
   or a conclusion; directly under `absent` or `open` the other is refused but
   `(absent (open P))`, and so is `(absent (absent P))`
