@@ -36,20 +36,26 @@ what the pass costs at a state and on the gate's build of one program.
    written with `open`, flagged and held by no suite, is the user's to say in review item 70: **it is left as it
    is here.**
 
-5. **[V-64](findings.md#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state): the pass's cost
-   at a state, bounded.** At the same count of saturations the search costs 1.2 to 1.5 times what it did before
-   the pass, 2.1 on one lattice render ([the measurement](costs/README.md)). Profile it, and take out what is
-   plain engineering: work the pass does at a state that nothing reads, such as a saturation resumed where no
-   rule reads `open`, an index built for facts no premise matches, a copy, a sort. **What it may not change**:
-   what any state holds, what any surface prints, any answer, the reading of any ruling. A state that holds its
-   `open` facts only once something reads them is a design choice: its expected gain is recorded, and it is not
-   built. Measured again with [the page's script](costs/four_engines.py), a fifth point beside the four.
+5. **[V-64](findings.md#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state): the pass runs at
+   root, and above it only where a state is used.** Ruled by the user 2026-11-20
+   ([Q-M1f.655](../open_questions.md#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs)): *"per-state open pass - we can make it optional, by default run only on root to make an H-set, then only on states that will be printed or saved or used eather way."*
+   - **At root** the pass runs as today and makes $H$.
+   - **Above root** it runs at a state that is printed or saved (the read-out's states, `-p`, `--dump-answer`,
+     `--dump-lattice`, the oracle's dump, a render of a state), and at a state that uses its `open` facts: where
+     a rule of the program reads an `open` fact, every state the search builds.
+   - **At every state, as before**: what the state owes, its verdict. $R$ needs it, and it is not the writing.
+   - **The check in flight** is made where the pass runs, a default
+     ([Q-M1f.656](../open_questions.md#q-m1f656--the-check-in-flight-once-the-pass-runs-where-a-state-is-used)).
+   - **Optional, so both are runs**: a lever runs the pass at every state, and the lever invariance holds every
+     corpus program to one answer and one printed state under it. Its name and where it is set are the stage's
+     default.
+   - Measured again with [the page's script](costs/four_engines.py), a fifth point beside the four.
 6. **[V-65](findings.md#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program): the gate's
    checked build on one program, bounded.** Find the debug check that makes `equation_two_unknowns.ein` cost 3.8
    times as much on the gate profile as on release. If it can be asked once a state, or under a smaller bound,
    and still check what it checks, do so; else record it.
 
-Tasks 5 and 6 are bounded: each ends at what it found, and neither is owed a number.
+Task 6 is bounded: it ends at what it found, and is owed no number.
 
 ## What must hold
 

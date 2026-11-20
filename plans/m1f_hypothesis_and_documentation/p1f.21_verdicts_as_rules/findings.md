@@ -74,7 +74,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
-| [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task**; what is left is **the user's call**, with V-39 |
+| [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655): the pass runs at root and, above it, only at a state that is printed, saved or used; S1f.21.20 builds it |
 | [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
@@ -895,9 +895,7 @@ With V-39 the two builds make `send_more_money.ein` 2.05 times what it cost befo
 `04_open.ein` 3 times. `zebra.ein` is 2.4 times, most of it the union's 353 saturations where there were 120
 (V-48).
 
-**Open.** [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) takes out what is plain engineering, with
-no change to what a state holds or a surface prints. A state that does not hold its `open` facts until something
-reads them is a design choice, not built: **the user's call**, with V-39.
+**Ruled by the user 2026-11-20** ([Q-M1f.655](../open_questions.md#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs)): *"per-state open pass - we can make it optional, by default run only on root to make an H-set, then only on states that will be printed or saved or used eather way."* [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) builds it.
 
 ## V-65 — The gate's checked build costs four times the release on one program
 

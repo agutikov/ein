@@ -562,6 +562,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
+| [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
+| [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **defaulted 2026-11-20** by the coordinator: it is made where the pass runs; for the user's review with S1f.21.20's defaults |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11768,3 +11770,30 @@ The other reading: the survey's program as it stood, two verdicts.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
 [review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+
+### Q-M1f.655 — Where the pass that writes a state's open facts runs
+
+**Raised** 2026-11-20 by the coordinator's cost measurement
+([the page](p1f.21_verdicts_as_rules/costs/README.md), finding V-64 of P1f.21): since S1f.21.12 a pass writes
+each state's `open` facts at its fixpoint, at every state a search builds, and at the same count of saturations
+the search costs 1.02 to 1.5 times what it did. The coordinator had left a state that holds its `open` facts
+only once something reads them as a design choice, not built.
+
+**Ruled 2026-11-20 by the user**, in the session, verbatim:
+
+> per-state open pass - we can make it optional, by default run only on root to make an H-set, then only on states that will be printed or saved or used eather way.
+
+So: the pass runs at root, where it makes $H$. Above root it runs at a state that is printed, saved, or used in
+any other way, and at no other. What a state owes, its verdict, is read at every state as before: $R$ needs it.
+[S1f.21.20](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md) builds it, its task 5.
+
+### Q-M1f.656 — The check in flight, once the pass runs only where a state is used
+
+**Raised and defaulted** 2026-11-20 by the coordinator, on the ruling of
+[Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs). The user ruled that a hypothesis
+first held above root flags its program, by the static check's site and by a check in flight, the warning *"shown
+immediately when detected, once"* ([Q-M1f.574](#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)). The check in
+flight reads the hypotheses a state holds, which the pass writes. **Default taken**: it is made where the pass
+runs, so a run that prints, saves or uses no state above root finds nothing in flight, and the static site is
+what flags such a program. The other reading: the rules that conclude a hypothesis are read at every state for
+the check alone, which keeps a part of the pass's cost at every state.
