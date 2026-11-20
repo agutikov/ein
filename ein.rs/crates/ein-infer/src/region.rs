@@ -1482,6 +1482,10 @@ pub(crate) fn pool_of(jobs: usize) -> Option<Pool> {
     }
 }
 
+/// A node a worker computed, and the hypothesis above root it found in
+/// flight ([`crate::open::deferring`]).
+type Speculated = (Result<NodeOut, SolveError>, Option<String>);
+
 /// Every node of `sets`, in `sets`' order — fanned out over `pool` where a
 /// worker can finish one without numbering a new fact, and the rest computed
 /// here, in order, which is where their new facts get their numbers. The
@@ -1501,8 +1505,7 @@ pub(crate) fn fan_out(
     // root it found in flight, which is read back in the nodes' order with
     // the node ([`crate::open::deferring`]).
     #[allow(unused_mut)]
-    let mut speculated: Vec<Option<(Result<NodeOut, SolveError>, Option<String>)>> =
-        sets.iter().map(|_| None).collect();
+    let mut speculated: Vec<Option<Speculated>> = sets.iter().map(|_| None).collect();
     #[cfg(feature = "parallel")]
     if let Some(pool) = pool {
         use rayon::prelude::*;
