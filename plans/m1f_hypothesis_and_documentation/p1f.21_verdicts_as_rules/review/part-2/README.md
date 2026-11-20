@@ -4,7 +4,7 @@
 
 **Two questions wait for you: [77](77-what-a-drawing-of-root-shows/README.md), what a drawing of root shows, which
 nine pictures of the pages wait on, and [78](78-the-key-of-a-state/README.md), whether the key of a state is built
-at its own size.** Eighteen items are open in all: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
+at its own size.** **Three findings are yours to call beside them: [83](83-three-pieces-of-the-search-with-no-subject/README.md), [84](84-the-classic-zebras-structure-under-the-union/README.md) and [85](85-a-misspelt-activator-loads-in-silence/README.md).** Twenty-one items are open in all: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
 defaults its build took, 70, those of S1f.21.13, 71, those of S1f.21.18, 72, those of S1f.21.20, 73, those of
 S1f.21.14, and 74, those of S1f.21.21. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
 and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
@@ -38,6 +38,9 @@ here blocks the build; each item below stays for your review, and once everythin
 | [**76**](76-S1f.21.23-defaults/README.md) | the four defaults S1f.21.23 took: a resumed state's delta read off its own layers; no firing moved | the four; its question is item 78 | as built |
 | [**77**](77-what-a-drawing-of-root-shows/README.md) | **what a drawing of root shows**: `ein render kb` draws root's `open` facts now, the blind enumerator's guesses among them; with the pictures | **(a)** all of them, **(b)** an option leaves them out and the pages use it, **(c)** the guesses left out by default. **Nine pictures of the pages wait on it** | (a) as built |
 | [**78**](78-the-key-of-a-state/README.md) | **the key of a state**: at every state it sorts root's facts with the state's own, about 47 % of one program's instructions | built at its own size, or left; no build waits on it | not built |
+| [**83**](83-three-pieces-of-the-search-with-no-subject/README.md) | **three pieces of the search have no subject under the union** (V-47), a finding that is yours to call | **(a)** The machinery stays, with tests that say it licenses nothing today; **(b)** The machinery goes, with its tests and its pages | (a) |
+| [**84**](84-the-classic-zebras-structure-under-the-union/README.md) | **the classic zebra's structure under the union** (V-48), a finding that is yours to call | **(a)** As built; **(b)** The structure view folds two candidates that imply each other into one, so the zebra reads as it did; **(c)** `zebra.ein` is written so that one writer proposes its placements, and its $H$ is 56 again | (a) |
+| [**85**](85-a-misspelt-activator-loads-in-silence/README.md) | **a misspelt activator, or one of another count, loads in silence** (V-58), a finding that is yours to call | **(a)** As built; **(b)** A `note | (a) |
 
 Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
 

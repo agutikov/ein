@@ -73,3 +73,56 @@ The pages of part 1. No engine code and no corpus program changed. The five:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 79 · A program with no candidate is never flagged
+
+[The item](79-a-program-with-no-candidate-is-never-flagged/README.md), a finding of the phase that is yours to call (V-22).
+
+- **(a)** It stays a row of the register: a wrong answer of a program the engine claims, the non-monotone milestone's to fix. **Default.**
+- **(b)** It goes: the program is counted non-monotone, and what is owed is a detection that warns of it, that milestone's too.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 80 · The read-out's examples page holds flagged programs' read-outs
+
+[The item](80-the-examples-page-holds-flagged-programs-read-outs/README.md), a finding of the phase that is yours to call (V-24).
+
+- **(a)** Left: the page shows the warning's rows and calls no answer right. **Default.**
+- **(b)** Those blocks are shown and not held to the binary.
+- **(c)** One flagged example is kept, for the warning, and the rest are replaced by monotone programs.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 81 · The load's warning is one line a site
+
+[The item](81-the-loads-warning-is-one-line-a-site/README.md), a finding of the phase that is yours to call (V-32).
+
+- **(a)** As built: one line a site, all of them. **Default.**
+- **(b)** A module's lines are gathered into one, which names the module and counts its rules.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 82 · A slice by a rule, activated with `symmetric`, loads now
+
+[The item](82-a-slice-by-a-rule-with-symmetric/README.md), a finding of the phase that is yours to call (V-34).
+
+- **(a)** It is: the program loads and answers under its warning, and L-109 is closed by that. **Default.**
+- **(b)** It is not what a slice should be: say what you want of it.
+
+**Your answer:**
+
+**Notes:**

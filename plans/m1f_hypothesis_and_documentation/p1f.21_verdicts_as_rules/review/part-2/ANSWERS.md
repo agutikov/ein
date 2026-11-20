@@ -351,3 +351,43 @@ about 47 % of `send_more_money.ein`'s instructions as the engine stands, about 1
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 83 · Three pieces of the search have no subject under the union
+
+[The item](83-three-pieces-of-the-search-with-no-subject/README.md), a finding of the phase that is yours to call (V-47).
+
+- **(a)** The machinery stays, with tests that say it licenses nothing today. **Default.**
+- **(b)** The machinery goes, with its tests and its pages.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 84 · The classic zebra's structure under the union
+
+[The item](84-the-classic-zebras-structure-under-the-union/README.md), a finding of the phase that is yours to call (V-48).
+
+- **(a)** As built: $H$ is what the union gives, and the structure view shows it. **Default.**
+- **(b)** The structure view folds two candidates that imply each other into one, so the zebra reads as it did.
+- **(c)** `zebra.ein` is written so that one writer proposes its placements, and its $H$ is 56 again.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 85 · A misspelt activator, or one of another count, loads in silence
+
+[The item](85-a-misspelt-activator-loads-in-silence/README.md), a finding of the phase that is yours to call (V-58).
+
+- **(a)** As built: an activator is a fact as every rule's, and nothing is said. **Default.**
+- **(b)** A `note:` at load where a rule that concludes a hypothesis has parameters and no activator.
+
+**Your answer:**
+
+**Notes:**
