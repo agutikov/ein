@@ -1,0 +1,20 @@
+;;; Review item 81: the program of docs/ein/user/04-reference/04-stdlib/20-negation-and-contradiction.md,
+;;; section "A program the import warns of", as the page writes it: under std.negation it warns once.
+
+(import std.negation)
+
+(relation is-a   T T :why "{?3} is a {?4}")
+(relation chosen T   :why "{?3} is chosen")
+(relation served T   :why "{?3} is served")
+
+(is-a Tea Drink) (is-a Milk Drink)
+
+(rule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (open (?R ?x))
+  :why    "is {?x} {?R}?")
+
+(guess chosen Drink) (guess served Drink)
+(relation offered Rule :why "the rule {?3} is offered")
+(offered guess)
+(query :goal (chosen ?x))
