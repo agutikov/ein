@@ -89,8 +89,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 | [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | **fixed** by S1f.21.23 |
-| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | open; **the user's call first**: whether a drawing of root shows the guesses, review item 75; then the pages |
-| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call** |
+| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | open; **the user's call first**: what a drawing of root shows, review item 77 of part 2; then the pages |
+| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call**, review item 78 of part 2 |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
 

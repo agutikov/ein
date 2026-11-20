@@ -289,21 +289,12 @@ for your review, the two most worth your eye:
 
 ---
 
-## 75 · The defaults S1f.21.22 took, and what a drawing of root shows
+## 75 · The defaults S1f.21.22 took
 
-[The item](75-S1f.21.22-defaults/README.md), which has the seven.
+[The item](75-S1f.21.22-defaults/README.md), which has the seven. Its question, what a drawing of root shows, is
+item 77 below.
 
-**The question the pages wait on.** `ein render kb` now draws the `open` facts root holds, as you ruled them part
-of a state. Where nothing else proposes, those are the blind enumerator's guesses: five on the guide's first
-program, 130 on *zebra2*. Nine pictures on the pages no longer match the binary.
-
-- **(a)** As built: a drawing of root shows all its `open` facts, and the nine pictures are drawn again with them.
-  **Default.**
-- **(b)** An option on `ein render kb` leaves the `open` facts out, as `-P` does for a listing, and the nine pages
-  draw their pictures with it.
-- **(c)** A drawing of root leaves out the blind enumerator's guesses by default, and an option shows them.
-
-Also worth your eye: **1, Q-M1f.666**, the claim row says *not printed* where a class lists an `open` fact;
+Worth your eye: **1, Q-M1f.666**, the claim row says *not printed* where a class lists an `open` fact;
 **2, Q-M1f.667**, the constraints view keeps `(open R)` and no `(open F)`.
 
 **Your answer:**
@@ -314,18 +305,48 @@ Also worth your eye: **1, Q-M1f.666**, the claim row says *not printed* where a 
 
 ## 76 · The defaults S1f.21.23 took
 
-[The item](76-S1f.21.23-defaults/README.md), which has the four.
+[The item](76-S1f.21.23-defaults/README.md), which has the four. Its question, the key of a state, is item 78
+below.
 
 A resumed state's delta is read off its own layers, on your word. It takes 8.9 % of `send_more_money.ein`'s
 instructions off, and no firing moved.
 
-**One question**: the next cost of the same kind (V-86). At every state the state's key sorts every fact the state
-holds, root's among them, and filters root's back out: about 47 % of `send_more_money.ein`'s instructions now, and
-about 13 % of `equation_two_unknowns.ein`'s.
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 77 · What a drawing of root shows
+
+[The item](77-what-a-drawing-of-root-shows/README.md), with the pictures. **Nine pictures of the pages wait on it.**
+
+`ein render kb` now draws the `open` facts root holds, as you ruled them part of a state. Where nothing else
+proposes, those are the blind enumerator's guesses: five on the guide's first program, 130 on *zebra2*.
+
+- **(a)** As built: a drawing of root shows all its `open` facts, and the nine pictures are drawn again with them.
+  **Default.**
+- **(b)** An option on `ein render kb` leaves the `open` facts out, as `-P` does for a listing; the default stays
+  as built, and the nine pages draw their pictures with the option. **The coordinator's recommendation.**
+- **(c)** A drawing of root leaves out the blind enumerator's guesses by default, and an option shows them.
+
+**Your answer:**
+
+**Notes:**
+
+---
+
+## 78 · The key of a state: built at its own size, or left
+
+[The item](78-the-key-of-a-state/README.md). **No build waits on it.**
+
+At every state the state's key sorts every fact the state holds, root's among them, and filters root's back out:
+about 47 % of `send_more_money.ein`'s instructions as the engine stands, about 13 % of
+`equation_two_unknowns.ein`'s. The engine did so before the phase.
 
 - **(a)** Not built. **Default.**
-- **(b)** Built, as S1f.21.23 was: the part of the key above root read and sorted at its own size, with no firing
-  and no key moved.
+- **(b)** Built, a stage of the phase like S1f.21.23.
+- **(c)** Not in this phase: kept as a finding for the work after it.
 
 **Your answer:**
 

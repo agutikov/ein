@@ -30,7 +30,84 @@ does; a figure is the mean, an entry's the sum over its declared runs. The scrip
   loadavg         0.35 0.62 1.63
 ```
 
-## The entries
+## The final table: before, after, improved after
+
+The user's word, 2026-11-20: *"plan to build everything recommended, then measure again and get final table with 3
+cols: before, after, improved after"*. Taken by the coordinator once every build of the phase was in master, no
+agent running, on AC.
+
+| column | commit | what it is |
+|---|---|---|
+| **before** | `edbe6c3b` | the engine before the contradiction became rules: point A above |
+| **after** | `1655f19d` | the engine after the phase's builds and before any of the fixes: point D above |
+| **improved after** | `fa2c2914` | the engine with the fixes in: the pass where a state is used and the agenda's tables kept (S1f.21.20), a pair matched by a probe and the index over contexts (S1f.21.21), a resumed state's delta read off its own layers (S1f.21.23) |
+
+Each engine runs the corpus and the standard library of its own commit. The script is
+[`three_engines.py`](three_engines.py), its rows [`three_engines.json`](three_engines.json), run as the four
+engines' was. The machine, as `bench_env.sh` printed it, the load what a build that had just ended left:
+
+```text
+  cpu             Intel(R) Core(TM) i9-14900HX
+  core spec       --cores PT
+  governor        powersave (epp balance_performance)
+  turbo           on (no_turbo=0)
+  power           AC (ACAD online=1); BAT1 Not charging 100 %
+  loadavg         4.16 5.85 7.38
+```
+
+### Time
+
+Milliseconds, an entry's declared runs summed. *Work* is the count of saturations `ein solve` reports, one figure
+where the three engines agree.
+
+| entry | before | after | improved after | improved / before | improved / after | work |
+|---|---:|---:|---:|---:|---:|---|
+| `zebra.ein` | 364 | 876 | 774 | 2.13× | 0.88× | 120 → 353 |
+| `features/04_open.ein` | 506 | 1 589 | 560 | 1.11× | 0.35× |  |
+| `beyond_arith/equation_two_unknowns.ein` | 460 | 772 | 495 | 1.08× | 0.64× | 1 191 |
+| `beyond_arith/send_more_money.ein` | 2 098 | 4 302 | 2 111 | 1.01× | 0.49× | 18 129 |
+| `beyond_arith/send_more_money_written.ein` | 1 398 | 2 851 | 1 408 | 1.01× | 0.49× |  |
+| `features/01_not_and_absent.ein` | 2 356 | 3 848 | 2 951 | 1.25× | 0.77× | 65 299 |
+| `lattice/06_friends_tables.ein` | 4 856 | 7 263 | 4 993 | 1.03× | 0.69× | 65 299 |
+| `lattice/07_two_pairs_two_tables.ein` | 4 173 | 5 014 | 4 325 | 1.04× | 0.86× | 149 |
+| `lattice/14_seats_nothing_proposes.ein` | 259 | 5 052 | 4 378 | 16.92× | 0.87× | 69 → 149 |
+| `zebra2.ein` | 1 866 | 1 985 | 1 896 | 1.02× | 0.96× | 120 |
+| `zebra2-obligations.ein` | 1 752 | 1 819 | 1 765 | 1.01× | 0.97× | 120 |
+| `zebra2-hints.ein` | 495 | 512 | 515 | 1.04× | 1.01× | 62 |
+| `saturation/square-fwd/meetings.ein` | 1 642 | 1 896 | 1 606 | 0.98× | 0.85× |  |
+| `saturation/square-fwd/houses.ein` | 1 591 | 1 856 | 1 573 | 0.99× | 0.85× |  |
+| `branching/06_lookahead_on.ein` | 29 | 55 | 41 | 1.42× | 0.75× | 133 |
+| `branching/07_lookahead_off.ein` | 48 | 52 | 48 | 0.99× | 0.93× | 133 |
+| `arith/rat.ein` | 659 | 666 | 662 | 1.00× | 0.99× | 1 |
+| `saturation/type-exclusivity/pets.ein` | 413 | 638 | 479 | 1.16× | 0.75× | 11 339 |
+| `zebra2-minus-15.ein` | 10 873 | 13 575 | 10 886 | 1.00× | 0.80× | 11 222 |
+
+- **At the same work the engine is back where it was**: 0.98 to 1.08 times its time before the phase on thirteen
+  of the nineteen entries.
+- **Two entries do more work, by the union the user ruled** (Q-M1f.570): `zebra.ein` describes $R$ in 353
+  saturations where it took 120, and `14_seats_nothing_proposes.ein`'s oracle enumerates a cube of 16 candidates
+  where it had 12. Their time is the union's and no fix's to take back.
+- **Three are left above**: `01_not_and_absent.ein` at 1.25, `pets.ein` at 1.16 and `04_open.ein` at 1.11. The
+  first two build many small states, 65 299 and 11 339, of a program with few facts, where what a rule instance
+  costs at a state is most of a state's cost: the contradiction's cost that is left, which the user accepted.
+  `branching/06_lookahead_on.ein`'s 1.42 is twelve milliseconds over six runs.
+
+### Instructions executed
+
+User space, `perf stat -e instructions:u`, one `ein solve` with one worker, pinned to the performance cores, in
+millions. The counts of [the section above](#why-the-contradiction-as-rules-costs) were taken at the default
+count of workers and are not to be set beside these (V-80). The rows are
+[`three_engines_instructions.tsv`](three_engines_instructions.tsv).
+
+| program | before | after | improved after | improved / before | improved / after |
+|---|---:|---:|---:|---:|---:|
+| `beyond_arith/equation_two_unknowns.ein` | 3 144 | 5 037 | 3 305 | 1.05× | 0.66× |
+| `saturation/type-exclusivity/pets.ein` | 3 050 | 4 854 | 3 930 | 1.29× | 0.81× |
+| `features/01_not_and_absent.ein` | 20 299 | 32 574 | 27 084 | 1.33× | 0.83× |
+| `beyond_arith/send_more_money.ein` | 10 666 | 19 841 | 10 480 | 0.98× | 0.53× |
+| `zebra2.ein` | 1 118 | 1 343 | 1 115 | 1.00× | 0.83× |
+
+## The four engines: the entries
 
 Milliseconds. *Work* is the count of saturations `ein solve` reports, one figure where the four engines agree.
 
@@ -205,9 +282,8 @@ cost; it is a change to how the saturator matches such rules, and it must keep e
 | `beyond_arith/send_more_money_written.ein` | 1 430 ms | 2 937, 2 938 ms | past twice its record |
 | `branching/06_lookahead_on.ein`, `07_lookahead_off.ein` | 40, 30 ms | 105, 104 and 70, 98 ms | past twice their record; far under the line |
 
-**The manifest is not changed here.** [S1f.21.20](../s1f.21.20_what_the_first_uses_of_open_found.md) has a task
-on the pass's cost, so the costs are taken again on the engine it leaves, and the flags and the recorded costs
-move once, then.
+**The manifest was not changed then.** The costs are taken again on the engine of the final table's last
+column, and the flags and the recorded costs move once, with it.
 
 ## The gate's build
 

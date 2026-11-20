@@ -1,0 +1,4 @@
+(relation nation-loc Nationality House :why "the {?3} lives in {?4}")   ; a relation, its two slots labelled
+(is-a Norwegian Nationality)              ; two facts of the puzzle's grouping relation
+(is-a Englishman Nationality)
+(nation-loc Norwegian House-1 :source "condition (10)")   ; a clue

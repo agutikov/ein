@@ -19,7 +19,7 @@ corpus files. These are its four defaults.
   ([V-86](../../../findings.md#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them)): at every
   state the key of the state sorts every fact the state holds, root's among them, and then filters root's back
   out. On `send_more_money.ein` that is about 47 % of the instructions the engine now executes. The engine did
-  so before the phase. **Not built; yours to call.**
+  so before the phase. **Not built; yours to call, in an item of its own: [78](../78-the-key-of-a-state/README.md).**
 
 ## The four
 

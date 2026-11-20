@@ -1,32 +1,16 @@
-# 75 · The defaults S1f.21.22 took, and what a drawing of root shows
+# 75 · The defaults S1f.21.22 took
 
 [← part 2](../README.md) · [← the phase](../../../README.md) · [your answers](../ANSWERS.md) ·
 [the stage's record](../../../s1f.21.22_what_the_pages_found_in_the_build.md#record)
 
 S1f.21.22 is done: the binary now does what two of your rulings say and it did not. `ein render kb` and
 `ein render constraints` draw the `open` facts root holds (Q-M1f.572), and a written `(open …)` that disagrees
-with the two lists or a closure is a load error, as a rule's is (Q-M1f.578). These are its seven defaults, and
-one question that is yours.
+with the two lists or a closure is a load error, as a rule's is (Q-M1f.578). These are its seven defaults.
 
-## The question: does a drawing of root show the guesses?
+## The question it leaves
 
-**What is built**: a drawing of root draws every `open` fact root holds, and where nothing else proposes, those
-are the blind enumerator's guesses. The four-line program of the guide's first page draws five hypotheses; the
-kb view of *zebra2* draws 130 `open` facts. `ein render kb` has no option that leaves them out (default 3).
-
-**What it does to the pages**
-([V-85](../../../findings.md#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws)): nine
-pictures no longer match what the binary draws, four of the guide and five of the reasoning pages, and three
-sentences say a drawing draws what it no longer does. Seventeen others still match.
-
-- **(a)** As built: a drawing of root shows all its `open` facts. The nine pictures are drawn again with them,
-  the guide's first among them. **Default.**
-- **(b)** A drawing has the view a listing has: an option on `ein render kb` leaves the `open` facts out, as `-P`
-  does for a state's listing (Q-M1f.577), and the nine pages draw their pictures with it and say so.
-- **(c)** A drawing of root leaves out the blind enumerator's guesses by default and shows what a rule or an
-  obligation wrote, with an option for all of them.
-
-The pages are not touched until you answer: a picture drawn twice is the cost of guessing.
+**What a drawing of root shows** has an item of its own, with the pictures: [77](../77-what-a-drawing-of-root-shows/README.md).
+Nine pictures of the pages wait on it.
 
 ## What else you should know
 
@@ -55,5 +39,4 @@ The pages are not touched until you answer: a picture drawn twice is the cost of
 
 ## Your call
 
-The letter for the question, and a number with what you want otherwise for a default, in
-[`ANSWERS.md`](../ANSWERS.md) under item 75.
+A number and what you want otherwise, in [`ANSWERS.md`](../ANSWERS.md) under item 75. Blank keeps the seven as built.
