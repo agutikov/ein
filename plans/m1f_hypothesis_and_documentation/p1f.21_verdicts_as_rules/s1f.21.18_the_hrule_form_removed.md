@@ -5,7 +5,7 @@
 anymore so we remove it and keyword :hrules."* **Done 2026-11-20**, on the user's word to run the phase to its end (the record below).
 **Waits on:** [S1f.21.12](s1f.21.12_hypotheses_as_facts.md), which makes a rule that concludes `(open F)` a
 hypothesis rule and reads the form as one.
-**In place of:** [S1f.21.16](s1f.21.16_hrules_lists_activators.md), which the user dropped (*"not start S1f.21.16,
+**In place of:** S1f.21.16, which the user dropped (*"not start S1f.21.16,
 will drop it after :hrules removed"*): its stage file is deleted with this stage's last commit.
 **Writes:** every program, page and test that writes the form or the clause; the grammar and the loader;
 `ein-infer/src/hrule.rs` and `mechanisms.rs`; `utils/gen_zebra2_variants.py` and the other scripts that name it.

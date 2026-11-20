@@ -549,6 +549,16 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.618](#q-m1f618--absent-and-open-heading-a-fact-under-not-in-a-guards-value-and-in-a-using-list) | absent and open heading a fact under not, in a guard's value and in a using list | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.619](#q-m1f619--the-structures-theory-share-under-the-union) | The structure's theory share under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.620](#q-m1f620--a-hypothesis-rule-that-concludes-an-open-fact) | A hypothesis rule that concludes an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.621](#q-m1f621--where-a-removed-clauses-activators-are-written) | Where a removed clause's activators are written | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.622](#q-m1f622--how-a-hypothesis-rules-conclusion-is-written-under-open) | How a hypothesis rule's conclusion is written under open | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.623](#q-m1f623--the-checks-the-hrules-clause-made-of-its-activators) | The checks the hrules clause made of its activators | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.624](#q-m1f624--a-fixture-or-witness-whose-subject-was-the-form-itself) | A fixture or witness whose subject was the form itself | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.625](#q-m1f625--file-names-test-names-and-regression-ids-that-contain-hrule) | File names, test names and regression ids that contain hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.626](#q-m1f626--the-words-for-a-hypothesis-rule-as-a-writer-of-h) | The words for a hypothesis rule as a writer of H | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.627](#q-m1f627--what-reads-a-hypothesis-rule-where-a-check-read-an-hrule) | What reads a hypothesis rule where a check read an hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.628](#q-m1f628--two-decisions-whose-questions-the-clause-asked) | Two decisions whose questions the clause asked | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.629](#q-m1f629--the-witness-of-a-hypothesis-rule-that-concludes-eq) | The witness of a hypothesis rule that concludes eq | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
+| [Q-M1f.630](#q-m1f630--the-saturated-dumps-section-of-hypothesis-rules) | The saturated dump's section of hypothesis rules | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
 | [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
@@ -10853,7 +10863,7 @@ of an hrule is an argument of that form. That is P1f.21's finding V-13, and it i
 corpus programs are refused beside `std.negation`: an hrule named a second time counts as *a rule named as an
 argument*. In the ruled form each name heads its own activator and none is an argument.
 
-**What it takes**, P1f.21's [S1f.21.16](p1f.21_verdicts_as_rules/s1f.21.16_hrules_lists_activators.md), planned, not
+**What it takes**, P1f.21's S1f.21.16, planned, not
 started: the grammar and the loader; every program that writes the clause, 52 under `examples/`, 4 under `tests/`
 and 1 in `stdlib/`, re-spelled with no answer moving; the pages, 32 of them, and the tests that write a program
 inline; the generator of the zebra variants. The clause stays where it is, in `(solve …)`, and what it does is not
@@ -11661,6 +11671,76 @@ The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/6
 an hrule whose `:assert` concludes `(open …)`. **The default taken**: refused at load: an hrule proposes a fact, a hypothesis already; a rule that concludes `(open …)` is written instead.
 
 The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.621 — Where a removed clause's activators are written
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: where a removed `:hrules` clause's activators are written.
+**The default taken**: where the `(solve …)` stood when it empties (the empty solve goes), else just before it, with the comment lines that stood before the clause inside it; a bare name in the clause activates nothing and goes.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.622 — How a hypothesis rule's conclusion is written under open
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: how an hrule's `:assert X` is written.
+**The default taken**: `(open X)`, the whole conclusion: what was no fact stays no fact, and is refused, now at the parse: `(open (and …))`, `(open (absent …))`, `(open (not ?g))`, `(open (eq …))`.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.623 — The checks the hrules clause made of its activators
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: the `:hrules` list's own checks (a listed name is a declared hrule, an activator's count, an argument at a relation parameter a relation of the program).
+**The default taken**: they go with the clause: an activator is a fact as every rule's (Q-M1f.567's *a rule like any other*); a wrong count activates nothing, a misspelt one is a fact of another relation; their three witnesses (`solve-hrules-*`) and rows deleted. No refusal is added for rules.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.624 — A fixture or witness whose subject was the form itself
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: a fixture or witness whose subject is the form itself.
+**The default taken**: deleted with its entry and row: `ein_on_hrule` (its refusal goes), `hrule_reserved_name` (it became `rule_reserved_name`'s program), `macro-bare-conclusion-hrule` (`(open (id ?x))` expands to `(open ?x)`, a form, and loads).
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.625 — File names, test names and regression ids that contain hrule
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: file names, test names and regression ids that contain `hrule`.
+**The default taken**: kept as identifiers: plan files the stage may not edit link them, and decision slugs are kept (V-55).
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.626 — The words for a hypothesis rule as a writer of H
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: the words for the writer (V-53).
+**The default taken**: the mode `hypothesis-rules`; the note *H, from \`MODE\`: …*; the h-space H row *· from \`MODE\`*; JSON `hypothesis_rules`, `hypothesis_plans`, `a_hypothesis_rule_proposes_it`; the `load` event's `hypothesis_rules`; the outside reason `not-proposed`, *no hypothesis rule proposes it*. The `rung` event and `Mode` keep their names.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.627 — What reads a hypothesis rule where a check read an hrule
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: what reads a rule that concludes a hypothesis where a check read an hrule.
+**The default taken**: every loader check, `F` under `open` read as `F` where a check reads what a state can hold, and the names index; an `eq`/`neq` instance of a hypothesis template is none (Q-M1f.32).
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.628 — Two decisions whose questions the clause asked
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: Q-M1f.115 and Q-M1f.116, whose questions the clause asked.
+**The default taken**: rewritten in place under their ids for activator facts, not deleted: `open_questions.md` links both.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.629 — The witness of a hypothesis rule that concludes eq
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: `hrule-eq.ein`, whose shape `(open (eq …))` the grammar refuses.
+**The default taken**: written through a parameter, `(h eq)`, so the witness keeps its subject and its answer, H empty and R {∅}.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+
+### Q-M1f.630 — The saturated dump's section of hypothesis rules
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: `ein saturate --dump`'s hypothesis rules.
+**The default taken**: the hypothesis registry under *;; Hypothesis rules (N)*, each with the activators the knowledge base holds; a rule that concludes facts beside its hypotheses stands in the agenda's section too.
+
+The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
 
 ### Q-M1f.631 — Where the example of the lattice as rules goes, and its name
 

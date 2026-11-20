@@ -204,3 +204,24 @@ The lattice written as rules is in the corpus as a pair, both monotone and held 
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 71 · The defaults S1f.21.18 took
+
+[The item](71-S1f.21.18-defaults/README.md), which has the ten, each with what was asked.
+
+There is no `hrule` form and no `:hrules` keyword; 120 programs were written again and each answers as before.
+The defaults most worth your eye:
+
+- **3, Q-M1f.623**: the checks the clause made of its activators are gone with it, and nothing replaces them: a
+  misspelt activator, or one of another count, loads in silence and activates nothing, and the blind enumerator may
+  then write $H$. Other: a note where a rule that concludes a hypothesis has no activator.
+- **2, Q-M1f.622**: a hypothesis rule's whole conclusion goes under `open`; what was no fact is refused at the
+  parse, `(open (not ?x))` among them.
+- **6, Q-M1f.626**: the words for the writer: the mode `hypothesis-rules`, the summary's keys `hypothesis_rules`,
+  `hypothesis_plans`, `a_hypothesis_rule_proposes_it`.
+
+**Your answer:**
+
+**Notes:**

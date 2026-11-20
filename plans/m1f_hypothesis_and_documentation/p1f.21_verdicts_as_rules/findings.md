@@ -51,7 +51,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
 | [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine; a first reading: 1.3 to 2.6 times the time at the same work, which fails the nightly's cost check; **the user's call** |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
-| [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
+| [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | **fixed** by S1f.21.18 |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
 | [V-43](#v-43--a-declared-nots-facts-still-read-as-written) | a program may declare `not`, and its facts still read as written in the trace; the kernel-register test still holds a page to a list that names `false` and `not` | S1f.21.2 | open |
 | [V-44](#v-44--a-trace-quoted-on-a-page-is-held-by-no-test) | a trace quoted on a page is held by no test but the natural-language page's | S1f.21.2 | open |
@@ -63,9 +63,14 @@ without a path is in [`design.md`](design.md), whole.
 | [V-50](#v-50--a-rules-open-fact-is-held-where-its-fact-is-held) | a rule's open fact is held where its fact is held | S1f.21.12's build | open |
 | [V-51](#v-51--the-state-route-counts-one-fact-more-on-one-program) | the state route counts one fact more on one program | S1f.21.12's build | open |
 | [V-52](#v-52--one-more-program-costs-past-a-second) | one more program costs past a second | S1f.21.12's build | **owed by the coordinator**, with the corpus's costs |
-| [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | open; S1f.21.18's, with the form |
+| [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | **fixed** by S1f.21.18 |
 | [V-54](#v-54--one-shape-of-absent-as-a-value-stays-refused) | one shape of absent as a value stays refused | S1f.21.12's build | open; with Q-M1f.618 |
 | [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | open; S1f.21.14's |
+| [V-56](#v-56--a-negated-hypothesis-held-in-a-variable-cannot-be-written) | a negated hypothesis held in a variable cannot be written | S1f.21.18 | open |
+| [V-57](#v-57--an-open-of-a-variable-bound-to-a-name-writes-nothing-in-silence) | an open of a variable bound to a name writes nothing in silence | S1f.21.18 | open |
+| [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | open; **the user's call**: whether a note says that a rule that concludes a hypothesis has no activator |
+| [V-59](#v-59--the-folded-drawing-of-a-hypothesis-rule-has-a-self-loop) | the folded drawing of a hypothesis rule has a self-loop | S1f.21.18 | open |
+| [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | **owed by the coordinator**: the corpus's costs taken again |
 | [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
@@ -816,6 +821,26 @@ is fixed; nothing holds the number to the code. **Open.**
 ## V-55 — A decision's file name says what is no longer true
 
 **Found** by the build of S1f.21.12. Q-M1f.66's file is named `…open-is-written-only-as-a-rules-verdict`. Its heading and text are rewritten; its name is not, since every link to it would move. **Open; S1f.21.14's.**
+
+## V-56 — A negated hypothesis held in a variable cannot be written
+
+**Found** by S1f.21.18. `(open (not ?x))` is a parse error, so a hypothesis that is the stored negation of a fact a variable holds cannot be written, where a hypothesis rule could propose `(not ?x)`. No corpus program wrote one that loaded; three test cases that did are dropped. **Open.**
+
+## V-57 — An open of a variable bound to a name writes nothing in silence
+
+**Found** by S1f.21.18. `(open ?x)` with `?x` bound by the `:match` to a name writes nothing and says nothing, where `(not ?x)` of a name is refused at load. With no other writer the blind enumerator then writes $H$. **Open.**
+
+## V-58 — A misspelt activator or one of another count loads in silence
+
+**Found** by S1f.21.18. An activator is an ordinary fact now, so one of another count than its rule's parameters, or with the rule's name misspelt, loads and activates nothing, where the `:hrules` clause refused both. With no other writer the blind enumerator then writes $H$: six candidates on a probe where the program meant its rule's. The diagnostics page says so. **Open; **the user's call**: whether a note says that a rule that concludes a hypothesis has no activator.**
+
+## V-59 — The folded drawing of a hypothesis rule has a self-loop
+
+**Found** by S1f.21.18. `ein render rule --fold` draws a rule that concludes `(open F)` with a dashed loop labelled `open` on the candidate's node, which may break the drawing rule *no arrow to or from an arrow*. The pages show the binary's output. **Open.**
+
+## V-60 — The per-commit check of the slow flag fails under load
+
+**Found** by S1f.21.18. `corpus_cli`'s check of an entry's cost against its `slow` flag failed twice during the stage on `examples/beyond_arith/equation_two_unknowns.ein`, and once on the two `send_more_money` programs, while another stage's suite loaded the machine. It is V-39's cost, met by the gate. ****owed by the coordinator**: the corpus's costs taken again.**
 
 ## V-61 — A written open fact breaks the answer dump's round trip
 

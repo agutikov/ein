@@ -384,11 +384,10 @@ paragraph, no register count, no measurement (the user's rule).
   hypotheses first, and that part is built and its pages written:
   S1f.21.6, S1f.21.8, S1f.21.10, S1f.21.15, S1f.21.17, S1f.21.11 and
   S1f.21.2 done. Of the second part, S1f.21.12, `open` facts, is built, and
-  S1f.21.13, the lattice written as rules, is in the corpus; the sweep that
-  removes the `hrule` form, S1f.21.18, is running; S1f.21.20 fixes what the
-  first uses of `open` found. S1f.21.16 (the
-  `:hrules` clause's spelling, Q-M1f.565) is not started and is dropped
-  once the second part removes `:hrules` (the user's word). Q-M1f.566 to
+  S1f.21.13, the lattice written as rules, is in the corpus, and S1f.21.18
+  has removed the `hrule` form and the keyword `:hrules`. Left: S1f.21.20,
+  which fixes what the first uses of `open` found; S1f.21.14, the part's
+  pages; S1f.21.19, the review items on the built engine. Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,
   S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to
   the phase's end, on the defaults of the open review items, and the phase

@@ -16,7 +16,7 @@ the contradiction is a theory a program imports, and
 [Q-M1f.447](../open_questions.md#q-m1f447--the-loaders-argument-count-check-once-relation-is-a-convention) **(c)**, the
 argument-count check is dropped. In order it runs after [S1f.21.15](s1f.21.15_forbid_becomes_a_warning.md) and
 [S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md), and **starts on the user's word**
-([S1f.21.16](s1f.21.16_hrules_lists_activators.md), which stood between them, is dropped).
+(S1f.21.16, which stood between them, is dropped).
 **Built on:** [S1f.21.10](s1f.21.10_the_kernels_prefix.md), the key and the module every program gets, done: the
 kernel reads no `(false)` to judge a state, a rule of `std.core` is read through in an explanation (`Rule::implicit`),
 and `monotone::leads_to_an_end` is what the agenda and the detector read;
