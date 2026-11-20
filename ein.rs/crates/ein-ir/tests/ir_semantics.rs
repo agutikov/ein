@@ -349,7 +349,7 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// decorative.
 #[test]
 fn every_syntactic_shape_survives_dump_then_parse() {
-    let cases: [&str; 48] = [
+    let cases: [&str; 52] = [
         "(type Person) (type Engineer Person)",
         "(= (color House-1) Red)",
         "(lives-in Norwegian House-1 :source \"condition (10)\")",
@@ -412,9 +412,15 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(rel $x [y] {z} it's a/b <= !x @x ~ %)",
         // The empty conclusion.
         "(rule e () :match () :assert () :why \"e\")",
-        // The reserved verdict atom, both forms. Nullary like
-        // `(false)`, and the unary one names the incomplete relation.
-        "(rule owes () :match (absent (r a b)) :assert (open) :why \"o\")",
+        // `open`: what a state owes, the relation a parameter names, and a
+        // hypothesis, a written one and a concluded one beside a fact; a
+        // premise that reads one, and `open` as a name under an ordinary
+        // relation.
+        "(open (r a b))",
+        "(rule guess () :match (p ?x) :assert (and (open (r ?x b)) (seen ?x)) :why \"g\")",
+        "(rule noted () :match (open (r ?x ?y)) :assert (seen ?x) :why \"n\")",
+        "(rule spare () :match (and (p ?x) (absent (open (r ?x ?y)))) :assert (seen ?x) :why \"s\")",
+        "(think Ann (open (r a b)))",
         "(rule owed (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
          (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (open ?R) :why \"w\")",
     ];

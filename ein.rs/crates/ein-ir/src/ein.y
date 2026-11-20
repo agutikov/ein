@@ -44,24 +44,27 @@ Forms -> Vec<b::Id>: { b::none() } | Forms Form { b::push($1, $2) } ;
 Form -> b::Id:
     Relation { $1 } | Rule { $1 } | Query { $1 } | Solve { $1 } | Config { $1 }
   | Trace { $1 } | Macro { $1 } | Import { $1 } | NotFact { $1 } | Fact { $1 }
+  | OpenFact { $1 }
   ;
 
 // ── Names ────────────────────────────────────────────────────────────
 // A name, wherever any name goes: a fact's argument, a pattern's, a list's.
-// Not `open`, the verdict, which `Assert` alone takes (Q-M1f.66): no
-// relation, value or name is `open`. `not` is a name here, the standard
-// library's name of a negation, `(clash-1 not)`, and not where a form's
-// head is read (`HeadName`), where `(not X)` is the stored negation.
+// `open` is a name here (Q-M1f.66): where the kernel reads it, at the head
+// of a written fact, a premise or a conclusion, it is shaped below. `not` is
+// a name here, the standard library's name of a negation, `(clash-1 not)`,
+// and not where a form's head is read (`HeadName`), where `(not X)` is the
+// stored negation.
 Name -> b::Id:
     HeadName { $1 }
   | "not" { b::name(p, $lexer, $1) }
   ;
-// A name that heads a macro's template or an obligation's `(open …)`.
+// A name that heads a macro's template.
 HeadName -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
   | "eq" { b::name(p, $lexer, $1) } | "absent" { b::name(p, $lexer, $1) }
   | "false" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
+  | "open" { b::name(p, $lexer, $1) }
   | "model" { b::name(p, $lexer, $1) }
   | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
   | "owing" { b::name(p, $lexer, $1) }
@@ -69,9 +72,9 @@ HeadName -> b::Id:
   | "commit" { b::name(p, $lexer, $1) }
   ;
 // A name a declarator binds: a relation's, a rule's, a macro's, an alias.
-// Not one of the kernel's reserved names (`ein_core::RESERVED`) but the
-// standard library's two, `false` and `not` (`ein_core::LIBRARY_NAMES`),
-// which a declarator may bind.
+// Not one of the kernel's reserved names (`ein_core::RESERVED`), `open` and
+// `absent` among them, but the standard library's two, `false` and `not`
+// (`ein_core::LIBRARY_NAMES`), which a declarator may bind.
 DeclName -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "false" { b::name(p, $lexer, $1) } | "not" { b::name(p, $lexer, $1) }
@@ -84,10 +87,10 @@ DeclName -> b::Id:
 // A top-level fact's relation: not `relation`, which declares, not a
 // claim's `region`, `merged` or `owing`, which belong under `(solve :expect)`,
 // not a saved file's `program`, `module` or `commit`, which wrap what it
-// carries, and not `open`, the verdict, which no fact is of. Not `absent`, which is
-// negation as failure, a premise's test and no relation a state holds a fact
-// of, and not `false`, which is shaped below: it takes no argument. `eq`
-// stays: a written equality is checked, never stored.
+// carries, and not `open`, which is shaped below (`OpenFact`). Not `absent`,
+// which is negation as failure, a premise's test and no relation a state
+// holds a fact of at the top, and not `false`, which is shaped below: it
+// takes no argument. `eq` stays: a written equality is checked, never stored.
 FactHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "step" { b::name(p, $lexer, $1) } | "eq" { b::name(p, $lexer, $1) }
@@ -98,9 +101,18 @@ FactHead -> b::Id:
 // pattern, a conclusion's or a guard's argument. An object is an atom, or a fact
 // a state could hold, a fact of an ordinary relation or the stored negation
 // of a fact a state could hold (Q-M1f.113, Q-M1f.391): so never `eq`, which
-// is computed, `absent`, a test, or `false`, which takes no argument and is
-// shaped where it is written.
-ValueHead -> b::Id:
+// is computed, or `false`, which takes no argument and is shaped where it is
+// written. Under an ordinary relation `open` and `absent` are ordinary names
+// (Q-M1f.571): `(think Ann (open (p A)))` and `(think Ann (absent (p A)))`
+// are facts whose inner relation is so called, and the kernel reads neither.
+ValueHead -> b::Id: OpenHead { $1 } | "absent" { b::name(p, $lexer, $1) } ;
+// A value's relation, `absent` aside: what heads a pattern where `absent`
+// would be the premise's test (`Connective`), and a fact a claim lists, where
+// `(absent …)` is a class's absence.
+OpenHead -> b::Id: OrdinaryHead { $1 } | "open" { b::name(p, $lexer, $1) } ;
+// A relation the kernel reads nothing of: what a hypothesis directly under
+// `open` is of (Q-M1f.568), and a conclusion's relation.
+OrdinaryHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
   | "true" { b::name(p, $lexer, $1) } | "model" { b::name(p, $lexer, $1) }
@@ -109,13 +121,13 @@ ValueHead -> b::Id:
   | "program" { b::name(p, $lexer, $1) } | "module" { b::name(p, $lexer, $1) }
   | "commit" { b::name(p, $lexer, $1) }
   ;
-// A premise's relation: not `eq` or `absent`, which are shaped below, not
-// `false`, which takes no argument, and not `open`, a verdict
-// and never a premise.
-PremiseHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
+// A premise's relation: not `eq` or `absent`, which are shaped below, and not
+// `false`, which takes no argument. `open` is one: a premise `(open ?R)` or
+// `(open (p ?x))` reads the `open` facts a state holds (Q-M1f.569).
+PremiseHead -> b::Id: OpenHead { $1 } | Var { $1 } ;
 // A conclusion's relation: not `eq`, `false` or `open`, which are shaped,
-// and not `absent`, which no fact is of.
-ConclusionHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
+// and not `absent`, which no fact is of at the top.
+ConclusionHead -> b::Id: OrdinaryHead { $1 } | Var { $1 } ;
 Var -> b::Id: "VAR" { b::var(p, $lexer, $1) } ;
 Text -> b::Id: "TEXT" { b::text(p, $lexer, $1) } ;
 Bool -> b::Id: "true" { b::name(p, $lexer, $1) } | "false" { b::name(p, $lexer, $1) } ;
@@ -137,6 +149,20 @@ NameListPlus -> b::Id: "(" Name Names ")" { b::list(p, $2, $3) } ;
 Fact -> b::Id:
     "(" FactHead FactArgs FactClauses ")" { b::top(p, $2, $3, $4) }
   | "(" "false" FactClauses ")" { b::top(p, b::name(p, $lexer, $2), b::none(), $3) }
+  ;
+// A written `open` fact (Q-M1f.566): `(open F)`, F a fact, is a hypothesis
+// the program writes, held at root alone; `(open R)`, R a relation's name, is
+// what a state owes, written. Directly under `open` neither `open` nor
+// `absent` is written, and `open` takes one argument (Q-M1f.568).
+OpenFact -> b::Id:
+    "(" "open" OpenFactArg FactClauses ")" { b::top(p, b::name(p, $lexer, $2), b::one($3), $4) }
+  ;
+OpenFactArg -> b::Id: Name { $1 } | OpenedFact { $1 } | NegFact { $1 } ;
+// A fact directly under `open`: its relation is an ordinary one, or it is
+// `(false)`.
+OpenedFact -> b::Id:
+    "(" OrdinaryHead FactArgs ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   ;
 // The stored negation of a fact, a negation among them, or `(not (eq a b))`,
 // which is checked as a written `(eq a b)` is.
@@ -204,7 +230,8 @@ RuleClauses -> Vec<b::Id>: { b::none() } | RuleClauses RuleClause { b::push($1, 
 
 // A :match is a premise, or `()`, the empty conjunction (Q-M1e2.36). A
 // conjunction or a disjunction has at least one member: `(and)` is refused,
-// and `()` is the one spelling of the empty conjunction.
+// and `()` is the one spelling of the empty conjunction. A premise headed
+// `open` reads the `open` facts a state holds (Q-M1f.569).
 Match -> b::Id: "(" ")" { b::empty(p) } | Premise { $1 } ;
 Premise -> b::Id:
     "(" PremiseHead Args ")" { b::list(p, $2, $3) }
@@ -218,7 +245,18 @@ Connective -> b::Id:
     "(" "and" Premises ")" { b::named(p, "and", $3) }
   | "(" "or" Premises ")" { b::named(p, "or", $3) }
   | "(" "not" Negated ")" { b::named(p, "not", b::one($3)) }
-  | "(" "absent" Premise ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
+  | "(" "absent" AbsentPremise ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
+  | Guard { $1 }
+  ;
+// What `absent` takes: a premise, a pattern or a conjunction, which may hold
+// an `absent` (the universal), but not an `absent` directly (Q-M1f.571):
+// `(absent (absent P))` is refused, and `(absent (open P))` is a premise.
+AbsentPremise -> b::Id:
+    "(" PremiseHead Args ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
+  | "(" "and" Premises ")" { b::named(p, "and", $3) }
+  | "(" "or" Premises ")" { b::named(p, "or", $3) }
+  | "(" "not" Negated ")" { b::named(p, "not", b::one($3)) }
   | Guard { $1 }
   ;
 // What a premise's or a conclusion's `(not …)` negates: a pattern, the
@@ -238,17 +276,18 @@ Guard -> b::Id:
 // A pattern's argument: a name, a variable, a pattern inside it, or, since
 // a macro such as `forall` is called as a pattern and takes premises, a
 // connective. Its relation is a name or a variable, but never `eq` or
-// `absent`, which the connectives shape, never `false` with an argument, and
-// never `open`, the verdict. A connective that is still a pattern's argument
-// once the macros are expanded is the loader's to refuse: the grammar cannot
-// tell a macro's call from a pattern.
+// `absent`, which the connectives shape, and never `false` with an argument.
+// A connective that is still a pattern's argument once the macros are
+// expanded is the loader's to refuse, but `(absent …)`, which under an
+// ordinary relation is a pattern of a relation so called (Q-M1f.571): the
+// grammar cannot tell a macro's call from a pattern.
 Args -> Vec<b::Id>: { b::none() } | Args Arg { b::push($1, $2) } ;
 Arg -> b::Id:
     Name { $1 } | Var { $1 } | "(" ArgHead Args ")" { b::list(p, $2, $3) }
   | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   | Connective { $1 }
   ;
-ArgHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
+ArgHead -> b::Id: OpenHead { $1 } | Var { $1 } ;
 
 // A term: a fact with variables in it, as a conclusion, a stored negation or
 // a guard holds one, and a negated one, as a fact may hold. No connective,
@@ -269,18 +308,19 @@ NegPattern -> b::Id:
   ;
 Terms -> Vec<b::Id>: { b::none() } | Terms Term { b::push($1, $2) } ;
 
-// An :assert is a conclusion, `()` (nothing), or `(open)` / `(open ?R)`,
-// which is a whole conclusion and never part of one. These two are the only
-// places `open` is written (Q-M1f.66): `?R` is a variable or a relation's
-// name, and no name is `open`.
+// An :assert is a conclusion, or `()` (nothing). An `(open …)` conclusion
+// takes one argument (Q-M1f.566, Q-M1f.573): a relation's name or a
+// parameter that names one is what an obligation owes, the rule's whole
+// :assert, which the loader holds; a fact, or a variable the :match binds, is
+// a hypothesis, which stands in a conjunction like any fact (Q-M1f.575).
+// Directly under `open` neither `open` nor `absent` is written (Q-M1f.568).
 Assert -> b::Id:
     "(" ")" { b::empty(p) }
   | Conclusion { $1 }
-  | "(" "open" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
-  | "(" "open" AnyHead ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   ;
 Conclusion -> b::Id:
     "(" ConclusionHead Terms ")" { b::list(p, $2, $3) }
+  | "(" "open" OpenTerm ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   | "(" "and" Conclusions ")" { b::named(p, "and", $3) }
   | "(" "not" Negated ")" { b::named(p, "not", b::one($3)) }
   | "(" "not" Var ")" { b::named(p, "not", b::one($3)) }
@@ -288,6 +328,15 @@ Conclusion -> b::Id:
   | Guard { $1 }
   ;
 Conclusions -> Vec<b::Id>: Conclusion { b::one($1) } | Conclusions Conclusion { b::push($1, $2) } ;
+// What an `(open …)` conclusion takes: a name or a variable, or a pattern
+// whose relation is an ordinary one or a variable, or `(false)`, or a stored
+// negation.
+OpenTerm -> b::Id: Name { $1 } | Var { $1 } | OpenedPattern { $1 } | NegPattern { $1 } ;
+OpenedPattern -> b::Id:
+    "(" OrdinaryHead Terms ")" { b::list(p, $2, $3) }
+  | "(" Var Terms ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
+  ;
 
 // ── Queries and the lattice ──────────────────────────────────────────
 Query -> b::Id: "(" "query" QueryClausesPlus ")" { b::named(p, "query", $3) } ;
@@ -306,9 +355,11 @@ Claim -> b::Id:
   ;
 Model -> b::Id: "(" "model" ClaimFacts ")" { b::list(p, b::name(p, $lexer, $2), $3) } ;
 Models -> Vec<b::Id>: Model { b::one($1) } | Models Model { b::push($1, $2) } ;
-// A claim lists facts, a stored negation, or an `eq` / `neq` fact.
+// A claim lists facts, a stored negation, or an `eq` / `neq` fact: facts of
+// the program's relations, so neither `open`, the kernel's, nor `absent`,
+// which there is a class's absence.
 ClaimFact -> b::Id:
-    NestedFact { $1 }
+    ClaimNested { $1 }
   | EqFact { $1 }
   | NegFact { $1 }
   | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
@@ -319,12 +370,16 @@ ClaimFact -> b::Id:
 // The one place `absent` heads a form that is no premise, and no fact either:
 // a claim lists a query's projection classes.
 ClaimAtom -> b::Id:
-    NestedFact { $1 }
+    ClaimNested { $1 }
   | EqFact { $1 }
   | NegFact { $1 }
   | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
   ;
 ClaimFacts -> Vec<b::Id>: { b::none() } | ClaimFacts ClaimFact { b::push($1, $2) } ;
+ClaimNested -> b::Id:
+    "(" OrdinaryHead FactArgs ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
+  ;
 
 Solve -> b::Id: "(" "solve" SolveClauses ")" { b::named(p, "solve", $3) } ;
 SolveClause -> b::Id:

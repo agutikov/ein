@@ -295,9 +295,9 @@ fn declaration(decl: &str, name: &str) -> String {
 /// **`open` and `absent` are refused at the parse wherever a declarator binds
 /// one**, each a word a position gives a meaning to and no name a declarator
 /// takes: in the program on the direct route, in the module on the other
-/// three. `open` is no name at all (Q-M1f.66), so the flat route's
-/// `:symbols (open)` is refused at the program's own parse, before the module
-/// is read. The loader's route-independence is held by a third name the
+/// three; a list of names takes either, so the flat route's `:symbols
+/// (open)` reads the module and is refused there. The loader's
+/// route-independence is held by a third name the
 /// grammar reads as a name, the kernel dunder `__closed__` (Q-M1f.7), refused
 /// as a reserved name through every route.
 #[test]
@@ -316,8 +316,6 @@ fn reserved_names_are_reserved_through_every_import_route() {
                 let cell = format!("{decl} {name} via {route}");
                 let want = if name.starts_with("__") {
                     "shadows a reserved kernel name".to_string()
-                } else if name == "open" && route == "symbols" {
-                    "<probe>:1:21: unexpected `open`\n  note: open is reserved".to_string()
                 } else {
                     format!(":3:{}: unexpected `{name}`", decl.len() + 3)
                 };

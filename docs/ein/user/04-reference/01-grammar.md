@@ -105,10 +105,10 @@ The exclusive start conditions are `AFTER_WORD`: a rule that names no condition 
 
 Six facts about the terminals that the diagrams state and do not explain:
 
-1. **A reserved word is a token only as a whole word.** The twelve reserved words, `and`, `or`, `neq`,
-   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`, `import` and `open`, and the fourteen position
-   words, `not`, `relation`, `step`, `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a
-   saved file's `program`, `module` and `commit`, are rules written
+1. **A reserved word is a token only as a whole word.** The eleven reserved words, `and`, `or`, `neq`,
+   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro` and `import`, and the fifteen position
+   words, `not`, `relation`, `step`, `eq`, `absent`, `false`, `true`, `open`, `model`, `region`, `merged`, `owing`,
+   and a saved file's `program`, `module` and `commit`, are rules written
    before `NAME`, and `NAME` is longest match: `neq` is the token `'neq'`, a tie the earlier rule wins, while `neqw`,
    `neq_test`, `neq-1`, `rule-x`, `rule.x`, `not-a` and `open-slot` are each the one `NAME` they spell, wherever they
    are written ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)).
@@ -116,19 +116,25 @@ Six facts about the terminals that the diagrams state and do not explain:
    `not` heads a stored negation, `(not X)`, and is the standard library's name of one, `(clash-1 not)` and
    `(relation not Claim)`
    ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)).
-   - **`open` is written only as a rule's verdict**: §2's `Assert` is the one production that takes it, a rule's
-     whole `:assert`, `(open)` or `(open ?R)`
-     ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)). An error found
-     at any other `open` carries the note *open is reserved: it is the verdict a rule's :assert states, written as the
-     whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value*. *Value*, in that
-     note, in the production `ValueHead` and in every line `ein` prints, is the engine's word for an object in an
-     argument's place: an atom, or a fact a state could hold.
-   - **`eq`, `absent` and `false` head no argument.** §2's `ValueHead` lists the words that may head a fact inside a
-     fact, a pattern inside a pattern and a conclusion's argument, and those three are not among them: `absent` heads
-     only a premise's connective and a fact a claim's class lists, `false` is written only as `(false)`, and `(eq a
-     b)` only as a fact, a premise or a conclusion of its own. An error found at an `absent` that opens a form, at an
-     `eq` or `neq` that opens a form inside another, and at an argument written after `(false`, carries a note saying
-     so ([`07-diagnostics.md`](07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold), *an object
+   - **`open` is the kernel's where it reads it, and a name elsewhere**
+     ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): §2's
+     `OpenFact`, `Premise` and `Conclusion` read it at the head of a written fact, a premise or a conclusion, what a
+     state owes, `(open R)`, and a hypothesis, `(open F)`, each with one argument, and directly under it neither
+     `open` nor `absent` (`OpenFactArg`, `OpenTerm`; [Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)).
+     An error found at an `open`, or at the end of an `(open)`, carries the note *open takes one argument: a
+     relation's name, which a state owes, or a fact a state could hold, which is a hypothesis; directly under it
+     neither open nor absent is written, and no declarator binds it*. *Value*, in the production `ValueHead` and in
+     every line `ein` prints, is the engine's word for an object in an argument's place: an atom, or a fact a state
+     could hold.
+   - **`eq` and `false` head no argument, and `absent` none at the top.** §2's `ValueHead` lists the words that may
+     head a fact inside a fact, a pattern inside a pattern and a conclusion's argument: `eq` and `false` are not
+     among them, `false` written only as `(false)` and `(eq a b)` only as a fact, a premise or a conclusion of its
+     own. Under an ordinary relation `open` and `absent` are ordinary names, and head such a fact
+     ([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md));
+     `absent` heads a premise's connective, which takes no `absent` directly (`AbsentPremise`), and a fact a claim's
+     class lists, and no top-level fact or conclusion. An error found at an `absent` that opens a form, at an `eq`
+     or `neq` that opens a form inside another, and at an argument written after `(false`, carries a note saying so
+     ([`07-diagnostics.md`](07-diagnostics.md#222-an-object-is-an-atom-or-a-fact-a-state-could-hold), *an object
      is an atom, or a fact a state could hold*).
    - **A keyword is `:` and a run of name characters**, read the same way: `:why` is the token `':why'`, and `:where`
      a `KEYWORD`, which no production of §2 takes, so a keyword a form does not take is a parse error that says so
@@ -193,7 +199,8 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-names.puml`](diagrams/01-grammar-phrase-names.puml):
-`Name`, `HeadName`, `DeclName`, `FactHead`, `ValueHead`, `PremiseHead`, `ConclusionHead`.
+`Name`, `HeadName`, `DeclName`, `FactHead`, `ValueHead`, `OpenHead`, `OrdinaryHead`, `PremiseHead`,
+`ConclusionHead`.
 
 ![Names, and the name a form is headed by, as a railroad diagram](diagrams/01-grammar-phrase-names.svg)
 
@@ -209,8 +216,8 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-fact.puml`](diagrams/01-grammar-phrase-fact.puml):
-`Fact`, `NotFact`, `NegFact`, `NestedFact`, `EqFact`, `FactArg`, `FactArgs`, `FactClause`, `FactClauses`,
-`NestedFacts`.
+`Fact`, `OpenFact`, `OpenFactArg`, `OpenedFact`, `NotFact`, `NegFact`, `NestedFact`, `EqFact`, `FactArg`,
+`FactArgs`, `FactClause`, `FactClauses`, `NestedFacts`.
 
 ![A fact, a stored negation and a fact as an argument, as a railroad diagram](diagrams/01-grammar-phrase-fact.svg)
 
@@ -234,7 +241,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-match.puml`](diagrams/01-grammar-phrase-match.puml):
-`Match`, `Premise`, `Premises`, `Connective`, `Negated`, `Guard`, `Args`, `Arg`, `ArgHead`.
+`Match`, `Premise`, `Premises`, `Connective`, `AbsentPremise`, `Negated`, `Guard`, `Args`, `Arg`, `ArgHead`.
 
 ![A rule's :match: premises, as a railroad diagram](diagrams/01-grammar-phrase-match.svg)
 
@@ -250,7 +257,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-assert.puml`](diagrams/01-grammar-phrase-assert.puml):
-`Assert`, `Conclusion`, `Conclusions`.
+`Assert`, `Conclusion`, `Conclusions`, `OpenTerm`, `OpenedPattern`.
 
 ![A rule's :assert: conclusions, as a railroad diagram](diagrams/01-grammar-phrase-assert.svg)
 
@@ -258,7 +265,8 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-query.puml`](diagrams/01-grammar-phrase-query.puml):
-`Query`, `QueryClause`, `QueryClausesPlus`, `Claim`, `Model`, `Models`, `ClaimFact`, `ClaimAtom`, `ClaimFacts`.
+`Query`, `QueryClause`, `QueryClausesPlus`, `Claim`, `Model`, `Models`, `ClaimFact`, `ClaimAtom`, `ClaimFacts`,
+`ClaimNested`.
 
 ![A query and its claim, as a railroad diagram](diagrams/01-grammar-phrase-query.svg)
 
@@ -376,9 +384,10 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   (`PremiseHead`'s `Var`). The loader refuses each shape no plan can be compiled from, a macro's expansion included.
 - **The kernel's names.** The dunder `__closed__` is a `NAME` the loader refuses where a program
   binds it ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)).
-  Where `open` stands is the grammar's; what the loader still refuses of it is the program's to tell, an `(open ?R)`
-  whose `?R` is no parameter or whose projection does not resolve, each line placed where the `(open …)` is written
-  ([`03-reserved-names.md` § The verdict](03-reserved-names.md#the-verdict--open)).
+  Where `open` stands is the grammar's; what the loader still refuses of it is the program's to tell: what an
+  obligation owes beside another conclusion, an obligation whose projection does not resolve, a written `(open x)`
+  with `x` neither a fact nor a relation of the program, and an activator that makes an obligation owe `open`, each
+  line placed where the form is written ([`07-diagnostics.md` § 2.17](07-diagnostics.md#217-where-open-is-written)).
 
 Every program under [`examples/broken/`](../../../../examples/broken/) is refused, and its report, the engine's
 defined output for it, is kept beside it as its `.expected` file: a parse error at the top, and one refused at load in

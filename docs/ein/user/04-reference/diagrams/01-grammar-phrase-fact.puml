@@ -1,5 +1,8 @@
 @startebnf
 Fact = "(" , FactHead , FactArgs , FactClauses , ")" | "(" , "false" , FactClauses , ")" ;
+OpenFact = "(" , "open" , OpenFactArg , FactClauses , ")" ;
+OpenFactArg = Name | OpenedFact | NegFact ;
+OpenedFact = "(" , OrdinaryHead , FactArgs , ")" | "(" , "false" , ")" ;
 NotFact =
     "(" , "not" , NestedFact , FactClauses , ")"
   | "(" , "not" , NegFact , FactClauses , ")"

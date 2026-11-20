@@ -1,0 +1,20 @@
+;;; A rule that reads an `open` fact: its program is not monotone, and nothing is
+;;; claimed of its answer (Q-M1f.569).
+;;
+;; `noted` reads the obligation's `(open ?R)` at root, where the pass that writes
+;; a state's `open` facts holds `(open r)`: no `r` fact holds yet, so one is owed.
+;; A fork drops every `open` fact and keeps what a rule concluded from one, so
+;; `(seen r)` stays in a state that pays the debt and holds no `(open r)`. The
+;; static check flags the program by a site of its own kind, `open-read`, and
+;; every command warns of it.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a T T :why "{?3} is a {?4}")
+(relation r A B    :why "r holds of {?3} and {?4}")
+(relation seen R   :why "what {?3} owes was seen")
+
+(is-a a A) (is-a b B)
+(total-owed r is-a)
+
+(rule noted () :match (open ?R) :assert (seen ?R) :why "{?R} owes, and is seen to")

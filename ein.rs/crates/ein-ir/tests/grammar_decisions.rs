@@ -34,7 +34,7 @@ fn answer(text: &str, filename: Option<&str>) -> String {
 /// `examples/broken/load/` uses, and for the same reason: a message captured
 /// verbatim passes on the machine that blessed it and fails everywhere else.
 ///
-/// **Thirty, and each `.expected` the whole report**: every error recovery
+/// **Twenty-eight, and each `.expected` the whole report**: every error recovery
 /// reaches, each with its position, its notes and its ranked repairs, three
 /// and then a count. Most are shapes the grammar refuses where the loader or
 /// the compiler would otherwise see them, `kwpair-below-the-filter` among
@@ -54,8 +54,8 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
     fixtures.sort();
     assert_eq!(
         fixtures.len(),
-        30,
-        "the parse-negative group is thirty fixtures"
+        28,
+        "the parse-negative group is twenty-eight fixtures"
     );
 
     let mut bad = Vec::new();

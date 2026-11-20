@@ -45,8 +45,7 @@
 %%
 <INITIAL,AFTER_WORD>\( <INITIAL>"("
 <INITIAL,AFTER_WORD>\) <INITIAL>")"
-// The declarators, the kernel's connectives and, below, `open`, the verdict
-// (Q-M1f.66). Never a name.
+// The declarators and the kernel's connectives. Never a name.
 and <AFTER_WORD>"and"
 or <AFTER_WORD>"or"
 neq <AFTER_WORD>"neq"
@@ -59,12 +58,12 @@ trace <AFTER_WORD>"trace"
 macro <AFTER_WORD>"macro"
 import <AFTER_WORD>"import"
 // Words a position gives a meaning to. Each is also a name (ein.y's Name),
-// so `(p model)` and `(relation step T)` mean what a name means; all but
-// `open`, which is a name nowhere and is written only as a rule's whole
-// :assert, `(open)` or `(open ?R)` (ein.y's Assert). Its rule stays among
-// these, so that no token moves. `not` heads a stored negation, and is a
-// name wherever a name goes but a head (ein.y's HeadName): the standard
-// library's name of a negation.
+// so `(p model)` and `(relation step T)` mean what a name means. `not` heads
+// a stored negation, and is a name wherever a name goes but a head (ein.y's
+// HeadName): the standard library's name of a negation. `absent` heads a
+// premise's test, and `open` a written fact or a conclusion the kernel reads,
+// a hypothesis or what a state owes; under an ordinary relation each is an
+// ordinary name (ein.y's ValueHead).
 not <AFTER_WORD>"not"
 relation <AFTER_WORD>"relation"
 step <AFTER_WORD>"step"

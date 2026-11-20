@@ -6,12 +6,13 @@ Claim = Model | "(" , "or" , Models , ")" | "(" , "false" , ")" ;
 Model = "(" , "model" , ClaimFacts , ")" ;
 Models = { Model }- ;
 ClaimFact =
-    NestedFact
+    ClaimNested
   | EqFact
   | NegFact
   | "(" , "not" , EqFact , ")"
   | "(" , "absent" , ClaimAtom , ")"
   | "(" , "neq" , FactArg , FactArg , ")" ;
-ClaimAtom = NestedFact | EqFact | NegFact | "(" , "not" , EqFact , ")" ;
+ClaimAtom = ClaimNested | EqFact | NegFact | "(" , "not" , EqFact , ")" ;
 ClaimFacts = { ClaimFact } ;
+ClaimNested = "(" , OrdinaryHead , FactArgs , ")" | "(" , "false" , ")" ;
 @endebnf

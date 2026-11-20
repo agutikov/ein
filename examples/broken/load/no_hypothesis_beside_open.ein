@@ -1,0 +1,45 @@
+;;; A `:no-hypothesis` that names a relation root holds an `open` fact of, refused at load.
+;;
+;; `examples/features/13_mixed_solution_and_open.ein` as it was written beside an
+;; obligation: `total-owed likes is-a` leaves Ann owing a Food at root, so root
+;; holds `(open likes)` and `(open (likes Ann Soup))`, and the list names `likes`.
+;; The two lists and a closure configure the blind enumerator, which does not run
+;; beside an `open` fact, and one that disagrees with the `open` facts root holds is
+;; an error (Q-M1f.578). The fixture's line is its `.expected`.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a   T T          :why "{?3} is a {?4}")
+(relation likes  Person Food  :why "{?3} likes {?4}")
+(relation choice Person       :why "{?3} was the one chosen")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)
+
+(likes Bob Soup)
+
+;; The obligation. Without this line the program owes nothing, every alive
+;; node is in R — three states — and `--single` says `Ambiguity`.
+(total-owed likes is-a)
+
+(hrule pick () :match (is-a ?p Person) :assert (choice ?p) :why "suppose {?p} is the one chosen")
+
+(rule feeds ()
+  :match  (choice Ann)
+  :assert (likes Ann Soup)
+  :why    "the one chosen is fed")
+
+;; Exactly one choice, so a single commitment is already complete.
+(rule mutex ()
+  :match  (and (choice Ann) (choice Bob))
+  :assert (false)
+  :why    "Ann and Bob are both chosen, but only one may be")
+
+(solve
+  ;; The blind rung would propose `is-a` and `likes` facts of its own; the
+  ;; subject here is the partition, not the generator.
+  :no-hypothesis (is-a likes)
+  :expect (region (model (likes Ann Soup) (likes Bob Soup))))
+
+(query
+  :goal   (likes ?who ?what))

@@ -1,6 +1,0 @@
-;; `(open …)` is a verdict about the KB. The third-state probe for a
-;; *fact* is `(unknown P)`, a macro of `std.macro`.
-
-(relation is-a T T)
-(relation r A B)
-(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))

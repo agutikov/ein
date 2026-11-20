@@ -55,32 +55,34 @@ pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 /// rest.
 pub const REPAIRS_SHOWN: usize = 3;
 
-/// The twelve words that are never a name: tokens of their own in `ein.l`,
-/// each a declarator, a kernel connective, or `open`, the verdict, which is
-/// written only as a rule's whole `:assert`, `(open)` or `(open ?R)` (`ein.y`'s
-/// `Assert`; Q-M1f.66). `ein_core::text::LEXER_KEYWORDS` is the printer's copy, which
-/// `the_reserved_words_are_the_printers` holds to this one.
-pub const RESERVED_WORDS: [&str; 12] = [
+/// The eleven words that are never a name: tokens of their own in `ein.l`,
+/// each a declarator or a kernel connective. `ein_core::text::LEXER_KEYWORDS`
+/// is the printer's copy, which `the_reserved_words_are_the_printers` holds
+/// to this one.
+pub const RESERVED_WORDS: [&str; 11] = [
     "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
-    "open",
 ];
 
-/// The fourteen words a position gives a meaning to: tokens of their own in
+/// The fifteen words a position gives a meaning to: tokens of their own in
 /// `ein.l`, and names wherever a name goes (`ein.y`'s `Name`), so `(p model)`
 /// is a fact and `(relation step T)` a declaration. The last three head a
 /// saved file's wrappers at the top of a file (Q-M1f.401). `not` heads a stored
 /// negation, `(not X)`, and is the standard library's name of one
 /// (`ein_core::LIBRARY_NAMES`): an argument, `(clash-1 not)`, and a declared
-/// relation, `(relation not Claim)`.
-pub const POSITION_WORDS: [&str; 14] = [
-    "relation", "step", "eq", "absent", "false", "true", "model", "region", "merged", "owing",
-    "program", "module", "commit", "not",
+/// relation, `(relation not Claim)`. `open` heads what a state owes and its
+/// hypotheses, `(open R)` and `(open F)`, which the kernel reads at the head
+/// of a written fact, a premise or a conclusion, and is a name elsewhere
+/// (Q-M1f.66).
+pub const POSITION_WORDS: [&str; 15] = [
+    "relation", "step", "eq", "absent", "false", "true", "open", "model", "region", "merged",
+    "owing", "program", "module", "commit", "not",
 ];
 
-/// What a parse error found at an `open` says (Q-M1f.88): the one place it is
-/// written, and that it names nothing.
-pub const OPEN_NOTE: &str = "open is reserved: it is the verdict a rule's :assert states, written as the \
-     whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value";
+/// What a parse error found at an `open` says, or at the end of an `(open)`
+/// (Q-M1f.88, Q-M1f.568): what it takes, and where no declarator binds it.
+pub const OPEN_NOTE: &str = "open takes one argument: a relation's name, which a state owes, or a \
+     fact a state could hold, which is a hypothesis; directly under it neither open nor absent is \
+     written, and no declarator binds it";
 
 /// Where a character that is not ASCII may be written, as the line that
 /// refuses one anywhere else says it (Q-M1f.95; a comment may hold any
@@ -522,6 +524,9 @@ fn notes(
                  lattice"
             ));
         }
+        Some(")") if written_before(lexer, at, 2) == ["(", "open"] => {
+            out.push(OPEN_NOTE.to_string())
+        }
         Some(")") => out.extend(empty_connective(lexer, at)),
         // A value after `(solve :no-search …)`, the one keyword that takes
         // none.
@@ -565,8 +570,10 @@ fn notes(
 /// fact, a value or a conclusion headed `absent` is refused, and the author who
 /// wrote one where a negation was meant is pointed at `(not …)`.
 const ABSENT_NOTE: &str = "absent is negation as failure, a test a premise makes of a state, \
-                           (absent <premise>) in a :match or a :goal, so no fact, value or \
-                           conclusion is of it: the stored negation of a fact is (not …)";
+                           (absent <premise>) in a :match or a :goal, so no fact or conclusion is \
+                           of it, and directly under open or absent it is refused; under an \
+                           ordinary relation it is an ordinary name: the stored negation of a fact \
+                           is (not …)";
 
 /// What an argument written after `false` is told (Q-M1f.123).
 const FALSE_NOTE: &str = "false takes no argument: (false) says that the state is impossible, \

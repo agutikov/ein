@@ -1,5 +1,6 @@
-; A declarator binding the reserved verdict atom, written directly: the
-; **control** of the four routes, refused at the parse.
+; A declarator binding `open`, the kernel's word of what a state owes and of
+; its hypotheses, written directly: the **control** of the four routes,
+; refused at the parse, where no declarator takes it.
 ;
 ; It is also the *module* the three import fixtures beside it pull in —
 ; `reserved_open_symbols`, `reserved_open_qualified`, `reserved_open_aliased`
@@ -8,8 +9,7 @@
 ; import resolver reads the one reserved list, `ein_core::RESERVED`, so no
 ; route can carry a macro named `reserved_open_direct.open` past the loader.
 ;
-; Every route is refused, at this file's line 16 or, for the `:symbols`
-; listing, where the importing file writes `open`.
+; Every route is refused at this file's line 16.
 ;
 (relation p T)
 

@@ -1,0 +1,1 @@
+{FILE}:10:17: rule 'bad': `(open ?R)` stands beside another conclusion — what a state owes is a rule's whole :assert, which the pass reads at the fixpoint and which concludes no fact: write one rule for the obligation and one for the rest

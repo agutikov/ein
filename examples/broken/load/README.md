@@ -37,12 +37,18 @@ parse error, read where the module is.
   grammar takes one name after it, and the loader holds the rest, each line listing the engine's words.
   `ein_word_unknown` writes `:ein dead`, a word that is none of the engine's; `ein_beside_assert` writes it beside
   an `:assert`, where a rule states one or the other; `ein_on_hrule` writes it on an hrule, which proposes a fact.
-- **`open` is no name**
-  ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is
-  written only as a rule's whole `:assert`, `(open)` or `(open ?R)`. `reserved_open_symbols` is refused at its own
-  parse, at the `open` its `:symbols (open)` writes, before the module is read; the other three
-  `reserved_open_*` keep the module's parse error, with its note, *open is reserved: …*. `open_compound_witness`,
-  the one verdict fixture the loader refuses, starts its line with where its `(open ?R)` is written.
+- **No declarator binds `open`**
+  ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is a
+  name wherever a name goes, and the kernel's word at the head of a written fact, a premise or a conclusion.
+  `reserved_open_symbols`' `:symbols (open)` reads the module, and the four `reserved_open_*` keep the module's parse
+  error, with its note, *open takes one argument: …*.
+- **What a state owes is a rule's whole `:assert`**
+  ([Q-M1f.575](../../../docs/decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)):
+  `open_mixed_assert` writes `(open ?R)` beside a fact, refused where the `(open ?R)` is written;
+  `open_compound_witness`, whose `(open ?R)` resolves to no single witness, starts its line the same way.
+- **A list that disagrees with root's `open` facts**
+  ([Q-M1f.578](../../../docs/decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)):
+  `no_hypothesis_beside_open` names in `:no-hypothesis` a relation root holds a hypothesis of.
 - **A relation variable no parameter binds**, `unbound_head.ein`, `(?R ?x)` with `?R` no parameter: the loader
   refuses it where the rule is written, so it never reaches the compiler. A relation parameter an activator binds to
   a fact is no refusal: the program loads under a warning, and the activator activates nothing

@@ -1,11 +1,14 @@
 @startebnf
-Assert = "(" , ")" | Conclusion | "(" , "open" , ")" | "(" , "open" , AnyHead , ")" ;
+Assert = "(" , ")" | Conclusion ;
 Conclusion =
     "(" , ConclusionHead , Terms , ")"
+  | "(" , "open" , OpenTerm , ")"
   | "(" , "and" , Conclusions , ")"
   | "(" , "not" , Negated , ")"
   | "(" , "not" , Var , ")"
   | "(" , "false" , ")"
   | Guard ;
 Conclusions = { Conclusion }- ;
+OpenTerm = Name | Var | OpenedPattern | NegPattern ;
+OpenedPattern = "(" , OrdinaryHead , Terms , ")" | "(" , Var , Terms , ")" | "(" , "false" , ")" ;
 @endebnf

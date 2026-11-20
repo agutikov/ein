@@ -199,14 +199,6 @@
   repair: Insert `:match`
 <string>:9:44: unexpected `)`
   repair: Delete `)`
-=== ";; `(open …)` is a verdict about the KB. The third-state probe for a\n;; *fact* is `(unknown P)`, a macro of `std.macro`.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))\n"
-  refused <string>:6:49: unexpected `open`
-  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
-  repair: Delete `open`
-=== ";; A rule concluding `open` AND a fact would belong to the saturation\n;; agenda and to the post-fixpoint obligation pass at once.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R ?isa)\n  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  :assert (and (open ?R) (r ?a b)))\n"
-  refused <string>:9:17: unexpected `open`
-  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
-  repair: Delete `open`
 === ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; Solving and asking are two forms: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
   refused <string>:13:23: unexpected `:no-hypothesis`
   note: :no-hypothesis chooses the lattice and belongs on (solve …) — one program, one lattice

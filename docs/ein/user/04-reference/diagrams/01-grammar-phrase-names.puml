@@ -1,15 +1,17 @@
 @startebnf
 Name = HeadName | "not" ;
 HeadName =
-    NAME | "relation" | "step" | "eq" | "absent" | "false" | "true" | "model" | "region" | "merged"
-  | "owing" | "program" | "module" | "commit" ;
+    NAME | "relation" | "step" | "eq" | "absent" | "false" | "true" | "open" | "model" | "region"
+  | "merged" | "owing" | "program" | "module" | "commit" ;
 DeclName =
     NAME | "false" | "not" | "step" | "true" | "model" | "region" | "merged" | "owing" | "program"
   | "module" | "commit" ;
 FactHead = NAME | "step" | "eq" | "true" | "model" ;
-ValueHead =
+ValueHead = OpenHead | "absent" ;
+OpenHead = OrdinaryHead | "open" ;
+OrdinaryHead =
     NAME | "relation" | "step" | "true" | "model" | "region" | "merged" | "owing" | "program"
   | "module" | "commit" ;
-PremiseHead = ValueHead | Var ;
-ConclusionHead = ValueHead | Var ;
+PremiseHead = OpenHead | Var ;
+ConclusionHead = OrdinaryHead | Var ;
 @endebnf

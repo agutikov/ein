@@ -1,7 +1,7 @@
 ; `open` listed in a flat `:symbols` import — route 2 of 4 of
 ; `reserved_open_direct.ein`'s declaration.
 ;
-; `:symbols (open)` writes the reserved name in this file, so the grammar
-; refuses it here, at the listing. The other routes are refused at the
-; module's own line: the same declaration, refused whichever way it comes.
+; A list of names takes `open`, a word a position gives a meaning to, so
+; the listing reads the module, which is refused at its own line, as on the
+; other routes: the same declaration, refused whichever way it comes.
 (import reserved_open_direct :symbols (open))

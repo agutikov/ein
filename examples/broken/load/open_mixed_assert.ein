@@ -1,0 +1,11 @@
+;; What a state owes, `(open ?R)`, beside a fact: an obligation is read at the
+;; fixpoint and concludes no fact, so `(open R)` is a rule's whole `:assert`
+;; (Q-M1f.575). Refused at load, one line, where the `(open …)` is written.
+
+(relation is-a T T :why "{?3} is a {?4}")
+(relation r A B    :why "r holds of {?3} and {?4}")
+(rule bad (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)
+               (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (and (open ?R) (r ?a b))
+  :why    "{?a} has no {?R} partner yet")

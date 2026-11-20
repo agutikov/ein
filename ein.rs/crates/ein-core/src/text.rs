@@ -4,7 +4,7 @@
 //! A fact argument is a name (a [`crate::Symbol`]) or a nested fact. A name
 //! prints **bare** where its text reads back as one name under the name rule
 //! (Q-M1e2.24, and `ein.l`'s `NAME`): a run of
-//! [name characters](is_name_char), not a bare `_`, not one of the twelve
+//! [name characters](is_name_char), not a bare `_`, not one of the eleven
 //! words that are never a name ([`LEXER_KEYWORDS`]) and not one of the
 //! engine's three writeback names. So `1`, `07`, `-7`, `1..5`, `it's` and
 //! `[a]` print bare, and `(p 1) (p 01)` print as two facts. Anything else
@@ -26,16 +26,14 @@
 
 use std::borrow::Cow;
 
-/// The twelve words that are never a name (`ein-ir`'s
+/// The eleven words that are never a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, tokens of their own in `ein.l`): a name that is
 /// one of them prints quoted. A longer run (`not-red`, `rule.x`, `neq-1`) is
-/// the name it spells, a reserved word being a whole token. `open`, the
-/// verdict, is one of them (Q-M1f.66): no
-/// program can write a name `open`, and a form headed `open` is the verdict,
-/// which [`head`] prints bare.
+/// the name it spells, a reserved word being a whole token. `open` is no
+/// longer one of them (Q-M1f.66): it is a name wherever a name goes, and a
+/// form headed `open`, which the kernel reads, prints bare ([`head`]).
 pub const LEXER_KEYWORDS: &[&str] = &[
     "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
-    "open",
 ];
 
 /// A character of a name, under the name rule (`ein.l`'s `NAME`): ASCII
@@ -73,7 +71,7 @@ pub fn is_name_char(ch: char) -> bool {
 
 /// Does `s`, written bare, read back as one name? A run of
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
-/// twelve words that are never a name ([`LEXER_KEYWORDS`]), and not one of
+/// eleven words that are never a name ([`LEXER_KEYWORDS`]), and not one of
 /// the engine's three writeback names (`ein.l`'s `WRITEBACK`). The
 /// fourteen words a position gives a meaning to (`relation`, `model`, `not`, …) are
 /// names wherever a name goes, so they print bare.
@@ -171,8 +169,8 @@ pub fn is_internal(name: &str) -> bool {
 }
 
 /// A fact's head as Ein text: a relation is a `SYMBOL`, a kernel form's head
-/// (`not`, `and`, `or`, `neq`, `=`, and `open`, the verdict) reads back as
-/// that form, and the two names
+/// (`not`, `and`, `or`, `neq`, `=`, and `open`, what a state owes and its
+/// hypotheses) reads back as that form, and the two names
 /// the loader gives a nested form with no atom head print as what loads them
 /// ([`NESTED_HEAD`], [`EMPTY_HEAD`]). Any other text is quoted, which does not
 /// parse in head position: no corpus state holds one
@@ -235,7 +233,7 @@ mod tests {
             ("x y", "\"x y\""),
             ("", "\"\""),
             ("and", "\"and\""),
-            ("open", "\"open\""),
+            ("open", "open"),
             ("?x", "\"?x\""),
             ("_", "\"_\""),
             (":kw", "\":kw\""),

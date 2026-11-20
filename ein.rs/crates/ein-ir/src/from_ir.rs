@@ -315,9 +315,11 @@ pub fn load_query_by(
         opts,
         &mut errors,
     )?;
-    // Pass 3 — facts.
+    // Pass 3 — facts. A written `(open …)` is held aside until the
+    // program's relations are known (`write_open_facts`).
+    let mut written_open: Vec<(FactId, ProvId, NodeId)> = Vec::new();
     for &form in &facts {
-        ingest_fact(ast, terms, &mut kb, form)?;
+        ingest_fact(ast, terms, &mut kb, form, &mut written_open)?;
     }
     // A written fact of `eq` at another arity.
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
@@ -332,6 +334,8 @@ pub fn load_query_by(
         &stdlib_macros,
         &mut errors,
     );
+    // An obligation made to owe `open` (Q-M1f.66).
+    refuse_open_owed(ast, terms, &kb, &facts, &mut errors);
     // A rule parameter that names a relation, bound to a nested fact by an
     // activator the program writes down: a warning.
     validate_relation_parameters(ast, terms, &kb, &facts, &mut warnings);
@@ -406,6 +410,9 @@ pub fn load_query_by(
         kb.program_mut().relations_of = symbols.into_boxed_slice();
     }
     validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
+    // The `open` facts the program writes, into the part of root no fork
+    // inherits (Q-M1f.566).
+    write_open_facts(ast, terms, &mut kb, &written_open, &mut errors);
     // A `(solve …)` list that names an hrule or a relation the program does
     // not have.
     if let Some(known) = relations_of.as_ref() {
@@ -1540,6 +1547,7 @@ fn ingest_rules(
         if kb.program().rules.contains(name_sym)
             || kb.program().hrules.contains(name_sym)
             || kb.program().obligations.contains(name_sym)
+            || kb.program().hypotheses.contains(name_sym)
         {
             errors.push(format!("duplicate rule/hrule name '{name}' at {loc}"));
             continue;
@@ -1638,12 +1646,13 @@ fn ingest_rules(
                 _ => None,
             })
             .collect();
-        // The reserved verdict atom: the grammar writes it only as a rule's
-        // whole `:assert`, at arity 0 or 1 (Q-M1f.66), and it is refused
-        // here where its projection does not resolve. A rule that asserts it is
-        // an **obligation** and is routed out of the saturation agenda below.
+        // What the rule concludes under `open` (Q-M1f.566, Q-M1f.573): a
+        // relation it owes, the rule's whole `:assert`, which makes it an
+        // **obligation**, refused here where its projection does not resolve;
+        // or hypotheses, which a rule concludes beside any facts. Either is
+        // routed out of the saturation agenda below.
         let n_errors = errors.len();
-        let is_obligation = validate_open(
+        let opened = validate_open(
             ast,
             &head,
             &name,
@@ -1655,6 +1664,7 @@ fn ingest_rules(
         if errors.len() != n_errors {
             continue;
         }
+        let is_obligation = matches!(opened, Opened::Owes);
         // An hrule proposes one fact per match, each a commitment of its own,
         // so its conclusion, read flat, is one conjunct (Q-M1f.271): a
         // conjunction could read as *each is a guess* or as *these together*,
@@ -1710,16 +1720,31 @@ fn ingest_rules(
             why,
             loc: core_loc(ast, form),
         };
-        if is_obligation {
+        match opened {
             // Never the saturator's: it derives nothing, so it has no place in
             // a queue that orders derivation, and it is read once per quiescent
             // KB after the fixpoint instead. An `hrule` asserting `open` is the
             // same object and goes the same way (`08-obligations.md`).
-            kb.program_mut().add_obligation(rule);
-        } else if head == "hrule" {
-            kb.program_mut().add_hrule(rule);
-        } else {
-            kb.program_mut().add_rule(rule);
+            Opened::Owes => kb.program_mut().add_obligation(rule),
+            // A rule that concludes hypotheses is read by the pass that
+            // writes a state's `open` facts, at every state, and never by the
+            // saturator (Q-M1f.569); the facts it concludes beside them are an
+            // ordinary rule's, the same rule with them alone.
+            Opened::Hypotheses { rest } => {
+                if !rest.is_empty() {
+                    let conclusion = if rest.len() == 1 {
+                        rest[0]
+                    } else {
+                        ast.sform_named("and", &rest, None)
+                    };
+                    let mut ordinary = rule.clone();
+                    ordinary.assert_ = Some(pattern_from_ir(ast, terms, conclusion)?);
+                    kb.program_mut().add_rule(ordinary);
+                }
+                kb.program_mut().add_hypothesis(rule);
+            }
+            Opened::Nothing if head == "hrule" => kb.program_mut().add_hrule(rule),
+            Opened::Nothing => kb.program_mut().add_rule(rule),
         }
     }
     Ok(())
@@ -2401,14 +2426,34 @@ impl<'a> Shapes<'a> {
                     );
                     return;
                 }
+                // `absent` takes a premise, which may hold an `absent` inside
+                // a conjunction, the universal, but is not one directly
+                // (Q-M1f.568, Q-M1f.571).
+                if matches!(self.shape(args[0]), Shape::Form(Some("absent"))) {
+                    self.refuse(
+                        node,
+                        "absent directly under absent is refused — absent takes a premise, a \
+                         pattern or a conjunction, and (absent (absent P)) is no test a state \
+                         makes"
+                            .to_string(),
+                    );
+                    return;
+                }
                 self.premise(args[0]);
             }
             Some("not") => self.negation(node, false, false),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
             // `false` takes no argument, as a premise too.
             Some("false") if !args.is_empty() => self.false_with_arguments(node, "holds where"),
-            // No premise is `(open …)`: the grammar writes `open` only as a
-            // rule's whole `:assert`, which `validate_open` holds (Q-M1f.66).
+            // A premise `(open …)` reads the `open` facts a state holds
+            // (Q-M1f.569): one argument, a fact's pattern or a variable.
+            Some("open") => {
+                if self.opened(node) {
+                    for a in args {
+                        self.arg(node, a);
+                    }
+                }
+            }
             _ => {
                 for a in args {
                     self.arg(node, a);
@@ -2460,11 +2505,6 @@ impl<'a> Shapes<'a> {
             Shape::Form(Some("eq")) => Some(format!(
                 "{text} is written where a value goes — eq is computed and never stored, and \
                  {VALUE}"
-            )),
-            Shape::Form(Some("absent")) => Some(format!(
-                "{text} is written where a value goes — absent is negation as failure, a \
-                 premise's test that no fact is of, and {VALUE}; the stored negation of a fact \
-                 is (not …)"
             )),
             Shape::Form(Some("false")) if !self.args(node).is_empty() => Some(format!(
                 "{text} is written where a value goes — false takes no argument, and {VALUE}"
@@ -2525,7 +2565,7 @@ impl<'a> Shapes<'a> {
         let p = args[0];
         match self.shape(p) {
             Shape::Form(Some("eq")) if !value => return self.guard(p, "eq"),
-            Shape::Form(Some("eq" | "absent" | "false")) => {
+            Shape::Form(Some("eq" | "false")) => {
                 if let Some(what) = self.no_value(p) {
                     return self.refuse(node, what);
                 }
@@ -2605,14 +2645,52 @@ impl<'a> Shapes<'a> {
                     .to_string(),
             ),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
-            // The verdict, a rule's whole `:assert`: `validate_open`'s.
-            Some("open") => {}
+            // What a state owes, or a hypothesis: one argument, which
+            // `validate_open` reads (Q-M1f.573).
+            Some("open") => {
+                if self.opened(node) {
+                    for a in args {
+                        self.term(node, a);
+                    }
+                }
+            }
             _ => {
                 for a in args {
                     self.term(node, a);
                 }
             }
         }
+    }
+
+    /// `(open …)` where the kernel reads it, a premise's or a conclusion's
+    /// head (Q-M1f.568): it takes one argument, and directly under it neither
+    /// `open` nor `absent` is written, `(open (open P))` and
+    /// `(open (absent P))`. The grammar gives each shape, and this holds a
+    /// macro's expansion to it. `false` where it refused.
+    fn opened(&mut self, node: NodeId) -> bool {
+        let args = self.args(node);
+        if args.len() != 1 {
+            self.refuse(
+                node,
+                format!(
+                    "open takes exactly 1 argument, not {} — a relation's name, which a state \
+                     owes, or a fact, which is a hypothesis",
+                    args.len()
+                ),
+            );
+            return false;
+        }
+        if let Shape::Form(Some(k @ ("open" | "absent"))) = self.shape(args[0]) {
+            self.refuse(
+                node,
+                format!(
+                    "{k} directly under open is refused — open takes a relation's name or a \
+                     fact a state could hold, and the kernel reads {k} there"
+                ),
+            );
+            return false;
+        }
+        true
     }
 }
 
@@ -2795,6 +2873,7 @@ fn validate_relation_parameters(
         &kb.program().rules,
         &kb.program().hrules,
         &kb.program().obligations,
+        &kb.program().hypotheses,
     ] {
         for (name, rule) in registry.iter() {
             let heads: Vec<(usize, Symbol)> = rule
@@ -4667,21 +4746,6 @@ fn is_open_form(ast: &Ast, node: NodeId) -> bool {
     matches!(ast.node(node), Node::SForm { .. }) && ast.head_name(node) == Some("open")
 }
 
-/// Every `(open …)` form anywhere under `node`, in source order.
-fn open_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
-    if is_open_form(ast, node) {
-        out.push(node);
-    }
-    if matches!(ast.node(node), Node::SForm { .. }) {
-        for &a in ast.form_args(node) {
-            open_forms(ast, a, out);
-        }
-    }
-    if let Node::KwPair { value, .. } = ast.node(node) {
-        open_forms(ast, value, out);
-    }
-}
-
 /// Every variable name occurring under `node`.
 fn vars_under(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
     match ast.node(node) {
@@ -4751,28 +4815,42 @@ fn rel_premises(
     }
 }
 
-/// Load-time validation of the reserved verdict atom, and the classification
-/// that follows from it.
+/// What a rule concludes under `open`, as [`validate_open`] reads it.
+enum Opened {
+    /// No `(open …)` conjunct.
+    Nothing,
+    /// `(open R)` or `(open ?R)`, `R` a relation's name or `?R` a
+    /// parameter that names one, the rule's whole `:assert`: an
+    /// **obligation**.
+    Owes,
+    /// One `(open F)` conjunct or more, each a hypothesis, `F` a fact or a
+    /// variable the `:match` binds; `rest` the conjuncts beside them, which
+    /// the rule concludes as any rule does.
+    Hypotheses { rest: Vec<NodeId> },
+}
+
+/// Load-time validation of what a rule concludes under `open`, and the
+/// classification that follows from it (Q-M1f.566, Q-M1f.573, Q-M1f.575).
 ///
-/// Returns `true` when the rule is an **obligation** — its `:assert` is
-/// `(open …)` and nothing else — which routes it out of the saturation agenda
-/// ([the form](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)). Errors are pushed rather than returned
-/// so one malformed rule does not hide the next.
+/// Under `open`, read here: **a relation's name, or a parameter, is what an
+/// obligation owes**, and the rule's whole `:assert`, which routes it out of
+/// the saturation agenda
+/// ([the form](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r));
+/// **a fact, or a variable the `:match` binds, is a hypothesis**, which
+/// stands in a conjunction like any fact. Errors are pushed rather than
+/// returned so one malformed rule does not hide the next.
 ///
-/// **Where `open` stands is the grammar's** (Q-M1f.66): `open` is no name,
-/// and `ein.y`'s `Assert` is the one production that takes it, `(open)` or
-/// `(open ?R)`, a rule's whole `:assert`, its argument a variable or a
-/// relation's name. So no `(open …)` stands in a `:match`, inside a
-/// conclusion, beside another conclusion or with two arguments, written or
-/// through a macro, whose body and arguments write no `open` either
-/// (Q-M1f.86); each of those, and an argument that is neither a variable nor
-/// a name, is a row of the grammar's table, and this pass holds it as an
-/// invariant. What it refuses is what only the program can tell, the
-/// projection:
+/// The grammar gives `(open …)` one argument, and refuses `(open)` and
+/// `open` or `absent` directly under it (`ein.y`'s `Conclusion`, Q-M1f.568);
+/// a macro's expansion is held to the same shapes by
+/// [`refuse_malformed_primitives`]. What this pass refuses is what only the
+/// program can tell:
 ///
-/// 1. **`(open ?R)` whose `?R` is not a parameter** — a relation variable is
-///    bound by the activator, never by a premise, so it could never resolve;
-/// 2. **a projection that does not resolve** — `(open ?R)` names the relation
+/// 1. **an obligation's `(open …)` beside another conclusion** — what a
+///    state owes is a rule's whole `:assert` (Q-M1f.575);
+/// 2. **an hrule that concludes `open`** but as an obligation — an hrule
+///    proposes a fact, a hypothesis already;
+/// 3. **a projection that does not resolve** — `(open ?R)` names the relation
 ///    whose extent is incomplete and the engine reads the rest out of the
 ///    rule's own `absent`: exactly one `absent` holding a positive `?R`
 ///    premise, and exactly one such premise bearing a variable the guard does
@@ -4789,42 +4867,68 @@ fn validate_open(
     match_node: NodeId,
     assert_node: NodeId,
     errors: &mut Vec<String>,
-) -> bool {
-    let mut forms = Vec::new();
-    open_forms(ast, match_node, &mut forms);
-    open_forms(ast, assert_node, &mut forms);
-    let whole = is_open_form(ast, assert_node);
-    assert!(
-        forms.len() == usize::from(whole) && (!whole || ast.form_args(assert_node).len() <= 1),
-        "{head} '{name}': an (open …) stands where the grammar writes none — ein.y's Assert is \
-         the one production that takes open, a rule's whole :assert, (open) or (open ?R)"
-    );
-    if !whole {
-        return false;
+) -> Opened {
+    let conjuncts = ast.conjuncts(assert_node);
+    let opens: Vec<NodeId> = conjuncts
+        .iter()
+        .copied()
+        .filter(|&c| is_open_form(ast, c))
+        .collect();
+    if opens.is_empty() {
+        return Opened::Nothing;
     }
-    let who = format!("{}{head} '{name}'", placed(ast, assert_node));
-    let Some(&arg) = ast.form_args(assert_node).first() else {
-        return true; // bare `(open)` — countable, nothing to project.
+    // What each `(open …)` takes: a name, or a parameter, is a relation the
+    // rule owes; anything else a hypothesis. A form with no argument, or
+    // more than one, is `refuse_malformed_primitives`' line.
+    let owes = |c: NodeId| -> Option<(String, bool)> {
+        match ast.form_args(c) {
+            [arg] => match ast.node(*arg) {
+                Node::Var(s) if params.iter().any(|p| p == ast.sym(s)) => {
+                    Some((ast.sym(s).to_string(), true))
+                }
+                Node::Atom(s) => Some((ast.sym(s).to_string(), false)),
+                _ => None,
+            },
+            _ => None,
+        }
     };
-    let (rel, is_var) = match ast.node(arg) {
-        Node::Var(s) => (ast.sym(s).to_string(), true),
-        Node::Atom(s) => (ast.sym(s).to_string(), false),
-        _ => unreachable!(
-            "{who}: (open …)'s argument is a variable or a name (ein.y's Assert, AnyHead)"
-        ),
+    let owed: Vec<(NodeId, (String, bool))> = opens
+        .iter()
+        .filter_map(|&c| owes(c).map(|o| (c, o)))
+        .collect();
+    let Some((at, (rel, is_var))) = owed.first().cloned() else {
+        if head == "hrule" {
+            errors.push(format!(
+                "{}hrule '{name}': its :assert concludes {} — an hrule proposes a fact, which is \
+                 a hypothesis already: write a rule that concludes (open …)",
+                placed(ast, opens[0]),
+                crate::dump::dump_compact(ast, opens[0]),
+            ));
+            return Opened::Nothing;
+        }
+        let rest = conjuncts
+            .iter()
+            .copied()
+            .filter(|c| !opens.contains(c))
+            .collect();
+        return Opened::Hypotheses { rest };
     };
-    // A variable relation head is bound by the activator, never by a
-    // premise (a rule compiles once per activator, Q29), so an
-    // `(open ?R)` whose `?R` is not a parameter could never resolve.
-    if is_var && !params.iter().any(|p| p == &rel) {
+    let who = format!("{}{head} '{name}'", placed(ast, at));
+    let shown = if is_var {
+        format!("?{rel}")
+    } else {
+        rel.clone()
+    };
+    if conjuncts.len() > 1 {
         errors.push(format!(
-            "{who}: `(open ?{rel})` names a relation the activator does not bind — `?{rel}` is \
-             not in the parameter list"
+            "{who}: `(open {shown})` stands beside another conclusion — what a state owes is a \
+             rule's whole :assert, which the pass reads at the fixpoint and which concludes no \
+             fact: write one rule for the obligation and one for the rest"
         ));
-        return true;
+        return Opened::Owes;
     }
     validate_projection(ast, &who, &rel, is_var, match_node, errors);
-    true
+    Opened::Owes
 }
 
 /// `<file>:<line>:<col>: `, where `node` is written, or nothing where the
@@ -5025,9 +5129,97 @@ fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations:
 
 // ── Pass 3 — facts ─────────────────────────────────────────────────
 
+/// **The `open` facts a program writes** (Q-M1f.566, Q-M1f.66): each held
+/// at root alone, in the part of a state no fork inherits, so a fork drops it
+/// and no state above root holds it again. `(open F)`, `F` a fact, is a
+/// hypothesis the program writes; `(open R)`, `R` a relation of the program,
+/// what root owes, written. A name that is no relation of the program is
+/// refused: under `open` it is a hypothesis of no fact, and owed by nothing.
+fn write_open_facts(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &mut Kb,
+    written: &[(FactId, ProvId, NodeId)],
+    errors: &mut Vec<String>,
+) {
+    for &(id, prov, form) in written {
+        let arg = terms.facts.args(id)[0];
+        if let Some(name) = arg.as_sym()
+            && !kb.program().relations.contains(name)
+        {
+            errors.push(format!(
+                "{}(open {}) is written, and {} is neither a fact nor a relation of the program — \
+                 under open a fact is a hypothesis and a relation's name is what a state owes",
+                placed_form(ast, form),
+                terms.sym(name),
+                terms.sym(name),
+            ));
+            continue;
+        }
+        kb.write_open(terms, &[id], |_| Some(prov));
+    }
+}
+
+/// **An obligation made to owe `open`** (Q-M1f.66): an activator the
+/// program writes binds the parameter an obligation's `(open ?R)` names to
+/// the name `open`. `open` is the kernel's relation, of what a state owes and
+/// of its hypotheses, and no obligation owes it: refused, one line per
+/// activator, placed where it is written.
+fn refuse_open_owed(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    facts: &[NodeId],
+    errors: &mut Vec<String>,
+) {
+    for &form in facts {
+        let Some(head) = ast.head_name(form) else {
+            continue;
+        };
+        let Some(rule) = terms.syms.get(head).and_then(|s| kb.program().obligations.get(s)) else {
+            continue;
+        };
+        let Some(open) = rule.assert_.as_ref().map(|a| NodeId(a.expr.0)) else {
+            continue;
+        };
+        let Some(&arg) = ast.form_args(open).first() else {
+            continue;
+        };
+        let Node::Var(v) = ast.node(arg) else {
+            continue;
+        };
+        let Some(i) = rule.params.iter().position(|&p| terms.sym(p) == ast.sym(v)) else {
+            continue;
+        };
+        let written: Vec<NodeId> = ast
+            .form_args(form)
+            .iter()
+            .copied()
+            .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
+            .collect();
+        if written.get(i).and_then(|&a| ast.atom_name(a)) == Some("open") {
+            errors.push(format!(
+                "{}{} makes obligation '{head}' owe open — open is the kernel's relation, of \
+                 what a state owes and of its hypotheses, and no obligation owes it",
+                placed_form(ast, form),
+                crate::dump::dump_compact(ast, form),
+            ));
+        }
+    }
+}
+
 /// One fact, with its provenance. A fact's relation is a name (`ein.y`'s
-/// `FactHead`): the grammar refuses a fact whose relation is not.
-fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Result<(), Overflow> {
+/// `FactHead`): the grammar refuses a fact whose relation is not. A written
+/// `(open …)` (`ein.y`'s `OpenFact`) is interned and handed back in
+/// `written_open`, which [`write_open_facts`] reads once the program's
+/// relations are known.
+fn ingest_fact(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    form: NodeId,
+    written_open: &mut Vec<(FactId, ProvId, NodeId)>,
+) -> Result<(), Overflow> {
     let head_name = ast
         .head_name(form)
         .expect("a fact's relation is a name (ein.y's FactHead)")
@@ -5121,6 +5313,10 @@ fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Resul
         });
     }
     let args = fact_args(ast, terms, &args)?;
+    if head == terms.kernel.open {
+        written_open.push((terms.intern_fact(head, &args)?, prov, form));
+        return Ok(());
+    }
     kb.add_fact(terms, head, &args, Some(prov))?;
     Ok(())
 }
@@ -5230,15 +5426,25 @@ mod tests {
             "…and to neither of the two that fire during a search"
         );
 
-        // The bare degenerate is the same object with nothing to project.
+        // A rule that concludes a hypothesis, `(open F)`, is read by the pass
+        // at each state's fixpoint, and its other conclusions are an
+        // ordinary rule's (Q-M1f.566, Q-M1f.573).
         let (terms, kb) = ok(
-            "(relation r A B :why \"r holds of {?3} and {?4}\")\n(rule owes () :match (absent (r a b)) :assert (open) :why \"r does not hold of a and b yet — that fact is still owed\")\n",
+            "(relation r A B :why \"r holds of {?3} and {?4}\")\n(relation s A :why \"s holds of {?3}\")\n(r a b)\n\
+             (rule ask () :match (r ?x ?y) :assert (and (open (r ?y ?x)) (s ?x)) :why \"is r of {?y} and {?x}?\")\n",
+        );
+        let ask = terms.syms.get("ask").expect("interned");
+        assert!(
+            kb.program().hypotheses.contains(ask) && !kb.program().obligations.contains(ask),
+            "a rule that concludes `(open F)` concludes a hypothesis, and owes nothing"
         );
         assert!(
             kb.program()
-                .obligations
-                .contains(terms.syms.get("owes").expect("interned")),
-            "`(open)` is countable and routes the same way"
+                .rules
+                .get(ask)
+                .and_then(|r| r.assert_.as_ref())
+                .is_some_and(|a| !a.relation_names.contains(&terms.kernel.open)),
+            "…and its other conclusion is an ordinary rule's, with no `open`"
         );
 
         // An ordinary rule is untouched by any of it.
@@ -5608,7 +5814,7 @@ mod tests {
                 format!("(rule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
                 format!("(rule r (?R) :match (and (?R ?x) {call}) :assert (p ?x) :why \"r\")"),
                 format!("(hrule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
-                format!("(rule r () :match (and (a ?x) {call}) :assert (open) :why \"r\")"),
+                format!("(rule r () :match (and (a ?x) {call}) :assert (open (p ?x)) :why \"r\")"),
             ]
         };
         let concl = |call: &str| {
@@ -5716,20 +5922,14 @@ mod tests {
         // What loads: every macro above, used by no rule; and every shape the
         // grammar takes where a rule writes it, written and through a macro.
         ok(&format!("{pre}{m}"));
-        // Seven shapes refused by the value rule (Q-M1f.113): a value is a
-        // name, or a fact a state could hold, so `absent`, `eq`, a connective
-        // and `false` with an argument head none, and no conclusion is of
-        // `absent`. The grammar refuses five written out, and the walk the two
-        // it cannot tell from a macro's call.
+        // Five shapes refused by the value rule (Q-M1f.113): a value is a
+        // name, or a fact a state could hold, so `eq`, a connective and
+        // `false` with an argument head none, and no conclusion is of
+        // `absent`. The grammar refuses three written out, and the walk the
+        // two it cannot tell from a macro's call. Under an ordinary relation
+        // `absent` is an ordinary name (Q-M1f.571), so a value headed by it
+        // loads, below.
         for (text, want) in [
-            (
-                "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
-                None,
-            ),
-            (
-                "(rule r () :match (and (a ?x) (eq ?x (absent (p k)))) :assert (p ?x) :why \"r\")",
-                None,
-            ),
             (
                 "(rule r () :match (and (a ?x) (false ?x)) :assert (p ?x) :why \"r\")",
                 None,
@@ -5766,6 +5966,8 @@ mod tests {
             }
         }
         for text in [
+            "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (eq ?x (absent (p k)))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (not (eq ?x k))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (p (not (q k)))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (absent (false))) :assert (p ?x) :why \"r\")",
@@ -6398,12 +6600,13 @@ mod tests {
                      (absent (?R ?a b))) :assert (open ?R) :why \"{{?a}} has no {{?R}} link to b yet — one is still owed\")"
                 ),
             ),
-            // A variable relation head comes from the activator, never a premise.
+            // An obligation's `(open R)` is a rule's whole `:assert`
+            // (Q-M1f.575).
             (
-                "is not in the parameter list",
+                "stands beside another conclusion",
                 format!(
-                    "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) \
-                     :assert (open ?R) :why \"{{?a}} is a {{?A}}, which {{?R}} is declared over, so a {{?R}} partner is owed\")"
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (and (open ?R) (r ?a b)) :why \"{{?a}} has no {{?R}} partner yet\")"
                 ),
             ),
             // Written as a premise's relation too, the rule pass refuses it

@@ -6,11 +6,18 @@ Connective =
     "(" , "and" , Premises , ")"
   | "(" , "or" , Premises , ")"
   | "(" , "not" , Negated , ")"
-  | "(" , "absent" , Premise , ")"
+  | "(" , "absent" , AbsentPremise , ")"
+  | Guard ;
+AbsentPremise =
+    "(" , PremiseHead , Args , ")"
+  | "(" , "false" , ")"
+  | "(" , "and" , Premises , ")"
+  | "(" , "or" , Premises , ")"
+  | "(" , "not" , Negated , ")"
   | Guard ;
 Negated = Pattern | NegPattern | "(" , "eq" , Term , Term , ")" ;
 Guard = "(" , "eq" , Term , Term , ")" | "(" , "neq" , Term , Term , ")" ;
 Args = { Arg } ;
 Arg = Name | Var | "(" , ArgHead , Args , ")" | "(" , "false" , ")" | Connective ;
-ArgHead = ValueHead | Var ;
+ArgHead = OpenHead | Var ;
 @endebnf
