@@ -101,10 +101,10 @@ itself one of the fixed orders below.
 | the registries: relations, rules, obligations, hypotheses, macros | declaration order | `entities::Registry<V>`: `Vec<(Symbol, V)>` and an `FxHashMap<Symbol, u32>` index |
 | the KB's fact list, `Kb::facts` | append order, layers read oldest first | `Layer::facts: Vec<FactId>` per layer |
 | a relation's held extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
-| a participation bucket `(relation, slot, value)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |
+| a participation bucket `(relation, slot, value)`, or `(relation, slot, a held fact's relation)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |
 | `Kb::names` | first-seen order, which no consumer relies on: each sorts | a bitset dedup over each layer's name registry |
 | an engine's plan list | compilation order: each rule with each of its activators, each engine its own list over the shared memo | `Engine::plans: Vec<PlanId>` with `by_key` |
-| plans by premise relation | plan-list order | `Saturator::pos_index`, built by walking the plan list |
+| plans by premise relation, and by a held fact's relation | plan-list order; a fact's plans from two lists merged into it | `Saturator::pos_index`, a `PlanIndex` built by walking the plan list |
 | a match's bindings, `Prov::bindings` | bind order, the matcher's trail | `Box<[(Symbol, Value)]>` |
 | a match's premises, `Prov::premises` | plan-step order, a seeded fact at its own step | `Box<[FactId]>` |
 | the agenda and the parked set | rank ([§ 3.1](#31-the-agendas-key-is-total)) | `BinaryHeap<Reverse<(u64, u32)>>`, `BTreeSet<(u64, u32)>` |
@@ -139,11 +139,11 @@ core of a dead node.
 
 | site | the structure that fixes its order |
 |---|---|
-| candidate selection, `Matcher` | the bucket of the first slot, left to right, holding a usable object (`plan.probes`, checked against `candidates_scan` in debug builds); a bucket yields in the held extent's order, so narrowing changes no match sequence: `match_.rs`' `narrowing_never_changes_the_match_sequence` |
+| candidate selection, `Matcher` | the bucket of the first slot, left to right, holding a usable object, else of the first nested fact's relation (`plan.probes`, checked against `candidates_scan` in debug builds); a bucket yields in the held extent's order, so narrowing changes no match sequence: `match_.rs`' `narrowing_never_changes_the_match_sequence` |
 | the join | left-deep, steps in plan order; no join is reordered ([`05-matcher.md`](05-matcher.md)) |
 | a seeded match | the delta fact at each matching step, in step order, at its own premise position |
 | compilation, `Engine` | each rule with each of its activators, in registry and append order; the memo shares plans, never the order |
-| the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then `pos_index[rel]` |
+| the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then the plans `pos_index` gives each, in plan-list order; a pair's plan takes a probe at its place in that order and queues the match a seeded match would |
 | the boundary | parked candidates in rank order; the first whose guards pass is admitted, one per round |
 | a resumed node's delta | the facts the snapshot lacks in the order the KB holds them, which is the order the caller wrote them (`Snapshot::new_facts_of`); every route writes a commitment in H's order |
 

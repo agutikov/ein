@@ -265,6 +265,83 @@ pub struct Pairs {
     /// For each plan [`Pairs::of`] read, in its order: whether the plan is
     /// such a rule.
     refuting: Vec<bool>,
+    /// For each plan [`Pairs::of`] read, in its order: where it is such a
+    /// rule and its match is the pair and nothing else, one disjunct, the
+    /// pair's shape, which the saturator matches by a probe.
+    shapes: Vec<Option<PairShape>>,
+}
+
+/// **A plan whose match is a pair and nothing else**: one disjunct, no
+/// `(absent …)`, two premises, a fact `(R ?a …)` of `count` distinct
+/// variables at the step `held`, and `(wrapper (R ?a …))` at the other, and a
+/// firing that ends a state ([`Pairs::shape_at`]). `std.contradiction`'s
+/// `clash-N`, activated for `R`, is one, `wrapper` the relation `not`.
+///
+/// Its matches need no walk: a new fact `F` of `R` matches it where the state
+/// holds `(wrapper F)`, a new `(wrapper G)` where the state holds `G`, one
+/// probe each ([`PairShape::each_match`]), which the saturator asks in place
+/// of a seeded match (`saturator`'s § A pair matched by a probe).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct PairShape {
+    /// The relation of the fact that holds the other, as the rule's shape
+    /// names it: no name the kernel knows.
+    pub wrapper: Symbol,
+    /// The relation of the held fact.
+    pub rel: Symbol,
+    /// The held fact's count of arguments.
+    pub count: usize,
+    /// The step of the held fact, 0 or 1; the other is the fact holding it.
+    pub held: usize,
+}
+
+impl PairShape {
+    /// The premises, in step order, of each match of the plan that `fact`
+    /// takes part in, handed to `each` in the order a seeded match finds
+    /// them: the plan's steps in order, `fact` at each it can stand at.
+    ///
+    /// At the held step, a fact of `rel` and `count` arguments, where `kb`
+    /// holds `(wrapper fact)`: the fact store's own probe of that
+    /// proposition, which builds nothing, then `Kb::contains`. At the other,
+    /// `(wrapper G)` with `G` a fact of `rel` and `count` arguments, where
+    /// `kb` holds `G`. A fact of another relation or count is turned away by
+    /// a compare.
+    pub fn each_match(
+        &self,
+        kb: &Kb,
+        terms: &Terms,
+        fact: FactId,
+        mut each: impl FnMut([FactId; 2]),
+    ) {
+        let (rel, args) = terms.facts.get(fact);
+        for step in 0..2 {
+            if step == self.held {
+                if rel == self.rel
+                    && args.len() == self.count
+                    && let Some(holding) = terms.facts.probe(self.wrapper, &[Value::fact(fact)])
+                    && kb.contains(holding)
+                {
+                    each(self.premises(fact, holding));
+                }
+            } else if rel == self.wrapper
+                && let [held] = args
+                && let Some(held) = held.as_fact()
+                && terms.facts.rel(held) == self.rel
+                && terms.facts.args(held).len() == self.count
+                && kb.contains(held)
+            {
+                each(self.premises(held, fact));
+            }
+        }
+    }
+
+    /// The held fact and the one holding it, in step order.
+    fn premises(&self, held: FactId, holding: FactId) -> [FactId; 2] {
+        if self.held == 0 {
+            [held, holding]
+        } else {
+            [holding, held]
+        }
+    }
 }
 
 impl Pairs {
@@ -297,6 +374,7 @@ impl Pairs {
         let mut out = Pairs::default();
         for plan in plans {
             out.refuting.push(false);
+            out.shapes.push(None);
             if !ends(plan) {
                 continue;
             }
@@ -307,8 +385,9 @@ impl Pairs {
                 let [Step::Rel(a), Step::Rel(b)] = plan.steps(d.steps) else {
                     continue;
                 };
-                let Some((wrapper, rel, count)) =
-                    wrapped(plan, a, b).or_else(|| wrapped(plan, b, a))
+                let Some((wrapper, rel, count, held)) = wrapped(plan, a, b)
+                    .map(|(w, r, n)| (w, r, n, 0))
+                    .or_else(|| wrapped(plan, b, a).map(|(w, r, n)| (w, r, n, 1)))
                 else {
                     continue;
                 };
@@ -318,9 +397,23 @@ impl Pairs {
                 }
                 out.by_wrapper.entry(wrapper).or_default().insert(rel);
                 *out.refuting.last_mut().expect("pushed above") = true;
+                if plan.disjuncts.len() == 1 {
+                    *out.shapes.last_mut().expect("pushed above") = Some(PairShape {
+                        wrapper,
+                        rel,
+                        count,
+                        held,
+                    });
+                }
             }
         }
         out
+    }
+
+    /// The shape of the `at`-th plan [`Pairs::of`] read, where it refutes a
+    /// pair and its match is that pair and nothing else ([`PairShape`]).
+    pub fn shape_at(&self, at: usize) -> Option<PairShape> {
+        self.shapes.get(at).copied().flatten()
     }
 
     /// Whether the `at`-th plan [`Pairs::of`] read refutes a pair: its
@@ -527,5 +620,135 @@ mod tests {
              (rule noted () :match (and (p ?a) (not (p ?a))) :assert (q ?a) :why \"n\")\n(p one)\n",
         );
         assert!(Pairs::of(plans.iter().map(|p| &**p), &terms).is_empty());
+    }
+
+    /// The shape of each plan `src` compiles, by its rule's name.
+    fn shapes(src: &str) -> (Terms, Kb, Vec<(String, Option<PairShape>)>) {
+        let (terms, kb, plans) = saturated(src);
+        let pairs = Pairs::of(plans.iter().map(|p| &**p), &terms);
+        let shapes = plans
+            .iter()
+            .enumerate()
+            .map(|(at, p)| (terms.sym(p.rule).to_string(), pairs.shape_at(at)))
+            .collect();
+        (terms, kb, shapes)
+    }
+
+    fn shape_of(shapes: &[(String, Option<PairShape>)], rule: &str) -> Option<PairShape> {
+        shapes
+            .iter()
+            .find(|(name, _)| name == rule)
+            .unwrap_or_else(|| panic!("no plan of {rule}"))
+            .1
+    }
+
+    /// A plan whose match is the pair and nothing else has a shape, its held
+    /// fact at the step it is written at; one that refutes a pair in one of
+    /// two disjuncts refutes it and has none, so it is seeded.
+    #[test]
+    fn a_pair_alone_has_a_shape_and_its_held_step() {
+        let (terms, _, shapes) = shapes(
+            "(relation p A B :why \"p holds of {?3} and {?4}\")\n(relation q Thing :why \"q {?3}\")\n\
+             (rule first () :match (and (p ?a ?b) (not (p ?a ?b))) :assert (false) :why \"f\")\n\
+             (rule second () :match (and (not (q ?a)) (q ?a)) :ein inconsistent :why \"s\")\n\
+             (rule either () :match (or (and (q ?a) (not (q ?a))) (and (p ?a ?b) (not (p ?a ?b)))) :assert (false) :why \"e\")\n\
+             (p one two)\n",
+        );
+        let (p, q) = (terms.syms.get("p").unwrap(), terms.syms.get("q").unwrap());
+        let not = terms.syms.get("not").unwrap();
+        assert_eq!(
+            shape_of(&shapes, "first"),
+            Some(PairShape {
+                wrapper: not,
+                rel: p,
+                count: 2,
+                held: 0
+            })
+        );
+        assert_eq!(
+            shape_of(&shapes, "second"),
+            Some(PairShape {
+                wrapper: not,
+                rel: q,
+                count: 1,
+                held: 1
+            })
+        );
+        assert_eq!(
+            shape_of(&shapes, "either"),
+            None,
+            "two disjuncts are seeded"
+        );
+    }
+
+    /// A pair's probe finds the match from either side: a new fact where the
+    /// state holds the fact holding it, a new holding fact where the state
+    /// holds the fact it holds, and a fact of another count or relation is
+    /// turned away.
+    #[test]
+    fn a_pair_is_found_from_either_side_by_a_probe() {
+        let (terms, kb, shapes) = shapes(
+            "(relation p Thing :why \"p holds of {?3}\")\n(relation q Thing :why \"q {?3}\")\n\
+             (rule first () :match (and (p ?a) (not (p ?a))) :assert (false) :why \"f\")\n\
+             (p one)\n(not (p one))\n(p two)\n(p one two)\n(not (q one))\n(q one)\n",
+        );
+        let shape = shape_of(&shapes, "first").expect("a pair alone");
+        let fact = |rel: &str, args: &[&str]| {
+            let rel = terms.syms.get(rel).unwrap();
+            let args: Vec<Value> = args
+                .iter()
+                .map(|a| Value::sym(terms.syms.get(a).unwrap()))
+                .collect();
+            terms.probe_fact(rel, &args).expect("interned")
+        };
+        let not = terms.syms.get("not").unwrap();
+        let p_one = fact("p", &["one"]);
+        let not_p_one = terms.probe_fact(not, &[Value::fact(p_one)]).unwrap();
+        let q_one = fact("q", &["one"]);
+        let not_q_one = terms.probe_fact(not, &[Value::fact(q_one)]).unwrap();
+        let found = |f: FactId| {
+            let mut out = Vec::new();
+            shape.each_match(&kb, &terms, f, |premises| out.push(premises));
+            out
+        };
+        assert_eq!(found(p_one), [[p_one, not_p_one]]);
+        assert_eq!(found(not_p_one), [[p_one, not_p_one]]);
+        assert!(
+            found(fact("p", &["two"])).is_empty(),
+            "nothing holds (not (p two))"
+        );
+        assert!(
+            found(fact("p", &["one", "two"])).is_empty(),
+            "another count"
+        );
+        assert!(found(not_q_one).is_empty(), "another relation");
+        assert!(found(q_one).is_empty(), "another relation");
+    }
+
+    /// A wrapper may be the held fact's own relation: a fact of it stands at
+    /// either step, and the saturation, which the gate's build holds to a
+    /// seeded match fact by fact, ends the state.
+    #[test]
+    fn a_wrapper_of_its_own_relation_is_probed_at_both_steps() {
+        let src = "(relation w Thing :why \"w {?3}\")\n\
+                   (rule own () :match (and (w ?a) (w (w ?a))) :assert (false) :why \"o\")\n\
+                   (w x)\n(w (w x))\n";
+        let (terms, kb, shapes) = shapes(src);
+        let w = terms.syms.get("w").unwrap();
+        assert_eq!(
+            shape_of(&shapes, "own"),
+            Some(PairShape {
+                wrapper: w,
+                rel: w,
+                count: 1,
+                held: 0
+            })
+        );
+        assert!(has_contradiction(&kb, &terms));
+        let found = detect(&kb, &terms);
+        let [Contradiction::Pair { positive, negative }] = found[..] else {
+            panic!("{found:?}")
+        };
+        assert_eq!(terms.facts.args(negative), [Value::fact(positive)]);
     }
 }

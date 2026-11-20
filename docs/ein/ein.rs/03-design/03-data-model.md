@@ -303,7 +303,7 @@ fact list (`rebuild_layer`) and then checks the extent counts (§ 7). Held by
 |---|---|---|---|---|
 | `present` | per layer | `FactId` | a bit set: believed here | `Kb::contains` |
 | `by_rel` | per layer | relation `Symbol` | the held extent, append order | `Kb::facts_of` |
-| `by_rel_slot_val` | per layer | `SlotKey` (§ 6.1) | the facts with that object at that position | `Kb::facts_with` |
+| `by_rel_slot_val` | per layer | `SlotKey` (§ 6.1) | the facts with that object at that position, or a fact of that relation | `Kb::facts_with` |
 | `negated` | per layer | the inner `FactId` of each stored `(not X)` | a bit set | `Kb::is_negated`, `Kb::negated` |
 | `rule_apps_by_rule` | per layer | a rule's name | the facts headed by it: its activators | `Kb::rule_apps_by_rule` |
 | `rule_apps_on_rel` | per layer | a relation's name | rule-application facts naming it as an argument, `(symmetric co-located)` | `Kb::rule_apps_on_relation` |
@@ -327,24 +327,33 @@ filters (`relation`, `about`, `by_source`, `by_rule`).
 
 ```rust
 pub struct SlotKey { pub rel: Symbol, pub slot: u16, pub inner: u16, pub value: Value }
-impl SlotKey { pub const DIRECT: u16 = u16::MAX; }
+impl SlotKey { pub const DIRECT: u16 = u16::MAX; pub const RELATION: u16 = u16::MAX - 1; }
 ```
 
 Its four fields make 12 bytes, which does not pack into a `u64` (the symbol and the value need 32 bits each), so it
 stays a struct key. A name in argument `slot` is keyed `(rel, slot, DIRECT, value)`. A nested fact in argument
 `slot` has no single name to key on, so the key reaches **one level inside** it instead: each name at position
-`inner` of the nested fact is keyed `(rel, slot, inner, value)`. A premise `(not (R ?a ?b))` with `?a` bound is then
-a bucket lookup rather than a scan of the held extent of `not`. One level only. That serves a premise over a
-stored negation and one over a context whose fact holds names, `(says ?w (owns ?p ?x))` with `?p` bound. What is
-nested deeper is not keyed: a numeral of the standard library and a tag nest to any depth, and a premise whose
-only bound slots hold facts walks the held extent of its relation
-([05-matcher.md § 5.2](05-matcher.md#52-a-probe-into-the-participation-index)).
+`inner` of the nested fact is keyed `(rel, slot, inner, value)`, and the nested fact's relation `R` is keyed
+`(rel, slot, RELATION, R)`, the context and the relation. A premise `(not (R ?a ?b))` with `?a` bound is then a
+bucket lookup rather than a scan of the held extent of `not`, and with nothing bound a walk of the negations of `R`
+alone. One level only. That serves a premise over a stored negation and one over a context whose fact holds names,
+`(says ?w (owns ?p ?x))` with `?p` bound. What is nested deeper is not keyed: a numeral of the standard library and a
+tag nest to any depth, and a premise whose only bound slots hold facts walks the held extent of its relation
+([05-matcher.md § 5.2](05-matcher.md#52-a-probe-into-the-participation-index)). A fact may have as many arguments as
+a `u16` counts, so a position inside one can be `RELATION`'s number; such a position is not keyed
+(`SlotKey::keys_inner`), and a position's key and a relation's never share a bucket.
+
+The saturator reads the same key to hand a new fact to the plans that can match it: a plan whose every premise of a
+relation holds a fact of a known relation is listed under that relation's key, so a new `(not (R …))` reaches the
+plans that read a negation of `R` and those whose premise leaves the relation open, and no other
+([06-saturation.md § 3](06-saturation.md#3-the-queue-the-delta-and-the-parked-set)).
 
 The index is a narrowing. The matcher re-checks every slot of every candidate, so a key changes which facts are
 offered and never which ones match; buckets are appended in insertion order, so the facts that survive come in the
 extent's order and the firing sequence is the same with or without it. `Kb::index_sizes`, which `ein saturate`'s
 snapshot prints, counts the `DIRECT` postings only, so the report describes the knowledge base rather than how
-`ein.rs` indexes it. Held by `kb.rs`'s `the_participation_index_keys_the_join_types_and_one_level_in`.
+`ein.rs` indexes it. Held by `kb.rs`'s `the_participation_index_keys_the_join_types_and_one_level_in`, the relation's
+key among them.
 
 ### 6.2 The per-layer Bloom filter
 

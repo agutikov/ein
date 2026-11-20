@@ -101,6 +101,31 @@
 //! calling thread, read when a saturation is built, for a measurement over
 //! [`crate::region::Nodes`]' readers, which no route stops. Not taken,
 //! `saturate` runs to the fixpoint.
+//!
+//! ### The plans a fact seeds
+//!
+//! A new fact is handed to the plans that read its relation at a top-level
+//! positive premise (`PlanIndex`), in the plans' order. A premise that holds
+//! a fact of a known relation at an argument, `(not (R ?a ?b))`, keys its
+//! plan by that relation too, the participation index's key of it
+//! ([`ein_core::SlotKey::relation`]), so a new `(not (R …))` is handed to the
+//! plans that read a negation of `R` and to those whose premise leaves the
+//! relation open, and to no other. The index only narrows what is offered:
+//! a plan left out would have found no match, its premise not unifying, and
+//! the plans offered come in the order the whole list gives them.
+//!
+//! ### A pair matched by a probe
+//!
+//! A plan whose match is a fact `F` beside a fact `(W F)` holding it as its
+//! one argument, and nothing else, and whose firing ends a state
+//! ([`crate::contradiction::PairShape`]), `std.contradiction`'s `clash-N`,
+//! is never seeded, after a step or by the pass: a new fact of its relation
+//! asks whether the state holds `(W F)`, a new `(W G)` whether it holds `G`,
+//! one probe by the fact's id each, and only a hit builds the match, the one
+//! a seeded match would build, queued at the place it would take. `W` is the
+//! wrapper the rule's shape names, never a name the kernel knows. A plan
+//! compiled at a state is matched whole once, as every plan is. The gate's
+//! build holds each probe to a seeded match of the same fact.
 
 use std::cell::Cell;
 use std::cmp::Reverse;
@@ -108,11 +133,12 @@ use std::collections::BinaryHeap;
 use std::ops::ControlFlow;
 use std::sync::Arc;
 
-use ein_core::{FactId, Kb, NafArg, NafRef, Prov, Symbol, Terms, Value};
+use ein_core::{FactId, Kb, NafArg, NafRef, Prov, SlotKey, Symbol, Terms, Value};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::{CompileError, SharedMemo};
+use crate::contradiction::PairShape;
 use crate::engine::Engine;
 use crate::events::{self, Events};
 use crate::firing::{BindingKey, Env, FireError, Firing, build_conclusion, fire};
@@ -294,6 +320,31 @@ struct Entry {
     guard_set: GuardSetId,
 }
 
+/// What a match hands the queue, owned: the disjunct, the plan's registers,
+/// the bindings' order and the premises. The gate's build compares what a
+/// pair's probe queues with what a seeded match of the same fact finds
+/// ([`Saturator::pair_match`]).
+#[cfg(debug_assertions)]
+#[derive(Debug, PartialEq)]
+struct SeededMatch {
+    disjunct: usize,
+    regs: Vec<Value>,
+    trail: Vec<Reg>,
+    premises: Vec<FactId>,
+}
+
+#[cfg(debug_assertions)]
+impl SeededMatch {
+    fn of(m: &crate::match_::Match<'_>) -> SeededMatch {
+        SeededMatch {
+            disjunct: m.disjunct,
+            regs: m.regs()[..m.plan.n_regs as usize].to_vec(),
+            trail: m.trail().to_vec(),
+            premises: m.premises().to_vec(),
+        }
+    }
+}
+
 /// The candidate arena, in two layers — the shape
 /// [03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md) gives
 /// the KB, for the same reason.
@@ -400,8 +451,20 @@ pub struct Saturator {
     needs_enqueue: bool,
     delta: Option<Vec<FactId>>,
     matched_plans: Vec<bool>,
-    pos_index: FxHashMap<Symbol, Vec<usize>>,
+    /// Every plan below it has been matched whole ([`Self::matched_plans`]):
+    /// where a pass looks for a plan never matched, it starts here, and not
+    /// at the first plan of the list. 0 where a saturation is built.
+    matched_upto: usize,
+    /// The same of [`Self::end_plans`], for [`Saturator::match_ends`]: those
+    /// below it have been matched whole.
+    ends_matched: usize,
+    /// The plans a new fact is handed to, by its relation and the relation of
+    /// a fact it holds ([`PlanIndex`]); rebuilt when the plan list grows,
+    /// shared with a snapshot and every saturation resumed from it.
+    pos_index: Arc<PlanIndex>,
     index_n: usize,
+    /// Scratch: the plans [`PlanIndex::plans_for`] gives one fact.
+    offered: Vec<usize>,
     /// The boundary's clock: one tick per round, and what a judgement is
     /// stamped with — [`Saturator::refresh_epochs`].
     epoch: u32,
@@ -458,12 +521,16 @@ pub struct Saturator {
     /// ([`crate::contradiction::Pairs::refutes_at`]), so a state ends as soon
     /// as it holds what such a rule reads ([`Saturator::refresh_at_once`]).
     at_once: Vec<bool>,
+    /// Per plan, where its match is a pair and nothing else, the pair's
+    /// shape ([`crate::contradiction::Pairs::shape_at`]): the plan is matched
+    /// by a probe and never seeded (the module's § A pair matched by a
+    /// probe). Read with [`Self::at_once`].
+    pair_at: Vec<Option<PairShape>>,
     /// The plans of rules that fire at once ([`Self::at_once`]), in the engine's
-    /// order, and the relations each reads as a positive premise, as
-    /// [`Self::pos_index`] holds every plan's; read by
-    /// [`Saturator::match_ends`] alone, and computed at `ends_n` plans.
+    /// order, and an index of them as [`Self::pos_index`] is of every plan;
+    /// read by [`Saturator::match_ends`] alone, and computed at `ends_n` plans.
     end_plans: Vec<usize>,
-    end_index: FxHashMap<Symbol, Vec<usize>>,
+    end_index: Arc<PlanIndex>,
     ends_n: usize,
     /// Some rule that states `:ein inconsistent` has parameters, so a derived
     /// activator can give it a plan.
@@ -537,7 +604,7 @@ pub struct Snapshot {
     guard_sets: FxHashMap<Box<[u32]>, GuardSetId>,
     tiebreaker: u64,
     matched_plans: Vec<bool>,
-    pos_index: FxHashMap<Symbol, Vec<usize>>,
+    pos_index: Arc<PlanIndex>,
     index_n: usize,
     /// The boundary's clock and what it has judged — carried so a fork
     /// re-judges exactly the parked candidates whose watched relations its own
@@ -581,13 +648,120 @@ pub struct Snapshot {
 struct Tables {
     /// How many plans they were read over: the engine's length.
     n: usize,
-    /// [`Saturator::at_once`]'s.
+    /// [`Saturator::at_once`]'s and [`Saturator::pair_at`]'s.
     at_once: Vec<bool>,
+    pair_at: Vec<Option<PairShape>>,
     /// [`Saturator::end_plans`]' and [`Saturator::end_index`]'s.
     end_plans: Vec<usize>,
-    end_index: FxHashMap<Symbol, Vec<usize>>,
+    end_index: Arc<PlanIndex>,
     /// What [`Saturator::first`] is read off.
     first: FirstTables,
+}
+
+/// **The plans a new fact is handed to** (the module's § The plans a fact
+/// seeds), each list in the plans' order: by the relation of a top-level
+/// positive premise, and, where every premise of that relation in a plan
+/// holds a fact at some argument, by the relation of the first such fact
+/// too, the participation index's key of it ([`SlotKey::relation`]). So a new
+/// `(not (R …))` reaches the plans that read a negation of `R` and those
+/// whose premise leaves the relation open, `(not ?x)`, and no other.
+#[derive(Clone, Default)]
+struct PlanIndex {
+    /// Relation → the plans with a premise of it, every fact of which can
+    /// seed them ([`Seeds::open`]), and whether some plan is keyed by the
+    /// relation of a fact at an argument of it.
+    by_rel: FxHashMap<Symbol, Seeds>,
+    /// `(relation, argument, RELATION, the relation of the fact there)` →
+    /// the plans keyed by it.
+    by_nested: FxHashMap<SlotKey, Vec<usize>>,
+}
+
+#[derive(Clone, Default)]
+struct Seeds {
+    /// The plans with a premise of the relation that holds no fact at any
+    /// argument, in the plans' order.
+    open: Vec<usize>,
+    /// Some plan is keyed in [`PlanIndex::by_nested`] under the relation.
+    keyed: bool,
+}
+
+impl PlanIndex {
+    /// The index of the plans `plans`, ascending, of `engine`.
+    fn of(engine: &Engine, plans: impl IntoIterator<Item = usize>) -> PlanIndex {
+        let mut index = PlanIndex::default();
+        for at in plans {
+            let plan = engine.plan(at);
+            // Each relation the plan reads at a top-level premise, with the
+            // keys of the relations of the facts its premises hold, or none
+            // where a premise of it holds none.
+            let mut rels: Vec<(Symbol, Option<Vec<SlotKey>>)> = Vec::new();
+            for d in plan.disjuncts.iter() {
+                for step in plan.steps(d.steps) {
+                    let Step::Rel(r) = step else { continue };
+                    let key = plan
+                        .slots(r.slots)
+                        .iter()
+                        .zip(0u16..)
+                        .find_map(|(slot, i)| match *slot {
+                            Slot::Nested { rel, .. } => Some(SlotKey::relation(r.rel, i, rel)),
+                            _ => None,
+                        });
+                    match rels.iter_mut().find(|(rel, _)| *rel == r.rel) {
+                        None => rels.push((r.rel, key.map(|k| vec![k]))),
+                        Some((_, keys)) => match (keys.as_mut(), key) {
+                            (Some(keys), Some(k)) => {
+                                if !keys.contains(&k) {
+                                    keys.push(k);
+                                }
+                            }
+                            _ => *keys = None,
+                        },
+                    }
+                }
+            }
+            for (rel, keys) in rels {
+                let seeds = index.by_rel.entry(rel).or_default();
+                match keys {
+                    None => seeds.open.push(at),
+                    Some(keys) => {
+                        seeds.keyed = true;
+                        for k in keys {
+                            index.by_nested.entry(k).or_default().push(at);
+                        }
+                    }
+                }
+            }
+        }
+        index
+    }
+
+    /// The plans `fact` can seed, into `out`: in the plans' order, each once.
+    fn plans_for(&self, terms: &Terms, fact: FactId, out: &mut Vec<usize>) {
+        out.clear();
+        let (rel, args) = terms.facts.get(fact);
+        let Some(seeds) = self.by_rel.get(&rel) else {
+            return;
+        };
+        out.extend_from_slice(&seeds.open);
+        if !seeds.keyed {
+            return;
+        }
+        let mut lists = usize::from(!seeds.open.is_empty());
+        for (arg, slot) in args.iter().zip(0u16..) {
+            if let Some(held) = arg.as_fact()
+                && let Some(plans) =
+                    self.by_nested
+                        .get(&SlotKey::relation(rel, slot, terms.facts.rel(held)))
+            {
+                out.extend_from_slice(plans);
+                lists += 1;
+            }
+        }
+        if lists > 1 {
+            out.sort_unstable();
+            out.dedup();
+        }
+    }
 }
 
 /// What decides which plans fire first under an agenda, all of it the
@@ -705,27 +879,10 @@ impl FirstTables {
 }
 
 /// The plans of rules that fire at once, `at_once`'s, in the engine's order,
-/// and the relations each reads as a positive premise: what
-/// [`Saturator::match_ends`] matches after each step.
-fn ends_of(engine: &Engine, at_once: &[bool]) -> (Vec<usize>, FxHashMap<Symbol, Vec<usize>>) {
+/// and their index: what [`Saturator::match_ends`] matches after each step.
+fn ends_of(engine: &Engine, at_once: &[bool]) -> (Vec<usize>, Arc<PlanIndex>) {
     let end_plans: Vec<usize> = (0..at_once.len()).filter(|&at| at_once[at]).collect();
-    let mut end_index: FxHashMap<Symbol, Vec<usize>> = FxHashMap::default();
-    for &at in &end_plans {
-        let plan = engine.plan(at);
-        let mut rels: Vec<Symbol> = Vec::new();
-        for d in plan.disjuncts.iter() {
-            for step in plan.steps(d.steps) {
-                if let Step::Rel(r) = step
-                    && !rels.contains(&r.rel)
-                {
-                    rels.push(r.rel);
-                }
-            }
-        }
-        for rel in rels {
-            end_index.entry(rel).or_default().push(at);
-        }
-    }
+    let end_index = Arc::new(PlanIndex::of(engine, end_plans.iter().copied()));
     (end_plans, end_index)
 }
 
@@ -786,8 +943,11 @@ impl Saturator {
             needs_enqueue: true,
             delta: None,
             matched_plans: Vec::new(),
-            pos_index: FxHashMap::default(),
+            matched_upto: 0,
+            ends_matched: 0,
+            pos_index: Arc::default(),
             index_n: usize::MAX,
+            offered: Vec::new(),
             epoch: 0,
             judged_at: Vec::new(),
             gs_epoch: Vec::new(),
@@ -807,8 +967,9 @@ impl Saturator {
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
             at_once: Vec::new(),
+            pair_at: Vec::new(),
             end_plans: Vec::new(),
-            end_index: FxHashMap::default(),
+            end_index: Arc::default(),
             ends_n: usize::MAX,
             open_ends: s.kb.program().rules.values().any(|r| !r.params.is_empty()),
             ends_seeded: None,
@@ -867,6 +1028,7 @@ impl Saturator {
         let at_once: Vec<bool> = (0..n)
             .map(|at| plans[at].ends || first.pairs.refutes_at(at))
             .collect();
+        let pair_at: Vec<Option<PairShape>> = (0..n).map(|at| first.pairs.shape_at(at)).collect();
         let (end_plans, end_index) = ends_of(&self.engine, &at_once);
         let mut held = FxHashSet::default();
         // determinism-ok: what is read is collected into a set.
@@ -881,6 +1043,7 @@ impl Saturator {
         Tables {
             n,
             at_once,
+            pair_at,
             end_plans,
             end_index,
             first,
@@ -946,8 +1109,11 @@ impl Saturator {
             needs_enqueue: true,
             delta: Some(delta),
             matched_plans: snapshot.matched_plans.clone(),
+            matched_upto: 0,
+            ends_matched: 0,
             pos_index: snapshot.pos_index.clone(),
             index_n: snapshot.index_n,
+            offered: Vec::new(),
             epoch: snapshot.epoch,
             judged_at: snapshot.judged_at.clone(),
             gs_epoch: snapshot.gs_epoch.clone(),
@@ -969,6 +1135,11 @@ impl Saturator {
             } else {
                 Vec::new()
             },
+            pair_at: if kept {
+                tables.pair_at.clone()
+            } else {
+                Vec::new()
+            },
             end_plans: if kept {
                 tables.end_plans.clone()
             } else {
@@ -977,7 +1148,7 @@ impl Saturator {
             end_index: if kept {
                 tables.end_index.clone()
             } else {
-                FxHashMap::default()
+                Arc::default()
             },
             ends_n: if kept { tables.n } else { usize::MAX },
             open_ends: s.kb.program().rules.values().any(|r| !r.params.is_empty()),
@@ -1304,6 +1475,7 @@ impl Saturator {
             self.refresh_at_once(s);
             (self.end_plans, self.end_index) = ends_of(&self.engine, &self.at_once);
             self.ends_n = n;
+            self.ends_matched = 0;
         }
         if self.end_plans.is_empty() {
             return Ok(());
@@ -1320,22 +1492,25 @@ impl Saturator {
             }
             return Ok(());
         };
-        // A plan the pending pass would match whole, as it is new.
-        for k in 0..self.end_plans.len() {
+        // A plan the pending pass would match whole, as it is new; those
+        // below `ends_matched` have been.
+        for k in self.ends_matched..self.end_plans.len() {
             let at = self.end_plans[k];
             if !self.matched_plans[at] {
                 self.matched_plans[at] = true;
                 self.full_match(s, at);
             }
         }
+        self.ends_matched = self.end_plans.len();
+        let index = Arc::clone(&self.end_index);
+        let mut plans = std::mem::take(&mut self.offered);
         for &fact in &delta[self.ends_seeded.unwrap_or(0)..] {
-            let rel = s.terms.facts.rel(fact);
-            if let Some(plans) = self.end_index.get(&rel).cloned() {
-                for at in plans {
-                    self.seed_match(s, at, fact);
-                }
+            index.plans_for(s.terms, fact, &mut plans);
+            for &at in &plans {
+                self.offer(s, at, fact);
             }
         }
+        self.offered = plans;
         self.ends_seeded = Some(delta.len());
         self.delta = Some(delta);
         Ok(())
@@ -1582,60 +1757,106 @@ impl Saturator {
                 self.matched_plans[at] = true;
                 self.full_match(s, at);
             }
+            self.matched_upto = self.engine.len();
             return Ok(());
         };
         self.rebuild_index();
         let mut full_done: FxHashSet<usize> = FxHashSet::default();
         // Never-matched plans (a reflective rule's freshly-compiled one) get
         // one FULL match each: they may match existing facts, not just the
-        // delta.
-        for at in 0..self.engine.len() {
+        // delta. Every plan below `matched_upto` has been.
+        for at in self.matched_upto..self.engine.len() {
             if !self.matched_plans[at] {
                 self.matched_plans[at] = true;
                 full_done.insert(at);
                 self.full_match(s, at);
             }
         }
+        self.matched_upto = self.engine.len();
         // Positive-premise plans: seed each delta fact. The matcher iterates
         // the one new fact at its premise instead of re-scanning the
         // relation's whole extent — 91 % of matcher output was re-discovery a
         // full re-match would recompute.
+        let index = Arc::clone(&self.pos_index);
+        let mut plans = std::mem::take(&mut self.offered);
         for fact in delta {
-            let rel = s.terms.facts.rel(fact);
-            let plans = self.pos_index.get(&rel).cloned().unwrap_or_default();
-            for at in plans {
-                if !full_done.contains(&at) {
-                    self.seed_match(s, at, fact);
+            index.plans_for(s.terms, fact, &mut plans);
+            for &at in &plans {
+                if full_done.is_empty() || !full_done.contains(&at) {
+                    self.offer(s, at, fact);
                 }
             }
         }
+        self.offered = plans;
         Ok(())
     }
 
-    /// relation → plans with that relation as a top-level positive premise —
-    /// the set a new fact can seed. Rebuilt when the plan list grows.
+    /// The plans a new fact can seed ([`PlanIndex`]), every plan of the
+    /// engine's. Rebuilt when the plan list grows.
     fn rebuild_index(&mut self) {
         if self.index_n == self.engine.len() {
             return;
         }
-        self.pos_index.clear();
-        for at in 0..self.engine.len() {
-            let plan = self.engine.plan(at);
-            let mut rels: Vec<Symbol> = Vec::new();
-            for d in plan.disjuncts.iter() {
-                for step in plan.steps(d.steps) {
-                    if let Step::Rel(r) = step
-                        && !rels.contains(&r.rel)
-                    {
-                        rels.push(r.rel);
-                    }
-                }
-            }
-            for rel in rels {
-                self.pos_index.entry(rel).or_default().push(at);
-            }
-        }
+        self.pos_index = Arc::new(PlanIndex::of(&self.engine, 0..self.engine.len()));
         self.index_n = self.engine.len();
+    }
+
+    /// Hand the new `fact` to plan `at`: a probe where the plan's match is
+    /// a pair and nothing else ([`Self::pair_at`]), else a seeded match.
+    fn offer(&mut self, s: &mut Session<'_>, at: usize, fact: FactId) {
+        match self.pair_at.get(at).copied().flatten() {
+            Some(shape) => self.pair_match(s, at, shape, fact),
+            None => self.seed_match(s, at, fact),
+        }
+    }
+
+    /// **A pair matched by a probe** (the module's § A pair matched by a
+    /// probe): the matches of plan `at`, whose match is the pair `shape`,
+    /// that the new `fact` takes part in, found by one probe each
+    /// ([`PairShape::each_match`]) and queued as a seeded match would queue
+    /// them, the same registers, bindings and premises, in the same order.
+    /// Where the probe finds nothing, nothing is built.
+    ///
+    /// The gate's build holds what is queued to a seeded match of the same
+    /// fact, a check a fact.
+    fn pair_match(&mut self, s: &mut Session<'_>, at: usize, shape: PairShape, fact: FactId) {
+        let mut hits = [[FactId(0); 2]; 2];
+        let mut n = 0;
+        shape.each_match(s.kb, s.terms, fact, |premises| {
+            hits[n] = premises;
+            n += 1;
+        });
+        #[cfg(debug_assertions)]
+        let mut probed: Vec<SeededMatch> = Vec::new();
+        if n > 0 {
+            let plan = self.engine.plan_arc(at);
+            let mut m = std::mem::take(&mut self.matcher);
+            let (terms, events) = (&*s.terms, &mut *s.events);
+            for &premises in &hits[..n] {
+                m.run_pair(terms, &plan, shape.held, premises, &mut |mt| {
+                    #[cfg(debug_assertions)]
+                    probed.push(SeededMatch::of(mt));
+                    self.enqueue_binding(terms, events, at, &plan, mt);
+                    ControlFlow::Continue(())
+                });
+            }
+            self.matcher = m;
+        }
+        #[cfg(debug_assertions)]
+        {
+            let plan = self.engine.plan_arc(at);
+            let mut seeded: Vec<SeededMatch> = Vec::new();
+            let mut m = std::mem::take(&mut self.matcher);
+            m.run_seeded(s.kb, s.terms, s.ast, &plan, fact, &mut |mt| {
+                seeded.push(SeededMatch::of(mt));
+                ControlFlow::Continue(())
+            });
+            self.matcher = m;
+            debug_assert_eq!(
+                probed, seeded,
+                "the probe of a pair disagrees with a seeded match of the same fact"
+            );
+        }
     }
 
     fn full_match(&mut self, s: &mut Session<'_>, at: usize) {
@@ -1756,8 +1977,9 @@ impl Saturator {
         }
     }
 
-    /// Read again which plans' rules fire at once ([`Self::at_once`]), once
-    /// the engine holds a plan this saturation has not read.
+    /// Read again which plans' rules fire at once ([`Self::at_once`]), and
+    /// which are matched by a probe ([`Self::pair_at`]), once the engine
+    /// holds a plan this saturation has not read.
     fn refresh_at_once(&mut self, s: &Session<'_>) {
         let n = self.engine.len();
         if self.at_once.len() == n {
@@ -1767,6 +1989,7 @@ impl Saturator {
         self.at_once = (0..n)
             .map(|at| self.engine.plan(at).ends || pairs.refutes_at(at))
             .collect();
+        self.pair_at = (0..n).map(|at| pairs.shape_at(at)).collect();
     }
 
     /// Under an agenda, read again which plans' rules fire first, once
@@ -2235,6 +2458,55 @@ mod tests {
             order = derived.iter().map(|&f| events::sexpr(s.terms, f)).collect();
         }
         (terms, kb, order, rounds)
+    }
+
+    /// A new fact holding a fact is handed to the plans that read one of
+    /// that fact's relation at that argument, and to those whose premise
+    /// leaves it open, in the plans' order, each once; a fact holding none
+    /// to the open ones alone.
+    #[test]
+    fn a_fact_holding_a_fact_seeds_the_plans_of_its_relation() {
+        let src = "(relation p Thing :why \"p {?3}\")\n(relation q Thing :why \"q {?3}\")\n\
+                   (relation r Thing :why \"r {?3}\")\n(relation w Thing :why \"w {?3}\")\n\
+                   (rule of-p () :match (w (p ?a)) :assert (r ?a) :why \"a\")\n\
+                   (rule loose () :match (and (q ?a) (w ?x)) :assert (r ?a) :why \"b\")\n\
+                   (rule of-q () :match (and (w (q ?a)) (q ?a)) :assert (r ?a) :why \"c\")\n\
+                   (rule both () :match (and (w (p ?a)) (w (q ?a))) :assert (r ?a) :why \"d\")\n\
+                   (p a)\n(q a)\n(w (p a))\n(w (q a))\n(w b)\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut ev,
+            memo: SharedMemo::default(),
+        };
+        let sat = Saturator::new(&mut s).expect("compiles");
+        let index = PlanIndex::of(&sat.engine, 0..sat.engine.len());
+        let plans_of = |fact: FactId| -> Vec<String> {
+            let mut out = Vec::new();
+            index.plans_for(s.terms, fact, &mut out);
+            out.iter()
+                .map(|&at| s.terms.sym(sat.engine.plan(at).rule).to_string())
+                .collect()
+        };
+        let (terms, kb) = (&*s.terms, &*s.kb);
+        let w = terms.syms.get("w").unwrap();
+        let held = |inner: &str| {
+            kb.facts_of(w)
+                .find(|&f| events::sexpr(terms, f).contains(inner))
+                .unwrap()
+        };
+        assert_eq!(plans_of(held("(p a)")), ["of-p", "loose", "both"]);
+        assert_eq!(plans_of(held("(q a)")), ["loose", "of-q", "both"]);
+        assert_eq!(plans_of(held(" b")), ["loose"]);
+        let q = terms.syms.get("q").unwrap();
+        let q_a = kb.facts_of(q).next().unwrap();
+        assert_eq!(plans_of(q_a), ["loose", "of-q"]);
     }
 
     /// One admission per boundary round, and it is a soundness requirement.

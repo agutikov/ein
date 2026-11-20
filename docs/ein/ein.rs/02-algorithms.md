@@ -94,8 +94,11 @@ enqueue_pass(delta):
         return
     for plan never matched yet: full_match(plan)
     for fact in delta, in order:
-        for plan in pos_index[relation of fact], in list order:
-            seed_match(plan, fact)          # run_seeded: the fact bound at each step it can play
+        for plan in pos_index.plans_for(fact), in list order:   # by its relation, and a held fact's relation
+            if plan is a pair alone:        # (R ?a …) and (W (R ?a …)), nothing else
+                pair_match(plan, fact)      # one probe: (W fact) held, or fact = (W g) and g held
+            else:
+                seed_match(plan, fact)      # run_seeded: the fact bound at each step it can play
 
 each match:
     key = (rule, activator, registers); guards = the disjunct's guard set

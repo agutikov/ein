@@ -70,9 +70,9 @@ use std::sync::Arc;
 pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index: relation, argument
-/// position, and the value in it — or, since
-/// [03-design/03-data-model.md § 6.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#61-the-participation-key),
-/// a position *inside* the fact in that argument.
+/// position, and the value in it — or, where that argument is a fact, a name
+/// at a position *inside* it, or the fact's relation
+/// ([03-design/03-data-model.md § 6.1](../../../../docs/ein/ein.rs/03-design/03-data-model.md#61-the-participation-key)).
 ///
 /// 12 bytes with padding. Packing it into a `u64` does not fit — the
 /// `Value` needs 32 bits and the symbol another 32 — so
@@ -88,12 +88,19 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 /// which facts are offered and not which ones match, and buckets are appended
 /// in insertion order like every other index here, so the surviving order is
 /// the extent's.
+///
+/// **The relation of the fact at an argument** is a key of its own,
+/// [`SlotKey::RELATION`]: `(not (R ?a ?b))` with nothing bound walks the
+/// stored negations of `R`, not every negation the state holds, and the
+/// saturator hands a new `(not (R …))` to the plans that read one of `R`
+/// ([03-design/05-matcher.md § 5.2](../../../../docs/ein/ein.rs/03-design/05-matcher.md#52-a-probe-into-the-participation-index)).
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct SlotKey {
     pub rel: Symbol,
     pub slot: u16,
-    /// The position inside the nested fact at `slot`, or [`SlotKey::DIRECT`]
-    /// for the argument itself.
+    /// The position inside the nested fact at `slot`, [`SlotKey::DIRECT`]
+    /// for the argument itself, or [`SlotKey::RELATION`] for the relation of
+    /// the nested fact at `slot`.
     pub inner: u16,
     pub value: Value,
 }
@@ -101,6 +108,30 @@ pub struct SlotKey {
 impl SlotKey {
     /// `inner` for a key on the argument itself rather than inside it.
     pub const DIRECT: u16 = u16::MAX;
+
+    /// `inner` for a key on the relation of the fact at the argument, the
+    /// key's `value` that relation's name. A fact may have as many arguments
+    /// as a `u16` counts, so a position inside one can be this number: such a
+    /// position is not keyed (`SlotKey::keys_inner`), and the two kinds of key
+    /// never share a bucket.
+    pub const RELATION: u16 = u16::MAX - 1;
+
+    /// Whether a name at position `inner` inside a nested fact is keyed: every
+    /// position below [`SlotKey::RELATION`].
+    pub fn keys_inner(inner: usize) -> bool {
+        inner < SlotKey::RELATION as usize
+    }
+
+    /// The key of the facts of `rel` that hold, at argument `slot`, a fact
+    /// of the relation `of`.
+    pub fn relation(rel: Symbol, slot: u16, of: Symbol) -> SlotKey {
+        SlotKey {
+            rel,
+            slot,
+            inner: SlotKey::RELATION,
+            value: Value::sym(of),
+        }
+    }
 
     /// The ordinary one-level key — `(rel, slot) = value`.
     pub fn direct(rel: Symbol, slot: u16, value: Value) -> SlotKey {
@@ -1249,6 +1280,38 @@ impl Kb {
     }
 }
 
+/// Every key of the participation index a fact of `rel` with `args` is
+/// posted under, handed to `each` (03-design/03-data-model.md § 6.1): the
+/// incremental and the batch indexing both read it, so they cannot disagree.
+fn participation_keys(terms: &Terms, rel: Symbol, args: &[Value], mut each: impl FnMut(SlotKey)) {
+    for (slot, value) in args.iter().enumerate() {
+        // The join-key types only: a nested fact has no single value of its
+        // own to key on…
+        if value.tag() != Tag::Fact {
+            each(SlotKey::direct(rel, slot as u16, *value));
+        } else if let Some(nested) = value.as_fact() {
+            // …so key one level in instead, each name of the nested fact at
+            // its position, and the nested fact's relation. Only one level:
+            // it serves a premise over a stored negation, `(not (R ?a ?b))`,
+            // and one over a context whose fact holds names,
+            // `(says ?w (owns ?p ?x))`; what nests deeper, a numeral or a
+            // tag, is not keyed.
+            let (of, deep) = terms.facts.get(nested);
+            for (inner, deep) in deep.iter().enumerate() {
+                if deep.tag() != Tag::Fact && SlotKey::keys_inner(inner) {
+                    each(SlotKey {
+                        rel,
+                        slot: slot as u16,
+                        inner: inner as u16,
+                        value: *deep,
+                    });
+                }
+            }
+            each(SlotKey::relation(rel, slot as u16, of));
+        }
+    }
+}
+
 /// Append fact `id` to every reverse index of `layer`: what
 /// [`Kb::index_fact`] does to the top, and [`Kb::write_open`] to the
 /// state's `open` facts.
@@ -1268,32 +1331,11 @@ fn index_into(
             layer.rule_apps_by_rule.entry(rel).or_default().push(id);
             layer.rule_apps += 1;
         }
-        for (slot, value) in args.iter().enumerate() {
-            // The join-key types only: a nested fact has no single value of
-            // its own to key on…
-            if value.tag() != Tag::Fact {
-                let key = SlotKey::direct(rel, slot as u16, *value);
-                layer.by_rel_slot_val.entry(key).or_default().push(id);
-                layer.bloom_add(&key);
-            } else if let Some(nested) = value.as_fact() {
-                // …so key one level in instead. Only one level: it serves
-                // a premise over a stored negation, `(not (R ?a ?b))`, and
-                // one over a context whose fact holds names,
-                // `(says ?w (owns ?p ?x))`; what nests deeper, a numeral or a
-                // tag, is not keyed (03-design/03-data-model.md § 6.1).
-                for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
-                    if deep.tag() != Tag::Fact {
-                        let key = SlotKey {
-                            rel,
-                            slot: slot as u16,
-                            inner: inner as u16,
-                            value: *deep,
-                        };
-                        layer.by_rel_slot_val.entry(key).or_default().push(id);
-                        layer.bloom_add(&key);
-                    }
-                }
-            }
+        participation_keys(terms, rel, args, |key| {
+            layer.by_rel_slot_val.entry(key).or_default().push(id);
+            layer.bloom_add(&key);
+        });
+        for value in args.iter() {
             if let Some(name) = value.as_sym()
                 && is_rule_app
                 && is_relation(name)
@@ -1364,27 +1406,12 @@ impl Kb {
                 layer.rule_apps += 1;
             }
             layer.names.entry(rel).as_head.push(id);
-            for (slot, value) in args.iter().enumerate() {
-                if value.tag() != Tag::Fact {
-                    let key = SlotKey::direct(rel, slot as u16, *value);
-                    layer.by_rel_slot_val.entry(key).or_default().push(id);
-                    let (word, bit) = bloom_at(&key);
-                    layer.slot_bloom[word] |= bit;
-                } else if let Some(nested) = value.as_fact() {
-                    for (inner, deep) in terms.facts.args(nested).iter().enumerate() {
-                        if deep.tag() != Tag::Fact {
-                            let key = SlotKey {
-                                rel,
-                                slot: slot as u16,
-                                inner: inner as u16,
-                                value: *deep,
-                            };
-                            layer.by_rel_slot_val.entry(key).or_default().push(id);
-                            let (word, bit) = bloom_at(&key);
-                            layer.slot_bloom[word] |= bit;
-                        }
-                    }
-                }
+            participation_keys(terms, rel, args, |key| {
+                layer.by_rel_slot_val.entry(key).or_default().push(id);
+                let (word, bit) = bloom_at(&key);
+                layer.slot_bloom[word] |= bit;
+            });
+            for value in args.iter() {
                 if let Some(name) = value.as_sym() {
                     layer.names.entry(name).as_arg.push(id);
                     if is_rule_app && self.program.relations.contains(name) {
@@ -2214,6 +2241,20 @@ mod tests {
             })
             .count(),
             0
+        );
+        // The nested fact's relation is a key of its own, which a
+        // `(not (co-located ?x ?y))` premise probes with nothing bound.
+        assert_eq!(
+            kb.facts_with(SlotKey::relation(not, 0, co_located))
+                .collect::<Vec<_>>(),
+            vec![f]
+        );
+        assert_eq!(kb.facts_with(SlotKey::relation(not, 0, not)).count(), 0);
+        assert_eq!(
+            kb.facts_with(SlotKey::direct(not, 0, Value::sym(co_located)))
+                .count(),
+            0,
+            "the relation's key is not the key of a name at the argument"
         );
         assert_eq!(
             kb.facts_with(SlotKey::direct(co_located, 1, one)).count(),

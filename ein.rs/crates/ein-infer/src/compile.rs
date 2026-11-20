@@ -1699,8 +1699,18 @@ impl<'a> Compiler<'a> {
     /// narrowed, this narrows on the same slot; the nested entries are reached
     /// only when nothing before them was usable — which, for a
     /// `(not (R …))` premise, is always.
+    ///
+    /// **Last, the relation of the first nested pattern**, a constant: where
+    /// no argument of the premise is known, `(not (R ?a ?b))` with nothing
+    /// bound, the step walks the facts holding a fact of `R` there and not
+    /// the relation's whole extent. A bound argument comes first, as the
+    /// narrower, and where the premise holds a constant, at its top level or
+    /// in a nested fact, the relation's key is never reached and is not
+    /// listed.
     fn probes_for(&mut self, slots: Span) -> Span {
         let start = self.probes.len() as u32;
+        let mut ended = false;
+        let mut relation: Option<(u16, Symbol)> = None;
         for (i, idx) in slots.range().enumerate() {
             match self.slots[idx] {
                 Slot::Const(v) => {
@@ -1711,6 +1721,7 @@ impl<'a> Compiler<'a> {
                     });
                     // The candidate scan stops at the first known value, so no
                     // later slot can ever be the one it narrows on.
+                    ended = true;
                     break;
                 }
                 Slot::Reg(r) => self.probes.push(Probe {
@@ -1718,7 +1729,8 @@ impl<'a> Compiler<'a> {
                     inner: SlotKey::DIRECT,
                     src: ProbeSrc::Reg(r),
                 }),
-                Slot::Nested { slots: inner, .. } => {
+                Slot::Nested { rel, slots: inner } => {
+                    relation.get_or_insert((i as u16, rel));
                     for (j, inner_idx) in inner.range().enumerate() {
                         let src = match self.slots[inner_idx] {
                             Slot::Const(v) => ProbeSrc::Const(v),
@@ -1728,6 +1740,14 @@ impl<'a> Compiler<'a> {
                             // no value at all.
                             Slot::Nested { .. } | Slot::Opaque(_) => continue,
                         };
+                        // A position the index does not key, past the last
+                        // a `u16` leaves below its own markers.
+                        if !SlotKey::keys_inner(j) {
+                            continue;
+                        }
+                        // A constant is always usable: the relation's key
+                        // after it would never be reached.
+                        ended |= matches!(src, ProbeSrc::Const(_));
                         self.probes.push(Probe {
                             slot: i as u16,
                             inner: j as u16,
@@ -1738,6 +1758,13 @@ impl<'a> Compiler<'a> {
                 // An opaque slot has no value at all.
                 Slot::Opaque(_) => {}
             }
+        }
+        if !ended && let Some((slot, rel)) = relation {
+            self.probes.push(Probe {
+                slot,
+                inner: SlotKey::RELATION,
+                src: ProbeSrc::Const(Value::sym(rel)),
+            });
         }
         Span {
             start,
@@ -1974,12 +2001,13 @@ mod tests {
         let _ = terms;
     }
 
-    /// A nested pattern has no key of its own and two of its slots'. Without
-    /// them this premise would compile to an empty probe list and walk `not`'s
-    /// whole extent, most of an exhaustive `zebra`'s candidates.
+    /// A nested pattern has no key of its own, two of its slots' and its
+    /// relation's, last. Without them this premise would compile to an empty
+    /// probe list and walk `not`'s whole extent, most of an exhaustive
+    /// `zebra`'s candidates.
     #[test]
     fn a_nested_pattern_probes_one_level_in() {
-        let (_, _terms, plan) = compile(
+        let (_, terms, plan) = compile(
             "(relation likes A B :why \"{?3} likes {?4}\")\n\
              (rule r ()\n  :match (not (likes ?a ?b))\n  :assert (likes ?b ?a) :why \"{?a} does not like {?b}, so {?b} likes {?a}\")\n",
         );
@@ -1990,20 +2018,56 @@ mod tests {
         let probes = plan.probes(first.probe);
         assert_eq!(
             probes.len(),
-            2,
-            "one per inner slot, and none for the outer"
+            3,
+            "one per inner slot, then the nested relation, and none for the outer"
         );
-        for (i, p) in probes.iter().enumerate() {
+        for (i, p) in probes[..2].iter().enumerate() {
             assert_eq!(p.slot, 0, "the outer position is the nested argument");
             assert_eq!(p.inner, i as u16);
             assert!(matches!(p.src, ProbeSrc::Reg(_)));
         }
+        let likes = terms.syms.get("likes").expect("interned");
+        assert_eq!(
+            probes[2],
+            Probe {
+                slot: 0,
+                inner: SlotKey::RELATION,
+                src: ProbeSrc::Const(Value::sym(likes)),
+            }
+        );
+    }
+
+    /// The relation of a nested pattern is a probe only where the premise
+    /// has no constant argument, which ends the list before it, and comes
+    /// after every argument that can be bound.
+    #[test]
+    fn the_nested_relation_is_the_last_probe() {
+        let (_, terms, plan) = compile(
+            "(relation says A B :why \"{?3} says {?4}\")\n(relation likes A B :why \"{?3} likes {?4}\")\n\
+             (rule r ()\n  :match (and (says ?w (likes ?a ?b)) (says ann (likes ?b ?a)))\n  :assert (likes ?b ?a) :why \"{?w} says {?a} likes {?b}, so {?b} likes {?a}\")\n",
+        );
+        let steps = plan.steps(plan.disjuncts[0].steps);
+        let (Step::Rel(first), Step::Rel(second)) = (steps[0], steps[1]) else {
+            panic!("expected two relation steps")
+        };
+        let likes = terms.syms.get("likes").expect("interned");
+        let probes = plan.probes(first.probe);
+        let at: Vec<(u16, u16)> = probes.iter().map(|p| (p.slot, p.inner)).collect();
+        assert_eq!(
+            at,
+            [(0, SlotKey::DIRECT), (1, 0), (1, 1), (1, SlotKey::RELATION)]
+        );
+        assert_eq!(probes[3].src, ProbeSrc::Const(Value::sym(likes)));
+        let probes = plan.probes(second.probe);
+        assert_eq!(probes.len(), 1, "the constant `ann` ends the list");
+        assert!(matches!(probes[0].src, ProbeSrc::Const(_)));
     }
 
     /// The same premise with a variable used once inside it, where a program
     /// might want a wildcard (a bare `_` is refused, Q-M1e2.22): a variable is
     /// a register, and a register stays a probe, since it may be unbound, so
-    /// the nested premise probes on both inner slots.
+    /// the nested premise probes on both inner slots, and then on its
+    /// relation.
     #[test]
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
@@ -2015,11 +2079,12 @@ mod tests {
             panic!("expected a relation step")
         };
         let probes = plan.probes(first.probe);
-        assert_eq!(probes.len(), 2, "`?any`, then `?b`");
-        for (i, p) in probes.iter().enumerate() {
+        assert_eq!(probes.len(), 3, "`?any`, then `?b`, then `likes`");
+        for (i, p) in probes[..2].iter().enumerate() {
             assert_eq!((p.slot, p.inner), (0, i as u16));
             assert!(matches!(p.src, ProbeSrc::Reg(_)));
         }
+        assert_eq!((probes[2].slot, probes[2].inner), (0, SlotKey::RELATION));
     }
 
     /// A bare `_` is refused at the parse, in every position (Q-M1e2.22):

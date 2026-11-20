@@ -79,8 +79,24 @@ found it to the application that fires it. Only the boundary moves a parked cand
 
 **The closure is semi-naive.** After a productive firing, the next enqueue pass reads only the derived facts,
 seeding each plan whose positive premises name a delta fact's relation at that premise (`run_seeded`); a full pass
-runs only where no delta is known. A binding key is a fixed-width array of `Value`s, the code's word for objects,
-hashed with FxHash, keyed on the rule, **every argument of its activator** and the bindings
+runs only where no delta is known. The plans a fact is handed to are indexed (`saturator::PlanIndex`) by the
+relation of a premise and, where every premise of that relation in a plan holds a fact of a known relation at an
+argument, `(not (R ?a ?b))`, by that relation too, the participation index's key of it
+([`03-data-model.md` § 6.1](03-data-model.md#61-the-participation-key)): a new `(not (R …))` reaches the plans that
+read a negation of `R` and those whose premise leaves the relation open, in the plans' order, and no other, which
+would have found no match. A pass and the match after a step of a stopped saturation (§ 5) look for a plan never
+matched from the first plan not known to be matched, not from the first of the list.
+
+**A pair is matched by a probe.** A plan whose match is a fact `F` of distinct variables and a fact `(W F)` holding it
+as its one argument, and nothing else, and whose firing ends a state (`contradiction::PairShape`, § 6.1), is never
+seeded: a new fact of its relation and count asks whether the state holds `(W F)`, by the fact store's own probe of
+that proposition and `Kb::contains`, and a new `(W G)` whether it holds `G`, and only a hit builds the match
+(`Matcher::run_pair`), the one a seeded match would build, queued where that one would be. `W` is the relation the
+rule's shape names, never a name the kernel knows. A plan compiled at a state is matched whole once, as every plan
+is. The gate's build holds each probe to a seeded match of the same fact (`Saturator::pair_match`).
+
+A binding key is a fixed-width array of `Value`s, the code's word for objects, hashed with FxHash, keyed on the rule,
+**every argument of its activator** and the bindings
 ([Q-M1e.16](../../../decisions/engine/Q-M1e.16-a-firings-identity-keys-on-every-activator.md)).
 
 **The boundary judges only what can have changed.** Each parked candidate records the epoch it was judged at, per
@@ -162,7 +178,8 @@ it reaches the core and the trace.
 
 What a rule refutes beside a fact is read off the compiled plans, with no name (`contradiction::Pairs`): a plan whose
 disjunct is a fact of distinct variables and a fact holding it as its one argument, and whose firing ends a state.
-Where one is compiled, its candidate is before every other in the queue, as a rule that states the key is, so a
+Where one is compiled, it is matched by a probe where that disjunct is its whole match (§ 3), its candidate is
+before every other in the queue, as a rule that states the key is, so a
 state ends at the firing that completes the pair; a candidate root holds the other side of is not in `H`; a
 candidate an alive state so denies is dead above it (L8); and the agenda fires either side first.
 

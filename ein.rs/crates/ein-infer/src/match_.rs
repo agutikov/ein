@@ -277,6 +277,47 @@ impl Matcher {
         }
     }
 
+    /// The one match of a plan whose match is a pair and nothing else
+    /// ([`crate::contradiction::PairShape`]) over `premises`, in step order,
+    /// which the caller found held by a probe: the match
+    /// [`Matcher::run_seeded`] emits for either of them, with no walk. The
+    /// registers are the seed's, then the held fact's variables, bound in
+    /// slot order from it, which is the order unifying either premise binds
+    /// them in; the premises are in step order. `held` is the held fact's
+    /// step.
+    pub fn run_pair(
+        &mut self,
+        terms: &Terms,
+        plan: &Plan,
+        held: usize,
+        premises: [FactId; 2],
+        f: Emit<'_>,
+    ) {
+        let d: Disjunct = plan.disjuncts[0];
+        self.reset(plan.n_regs, d.n_slots as usize, d.n_premises as usize, 0);
+        for (r, (_, value)) in plan.seed.iter().enumerate() {
+            self.regs[r] = *value;
+            self.trail.push(r as Reg);
+        }
+        let Step::Rel(step) = plan.steps(d.steps)[held] else {
+            unreachable!("a pair's held fact is a relation step")
+        };
+        let bound = self.unify(terms, plan, step.slots, terms.facts.args(premises[held]));
+        debug_assert!(
+            bound,
+            "the held fact is of the pattern's relation and count"
+        );
+        self.prems[..2].copy_from_slice(&premises);
+        let m = Match {
+            plan,
+            disjunct: 0,
+            regs: &self.regs,
+            trail: &self.trail,
+            premises: &self.prems[..self.n_premises],
+        };
+        let _ = f(&m);
+    }
+
     /// [`Matcher::run_seeded`] for a guarded caller — see
     /// [`Matcher::run_guarded`].
     pub fn run_seeded_guarded(
@@ -994,11 +1035,16 @@ fn candidates_scan(plan: &Plan, regs: &[Value], step: RelStep) -> Option<SlotKey
             Slot::Nested { .. } | Slot::Opaque(_) => None,
         }
     };
+    let mut relation: Option<SlotKey> = None;
     for (slot, i) in plan.slots(step.slots).iter().zip(0u16..) {
-        if let Slot::Nested { slots, .. } = *slot {
+        if let Slot::Nested { rel, slots } = *slot {
+            relation.get_or_insert(SlotKey::relation(step.rel, i, rel));
             // The second level, in the same left-to-right order the
             // compiled list is built in.
             for (deep, j) in plan.slots(slots).iter().zip(0u16..) {
+                if !SlotKey::keys_inner(j as usize) {
+                    break;
+                }
                 if let Some(value) = usable(deep) {
                     return Some(SlotKey {
                         rel: step.rel,
@@ -1014,7 +1060,9 @@ fn candidates_scan(plan: &Plan, regs: &[Value], step: RelStep) -> Option<SlotKey
             return Some(SlotKey::direct(step.rel, i, value));
         }
     }
-    None
+    // No argument known: the relation of the first nested fact, which the
+    // index keys as well.
+    relation
 }
 
 #[cfg(test)]
@@ -1053,6 +1101,11 @@ mod tests {
             let likes = terms.intern_text("likes").expect("room");
             let (rel, args) = match *kind {
                 "pal" => (terms.intern_text("pal").expect("room"), vec![a, b]),
+                "notpal" => {
+                    let pal = terms.intern_text("pal").expect("room");
+                    let inner = terms.value_fact(pal, &[a, b]).expect("room");
+                    (terms.kernel.not, vec![inner])
+                }
                 _ => {
                     let inner = terms.value_fact(likes, &[a, b]).expect("room");
                     (terms.kernel.not, vec![inner])
@@ -1096,7 +1149,8 @@ mod tests {
     /// identical and only the number of *rejected* candidates differs.
     ///
     /// The interesting case is the second level: a `(not (likes …))` premise
-    /// has no key of its own and one per inner slot. The
+    /// has no key of its own, one per inner slot, and one of its relation,
+    /// which the negations of `pal` beside those of `likes` narrow. The
     /// insertion order is randomised because "in extent order" is the half of
     /// the argument that a single fixed order cannot test.
     #[test]
@@ -1118,6 +1172,9 @@ mod tests {
                 if (i + j) % 3 != 0 {
                     facts.push(format!("(not (likes {a} {b}))"));
                 }
+                if (i * j) % 2 == 1 {
+                    facts.push(format!("(not (pal {a} {b}))"));
+                }
             }
         }
         // Some of the facts arrive through the incremental index instead, the
@@ -1125,6 +1182,7 @@ mod tests {
         let later: &[(&str, &str, &str)] = &[
             ("pal", "Erin", "Alice"),
             ("not", "Alice", "Erin"),
+            ("notpal", "Alice", "Erin"),
             ("not", "Erin", "Bob"),
             ("pal", "Bob", "Erin"),
         ];

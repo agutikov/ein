@@ -139,10 +139,12 @@ pub struct RelStep {
 ///
 /// The candidate scan walks the argument slots left to right and narrows on
 /// the first slot whose value is known, skipping two shapes: a nested pattern
-/// (never keyed) and a variable bound to a nested `Fact` (not keyed).
+/// (no key of its own, but one for each of its slots) and a variable bound to
+/// a nested `Fact` (not keyed). Where no slot is known, it narrows on the
+/// relation of the first nested pattern.
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
-/// never produces a `Probe`. The other two conditions are **not** static
+/// never produces a `Probe` of its own. The other two conditions are **not** static
 /// ([03-design/05-matcher.md § 5.2](../../../../docs/ein/ein.rs/03-design/05-matcher.md#52-a-probe-into-the-participation-index)):
 ///
 /// - whether a register is bound at this step depends on the *entry point* —
@@ -161,15 +163,19 @@ pub struct RelStep {
 pub struct Probe {
     /// The argument position this probe keys on.
     pub slot: u16,
-    /// The position *inside* the nested fact at `slot`, or
+    /// The position *inside* the nested fact at `slot`,
     /// [`SlotKey::DIRECT`](ein_core::SlotKey::DIRECT) when the probe keys on
-    /// the argument itself.
+    /// the argument itself, or
+    /// [`SlotKey::RELATION`](ein_core::SlotKey::RELATION) when it keys on the
+    /// relation of the nested fact there.
     ///
     /// A `Nested` slot contributes no direct key — there is no single value
-    /// at that position — but its own slots do, and the index holds them.
-    /// This is the compile-time half:
+    /// at that position — but its own slots do, and its relation, and the
+    /// index holds them. This is the compile-time half:
     /// `(not (?R ?b ?i))` with `?b` already bound probes
-    /// `(not, slot 0, inner 0) = ?b` instead of walking `not`'s extent.
+    /// `(not, slot 0, inner 0) = ?b` instead of walking `not`'s extent, and
+    /// with nothing bound `(not, slot 0, RELATION) = R`, the last entry of
+    /// the list.
     pub inner: u16,
     pub src: ProbeSrc,
 }

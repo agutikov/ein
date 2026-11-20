@@ -27,8 +27,8 @@ indexes allow. Each choice below removes a cost that would grow with the work, n
 - **A match is not materialised.** It is handed to a callback that reads it in place, so a match the saturator turns
   out to have seen costs a key hash and nothing more.
 - **A candidate comes from the narrowest index that answers the premise**: one lookup for a premise every slot of
-  which is bound, a bucket of the participation index where what a slot holds is known, the relation's whole held
-  extent, which the code calls its extent, only where nothing is (§ 5).
+  which is bound, a bucket of the participation index where what a slot holds is known or the relation of a fact it
+  holds, the relation's whole held extent, which the code calls its extent, only where nothing is (§ 5).
 - **A plan is compiled once per run** for each pair of a rule and an activator, and read without a lock (§ 7).
 
 The inner loop allocates nothing: `ein-infer/tests/match_alloc.rs`' `the_inner_loop_does_not_allocate` runs one
@@ -196,7 +196,8 @@ slots past the reported ones, which is why `Disjunct::n_slots` sizes the array a
 |---|---|---|
 | `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_matches`: each match's row, its disjunct and the facts it matched, which a read-out's class and a goal's slice read), the rules that conclude a hypothesis, the obligation reports and the obligations' candidates |
 | `run_one` | every match of one disjunct | the saturator's full pass over its plans (`Saturator::full_match`) |
-| `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(and (R ?a ?b) (R ?b ?c))`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise |
+| `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(and (R ?a ?b) (R ?b ?c))`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise, and the gate build's check of a pair's probe |
+| `run_pair` | the one match of a plan whose match is a fact and a fact holding it, and nothing else, over two premises a probe found held: the seed's registers, then the held fact's variables in slot order, the premises in step order, which is the match `run_seeded` emits for either premise | the saturator's probe of a pair (`Saturator::pair_match`, [06-saturation.md § 3](06-saturation.md#3-the-queue-the-delta-and-the-parked-set)) |
 | `holds` | whether a lifted guard's sub-plan has one match, in its own space, seeded from the parent's registers through `scope_of` | the NAF boundary, a goal's guards, the detector, the obligation reports |
 | `universal_support` | the facts a holding guard of `forall`'s shape rests on: what its nested body matched | the saturator, for a firing's `Prov::universal` |
 | `scan_without` | a guard's sub-plan with one step skipped, its other steps enumerated | what would pay an obligation's debt (`oblgen`) |
@@ -253,22 +254,26 @@ The scan would emit the same one-or-none sequence, with the same `FactId` in the
 ### 5.2 A probe into the participation index
 
 Otherwise the step narrows on its first known slot, through `ein_core::kb::SlotKey { rel, slot, inner, value }`:
-`Kb::facts_with(key)` yields the facts of `rel` with `value` at argument `slot`, or, where `inner` is not
-`SlotKey::DIRECT`, at position `inner` **inside the fact** at argument `slot`. `Kb::index_fact` keys every argument
-that is a name directly, and for an argument that is a fact, each of that fact's name arguments one level in
-([03-data-model.md](03-data-model.md#61-the-participation-key)). No key has a fact as its `value` and none reaches
-two levels in, so `(not (R ?b ?i))` with `?b` bound probes `(not, slot 0, inner 0) = ?b` instead of walking the held
-extent of `not`, and a premise whose only bound slots hold facts walks the held extent unless every slot is bound (§
+`Kb::facts_with(key)` yields the facts of `rel` with `value` at argument `slot`, or, where `inner` is a position, at
+position `inner` **inside the fact** at argument `slot`, or, where `inner` is `SlotKey::RELATION`, the facts of `rel`
+holding a fact of the relation `value` at argument `slot`. `Kb::index_fact` keys every argument that is a name
+directly, and for an argument that is a fact, each of that fact's name arguments one level in and that fact's
+relation ([03-data-model.md](03-data-model.md#61-the-participation-key)). No key has a fact as its `value` and none
+reaches two levels in, so `(not (R ?b ?i))` with `?b` bound probes `(not, slot 0, inner 0) = ?b` instead of walking
+the held extent of `not`, with nothing bound `(not, slot 0, RELATION) = R`, the stored negations of `R` and not
+every negation, and a premise whose only bound slots hold facts walks the held extent unless every slot is bound (§
 5.1).
 
 The compiler precomputes the step's candidate probes, `RelStep::probe` (`compile`'s `probes_for`): the slots left to
-right, a constant ending the list, a register listed, and a nested pattern contributing its own constant and
-register slots at its position. Two of the conditions cannot be decided at compile time: whether a register is
-bound at a step depends on the entry point, because `run_seeded` binds a later step first, and whether a bound
-register holds a fact depends on the data. So the matcher walks the precomputed list and takes the first entry that
-is a constant or a bound register holding no fact (`Matcher::probe_key`): the left-to-right scan's choice, which a
-debug build asserts against the scan computed from the raw slots (`candidates_scan`). The compile-time list narrows
-that scan; it does not remove it.
+right, a constant ending the list, a register listed, a nested pattern contributing its own constant and register
+slots at its position, and last, where no constant came before it, the relation of the first nested pattern, a
+constant: a bound argument is the narrower key and comes first. Two of the conditions cannot be decided at compile
+time: whether a register is bound at a step depends on the entry point, because `run_seeded` binds a later step
+first, and whether a bound register holds a fact depends on the data. So the matcher walks the precomputed list and
+takes the first entry that is a constant or a bound register holding no fact (`Matcher::probe_key`): the
+left-to-right scan's choice, the first nested pattern's relation where no slot is known, which a debug build asserts
+against the scan computed from the raw slots (`candidates_scan`). The compile-time list narrows that scan; it does
+not remove it.
 
 `facts_with` hashes the key once and tests each layer's Bloom filter (`kb::BLOOM_BITS`, 2048 bits a layer) before
 that layer's map, so a deep KB asks only the layers that may hold the key; a filter never reports a key a layer has
@@ -298,8 +303,9 @@ in what order:
 |---|---|
 | registers and a trail | a binding is the same object in the same order, without a copied environment |
 | `u32` equality on tagged `Value`s | equality of `Value` is equality of the atom or the fact it denotes |
-| the compiled probe list, and keys one level inside a nested argument | a bucket holds every fact that could unify on the probed slot, in extent order, and **every slot is re-checked** (`try_candidate` unifies the whole premise, the probed slot included), so the surviving subsequence is the extent's |
+| the compiled probe list, keys one level inside a nested argument, and the key of a nested argument's relation | a bucket holds every fact that could unify on the probed slot, in extent order, and **every slot is re-checked** (`try_candidate` unifies the whole premise, the probed slot included), so the surviving subsequence is the extent's |
 | one lookup for a ground premise | the same one-or-none candidate, the same `FactId` (§ 5.1) |
+| one probe for a pair's plan (`run_pair`) | its match is two premises, a fact of distinct variables and a fact holding it, so a new fact makes the match with a held fact or none; the probe finds that fact by its id, and `run_pair` binds the registers from the held fact in slot order, as unifying either premise does, and writes the premises in step order: the match `run_seeded` emits, which the gate's build checks fact by fact |
 | the per-layer Bloom filter | it skips only layers that do not hold the key |
 | reading a nested fact's row once | the relation is compared before the arguments, as unification would |
 | callback emission | the callback sees each match where it is produced |
@@ -385,7 +391,8 @@ no increment. The matcher's work, by name:
 | [`ein-infer/tests/compile_semantics.rs`](../../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs) | every `CompileError` a direct caller reaches, in its words; a nested `(or …)` refused; a parameter that names no relation, bound to a nested fact, is bound |
 | [`ein-infer/tests/rule_semantics.rs`](../../../../ein.rs/crates/ein-infer/tests/rule_semantics.rs) | `a_premise_means_the_same_in_any_order_of_its_conjuncts`, `a_binding_guard_binds_where_it_is_written`, `a_guards_free_variable_ranges_over_the_programs_names`, `an_empty_match_fires_once_or_once_per_activator`, activators that differ only in a nested fact both fire |
 | `match_.rs`' unit tests | `narrowing_never_changes_the_match_sequence`, `a_seeded_match_reports_the_same_premise_order`, `a_lifted_guard_keeps_asking_its_own_question`, `two_free_guard_arguments_range_over_the_programs_names` |
-| `compile.rs`' unit tests | the seed's registers in binding order, the probe list as the scan narrowed, a nested pattern probing one level in, a guard's scope, the memo compiling a pair once |
+| `compile.rs`' unit tests | the seed's registers in binding order, the probe list as the scan narrowed, a nested pattern probing one level in and on its relation last, a guard's scope, the memo compiling a pair once |
+| `contradiction.rs`' unit tests | `a_pair_alone_has_a_shape_and_its_held_step`, `a_pair_is_found_from_either_side_by_a_probe`, `a_wrapper_of_its_own_relation_is_probed_at_both_steps` |
 | [`ein-ir/tests/fuzz_properties.rs`](../../../../ein.rs/crates/ein-ir/tests/fuzz_properties.rs) | the compiler refuses nothing the loader accepts; no firing meets an unbound variable |
 | `ein-core`'s `kb.rs` unit tests | `n_facts_of_costs_one_probe_at_any_depth`; the layering check, extent counts included |
 
