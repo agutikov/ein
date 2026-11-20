@@ -659,3 +659,17 @@ phase run subagents with Opus"*).
 **No backward compatibility is kept** (the user, 2026-11-19: *"There is still only a single user of ein - me, so I
 don't care about backward compatibility. Forget about it until I explicitely ask."*): a retired spelling gets no
 line of its own, and a saved file or a container of an older format is deleted and made again.
+
+## The container's runs on the built phase
+
+`utils/ci_container.sh`, the gate and the nightly in a container built like the runner, on the commit as it stood.
+
+| commit | what | result |
+|---|---|---|
+| `7b72bd84` | the gate | exit 0, 168 test binaries |
+| `7b72bd84` | the whole nightly | **failed** at the mutation census, shard 5 of 12: two mutants of `bijective-setup` outside the banked set ([V-100](findings.md#v-100--two-mutants-of-the-bijections-setup-were-caught-by-a-load-error-alone)); every step before it passed. Fixed by a test, `f929737b` |
+| `b26d2c03`, every stage in | the gate | **exit 0**, 169 test binaries, none failed |
+| `b26d2c03` | the whole nightly | **exit 0**: the deep corpus sweeps and their four shards, the mutation census's twelve, the fuzzer's two seeds, the bench smoke |
+
+The logs are under `build/ci-logs/`, on this machine. **The phase is built and not closed**: its close waits for
+the user's word, and [the review bundle](review/README.md) holds what waits for the user.
