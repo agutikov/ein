@@ -30,7 +30,8 @@
 (relation in-R     World       :why "{?3} is alive and owes nothing")
 (relation possible Fact        :why "{?3} holds in some state of R")
 
-;; the candidates, and an order on them
+;; the object program's things; the candidates, and an order on them
+(thing a) (thing b)
 (question (s a)) (question (s b))
 (before (s a) (s b))
 
