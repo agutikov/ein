@@ -62,6 +62,22 @@ pub struct Engine {
     /// `rules × activators` can only find something new when a rule gained an
     /// activator, and nothing else adds one.
     last_rule_apps: usize,
+    /// The facts of the rules' relations the last walk read, counted by
+    /// relation ([`rule_facts`]): what the debug build's check of the
+    /// shortcut compares before it walks again. Unread in a release build.
+    walked_facts: usize,
+}
+
+/// The facts a knowledge base holds of the relations named by its rules,
+/// counted by relation (`Kb::n_facts_of`, one probe each): the facts a walk
+/// of `rules × activators` reads its activators from, counted apart from the
+/// rule-application counter it checks.
+fn rule_facts(kb: &Kb) -> usize {
+    kb.program()
+        .rules
+        .values()
+        .map(|r| kb.n_facts_of(r.name))
+        .sum()
 }
 
 impl Engine {
@@ -75,6 +91,7 @@ impl Engine {
     pub fn with_memo(memo: SharedMemo) -> Engine {
         Engine {
             last_rule_apps: usize::MAX,
+            walked_facts: usize::MAX,
             memo,
             ..Engine::default()
         }
@@ -140,6 +157,9 @@ impl Engine {
             return Ok(());
         }
         self.last_rule_apps = n;
+        if cfg!(debug_assertions) {
+            self.walked_facts = rule_facts(kb);
+        }
         // No `Vec<Rule>` and no `Vec<Option<FactId>>` per rule, per call:
         // `rules` borrows the program and `compile_for` touches `self`,
         // `terms` and `events`, so the two borrows never meet, and one buffer
@@ -263,8 +283,18 @@ impl Engine {
     }
 
     /// Would a full walk add anything? The shortcut's proof obligation.
+    ///
+    /// Where the facts of the rules' relations are as many as the last walk
+    /// read ([`rule_facts`], counted by relation and not by the counter the
+    /// shortcut reads), they are the facts it read, since a knowledge base
+    /// only grows and a fork holds its parent's: the walk would read the same
+    /// activators and compile nothing new, and is not made again. Elsewhere
+    /// it is made, in full.
     #[cfg(debug_assertions)]
     fn would_not_grow(&self, _ast: &Ast, terms: &Terms, kb: &Kb) -> bool {
+        if rule_facts(kb) == self.walked_facts {
+            return true;
+        }
         let mut n = 0;
         for (_, rule) in kb.program().rules.iter() {
             n += crate::compile::activators_for(kb, terms, rule).len();
