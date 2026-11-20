@@ -3,7 +3,7 @@
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19, cut out of [S1f.21.2](s1f.21.2_the_pages.md) on the user's word (*"leave open facts
 and hypotheses to the second part of the phase and finishe everything else before"*). **Done 2026-11-20**
-([§ Record](#record)), but for what waits on S1f.21.20's merge: Q-M1f.655 and Q-M1f.656 cited, and the flag named.
+([§ Record](#record)); finished after S1f.21.20's merge, the same day ([§ After S1f.21.20](#after-s1f2120)).
 **Group:** [B](modifications.md#b-the-pages-todays-kernel-stated-as-rules), items 8, 11 and 13, and item 10's half
 on the obligations.
 **Waits on:** the builds of the second part, [S1f.21.7](s1f.21.7_the_debts_term.md),
@@ -55,8 +55,8 @@ During the run the coordinator relayed the user's rulings of Q-M1f.655 and Q-M1f
 facts runs at root, where it makes H, and above root only at a state printed, saved or whose rules read them; what a
 state owes is read at every state; a flag runs the pass at every state, for the check in flight). The pages are
 written to them, **without the two ids and without the flag's name**: S1f.21.20 builds both and writes the decision
-files, which `master` did not hold when this record was written. The binary of this run still runs the pass at every
-state; no page rests on an output that differs.
+files, which `master` did not hold when this record was first written. They are cited, and the flag named, since
+S1f.21.20's merge ([§ After S1f.21.20](#after-s1f2120)).
 
 ### The commits
 
@@ -185,7 +185,7 @@ reasoning, which S1f.21.12's build had written. The generated regions: `gen_stdl
 | Q-M1f.645 | V-55 read as its class: every decision file whose name the part made untrue is renamed, twelve, and every reference moves with it, the ledger's link targets among them | Q-M1f.66's file alone; or no rename that touches the ledger |
 | Q-M1f.646 | the status of a fact neither held nor negated is *unknown*, as the library's `unknown` tests it, on every page and in Q-M1f.394, so that *open* names the facts of `open` | *open* kept for the status on the reasoning pages, the user's page saying *unknown* |
 | Q-M1f.647 | the remark on `(open R)` (item 11) on satisfiability § 1.1, hypothesis generation § 4.1 and the obligations page, worded under Q-M1f.390: one fact however many instances, the count beside it, the instance the engine's record; held by the state alone, no rule removing it | the remark on one page; or worded as a property of a verdict that is no fact |
-| Q-M1f.648 | *stuck* on hypothesis generation § 4.5 is an owed instance whose payments root all settles, true under the union, with $R = \emptyset$ as before | $H_{\mathrm{ob}} = \emptyset$ kept, which the union makes false: `18_two_candidates.ein` has it and a non-empty $R$ |
+| Q-M1f.648 | *stuck* on hypothesis generation § 4.5 is what the engine reads since S1f.21.20 (its Q-M1f.637): root owes and $H$ is empty, whoever the writers; beside it, as a proposition, an owed instance whose payments root all settles empties $R$ whatever another writer proposes. The first wording of this stage, the second alone, was replaced after the merge (V-67) | $H_{\mathrm{ob}} = \emptyset$ kept, which the union makes false: `18_two_candidates.ein` has it and a non-empty $R$ |
 | Q-M1f.649 | $R$ with no search is solution semantics § 2.6, with a pointer from finding R § 2; its example drawn as four worlds, its program named on no reasoning page, since no user page spells it | a page of its own, renumbering the folder |
 | Q-M1f.650 | `open` as a core notion is a section of the user's hypotheses page, its graph drawn by hand from `ein saturate --dump`'s facts, since `ein render kb` draws none (V-72) | a page of its own under `03-syntax-and-semantics/`, renumbering the folder |
 | Q-M1f.651 | Q-M1f.549's file states the user's main call and what Q-M1f.566, .570, .573 and .574 carry; the two uses, search control from inside Ein and facts inferred from the search, declined by S1f.21.13 under the recommendation, are a default and no decision | the declines written into the decision |
@@ -220,7 +220,8 @@ reasoning, which S1f.21.12's build had written. The generated regions: `gen_stdl
   (a relation declared twice among the refusals, no fixture); `examples/word_problems/README.md` (a redundant
   `:no-hypothesis (has)`, a `note:` on every command); Q-M1f.381 (its test does not exist, and a declaration fixes the
   count); `05-events.md`'s drawing `05-one-run-line-by-line.puml` (no `std.core.inconsistent` lines, every `n`
-  shifted); `03-data-model.md` § 5 (`Kb` lists no `ended`).
+  shifted); `03-data-model.md` § 5 (`Kb` lists no `ended`). **Fixed** after S1f.21.20's merge, every one
+  ([§ After S1f.21.20](#after-s1f2120)).
 - **V-77 — the hypothesis found in flight may depend on the count of workers.** A worker sets
   `open::Writers::first_above`, a `OnceLock`, in `open::write`, before the interning that may hand the node back, so
   under `--jobs N` the hypothesis `monotonicity.in_flight` and the read-out name could be another node's than at one
@@ -249,3 +250,31 @@ record's commit before its gate paragraph:
 
 Not run, as the brief says: the nightly, `--dev-host`, `utils/ci_container.sh`. The stage changes no DOT writer, no
 review bundle and nothing CI installs.
+
+### After S1f.21.20
+
+On the coordinator's word once S1f.21.20 was in `master` (`0a6e6e3b`): the branch rebased onto it, the engine rebuilt
+(`--in-flight` on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`, run), and five things.
+
+**The rebase.** Nine files met S1f.21.20's edits: `AGENTS.md`, Q-M1f.574, `02-algorithms.md`, `06-saturation.md`,
+`07-search.md`, `05-events.md`, the reasoning-in-code page on hypotheses, `08-read-out.md` and `examples/README.md`.
+Where both said where the pass runs, S1f.21.20's sentence was kept, with its ids and the flag; what this stage added
+beside it was kept too (the saturator never fires an `(open F)`; a rule that reads `open` flags its program; *stuck*'s
+row, whose scoping clause was stale); the catalogue's `features/` row holds both `23_a_rule_reads_open.ein` and
+`24_written_hypotheses.ein`. The renames' link targets in the ledger applied beside the coordinator's entries. Every
+command this stage's own pages show was run again on the rebuilt binary and matches.
+
+| commit | what |
+|---|---|
+| `16248b32` | 1. Q-M1f.655 and Q-M1f.656 cited, and `--in-flight` named, where a page says where the pass runs or where the check in flight is made: the user's obligations, hypotheses, solutions and models pages, syntax, reserved names, the region dump, the glossary, the engine's algorithms, data model, saturation, events and reasoning-in-code pages; the reasoning pages (saturation, absence, monotonicity, finding R) cite the two with no flag; Q-M1f.566 cites Q-M1f.655. With it, V-76's glossary and data-model places, in the same files |
+| `8ce9aec4` | 2. V-76's other places: the guide (a fact of another count loads), the relations page (`not` and `false` the library's), the facts page (a nested `eq` refused at its word), the two READMEs, Q-M1f.381 (its test is `a_form_of_another_count_loads_on_every_command`), the one run's event lines drawn again with `std.core.inconsistent`'s `compile`, `enqueue` and `fire` (run: 22 lines) |
+| `e62c407a` | 3. V-67: *stuck* is a root that owes with H empty, as the engine reads it (`18_two_candidates.ein` is `union`, a probe with every payment denied `stuck`, both run), and an owed instance whose payments root all settles empties R beside it. 4. V-68: the stream's state machine has root's saturation resumed after its obligation pass, and a node's after its `owe` lines, where a rule reads `open` (`23_a_rule_reads_open.ein`'s stream, run) |
+
+**5.** Nothing of S1f.21.21's subjects (the matcher's indexes) or S1f.21.22's (the kb and constraints renders, the
+lists' check of a written `(open …)`, the `outside` and `as :expect` rows) was touched; V-72, V-73 and V-74 are
+theirs to move.
+
+The checks on `e62c407a`: `doc_audit.py --links --check --tracked`, 2450 files, 0 findings in links and in decision
+ids; `check_release_voice.py`, 1876 files, none; `check_doc_blocks.py`, 550 pages, rules 1 to 5 hold;
+`render_diagrams.py --check`, 818 diagrams, every picture drawn from its source; `check_generated.py`, 9
+generators, every file as written; `read_out_examples.py` run again, nothing moved.
