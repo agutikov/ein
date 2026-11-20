@@ -1,11 +1,12 @@
 //! **A hypothesis rule that reads `not` gets one answer from both builds**
 //! (Q-M1f.129).
 //!
-//! `Hrules::candidates` holds no `debug_assert!` that no hypothesis rule's `:match`
-//! reads `not`: nothing writes a `not` mid-enumeration, so such an assertion
-//! would guard a write no path makes and stop a debug build, exit 101, on a
-//! program a release build answers as `ein oracle` does. Nothing is written
-//! between two candidates, so every hypothesis rule reads the state it was asked about.
+//! `HypothesisRules::candidates` holds no `debug_assert!` that no hypothesis
+//! rule's `:match` reads `not`: nothing writes a `not` mid-enumeration, so
+//! such an assertion would guard a write no path makes and stop a debug build,
+//! exit 101, on a program a release build answers as `ein oracle` does.
+//! Nothing is written between two candidates, so every hypothesis rule reads
+//! the state it was asked about.
 //!
 //! `cargo test` builds with debug assertions, so this file is the debug
 //! build's run of the three shapes: a stored negation read under `(absent
