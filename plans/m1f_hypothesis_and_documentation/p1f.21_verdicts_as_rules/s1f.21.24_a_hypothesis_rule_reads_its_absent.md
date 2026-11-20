@@ -59,7 +59,9 @@ is asked about, and the user ruled a hypothesis rule a rule that concludes `(ope
 
 ## Record
 
-Run 2026-11-20 in a worktree fast-forwarded to `master` at `3fdf6c97`; `master` did not move during the stage.
+Run 2026-11-20 in a worktree fast-forwarded to `master` at `3fdf6c97`; `master` moved during the stage to `ba81c7e0`
+(a program under `tests/stdlib/bijection/` and plans), and the branch was rebased onto it at the end, its goldens
+unmoved by the rebase (the new program answers alike on both binaries, its three runs byte for byte).
 Scratch named `build/s24/…` is the worktree's: the release binary of `3fdf6c97` (`ein-base`), of the fix alone
 (`ein-new1`) and of the stage's tip (`ein-final`); `run_one.sh`, the three runs taken on every corpus file, and their
 outputs under `base/`, `new/` and `final/`; the probes of the static check under `probes/`.
@@ -68,11 +70,14 @@ outputs under `base/`, `new/` and `final/`; the probes of the static check under
 
 | commit | task | what |
 |---|---|---|
-| `90b43fd2` | 1 | W99 filed open: the row `W99/hypothesis-rule-absent`, owned by this stage, its witness `plans/wrong_answers/witnesses/hypothesis-rule-absent.ein` (item 62's probe with a header written for the corpus); `python3 utils/wrong_answers.py` green on it, 10 open rows each still answered wrong |
-| `9c72cdcb` | 2–4 | the fix, the second route's test, the row moved to `corpus/regressions.toml` and its witness to `examples/ein-bugs/wrong-answers/` with a corpus entry and an `:expect`; Q-M1f.685's decision file; Q-M1f.129, `02-syntax.md`, `09-hypotheses.md` and the reasoning-in-code page; the shape golden |
-| `66a17ce8` | 5 | the oracle's listing of a node lists every `open` fact it holds (V-91) |
-| `146a29d4` | 6 | the two help texts, `08-read-out.md`'s licence sentence (V-93), `obligation_reports.rs`'s full names (V-94) |
-| this record | | plans only |
+| `1f14f270` | 1 | W99 filed open: the row `W99/hypothesis-rule-absent`, owned by this stage, its witness `plans/wrong_answers/witnesses/hypothesis-rule-absent.ein` (item 62's probe with a header written for the corpus); `python3 utils/wrong_answers.py` green on it, 10 open rows each still answered wrong |
+| `21115a70` | 2–4 | the fix, the second route's test, the row moved to `corpus/regressions.toml` and its witness to `examples/ein-bugs/wrong-answers/` with a corpus entry and an `:expect`; Q-M1f.685's decision file; Q-M1f.129, `02-syntax.md`, `09-hypotheses.md` and the reasoning-in-code page; the shape golden |
+| `1f19de58` | 5 | the oracle's listing of a node lists every `open` fact it holds (V-91) |
+| `4bcfd718` | 6 | the two help texts, `08-read-out.md`'s licence sentence (V-93), `obligation_reports.rs`'s full names (V-94) |
+| `e9f9d555` | | this record, before its gate section; plans only |
+| `c37287f1` | 2, 5 | two lines of the new tests as rustfmt writes them, which the first gate stopped at |
+| `5e3d80e7` | 4 | `corpus_cli`'s exit table gains the witness's four cells, which the second gate stopped at |
+| the next | | this record's gate section; plans only |
 
 ### 1. The row, as filed and as moved
 
@@ -206,7 +211,27 @@ asserts. The two pictures of V-93 are item 77's and were not touched.
 
 ### The gate
 
-GATE-PENDING
+Four runs of `./run_tests.sh`, with the default 16 test workers; the first three on the branch before its rebase,
+whose commits are the ones above under other hashes:
+
+- on the record before its gate section: stopped at `cargo fmt --all --check`, two lines of the new tests (`c37287f1`);
+- on the rustfmt commit: stopped at `corpus_cli`'s `every_cell_reproduces_its_exit_code`, the witness's four new
+  cells missing from the banked exit table (`5e3d80e7`); then `cargo test --profile gate --workspace
+  --no-fail-fast` on the re-banked table, every one of 169 test binaries passing, so nothing else waited behind it;
+- on the exit table's commit: **exit 0**, every step; and on it `EIN_CORPUS_SLOW=1` `dot_wellformed` (5 passed) and
+  `id_order_invariance` (4 passed);
+- after the rebase onto `ba81c7e0`, on `5e3d80e7`: **exit 0**, every step: the static checks, clippy, rustdoc,
+  `cargo test --profile gate --workspace` (169 test binaries, none failed: the shape golden, `lever_invariance.rs`,
+  `explore.rs`, `regressions.rs` and `corpus_cli`'s cost check among them), the scratch check, `check_generated.py`,
+  `check_region_routes.py`, `wrong_answers.py` (9 open rows), the review bundle's smoke and the bench smoke. Load
+  average 5.5 when it started and 5.7 when it ended.
+
+On `5e3d80e7`, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: 5 passed; and
+`… --test id_order_invariance`: 4 passed, the shape golden as banked on every corpus file. This record's gate
+section is the one commit after it, plans only.
+
+Not run: the nightly, `utils/ci_container.sh` (no DOT writer, review bundle or CI install changed), and
+`arith_batch` (no rule of the calculator changed).
 
 ### What the user must see
 
