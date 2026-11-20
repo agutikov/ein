@@ -274,3 +274,36 @@ two ways where a program writes an `(open F)`; V-8 still holds on a program the 
 - `162e99e9` this record's second version, with the two witnesses beside it, plans only.
 - `4b2a3026` `18_two_candidates_as_rules.ein` writes `(thing a) (thing b)` again; its shape lines banked again.
 - this record, plans only.
+
+### The gate
+
+`./run_tests.sh`, four times, each stopping at its first failing test binary:
+
+| commit | result |
+|---|---|
+| `54adb21a` | exit 101 at `answer_round_trip`, on the example's `open` form alone (V-61); the form went back to the page's spelling |
+| `162e99e9` | exit 101 at `alive_invariant`'s `every_name_of_the_program_is_a_candidate_object`, the two pairs of `a` and `b` named only inside a candidate; `(thing a) (thing b)` went back in |
+| `59986c93` | exit 101 at `corpus_cli`'s `the_slow_flag_still_describes_the_sweep`: `examples/beyond_arith/equation_two_unknowns.ein: 4455 ms of cells and no slow flag`, with another worktree's gate running beside it (load average 12 to 14). An entry this stage does not touch: its two cells take 2.9 s together when run alone, under the 4 000 ms ceiling, and S1f.21.11's runs found the same entry over it under load (the cost measurement V-39 owes) |
+| `59986c93` | **exit 0** with `EIN_TEST_JOBS=4`, the runner's count, which no verdict depends on: the ten static checks, `cargo test --profile gate --workspace` (160 test binaries, 1380 tests, none failed), the process's checks and the bench smoke |
+
+The tail of the green run:
+
+<!-- output -->
+```text
+── utils/check_generated.py ──────────────────────────────────────
+check_generated: 9 generators, every file they write as written
+── utils/check_region_routes.py ──────────────────────────────────
+check_region_routes: the oracle agrees with the per-subset route on 8 programs, and holds 300 random regions written as programs to their verdict, the monotone ones node for node
+── utils/wrong_answers.py ────────────────────────────────────────
+wrong_answers: 9 open rows, 0 defects in the register's keys
+── utils/review_bundle.py --smoke ────────────────────────────────
+smoke: the register pass read 9 rows, 0 failed
+── cargo bench --bench engine -- --test ──────────────────────────
+…
+Testing region_single/zebra2
+Success
+
+exit 0
+```
+
+Not run, as the brief says: the nightly and `utils/ci_container.sh`.
