@@ -99,6 +99,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-92](#v-92--what-the-runs-correct-in-the-findings-the-review-items-were-written-from) | what the runs correct in the findings the review items were written from | S1f.21.19 | **closed**: corrected on the items' pages |
 | [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | open; the help texts are **S1f.21.24's**, the two pictures go with the nine of review item 77 |
 | [V-94](#v-94--a-test-of-the-obligations-reports-checks-proposals-by-short-names-only) | a test of the obligations' reports checks proposals by short names only | S1f.21.19 | open; **S1f.21.24 fixes it** |
+| [V-100](#v-100--two-mutants-of-the-bijections-setup-were-caught-by-a-load-error-alone) | two mutants of the bijection's setup were caught by a load error alone, and survived once the file that gave it was rewritten: the container's nightly failed on them | the coordinator, the container's nightly | **fixed**: a test that claims the two activators, `tests/stdlib/bijection/07_setup_owed_activators.ein` |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -1023,3 +1024,23 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-94 — A test of the obligations' reports checks proposals by short names only
 
 **Found** by S1f.21.19, running the review items on the final engine. `ein-infer/tests/obligation_reports.rs` compares what an obligation proposes against short names, so a proposal printed under a full name would pass unseen. **Open; S1f.21.24 fixes it.**
+
+## V-100 — Two mutants of the bijection's setup were caught by a load error alone
+
+**Found** by the coordinator's run of the nightly in the runner's container on `7b72bd84`, which failed at the
+mutation census's fifth shard of twelve: *survivor not in the baseline:
+`bijection.ein::bijective-setup::swap-assert::(total-owed ?R ?isa)`*. The whole census, run on the host, has that
+one and its twin, `(surjective-owed ?R ?isa)`, and no other difference from the banked set. Every step of the
+nightly before the census passed: the deep corpus sweeps, all four shards.
+
+On the engine before the second part both mutants were caught, and by one file alone,
+`tests/stdlib/bijection/06_blind_enumeration.ein`, with a load error: its `:no-hypothesis` list named the relation
+the misdirected obligation then owed. No claim held either. S1f.21.12 rewrote that file with no obligation
+activated (its default Q-M1f.600), and nothing caught them. No answer is wrong by it: what was lost is the suite's
+hold on the order of two activators' arguments.
+
+No claim about $R$ can hold it: on a bijection the two obligations agree at every state, and where the two labels
+differ in count the setup's elimination rules end root. **Fixed** by a program that claims the owing root by the
+two activators it holds, `tests/stdlib/bijection/07_setup_owed_activators.ein`: it holds on the library and fails
+on each mutant, and the census's survivors are the banked set again. The nightly's steps after the census were not
+run on that commit; the whole nightly is run again on the phase's last commit.
