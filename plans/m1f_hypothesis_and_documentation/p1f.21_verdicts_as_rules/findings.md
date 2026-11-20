@@ -50,12 +50,22 @@ without a path is in [`design.md`](design.md), whole.
 | [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | open |
 | [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
 | [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine; a first reading: 1.3 to 2.6 times the time at the same work, which fails the nightly's cost check; **the user's call** |
-| [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
+| [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
-| [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
+| [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
 | [V-43](#v-43--a-declared-nots-facts-still-read-as-written) | a program may declare `not`, and its facts still read as written in the trace; the kernel-register test still holds a page to a list that names `false` and `not` | S1f.21.2 | open |
 | [V-44](#v-44--a-trace-quoted-on-a-page-is-held-by-no-test) | a trace quoted on a page is held by no test but the natural-language page's | S1f.21.2 | open |
 | [V-45](#v-45--the-binary-formats-minor-version-on-its-page-is-held-by-no-test) | the binary format's minor version on its page is held by no test | S1f.21.2 | open; the page fixed |
+| [V-46](#v-46--a-witness-of-nested-absent-loads) | a witness of nested absent loads | S1f.21.12's build | open; with Q-M1f.618 |
+| [V-47](#v-47--three-pieces-of-the-search-have-no-subject-in-the-corpus-under-the-union) | three pieces of the search have no subject in the corpus under the union | S1f.21.12's build | open; **the user's call**: whether the machinery goes |
+| [V-48](#v-48--the-classic-zebras-structure-under-the-union) | the classic zebra's structure under the union | S1f.21.12's build | open; **the user's call** |
+| [V-49](#v-49--a-written-open-of-a-relations-name-is-held-and-owes-nothing) | a written open of a relation's name is held and owes nothing | S1f.21.12's build | open |
+| [V-50](#v-50--a-rules-open-fact-is-held-where-its-fact-is-held) | a rule's open fact is held where its fact is held | S1f.21.12's build | open |
+| [V-51](#v-51--the-state-route-counts-one-fact-more-on-one-program) | the state route counts one fact more on one program | S1f.21.12's build | open |
+| [V-52](#v-52--one-more-program-costs-past-a-second) | one more program costs past a second | S1f.21.12's build | **owed by the coordinator**, with the corpus's costs |
+| [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | open; S1f.21.18's, with the form |
+| [V-54](#v-54--one-shape-of-absent-as-a-value-stays-refused) | one shape of absent as a value stays refused | S1f.21.12's build | open; with Q-M1f.618 |
+| [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | open; S1f.21.14's |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -763,3 +773,43 @@ trace on a page is checked only on the natural-language page. **Open.**
 
 **Found** by S1f.21.2. `09-binary-format.md` named the format's minor version as 1 where the code has 2. The page
 is fixed; nothing holds the number to the code. **Open.**
+
+## V-46 — A witness of nested absent loads
+
+**Found** by the build of S1f.21.12. `examples/ein-bugs/wrong-answers/absent-fact-nested.ein` loads now, which the examples' list did not name; its regression row says so, and seven `absent` shapes moved from the refused list of `ein-cli/tests/value_rule.rs` to the loading one (Q-M1f.618). **Open; with Q-M1f.618.**
+
+## V-47 — Three pieces of the search have no subject in the corpus under the union
+
+**Found** by the build of S1f.21.12. Under the union an activated obligation writes every witness its guard gives at root, so on a monotone program no instance root owes has an unproposed witness. Licence L5's last reason, licence L9 (`ein_infer::unheld`) and the coupling's unlicensed path have no subject in the corpus. The machinery stays, and the tests say that it licenses nothing today. **Open; **the user's call**: whether the machinery goes.**
+
+## V-48 — The classic zebra's structure under the union
+
+**Found** by the build of S1f.21.12. `zebra.ein`'s $H$ holds each placement beside its mirror, 112 candidates where 56. `ein render h-space` reads 352 groups and no grid where it read 36 groups and five grids, 33 305 coupling edges where 386, and a root layer of 705 808 facts where 181 088. `zebra.ein` and `zebra2.ein` have one cover and one theory only once the two orientations are folded together, which the tests now say. The cover reads two candidates that imply each other as two. **Open; **the user's call**.**
+
+## V-49 — A written open of a relation's name is held and owes nothing
+
+**Found** by the build of S1f.21.12. A program may write `(open R)`, `R` a relation's name. It is held at root, and nothing reads it as owed: $R$ is {∅} beside it. **Open.**
+
+## V-50 — A rule's open fact is held where its fact is held
+
+**Found** by the build of S1f.21.12. A rule's `(open F)` is held at a state that holds `F`, the rule writing what it concludes, where an obligation's and the blind enumerator's are written less what the state holds. `-p` lists both. **Open.**
+
+## V-51 — The state route counts one fact more on one program
+
+**Found** by the build of S1f.21.12. The state route commits a state's closure. Where one candidate implies another, its dead extension, stopped at its first contradiction, holds a candidate that route 1's fork from root has not derived: `13_mixed_solution_and_open.ein` counts one fact more on the state route, which `route_invariance.rs` names as its one exception. **Open.**
+
+## V-52 — One more program costs past a second
+
+**Found** by the build of S1f.21.12. `examples/lattice/14_seats_nothing_proposes.ein`, whose candidates the union takes from 12 to 16, costs past a second in its declared runs. It is flagged `slow` with the gate run's figure, to be taken again under `utils/bench_env.sh`. ****owed by the coordinator**, with the corpus's costs.**
+
+## V-53 — The generator's words still say hrules and rung
+
+**Found** by the build of S1f.21.12. The mode `hrules` now names the rules that conclude a hypothesis and the program's written `open` facts, and `ein show hyps`' note still says *built by the rung …*. **Open; S1f.21.18's, with the form.**
+
+## V-54 — One shape of absent as a value stays refused
+
+**Found** by the build of S1f.21.12. `(?R ?x)` written where a value goes, with `?R` bound to `absent`, stays refused, while `(q (absent ?x))` loads (Q-M1f.618). **Open; with Q-M1f.618.**
+
+## V-55 — A decision's file name says what is no longer true
+
+**Found** by the build of S1f.21.12. Q-M1f.66's file is named `…open-is-written-only-as-a-rules-verdict`. Its heading and text are rewritten; its name is not, since every link to it would move. **Open; S1f.21.14's.**

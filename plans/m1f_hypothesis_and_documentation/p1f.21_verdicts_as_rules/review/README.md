@@ -14,6 +14,6 @@ the page to read first. Each part has its index and its own answers file; an ite
 | part | what | items | answers |
 |---|---|---|---|
 | [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Built, and its pages written | **three open**, for review after the build: the defaults each of its last stages took, [66](part-1/66-S1f.21.17-defaults/README.md), [67](part-1/67-S1f.21.11-defaults/README.md) and [68](part-1/68-S1f.21.2-defaults/README.md) | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
-| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Not started before part 1 is done | **none open**: every item is ruled and out of the bundle, the last, 56 and 57, on 2026-11-20. Its two builds are planned on the rulings | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
+| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Its first build done; the sweep that removes `hrule` next | **nine open**, for review after the build: 58 to 65, the examples of S1f.21.12, and [69](part-2/69-S1f.21.12-defaults/README.md), the fifteen defaults its build took | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

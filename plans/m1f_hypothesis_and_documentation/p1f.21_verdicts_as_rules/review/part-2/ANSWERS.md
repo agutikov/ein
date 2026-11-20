@@ -161,3 +161,29 @@ One corpus program becomes an error, `13_mixed_solution_and_open.ein`.
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 69 · The defaults the build of S1f.21.12 took
+
+[The item](69-S1f.21.12-defaults/README.md), which has the fifteen, each with what was asked.
+
+First, what the built engine answers on `oblig-derived-domain.ein`: **an empty $R$**, the program flagged, its claim
+failing; before, `(likes Ann Pie)`. You expected it still solvable and called that no requirement.
+
+The defaults most worth your eye:
+
+- **13, Q-M1f.618**: `absent` and `open` are names, plain facts, under `not`, in a guard's value and in a `:using`
+  list, as under an ordinary relation. Other: refused there, as before.
+- **1, Q-M1f.606**: a rule that concludes a hypothesis is a site of the static check for a read outside an `absent`
+  or inside an even number of them. Other: a read at any depth, which flags programs that only probe with
+  `unknown`.
+- **5, Q-M1f.610**: an obligation whose witness does not resolve declines the whole call, and the blind enumerator
+  does not run beside it. Other: the blind enumerator runs.
+- **10, Q-M1f.615**: the warning found in flight is printed once a file, at once, and only where the static check
+  had not flagged the program.
+- **15, Q-M1f.620**: a hypothesis rule whose `:assert` concludes `(open …)` is refused.
+
+**Your answer:**
+
+**Notes:**

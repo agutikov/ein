@@ -244,8 +244,8 @@ None is cited by a project file; each is what the build does until the user rule
   obligations' and the blind enumerator's are written less what the state holds; `-p` lists both.
 - **V-51.** The state route commits a state's closure, so where one candidate implies another its dead extension,
   stopped at its first contradiction, holds a candidate route 1's fork from root has not derived:
-  `13_mixed_solution_and_open` counts one fact more on the state route, which `route_invariance.rs` names
-  (``e1f37012` (the grammar and the loader), `e46c4c89` (the engine and its tests), `21865cbc` (the corpus), `f0bbd066` (the pages, the decisions, AGENTS.md), `04d780fb` (the goldens), `375e3d4f` (a node's `beyond` without its `open` facts, the rebase's anchor and the examples page); two helpers of the build's own rewrote the pages that told the ladder and restated the structure tests the union moved (`coupling`, `cover`, `exactly_one`, `theory_share`, `h_space_view`), each change in the commits above_AN_IMPLIED_CANDIDATE`); the saturations and the read-out are one.
+  `13_mixed_solution_and_open` counts one fact more on the state route, which `route_invariance.rs` names as its one
+  exception.
 - **V-52.** `14_seats_nothing_proposes.ein`'s declared runs cost past a second (the oracle over 16 candidates): it is
   flagged `slow`, its `cost_ms` the gate run's figure (9 128), to re-take under `utils/bench_env.sh`.
 - **V-53.** The generator's words: the mode `hrules` now names the rules that conclude a hypothesis and the program's

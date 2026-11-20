@@ -534,6 +534,21 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.603](#q-m1f603--the-constraints-pages-running-program-imports-the-contradiction) | The constraints page's running program imports the contradiction | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
 | [Q-M1f.604](#q-m1f604--how-the-words-a-module-reads-and-does-not-declare-are-listed) | How the words a module reads and does not declare are listed | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
 | [Q-M1f.605](#q-m1f605--sentences-of-the-second-parts-pages-changed-by-the-first-parts) | Sentences of the second part's pages changed by the first part's | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.606](#q-m1f606--which-reads-make-a-rule-that-concludes-a-hypothesis-a-site-of-the-static-check) | Which reads make a rule that concludes a hypothesis a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.607](#q-m1f607--the-blind-enumerator-under-no-search) | The blind enumerator under no-search | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.608](#q-m1f608--a-states-open-facts-within-its-own-pass) | A state's open facts within its own pass | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.609](#q-m1f609--what-the-blind-enumerator-and-a-later-debt-write-above-root) | What the blind enumerator and a later debt write above root | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.610](#q-m1f610--an-obligation-whose-witness-does-not-resolve) | An obligation whose witness does not resolve | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.611](#q-m1f611--whether-a-claim-may-list-an-open-fact) | Whether a claim may list an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.612](#q-m1f612--an-open-facts-provenance) | An open fact's provenance | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.613](#q-m1f613--a-variable-under-open-in-a-conclusion) | A variable under open in a conclusion | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.614](#q-m1f614--the-two-fixtures-of-the-old-rule-on-open) | The two fixtures of the old rule on open | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.615](#q-m1f615--the-warning-found-in-flight-on-stderr) | The warning found in flight, on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.616](#q-m1f616--whether-a-nodes-open-facts-count-as-work) | Whether a node's open facts count as work | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.617](#q-m1f617--whether-open-is-an-atom-the-blind-enumerator-guesses-about) | Whether open is an atom the blind enumerator guesses about | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.618](#q-m1f618--absent-and-open-heading-a-fact-under-not-in-a-guards-value-and-in-a-using-list) | absent and open heading a fact under not, in a guard's value and in a using list | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.619](#q-m1f619--the-structures-theory-share-under-the-union) | The structure's theory share under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.620](#q-m1f620--a-hypothesis-rule-that-concludes-an-open-fact) | A hypothesis rule that concludes an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11538,3 +11553,108 @@ The other reading: left untrue until the second part's pages are written.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
 [review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+
+### Q-M1f.606 — Which reads make a rule that concludes a hypothesis a site of the static check
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+which reads of a rule that concludes `(open F)` are the `hypothesis` site. **The default taken**: a read of `D` outside an `absent` or inside an even number of them, as a saturation rule's monotone reads; the literal reading of Q-M1f.574 (any depth) flagged `hrule-reads-unknown.ein` and its kin for an `unknown` probe.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.607 — The blind enumerator under no-search
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+the blind enumerator under `(solve :no-search)`. **The default taken**: it writes nothing: no candidate, as no writer runs.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.608 — A state's open facts within its own pass
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+a state's `open` facts within its own pass. **The default taken**: written once at the fixpoint and only added to while a rule that reads `open` derives (the pass, then such rules, until nothing changes); none is withdrawn within a state.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.609 — What the blind enumerator and a later debt write above root
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+what the blind enumerator and a later debt write above root. **The default taken**: what root read: the blind enumerator's raw list at root and the later debts' candidates, less what the state holds or denies.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.610 — An obligation whose witness does not resolve
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+an obligation whose witness step does not resolve under an activator. **The default taken**: the call is declined: nothing is written for any obligation, and the blind enumerator does not run beside an activated obligation (`rung` mode `declined`).
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.611 — Whether a claim may list an open fact
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+may a claim list an `open` fact. **The default taken**: no: a claim lists facts of the program's relations (`ein.y`'s `ClaimNested`); `(model (open k))` is a parse error.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.612 — An open fact's provenance
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+an `open` fact's provenance. **The default taken**: a pass-written one carries a rule's provenance naming its writer (the obligation, the rule, or `open` for the blind enumerator), printed *which rule … writes*; a written one the loader's source provenance.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.613 — A variable under open in a conclusion
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+`(open ?x)` in a conclusion. **The default taken**: `?x` a parameter of the rule names a relation (what a state owes); a variable the `:match` binds is a hypothesis.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.614 — The two fixtures of the old rule on open
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+the two parse-negative fixtures Q-M1f.66's old shape made. **The default taken**: `open_in_match.ein` moves to `examples/features/23_a_rule_reads_open.ein` (its subject, a rule that reads `open`, is legal and flagged); `open_mixed_assert.ein` moves to `examples/broken/load/` with `:why`s, refused at load.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.615 — The warning found in flight, on stderr
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+the in-flight warning on stderr. **The default taken**: once per file, at once, and only where the static check did not already flag the program (a flagged program's warning is already printed).
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.616 — Whether a node's open facts count as work
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+does a node's `open` facts count as work and against `--region-budget`. **The default taken**: no: `region::NodeOut::work` counts the facts saturation built beyond root, the `open` facts aside, in every route's `facts`.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.617 — Whether open is an atom the blind enumerator guesses about
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+is `open` a guessable atom where a program writes it as a name. **The default taken**: no: the kernel's word, left out of the blind enumerator's atoms as `absent` is (`hypgen::candidate_objects`).
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.618 — absent and open heading a fact under not, in a guard's value and in a using list
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+`open` and `absent` heading a fact under `not`, in a guard's value and in a `:using` list. **The default taken**: names, as under an ordinary relation (Q-M1f.571 read where it is silent): `(not (absent k))`, `(neq ?x (absent k))`, `(q (absent ?x))` load; directly under `open` or `absent`, written at the top and concluded they stay refused.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.619 — The structure's theory share under the union
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+the structure's theory share under the union. **The default taken**: the program's own writers built H (`structure.rs`' `declared`), and the relations they read, the rules' and the obligations', are what the universe is made of.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.620 — A hypothesis rule that concludes an open fact
+
+**Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
+an hrule whose `:assert` concludes `(open …)`. **The default taken**: refused at load: an hrule proposes a fact, a hypothesis already; a rule that concludes `(open …)` is written instead.
+
+The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
