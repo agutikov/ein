@@ -13,10 +13,12 @@ the relation of a fact root's fixpoint holds: `(likes Ann happy)` is no candidat
 
 **The kernel's own words are not made relations of the program by heading a tuple**, since the kernel reads each as
 a form of its language: the connectives `and` and `or`, `absent`, the computed relations `eq` and `neq`, the negation
-`not`, whose fact is of its argument's relation, `false`, the verdict `open`, the declaration `relation` and the
-closure marker `__closed__`; and neither are the names the loader makes up, which start with `#`. `=` is none of
-them: the grammar keeps it a name, and the kernel reads no form of it. A goal and a claim may name the kernel's words
-a program writes, and `eq` and `neq`, which every program has
+`not`, whose fact is of its argument's relation, `false`, `open`, under which a state owes and supposes
+([Q-M1f.566](../hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), the declaration
+`relation` and the closure marker `__closed__`; and neither are the names the loader makes up, which start with
+`#`. `=` is none of them: the grammar keeps it a name, and the kernel reads no form of it. A goal and a claim may
+name the kernel's words a program writes, a claim all but `open`, of which it lists no fact, and `eq` and `neq`,
+which every program has
 ([Q-M1f.119](Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)).
 
 **Why.** Being the first item of a tuple is enough to be a relation, a nested fact's included, and a declaration is

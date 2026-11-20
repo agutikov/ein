@@ -10,9 +10,10 @@ ways the engine reaches the same positive:
 - **B** — the hypothesis layer: `(color-loc Blue H1)` is a candidate, and
   each wrong house a commitment refutes.
 
-All three fixtures hold the hypothesis generator constant (the rule
-`guess` and its activator `(guess color-loc Color House)`) and vary only the rule
-library, so each comparison moves a single variable:
+All three fixtures hold what writes the hypotheses constant (the rule
+`guess`, which concludes `(open F)`, and its activator
+`(guess color-loc Color House)`) and vary only the rule library, so each
+comparison moves a single variable:
 
 | fixture | elimination rules (A) | negative-completion | what `ein solve` finds |
 |---------|:---:|:---:|-----------|

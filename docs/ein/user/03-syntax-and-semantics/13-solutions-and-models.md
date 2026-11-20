@@ -120,8 +120,9 @@ the claim that names it, `(model …)`, so the answer reads back into the progra
 
 ## In mathematics
 
-Root is the program saturated, $H$ the candidates proposed at root, $n = |H|$, and a commitment a subset of $H$, a
-node of the lattice $(2^H, \subseteq)$ ([hypotheses](09-hypotheses.md)):
+Root is the program saturated, $H$ the candidates, the hypotheses root holds less the facts it holds or denies,
+$n = |H|$, and a commitment a subset of $H$, a node of the lattice $(2^H, \subseteq)$
+([hypotheses](09-hypotheses.md)):
 
 $$
 \begin{aligned}
@@ -214,11 +215,11 @@ context**: the same clues in another context have another region.
 | word | what it is |
 |---|---|
 | **root** | the program's facts saturated by its rules, nothing assumed. It is the commitment ∅, and a node like any other |
-| **candidate** | a fact the engine may assume; **H** is all of them, built once at root ([hypotheses](09-hypotheses.md)) |
+| **candidate** | a fact the engine may assume: a hypothesis `(open F)` root holds, whoever wrote it, of a fact root neither holds nor denies; **H** is all of them, read once at root ([hypotheses](09-hypotheses.md)) |
 | **commitment** | a set of candidates assumed together; as a point of the lattice, a **node** |
 | **state** | root with the commitment's facts added and saturated to its fixpoint. It is never cut at the first contradiction |
 | **dead** · **alive** | a rule that states `:ein inconsistent` fires in the state: `std.core`'s on a held `(false)`, which `std.contradiction`'s rules conclude from a fact beside its stored negation where a program imports the module, or a program's own · neither |
-| **owing** · **discharged** | the state has an unpaid obligation instance · it has none ([obligations](08-obligations.md)) |
+| **owing** · **discharged** | the state has an unpaid obligation instance, and holds `(open R)` for its relation · it has none ([obligations](08-obligations.md)) |
 | **solution** | a node of R: alive and discharged |
 | **state class** | the commitments that reach one state. Where saturation derives a candidate, several commitments have one state; the smallest that reach it are its **minimal generators**, how few guesses the solution needs |
 | **minimal line** · **maximal line** | R's minimal and maximal members: the least that must be guessed, and the most that can be |
@@ -230,10 +231,10 @@ context**: the same clues in another context have another region.
 
 ## Root as a solution
 
-**∅ is in R exactly when root is alive and owes nothing**, whatever the generator proposes, and including when it
-proposes nothing. A program that states no obligation and whose root is consistent always has ∅ in R. That is not a
-defect: a puzzle that does not say what it requires is solved by saying nothing more. A question about *the* answer of
-such a program is asked over its maximal line ([query](12-query.md)).
+**∅ is in R exactly when root is alive and owes nothing**, whatever H holds, and including when H is empty. A
+program that states no obligation and whose root is consistent always has ∅ in R. That is not a defect: a puzzle that
+does not say what it requires is solved by saying nothing more. A question about *the* answer of such a program is
+asked over its maximal line ([query](12-query.md)).
 
 ## How many: `k_s` and `k_c`
 
@@ -257,7 +258,8 @@ A count is exact, and printed up to 2^63 − 1; past that the surfaces read it a
 
 A **restriction** is a rule that concludes `(false)` ([constraints](06-constraints.md)). It kills nodes, and sets the
 **maximal line**. An **obligation** is a rule that concludes `(open ?R)` while a witness is missing
-([obligations](08-obligations.md)). A state that owes is not a solution, and obligations set the **minimal line**.
+([obligations](08-obligations.md)). A state that owes, and so holds `(open R)`, is not a solution, and obligations
+set the **minimal line**.
 
 | the program states | R | minimal line | maximal line |
 |---|---|---|---|
@@ -343,7 +345,13 @@ saturation derives, and the read-out names the relation, an `outside` row under 
 ## A program the engine cannot vouch for
 
 Everything above holds of a **monotone** program, and the read-out's `lattice` row says whether a program is one: no
-`absent` over facts of a relation a commitment can add to, and no obligation trigger over such facts. A program that
+`absent` over facts of a relation a commitment can add to, no obligation whose trigger or guard reads such facts
+([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)), no rule
+that reads an `open` fact
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)), and no rule
+that concludes a hypothesis from such facts, so that no state above root holds a hypothesis root does not; where a run writes
+the `open` facts of such a state, it says so on stderr when it does
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). A program that
 fails that check
 is **flagged**: R is still the set of alive, discharged nodes, each built as root with its commitment added, and every
 command agrees on it, but the engine claims nothing more of it, not soundness and not completeness

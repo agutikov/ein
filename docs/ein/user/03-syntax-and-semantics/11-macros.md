@@ -293,7 +293,7 @@ The form is `(macro NAME (PARAMETER…) BODY :why "TEXT")`, with one parameter o
   rule calls is never expanded, and loads whatever its body
   ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)).
 - **A body may write `(open …)`**, `(open ?R)` or `(open (p ?x))`: it is checked where a rule calls it, as every
-  template's shape is ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)).
+  template's shape is ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-may-write-open-checked.md)).
 - **A goal prints as written**: the read-out shows `(housemates Ann ?x)`, not its expansion, and the class lists the
   expansion's instances ([Q-M1f.117](../../../decisions/language/Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md)).
 - **No relation is declared under a macro's name**: a premise `(housemates …)` would be the call and a fact

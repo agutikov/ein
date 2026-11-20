@@ -1430,7 +1430,7 @@ with no logical reason, which the user asked for none of (2026-11-07, G-21). W51
 
 ### Q-M1f.32 — An hrule's `eq` or `neq` instance
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md`](../../docs/decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md`](../../docs/decisions/hypotheses/Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md)
 
 **Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. An hrule's `:assert` takes an `eq` or `neq` conclusion, and the hrule
 rung proposed every instance as a hypothesis, which a commitment stored, `(eq a b)` among them (W53).
@@ -2120,7 +2120,7 @@ that is not ASCII; no file changes.
 
 ### Q-M1f.66 — May `open` be written as a value?
 
-**Decision file:** [`docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md`](../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md`](../../docs/decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)
 
 **Raised** 2026-11-10 by S1f.5.23's T1, on the user's ruling
 of that day: *"`open` is reserved word, here it appers as what? as relation name? - then it is an error, if not -
@@ -2517,7 +2517,7 @@ lets P1f.5 stop growing. (c) would undo the user's ruling on finding 9. Re-openi
 
 ### Q-M1f.86 — May a macro's body write `open`?
 
-**Decision file:** [`docs/decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md`](../../docs/decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.86-a-macros-body-may-write-open-checked.md`](../../docs/decisions/language/Q-M1f.86-a-macros-body-may-write-open-checked.md)
 
 **Raised** 2026-11-10 by S1f.5.23's T2, on the user's
 ruling on [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value): `open` is written only as a rule's `(open)` or
@@ -2539,7 +2539,7 @@ it stands, as it refuses `_` in a body. Re-opening it means (b).
 
 ### Q-M1f.87 — The verdict's loader lines once the grammar places `open`
 
-**Decision file:** [`docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md`](../../docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md)
+**Decision file:** [`docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-what-an-obligation-owes.md`](../../docs/decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-what-an-obligation-owes.md)
 
 **Raised** 2026-11-10 by S1f.5.23's T3. With `open` no
 name, five of `validate_open`'s ten lines are reached by no program: `(open …)` in a `:match`, inside a conclusion,
@@ -3060,7 +3060,7 @@ narrowed to (c) for the two relation lists once S1f.7.11 has said what *makes* a
 
 ### Q-M1f.115 — What else of an `:hrules` list is refused
 
-**Decision file:** [`docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md`](../../docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.115-an-activator-is-a-fact-of-its-rules-name-and-one.md`](../../docs/decisions/language/Q-M1f.115-an-activator-is-a-fact-of-its-rules-name-and-one.md)
 
 **Raised** 2026-11-11 by S1f.7.8's T1. Beside the list's first name, an `:hrules` list holds bare names
 after it, which the engine reads as nothing (`tests/region/01_states.ein` writes `guess` three times), and
@@ -3077,7 +3077,7 @@ moved. That a bare name selects nothing is F25's R-3.
 
 ### Q-M1f.116 — An activator's argument that is a value
 
-**Decision file:** [`docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md`](../../docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.116-an-activators-argument-is-not-checked-against.md`](../../docs/decisions/language/Q-M1f.116-an-activators-argument-is-not-checked-against.md)
 
 **Raised** 2026-11-11 by the analysis of that day
 and S1f.7.8's T1: `(guess (at Colour House))`, a misspelt type at a parameter that names no relation,
@@ -3307,7 +3307,7 @@ every command and in both builds, and the sweep of T3 moved no corpus answer. R-
 
 ### Q-M1f.129 — The assertion that no hrule reads `not`: removed, or kept where the kill cache is on
 
-**Decision file:** [`docs/decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md`](../../docs/decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)
+**Decision file:** [`docs/decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md`](../../docs/decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md)
 
 **Raised** 2026-11-11 by S1f.7.2's T1. The premise of `Hrules::candidates`' `debug_assert!` is
 stale for every command: H is taken config-free since M1e2 S1e2.3.1, the lookahead's kill cache off. The
@@ -5497,7 +5497,7 @@ make `word-theory.gaps.x` the full name of two declarations, its own and module 
 
 ### Q-M1f.242 — A dead or redundant hypothesis declaration
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md`](../../docs/decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md`](../../docs/decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md)
 
 **Raised** 2026-11-14 by S1f.6.34, the user's simplification of 2026-11-13 on the pairs of mechanisms:
 *"no-hypothesis make no sense if there are hrules - if the conflict then it's conflict, if not - then it filters
@@ -5515,7 +5515,7 @@ nothing"*. A list beside an hrule that contradicts none of its proposals filters
 
 ### Q-M1f.243 — An obligation, read as declared or as owed
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md`](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md`](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md)
 
 **Raised** 2026-11-14 by S1f.6.34's census. The verdicts of O + HR, O + NH and O + C name *an owed relation*. Seven
 corpus programs list a relation their obligation can owe and root does not owe (`tests/stdlib/algebra/24`, `26`,
@@ -6087,7 +6087,7 @@ reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a gener
 
 ### Q-M1f.271 — What an hrule's `(and …)` conclusion proposes
 
-**Decision file:** [`docs/decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md`](../../docs/decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)
+**Decision file:** [`docs/decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md`](../../docs/decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)
 
 **Raised** 2026-11-14 by S1f.6.37's
 inventory of what reads a conclusion (E-65, W95). An hrule proposes facts, each a commitment of its own, and the
@@ -7027,7 +7027,7 @@ and H6-4.
 
 ### Q-M1f.308 — The rung a loaded obligation rule chooses
 
-**Decision file:** [`docs/decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md`](../../docs/decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)
+**Decision file:** [`docs/decisions/hypotheses/Q-M1f.308-an-obligation-activated-at-root-writes.md`](../../docs/decisions/hypotheses/Q-M1f.308-an-obligation-activated-at-root-writes.md)
 
 **Raised** 2026-11-15 by
 S1f.10.15's
@@ -10718,7 +10718,7 @@ Three calls:
 - **B, the filtering way's mechanism**: (a) the closure alone, the two lists removed and written as closures, a
   single fact taken out by a rule that denies it; (b) the lists stay.
 - **C, *may* beside *must* in one program**: (a) one way a program, as the ladder has it
-  ([Q-M1f.243](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)), a
+  ([Q-M1f.243](../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md)), a
   *may* there written as a decision that is owed; (b) the two ways add up.
 
 **Proposed** at first, if one way each is wanted: A (a), B (a), C (a).
@@ -10866,8 +10866,8 @@ live in a `:hrules` keyword of (query …) — `:hrules (NAME (args…) (args…
 …)"*. That an hrule's activators are in a clause and are no facts has that reason, a hypothesis rule being the
 search's and not the knowledge base's. That the clause groups argument lists under a name, and does not write each
 activator whole, has none on record: the two decisions about the clause since
-([Q-M1f.115](../../docs/decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md),
-[Q-M1f.116](../../docs/decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)) say what
+([Q-M1f.115](../../docs/decisions/language/Q-M1f.115-an-activator-is-a-fact-of-its-rules-name-and-one.md),
+[Q-M1f.116](../../docs/decisions/language/Q-M1f.116-an-activators-argument-is-not-checked-against.md)) say what
 its names must be and take the shape as given.
 
 **What the grouped form costs.** The grammar reads it as one form headed by its first name, so every later name

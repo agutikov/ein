@@ -165,8 +165,11 @@ ein saturate --dump B/root.ein > b.txt                 # load → save → load:
 
 `ein saturate --dump` of a saved file prints the node's state, root's fixpoint and then the choices committed and
 saturated, each fact with its first origin, `:source`, `:rule` or `:hypothesis`, in the order held; on the state
-above it is root's `(item a)`, then `(note (bad a) :hypothesis 0)` and `(flagged a :rule flag)`. A state's first load
-is the state the run saved, fact for fact and origin for origin.
+above it is root's `(item a)`, then `(note (bad a) :hypothesis 0)` and `(flagged a :rule flag)`, and the hypothesis
+the pass writes at the node's fixpoint, `(open (note (bad a)) :rule guess)`: a state's `open` facts are part of it
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)), written
+again at every load and never saved. A state's first load is the state the run saved, fact for fact and origin for
+origin.
 
 ## A saved file is a node of its program's lattice
 

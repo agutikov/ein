@@ -165,9 +165,9 @@ constrained-reasoning research.
   (below), and adding a rule here means adding a program there. Four of its
   rules are **obligations** — `total-owed` / `surjective-owed` in
   `std.algebra`, `slot-owed-room` / `slot-owed-fill` in `std.slots` — which
-  conclude `(open ?R)`, are not in the saturation agenda, and are read by one
-  pass over each state's fixpoint, which writes `(open R)` once for each
-  relation the state owes. **H is the union of the hypotheses root holds**
+  conclude `(open ?R)`, are not in the saturation agenda, and are read at
+  each state's fixpoint, where a state holds `(open R)` once for each
+  relation it owes. **H is the union of the hypotheses root holds**
   ([Q-M1f.570](docs/decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
   the `(open F)` facts a rule concludes (a hypothesis rule), the program
   writes, and an obligation **activated** at root writes for what would
@@ -492,7 +492,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   ([Q-M1f.568](docs/decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)).
   A rule may read an `open` fact, and its program is flagged
   ([Q-M1f.569](docs/decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md));
-  a hypothesis first held above root flags its program in flight
+  a hypothesis first held above root flags its program in flight, where
+  the pass writes that state's `open` facts
   ([Q-M1f.574](docs/decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 - **A string is natural-language text**, written only after `:why`, `:source`
   or `:goal-text`, never an object. Names are ASCII.
@@ -582,7 +583,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   pattern of the other count matches. A relation may be declared more than
   once, at one count or at several, and no declaration is refused as a
   duplicate; what reads a declaration reads each (`ein_core::Program::declarations`):
-  the blind rung guesses at each declared count, and `std.contradiction`
+  the blind enumerator guesses at each declared count, and `std.contradiction`
   activates the rule of each. Ein has no types, and a label means what a
   rule makes it mean (Q-M1f.372).
 - **Every import brings its module whole**, with its own imports, one copy

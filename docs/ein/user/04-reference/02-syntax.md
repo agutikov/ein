@@ -304,9 +304,16 @@ a state could hold**, a fact of an ordinary relation or the stored negation of a
   ([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)).
 - `false` takes no argument, `(false)` alone, as a fact and as an argument
   ([Q-M1f.123](../../../decisions/language/Q-M1f.123-false-with-no-argument-is-an-object.md)).
+- `open` heads a written fact as the kernel's word, with one argument: `(open F)`, a hypothesis the program writes,
+  and `(open R)`, `R` a relation of the program, each held at root alone
+  ([§ Conclusion forms](#conclusion-forms-in-assert)). As an argument of an ordinary relation,
+  `(think Ann (open (p A)))`, it is a name the kernel reads nothing of
+  ([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)).
 - The declarators `rule`, `query`, `solve`, `config`, `macro`, `import` and `trace` are reserved words, never
-  a fact's head. `hrule` is none: it is a name, and a form headed by it is a fact
-  ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)).
+  a fact's head. There is no `hrule` form: `hrule` is a name, so `(hrule …)` is a fact, and a rule written under it
+  is refused at the parse
+  ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md);
+  [`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-hypothesis-rule-is-a-rule-there-is-no-hrule-form-and-no-hrules)).
 
 Everything else, `instance`, `type`, `symmetric`, `co-located`, `lives-in`, …, is an ordinary `(NAME arg*)` fact:
 introduce a relation by declaring it and stating its facts. A fact that activates a rule, `(symmetric co-located)`,
@@ -430,13 +437,14 @@ does it conclude a compound fact, a connective inside a fact or under a conclusi
 parse, and through a macro's expansion at load
 ([Q-M1f.74](../../../decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)). **A
 hypothesis is one fact**, a commitment of its own, so `(open (and …))` is refused, at the parse and through a macro's
-expansion at load ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): a rule
+expansion at load ([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)): a rule
 concludes several hypotheses as several `(open F)`.
 
 **A hypothesis rule is a rule that concludes `(open F)`** ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)): it is activated as every rule
 is, by a fact of its name the program writes anywhere in it, or by none where it has no parameter, and the
 hypotheses it concludes at root are H's. There is no `hrule` form and no `:hrules` clause; a program that writes
-either is refused at the parse.
+either is refused at the parse
+([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-hypothesis-rule-is-a-rule-there-is-no-hrule-form-and-no-hrules)).
 
 ```lisp
 (rule guess (?R ?T)
@@ -495,14 +503,19 @@ part to play:
 | `(open R)` / `(open ?R)` | this state is **unfinished**: it owes a witness of the relation `R`, whose held extent is incomplete; the rule's whole `:assert`, an obligation |
 | `(open F)` | `F`, a fact or a variable the `:match` binds to one, is a **hypothesis**: a commitment may suppose it |
 
-**The `open` facts are part of a state** and no fork inherits them: a pass writes them at each state's fixpoint,
-`(open R)` where the state owes an instance of `R` and `(open F)` for each hypothesis a rule concludes there, and a
-fork drops every one ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)).
-A program may write one: `(open F)` is a hypothesis held at root alone. `open` takes one argument, and directly under
-it neither `open` nor `absent` is written ([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md));
-elsewhere it is a name ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)),
-a macro's body among the places it is written ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)).
-A rule that reads an `open` fact makes its program not monotone
+**The `open` facts are part of a state** and no fork inherits them: a pass writes them at a state's fixpoint (at
+root, where they make H, and above root at a state that is printed or saved, or whose rules read them),
+`(open R)` once where the state owes an instance of `R`, and `(open F)` for each hypothesis a rule concludes there,
+each fact that would pay what the state owes, and the blind enumerator's guesses where it runs; a fork drops every
+one, and no rule deletes a fact
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). A program
+may write one, held at root alone: `(open F)` is a hypothesis, and a written `(open R)` adds no debt, a state owing
+what its obligations count. `open` takes one argument, and directly under it neither `open` nor `absent` is written
+([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)); elsewhere it is a
+name ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)), and a macro's body
+may write `(open …)`, held to these shapes where a rule calls it
+([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-may-write-open-checked.md)). A rule may read an `open`
+fact, `(open ?R)`, `(open (p ?x))` or `(absent (open (p ?x)))`, and its program is then not monotone
 ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)).
 
 **A conclusion of `eq` or `neq`**, `(neq ?x ?y)`, `(eq ?x w)`, `(not (eq ?x ?y))`, or a pattern whose relation a
@@ -511,7 +524,7 @@ that does not is `(false)`, derived by the rule from the premises its firing mat
 those premises and `refuted by` the rule. A firing whose every conclusion holds derives nothing and is no firing. A
 fact of either that a hypothesis would state is no hypothesis: `(open (eq …))` is refused at the parse, and an
 instance a parameter bound to `eq` makes is proposed as nothing
-([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)).
+([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md)).
 
 **A conclusion `(not ?x)` negates the fact `?x` is bound to**, a stored negation among them, which gives the
 negation of a negation, and an atom has no negation: where the program shows
@@ -539,7 +552,8 @@ asserts it is an **obligation**, which never fires during saturation. `(open ?R)
 to fill are read off the rule's own `(absent …)`, and where they cannot be, the rule is refused at load rather than
 guessed. What an obligation means, and how a state's debts are reported, is
 [`../03-syntax-and-semantics/08-obligations.md`](../03-syntax-and-semantics/08-obligations.md); its refusals are
-[`03-reserved-names.md` § The verdict](03-reserved-names.md#the-verdict--open).
+[`07-diagnostics.md` § 2.2](07-diagnostics.md#22-what-an-obligation-owes-and-its-refusals), and `open` among the
+reserved names is [`03-reserved-names.md`](03-reserved-names.md#open--what-a-state-owes-and-supposes)'s.
 
 #### NAF evaluation timing — the closure/world boundary
 
@@ -632,7 +646,7 @@ has one lattice and one answer, and every query asks about it. What each list do
   root holds an `open` fact, `:hypothesis-relations` names exactly the relations of those facts and `:no-hypothesis`
   names none of them; no relation is in both lists; and no listed relation is closed by a `(__closed__ R)`. Where
   root holds none, a `:no-hypothesis` name another list or a closure already says is one `note:` line on stderr
-  ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)).
+  ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md)).
   `:no-search` relaxes no conflict
   ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)): beside an obligation
   or a closure it is silent, and beside a hypothesis rule or a list one `note:` says that the rule proposes, or the
@@ -933,8 +947,9 @@ no negation, so the loader refuses the conclusion wherever the program shows tha
 written fact, a declaration, another rule's conclusion, a hypothesis's among them, the rule's activator, a declared
 relation the hypotheses are taken from, or a guard that alone binds it. Where only a run meets the name, the firing
 stores nothing for that conclusion. **A hypothesis rule's `:match` may read `not`**, as a premise, under `(absent …)`
-and through `unknown`, and reads the state it was proposed in
-([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
+and through `unknown`, and reads the state it is asked about, the negations that state holds and none written while
+its candidates are taken
+([Q-M1f.129](../../../decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md)).
 
 **An `(or …)` written as a premise** of an `(and …)` or under an `(absent …)` is a shape no plan is compiled from,
 and the loader refuses it, a macro's expansion included; a top-level `(or …)` in a `:match` is one rule per disjunct.

@@ -54,8 +54,10 @@ A formula is TeX. After the four come the details, each refusal linked to the
 - [Constraints](06-constraints.md): `(false)` and `(not …)`, what cannot be, the upper bound of the answer; the
   contradiction as a rule.
 - [Properties and operators](07-properties-and-operators.md): the relation algebra as facts and rules.
-- [Obligations](08-obligations.md): `(open ?R)`, what a state still owes, the lower bound of the answer.
-- [Hypotheses](09-hypotheses.md): what the engine may assume, and how a program says where to look.
+- [Obligations](08-obligations.md): `(open ?R)`, what a state still owes, a fact it holds, the lower bound of the
+  answer.
+- [Hypotheses](09-hypotheses.md): `(open F)`, what the engine may assume, who writes it, and how a program that
+  writes none says where the blind enumerator looks.
 - [Theories](10-theory.md): a rule set as a whole, how its rules interact, and a theory as a module.
 - [Macros and imports](11-macros.md): a pattern written once, called and expanded; `forall`; modules brought in whole.
 

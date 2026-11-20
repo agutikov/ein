@@ -21,7 +21,7 @@ Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store
 - [Q-M1f.75](Q-M1f.75-the-compilers-errors-are-a-library-callers.md) — The compiler's errors are a library caller's, in Ein's words
 - [Q-M1f.84](Q-M1f.84-a-compiler-arm-the-loader-covers-is-an-invariant.md) — A compiler arm the loader covers is an invariant
 - [Q-M1f.110](Q-M1f.110-a-container-saved-again-is-the-same-container.md) — A container saved again is the same container
-- [Q-M1f.129](Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md) — A rule that concludes a hypothesis and reads `not` reads the state it was asked about
+- [Q-M1f.129](Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md) — A rule that concludes a hypothesis and reads `not` reads the state it was asked about
 - [Q-M1f.173](Q-M1f.173-the-register-file-stays-256-wide.md) — The register file stays 256 wide
 - [Q-M1f.185](Q-M1f.185-a-state-deeper-than-the-parsers-limit.md) — A state deeper than the parser's limit is answered, saved and loaded again
 - [Q-M1f.413](Q-M1f.413-a-nodes-container-opens-as-the-node.md) — A node's container opens as the node

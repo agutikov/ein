@@ -1,28 +1,31 @@
 # Absence: negation as failure
 
-$\operatorname{absent}(G)$ is the one place a rule reads what a world lacks. Everything else a rule does is
-positive: it reads facts and adds facts, and a knowledge base only grows. This page states what
+$\operatorname{absent}(G)$ is the one condition by which a rule reads what a world lacks. Everything else a rule
+does is positive: it reads facts and adds facts, and a knowledge base only grows. This page states what
 $\operatorname{absent}(G)$ means, the one moment at which it is asked, what follows from that for the rest of the
-reasoning, and what it does not give. The symbols are those of [firing a rule](01-firing.md) and
-[saturation](02-saturation.md).
+reasoning, what a world's facts of $\mathsf{open}$ say of what it lacks, and what absence does not give. The
+symbols are those of [firing a rule](01-firing.md) and [saturation](02-saturation.md).
 
 The one distinction that matters: **$\operatorname{absent}(G)$ is a question about a saturated world, never a
-fact.** It is asked, answered and acted on, and its answer is not stored, kept or carried to another world. Of the
-three readings of negation as failure a reasoner could take, closed-world, stratified and world-relative
-epistemic, Ein takes the third; the worked examples below are where the other two give other answers.
+fact.** It is asked, answered and acted on, and its answer is carried to no other world. The one answer a world
+keeps as a fact, what it owes, is a fact of $\mathsf{open}$, which no fork inherits
+([below](#what-a-world-owes-and-supposes)). Of the three readings of negation as failure a reasoner could take,
+closed-world, stratified and world-relative epistemic, Ein takes the third; the worked examples below are where the
+other two give other answers.
 
 How a program writes an absence, and the universal and the *unknown* test built from it, is the user's
 [rules page](../../user/03-syntax-and-semantics/05-rules.md) and [macros page](../../user/03-syntax-and-semantics/11-macros.md).
 
 ## Two halves: a positive closure and a boundary
 
-Saturation is split along negation ([saturation](02-saturation.md)):
+Saturation is split along negation ([saturation](02-saturation.md)), here where no rule reads a fact of
+$\mathsf{open}$:
 
 $$
 \begin{aligned}
 K_0' &= \operatorname{pos}(K) \\
 K_{i+1}' &= \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr) \\
-\operatorname{sat}(K) &= K_m'
+\operatorname{sat}(K) &= K_m' \cup \operatorname{opens}(K_m')
 \end{aligned}
 $$
 
@@ -30,7 +33,9 @@ $$
   no negation at all. A rule's absences are set aside; a candidate whose disjunct carries one is **parked**, not
   fired;
 - **the boundary**, at each quiescence $K_i'$, judges the parked candidates against that fixpoint, admits at most
-  one whose every guard passes, $\kappa_i$, and hands it back to the closure.
+  one whose every guard passes, $\kappa_i$, and hands it back to the closure;
+- **the pass**, at the quiescence the boundary admits nothing at, writes what the world owes and supposes, as facts
+  of $\mathsf{open}$ ([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)).
 
 So the deductive part of Ein is monotone, and the non-monotone part, absence, is confined to one place with one
 world to look at. Nothing is ever retracted: a world's facts only grow.
@@ -46,7 +51,8 @@ $$
 K_t \subseteq K_{t+1}
 $$
 
-Two worlds are related only by the fork that made one from the other; a question asked in one is not an answer
+Two worlds are related only by the fork that made one from the other, which keeps every fact of the parent but
+its facts of $\mathsf{open}$ ([firing a rule](01-firing.md#two-layers)); a question asked in one is not an answer
 in another.
 
 ## The definition
@@ -217,8 +223,9 @@ $$
 \end{aligned}
 $$
 
-  so a guard's answer is never carried across worlds nor stored as a fact; a candidate a node inherits parked
-  from root is judged again in the node's own world before it can be admitted. A fact root admitted through a
+  so a guard's answer is never carried across worlds: the one a world keeps as a fact, what it owes, is a fact of
+  $\mathsf{open}$, which no fork inherits, and a candidate a node inherits parked from root is judged again in the
+  node's own world before it can be admitted. A fact root admitted through a
   guard is, though, part of root's fixpoint, and every node holds it, $\mathrm{root} \subseteq
   \operatorname{st}(C)$; where a commitment can fill the absence that fact rested on, the node holds it beside
   the fact that denies its premise. That is the case in which a node's state depends on the path to it, and a
@@ -332,6 +339,44 @@ This is not the stratification hazard and the two do not overlap. A guard over t
 rule derives can change its answer during saturation, and judging it at the fixpoint makes that sound. A guard
 over the held extent of an extendable relation is discharged by a commitment, in a world the guard was never
 asked in.
+
+## What a world owes and supposes
+
+**What a world owes is an absence's answer, kept as a fact.** An obligation's pattern is a trigger and the absence of
+a witness. At a world's fixpoint, where the trigger holds with no witness, the world holds
+$\operatorname{open}(r)$, and beside it the hypotheses $\operatorname{open}(f)$ its writers read off the same
+fixpoint ([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)). Neither outlives its world: a
+fork drops every fact of $\mathsf{open}$, and the fork's are those of its own fixpoint, so what an absence
+answered in one world is carried to no other, as [§ What follows](#what-follows) has it of every guard.
+
+**A rule that reads one reads an absence across worlds.** A rule may read a fact of $\mathsf{open}$, or its
+absence. What it concludes is a fact like any other, which every fork keeps; the fact of $\mathsf{open}$ it read is
+dropped at the fork and held again only where the fork's own fixpoint gives it. So a commitment that pays what
+root owes leaves the node holding a conclusion of a debt it no longer has, which is the shape of a refutation
+resting on an absent, above, with no absence written. The static check finds it as a site of its own, a **read of
+$\mathsf{open}$**, and such a program is not monotone
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md);
+[monotonicity § 3.1](08-monotonicity.md#31-what-it-reads)).
+
+**Where a commitment changes what is supposed or owed.** Two more shapes let a world above root hold what root's
+fixpoint did not, each a site of the same check, with $D$ the relations whose held extent a commitment can change
+([monotonicity § 3.1](08-monotonicity.md#31-what-it-reads)):
+
+- **a hypothesis**: a rule that concludes one reads a relation of $D$ under an even number of absences, so growing
+  the relation adds a match, and a world above root supposes a fact root did not
+  ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md));
+- **an obligation's trigger or guard**: an obligation whose trigger, or whose guard beside its witness, reads a
+  relation of $D$, so a world above root owes an instance root did not, or has a payment root's guard did not give.
+  It writes at root what root's guard gives, as every obligation does
+  ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)).
+
+**Found in flight.** Whatever the sites, a world above root that holds a hypothesis root does not makes the
+program not monotone: a monotone program, world by world, proves or refutes hypotheses and adds none. A computation
+that writes such a world's facts of $\mathsf{open}$ says so at once, and once, where it writes them, which a run
+may be asked to do at every world; where the check is made changes no $R$, the answer stands, and nothing is
+claimed of it
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 ## Stratification
 

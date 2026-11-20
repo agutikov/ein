@@ -1,0 +1,26 @@
+digraph r_with_no_search {
+  rankdir=TB; nodesep=0.45; ranksep=0.6; forcelabels=true;
+  node [shape=box, fontname="Helvetica", fontsize=11, height=0.3];
+  edge [fontname="Helvetica", fontsize=10];
+  w0  [label="w∅", style=filled, fillcolor="#fee391"];
+  wa  [label="w{s(a)}", style=filled, fillcolor="#a1d99b"];
+  wb  [label="w{s(b)}", style=filled, fillcolor="#a1d99b"];
+  wab [label="w{s(a), s(b)}", style=filled, fillcolor="#fcbba1"];
+  { rank=same; w0; wa; wb; wab; }
+  subgraph cluster_ctx_in { label="in ctx"; labeljust=l; fontname="Helvetica"; fontsize=10; fontcolor="#888888"; style="dashed,rounded"; color="#888888";
+    sa  [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="s(a)"];
+    sb  [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="s(b)"];
+    bot [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, xlabel="⊥"];
+  }
+  "s"; "a"; "b"; "false";
+  wa  -> sa  [label="in"];
+  wb  -> sb  [label="in"];
+  wab -> sa  [label="in"];
+  wab -> sb  [label="in"];
+  wab -> bot [label="in", style=dashed];
+  "s" -> sa [label="1", dir=back];
+  sa -> "a" [label="2"];
+  "s" -> sb [label="1", dir=back];
+  sb -> "b" [label="2"];
+  "false" -> bot [label="1", dir=back];
+}

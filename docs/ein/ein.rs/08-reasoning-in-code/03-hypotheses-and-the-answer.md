@@ -31,7 +31,7 @@ test under a crate's `tests/`.
 | $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hypothesis_rules.rs`](../../../../ein.rs/crates/ein-infer/src/hypothesis_rules.rs): each active rule that concludes `(open F)` is a compiled plan matched at the state, one per activator the state holds, each `(open F)` of its `:assert` a hypothesis per match; `ein_core::Program::hypotheses` holds those rules, whole |
 | $\beta(P)$ | `hypgen::generate_with`: the blind enumerator runs where no rule or program `(open F)` wrote and `mechanisms::obligation_plans` is empty |
 | $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the writers and the conflict check share |
-| $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`); `oblgen::payments` reads it at every state for the pass |
+| $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`); `oblgen::payments` reads it for the pass, at each state where the pass runs |
 | a witness step that does not resolve under its activator | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
 | $D^{+}$, $\operatorname{grows}(o)$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes once the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change, for the static check, whose `obligation-trigger` and `obligation-guard` sites (`oblgen::guard_reads`) flag an obligation whose payments can grow; no writer reads it |
 | $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `extendable::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
@@ -65,8 +65,9 @@ first filter that names it or emitted, so `raw == emitted + Σ filtered` and a d
 its filter. $H$ is what survives, identical facts one. A skip made before any candidate exists is a `hypskip` event,
 and a call made where an obligation is activated writes one `rung` event with its `mode`, its `reason` and its
 counts ([`05-events.md` § `rung`](../05-events.md#rung-which-generator-proposed)). What the writers gave at root,
-`open::at_root` writes as root's `(open …)` facts, and every state above root re-reads the same writers at its own
-fixpoint.
+`open::at_root` writes as root's `(open …)` facts; a state above root that is printed or saved, or that uses its
+`open` facts, as every state of a program in which a rule reads one does, re-reads the same writers at its own
+fixpoint, and no other state does.
 
 **Which writers built $H$** is `Mode::as_str`, one of seven words, and it is what the note of `ein show hyps`, the
 `H` row of `ein render h-space` and the `rung` field of `h-space.json` print:
@@ -76,7 +77,7 @@ fixpoint.
 | `no-search` | nothing: the program states `(solve :no-search)` |
 | `hypothesis-rules` | the rules that conclude a hypothesis, or the program's `(open F)`, and no activated obligation |
 | `obligations` | an activated obligation alone, what would pay what root owes; empty where root owes nothing |
-| `union` | both: the rules' hypotheses beside an activated obligation's, which may be none, the counts of the `rung` event the obligations' |
+| `union` | both: the hypotheses of the rules, or the program's `(open F)`, beside an activated obligation's, which may be none, the counts of the `rung` event the obligations' |
 | `stuck` | an activated obligation, and nothing left to propose, by it or another writer, while root owes |
 | `declined` | an activated obligation whose witness step did not resolve under its activator: it proposed nothing, and the blind enumerator does not run beside it |
 | `blind` | the blind enumerator: root holds no `open` fact and activates no obligation |
@@ -128,7 +129,7 @@ The block is the binary's output, held to it by a test ([§ 2.6](#26-what-holds-
 - **stderr holds one `note:`**, which writers built H, in the word of § 1.2, and how many candidates it holds:
   ``note: FILE: H, from `hypothesis-rules`: …``. An empty H prints nothing on stdout and exits 0, and the note says
   why in the words of the read-out's `universe` row: *no candidate*, and *the program states :no-search* where it
-  does. On a program the static check flags, the warning's line comes before the note,
+  does. On a program the static check flags, stderr holds the warning's line beside the note,
   `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: …`: H is what the routes search over, and nothing is claimed of what
   they answer ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 - **Exit codes**: 0 for every H, empty or not, a dead root's among them. A program the loader refuses, or the engine
@@ -148,7 +149,7 @@ Each is a corpus program whose note names the writers, re-taken by `ein show hyp
 | `obligations` | [`examples/zebra2-obligations.ein`](../../../../examples/zebra2-obligations.ein) | `zebra2.ein` with the hypothesis rule and its activators deleted and nothing else |
 | `obligations`, no candidate | [`examples/ein-bugs/wrong-answers/rung-discharged.ein`](../../../../examples/ein-bugs/wrong-answers/rung-discharged.ein) | an activated obligation and a root that owes nothing |
 | `obligations`, with a later debt | [`examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein) | a rule derives an obligation's activator from a commitment |
-| `obligations`, flagged | [`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | a guard reads facts of a relation whose held extent a commitment can change: the obligation writes what root's guard gives, and the warning's line comes first |
+| `obligations`, flagged | [`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | a guard reads facts of a relation whose held extent a commitment can change: the obligation writes what root's guard gives, and stderr holds the warning's line |
 | `stuck` | [`examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein`](../../../../examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein) | root owes, and nothing is left to propose |
 | `blind` | [`examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein`](../../../../examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein) | root holds no `open` fact and activates no obligation |
 | `no-search` | [`examples/beliefs/01_common_belief.ein`](../../../../examples/beliefs/01_common_belief.ein) | `(solve :no-search)` |
@@ -569,16 +570,16 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | $K_0$, the knowledge base as loaded | what `ein-ir` loads into an `ein_core::Kb`, before any saturation; every command reads a program through `ein-cli`'s `common::read_program` |
 | $\operatorname{names}(P)$ | `invariant::program_names` |
 | $\mathrm{root}$ | `region::prepare`: root saturated once, and sealed |
-| $\operatorname{st}(C)$, the node function | [`region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs): a copy-on-write fork of root's KB, the commitment's facts written in candidate order, root's saturation resumed; reached by every route through one cache, `explore::Space::eval` |
+| $\operatorname{st}(C)$, the node function | [`region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs): a copy-on-write fork of root's KB, the commitment's facts written in candidate order, root's saturation resumed, and what it owes read at its fixpoint, its `open` facts written there where the pass of `open.rs` runs; reached by every route through one cache, `explore::Space::eval` |
 | $\operatorname{dead}$ | `contradiction.rs`: the firing of a rule that states `:ein inconsistent`, recorded on the KB (`Kb::ended`): a held `(false)` by `std.core`'s rule, which a fact beside its stored `(not …)` concludes by `std.contradiction`'s where the program imports it; such a rule fires as soon as it is enabled (`Saturator::at_once`) |
-| $\operatorname{Owed}$, $\operatorname{owes}$ | [`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): one pass over a quiescent KB; an obligation rule is in no saturation agenda |
+| $\operatorname{Owed}$, $\operatorname{owes}$ | [`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): one pass over a quiescent KB, `obligations::tally`; an obligation rule is in no saturation agenda; what a state owes is read at every state, and where the pass of `open.rs` runs it writes `(open R)` once for each relation the state owes |
 | a node's kind | `dead`, `owing` or `in-r`, with what it owes, its closure and its facts beyond root's |
 | a state's identity, $C \sim C'$ | `canon::state_key`: the sorted fact set itself, never a hash of it |
 | the order of the candidates, by text | `order_key` in `ein-infer/src/region.rs`, which H is sorted by ([`03-design/01-determinism-and-order.md` § 4.2](../03-design/01-determinism-and-order.md#42-the-hypothesis-set-and-the-search)) |
 | $R$ described: the lines, the components, the sub-cubes, $N$, $E$, the holes | `described::Described`, built once and read by the read-out, the summary, the answer dump and a region claim's check; `explore::Shape` |
 | $k_s$, $k_c$ | `explore::Counts`, exact in [`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs) and reported up to $2^{63} - 1$ |
 | monotone | `monotone::classify`, the static check; `ein solve FILE --monotone` asks it alone |
-| $\operatorname{model}(C)$, $\pi_g$ | `ein-cli/src/factdump.rs`, `-P`'s facts; `verdict.rs`, a query projected over a state |
+| $\operatorname{model}(C)$, $\pi_g$ | `ein-cli/src/factdump.rs`, `-P`'s facts, a state's `(not …)` and `open` facts left out ([Q-M1f.577](../../../decisions/read-out/Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)); `verdict.rs`, a query projected over a state |
 | a claim compared with $R$ | `claim.rs`, `expect.rs` |
 | the verdict of *is $R$ one state?* | `explore::Verdict`: `Solution`, `Ambiguity`, `Contradiction`, `Open` |
 
@@ -723,7 +724,8 @@ Past the limit a line question certifies what describe certifies, no more
 ### 4.3 A node, as computed
 
 One function for every route and for the oracle: a copy-on-write fork of root, the commitment written in
-candidate order, root's saturation resumed, and the verdicts read off the result. Its flow is
+candidate order, root's saturation resumed, what it owes read, and the verdicts read off the result; its `open`
+facts are written where the pass of `open.rs` runs ([`03-design/07-search.md` § 1](../03-design/07-search.md#1-hypothesis-generation)). Its flow is
 [`02-algorithms.md` § 7](../02-algorithms.md#7-the-node-function) and its contract
 [`03-design/07-search.md` § 2](../03-design/07-search.md#2-the-node).
 
@@ -800,7 +802,7 @@ tooltips and the legend the command writes are left out here.
 | describe's two routes give one $R$, every field both compute, on every corpus program; each is the oracle's; the default takes the tree where it branches | `ein-infer/tests/tree_classes.rs`: `every_field_both_routes_compute_is_one_on_the_corpus`, `both_routes_are_the_oracle_where_it_reaches`, `the_default_takes_the_tree_where_it_branches`; `ein-cli/tests/lever_invariance.rs` |
 | the state route is the oracle on every monotone program it reaches | `ein-infer/tests/region.rs`: `the_state_route_is_the_oracle_on_every_monotone_program_it_reaches` |
 | L5's premise is read as stated, and a licensed instance is owed exactly when none of its alternatives is in the state, on every monotone cube | `ein-infer/tests/region.rs`: `l5_is_the_oracle_on_every_monotone_program_it_reaches`, `l5_licenses_what_its_premise_holds_of_on_the_zebra_family` |
-| L9 licenses where nothing concludes a fact of the witness's relation, gives every question the answer it has without it, and a node that breaks its premise refuses the run | `ein-infer/tests/unheld.rs`: `l9_licenses_where_nothing_writes_the_witness_relation`, `every_question_answers_alike_with_l9_and_without`, `a_node_that_breaks_the_premise_refuses_the_run` |
+| L9 licenses where nothing concludes a fact of the witness's relation, is the oracle's, and gives every question the answer it has without it; under the union of the writers an activated obligation writes every witness its guard gives at root, so no corpus instance is L9's, and a witness a rule writes is a candidate, which L5 licenses | `ein-infer/tests/unheld.rs`: `l9_licenses_where_nothing_writes_the_witness_relation`, `l9_is_the_oracle_on_every_monotone_program_it_reaches`, `every_question_answers_alike_with_l9_and_without`, `a_witness_a_rule_writes_is_a_candidate_too` |
 | a denial kills exactly where a computed node would, on every monotone cube; the run with and without the memory's denials gives one answer | `ein-infer/tests/known_dead.rs`: `what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube`, `every_question_answers_alike_with_the_denials_and_from_deaths_alone` |
 | a route's dead node stopped at its first contradiction gives every question the answer the node run to quiescence gives | `ein-infer/tests/first_contradiction.rs`: `every_question_answers_alike_with_the_stop_and_without` |
 | the agenda gives every question and every claim the answer the written order alone gives, on every monotone program | `ein-infer/tests/agenda.rs`: `every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order` |

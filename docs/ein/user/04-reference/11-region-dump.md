@@ -36,12 +36,14 @@ The lattice over `n` candidates is the `n`-cube. A node is an `n`-bit mask, an e
 `k` holds the `C(n, k)` masks with `k` bits set. Bit `i` is the `i`-th entry of `region.json`'s `candidates`, in
 **rendered-text order**.
 
-**The universe** is the generator's list at root's fixpoint with **no config field applied**: no option may change the
-problem's lattice ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)),
-and every route of `ein solve` takes the same list.
+**The universe** is H, the hypotheses root's fixpoint holds under `open` less those root holds or denies
+([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)), with **no
+config field applied**: no option may change the problem's lattice
+([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)), and every route
+of `ein solve` takes the same list.
 
 **What it leaves out** is named: each relation the program can conclude or ask about, does not scope out itself, and of
-which the rung that built the list proposes no fact
+which no writer of H proposes a fact
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md),
 [`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it under its candidate count, as the read-out's `outside` row does, and `region.json` lists it as
@@ -66,8 +68,8 @@ Four more fields say what saturation does to a node:
   An alive node and its closure are one state.
 - **`excluded`** is the mask of the candidates whose `(not h)` it holds.
 - **`beyond`** counts the facts beyond root's that are not candidates.
-- **`beyond_hypothesised`** counts the positive ones among them over a candidate's relation: facts a generator could
-  have proposed and root's did not.
+- **`beyond_hypothesised`** counts the positive ones among them over a candidate's relation: facts a writer of H
+  could have proposed and none did at root.
 
 They are what a node *is* that its coordinates do not say.
 
@@ -106,10 +108,20 @@ rule that reads `D` asserts into `D`*, with `(not (R …))` as its own `¬R`. Ev
 | dynamic, monotone polarity | in `D`: even `absent` depth in a saturation rule, odd in an obligation | only add a conclusion, or only pay a debt | `total`'s `forall`; `total-owed`'s witness |
 | dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | a rule `derive-p` that reads `(absent (q ?x))` beside a rule `derive-q` that reads `(absent (p ?x))`; [`lattice/04`](../../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
 
-A **site** is a read of the third kind, or a rule whose activator relation is in `D`. **No site means the program is
-monotone**: *dead* and *discharged* are both upward-closed, `R` has no holes, and its two lines describe it. That is a
-sufficient condition, and the cube is its check: `region.md` flags a monotone verdict beside an observed violation as
-an engine defect, and `ein oracle` exits 1 on one.
+A **site** is a read of the third kind, or a rule whose activator relation is in `D`, and three more read the
+hypotheses, each a site wherever it stands: a rule whose `:match` reads `open`, `open-read`
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)); a rule that
+concludes `(open F)` and reads a relation in `D` at even `absent` depth, `hypothesis`, where a state above root can
+hold a hypothesis root does not
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)); and an obligation
+whose guard reads a relation in `D` beside its witness, `obligation-guard`, which writes its guard's candidates at
+root ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)).
+A run that writes the `open` facts of a state holding a hypothesis root does not finds the program not monotone
+**in flight**, whatever
+its sites, and says so as the static check's warning is said (`in_flight`, below). **No site, and nothing found in
+flight, means the program is monotone**: *dead* and *discharged* are both upward-closed, `R` has no holes, and its
+two lines describe it. That is a sufficient condition, and the cube is its check: `region.md` flags a monotone verdict
+beside an observed violation as an engine defect, and `ein oracle` exits 1 on one.
 
 **The grain is the relation's**: a read over a relation in `D` is dynamic whatever its pattern, even where no
 candidate, and nothing derived from one, can match it.

@@ -5,8 +5,8 @@ hypothesis lattice, the commitments whose state is alive and discharged
 ([solution semantics](06-solution-semantics.md),
 [Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)). The lattice is the
 domain, and it is never itself monotone or not: what can be are the functions on its nodes, a node's state and
-its status (§ 2). A **monotone** program is one where growth never takes a conclusion away and never adds a debt;
-there $R$ has no hole, two lines describe it, and a computation of $R$ may skip every node a licence decides
+its status (§ 2). A **monotone** program is one where growth never takes a conclusion away and never adds a debt
+or a hypothesis; there $R$ has no hole, two lines describe it, and a computation of $R$ may skip every node a licence decides
 ([finding R](07-finding-r.md)). This page sets the two kinds side by side: what each means, what causes the
 second, how it is detected, how each looks on the lattice, what each lets a computation of $R$ simplify, and what
 is claimed of a program that cannot be proved monotone. The symbols are those of [firing a rule](01-firing.md)
@@ -65,16 +65,21 @@ Each shorter description is licensed by a property of the program, and § 5 orde
 
 - **The lattice** $L = (2^H, \subseteq)$, the commitments over the candidate set $H$, is the domain: a Boolean
   lattice, neither monotone nor not.
-- **The state**, $\operatorname{st}(C)$, is the knowledge base a node holds.
+- **The state**, $\operatorname{st}(C)$, is the knowledge base a node holds. Its facts of $\mathsf{open}$, what
+  it owes and what it supposes, are a function of its own fixpoint and inherited by no fork
+  ([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)): a commitment that pays a debt or
+  settles a hypothesis leaves a state without the fact that said so. So a state is compared with a smaller one
+  outside them, and what it holds under $\mathsf{open}$ is asked of separately.
 - **The status** is two functions of the state, $\operatorname{dead}$ and $\operatorname{owes}$, and
   $C \in R \iff \lnot\operatorname{dead}(C) \land \operatorname{owes}(C) = 0$.
 
-So *monotone* is asked of an arrow, and of three of them:
+So *monotone* is asked of an arrow, and of three of them, with a fourth property, of the hypotheses, beside them:
 
 | property | of | holds when | broken by | what it decides |
 |---|---|---|---|---|
-| **state monotone** ($\iff$ path-independent, given cumulativity, § 8.2) | $\operatorname{st} : L \to$ knowledge bases | $C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C')$ | an absence at odd depth over the [held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) of a relation that a commitment can change; the FIFO gap (§ 8.3) | which knowledge base a node holds, and whether a node built from a parent's fixpoint is the node built from root |
+| **state monotone** ($\iff$ path-independent, given cumulativity, § 8.2) | $\operatorname{st} : L \to$ knowledge bases | $C \subseteq C' \implies \operatorname{st}(C) \setminus \operatorname{ext}_{\operatorname{st}(C)}(\mathsf{open}) \subseteq \operatorname{st}(C')$ | an absence at odd depth over the [held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) of a relation that a commitment can change; a read of $\mathsf{open}$; the FIFO gap (§ 8.3) | which knowledge base a node holds, and whether a node built from a parent's fixpoint is the node built from root |
 | **status monotone** | $(\operatorname{dead}, \operatorname{owes})$ on states | $\operatorname{dead}$ and $\operatorname{discharged}$ are both upward-closed: $C \subseteq C'$ carries each from $C$ to $C'$ | $\operatorname{dead}$: as the state. $\operatorname{owes}$: an obligation's trigger, or an activator that applies an obligation | whether $R$ has holes, and so whether two lines describe it |
+| **hypotheses bounded by root's** | $\operatorname{hyp}$ on states, the hypotheses a state holds ([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union)) | $\operatorname{hyp}(\operatorname{st}(C)) \subseteq \operatorname{hyp}(\mathrm{root})$ | a rule that concludes a hypothesis, or an obligation's trigger or guard, over a relation a commitment can change; an activator that applies either | whether the lattice over root's candidates holds every fact a state supposes |
 | **monotone program** | the consequence operator $T_P$, on every knowledge base | $K \subseteq K' \implies T_P(K) \subseteq T_P(K')$ | any site (§ 3) | the static check's verdict, and the licences a computation of $R$ may take |
 
 A **monotone program** in the logic-programming sense has a consequence operator monotone on every knowledge
@@ -132,23 +137,33 @@ A **site** is a dynamic read at non-monotone polarity, or a rule with parameters
 $D$, the relation its **activators** are facts of: a commitment can then make a node apply the rule in a way root
 never did, which a check of root's applications cannot see.
 
-Three more reads are sites, each about the hypotheses rather than the status: a state above root could then hold, or
-need, what root's candidate set lacks
-([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union)).
+Three more reads are sites, each about what a state holds of $\mathsf{open}$ rather than the status: one about the
+state, which a fork can leave holding a conclusion of a fact of $\mathsf{open}$ it dropped, and two about the
+hypotheses, where a state above root could then hold, or need, what root's candidate set lacks
+([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union);
+[absence](03-absent-and-naf.md#what-a-world-owes-and-supposes)).
 
 | site | the read | why |
 |---|---|---|
 | **a read of $\mathsf{open}$** | a rule's pattern reads a fact under $\mathsf{open}$, at any depth | a fork drops every fact under $\mathsf{open}$ and keeps what a rule concluded from one, so a state can hold a conclusion of a premise it no longer holds ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)) |
 | **a hypothesis** | a rule that concludes a hypothesis reads a relation of $D$ at even depth | growing it adds a match, so a state above root can hold a hypothesis root does not ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)) |
-| **an obligation's guard** | an obligation's guard reads a relation of $D$ beside its witness step | its payments are read off its guard at root, and a member the guard gains above root is in no candidate ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)) |
+| **an obligation's guard** | an obligation's guard reads a relation of $D$ beside its witness step | its payments are read off its guard at root, which it writes there as every obligation does, and a member the guard gains above root is in no candidate ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)) |
+
+An obligation whose trigger reads a relation of $D$ is the obligation's site above, at even depth: it is about the
+status, what a state owes, and about the hypotheses too, since a state above root then owes an instance whose
+payments root's guard never gave.
 
 A program with no site is **monotone** by the check; one with a site is **flagged**. The check costs root's
 saturation and builds no node.
 
 **Found in flight.** A state above root that holds a hypothesis root does not makes the program not monotone,
 whatever its sites: a monotone program, state by state, proves or refutes hypotheses and adds none, and its lattice
-is a cube over root's. A computation that builds such a state says so at once, the answer stands, and nothing is
-claimed of it ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
+is a cube over root's. The check is made where a computation writes a state's facts of $\mathsf{open}$, at root,
+at a state that is shown or saved, and where a rule reads them at every state
+([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)), and a run may be asked to make it at
+every state; where it is made changes no $R$. A computation that finds such a state says so at once, and once; the
+answer stands, and nothing is claimed of it
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 The rule that gives a seated guest the soup unless the guest is allergic ([absence](03-absent-and-naf.md)), with
 seatings and allergies as candidates, has one site:
@@ -160,24 +175,30 @@ read under one absence. The red arrow starts inside $D$, so growing the commitme
 
 ### 3.2 The theorem
 
-**Theorem.** A program with no site has a monotone state and a monotone status, on nodes built by fork from
-root:
+**Theorem.** A program with no site has a monotone state, a monotone status and its hypotheses bounded by root's,
+on nodes built by fork from root:
 
 $$
 \begin{aligned}
-C \subseteq C' \;\implies\;\ & \operatorname{st}(C) \subseteq \operatorname{st}(C') \\
+C \subseteq C' \;\implies\;\ & \operatorname{st}(C) \setminus \operatorname{ext}_{\operatorname{st}(C)}(\mathsf{open}) \subseteq \operatorname{st}(C') \\
 \land\ & \bigl( \operatorname{dead}(C) \implies \operatorname{dead}(C') \bigr) \\
-\land\ & \bigl( \operatorname{discharged}(C) \implies \operatorname{discharged}(C') \bigr)
+\land\ & \bigl( \operatorname{discharged}(C) \implies \operatorname{discharged}(C') \bigr) \\
+\land\ & \operatorname{hyp}(\operatorname{st}(C')) \subseteq \operatorname{hyp}(\mathrm{root})
 \end{aligned}
 $$
 
-*Argument.* Every fact of a relation in $D$ is derived only through positive reads of relations of $D$ and reads
-of static relations, whose held extent is the same at every node; so each node's fixpoint contains its subsets'
-fixpoints, and
-$\operatorname{dead}$ is upward-closed, a rule that ends a state matching in every larger fixpoint what it matched in
-a smaller one, $\bot$ and both sides of a pair being facts. Every obligation's set of
-triggered instances is fixed while its witnesses only grow, so $\operatorname{discharged}$ is upward-closed.
-$\square$
+*Argument.* No rule reads a fact of $\mathsf{open}$, so the facts a fork drops are read by no rule, and what a
+node's saturation derives does not depend on them; and no rule's activators are facts of a relation in $D$, so
+every node applies the rules root applies. Every fact of a relation in $D$ is derived only through positive
+reads of relations of $D$ and reads of static relations, whose held extent is the same at every node; so each
+node's fixpoint contains its subsets' fixpoints outside $\mathsf{open}$, and $\operatorname{dead}$ is
+upward-closed, a rule that ends a state matching in every larger fixpoint what it matched in a smaller one, $\bot$
+and both sides of a pair being facts. Every obligation's set of triggered instances is fixed while its witnesses
+only grow, so $\operatorname{discharged}$ is upward-closed. A rule that concludes a hypothesis reads a relation of
+$D$ only under an odd number of absences, so its matches at a node are among its matches at root; the instances an
+obligation owes at a node are among those it owes at root, and its guard reads what root's does, so its payments
+there are among root's; and the blind enumerator guesses over the same names at every state. So no state supposes
+a fact root does not. $\square$
 
 Both closures together leave $R$ no hole, and its two lines describe it.
 
@@ -325,8 +346,8 @@ line, a heavy green one its maximal line, a purple one a hole.
 
 | | monotone | non-monotone |
 |---|---|---|
-| **what it means** | adding a commitment never takes a conclusion away and never adds a debt | some commitment does one or the other |
-| **what causes it** | nothing: no site (§ 3) | a **site**, from one of three sources: an absence at odd depth in a saturation rule over the held extent of a relation of $D$; an obligation's **trigger** over one; a rule whose **activators** are facts of a relation of $D$ (§ 9: c4, c5, c6, each a program's only site, each with the hole its cause makes) |
+| **what it means** | adding a commitment never takes a conclusion away and never adds a debt or a hypothesis | some commitment does one of them |
+| **what causes it** | nothing: no site (§ 3) | a **site**, from one of six sources: an absence at odd depth in a saturation rule over the held extent of a relation of $D$; an obligation's **trigger** over one; a rule whose **activators** are facts of a relation of $D$ (§ 9: c4, c5, c6, each a program's only site, each with the hole its cause makes); a read of $\mathsf{open}$; a rule that concludes a **hypothesis** from a relation of $D$; an obligation's **guard** over one (§ 9: c13, c14, c15) |
 | **how it looks** | a **band**. Dead is an up-set, drawn at the bottom; owing is a down-set among the alive nodes, near the empty commitment; $R$ lies between, and components separate where dead and owing meet | **islands**: a node outside $R$ between two members, joined to $R$ above it by a repair edge; a dead node with an alive superset; a discharged node with an owing superset |
 | **dead** | upward-closed | not, where a refutation rests on an absence over a relation whose held extent a commitment can extend, directly, through a fact derived under it, or through a rule a node applies ([absence](03-absent-and-naf.md#a-refutation-resting-on-an-absent); § 9: c2, c3, c7, c9, c11) |
 | **discharged** | upward-closed | not, where a trigger grows (c5), an absence takes a witness away (c4), or a commitment applies an obligation (c6) |
@@ -387,7 +408,8 @@ reads the alive states and their extensions; on a flagged one it classifies ever
 ### 8.1 Three constructions of a node
 
 A node's state can be built along a path, each step taking the last fixpoint, adding the next facts and
-saturating. The general question is whether
+saturating, in a fork, which leaves the last fixpoint's facts of $\mathsf{open}$ behind
+([firing a rule](01-firing.md#two-layers)). The general question is whether
 
 $$
 \operatorname{sat}(K_0 \cup C_1 \cup C_2) = \operatorname{sat}\bigl(\operatorname{sat}(K_0 \cup C_1) \cup C_2\bigr)
@@ -419,22 +441,23 @@ Three properties of the construction, for commitments $C \subseteq C'$ and knowl
 | property | what it says |
 |---|---|
 | **path-independent** | every path to $C$ gives one set of facts, $\operatorname{st}(C)$ |
-| **monotone** | $C \subseteq C' \implies \operatorname{st}(C) \subseteq \operatorname{st}(C')$ |
+| **monotone** | $C \subseteq C' \implies \operatorname{st}(C) \setminus \operatorname{ext}_{\operatorname{st}(C)}(\mathsf{open}) \subseteq \operatorname{st}(C')$, as in § 2 |
 | **cumulative** | $X \subseteq Y \subseteq \operatorname{sat}(X) \implies \operatorname{sat}(Y) = \operatorname{sat}(X)$ |
 
 **Proposition ($\Rightarrow$ holds always).** Path-independent implies monotone.
 
 *Argument.* Construction is append-only: a knowledge base never retracts a fact
-([absence](03-absent-and-naf.md)). Take $C \subseteq C'$ and build $C'$ by way of $C$: the result holds
-$\operatorname{st}(C)$, and by path independence it is $\operatorname{st}(C')$. $\square$
+([absence](03-absent-and-naf.md)), and a fork leaves behind only the facts of $\mathsf{open}$. Take $C \subseteq C'$
+and build $C'$ by way of $C$: the result holds $\operatorname{st}(C)$ outside $\mathsf{open}$, and by path
+independence it is $\operatorname{st}(C')$. $\square$
 
 **Proposition ($\Leftarrow$ needs cumulativity).** If saturation is cumulative, monotone implies
 path-independent.
 
 *Argument.* Take a path $\emptyset = C_0 \subseteq C_1 \subseteq \dots \subseteq C_k = C$, with
 $S_0 = \operatorname{sat}(K_0)$ and each step $S_i = \operatorname{sat}(S_{i-1} \cup C_i)$, and suppose
-$S_{i-1} = \operatorname{sat}(K_0 \cup C_{i-1})$. By monotonicity $S_{i-1} \subseteq \operatorname{sat}(K_0 \cup
-C_i)$, so
+$S_{i-1} = \operatorname{sat}(K_0 \cup C_{i-1})$. By monotonicity what the step carries over of $S_{i-1}$, its
+facts outside $\mathsf{open}$, is contained in $\operatorname{sat}(K_0 \cup C_i)$, so
 
 $$
 K_0 \cup C_i \;\subseteq\; S_{i-1} \cup C_i \;\subseteq\; \operatorname{sat}(K_0 \cup C_i),
@@ -446,7 +469,7 @@ $\operatorname{sat}(K_0 \cup C)$. $\square$
 A monotone program is cumulative by fork, its saturation being a closure operator. A stratified program
 evaluated stratum by stratum is cumulative, since its fixpoint is its perfect model. So the state has **one
 property**, monotone $\iff$ path-independent, wherever saturation is cumulative, and it is broken by an absence
-at odd depth over $D$ (§ 8.4) and by the FIFO gap (§ 8.3).
+at odd depth over $D$ and a read of $\mathsf{open}$ (§ 8.4), and by the FIFO gap (§ 8.3).
 
 ### 8.3 The FIFO gap
 
@@ -489,14 +512,18 @@ which is cumulativity failing. Every node is in $R$, so the status never shows i
 program conservative. Written in the other order, or admitted in stratum order, $\lbrace a, b \rbrace$ holds
 $\lbrace a, b, q \rbrace$ built at once.
 
-### 8.4 A state difference needs an absent
+### 8.4 A state difference needs an absent or a read of open
 
 **Proposition.** If two constructions of a node differ, some fact was admitted under a read that a later fact
-falsifies, and that read is an absence at odd depth in a saturation rule.
+falsifies, or that a fork leaves behind: an absence at odd depth in a saturation rule, or a read of a fact of
+$\mathsf{open}$.
 
-*Argument.* A positive read, or one at even depth, only becomes true as facts grow, and a stored negation read
-positively only grows. An activator only adds applications as facts grow, and an obligation derives nothing.
-What is left is an absence at odd depth in a saturation rule, an absence site. $\square$
+*Argument.* A positive read of a fact outside $\mathsf{open}$, or one at even depth, only becomes true as facts
+grow, and a stored negation read positively only grows. An activator only adds applications as facts grow, and an
+obligation and a hypothesis add no fact a rule reads unless a rule reads $\mathsf{open}$: what they say is a
+function of each fixpoint and left behind at each fork. What is left is an absence at odd depth in a saturation
+rule, an absence site, and a read of $\mathsf{open}$, whose fact one construction holds when the rule fires and
+another never does, the facts of $\mathsf{open}$ being each fixpoint's own and not inherited. $\square$
 
 **An activator can hide the absence.** A rule with parameters that a node applies can read an absence over the
 held extent of the relation its parameter names, $\operatorname{absent}(R(x))$ with $R$ a parameter; the program's
@@ -521,7 +548,8 @@ $$
   so a trigger $T_o$ with a read of a relation of $D$, or an activator $a$ a commitment can derive, adds a debt
   over a monotone,
   path-independent state. The seated guest who dines (a trigger) and the kitchen that opens (an activator) have
-  no absence site, so by § 8.4 one state per node by every construction, and each has an owing hole. **A hole
+  no absence site and no read of $\mathsf{open}$, so by § 8.4 one state per node by every construction, and each
+  has an owing hole. **A hole
   needs no path dependence.** Holes are a question about the status, not about the state.
 
 ### 8.6 What a traversal may memoize by
@@ -576,8 +604,9 @@ consequence, and § 8 says which causes produce it.
 | c15 | a domain a commitment can grow | an obligation owing each guest a seat among the chairs, where a rule derives a chair from a candidate | **the candidate set**: a payment only a node's guard admits is in no candidate | a guard site |
 
 **The status and the state are apart.** *Exercised* and *conservative* are words about the status. c1, c8, c9,
-c10 and c12 break the state where the cube can say *conservative*, so what is reported of a flagged program
-(§ 10) keeps the state's evidence beside the status's and never folds one into the other.
+c10, c12 and c13 break the state, and c14 and c15 the candidate set, where the cube can say *conservative*, so
+what is reported of a flagged program (§ 10) keeps the state's evidence and the hypotheses' beside the status's and
+never folds one into another.
 
 ## 10. The detector
 
@@ -593,7 +622,6 @@ Read off root's applications, before any node:
   and $\operatorname{dead}$ with it when it concludes $\bot$; a trigger the status, $\operatorname{owes}$; an
   activator either, through the rule a node applies; a read of $\mathsf{open}$ the state; a hypothesis and an
   obligation's guard the candidate set;
-- **what a run found in flight**: the first hypothesis a state it built holds and root does not;
 - **each cycle through an absence** over $D$, with its parity: a negative cycle of the rule dependency graph
   ([analysis of rules](../03-rule-evolution/02-analysis-of-rules.md)), restricted to the relations of $D$. An
   even cycle can have several states with no stale fact, two stable models; an odd one need not
@@ -630,7 +658,10 @@ $$
 $$
 
   Its reach is one step: a node can be dead along a two-step chain through an alive parent that one-step parents
-  do not show. A check of some parents says what was checked and claims nothing more.
+  do not show. A check of some parents says what was checked and claims nothing more;
+- **the hypotheses**, found in flight on the states whose facts of $\mathsf{open}$ a run writes, every state where
+  it is asked to (§ 3.1): the first hypothesis a state above root holds and root does not, which makes the program
+  not monotone whatever its sites.
 
 ### 10.3 Why it finds nothing on an unflagged program
 
@@ -641,8 +672,9 @@ a fixpoint that holds root's.
 *Argument.* No site means no read whose relation is in $D$ under an odd number of absences. So there is no
 negative edge over $D$, and no cycle; no rule with an absence has under an absence a read of a relation in $D$ of
 which another concludes a fact, and no order finding; the held extent of every relation in $D$ grows with the
-commitment, so no guard is falsified, and no fact is stale; and every static read is settled at root, where every
-fork inherits its result, so no path differs.
+commitment, so no guard is falsified, and no fact is stale; no rule reads a fact of $\mathsf{open}$, and every
+static read is settled at root, where every fork inherits its result, so no path differs; and no state holds a
+hypothesis root does not (§ 3.2), so nothing is found in flight.
 $\square$
 
 It does not hold from scratch (§ 3.4). No node is built from scratch, so the claim is sound for what is

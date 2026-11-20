@@ -39,8 +39,9 @@ fact of two arguments that nothing points at as one arrow with the relation's na
 A fact is **held** when the knowledge base holds it, and the facts held are the **global context**: where a rule's
 premise, a query and a contradiction look. A fact is **in a context** when a held fact points at it, as an argument
 or deeper: `(knows Carol Dan)` is in the context of `(claims Carol (knows Carol Dan))`, which speaks about it. A
-fact may be held, in a context, or both, and a context gives it no truth: only `(not P)`, which is a context of
-`P`, is read by the engine as saying something of `P`
+fact may be held, in a context, or both, and a context gives it no truth. `(not P)` says something of `P` where a
+rule reads the two together, and `(open P)`, held at root, makes `P` a [hypothesis](#hypothesis-candidate) and holds
+nothing of it
 ([Q-M1f.394](../../../decisions/language/Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md)). See
 [`../03-syntax-and-semantics/03-facts.md` § A fact inside a fact](../03-syntax-and-semantics/03-facts.md#a-fact-inside-a-fact).
 
@@ -115,6 +116,20 @@ no pair by itself. See [`../03-syntax-and-semantics/06-constraints.md`](../03-sy
 A rule that concludes `(open F)`: `F` is proposed as a hypothesis rather than derived. It is activated as every rule
 is, by a fact of its name; there is no other form for it. See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
+
+### `open`
+The relation of what a state has not decided, read by the engine where it heads a written fact, a premise or a
+conclusion. `(open R)`, `R` a relation, is what a state **owes**: held once a relation by a state that owes an
+instance of an [obligation](#obligation) over it. `(open F)`, `F` a fact, is a **hypothesis**: a fact a commitment
+may add, concluded by a [hypothesis rule](#hypothesis-rule), written by an obligation or the blind enumerator, or
+written by the program, which root alone then holds. A state's `open` facts are a part of it no fork inherits,
+written at its fixpoint: at root, where they make H, and above root at a state that is printed or saved, or whose
+rules read them. They are listed, drawn and counted with its other facts;
+`-P` leaves them out
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
+[Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). A rule may
+read one, and its program is then not [monotone](#monotone); under any other relation `open` is a name. See
+[`../03-syntax-and-semantics/09-hypotheses.md` § `open`](../03-syntax-and-semantics/09-hypotheses.md#open-what-a-state-supposes-and-what-it-owes).
 
 ### Activator, property fact
 A fact whose relation is a rule's name; its arguments bind the rule's parameters. `(symmetric co-located)` activates the
@@ -194,8 +209,20 @@ dunder `__closed__`
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
 ### Universe, H
-The candidate list, $n = |H|$: **the space every definition quantifies over**. It must hold every fact a model needs; a
-shortfall is a program error.
+The candidates, $n = |H|$: the hypotheses root holds, less the facts root holds or denies, and **the space every
+definition quantifies over**. It must hold every fact a model needs; a shortfall is a program error.
+
+### Writers of H, the blind enumerator
+What writes a hypothesis at root: the rules that conclude one, the program, and every obligation activated at root,
+which writes the facts that would pay what root owes; H is their **union**, identical facts one
+([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)). The **blind
+enumerator** writes only where root holds no `open` fact and activates no obligation: every fact of a declared
+relation of one or two arguments over the guessable atoms. `:hypothesis-relations`, `:no-hypothesis` and
+`(__closed__ R)` are its configuration, a white list and a black list, and one that disagrees with the `open` facts
+root holds is refused at load
+([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
+`(solve :no-search)` says the lattice is root alone: H is empty. `ein show hyps` names the writers. See
+[`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md#where-candidates-come-from-the-writers).
 
 ### Commitment
 A subset of the universe: a node of the lattice. Without merging, the lattice is the $n$-cube, and its layer $k$ holds
@@ -238,16 +265,20 @@ The minimal dead sets: the dead commitments every one of whose proper subsets is
 its core. See [`08-read-out.md`](08-read-out.md).
 
 ### Monotone
-No read that can take a conclusion away, or add a debt, as a commitment grows. Then dead and discharged are
-upward-closed, and R is convex. A static check over the program, its verdict the read-out's `lattice` row.
+No read that can take a conclusion away, or add a debt or a hypothesis, as a commitment grows. Then dead and
+discharged are upward-closed, and R is convex. A static check over the program, its verdict the read-out's `lattice`
+row; where a run writes the `open` facts of a state above root that holds a hypothesis root does not, it says the
+program is not monotone, at once and once
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). Of a program that
+is not, nothing is claimed.
 
 ### Exhausted
 That the part of R a run asked is all there: the run did not stop at a budget or a count. See
 [`08-read-out.md`](08-read-out.md).
 
 ### Model
-The **positive** part of a solution's state **less the positive part of the program as loaded**: no `(not …)`,
-nothing the file stated and nothing the loader wrote, so it is what the puzzle did not say and the solution
+The **positive** part of a solution's state **less the positive part of the program as loaded**: no `(not …)`, no
+`(open …)`, nothing the file stated and nothing the loader wrote, so it is what the puzzle did not say and the solution
 established; `ein solve -P` prints it
 ([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)). Distinct from a listing's
 `(model …)`, the claim form, which holds a state's facts over the candidates' relations, root's included
@@ -255,11 +286,12 @@ established; `ein solve -P` prints it
 model's **projection**, and the models with one projection form a **projection class**.
 
 ### Obligation
-A rule that asserts the verdict `(open ?R)` while a witness is missing
+A rule whose whole `:assert` is `(open ?R)`, which matches while a witness is missing
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a state
 **owes** is its undischarged instances, and a state owing none is **discharged**; a state that owes holds `(open R)`,
-which no state built on it inherits. Obligations set R's minimal line, as
-restrictions, rules that assert `(false)`, set its maximal line. See
+once a relation however many instances, which no state built on it inherits. Its **requirement**, that the trigger
+holds, and its **payment**, a witness beside it, stay true as a state grows, and `std.debts` states both as facts.
+Obligations set R's minimal line, as restrictions, rules that assert `(false)`, set its maximal line. See
 [`../03-syntax-and-semantics/08-obligations.md`](../03-syntax-and-semantics/08-obligations.md).
 
 ### Core, the smallest contradiction frontier

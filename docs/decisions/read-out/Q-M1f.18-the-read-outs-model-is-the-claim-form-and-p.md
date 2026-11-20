@@ -3,7 +3,9 @@
 The word *model* names two things, each printed under its own form. A listing's `(model …)`, and the summary's
 `region.states[].facts`, is a state's facts over the candidates' relations, root's included: what tells R's states
 apart, and the region language's claim form, pasted into an `:expect` as printed. A state's **model**, its positive
-facts minus the positive initial KB, is what `-P` prints. `-t`'s `read-out` row says *model* of the first.
+facts minus the positive initial KB, its `(not …)` and its `open` facts left out
+([Q-M1f.577](Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)), is what `-P` prints. `-t`'s `read-out`
+row says *model* of the first.
 
 **Why.** `(model …)` is a form of the language, and a claim is written in it; printing the other one under that name
 on the screen that holds the claim blocks would give one word two sets in one place.

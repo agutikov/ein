@@ -20,8 +20,10 @@ $\varphi_\rho[a]$ and its conclusion $\psi_\rho[a]$ ([the rules](../01-static-ir
 **What a firing reads.** Whether a pattern holds in $K$ under $\theta$ is decided by the facts $K$ holds
 ([the conditions on a match](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)), with one
 exception: an absence, $\operatorname{absent}(G)$, holds where the pattern $G$ has no match, so it is the one
-place a rule reads what $K$ lacks. In which knowledge base an absence is read is not left to the firing; it is
-fixed by [the boundary](03-absent-and-naf.md).
+condition by which a rule reads what $K$ lacks. In which knowledge base an absence is read is not left to the
+firing; it is fixed by [the boundary](03-absent-and-naf.md). What $K$ owes, a fact of $\mathsf{open}$ read off its
+fixpoint, is held, and a rule that reads it reads a held fact
+([absence](03-absent-and-naf.md#what-a-world-owes-and-supposes) says what that reads across worlds).
 
 **Application.** A rule with parameters is applied once under each of its activators in $K$, the facts of
 $\operatorname{Act}_K(\rho)$; a rule with no parameter is applied once, as it stands; and a rule with parameters
@@ -139,12 +141,13 @@ boundary).
 of this part use them from here on:
 
 - **root** is the program's own knowledge base, saturated;
-- a **candidate** is a fact that may be supposed, and the **candidate set** $H$ is a finite set of them, read off
-  root ([hypothesis generation](04-hypothesis-generation.md) builds it);
+- a **candidate** is a fact that may be supposed, and the **candidate set** $H$ is a finite set of them: the
+  hypotheses root holds, the facts $f$ with $\operatorname{open}(f) \in \mathrm{root}$, less those root holds or denies
+  ([hypothesis generation](04-hypothesis-generation.md#2-the-union) builds it);
 - a **commitment** $C \subseteq H$ is a set of candidates supposed together, and as a point of the lattice of all
   of them, $(2^{H}, \subseteq)$, it is a **node**;
 - the **state** of a commitment, $\operatorname{st}(C)$, is the knowledge base that root with the commitment added
-  is saturated to.
+  is saturated to, in a fork of root (below).
 
 $$
 \begin{aligned}
@@ -167,17 +170,24 @@ further additions, a fork $K'$ of $K$ has
 
 $$
 \begin{aligned}
-K'(t) &\supseteq K \\
+K'(t) &\supseteq K \setminus \operatorname{ext}_K(\mathsf{open}) \\
 K'(t) \setminus K &\ \text{ is the fork's alone} \\
 K(t) \setminus K &\ \text{ is the parent's alone}
 \end{aligned}
 $$
 
-The fork keeps what its parent held when it was made; nothing a fork adds reaches its parent or a sibling; and
-nothing the parent adds afterwards reaches the fork. What a search assumes is so set aside by discarding a fork,
-never by taking a fact out of a knowledge base, and every node is read independently of every other
-([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). The records of how
-a fork's facts came to be held are the fork's too ([cores](09-cores.md#a-derivation-record)).
+The fork keeps what its parent held when it was made, but for the facts of $\mathsf{open}$, what the parent owes and
+supposes; nothing a fork adds reaches its parent or a sibling; and nothing the parent adds afterwards reaches the
+fork. The facts of $\mathsf{open}$ are a function of each fixpoint, held in a part of a knowledge base that no fork
+inherits: a fork drops every one, and its own are those of its own fixpoint
+([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes),
+[Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). So a
+saturation that continues a fixpoint $S$ with facts $X$ added, written $\operatorname{sat}(S \cup X)$ on every page,
+is a fork's, and starts from $S \setminus \operatorname{ext}_S(\mathsf{open})$ and $X$; and what a commitment pays
+is not owed by the state that pays it. What a search assumes is so set aside by discarding a fork, and what a state
+no longer owes by not inheriting it, never by taking a fact out of a knowledge base, and every node is read independently
+of every other ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). The
+records of how a fork's facts came to be held are the fork's too ([cores](09-cores.md#a-derivation-record)).
 
 ![Two layers: one saturation to root, and commitments forked from root and saturated on their own](diagrams/01-two-layers.svg)
 
@@ -188,9 +198,11 @@ of candidates added, saturated on its own. No arrow leads back, and none joins t
 
 Ein answers **finite-domain constraint-satisfaction** questions over a knowledge base, a graph of facts, and the
 rules over it: the Zebra puzzle and its kin. The answer to a program is one thing, the **region** $R$: the
-commitments whose state is alive and owes nothing. What a state can owe is stated by an **obligation**, a
-declaration with a rule's parts that derives nothing and says what a state has still to hold
-([solution semantics](06-solution-semantics.md) defines what is owed, and $R$):
+commitments whose state is alive and owes nothing. What a state can owe is stated by an **obligation**, a rule
+whose whole conclusion is $\operatorname{open}(r)$: it derives nothing, and a state holds $\operatorname{open}(r)$
+at its fixpoint where it owes an instance of it, something it has still to hold
+([the rules](../01-static-ir/02-rewriting-rules.md#what-a-state-owes-and-what-it-supposes);
+[solution semantics](06-solution-semantics.md) defines what is owed, and $R$):
 
 $$
 R = \lbrace\, C \subseteq H \;:\; \lnot\operatorname{dead}(C) \;\land\; \operatorname{owes}(C) = 0 \,\rbrace
@@ -240,6 +252,7 @@ The words of this part, each with where it is defined and what other fields call
 | **derivation record** $\delta$ | how a fact came to be: given, a rule's firing, or a commitment ([cores](09-cores.md#a-derivation-record)) | a TMS justification, why-provenance, a proof term |
 | **commitment** $C \subseteq H$ | a set of candidates supposed together ([above](#two-layers)) | a partial assignment, an ATMS environment |
 | **state** $S$ | a commitment's world at its fixpoint, $\operatorname{st}(C)$, identified by its set of facts ([solution semantics](06-solution-semantics.md#15-commitment-node-state)) | a model, an answer set |
+| **what a state owes and supposes** $\operatorname{open}(r)$, $\operatorname{open}(f)$ | facts of $\mathsf{open}$, a function of a state's fixpoint, inherited by no fork: a relation an instance is owed of, and a hypothesis ([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)) | an unmet goal; an assumption that may be made |
 | **core** | of a dead node, a smallest set of givens and commitments its contradiction follows from ([cores](09-cores.md#the-core)) | an unsat core, a conflict |
 
 ## The main steps

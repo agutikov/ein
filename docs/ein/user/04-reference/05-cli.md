@@ -14,7 +14,7 @@ prints is [`08-read-out.md`](08-read-out.md); every refusal is [`07-diagnostics.
 | `ein test PATH…` | the claims programs state about themselves (§ [2.3](#23-ein-test)) | per file, the least question that decides its claims |
 | `ein saturate FILE` | root, the node $\emptyset$: the program's least fixpoint (§ [2.4](#24-ein-saturate)) | one saturation |
 | `ein render VIEW …` | a drawing, as DOT (§ [2.5](#25-ein-render-and-ein-show)) | what the view reads |
-| `ein show hyps FILE` | the hypothesis set H, as Ein facts (§ [2.5](#25-ein-render-and-ein-show)) | root's saturation and the generator |
+| `ein show hyps FILE` | the hypothesis set H, as Ein facts (§ [2.5](#25-ein-render-and-ein-show)) | root's saturation and the pass that writes its `open` facts |
 | `ein kb save FILE OUT` | a `.einb` container of the program (§ [2.6](#26-ein-kb)) | one load |
 
 `ein --version` prints five lines, the engine, the event protocol, the container format, the build's features and
@@ -220,7 +220,9 @@ is asked nothing the same way.
 hypothesis taken. It prints the input, the time of each phase, the state before and after saturation and the
 firings by rule; `--dump` adds the saturated knowledge base: the relations; the rules, each kind in a section of
 its own (the saturation agenda's, each with its stratum, then the obligation rules and the hypothesis rules, each
-with how many activators bind its parameters); and the facts grouped by origin. It is how a commitment is checked by
+with how many activators bind its parameters); and the facts grouped by origin, the `open` facts root holds among
+them, those the program writes and those the pass writes at its fixpoint
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). It is how a commitment is checked by
 hand, too: add its facts to a copy of the program and saturate the copy (§ [4.4](#44-checking)). `--max-steps N`
 stops it after N firings (§ [5](#5-what-is-fixed-about-the-command-line)), and `--progress-every N` logs a progress
 line every N steps (0 logs none).

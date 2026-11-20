@@ -98,7 +98,7 @@ What the partition produces, rule by rule:
 | `slot-elimination` | `(R a i)` where every index but `i` is excluded for `a` |
 | `slot-fill` | `(R i v)` where every member of a label but `v` is excluded for slot `i` |
 | `slot-no-room`, `slot-no-fill` | `(false)`: a value with every slot excluded, a slot with every member of a label excluded |
-| `slot-owed-room`, `slot-owed-fill` | the obligations of the two above: a value in no slot yet, a slot with no member of a label yet, each `(open R)` |
+| `slot-owed-room`, `slot-owed-fill` | the obligations of the two above: a value in no slot yet, a slot with no member of a label yet, each concluding `(open R)`, which the state that owes holds |
 
 ### A row: one relation, between slots and between values
 
@@ -164,8 +164,8 @@ read the position structure alone: sound where that structure is decided by satu
 
 ### Where root owes: the search
 
-Without the blue house's place, root is alive and owes every colour a house and every house a colour. The search
-tries the placements that pay:
+Without the blue house's place, root is alive and owes every colour a house and every house a colour. The two
+obligations, activated at root, write the placements that would pay as hypotheses, and the search tries them:
 
 ```lisp
 (import std.algebra :symbols (symmetric))

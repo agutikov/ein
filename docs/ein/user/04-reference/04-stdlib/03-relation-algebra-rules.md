@@ -411,8 +411,9 @@ The dual: a member of the second label excluded for every member of the first.
 
 ### The totality obligations
 
-The two rules beside `total` and `surjective` that conclude `(open ?R)`. An obligation derives nothing and is not
-run with the others: it is read once over a state that has stopped changing, and a match means the state owes.
+The two rules beside `total` and `surjective` that conclude `(open ?R)`. An obligation is not run with the others:
+it is read once over a state that has stopped changing, a match means the state owes, and the state that owes holds
+`(open R)`, once a relation, a fact no fork inherits.
 
 #### `total-owed`
 

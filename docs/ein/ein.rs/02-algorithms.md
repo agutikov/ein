@@ -147,17 +147,19 @@ H is built once, at root's fixpoint, by `hypgen::generate_config_free`, and is t
 propose: the rules that conclude a hypothesis, `(open F)`; the `(open F)` facts the program
 writes; the obligations activated at root; and, only where none of those wrote and no obligation is activated, the
 blind enumerator. Every writer feeds one filter pipeline, and the survivors are sorted by text and deduplicated
-into H. What the writers give at root, and at every state above it, the pass of `open.rs` writes as the state's
-`(open …)` facts. The contract is
+into H. What the writers give at root the pass of `open.rs` writes as root's `(open …)` facts; above root the pass
+runs only at a state that is printed or saved, or that uses its `open` facts, as every state of a program in which a
+rule reads one does, and writes what the same writers give there. The contract is
 [`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation).
 
 ![Hypothesis generation as a flow: the writers whose union is H](diagrams/02-hypothesis-writers.svg)
 
 An obligation whose witness step does not resolve under its activator proposes nothing, and the blind enumerator
-does not run beside it (`oblgen::Mode::Declined`); an obligation whose guard reads a relation a commitment can
-change still proposes what root's guard gives, and the static check flags the program. A state that owes and has
-nothing left to propose says so (`Mode::Stuck`). The filter that drops a candidate is named on its `hyp` event, and
-the generator's statistics assert that nothing is lost between the two counts:
+does not run beside it (`oblgen::Mode::Declined`); an obligation whose guard or trigger reads a relation a
+commitment can change proposes what root's guard gives, as any obligation does, and the static check flags the
+program. A root that owes and has nothing left to propose says so on its `rung` event
+([`05-events.md`](05-events.md#rung-which-generator-proposed)). The filter that drops a candidate is named on its
+`hyp` event, and the generator's statistics assert that nothing is lost between the two counts:
 
 $$
 \operatorname{raw} = \operatorname{emitted} + \sum_{f \in \text{filters}} \operatorname{dropped}_f
@@ -166,7 +168,8 @@ $$
 ## 7. The node function
 
 Every route, and the oracle, reads a commitment through `region`'s node function: a fork of root with the
-commitment written in, root's saturation resumed over it, and both verdicts read off the result. The contract is
+commitment written in, root's saturation resumed over it, what it owes read at its fixpoint, and both verdicts read
+off the result; its `open` facts are written there where the pass of `open.rs` runs (§ 6). The contract is
 [`03-design/07-search.md` § 2](03-design/07-search.md#2-the-node).
 
 ![The node function as a flow: fork root, write the commitment, resume, read both verdicts](diagrams/02-node-function.svg)
@@ -305,10 +308,10 @@ and the status says it was cut. A core is taken only where a surface prints one 
 ## 10. The obligation pass
 
 A rule whose `:assert` is `(open ?R)` is in no agenda. `obligations::tally` runs once over a KB after its
-saturation returns and reports what the KB still owes, and the pass of `open.rs` writes `(open R)` once for each
-relation owed, into the part of the state no fork inherits, where the state is used
-([Q-M1f.655](../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md))
-([`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)).
+saturation returns and reports what the KB still owes, at every state, and the pass of `open.rs` writes `(open R)` once
+for each relation owed, into the part of the state no fork inherits, where the state is used
+([Q-M1f.655](../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md);
+[`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)).
 
 ![The obligation pass as a flow over a saturated knowledge base](diagrams/02-obligation-pass.svg)
 

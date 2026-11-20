@@ -416,8 +416,9 @@ What a context does and does not say of the fact in it is [below](#a-context-giv
 
 A finite set $W \subset \Sigma^{+}$ of names is **reserved**: the language gives the atom one fixed part to play,
 and no declaration takes its name ([the reserved names](../../user/04-reference/03-reserved-names.md) lists $W$).
-Those the graph itself has a part for are $\mathsf{relation}$, above, and one marker, of closure, which a program
-may write as a relation or as an argument and which is read where a knowledge base grows
+Those the graph itself has a part for are $\mathsf{relation}$, above; $\mathsf{open}$, whose facts say what a
+state owes and what it supposes ([below](#a-fact-its-negation-both-or-neither)); and one marker, of closure, which a
+program may write as a relation or as an argument and which is read where a knowledge base grows
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). No name of a
 theory is reserved: a relation's symmetry, a type and a bijection are rules a library states over names the
 program chooses, and so are a stored negation and falsity, whose shape alone is the language's (above): what
@@ -425,8 +426,11 @@ $\lnot f$ beside $f$ means and what $\bot$ does to a state are rules of the stan
 ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md),
 [Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A subset
 $W_{\!c} \subset W$ is the relation of no fact at all: the words that join and test the parts of a pattern,
-equality and inequality among them, which [the next page](02-rewriting-rules.md) defines. So no equality, no
-test and no connective is a fact, and none is an object:
+conjunction, disjunction, equality and inequality, which [the next page](02-rewriting-rules.md) defines. So no
+equality, no test and no connective is a fact, and none is an object. The word of an absence is not among them: it
+is read where it heads a premise, and under an argument arrow of a fact it is a name like any other, so a fact
+under that arrow whose relation it is, is a fact like any other
+([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)):
 
 $$
 \forall f \in F.\ \ \operatorname{rel}(f) \in \Sigma^{+} \setminus W_{\!c}
@@ -754,13 +758,13 @@ $$
 \begin{cases}
 \text{asserted} & f \in K,\ \lnot f \notin K \\
 \text{negated} & f \notin K,\ \lnot f \in K \\
-\text{open} & f \notin K,\ \lnot f \notin K \\
+\text{unknown} & f \notin K,\ \lnot f \notin K \\
 \text{contradicted} & f \in K,\ \lnot f \in K
 \end{cases}
 $$
 
 In the graph the four are the four ways two nodes can be held or not: $f$, and the fact of $\mathsf{not}$ that
-points at it. A negated fact is not merely missing: a stored negation is a fact the set holds, and *open* is
+points at it. A negated fact is not merely missing: a stored negation is a fact the set holds, and *unknown* is
 that it holds neither.
 
 **A contradiction** is what a rule says is one. A rule may state, in the place of a conclusion, the one word the
@@ -799,6 +803,33 @@ $$
 A program that takes no such rule holds the two in a set that is alive, as a three- or four-valued or a
 paraconsistent logic would have it; one that wants another reading states rules of its own.
 
+**A third context: $\mathsf{open}$.** A fact of the relation $\mathsf{open}$ has one argument, and says that
+something is not yet decided, in one of two ways
+([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)):
+
+- $\operatorname{open}(f)$, $f$ a fact, says that $f$ is a **hypothesis**: a fact a commitment may add;
+- $\operatorname{open}(r)$, $r$ the atom of a relation, says that the held extent of $r$ is **incomplete**: what a
+  state owes.
+
+Its argument is never a fact of $\mathsf{open}$
+([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)). Like $\lnot f$,
+$\operatorname{open}(f)$ is a held fact that points at $f$, so $f$ is in its context and is not held by it; a
+hypothesis's fact may have any of the four statuses beside it:
+
+$$
+\begin{aligned}
+\operatorname{open}(f) \in K &\ \not\Longrightarrow\ f \in K \\
+\operatorname{open}(f) \in K &\ \not\Longrightarrow\ \operatorname{status}_K(f) = \text{unknown}
+\end{aligned}
+$$
+
+The two meet in the answer: its candidates are the hypotheses root holds whose fact root neither holds nor denies,
+so where the program takes the theory of the contradiction for a candidate's relation, the candidate's status at
+root is *unknown* ([hypothesis generation § 2](../02-kb-evolution/04-hypothesis-generation.md#2-the-union)).
+Which state holds which fact of $\mathsf{open}$, written where no larger state inherits it, is a matter of how a
+knowledge base grows ([the same page](../02-kb-evolution/04-hypothesis-generation.md#2-the-union)); here it is a fact
+like any other, one node however many times it is concluded.
+
 **The fact $f$ may itself be a stored negation**, and a rule over a fact and its negation reads it as it reads
 any fact. With $f = \lnot g$, the pair such a rule compares, where it reaches the relation $\mathsf{not}$, is
 $\lnot g$ and $\lnot\lnot g$:
@@ -827,7 +858,7 @@ $g \notin K$:
 
 $$
 \begin{aligned}
-c(a, g) \in K \ \land\ \lnot g \notin K &\implies \operatorname{status}_K(g) = \text{open} \\
+c(a, g) \in K \ \land\ \lnot g \notin K &\implies \operatorname{status}_K(g) = \text{unknown} \\
 c(a, \bot) \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
 c(a, g) \in K \ \land\ c(a, \lnot g) \in K &\ \not\Longrightarrow\ \operatorname{dead}(K) \\
 c(a, g) \in K \ \land\ \lnot g \in K &\ \not\Longrightarrow\ \operatorname{dead}(K)
@@ -853,10 +884,13 @@ K &= \lbrace t, n \rbrace \\
 \end{aligned}
 $$
 
-**One context is read: that of $\mathsf{not}$.** A stored negation is a held fact that points at the fact it
-denies, so it is a context of that fact like any other, and it is the only one the definitions above read:
-$\lnot g \in K$ makes $g$ negated, and, where the program takes the theory of the contradiction, makes $K$ dead
-where $g$ is in the global context too. The facts of every other relation are opaque to those definitions. What $\mathsf{think}$ means, whether what a reliable witness
+**Two contexts are read: that of $\mathsf{not}$, and that of $\mathsf{open}$.** A stored negation is a held fact
+that points at the fact it denies, so it is a context of that fact like any other, and it is the only one the
+definitions above read: $\lnot g \in K$ makes $g$ negated, and, where the program takes the theory of the
+contradiction, makes $K$ dead where $g$ is in the global context too. The context of $\mathsf{open}$ is read by the
+answer and by no status: $\operatorname{open}(g)$ at root makes $g$ a hypothesis, and says nothing of whether $g$
+is held ([above](#a-fact-its-negation-both-or-neither)). The facts of every other relation are opaque to those
+definitions. What $\mathsf{think}$ means, whether what a reliable witness
 says is to be held, is what the rules of a program make of it
 ([packing and unpacking](02-rewriting-rules.md#packing-and-unpacking)), and with no such rule it means nothing.
 
@@ -868,17 +902,19 @@ complement of $K$: the four statuses are the four ways a fact can be in the two,
 |---|---|---|
 | asserted | yes | no |
 | negated | no | yes |
-| open | no | no |
+| unknown | no | no |
 | contradicted | yes | yes |
 
-A mirror would leave no fact open. So a fact that is denied is no more held than one that somebody says: it is
+A mirror would leave no fact unknown. So a fact that is denied is no more held than one that somebody says: it is
 in a context, and a pattern finds it there and not in the global one. Nor does denying twice lead back:
 $\lnot\lnot g \in K$ puts $\lnot g$ in $N_K$, and says nothing of whether $g$ is in the global context.
 
 **The same holds of every fact that is read where it is held.** A declaration is a held fact of
-$\mathsf{relation}$, and the facts that apply a rule are held facts of its name
-([the rules](02-rewriting-rules.md#a-rule-declared)). Under an argument arrow each is a fact about which
-something is said: it declares nothing and applies nothing.
+$\mathsf{relation}$, the facts that apply a rule are held facts of its name
+([the rules](02-rewriting-rules.md#a-rule-declared)), and a hypothesis and what a state owes are held facts of
+$\mathsf{open}$. Under an argument arrow each is a fact about which something is said: it declares nothing,
+applies nothing, supposes nothing and owes nothing
+([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)).
 
 **What is the same in the three cases, and what differs.** For a fact $g$ of the graph of $K$:
 
@@ -888,7 +924,7 @@ something is said: it declares nothing and applies nothing.
 | its **text**, its **quoted form**, its place in the **order** $\prec$ | functions of the object alone | |
 | its membership of the **extent** | $g \in \operatorname{ext}(\operatorname{rel}(g))$ | $g \in \operatorname{ext}_K(\operatorname{rel}(g))$, the held extent, only where held |
 | the **names** under its arrows | in $\operatorname{names}(K)$, which reads every depth | |
-| its **status** | | asserted or contradicted where held, negated or open where not |
+| its **status** | | asserted or contradicted where held, negated or unknown where not |
 | making $K$ **dead**, with $\lnot g$ or as $\bot$ | | only where held |
 
 What a rule reads of a fact in each case, and how a rule moves a fact from one to another, is

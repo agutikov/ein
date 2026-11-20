@@ -58,7 +58,7 @@ A text then goes through these phases, in this order:
 | 5 | pass 1, the relations, each storing its declaration fact | `ingest_relation` |
 | 6 | pass 2, the rules, their `:match` and `:assert` macro-expanded first | `ingest_rules` |
 | 7 | pass 3, the facts, with provenance from `:source`, `:rule` and `:using` | `ingest_fact` |
-| 8 | the program-wide refusals, the queries (goals macro-expanded), the one `(solve …)`, the last `(config …)` | `expand_goal`, `validate_solve`, `validate_queries`, `config_from_kw_pairs` |
+| 8 | the program-wide refusals, the queries (goals macro-expanded), the one `(solve …)`, the last `(config …)`; the `open` facts the program writes, into the part of root no fork inherits | `expand_goal`, `validate_solve`, `validate_queries`, `config_from_kw_pairs`, `write_open_facts` |
 | 9 | the unimported-`std.macro` guard | `macros::unimported_macro_errors` (§ 7) |
 | 10 | intern every name a rule or a query mentions | `intern_program_names` (§ 9.1) |
 | 11 | build the KB's indexes, once | `ein_core::Kb::rebuild_indexes` |
@@ -250,8 +250,9 @@ recovery reached, in file order, each a `SyntaxError { line, col, what, notes, r
   `unexpected end of input`; for a lexing error, the not-ASCII line (`grammar::not_ascii`) or `no token starts with
   …`.
 - **`notes`**: where a decision says more than the token: a bare `_`, a string where an object goes, a lattice
-  keyword written on a `(query …)`, a retired `(config …)` flag (`ein_core::config::RETIRED`), `open` outside a
-  rule's `:assert`, `absent` heading no premise, `false` with an argument, an empty `(and)` or `(or)`.
+  keyword written on a `(query …)`, a retired `(config …)` flag (`ein_core::config::RETIRED`), what `open` takes
+  where an `(open)` or a word under `open` is refused (`grammar::OPEN_NOTE`), `absent` heading no premise, `false`
+  with an argument, an empty `(and)` or `(or)`.
 - **`repairs`**: CPCT+'s ranked repairs, best first, the first being the one the parse went on with. Where a place
   takes a name, repairs that differ only in which of the `POSITION_WORDS` or which name they insert fold into one,
   `Insert a name`. `REPAIRS_SHOWN` (3) are listed and the rest counted in `more_repairs`.
@@ -393,7 +394,13 @@ its errors are fatal and returned at once, because a half-resolved program canno
 The loader refuses what a context-free grammar cannot see, but a form's count of arguments, which no declaration
 holds ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)): which keywords
 a form requires and that each appears once, a conclusion's variable no premise binds, a
-relation written as a variable no parameter binds, a nested `(or …)`, a malformed primitive an expansion writes, a
+relation written as a variable no parameter binds, a nested `(or …)`, a malformed primitive an expansion writes,
+what a rule concludes under `open` where only the program can tell (`validate_open`: what a state owes beside
+another conclusion, an obligation's projection that does not resolve;
+[Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)), a written
+`(open x)` with `x` neither a fact nor a relation of the program (`write_open_facts`), an obligation an activator
+makes owe `open` (`refuse_open_owed`;
+[Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)), a
 `(solve …)` list naming what the program does not have, and a `:match` (with
 the rule's parameters) or a `:goal` writing more than `MAX_MATCH_VARIABLES` (256) distinct variables
 (`refuse_wide_matches`;
@@ -403,7 +410,8 @@ grammar refuses, the arm is an `expect` or an `unreachable!` naming the producti
 ([Q-M1f.9](../../../decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md)).
 
 What it builds, into `ein_core::Program`: the registries of relations (the first declaration of each), rules,
-obligations, the rules that conclude a hypothesis, and macros; every declaration, in the order written (`Program::declarations`, a relation
+obligations, the rules that conclude a hypothesis, and macros, a rule's `(open R)` making it an obligation and its
+`(open F)` a hypothesis rule, the facts it concludes beside them an ordinary rule's; every declaration, in the order written (`Program::declarations`, a relation
 declared more than once read at each); every
 `(query …)`, in source order, `active_query` choosing the one a run asks; the one `(solve …)` a program may state;
 the relations a goal and a claim may name, `relations_of`, which `read_goal` holds a goal given beside the loaded

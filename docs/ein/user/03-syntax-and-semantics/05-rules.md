@@ -188,6 +188,7 @@ A `:match` is a **premise**, made of these:
 | a disjunction | `(or P Q …)` | some disjunct holds; each disjunct binds what the conclusion uses |
 | a guard | `(eq ?a ?b)`, `(neq ?a ?b)` | the two objects are one, the same atom or the same fact, or are not |
 | negation as failure | `(absent P)` | no fact of the state matches `P` (below) |
+| an `open` fact | `(open ?R)`, `(open (in ?p ?b))`, and `(absent (open (in ?p ?b)))` | an `open` fact of the state matches it, what the state owes or a hypothesis it holds; under `absent`, none does. A program with such a rule is flagged ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)) |
 | the empty conjunction | `()`, as a whole `:match` | always: the rule fires once, or once per activator |
 
 The [standard library's macros](11-macros.md) add two more, expanded where they are written: `(unknown P)`, *neither `P`
@@ -218,8 +219,13 @@ conclusion, a guard is checked: a true one adds nothing, a false one is `(false)
 
 A rule states what it concludes under `:assert`, or a word to the engine under `:ein` (below), never both
 ([Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). An `:assert` is
-a conjunction of facts and stored negations, read flat at any depth, with `(false)` and guards among them; or `()`,
-which concludes nothing; or, whole, an obligation `(open ?R)` ([obligations](08-obligations.md)). It is never a
+a conjunction of facts, stored negations and hypotheses `(open F)`, read flat at any depth, with `(false)` and guards
+among them; or `()`, which concludes nothing; or, whole, an obligation `(open ?R)` ([obligations](08-obligations.md)),
+which beside another conclusion is refused
+([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)). A
+hypothesis is one fact: `(and (open (p ?x)) (seen ?x))` concludes a hypothesis and a fact, several hypotheses are
+several `(open F)`, and `(open (and …))` is refused
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)). An `:assert` is never a
 disjunction: *one of these* is the [hypotheses](09-hypotheses.md)' job. Every variable a conclusion writes is
 bound by a parameter or a premise on every way of satisfying the `:match`, each disjunct of an `(or …)` included
 ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)); to conclude a
@@ -440,6 +446,10 @@ program:
   answered, and of its answer the engine claims nothing
   ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md);
   [solutions and models](13-solutions-and-models.md)).
+- **So is a program in which a rule reads an `open` fact**, and one whose rule concludes a hypothesis from what a
+  commitment can change, since a state above root can then hold a hypothesis root does not
+  ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md),
+  [Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 ## Every firing is recorded
 
@@ -470,6 +480,9 @@ At the parse or at load, on every command, one line each ([diagnostics](../04-re
 - a conclusion variable nothing binds;
 - `not`, `eq`, `neq` or `absent` at another count of arguments, `(and)` and `(or)` with nothing to join, and a
   connective, a guard or an `absent` where an argument goes, written or produced by a macro's expansion;
+- `(open)` with no argument, `(open (and …))`, `open` or `absent` directly under `open`, and `(absent (absent P))`
+  ([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)); an obligation
+  `(open R)` beside another conclusion;
 - a conclusion `(not ?x)` where the program shows that `?x` can be bound to an atom, which has no negation;
 - a premise that reads nothing: a name, a variable or a string where a premise goes;
 - a rule that states both `:assert` and `:ein`, and a word after `:ein` that is not the engine's.

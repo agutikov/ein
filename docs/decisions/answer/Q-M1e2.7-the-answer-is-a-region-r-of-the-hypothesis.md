@@ -1,13 +1,13 @@
 # Q-M1e2.7 — The answer is a region R of the hypothesis lattice
 
 The answer to a program is **R = { C ⊆ H : sat(root + C) is alive and discharged }**, a set of nodes of the lattice
-over H, the candidate list built at root. What a run reports of it:
+over H, the hypotheses root holds. What a run reports of it:
 
 - **two counts**, `k_s` in states and `k_c` in commitments, which differ where saturation derives a candidate;
 - **the minimal and maximal lines**, R's minimal and maximal members; restrictions only make the minimal line {∅},
   obligations only make the maximal line ⊤ on a monotone program, and neither line is enumerated where the shape
   says it is trivial;
-- **∅ ∈ R exactly when root is alive and discharged**, whatever the generator proposes;
+- **∅ ∈ R exactly when root is alive and discharged**, whatever H holds;
 - **components**, each a set of models and never a model; a query answers with projection classes;
 - **`exhausted`** means the reported region is all of R; a run a budget stopped reports a part, and says so;
 - **two kinds of empty R**, every node dead or every alive node owing; the verdict words judge a stated

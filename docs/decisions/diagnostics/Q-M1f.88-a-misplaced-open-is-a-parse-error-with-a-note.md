@@ -1,14 +1,18 @@
 # Q-M1f.88 — A misplaced `open` is a parse error with a note saying what `open` is
 
-`open` written anywhere but as a rule's whole `:assert` is refused with the parse error's line,
-``<file>:<line>:<col>: unexpected `open` ``, and under it the note `open is reserved: it is the verdict a rule's
-:assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no
-value`, then the error's repairs; *value* is the note's word for an object. `open` names no relation and no object
-([Q-M1f.66](../language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)).
+`open` where the grammar does not take it, the bare `(open)`, `open` directly under `open`
+([Q-M1f.568](../language/Q-M1f.568-directly-under-absent-or-open-the-other.md)), and `open` as the name a
+`relation`, a `rule`, a `macro` or an import's `:as` binds, is refused with the parse error's line,
+``<file>:<line>:<col>: unexpected `open` ``, or ``unexpected `)` `` at the bare `(open)`'s end, and under it the
+note `open takes one argument: a relation's name, which a state owes, or a fact a state could hold, which is a
+hypothesis; directly under it neither open nor absent is written, and no declarator binds it`, then the error's
+repairs. Where the kernel reads `open` and where it is a name:
+[Q-M1f.66](../language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md).
 
 **Why.** A parse error has one spelling: the first line names the token and its place, and a note says what a
 decision says about it, as for `_` and for a string where an object goes.
 
 **Held by.** `ein_ir::grammar::OPEN_NOTE`; `ein-cli/tests/open_reserved.rs`:
-`open_is_refused_wherever_it_is_not_the_verdict`, every place on every command with the note under the line;
-`ein-ir/tests/grammar_pages.rs`' table, a row per place, banked in `ein-ir/tests/golden/grammar_table.txt`.
+`open_is_refused_where_a_program_would_make_it_more_than_the_kernels`, every place on every command with one first
+line; `ein-ir/tests/grammar_pages.rs`' table, a row per place, banked in `ein-ir/tests/golden/grammar_table.txt`;
+`examples/broken/load/reserved_open_direct.expected`.

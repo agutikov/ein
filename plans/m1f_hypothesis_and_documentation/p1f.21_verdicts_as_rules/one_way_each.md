@@ -168,7 +168,7 @@ is not closed.
 
 **The one thing that has no other home: *may* and *must* in one program.** The ladder takes one rung: under an
 activated obligation $H$ is what the debts ask for, and nothing the enumerator would add
-([Q-M1f.243](../../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md): a root
+([Q-M1f.243](../../../docs/decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md): a root
 that owes nothing is complete, and falling back to the enumerator there would let exhaustion decide what discharge
 decides). A hypothesis rule is today the only way to have candidates beside the debts' own: the seven programs
 whose $R$ changes, and `features/13`. Without it they are written with a decision that is owed, or the two ways

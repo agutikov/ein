@@ -5,8 +5,8 @@ not derive, but a solution might hold. The candidates of a program are its **hyp
 A **commitment** is a set of candidates assumed together, and the answer is the commitments whose state is alive and
 owes nothing ([solutions and models](13-solutions-and-models.md)). So H is the space the answer is drawn from, and a
 program says what may go into it: a rule that concludes candidates, `(open F)`, an obligation whose payments are
-the candidates, or neither, and then every fact the blind enumerator can form. `(solve …)` and `(__closed__ R)` narrow
-it, and `(solve :no-search)` empties it. A `(__closed__ R)` fact **closes** the relation `R`: the held extent of
+the candidates, or neither, and then every fact the blind enumerator can form. The two lists of `(solve …)` and
+`(__closed__ R)` narrow what the blind enumerator forms, and `(solve :no-search)` empties H. A `(__closed__ R)` fact **closes** the relation `R`: the held extent of
 `R` is fixed, and no candidate is a fact of it; *a closed relation* on these pages is a relation such a fact
 names.
 
@@ -164,6 +164,84 @@ kernel's own words and the names of relations and rules
 Candidates are proposed at a fixpoint, after saturation, never in the middle of it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)).
 
+## `open`: what a state supposes, and what it owes
+
+A hypothesis is a fact the knowledge base holds, under `open`, whoever wrote it
+([Q-M1f.549](../../../decisions/hypotheses/Q-M1f.549-a-hypothesis-is-a-fact-open-f-whoever-writes.md)), and so
+is a debt ([obligations](08-obligations.md)). A state holds `(open F)` for each fact `F` it supposes, and
+`(open R)` once for each relation `R` it owes an instance of
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). Both are a
+part of the state no fork inherits, written at its fixpoint: at root, where they make H, and above root at a state
+that is printed or saved, or whose rules read them. A fork starts without them, and no rule removes a fact; what a
+state owes is read at every state. H is the hypotheses root holds,
+less the facts root holds or denies.
+
+### In Ein
+
+`open` is read where it heads a written fact, a premise or a conclusion:
+
+| written | where | it is |
+|---|---|---|
+| `:assert (open (seat ?p ?c))` | a rule's conclusion, alone or in an `(and …)` beside other facts | a hypothesis, at every state the rule matches in |
+| `:assert (open seat)`, `:assert (open ?R)` | a rule's whole `:assert` | an obligation: what a state owes ([obligations](08-obligations.md)) |
+| `(open (seat Ann C1))` | a fact the program writes | a hypothesis, held at root alone |
+| `(open ?R)`, `(absent (open (seat ?p ?c)))` | a rule's `:match` | a rule that reads `open`: its program is not monotone ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)) |
+
+Under any other relation `open` is a name, as `not` is: `(think Ann (open (seat Ann C1)))` is a fact about what Ann
+thinks, and supposes nothing
+([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)). Directly
+under `open` neither `open` nor `absent` is written, and `(open)` takes one argument
+([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)).
+
+What a state holds under `open` is listed with its other facts. For the seating program of
+[obligations](08-obligations.md#in-ein), whose root owes Bob a chair, `ein saturate --dump FILE` lists root's:
+
+<!-- output -->
+```text
+;; ── DERIVED (3 facts) ──
+;;   open (3)
+  (open seat :rule everyone-sits)
+  (open (seat Bob C1) :rule everyone-sits)
+  (open (seat Bob C2) :rule everyone-sits)
+```
+
+`(open seat)` is the debt, and the two hypotheses are what would pay it. `ein solve -p` lists a state's `open`
+facts with the rest, and `-P` leaves them out, as it leaves out the `(not …)` facts
+([Q-M1f.577](../../../decisions/read-out/Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)).
+
+### As a graph
+
+A fact of `open` is a node like any other: its arrow `1` at the atom `open`, its arrow `2` at what it is about. Root
+of the seating program, drawn as the knowledge base is, with the fact `g`, `(seat Ann C2)`, beside the three facts
+of `open`, dashed as a fact a rule wrote is:
+
+![Root of the seating program: the held fact g; the debt d, a fact of open whose arrow 2 is at the atom seat; the hypotheses h1 and h2, facts of open whose arrows 2 are at f1 and f2, which are not held and stand in the frame open ctx](diagrams/09-open-facts.svg)
+
+The debt `d`, `(open seat)`, points at the relation. Each hypothesis points at a fact the state does not hold: `f1`
+and `f2`, `(seat Bob C1)` and `(seat Bob C2)`, stand in the frame of the context of `open`, as a denied fact stands in
+the frame of `not` ([facts](03-facts.md)). A commitment to `f1` holds `f1` itself, outside any frame.
+
+### In words
+
+A debt reads by its obligation's `:why`, once an instance: *Bob has no chair yet*, the `owed` row under `∅`. A
+hypothesis reads as the fact it supposes, `(seat Bob C1)`, the way `ein show hyps` lists H, and a rule that concludes
+one says why in its own `:why`: *suppose Bob sits on C1*. Read aloud, `(open (seat Bob C1))` is *Bob may sit on C1*,
+and `(open seat)` is *who sits where is not yet complete*.
+
+### In mathematics
+
+With $\operatorname{Owed}(S)$ the instances a state owes ([obligations](08-obligations.md#in-mathematics)):
+
+$$
+\begin{aligned}
+\operatorname{open}(r) \in S &\iff \exists\, (o, a, \theta) \in \operatorname{Owed}(S).\ o \text{ owes } r \\
+H &= \lbrace\, f \mid \operatorname{open}(f) \in \mathrm{root},\ f \notin \mathrm{root},\ \text{root does not deny } f \,\rbrace
+\end{aligned}
+$$
+
+and a fork of a state starts from every fact it holds but its facts of `open`. What a commitment adds is a fact of
+H itself: committing to `f1` adds `(seat Bob C1)`, and not `(open (seat Bob C1))`.
+
 ## Where candidates come from: the writers
 
 | writer | when | the candidates |
@@ -178,7 +256,7 @@ enumerator writes only where neither does
 ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)).
 
 Which writers write is decided once, at root
-([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), and
+([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-an-obligation-activated-at-root-writes.md)), and
 `ein show hyps`' note names them. An obligation rule the program loads and nothing
 activates writes nothing: an import brings its module whole, so importing `std.algebra` for `symmetric` loads its two
 obligation rules, and they decide nothing until a fact activates one.
@@ -194,16 +272,16 @@ obligation rules, and they decide nothing until a fact activates one.
 
 - **Each `(open F)` is one fact**: each match proposes one candidate per `(open F)`, a commitment of its own.
   `(open (and …))` is refused, and a rule concludes several hypotheses as several `(open F)`
-  ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). The facts it concludes
+  ([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)). The facts it concludes
   beside them are an ordinary rule's.
 - **Active** as every rule is ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)): one with no parameters always, one with parameters once
   per fact of its name root holds, one the program writes anywhere in it or a rule derives, with as many arguments
   as the rule has parameters. There
   is no `hrule` form and no `:hrules` clause.
 - **Its matches at root are H's.** `:match ()` proposes its candidate once. A fact of `eq` or `neq` is no hypothesis
-  ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and the rule
+  ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md)), and the rule
   may read a stored `(not …)`, which it reads in root's state
-  ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
+  ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md)).
 - **No list and no closure filters it.** What a hypothesis rule proposes is what it proposes.
 
 ### The blind enumerator
@@ -225,7 +303,7 @@ more is enumerated. Where `ein` prints *object* in a row about the enumerator, i
 | `(solve :hypothesis-relations (R …))` | propose facts of these relations only; `()` names none | the blind enumerator |
 | `(solve :no-hypothesis (R …))` | propose no fact of these | the same |
 | `(__closed__ R)`, written or derived | the held extent of R is fixed: no commitment adds a fact of R | the same, and the read-out |
-| `(solve :no-search)` | the lattice is root alone: nothing is proposed, H is empty, R is {∅} or empty | every writer, before any writes |
+| `(solve :no-search)` | the lattice is root alone: H is empty, and R is {∅} or empty; root still holds what its writers write under `open` | H |
 
 Every name a list holds is a relation the program writes elsewhere, or the program is refused at load
 ([Q-M1f.114](../../../decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md)). A
@@ -243,7 +321,7 @@ root holds, of a hypothesis or of what root owes, is **refused at load**, on eve
 ([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md),
 [Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)). A
 name that repeats what another declaration says is one `note:` line on stderr and changes nothing
-([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)).
+([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md)).
 
 | the program states | refused where | a `note:` where |
 |---|---|---|

@@ -6,4 +6,4 @@ hypothesis and the fact.
 
 **Why.** An obligation is read at the fixpoint and concludes no fact; a hypothesis is a fact a state holds.
 
-**Held by.** `ein_ir::from_ir`'s `validate_open`; `examples/broken/open_mixed_assert.ein`.
+**Held by.** `ein_ir::from_ir`'s `validate_open`; `examples/broken/load/open_mixed_assert.ein`.

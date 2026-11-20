@@ -149,13 +149,16 @@ core of a dead node.
 
 ### 4.2 The hypothesis set and the search
 
-- **The generator** (`hypgen`): the atoms it guesses about sorted by name rank; its focal order by descending
-  participation, then name, stably; relations in declaration order, slots ascending. The order of its filters
-  decides which counter a dropped candidate is attributed to, and those counters are printed.
-- **H** is the generator's list sorted by `region::order_key`, a candidate's s-expression with every name as its raw
+- **The writers of H** (`hypgen`), in the order a call runs them: the rules that conclude a hypothesis, in registry
+  order, each plan's matches in match order; the `(open F)` facts the program writes, in the order written; the
+  obligations, in report order, plan by plan and match by match (`oblgen::ORDER`); and, where it writes, the blind
+  enumerator: the atoms it guesses about sorted by name rank, its focal order by descending participation, then
+  name, stably, relations in declaration order, slots ascending. The order of the filters decides which counter a
+  dropped candidate is attributed to, and those counters are printed.
+- **H** is the writers' list sorted by `region::order_key`, a candidate's s-expression with every name as its raw
   text and a nested fact rendered recursively, stably, and deduplicated. The key is defined for every argument
   shape, a name or a nested fact, so H's order is a content order whatever a hypothesis holds; between two
-  candidates of one key, the generator's order, itself a content order, decides. H's order is the bit order of every
+  candidates of one key, the writers' order, itself a content order, decides. H's order is the bit order of every
   node mask, the oracle's cube included, so no node, edge or listing depends on ids.
 - **The tree's order** (`ein_infer::order`): which owed instance a state branches on and which state next. No key
   reads an interner id; the last key is rendered text or, on the minimal line and under `-n N`, the order the

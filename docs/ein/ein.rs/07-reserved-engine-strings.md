@@ -59,10 +59,10 @@ listed with the name, is empty, and a listed drawing that no longer moved on any
 **None.** A committed hypothesis is a fact with a provenance *kind*, `hypothesis` (`ein_core::prov::ProvKind`),
 never a fact wrapped in a carrier head. A state's `open` facts, `(open R)` and `(open F)`, are facts of the kernel's
 relation `open` and part of the state
-([Q-M1f.572](../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)), written at
-its fixpoint from the rest of it, so the canonical state form,
-[`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs), excludes nothing: it is the sorted fact set of
-the state, its `open` facts among them, free of provenance. A carrier head added later would have to be registered here **and** excluded by
+([Q-M1f.572](../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)), written from
+the rest of it where the pass runs ([`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation)),
+so the canonical state form, [`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs), excludes nothing:
+it is the sorted fact set the state holds, free of provenance. A carrier head added later would have to be registered here **and** excluded by
 `state_key`, so that it does not perturb a state's identity ([`03-design/07-search.md`](03-design/07-search.md)).
 
 ## Synthetic writeback rule names
@@ -110,7 +110,8 @@ it), `hypothesis` (a commitment assumed it), `rejected`. The words are the ones 
 
 `(__closed__ R)` has one engine side, in [`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) (`CLOSED`):
 the blind enumerator reads the `(__closed__ R)` facts in the KB and proposes **no candidate for R**, at root and,
-in [`open.rs`](../../../ein.rs/crates/ein-infer/src/open.rs), at every state above it. The marks are the
+in [`open.rs`](../../../ein.rs/crates/ein-infer/src/open.rs), at a state above it where the pass that writes its
+`open` facts runs. The marks are the
 ones a program writes or a rule derives (`std.closure`'s `infer-closure` asserts `(__closed__ ?R)`), and H holds the
 candidates of every other relation. It is genuinely the engine's: a saturation rule can neither suppress the
 generator nor observe that no rule asserts R. The hypothesis mechanisms are read together, and a closure of a relation
@@ -128,6 +129,9 @@ about: `HYPOTHESIS_RELATIONS` and `NO_HYPOTHESIS` in [`hypgen.rs`](../../../ein.
 | `:no-hypothesis` | **a deny-list**: never a candidate on the listed relations; saturation rules on them still fire |
 
 Neither touches the saturator: they scope generation only, where `(__closed__ R)` above also states that no rule
-derives R. The mechanisms are read together on root's fixpoint (`ein_infer::mechanisms`): a relation in both lists,
-or listed and closed, is refused before any search, and a list a hypothesis rule leaves filtering nothing is a note
+derives R. The mechanisms are read together on root's fixpoint (`ein_infer::mechanisms`), against the `open` facts
+root holds ([Q-M1f.578](../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)):
+a list or a closure that disagrees with them is refused before any search, and one that agrees with them says
+nothing, since the blind enumerator does not run beside them; a relation in both lists, or listed and closed, is
+refused too, and a name a `:no-hypothesis` names that another declaration already leaves out is a note
 ([`03-design/07-search.md`](03-design/07-search.md)).

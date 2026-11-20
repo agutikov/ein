@@ -8,8 +8,11 @@ if (a route's node, on a monotone program,\nand the commitment is not empty?) th
 else (no)
   :saturate to the fixpoint;
 endif
-:contradiction::detect: dead?;
 :obligations::tally: what it owes;
+if (a rule reads open, or the state is printed or saved?) then (yes)
+  :the pass of open.rs writes the state's open facts;
+endif
+:contradiction::detect: dead?;
 :closure = the candidates it holds;\ndenied = those whose negation it stores;
 :state key = its facts beyond root's, sorted;
 if (dead, and a core is asked of this node?) then (yes)

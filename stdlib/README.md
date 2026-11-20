@@ -247,11 +247,12 @@ has become unreachable and the state is dead. The dual is about a set that is
 still empty: nothing is stored either way, so the requirement is **unmet**,
 not unmeetable. `(false)` becomes `(open ?R)`; *dead* becomes *unfinished*.
 
-They derive nothing and are not in the saturation agenda; what reads them is
-one pass over the quiescent KB, reported through `--events`' `owe` lines,
-`--json-summary`'s `owes` block and the trace's *Outstanding obligations*
-section
-([`03-reserved-names.md` § the verdict `open`](../docs/ein/user/04-reference/03-reserved-names.md#the-verdict--open)).
+They are not in the saturation agenda; what reads them is one pass over each
+state's fixpoint, which writes into the state that owes `(open R)`, once a
+relation, and the facts that would pay it as hypotheses `(open F)`, facts no
+fork inherits. Each instance owed is reported through the read-out's
+`owed` rows, `--events`' `owe` lines and `--json-summary`'s `owes` and `owed`
+([`08-obligations.md` § Reading a state that owes](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#reading-a-state-that-owes)).
 
 ## `std.negation` and `std.contradiction`: negation as rules
 
@@ -1576,8 +1577,9 @@ solver.
 family (`find tests/stdlib -name '*.ein' | wc -l`), each stating what it
 should and should not derive. `ein test tests/stdlib/` runs the lot and exits
 1 if a claim is false. The obligation duals have a firing and a satisfied
-program each, and `bijection/06_blind_enumeration.ein` leaves the blind
-enumerator on, where the other programs of its directory turn it off.
+program each, and `bijection/06_blind_enumeration.ein` activates no
+obligation, so the blind enumerator writes its candidates, where the other
+programs of its directory state `:no-search` or scope it out.
 
 **Every rule is activated by a program**, and that is measured, not read off
 the directory: `ein-infer/tests/stdlib_coverage.rs` solves every program under
@@ -1588,9 +1590,9 @@ are every depth's, `find stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '
 
 **"Activated" is two events**, and the second is not an optimisation of the
 first. A saturation rule reaches the agenda and emits `fire`. An **obligation**
-rule, one whose `:assert` is the verdict `open`, never can: it derives nothing
-and is kept out of the agenda, so its evidence is the `owe` its post-fixpoint
-pass emits
+rule, one whose whole `:assert` is `(open R)`, never can: it is kept out of the
+agenda, so its evidence is the `owe` the pass over each state's fixpoint emits,
+one an instance, where it writes `(open R)`
 ([`08-obligations.md`](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)).
 The test reads both kinds; counting only `fire` would leave the four duals
 permanently unactivated.

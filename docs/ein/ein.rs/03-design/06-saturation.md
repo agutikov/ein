@@ -168,14 +168,21 @@ candidate an alive state so denies is dead above it (L8); and the agenda fires e
 
 ### 6.2 Obligations
 
-A rule whose `:assert` is `(open ?R)` derives nothing and is not in the agenda: it runs as one pass over the KB
-**after** the fixpoint ([`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)), and what it reports,
-a node's debts, the pass of [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once
-for each relation owed, into the part of the state no fork inherits
+A rule whose `:assert` is `(open R)` or `(open ?R)` derives nothing and is not in the agenda: it runs as one pass
+over the KB **after** the fixpoint ([`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)), and
+what it reports, a node's debts, is read at every state. The pass of
+[`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes it as `(open R)`, once for each relation owed,
+into the part of the state no fork inherits, at root and at a state above root that is printed or saved or that uses
+its `open` facts
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), beside the
-hypotheses `(open F)` the rules that conclude one give there, at root and where a state is used
-([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). Where a rule reads an `open` fact, the saturation
-resumes over what the pass wrote, and the two repeat until neither adds anything. Its event is `owe`.
+hypotheses `(open F)` the writers of H give there ([`07-search.md` § 1](07-search.md#1-hypothesis-generation)), at
+root and where a state is used
+([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). The saturator
+never fires an `(open F)` a rule concludes: the facts such a rule concludes beside it are an ordinary rule's, and the
+hypothesis is the pass's. Where a rule reads an `open` fact, the saturation resumes over what the pass wrote, and the
+two repeat until neither adds anything; the program is then flagged, by the static check's `open-read` site
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)). Its event is
+`owe`.
 
 ## 7. `is_stalled` is not a read
 

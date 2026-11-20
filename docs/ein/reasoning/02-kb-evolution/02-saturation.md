@@ -4,9 +4,10 @@ Saturation is the one computation every answer is made of. Root is the program's
 rules, $\mathrm{root} = \operatorname{sat}(K_0)$; every node of the search is root's fixpoint with a
 commitment added, saturated again, $\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$; the
 candidate set $H$ is read off root's fixpoint, and whether a node is dead and what it owes off its own
-([solution semantics](06-solution-semantics.md)). This page states what $\operatorname{sat}$ computes, the order
-it derives in and what that order can and cannot decide, what it derives before anything is supposed, and the
-invariant that lets $H$ be taken once, at root. The symbols are those of [firing a rule](01-firing.md).
+([solution semantics](06-solution-semantics.md)). This page states what $\operatorname{sat}$ computes, the pass
+that reads off the fixpoint what a state owes and supposes, the order it derives in and what that order can and
+cannot decide, what it derives before anything is supposed, and the invariant that lets $H$ be taken once, at
+root. The symbols are those of [firing a rule](01-firing.md).
 
 ## The fixpoint
 
@@ -53,6 +54,12 @@ $$
 
 It is extensive, idempotent and monotone: a **closure operator**.
 
+**Outside $\mathsf{open}$.** At the limit a pass adds what the knowledge base owes and supposes, as facts of
+$\mathsf{open}$ read off the limit whole ([below](#the-pass-what-a-state-owes-and-supposes)), and a larger
+knowledge base can owe less, or leave less undecided, and so hold fewer of them. The chain, its limit and the three
+properties are of what the firings derive, $\operatorname{sat}(K)$ outside $\mathsf{open}$; its facts of
+$\mathsf{open}$ are the pass's, a function of that limit where no rule reads them.
+
 **With an absence the third property can fail.** A premise $\operatorname{absent}(G)$ holds in $K$ and may fail in
 a larger $K'$, so a larger input can block a firing a smaller one admits, $\operatorname{en}(K) \not\subseteq
 \operatorname{en}(K')$. What $\operatorname{sat}$ is on a program that reads absences is fixed by the next section
@@ -61,14 +68,15 @@ and a boundary decides the rest. The first two properties hold of every program.
 
 **A fact is held because it was given or concluded, and never because of its context.** The fixpoint is $K$
 closed under rewriting, and a rewriting holds exactly the instances of a conclusion's literals. So for every fact
-$g$,
+$g$ outside $\mathsf{open}$,
 
 $$
 g \in \operatorname{sat}(K) \iff g \in K \ \lor\ g \in \psi_\rho[a]\,\theta \ \text{ for a firing } \xi = (\rho, a, \theta) \text{ along the saturation of } K
 $$
 
 and no clause of the right-hand side reads the context of $g$
-([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). A fact
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)); a fact
+of $\mathsf{open}$ is held where $K$ holds it or the pass wrote it. A fact
 that stands under an arrow of a held fact is held at the fixpoint only where some rule concluded it, by spelling
 it ([packing and unpacking](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking)).
 
@@ -145,20 +153,25 @@ K_{i+1}' &= \operatorname{pos}\bigl(K_i' \cup \psi_{\kappa_i}\theta_i\bigr) \\
 \end{aligned}
 $$
 
-and its **fixpoint** is the first quiescence at which the boundary admits nothing:
+and the boundary is done at the first quiescence at which it admits nothing:
 
 $$
-\begin{aligned}
-\operatorname{sat}(K) &= K_m' \\
-m &= \min \lbrace\, i \;:\; \text{no parked } \kappa \notin \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace \text{ passes in } K_i' \,\rbrace
-\end{aligned}
+m = \min \lbrace\, i \;:\; \text{no parked } \kappa \notin \lbrace \kappa_0, \dots, \kappa_{i-1} \rbrace \text{ passes in } K_i' \,\rbrace
 $$
 
-![Two phases: closures, and the rounds of the boundary between them](diagrams/02-two-phases.svg)
+There a pass writes what the knowledge base owes and supposes, $\operatorname{opens}(K_m')$
+([below](#the-pass-what-a-state-owes-and-supposes)), and the **fixpoint** is $K_m'$ with what the pass wrote. Where
+no rule reads a fact of $\mathsf{open}$, that is all:
+
+$$
+\operatorname{sat}(K) = K_m' \cup \operatorname{opens}(K_m')
+$$
+
+![Two phases: closures, the rounds of the boundary between them, and the pass at the end](diagrams/02-two-phases.svg)
 
 A solid arrow is the closure, a least fixpoint in which no absence is read. A dashed arrow is one round of the
 boundary: one candidate admitted, against exactly the knowledge base its guards were judged in, and the closure
-resumed.
+resumed. The dotted arrow is the pass, and the heavy box the fixpoint.
 
 **One admission a round is a soundness requirement.** Let $P$ hold the two rules
 $t \land \operatorname{absent}(q) \implies p$ and $t \land \operatorname{absent}(p) \implies q$, and $K = \lbrace
@@ -177,6 +190,54 @@ $$
 knowledge base, so its candidate can never pass and is dropped. A guard with a nested absence, a universal's, can
 turn from failing to passing as the knowledge base grows; its candidate stays parked and is judged again at a
 later quiescence ([absence](03-absent-and-naf.md)).
+
+## The pass: what a state owes and supposes
+
+What a knowledge base owes and what it supposes are facts of the relation $\mathsf{open}$
+([the rules](../01-static-ir/02-rewriting-rules.md#what-a-state-owes-and-what-it-supposes),
+[Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), and no
+firing adds one: a **pass** writes them at a quiescence the boundary admits nothing at. Of a quiescent $S$, with
+$\operatorname{Owed}(S)$ the instances it owes
+([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)),
+
+$$
+\begin{aligned}
+\operatorname{opens}(S) \;=\;\ & \lbrace\, \operatorname{open}(r) \;:\; \text{an instance in } \operatorname{Owed}(S) \text{ owes } r \,\rbrace \\
+\cup\ & \lbrace\, \operatorname{open}(f) \;:\; f \text{ a hypothesis a writer gives at } S \,\rbrace
+\end{aligned}
+$$
+
+The first part is one fact for each relation, however many instances of it $S$ owes, and is empty where $S$ owes
+nothing.
+The second is the hypotheses of [hypothesis generation § 2](04-hypothesis-generation.md#2-the-union): an instance
+of a hypothesis for each match of its rule in $S$, the facts that would pay what $S$ owes, and, where root holds
+nothing under $\mathsf{open}$ and activates no obligation, the blind enumerator's guesses. Both are a function of
+the fixpoint $S$ and the rules, so they need not be written to be known. They are written at root, where they make
+$H$, and above root at a state that is shown or saved, or where a rule reads them, which then needs them at every
+state; what a state owes is read at every state whatever is written, since $R$ needs it
+([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)).
+
+**A rule that reads them.** A rule may read a fact of $\mathsf{open}$, or its absence. Then the closure and the
+boundary resume from $K_m' \cup \operatorname{opens}(K_m')$, as the sequence above resumes from a fact admitted,
+and the pass writes again at the next quiescence the boundary admits nothing at; the two alternate until the pass
+writes nothing the knowledge base does not hold:
+
+$$
+\operatorname{opens}(\operatorname{sat}(K)) \;\subseteq\; \operatorname{sat}(K)
+$$
+
+Such a program is not monotone
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md);
+[monotonicity § 3.1](08-monotonicity.md#31-what-it-reads)). Where no rule reads one, what the pass writes enables no
+candidate, and one pass ends the saturation.
+
+**The pass only adds.** A fact of $\mathsf{open}$, once written, stays in the knowledge base it was written in, as
+every fact does: within one world the facts only grow, and no rule deletes a fact. **No fork inherits them.** They
+are held in a part of the knowledge base that a fork drops whole, the facts the program writes under
+$\mathsf{open}$ among them, which root alone holds, and a fork's own are those of its own fixpoint
+([firing a rule](01-firing.md#two-layers)). So an $\operatorname{open}(r)$ that a commitment pays is not
+held by the state that pays it, and a rule that read one at root keeps its conclusion in a state that no longer holds
+what it read: the reason a rule that reads $\mathsf{open}$ makes a program not monotone.
 
 ## The agenda: the order rules fire in
 
@@ -302,19 +363,23 @@ answer is claimed under any order ([monotonicity](08-monotonicity.md)).
 ## A node resumes root's saturation
 
 A node's saturation is root's, continued. It starts from root's fixpoint, with what root has fired and what it
-has parked, adds the commitment's facts, and saturates to quiescence; it does not derive root's fixpoint again,
-and every candidate it inherits parked is judged again in its own world before it can be admitted.
+has parked and without root's facts of $\mathsf{open}$, which no fork inherits, adds the commitment's facts, and
+saturates to its own fixpoint, whose facts of $\mathsf{open}$ are its own; it does not derive root's fixpoint again, and every
+candidate it inherits parked is judged again in its own world before it can be admitted.
 
 **Proposition (continuing is saturating afresh).** Let $\mathrm{root}$ be quiescent with fired set $\Xi$ and
-parked set $Q$. The saturation continued from $(\mathrm{root}, \Xi, Q)$ with $C$ added reaches the fixpoint a
-fresh saturation of the set $\mathrm{root} \cup C$ reaches
+parked set $Q$, and $\mathrm{root}^{-} = \mathrm{root} \setminus \operatorname{ext}_{\mathrm{root}}(\mathsf{open})$.
+The saturation continued from $(\mathrm{root}^{-}, \Xi, Q)$ with $C$ added reaches the fixpoint a fresh saturation
+of the set $\mathrm{root}^{-} \cup C$ reaches
 ([Q-M1a.18](../../../decisions/engine/Q-M1a.18-a-node-resumes-roots-saturation.md)).
 
-*Argument.* A fresh saturation of $\mathrm{root} \cup C$ meets three kinds of candidate. One whose match
-lies in $\mathrm{root}$ and is positive was fired at root, is in $\Xi$, and adds nothing a second time. One
-whose match lies in $\mathrm{root}$ and is parked is in $Q$, and the continued saturation judges it again in
-the node's own world. One whose match reads a fact of $C$ or a fact derived from one is new to both, and both
-find it, since the continued saturation starts from the facts the node has and root lacked. $\square$
+*Argument.* A fresh saturation of $\mathrm{root}^{-} \cup C$ meets three kinds of candidate. One whose match
+lies in $\mathrm{root}^{-}$ and is positive was fired at root, is in $\Xi$, and adds nothing a second time. One
+whose match lies in $\mathrm{root}^{-}$ and is parked is in $Q$, and the continued saturation judges it again in
+the node's own world. One whose match reads a fact of $C$, a fact derived from one, or a fact the node's pass
+writes, is new to both, and both find it, since the continued saturation starts from the facts the node has and
+root lacked. Both end with the pass, which reads the knowledge base it is given and nothing of how it was
+reached. $\square$
 
 ![A node resumes root's saturation: two ways to one state](diagrams/02-resume.svg)
 
@@ -423,16 +488,20 @@ and it has three clauses:
    a name in, and every such atom is the program's
    ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)). By induction along a
    saturation, $\operatorname{names}(\operatorname{sat}(K)) \subseteq \operatorname{names}(K) \cup
-   \operatorname{names}(P)$. An atom only a query writes is not a name of the program: adding a query never
-   changes $R$.
-2. **No new relations.** $\operatorname{rels}(\operatorname{st}(C)) \subseteq \operatorname{rels}(P)$, the
-   relations of the program, fixed when it is read: every atom it writes first in a tuple, at any depth, the
-   relation of each of its facts and of each fact inside one, of each pattern of a rule, a premise or a
-   conclusion, and the atom an activator gives a parameter that stands first in a pattern; and the declared ones
+   \operatorname{names}(P)$. The pass brings in none either: what it writes is a relation of the program, an
+   instance of a rule's hypothesis, a fact a guard reads off the knowledge base, or a guess over the program's
+   names. An atom only a query writes is not a name of the program: adding a query never changes $R$.
+2. **No new relations.** $\operatorname{rels}(\operatorname{st}(C)) \subseteq \operatorname{rels}(P) \cup
+   \lbrace \mathsf{open} \rbrace$, with $\operatorname{rels}(P)$ the relations of the program, fixed when it is
+   read: every atom it writes first in a tuple, at any depth, the relation of each of its facts and of each fact
+   inside one, of each pattern of a rule, a premise or a conclusion, and the atom an activator gives a parameter
+   that stands first in a pattern; and the declared ones
    ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)). The
-   words of the rule language and the kernel's markers are none. No fact of any other relation is added
-   while a saturation runs, and nothing adds a rule or a declaration: a conclusion is literals, so along every
-   saturation $P$ and $\operatorname{names}(P)$ are constant and a knowledge base grows by facts alone.
+   words of the rule language and the kernel's markers are none; $\mathsf{open}$, of which the pass writes facts
+   whether or not the program writes it, is the one more relation a state holds facts of. No fact of any other relation is added while a
+   saturation runs, and nothing adds a rule or a declaration: a conclusion is literals, the engine's word, or what
+   an obligation owes, so along every saturation $P$ and $\operatorname{names}(P)$ are constant and a knowledge
+   base grows by facts alone.
 3. **Hypotheses connect names.** $h \in H \implies \operatorname{names}(h) \subseteq \operatorname{names}(P)$: a
    candidate's arguments are atoms of the program or facts built of them. A parameter written in a relation's
    place and bound to a fact, an object that is no relation, names none: the activator that binds it activates

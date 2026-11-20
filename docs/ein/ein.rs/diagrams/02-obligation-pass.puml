@@ -16,5 +16,8 @@ while (next obligation rule, in registry order,\nand next activator of it?) is (
   endwhile (none)
 endwhile (none)
 :one owe event an instance;\nOwes: the instances in report order;
+if (root, a state printed or saved,\nor one whose rules read open?) then (yes)
+  :the pass of open.rs writes (open R), once for each relation owed,\ninto the part of the state no fork inherits;
+endif
 stop
 @enduml

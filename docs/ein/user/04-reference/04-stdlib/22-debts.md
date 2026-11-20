@@ -1,15 +1,17 @@
 # Requirements and payments: `std.debts`
 
 An [obligation](../../03-syntax-and-semantics/08-obligations.md) says what a state still **owes**. What it concludes
-is the verdict `(open R)` ([Q-M1d.2](../../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)),
-which the state that owes holds alone: a debt a state kept would outlive its own payment in the state that paid it,
-so a fork drops it and the engine writes it again at each state's fixpoint
+is `(open R)` ([Q-M1d.2](../../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)),
+a fact of the kernel's relation `open`, one for the relation however many instances the state owes, which the state
+that owes holds alone: a debt a state kept would outlive its own payment in the state that paid it, so a fork drops
+it, and each state that owes holds its own
 ([Q-M1f.566](../../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). A rule
 that reads it makes its program not monotone
 ([Q-M1f.569](../../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)).
 
-`std.debts` states the two halves of a debt that **can** be facts, because each stays true as a state grows, for the
-four obligations of the library, and the one verdict over them that stays true as well:
+`std.debts` states, for the four obligations of the library, the two halves of a debt as facts, one an instance,
+which every larger state keeps because each stays true as the state grows, and the one verdict over them that stays
+true as well:
 
 | fact | what it says |
 |---|---|
@@ -35,7 +37,8 @@ $$
 
 A requirement is never retracted and a payment never withdrawn, so both sets only grow with the state, and where a
 state holds `(debts-discharged)` every larger state holds it. The difference does not grow: it shrinks as payments
-arrive, which is why *owed* is no fact and these three are.
+arrive, which is why what a state owes, `(open R)`, is a fact of that state alone, never inherited,
+and these three are facts every larger state keeps.
 
 ## Using `std.debts`
 
@@ -167,21 +170,35 @@ Root of the program above owes four and is no state of R, so no query reads it. 
 (query :goal (likes ?who ?what))
 ```
 
-`ein solve` says R is empty, every alive node owing, and `ein saturate --dump` lists what root's saturation derived:
+`ein solve` says R is empty, every alive node owing, and `ein saturate --dump` lists what root derived beyond the
+program, its `open` facts among it:
 
 <!-- output -->
 ```text
-;; ── DERIVED (5 facts) ──
+;; ── DERIVED (12 facts) ──
 ;;   debt-due (2)
   (debt-due likes (total-owed-of likes is-a Person Food Ann) :rule std.debts.total-due)
   (debt-due likes (total-owed-of likes is-a Person Food Bob) :rule std.debts.total-due)
   (debt-paid likes (total-owed-of likes is-a Person Food Bob) :rule std.debts.total-paid)
+;;   open (3)
+  (open likes :rule total-owed)
+  (open (likes Ann Soup) :rule total-owed)
+  (open (likes Ann Stew) :rule total-owed)
+;;   std.contradiction.clash-0 (2)
+  (std.contradiction.clash-0 is-a :rule std.contradiction.clash-of-0)
+  (std.contradiction.clash-0 likes :rule std.contradiction.clash-of-0)
+;;   std.contradiction.clash-2 (2)
+  (std.contradiction.clash-2 is-a :rule std.contradiction.clash-of-2)
+  (std.contradiction.clash-2 likes :rule std.contradiction.clash-of-2)
   (std.debts.total-due likes is-a :rule std.debts.debts-of-total)
   (std.debts.total-paid likes is-a :rule std.debts.debts-of-total)
 ```
 
 Two requirements, one payment, and no `(debts-discharged)`. The requirement with no payment is Ann's, the instance
-the kernel owes.
+the kernel owes. The kernel's side of it is `(open likes)`, one fact for the relation, beside the two hypotheses
+the obligation writes for what would pay Ann, and a state that pays her holds none of the three; the module's side
+names the instance, and stays in that state beside the payment that joins it. The rest are activators:
+`std.contradiction`'s, which `std.algebra` imports, for the two declared relations, and the module's pair.
 
 ### What a rule may read of them
 
@@ -266,8 +283,8 @@ on root keeps what root holds. The static check flags the rule, the read-out ope
 flagged program nothing is claimed
 ([the read-out § 5.1](../08-read-out.md#51-under-lattice-and-monotone-the-warning),
 [Q-M1f.564](../../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)). It is the
-reason what a state owes, `(open R)`, is held by that state alone and written again at each state's fixpoint, and
-why a rule that reads it is flagged as this one is.
+reason what a state owes, `(open R)`, is held by that state alone and inherited by no fork, and
+why a rule that reads it flags its program too, by a site of its own, `open-read`.
 
 ### `(debts-discharged)` is about the requirements that are stated
 
@@ -326,7 +343,8 @@ trigger with the witness:
 ```
 
 With the two rules `window-due` and `window-paid` left out, root still owes Ann her chair and **holds
-`(debts-discharged)`**: nothing is stated as required, so nothing stated is unpaid.
+`(debts-discharged)`**: nothing is stated as required, so nothing stated is unpaid. `ein saturate --dump` lists
+root's `(open seats)`, what the kernel says it owes, beside that `(debts-discharged)`.
 
 ### Activating a pair by hand
 

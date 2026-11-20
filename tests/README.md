@@ -125,7 +125,7 @@ these programs give each rule one.
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/negation/`](stdlib/negation/) | `std.negation`, the elimination of a double negation: one program, the seven rules each activated for a relation of its count, every argument a different name; and three relations the rules leave alone, one nobody activates, one activated at counts its facts do not have, one that holds a single negation |
 | [`stdlib/contradiction/`](stdlib/contradiction/) | `std.contradiction`, the contradiction as rules that conclude `(false)` from a fact beside its negation: a firing program for each `clash-N`, one rule a file; all seven loaded, activated and silent over facts and denials that do not meet; the activators `clash-of-N` derives from the declarations, and a relation no declaration names, whose fact beside its negation is alive. See [below](#stdlibcontradiction-the-contradiction-a-program-imports) |
-| [`stdlib/debts/`](stdlib/debts/) | `std.debts`, an obligation's requirements and payments as facts: each obligation's pair activated by hand with no obligation beside it, the requirements and the payments claimed whole; `(debts-discharged)` concluded and, with one arrow less, not; the four rules that activate a pair from an obligation's activator, asked for and not asked for; a state that owes, its two halves under `(owing …)`; and a search, every state of R discharged. See [below](#stdlibdebts-claims-over-a-verdict-that-is-no-fact) |
+| [`stdlib/debts/`](stdlib/debts/) | `std.debts`, an obligation's requirements and payments as facts: each obligation's pair activated by hand with no obligation beside it, the requirements and the payments claimed whole; `(debts-discharged)` concluded and, with one arrow less, not; the four rules that activate a pair from an obligation's activator, asked for and not asked for; a state that owes, its two halves under `(owing …)`; and a search, every state of R discharged. See [below](#stdlibdebts-claims-beside-a-fact-no-claim-lists) |
 | [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | `std.math.decimal-arith`, school arithmetic computed by saturation alone: addition, subtraction and comparison, multiplication, division, and the faults of an operand and a `let`: one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but those that divide by zero and those that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/math/decimal/`](stdlib/math/decimal/) | `std.math.decimal`, the numeral and the check an operation asks of one it takes: a well-formed numeral in every place a file writes one, labelled where an operation takes or makes it; a malformed one in a `let` nobody asks about, in a fact of the program's own and in a rule's conclusion that never fires, each unchecked, and one a rule hands to a request, checked; what stays silent; and a program's own `(named z)`. `std.math.arith`, whose two rules the division-by-zero programs activate, has none of its own; see [below](#stdlibmathdecimal-a-numeral-checked-where-an-operation-takes-it) |
 | [`stdlib/math/num9/`](stdlib/math/num9/) | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules: a program a rule or tight family: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
@@ -138,8 +138,8 @@ these programs give each rule one.
 
 ### The obligation pairs, and the check that is not an `:expect`
 
-Four rules assert the verdict `open` — `total-owed`, `surjective-owed`,
-`slot-owed-room`, `slot-owed-fill`
+Four rules conclude what a state owes, `(open ?R)` — `total-owed`,
+`surjective-owed`, `slot-owed-room`, `slot-owed-fill`
 ([when an obligation is read](../docs/ein/user/03-syntax-and-semantics/08-obligations.md#when-an-obligation-is-read))
 — and eight programs exercise them, one owing and one satisfied per rule. They
 are written the way everything else here is, with one exception that is worth
@@ -230,12 +230,13 @@ no claim can name it: what a claim sees is that the state is dead.
 [`ein-infer/tests/search_semantics.rs`](../ein.rs/crates/ein-infer/tests/search_semantics.rs) holds the record of the
 firing, and that a held `(false)` no rule has run over is no contradiction.
 
-### `stdlib/debts/`: claims over a verdict that is no fact
+### `stdlib/debts/`: claims beside a fact no claim lists
 
 `std.debts` states an obligation's two halves as facts, `(debt-due R J)` and
 `(debt-paid R J)`, and what the obligation owes is their difference. The
-kernel's side of that sentence is a verdict, so the programs here are written
-around what a claim can read.
+kernel's side of that sentence is `(open R)`, a fact of the kernel's relation
+held by the owing state alone, which no claim lists, so the programs here are
+written around what a claim can read.
 
 **The pairs are tested with no obligation beside them.** A query's claim reads
 R, and a root that owes is no state of R. So `01` to `04` activate one
@@ -769,7 +770,8 @@ the answer's fact set is, and the facts an owing state reached are the facts it
 reached. What a fixture cannot state it asserts in-process instead — the owe
 counts in
 [`obligation_reports.rs`](../ein.rs/crates/ein-infer/tests/obligation_reports.rs),
-the rung modes in `obligation_rung.rs`. One form says that a state owes, though
+what writes H and the candidates an obligation writes in `obligation_rung.rs`.
+One form says that a state owes, though
 not how much: `(solve … :expect (region (owing (model …))))` names an owing
 state, which R, the states that are alive *and discharged*, does not hold
 ([solution semantics](../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r)).

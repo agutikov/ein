@@ -115,6 +115,11 @@ record** $\delta$ is one of three kinds:
 | **a rule's firing** | $\operatorname{fired}(\rho, a, \theta, \operatorname{prem}, \operatorname{all}, \operatorname{abs})$ | the rule, the activator it was applied with, its bindings, the positive premises it read, the facts a universal it read ranged over, and the absences that had to hold for it |
 | **a commitment** | $\operatorname{committed}(h)$ | the hypothesis $h \in C$ a node assumed |
 
+A fact of $\mathsf{open}$ that the pass writes off a fixpoint
+([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)) is no firing's, and its record is a
+firing's with no premise: of the rule whose conclusion it is, an obligation or a rule that concludes a hypothesis,
+and of the pass alone where the blind enumerator guessed it. It rests on nothing a core counts.
+
 A fact's identity is its relation and its arguments
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#identity)), so a fact derived twice is one fact; the
 second derivation is recorded beside the first, as an **alternative**. The records of a world are its
@@ -309,6 +314,15 @@ $$
 &\lnot\operatorname{dead}(K) \;\land\; \operatorname{core}(K) \text{ undefined} && \text{no core}
 \end{aligned}
 $$
+
+**What a state owes has no core.** A core explains a death and nothing else. A node that is alive and owes is out of
+$R$ by what it owes: the instances its state owes, $\operatorname{Owed}(\operatorname{st}(C))$, each with the facts
+that would pay it
+([hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)), and
+the state holds $\operatorname{open}(r)$ for each relation it owes. That list is the explanation of a debt, and no
+set of terminals is. A dead node owes too, what its fixpoint owes, and holds it as any state does
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)); its core
+is of its death alone.
 
 **A core names facts.** The absences a derivation rested on, $\operatorname{abs}(\delta)$, are recorded, and a
 core does not count them: an absence is no fact a node could be shown. What reads them is the check of a program

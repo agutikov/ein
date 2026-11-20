@@ -7,7 +7,7 @@
 name wherever a name goes, an argument, an activator's argument, a label, so `(clash-1 not)` and
 `(relation not Claim)` are written and print bare. Where a form's head is read, the grammar gives each its shape:
 `(not X)` is the stored negation of one fact `X`, `(false)` takes no argument, and `(not a)` and `(false k)` are
-refused at the parse. A relation, a rule, a hypothesis rule and an import's alias may be named `false` or `not`; a
+refused at the parse. A relation, a rule and an import's alias may be named `false` or `not`; a
 macro may not, since every `(false)` and every `(not X)` would be its call, `std.core`'s own among them.
 
 The names a declarator may not bind are `eq`, `neq`, `and`, `or`, `absent`, `open`, `relation` and `__closed__`.

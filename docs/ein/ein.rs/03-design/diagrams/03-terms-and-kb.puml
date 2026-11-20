@@ -33,6 +33,7 @@ package "belief: one per branch" {
     n_by_rel : FxHashMap<Symbol, u32>
     classes : EqClasses
     saturated_facts : usize
+    open : Layer
   }
   class Layer {
     facts : Vec<FactId>
@@ -54,6 +55,7 @@ Terms *-- FactStore
 Terms *-- ProvArena
 Kb o-- "0..*" Layer : sealed, shared by Arc
 Kb *-- "1" Layer : top, the only writable one
+Kb *-- "1" Layer : open, the state's open facts,\nwhich no fork inherits
 Kb o-- "1" Program : shared by Arc
 Layer ..> FactStore : FactId
 Layer ..> ProvArena : ProvId

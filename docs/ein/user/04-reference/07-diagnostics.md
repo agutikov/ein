@@ -37,7 +37,7 @@ Under each error come its **notes**, where a ruling says more than the token doe
 ([§ 2.8](#28-_-and-_-are-refused-wherever-they-are-written)), a string as an argument
 ([§ 2.12](#212-a-string-is-natural-language-text-and-an-escape-names-a-character)), a lattice keyword on a query
 ([§ 2.1](#21-a-querys-a-solves-and-a-claims-refusals)), a retired `(config …)` flag ([`06-config.md`](06-config.md)), an
-`open` that is not a rule's verdict ([§ 2.17](#217-where-open-is-written)), and `absent`, `false`
+`open` in a shape the kernel does not read ([§ 2.17](#217-where-open-is-written)), and `absent`, `false`
 or `eq` where an argument goes ([§ 2.22](#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)). Then come at most three
 ranked **repairs**, `repair: Insert `)`` or `repair: Delete `a?x``, and `and n more repairs`. Recovery has a budget
 of 30 000 steps; a report it cuts ends with a line at its last error, *recovery stopped here, at its budget of 30000
@@ -192,12 +192,15 @@ words.
 **A refusal of the loader** is `kb load error: ` and its lines, `; `-joined in the order the loader's passes find
 them. Each line is one finding, then ` — `, then what to write instead
 ([Q-M1f.38](../../../decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)). Each refusal
-of a program below is made at load, before any rule fires, any hypothesis is proposed or any obligation is owed, on
-every command that reads the program — `ein solve` in every mode, `oracle`, `saturate`, `test`, `show`, each
-`render` view and `kb save`, which writes no container — so no command stops part way through a run on a rule's
-shape, and no two commands disagree about whether a program loads. The one exception is a saved file's choice
-that names no node ([§ 2.29](#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)), which reads
-H at root's fixpoint and is made by the commands that read the node. Each exits at the command's load-error exit:
+of a program below is made at load, on every command that reads the program — `ein solve` in every mode, `oracle`,
+`saturate`, `test`, `show`, each `render` view and `kb save`, which writes no container — so no command stops part
+way through a run on a rule's shape, and no two commands disagree about whether a program loads. All but two are
+made before any rule fires, any hypothesis is proposed or any obligation is owed; those two are read on root's
+fixpoint, once root is saturated and before any other node is built: a `(solve …)` list or a closure that disagrees
+with the `open` facts root holds ([§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)),
+refused by every command as the rest are, and a saved file's choice that names no node
+([§ 2.29](#229-a-saved-file-is-its-program-its-modules-and-one-commitment-of-h)), which reads H there and is made by
+the commands that read the node. Each exits at the command's load-error exit:
 **1, and 2 under `ein test`**. A
 view refuses what the loader refuses
 ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)).
@@ -223,7 +226,7 @@ and a region's shapes are the grammar's.
 |---|---|
 | a `(query …)` keyword it does not take | `<file>:<l>:<c>: unexpected `:<k>`: a keyword this form does not take` † |
 | a lattice keyword on a `(query …)`, `:hypothesis-relations`, `:no-hypothesis` or `:no-search` | a parse error at the keyword, its note `:<k> chooses the lattice and belongs on (solve …)` …, ending `— one program, one lattice` † |
-| a `(solve …)` keyword it does not take, `:hrules` among them, which no form takes ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)) | a parse error at the keyword † |
+| a `(solve …)` keyword it does not take, `:hrules` among them, which no form takes ([§ 2.31](#231-a-hypothesis-rule-is-a-rule-there-is-no-hrule-form-and-no-hrules)) | a parse error at the keyword † |
 | more than one `(solve …)` | `kb load error: <n> (solve …) forms — a program states its lattice once` |
 | a top-level `(region …)`, `(merged …)` or `(owing …)` | a parse error at the word † |
 | a `(solve … :expect …)` that is not `(false)` or `(region …)`, or a region item that is not `(model …)`, `(merged …)` or `(owing …)` of their shapes | a parse error at the first token that is not † |
@@ -255,24 +258,25 @@ of a state found that the claim does not list, or for `(solve … :expect (false
 ([Q-M1f.222](../../../decisions/answer/Q-M1f.222-under-ein-test-a-state-found-refutes-a-claim.md)). Under
 `--no-search`, a claim root does not decide moves no exit code ([`05-cli.md`](05-cli.md)).
 
-### 2.2 The verdict's refusals
+### 2.2 What an obligation owes, and its refusals
 
 `open` is the kernel's relation of what a state owes and of its hypotheses
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). An obligation
-rule states the verdict, what a state owes: its whole `:assert` is `(open R)` or `(open ?R)`, `R` a relation's name
-or `?R` a parameter that names one ([`08-obligations.md`](../03-syntax-and-semantics/08-obligations.md),
+is a rule that concludes what a state owes: its whole `:assert` is `(open R)` or `(open ?R)`, `R` a relation's name
+or `?R` a parameter that names one, and a state that owes an instance of `R` holds `(open R)` ([`08-obligations.md`](../03-syntax-and-semantics/08-obligations.md),
 [Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)); a fact, or a
 variable the `:match` binds, under `open` is a hypothesis
 ([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)). Each refusal below
 is a place the engine would otherwise have to guess.
 
-**The shapes are parse errors**, where the grammar gives `open` its one argument
-([§ 2.17](#217-where-open-is-written)): the bare `(open)`, an `(open …)` with two or more arguments, and `open` or
-`absent` directly under it. Each is an unexpected token with the note *open takes one argument …*.
+**The shapes are [§ 2.17](#217-where-open-is-written)'s**: the bare `(open)`, an `(open …)` with two or more
+arguments, and `open` or `absent` directly under it, each refused at the parse where a fact or a conclusion writes
+it and at load where a premise or a goal does.
 
 **These are the loader's**, because the grammar cannot see them, and each line starts with where the `(open …)` is
-written ([Q-M1f.87](../../../decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md)),
-behind `kb load error: `:
+written ([Q-M1f.87](../../../decisions/diagnostics/Q-M1f.87-the-loaders-refusals-of-what-an-obligation-owes.md)),
+behind `kb load error: `; `` `(open ?R)` `` is the form as the rule writes it, `` `(open q)` `` where it names the
+relation:
 
 | input | the line |
 |---|---|
@@ -282,12 +286,17 @@ behind `kb load error: `:
 | the `?R` premise binds no variable of its own | ``… <k> '<r>': `(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge`` |
 | two positive `?R` premises each bind one | ``… <k> '<r>': <m> positive `?R` premises each bind a witness variable — a compound witness has no single slot to branch on`` |
 
-The last row is pinned by `open_compound_witness` in [`examples/broken/load/`](../../../../examples/broken/load/),
-whose line reads `{FILE}:10:12: rule 'bad': 2 positive …`, and the first by `open_mixed_assert` in
-[`examples/broken/`](../../../../examples/broken/). An `(open ?x)` whose `?x` is no parameter and is bound by the
-`:match` concludes a hypothesis, and a name it binds is none. Binding the name is refused at the parse:
-`(relation open …)`, `(macro open …)` and `(rule open …)` declare nothing, `open` being one of the names no
-declarator binds ([`03-reserved-names.md`](03-reserved-names.md)).
+```text
+$ ein solve examples/broken/load/open_mixed_assert.ein     # :assert (and (open ?R) (r ?a b))
+kb load error: examples/broken/load/open_mixed_assert.ein:10:17: rule 'bad': `(open ?R)` stands beside another conclusion — what a state owes is a rule's whole :assert, which the pass reads at the fixpoint and which concludes no fact: write one rule for the obligation and one for the rest
+```
+
+The first row is pinned by `open_mixed_assert` and the last by `open_compound_witness`, both in
+[`examples/broken/load/`](../../../../examples/broken/load/), the last's line reading `{FILE}:10:12: rule 'bad': 2
+positive …`. A hypothesis, `(open F)`, stands in a conjunction like any fact, and is refused beside nothing. An
+`(open ?x)` whose `?x` is no parameter and is bound by the `:match` concludes a hypothesis, and a name it binds is
+none. Binding the name is refused at the parse: `(relation open …)`, `(macro open …)` and `(rule open …)` declare
+nothing, `open` being one of the names no declarator binds ([`03-reserved-names.md`](03-reserved-names.md)).
 
 ### 2.3 `eq` and `absent` at another arity
 
@@ -539,7 +548,7 @@ top-level `(or …)` is one way per disjunct. The line's two spellings say what 
 objects a relation holds of* and *every name of the program*, each written out
 ([Q-M1f.38](../../../decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)). A hypothesis,
 `(open F)`, is read as `F` is, so a variable it writes is held to the same; an obligation's `(open ?R)` names a
-relation, which [§ 2.2](#22-the-verdicts-refusals) checks. The witness is
+relation, which [§ 2.2](#22-what-an-obligation-owes-and-its-refusals) checks. The witness is
 [`examples/ein-bugs/unbound-assert-var.ein`](../../../../examples/ein-bugs/unbound-assert-var.ein).
 
 ### 2.14 `eq` at another arity
@@ -624,21 +633,44 @@ flat at any depth, so `(and (r a) (both a))`, `both` writing `(and (p ?x) (q ?x)
 ### 2.17 Where `open` is written
 
 The kernel reads `open` at the head of a written fact, a premise or a conclusion, and it is a name everywhere else
-([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): an argument, a name
+([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)): an argument, a name
 `eq` compares, a fact's `:rule`, a trace step's rule, a macro's body, which is checked where it is called, and under
 an ordinary relation the head of a fact, `(think Ann (open (p A)))`, which the kernel does not read
 ([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)). A written
 `(open F)` is a hypothesis the program writes, held at root alone, and a written `(open R)`, `R` a relation of the
-program, what root owes, written. Where the kernel reads it, `open` takes one argument, and directly under it
-neither `open` nor `absent` is written, nor `absent` directly under `absent`
-([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)): each is a parse
-error at its place, with a note
-([Q-M1f.88](../../../decisions/diagnostics/Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md)):
+program, a fact root holds in the same way, which adds no debt: a state owes what its obligations count there. Where
+the kernel reads it, `open` takes one argument, and directly under it neither `open` nor `absent` is written, nor
+`absent` directly under `absent`
+([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)). `(absent (open
+P))`, a premise over an `open` fact, is legal, and so are a written `(open P)`, `(not (open P))` and `(open (not
+P))`; a rule that reads an `open` fact loads, and the static check flags its program
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)). A shape
+broken where a fact, a conclusion or a claim writes it is a parse error at its place, with a note
+([Q-M1f.88](../../../decisions/diagnostics/Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md)); where a
+premise or a goal writes it, the grammar takes `open` as a pattern's relation and the loader refuses it, one line
+placed where the form is written:
+
+| the form | where it is written | the error |
+|---|---|---|
+| `(open (open P))` | a fact, a conclusion | a parse error at the inner `open`, with the note *open takes one argument: a relation's name, which a state owes, or a fact a state could hold, which is a hypothesis; directly under it neither open nor absent is written, and no declarator binds it* |
+| | a premise, a goal | ``kb load error: <file>:<l>:<c>: rule '<r>': its :match writes (open (open (p ?x))), and open directly under open is refused — open takes a relation's name or a fact a state could hold, and the kernel reads open there``; a goal's reads `query: its :goal writes …` |
+| `(open (absent P))` | a fact, a conclusion | a parse error at the `absent`, with the note *absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact or conclusion is of it, and directly under open or absent it is refused; under an ordinary relation it is an ordinary name: the stored negation of a fact is (not …)* |
+| | a premise, a goal | ``… its :match writes (open (absent (p ?x))), and absent directly under open is refused — open takes a relation's name or a fact a state could hold, and the kernel reads absent there`` |
+| `(absent (absent P))` | a premise, a goal | a parse error at the inner `absent`, with the same note; written as a fact, at the outer one, which heads no fact ([§ 2.22](#222-an-object-is-an-atom-or-a-fact-a-state-could-hold)) |
+| `(open)` | a fact, a conclusion | a parse error at the `)`, with the note *open takes one argument …* |
+| | a premise, a goal | ``… its :match writes (open), and open takes exactly 1 argument, not 0 — a relation's name, which a state owes, or a fact, which is a hypothesis`` |
+| `(open p q)` | a fact, a conclusion | a parse error at the second argument, *unexpected `q`: a name*, with no note |
+| | a premise, a goal | ``… its :match writes (open p ?x), and open takes exactly 1 argument, not 2 — …`` |
+| `(model (open (q a)))` | a claim | a parse error at the `open`, with the note *open takes one argument …*: a claim lists facts of the program's relations |
+| `(open (open (p ?x)))` | a conclusion a macro's expansion writes | ``… rule '<r>': its :assert writes (open (open (p ?x))), and open directly under open is refused — …``, placed at the macro body's form ([§ 2.16](#216-a-malformed-primitive-a-macros-expansion-writes)) |
 
 ```text
 $ ein solve t.ein               # file is: (relation p T) (p a) (open (open (p a)))
-t.ein:1:28: unexpected `open`
+t.ein:1:29: unexpected `open`
   note: open takes one argument: a relation's name, which a state owes, or a fact a state could hold, which is a hypothesis; directly under it neither open nor absent is written, and no declarator binds it
+  repair: Insert a name
+$ ein solve t.ein               # file is: (rule r () :match (open (open (p ?x))) :assert (q a) :why "r")
+kb load error: t.ein:1:20: rule 'r': its :match writes (open (open (p ?x))), and open directly under open is refused — open takes a relation's name or a fact a state could hold, and the kernel reads open there
 ```
 
 It stays refused where a program would declare it or make it more than the kernel's: as a relation, a rule, a macro
@@ -646,8 +678,10 @@ or an alias, at the parse; and at load, a written `(open x)` with `x` neither a 
 (*`(open x) is written, and x is neither a fact nor a relation of the program — under open a fact is a hypothesis
 and a relation's name is what a state owes`*), an activator that makes an obligation owe `open` (*`(owe open) makes
 obligation 'owe' owe open — open is the kernel's relation, of what a state owes and of its hypotheses, and no
-obligation owes it`*), a name an import lists, which no module provides, and a name a `(solve …)` list names, which
-is no relation of the program. What the loader refuses of the verdict is § 2.2's.
+obligation owes it`*), a name an import lists, which no module provides (*`not provided by the module: open`*), and
+a name a `(solve …)` list names, which is no relation of the program (*`:no-hypothesis names open, and the program
+names no relation open`*). What the loader refuses of an obligation's `(open R)` is § 2.2's, and of a hypothesis of
+a conjunction, `(open (and …))`, § 2.28's.
 
 ### 2.18 An imported module is read as the program is
 
@@ -860,7 +894,7 @@ is concluded, and no state holds the negation of a name
 **A rule that concludes a hypothesis may read `not` in its `:match`**: a stored negation as a premise, `(not (paid ?g))`, under `(absent …)`, and
 through `std.macro`'s `unknown`. It is matched against the state the hypotheses are taken at, and `ein solve` answers
 what `ein oracle` answers
-([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
+([Q-M1f.129](../../../decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md)).
 
 ### 2.24 A macro's call is no fact
 
@@ -951,7 +985,7 @@ fact is of the relation it owes, `(open R)`, or of its hypothesis's, `(open F)`:
 **Read on root's fixpoint, on every command, at load**
 ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)),
 against the `open` facts the pass writes there
-([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)): an
+([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md)): an
 obligation that owes nothing at root writes none, and disagrees with nothing. A derived closure and a derived
 activator exist only there; one only a commitment derives is not seen. The views and `kb save` refuse as `solve`
 does, writing no container.
@@ -970,7 +1004,7 @@ The position is the list's name, the list where it names none (`()` at its keywo
 form; a line about a derived declaration has none. The notes, each `note: FILE:L:C: solve: its :no-hypothesis …`,
 are *names near, which its :hypothesis-relations already leaves out* and *names at, which (__closed__ at), written
 at FILE:L:C, already closes*, printed once a process and moving no exit, answer or stdout
-([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)). The
+([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md)). The
 refusal's fixtures are [`examples/ein-bugs/closed-and-owing.ein`](../../../../examples/ein-bugs/closed-and-owing.ein)
 and [`examples/broken/load/no_hypothesis_beside_open.ein`](../../../../examples/broken/load/no_hypothesis_beside_open.ein).
 
@@ -1020,7 +1054,7 @@ another file writes as a name of its own is not taken. The answer does not depen
 ### 2.28 A hypothesis is one fact
 
 A hypothesis is a fact, each a commitment of its own, so `(open …)` holds one
-([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): `(open (and …))` is refused,
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)): `(open (and …))` is refused,
 at the parse where a program writes it, `and` heading no fact, and at load where a macro's expansion makes it, a
 connective where a value goes (§ 2.16), placed at the `open`. A rule concludes several hypotheses as several
 `(open F)` in its `:assert`'s `(and …)`, each proposed as its own
@@ -1081,6 +1115,32 @@ engine's words, of which there is one
 A misspelt word therefore does not load in silence, and a word of the language is none of the engine's: `:ein false`
 is refused as `:ein dead` is. The two are pinned by `ein_word_unknown` and `ein_beside_assert` in
 [`examples/broken/load/`](../../../../examples/broken/load/).
+
+### 2.31 A hypothesis rule is a rule: there is no `hrule` form and no `:hrules`
+
+A rule that concludes `(open F)` states a hypothesis, and it is activated as every rule is, by a fact of its name the
+program writes, or by none where it has no parameter
+([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md);
+[`02-syntax.md` § Rules](02-syntax.md#rules)). `hrule` is a name, so `(hrule …)` is a fact, and a rule written under
+it is refused at the parse at its first parameter or its `()`, which no fact's argument is; `:hrules` is a keyword
+no form takes, refused at the parse at the keyword, as any such keyword is
+([§ 2.1](#21-a-querys-a-solves-and-a-claims-refusals)):
+
+```text
+$ ein solve t.ein               # file is: (hrule guess (?R ?T) :match (is-a ?x ?T) :assert (open (?R ?x)) :why "guess")
+t.ein:1:15: unexpected `?R`: a variable
+  repair: Insert a name, Delete `?R`, Delete `?T`, Shift `)`, Delete `:match`, Shift `(`, Shift `is-a`, Delete `?x`, Delete `?T`, Shift `)`, Delete `:assert`
+t.ein:1:57: unexpected `?R`: a variable
+  repair: Insert a name, Delete `?R`, Delete `?x`, Shift `)`, Shift `)`, Insert `:source`, Delete `:why`
+  repair: Insert a name, Delete `?R`, Delete `?x`, Shift `)`, Shift `)`, Delete `:why`, Delete `"guess"`
+$ ein solve t.ein               # file is: (solve :hrules (guess))
+t.ein:1:8: unexpected `:hrules`: a keyword this form does not take
+  repair: Insert `:hypothesis-relations`, Delete `:hrules`
+  repair: Insert `:no-hypothesis`, Delete `:hrules`
+```
+
+Written as the rule it is, `(rule guess (?R ?T) :match (is-a ?x ?T) :assert (open (?R ?x)) :why "…")` beside its
+activators `(guess chosen Drink)`, the program loads.
 
 ## See also
 

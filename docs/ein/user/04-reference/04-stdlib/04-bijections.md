@@ -108,7 +108,7 @@ and `ein solve -p`, which prints what a state holds beyond the program:
 
 <!-- output -->
 ```text
-final-state facts (beyond the program as loaded: root's derivations, the commitment and what it derives; 15 facts):
+final-state facts (beyond the program as loaded: root's derivations, the commitment and what it derives; 19 facts):
   (not (wears Ann Green))
   (not (wears Bob Red))
   (std.algebra.functional wears)
@@ -123,17 +123,23 @@ final-state facts (beyond the program as loaded: root's derivations, the commitm
   (std.bijection.functional-negative wears is-a)
   (std.bijection.injective-negative wears is-a)
   (std.bijection.range-elimination wears is-a)
+  (std.contradiction.clash-0 is-a)
+  (std.contradiction.clash-0 wears)
+  (std.contradiction.clash-2 is-a)
+  (std.contradiction.clash-2 wears)
   (wears Bob Green)
 ```
 
 The two negations are the negative completion of `(wears Ann Red)`, and `(wears Bob Green)` is forced by
-elimination. The rest are the activators: `std.algebra`'s four one-argument markers, and the eight the setup
-derives. A name the file does not write is printed by its full name.
+elimination. The rest are the activators: `std.algebra`'s four one-argument markers, the eight the setup derives,
+and the four `std.contradiction` derives from the two declarations, a module `std.bijection` imports. A name the file
+does not write is printed by its full name.
 
 ### Where root owes: the search
 
-With less given, root is alive and owes: the obligations name what is missing, and the search tries the facts that
-pay ([Hypotheses](../../03-syntax-and-semantics/09-hypotheses.md)).
+With less given, root is alive and owes: the obligations, activated at root, name what is missing and write the
+facts that would pay it as hypotheses, and the search tries them
+([Hypotheses](../../03-syntax-and-semantics/09-hypotheses.md)).
 
 ```lisp
 (import std.bijection)
@@ -261,8 +267,10 @@ derived: no rule here is an obligation, so root owes nothing.
 ```
 
 Zed is no agent. [`tests/stdlib/bijection/`](../../../../../tests/stdlib/bijection/) has a program for each rule;
-`06_blind_enumeration.ein` runs with the blind enumerator left on, and holds that no candidate is ever a fact of
-an activator the setup derives.
+`06_blind_enumeration.ein` writes the setup's activators by hand, all but the two obligations', so that no
+obligation is activated and the blind enumerator writes
+([Q-M1f.576](../../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)), and
+holds that no candidate is ever a fact of an activator.
 
 ## Using `std.elim` — elimination with positional markers
 

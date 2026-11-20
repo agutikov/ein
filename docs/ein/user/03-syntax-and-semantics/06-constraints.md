@@ -302,7 +302,7 @@ At any moment a fact `P` is in one of three states, and a pattern can ask about 
 |---|---|---|
 | **asserted** | `P` | `P` |
 | **negated** | `(not P)` | `(not P)` |
-| **open** | neither | `(unknown P)`, which is `(and (absent P) (absent (not P)))` |
+| **unknown** | neither | `(unknown P)`, which is `(and (absent P) (absent (not P)))` |
 
 `(not P)` in a `:match` matches a stored negation: it is not *P is not provable*. That question is
 `(absent P)`, negation as failure, asked of a whole state ([rules](05-rules.md)). `unknown` is a macro of the standard

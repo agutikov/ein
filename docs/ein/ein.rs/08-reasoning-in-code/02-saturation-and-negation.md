@@ -205,14 +205,18 @@ ein saturate examples/ein-bugs/binding-key-both.ein --dump
 ein saturate examples/ein-bugs/binding-key-swapped.ein --dump
 ```
 
-Both print the same derived facts:
+Both print the same derived facts, and beside them root's `open` facts, the blind enumerator's hypotheses, which
+the dump lists with the state:
 
 <!-- output -->
 ```text
-;; ── DERIVED (2 facts) ──
+;; ── DERIVED (4 facts) ──
 ;;   noted (2)
   (noted 1 1 :rule note)
   (noted 2 1 :rule note)
+;;   open (2)
+  (open (holds 2) :rule open)
+  (open (holds Y) :rule open)
 ```
 
 ---
@@ -322,9 +326,14 @@ The reasoning: [monotone and non-monotone programs](../../reasoning/02-kb-evolut
 `monotone::classify` reads root's compiled plans: it closes the candidates' relations under *a saturation plan
 that reads facts of one concludes into the set*, classifies every read by that set and its `absent` depth, and
 reports a site for each dynamic read at non-monotone polarity and for each rule whose name, the relation of its
-activators, is in the set. It
-costs root's saturation and builds no node. A program with no site takes the routes with their licences; a
-flagged one takes the cube ([`07-search.md` § 7](../03-design/07-search.md#7-monotone-and-flagged-programs)).
+activators, is in the set; and three of the hypotheses: a rule that reads `open` (`open-read`), a rule that
+concludes `(open F)` and reads a relation of the set at even depth (`hypothesis`), and an obligation whose guard
+reads one beside its witness (`obligation-guard`). It costs root's saturation and builds no node. A program with no
+site takes the routes with their licences; a flagged one takes the cube
+([`07-search.md` § 7](../03-design/07-search.md#7-monotone-and-flagged-programs)). A run that builds a state
+holding a hypothesis root does not, where the pass that writes `open` facts runs, finds the program not monotone in
+flight (`open::Writers::first_above`), says so at once, once, and answers
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 The detector's dynamic half reads what the run computes anyway: each node's derivation records for a guard the
 node's fixpoint now falsifies (a stale fact), and for each printed state of two commitments or more up to
@@ -340,13 +349,16 @@ The reasoning page states each cause by the shape of a program; these are the co
 | c2, an `absent` that refutes | [`examples/ein-bugs/naf-upward-closure.ein`](../../../../examples/ein-bugs/naf-upward-closure.ein)'s `bad` |
 | c3, a refutation through a fact derived under an `absent` | [`examples/ein-bugs/wrong-answers/stale-naf-fork.ein`](../../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein)'s `p-and-q-clash` |
 | c4, an `absent` that takes a witness away | [`examples/lattice/08_absent_witness_hole.ein`](../../../../examples/lattice/08_absent_witness_hole.ein) |
-| c5, an obligation's trigger | [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables.ein`](../../../../examples/lattice/06_friends_tables.ein) with its monotone twin [`06_friends_tables_everyone_sits.ein`](../../../../examples/lattice/06_friends_tables_everyone_sits.ein) |
+| c5, an obligation's trigger | [`06_friends_tables.ein`](../../../../examples/lattice/06_friends_tables.ein), its only site, with its monotone twin [`06_friends_tables_everyone_sits.ein`](../../../../examples/lattice/06_friends_tables_everyone_sits.ein); [`examples/lattice/04_obligation_trigger_hole.ein`](../../../../examples/lattice/04_obligation_trigger_hole.ein), the trigger beside c14's and c15's sites |
 | c6, an activator that applies an obligation | [`examples/lattice/09_activator_hole.ein`](../../../../examples/lattice/09_activator_hole.ein) |
 | c7, c11, an activator that hides the `absent` | no corpus program: the two written in [`ein-infer/examples/shared/written.rs`](../../../../ein.rs/crates/ein-infer/examples/shared/written.rs), `ACTIVATOR_REFUTES` and `ACTIVATOR_UNDER_ABSENT`, which `ein-infer/tests/non_monotone_loads.rs` loads |
 | c8, an even cycle through an `absent` | `07_unstratifiable.ein` and [`examples/ein-bugs/wrong-answers/f07-rules-swapped.ein`](../../../../examples/ein-bugs/wrong-answers/f07-rules-swapped.ein), the same program with its two rules in the other order |
 | c9, an odd cycle through an `absent` | [`examples/ein-bugs/d3-unsat-core.ein`](../../../../examples/ein-bugs/d3-unsat-core.ein) |
 | c10, the FIFO gap | [`examples/lattice/10_fifo_gap.ein`](../../../../examples/lattice/10_fifo_gap.ein) |
 | c12, a FIFO race over a static read | [`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) |
+| c13, a rule that reads what a state owes or supposes | [`examples/features/23_a_rule_reads_open.ein`](../../../../examples/features/23_a_rule_reads_open.ein)'s `noted`, an `open-read` site |
+| c14, a hypothesis a commitment can bring | `04_obligation_trigger_hole.ein`'s `seat` and `dine`, `hypothesis` sites; found in flight too, on the program `ein-infer/tests/open_facts.rs` writes in `a_hypothesis_first_held_above_root_is_found` |
+| c15, a domain a commitment can grow | [`examples/ein-bugs/wrong-answers/oblig-derived-domain.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain.ein)'s `owes-food`, an `obligation-guard` site, and its siblings; `04_obligation_trigger_hole.ein`'s `total-owed` |
 | a chain of activators that first appears at a node | [`examples/ein-bugs/wrong-answers/activator-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/activator-chain-1.ein) and its siblings |
 | what is no site | [`examples/zebra2.ein`](../../../../examples/zebra2.ein)'s spatial reads; `total-owed`'s witness in [`examples/lattice/05_owed_seats_bounded.ein`](../../../../examples/lattice/05_owed_seats_bounded.ein); a stored negation of a fact of a relation that has candidates in [`examples/ein-bugs/complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) |
 | the one-fact test misreads the lines | [`examples/lattice/synth/local_not_global.ein`](../../../../examples/lattice/synth/local_not_global.ein) |
@@ -365,7 +377,8 @@ The reasoning page states each cause by the shape of a program; these are the co
 | a *monotone* verdict is one state per node by fork and by every split from a fixpoint that holds root's, with no stale fact; from scratch it departs on `11_fifo_gap_static`'s `{b}` alone | `ein-infer/tests/detector.rs`: `a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`, `a_monotone_verdict_is_one_state_per_node_on_random_programs` |
 | zebra2's `absent`s read facts of static relations, those no commitment can add a fact of, so the check calls it monotone | `ein-infer/tests/region.rs`: `zebra2_is_monotone_by_construction` |
 | an obligation's witness `absent` is no site | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
-| one witness per cause, each its program's only site; an activator hides the refutation's `absent` from root's rules | `ein-infer/tests/region.rs`: `each_cause_has_a_fixture_whose_only_site_is_of_its_kind` |
+| a fixture per cause, each its program's only site: an `absent` that takes a witness away, an obligation's trigger and an activator; `04_obligation_trigger_hole.ein` holds the trigger beside a `hypothesis` and an `obligation-guard` site; an activator hides the refutation's `absent` from root's rules | `ein-infer/tests/region.rs`: `each_cause_has_a_fixture_whose_only_site_is_of_its_kind` |
+| a rule that reads `open` is flagged, and a hypothesis first held above root is found by the static check and in flight | `ein-infer/tests/open_facts.rs`: `a_rule_that_reads_open_is_flagged`, `a_hypothesis_first_held_above_root_is_found` |
 | without holes the minimal and maximal lines are E's and N's | `ein-infer/tests/region.rs`: `the_duality_holds_without_holes` |
 | on a monotone cube saturation is a closure operator | `ein-infer/tests/region.rs`: `a_monotone_verdict_makes_saturation_a_closure_operator` |
 | what an alive state denies is dead above it on every monotone cube, and a flagged program spends no denial | `ein-infer/tests/known_dead.rs`: `what_an_alive_node_denies_is_dead_above_it_on_every_monotone_cube`, `a_flagged_program_spends_no_denial` |
@@ -516,7 +529,7 @@ ein solve FILE                      # a dead root: the rows `unsat core`, `sourc
 ein solve FILE --trace OUT.md       # N, each minimal dead set with its core and what refutes it
 ein solve FILE --dump-answer DIR    # the members of N with their cores, as files
 ein solve FILE --dump-lattice DIR   # every node the run visited, a dead one with its core
-ein saturate FILE --dump            # root's facts by origin: BACKGROUND, GIVEN, DERIVED
+ein saturate FILE --dump            # root's facts by origin: BACKGROUND, GIVEN, DERIVED, its open facts among them
 ein render kb --colour-by origin FILE   # the same, drawn: given black, derived blue and dashed
 ```
 
@@ -534,7 +547,7 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 
 | notion | code |
 |---|---|
-| what a state owes | [`ein-infer/src/obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): `tally`, one pass over a quiescent knowledge base, its result `Owes`, which [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once for each relation owed, into the part of the state no fork inherits |
+| what a state owes | [`ein-infer/src/obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): `tally`, one pass over a quiescent knowledge base, its result `Owes`, read at every state, which [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once for each relation owed, into the part of the state no fork inherits, where its pass runs: at root, and at a state above root that is printed or saved or that uses its `open` facts |
 | a claim and its outcome | [`ein-infer/src/claim.rs`](../../../../ein.rs/crates/ein-infer/src/claim.rs) compares, [`expect.rs`](../../../../ein.rs/crates/ein-infer/src/expect.rs) is the outcome and its report, [`ein-cli/src/test.rs`](../../../../ein.rs/crates/ein-cli/src/test.rs) the runner and its exit codes |
 | a goal's rows over a state | [`ein-infer/src/verdict.rs`](../../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | the branch on an owed instance | [`ein-infer/src/tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs), the obligation tree, under the licences of [`07-search.md` § 3](../03-design/07-search.md#3-the-licences) |
@@ -544,7 +557,8 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 ### 6.2 The algorithm
 
 An obligation rule is compiled like any other and kept out of the agenda. After a node's fixpoint the pass runs
-each obligation plan once and counts its matches; the event is `owe`
+each obligation plan once and counts its matches, and where the pass of `open.rs` runs it writes `(open R)` once for
+each relation owed; the event is `owe`
 ([`06-saturation.md` § 6.2](../03-design/06-saturation.md#62-obligations); the pass as a flow is
 [`02-algorithms.md` § 10](../02-algorithms.md#10-the-obligation-pass)).
 

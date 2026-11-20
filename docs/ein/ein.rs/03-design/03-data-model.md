@@ -198,6 +198,7 @@ pub struct Kb {
     n_by_rel: FxHashMap<Symbol, u32>,                   // § 7
     classes: EqClasses,                                 // § 10
     saturated_facts: usize,                             // the clean mark
+    open: Layer,                                        // the state's open facts, which no fork inherits, § 5.1
 }
 ```
 
@@ -215,6 +216,14 @@ provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3).
   compares the two and `Kb::mark_saturated` sets it. A count serves because a KB's fact list only grows.
   `Kb::facts_from(n)` reads the facts from insertion ordinal `n` on, skipping whole layers below it, so a per-fork
   check costs the fork's own writes.
+- **The state's `open` facts are a layer of their own**, `open`: what the state owes, `(open R)`, and its
+  hypotheses, `(open F)`
+  ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)).
+  `Kb::write_open` writes them: the pass of `ein_infer::open` at root's fixpoint and at a state above root that is
+  printed or saved or that reads them, and the loader the ones the program writes, at root. A read walks the layer
+  after the stack, so a state holds, lists and counts them with its facts ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md));
+  `Kb::open_facts` reads it alone. `Kb::materialise` concatenates the stack and `n_by_rel` counts it, the layer
+  aside, and `Kb::n_facts_of` adds the layer's own count (§ 7).
 
 Two write paths exist. `Kb::add_fact` is the loader's: append if new, no indexing, first occurrence keeps its
 provenance, and one `Kb::rebuild_indexes` at the end. `Kb::add_and_index_fact` is saturation's: a fact already
@@ -234,7 +243,8 @@ asserts the top is empty, in every build, and builds the child:
 | `top` | a fresh empty layer |
 | `n_by_rel` | copied: one `u32` per relation with facts |
 | `classes` | copied (§ 10) |
-| `saturated_facts` | inherited, so a branch of a saturated root starts clean |
+| `saturated_facts` | inherited less the parent's `open` facts, so a branch of a saturated root starts clean |
+| `open` | a fresh empty layer: a fork drops every `open` fact, a written one among them, and the pass writes the child's at the child's own fixpoint, where it runs there |
 
 A fork in the two steps it is made of. Before it, root's writes since the last seal are in its `top`. `seal_top`
 moves that layer behind an `Arc`; `branch` then copies the vector of `Arc`s. Afterwards the two KBs share every
@@ -250,8 +260,12 @@ node then branches through `&`.
 Because sealing is the half that mutates, a layer of the search seals once and then branches from many threads
 through `&` ([`07-search.md`](07-search.md), [`08-parallelism.md`](08-parallelism.md)). After a fork the parent's later appends
 land in a new top its child never sees (`kb.rs`: `a_fork_reads_base_then_delta_and_the_two_histories_diverge`).
-`Kb::snapshot` is a fork. The registries cannot change once a fork shares them: `Kb::program_mut` panics on a shared
-`Arc` (`the_registries_cannot_be_edited_once_a_branch_exists`).
+`Kb::snapshot` is a fork that keeps the state's `open` facts, an archive of the state as it stands. The registries
+cannot change once a fork shares them: `Kb::program_mut` panics on a shared `Arc`
+(`the_registries_cannot_be_edited_once_a_branch_exists`). That a fork drops every `open` fact, a written one among
+them, is held by
+[`ein-infer/tests/open_facts.rs`](../../../../ein.rs/crates/ein-infer/tests/open_facts.rs)'s
+`a_fork_drops_every_open_fact_a_written_one_among_them`.
 
 **A fork costs the same at any KB size.** Its allocations and bytes do not grow with the facts below it, only with
 the depth of the stack it clones, held with a counting allocator by
@@ -547,7 +561,8 @@ merged, and `eq` is identity of names.
 ## 11. What the store does not do
 
 - **Delete a fact.** The store and every KB are append-only; the layering argument (§ 5.2), the clean mark and the
-  extent counts rest on it. Retraction is a fork that is dropped.
+  extent counts rest on it. Retraction is a fork that is dropped, and the `open` layer is dropped whole at the fork
+  (§ 5.1), never a fact of it.
 - **Share arguments across facts.** A fact's arguments are its own; two facts with equal arguments do not share
   storage beyond the arena.
 - **Hash-cons provenance.** Two firings make two records; the AND-node dedup is `Kb::record_justification`'s.

@@ -283,7 +283,8 @@ a program to answer about.
   said to be stopped, with what was not read, in the document, in the read-out and as a `note:` on stderr; `--jobs`
   moves no byte.
 - **The hypothesis set, listed** — `ein show hyps`, which takes no option of its own. **Does it change the answer:
-  no.** It saturates root, runs the generator at root's fixpoint and prints the candidates, one fact a line; it
+  no.** It saturates root, reads H off the `open` facts root's fixpoint holds and prints the candidates, one fact a
+  line; it
   reads no node, and no option, `(config …)` flag or environment name moves what it lists. Its lines are the
   candidates `ein solve -H` lists and the document of `ein render h-space` lists.
 - **The check** — `-y`, § [3.2](#32-the-option-that-shadows-a-flag): its own row, and on a monotone program a

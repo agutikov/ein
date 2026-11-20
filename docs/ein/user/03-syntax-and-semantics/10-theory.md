@@ -228,18 +228,19 @@ term, and not by the theories that compute with it
 ## What a theory owes
 
 Besides what holds and what cannot, a theory can say what a state still **owes**: a rule whose whole conclusion is
-`(open ?R)` reports that `?R`'s held extent is incomplete where its pattern matches, and derives nothing. `std.algebra`'s
-`total-owed` is the dual of the check `total`: where `total` refutes a state in which every partner of an `a` is
-excluded, `total-owed` reports an `a` that has no partner yet. A state that owes nothing is **discharged**, and the
+`(open ?R)`, an obligation, says that `?R`'s held extent is incomplete where its pattern matches, and a state where
+it matches holds `(open R)`, once for the relation, and nothing else from it. `std.algebra`'s `total-owed` is the
+dual of the check `total`: where `total` refutes a state in which every partner of an `a` is excluded, `total-owed`
+makes a state owe for an `a` that has no partner yet. A state that owes nothing is **discharged**, and the
 answer is the alive and discharged states. [Obligations](08-obligations.md) has the form and what reads it.
 
 ## The closing rule: what a theory never guesses
 
-The engine proposes as hypotheses facts of the relations a program does not close, and the facts of a computed
-relation are not to be guessed: guessing a sum would be wrong, not just slow. So each module of the calculator ends
-in a **closing rule**, its entry, with an empty `:match`: it fires once in every program that imports the module,
-concludes `(__closed__ R)` for every relation of the module and every table it reads, so that no fact of one is
-ever proposed as a hypothesis, and names every rule of the
+Where root holds no `open` fact and no obligation is activated, the engine guesses facts of the relations a program
+does not close, and the facts of a computed relation are not to be guessed: guessing a sum would be wrong, not just
+slow. So each module of the calculator ends in a **closing rule**, its entry, with an empty `:match`: it fires once
+in every program that imports the module, concludes `(__closed__ R)` for every relation of the module and every
+table it reads, so that no fact of one is ever proposed as a hypothesis, and names every rule of the
 module ([Q-M1f.240](../../../decisions/imports/Q-M1f.240-a-module-keeps-its-entry-rule-which-a-program.md),
 [Q-M1f.365](../../../decisions/stdlib/math/Q-M1f.365-the-calculator-closes-the-held-extents.md)). A program that
 imports the calculator and states requests therefore has nothing to search: one saturation decides it. A relation the
@@ -335,4 +336,5 @@ answer as a whole is stated beside the theory, as a query's `:expect`, and check
 - [Properties and operators](07-properties-and-operators.md): `std.algebra`, a theory of relations.
 - [Macros and imports](11-macros.md): how a theory is brought into a program, and its names.
 - [The stdlib reference](../04-reference/04-stdlib/README.md): every theory the standard library ships.
-- [Hypotheses](09-hypotheses.md): what the engine guesses where a theory does not close a relation.
+- [Hypotheses](09-hypotheses.md): `(open F)`, what a state may suppose, and what the engine guesses where nothing
+  writes one and a theory does not close a relation.

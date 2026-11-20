@@ -4,8 +4,10 @@ digraph two_phases {
   K [label="K"];
   q0 [label="K′₀ = pos(K)\nquiescent"];
   q1 [label="K′₁ = pos(K′₀ ∪ Aκ₀)\nquiescent"];
-  qm [label="K′ₘ = sat(K)\nquiescent, nothing passes", penwidth=2];
+  qm [label="K′ₘ\nquiescent, nothing passes"];
+  sat [label="sat(K) = K′ₘ ∪ opens(K′ₘ)\nwhere no rule reads open", penwidth=2];
   K -> q0 [label="closure:\nevery positive candidate"];
   q0 -> q1 [label="boundary admits κ₀,\nthen closure", style=dashed];
   q1 -> qm [label="… one admission a round …", style=dashed];
+  qm -> sat [label="the pass writes what\nis owed and supposed", style=dotted];
 }

@@ -4,8 +4,8 @@ A program answers alike under each of the three import forms: with its imports s
 `(import M)`, every short name it writes written in full; and aliased, `(import M :as a)`, every such name written
 `a.name`. R, its two counts, root's verdict and debts, whether the run exhausted, every query's classes and every
 claim's outcome are the same once module prefixes and aliases are taken off. A program one form refuses, the others
-refuse. What an import loads chooses no rung of hypothesis generation: a module imported for one rule takes the
-rung of that rule written out.
+refuse. What an import loads chooses no writer of H: a module imported for one rule has the writer and the H of
+that rule written out, since an obligation it brings that nothing activates writes nothing.
 
 **Why.** An import form says only which spelling a file writes
 ([Q-M1f.247](Q-M1f.247-every-import-brings-its-module-whole.md)). Two programs that differ only in it are one

@@ -60,10 +60,17 @@ ein saturate kinds.ein --dump     # the derived facts, each with the rule that d
 ein render kb --fold kinds.ein    # the drawing on the page, each fact of three arrows folded
 ```
 
+The dump's `DERIVED` section holds more than the two rules derive: what the imported module's own rules derive, and
+root's `open` facts, the blind enumerator's hypotheses, as part of the state
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). The facts the
+page derives are the two rules':
+
+```sh
+ein saturate kinds.ein --dump | grep -E ':rule (includes|transitive)\)'
+```
+
 <!-- output -->
 ```text
-;; ── DERIVED (10 facts) ──
-;;   is-a* (10)
   (is-a* Object T :rule includes)
   (is-a* Relation Object :rule includes)
   (is-a* Fact Object :rule includes)

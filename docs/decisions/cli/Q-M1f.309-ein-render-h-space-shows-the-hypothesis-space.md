@@ -3,8 +3,9 @@
 The structure of a program's hypothesis set H, its candidates and which of them exclude each other, the groups, the
 owed groups and grids, and what couples the questions, is shown by a view of `ein render`: `ein render h-space FILE`
 prints a read-out, or with `--view` a graph as DOT or the document `h-space.json`, and `--dump DIR` writes them all.
-`ein show hyps FILE` lists H itself as Ein facts, one candidate a line, uncut, and nothing else on stdout, at the cost
-of root's saturation and the generator's pass. `ein solve` computes none of it and prints no row of it.
+`ein show hyps FILE` lists H itself as Ein facts, one candidate a line, uncut, and nothing else on stdout, with a
+`note:` on stderr that names the writer that built H and counts it, at the cost of root's saturation and the pass
+that writes root's `open` facts. `ein solve` computes none of it and prints no row of it.
 
 **Why.** The structure costs more than most answers: reading it saturates the node of every candidate and of every
 pair of them, thousands of saturations on a program whose search is tens. As a view of its own it is paid for only by

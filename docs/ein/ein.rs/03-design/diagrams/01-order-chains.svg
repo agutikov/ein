@@ -2,256 +2,263 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: orders Pages: 1 -->
-<svg width="1676pt" height="301pt"
- viewBox="0.00 0.00 1676.00 301.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 297)">
+<svg width="1789pt" height="302pt"
+ viewBox="0.00 0.00 1789.00 302.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 298)">
 <title>orders</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-297 1671.75,-297 1671.75,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-298 1785,-298 1785,4 -4,4"/>
 <!-- written -->
 <g id="node1" class="node">
 <title>written</title>
-<path fill="none" stroke="black" d="M180.25,-207.69C180.25,-210.1 139.85,-212.06 90.12,-212.06 40.4,-212.06 0,-210.1 0,-207.69 0,-207.69 0,-168.31 0,-168.31 0,-165.9 40.4,-163.94 90.12,-163.94 139.85,-163.94 180.25,-165.9 180.25,-168.31 180.25,-168.31 180.25,-207.69 180.25,-207.69"/>
-<path fill="none" stroke="black" d="M180.25,-207.69C180.25,-205.27 139.85,-203.31 90.12,-203.31 40.4,-203.31 0,-205.27 0,-207.69"/>
-<text xml:space="preserve" text-anchor="middle" x="90.12" y="-191.05" font-family="Helvetica,sans-Serif" font-size="11.00">the order forms are written in</text>
-<text xml:space="preserve" text-anchor="middle" x="90.12" y="-177.55" font-family="Helvetica,sans-Serif" font-size="11.00">(the registries, a file&#39;s facts)</text>
+<path fill="none" stroke="black" d="M180.25,-259.69C180.25,-262.1 139.85,-264.06 90.12,-264.06 40.4,-264.06 0,-262.1 0,-259.69 0,-259.69 0,-220.31 0,-220.31 0,-217.9 40.4,-215.94 90.12,-215.94 139.85,-215.94 180.25,-217.9 180.25,-220.31 180.25,-220.31 180.25,-259.69 180.25,-259.69"/>
+<path fill="none" stroke="black" d="M180.25,-259.69C180.25,-257.27 139.85,-255.31 90.12,-255.31 40.4,-255.31 0,-257.27 0,-259.69"/>
+<text xml:space="preserve" text-anchor="middle" x="90.12" y="-243.05" font-family="Helvetica,sans-Serif" font-size="11.00">the order forms are written in</text>
+<text xml:space="preserve" text-anchor="middle" x="90.12" y="-229.55" font-family="Helvetica,sans-Serif" font-size="11.00">(the registries, a file&#39;s facts)</text>
 </g>
 <!-- extent -->
 <g id="node4" class="node">
 <title>extent</title>
-<polygon fill="none" stroke="black" points="345.38,-206 224.38,-206 224.38,-170 345.38,-170 345.38,-206"/>
-<text xml:space="preserve" text-anchor="middle" x="284.88" y="-191.05" font-family="Helvetica,sans-Serif" font-size="11.00">a relation&#39;s extent,</text>
-<text xml:space="preserve" text-anchor="middle" x="284.88" y="-177.55" font-family="Helvetica,sans-Serif" font-size="11.00">append order</text>
+<polygon fill="none" stroke="black" points="338.25,-258 217.25,-258 217.25,-222 338.25,-222 338.25,-258"/>
+<text xml:space="preserve" text-anchor="middle" x="277.75" y="-243.05" font-family="Helvetica,sans-Serif" font-size="11.00">a relation&#39;s extent,</text>
+<text xml:space="preserve" text-anchor="middle" x="277.75" y="-229.55" font-family="Helvetica,sans-Serif" font-size="11.00">append order</text>
 </g>
 <!-- written&#45;&gt;extent -->
 <g id="edge1" class="edge">
 <title>written&#45;&gt;extent</title>
-<path fill="none" stroke="black" d="M180.73,-188C191.37,-188 202.13,-188 212.47,-188"/>
-<polygon fill="black" stroke="black" points="212.43,-191.5 222.43,-188 212.43,-184.5 212.43,-191.5"/>
+<path fill="none" stroke="black" d="M180.68,-240C188.99,-240 197.35,-240 205.47,-240"/>
+<polygon fill="black" stroke="black" points="205.25,-243.5 215.25,-240 205.25,-236.5 205.25,-243.5"/>
 </g>
 <!-- plans -->
 <g id="node5" class="node">
 <title>plans</title>
-<polygon fill="none" stroke="black" points="1504.12,-273 1373.38,-273 1373.38,-237 1504.12,-237 1504.12,-273"/>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-258.05" font-family="Helvetica,sans-Serif" font-size="11.00">the engine&#39;s plan list</text>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-244.55" font-family="Helvetica,sans-Serif" font-size="11.00">rules x activators</text>
+<polygon fill="none" stroke="black" points="1617.38,-250 1486.62,-250 1486.62,-214 1617.38,-214 1617.38,-250"/>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-235.05" font-family="Helvetica,sans-Serif" font-size="11.00">the engine&#39;s plan list</text>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-221.55" font-family="Helvetica,sans-Serif" font-size="11.00">rules x activators</text>
 </g>
 <!-- written&#45;&gt;plans -->
 <g id="edge2" class="edge">
 <title>written&#45;&gt;plans</title>
-<path fill="none" stroke="black" d="M116.18,-212.35C150.85,-243.37 216.81,-293 283.88,-293 283.88,-293 283.88,-293 1115.88,-293 1200.58,-293 1296.97,-279.86 1362.01,-269.03"/>
-<polygon fill="black" stroke="black" points="1362.21,-272.55 1371.48,-267.43 1361.04,-265.65 1362.21,-272.55"/>
+<path fill="none" stroke="black" d="M144.76,-264.31C181.21,-278.65 230.94,-294 276.75,-294 276.75,-294 276.75,-294 1190.88,-294 1290.29,-294 1402.94,-270.77 1475.36,-252.75"/>
+<polygon fill="black" stroke="black" points="1475.88,-256.23 1484.72,-250.39 1474.17,-249.44 1475.88,-256.23"/>
 </g>
 <!-- gen -->
 <g id="node10" class="node">
 <title>gen</title>
-<polygon fill="none" stroke="black" points="352.5,-123 217.25,-123 217.25,-87 352.5,-87 352.5,-123"/>
-<text xml:space="preserve" text-anchor="middle" x="284.88" y="-108.05" font-family="Helvetica,sans-Serif" font-size="11.00">the generator&#39;s list</text>
-<text xml:space="preserve" text-anchor="middle" x="284.88" y="-94.55" font-family="Helvetica,sans-Serif" font-size="11.00">objects by name rank</text>
+<polygon fill="none" stroke="black" points="906.75,-136.25 683,-136.25 683,-87.75 906.75,-87.75 906.75,-136.25"/>
+<text xml:space="preserve" text-anchor="middle" x="794.88" y="-121.8" font-family="Helvetica,sans-Serif" font-size="11.00">the writers&#39; list</text>
+<text xml:space="preserve" text-anchor="middle" x="794.88" y="-108.3" font-family="Helvetica,sans-Serif" font-size="11.00">the rules&#39; matches, the written order,</text>
+<text xml:space="preserve" text-anchor="middle" x="794.88" y="-94.8" font-family="Helvetica,sans-Serif" font-size="11.00">objects by name rank</text>
 </g>
 <!-- written&#45;&gt;gen -->
 <g id="edge13" class="edge">
 <title>written&#45;&gt;gen</title>
-<path fill="none" stroke="black" d="M147.14,-163.88C173.41,-152.57 204.58,-139.14 230.52,-127.98"/>
-<polygon fill="black" stroke="black" points="231.72,-131.27 239.52,-124.1 228.95,-124.84 231.72,-131.27"/>
+<path fill="none" stroke="black" d="M176.78,-217.31C232.94,-202.98 308.12,-184.82 375.25,-172 474.36,-153.08 587.71,-137.18 671.44,-126.51"/>
+<polygon fill="black" stroke="black" points="671.81,-129.99 681.29,-125.27 670.93,-123.05 671.81,-129.99"/>
 </g>
 <!-- names -->
 <g id="node2" class="node">
 <title>names</title>
-<path fill="none" stroke="black" d="M155.12,-78.69C155.12,-81.1 125.99,-83.06 90.12,-83.06 54.26,-83.06 25.12,-81.1 25.12,-78.69 25.12,-78.69 25.12,-39.31 25.12,-39.31 25.12,-36.9 54.26,-34.94 90.12,-34.94 125.99,-34.94 155.12,-36.9 155.12,-39.31 155.12,-39.31 155.12,-78.69 155.12,-78.69"/>
-<path fill="none" stroke="black" d="M155.12,-78.69C155.12,-76.27 125.99,-74.31 90.12,-74.31 54.26,-74.31 25.12,-76.27 25.12,-78.69"/>
-<text xml:space="preserve" text-anchor="middle" x="90.12" y="-62.05" font-family="Helvetica,sans-Serif" font-size="11.00">the text of names</text>
-<text xml:space="preserve" text-anchor="middle" x="90.12" y="-48.55" font-family="Helvetica,sans-Serif" font-size="11.00">(Interner::rank, repr)</text>
+<path fill="none" stroke="black" d="M528.12,-79.69C528.12,-82.1 498.99,-84.06 463.12,-84.06 427.26,-84.06 398.12,-82.1 398.12,-79.69 398.12,-79.69 398.12,-40.31 398.12,-40.31 398.12,-37.9 427.26,-35.94 463.12,-35.94 498.99,-35.94 528.12,-37.9 528.12,-40.31 528.12,-40.31 528.12,-79.69 528.12,-79.69"/>
+<path fill="none" stroke="black" d="M528.12,-79.69C528.12,-77.27 498.99,-75.31 463.12,-75.31 427.26,-75.31 398.12,-77.27 398.12,-79.69"/>
+<text xml:space="preserve" text-anchor="middle" x="463.12" y="-63.05" font-family="Helvetica,sans-Serif" font-size="11.00">the text of names</text>
+<text xml:space="preserve" text-anchor="middle" x="463.12" y="-49.55" font-family="Helvetica,sans-Serif" font-size="11.00">(Interner::rank, repr)</text>
 </g>
 <!-- names&#45;&gt;gen -->
 <g id="edge12" class="edge">
 <title>names&#45;&gt;gen</title>
-<path fill="none" stroke="black" d="M155.58,-74.38C171.74,-78.24 189.25,-82.42 205.98,-86.41"/>
-<polygon fill="black" stroke="black" points="204.84,-89.74 215.37,-88.65 206.46,-82.93 204.84,-89.74"/>
+<path fill="none" stroke="black" d="M528.49,-70.15C569.09,-76.55 622.84,-85.03 671.35,-92.68"/>
+<polygon fill="black" stroke="black" points="670.66,-96.11 681.08,-94.21 671.75,-89.2 670.66,-96.11"/>
 </g>
 <!-- H -->
 <g id="node11" class="node">
 <title>H</title>
-<polygon fill="none" stroke="black" points="734.75,-81 536.5,-81 536.5,-45 734.75,-45 734.75,-81"/>
-<text xml:space="preserve" text-anchor="middle" x="635.62" y="-66.05" font-family="Helvetica,sans-Serif" font-size="11.00">H, sorted by order_key:</text>
-<text xml:space="preserve" text-anchor="middle" x="635.62" y="-52.55" font-family="Helvetica,sans-Serif" font-size="11.00">the bit order of every node mask</text>
+<polygon fill="none" stroke="black" points="1289,-80 1090.75,-80 1090.75,-44 1289,-44 1289,-80"/>
+<text xml:space="preserve" text-anchor="middle" x="1189.88" y="-65.05" font-family="Helvetica,sans-Serif" font-size="11.00">H, sorted by order_key:</text>
+<text xml:space="preserve" text-anchor="middle" x="1189.88" y="-51.55" font-family="Helvetica,sans-Serif" font-size="11.00">the bit order of every node mask</text>
 </g>
 <!-- names&#45;&gt;H -->
-<g id="edge15" class="edge">
+<g id="edge16" class="edge">
 <title>names&#45;&gt;H</title>
-<path fill="none" stroke="black" d="M155.61,-59.47C246.68,-60.14 414.21,-61.38 525.02,-62.19"/>
-<polygon fill="black" stroke="black" points="524.7,-65.69 534.72,-62.26 524.75,-58.69 524.7,-65.69"/>
+<path fill="none" stroke="black" d="M528.44,-60.18C652.39,-60.52 925.63,-61.27 1078.97,-61.7"/>
+<polygon fill="black" stroke="black" points="1078.73,-65.2 1088.74,-61.72 1078.75,-58.2 1078.73,-65.2"/>
 </g>
 <!-- sorted -->
 <g id="node13" class="node">
 <title>sorted</title>
-<polygon fill="none" stroke="black" points="518.5,-36 370.5,-36 370.5,0 518.5,0 518.5,-36"/>
-<text xml:space="preserve" text-anchor="middle" x="444.5" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">every printed set,</text>
-<text xml:space="preserve" text-anchor="middle" x="444.5" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">sorted by rendered text</text>
+<polygon fill="none" stroke="black" points="1072.75,-36 924.75,-36 924.75,0 1072.75,0 1072.75,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="998.75" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">every printed set,</text>
+<text xml:space="preserve" text-anchor="middle" x="998.75" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">sorted by rendered text</text>
 </g>
 <!-- names&#45;&gt;sorted -->
-<g id="edge19" class="edge">
+<g id="edge20" class="edge">
 <title>names&#45;&gt;sorted</title>
-<path fill="none" stroke="black" d="M155.39,-50.39C169.51,-48.55 184.38,-46.67 198.25,-45 251.58,-38.58 311.52,-31.97 358.79,-26.9"/>
-<polygon fill="black" stroke="black" points="359.14,-30.38 368.71,-25.84 358.39,-23.42 359.14,-30.38"/>
+<path fill="none" stroke="black" d="M528.38,-50.72C541.79,-48.99 555.84,-47.31 569,-46 688.17,-34.17 826.49,-26.16 913.07,-21.84"/>
+<polygon fill="black" stroke="black" points="913.09,-25.34 922.91,-21.36 912.75,-18.35 913.09,-25.34"/>
 </g>
 <!-- argv -->
 <g id="node3" class="node">
 <title>argv</title>
-<path fill="none" stroke="black" d="M724.25,-131.73C724.25,-133.53 684.53,-135 635.62,-135 586.72,-135 547,-133.53 547,-131.73 547,-131.73 547,-102.27 547,-102.27 547,-100.47 586.72,-99 635.62,-99 684.53,-99 724.25,-100.47 724.25,-102.27 724.25,-102.27 724.25,-131.73 724.25,-131.73"/>
-<path fill="none" stroke="black" d="M724.25,-131.73C724.25,-129.92 684.53,-128.45 635.62,-128.45 586.72,-128.45 547,-129.92 547,-131.73"/>
-<text xml:space="preserve" text-anchor="middle" x="635.62" y="-113.3" font-family="Helvetica,sans-Serif" font-size="11.00">the command and its options</text>
+<path fill="none" stroke="black" d="M1278.5,-130.73C1278.5,-132.53 1238.78,-134 1189.88,-134 1140.97,-134 1101.25,-132.53 1101.25,-130.73 1101.25,-130.73 1101.25,-101.27 1101.25,-101.27 1101.25,-99.47 1140.97,-98 1189.88,-98 1238.78,-98 1278.5,-99.47 1278.5,-101.27 1278.5,-101.27 1278.5,-130.73 1278.5,-130.73"/>
+<path fill="none" stroke="black" d="M1278.5,-130.73C1278.5,-128.92 1238.78,-127.45 1189.88,-127.45 1140.97,-127.45 1101.25,-128.92 1101.25,-130.73"/>
+<text xml:space="preserve" text-anchor="middle" x="1189.88" y="-112.3" font-family="Helvetica,sans-Serif" font-size="11.00">the command and its options</text>
 </g>
 <!-- visit -->
 <g id="node12" class="node">
 <title>visit</title>
-<polygon fill="none" stroke="black" points="1009.88,-135 873.88,-135 873.88,-99 1009.88,-99 1009.88,-135"/>
-<text xml:space="preserve" text-anchor="middle" x="941.88" y="-113.3" font-family="Helvetica,sans-Serif" font-size="11.00">the route&#39;s visit order</text>
+<polygon fill="none" stroke="black" points="1620,-104 1484,-104 1484,-68 1620,-68 1620,-104"/>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-82.3" font-family="Helvetica,sans-Serif" font-size="11.00">the route&#39;s visit order</text>
 </g>
 <!-- argv&#45;&gt;visit -->
-<g id="edge17" class="edge">
+<g id="edge18" class="edge">
 <title>argv&#45;&gt;visit</title>
-<path fill="none" stroke="black" d="M724.63,-117C768.19,-117 820.35,-117 862.52,-117"/>
-<polygon fill="black" stroke="black" points="862.34,-120.5 872.34,-117 862.34,-113.5 862.34,-120.5"/>
+<path fill="none" stroke="black" d="M1278.97,-108.66C1338.12,-103.73 1415.37,-97.3 1472.43,-92.55"/>
+<polygon fill="black" stroke="black" points="1472.38,-96.06 1482.05,-91.74 1471.8,-89.09 1472.38,-96.06"/>
 </g>
 <!-- matches -->
 <g id="node6" class="node">
 <title>matches</title>
-<polygon fill="none" stroke="black" points="723.5,-227 547.75,-227 547.75,-191 723.5,-191 723.5,-227"/>
-<text xml:space="preserve" text-anchor="middle" x="635.62" y="-212.05" font-family="Helvetica,sans-Serif" font-size="11.00">the match sequence</text>
-<text xml:space="preserve" text-anchor="middle" x="635.62" y="-198.55" font-family="Helvetica,sans-Serif" font-size="11.00">left&#45;deep, steps in plan order</text>
+<polygon fill="none" stroke="black" points="551,-217 375.25,-217 375.25,-181 551,-181 551,-217"/>
+<text xml:space="preserve" text-anchor="middle" x="463.12" y="-202.05" font-family="Helvetica,sans-Serif" font-size="11.00">the match sequence</text>
+<text xml:space="preserve" text-anchor="middle" x="463.12" y="-188.55" font-family="Helvetica,sans-Serif" font-size="11.00">left&#45;deep, steps in plan order</text>
 </g>
 <!-- extent&#45;&gt;matches -->
 <g id="edge3" class="edge">
 <title>extent&#45;&gt;matches</title>
-<path fill="none" stroke="black" d="M345.83,-191.61C398.08,-194.76 474.87,-199.38 536.14,-203.07"/>
-<polygon fill="black" stroke="black" points="535.69,-206.55 545.88,-203.66 536.11,-199.56 535.69,-206.55"/>
+<path fill="none" stroke="black" d="M338.54,-226.63C348.13,-224.49 358.26,-222.22 368.42,-219.95"/>
+<polygon fill="black" stroke="black" points="368.96,-223.42 377.96,-217.82 367.43,-216.59 368.96,-223.42"/>
 </g>
 <!-- plans&#45;&gt;matches -->
 <g id="edge4" class="edge">
 <title>plans&#45;&gt;matches</title>
-<path fill="none" stroke="black" d="M1373.01,-254.54C1267.04,-253.4 1050,-249.48 866.75,-236 815.89,-232.26 803.4,-228.94 752.75,-223 747.04,-222.33 741.16,-221.64 735.24,-220.93"/>
-<polygon fill="black" stroke="black" points="735.65,-217.46 725.31,-219.75 734.82,-224.41 735.65,-217.46"/>
+<path fill="none" stroke="black" d="M1486.25,-230.03C1303.29,-224.48 781.58,-208.64 562.69,-201.99"/>
+<polygon fill="black" stroke="black" points="562.85,-198.5 552.74,-201.69 562.63,-205.49 562.85,-198.5"/>
 </g>
 <!-- rank -->
 <g id="node7" class="node">
 <title>rank</title>
-<polygon fill="none" stroke="black" points="1017,-227 866.75,-227 866.75,-191 1017,-191 1017,-227"/>
-<text xml:space="preserve" text-anchor="middle" x="941.88" y="-212.05" font-family="Helvetica,sans-Serif" font-size="11.00">the agenda&#39;s rank</text>
-<text xml:space="preserve" text-anchor="middle" x="941.88" y="-198.55" font-family="Helvetica,sans-Serif" font-size="11.00">half, then the tiebreaker</text>
+<polygon fill="none" stroke="black" points="870,-190 719.75,-190 719.75,-154 870,-154 870,-190"/>
+<text xml:space="preserve" text-anchor="middle" x="794.88" y="-175.05" font-family="Helvetica,sans-Serif" font-size="11.00">the agenda&#39;s rank</text>
+<text xml:space="preserve" text-anchor="middle" x="794.88" y="-161.55" font-family="Helvetica,sans-Serif" font-size="11.00">half, then the tiebreaker</text>
 </g>
 <!-- matches&#45;&gt;rank -->
 <g id="edge5" class="edge">
 <title>matches&#45;&gt;rank</title>
-<path fill="none" stroke="black" d="M723.81,-209C764.98,-209 813.96,-209 854.97,-209"/>
-<polygon fill="black" stroke="black" points="854.8,-212.5 864.8,-209 854.8,-205.5 854.8,-212.5"/>
+<path fill="none" stroke="black" d="M551.19,-191.87C599.68,-187.9 659.82,-182.98 708.1,-179.02"/>
+<polygon fill="black" stroke="black" points="708.29,-182.52 717.97,-178.22 707.71,-175.54 708.29,-182.52"/>
+</g>
+<!-- matches&#45;&gt;gen -->
+<g id="edge14" class="edge">
+<title>matches&#45;&gt;gen</title>
+<path fill="none" stroke="black" d="M551.36,-181.4C586.91,-173.5 628.22,-163.39 665,-152 673.2,-149.46 674.88,-147.78 683,-145 687.72,-143.38 692.57,-141.77 697.48,-140.17"/>
+<polygon fill="black" stroke="black" points="698.4,-143.55 706.86,-137.17 696.27,-136.88 698.4,-143.55"/>
 </g>
 <!-- firing -->
 <g id="node8" class="node">
 <title>firing</title>
-<polygon fill="none" stroke="black" points="1175.75,-205 1054,-205 1054,-169 1175.75,-169 1175.75,-205"/>
-<text xml:space="preserve" text-anchor="middle" x="1114.88" y="-183.3" font-family="Helvetica,sans-Serif" font-size="11.00">the firing sequence</text>
+<polygon fill="none" stroke="black" points="1250.75,-190 1129,-190 1129,-154 1250.75,-154 1250.75,-190"/>
+<text xml:space="preserve" text-anchor="middle" x="1189.88" y="-168.3" font-family="Helvetica,sans-Serif" font-size="11.00">the firing sequence</text>
 </g>
 <!-- rank&#45;&gt;firing -->
 <g id="edge6" class="edge">
 <title>rank&#45;&gt;firing</title>
-<path fill="none" stroke="black" d="M1017.38,-199.41C1025.73,-198.34 1034.23,-197.25 1042.54,-196.18"/>
-<polygon fill="black" stroke="black" points="1042.76,-199.68 1052.23,-194.93 1041.87,-192.74 1042.76,-199.68"/>
+<path fill="none" stroke="black" d="M870.26,-172C941.19,-172 1047.29,-172 1117.29,-172"/>
+<polygon fill="black" stroke="black" points="1117.11,-175.5 1127.11,-172 1117.11,-168.5 1117.11,-175.5"/>
 </g>
 <!-- firing&#45;&gt;extent -->
 <g id="edge7" class="edge">
 <title>firing&#45;&gt;extent</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1053.69,-183.41C1041.55,-182.82 1028.87,-182.31 1017,-182 803.52,-176.49 750.04,-179.44 536.5,-182 475.94,-182.72 407.16,-184.43 356.99,-185.84"/>
-<polygon fill="black" stroke="black" points="357.03,-182.34 347.13,-186.12 357.23,-189.34 357.03,-182.34"/>
-<text xml:space="preserve" text-anchor="middle" x="800.75" y="-181.83" font-family="Helvetica,sans-Serif" font-size="9.00">derived facts append</text>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1128.66,-179.74C1110.69,-181.92 1090.94,-184.19 1072.75,-186 841.32,-209.02 783.1,-211.27 551,-226 464.92,-231.46 443.4,-232.91 357.25,-237 354.76,-237.12 352.22,-237.23 349.66,-237.35"/>
+<polygon fill="black" stroke="black" points="349.68,-233.85 339.84,-237.77 349.99,-240.84 349.68,-233.85"/>
+<text xml:space="preserve" text-anchor="middle" x="617" y="-227.37" font-family="Helvetica,sans-Serif" font-size="9.00">derived facts append</text>
 </g>
 <!-- firing&#45;&gt;plans -->
 <g id="edge8" class="edge">
 <title>firing&#45;&gt;plans</title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1176.2,-197.87C1242.64,-209.87 1341.29,-227.77 1349.75,-229.75 1354.9,-230.96 1360.19,-232.27 1365.51,-233.66"/>
-<polygon fill="black" stroke="black" points="1364.38,-236.98 1374.95,-236.17 1366.19,-230.21 1364.38,-236.98"/>
-<text xml:space="preserve" text-anchor="middle" x="1271.75" y="-232.45" font-family="Helvetica,sans-Serif" font-size="9.00">a derived activator&#39;s plan appends</text>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1251.01,-172.98C1319.04,-174.73 1425.27,-179.54 1463,-192.75 1472.13,-195.95 1472.43,-200.51 1481,-205 1483.52,-206.32 1486.13,-207.62 1488.78,-208.88"/>
+<polygon fill="black" stroke="black" points="1487.24,-212.02 1497.79,-212.94 1490.11,-205.64 1487.24,-212.02"/>
+<text xml:space="preserve" text-anchor="middle" x="1385" y="-195.45" font-family="Helvetica,sans-Serif" font-size="9.00">a derived activator&#39;s plan appends</text>
 </g>
 <!-- first -->
 <g id="node9" class="node">
 <title>first</title>
-<polygon fill="none" stroke="black" points="1509.75,-205 1367.75,-205 1367.75,-169 1509.75,-169 1509.75,-205"/>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-190.05" font-family="Helvetica,sans-Serif" font-size="11.00">which derivation a fact</text>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-176.55" font-family="Helvetica,sans-Serif" font-size="11.00">records first</text>
+<polygon fill="none" stroke="black" points="1623,-196 1481,-196 1481,-160 1623,-160 1623,-196"/>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-181.05" font-family="Helvetica,sans-Serif" font-size="11.00">which derivation a fact</text>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-167.55" font-family="Helvetica,sans-Serif" font-size="11.00">records first</text>
 </g>
 <!-- firing&#45;&gt;first -->
 <g id="edge9" class="edge">
 <title>firing&#45;&gt;first</title>
-<path fill="none" stroke="black" d="M1176.04,-187C1226.85,-187 1300.09,-187 1356.18,-187"/>
-<polygon fill="black" stroke="black" points="1356,-190.5 1366,-187 1356,-183.5 1356,-190.5"/>
+<path fill="none" stroke="black" d="M1251.15,-171.3C1306.3,-170.89 1390.16,-170.8 1463,-173 1465.18,-173.07 1467.39,-173.14 1469.62,-173.22"/>
+<polygon fill="black" stroke="black" points="1469.24,-176.71 1479.37,-173.62 1469.52,-169.71 1469.24,-176.71"/>
 </g>
 <!-- o_trace -->
 <g id="node14" class="node">
 <title>o_trace</title>
-<polygon fill="none" stroke="black" points="1488.75,-139 1382.75,-139 1382.75,-103 1494.75,-103 1494.75,-133 1488.75,-139"/>
-<polyline fill="none" stroke="black" points="1488.75,-139 1488.75,-133"/>
-<polyline fill="none" stroke="black" points="1494.75,-133 1488.75,-133"/>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-124.05" font-family="Helvetica,sans-Serif" font-size="11.00">the trace,</text>
-<text xml:space="preserve" text-anchor="middle" x="1438.75" y="-110.55" font-family="Helvetica,sans-Serif" font-size="11.00">the event stream</text>
+<polygon fill="none" stroke="black" points="1770.5,-134 1664.5,-134 1664.5,-98 1776.5,-98 1776.5,-128 1770.5,-134"/>
+<polyline fill="none" stroke="black" points="1770.5,-134 1770.5,-128"/>
+<polyline fill="none" stroke="black" points="1776.5,-128 1770.5,-128"/>
+<text xml:space="preserve" text-anchor="middle" x="1720.5" y="-119.05" font-family="Helvetica,sans-Serif" font-size="11.00">the trace,</text>
+<text xml:space="preserve" text-anchor="middle" x="1720.5" y="-105.55" font-family="Helvetica,sans-Serif" font-size="11.00">the event stream</text>
 </g>
 <!-- firing&#45;&gt;o_trace -->
 <g id="edge10" class="edge">
 <title>firing&#45;&gt;o_trace</title>
-<path fill="none" stroke="black" d="M1176.04,-174.66C1231.57,-163.28 1313.87,-146.4 1371.31,-134.62"/>
-<polygon fill="black" stroke="black" points="1371.87,-138.08 1380.97,-132.64 1370.47,-131.22 1371.87,-138.08"/>
+<path fill="none" stroke="black" d="M1251,-165.63C1350.64,-155.08 1549.26,-134.03 1652.97,-123.05"/>
+<polygon fill="black" stroke="black" points="1653.14,-126.55 1662.72,-122.02 1652.4,-119.59 1653.14,-126.55"/>
 </g>
 <!-- o_core -->
 <g id="node15" class="node">
 <title>o_core</title>
-<polygon fill="none" stroke="black" points="1661.75,-205 1546.75,-205 1546.75,-169 1667.75,-169 1667.75,-199 1661.75,-205"/>
-<polyline fill="none" stroke="black" points="1661.75,-205 1661.75,-199"/>
-<polyline fill="none" stroke="black" points="1667.75,-199 1661.75,-199"/>
-<text xml:space="preserve" text-anchor="middle" x="1607.25" y="-183.3" font-family="Helvetica,sans-Serif" font-size="11.00">a dead node&#39;s core</text>
+<polygon fill="none" stroke="black" points="1775,-196 1660,-196 1660,-160 1781,-160 1781,-190 1775,-196"/>
+<polyline fill="none" stroke="black" points="1775,-196 1775,-190"/>
+<polyline fill="none" stroke="black" points="1781,-190 1775,-190"/>
+<text xml:space="preserve" text-anchor="middle" x="1720.5" y="-174.3" font-family="Helvetica,sans-Serif" font-size="11.00">a dead node&#39;s core</text>
 </g>
 <!-- first&#45;&gt;o_core -->
 <g id="edge11" class="edge">
 <title>first&#45;&gt;o_core</title>
-<path fill="none" stroke="black" d="M1509.88,-187C1518.25,-187 1526.8,-187 1535.19,-187"/>
-<polygon fill="black" stroke="black" points="1534.97,-190.5 1544.97,-187 1534.97,-183.5 1534.97,-190.5"/>
+<path fill="none" stroke="black" d="M1623.13,-178C1631.5,-178 1640.05,-178 1648.44,-178"/>
+<polygon fill="black" stroke="black" points="1648.22,-181.5 1658.22,-178 1648.22,-174.5 1648.22,-181.5"/>
 </g>
 <!-- gen&#45;&gt;H -->
-<g id="edge14" class="edge">
+<g id="edge15" class="edge">
 <title>gen&#45;&gt;H</title>
-<path fill="none" stroke="black" d="M352.7,-96.95C401.38,-91.09 468.39,-83.02 524.87,-76.22"/>
-<polygon fill="black" stroke="black" points="525.01,-79.73 534.52,-75.06 524.17,-72.78 525.01,-79.73"/>
+<path fill="none" stroke="black" d="M907.18,-97.84C961,-90.99 1025.39,-82.8 1079.02,-75.98"/>
+<polygon fill="black" stroke="black" points="1079.31,-79.47 1088.79,-74.73 1078.43,-72.52 1079.31,-79.47"/>
 </g>
 <!-- H&#45;&gt;visit -->
-<g id="edge16" class="edge">
+<g id="edge17" class="edge">
 <title>H&#45;&gt;visit</title>
-<path fill="none" stroke="black" d="M734.99,-80.46C776.23,-87.78 823.52,-96.17 862.37,-103.07"/>
-<polygon fill="black" stroke="black" points="861.67,-106.5 872.13,-104.8 862.89,-99.6 861.67,-106.5"/>
+<path fill="none" stroke="black" d="M1289.28,-68.56C1346.93,-72.4 1418.74,-77.19 1472.55,-80.77"/>
+<polygon fill="black" stroke="black" points="1472.03,-84.24 1482.24,-81.42 1472.5,-77.26 1472.03,-84.24"/>
 </g>
 <!-- o_list -->
 <g id="node16" class="node">
 <title>o_list</title>
-<polygon fill="none" stroke="black" points="1006.12,-58 871.62,-58 871.62,-22 1012.12,-22 1012.12,-52 1006.12,-58"/>
-<polyline fill="none" stroke="black" points="1006.12,-58 1006.12,-52"/>
-<polyline fill="none" stroke="black" points="1012.12,-52 1006.12,-52"/>
-<text xml:space="preserve" text-anchor="middle" x="941.88" y="-43.05" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s listings,</text>
-<text xml:space="preserve" text-anchor="middle" x="941.88" y="-29.55" font-family="Helvetica,sans-Serif" font-size="11.00">the dumps, DOT</text>
+<polygon fill="none" stroke="black" points="1616.25,-42 1481.75,-42 1481.75,-6 1622.25,-6 1622.25,-36 1616.25,-42"/>
+<polyline fill="none" stroke="black" points="1616.25,-42 1616.25,-36"/>
+<polyline fill="none" stroke="black" points="1622.25,-36 1616.25,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-27.05" font-family="Helvetica,sans-Serif" font-size="11.00">the read&#45;out&#39;s listings,</text>
+<text xml:space="preserve" text-anchor="middle" x="1552" y="-13.55" font-family="Helvetica,sans-Serif" font-size="11.00">the dumps, DOT</text>
 </g>
 <!-- H&#45;&gt;o_list -->
-<g id="edge21" class="edge">
+<g id="edge22" class="edge">
 <title>H&#45;&gt;o_list</title>
-<path fill="none" stroke="black" d="M734.99,-55.56C775.44,-52.51 821.71,-49.01 860.13,-46.1"/>
-<polygon fill="black" stroke="black" points="860.05,-49.62 869.76,-45.38 859.52,-42.64 860.05,-49.62"/>
+<path fill="none" stroke="black" d="M1289.28,-51.62C1346.15,-45.62 1416.81,-38.16 1470.37,-32.51"/>
+<polygon fill="black" stroke="black" points="1470.44,-36.02 1480.02,-31.49 1469.71,-29.06 1470.44,-36.02"/>
 </g>
 <!-- visit&#45;&gt;o_trace -->
-<g id="edge18" class="edge">
+<g id="edge19" class="edge">
 <title>visit&#45;&gt;o_trace</title>
-<path fill="none" stroke="black" d="M1010.13,-117.54C1104.89,-118.31 1276.63,-119.7 1371.07,-120.46"/>
-<polygon fill="black" stroke="black" points="1370.93,-123.96 1380.96,-120.54 1370.99,-116.96 1370.93,-123.96"/>
+<path fill="none" stroke="black" d="M1620.24,-98.12C1631.03,-100.06 1642.18,-102.07 1652.95,-104.01"/>
+<polygon fill="black" stroke="black" points="1652.05,-107.4 1662.51,-105.73 1653.29,-100.51 1652.05,-107.4"/>
 </g>
 <!-- sorted&#45;&gt;o_list -->
-<g id="edge20" class="edge">
+<g id="edge21" class="edge">
 <title>sorted&#45;&gt;o_list</title>
-<path fill="none" stroke="black" d="M518.86,-21.26C610.09,-25.31 765.32,-32.2 859.94,-36.41"/>
-<polygon fill="black" stroke="black" points="859.51,-39.89 869.65,-36.84 859.82,-32.9 859.51,-39.89"/>
+<path fill="none" stroke="black" d="M1073.24,-18.8C1176.33,-19.92 1363.21,-21.96 1470.13,-23.12"/>
+<polygon fill="black" stroke="black" points="1469.94,-26.62 1479.98,-23.23 1470.02,-19.62 1469.94,-26.62"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: 1329381e32fa7346d6bf1e5baedca2d1cb45d68204428992fc46eb3ab0d80348 -->
+<!-- source sha256: e4f27e93a77222c4d0e8a2f0df533698668c05e967b5405e2f68321aa0e42799 -->

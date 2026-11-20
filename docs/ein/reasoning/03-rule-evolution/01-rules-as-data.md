@@ -20,8 +20,8 @@ $$
 \end{aligned}
 $$
 
-where $W_{\!d} \subset W$ is the closed set of words that head a declaration: of a relation, a rule, a hypothesis
-rule, a macro, an import, and of a program's questions
+where $W_{\!d} \subset W$ is the closed set of words that head a declaration: of a relation, a rule, a macro, an
+import, and of a program's questions
 ([the reserved names](../../user/04-reference/03-reserved-names.md) lists them). **Every other form is a fact.**
 The two kinds are told apart as forms, by the first word: what reading makes of a relation's declaration is
 again facts, of the relation $\mathsf{relation}$ (§ 2).
@@ -197,7 +197,7 @@ the cardinality properties are rules that conclude $\bot$. None has a kernel cou
 and the kernel reserves no name of a theory
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)).
 
-**The quantifiers are Ein in Ein.** The bounded universal and the open fact
+**The quantifiers are Ein in Ein.** The bounded universal and the *unknown* test
 ([the rules](../01-static-ir/02-rewriting-rules.md#the-conditions-on-a-match)) are not forms of the pattern
 language. Each is a macro, a named pattern with parameters that is replaced by its body where it is written:
 

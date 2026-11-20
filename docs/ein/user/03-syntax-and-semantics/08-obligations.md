@@ -3,9 +3,10 @@
 An **obligation** says that something must exist: every person likes some food, every house has an owner, every
 chair is taken. It is a rule that matches while the thing is missing and whose whole conclusion is the verdict
 `(open ?R)`, *this state is unfinished: the facts of `?R` are incomplete*. A state the rule matches **owes**; a state
-that owes nothing is **discharged**. An obligation derives nothing: it is read once on each state the engine
-reaches, after saturation, where the state that owes holds `(open R)`
-([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), and it is half of what decides the answer. The other half is the restriction, a
+that owes nothing is **discharged**. An obligation is no part of saturation: it is read once on each state the engine
+reaches, at its fixpoint, and the state that owes holds the fact `(open R)`
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). It is half
+of what decides the answer. The other half is the restriction, a
 rule that concludes `(false)` ([constraints](06-constraints.md)): restrictions say what a solution may not be,
 obligations what it must contain, and the answer is every state between them
 ([solutions and models](13-solutions-and-models.md)).
@@ -193,18 +194,117 @@ Each refusal is a line of [diagnostics](../04-reference/07-diagnostics.md).
 An obligation is **not in the saturation agenda**. Saturation runs to its fixpoint; then one pass reads every
 obligation against that fixpoint, and the instances it matches are the state's debts. Three things follow:
 
-- **It derives nothing.** An obligation enables no rule; a rule that reads what a state owes makes its program
-  not monotone ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)). A rule that concluded what a state owes and something else would belong to both
-  passes, so that is refused at load.
+- **It writes only `open` facts.** An obligation concludes nothing saturation reads; a rule that reads what a state
+  owes makes its program not monotone
+  ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)). A rule that
+  concluded what a state owes and something else would belong to both passes, so that is refused at load.
 - **Firing is being undischarged.** The rule matches while the witness is missing and stops matching once it is
   there, so the pass asks no second question: what discharges a debt is exactly what the guard looks for.
+- **`(open R)` is one fact, however many instances.** Two people without a chair are two instances of
+  `everyone-sits` and one fact, `(open seat)`: the count of instances is kept beside it, in every report of a
+  state that owes, and where each was written is the engine's record and no part of the fact
+  ([Q-M1f.390](../../../decisions/hypotheses/Q-M1f.390-open-r-carries-no-justification-and-the-instance.md)).
 - **A debt is a fact of the state that owes it alone.** `(false)` is inherited, because a dead state stays dead
   whatever is added; a debt exists to be paid by an addition, and an inherited one would survive its own payment. So
-  `(open R)` is written at each state's fixpoint, root's and every node's the engine builds, in a part of the state
-  no fork inherits, and a state that pays it holds none.
+  `(open R)` is held by the state that owes it, in a part of the state no fork inherits, and a state that pays it
+  holds none. What a state owes is read at every state the engine builds; the pass that writes a state's `open`
+  facts runs at root, and above root at a state that is printed or saved, or whose rules read them. No rule removes
+  a fact.
 
 A state that holds `(false)` is dead whatever it owes. The order of the debts in a report is the order the
 obligation rules are written in.
+
+## The requirement and the payment, as facts
+
+What a state owes is lost as the state grows, which is why `(open R)` is the state's own. Its two halves are not.
+The **requirement**, that the trigger holds, and the **payment**, that the trigger holds with a witness beside it,
+each stay true in every larger state, and so does *nothing required is unpaid*. So each is an ordinary rule, and a
+fork inherits what it concludes. For `everyone-sits`, three rules added to the program above:
+
+```lisp
+(rule seat-due ()
+  :match  (is-a ?p Person)
+  :assert (debt-due seat (everyone-sits-of ?p))
+  :why    "{?p} is required a chair")
+(rule seat-paid ()
+  :match  (and (is-a ?p Person) (is-a ?c Chair) (seat ?p ?c))
+  :assert (debt-paid seat (everyone-sits-of ?p))
+  :why    "{?p} has a chair")
+(rule nothing-unpaid ()
+  :match  (absent (and (debt-due ?r ?j) (absent (debt-paid ?r ?j))))
+  :assert (debts-discharged)
+  :why    "every requirement is paid")
+```
+
+`seat-due` is the obligation's trigger, and `seat-paid` the trigger with what its `absent` looks for; neither reads
+an `absent`. `(everyone-sits-of ?p)` names the instance, a fact no state holds. `nothing-unpaid` reads an `absent`
+inside an `absent`, *for every requirement, a payment*. At root, `ein saturate --dump FILE` lists two requirements,
+one payment, and what root owes:
+
+<!-- output -->
+```text
+;; ── DERIVED (6 facts) ──
+;;   debt-due (2)
+  (debt-due seat (everyone-sits-of Ann) :rule seat-due)
+  (debt-due seat (everyone-sits-of Bob) :rule seat-due)
+  (debt-paid seat (everyone-sits-of Ann) :rule seat-paid)
+;;   open (3)
+  (open seat :rule everyone-sits)
+  (open (seat Bob C1) :rule everyone-sits)
+  (open (seat Bob C2) :rule everyone-sits)
+```
+
+and `ein solve -p FILE` lists the one state of R with both payments, `(debts-discharged)`, and no `open` fact:
+
+<!-- output -->
+```text
+── state 1 of 1 ──
+final-state facts (beyond the program as loaded: root's derivations, the commitment and what it derives; 6 facts):
+  (debt-due seat (everyone-sits-of Ann))
+  (debt-due seat (everyone-sits-of Bob))
+  (debt-paid seat (everyone-sits-of Ann))
+  (debt-paid seat (everyone-sits-of Bob))
+  (debts-discharged)
+  (seat Bob C1)
+```
+
+The rest of the read-out is the program's without the three rules, two facts more beyond root, and its `lattice`
+row still says `monotone (the static check)`. The requirement reads only `is-a`, which no commitment adds to, so a
+state that holds `(debts-discharged)` passes it to every larger state, as a state that holds `(false)` does.
+[`std.debts`](../04-reference/04-stdlib/22-debts.md) states the same three for the library's four obligations, with
+the words these rules borrow.
+
+What is lost as a state grows is not written so. The debt itself, concluded by an ordinary rule from the
+obligation's `:match`,
+
+```lisp
+(rule unseated ()
+  :match  (and (is-a ?p Person)
+               (absent (and (is-a ?c Chair) (seat ?p ?c))))
+  :assert (unseated ?p)
+  :why    "{?p} has no chair yet")
+```
+
+concludes a fact from an `absent` a commitment can fill, and a fork inherits it where its guard no longer holds.
+The static check flags the program, and `ein solve FILE` names the stale fact in the state that seats Bob:
+
+<!-- output -->
+```text
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
+  …
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            unseated: absent reads seat at absent depth 1, concludes a positive fact — at stake: the state
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 3 of the cube's 4 nodes hold one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(seat Bob C1)}, in R: (unseated Bob) ← unseated (absent (is-a _ Chair)) (absent (seat Bob _))
+  …
+```
+
+*Alive* is the other: concluded from the absence of `(false)`, it is the same shape, and a dead fork would inherit
+it. A state's verdicts that a larger state can lose are read on the state, or written where no fork inherits them.
 
 ## What an obligation quantifies over
 

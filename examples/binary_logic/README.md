@@ -59,10 +59,11 @@ ein solve examples/binary_logic/unsatisfiable.ein --dump-answer unsat   # the an
   ([Q-M1f.326](../../docs/decisions/stdlib/bool/Q-M1f.326-the-properties-of-the-sixteen-functions-are.md)):
   a program that reads them pays their firings, once, at root. The claims of `tests/stdlib/bool/props/`, the
   properties as generated facts, are the rules' check.
-- **Inputs as two candidates each, by an obligation** (`std.bool.inputs`): the obligations rung proposes
-  them, the simplest of the forms whose answer is the same
+- **Inputs as two candidates each, by an obligation** (`std.bool.inputs`): the obligation, activated at root,
+  writes the two values of each input as hypotheses, the simplest of the forms whose answer is the same
   ([Q-M1f.190](../../docs/decisions/corpus/Q-M1f.190-each-circuit-example-takes-the-simplest-form.md)).
-  One candidate an input with `absent` is refused or answers otherwise.
+  One candidate an input, the other value read off an `absent`, makes a program the static check flags, of
+  whose answer nothing is claimed.
 
 ## What to know before reading a read-out
 

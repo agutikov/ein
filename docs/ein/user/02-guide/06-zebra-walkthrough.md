@@ -25,9 +25,13 @@ Each human step is one of three things in Ein.
 - **Root**: what saturation derives from the program with nothing guessed. The human's unconditional steps are all
   here. `ein saturate examples/zebra2.ein --dump` lists root, each derived fact with the rule that derived it, and
   `ein solve examples/zebra2.ein --no-search` reports it.
-- **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` rule proposes a fact of each of the
-  five relations for each value of its attribute and each house, and `ein show hyps examples/zebra2.ein` lists every
-  candidate. A candidate is **dead alone** when
+- **A supposition refuted**: the human's *"suppose … — impossible"*. What may be supposed is a **candidate**. The
+  `guess` rule supposes a fact of each of the five relations for each value of its attribute and each house,
+  `(open (color-loc Red House-3))` and the rest; the obligations each `(bijective R)` turns on suppose the facts that
+  would give root what it still owes; and the candidates are all of these together, less what root already holds or
+  denies. On this puzzle the two give the same facts: `ein show hyps examples/zebra2.ein` lists the 56 candidates, and
+  `ein show hyps examples/zebra2-obligations.ein`, the same puzzle with the `guess` rule deleted, lists the same 56.
+  A candidate is **dead alone** when
   assuming it, and nothing else, ends the state: a rule concludes `(false)`, a check of `std.algebra` such as
   `surjective`, or `std.contradiction`'s rule from a fact beside its negation, which `std.algebra` imports, and the
   rule every program gets reads it and states `:ein inconsistent`. To see it, add the candidate to a copy of

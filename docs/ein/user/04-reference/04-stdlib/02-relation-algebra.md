@@ -58,8 +58,8 @@ Read these before importing a relation-algebra module: they decide whether a rul
   `total`, `surjective`, `empty`, `irreflexive`, `antisymmetric`, `asymmetric`, `connex`): a state that breaks it is
   dead. A **closure** derives the edge that makes the property hold (`symmetric`, `transitive`, `includes`,
   `difunctional`, `reflexive`). An **obligation** concludes `(open R)` while a requirement is unmet (`total-owed`,
-  `surjective-owed`, and `std.slots`' `slot-owed-room` and `slot-owed-fill`): it derives nothing, and a state that
-  owes is not an answer ([Obligations](../../03-syntax-and-semantics/08-obligations.md)).
+  `surjective-owed`, and `std.slots`' `slot-owed-room` and `slot-owed-fill`): the state that owes holds `(open R)`,
+  once a relation, and is not an answer ([Obligations](../../03-syntax-and-semantics/08-obligations.md)).
 - **The closed-world caveat.** A rule that reads an absence — the extensive operators, `difference`,
   `compose-negative-*`, `std.closure`'s `infer-closure`, the `absent` guards of `std.slots`' spatial rules — is
   sound only where the facts of its operand are decided by saturation, never where they are found by hypotheses, as
@@ -590,10 +590,12 @@ $$
 \end{aligned}
 $$
 
-An obligation concludes `(open R)` and derives nothing. A state that owes is alive and is not an answer.
-`total` and `total-owed` are one property at its two ends: the check is about a candidate set emptied by stated
-negatives, so the requirement cannot be met and the state is dead; the obligation is about a set with nothing
-stated in it yet, so the requirement is unmet and the state is unfinished.
+An obligation concludes `(open R)`, a fact the state that owes holds, once a relation however many instances it
+owes. The fact is written at the state's fixpoint and no fork inherits it, so a state that pays the debt holds none
+([Q-M1f.566](../../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). A state
+that owes is alive and is not an answer. `total` and `total-owed` are one property at its two ends: the check is
+about a candidate set emptied by stated negatives, so the requirement cannot be met and the state is dead; the
+obligation is about a set with nothing stated in it yet, so the requirement is unmet and the state is unfinished.
 
 [`tests/stdlib/algebra/23_total_owed.ein`](../../../../../tests/stdlib/algebra/23_total_owed.ein) judges root
 alone. Bob likes stew; nothing is said of Ann:
@@ -642,9 +644,31 @@ alone. Bob likes stew; nothing is said of Ann:
   (solve :expect)   holds
 ```
 
-An obligation is also what proposes candidates: where root owes, the search tries the facts that would pay
-([Hypotheses](../../03-syntax-and-semantics/09-hypotheses.md)). The same program without `:no-search`, and with
-`functional` beside the obligation, has two answers, one for each thing Ann could like:
+`ein saturate --dump tests/stdlib/algebra/23_total_owed.ein` lists what root derived beyond the program:
+
+<!-- output -->
+```text
+;; ── DERIVED (7 facts) ──
+;;   open (3)
+  (open likes :rule total-owed)
+  (open (likes Ann Soup) :rule total-owed)
+  (open (likes Ann Stew) :rule total-owed)
+;;   std.contradiction.clash-0 (2)
+  (std.contradiction.clash-0 is-a :rule std.contradiction.clash-of-0)
+  (std.contradiction.clash-0 likes :rule std.contradiction.clash-of-0)
+;;   std.contradiction.clash-2 (2)
+  (std.contradiction.clash-2 is-a :rule std.contradiction.clash-of-2)
+  (std.contradiction.clash-2 likes :rule std.contradiction.clash-of-2)
+```
+
+`(open likes)` is what root owes, one fact for the relation, here for Ann's one instance. Beside it are the two
+hypotheses the obligation writes for what would pay her, `(open (likes Ann Soup))` and `(open (likes Ann Stew))`,
+and the activators `std.contradiction`, which `std.algebra` imports, derives for the two declared relations.
+
+An obligation is also what proposes candidates: activated at root, it writes the facts that would pay what root
+owes, and the search tries them ([Hypotheses](../../03-syntax-and-semantics/09-hypotheses.md)). The same program
+without `:no-search`, and with `functional` beside the obligation, has two answers, one for each thing Ann could
+like:
 
 ```lisp
 (import std.algebra :symbols (total-owed functional))
@@ -903,15 +927,19 @@ The reflexive closure:
 
 | a program writes | it produces |
 |---|---|
-| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that no fact of R is proposed as a hypothesis |
+| `(import std.closure)`, and nothing more | `(__closed__ R)` for every R marked `(functional R)` and `(total R)`, so that the blind enumerator proposes no fact of R |
 
 The import brings `std.algebra`, whose one-argument markers it reads. **The import is the switch**, and it is a
 completeness hazard: *functional and total* is a witness about how saturation reaches the facts of R, not about R
-itself, so it is safe only where the facts of R are decided by saturation. Imported into a puzzle that finds the
-facts of R by hypotheses, it closes R, fixing its held extent, and takes away the candidates the search needs.
+itself, so it is safe only where the facts of R are decided by saturation. Imported into a puzzle whose blind
+enumerator finds the facts of R, it closes R, fixing its held extent, and takes away the candidates the search
+needs. Where a rule or an obligation writes hypotheses of R at root, a closure of R disagrees with the `open` facts
+root holds, and the program is refused at load
+([`07-diagnostics.md` § 2.26](../07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another);
+[Q-M1f.578](../../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 
-`ein show hyps` lists the candidates a program's search would try. Without the import, this program's candidates
-are the facts of `wears` it does not state:
+`ein show hyps` lists the candidates a program's search would try, and names on stderr what wrote them. Without
+the import, this program's candidates are the blind enumerator's, the facts of `wears` it does not state:
 
 ```lisp
 (import std.algebra :symbols (functional total))
@@ -931,6 +959,7 @@ are the facts of `wears` it does not state:
 
 <!-- output -->
 ```text
+note: closure-off.ein: H, from `blind`: 11 candidates
 (wears Ann Bob)
 (wears Ann Green)
 (wears Bob Ann)
@@ -942,7 +971,6 @@ are the facts of `wears` it does not state:
 (wears Red Ann)
 (wears Red Bob)
 (wears Red Green)
-note: closure-off.ein: H, from `blind`: 11 candidates
 ```
 
 With `(import std.closure)` added, and a query for what is closed, it has none, and the state holds the closure:

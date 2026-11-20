@@ -9,7 +9,7 @@ What a refusal prints: where its line places the fault, how it words it, and the
 - [Q-M1f.45](Q-M1f.45-the-parse-error-at-and-or-or-carries-a-note.md) — The parse error at `(and)` or `(or)` carries a note naming the rule and the clause
 - [Q-M1f.72](Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md) — A nested `(or …)`, a wide `:match` and a goal's relation variable are refused as loader lines
 - [Q-M1f.82](Q-M1f.82-a-malformed-primitive-a-macro-writes-is-refused.md) — A malformed primitive a macro writes is refused at the position of the expanded form
-- [Q-M1f.87](Q-M1f.87-the-loaders-refusals-of-the-verdict-start-where.md) — The loader's refusals of the verdict start where the `(open …)` is written
+- [Q-M1f.87](Q-M1f.87-the-loaders-refusals-of-what-an-obligation-owes.md) — The loader's refusals of what an obligation owes start where the `(open …)` is written
 - [Q-M1f.88](Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md) — A misplaced `open` is a parse error with a note saying what `open` is
 - [Q-M1f.92](Q-M1f.92-a-character-a-reader-cannot-see-is-quoted-as.md) — A character a reader cannot see is quoted as its escape
 - [Q-M1f.93](Q-M1f.93-a-modules-read-line-names-the-path-its-import.md) — A module's read line names the path its import resolves to

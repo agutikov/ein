@@ -50,7 +50,7 @@ Rows are the outer form, columns the inner. *M* a premise, *A* a conclusion, *F*
 |---|---|---|
 | `not` | a fact, `(not F)` with F a fact, a negation or an `eq` fact; a premise, `(not …)` of a pattern | a fact may hold a fact as an argument ([Q40](../../../docs/decisions/language/Q40-a-fact-may-hold-a-fact-as-an-argument.md)); the negation of a negation is a fact ([Q-M1f.391](../../../docs/decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)) |
 | `absent` | one production of a premise, `(absent Premise)`, and one of a claim | `absent` heads a premise and a member of a claim, nothing else ([Q-M1f.122](../../../docs/decisions/language/Q-M1f.122-absent-heads-a-premise-and-a-member-of-a-claims.md)); it is read at its own boundary ([Q-M1e.18](../../../docs/decisions/language/Q-M1e.18-eq-neq-and-absent-are-read-only-at-their-own.md)) |
-| `open` | one production, a rule's whole `:assert`: `(open)` or `(open R)`; a reserved word everywhere else | `open` is written only as a rule's verdict ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)) |
+| `open` | one production, a rule's whole `:assert`: `(open)` or `(open R)`; a reserved word everywhere else | `open` is written only as a rule's verdict ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)) |
 
 And the standing rule of `AGENTS.md` § The language: *a fact that is an argument is one a state could hold: a fact
 of an ordinary relation or its negation; `absent` with an argument is never a nested head*.

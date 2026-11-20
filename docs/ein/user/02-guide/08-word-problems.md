@@ -141,9 +141,9 @@ Here is the whole program, the part of the theory this problem needs written bes
 
 `(diff-of ?a ?x ?d z)` reads the subtraction's answer: the difference `?d`, and `z` where the calculator says how
 far the first number falls short of the second, here by nothing
-([Q-M1f.364](../../../decisions/stdlib/math/decimal/Q-M1f.364-a-subtraction-answers-the-difference.md)). The rule `words` closes the theory's relations, so
-the engine supposes no fact of them: a relation left open is one whose facts the engine may take as
-[hypotheses](../03-syntax-and-semantics/09-hypotheses.md), and a word theory supposes nothing.
+([Q-M1f.364](../../../decisions/stdlib/math/decimal/Q-M1f.364-a-subtraction-answers-the-difference.md)). The rule `words` closes the theory's relations: where
+a program supposes nothing and turns on no obligation, as here, the engine guesses facts of the relations it declares
+and does not close ([hypotheses](../03-syntax-and-semantics/09-hypotheses.md)), and a word theory guesses nothing.
 
 **As a graph.** The problem's three sentences, from the digraph `kb` of `ein render program` on that file, cut to
 them: each fact is an octagon, its arrow `1` at its relation and its next arrows at its arguments in order, its

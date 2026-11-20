@@ -7,10 +7,14 @@ speaks about it. The two are independent, so a fact of the graph is held and in 
 held, or both, and it is one node in each case
 ([Q-M1f.380](Q-M1f.380-an-objects-identity-is-its-name-or-its-tuple.md)).
 
-**A stored negation is a context.** `(not P)` is a held fact that points at `P`, and it is the one context the
-kernel reads: `P` held beside it is a contradiction. It is no mirror of the global context: it holds the facts
-something stated or concluded as denied, so a fact may be in neither, which is *open*. Every other relation's
-facts are opaque to the kernel, and mean what a program's rules make of them.
+**A stored negation and a hypothesis are contexts.** `(not P)` is a held fact that points at `P`: where a program
+imports the contradiction's rules, `P` held beside it is a contradiction
+([Q-M1f.557](../stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). It is no mirror of the global
+context: it holds the facts something stated or concluded as denied, so a fact may be in neither, which is
+*unknown*. `(open P)` is a held fact that points at `P` too, and the kernel reads it at root: `P` is a hypothesis,
+and holding `(open P)` holds nothing of `P`
+([Q-M1f.566](../hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). Every other relation's facts
+are opaque to the kernel, and mean what a program's rules make of them.
 
 **The words, each in its place.** *Object* is the word of the core theory, on the graphs, for every node: an atom
 or a fact ([Q-M1f.379](Q-M1f.379-an-object-is-a-node-of-the-knowledge-base-graph.md)). *Value* is used only of a

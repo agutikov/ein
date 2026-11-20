@@ -22,9 +22,11 @@ H is built once, at root, as **the union of its writers** ([`hypgen.rs`](../../.
 2. beside them, **the obligations** activated at root
    ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root
    owes, and, read off the rules with no saturation, what a rule can bring a commitment to owe. Under an activated
-   obligation a state that owes nothing proposes nothing from it. An obligation whose guard reads a relation whose
-   held extent a commitment can change still proposes what root's guard gives, and the static check flags the
-   program (§ 7); one whose witness step does not resolve under its activator proposes nothing;
+   obligation a state that owes nothing proposes nothing from it. An obligation whose guard, beside its witness, or
+   whose trigger reads a relation whose held extent a commitment can change proposes what root's guard gives, as any
+   obligation does, and the static check flags the program (§ 7,
+   [Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)); one
+   whose witness step does not resolve under its activator proposes nothing;
 3. only where neither writes and no obligation is activated, **the blind enumerator**
    ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)): every
    eligible relation of one or two arguments, every guessable atom in each of
@@ -82,8 +84,9 @@ that holds a hypothesis root does not makes the program not monotone, found in f
 Every route reads every commitment through **one node function**
 ([`region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs)): a fork of root's KB
 ([`03-data-model.md`](03-data-model.md)) with the commitment's facts written in candidate order, resumed from root's
-snapshot ([`06-saturation.md`](06-saturation.md)), saturation alone, and nothing written into root or the node by the
-search ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Its outcome is
+snapshot ([`06-saturation.md`](06-saturation.md)), saturation alone, what it owes read at its fixpoint, its `open`
+facts written there where the pass of `open.rs` runs (§ 1), and nothing written into root or the node by the search
+([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Its outcome is
 its kind, `dead` (its fixpoint is contradictory), `owing` (alive, with an undischarged obligation) or `in-r`, with what
 it owes, its closure, and its facts beyond root's. So a route and the oracle may visit different nodes and cannot
 read one differently.
@@ -169,7 +172,8 @@ line is $\{\emptyset\}$.
 
 ### 4.1 Budgets
 
-A run has two bounds: the **region budget**, facts beyond root summed over every fixpoint the run computes
+A run has two bounds: the **region budget**, facts beyond root, their `open` facts aside, summed over every fixpoint
+the run computes
 (`--region-budget`, [$2^{20}$ by default](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md)),
 checked before each step, and on the cube the **region limit**, the largest `n` whose whole cube a flagged program
 gets (`--region-limit`). **A budget stops work and never changes an answer**: a stopped run says what it established,
@@ -207,7 +211,9 @@ Two commitments that saturate to the same KB are one state. `canon::state_key`
 collision costs a comparison and never a wrong answer; `canon::state_digest` exists for display alone. For identity
 any total order is equivalent, so the key sorts by fact id, which is no observable order; where a state is shown, it
 is ordered by its rendered text ([`01-determinism-and-order.md`](01-determinism-and-order.md)). No carrier head is
-excluded, since a hypothesis is a provenance kind, not a wrapper.
+excluded: a committed fact is the fact itself, its provenance a commitment's, and a state's `open` facts are facts of
+the kernel's relation `open`, a function of the rest of the state
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)).
 
 ## 6. Cores and explanations
 

@@ -1,0 +1,33 @@
+digraph verdicts_as_strata {
+  rankdir=LR; nodesep=0.35; ranksep=0.7;
+  node [fontname="Inter", fontsize=11, shape=ellipse];
+  edge [fontname="Inter", fontsize=10];
+  subgraph cluster_fixpoint { label="the fixpoint: what a fork inherits"; style="rounded"; color="#888888"; fontname="Inter"; fontsize=10;
+    r [label="the program's\nrelations"];
+    bot [label="false"];
+  }
+  subgraph cluster_end { label="the last stratum"; style="rounded"; color="#888888"; fontname="Inter"; fontsize=10;
+    end [label="the end:\ninconsistent", shape=box];
+  }
+  subgraph cluster_open { label="of the fixpoint, inherited by no fork"; style="rounded,dashed"; color="#888888"; fontname="Inter"; fontsize=10;
+    owes [label="open(r)"];
+    hyp [label="open(f)"];
+  }
+  subgraph cluster_read { label="read on the finished state"; style="rounded,dashed"; color="#888888"; fontname="Inter"; fontsize=10;
+    alive [label="alive"];
+    discharged [label="discharged"];
+  }
+  subgraph cluster_answer { label="the answer"; style="rounded,dashed"; color="#888888"; fontname="Inter"; fontsize=10;
+    inR [label="in R"];
+  }
+  r -> bot [label="a restriction"];
+  bot -> end [label="the rule every\nprogram holds"];
+  r -> end [label="a rule that\nends a state"];
+  r -> owes [label="trigger"];
+  r -> owes [label="¬ witness", color="#d62728", fontcolor="#d62728", style=dashed];
+  r -> hyp [label="a pattern;\na domain"];
+  end -> alive [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+  owes -> discharged [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+  alive -> inR;
+  discharged -> inR;
+}

@@ -8,16 +8,18 @@ Decisions on hypotheses: the rules that conclude one, obligations, the writers o
 - [Q-M1e.11](Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md) — H holds what a debt only a commitment brings would propose
 - [Q-M1e.12](Q-M1e.12-the-blind-enumerator-is-untyped.md) — The blind enumerator is untyped
 - [Q-M1e.21](Q-M1e.21-a-rule-brings-in-no-name.md) — A rule brings in no name
-- [Q-M1e2.10](Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md) — An obligation whose domain can grow writes its candidates at root, and its program is flagged
-- [Q-M1f.32](Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md) — An `eq` or `neq` instance is no hypothesis
+- [Q-M1e2.10](Q-M1e2.10-an-obligation-whose-domain-can-grow-writes.md) — An obligation whose domain can grow writes its candidates at root, and its program is flagged
+- [Q-M1f.32](Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md) — An `eq` or `neq` instance is no hypothesis
 - [Q-M1f.226](Q-M1f.226-an-obligations-name-is-no-guessable-atom.md) — An obligation's name is no guessable atom
-- [Q-M1f.242](Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md) — A list that only repeats what another declaration says is a note
-- [Q-M1f.243](Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md) — An obligation is read as activated, and judged by the open facts root holds
+- [Q-M1f.242](Q-M1f.242-a-list-that-only-repeats-what-another.md) — A list that only repeats what another declaration says is a note
+- [Q-M1f.243](Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md) — An obligation is read as activated, and judged by the open facts root holds
 - [Q-M1f.244](Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md) — An obligated relation's held extent is not closed, whatever generates
 - [Q-M1f.245](Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md) — The hypothesis mechanisms are judged at load, on every command
 - [Q-M1f.254](Q-M1f.254-solve-no-search-relaxes-no-conflict.md) — `(solve :no-search)` relaxes no conflict
 - [Q-M1f.306](Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md) — The guessable atoms are the program's names, never a kernel dunder
-- [Q-M1f.308](Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md) — An obligation activated at root writes what would pay what root owes
+- [Q-M1f.308](Q-M1f.308-an-obligation-activated-at-root-writes.md) — An obligation activated at root writes what would pay what root owes
+- [Q-M1f.390](Q-M1f.390-open-r-carries-no-justification-and-the-instance.md) — `(open R)` carries no justification, and the instance is the engine's record
+- [Q-M1f.549](Q-M1f.549-a-hypothesis-is-a-fact-open-f-whoever-writes.md) — A hypothesis is a fact `(open F)`, whoever writes it
 - [Q-M1f.566](Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md) — What a state owes is `(open R)`, a fact, and `(open F)` is a hypothesis
 - [Q-M1f.567](Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md) — A hypothesis rule is a rule that concludes `(open F)`
 - [Q-M1f.569](Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md) — A rule may read an `open` fact, and its program is then not monotone

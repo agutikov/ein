@@ -38,7 +38,7 @@ parse error, read where the module is.
   `ein_word_unknown` writes `:ein dead`, a word that is none of the engine's; `ein_beside_assert` writes it beside
   an `:assert`, where a rule states one or the other.
 - **No declarator binds `open`**
-  ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is a
+  ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)): it is a
   name wherever a name goes, and the kernel's word at the head of a written fact, a premise or a conclusion.
   `reserved_open_symbols`' `:symbols (open)` reads the module, and the four `reserved_open_*` keep the module's parse
   error, with its note, *open takes one argument: …*.
@@ -48,7 +48,8 @@ parse error, read where the module is.
   `open_compound_witness`, whose `(open ?R)` resolves to no single witness, starts its line the same way.
 - **A list that disagrees with root's `open` facts**
   ([Q-M1f.578](../../../docs/decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)):
-  `no_hypothesis_beside_open` names in `:no-hypothesis` a relation root holds a hypothesis of.
+  `no_hypothesis_beside_open` names in `:no-hypothesis` `likes`, a relation root holds an `open` fact of,
+  `(open likes)`, which the obligation `total-owed` writes.
 - **A relation variable no parameter binds**, `unbound_head.ein`, `(?R ?x)` with `?R` no parameter: the loader
   refuses it where the rule is written, so it never reaches the compiler. A relation parameter an activator binds to
   a fact is no refusal: the program loads under a warning, and the activator activates nothing

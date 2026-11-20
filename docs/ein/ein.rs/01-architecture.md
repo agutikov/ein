@@ -65,7 +65,7 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 | judge the mechanisms | where two hypothesis mechanisms could conflict, a second load is saturated and they are read together on root's fixpoint | `ein-cli/src/common.rs` (`load_held`), `ein_infer::mechanisms` |
 | compile | each rule, per activator, to a plan, memoised for the run | `ein_infer::{compile, plan, engine}` |
 | saturate root | the closure and the boundary, to root's fixpoint | `ein_infer::{saturator, match_, firing, contradiction}` |
-| build H | the writers at root, their union; each state's `open` facts | `ein_infer::{hypgen, hypothesis_rules, oblgen, open}` |
+| build H | the writers at root, their union, written as root's `open` facts | `ein_infer::{hypgen, hypothesis_rules, oblgen, open}` |
 | check | what root owes, the static monotonicity check | `ein_infer::{obligations, monotone}` |
 | answer | the question's route over `R`, each node through the node function | `ein_infer::{explore, tree, tree_classes, states, downset, region}` |
 | read | `R` described once; each listed state's model and each query's projection | `ein_infer::{described, read_out, verdict}` |
@@ -128,7 +128,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `saturator.rs`, `firing.rs`, `contradiction.rs` | the two-phase loop and the agenda; a rule application; the contradiction check |
 | `obligations.rs` | the obligation pass over a quiescent KB |
 | `naf_deps.rs`, `strata.rs` | the static map of what reads an `absent` over what; the rule dependency graph and its strata |
-| `hypgen.rs`, `hypothesis_rules.rs`, `oblgen.rs`, `open.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the writers of H and their union; the pass that writes a state's `open` facts at its fixpoint; the mechanisms read together; the alive-set invariant; what the universe leaves out |
+| `hypgen.rs`, `hypothesis_rules.rs`, `oblgen.rs`, `open.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the writers of H and their union; the pass that writes a state's `open` facts, root's and those of a state above it that is printed, saved or reads them; the mechanisms read together; the alive-set invariant; what the universe leaves out |
 | `monotone.rs`, `detector.rs`, `extendable.rs` | the static check, the detector, the relations a commitment can extend, followed through each rule's activator |
 | `region.rs` | the node function, the fan-out, the cube (route 2, the oracle) |
 | `explore.rs` | every question about `R` and its route; the licences |
@@ -166,8 +166,8 @@ stdout, which is `ein-cli`'s.
 | a fact | `ein.y` | `from_ir` writes it, with `source` provenance | — | read by every plan through the indexes |
 | a rule | `ein.y` | `from_ir` registers it (`entities`) | `compile::compile_rule`, once per activator, to a `Plan` | the matcher finds its matches; the saturator fires them |
 | `(absent …)` | `ein.y` | — | lifted to a NAF guard (`split_naf`), or a nested step | judged at the boundary, on a quiescent KB |
-| `(open ?R)` | `ein.y` | an obligation rule | compiled like any rule | the obligation pass, after the fixpoint |
-| `(open F)`, a hypothesis | `ein.y` | a rule that concludes one, registered in `Program::hypotheses` | compiled like any rule, never into the saturation's memo | `hypothesis_rules`, one of the writers of H, at every state's fixpoint |
+| `(open R)`, what a state owes | `ein.y` | an obligation rule, whose whole `:assert` it is (`validate_open`) | compiled like any rule | the obligation pass, after the fixpoint, at every state; `open`'s pass writes `(open R)` once for each relation owed where it runs |
+| `(open F)`, a hypothesis | `ein.y` | a rule that concludes one, registered in `Program::hypotheses`; one the program writes, held at root alone (`write_open_facts`) | compiled like any rule, never into the saturation's memo | `hypothesis_rules`, one of the writers of H; `open`'s pass writes root's, and those of a state above it that is printed, saved or reads them |
 | a macro | `ein.y` | expanded away before the load (`macros`) | — | — |
 | an import | `ein.y` | resolved before the load (`imports`) | — | — |
 | `(query …)`, `(solve …)` | `ein.y` | registered on the program | a goal compiles under `#query` | the routes; `verdict` projects a goal over a state |

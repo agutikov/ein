@@ -10,8 +10,8 @@ position holds a name where the program shows one there:
 - a rule's conclusion that writes a name, a hypothesis `(open F)` among them, or a variable that can hold one, to
   a fixpoint;
 - the rule's own written activator;
-- a declared relation the hypotheses are taken from: no rule that concludes a hypothesis declared, the `(solve …)` lists leaving it in, and
-  nothing writing the closure marker;
+- a declared relation the blind enumerator can propose facts of: no rule that concludes a hypothesis written, no
+  `(solve :no-search)`, the `(solve …)` lists leaving it in, and nothing writing the closure marker;
 - a guard that alone binds the variable.
 
 A position that holds both a name and a fact is refused. A pattern whose relation is a parameter, `(?R ?x)`, is

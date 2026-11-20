@@ -225,8 +225,8 @@ holds a pair* says that the state holds that fact.
 
 `total` and `surjective` fire only where every partner carries a stored negation: a relation of which the state
 holds no fact yet is not a violation. What such a relation still **owes** is the pair of obligations `total-owed`
-and `surjective-owed`,
-activated beside them, which report a debt and refute nothing ([obligations](08-obligations.md)).
+and `surjective-owed`, activated beside them: a state in which a member has no partner yet owes, and holds
+`(open R)`, and nothing is refused ([obligations](08-obligations.md)).
 
 **Other checks.**
 

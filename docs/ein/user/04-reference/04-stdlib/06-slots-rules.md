@@ -224,8 +224,9 @@ A slot with every member of a label excluded is a contradiction.
 
 ### What is still owed
 
-The obligations of the two rules above: the same question where nothing is stated yet. Each concludes `(open ?R)`,
-derives nothing, and is read once over a state that has stopped changing.
+The obligations of the two rules above: the same question where nothing is stated yet. Each concludes `(open ?R)`
+and is read once over a state that has stopped changing; a state it matches owes, and holds `(open R)`, once a
+relation, a fact no fork inherits.
 
 #### `slot-owed-room`
 

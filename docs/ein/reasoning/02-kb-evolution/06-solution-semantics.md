@@ -141,12 +141,12 @@ Three things decide $H$:
   together with, where an obligation is activated at root, the facts that would pay what root owes and what a
   commitment can bring it to owe, the union of the two
   ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md),
-  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)); and where
+  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-an-obligation-activated-at-root-writes.md)); and where
   neither writes and no obligation is activated, every fact the blind enumerator can form
   ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)). An
   obligation reads its domain at root, and where a domain could grow under it, it still writes what root's guard
   gives and the program is not monotone
-  ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md));
+  ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-an-obligation-whose-domain-can-grow-writes.md));
 - **what the program scopes out**: a fact of a relation the program excludes from the blind enumerator's guessing is
   none of its candidates, and a scoping that disagrees with what root holds under $\mathsf{open}$ makes the text no
   program;
@@ -264,7 +264,7 @@ $\mathsf{inconsistent}$ was applied in its saturation
 ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)): the rule every program holds, on a held
 $\bot$, or any other of $P_{\mathsf{inc}}$. Nothing else makes a state dead, and no fact stands for it: the
 application is recorded with what it rests on, as a derivation is, and a core is taken over that record
-([cores](09-cores.md#a-contradiction)). A fork starts from everything its parent holds and has recorded, the
+([cores](09-cores.md#a-contradiction)). A fork starts from everything its parent holds and has recorded but its facts of $\mathsf{open}$, the
 application that ended it among them, so a dead state's forks are dead, and on a monotone program so is every state
 above a dead one (§ 1.6):
 
@@ -417,15 +417,16 @@ and one minimal generator $\lbrace v \rbrace$: four commitments, three states.
 
 ### 1.6 Monotone
 
-A program is **monotone** when growth of a commitment can neither take a conclusion away nor add a debt: no rule
-that derives reads, under an odd number of absences, facts of a relation whose held extent a commitment can change,
-and no obligation's trigger reads facts of one. How that is decided for a program, and what a program that fails
+A program is **monotone** when growth of a commitment can neither take a conclusion away nor add a debt or a
+hypothesis: no rule that derives reads, under an odd number of absences, facts of a relation whose held extent a
+commitment can change, no rule reads a fact of $\mathsf{open}$, and no obligation's trigger reads facts of such a
+relation. How that is decided for a program, and what a program that fails
 the test is, is [Monotone and non-monotone programs](08-monotonicity.md). On a monotone program, for all
 $C \subseteq C' \subseteq H$:
 
 $$
 \begin{aligned}
-\operatorname{st}(C) &\subseteq \operatorname{st}(C') && \text{the state is monotone} \\
+\operatorname{st}(C) \setminus \operatorname{ext}_{\operatorname{st}(C)}(\mathsf{open}) &\subseteq \operatorname{st}(C') && \text{the state is monotone} \\
 \operatorname{dead}(C) &\implies \operatorname{dead}(C') && \text{dead is upward-closed} \\
 \operatorname{discharged}(C) &\implies \operatorname{discharged}(C') && \text{discharged is upward-closed}
 \end{aligned}
@@ -433,6 +434,8 @@ $$
 
 - a contradiction stays as facts are added;
 - a witness stays, and no new debt arrives;
+- every fact but those of $\mathsf{open}$ stays: what a state owes and supposes is its own fixpoint's, and a larger
+  state owes less;
 - so $R$ (§ 2) has no hole, and its two lines describe it;
 - and $\operatorname{cl}$ is a closure operator (§ 1.5).
 
@@ -671,6 +674,65 @@ The picture is the engine's drawing of this region ([its source](diagrams/06-reg
 border is the lines, as in § 1.5. This drawing also overlays one computation of $R$ on the lattice, by a node's
 shape: an octagon is a state the computation reported and a rounded box a node it evaluated. It reported the seven
 states of $R$ and evaluated all eight nodes, the dead triple among them, since no smaller dead set decides it.
+
+### 2.6 R with no search
+
+**$R$ needs no search to be stated.** Each commitment $C \subseteq H$ is a **world**, named by an object $w_C$ that
+no other world shares, and each fact $f$ of its state is held once more as the fact $\operatorname{in}(w_C, f)$: $f$
+then stands in the context of that fact, and no world holds it in the global context
+([the knowledge base](../01-static-ir/01-knowledge-base.md#the-global-context-and-the-context-of-a-fact)). So every
+state is a context. The worlds read nothing of one another, so the whole lattice is one knowledge base, their union,
+which the program's rules, each written again inside a world, take to its fixpoint in one saturation. A world is
+dead where a rule that states the engine's word would apply inside it; since that word ends a state, and would end
+every world at once, the rule written inside a world concludes $\operatorname{in}(w, \bot)$ in its place. A world
+owes where an obligation's instance holds inside it unpaid, and $R$ is the commitments whose world is neither.
+
+For a rule $\rho$ of $P$, write $\rho^{\mathrm{in}}$ for $\rho$ with every premise, absence and conclusion $g$
+written $\operatorname{in}(w, g)$, for one variable $w$ that $\rho$ does not use, and, where
+$\rho \in P_{\mathsf{inc}}$, the conclusion $\operatorname{in}(w, \bot)$ in the place of the word; $P^{\mathrm{in}}$
+is every such rule. Then
+
+$$
+\begin{aligned}
+\mathcal{U} &= \operatorname{sat}_{P^{\mathrm{in}}}\Bigl(\,\bigcup_{C \subseteq H} \lbrace\, \operatorname{in}(w_C, f) \;:\; f \in \mathrm{root} \cup C \,\rbrace \Bigr) \\
+\operatorname{st}(C) &= \lbrace\, f \;:\; \operatorname{in}(w_C, f) \in \mathcal{U} \,\rbrace \\
+R &= \lbrace\, C \subseteq H \;:\; \operatorname{in}(w_C, \bot) \notin \mathcal{U} \;\land\; \operatorname{Owed}(\operatorname{st}(C)) = \emptyset \,\rbrace
+\end{aligned}
+$$
+
+where the saturation reads each world's absences at that world's own fixpoint. The second line is § 1.5's
+$\operatorname{st}(C) = \operatorname{sat}(\mathrm{root} \cup C)$, read inside one knowledge base. A dead world goes on
+saturating where a dead state ends at the word, so it may hold more than the dead state does; it is in no $R$ either
+way.
+
+**Nothing in that statement chooses, orders or splits.** A search is a way to decide the same $R$ while building
+only some of the worlds. The oracle builds all $2^{n}$ of them, one saturation a world, and is this statement read by
+brute force, which every route is held to
+([Q-M1e2.32](../../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md);
+[finding R](07-finding-r.md#2-the-oracle-the-cube)). The verdicts read a world only once its own facts are
+complete, so they stand a stratum above them; a fact about the whole of $R$ that reads the verdicts under an absence,
+*$f$ holds in every state of $R$*, stands one stratum higher again.
+
+**Two candidates.** $H = \lbrace s(\mathsf{a}), s(\mathsf{b}) \rbrace$, a restriction
+$s(\mathsf{a}) \land s(\mathsf{b}) \implies \bot$, and an obligation that owes a fact of $s$ while none is held,
+$\operatorname{absent}(s(x)) \implies \operatorname{open}(s)$. The four worlds, each fact a world holds drawn as an
+arrow labelled *in* from the world to the fact, which stands in the frame of the context of $\mathsf{in}$:
+
+![The four worlds of two candidates as one knowledge base: each world an object, an arrow labelled in to each fact it holds, the facts in the frame in ctx, and in from the world of both candidates to false dashed](diagrams/06-r-with-no-search.svg)
+
+A world's fill is what the verdicts say of it, as in the drawing of § 1.5: amber owes, green is in $R$, red is dead.
+The dashed arrow is $\operatorname{in}(w_{\lbrace s(\mathsf{a}), s(\mathsf{b}) \rbrace}, \bot)$, which the restriction
+written inside a world concludes. Read off the one knowledge base:
+
+$$
+\begin{aligned}
+\operatorname{in}(w_{\lbrace s(\mathsf{a}), s(\mathsf{b}) \rbrace}, \bot) &\in \mathcal{U} \\
+\operatorname{Owed}(\operatorname{st}(\emptyset)) &= \lbrace\, \text{the instance over } s \,\rbrace \\
+R &= \lbrace \lbrace s(\mathsf{a}) \rbrace, \lbrace s(\mathsf{b}) \rbrace \rbrace
+\end{aligned}
+$$
+
+the region § 2 gives the program.
 
 ---
 

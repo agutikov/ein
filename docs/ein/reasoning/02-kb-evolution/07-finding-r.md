@@ -90,7 +90,9 @@ of the table:
 - the components, the maximal sub-cubes, the holes, and the counts $k_s$ and $k_c$.
 
 Its cost is $2^{n}$ evaluations of $\operatorname{st}$, so it exists as a computation only for small $n$; as a
-definition it exists for every program.
+definition it exists for every program. It is the statement of $R$ with no search, every state a world of one
+knowledge base ([Solution semantics § 2.6](06-solution-semantics.md#26-r-with-no-search)), read one world at a
+time.
 
 The running example of [the hypothesis space](05-hypothesis-space.md): one guest owed a chair, $c_1$ or $c_2$, and a
 drink, $t$ or $m$, each of the two relations stated functional, and nobody at the first chair drinks milk. Its
@@ -121,8 +123,11 @@ the oracle's $R$ as from every route's. A relation of which no writer proposes a
 ## 3. A program the static check flags
 
 A program is **flagged** when it is not proved monotone
-([Monotone and non-monotone programs](08-monotonicity.md)). On such a program a dead set can have an alive superset,
-and an alive superset of a member of $R$ can owe:
+([Monotone and non-monotone programs](08-monotonicity.md)), or when a computation of its answer finds a state above
+root that holds a hypothesis root does not
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)): that answer
+stands as computed, and what this section says of a flagged program is said of it. On such a program a dead set can
+have an alive superset, and an alive superset of a member of $R$ can owe:
 
 $$
 \begin{aligned}

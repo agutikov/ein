@@ -67,7 +67,7 @@ repeated until no call is left, a body's own calls included
 ([Q-M1f.130](../../../decisions/language/Q-M1f.130-a-macros-call-in-a-conclusion-is-expanded.md)). What must be a
 well-formed pattern or conclusion is the result, so a body is judged where it is called and not where it is
 defined ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)). The
-bounded universal and the open fact are such macros, so a program that writes them is a program of absences
+bounded universal and the *unknown* test are such macros, so a program that writes them is a program of absences
 before any rule fires ([rules as data](01-rules-as-data.md#3-what-already-describes-itself)).
 
 **Flatten.** A conclusion's conjunction is read as the set of its literals, at any depth of nesting:
@@ -79,7 +79,10 @@ $$
 \end{aligned}
 $$
 
-A rule concludes a conjunction of literals, or states the engine's word, and nesting adds nothing.
+A rule concludes a conjunction of literals, hypotheses among them, states the engine's word, or owes a relation,
+$\operatorname{open}(r)$ as its whole conclusion, and nesting adds nothing. Nothing under $\mathsf{open}$ is
+flattened: a hypothesis is of one fact, and $\mathsf{open}$ of a conjunction, written or made by an expansion, is
+no literal ([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)).
 
 **Instantiate.** A rule with parameters stands for one rule per activator
 ([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)):

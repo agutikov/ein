@@ -5,8 +5,9 @@ model, and which. Ein's answer to the second is the region $R$, the commitments 
 discharged ([solution semantics](06-solution-semantics.md)). This page states what a program can say about that
 answer from the inside, in its rules, and where that stops:
 
-- each rule is a sentence about the one state it fires in, and the two bounds on $R$ are made of such sentences
-  (§ 1);
+- each rule is a sentence about the one state it fires in, and the two bounds on $R$ are made of such sentences;
+  a verdict may be a fact a fork inherits exactly when it stays true as the state grows, and *owed* and
+  *discharged* are rules (§ 1);
 - a sentence about the set of states is not a rule, and why no form of the language can be one (§ 2);
 - such a sentence is a claim, stated at the meta level and checked against $R$ (§ 3);
 - an obligation's alternatives are jointly exhaustive, which is what lets a search branch on one debt (§ 4);
@@ -34,9 +35,9 @@ which it holds **owes** that instance, $\operatorname{owes}(o, a, \theta, S)$; t
 $\operatorname{Owed}(S)$, and a state that owes none is **discharged**
 ([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)).
 
-Obligations bound $R$ from below: they set its **minimal line**. A state that owes holds the verdict as a fact,
-$\operatorname{open}(r)$, once, written at its own fixpoint and inherited by no state above it, so a state that pays
-it holds none
+Obligations bound $R$ from below: they set its **minimal line**. A state that owes an instance over $r$ holds the
+fact $\operatorname{open}(r)$, once however many instances over $r$ it owes, a fact of its own fixpoint that no
+state above it inherits, so a state that pays it holds none
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md); the user's
 [obligations page](../../user/03-syntax-and-semantics/08-obligations.md) has the spelling).
 
@@ -62,12 +63,106 @@ matches while the cluster finds nothing. With one guest and two chairs their reg
 [monotonicity § 6](08-monotonicity.md#6-the-two-kinds-compared): the empty commitment owes, both seatings
 together are dead, and $R$ is the two seatings between.
 
-The two are not symmetric, and the asymmetry is why the debt is not a fact. $\bot$ can be stored, because a dead
-state stays dead under any addition. A debt exists to be paid by an addition: a stored debt would survive its own
-payment in the fork that paid it. So an obligation derives nothing and is no part of the agenda; it is read once
-on each quiescent state, and $\operatorname{owes}(S)$ is a property of the node, beside
-$\operatorname{dead}(S)$. Whether a state owes is therefore decided by that state alone, as whether it is dead
-is.
+The two are not symmetric, and the asymmetry is why the debt is held otherwise than $\bot$. $\bot$ can be a fact
+every fork inherits, because a dead state stays dead under any addition. A debt exists to be paid by an addition:
+an inherited debt would survive its own payment in the fork that paid it. So an obligation is no part of the
+agenda: it is read once on each state's fixpoint, and $\operatorname{open}(r)$ is a fact of that fixpoint, in the
+part of the state that no fork inherits. Whether a state owes is therefore decided by that state alone, as whether it is
+dead is.
+
+### 1.1 Which conclusion a fork may inherit
+
+A fork starts from everything its parent holds, and no fact is ever removed. So **a conclusion may be a fact a fork
+inherits exactly when it stays true in every larger state**. One that a larger state can lose is held by the state
+alone, a fact of its own fixpoint in the part of it no fork inherits, or it is read on the state and written
+nowhere. On a program the static check calls monotone ([monotonicity](08-monotonicity.md)), with
+$C \subseteq C'$, the conclusions that say how far a state has got are these:
+
+| the conclusion | says of $\operatorname{st}(C)$ | in $\operatorname{st}(C')$ | so it is |
+|---|---|---|---|
+| $\mathsf{inconsistent}$ | it is contradictory | stays: dead is upward-closed | a rule's word and no fact; its application is recorded, and a fork inherits the record ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)) |
+| $\operatorname{open}(f)$, $f$ a fact | $f$ is a hypothesis: a commitment may add it | goes where it was written for a debt that a larger state pays | a fact of the part no fork inherits, read off each fixpoint; $H$ is root's ([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union)) |
+| $\operatorname{open}(r)$, $r$ a relation | it owes an instance over $r$ | goes: a larger state pays | a fact of the part no fork inherits, read off each fixpoint |
+| *still open*: $f \in H$, neither held nor denied | a commitment may still decide $f$ | goes: a larger state decides it | read against $H$, written nowhere |
+| *alive* | no rule that states the engine's word has applied | goes: a commitment can add what such a rule reads | read on the finished state, written nowhere ([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)) |
+| $\operatorname{due}(j)$, $\operatorname{paid}(j)$ | the instance $j$ is required; it is paid | stay | ordinary facts, which a fork inherits (§ 1.2) |
+| $\operatorname{disch}$ | no requirement is unpaid | stays: discharged is upward-closed | an ordinary fact, which a fork inherits (§ 1.2) |
+
+**What a debt held as a fact would be, and what it is.** Read as facts, the verdicts of what a state owes would be
+the only conclusions that **duplicate** and the only ones that **can be removed**. Both are so, and the fact carries
+no justification to escape either: it is $\operatorname{open}(r)$ and nothing more
+([Q-M1f.390](../../../decisions/hypotheses/Q-M1f.390-open-r-carries-no-justification-and-the-instance.md)).
+
+- **It duplicates.** Two instances over one relation conclude one fact, one node of the graph, so a state holds
+  $\operatorname{open}(r)$ once while it owes any number of instances over $r$. The count is of the instances, kept
+  beside the fact by what writes it, and where each instance came from is the engine's own record, which no rule
+  reads:
+
+$$
+\begin{aligned}
+\operatorname{open}(r) \in S &\iff \exists\, (o, a, \theta) \in \operatorname{Owed}(S).\ o \text{ owes } r \\
+\operatorname{owes}(S) &= \lvert \operatorname{Owed}(S) \rvert \ \geq\ \lvert \lbrace\, r : \operatorname{open}(r) \in S \,\rbrace \rvert
+\end{aligned}
+$$
+
+- **It can be removed.** A larger state pays it, and no rule removes a fact. So it is a fact of each state's own
+  fixpoint, inherited by no fork: the state that pays holds none, and nothing was taken away.
+
+### 1.2 Owed and discharged, as rules
+
+*Owed* is a rule already: the obligation, $T_o \land \operatorname{absent}(W_o) \implies \operatorname{open}(r)$. A
+rule for *discharged* over it would read the absence of its conclusion, and a rule that reads an
+$\mathsf{open}$ fact makes its program not monotone
+([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)): the fact is
+held at one state and not at a larger one, and what a rule concluded from it is inherited. The fixpoint's reading
+says it instead, of every state:
+
+$$
+\operatorname{discharged}(S) \iff \operatorname{Owed}(S) = \emptyset
+$$
+
+**What stays of a debt runs as three ordinary rules.** Write the requirement and its payment in place of the debt,
+for an instance $j = (o, a, \theta)$:
+
+$$
+\begin{aligned}
+T_o(a, \theta) &\implies \operatorname{due}(j) \\
+T_o(a, \theta) \land W_o(a, \theta, \bar{y}) &\implies \operatorname{paid}(j) \\
+\operatorname{absent}\bigl(\operatorname{due}(j) \land \operatorname{absent}(\operatorname{paid}(j))\bigr) &\implies \operatorname{disch}
+\end{aligned}
+$$
+
+The first two read no absence. The third reads an absence inside an absence, a universal, *for every requirement,
+a payment*, which a larger state can only turn from failing to holding where no commitment adds a requirement; on a
+monotone program none does, since a trigger reads only relations whose held extent no commitment changes (§ 4). So
+the three keep a program monotone, a fork inherits each fact they conclude, and for the obligations they restate,
+at every state,
+
+$$
+\operatorname{disch} \in S \iff \operatorname{discharged}(S)
+$$
+
+The dual of $\bot$ is $\operatorname{disch}$, and not $\operatorname{open}(r)$: what is dead stays dead and what is
+discharged stays discharged, and each can be a fact a fork inherits; *alive* and *owed* are what a larger state
+loses. The standard library states the three for its obligations, and the user's
+[obligations page](../../user/03-syntax-and-semantics/08-obligations.md#the-requirement-and-the-payment-as-facts)
+writes them for one, with a run.
+
+### 1.3 The verdicts are the last strata
+
+Read with the strata of [absence](03-absent-and-naf.md#stratification), the verdicts stand after every relation of
+the program:
+
+![The verdicts as strata: false in the fixpoint, the end after it, the open facts of the fixpoint, alive and discharged read on the finished state, and the answer](diagrams/10-verdicts-as-strata.svg)
+
+A black arrow is a positive read and a red dashed one a read under an absence. $\bot$ is concluded in the
+fixpoint, by a restriction; the end, a rule that states $\mathsf{inconsistent}$, stands last among the program's
+rules. The $\mathsf{open}$ facts are read off the fixpoint: $\operatorname{open}(r)$ reads an obligation's
+trigger and the absence of its witness, and $\operatorname{open}(f)$ what a rule's pattern or an obligation's domain
+finds. *Alive* reads the absence of the end, *discharged* the absence of anything owed, and a state is in $R$ where
+it is both. What the fixpoint's reading does differs from firing such rules in two things and no more: **it reads
+them once, after the fixpoint, in the order of the strata**, where an agenda would admit them in written order; and
+**what it writes is the state's own**, never part of what a fork starts from.
 
 ## 2. The second-order boundary
 
@@ -245,7 +340,7 @@ is a duplicate, not a gap, and $R$ is a set, so it holds the state once.
    extend would hold, at some state, a witness root never saw. Wherever that could happen the obligation still
    writes what root's guard gives, and the program is one the static check flags, so nothing is claimed of its
    answer ([hypothesis generation § 4.3](04-hypothesis-generation.md#43-where-the-payments-can-grow),
-   [Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)).
+   [Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-an-obligation-whose-domain-can-grow-writes.md)).
 2. **Every witness is a candidate, or refuted at root.** A witness that is neither could pay the instance at a
    state no branch reaches. The branch is taken only for an instance of which this is checked, on the program
    and on every node computed, and a node that breaks it stops the computation rather than give an answer

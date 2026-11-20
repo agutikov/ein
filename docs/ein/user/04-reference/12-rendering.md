@@ -404,7 +404,7 @@ saturation already derived is *absorbed*, dotted: it moves nothing. The drawing 
 closure being one state, so that committing to what saturation derived changes no fixpoint.
 
 A dead node's move is not drawn, since a contradictory fixpoint holds everything. Facts a fixpoint holds that are not
-coordinates, derived facts and facts over a candidate relation that root's generator did not propose, are counted in
+coordinates, derived facts and facts over a candidate relation that no writer of H proposed at root, are counted in
 the tooltip, not drawn: they decide a node's status without being a position in the cube.
 
 ### One channel per question

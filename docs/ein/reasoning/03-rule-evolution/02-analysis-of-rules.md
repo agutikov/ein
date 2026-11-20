@@ -62,7 +62,13 @@ In words:
   in a pattern is the negation of a fact pattern, whose relation is an atom of the instance
   ([the rules](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking));
 - a positive edge from the rule's own name, the relation whose facts apply it, to each vertex it writes;
-- an equality or an inequality is computed and never stored, and adds no edge.
+- an equality or an inequality is computed and never stored, and adds no edge;
+- a hypothesis in a conclusion, and what an obligation owes, write no vertex: no firing adds a fact of
+  $\mathsf{open}$, which a state holds as a function of its fixpoint
+  ([saturation](../02-kb-evolution/02-saturation.md#the-pass-what-a-state-owes-and-supposes)). An obligation,
+  whose whole conclusion is what it owes, adds no edge, and a rule that concludes a hypothesis beside facts adds
+  the edges of those facts. A rule that reads a fact of $\mathsf{open}$ reads the vertex $\mathsf{open}$, which no
+  edge enters.
 
 **An example.** Four relations of one argument, one written fact $\operatorname{p}(\mathsf{a})$, and two rules:
 
@@ -215,8 +221,9 @@ page of what it serves:
   [saturation](../02-kb-evolution/02-saturation.md);
 - **what a rule can bring a commitment to owe**, read off the obligation rules, one of the writers of the
   candidate set: [hypothesis generation](../02-kb-evolution/04-hypothesis-generation.md);
-- **the hypothesis mechanisms judged together**, the scoping a program states and a relation closed to hypotheses
-  against what root's hypothesis rules and obligations write, and against one another
+- **the hypothesis mechanisms judged together**, the two lists a program states and a relation closed to
+  hypotheses, which configure the blind enumerator, against the facts of $\mathsf{open}$ root holds and against one
+  another
   ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md),
   [Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md));
 - **the rule shapes that are no program**, a conclusion's variable nothing binds, a rule that reads nothing, a

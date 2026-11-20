@@ -1,8 +1,9 @@
 # Q-M1f.568 — Directly under `absent` or `open` the other is refused, but `(absent (open P))`
 
 The kernel reads `absent` at the head of a premise, and `open` at the head of a written fact, a premise or a
-conclusion. Directly under one of the two the other is refused, at the parse: `(absent (absent P))`,
-`(open (open P))` and `(open (absent P))`. `(absent (open P))`, a premise over an `open` fact, is legal, and so are
+conclusion. Directly under one of the two the other is refused: `(absent (absent P))`, `(open (open P))` and
+`(open (absent P))`, at the parse where a fact or a conclusion writes it and where `absent` heads it, and at load
+where a premise, a goal or a macro's expansion writes `open` over either. `(absent (open P))`, a premise over an `open` fact, is legal, and so are
 a written `(open P)`, `(not (open P))` and `(open (not P))`.
 
 **Why.** `absent`'s argument is a premise and `open`'s a relation's name or a fact a state could hold; `(absent P)`

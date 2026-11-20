@@ -38,17 +38,17 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.46](Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md) — A relation parameter that can hold `eq` heads only a form of two arguments
 - [Q-M1f.47](Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md) — A written fact of `eq` at another arity than two is refused at load
 - [Q-M1f.65](Q-M1f.65-a-comment-may-hold-any-character.md) — A comment may hold any character
-- [Q-M1f.66](Q-M1f.66-open-is-written-only-as-a-rules-verdict.md) — `open` is a name, and the kernel reads it at the head of a written fact, a premise or a conclusion
+- [Q-M1f.66](Q-M1f.66-open-is-a-name-and-the-kernel-reads.md) — `open` is a name, and the kernel reads it at the head of a written fact, a premise or a conclusion
 - [Q-M1f.67](Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md) — A macro's body is checked where it is called, and an unused macro loads
 - [Q-M1f.74](Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md) — A nested `(or …)` a macro's expansion writes is refused as a written one is
 - [Q-M1f.80](Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md) — A malformed primitive a macro's expansion writes is refused at load
 - [Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md) — A malformed primitive is a form the grammar would refuse where it stands
-- [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro’s body may write `(open …)`, checked where it is called
+- [Q-M1f.86](Q-M1f.86-a-macros-body-may-write-open-checked.md) — A macro’s body may write `(open …)`, checked where it is called
 - [Q-M1f.96](Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md) — A byte-order mark is refused as any character that is not ASCII
 - [Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md) — An object is an atom, or a fact a state could hold
 - [Q-M1f.114](Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md) — A relation a `(solve …)` list names is one the program writes elsewhere
-- [Q-M1f.115](Q-M1f.115-an-hrules-list-names-declared-hrules.md) — An activator is a fact of its rule's name, and one of another count activates nothing
-- [Q-M1f.116](Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md) — An activator's argument is not checked against the program's relations
+- [Q-M1f.115](Q-M1f.115-an-activator-is-a-fact-of-its-rules-name-and-one.md) — An activator is a fact of its rule's name, and one of another count activates nothing
+- [Q-M1f.116](Q-M1f.116-an-activators-argument-is-not-checked-against.md) — An activator's argument is not checked against the program's relations
 - [Q-M1f.117](Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md) — A macro call in a goal is expanded, and the goal is printed as written
 - [Q-M1f.118](Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md) — A claim is not expanded, so a claim headed by a macro's call is refused
 - [Q-M1f.119](Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md) — A goal and a claim ask only about relations of the program
@@ -64,7 +64,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.131](Q-M1f.131-no-relation-is-declared-under-a-macros-name.md) — No relation is declared under a macro's name
 - [Q-M1f.132](Q-M1f.132-a-std-macro-macro-the-program-does-not-import.md) — A `std.macro` macro the program does not import heads no fact
 - [Q-M1f.133](Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md) — A macro's call inside a claim's fact or a `:using` is refused
-- [Q-M1f.271](Q-M1f.271-an-hrules-conclusion-is-one-fact.md) — A hypothesis is one fact
+- [Q-M1f.271](Q-M1f.271-a-hypothesis-is-one-fact.md) — A hypothesis is one fact
 - [Q-M1f.339](Q-M1f.339-every-name-the-loader-makes-up-starts-with.md) — Every name the loader makes up starts with `#`
 - [Q-M1f.351](Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md) — A bare variable or name is no whole conclusion
 - [Q-M1f.372](Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md) — Ein has no types: a declaration's slot names are labels

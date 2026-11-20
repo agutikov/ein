@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Title: verdicts_as_strata Pages: 1 -->
+<svg width="907pt" height="312pt"
+ viewBox="0.00 0.00 907.00 312.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 308)">
+<title>verdicts_as_strata</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-308 902.76,-308 902.76,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_fixpoint</title>
+<path fill="none" stroke="#888888" d="M20,-202C20,-202 350.14,-202 350.14,-202 356.14,-202 362.14,-208 362.14,-214 362.14,-214 362.14,-284 362.14,-284 362.14,-290 356.14,-296 350.14,-296 350.14,-296 20,-296 20,-296 14,-296 8,-290 8,-284 8,-284 8,-214 8,-214 8,-208 14,-202 20,-202"/>
+<text xml:space="preserve" text-anchor="middle" x="185.07" y="-282.5" font-family="Inter" font-size="10.00">the fixpoint: what a fork inherits</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_end</title>
+<path fill="none" stroke="#888888" d="M529.76,-148C529.76,-148 600.01,-148 600.01,-148 606.01,-148 612.01,-154 612.01,-160 612.01,-160 612.01,-214 612.01,-214 612.01,-220 606.01,-226 600.01,-226 600.01,-226 529.76,-226 529.76,-226 523.76,-226 517.76,-220 517.76,-214 517.76,-214 517.76,-160 517.76,-160 517.76,-154 523.76,-148 529.76,-148"/>
+<text xml:space="preserve" text-anchor="middle" x="564.89" y="-212.5" font-family="Inter" font-size="10.00">the last stratum</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_open</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M250.26,-8C250.26,-8 405.01,-8 405.01,-8 411.01,-8 417.01,-14 417.01,-20 417.01,-20 417.01,-131 417.01,-131 417.01,-137 411.01,-143 405.01,-143 405.01,-143 250.26,-143 250.26,-143 244.26,-143 238.26,-137 238.26,-131 238.26,-131 238.26,-20 238.26,-20 238.26,-14 244.26,-8 250.26,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="327.64" y="-129.5" font-family="Inter" font-size="10.00">of the fixpoint, inherited by no fork</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_read</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M664.01,-81C664.01,-81 773.76,-81 773.76,-81 779.76,-81 785.76,-87 785.76,-93 785.76,-93 785.76,-204 785.76,-204 785.76,-210 779.76,-216 773.76,-216 773.76,-216 664.01,-216 664.01,-216 658.01,-216 652.01,-210 652.01,-204 652.01,-204 652.01,-93 652.01,-93 652.01,-87 658.01,-81 664.01,-81"/>
+<text xml:space="preserve" text-anchor="middle" x="718.89" y="-202.5" font-family="Inter" font-size="10.00">read on the finished state</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_answer</title>
+<path fill="none" stroke="#888888" stroke-dasharray="5,2" d="M832.76,-115C832.76,-115 878.76,-115 878.76,-115 884.76,-115 890.76,-121 890.76,-127 890.76,-127 890.76,-177 890.76,-177 890.76,-183 884.76,-189 878.76,-189 878.76,-189 832.76,-189 832.76,-189 826.76,-189 820.76,-183 820.76,-177 820.76,-177 820.76,-127 820.76,-127 820.76,-121 826.76,-115 832.76,-115"/>
+<text xml:space="preserve" text-anchor="middle" x="855.76" y="-175.5" font-family="Inter" font-size="10.00">the answer</text>
+</g>
+<!-- r -->
+<g id="node1" class="node">
+<title>r</title>
+<ellipse fill="none" stroke="black" cx="78.76" cy="-238" rx="62.76" ry="27.93"/>
+<text xml:space="preserve" text-anchor="middle" x="78.76" y="-243.3" font-family="Inter" font-size="11.00">the program&#39;s</text>
+<text xml:space="preserve" text-anchor="middle" x="78.76" y="-227.55" font-family="Inter" font-size="11.00">relations</text>
+</g>
+<!-- bot -->
+<g id="node2" class="node">
+<title>bot</title>
+<ellipse fill="none" stroke="black" cx="327.14" cy="-248" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="327.14" y="-245.43" font-family="Inter" font-size="11.00">false</text>
+</g>
+<!-- r&#45;&gt;bot -->
+<g id="edge1" class="edge">
+<title>r&#45;&gt;bot</title>
+<path fill="none" stroke="black" d="M141.61,-240.51C187.86,-242.39 249.59,-244.89 288.61,-246.48"/>
+<polygon fill="black" stroke="black" points="288.3,-249.97 298.43,-246.88 288.59,-242.97 288.3,-249.97"/>
+<text xml:space="preserve" text-anchor="middle" x="193.89" y="-248.35" font-family="Inter" font-size="10.00">a restriction</text>
+</g>
+<!-- end -->
+<g id="node3" class="node">
+<title>end</title>
+<polygon fill="none" stroke="black" points="604.01,-195.75 525.76,-195.75 525.76,-156.25 604.01,-156.25 604.01,-195.75"/>
+<text xml:space="preserve" text-anchor="middle" x="564.89" y="-181.3" font-family="Inter" font-size="11.00">the end:</text>
+<text xml:space="preserve" text-anchor="middle" x="564.89" y="-165.55" font-family="Inter" font-size="11.00">inconsistent</text>
+</g>
+<!-- r&#45;&gt;end -->
+<g id="edge3" class="edge">
+<title>r&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M127.19,-220C158.29,-209.07 200.11,-196.02 238.26,-189.5 334.87,-173 449.82,-172.65 514.07,-174.15"/>
+<polygon fill="black" stroke="black" points="513.85,-177.64 523.94,-174.4 514.04,-170.64 513.85,-177.64"/>
+<text xml:space="preserve" text-anchor="middle" x="327.14" y="-208.5" font-family="Inter" font-size="10.00">a rule that</text>
+<text xml:space="preserve" text-anchor="middle" x="327.14" y="-194.25" font-family="Inter" font-size="10.00">ends a state</text>
+</g>
+<!-- owes -->
+<g id="node4" class="node">
+<title>owes</title>
+<ellipse fill="none" stroke="black" cx="327.14" cy="-95" rx="35.1" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="327.14" y="-92.42" font-family="Inter" font-size="11.00">open(r)</text>
+</g>
+<!-- r&#45;&gt;owes -->
+<g id="edge4" class="edge">
+<title>r&#45;&gt;owes</title>
+<path fill="none" stroke="black" d="M97.77,-211.29C113.54,-189.85 138.3,-160.49 166.51,-142.75 201.78,-120.57 247.88,-108.24 281.47,-101.69"/>
+<polygon fill="black" stroke="black" points="282.1,-105.13 291.3,-99.88 280.84,-98.25 282.1,-105.13"/>
+<text xml:space="preserve" text-anchor="middle" x="193.89" y="-147.5" font-family="Inter" font-size="10.00">trigger</text>
+</g>
+<!-- r&#45;&gt;owes -->
+<g id="edge5" class="edge">
+<title>r&#45;&gt;owes</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M88.02,-209.89C99.54,-176.4 123.95,-121.95 166.51,-97.75 202.23,-77.44 250.11,-79.73 284.08,-85.26"/>
+<polygon fill="#d62728" stroke="#d62728" points="283.09,-88.63 293.55,-86.96 284.32,-81.74 283.09,-88.63"/>
+<text xml:space="preserve" text-anchor="middle" x="193.89" y="-102.5" font-family="Inter" font-size="10.00" fill="#d62728">¬ witness</text>
+</g>
+<!-- hyp -->
+<g id="node5" class="node">
+<title>hyp</title>
+<ellipse fill="none" stroke="black" cx="327.14" cy="-34" rx="35.1" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="327.14" y="-31.43" font-family="Inter" font-size="11.00">open(f)</text>
+</g>
+<!-- r&#45;&gt;hyp -->
+<g id="edge6" class="edge">
+<title>r&#45;&gt;hyp</title>
+<path fill="none" stroke="black" d="M83.64,-209.71C91.18,-166.7 112.15,-85.81 166.51,-47.5 200.11,-23.82 248.12,-22.98 282.7,-26.51"/>
+<polygon fill="black" stroke="black" points="282.02,-29.95 292.37,-27.66 282.85,-23 282.02,-29.95"/>
+<text xml:space="preserve" text-anchor="middle" x="193.89" y="-66.5" font-family="Inter" font-size="10.00">a pattern;</text>
+<text xml:space="preserve" text-anchor="middle" x="193.89" y="-52.25" font-family="Inter" font-size="10.00">a domain</text>
+</g>
+<!-- bot&#45;&gt;end -->
+<g id="edge2" class="edge">
+<title>bot&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M352.04,-240.7C390.02,-229.1 464.94,-206.22 514.73,-191.01"/>
+<polygon fill="black" stroke="black" points="515.58,-194.41 524.12,-188.15 513.53,-187.72 515.58,-194.41"/>
+<text xml:space="preserve" text-anchor="middle" x="467.39" y="-233.16" font-family="Inter" font-size="10.00">the rule every</text>
+<text xml:space="preserve" text-anchor="middle" x="467.39" y="-218.91" font-family="Inter" font-size="10.00">program holds</text>
+</g>
+<!-- alive -->
+<g id="node6" class="node">
+<title>alive</title>
+<ellipse fill="none" stroke="black" cx="718.39" cy="-168" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="718.39" y="-165.43" font-family="Inter" font-size="11.00">alive</text>
+</g>
+<!-- end&#45;&gt;alive -->
+<g id="edge7" class="edge">
+<title>end&#45;&gt;alive</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M604.51,-173.96C627.65,-172.74 656.94,-171.19 679.88,-169.98"/>
+<polygon fill="#d62728" stroke="#d62728" points="679.92,-173.48 689.72,-169.46 679.55,-166.49 679.92,-173.48"/>
+<text xml:space="preserve" text-anchor="middle" x="632.01" y="-177.23" font-family="Inter" font-size="10.00" fill="#d62728">¬</text>
+</g>
+<!-- discharged -->
+<g id="node7" class="node">
+<title>discharged</title>
+<ellipse fill="none" stroke="black" cx="718.39" cy="-107" rx="48.57" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="718.39" y="-104.42" font-family="Inter" font-size="11.00">discharged</text>
+</g>
+<!-- owes&#45;&gt;discharged -->
+<g id="edge8" class="edge">
+<title>owes&#45;&gt;discharged</title>
+<path fill="none" stroke="#d62728" stroke-dasharray="5,2" d="M362.34,-96.05C428.71,-98.1 575.7,-102.63 658.23,-105.18"/>
+<polygon fill="#d62728" stroke="#d62728" points="658.06,-108.67 668.16,-105.48 658.27,-101.68 658.06,-108.67"/>
+<text xml:space="preserve" text-anchor="middle" x="564.89" y="-108.46" font-family="Inter" font-size="10.00" fill="#d62728">¬</text>
+</g>
+<!-- inR -->
+<g id="node8" class="node">
+<title>inR</title>
+<ellipse fill="none" stroke="black" cx="855.76" cy="-141" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="855.76" y="-138.43" font-family="Inter" font-size="11.00">in R</text>
+</g>
+<!-- alive&#45;&gt;inR -->
+<g id="edge9" class="edge">
+<title>alive&#45;&gt;inR</title>
+<path fill="none" stroke="black" d="M744.53,-162.98C765.33,-158.84 795.15,-152.89 818.53,-148.23"/>
+<polygon fill="black" stroke="black" points="819.14,-151.67 828.27,-146.28 817.77,-144.81 819.14,-151.67"/>
+</g>
+<!-- discharged&#45;&gt;inR -->
+<g id="edge10" class="edge">
+<title>discharged&#45;&gt;inR</title>
+<path fill="none" stroke="black" d="M759.27,-117.02C778.17,-121.76 800.57,-127.39 818.92,-132"/>
+<polygon fill="black" stroke="black" points="818.02,-135.38 828.57,-134.42 819.73,-128.59 818.02,-135.38"/>
+</g>
+</g>
+</svg>
+<!-- source sha256: 354d5ec9d7c2fba7e6165c16a116d3b6ca7b73157ea9f78d326f2440ac20284e -->

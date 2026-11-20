@@ -3,7 +3,7 @@
 `Plan::activator_args` holds every argument of the fact the plan was compiled from, as objects (the engine's
 `Value`), the compile key's list; each argument binds its parameter, a nested fact included. It is what the
 `enqueue`, `fire` and `owe` events print as the activator, what the static checks print as a label, and a plan's
-identity wherever an analysis keys on one: the obligation rung's owed instances, the region's, the detector's root
+identity wherever an analysis keys on one: the obligations' owed instances, the region's, the detector's root
 plans and the NAF dependencies.
 
 **Why.** One list for a plan's activator everywhere: two plans that differ only in a nested fact bind two objects,

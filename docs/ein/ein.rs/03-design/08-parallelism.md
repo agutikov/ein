@@ -68,6 +68,7 @@ divides. Root's saturation is sequential, and so is the load.
 | the interner and the fact store (`Terms`) | **lent**: `Terms::lend` turns each table into its shared state for the batch, every worker takes a view (`Terms::worker`, over the `&Terms` that `Lent::get` hands out), and a lent table is readable from every thread and growable from none; the committing thread takes the tables back when the batch ends |
 | the provenance arena | **per worker**: each view opens a fork region of its own (`ProvArena::open_fork`) and records its derivations there; nothing is shared |
 | the plan memo | append-only, keyed by rule and activator, behind one lock; a worker almost always hits ([`05-matcher.md`](05-matcher.md)) |
+| the writers of a state's `open` facts | read at root and carried by the snapshot behind an `Arc` (`open::Shared`); each `open` fact a state above root can hold of a monotone program is numbered at root, so a worker's pass, where it runs, finds it numbered. The first hypothesis a state above root holds that root does not, where the pass runs, is set once in them (`Writers::first_above`, a `OnceLock`) and said once ([`07-search.md` § 7](07-search.md#7-monotone-and-flagged-programs)) |
 | the work counters | thread-local (`ein_core::counters`), merged on the committing thread |
 | the event sink | per worker, replayed in order (§ 2); `Events` is `Send` and deliberately **not** `Sync` |
 

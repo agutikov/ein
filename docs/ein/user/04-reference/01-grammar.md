@@ -117,10 +117,13 @@ Six facts about the terminals that the diagrams state and do not explain:
    `(relation not Claim)`
    ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)).
    - **`open` is the kernel's where it reads it, and a name elsewhere**
-     ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): §2's
-     `OpenFact`, `Premise` and `Conclusion` read it at the head of a written fact, a premise or a conclusion, what a
-     state owes, `(open R)`, and a hypothesis, `(open F)`, each with one argument, and directly under it neither
-     `open` nor `absent` (`OpenFactArg`, `OpenTerm`; [Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)).
+     ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)): §2's
+     `OpenFact` and `Conclusion` read it at the head of a written fact or a conclusion, what a state owes,
+     `(open R)`, and a hypothesis, `(open F)`, each with one argument, and directly under it neither `open` nor
+     `absent` (`OpenFactArg`, `OpenTerm`; [Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md));
+     a `Premise` takes it as a pattern's relation (`PremiseHead`), which reads the `open` facts a state holds, and
+     the loader holds that pattern to the same shapes
+     ([`07-diagnostics.md` § 2.17](07-diagnostics.md#217-where-open-is-written)).
      An error found at an `open`, or at the end of an `(open)`, carries the note *open takes one argument: a
      relation's name, which a state owes, or a fact a state could hold, which is a hypothesis; directly under it
      neither open nor absent is written, and no declarator binds it*. *Value*, in the production `ValueHead` and in
@@ -383,10 +386,16 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
   (`PremiseHead`'s `Var`). The loader refuses each shape no plan can be compiled from, a macro's expansion included.
 - **The kernel's names.** The dunder `__closed__` is a `NAME` the loader refuses where a program
   binds it ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)).
-  Where `open` stands is the grammar's; what the loader still refuses of it is the program's to tell: what an
-  obligation owes beside another conclusion, an obligation whose projection does not resolve, a written `(open x)`
-  with `x` neither a fact nor a relation of the program, and an activator that makes an obligation owe `open`, each
-  line placed where the form is written ([`07-diagnostics.md` § 2.17](07-diagnostics.md#217-where-open-is-written)).
+  Where `open` stands in a written fact, a conclusion or a claim is the grammar's; a premise's and a goal's pattern
+  takes any head, so there the loader holds `open` to its one argument and to neither `open` nor `absent` directly
+  under it. What the loader refuses besides is the program's to tell: what an obligation owes beside another
+  conclusion, an obligation whose projection does not resolve, a written `(open x)` with `x` neither a fact nor a
+  relation of the program, an activator that makes an obligation owe `open`, an `(open (and …))` a macro's expansion
+  makes, and a `(solve …)` list or a closure that disagrees with the `open` facts root holds, each line placed where
+  the form is written ([`07-diagnostics.md` § 2.2](07-diagnostics.md#22-what-an-obligation-owes-and-its-refusals),
+  [§ 2.17](07-diagnostics.md#217-where-open-is-written),
+  [§ 2.26](07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another),
+  [§ 2.28](07-diagnostics.md#228-a-hypothesis-is-one-fact)).
 
 Every program under [`examples/broken/`](../../../../examples/broken/) is refused, and its report, the engine's
 defined output for it, is kept beside it as its `.expected` file: a parse error at the top, and one refused at load in

@@ -56,10 +56,13 @@ The pages use its **root**, the state its own facts saturate to, and never its a
 `absent` over the facts of `lives-in` that a state holds, the relation's held extent
 ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)),
 which the blind enumerator's candidates may extend, so a bare `ein solve` flags the program as not monotone.
-`ein saturate` stops at the root, and `--dump` prints it by origin:
+`ein saturate` stops at the root, and `--dump` prints it by origin. The root holds, beside the facts the pages use,
+its hypotheses, `(open F)`, which the blind enumerator writes there; the dump lists them under `DERIVED`, as part of
+the state ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)),
+and the command below leaves their lines out and keeps their count:
 
 ```sh
-ein saturate three-houses.ein --dump
+ein saturate three-houses.ein --dump | sed -n '/── GIVEN/,/^=/p' | grep -v '(open '
 ```
 
 <!-- output -->
@@ -71,12 +74,15 @@ ein saturate three-houses.ein --dump
   (lives-in Norwegian House-1 :source "The Norwegian lives in the first house")
   (owns Norwegian Dog :source "The Norwegian owns the dog")
 
-;; ── DERIVED (4 facts) ──
+;; ── DERIVED (101 facts) ──
   (left-of House-1 House-3 :rule transitive)
+;;   open (97)
   (pet-at Dog House-1 :rule pet-follows-owner)
 ;;   vacant (2)
   (vacant House-2 :rule nobody-home)
   (vacant House-3 :rule nobody-home)
+
+======================================================================
 ```
 
 **Where each drawing of the reasoning comes from.** The drawings of the two pages are files under
@@ -227,8 +233,9 @@ gives a label a meaning, as a program. A variable in a relation's place must be 
 ```
 
 `ein saturate FILE --dump` lists the facts the declarations are stored as, `(relation lives-in Person House)` and
-`(relation lives-in)` among the background facts, and one derived fact, `(fits Norwegian Person :rule
-first-fits)`. `(lives-in House-1 Norwegian)` loads, and the rule concludes nothing from it. With the rule
+`(relation lives-in)` among the background facts, and one fact a rule derives, `(fits Norwegian Person :rule
+first-fits)`, beside root's `open` facts, the blind enumerator's hypotheses. `(lives-in House-1 Norwegian)` loads,
+and the rule concludes nothing from it. With the rule
 written `(rule first-fits () …)` the program is refused at load: *its :match writes (?R ?x1 ?x2) with ?R as its
 relation, which no parameter binds*.
 

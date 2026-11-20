@@ -186,9 +186,14 @@ $$
 
 - **At most one per program.** A second is refused at load: two would be two lattices, and a program has one lattice
   and one R. With none, the lattice is the one H's writers give, unrestricted, and `(solve)` says the same.
-- **The lattice is what the lists choose**: which candidates there are, and so which commitments. The lists, the
-  writers of H and `:no-search` are [hypotheses](09-hypotheses.md)'. Every name a list holds is something the program has, or
-  it is refused at load.
+- **The lattice is over H**, the hypotheses root holds, whoever wrote them: a rule that concludes `(open F)`, the
+  program, an activated obligation, or the blind enumerator. **The two lists configure the blind enumerator**, which
+  guesses only where root holds no `open` fact and no obligation is activated: `:hypothesis-relations` is what it
+  may guess, `:no-hypothesis` what it may not. Beside the `open` facts root holds a list that disagrees with them is
+  refused at load, and `:hypothesis-relations` names exactly their relations
+  ([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)). The
+  writers of H, the lists and `:no-search` are [hypotheses](09-hypotheses.md)'. Every name a list holds is something
+  the program has, or it is refused at load.
 - **`:no-search` is a flag**, the one keyword with no value: the program states its lattice is root alone, nothing is
   proposed, and R is {∅} where root is alive and owes nothing, empty otherwise. It is how a program says *judge root
   alone*; `ein solve --no-search` is a different thing, a command declining to search ([the CLI](../04-reference/05-cli.md)).
@@ -498,7 +503,8 @@ Each with its line in [diagnostics](../04-reference/07-diagnostics.md):
 - at the parse: a keyword a form does not take, a lattice keyword on a `(query …)`, a value after `:no-search`, a claim
   or a region item not of its shape, a variable or a `_` in a claim, a top-level `(region …)`, `(merged …)` or
   `(owing …)`;
-- at load: a second `(solve …)`; a list name the program does not have; a goal or a claim naming a relation the
+- at load: a second `(solve …)`; a list name the program does not have; a list that disagrees with the `open` facts
+  root holds; a goal or a claim naming a relation the
   program does not have; a relation written as a variable in a goal; a query's claim listing a fact no pattern of
   the goal matches; a region claim naming `eq` or `neq`; a `(merged …)` whose state the region does not list; `(owing …)` beside
   states.

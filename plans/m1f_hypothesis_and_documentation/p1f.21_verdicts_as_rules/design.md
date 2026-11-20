@@ -764,7 +764,7 @@ what a rule can conclude, `(open R)` is the only one.
 ### 3.3 What the engine does with `open` anywhere but the verdict
 
 Every place is a parse error with one note
-([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md),
+([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md),
 `ein-cli/tests/open_reserved.rs`' `open_is_refused_wherever_it_is_not_the_verdict`). Five programs, each run with
 `ein solve`, each exit 1:
 

@@ -107,7 +107,7 @@ to `header::ALIGN = 8`.
 | 1 | `META` | always | what the file was made from (§ 4.3): the engine version, a writer string, the KB state (`Loaded`, `Saturated`, `Solved`), the stdlib digest, each source's path and BLAKE3 digest, and the `SolverConfig` in force field by field in `ein_core::config::FIELDS` order; no time |
 | 2 | `SYMBOLS` | always | the interner in id order, as a string table: the count, the blob length, `count + 1` prefix-sum `u32` offsets, then the blob |
 | 4 | `FACTS` | always | the fact store in id order: the row count, the argument count, the rows as `cast::RawRow { rel, args_at, arity }`, then the flat argument arena as `Value` bits, a `Value` being the code's word for an object, an atom or a fact |
-| 5 | `PRESENT` | always | the believed facts in insertion order, as `FactId`s |
+| 5 | `PRESENT` | always | the believed facts in insertion order, as `FactId`s, the state's `open` facts last, which an open writes back into the part of the state no fork inherits ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)) |
 | 6 | `PROV` | always | the derivation records the KB references, then the primary map `(fact, record)` and the alternative lists `(fact, [record…])` |
 | 7 | `PROGRAM` | always | the table of file names provenance positions refer to, then the resolved, import-flattened program as canonical text (`ein_ir::dump_canonical`), with no form of `std.core`, the module every program gets, which the load that opens the file brings as every load does ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)) |
 | 8 | `INDEXES` | never | known to the reader and skipped |
@@ -287,7 +287,8 @@ The KB an open returns is built through four hooks of `ein_core::kb::Kb` that on
 `Kb::with_program` (a KB over the registries the stored program loaded to), `Kb::restore_fact` (believe an
 already-interned fact with its recorded primary), `Kb::restore_alternatives` and `Kb::restore_closure` (reinstate a
 list or a closure verbatim, rather than through `Kb::record_justification`'s policy, which would re-sort a sorted list
-and re-cap a capped one), and then `Kb::rebuild_indexes_from`.
+and re-cap a capped one), and then `Kb::rebuild_indexes_from`; the stored `open` facts go back through
+`Kb::write_open`, as the pass that wrote them did.
 
 **A container saved again is the same container**, byte for byte
 ([Q-M1f.110](../../../decisions/engine/Q-M1f.110-a-container-saved-again-is-the-same-container.md)): `META` holds no

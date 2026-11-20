@@ -75,14 +75,20 @@ a divergence. Both stay in the file, where they document the run.
 
 [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs) classifies every relation a compiled plan
 reads. A **site** is a read a commitment can undo: an `(absent …)` at odd depth in a saturation rule over a relation
-a commitment changes, an obligation's trigger over one, or a rule whose activator a commitment can derive. On a
-program with a site the region may have holes, and root's preparation narrates this one line; it changes nothing
-about the run. The line carries the [detector](../../../ein.rs/crates/ein-infer/src/detector.rs)'s static half, read
-at root before any node: what each site puts at stake (`at_stake`: `state`, `state, dead`, `status: owes`, or either
-through a node's plan), the cycles through an `absent` over the relations a commitment changes, the order findings,
-and what is assumed (`assumes: "fork"`, every node a fork of root). The dynamic half (a node's status, its stale
-facts, its parent paths) needs the run, and is the read-out's and `--json-summary`'s, not the stream's
-([`03-design/07-search.md`](03-design/07-search.md)).
+a commitment changes, an obligation's trigger over one, or a rule whose activator a commitment can derive; or a read
+that lets a node hold or need what root's H lacks: a rule that reads `open` (`open-read`), a rule that concludes
+`(open F)` and reads a relation a commitment changes at even depth (`hypothesis`), and an obligation whose guard
+reads one beside its witness (`obligation-guard`). On a program with a site the region may have holes, and root's
+preparation narrates this one line; it changes nothing about the run. The line carries the
+[detector](../../../ein.rs/crates/ein-infer/src/detector.rs)'s static half, read at root before any node: what each
+site puts at stake (`at_stake`: `state`, `state, dead`, `status: owes`, either through a node's plan, or
+`hypotheses`), the cycles through an `absent` over the relations a commitment changes, the order findings, and what
+is assumed (`assumes: "fork"`, every node a fork of root). The dynamic half (a node's status, its stale facts, its
+parent paths) needs the run, and is the read-out's and `--json-summary`'s, not the stream's
+([`03-design/07-search.md`](03-design/07-search.md)). A hypothesis first held above root, found where the pass that
+writes `open` facts runs, makes the program not monotone in flight; it is said on stderr, by the read-out and by
+`--json-summary`'s `monotonicity.in_flight`, not in the stream
+([Q-M1f.574](../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 A monotone program emits no `monotonicity` line. The same verdict is `--json-summary`'s `monotonicity` block on
 every run, and the `lattice` block on stdout carries the warning when there is a site; `ein solve FILE --monotone`
@@ -113,9 +119,10 @@ comparison surface: a changed field meaning is a schema version ([§ Versioning]
 
 `asserts` and `rule` mean what they say.
 
-**`owe` is not a firing.** A rule whose `:assert` is what a state owes, `(open R)`, concludes no fact a rule can build
-on during saturation, so it is kept out of the saturation agenda and runs as one pass over the KB after the fixpoint
-([`03-design/06-saturation.md`](03-design/06-saturation.md)). Three consequences for a reader of this stream:
+**`owe` is not a firing.** A rule whose `:assert` is what a state owes, `(open R)`, is read at the fixpoint and never
+fired: it is kept out of the saturation agenda and runs as one pass over the KB after the fixpoint
+([`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)). Three consequences for a reader
+of this stream:
 
 - **A rule never emits both.** An obligation rule never produces a `fire`; a saturation rule never produces an
   `owe`. That makes `owe` the activation evidence for the obligation half of the stdlib, which is how
@@ -125,8 +132,11 @@ on during saturation, so it is kept out of the saturation agenda and runs as one
   route stops a dead node at its first contradiction, over the node as far as there. Root's lines come first, then
   one group per node visited, each before that node's `enter` line.
 - **What it reports the state holds as `(open R)`, once per relation, in a layer no fork inherits**
-  ([Q-M1f.566](../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)): a debt exists
-  to be discharged by an extension, so a child that pays it holds no `(open R)` of it. The line is one per instance
+  ([Q-M1f.566](../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), where the
+  pass that writes a state's `open` facts runs: at root, and at a state above root that is printed or saved or that
+  uses them ([`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation)). The `owe` lines are
+  written at every state all the same. A debt exists to be discharged by an extension, so a child that pays it holds
+  no `(open R)` of it. The line is one per instance
   and the fact one per relation; `--json-summary`'s `owes` block is the same tally as a document.
 
 Every derivation is reported exactly once, as a `fire`. `alt` is narrower than it looks: `record_justification` returns true only for a rule's
@@ -163,8 +173,8 @@ core of a dead node ([Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json
 The candidates are **the union of the hypotheses the state holds**
 ([Q-M1f.570](../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)): the `open` facts
 its rules and the program wrote, and, where an obligation is activated at the state, what would
-discharge the debts it owes; the blind enumerator runs only where there is none of them
-([`03-design/07-search.md`](03-design/07-search.md)). A `rung` line is written once per generation call, and **only**
+discharge the debts it owes; the blind enumerator runs only where the state holds no `open` fact and no obligation is
+activated ([`03-design/07-search.md`](03-design/07-search.md)). A `rung` line is written once per generation call, and **only**
 where an obligation is activated at the state the call is made at: a program that activates none emits none,
 whatever obligation rules it loads. So a call of the blind enumerator, or of written `open` facts alone, narrates
 nothing, and its `mode` says how the obligations went:
@@ -173,13 +183,17 @@ nothing, and its `mode` says how the obligations went:
 |---|---|
 | `obligations` | it generated: the candidates are the facts that would discharge what this state owes |
 | `union` | it generated beside written `open` facts, and the candidates are both, the obligations' share empty where they offered none; the counts are the obligations' |
-| `stuck` | it owed something and no writer proposed anything: every debt scoped out by `:no-hypothesis`, `:hypothesis-relations` or `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
+| `stuck` | it owed something and no writer proposed anything: the guards give no candidate for what the state owes, or every candidate is already refuted. **The state is not silently complete**: this line is the report |
 | `declined` | it proposed nothing for a projection that did not resolve for this activator; the blind enumerator does not run beside an activated obligation |
 
 `reason` is the sentence of a `declined` call, and otherwise `rule-order`, the one order the obligations emit in: the owed instances' candidates in report order, plan by
 plan and match by match. `owed` counts the undischarged instances at this quiescence, `branches` those branched on,
-`declined` those scoped out, so that `owed = branches + declined`, and `candidates` the facts proposed before the
-filter pipeline, which is the `hyp` stream's `raw` for this call.
+`declined` those scoped out by a list or a closure, so that `owed = branches + declined`, and `candidates` the facts
+proposed before the filter pipeline, which is the `hyp` stream's `raw` for this call. A program `ein` loads scopes
+nothing out, so its `declined` is 0: a list or a closure that names a relation root owes disagrees with root's
+`(open R)` and is refused at load
+([`07-diagnostics.md` § 2.26](../user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another);
+`ein-cli/tests/mechanism_conflicts.rs`, its `o-` shapes).
 
 `uncovered` is the obligations' **completeness condition as a number**: how many hypothesis-eligible relations no
 obligation names, under the same eligibility test the blind enumerator applies. `0` says the obligations are exhaustive
@@ -235,8 +249,8 @@ is, in order:
 
 1. `run` and `load`, as above;
 2. **root**, in this order: root's saturation (`compile`, `enqueue`, `fire`, …); **how H was built** (one `hyp` per
-   candidate and, at `verbose`, the `hypskip`s, with the generator's `rung` line where it reached the obligations
-   rung: after the candidates of a call that generated, alone on a call that declined);
+   candidate and, at `verbose`, the `hypskip`s, with the generator's `rung` line where an obligation is activated at
+   root: after the candidates of a call that generated, alone on a call that declined);
    root's obligation pass (`owe`); and, on a program the static check flags, one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that node's saturation and obligation events,
    then one `enter` line. A dead node on a monotone program's route narrates its saturation up to the firing that

@@ -3,7 +3,8 @@
 A rule rewrites the graph a knowledge base is ([the knowledge base](01-knowledge-base.md)). This page does the
 rewriting first: a pattern, which is the same graph with variables in it; a match of a pattern in a knowledge
 base; the conditions a match can be held to; a conclusion; the knowledge base that rewriting at a match
-gives; and how a rewriting moves a fact into a context and out of one. Then it says how a rule is declared, what
+gives; the two conclusions no rewriting adds, what a knowledge base owes and what it supposes; and how a rewriting
+moves a fact into a context and out of one. Then it says how a rule is declared, what
 a declaration must meet, and the kinds of rule. Everything
 here is about one knowledge base as it stands. When a rule is applied, in what order, and what a knowledge base
 becomes under all its rules is [the part after this one](../02-kb-evolution/01-firing.md).
@@ -111,7 +112,10 @@ A $t$ that stands as a part is a premise, a fact pattern; in an equality or an i
 an atom, or a fact with no variable
 ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)). A
 disjunction is a whole pattern and no part of one
-([Q-M1f.74](../../../decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)).
+([Q-M1f.74](../../../decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)). An
+absence's argument is a premise or a conjunction, which may hold an absence, a universal's; an absence directly
+under an absence, $\operatorname{absent}(\operatorname{absent}(\gamma))$, is no part
+([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)).
 $K \models \varphi\theta$, *$\varphi$ holds in $K$ under $\theta$*, is defined on the shape of the pattern:
 
 $$
@@ -130,7 +134,9 @@ $$
   ([Q-M1e2.36](../../../decisions/language/Q-M1e2.36-an-empty-match-is-true-and-fires-once.md)).
 - **A premise** is the homomorphism condition above. A stored negation is nothing new: the premise $\lnot t$ is
   the fact pattern $\operatorname{not}(t)$, and it is sent to a held fact of $\mathsf{not}$ and to nothing
-  else.
+  else. Nor is what a knowledge base owes or supposes: the premise $\operatorname{open}(t)$ is sent to a held fact
+  of $\mathsf{open}$ ([below](#what-a-state-owes-and-what-it-supposes)), and $\operatorname{absent}(\operatorname{open}(t))$
+  holds where none matches.
 - **An equality or an inequality** is computed from the two objects and reads no fact: equality is identity, and
   no knowledge base holds one
   ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)).
@@ -159,7 +165,7 @@ $$
 A **match** of a pattern $\varphi$ in $K$ over $N$ is a substitution $\theta$ of the variables that stand in
 $\varphi$ outside every absence, with $K \models \varphi\theta$.
 
-**Two forms written with these**, and no part of the definition: the bounded universal and the open fact,
+**Two forms written with these**, and no part of the definition: the bounded universal and the *unknown* test,
 
 $$
 \begin{aligned}
@@ -205,11 +211,12 @@ makes the octagon in the box a held fact.
 A **conclusion** $\psi$ is again fact structures with variables: a finite set of **literals**, each one of
 
 $$
-\ell \;::=\; t \;\mid\; \lnot x \;\mid\; t = t' \;\mid\; t \neq t'
+\ell \;::=\; t \;\mid\; \lnot x \;\mid\; \operatorname{open}(t) \;\mid\; t = t' \;\mid\; t \neq t'
 $$
 
-a fact pattern, $\lnot t$ and $\bot$ among them; the negation of whatever fact a variable stands for; or a
-**check**, an equality or an inequality
+a fact pattern, $\lnot t$ and $\bot$ among them; the negation of whatever fact a variable stands for; a
+**hypothesis**, a fact pattern or a variable under $\mathsf{open}$, which supposes the fact it makes
+([below](#what-a-state-owes-and-what-it-supposes)); or a **check**, an equality or an inequality
 ([Q-M1f.351](../../../decisions/language/Q-M1f.351-a-bare-variable-or-name-is-no-whole-conclusion.md)). For a
 substitution $\theta$ that gives every variable of $\psi$ an object, the **instance** $\psi\theta$ is a set of
 facts, the union over the literals of
@@ -218,6 +225,7 @@ $$
 \begin{aligned}
 t &\mapsto \{ t\theta \} \\
 \lnot x &\mapsto \begin{cases} \{ \lnot\,\theta(x) \} & \theta(x) \in F \\ \emptyset & \theta(x) \in \Sigma^{+} \end{cases} \\
+\operatorname{open}(t) &\mapsto \emptyset \\
 (t = t') &\mapsto \begin{cases} \emptyset & t\theta = t'\theta \\ \{ \bot \} & t\theta \neq t'\theta \end{cases} \\
 (t \neq t') &\mapsto \begin{cases} \{ \bot \} & t\theta = t'\theta \\ \emptyset & t\theta \neq t'\theta \end{cases}
 \end{aligned}
@@ -227,7 +235,9 @@ An atom has no negation, so the second literal adds nothing where its variable h
 ([Q-M1f.128](../../../decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)), and a check
 that fails is a contradiction, as $\bot$ is. A stored negation has one: where $\theta(x) = \lnot g$, the literal
 gives $\lnot\lnot g$, a fact
-([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)).
+([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)). A hypothesis adds
+nothing where its rule is applied: the fact $\operatorname{open}(t\theta)$ it makes is held at the fixpoint
+([below](#what-a-state-owes-and-what-it-supposes)).
 
 **Or a word to the engine.** In the place of a set of literals a conclusion may be the one word the engine reads,
 $\mathsf{inconsistent}$
@@ -240,9 +250,10 @@ $$
 $$
 
 and what it says is said of the knowledge base the match stands in: it is **dead**
-([the knowledge base](01-knowledge-base.md#a-fact-its-negation-both-or-neither)). A conclusion is one or the other,
-literals or the word, never both. Write $P_{\mathsf{inc}} \subseteq P$ for the rules of a program $P$ whose conclusion
-is the word; every program holds one, whose pattern is $\bot$ alone
+([the knowledge base](01-knowledge-base.md#a-fact-its-negation-both-or-neither)). A conclusion is one of three,
+literals, the word, or what an obligation owes ([below](#what-a-state-owes-and-what-it-supposes)), never two of them.
+Write $P_{\mathsf{inc}} \subseteq P$ for the rules of a program $P$ whose conclusion is the word; every program holds
+one, whose pattern is $\bot$ alone
 ([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)).
 
 **The result of rewriting** a knowledge base $K$ by a pattern $\varphi$ and a conclusion $\psi$ **at a match**
@@ -331,6 +342,55 @@ square:
 The pattern and the conclusion above drawn as one graph, $L$ solid and what $L^{+}$ adds dashed:
 
 ![The rule pet-follows-owner as one graph, the conclusion dashed](diagrams/02-pet-follows-owner-overlay.svg)
+
+### What a state owes, and what it supposes
+
+**What an obligation owes.** A conclusion may be, whole, $\operatorname{open}(r)$, with $r$ a relation's atom or a
+parameter that names one. The rule is an **obligation**: where its pattern matches, a trigger with no witness
+beside it, the knowledge base owes an instance of it, and the held extent of $r$ is not yet what it has to be
+([hypothesis generation § 4.1](../02-kb-evolution/04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)).
+$\operatorname{open}(r)$ is the rule's whole conclusion and stands beside no literal
+([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md),
+[Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)).
+Its instance, like a hypothesis's, adds no fact where the rule matches.
+
+**Both are facts of $\mathsf{open}$, held at the fixpoint.** What a knowledge base owes and what it supposes
+are facts of the relation $\mathsf{open}$, held, read and counted as any other
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)):
+$\operatorname{open}(r)$, once for each relation an instance is owed of, and $\operatorname{open}(t\theta)$ for each
+match of a rule with the hypothesis $\operatorname{open}(t)$. No rewriting adds one. They are a function of the
+knowledge base's fixpoint, held in a part of it that no fork inherits
+([saturation](../02-kb-evolution/02-saturation.md#the-pass-what-a-state-owes-and-supposes)).
+A program may write a hypothesis as a fact of its own, which root alone holds
+([hypothesis generation § 2](../02-kb-evolution/04-hypothesis-generation.md#2-the-union)).
+Under $\mathsf{open}$ the argument says which: a relation's atom, or a parameter that names one, is what is owed,
+and a fact, or a variable the pattern binds to one, is a hypothesis; a variable the pattern binds to an atom gives
+none ([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)). **A
+hypothesis is one fact**: $\mathsf{open}$ of a conjunction is no literal, and a conclusion that supposes several
+facts holds several hypotheses
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)).
+
+**Where $\mathsf{absent}$ and $\mathsf{open}$ are read.** The two are the kernel's words where it reads them, and
+names everywhere else ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)):
+$\mathsf{absent}$ at the head of a part of a pattern, and $\mathsf{open}$ at the head of a fact the program writes,
+of a premise, and of a literal or a whole conclusion. There $\mathsf{absent}$ takes a premise or a conjunction and
+$\mathsf{open}$ takes one argument, a relation's atom or a fact; directly under one of the two the other stands only
+in the absence of a fact of $\mathsf{open}$
+([Q-M1f.568](../../../decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)):
+
+| written | what it is |
+|---|---|
+| $\operatorname{absent}(\operatorname{open}(t))$ | a part of a pattern: no fact of $\mathsf{open}$ matches $t$ |
+| $\operatorname{open}(\lnot t)$, $\lnot\operatorname{open}(t)$ | a hypothesis of a stored negation; the stored negation of a fact of $\mathsf{open}$ |
+| $\operatorname{absent}(\operatorname{absent}(\gamma))$, $\operatorname{open}(\operatorname{open}(t))$, $\operatorname{open}(\operatorname{absent}(\gamma))$ | nothing: no part, no literal and no fact |
+| $\mathsf{open}$ with no argument | nothing: it names no relation |
+
+**Under an ordinary relation both are names**
+([Q-M1f.571](../../../decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)). A fact
+$g$ with $\operatorname{out}(g) = (\mathsf{absent}, p(\mathsf{A}))$ under an argument arrow of a fact of
+$\operatorname{think}$ is a fact of a relation so named, which the kernel reads nothing of, and so is one whose
+first arrow is at $\mathsf{open}$; a premise that writes the same shape under $\operatorname{think}$ matches such a
+fact and tests no absence.
 
 ## Packing and unpacking
 
@@ -620,9 +680,13 @@ $$
   ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)), and one whose relation is a parameter matches the facts of its count of the relation its
   activator names.
 - **A rule's name is declared once.**
-- **A conclusion is literals, or the engine's word, and nothing else**: no disjunction, and no fact made of several.
-  *One of these* is not said by a rewriting rule. A conjunction in a conclusion is read flat, as the set of its literals, at any depth of
-  nesting, and the empty conclusion adds nothing.
+- **A conclusion is literals, the engine's word, or what an obligation owes, and nothing else**: no disjunction,
+  and no fact made of several. *One of these* is not said by a rewriting rule. A conjunction in a conclusion is read
+  flat, as the set of its literals, at any depth of nesting, and the empty conclusion adds nothing; what an
+  obligation owes is its rule's whole conclusion
+  ([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)), and a
+  hypothesis is of one fact
+  ([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)).
 - **A conclusion $\lnot x$ is of a variable that holds a fact**: where the text shows that $x$ can hold an atom,
   the declaration is no rule
   ([Q-M1f.127](../../../decisions/language/Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)).
@@ -665,6 +729,8 @@ What a rule does to a knowledge base it matches in is read off its conclusion:
 | $\bot$ | holds $\bot$, and is dead by the rule every program holds, which reads it: the rule is a **constraint**, a pattern that no alive knowledge base matches and satisfies |
 | a check | is $K$ where the check holds of the match, and holds $\bot$ where it does not |
 | nothing | is $K$ |
+| hypotheses, $\operatorname{open}(t)$ | is $K$ for them; at the fixpoint $K$ holds $\operatorname{open}(t\theta)$ for each match, in the part no fork inherits |
+| $\operatorname{open}(r)$, whole: an **obligation** | is $K$; at the fixpoint $K$ holds $\operatorname{open}(r)$ where it owes an instance, in the same part |
 | the word $\mathsf{inconsistent}$ | is $K$, and $K$ is dead: the rule **ends a state**, a constraint with no $\bot$ between |
 
 So a knowledge base is dead exactly where a rule of $P_{\mathsf{inc}}$ has a match in it:
@@ -676,11 +742,10 @@ $$
 with $a$ nothing where $\rho$ has no parameter, and the absences of $\varphi_\rho$ read where
 [absence](../02-kb-evolution/03-absent-and-naf.md) reads them.
 
-Two more kinds of conclusion are no rewriting's: a **hypothesis**, a fact pattern under $\mathsf{open}$ that
-supposes the fact it makes, which a conclusion may hold beside facts, and the verdict of an **obligation**, that the
-held extent of a relation is incomplete, which is a declaration's whole conclusion. Neither is added to the knowledge
-base it matches in while it is saturated: each is written at the fixpoint, under $\mathsf{open}$, in a part of the
-knowledge base that no extension of it inherits. Each is defined where it is used, in the part after this one
+The two conclusions under $\mathsf{open}$ are no rewriting's
+([above](#what-a-state-owes-and-what-it-supposes)): a **hypothesis rule**, a rule whose conclusion holds a
+hypothesis, beside facts or alone, and an **obligation**, whose whole conclusion is what it owes. What each says is
+held at the fixpoint, as facts of $\mathsf{open}$ that no fork inherits, and read in the part after this one
 ([the first](../02-kb-evolution/04-hypothesis-generation.md#3-the-hypothesis-rules-what-the-program-says-to-guess),
 [the second](../02-kb-evolution/04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)).
 

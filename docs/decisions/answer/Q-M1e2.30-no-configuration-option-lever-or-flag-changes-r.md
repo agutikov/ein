@@ -3,8 +3,10 @@
 R is a property of the program: of its lattice of commitments, each node read by saturation. No `(config …)` field,
 command-line option, environment name or lever changes it. Under every one, a run that discovers R whole reports the
 same R; an option may change how much work a run does and how fast, never which states are solutions. An option may
-also decline to discover R, which is not a change of R: `--no-search` and `(solve :no-search)` judge root alone and
-state no R, and a budget stops a run with a part of R that the run says is a part. A flag found to change R is
+also decline to discover R, which is not a change of R: `--no-search` judges root alone and states no R, and a
+budget stops a run with a part of R that the run says is a part. `(solve :no-search)` is no option but the
+program's own statement that its lattice is root alone: nothing is proposed, and its R is {∅} or empty
+([Q-M1f.254](../hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)). A flag found to change R is
 retired and refused, not kept as a mode.
 
 One thing besides R may vary with an option: a dead node's core under `:record-alternative-justifications false`

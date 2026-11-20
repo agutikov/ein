@@ -65,15 +65,15 @@ It relaxes no conflict between the mechanisms of § 6
 
 ## 2. The union
 
-**What a state holds under $\mathsf{open}$.** At each state's fixpoint, root's and every node's, two kinds of fact
-are written under the relation $\mathsf{open}$
+**What a state holds under $\mathsf{open}$.** A state, root or a node, holds two kinds of fact under the relation
+$\mathsf{open}$, read off its own fixpoint
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)):
 
 - $\operatorname{open}(r)$, $r$ a relation, once, where the state owes an instance of an obligation that owes $r$
   (§ 4); a state that owes nothing holds none;
 - $\operatorname{open}(f)$, $f$ a fact, a **hypothesis**: a fact the state supposes, which a commitment may add.
 
-They are a part of the state that no extension inherits: a node's are written at its own fixpoint, so an
+They are a part of the state that no extension inherits: a node's are those of its own fixpoint, so an
 $\operatorname{open}(r)$ that a commitment pays is not held by the state that pays it, and no rule removes a fact.
 Under $\mathsf{open}$ a relation is what is owed and a fact is a hypothesis
 ([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)). Write
@@ -127,8 +127,8 @@ Three things about the union decide what it means:
   writer's candidates it commits to.
 - **It is about what the program activates, not what root owes or what it loads.** $\operatorname{ActOb}(P)$ is
   defined by root holding an obligation's activator, whether or not root owes anything under it
-  ([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md),
-  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)). Under an
+  ([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md),
+  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-an-obligation-activated-at-root-writes.md)). Under an
   activated obligation a root that owes nothing proposes nothing from it, and is complete because it is discharged;
   letting $H_{\mathrm{bl}}$ write wherever nothing was owed would make exhaustion, not discharge, decide when a state
   is finished, at exactly the states the obligation exists to judge. Every import brings its module whole,
@@ -164,7 +164,7 @@ its hypotheses the conclusion may hold facts, which are a rewriting rule's
 ([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md);
 [the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A hypothesis is one
 fact: $\mathsf{open}$ holds no conjunction, and a rule that supposes several facts holds several hypotheses
-([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). A hypothesis rule is a rule
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)). A hypothesis rule is a rule
 like any other, and there is no other way to say what to guess
 ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)). Write
 $\varphi_h$ for the pattern, and $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and
@@ -186,9 +186,9 @@ $$
 with $\operatorname{Hr}(P)$ the hypothesis rules of the program.
 
 An instance of equality or of inequality is no candidate, since a state stores neither
-([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and a
+([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-eq-or-neq-instance-is-no-hypothesis.md)), and a
 hypothesis rule whose pattern reads a stored negation reads the state it is matched in, root's for $H$
-([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
+([Q-M1f.129](../../../decisions/engine/Q-M1f.129-a-rule-that-concludes-a-hypothesis-and-reads-not.md)).
 
 A hypothesis rule is drawn as any rule is, its pattern beside its conclusion. This one says *guess, for each guest
 and each drink, that the guest drinks it*:
@@ -217,8 +217,8 @@ does (§ 2), and the scoping of § 6 filters none of it: a scoping that disagree
 program that says what to guess is never second-guessed by the blind enumerator, wherever a rule of it matches at
 root.
 
-**A hypothesis rule writes at every state**, at its fixpoint, and what it proposes is what its pattern finds at
-root:
+**A hypothesis rule's hypotheses are each state's own**, read off its fixpoint, and what it proposes is what its
+pattern finds at root:
 
 $$
 \operatorname{st}(C) \models \varphi_h(a, \theta) \ \land\ \mathrm{root} \not\models \varphi_h(a, \theta) \implies \psi_h(a, \theta) \text{ is in no candidate on this account}
@@ -236,11 +236,13 @@ site of the static check ([Monotone and non-monotone programs § 3.1](08-monoton
 
 An **obligation** is a declaration with a rule's parts that is no rewriting rule: it adds no fact to the knowledge
 base it matches in during saturation ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)). Its
-whole conclusion is the verdict that the held extent of a relation is incomplete, written $\operatorname{open}(r)$,
-and its pattern is the requirement's guard
+whole conclusion is $\operatorname{open}(r)$, the fact that the held extent of a relation is incomplete, and its
+pattern is the requirement's guard
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). The relation the
-verdict names is the one the obligation **owes**: what is owed is a fact of it. A state that owes an instance of it
-holds $\operatorname{open}(r)$, written at its fixpoint (§ 2), and a state that owes nothing under it holds none. The guard of $o$ under an activator
+fact names is the one the obligation **owes**: what is owed is a fact of it. A state that owes an instance of it
+holds $\operatorname{open}(r)$ (§ 2), once however many instances over $r$ it owes, and a
+state that owes nothing under it holds none: the count is of the instances, and the fact carries none of them
+([satisfiability § 1.1](10-satisfiability.md#11-which-conclusion-a-fork-may-inherit)). The guard of $o$ under an activator
 $a$ has two parts, a **trigger** $T_o$, which says who is owed, and one absence, over the **witness** $W_o$:
 
 $$
@@ -341,7 +343,7 @@ union, and nothing outside it is proposed.
 A choice among an instance's payments is exhaustive only while the set of them cannot grow beneath it. Where it
 could, **the obligation still writes what root's guard gives**, as every obligation does, and the program is not
 monotone: nothing is claimed of its answer
-([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md),
+([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-an-obligation-whose-domain-can-grow-writes.md),
 [Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)).
 
 **The relations whose held extent a commitment can change**, $D^{+}$, are read off the rules, with no state
@@ -429,17 +431,18 @@ The reading is **at relation grain and inexact both ways**:
 A program this reading adds a candidate to derives an activator from a commitment, so it is not proved monotone
 ([Monotone and non-monotone programs](08-monotonicity.md)), and its answer is the whole lattice's.
 
-### 4.5 Stuck: owing, with nothing to propose
+### 4.5 Stuck: owing, with every payment settled
 
-A payment root denies is settled, and is no candidate. A root is **stuck** where it owes and the
-obligations have nothing left to propose:
+A payment root denies is settled, and is no candidate. A root is **stuck** where it owes an instance whose
+payments can be formed and of which root leaves none open:
 
 $$
-\operatorname{stuck}(P) \iff \operatorname{Owed}(\mathrm{root}) \neq \emptyset \ \land\ H_{\mathrm{ob}} = \emptyset
+\operatorname{stuck}(P) \iff \exists I \in \operatorname{Owed}(\mathrm{root}).\ \ \operatorname{unsettled}(\operatorname{pay}(I)) = \emptyset
 $$
 
-A state that held a payment $f$ of such an instance would hold $f$ beside what of root denies it and be dead, so
-no alive state discharges the instance:
+On a monotone program every witness a state above root holds is a payment read at root (§ 4.3), so a state that
+paid such an instance would hold a payment beside what of root denies it, and be dead; no alive state discharges the
+instance, whatever another writer proposes:
 
 $$
 \begin{aligned}
@@ -448,9 +451,10 @@ $$
 \end{aligned}
 $$
 
-the kind of empty $R$ where alive states exist and every one owes. It is said as such, and an empty proposal is
-never passed for completeness. A scoping that would take out the relation an obligation owes cannot make a state
-stuck: such a program is no program (§ 6,
+the kind of empty $R$ where alive states exist and every one owes. An empty $H_{\mathrm{ob}}$ is not that by itself:
+where no payment of an owed instance can be formed (§ 4.3), a hypothesis rule's candidates may pay it, and $R$ is
+what the union of § 2 gives. A scoping
+that would take out the relation an obligation owes cannot make a state stuck: such a program is no program (§ 6,
 [Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md),
 [Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 
@@ -600,7 +604,7 @@ $$
 $$
 
 An obligation that owes nothing at root writes nothing there, and disagrees with nothing
-([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)). A text is a
+([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-and-judged.md)). A text is a
 program only if none of these holds:
 
 | a declaration that says the opposite of what root holds, or of another | as a condition |
@@ -615,7 +619,7 @@ closure that says otherwise of those facts says what the program does not do. A 
 is no conflict: both write, and the obligation judges. Where root holds nothing under $\mathsf{open}$, a name of
 $L^{-}$ that another declaration already takes out contradicts nothing and filters nothing: it is remarked on and
 changes nothing
-([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)). The
+([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-list-that-only-repeats-what-another.md)). The
 refusals and the remarks, each worded, are the [diagnostics](../../user/04-reference/07-diagnostics.md)'.
 
 ## 7. What H does not depend on

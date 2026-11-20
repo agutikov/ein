@@ -25,8 +25,8 @@ built in.
 
 A declaration is *almost* an ordinary fact, in two things, and holds no form of its relation to its count
 ([Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). It carries the `:why` a fact of the
-relation reads as. And it tells the blind enumerator what to guess about: that rung proposes facts of declared
-relations of one or two arguments, over the guessable atoms, which are the program's
+relation reads as. And it tells the blind enumerator what to guess about: where it writes, it proposes facts of
+declared relations of one or two arguments, over the guessable atoms, which are the program's
 names less those some declaration writes as a label
 ([Q-M1e.12](../hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md),
 [Q-M1f.306](../hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)). That is the one place the
