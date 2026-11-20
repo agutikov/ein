@@ -564,6 +564,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
+| [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11804,3 +11805,24 @@ the check alone, which keeps a part of the pass's cost at every state.
 
 So: by default the check is made where the pass runs. A command-line flag runs the pass at every state a run
 builds, and with it the check in flight is made at every state. The flag changes no $R$.
+
+### Q-M1f.657 — The cost of the contradiction as rules: what is built
+
+**Raised** 2026-11-20 by the coordinator's cost measurement, finding V-39 of P1f.21: the contradiction as rules
+costs 1.0 to 1.6 times the time at the same work. On the user's questions the coordinator explained where it goes
+([the page](p1f.21_verdicts_as_rules/costs/README.md#why-the-contradiction-as-rules-costs)) and analysed an
+index over contexts ([the page](p1f.21_verdicts_as_rules/costs/README.md#an-index-over-contexts-analysed)),
+ending on four things recommended: the agenda's tables kept and not built again at every state; a rule of the
+pair's shape matched by one probe for each new fact; the relation of a nested fact a key of the indexes; one
+instance of the pair's rule a relation in place of two.
+
+**Ruled 2026-11-20 by the user**, in the session, verbatim:
+
+> plan to build everything recommended, then measure again and get final table with 3 cols: before, after, improved after
+
+The first is [S1f.21.20](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md)'s task 7; the
+other three are [S1f.21.21](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md). **The fourth is not
+built as worded**: the second instance comes from the membership fact every declaration stores, a stated part
+of the language, and taking it away changes the language, the library or what a program means. The stage's
+default, Q-M1f.658, keeps the instance and makes it free; the three ways to take it away are shown to the user
+with what each costs.

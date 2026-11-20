@@ -132,9 +132,8 @@ the fact.
 
 **What can go with no change to any answer or any printed line**: part 1 whole, and part 2's index, by keeping
 the tables with the snapshot a state resumes from. [S1f.21.20](../s1f.21.20_what_the_first_uses_of_open_found.md)
-has it as a task. **What is the user's call**: part 3. One instance a relation in place of two (V-37) would halve
-it; an index of the instances by the relation under `not` would spare a negation the instances of every other
-relation.
+has it as a task. **Part 3** is [S1f.21.21](../s1f.21.21_the_contradictions_cost.md)'s, on the user's ruling of Q-M1f.657: a
+rule of the pair's shape matched by one probe, and an index over contexts, analysed below.
 
 ## An index over contexts, analysed
 
@@ -180,7 +179,7 @@ it as its one argument, which `contradiction::Pairs` already tells by shape and 
 probe, and the rule's instance is queued only where the probe hits. The rule still fires as a rule, with its
 premises and its `:why`. This is the reading that would take parts 2 and 3 down to about what the kernel's check
 cost; it is a change to how the saturator matches such rules, and it must keep every firing where it is.
-**Not built; the user's call.**
+**Ruled by the user 2026-11-20: built**, with the reading above it, by [S1f.21.21](../s1f.21.21_the_contradictions_cost.md).
 
 ## The runs behind the entries that moved most
 

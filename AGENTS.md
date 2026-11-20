@@ -386,8 +386,9 @@ paragraph, no register count, no measurement (the user's rule).
   S1f.21.2 done. Of the second part, S1f.21.12, `open` facts, is built, and
   S1f.21.13, the lattice written as rules, is in the corpus, and S1f.21.18
   has removed the `hrule` form and the keyword `:hrules`. Left: S1f.21.20,
-  which fixes what the first uses of `open` found; S1f.21.14, the part's
-  pages; S1f.21.19, the review items on the built engine. Q-M1f.566 to
+  which fixes what the first uses of `open` found; S1f.21.21, the
+  contradiction's cost; S1f.21.14, the part's pages; S1f.21.19, the review
+  items on the built engine. Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,
   S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to
   the phase's end, on the defaults of the open review items, and the phase
