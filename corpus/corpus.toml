@@ -128,14 +128,14 @@ levers = ["-y"]
 path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 40
+cost_ms = 83
 note   = "the on half of a pair, `07` its twin, whose `(config …)` lines set the one-step lookahead that no route runs (docs/ein/user/04-reference/06-config.md): the two are one program and describe one R. The puzzle: five colours, five houses, four anchored, and Blue's four doomed placements each dead in one firing."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 30
+cost_ms = 88
 note   = "the off half of the pair `06` heads: the same program, and the same R."
 
 [[entry]]
@@ -218,7 +218,7 @@ path   = "examples/features/01_not_and_absent.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 2267
+cost_ms = 3019
 heavy_dump = true
 note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. The runs stay: this is the cheapest fixture where NAF meets the blind enumerator."
 
@@ -226,7 +226,7 @@ note   = "slow out of proportion to its size: three NAF guards over a 3-object d
 path   = "examples/features/02_star_in_identifiers.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 98
+cost_ms = 143
 note   = "no `solve`: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, which is the demo's question; its goal is `(is-a* Rex Animal)`."
 
 [[entry]]
@@ -522,7 +522,7 @@ path   = "examples/beyond_arith/send_more_money.ein"
 group  = "positive"
 runs   = ["solve", "solve --single", "test"]
 slow   = true
-cost_ms = 2150
+cost_ms = 2148
 note   = "SEND + MORE = MONEY, `cryptarithm.ein`'s rules on 80 candidates, its one state 9567 + 1085 = 10652 claimed. `ein test` reads the claim, one class over all of R, and asks `--single`, which finds the state and shows R holds no other: held. A bare `solve` describes R by the tree and the classes and decides it, one state. The letters are declared by column, units first, and the search does not read that order: `send_more_money_written.ein` beside it declares them as the puzzle is written and takes the same work (`ein-infer/tests/order.rs`). Slow by its runs together, the fixture's question being the whole search."
 
 [[entry]]
@@ -530,7 +530,7 @@ path   = "examples/beyond_arith/send_more_money_written.ein"
 group  = "positive"
 runs   = ["solve --single", "test"]
 slow   = true
-cost_ms = 1430
+cost_ms = 1432
 note   = "`send_more_money.ein` with its letters declared as the puzzle is written, S E N D M O R Y, and nothing else changed: generated, not edited by hand. One puzzle, one universe of 80 candidates, one answer. **`--single` is *Solution — R is one state* in the same work as the by-column file, to the saturation and the fact** (`ein-infer/tests/order.rs`): the obligation tree branches on the letter closest to closing a coupling, the couplings being the columns, each with the letters its carry comes from, read off the whole node, and the `route` row says so. `test` holds the claim by that question. No bare `solve` is declared: describing this R is the by-column file's question, to the node. Slow by its two runs together."
 
 [[entry]]
@@ -677,7 +677,7 @@ path   = "examples/lattice/06_friends_tables.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice"]
 slow   = true
-cost_ms = 5198
+cost_ms = 5024
 note   = "the user's seating example: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger), and nothing is claimed of its answer (Q-M1f.564). 19 candidates: the `solve` cell is route 2 stopping at --region-limit 16, and there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2). Slow: bare `solve` describes R and its cells run to the default --region-budget."
 
 [[entry]]
@@ -691,7 +691,7 @@ path   = "examples/lattice/07_two_pairs_two_tables.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 slow   = true
-cost_ms = 3905
+cost_ms = 4349
 note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table. Slow because its question is the region, and n = 16 is 2^16 saturations, nearly all of it the `oracle --dump` cell. The run stays — it is the one that asks the question."
 
 [[entry]]
@@ -735,7 +735,7 @@ path   = "examples/lattice/14_seats_nothing_proposes.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "solve --single", "solve --maximal", "oracle --dump {out}/region"]
 slow   = true
-cost_ms = 9128
+cost_ms = 4391
 note   = "06_friends_tables_everyone_sits made small enough for the oracle: everyone owes a seat, the duo fits only the big table, and the hypothesis rule proposes 12 seats; the obligation proposes beside them the four seats that pay Cat's and Dan's debts at the small table (Q-M1f.570), 16 candidates. R is eight seatings, the oracle's, which the claim states."
 
 [[entry]]
@@ -845,7 +845,7 @@ path   = "examples/saturation/square-bwd/floors.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1595
+cost_ms = 1600
 note   = "no `solve`: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -853,7 +853,7 @@ path   = "examples/saturation/square-bwd/houses.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1584
+cost_ms = 1600
 note   = "no `solve`: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -861,7 +861,7 @@ path   = "examples/saturation/square-bwd/meetings.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1643
+cost_ms = 1648
 note   = "no `solve`: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -869,7 +869,7 @@ path   = "examples/saturation/square-fwd/floors.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1631
+cost_ms = 1599
 note   = "no `solve`: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -877,7 +877,7 @@ path   = "examples/saturation/square-fwd/houses.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1587
+cost_ms = 1601
 note   = "no `solve`: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -885,7 +885,7 @@ path   = "examples/saturation/square-fwd/meetings.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 1663
+cost_ms = 1646
 note   = "no `solve`: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure, which `saturate` answers. Slow by its `render lattice`, which describes at the default --region-budget, where the state route counts the states 2^20 reaches."
 
 [[entry]]
@@ -958,14 +958,14 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/zebra.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 500
+cost_ms = 889
 note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding."
 
 [[entry]]
 path   = "examples/zebra2-hints.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 802
+cost_ms = 557
 note   = "the cells that print every core the run visits (`--trace`, `--dump-lattice`, `render lattice`) pay for each fact a `forall` read folded into a core (Q-M1e2.15), and a run that prints none takes none."
 
 [[entry]]
@@ -973,7 +973,7 @@ path   = "examples/zebra2-minus-15.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
 slow   = true
-cost_ms = 11030
+cost_ms = 10798
 note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 states. `solve` stays: it describes R, and stops at the default --region-budget in the classes, every state found and its commitments counted in part; it is what makes the entry slow. No `render lattice`: its view would be the blind enumerator rather than a picture of the puzzle."
 
 [[entry]]
@@ -981,7 +981,7 @@ path   = "examples/zebra2-minus-15-obligations.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
 slow   = true
-cost_ms = 11060
+cost_ms = 10845
 note   = "the under-determined regime with no hypothesis rule: `zebra2-minus-15.ein` with the rule `guess` and its five activators deleted, generated by the same script that makes the other three variants so that \"nothing else changed\" is checked rather than claimed. Its twin's run list, verbatim, and for the same reasons; the obligations find the same 32 states as the hypothesis rule does."
 
 [[entry]]
@@ -990,7 +990,7 @@ group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
 levers = ["-y"]
 slow   = true
-cost_ms = 2370
+cost_ms = 2082
 note   = "the fixture the obligations need, every other searching entry of the zebra family carrying a hypothesis rule: `zebra2.ein` with the rule `guess` and its activators deleted and nothing else. The five `(bijective *-loc)` declarations fan out into `total-owed` / `surjective-owed`, and the obligations write what would pay what they owe; the answer is the hypothesis rule's, one state, the same one. Its run list is `zebra2.ein`'s so the two are comparable cell by cell. The cells that print every core the run visits (`--trace`, `--dump-lattice`, `render lattice`) pay for each fact a `forall` read folded into a core (Q-M1e2.15)."
 
 [[entry]]
@@ -999,7 +999,7 @@ group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice", "solve --region-budget 1"]
 levers = ["-y"]
 slow   = true
-cost_ms = 2470
+cost_ms = 2239
 note   = "the flagship. `solve --region-budget 1` is the corpus's budgeted run: a run that reaches the budget prints what it established and bounds, never another answer, and exits 0. The cells that print every core the run visits (`--trace`, `--dump-lattice`, `render lattice`) pay for each fact a `forall` read folded into a core (Q-M1e2.15), and a run that prints none takes none."
 
 
