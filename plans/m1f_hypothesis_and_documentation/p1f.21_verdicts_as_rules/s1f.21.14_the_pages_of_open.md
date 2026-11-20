@@ -235,3 +235,17 @@ every picture drawn from its source; `python3 utils/check_generated.py`, 9 gener
 crate tests that hold the reference pages, run by the subagents on the release profile: `grammar_pages` 6,
 `read_out_reference` 6, `config_reference` 9, `answer_dump` 8, `region_dump` 6, `help_surface` 4, `guide_programs`,
 `guide_transcripts`, `natural_language_page`, all passed.
+
+### The gate
+
+On the branch rebased onto `master` at `b578f261` (the engine as at `8c5d1bb0`, rebuilt; the commands of this
+stage's pages run again on it, the generators run again, nothing moved), `./run_tests.sh` twice on `15e0334d`, this
+record's commit before its gate paragraph:
+
+| run | result |
+|---|---|
+| default workers | exit 101 at `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` alone: `examples/features/04_open.ein` 4069 ms and `examples/beyond_arith/equation_two_unknowns.ein` 7254 ms of cells with no `slow` flag, `examples/zebra.ein` 2923 ms against its 500, under load (V-60, V-64, V-65); no file this stage touches |
+| `EIN_TEST_JOBS=4` | **exit 0**: the ten static checks, `cargo test --profile gate --workspace` (168 test binaries, 1380 tests passed, none failed, by the sum of their `test result` lines), the process's checks (`check_generated.py` 9 generators as written; `check_region_routes.py` 8 programs and 300 regions; `wrong_answers.py` 9 open rows; the review bundle's smoke, 0 failed) and the bench smoke |
+
+Not run, as the brief says: the nightly, `--dev-host`, `utils/ci_container.sh`. The stage changes no DOT writer, no
+review bundle and nothing CI installs.
