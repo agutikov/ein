@@ -584,6 +584,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
+| [Q-M1f.658](#q-m1f658--the-pairs-rule-of-no-argument-for-a-relation-declared-with-labels) | The pair's rule of no argument for a relation declared with labels | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.659](#q-m1f659--how-a-pairs-probe-asks-whether-the-state-holds-the-other-side) | How a pair's probe asks whether the state holds the other side | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.660](#q-m1f660--which-rules-take-the-probe) | Which rules take the probe | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.661](#q-m1f661--the-key-of-a-nested-facts-relation) | The key of a nested fact's relation | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.662](#q-m1f662--what-a-rule-instance-costs-at-every-state-beside-the-two-tasks) | What a rule instance costs at every state beside the two tasks | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.663](#q-m1f663--a-position-inside-a-nested-fact-that-has-the-relation-keys-number) | A position inside a nested fact that has the relation key's number | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11968,3 +11974,45 @@ built as worded**: the second instance comes from the membership fact every decl
 of the language, and taking it away changes the language, the library or what a program means. The stage's
 default, Q-M1f.658, keeps the instance and makes it free; the three ways to take it away are shown to the user
 with what each costs.
+
+### Q-M1f.658 — The pair's rule of no argument for a relation declared with labels
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: `clash-0`'s instance for a relation declared with labels.
+**The default taken**: stays, made free; measured, the three ways shown (§ 3). The other reading: one of the three ways.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.659 — How a pair's probe asks whether the state holds the other side
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: how a pair's probe asks whether the state holds the other side.
+**The default taken**: the fact store's own probe of `(W, [f])`, then `Kb::contains`; `Kb::is_negated`, its set and the dump's `NEG` rows go. The other reading: a set of the facts a state holds under a wrapper, by wrapper relation: measured 0.1 to 0.4 % cheaper in the form specific to `not`, which reads a kernel name.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.660 — Which rules take the probe
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: which plans take the probe.
+**The default taken**: a plan whose whole match is one pair, one disjunct of two premises, and whose firing ends a state, by stating the key or concluding what a rule that does matches alone: `clash-N` and a program's own pair rule either way; a rule that states `:ein inconsistent` over anything but a pair, `std.core`'s, and a pair inside one of several disjuncts stay seeded. The other reading: probe the pair's disjunct of a plan of several and seed the rest.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.661 — The key of a nested fact's relation
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: the nested relation's key.
+**The default taken**: `(context, argument, RELATION, relation)`, the argument part of the key; a plan keyed by its premise's first nested pattern; the probe last, after every argument that can be bound, and not listed after a constant. The other reading: `(context, relation)` without the argument; or the relation's key before a later argument.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.662 — What a rule instance costs at every state beside the two tasks
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: the costs of a plan at a state beside the two tasks.
+**The default taken**: built: the watermark for the plan never matched, and the shared plan list. The other reading: leave them for a stage of their own.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.663 — A position inside a nested fact that has the relation key's number
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: a position inside a nested fact that is `RELATION`'s number (the last of a fact of 65 535 arguments).
+**The default taken**: not keyed, by the scan, the compiled list and the index alike (`SlotKey::keys_inner`), so a position's key and a relation's never share a bucket. The other reading: a field of its own in `SlotKey`, past its 12 bytes.
+
+The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).

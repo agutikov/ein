@@ -46,10 +46,10 @@ without a path is in [`design.md`](design.md), whole.
 | [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
 | [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | open; the user's call, with L-109 |
 | [V-35](#v-35--the-renaming-test-does-not-rename-false-and-not) | `renaming_invariance.rs` does not rename `false` and `not`: the kernel still reads both in four places | S1f.21.11 | open |
-| [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | open; **S1f.21.21's**: the set of negated facts is read again or goes |
-| [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | open; **S1f.21.21's task 3**: the instance stays and is made free by default, the ways to take it away shown to the user |
+| [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | **fixed** by S1f.21.21: the set of negated facts and the dump's rows that printed it are gone; a pair's probe asks the fact store |
+| [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | **measured** by S1f.21.21, the instance kept (its default Q-M1f.658): it still costs 0.5 to 8.6 % of the instructions, as a plan at every state and not as a match; the three ways to take it away are in the stage's record: **the user's call** |
 | [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
-| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **measured, explained, and ruled by the user 2026-11-20** (Q-M1f.657): everything recommended is built, by S1f.21.20's task 7 and [S1f.21.21](s1f.21.21_the_contradictions_cost.md), and the cost measured again |
+| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **measured, explained, ruled by the user (Q-M1f.657) and built**: by S1f.21.20's task 7 and S1f.21.21; in instructions the engine is back to its count before the contradiction became rules on `zebra2.ein` and 8 % above it on the two calculator programs; the final table is the coordinator's |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | **fixed** by S1f.21.18 |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
@@ -85,6 +85,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | open; **S1f.21.22 rewords them** |
 | [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | **fixed** by S1f.21.14 on its resume |
 | [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | open; **S1f.21.22 runs it and fixes it if it does** |
+| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | open; the largest cost at a state that is left; **the user's call** |
+| [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | open; **the user's call**, with V-37 |
+| [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -953,3 +956,15 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-77 — The hypothesis found in flight may depend on the count of workers
 
 **Found** by S1f.21.14. A worker records the first hypothesis held above root in a cell written once, before the interning that may hand the node back, so under `--jobs N` the hypothesis the warning and the summary name could be another node's than at one job. Read off the code, not run. No verdict may depend on the count of workers. **Open; S1f.21.22 runs it and fixes it if it does.**
+
+## V-78 — A resumed state walks every fact it holds to find what is new
+
+**Found** by S1f.21.21. At every state of a search, the saturation's resume walks the state's whole list of facts and asks, for each, whether root held it, to find the facts the commitment added. A profile with call stacks puts it at about 17 % of `send_more_money.ein`'s instructions and about 5 % of `equation_two_unknowns.ein`'s, on the engine S1f.21.21 leaves. It is no part of the contradiction's cost: the engine before the phase did it too. Read off the layers above the snapshot's, the delta would cost its own size. **Open; the largest cost at a state that is left; the user's call.**
+
+## V-79 — What a rule instance still costs at a state
+
+**Found** by S1f.21.21. A state that compiles a plan, as the calculator's derived activators make it do, reads every table of the agenda and the index of plans again over every plan: about 5 % of `equation_two_unknowns.ein`. Every state copies root's sets of what fired and what was seen: about 1.3 % each. With the plans' own firings at root they are what the pair's rule of no argument still costs. **Open; the user's call, with V-37.**
+
+## V-80 — The cost page's first instruction counts were taken unpinned
+
+**Found** by S1f.21.21. The counts of the cost page's section on why the contradiction costs were taken at the default count of workers, not pinned; pinned to the performance cores with one worker the same engines execute fewer instructions (A on `equation_two_unknowns.ein`: 3 143 M against the page's 3 610 M). The two are not to be set side by side. ****taken up by the coordinator: the final table takes every count one way.**
