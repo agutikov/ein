@@ -163,3 +163,101 @@ Q-M1f.601 to Q-M1f.604 are not used.
 - **V-42.** `examples/syntax/query-full.ein`'s goal names `drinks`, which only its two hypothesis rules write. Once
   they conclude `(open (drinks …))`, the loader's check that a goal names a relation of the program has to read
   under `open`, or the program is refused, as it is today with the hypothesis rules deleted.
+
+**Task 2, the build: done 2026-11-20**, in a subagent of its own, on the branch of its worktree from `621c2ab1`,
+then rebased onto `master`. Commits: `e1f37012` (the grammar and the loader), `e46c4c89` (the engine and its tests), `21865cbc` (the corpus), `f0bbd066` (the pages, the decisions, AGENTS.md), `04d780fb` (the goldens), `375e3d4f` (a node's `beyond` without its `open` facts, the rebase's anchor and the examples page); two helpers of the build's own rewrote the pages that told the ladder and restated the structure tests the union moved (`coupling`, `cover`, `exactly_one`, `theory_share`, `h_space_view`), each change in the commits above.
+
+| step | what was built |
+|---|---|
+| 1, the grammar and the loader | `open` is a position word (`ein.y`'s `OpenFact`, `OpenHead`, `OrdinaryHead`, `OpenTerm`, `AbsentPremise`, `ClaimNested`): the kernel's word at the head of a written fact, a premise and a conclusion, a name elsewhere, bound by no declarator. `(open)`, `(open (open P))`, `(open (absent P))` and `(absent (absent P))` are parse errors, each a row of the grammar page's table (seven rows added, 48 rows and the five `open-*` deleted lines removed: their shapes load now). The loader's `validate_open` reads a name or a parameter under `open` as what a state owes, the rule's whole `:assert`, and anything else as a hypothesis; a written `(open F)` is held at root; a written `(open x)` with `x` no fact and no relation, an obligation made to owe `open`, and an hrule that concludes `(open …)` are refused at load |
+| 2, the pass | `ein_infer::open`: at each state's fixpoint it writes `(open R)` once per relation the state owes and `(open F)` for each hypothesis its writers give there, into `Kb`'s `open` layer, which no fork inherits; the count of instances is as before (`obligations::tally`) |
+| 3, H | read at root off the `open` facts, less what root holds or denies; the union of the rules that conclude a hypothesis (hrules among them), the program's written ones and the activated obligations' payments; the blind enumerator only where none writes; `mechanisms::judge` holds the two lists and a closure to root's `open` facts, a disagreement a load error (`no_hypothesis_beside_open.ein`); obligations never decline |
+| 4, a rule that reads `open` | the pass, then such rules, until nothing changes; the static check's site `open-read` (also through a relation parameter an activator binds to `open`) |
+| 5, a hypothesis first held above root | the site `hypothesis` (a rule that concludes `(open F)` and reads `D` outside an `absent` or under an even number), the site `obligation-guard` (Q-M1f.579), and `Monotonicity::in_flight`, read off the run: the read-out's `in flight` row, the summary's `monotonicity.in_flight`, stderr's warning once per file |
+| 6, the surfaces | `-p` lists a state's `open` facts and `-P` leaves them out; the dumps, `ein saturate --dump`, the drawings, the events (`rung` mode `union`), the summary and `ein show hyps` carry them; `08-read-out.md` and `11-region-dump.md` in the same commit |
+| 7, the hrule | read as a rule that concludes `(open F)` with its clause's activators (`hrule::Hrules` over `program.hrules` and `program.hypotheses`) |
+
+**The corpus, against item 58.** Run on the built engine against `621c2ab1`'s (`build/s12/compare.py`):
+
+- *By the union*, as item 58 says: `zebra.ein` (H 56 → 112, R one state as before), `06_friends_tables_everyone_sits`
+  (19 → 25), `08_absent_witness_hole` (3 → 4), `13_witness_of_two` (3 → 4, R 8 states, its claim restated from the
+  oracle), `14_seats_nothing_proposes` (12 → 16, R 8 states, its claim restated from the oracle; it now costs past a
+  second and is flagged `slow`, its `cost_ms` the gate run's figure and not re-taken), `13_mixed_solution_and_open`
+  (its `:no-hypothesis (is-a likes)` dropped, item 65: R three states, the claim restated; the program as it was is
+  `examples/broken/load/no_hypothesis_beside_open.ein`, refused at load).
+- *An obligation that no longer steps aside*, as item 64 says: the six `oblig-fresh-name*` and `oblig-derived-domain*`
+  witnesses, newly flagged, and the two `oblig-stdlib-total-owed*`, flagged already; each lost the regression rows and
+  claim-checking runs a flagged program may not have, and its header says what is true.
+- *Where `open` is written*: the regressions' `open-*` witnesses (item 58's list): twenty load now, `open` a name
+  where the kernel does not read it, each row's region banked; `open-fact-head`, `open-relation-parameter`,
+  `open-obligation-parameter` and `open-solve-list` stay refused, by the loader's new lines. `absent-fact-nested.ein`
+  loads (Q-M1f.571), which item 58 did not list. `open_in_match.ein` and `open_mixed_assert.ein` moved (Q-M1f.614,
+  below). `tests/stdlib/bijection/06_blind_enumeration.ein` rewritten with no obligation activated (Q-M1f.600).
+- `13_witness_of_two` and `14_seats_nothing_proposes` lose the subject the tests read them for (an unproposed
+  witness, L9): see V-48.
+
+**`oblig-derived-domain.ein`, run on the built engine** (`ein solve`): flagged (`obligation-guard reads food at absent
+depth 1`), H one candidate, `(likes Ann Soup)`, dead alone; R empty, every alive node owes (*Ann owes a liked food*);
+its claim, `(model (likes Ann Pie))`, FAILS. Before (`621c2ab1`): H six candidates by the blind enumerator after the
+decline, R one state, `(likes Ann Pie)`, the claim held, monotone. Item 64's stand-in said the same of the build.
+
+**Defaults taken in the build, ids for the coordinator to file (Q-M1f.606 to Q-M1f.620).**
+None is cited by a project file; each is what the build does until the user rules otherwise.
+
+| id | question | default the build takes |
+|---|---|---|
+| Q-M1f.606 | which reads of a rule that concludes `(open F)` are the `hypothesis` site | a read of `D` outside an `absent` or inside an even number of them, as a saturation rule's monotone reads; the literal reading of Q-M1f.574 (any depth) flagged `hrule-reads-unknown.ein` and its kin for an `unknown` probe |
+| Q-M1f.607 | the blind enumerator under `(solve :no-search)` | it writes nothing: no candidate, as no writer runs |
+| Q-M1f.608 | a state's `open` facts within its own pass | written once at the fixpoint and only added to while a rule that reads `open` derives (the pass, then such rules, until nothing changes); none is withdrawn within a state |
+| Q-M1f.609 | what the blind enumerator and a later debt write above root | what root read: the blind enumerator's raw list at root and the later debts' candidates, less what the state holds or denies |
+| Q-M1f.610 | an obligation whose witness step does not resolve under an activator | the call is declined: nothing is written for any obligation, and the blind enumerator does not run beside an activated obligation (`rung` mode `declined`) |
+| Q-M1f.611 | may a claim list an `open` fact | no: a claim lists facts of the program's relations (`ein.y`'s `ClaimNested`); `(model (open k))` is a parse error |
+| Q-M1f.612 | an `open` fact's provenance | a pass-written one carries a rule's provenance naming its writer (the obligation, the rule, or `open` for the blind enumerator), printed *which rule … writes*; a written one the loader's source provenance |
+| Q-M1f.613 | `(open ?x)` in a conclusion | `?x` a parameter of the rule names a relation (what a state owes); a variable the `:match` binds is a hypothesis |
+| Q-M1f.614 | the two parse-negative fixtures Q-M1f.66's old shape made | `open_in_match.ein` moves to `examples/features/23_a_rule_reads_open.ein` (its subject, a rule that reads `open`, is legal and flagged); `open_mixed_assert.ein` moves to `examples/broken/load/` with `:why`s, refused at load |
+| Q-M1f.615 | the in-flight warning on stderr | once per file, at once, and only where the static check did not already flag the program (a flagged program's warning is already printed) |
+| Q-M1f.616 | does a node's `open` facts count as work and against `--region-budget` | no: `region::NodeOut::work` counts the facts saturation built beyond root, the `open` facts aside, in every route's `facts` |
+| Q-M1f.617 | is `open` a guessable atom where a program writes it as a name | no: the kernel's word, left out of the blind enumerator's atoms as `absent` is (`hypgen::candidate_objects`) |
+| Q-M1f.618 | `open` and `absent` heading a fact under `not`, in a guard's value and in a `:using` list | names, as under an ordinary relation (Q-M1f.571 read where it is silent): `(not (absent k))`, `(neq ?x (absent k))`, `(q (absent ?x))` load; directly under `open` or `absent`, written at the top and concluded they stay refused |
+| Q-M1f.619 | the structure's theory share under the union | the program's own writers built H (`structure.rs`' `declared`), and the relations they read, the rules' and the obligations', are what the universe is made of |
+| Q-M1f.620 | an hrule whose `:assert` concludes `(open …)` | refused at load: an hrule proposes a fact, a hypothesis already; a rule that concludes `(open …)` is written instead |
+
+**Findings outside the build, for the coordinator to file (V-46 to V-55):**
+
+- **V-46.** `examples/ein-bugs/wrong-answers/absent-fact-nested.ein` loads (Q-M1f.571), which item 58 did not list;
+  its regression row says so, and `ein-cli/tests/value_rule.rs` moved seven `absent` shapes from the refused list
+  to the loading one (Q-M1f.618).
+- **V-47.** Under the union an activated obligation writes every witness its guard gives at root, so on a monotone
+  program no instance root owes has an unproposed witness: L5's last reason, L9 (`ein_infer::unheld`) and the
+  coupling's unlicensed path (`Debt.licensed`, `Owing::Unlicensed`, the payers read off holders) have no subject in
+  the corpus, nor can have but through the filter pipeline. `unheld.rs` holds that L9 licenses nothing and reads one
+  the day it appears; the structure tests dropped the assertions that had no subject. The machinery stays: whether it
+  goes is the user's. The read-out's holder sentence at a stopped budget still says *an instance L5 does not license
+  has no payers read* on a program with none.
+- **V-48.** `zebra.ein`'s H holds each placement beside its mirror (56 → 112). Its structure reads 352 groups and no
+  grid where it read 36 groups and five grids, 33 305 coupling edges where 386, and its root layer 705 808 facts where
+  181 088 (`ein render h-space examples/zebra.ein`); `zebra.ein` and `zebra2.ein` have one cover and one theory only
+  folded by orientation, which the tests now say. The cover reads two candidates that imply each other as two.
+- **V-49.** A written `(open R)`, `R` a relation's name, loads and is held at root, and nothing reads it as owed: R is
+  {∅} beside it.
+- **V-50.** A rule's `(open F)` is held at a state that holds `F`, a rule writing what it concludes, where the
+  obligations' and the blind enumerator's are written less what the state holds; `-p` lists both.
+- **V-51.** The state route commits a state's closure, so where one candidate implies another its dead extension,
+  stopped at its first contradiction, holds a candidate route 1's fork from root has not derived:
+  `13_mixed_solution_and_open` counts one fact more on the state route, which `route_invariance.rs` names
+  (``e1f37012` (the grammar and the loader), `e46c4c89` (the engine and its tests), `21865cbc` (the corpus), `f0bbd066` (the pages, the decisions, AGENTS.md), `04d780fb` (the goldens), `375e3d4f` (a node's `beyond` without its `open` facts, the rebase's anchor and the examples page); two helpers of the build's own rewrote the pages that told the ladder and restated the structure tests the union moved (`coupling`, `cover`, `exactly_one`, `theory_share`, `h_space_view`), each change in the commits above_AN_IMPLIED_CANDIDATE`); the saturations and the read-out are one.
+- **V-52.** `14_seats_nothing_proposes.ein`'s declared runs cost past a second (the oracle over 16 candidates): it is
+  flagged `slow`, its `cost_ms` the gate run's figure (9 128), to re-take under `utils/bench_env.sh`.
+- **V-53.** The generator's words: the mode `hrules` now names the rules that conclude a hypothesis and the program's
+  written `open` facts, and `ein show hyps`' note still says *built by the rung …*; the words stay until the hrule
+  form is deleted.
+- **V-54.** `(?R ?x)` written where a value goes with `?R` bound to `absent` stays refused (`value_rule.rs`'
+  `absent-parameter-value`), while `(q (absent ?x))` loads (Q-M1f.618).
+- **V-55.** Q-M1f.66's file name, `open-is-written-only-as-a-rules-verdict`, says what is no longer true: its heading
+  and text are rewritten, its slug is not, every link to it would move.
+
+**What the user must see**: the oblig-derived-domain answer above; V-47 (L9 and the unlicensed path have no
+subject); V-48 (zebra's structure under the union); the defaults Q-M1f.606 to Q-M1f.620, Q-M1f.618 above all
+(`absent` and `open` as names under `not`).
+
+**The gate**: the next commit records it.
