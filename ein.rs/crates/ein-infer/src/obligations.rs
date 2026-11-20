@@ -12,9 +12,9 @@
 //! fixpoint** — a band would have ordered its selection *inside* the loop,
 //! where a debt that negative-completion (240) or elimination (400) was about
 //! to pay is still outstanding. Read at the fixpoint, the tally is a function
-//! of the final KB rather than of a moment on the way to it. `:priority` keeps
-//! one residual meaning here: the **report order** among obligation rules,
-//! which is what makes the outstanding list deterministic.
+//! of the final KB rather than of a moment on the way to it. Among obligation
+//! rules the **report order** is their load order, which is what makes the
+//! outstanding list deterministic.
 //!
 //! ### Firing *is* undischarged
 //!
@@ -74,8 +74,9 @@ pub struct Owed {
     /// value it binds its parameter to.
     pub activator: Box<[Value]>,
     /// The relation whose extent is incomplete: `(open ?R)`'s argument,
-    /// substituted per activator. `None` is the bare `(open)`, which counts
-    /// and reports but does not attribute.
+    /// substituted per activator. `None` where the argument is no name, which
+    /// no activator gives: one that binds `?R` to a fact activates nothing.
+    /// Such an instance would count and report but not attribute.
     pub relation: Option<Symbol>,
     pub bindings: Box<[(Symbol, Value)]>,
     /// The rule's `:why`, rendered against `bindings` — the report. Empty when
@@ -85,9 +86,9 @@ pub struct Owed {
 
 /// What a quiescent KB owes: the instances, in report order.
 ///
-/// Report order is `(:priority, the rule's load order, the activator's order,
-/// the match order)` — all four deterministic, so two runs over one KB list
-/// the same debts in the same order.
+/// Report order is `(the rule's load order, the activator's order, the
+/// match order)` — all three deterministic, so two runs over one KB list the
+/// same debts in the same order.
 #[derive(Clone, Default, PartialEq, Eq, Debug)]
 pub struct Owes {
     instances: Vec<Owed>,
@@ -110,8 +111,8 @@ impl Owes {
     /// `--json-summary` say `owes: {pet-loc: 9, nation-loc: 8, …}` and what
     /// the conservation audit checks against a declaration.
     ///
-    /// A bare `(open)` contributes to [`Owes::total`] and to nothing here: it
-    /// has no slot to name.
+    /// An instance with no relation ([`Owed::relation`]) contributes to
+    /// [`Owes::total`] and to nothing here: it has no relation to name.
     pub fn by_relation(&self) -> Vec<(Symbol, usize)> {
         let mut out: Vec<(Symbol, usize)> = Vec::new();
         for i in &self.instances {
@@ -266,7 +267,7 @@ fn narrate(instances: &[Owed], terms: &Terms, events: &mut Events) {
     }
 }
 
-/// `(open ?R)`'s argument, substituted — or `None` for the bare `(open)`.
+/// `(open ?R)`'s argument, substituted — or `None` where it is no name.
 ///
 /// The parameter is bound by the activator, so the compiler has already turned
 /// `?R` into a `Slot::Const` naming a relation ([`crate::compile`]: "the
