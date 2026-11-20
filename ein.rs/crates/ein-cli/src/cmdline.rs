@@ -1155,7 +1155,8 @@ fn oracle_command() -> Command {
                 .long("states")
                 .action(ArgAction::SetTrue)
                 .help(
-                    "(--dump) also keep every node's state beyond root's, as text, in region.json",
+                    "(--dump) also keep every node's state, as text, in region.json: its facts \
+                     beyond root's and every open fact it holds, root's too",
                 ),
         )
         .arg(

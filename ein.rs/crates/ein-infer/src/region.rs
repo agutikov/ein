@@ -240,7 +240,8 @@ pub struct Projection {
 pub struct Options {
     /// The largest `n` it runs.
     pub limit: u32,
-    /// Keep every node's state (its facts beyond root's) as text.
+    /// Keep every node's state (its facts beyond root's, and every `open`
+    /// fact it holds) as text.
     pub keep_states: bool,
     /// Threads. `1` is the sequential oracle; `N` gives the same record byte
     /// for byte (`region::jobs_change_nothing`), because a worker that would
@@ -330,8 +331,8 @@ pub struct Region {
     pub monotonicity: Monotonicity,
     pub topology: Topology,
     pub cost: Cost,
-    /// Each node's state beyond root's, sorted by text — only when
-    /// [`Options::keep_states`].
+    /// Each node's state beyond root's, with every `open` fact it holds,
+    /// sorted by text — only when [`Options::keep_states`].
     pub states: Option<Vec<Vec<String>>>,
     /// On a program the static check flags, what the detector read off the
     /// cube: the status, attributed, and every node's stale facts
@@ -1297,7 +1298,8 @@ pub(crate) struct Axes {
     is_candidate: FxHashSet<FactId>,
     /// The candidates' relations.
     hypothesised: FxHashSet<ein_core::Symbol>,
-    /// Render each node's facts beyond root's — [`Options::keep_states`].
+    /// Render each node's facts beyond root's, and its `open` facts —
+    /// [`Options::keep_states`].
     keep_states: bool,
     /// Run the pass that writes a node's `open` facts at every node, and
     /// make the check in flight there ([`crate::open::at_every_state`],
@@ -1436,7 +1438,8 @@ pub(crate) struct NodeOut {
     /// ([`crate::known_dead`], L8). At any `n`, where [`Node::excluded`] is a
     /// mask.
     pub denied: Vec<u32>,
-    /// [`Self::state`] rendered, only under [`Axes::keep_states`].
+    /// [`Self::state`] rendered with every `open` fact the node holds,
+    /// root's too (Q-M1f.572), only under [`Axes::keep_states`].
     pub delta: Vec<String>,
     /// The node's own narration, when the axes narrate: its saturation's and
     /// its obligation pass's events, for the caller to replay in order.
@@ -2327,8 +2330,16 @@ fn node_in_region(
         dead,
         owes: node.owes,
         node,
+        // The node's listing: its facts beyond root's, and every `open` fact
+        // it holds, root's too, since a listing of a state lists them
+        // (Q-M1f.572) and a fork holds none of root's.
         delta: if axes.keep_states {
-            sorted_text(terms, &delta)
+            let listed: Vec<FactId> = state
+                .iter()
+                .copied()
+                .filter(|&f| terms.facts.rel(f) == open || !axes.root_facts.contains(&f))
+                .collect();
+            sorted_text(terms, &listed)
         } else {
             Vec::new()
         },

@@ -199,7 +199,9 @@ fn a_raised_limit_warns_with_the_projected_cost() {
     assert!(!r.err.contains("warning:"), "{}", r.err);
 }
 
-/// `--states` keeps each node's state beyond root's.
+/// `--states` keeps each node's state beyond root's, and every `open` fact
+/// the node holds, those root holds too (Q-M1f.572): the node of one seat
+/// owes, and still proposes the three seats it does not hold.
 #[test]
 fn region_states_keeps_every_nodes_state() {
     let root = scratch("states");
@@ -222,6 +224,33 @@ fn region_states_keeps_every_nodes_state() {
         .collect();
     assert!(state.contains(&"(seats Ann C1)"), "{state:?}");
     assert_eq!(seated["status"], "owing");
+    let open: Vec<&str> = state
+        .iter()
+        .copied()
+        .filter(|f| f.starts_with("(open "))
+        .collect();
+    assert_eq!(
+        open,
+        [
+            "(open (seats Ann C2))",
+            "(open (seats Bob C1))",
+            "(open (seats Bob C2))",
+            "(open seats)"
+        ],
+        "the node's open facts, each of them root's too: {state:?}"
+    );
+    let at_root: Vec<&str> = region["region"]["nodes"][0]["state"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|x| x.as_str().unwrap())
+        .collect();
+    assert_eq!(
+        at_root.len(),
+        5,
+        "root's listing is its open facts, nothing beyond root's: {at_root:?}"
+    );
+    assert!(at_root.iter().all(|f| f.starts_with("(open ")), "{at_root:?}");
     let without = root.join("e");
     dump(file, &[], &without);
     let region = json(&without.join("region.json"));

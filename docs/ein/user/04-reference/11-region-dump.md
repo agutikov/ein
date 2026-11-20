@@ -93,7 +93,7 @@ candidates}` each), `outside` (one `{relation, arity, why}` per relation outside
 | `violations` | `dead_not_upward_closed` (a dead node with an alive superset) and `discharged_not_upward_closed` (a discharged node with an owing superset), each with a count and the smallest pair |
 | `edges` | every upward edge, counted by the statuses at its two ends |
 | `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check flags the program, and the lines and components are computed over nodes built by fork from root (`region.md`'s *(nodes by fork)*) |
-| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core` and `refuted_by` (lists on a dead node, `[]` the empty set; `null` on a node that is not dead, whose core does not exist), `core_status` (`null` where no core was taken), `absent_premises`, and `state` (the node's facts beyond root's) under `--states` |
+| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core` and `refuted_by` (lists on a dead node, `[]` the empty set; `null` on a node that is not dead, whose core does not exist), `core_status` (`null` where no core was taken), `absent_premises`, and `state` (the node's facts beyond root's, and every `open` fact it holds, root's too, as every listing of a state lists them, [Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)) under `--states` |
 
 ## Monotonicity — the static check
 

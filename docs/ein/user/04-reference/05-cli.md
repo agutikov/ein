@@ -114,7 +114,9 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
   that would compute it. Passing a larger N is the request; from 17 the command warns, and from 20 it warns with
   the projected cost.
 - **`--dump DIR`** writes `region.json` and `region.md` ([`11-region-dump.md`](11-region-dump.md)), which
-  `ein render region DIR` draws, and `--states` keeps every node's state beside them.
+  `ein render region DIR` draws, and `--states` keeps every node's state beside them: its facts beyond root's,
+  and every `open` fact it holds, root's too
+  ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)).
 - `ein oracle` takes no `--no-search`: it refuses it with the command that judges root alone.
 
 ### 2.3 `ein test`

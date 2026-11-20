@@ -19,7 +19,7 @@ COMMAND ein oracle
   OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts; DIR/forms/print-final-positive.txt
   OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, each state it showed, its facts beyond the program as loaded: root's derivations, its commitment and what that derives, in what the read-out left of stdout's 100 lines. `ein solve FILE -p --dump-answer DIR` writes every listed state's, as DIR/forms/print-final-state.txt
   OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=the most root candidates the cube is computed for: 2^N saturations. Above it the command refuses; 17-19 warns, 20 and more warns with the projected cost
-  OPTION --states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump) also keep every node's state beyond root's, as text, in region.json
+  OPTION --states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump) also keep every node's state, as text, in region.json: its facts beyond root's and every open fact it holds, root's too
   OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print the work: saturations and the wall clock of each phase
   POSITIONAL file required=True help=
 COMMAND ein render
