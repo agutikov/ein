@@ -90,6 +90,9 @@ the contradiction as rules. Scratch named `build/s20/…` is the worktree's, not
 | `0b51c6c8` | 7 | the agenda's tables kept with the snapshot |
 | `0a30e8fe` | 6 | the gate build's check of `compile_all`'s shortcut |
 | `3a094688` | 5 | the check in flight at a printed state too, folded into every surface (Q-M1f.656 as ruled) |
+| `5e84eca8` | | this record's first version, plans only |
+| `3b07ab1b` | 5 | `region`'s module doc names `fork_of` as code: the gate's rustdoc step refused a public doc linking it |
+| `3fbdbd2b` | 5 | X9 of the examples page runs with `--in-flight`: the gate's `read_out_reference.rs` refused the page with no `in flight` row |
 | this record | | plans only |
 
 The hashes are the branch's after its rebase onto `master` at `dfc5f3a0`.
@@ -176,10 +179,12 @@ golden did not move, per commit and under `EIN_CORPUS_SLOW=1`. `06-config.md`'s 
 parsers' counts, and a class of its own in § 3.3, *Does it change the answer: no*; `help_surface.rs`' counts and
 the help golden.
 
-**What moved on a page.** `09-read-out-examples.md` (generated) lost X9's three `in flight` rows:
-`lattice/06_friends_tables.ein` is flagged by a site, and by default its run checks only the states it prints, of
-which none holds a hypothesis root does not; `--in-flight` finds `(sits Dan S1)` again. The rows' table in `08-read-out.md` already said no
-example holds one.
+**What moved on a page.** `09-read-out-examples.md` (generated): X9, `lattice/06_friends_tables.ein`, printed an
+`in flight` row in each of its three runs. The program is flagged by a site, and by default its run checks only the
+states it prints, of which none holds a hypothesis root does not, so the rows went, and `read_out_reference.rs`
+(every row printed by an example) refused the page. X9's first run asks `--in-flight` now
+(`utils/read_out_examples.py`, a sentence of its prose) and prints `(sits Dan S1)`; the row's line in
+`08-read-out.md` names X9, where it said no example held one.
 
 **The cost**, measured with a copy of [the page's script](costs/four_engines.py) (`build/s20/costs/five.py`): point
 D and this stage's release build back to back, and the same build with `--in-flight` on each run that takes it,
@@ -266,9 +271,9 @@ summed):
 | `beyond_arith/equation_two_unknowns.ein` | 4 893 M | 4 213 M | 680 M |
 | `beyond_arith/send_more_money.ein` | 14 150 M | 12 204 M | 1 946 M |
 
-More than the page's part 1 (132, 214 and 451 M): the page's numbers are what the change from A to B added, at
-B's count of plans and `not` facts, and here the tables are read at every state over every plan of this tree's
-engine, where task 5 had left the pass at most states, so they were a larger share of what a state cost.
+More than the page's part 1 (132, 214 and 451 M), which counted what the change from A to B added to the tables:
+the tables were built at every resumed state at A too (`writes_of` and `leads_to_an_end` over every plan, under the
+agenda), and keeping them saves that part as well. The two parts were not measured apart.
 
 ### Defaults taken (Q-M1f.636 to Q-M1f.644)
 
