@@ -250,7 +250,7 @@ fn run(path: &Path) -> Result<String, String> {
 Output, on [`examples/zebra2.ein`](../../../examples/zebra2.ein):
 
 ```text
-loaded 84 facts
+loaded 89 facts
 one state: 25 facts over H
   h_water = House-1
   h_zebra = House-5

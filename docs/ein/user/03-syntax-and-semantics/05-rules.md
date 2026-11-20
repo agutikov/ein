@@ -277,7 +277,7 @@ makes a state that holds it dead is one rule, which every program gets with no i
 ([`04-stdlib/21-core.md`](../04-reference/04-stdlib/21-core.md)). So `one-king` with `:assert (false)` answers the
 same, and its trace has one step more, the rule of `std.core` that reads the `(false)`. Writing `(false)` keeps the
 contradiction a fact a rule can read, a claim can state and a trace shows; stating the word says the same with no
-fact between. A word that is not the engine's, `:ein` beside an `:assert`, and `:ein` on an hrule are refused at load
+fact between. A word that is not the engine's and `:ein` beside an `:assert` are refused at load
 ([`07-diagnostics.md` § 2.30](../04-reference/07-diagnostics.md#230-a-rules-word-to-the-engine)).
 
 ## Parameters and activators

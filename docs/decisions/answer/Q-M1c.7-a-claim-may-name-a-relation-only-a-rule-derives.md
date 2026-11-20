@@ -1,8 +1,8 @@
 # Q-M1c.7 — A claim may name a relation only a rule derives
 
 A claim may list a fact of any relation of the program, and so may a query's goal: one the program declares,
-states a fact of, or writes in a rule, an hrule or an obligation, at any depth, a rule's `:assert` among them, and
-one a `(solve :hrules …)` activator has its hrule propose. A relation only saturation creates, such as an
+states a fact of, or writes in a rule or an obligation, at any depth, a rule's `:assert` and a hypothesis `(open
+F)` among them, and one an activator gives a rule's parameter that heads a form. A relation only saturation creates, such as an
 activator a library's fan-out rule concludes, is a relation of the program once the module that writes it is
 imported, and a claim names it by the short name the file lists. A name the program writes nowhere is refused at
 load: `(solve … :expect …) names <r>, and the program names no relation <r> — …`.

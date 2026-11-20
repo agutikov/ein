@@ -31,7 +31,7 @@
 <g id="node3" class="node">
 <title>r1</title>
 <polygon fill="none" stroke="black" points="619.25,-197.25 452.5,-197.25 452.5,-135.25 619.25,-135.25 619.25,-197.25"/>
-<text xml:space="preserve" text-anchor="middle" x="535.88" y="-182.8" font-family="Helvetica,sans-Serif" font-size="11.00">hrule.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="535.88" y="-182.8" font-family="Helvetica,sans-Serif" font-size="11.00">hypothesis_rules.rs</text>
 <text xml:space="preserve" text-anchor="middle" x="535.88" y="-169.3" font-family="Helvetica,sans-Serif" font-size="11.00">the matches of the rules</text>
 <text xml:space="preserve" text-anchor="middle" x="535.88" y="-155.8" font-family="Helvetica,sans-Serif" font-size="11.00">that conclude (open F),</text>
 <text xml:space="preserve" text-anchor="middle" x="535.88" y="-142.3" font-family="Helvetica,sans-Serif" font-size="11.00">and the program&#39;s (open F)</text>
@@ -149,4 +149,4 @@
 </g>
 </g>
 </svg>
-<!-- source sha256: f3508b8c8c395b4e892b93dee7ca02a642e5bae4b9118f826d5c11f02cab7cb7 -->
+<!-- source sha256: 9257273df3b45a6257f833c33bcb31a4506c0aa15ec59a63f368dacb3e646ab5 -->

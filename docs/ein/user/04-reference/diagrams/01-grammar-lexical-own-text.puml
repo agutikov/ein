@@ -1,14 +1,13 @@
 @startebnf
 punctuation = "(" | ")" ;
 reserved-word =
-    "and" | "or" | "neq" | "rule" | "hrule" | "query" | "solve" | "config" | "trace" | "macro"
-  | "import" ;
+  "and" | "or" | "neq" | "rule" | "query" | "solve" | "config" | "trace" | "macro" | "import" ;
 position-word =
     "not" | "relation" | "step" | "eq" | "absent" | "false" | "true" | "open" | "model" | "region"
   | "merged" | "owing" | "program" | "module" | "commit" ;
 known-keyword =
     ":why" | ":source" | ":goal-text" | ":match" | ":assert" | ":ein" | ":rule" | ":using" | ":goal"
-  | ":over" | ":expect" | ":hrules" | ":hypothesis-relations" | ":no-hypothesis" | ":no-search"
+  | ":over" | ":expect" | ":hypothesis-relations" | ":no-hypothesis" | ":no-search"
   | ":lattice-sanity-check" | ":record-alternative-justifications" | ":symbols" | ":as" | ":derives"
   | ":assumes" ;
 @endebnf

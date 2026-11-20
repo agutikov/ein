@@ -111,8 +111,9 @@ concludes `(false)` from the two, `std.contradiction`'s where a program imports 
 ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). The kernel judges
 no pair by itself. See [`../03-syntax-and-semantics/06-constraints.md`](../03-syntax-and-semantics/06-constraints.md).
 
-### Hrule
-A hypothesis rule: the shape of a rule, and what it concludes is proposed as a hypothesis rather than derived. See
+### Hypothesis rule
+A rule that concludes `(open F)`: `F` is proposed as a hypothesis rather than derived. It is activated as every rule
+is, by a fact of its name; there is no other form for it. See
 [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md).
 
 ### Activator, property fact
@@ -182,7 +183,7 @@ writes `∅`.
 
 ### Hypothesis, candidate
 A fact root supposes, `(open F)`, and does not settle. Which ones exist is the **union of its writers**: what the
-program's rules that conclude one propose, an `(hrule …)` among them, with the facts that would discharge what root
+program's rules that conclude one propose, with the facts that would discharge what root
 owes and what a rule can bring a commitment to owe; and, only where root holds no `open` fact and activates no
 obligation, the blind enumerator's guesses. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide
 which relations the blind enumerator guesses, so a fact of a relation they exclude is none of its guesses. The blind enumerator proposes about the **guessable

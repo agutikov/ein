@@ -942,14 +942,14 @@ are the facts of `wears` it does not state:
 (wears Red Ann)
 (wears Red Bob)
 (wears Red Green)
-note: closure-off.ein: H, built by the rung `blind`: 11 candidates
+note: closure-off.ein: H, from `blind`: 11 candidates
 ```
 
 With `(import std.closure)` added, and a query for what is closed, it has none, and the state holds the closure:
 
 <!-- output -->
 ```text
-note: closure-on.ein: H, built by the rung `blind`: no candidate
+note: closure-on.ein: H, from `blind`: no candidate
 ```
 
 <!-- output -->

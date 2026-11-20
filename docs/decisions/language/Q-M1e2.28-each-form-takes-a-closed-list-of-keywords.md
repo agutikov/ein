@@ -6,10 +6,10 @@ anything runs:
 | form | its keywords |
 |---|---|
 | `relation`, `macro` | `:why` |
-| `rule`, `hrule` | `:match`, `:assert`, `:why` |
+| `rule` | `:match`, `:assert`, `:ein`, `:why` |
 | a fact, a stored negation | `:source`, `:rule`, `:using` |
 | `query` | `:goal`, `:goal-text`, `:over`, `:expect` |
-| `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis`, `:no-search`, `:expect` |
+| `solve` | `:hypothesis-relations`, `:no-hypothesis`, `:no-search`, `:expect` |
 | `config` | `:lattice-sanity-check`, `:record-alternative-justifications` |
 | `import` | `:symbols`, `:as` |
 | a trace's `step` | `:rule`, `:using`, `:derives`, `:source`, `:assumes` |

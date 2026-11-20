@@ -1,14 +1,14 @@
-# Q-M1f.115 — An `:hrules` list names declared hrules, and an activator has its hrule's count of arguments
+# Q-M1f.115 — An activator is a fact of its rule's name, and one of another count activates nothing
 
-Every bare name an `:hrules` list holds, first or not, is an hrule the program declares, and every activator gives
-its hrule as many arguments as the hrule has parameters, an hrule without parameters none. Anything else is refused
-at load, one line, placed at the name: `:hrules names gues, and the program declares no hrule gues — it declares
-guess`, or `:hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2) — an activator
-binds each parameter once`.
+No list in a `(solve …)` names the rules that conclude a hypothesis
+([Q-M1f.567](../hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)): such a rule is activated
+as every rule is, by a fact of its name the program writes, with as many arguments as the rule has parameters. A fact
+of its name with another count activates nothing, `(guess at Color)` beside `guess (?R ?T1 ?T2)`, and a fact whose
+relation is a misspelt rule name, `(gues at Color House)`, is a fact of another relation; neither is refused, and
+neither moves H but by what it does not activate.
 
-**Why.** Every name a `(solve …)` list holds names something the program has, and an activator that binds its
-hrule's parameters short or long binds nothing: read as nothing, either would leave the hypotheses empty in
-silence.
+**Why.** An activator is a fact as any rule's is, read by the checks every activator is read by; a rule's count of
+parameters is what binds them, and a fact of another count binds none.
 
-**Held by.** `ein_ir::from_ir`'s `refuse_solve_names`; `ein-cli/tests/solve_lists.rs`:
-`a_list_naming_nothing_is_refused_on_every_command` and `a_list_naming_what_the_program_has_loads`.
+**Held by.** `ein_infer::compile::activators_for`, which takes the facts of the rule's name with its count of
+arguments; `ein_infer::hypothesis_rules`, one plan per activator it takes.

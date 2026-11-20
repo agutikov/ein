@@ -291,8 +291,8 @@ fact list (`rebuild_layer`) and then checks the extent counts (§ 7). Held by
 | `names` | per layer | any name | `NameEntry { as_head, as_arg }`, direct arguments only | `Kb::names`, `Kb::participation`, the hypothesis generator |
 | `rules_by_relation` | one per KB, shared by `Arc` | a relation's name | the rules naming it in a pattern or through a property fact, sorted by rule name's rank | `Kb::rules_of_relation` |
 
-A fact heads `rule_apps_by_rule` when its head names a saturation rule or an obligation rule; an hrule's activators
-come from the `(solve …)` block and never from the store. `names` counts a name where it heads a fact or is a direct
+A fact heads `rule_apps_by_rule` when its head names a saturation rule, an obligation rule or a rule that
+concludes a hypothesis: every rule's activators come from the store. `names` counts a name where it heads a fact or is a direct
 argument; a nested fact is its own entry, so the names inside it are counted there and not again on the outer fact.
 `rules_by_relation` is computed by `Kb::rebuild_indexes` and then shared, never maintained incrementally, so a
 property fact derived during saturation does not extend it. Each layer also counts `rule_apps`, the facts it added
@@ -477,22 +477,21 @@ finishes and shared by every fork as `Arc<Program>`.
 |---|---|---|
 | `relations` | `Registry<Relation>` | every relation of the program ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)): the declared ones, then each atom the program writes first in a tuple, open-world, a stated fact's in the order of the facts and every other in the order of its text; the kernel's words are none |
 | `rules` | `Registry<Rule>` | the saturation rules, the only registry the saturator walks |
-| `hrules` | `Registry<Rule>` | hypothesis rules, a `Rule` by shape, read by the hypothesis generator |
 | `obligations` | `Registry<Rule>` | rules whose `:assert` is `(open R)` or `(open ?R)`; read once per quiescent KB, never on the agenda |
-| `hypotheses` | `Registry<Rule>` | rules that conclude `(open F)`, a hypothesis; read by the pass that writes a state's `open` facts, never on the agenda |
+| `hypotheses` | `Registry<Rule>` | rules that conclude `(open F)`, a hypothesis, each with its whole `:assert`; read by the pass that writes a state's `open` facts and by the hypothesis generator, never on the agenda; the facts such a rule concludes beside its hypotheses are in `rules` under the same name. `Program::every_rule` reads each rule once, whole |
 | `macros` | `Registry<Macro>` | kept for inspection; expansion happens at load |
 | `queries` | `Vec<Query>` | every `(query …)` block, in source order |
 | `active_query` | `usize` | which of `queries` this load answers (`Program::query`) |
 | `solve` | `Option<Solve>` | the `(solve …)` block, at most one |
 | `config` | `Option<SolverConfig>` | the `(config …)` block, last one wins |
 | `domain` | `OnceLock<Box<[Value]>>` | the program's names sorted by text, what an unbound guard variable ranges over; computed once, cleared by `Kb::program_mut` |
-| `relations_of` | `Box<[Symbol]>` | the relations a goal and a claim may name, in the order of their text: every atom the program writes first in a tuple, the kernel's words it writes among them, `eq` and `neq`, and a relation a `(solve :hrules …)` activator gives its hrule ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)); what a goal given beside the program is held to (`ein_ir::read_goal`) and the facts about relations are read by (`ein_infer::slice`, [Q-M1f.523](../../../decisions/cli/Q-M1f.523-the-facts-about-relations-are-every-fact.md)) |
+| `relations_of` | `Box<[Symbol]>` | the relations a goal and a claim may name, in the order of their text: every atom the program writes first in a tuple, the kernel's words it writes among them, and `eq` and `neq` ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)); what a goal given beside the program is held to (`ein_ir::read_goal`) and the facts about relations are read by (`ein_infer::slice`, [Q-M1f.523](../../../decisions/cli/Q-M1f.523-the-facts-about-relations-are-every-fact.md)) |
 
 `Registry<V>` is an insertion-ordered `Vec<(Symbol, V)>` with an `FxHashMap<Symbol, u32>` index, because its order is
 observable (the hypothesis generator and the plan compiler iterate it). `Registry::insert_new` keeps the first
 declaration of a name; `Registry::replace` overwrites in place, keeping the position, which is how
-`Program::add_relation` upgrades an open-world relation to a declared one. Rules, hrules and obligations share one
-name-space.
+`Program::add_relation` upgrades an open-world relation to a declared one. Every rule shares one name-space,
+whichever registry holds it.
 
 ### 9.2 Entity records
 
@@ -513,7 +512,7 @@ explicitly, so a record shared between a root and its forks cannot answer for on
 
 There is no type or instance record: a program's membership facts are ordinary facts. `Program::categorise` gives
 each name a `NameCategory`: `Relation` for the kernel's `relation` and `rule` and for every registered
-relation, `Rule` for a saturation or obligation rule's name, `Object` for everything else, an hrule's name included.
+relation, `Rule` for a rule's name, whichever registry holds it, `Object` for everything else.
 `Object` is the category's name in the code and no sort of node; the blind enumerator draws the guessable atoms from
 `Object` names alone.
 

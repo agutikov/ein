@@ -43,7 +43,7 @@ package "belief: one per branch" {
     primary, alts, closure, best
   }
   class Program {
-    relations, rules, hrules,
+    relations, rules, hypotheses,
     obligations, macros : Registry
     queries, solve, config
   }

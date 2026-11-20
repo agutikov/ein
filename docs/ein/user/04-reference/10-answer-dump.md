@@ -94,9 +94,9 @@ the rule that derived it, with the origin it had, and **it reads no other file**
 
 (item a)
 
-(hrule guess ()
+(rule guess ()
   :match  (item ?x)
-  :assert (note (bad ?x))
+  :assert (open (note (bad ?x)))
   :why    "suppose a note about {?x}")
 
 (rule flag ()
@@ -273,7 +273,7 @@ are the full run's `region.root`, `root_owes` and `root_owed`.
 | `root.hypgen.filtered` | why a built candidate is not in H, sparse, only the keys that fired: `fact_already_exists` (root holds it), `negated_fact` (root holds its `(not …)`), `seen_in_call` (proposed again, from another atom the enumerator proposes about) |
 | `root.hypgen.pre_candidate` | relation and slot skips before any candidate exists, sparse: `closed_relation` (a `(__closed__ R)` root holds, which the program states or derives through `std.closure`), `no_hypothesis_relation` and `relation_not_whitelisted` (the `(solve …)` lists `:no-hypothesis` and `:hypothesis-relations`), `self_edge` (both arguments the same atom) |
 | `root.hypgen.later_debts` | what H holds for debts root does not owe and a commitment can bring, **written only where H holds a candidate for one**, so the key is absent from every other summary: one `{obligation, activator, relation, by, added, candidates}` per activator of an obligation rule that root's fixpoint does not hold and a rule's `:assert` concludes, in the order the obligations read them. `obligation` is the rule, `activator` the fact that would activate it, `relation` the relation its plan owes, `by` the rules that conclude the activator, `candidates` the facts of H that would pay the debt and that no debt before it proposed, in H's order, and `added` their count. The read-out's `later debt` rows say the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
-| `root.hypgen.outside` | what the universe leaves out ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)): one `{relation, arity, why}` per relation the program can conclude or ask about, does not scope out itself, and of which the writers that built H propose no fact, sorted by name, `[]` when none. `why` is `not-owed` (an obligation activated at root, alone or beside the rules that conclude a hypothesis: no obligation owes it and no rule proposes it), `no-hrule` (the rules that conclude a hypothesis, with no obligation activated: none asserts it) or `arity` (the blind enumerator, which proposes arity 1 and 2 only). The read-out's `outside` row says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
+| `root.hypgen.outside` | what the universe leaves out ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)): one `{relation, arity, why}` per relation the program can conclude or ask about, does not scope out itself, and of which the writers that built H propose no fact, sorted by name, `[]` when none. `why` is `not-owed` (an obligation activated at root, alone or beside the rules that conclude a hypothesis: no obligation owes it and no rule proposes it), `not-proposed` (the rules that conclude a hypothesis, with no obligation activated: none proposes it) or `arity` (the blind enumerator, which proposes arity 1 and 2 only). The read-out's `outside` row says the same in words ([`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)) |
 
 ## Where it is read
 

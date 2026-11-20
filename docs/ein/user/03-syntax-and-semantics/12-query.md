@@ -26,9 +26,9 @@ computed once, and every query is a question about that one R. **`(config …)`*
   :assert (false)
   :why    "{?p} and {?q} cannot share {?c}")
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?p Person) (is-a ?c Chair))
-  :assert (seat ?p ?c)
+  :assert (open (seat ?p ?c))
   :why    "suppose {?p} sits on {?c}")
 
 (solve
@@ -93,7 +93,7 @@ shows
 ([solutions and models](13-solutions-and-models.md#as-a-graph)).
 
 `ein render program FILE` draws the two forms themselves in its digraph `query`, beside its digraph `kb` and a
-digraph per rule (the program's hrule and its two restrictions are drawn on
+digraph per rule (the program's hypothesis rule and its two restrictions are drawn on
 [hypotheses](09-hypotheses.md#as-a-graph)): the `(solve …)` clause a note holding its keywords, and the query a
 cluster, its `:goal` drawn as a rule's match is, a pattern whose arrow `1` is at the box `seat`, and its other
 clauses in a note beside it:
@@ -178,7 +178,6 @@ $$
 
 ```text
 (solve
-  [:hrules (<activator> …)]          ; which hrules propose, and with what
   [:hypothesis-relations (<rel> …)]  ; guess only these
   [:no-hypothesis (<rel> …)]         ; …or never these
   [:no-search]                       ; nothing is guessed: the lattice is root alone
@@ -193,8 +192,10 @@ $$
 - **`:no-search` is a flag**, the one keyword with no value: the program states its lattice is root alone, nothing is
   proposed, and R is {∅} where root is alive and owes nothing, empty otherwise. It is how a program says *judge root
   alone*; `ein solve --no-search` is a different thing, a command declining to search ([the CLI](../04-reference/05-cli.md)).
-- **It takes these five keywords and no other.** On a `(query …)`, each of the four that choose the lattice is
-  refused at the parse with a note that names `(solve …)`. `solve` is a reserved word, never a name.
+- **It takes these four keywords and no other.** On a `(query …)`, each of the three that choose the lattice is
+  refused at the parse with a note that names `(solve …)`. A hypothesis rule's activators are facts the program
+  writes, anywhere in it, and no keyword of `(solve …)`
+  ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)). `solve` is a reserved word, never a name.
 
 ## `(query …)`: one question about R
 
@@ -218,9 +219,9 @@ $$
 - **A goal is held to what a rule's `:match` is held to.** A macro's call in it is expanded, and the read-out prints the
   goal as written. Every relation it names, at any depth, is one the program has, an atom the program writes first in
   a tuple ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)),
-  declared, stated, written as the relation of a fact that is an argument, written in a rule or an hrule, or passed by
-  an activator where a relation's name is held, `(symmetric next-to)`; or one proposed by an hrule a
-  `(solve :hrules …)` activator turns on; `eq` and `neq` are every program's, and no theory's relation is: `is-a` is
+  declared, stated, written as the relation of a fact that is an argument, written in a rule, a hypothesis's fact
+  among them, or passed by an activator where a relation's name is held, `(symmetric next-to)`, and
+  `(guess wanted Drink)` to a rule that concludes `(open (?R ?x))`; `eq` and `neq` are every program's, and no theory's relation is: `is-a` is
   one where the program writes it. A relation written as a variable is refused, since a query has no activator to
   bind it
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)).
@@ -351,7 +352,7 @@ The region, pasted under `(solve :expect …)`, and the query's `as :expect`, pa
 
 **A state reached by two commitments of different sizes**:
 [`tests/region/03_merged_or.ein`](../../../../tests/region/03_merged_or.ein). `(co-located A B)` and `(co-located B C)`
-with `transitive`, no hrule. The maximal state is reached by five commitments, two of them minimal, `{(co-located C
+with `transitive`, no hypothesis rule. The maximal state is reached by five commitments, two of them minimal, `{(co-located C
 A)}` and `{(co-located B A), (co-located C B)}`; transitivity derives the rest either way:
 
 ```lisp

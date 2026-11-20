@@ -277,7 +277,7 @@ $$
 
 The form is `(macro NAME (PARAMETER…) BODY :why "TEXT")`, with one parameter or more.
 
-- **Where a call is expanded**: in a rule's or an hrule's `:match` and `:assert`, and in a query's `:goal`. The call
+- **Where a call is expanded**: in a rule's `:match` and `:assert`, and in a query's `:goal`. The call
   is replaced by the body with the arguments put for the parameters, and the call's arguments are what the call
   writes, a premise among them, so `forall` can take premises. A call has as many arguments as the macro has
   parameters.
@@ -354,7 +354,7 @@ depend on which is used**
 
 ### Full names and short names
 
-- **A full name is the name.** Every name a module declares, a relation, a rule, an hrule or a macro, has one full
+- **A full name is the name.** Every name a module declares, a relation, a rule or a macro, has one full
   name: the module's name and the name, `std.math.decimal-arith.add`, `seating.rules.one-chair-each`. It is the same
   through every import, and any file of the program may write it
   ([Q-M1f.231](../../../decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)). What the main

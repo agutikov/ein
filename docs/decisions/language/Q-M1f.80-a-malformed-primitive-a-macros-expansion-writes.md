@@ -1,10 +1,10 @@
 # Q-M1f.80 — A malformed primitive a macro's expansion writes is refused at load
 
-The loader holds a rule's, an hrule's, an obligation's and a goal's clauses, after macro expansion, to the shapes
+The loader holds a rule's, an obligation's and a goal's clauses, after macro expansion, to the shapes
 the grammar gives a written rule, and refuses a form in another shape
 ([Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md)), one line each, `; `-joined with the loader's
 other lines. So every command that reads the program refuses it, the views and `kb save` among them, before any
-path compiles, fires, proposes or owes the rule: under a commitment, in an hrule, in an obligation, and in a rule
+path compiles, fires, proposes or owes the rule: under a commitment, in a hypothesis, in an obligation, and in a rule
 no activator reaches, as at root. A macro no rule calls is not read, and loads.
 
 **Why.** No path may execute a malformed primitive, `(eq k)` among them

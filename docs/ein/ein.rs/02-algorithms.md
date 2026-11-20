@@ -17,7 +17,7 @@ design page that is its contract.
 | **equality** | none: `eq` is name identity, computed, never stored, and names are never merged ([Q1](../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)) | no congruence closure | [`03-design/03-data-model.md`](03-design/03-data-model.md) |
 | **contradiction** | two bit tests per new fact, `(false)` and a pair `X`, `(not X)`; the agenda fires first what can make one, and a route's node stops at its first | incremental clash detection | [`03-design/06-saturation.md`](03-design/06-saturation.md) |
 | **provenance and cores** | every derivation recorded as an OR over AND-nodes, alternatives kept by premise count and smallest closure; a core is the smallest frontier, by an ATMS label search with a budget | ATMS labels; a minimum-cardinality frontier rather than a subset-minimal unsatisfiable subset | [`03-design/03-data-model.md`](03-design/03-data-model.md), [`03-design/07-search.md`](03-design/07-search.md) |
-| **hypotheses**: the candidates H | a union: what the program's rules that conclude a hypothesis propose, hrules among them, with what would pay what the activated obligations owe; else, where neither writes, blind enumeration, every guessable atom in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
+| **hypotheses**: the candidates H | a union: what the program's rules that conclude a hypothesis propose, with what would pay what the activated obligations owe; else, where neither writes, blind enumeration, every guessable atom in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
 | **the search**: the region `R` | routes over the lattice of commitments, each the least work its question needs: the state route (each alive state once), the obligation tree, the climb and the shrink, the alive down-set, the cube | monotone, upward-closed pruning (a dead node's supersets are dead), minimal transversals for the dead sets and the minimal generators, branching on an owed instance's exhaustive alternatives | [`03-design/07-search.md`](03-design/07-search.md) |
 | **canonicalisation** | a state is its sorted fact set, compared whole, never by hash | canonical forms rather than isomorphism | [`03-design/07-search.md`](03-design/07-search.md) |
 
@@ -144,7 +144,7 @@ stops at the first match.
 ## 6. Hypothesis generation: the writers
 
 H is built once, at root's fixpoint, by `hypgen::generate_config_free`, and is the union of what its writers
-propose: the rules that conclude a hypothesis, `(open F)`, hrules among them; the `(open F)` facts the program
+propose: the rules that conclude a hypothesis, `(open F)`; the `(open F)` facts the program
 writes; the obligations activated at root; and, only where none of those wrote and no obligation is activated, the
 blind enumerator. Every writer feeds one filter pipeline, and the survivors are sorted by text and deduplicated
 into H. What the writers give at root, and at every state above it, the pass of `open.rs` writes as the state's

@@ -89,8 +89,9 @@ double negation held, a fact among them. The loader reads such a conclusion as w
 of parameters whose name the program writes as an argument
 ([Q-M1f.42](../../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)), and warns of it
 where one of those parameters names a relation, whether or not any run would derive the activator, which would
-activate nothing ([diagnostics § 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). This program names
-its hypothesis rule twice in `:hrules`, and the rule's first parameter stands first in a pattern:
+activate nothing ([diagnostics § 2.9](../07-diagnostics.md#29-a-rule-shape-that-reads-nothing)). This program writes
+its hypothesis rule's name as an argument, `(offered guess)`, and the rule's first parameter stands first in a
+pattern:
 
 ```lisp
 (import std.negation)
@@ -101,13 +102,14 @@ its hypothesis rule twice in `:hrules`, and the rule's first parameter stands fi
 
 (is-a Tea Drink) (is-a Milk Drink)
 
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "is {?x} {?R}?")
 
-(solve :hrules (guess (chosen Drink)
-                guess (served Drink)))
+(guess chosen Drink) (guess served Drink)
+(relation offered Rule :why "the rule {?3} is offered")
+(offered guess)
 (query :goal (chosen ?x))
 ```
 

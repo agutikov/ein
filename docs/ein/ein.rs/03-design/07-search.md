@@ -14,10 +14,10 @@ H is built once, at root, as **the union of its writers** ([`hypgen.rs`](../../.
 `generate_config_free`), the hypotheses root holds, `(open F)`, less what root holds or denies
 ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
 
-1. **the rules that conclude a hypothesis**, `(open F)`, `(hrule …)`s among them
-   ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)): a rule without parameters is one plan, an
-   hrule with them one plan per activator `(solve :hrules …)` names, another rule one per activator root holds, and
-   each `(open F)` of a plan's `:assert` is a candidate per match; with them the `(open F)` facts the program writes,
+1. **the rules that conclude a hypothesis**, `(open F)`
+   ([`hypothesis_rules.rs`](../../../../ein.rs/crates/ein-infer/src/hypothesis_rules.rs)): a rule without
+   parameters is one plan, a rule with them one plan per activator root holds, and each `(open F)` of a plan's
+   `:assert` is a candidate per match, an instance of `eq` or `neq` none; with them the `(open F)` facts the program writes,
    which root alone holds;
 2. beside them, **the obligations** activated at root
    ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root

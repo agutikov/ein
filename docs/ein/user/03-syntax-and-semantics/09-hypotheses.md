@@ -4,15 +4,16 @@ A **hypothesis**, or **candidate**, is a fact the engine may assume: one the pro
 not derive, but a solution might hold. The candidates of a program are its **hypothesis set H**, built once, at root.
 A **commitment** is a set of candidates assumed together, and the answer is the commitments whose state is alive and
 owes nothing ([solutions and models](13-solutions-and-models.md)). So H is the space the answer is drawn from, and a
-program says what may go into it: an `hrule` that proposes candidates, an obligation whose payments are the
-candidates, or neither, and then every fact the blind enumerator can form. `(solve …)` and `(__closed__ R)` narrow
+program says what may go into it: a rule that concludes candidates, `(open F)`, an obligation whose payments are
+the candidates, or neither, and then every fact the blind enumerator can form. `(solve …)` and `(__closed__ R)` narrow
 it, and `(solve :no-search)` empties it. A `(__closed__ R)` fact **closes** the relation `R`: the held extent of
 `R` is fixed, and no candidate is a fact of it; *a closed relation* on these pages is a relation such a fact
 names.
 
 ## In Ein
 
-An `hrule` is a rule whose conclusion is not derived but **proposed**: each match gives one candidate.
+A **hypothesis rule** is a rule that concludes `(open F)`: `F` is not derived but **proposed**, each match giving
+one candidate ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)).
 
 ```lisp
 ;; Two people, two chairs: who sits where?
@@ -31,18 +32,18 @@ An `hrule` is a rule whose conclusion is not derived but **proposed**: each matc
   :assert (false)
   :why    "{?p} and {?q} cannot share {?c}")
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?p Person) (is-a ?c Chair))
-  :assert (seat ?p ?c)
+  :assert (open (seat ?p ?c))
   :why    "suppose {?p} sits on {?c}")
 
 (query :goal (seat ?who ?chair) :over maximal)
 ```
 
-`ein show hyps FILE` lists H, one candidate a line, as Ein facts, and says on stderr which rung built it:
+`ein show hyps FILE` lists H, one candidate a line, as Ein facts, and says on stderr which writers it is from:
 
 ```text
-note: chairs.ein: H, built by the rung `hrules`: 4 candidates
+note: chairs.ein: H, from `hypothesis-rules`: 4 candidates
 (seat Ann C1)
 (seat Ann C2)
 (seat Bob C1)
@@ -53,27 +54,28 @@ The answer is over the 16 commitments these four make: seven of them are alive (
 two full ones), and the query, asked over the maximal line, has two classes, Ann on `C1` with Bob on `C2`, and the
 other way round.
 
-An hrule with parameters is activated by the activators `(solve :hrules …)` lists, each binding its parameters once:
+A hypothesis rule with parameters is activated as every rule is, by the facts of its name the program writes,
+each binding its parameters once:
 
 ```lisp
-(hrule guess (?p ?s)
+(rule guess (?p ?s)
   :match  (instance ?p Person)
-  :assert (seat ?p ?s)
+  :assert (open (seat ?p ?s))
   :why    "suppose {?p} sits in {?s}")
 
-(solve
-  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+(guess Ann S1) (guess Ann S2) (guess Bob S1) (guess Bob S2)
 ```
 
 ## As a graph
 
-An hrule is drawn as a rule is, `ein render rule --name guess FILE`: what it matches at root, and the fact each
-match proposes, dashed.
+A hypothesis rule is drawn as every rule is, `ein render rule --name guess FILE`: what it matches at root, and
+what each match concludes, dashed: the fact `(open …)`, whose argument, the candidate `(seat ?p ?c)`, stands in its
+context.
 
-![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/09-rule-guess.svg)
+![The rule guess: what it matches, and the fact (open (seat ?p ?c)) each match concludes, dashed, the candidate in its context](diagrams/09-rule-guess.svg)
 
-The drawing is the same as a rule's, and the difference is in what the dashed fact means: a rule's is added to
-the state the rule fires in, an hrule's is a candidate, added in the states that commit to it and in no other.
+What the dashed `open` fact means is the difference: a fact a rule concludes is added to the state the rule fires
+in, and the fact under `open` is a candidate, added in the states that commit to it and in no other.
 
 The program's two restrictions are what the guesses are judged by ([constraints](06-constraints.md)). Each is a
 picture of what a state may not hold, two facts of `seat` from one person or to one chair, with `(false)` on the
@@ -95,7 +97,7 @@ commitments over these four candidates, each node coloured by what its state is,
 
 ## In words
 
-An hrule's `:why` says the guess it proposes: *suppose Ann sits on C1*. A candidate is a fact, and reads as one, as
+A hypothesis rule's `:why` says the guess it proposes: *suppose Ann sits on C1*. A candidate is a fact, and reads as one, as
 written: `(seat Ann C1)`. The read-out names the candidates of a state by its commitment, `from
 {(seat Ann C1), (seat Bob C2)}`, and a run's trace opens each state with *Assuming (seat Ann C1), (seat Bob C2)*.
 
@@ -114,7 +116,7 @@ C &\subseteq H \\
 $$
 
 A hypothesis adds one fact to what the rules start from, and everything the rules then derive. The commitments
-ordered by inclusion are the lattice $(2^H, \subseteq)$, with $2^n$ nodes for $n = |H|$. The hrule above proposes
+ordered by inclusion are the lattice $(2^H, \subseteq)$, with $2^n$ nodes for $n = |H|$. The rule `guess` above proposes
 
 $$
 \begin{aligned}
@@ -166,7 +168,7 @@ Candidates are proposed at a fixpoint, after saturation, never in the middle of 
 
 | writer | when | the candidates |
 |---|---|---|
-| **rules** | a rule concludes `(open F)`, an `hrule` among them, or the program writes one | each active rule's hypothesis, once per match at root |
+| **rules** | a rule concludes `(open F)`, or the program writes one | each active rule's hypothesis, once per match at root |
 | **obligations** | an obligation is activated at root | the facts that would pay what root owes, and what a commitment can bring it to owe; a root that owes nothing proposes nothing from it ([obligations](08-obligations.md)) |
 | **blind** | root holds no `open` fact and activates no obligation | every fact of a declared relation of one or two arguments over the guessable atoms, whatever the labels |
 
@@ -181,26 +183,28 @@ Which writers write is decided once, at root
 activates writes nothing: an import brings its module whole, so importing `std.algebra` for `symmetric` loads its two
 obligation rules, and they decide nothing until a fact activates one.
 
-### The hrule
+### The hypothesis rule
 
 ```text
-(hrule <name> (<param>*)
+(rule <name> (<param>*)
   :match  <premise>
-  :assert <one fact>
+  :assert (open <fact>)        ; one or more, in an (and …) beside any facts
   :why    "<the guess, in words>")
 ```
 
-- **Its conclusion is one fact**: each match proposes one candidate, a commitment of its own. An `:assert` of two
-  conclusions is refused at load; write one hrule per conclusion
-  ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)).
-- **Active**: an hrule with no parameters always; one with parameters once per activator in `(solve :hrules (h (a b)
-  …))`. Every name in that list is an hrule the program declares, and each activator has as many arguments as its
-  hrule has parameters ([Q-M1f.115](../../../decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)).
-- **It matches at root.** `:match ()` proposes its conclusion once. A fact of `eq` or `neq` is no hypothesis
-  ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and an hrule
+- **Each `(open F)` is one fact**: each match proposes one candidate per `(open F)`, a commitment of its own.
+  `(open (and …))` is refused, and a rule concludes several hypotheses as several `(open F)`
+  ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). The facts it concludes
+  beside them are an ordinary rule's.
+- **Active** as every rule is ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)): one with no parameters always, one with parameters once
+  per fact of its name root holds, one the program writes anywhere in it or a rule derives, with as many arguments
+  as the rule has parameters. There
+  is no `hrule` form and no `:hrules` clause.
+- **Its matches at root are H's.** `:match ()` proposes its candidate once. A fact of `eq` or `neq` is no hypothesis
+  ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and the rule
   may read a stored `(not …)`, which it reads in root's state
   ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
-- **No list and no closure filters it.** What an hrule proposes is what it proposes.
+- **No list and no closure filters it.** What a hypothesis rule proposes is what it proposes.
 
 ### The blind enumerator
 
@@ -209,7 +213,7 @@ arguments, over every **guessable atom**, a pair of two different ones for a rel
 label**: the declaration `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. What a label does is
 leave the guessable atoms: `Person`, `Chair` and `T` are written as labels, so no candidate is about them, and the
 guessable atoms are the four names left
-([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). Dropping the hrule from the chairs
+([objects](01-objects.md#no-types-a-label-means-what-a-rule-makes-it-mean)). Dropping the rule `guess` from the chairs
 program gives 24 candidates, `is-a` and `seat` facts over every pair of the four atoms; `(solve
 :hypothesis-relations (seat))` brings it to the twelve `seat` facts. No fact of a relation of three arguments or
 more is enumerated. Where `ein` prints *object* in a row about the enumerator, it means a guessable atom.
@@ -266,8 +270,8 @@ and of a list beside one, [`no_hypothesis_beside_open.ein`](../../../../examples
 kb load error: examples/broken/load/no_hypothesis_beside_open.ein:41:24: solve: its :no-hypothesis names likes, and root holds (open likes), which obligation 'total-owed' writes — the two lists and a closure configure the blind enumerator, which does not run beside an open fact, and one that disagrees with the open facts root holds is an error: drop likes from the list
 ```
 
-`(solve :no-search)` relaxes no conflict: beside an obligation or a closure it is silent, beside an hrule or a list it
-is a `note:` saying that nothing is proposed, and every refused program is refused beside it too
+`(solve :no-search)` relaxes no conflict: beside an obligation or a closure it is silent, beside a hypothesis rule or a
+list it is a `note:` saying that nothing is proposed, and every refused program is refused beside it too
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)). It is the way to say
 *judge root alone*. The exact lines are [diagnostics](../04-reference/07-diagnostics.md)'.
 

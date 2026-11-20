@@ -20,6 +20,6 @@ the name was written quoted and drawn as two nodes of a knowledge base.
 
 **Held by.** `ein-ir/src/ein.y`'s `Name`, `HeadName` and `DeclName`; `ein_core::LIBRARY_NAMES` and
 `ein_core::binds_no_reserved`; `ein-ir/tests/imports_semantics.rs`'
-`the_librarys_two_names_are_bound_by_a_relation_a_rule_and_an_hrule`; `ein-ir/tests/grammar_pages.rs`, a row of the
+`the_librarys_two_names_are_bound_by_a_relation_and_a_rule`; `ein-ir/tests/grammar_pages.rs`, a row of the
 grammar's table per shape the parse refuses; `examples/beliefs/04_liar_denial_contradicted.ein`, which declares
 `(relation not Claim)`. The page is [the reserved names](../../ein/user/04-reference/03-reserved-names.md).

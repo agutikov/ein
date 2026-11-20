@@ -13,5 +13,5 @@ named a domain of its own would bring a type system into the kernel, and the std
 activator's parameter instead.
 
 **Held by.** `ein_infer::oblgen`, through `Matcher::scan_without`; `ein-infer/tests/obligation_rung.rs`:
-`the_candidates_are_what_the_guard_scans`, `the_theory_finds_what_the_hrule_finds`; the `total` and `total-owed`
+`the_candidates_are_what_the_guard_scans`, `the_theory_finds_what_the_hypothesis_rule_finds`; the `total` and `total-owed`
 pairs of `stdlib/algebra.ein`.

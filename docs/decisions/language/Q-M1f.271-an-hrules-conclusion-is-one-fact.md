@@ -1,13 +1,17 @@
-# Q-M1f.271 — An hrule's conclusion is one fact
+# Q-M1f.271 — A hypothesis is one fact
 
-An hrule whose `:assert`, read flat (`ein_ir::Ast::conjuncts`) after its macros expand, is more than one conjunct
-is refused at load, on every command, one line placed at the conclusion: *hrule 'h': its :assert writes (and (p a)
-(q a)), 2 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per
-conclusion*. An `(and …)` of one conjunct is one conclusion and loads.
+`(open F)` takes one fact: a hypothesis of a conjunction, `(open (and (p a) (q a)))`, is refused on every command, at
+the parse where it is written (*unexpected `and`*) and at load where a macro's expansion makes it, one line placed at
+the conclusion (*rule 'h': its :assert writes (open (and (p a) (q a))), and (and (p a) (q a)) is a connective where a
+value goes*). A rule supposes several facts as several hypotheses, a conjunction of `(open F)`, `(and (open (p a))
+(open (q a)))`, each a candidate of its own
+([Q-M1f.575](Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)).
 
-**Why.** An hrule proposes facts, each a candidate and a commitment of its own. A conjunction could be read as
-*each of these is a guess* or as *these together*, and no commitment states the second; two hrules say the first
-with no reading to choose.
+**Why.** A hypothesis is a candidate and a commitment of its own. A conjunction under `open` could be read as *each of
+these is a guess* or as *these together*, and no commitment states the second; several `(open F)` say the first with
+no reading to choose.
 
-**Held by.** `ein-cli/tests/conclusion_shapes.rs`: `an_hrule_concludes_one_fact`, the conjunction written and
-through a macro's call.
+**Held by.** `ein-ir/src/ein.y`, where `open`'s argument is a fact and `and` heads none; `ein_ir::from_ir`'s
+`refuse_malformed_primitives`, a macro's expansion; `ein-cli/tests/conclusion_shapes.rs`: `a_hypothesis_is_one_fact`,
+the conjunction written and through a macro's call refused on every command, and the conjunctions of hypotheses
+loading; `examples/ein-bugs/wrong-answers/hrule-and.ein` and `hrule-and-in-and.ein`.

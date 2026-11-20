@@ -3,7 +3,7 @@
 `open` stands only as a rule's whole `:assert`, `(open)` or `(open ?R)`; anywhere else it is a parse error
 ([Q-M1f.88](Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md)). Of a verdict the grammar takes, the loader
 refuses five shapes, each with a line that starts with where the `(open …)` is written,
-`<file>:<line>:<col>: <k> '<n>': …`, `<k>` being `rule` or `hrule`:
+`<file>:<line>:<col>: rule '<n>': …`:
 
 - `(open ?R)` whose `?R` is not a parameter;
 - no `(absent …)` of the `:match` holds a positive `?R` premise;

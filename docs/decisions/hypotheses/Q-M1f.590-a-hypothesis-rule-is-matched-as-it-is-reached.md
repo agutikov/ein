@@ -10,5 +10,5 @@ another rule can read at root; a look-ahead over a premise that reads `not` read
 kernel does not ([Q-M1f.436](../engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)), and matching each rule as it
 is reached answers alike.
 
-**Held by.** `ein_infer::hrule::Hrules::candidates`; `ein-cli/tests/hrule_reads_not.rs`; the corpus sweeps, which
+**Held by.** `ein_infer::hypothesis_rules::HypothesisRules::candidates`; `ein-cli/tests/hrule_reads_not.rs`; the corpus sweeps, which
 hold every program's H and R.

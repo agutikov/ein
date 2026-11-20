@@ -1,6 +1,6 @@
 # Q-M1f.231 — Every name a module declares has a full name, and a file lists the short names it writes
 
-Every name a module declares, a relation, a rule, an hrule or a macro, has one full name: the module's name, a dot,
+Every name a module declares, a relation, a rule or a macro, has one full name: the module's name, a dot,
 and the name, `std.math.decimal-arith.add`. A full name is the same whoever imports the module and through whatever
 path, so a module is one copy per program. A short name is an alias local to the file that binds it: a module's own
 file writes its declarations short, and an importer writes short only the names it lists, `(import M :symbols (add

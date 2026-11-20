@@ -1,7 +1,7 @@
 # Q-M1f.67 — A macro's body is checked where it is called, and an unused macro loads
 
 A macro's body is a template, and what its kernel primitives mean depends on what a call puts in it, so a body is
-not refused where it is defined: `(macro one (?a) (eq ?a))` loads, and a macro no rule, hrule, obligation or goal
+not refused where it is defined: `(macro one (?a) (eq ?a))` loads, and a macro no rule, obligation or goal
 calls loads whatever its body. What is required is that no path executes a malformed primitive: a call's expansion
 is held to the grammar's shapes at load, before anything runs
 ([Q-M1f.80](Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md),

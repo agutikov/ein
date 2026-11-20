@@ -62,7 +62,7 @@ solve · examples/branching/05_mini_zebra.ein
   N                 6 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          9 candidates, 6 dead alone
-    outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
+    outside         is-a — no candidate: no hypothesis rule proposes it. R holds of it only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              13 saturations · 51 facts beyond root · 4 layers
 
@@ -2458,7 +2458,7 @@ solve · tests/saved/04_a_saved_node.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
     commit          1 candidate of H, the node this saved file names: R is the part of its program's R above it, and the universe is the rest of H — (note (bad a))
-    outside         flagged — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
+    outside         flagged — no candidate: no hypothesis rule proposes it. R holds of it only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 2 facts beyond root · 2 layers
 

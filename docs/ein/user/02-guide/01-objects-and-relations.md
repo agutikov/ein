@@ -70,7 +70,7 @@ proposes no fact *about* an atom that some declaration uses as a label
 `is-a` is declared the same way, `(relation is-a T T :why "{?3} is a {?4}")`, when a puzzle wants Ein to guess its
 facts ([reserved names](../04-reference/03-reserved-names.md)); `T` there is a label that says nothing in
 particular. Every relation carries its rendering text, a `:why`, which says what one of its facts reads as in
-English; the loader refuses a relation, rule or hrule without one (`--no-require-why` loads it anyway).
+English; the loader refuses a relation or rule without one (`--no-require-why` loads it anyway).
 
 ## Facts — a relation and its arguments
 

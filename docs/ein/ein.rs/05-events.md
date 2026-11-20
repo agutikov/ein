@@ -63,7 +63,7 @@ dropped **productive** firing, and that is what [§ Comparison](#comparison) com
 | `e` | emitted at | payload |
 |---|---|---|
 | `run` | process start | `version`, `level`; from the CLI also `impl`, `file`, `argv` and `config` (every resolved configuration field, kebab-cased) |
-| `load` | after the program is loaded | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
+| `load` | after the program is loaded | `relations`, `rules`, `hypothesis_rules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `region` | the end of every region run: every `ein solve` and every `ein test` file ([§ Region runs](#region-runs)) | `asked`, `region`, `verdict`, `work`: the `--json-summary` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` |
 | `monotonicity` | at root, before the search, after root's obligation pass, and **only when the static check finds a site**, so the program is not monotone | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted); the detector's static half, optional: `at_stake` (one key per site, in `site`'s order), `cycles` and `order` (one rendered line each, as the read-out's `cycle` and `order` rows) and `assumes` (`"fork"`) |
 
@@ -162,7 +162,7 @@ core of a dead node ([Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json
 
 The candidates are **the union of the hypotheses the state holds**
 ([Q-M1f.570](../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)): the `open` facts
-its rules (an hrule among them) and the program wrote, and, where an obligation is activated at the state, what would
+its rules and the program wrote, and, where an obligation is activated at the state, what would
 discharge the debts it owes; the blind enumerator runs only where there is none of them
 ([`03-design/07-search.md`](03-design/07-search.md)). A `rung` line is written once per generation call, and **only**
 where an obligation is activated at the state the call is made at: a program that activates none emits none,
@@ -250,7 +250,7 @@ is, in order:
 
 ### One run, line by line
 
-A program with one rule, one hrule and two candidates, small enough to follow every line of:
+A program with one rule, one hypothesis rule and two candidates, small enough to follow every line of:
 
 ```lisp
 (relation person Person      :why "{?3} is a person")
@@ -260,9 +260,9 @@ A program with one rule, one hrule and two candidates, small enough to follow ev
 (person Ann)
 (drink Tea) (drink Coffee)
 
-(hrule guess ()
+(rule guess ()
   :match  (and (person ?p) (drink ?d))
-  :assert (likes ?p ?d)
+  :assert (open (likes ?p ?d))
   :why    "guess that {?p} likes {?d}")
 
 (rule one-drink ()

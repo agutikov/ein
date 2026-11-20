@@ -37,7 +37,7 @@ The entry points, re-exported from `ein_ir`:
 | `load_file`, `load_file_with` | reads a `.ein` file as UTF-8 text, then parses and loads it |
 | `dump_compact`, `dump_pretty`, `dump_canonical` | print nodes as Ein text (§ 10) |
 
-`LoadOptions { require_why }` is the one load option: whether a relation, rule, hrule or macro with no `:why` is
+`LoadOptions { require_why }` is the one load option: whether a relation, rule or macro with no `:why` is
 refused. It is true by default (`--no-require-why` turns it off on every command) and it decides only whether a
 program loads: a program it lets through loads to the same `Kb` either way.
 
@@ -53,10 +53,10 @@ A text then goes through these phases, in this order:
 |---|---|---|
 | 1 | refuse a text nested past the limit, then parse it into the arena | `grammar::parse` (§ 3, § 6) |
 | 2 | read every module once, rename to full names, splice into one import-free list | `Resolver::resolve_imports` (§ 8) |
-| 3 | sort the forms by head: `relation`, `rule`/`hrule`, `macro`, `query`, `solve`, `config`; `trace` is ignored; any other head is a fact | `from_ir::load_query_with` |
+| 3 | sort the forms by head: `relation`, `rule`, `macro`, `query`, `solve`, `config`; `trace` is ignored; any other head is a fact | `from_ir::load_query_with` |
 | 4 | pass 0, the macros | `ingest_macros` (§ 7) |
 | 5 | pass 1, the relations, each storing its declaration fact | `ingest_relation` |
-| 6 | pass 2, the rules and hrules, their `:match` and `:assert` macro-expanded first | `ingest_rules` |
+| 6 | pass 2, the rules, their `:match` and `:assert` macro-expanded first | `ingest_rules` |
 | 7 | pass 3, the facts, with provenance from `:source`, `:rule` and `:using` | `ingest_fact` |
 | 8 | the program-wide refusals, the queries (goals macro-expanded), the one `(solve …)`, the last `(config …)` | `expand_goal`, `validate_solve`, `validate_queries`, `config_from_kw_pairs` |
 | 9 | the unimported-`std.macro` guard | `macros::unimported_macro_errors` (§ 7) |
@@ -127,9 +127,9 @@ of a text is therefore fixed by the rules, and `ein.l` leans on that:
 
 - **A reserved word is a whole token.** `not` is the word; `not-a`, `nota` and `neq-1` are longer, so they are names
   ([Q-M1e2.17](../../../decisions/language/Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md)). The
-  twelve `grammar::RESERVED_WORDS` (`and`, `or`, `neq`, `rule`, `hrule`, `query`, `solve`, `config`, `trace`,
-  `macro`, `import` and `open`) are never names. The fourteen `grammar::POSITION_WORDS` (`not`, `relation`, `step`,
-  `eq`, `absent`, `false`, `true`, `model`, `region`, `merged`, `owing`, and a saved file's `program`, `module` and
+  ten `grammar::RESERVED_WORDS` (`and`, `or`, `neq`, `rule`, `query`, `solve`, `config`, `trace`, `macro` and
+  `import`) are never names. The fifteen `grammar::POSITION_WORDS` (`not`, `relation`, `step`, `eq`, `absent`,
+  `false`, `true`, `open`, `model`, `region`, `merged`, `owing`, and a saved file's `program`, `module` and
   `commit`) are tokens of their own that `ein.y`'s `Name` takes wherever a name goes; `not` no head but its own
   stored negation (`HeadName`).
 - **A keyword a form takes is a token of its own**; any other `:word` is `KEYWORD`, which no production uses, so an
@@ -286,7 +286,7 @@ which each parameter variable is the call's argument node. `forall` and `unknown
   file:line:col`. Both are a `MacroError`, which the loader prefixes with the rule, `(rule NAME): `.
 - **Substitution** (`substitute`) replaces a parameter in head position only where the argument is an atom or a
   variable, so a head stays one.
-- **Where calls are expanded.** The loader expands a rule's and an hrule's `:match` and `:assert` before anything
+- **Where calls are expanded.** The loader expands a rule's `:match` and `:assert` before anything
   reads them (`expand_pair`), so a body that is an `(or …)` still lowers to one plan per disjunct, and a query's
   `:goal` (`expand_goal`), keeping the goal as written for the surfaces that print it
   ([Q-M1f.117](../../../decisions/language/Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md),
@@ -321,7 +321,7 @@ So the answer does not depend on the import form
   ([Q-M1f.252](../../../decisions/imports/Q-M1f.252-a-modules-name-has-no-empty-segment-and-no-slash.md)), as is a
   bare `std`; a `std.*` module imports only `std.*` modules, because the embedded copy has no directory to find any
   other from; a file-relative import needs the program's directory.
-- **Full names.** Each name a module declares, a relation, a rule, an hrule or a macro (`DECLARATORS`), has the
+- **Full names.** Each name a module declares, a relation, a rule or a macro (`DECLARATORS`), has the
   full name `module.name` (`File::full`), the same through every path
   ([Q-M1f.231](../../../decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)). The main
   file has no module name. A reserved kernel name is never renamed, so the loader refuses it under its own name. A
@@ -403,7 +403,7 @@ grammar refuses, the arm is an `expect` or an `unreachable!` naming the producti
 ([Q-M1f.9](../../../decisions/engine/Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md)).
 
 What it builds, into `ein_core::Program`: the registries of relations (the first declaration of each), rules,
-hrules, obligations and macros; every declaration, in the order written (`Program::declarations`, a relation
+obligations, the rules that conclude a hypothesis, and macros; every declaration, in the order written (`Program::declarations`, a relation
 declared more than once read at each); every
 `(query …)`, in source order, `active_query` choosing the one a run asks; the one `(solve …)` a program may state;
 the relations a goal and a claim may name, `relations_of`, which `read_goal` holds a goal given beside the loaded

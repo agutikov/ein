@@ -254,7 +254,7 @@ claimed of its answer ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-ob
 
 An obligation plays two parts ([hypotheses](09-hypotheses.md)):
 
-- **It judges.** A state that owes is not in R, whatever proposed it. This holds beside an `hrule` too: the hrule
+- **It judges.** A state that owes is not in R, whatever proposed it. This holds beside a hypothesis rule too: the rule
   proposes, the obligation proposes and judges, and that is how [`zebra2.ein`](../../../../examples/zebra2.ein)
   states its puzzle.
 - **It generates.** An obligation **activated** at root (a rule with no parameters always is; a parameterised one is

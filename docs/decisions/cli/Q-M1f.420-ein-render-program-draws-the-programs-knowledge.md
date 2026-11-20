@@ -4,7 +4,7 @@
 whose arrow `2` is at the fact it denies, and a fact that applies a rule an octagon whose arrow `1` is at the rule's
 name. `ein render program` draws the program as written in
 three parts: the digraph `kb`, every fact and declaration the program states, drawn by the KB view's code as one
-graph; a digraph per rule, hrule and macro, as `ein render rule` draws one; and the digraph `query`, each query's
+graph; a digraph per rule and macro, as `ein render rule` draws one; and the digraph `query`, each query's
 `:goal` drawn as a rule's match is, its other clauses in a note beside it, a claim written there as it is written,
 and the `(solve …)` clause in a note. A
 written `(trace …)` is drawn after them. The knowledge base is not split into an ontology and facts: a

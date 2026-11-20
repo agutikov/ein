@@ -5,7 +5,7 @@
 atom `relation`, `{?2}` the relation's name, `{?k+2}` its k-th label, so it reads *a Person owns a Pet*: the
 declaration's **statement**. That fact reads by the text however a run reaches it; the companion `(relation owns)`
 the loader stores beside a typed declaration is no form the program wrote, and an untyped declaration, `(relation z
-:why "…")`, is its own form. A rule's, an hrule's and a macro's `:why` are filled by their variables.
+:why "…")`, is its own form. A rule's and a macro's `:why` are filled by their variables.
 
 **A fact of a relation takes no text from the declaration, and carries none of its own.** `(owns Ann Dog)` reads by
 its **reason**, read off its first recorded justification: a given's `:source`, or the deriving rule's `:why`
@@ -19,7 +19,7 @@ them, and a saved state holds no fact of the state to render
 ([Q-M1f.392](../answer/Q-M1f.392-a-saved-state-is-saved-and-loaded-as-itself.md)). A stated fact takes `:source`
 alone, and it is optional.
 
-A `:why` is required on a relation, as on a rule, an hrule and a macro, and `--no-require-why` loads a program
+A `:why` is required on a relation, as on a rule and a macro, and `--no-require-why` loads a program
 without ([Q-M1f.62](../cli/Q-M1f.62-no-require-why-loads-a-program-without-a-why.md)). The relations the project
 ships keep words written to read one fact of them, so many read stiffly as their declaration: `(relation valid
 Number :why "{?3} is a decimal number")` reads *Number is a decimal number*.

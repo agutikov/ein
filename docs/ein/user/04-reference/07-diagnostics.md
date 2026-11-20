@@ -10,8 +10,8 @@ to Ein, and the test suite holds every one of them to the binary. A few are stra
 behaviour is known, its section names it.
 
 **How a line is written here.** `<file>`, `<line>` and `<col>` are where the fault is written, 1-based, lines split
-at `\n` and columns counted in characters. `<r>` is a rule's name, `<k>` a keyword or the word `rule` or `hrule` as
-the line has it, `<n>` a count; a `…` in a quoted line stands for the part this page does not repeat. Every example
+at `\n` and columns counted in characters. `<r>` is a rule's name, `<k>` a keyword or the word `rule` as the line has
+it, `<n>` a count; a `…` in a quoted line stands for the part this page does not repeat. Every example
 is the binary's own output.
 
 **The lines' own words.** A line is quoted as `ein` prints it, and three of its words are not the words of these
@@ -107,10 +107,10 @@ t.ein:1:10: unexpected `)`
 A loader line about a top-level form that carries no position of its own ends in ` at None`:
 
 ```text
-kb load error: duplicate rule/hrule name 'g' at None
+kb load error: duplicate rule name 'g' at None
 ```
 
-So do a duplicate rule, hrule or macro, a rule missing its `:match` or `:assert`, an import cycle, a bare
+So do a duplicate rule or macro, a rule missing its `:match` or `:assert`, an import cycle, a bare
 `(import std)`, an import that writes both `:as` and `:symbols`, and a `:symbols` name the module does not provide
 (the fixtures under [`examples/broken/load/`](../../../../examples/broken/load/) whose `.expected` holds `at None`).
 A line raised where a position is known carries it: a macro called with the wrong count ends
@@ -142,8 +142,8 @@ t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string l
   its first error, so no parse error and no repair follows
   ([Q-M1f.95](../../../decisions/diagnostics/Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md)). A `#`
   before one is passed over: no rule starts at that `#`, and the line is about the character.
-- **Every place**: a name, a variable, a keyword, a declared relation's name or a slot's label, a nested fact, a rule, an
-  hrule, a macro's name or body, a query's goal, `:over` or claim, a `(solve …)` list, a `(config …)` flag, a trace
+- **Every place**: a name, a variable, a keyword, a declared relation's name or a slot's label, a nested fact, a rule, a
+  macro's name or body, a query's goal, `:over` or claim, a `(solve …)` list, a `(config …)` flag, a trace
   step, an import's module, between two tokens, a line's or the file's first character — a byte-order mark among
   them, `'\u{feff}' (U+FEFF)`
   ([Q-M1f.96](../../../decisions/language/Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md)) — in place of a
@@ -222,17 +222,17 @@ and a region's shapes are the grammar's.
 | input | the line |
 |---|---|
 | a `(query …)` keyword it does not take | `<file>:<l>:<c>: unexpected `:<k>`: a keyword this form does not take` † |
-| a lattice keyword on a `(query …)`, `:hrules`, `:hypothesis-relations`, `:no-hypothesis` or `:no-search` | a parse error at the keyword, its note `:<k> chooses the lattice and belongs on (solve …)` …, ending `— one program, one lattice` † |
-| a `(solve …)` keyword it does not take | a parse error at the keyword † |
+| a lattice keyword on a `(query …)`, `:hypothesis-relations`, `:no-hypothesis` or `:no-search` | a parse error at the keyword, its note `:<k> chooses the lattice and belongs on (solve …)` …, ending `— one program, one lattice` † |
+| a `(solve …)` keyword it does not take, `:hrules` among them, which no form takes ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)) | a parse error at the keyword † |
 | more than one `(solve …)` | `kb load error: <n> (solve …) forms — a program states its lattice once` |
 | a top-level `(region …)`, `(merged …)` or `(owing …)` | a parse error at the word † |
 | a `(solve … :expect …)` that is not `(false)` or `(region …)`, or a region item that is not `(model …)`, `(merged …)` or `(owing …)` of their shapes | a parse error at the first token that is not † |
 | `(owing …)` beside states of R | ``kb load error: (region …) — `(owing …)` says R is empty, and the region lists states`` |
 | a `(merged …)` whose state is not a listed one | `kb load error: (merged …) — its state is not one the region lists` |
-| a region claim naming a relation the program does not have ([§ 2.21](#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) | `kb load error: (solve … :expect …) names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule` |
+| a region claim naming a relation the program does not have ([§ 2.21](#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) | `kb load error: (solve … :expect …) names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule` |
 | a region claim naming `eq` or `neq` | `kb load error: (solve … :expect …) names <r>, which a state never stores — eq and neq are computed from their definition, so a region claim, which lists a state's facts, holds neither` |
 | a query's `:expect` that is not `(false)`, `(model …)` or `(or (model …) …)` | a parse error at the first token that is not † |
-| a query's `:expect` naming a relation the program does not have (`eq` and `neq` excepted, which a goal may ask about) | `kb load error: :expect names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule` |
+| a query's `:expect` naming a relation the program does not have (`eq` and `neq` excepted, which a goal may ask about) | `kb load error: :expect names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule` |
 | a query's `:expect` listing a fact no pattern of the `:goal` matches | `kb load error: :expect lists (q A H1), which no atom of the query's :goal matches — a query's claim lists its projection classes; a claim about the state is (solve … :expect (region …))'s` |
 | a `:goal` whose `eq` or `neq` compares a form that holds a variable | `kb load error: query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)) |
 | a `?var`, `_` or `?_` inside an `:expect` | a parse error at the variable, or at the `_` with its note ([§ 2.8](#28-_-and-_-are-refused-wherever-they-are-written)) † |
@@ -277,7 +277,6 @@ behind `kb load error: `:
 | input | the line |
 |---|---|
 | what a state owes beside another conclusion ([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)) | ``<file>:<l>:<c>: <k> '<r>': `(open ?R)` stands beside another conclusion — what a state owes is a rule's whole :assert, which the pass reads at the fixpoint and which concludes no fact: write one rule for the obligation and one for the rest`` |
-| an hrule that concludes a hypothesis | ``<file>:<l>:<c>: hrule '<r>': its :assert concludes (open …) — an hrule proposes a fact, which is a hypothesis already: write a rule that concludes (open …)`` |
 | no `(absent …)` holds a positive `?R` premise | ``… <k> '<r>': `(open ?R)` needs an `(absent …)` in :match holding a positive `?R` premise — that premise is the witness the obligation owes`` |
 | two or more `(absent …)` do | ``… <k> '<r>': <m> `(absent …)` guards hold a positive `?R` premise — which one states the obligation is not decidable`` |
 | the `?R` premise binds no variable of its own | ``… <k> '<r>': `(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge`` |
@@ -292,8 +291,8 @@ declarator binds ([`03-reserved-names.md`](03-reserved-names.md)).
 
 ### 2.3 `eq` and `absent` at another arity
 
-`eq` and `neq` compare two objects, and `absent` is negation as failure over one premise. Written in a rule, a goal or
-an hrule at any other arity, each is a parse error, with no note: `(eq ?x)` and `(neq ?x)` at their `)`, and
+`eq` and `neq` compare two objects, and `absent` is negation as failure over one premise. Written in a rule or a
+goal at any other arity, each is a parse error, with no note: `(eq ?x)` and `(neq ?x)` at their `)`, and
 `(absent (p ?x) (q ?x))` at its second premise. The fixtures are `eq_arity_low`, `eq_arity_high`,
 `absent_arity_zero` and `absent_arity_high` in [`examples/broken/`](../../../../examples/broken/). `(false)` takes no
 argument, and `(false ?x)` is a parse error with a note
@@ -414,13 +413,13 @@ Each shape below would read nothing: no fact could make it hold, or it would hol
 refuses three of them at the parse wherever a program writes them — `_`
 ([§ 2.8](#28-_-and-_-are-refused-wherever-they-are-written)), a keyword pair inside a term
 ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)), and a premise
-that is not a form. The loader refuses the rest, which the grammar cannot see, in a rule, an hrule and an obligation,
-one line per slot, `; `-joined with every other loader line
+that is not a form. The loader refuses the rest, which the grammar cannot see, in a rule, one that concludes a hypothesis
+or an obligation among them, one line per slot, `; `-joined with every other loader line
 ([Q-M1e2.18](../../../decisions/language/Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md)):
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a form that holds a variable as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)) |
+| a form that holds a variable as a guard's argument | `rule '<r>': its :match writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` ([Q-M1f.30](../../../decisions/language/Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md)) |
 | a premise that is not a form, where a macro's body puts it: `(macro id (?x) ?x)` called as `(id foo)` | `rule '<r>': its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes foo as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `rule '<r>': its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 `unbound_head.ein` in [`examples/broken/load/`](../../../../examples/broken/load/) is the witness of the relation
@@ -438,7 +437,7 @@ and no answer and no exit code moves:
 | what the program holds | the line |
 |---|---|
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact, so such an activator activates nothing` |
-| the same activator, which a rule could derive through a variable, whether or not a run derives it | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `hrule '<d>'` for an hrule; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
+| the same activator, which a rule could derive through a variable, whether or not a run derives it | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
 | a fact, or a literal fact in an `:assert`, written where a relation name is passed on | `the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' passes to rule '<r>''s parameter ?<p>, which names a relation — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`rule '<d>': its :assert writes (marker (a b)), whose (a b) is ?m of …` for the literal) |
 | a state of the run that holds such an activator | `<file>:<line>:<col>: rule '<r>': its activator (r (a b)) binds its parameter ?<p>, which names a relation, to the fact (a b), and activates nothing — a relation is named by a symbol, not a fact` |
 
@@ -476,13 +475,13 @@ on such a variable does ([Q-M1f.34](../../../decisions/language/Q-M1f.34-a-guard
 
 ### 2.10 A form with no `:why`
 
-The loader requires a `:why "…"` of every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` it reads, a
+The loader requires a `:why "…"` of every `(relation …)`, `(rule …)` and `(macro …)` it reads, a
 module's and the stdlib's included, and refuses each that carries none, one line per form, `; `-joined with every
 other loader line:
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a relation, rule, hrule or macro with no `:why` | `<relation\|rule\|hrule\|macro> '<name>' has no :why "…", which this load requires of every relation, rule, hrule and macro` |
+| a relation, rule or macro with no `:why` | `<relation\|rule\|macro> '<name>' has no :why "…", which this load requires of every relation, rule and macro` |
 
 A `:why` that is not a string is a parse error. `--no-require-why` loads such a program, on every command that loads
 one, and changes nothing else ([`06-config.md`](06-config.md),
@@ -494,12 +493,12 @@ A template reference, `{?name}` in a `:why` or a `:goal-text`, reads a variable'
 names every variable a program writes: `{?isR*}`, `{?_x_}` and `{?a.b}` are filled. `}` is a name character too, so a
 variable holding one, `?a}b`, is one no reference can name, and the loader refuses a template that writes a
 reference to one ([Q-M1f.11](../../../decisions/language/Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md)):
-a rule's, an hrule's or a macro's `:why` and a query's `:goal-text`, each read against its own variables, one line a
+a rule's or a macro's `:why` and a query's `:goal-text`, each read against its own variables, one line a
 reference:
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a template that writes `{?a}b}` where `?a}b` is a variable of its form | `<rule\|hrule\|macro> '<name>': its :why writes {?a}b}, a reference to ?a}b, which no reference can name — a reference reads a variable's name up to its first }` (`query: its :goal-text writes …` for a query) |
+| a template that writes `{?a}b}` where `?a}b` is a variable of its form | `<rule\|macro> '<name>': its :why writes {?a}b}, a reference to ?a}b, which no reference can name — a reference reads a variable's name up to its first }` (`query: its :goal-text writes …` for a query) |
 
 A reference to no variable of the form, `{?a}` there, stays text. A relation's `:why` names its declaration's arrows
 by number, `{?3}`, and is not read ([`14-natural-language.md`](../03-syntax-and-semantics/14-natural-language.md)).
@@ -523,13 +522,13 @@ lexical grammar). The text a program writes reaches every surface that carries i
 
 ### 2.13 A conclusion's variable nothing binds
 
-A rule's or an hrule's `:assert` that writes a variable some way of satisfying its `:match` leaves unbound is refused
+A rule's `:assert` that writes a variable some way of satisfying its `:match` leaves unbound is refused
 at load ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)), one
 line per variable, in the order the `:assert` writes them:
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a variable no premise or parameter binds | `<rule\|hrule> '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)` |
+| a variable no premise or parameter binds | `rule '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)` |
 | one that some disjuncts of a top-level `(or …)` bind and others do not | `… writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1 ?v3) — …`, the disjuncts that leave it unbound `or`-joined |
 
 A variable is bound, on each way the `:match` can hold, by a **parameter**, which the activator binds, a nested fact
@@ -538,8 +537,9 @@ or by an **`eq` or `neq` guard**, which binds a variable nothing else binds over
 inside an `(absent …)` is not bound outside it, and `forall` and `unknown` expand to one; `()` binds nothing; a
 top-level `(or …)` is one way per disjunct. The line's two spellings say what the implicit form could mean, *the
 objects a relation holds of* and *every name of the program*, each written out
-([Q-M1f.38](../../../decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)). An obligation's
-`(open ?R)` names a relation, which [§ 2.2](#22-the-verdicts-refusals) checks. The witness is
+([Q-M1f.38](../../../decisions/diagnostics/Q-M1f.38-a-refusals-line-names-the-fault-then-what.md)). A hypothesis,
+`(open F)`, is read as `F` is, so a variable it writes is held to the same; an obligation's `(open ?R)` names a
+relation, which [§ 2.2](#22-the-verdicts-refusals) checks. The witness is
 [`examples/ein-bugs/unbound-assert-var.ein`](../../../../examples/ein-bugs/unbound-assert-var.ein).
 
 ### 2.14 `eq` at another arity
@@ -551,11 +551,11 @@ refused at load, one line each:
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| a rule's or an hrule's relation parameter that can be bound to `eq`, heading a premise (at any depth of `and`, `or`, `not` and `absent`) or a top-level conclusion whose arity is not 2 | `<rule\|hrule> '<r>': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values`; where a rule derives the activator, `… and ?R can be bound to eq by <where eq comes from> — …` ([Q-M1f.46](../../../decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)) |
+| a rule's relation parameter that can be bound to `eq`, heading a premise (at any depth of `and`, `or`, `not` and `absent`) or a top-level conclusion, a hypothesis's `F` among them, whose arity is not 2 | `rule '<r>': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values`; where a rule derives the activator, `… and ?R can be bound to eq by <where eq comes from> — …` ([Q-M1f.46](../../../decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)) |
 | a written fact of `eq`, or of `(not (eq …))`, at any arity but 2 | `the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values` ([Q-M1f.47](../../../decisions/language/Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md)) |
 
 **Which parameters can hold `eq`** is read as § 2.9 reads relation names: a position that holds relation names can
-hold `eq` where a fact, a conclusion or a `(solve :hrules …)` activator writes `eq` there, or a `(relation …)`
+hold `eq` where a fact, an activator among them, or a conclusion writes `eq` there, or a `(relation …)`
 declaration's signature writes it as a label; or where a conclusion writes a variable that its `:match` binds, in some
 disjunct, only at positions that can, or only with an `eq` or `neq` guard while the program writes `eq` as a name; to
 a fixpoint. `<where eq comes from>` names the first such source and each conclusion it passes through: *the fact (mark
@@ -573,7 +573,7 @@ Three shapes no plan can be made of are refused at load, one line each
 
 | input | the line, behind `kb load error: ` |
 |---|---|
-| an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, in a rule's, an hrule's or an obligation's `:match` or a query's `:goal`, written or produced by a macro's expansion ([Q-M1f.74](../../../decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)) | `rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule`; a goal's `query: its :goal writes … — an (or …) is a whole :goal, … or ask two queries` |
+| an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, in a rule's or an obligation's `:match` or a query's `:goal`, written or produced by a macro's expansion ([Q-M1f.74](../../../decisions/language/Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md)) | `rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule`; a goal's `query: its :goal writes … — an (or …) is a whole :goal, … or ask two queries` |
 | a `:match` that writes more than 256 distinct variables, the rule's parameters among them, or a `:goal` that does ([Q-M1f.73](../../../decisions/engine/Q-M1f.73-a-rule-binds-at-most-256-variables-counted.md)) | `rule 'wide': its :match writes 257 distinct variables, and a rule binds at most 256 — split the rule`, with *its parameters among them* where it has any; a goal's `query: its :goal writes 257 distinct variables, and a goal binds at most 256 — ask two queries` |
 | a query's `:goal` premise whose relation is a variable, under `and`, `or` and `absent` | `query: its :goal writes (?R Rex Animal) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator` |
 
@@ -586,8 +586,8 @@ variable is [§ 2.21](#221-a-goal-is-held-to-what-a-rules-match-is-held-to)'s.
 ### 2.16 A malformed primitive a macro's expansion writes
 
 A macro's body is a template the grammar never reads expanded, and a call takes any premise as an argument, so a
-kernel primitive can reach a rule in a shape the grammar refuses where a rule writes it. The loader holds a rule's,
-an hrule's and an obligation's `:match` and `:assert`, after expansion, to the grammar's shapes by position, and
+kernel primitive can reach a rule in a shape the grammar refuses where a rule writes it. The loader holds a rule's and
+an obligation's `:match` and `:assert`, after expansion, to the grammar's shapes by position, and
 refuses a form in another, one line each
 ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md),
 [Q-M1f.80](../../../decisions/language/Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md),
@@ -614,7 +614,7 @@ kb load error: t.ein:3:18: rule 'r': its :match writes (eq ?x), and eq takes exa
 body's for a form the body writes, `(eq ?a)`; for one the grammar builds for a keyword, `(not …)`, `(neq …)` or
 `(or …)`, which keeps none, its first part's, the call's argument, so a form `std.macro`'s `unknown` writes is placed
 in the program's file; in a `.einb`, the stored program, `<program stored in x.einb>`. **The rule** is named as the
-loader names it, `hrule 'h'` for an hrule.
+loader names it, `rule 'h'`.
 
 **An `(and …)` a macro's call leaves inside a conclusion's `(and …)` is no malformed primitive**: a conclusion is read
 flat at any depth, so `(and (r a) (both a))`, `both` writing `(and (p ?x) (q ?x))`, concludes `(r a)`, `(p a)` and
@@ -688,37 +688,33 @@ has gone is an error, and the process exits 101
 
 ### 2.20 A `(solve …)` list names what the program has
 
-The three lists of a `(solve …)`, `:hrules`, `:hypothesis-relations` and `:no-hypothesis`, choose the candidates, and
-so the lattice the answer is a region of ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)). Every name one
-holds names something the program has, or the loader refuses the program, one line per name, placed at the name
-([Q-M1f.114](../../../decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md),
-[Q-M1f.115](../../../decisions/language/Q-M1f.115-an-hrules-list-names-declared-hrules.md)):
+The two lists of a `(solve …)`, `:hypothesis-relations` and `:no-hypothesis`, configure the blind enumerator, and so
+the lattice the answer is a region of ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)). Every name
+one holds is a relation of the program, or the loader refuses the program, one line per name, placed at the name
+([Q-M1f.114](../../../decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md)):
 
 | the list writes | the line, after `kb load error: <file>:<line>:<col>: solve: its ` |
 |---|---|
-| `:hrules (gues …)`, and no hrule is named `gues` | `:hrules names gues, and the program declares no hrule gues — it declares guess` |
-| `:hrules (guess (at Color))`, and `guess` takes three arguments | `:hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2) — an activator binds each parameter once` |
-| `:hrules (guess (att Color House))`, `?R` naming a relation, and no relation is named `att` | `:hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
-| `:hypothesis-relations (like)` or `:no-hypothesis (like)`, and no relation is named `like` | `:no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
+| `:hypothesis-relations (like)` or `:no-hypothesis (like)`, and no relation is named `like` | `:no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule or a goal` |
 
-**A relation of the program** is an atom the program writes first in a tuple outside the three lists
+**A relation of the program** is an atom the program writes first in a tuple outside the two lists
 ([Q-M1f.522](../../../decisions/language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)): one it
-declares or states a fact of; `eq` and `neq`; the relation of any form in a rule's, an hrule's or an obligation's
-`:match` or `:assert`, in a query's `:goal` or in a fact's argument; and a name a fact or a conclusion passes where a
-relation's name is held, as `(bijective color-loc)` passes `color-loc` (§ 2.9's positions). So a relation only a
-rule's or an hrule's `:assert` derives is one, an imported rule's included. The test is *named elsewhere*, not *made
-by something*, because an activator's hrule makes the relation it is given, `att` as it makes `at`: what tells a
-misspelt name is that the program writes it nowhere else. A parameter names a relation where it heads a form of the
-hrule, or is passed on to a position that holds one. A program the loader has already refused gets no line from this
-check.
+declares or states a fact of; `eq` and `neq`; the relation of any form in a rule's or an obligation's `:match` or
+`:assert`, a hypothesis `(open F)`'s among them, in a query's `:goal` or in a fact's argument; and a name a fact or a
+conclusion passes where a relation's name is held, as `(bijective color-loc)` passes `color-loc` and the activator
+`(guess color-loc Color House)` passes it to a rule whose `?R` heads `(open (?R ?a ?b))` (§ 2.9's positions). So a
+relation only a rule's `:assert` derives is one, an imported rule's included. The test is *named elsewhere*, not
+*made by something*: what tells a misspelt name is that the program writes it nowhere else. A program the loader has
+already refused gets no line from this check.
 
 **What is not refused here.** A list that names what the program has and contradicts another of its hypothesis
-declarations is [§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)'s. An activator's
-argument at a parameter that stands for no relation is any object, which no declaration lists, so
-`(guess (at Colour House))` loads and proposes nothing, and the read-out's `universe` row says *no candidate*
-([Q-M1f.116](../../../decisions/language/Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md)); so does a
-parameterised hrule that no activator names. A bare name in `:hrules` selects nothing: every hrule without parameters
-proposes whether the list names it or not.
+declarations is [§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)'s. A rule that
+concludes a hypothesis is activated as any rule is, by a fact of its name
+([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)), and an
+activator is a fact, held to what every fact is held to: one of another count than the rule's parameters activates
+nothing, and an argument at a parameter that stands for no relation is any object, so `(guess at Colour House)` loads
+and has the rule propose nothing; where no other writer proposes either, the blind enumerator writes H. A rule with
+parameters that no fact activates proposes nothing.
 
 ### 2.21 A goal is held to what a rule's `:match` is held to
 
@@ -734,9 +730,9 @@ A query's `:goal` is a premise, and the loader reads it as it reads a rule's `:m
 - **Every relation a goal asks about, and every relation a claim lists a fact of, is a relation of the program**
   ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): § 2.20's
   notion without the goals, so one the program declares, states a fact of, writes as the relation of a fact that
-  is an argument, or writes in a rule, an hrule or an obligation, at any depth, a rule's `:assert` among them, one it
-  passes by an activator where a relation's name is held, `(symmetric next-to)`, and one a `(solve :hrules …)`
-  activator has its hrule propose. `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are every program's; `is-a` is a
+  is an argument, or writes in a rule or an obligation, at any depth, a rule's `:assert` among them, a hypothesis's
+  too, and one it passes by an activator where a relation's name is held, `(symmetric next-to)`, or
+  `(guess wanted Color House)` to a rule that concludes `(open (?R ?a ?b))`. `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are every program's; `is-a` is a
   relation of the program only where it writes one, as any relation is.
 
 | the goal writes | the line, after `kb load error: ` |
@@ -746,7 +742,7 @@ A query's `:goal` is a premise, and the loader reads it as it reads a rule's `:m
 | a call of a macro that expands to itself | `query: its :goal: macro expansion exceeded depth 50 — a macro likely expands to itself` |
 | a call whose expansion leaves a name where a premise goes | `query: its :goal writes Ann as a premise of and, and Ann is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` |
 | a call whose expansion writes a kernel primitive in another shape (§ 2.16) | `<file>:<line>:<col>: query: its :goal writes (eq ?g), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair` |
-| `(payed ?g)`, at any depth, under `(absent …)` and `(not …)` too, and no relation is named `payed` | `<file>:<line>:<col>: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed` |
+| `(payed ?g)`, at any depth, under `(absent …)` and `(not …)` too, and no relation is named `payed` | `<file>:<line>:<col>: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule, so no state holds a fact of payed` |
 | `(says (?R ?g))`, a relation written as a variable inside a pattern, under `(absent …)` too | `query: its :goal writes (?R ?g) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator` ([Q-M1f.121](../../../decisions/diagnostics/Q-M1f.121-a-goals-relation-variable-is-refused-with.md)) |
 
 A line that names a place names where the pattern writes its relation. A program the loader has already refused gets
@@ -780,7 +776,7 @@ them, and the lines below call each a *value*. Four rules hold the language to i
   ([Q-M1f.124](../../../decisions/language/Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md)).
 - **A premise pattern's argument is what an object can be**: an atom, a variable, a pattern of an ordinary relation, or
   `(not <pattern>)`, a stored negation. `and`, `or`, `neq`, `eq` and `false` with an argument there are
-  refused, in a rule, an hrule, an obligation and a goal. The grammar takes a connective as a pattern's argument,
+  refused, in a rule, an obligation and a goal. The grammar takes a connective as a pattern's argument,
   because a macro such as `forall` is called as a pattern and takes premises, so this refusal is the loader's, read off
   the clause once its macros are expanded
   ([Q-M1f.125](../../../decisions/language/Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md)).
@@ -790,7 +786,7 @@ note:
 
 | the program writes | the error is at | the note |
 |---|---|---|
-| `(absent k)`, `(absent (p a))`, `(q (absent k))`, `(not (absent k))`, `:assert (absent (p ?x))` in a rule or an hrule, `:assert (q (absent ?x))` | `absent`: *unexpected \`absent\`* | `absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)` |
+| `(absent k)`, `(absent (p a))`, `(q (absent k))`, `(not (absent k))`, `:assert (absent (p ?x))` in a rule, `:assert (open (absent (p ?x)))`, `:assert (q (absent ?x))` | `absent`: *unexpected \`absent\`* | `absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)` |
 | `(false k)`, `(q (false k))`, `(not (false k))`, a premise or a goal `(false ?s)`, `(absent (false ?s))`, a pattern's argument `(q (false ?s))`, `:assert (q (false ?x))`, a claim's `(false k)` | the argument: *unexpected \`k\`: a name* | `false takes no argument: (false) says that the state is impossible, and names nothing` |
 | `(q (eq k j))`, `(q (not (eq k j)))`, `:assert (q (eq ?x ?y))`, a guard's `(eq ?y (eq ?x b))`, a claim's `(p (eq a b))`; `neq` in each | `eq`: *unexpected \`eq\`* | `eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern` |
 
@@ -820,7 +816,7 @@ kb load error: rule 'mk': its parameter ?R heads (?R ?x ?x), written where a val
 
 The three words stay names: `(h absent)`, `(h false)` and `(mk eq)` are facts.
 
-### 2.23 `not` of a name is the negation of no fact, and an hrule may read `not`
+### 2.23 `not` of a name is the negation of no fact, and a hypothesis rule may read `not`
 
 **A conclusion `(not ?x)` is of a variable bound to a fact.** The grammar takes `(not Var)` as a conclusion, as
 `(hypothesis ?h)` then `(not ?h)` writes it, and whether `?h` holds a fact depends on the data. A name has no
@@ -840,10 +836,9 @@ middle says which:
 |---|---|
 | a written fact, at any depth and under a `(not …)` | `(paid ?g) binds ?g where the fact (paid Ann) holds Ann` |
 | a `(relation …)` declaration, matched as a fact | `(relation ?R ?T) binds ?R where a declaration names a relation or a type` |
-| a rule's or an hrule's conclusion that writes a name, or a variable that can hold one, to a fixpoint | `(seen ?g) binds ?g where rule 'greet' writes (seen ?g)` |
+| a rule's conclusion that writes a name, a hypothesis's among them, or a variable that can hold one, to a fixpoint | `(seen ?g) binds ?g where rule 'greet' writes (seen ?g)` |
 | the rule's own activator, a written fact | `?g is its parameter, which the fact (deny Bob) binds to Bob` |
-| an hrule's activator in `(solve :hrules …)` | `?g is its parameter, which (solve :hrules (suppose (Bob))) binds to Bob` |
-| a declared relation the hypotheses are taken from: the program declares no hrule, the `(solve …)` lists leave the relation in, and nothing writes the closure marker | `(seen ?g) binds ?g where a commitment can hold a name, seen being a declared relation the hypotheses are taken from` |
+| a declared relation the hypotheses are taken from: the program declares no rule that concludes a hypothesis, the `(solve …)` lists leave the relation in, and nothing writes the closure marker | `(seen ?g) binds ?g where a commitment can hold a name, seen being a declared relation the hypotheses are taken from` |
 | nothing but a guard binds the variable | `(neq ?g Ann) binds ?g over the program's names, nothing else binding it`, `(eq ?g Ann) binds ?g to a name` |
 
 The variable *can hold a name* where, in one disjunct of the `:match`, every relation premise that binds it binds it
@@ -858,18 +853,18 @@ their `hypothesis` is no declared relation, and holds facts. A pattern or a conc
 **What the loader does not read is the firing's.** Where the activator is derived through a variable, `(marks paid)`
 and a rule concluding `(deny ?R)` of what is marked, the parameter's relation is not read, and the program loads.
 Where a binding then gives `(not ?g)` a name, there is no fact to conclude: the firing stores nothing for that
-conclusion, and stores the rule's other conclusions; an hrule proposes nothing for it. No command stops, no `(false)`
+conclusion, and stores the rule's other conclusions. No command stops, no `(false)`
 is concluded, and no state holds the negation of a name
 ([Q-M1f.128](../../../decisions/language/Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md)).
 
-**An hrule's `:match` may read `not`**: a stored negation as a premise, `(not (paid ?g))`, under `(absent …)`, and
+**A rule that concludes a hypothesis may read `not` in its `:match`**: a stored negation as a premise, `(not (paid ?g))`, under `(absent …)`, and
 through `std.macro`'s `unknown`. It is matched against the state the hypotheses are taken at, and `ein solve` answers
 what `ein oracle` answers
 ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
 
 ### 2.24 A macro's call is no fact
 
-**A macro is called where the loader expands it**: in a rule's or an hrule's `:match` and `:assert`, at any depth,
+**A macro is called where the loader expands it**: in a rule's `:match` and `:assert`, at any depth,
 and in a query's `:goal` (§ 2.21). There the call is replaced by the macro's body
 ([`11-macros.md`](../03-syntax-and-semantics/11-macros.md)). Nothing else is expanded, so a form headed by a macro's name
 anywhere else is no call. In a fact it is refused at load, one line per call, at the call's name:
@@ -910,7 +905,7 @@ program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros
 
 | of the module | `(import M)` | `(import M :as o)` | `(import M :symbols (n …))` |
 |---|---|---|---|
-| a declared relation, a rule, an hrule, a macro | kept, written `M.name` | kept, written `o.name` | kept, written `name` if listed and `M.name` if not |
+| a declared relation, a rule, a macro | kept, written `M.name` | kept, written `o.name` | kept, written `name` if listed and `M.name` if not |
 | a fact of a declared relation | kept: `(M.is-a Tea Drink)` | kept: `(o.is-a Tea Drink)` | kept: `(is-a Tea Drink)` where `is-a` is listed |
 | a fact of a relation no file declares | kept as written | kept as written | kept as written; the relation may be listed, a name only ([Q-M1f.250](../../../decisions/imports/Q-M1f.250-a-listed-name-a-module-states-facts-of-names.md)) |
 | a stored negation, `(not (likes Milk Tea))` | kept, as a fact is | kept, as a fact is | kept, as a fact is |
@@ -935,7 +930,7 @@ program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros
 ### 2.26 A program's hypothesis mechanisms do not contradict one another
 
 Three writers of a hypothesis, `(open F)` ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)): a
-rule that concludes one, an `(hrule …)` among them, with the `(open …)` facts the program writes; an obligation
+rule that concludes one, with the `(open …)` facts the program writes; an obligation
 rule, `:assert (open ?R)`, activated, which writes `(open R)` where an instance is owed and `(open F)` for what would
 pay it; and the blind enumerator, which writes only where root holds no `open` fact and no obligation is activated
 ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)).
@@ -982,7 +977,7 @@ and [`examples/broken/load/no_hypothesis_beside_open.ein`](../../../../examples/
 **`(solve :no-search)`** states that the lattice is root alone: nothing is proposed, and an obligation judges root
 alone. It is how a program says *judge root alone*. Beside an obligation or a closure it is silent; beside a rule
 that concludes a hypothesis, `:hypothesis-relations` or `:no-hypothesis` it is one `note:` each,
-*FILE:L:C: solve: its :no-search states the lattice is root alone, so hrule 'guess' proposes no candidate* and
+*FILE:L:C: solve: its :no-search states the lattice is root alone, so rule 'guess' proposes no candidate* and
 *FILE:L:C: solve: its :no-hypothesis filters no candidate — the program states :no-search, whose lattice is root
 alone*, which replace the notes above. **It relaxes no conflict**: the `open` facts root holds are written beside it,
 so every refused declaration is refused beside it with the same line
@@ -1022,19 +1017,21 @@ surface alike: a state, a trace, a core, `refuted by`, `--events`
 another file writes as a name of its own is not taken. The answer does not depend on the import form
 ([Q-M1f.249](../../../decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)).
 
-### 2.28 An hrule proposes one fact per match
+### 2.28 A hypothesis is one fact
 
-An hrule proposes facts, each a commitment of its own, so its conclusion is one fact
-([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): an hrule whose `:assert`,
-read flat, is more than one conjunct is refused at load, one `kb load error:` line placed at the conclusion's first
-conjunct, read after a macro's expansion:
+A hypothesis is a fact, each a commitment of its own, so `(open …)` holds one
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)): `(open (and …))` is refused,
+at the parse where a program writes it, `and` heading no fact, and at load where a macro's expansion makes it, a
+connective where a value goes (§ 2.16), placed at the `open`. A rule concludes several hypotheses as several
+`(open F)` in its `:assert`'s `(and …)`, each proposed as its own
+([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)).
 
-| the hrule | the line |
+| the rule's `:assert` | the line |
 |---|---|
-| `(hrule h () :match () :assert (and (p a) (q a)) …)`, and an `and` inside it, `(and (and (p a) (q a)) (r a))`, *3 conclusions* | `kb load error: h.ein:3:37: hrule 'h': its :assert writes (and (p a) (q a)), 2 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion` |
+| `(open (and (p a) (q a)))`, and `(open (and (p a)))` | ``h.ein:3:37: unexpected `and` `` with its repairs, a parse error |
+| `(open (both a))`, `both` a macro whose body is `(and (p ?x) (q ?x))` | `kb load error: h.ein:4:31: rule 'h': its :assert writes (open (and (p a) (q a))), and (and (p a) (q a)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)` |
 
-An `(and …)` of one conjunct, `(and (p ?x))`, is one conclusion and loads. A macro's call that leaves the `(and …)`
-is placed as § 2.16 places a form a body writes, at the macro's body.
+`(and (open (p a)) (open (q a)))` loads and proposes both.
 
 ### 2.29 A saved file is its program, its modules and one commitment of H
 
@@ -1080,10 +1077,9 @@ engine's words, of which there is one
 |---|---|
 | a word that is none of the engine's, `:ein dead` | `kb load error: F:6:10: rule 'r': :ein dead — dead is no word of the engine's (the engine's words: inconsistent)` |
 | `:ein` beside an `:assert` | `kb load error: F:8:11: rule 'r': states :ein inconsistent beside an :assert — a rule states what it concludes under :assert, or a word to the engine under :ein, never both: write one rule for each (the engine's words: inconsistent)` |
-| `:ein` on an hrule | `kb load error: F:6:10: hrule 'h': states :ein inconsistent — an hrule proposes a fact, which it states under :assert, and a word to the engine is a rule's (the engine's words: inconsistent)` |
 
 A misspelt word therefore does not load in silence, and a word of the language is none of the engine's: `:ein false`
-is refused as `:ein dead` is. The three are pinned by `ein_word_unknown`, `ein_beside_assert` and `ein_on_hrule` in
+is refused as `:ein dead` is. The two are pinned by `ein_word_unknown` and `ein_beside_assert` in
 [`examples/broken/load/`](../../../../examples/broken/load/).
 
 ## See also

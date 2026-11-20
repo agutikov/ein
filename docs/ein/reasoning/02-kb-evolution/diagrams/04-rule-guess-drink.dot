@@ -11,8 +11,16 @@ digraph rule_guess_drink_lhs_rhs {
     "?d_L" -> "Drink_L" [label="is-a", color="#7f7f7f", fontcolor="#7f7f7f"];
   }
   subgraph cluster_rhs { label="assert";
+    "drinks_R" [label="drinks", shape=box];
     "?g_R" [label="?g", shape=diamond];
     "?d_R" [label="?d", shape=diamond];
-    "?g_R" -> "?d_R" [label="drinks", color="#e377c2", fontcolor="#e377c2", style=dashed];
+    subgraph cluster_ctx_R_0 {
+      label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(drinks ?g ?d)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    }
+    "(drinks ?g ?d)_R" -> "(drinks ?g ?d)_R" [label="open", color="#2ca02c", fontcolor="#2ca02c", style=dashed];
+    "drinks_R" -> "(drinks ?g ?d)_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "(drinks ?g ?d)_R" -> "?g_R" [xlabel="2", color="#e377c2", style=dashed];
+    "(drinks ?g ?d)_R" -> "?d_R" [xlabel="3", color="#e377c2", style=dashed];
   }
 }

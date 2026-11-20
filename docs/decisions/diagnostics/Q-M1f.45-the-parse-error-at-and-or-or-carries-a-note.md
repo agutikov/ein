@@ -7,7 +7,7 @@ Under the error a note names where the form is written and says what the form ta
   more`;
 - `note: rule 'r''s :match writes (or) — or takes one disjunct or more`.
 
-In an `:assert` the note speaks of the empty conclusion, whose one spelling is `()` too. The note names an hrule, a
+In an `:assert` the note speaks of the empty conclusion, whose one spelling is `()` too. The note names a
 query's `:goal` or `:expect`, or a macro's template the same way where the form is written there.
 
 **Why.** `()` is the one spelling of the empty conjunction, a `:match` that is true and fires once, and a second

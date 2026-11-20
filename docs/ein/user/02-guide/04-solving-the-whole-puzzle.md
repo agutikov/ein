@@ -25,12 +25,12 @@ pieces from this guide, in layers:
 
 (rule co-located …) (rule adjacent-via-fwd …) (rule disjunctive-prune-fwd …) …  ; the spatial rules
 
-(hrule guess (?R ?T1 ?T2)                           ; what may be guessed
+(rule guess (?R ?T1 ?T2)                           ; what may be guessed
   :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
-  :assert (?R ?a ?b)
+  :assert (open (?R ?a ?b))
   :why    "guess: ({?R} {?a} {?b})?")
-(solve :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House)
-                      (smoke-loc Cigarette House) (pet-loc Pet House)))
+(guess color-loc Color House) (guess nation-loc Nationality House)   ; …and its activators
+(guess drink-loc Drink House) (guess smoke-loc Cigarette House) (guess pet-loc Pet House)
 
 (is-a Norwegian Nationality) …                      ; the is-a facts
 (nation-loc Norwegian House-1 :source "condition (10)")   ; the 15 clues
@@ -47,23 +47,25 @@ The pieces, and how `ein solve` turns them into the answer:
 
 ![The pieces of zebra2.ein, and ein solve turning them into the answer](diagrams/04-zebra2-pieces.svg)
 
-Nothing here is new — it's Chapters 1–3 at full size. The `(hrule guess …)`
-is Chapter 2's `guess`, written out: it proposes `(?R ?a ?b)` for every `?a`
-with an `is-a` fact into one name and every `?b` with one into another, and
-`(solve :hrules …)` names the five relations it runs over, each with those
-two names: for `color-loc`, every colour against every house. The names are
-the ones the declarations label their slots with, and it is this clause and
-the hrule's `is-a` premises that make them say what a slot is filled from;
-the declaration alone does not. The `(query …)` is the only piece we haven't
+Nothing here is new — it's Chapters 1–3 at full size. The rule `guess`
+is Chapter 2's `guess`, written out: its conclusion, `(open (?R ?a ?b))`, is a
+hypothesis, which it proposes for every `?a` with an `is-a` fact into one name
+and every `?b` with one into another, and its five activators, facts like any
+other, name the five relations it runs over, each with those two names: for
+`color-loc`, every colour against every house. The names are the ones the
+declarations label their slots with, and it is the activators and the rule's
+`is-a` premises that make them say what a slot is filled from; the
+declaration alone does not. The `(query …)` is the only piece we haven't
 used: a `:goal` pattern Ein matches against the solved KB, and a `:goal-text`
 template that renders the headline answer.
 
-The hrule drawn, from `ein render rule --name guess examples/zebra2.ein`: it
+The rule drawn, from `ein render rule --name guess examples/zebra2.ein`: it
 matches two facts of `is-a`, each an octagon whose arrow `1` is at the box
-`is-a`, and proposes the dashed one, a fact whose arrow `1` is at the
-variable `?R`.
+`is-a`, and concludes the dashed fact of `open`, whose arrow `2` is at the
+candidate, a fact whose arrow `1` is at the variable `?R`, standing in its
+context.
 
-![The hrule guess: two is-a pattern octagons it matches and the dashed ?R fact each match proposes](diagrams/04-rule-guess.svg)
+![The rule guess: two is-a pattern octagons it matches, and the dashed open fact each match concludes, its candidate a ?R fact in its context](diagrams/04-rule-guess.svg)
 
 ## Solve it
 

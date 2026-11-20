@@ -98,7 +98,7 @@ itself one of the fixed orders below.
 
 | container | order | structure |
 |---|---|---|
-| the registries: relations, rules, hrules, obligations, macros | declaration order | `entities::Registry<V>`: `Vec<(Symbol, V)>` and an `FxHashMap<Symbol, u32>` index |
+| the registries: relations, rules, obligations, hypotheses, macros | declaration order | `entities::Registry<V>`: `Vec<(Symbol, V)>` and an `FxHashMap<Symbol, u32>` index |
 | the KB's fact list, `Kb::facts` | append order, layers read oldest first | `Layer::facts: Vec<FactId>` per layer |
 | a relation's held extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
 | a participation bucket `(relation, slot, value)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |

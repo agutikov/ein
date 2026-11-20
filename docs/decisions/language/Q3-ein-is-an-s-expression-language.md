@@ -1,7 +1,7 @@
 # Q3 — Ein is an S-expression language
 
 A program is a sequence of S-expressions: every form is a parenthesised list whose head is a declarator (`relation`,
-`rule`, `hrule`, `macro`, `import`, `query`, `solve`, `config`, `trace`), a fact's relation, or `not` before a
+`rule`, `macro`, `import`, `query`, `solve`, `config`, `trace`), a fact's relation, or `not` before a
 stored negation, and whose parts are names, variables, nested forms, keyword pairs and, after `:why`, `:source` or
 `:goal-text`, a string. Names carry the meaning; the syntax adds only the parentheses, `?` before a variable, and
 `:` before a keyword.

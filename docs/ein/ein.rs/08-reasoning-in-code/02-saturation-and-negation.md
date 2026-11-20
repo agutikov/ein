@@ -435,7 +435,7 @@ satisfiability page draws with `ein render rule --fold`:
   :assert (false)
   :why    "{?g} is seated at {?c} and at {?d}, which cannot be")
 
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that {?g} is seated at {?c}")
+(rule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (open (seats ?g ?c)) :why "guess that {?g} is seated at {?c}")
 
 (query :goal (seats ?g ?c))
 ```
@@ -581,7 +581,7 @@ its § 2.3 are in the catalogue:
 | a claim's diff moves no verdict, no exit code and no other line, and a held claim's is all matches, over every claim of the corpus | `ein-cli/tests/test_cli.rs`: `the_diff_moves_no_verdict_and_no_exit_code` |
 | a claim the run did not decide is not checked; a run a budget stopped leaves its claim not checked and says why; under `--no-search` a claim not checked moves no exit code | `ein-infer/tests/expect_semantics.rs`: `a_claim_the_run_did_not_decide_is_not_checked`; `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/no_search.rs`: `test_decides_what_root_decides_and_a_claim_not_checked_exits_0` |
 | every route that branches on an owed instance's alternatives finds the oracle's R | `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle` |
-| on the zebra family, branching on what the obligations owe finds what the hrule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
+| on the zebra family, branching on what the obligations owe finds what the hypothesis rule finds | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hypothesis_rule_finds` |
 | every question names a relation H holds no fact of, in one sentence | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | what the blind enumerator would still propose at a listed state is a read, off unless asked | `ein-cli/tests/leftover_probe.rs`: `the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says` |
 | an exhausted run reports the states, an unexhausted one the states found | `ein-cli/tests/model_set_report.rs`: `an_exhausted_run_reports_the_states`, `an_unexhausted_run_reports_states_found` |

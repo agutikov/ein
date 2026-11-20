@@ -10,4 +10,4 @@ how its words are read; a state with no reading chosen has no answer to give. Th
 program needs no search of the whole cube.
 
 **Held by.** `examples/word_problems/boxes12.ein` and `boxes13.ein`, whose region claims list the two readings'
-states; `readings.ein`'s obligation `reading-owed` and its hrule `read-need`.
+states; `readings.ein`'s obligation `reading-owed` and its hypothesis rule `read-need`.

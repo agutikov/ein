@@ -46,7 +46,7 @@ one with an answer: where Ein postpones something, the decision says what it doe
 | [`imports/`](imports/README.md) | modules and imports: full and short names, and what an import brings |
 | [`diagnostics/`](diagnostics/README.md) | the line a refusal prints: its place, its wording, its note |
 | [`answer/`](answer/README.md) | the region R, a node's status, cores, claims, and the questions about R |
-| [`hypotheses/`](hypotheses/README.md) | hrules, obligations, the generation ladder, the hypothesis mechanisms, and the structure of H |
+| [`hypotheses/`](hypotheses/README.md) | the rules that conclude a hypothesis, obligations, the writers of H, the hypothesis mechanisms, and the structure of H |
 | [`read-out/`](read-out/README.md) | what `ein solve` and `ein test` print: rows, words, JSON, state files, the trace |
 | [`cli/`](cli/README.md) | the commands, their options and exit codes, and the views |
 | [`engine/`](engine/README.md) | `ein.rs` inside: the parser, the compiler's invariants, the agenda, the `.einb` format, determinism |

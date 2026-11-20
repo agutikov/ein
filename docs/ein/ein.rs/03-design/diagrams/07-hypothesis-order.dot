@@ -5,7 +5,7 @@ digraph h {
 
   root  [shape=cylinder, label="root's fixpoint"];
   gen   [shape=diamond, label="hypgen::\ngenerate_with"];
-  r1    [label="hrule.rs\nthe matches of the rules\nthat conclude (open F),\nand the program's (open F)"];
+  r1    [label="hypothesis_rules.rs\nthe matches of the rules\nthat conclude (open F),\nand the program's (open F)"];
   r2    [label="oblgen.rs\nwhat pays root's debts,\nand a commitment's"];
   r3    [label="the blind enumerator\nrelations x slots x objects"];
   scope [shape=note, label=":hypothesis-relations\n:no-hypothesis\n(__closed__ R)"];

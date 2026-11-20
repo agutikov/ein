@@ -1,7 +1,8 @@
 # Q-M1f.195 — A problem that asks what is needed imports the readings, whatever its numbers
 
-A word problem that asks how many containers are *needed* imports `readings.ein` and names its hrule,
-`(solve :hrules (read-need))`, whether or not its division leaves a remainder, and is one file.
+A word problem that asks how many containers are *needed* imports `readings.ein`, whose hypothesis rule
+`read-need` has no parameter and supposes the readings with no activator, whether or not its division leaves a
+remainder, and is one file.
 `boxes12.ein`, twelve apples in boxes of three, is such a file: its two states, a reading each, agree on 4 boxes,
 and its claims state the region, the answer, the readings and the model's assumption.
 `boxes13.ein` is the same problem with a remainder, whose readings disagree.

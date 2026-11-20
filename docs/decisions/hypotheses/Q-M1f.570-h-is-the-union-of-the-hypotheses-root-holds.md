@@ -1,7 +1,7 @@
 # Q-M1f.570 — H is the union of the hypotheses root holds, whoever wrote them
 
-$H$ is every `(open F)` root holds, less the facts root holds or denies: a rule's, an hrule's, the program's and an
-activated obligation's together, identical ones one fact. A rule that concludes a hypothesis no longer overrides an
+$H$ is every `(open F)` root holds, less the facts root holds or denies: a rule's, the program's and an activated
+obligation's together, identical ones one fact. A rule that concludes a hypothesis no longer overrides an
 obligation: what the obligation proposes joins what the rule does.
 
 **Why.** A rule asserts obligations and hypotheses independently, and identical `open` facts are one fact; so the

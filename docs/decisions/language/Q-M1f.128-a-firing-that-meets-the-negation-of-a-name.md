@@ -4,7 +4,7 @@ Where the loader does not read a binding
 ([Q-M1f.127](Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)), such as `(rule deny (?R) :match (?R
 ?g) :assert (not ?g))` activated through a rule that derives `(deny paid)`, a run may meet `(not ?g)` with `?g` a
 name. There is no fact to conclude: the firing stores nothing for that conclusion and stores the rule's other
-conclusions, and an hrule proposes nothing for it. No command stops, no `(false)` is concluded, and no state holds
+conclusions. No command stops, no `(false)` is concluded, and no state holds
 the negation of a name.
 
 **Why.** `not` of a name is the negation of no fact

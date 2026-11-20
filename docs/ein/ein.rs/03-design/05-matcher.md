@@ -194,7 +194,7 @@ slots past the reported ones, which is why `Disjunct::n_slots` sizes the array a
 
 | entry | what it enumerates | used by |
 |---|---|---|
-| `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_matches`: each match's row, its disjunct and the facts it matched, which a read-out's class and a goal's slice read), the rules that conclude a hypothesis, hrules among them, the obligation reports and the obligations' candidates |
+| `run` | every match of every disjunct, each from a fresh seed | a query's goal (`verdict::goal_matches`: each match's row, its disjunct and the facts it matched, which a read-out's class and a goal's slice read), the rules that conclude a hypothesis, the obligation reports and the obligations' candidates |
 | `run_one` | every match of one disjunct | the saturator's full pass over its plans (`Saturator::full_match`) |
 | `run_seeded` | the semi-naive delta: for each top-level relation step over a new fact's relation, that step bound to the fact first and the remaining steps walked, so a fact that can play two roles, as in `(and (R ?a ?b) (R ?b ?c))`, is seeded at each | the saturator's delta pass (`Saturator::seed_match`), over the plans that read the relation in a positive premise |
 | `holds` | whether a lifted guard's sub-plan has one match, in its own space, seeded from the parent's registers through `scope_of` | the NAF boundary, a goal's guards, the detector, the obligation reports |

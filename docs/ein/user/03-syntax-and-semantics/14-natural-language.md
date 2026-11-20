@@ -1,6 +1,6 @@
 # Natural language
 
-Every relation, rule, hrule and macro a program declares says in English what it means, and **a `:why` reads the
+Every relation, rule and macro a program declares says in English what it means, and **a `:why` reads the
 form it is written on**: a declaration's, the declaration; a rule's, the firing. A fact of a relation carries no text
 of its own and takes none from the declaration: it reads by where it came from, a `:source` or its rule's `:why`. The
 engine invents no prose: a sentence is always one the program wrote, filled in, and where no form carries one, a fact
@@ -76,7 +76,7 @@ written; a reference it cannot bind is left as it is.
 | text | on | fills | printed by |
 |---|---|---|---|
 | `:why` | `(relation R …)` | **the declaration's arrows**: `{?1}` the atom `relation`, `{?2}` the relation's name `R`, `{?3}` its first label, … — the declaration's **statement** | `--trace`'s premises line, after the declaration where a rule reads it, and its *Derives* line where a rule concludes it |
-| `:why` | `(rule …)`, `(hrule …)` | the firing's variables: a parameter, or a variable a positive premise binds — a derived fact's **reason** | `--trace`'s step, a rule node of the derivation views, an obligation's owe line |
+| `:why` | `(rule …)` | the firing's variables: a parameter, or a variable a positive premise binds — a derived fact's **reason** | `--trace`'s step, a rule node of the derivation views, an obligation's owe line |
 | `:why` | `(macro …)` | a parameter | nothing (§ 5): it documents the pattern |
 | `:goal-text` | `(query …)` | the goal's variables, per row | the read-out's projection rows, in `“…”` |
 | `:source` | a fact the program states | — | `--trace`'s premises line |
@@ -92,7 +92,7 @@ its rule's `:why`, or as written, `owns(Ann, Dog)`. A fact carries no `:why` of 
 
 ## 2. Every declaration carries a `:why`
 
-A `(relation …)`, `(rule …)`, `(hrule …)` or `(macro …)` without `:why "…"` is refused at load, one line per form,
+A `(relation …)`, `(rule …)` or `(macro …)` without `:why "…"` is refused at load, one line per form,
 on every command ([diagnostics](../04-reference/07-diagnostics.md)). `--no-require-why`, which every command that loads a
 program takes, loads one without; it decides whether a program loads, never what a loaded program answers
 ([configuration](../04-reference/06-config.md)). `:goal-text` and `:source` stay optional: a query's answer reads through
@@ -105,7 +105,7 @@ A `:why` that only fills the slot is worse than none, so a `:why` says what its 
 - a rule's says what it concludes and from what: `:why "{?a} knows {?b}, so {?b} knows {?a}"`;
 - a refutation's, a rule that concludes `(false)`, says what cannot be; an obligation's, one that concludes
   `(open …)`, what is still owed;
-- an hrule's names the guess it proposes: `:why "guess that {?x} is in box {?b}"`;
+- a hypothesis rule's names the guess it proposes: `:why "guess that {?x} is in box {?b}"`;
 - a made-up name, `p` or `r1`, is said as what it is, `"{?2} holds of a {?3}"`, and never given a meaning it does
   not have.
 
@@ -232,7 +232,7 @@ part of a vocabulary for the domain.
 
 - Every `{?ref}` in a `:why` of the standard library, and of every program the project ships as an example or a
   test, names something its form can fill: a relation's, an arrow of its declaration past the first, `{?2}` to
-  `{?n+2}` for `n` labels; a rule's or an hrule's, a variable it binds (a parameter, or a positive premise's, macros
+  `{?n+2}` for `n` labels; a rule's, a variable it binds (a parameter, or a positive premise's, macros
   expanded); a macro's, a parameter. None writes `{x}`, a reference with its `?` missing, and no declaration writes
   `{?1}`, the atom `relation`, which no text needs.
 - A declaration's `:why` reads its own arrows where the trace prints the declaration, and a fact of the relation

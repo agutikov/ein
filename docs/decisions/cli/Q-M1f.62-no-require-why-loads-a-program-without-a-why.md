@@ -1,6 +1,6 @@
 # Q-M1f.62 — `--no-require-why` loads a program without a `:why`
 
-A program whose relation, rule, hrule or macro carries no `:why` is refused at load, one line per form, unless the
+A program whose relation, rule or macro carries no `:why` is refused at load, one line per form, unless the
 command is given `--no-require-why`; every command that loads a program takes it. In the library,
 `LoadOptions::default()` requires a `:why`, and `require_why: false` is the option. It decides whether a program
 loads, never what a loaded one answers.

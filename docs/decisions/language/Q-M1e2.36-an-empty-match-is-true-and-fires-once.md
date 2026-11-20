@@ -1,7 +1,8 @@
 # Q-M1e2.36 — An empty `:match` is true and fires once
 
 `()` as a `:match` is the empty conjunction, which is true. A rule whose `:match` is `()` fires once at root, or once
-per activator fact, with only its parameters bound; an hrule whose `:match` is `()` proposes its conclusion likewise.
+per activator fact, with only its parameters bound; a rule that concludes a hypothesis, `(open F)`, with `()`
+as its `:match` proposes it likewise.
 `()` as a conclusion concludes nothing. `(and)` with no conjunct is refused at the parse, since `and` takes
 conjuncts and the empty conjunction is written `()`; `(or)` with no disjunct is refused the same way. The refusal's
 line: [Q-M1f.45](../diagnostics/Q-M1f.45-the-parse-error-at-and-or-or-carries-a-note.md).

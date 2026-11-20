@@ -17,9 +17,9 @@ may not hold; [obligations](08-obligations.md) are the lower bound, what a state
 (relation is-a T T :why "{?3} is a {?4}")
 (relation in Pet Box :why "the {?3} is in box {?4}")
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?p Pet) (is-a ?b Box))
-  :assert (in ?p ?b)
+  :assert (open (in ?p ?b))
   :why    "guess that the {?p} is in box {?b}")
 
 (rule one-box-per-pet ()
@@ -39,7 +39,8 @@ may not hold; [obligations](08-obligations.md) are the lower bound, what a state
 (in Dog B1)
 ```
 
-The hrule proposes where each pet might be ([hypotheses](09-hypotheses.md)); the two constraints cut the guesses down.
+The rule `guess` concludes where each pet might be, `(open (in ?p ?b))`, a hypothesis each
+([hypotheses](09-hypotheses.md)); the two constraints cut the guesses down.
 `one-box-per-pet` refutes any state that puts one pet in two boxes, and `cat-not-in-b2` stores `(not (in Cat B2))`
 at root, so no state may hold `(in Cat B2)`: `ein show hyps FILE` lists two candidates, and that is not one of them.
 The import is what makes the negation a constraint: without its first line `(in Cat B2)` is a third candidate, and a
@@ -69,9 +70,10 @@ and not asserted, so it stands in the frame `not ctx`. The empty `:match` of `ca
 
 ![The rule cat-not-in-b2: an empty match, and the stored negation it asserts, a fact of not whose arrow 2 is at (in Cat B2) in the frame not ctx](diagrams/06-rule-cat-not-in-b2.svg)
 
-The hrule the two constraints cut down is drawn the same way, its conclusion the guess:
+The rule the two constraints cut down is drawn the same way, its conclusion the guess, `(open (in ?p ?b))`, the
+candidate standing in its context:
 
-![The hrule guess: what it matches and the fact each match proposes, dashed](diagrams/06-rule-guess.svg)
+![The rule guess: what it matches, and the fact (open (in ?p ?b)) each match concludes, dashed, the candidate in its context](diagrams/06-rule-guess.svg)
 
 What the constraints do to the answer is a picture of the lattice. `ein oracle FILE --dump DIR` classifies every
 set of candidates, and `ein render region DIR` draws them, one layer per number of candidates, an edge per added

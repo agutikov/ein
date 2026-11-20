@@ -7,7 +7,7 @@ stays the word a program writes for a contradiction, a proposition a rule conclu
 holds under an arrow, and what makes a state that holds it dead is a rule from it to the engine's word
 ([Q-M1f.551](../stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)).
 
-A rule states one or the other, never both, and an hrule, which proposes a fact, states no word. The grammar takes
+A rule states one or the other, never both. The grammar takes
 one name after `:ein`; the loader holds it to the engine's words
 ([Q-M1f.550](Q-M1f.550-the-engines-word-is-inconsistent.md)) and refuses any other with a line that lists them, so a
 misspelt word does not load in silence. A program's own rule may state the word, from whatever it matches, with no
@@ -22,5 +22,5 @@ the engine is written where no fact goes.
 `engine_word`, with `a_rule_states_a_word_to_the_engine_in_the_place_of_an_assert`;
 `ein_core::EngineWord` and `ein_core::Rule::ein`; `ein_infer::firing::end`, which records the application and writes
 no fact, and `ein_infer::saturator`'s tests of it; `ein-ir/tests/grammar_pages.rs`, a row of the grammar's table per
-shape the parse refuses; `examples/features/18_ein_inconsistent.ein`, and the three refusals under
-`examples/broken/load/`, `ein_word_unknown`, `ein_beside_assert` and `ein_on_hrule`.
+shape the parse refuses; `examples/features/18_ein_inconsistent.ein`, and the two refusals under
+`examples/broken/load/`, `ein_word_unknown` and `ein_beside_assert`.

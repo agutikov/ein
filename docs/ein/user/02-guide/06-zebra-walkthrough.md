@@ -25,7 +25,7 @@ Each human step is one of three things in Ein.
 - **Root**: what saturation derives from the program with nothing guessed. The human's unconditional steps are all
   here. `ein saturate examples/zebra2.ein --dump` lists root, each derived fact with the rule that derived it, and
   `ein solve examples/zebra2.ein --no-search` reports it.
-- **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` hrule proposes a fact of each of the
+- **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` rule proposes a fact of each of the
   five relations for each value of its attribute and each house, and `ein show hyps examples/zebra2.ein` lists every
   candidate. A candidate is **dead alone** when
   assuming it, and nothing else, ends the state: a rule concludes `(false)`, a check of `std.algebra` such as

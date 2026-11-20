@@ -105,8 +105,8 @@ The exclusive start conditions are `AFTER_WORD`: a rule that names no condition 
 
 Six facts about the terminals that the diagrams state and do not explain:
 
-1. **A reserved word is a token only as a whole word.** The eleven reserved words, `and`, `or`, `neq`,
-   `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro` and `import`, and the fifteen position
+1. **A reserved word is a token only as a whole word.** The ten reserved words, `and`, `or`, `neq`,
+   `rule`, `query`, `solve`, `config`, `trace`, `macro` and `import`, and the fifteen position
    words, `not`, `relation`, `step`, `eq`, `absent`, `false`, `true`, `open`, `model`, `region`, `merged`, `owing`,
    and a saved file's `program`, `module` and `commit`, are rules written
    before `NAME`, and `NAME` is longest match: `neq` is the token `'neq'`, a tie the earlier rule wins, while `neqw`,
@@ -229,13 +229,13 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 ![A relation's declaration, as a railroad diagram](diagrams/01-grammar-phrase-relation.svg)
 
-### 2.6 A rule and an hrule
+### 2.6 A rule
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-rule.puml`](diagrams/01-grammar-phrase-rule.puml):
 `Rule`, `Params`, `RuleClause`, `RuleClauses`.
 
-![A rule and an hrule, as a railroad diagram](diagrams/01-grammar-phrase-rule.svg)
+![A rule, as a railroad diagram](diagrams/01-grammar-phrase-rule.svg)
 
 ### 2.7 A rule's `:match`: premises
 
@@ -274,8 +274,7 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 [`01-grammar-phrase-solve.puml`](diagrams/01-grammar-phrase-solve.puml):
-`Solve`, `SolveClause`, `SolveClauses`, `Hrules`, `HruleItem`, `HruleItems`, `RegionClaim`, `RegionItem`,
-`RegionItems`, `MergedFrom`.
+`Solve`, `SolveClause`, `SolveClauses`, `RegionClaim`, `RegionItem`, `RegionItems`, `MergedFrom`.
 
 ![A solve and its claim, as a railroad diagram](diagrams/01-grammar-phrase-solve.svg)
 
@@ -329,7 +328,7 @@ Six things the productions say that are easy to read past:
   ([`02-syntax.md` § Rules](02-syntax.md#rules)).
 - **A rule's word to the engine is no `Conclusion`.** `RuleClause` takes `:ein` and one `Name` where it takes
   `:assert` and an `Assert`, so `:ein inconsistent` writes no fact, pattern or term; which words are the engine's, that
-  a rule states one or the other, and that an hrule states none are the loader's (§ 3).
+  and that a rule states one or the other are the loader's (§ 3).
 - **A stored negative, `NotFact`, takes a fact's clauses**, so a derived `(not …)` fact's provenance, `:rule
   type-exclusivity :using ((c10 a))`, attaches as a fact's does. A `(not …)` in a `:match` or an `:assert` is a
   `Connective` or a `Conclusion` and takes no clause: a keyword pair there is a parse error.
@@ -339,7 +338,7 @@ Six things the productions say that are easy to read past:
   name, an equality or a variable there: `(not ?x)` is a `Conclusion` of its own and stands nowhere else.
 - **Each form's keywords are its own productions**, `RelationClauses`, `RuleClause`, `QueryClause`, `SolveClause`,
   `ConfigClause`, `ImportClause`, `StepClause` and `FactClause`, and each keyword's value is the production after it:
-  a claim is a `Claim` or a `RegionClaim`, a flag a `Bool`, a `:hrules` value `Hrules`, and `:no-search` takes none
+  a claim is a `Claim` or a `RegionClaim`, a flag a `Bool`, a list a `NameList`, and `:no-search` takes none
   ([`02-syntax.md` § The keywords each form takes](02-syntax.md#the-keywords-each-form-takes)).
 - **A `(trace …)` holds `step` events alone**: `(trace (branch-open …))` is a parse error at its head, a name where
   a trace wants `step`.
@@ -353,8 +352,8 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
 
 - **That a form's keywords are written, and once.** The grammar states which keywords each form takes and refuses any
   other, but takes them in any order and number: a rule with no `:match`, or with two, parses, and the loader refuses
-  it, `(rule r) missing :match or :assert at None`, as it refuses a rule that states `:ein` beside an `:assert`, on
-  an hrule, or with a word that is none of the engine's
+  it, `(rule r) missing :match or :assert at None`, as it refuses a rule that states `:ein` beside an `:assert`, or
+  with a word that is none of the engine's
   ([`07-diagnostics.md` § 2.30](07-diagnostics.md#230-a-rules-word-to-the-engine)). A query takes at least one clause of its four, any one
   (`QueryClausesPlus`).
 - **What a claim names.** An expectation's facts have a fact's shape at the parse (`ClaimFact`); that the relations it
@@ -375,7 +374,7 @@ ranked repairs and a count of the rest; a loader error about a top-level form en
 - **A connective as a pattern's argument.** `Arg` takes a `Connective`, since a macro such as `forall` is called as a
   pattern and takes premises, and the grammar cannot tell a macro's call from a pattern. Once the macros are expanded,
   a connective that is still a pattern's argument, `(q (and (p ?x)))`, `(q (eq ?a ?b))` or `(q (absent (p ?x)))`, is
-  a pattern no fact matches, and the loader refuses it, in a rule, an hrule, an obligation and a goal; `(not
+  a pattern no fact matches, and the loader refuses it, in a rule, an obligation and a goal; `(not
   <pattern>)`, a stored negation, stays. The same reading refuses what a macro's expansion writes of the shapes §2
   refuses written out: a fact, argument or conclusion of `absent`, `false` with an argument, and `(eq …)` as an argument.
 - **Where an `(or …)` sits, how wide a clause is, and a goal's relations.** `Connective` takes an `(or …)` wherever a

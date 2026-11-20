@@ -5,7 +5,7 @@ if (the program states (solve :no-search)?) then (yes)
   stop
 else (no)
 endif
-:the rules that conclude a hypothesis, hrules among them:\neach plan's matches at root, one candidate a match (Hrules::candidates);
+:the rules that conclude a hypothesis:\neach plan's matches at root, one candidate a match (HypothesisRules::candidates);
 :the (open F) facts the program writes;
 if (an obligation is activated at root?) then (yes)
   :oblgen::generate: the facts that would discharge what root owes,\nand what a rule can bring a commitment to owe;\nnothing where a witness step does not resolve (Mode::Declined);

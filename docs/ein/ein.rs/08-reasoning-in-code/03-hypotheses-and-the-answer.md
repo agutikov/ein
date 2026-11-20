@@ -28,7 +28,7 @@ test under a crate's `tests/`.
 | $\operatorname{gen}(P, \mathrm{root})$, the union | `hypgen::generate_config_free` runs the writers at root, the rules that conclude a hypothesis, the program's `(open F)`, the obligations activated there, and the blind enumerator where none of them writes: one entry for the search, the listing and the structure, with no configuration switch applied; its `HypGenStats::rung.mode`, an `oblgen::Mode`, says which wrote |
 | what a state holds under $\mathsf{open}$, $\operatorname{hyp}(S)$ | [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs), the pass at each state's fixpoint: `open::at_root` writes root's and returns the writers every state re-reads, and `ein_core::Kb::write_open` keeps them in the part of a state no fork inherits |
 | $\nu(P)$, nothing to guess | `hypgen::declares_no_search`: the program's `(solve :no-search)` |
-| $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs): each active rule that concludes `(open F)`, an `(hrule …)` among them, is a compiled plan matched at the state, each `(open F)` of its `:assert` a hypothesis per match; `ein_core::Program::hypotheses` holds those rules beside `Program::hrules` |
+| $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hypothesis_rules.rs`](../../../../ein.rs/crates/ein-infer/src/hypothesis_rules.rs): each active rule that concludes `(open F)` is a compiled plan matched at the state, one per activator the state holds, each `(open F)` of its `:assert` a hypothesis per match; `ein_core::Program::hypotheses` holds those rules, whole |
 | $\beta(P)$ | `hypgen::generate_with`: the blind enumerator runs where no rule or program `(open F)` wrote and `mechanisms::obligation_plans` is empty |
 | $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the writers and the conflict check share |
 | $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`); `oblgen::payments` reads it at every state for the pass |
@@ -50,8 +50,8 @@ The writers are one flow, drawn in
 [`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-writers), and its contract is
 [`03-design/07-search.md` § 1](../03-design/07-search.md#1-hypothesis-generation). In the code's words:
 `hypgen::generate_with` answers `Mode::NoSearch` before anything runs where the program states `(solve
-:no-search)`; else it hands on every match of the rules that conclude a hypothesis (`hrule::Hrules`, hrules
-among them), then the `(open F)` facts the program writes, then, where `mechanisms::obligation_plans` is not
+:no-search)`; else it hands on every match of the rules that conclude a hypothesis
+(`hypothesis_rules::HypothesisRules`), then the `(open F)` facts the program writes, then, where `mechanisms::obligation_plans` is not
 empty, what `oblgen::generate` proposes: each owed instance's guard scanned with the witness step skipped, then
 the debts a commitment can bring, or `Mode::Declined` with its reason before it emits anything where a witness step
 does not resolve. Only where none of those wrote and no obligation is activated does the blind enumerator run: it
@@ -74,7 +74,7 @@ fixpoint.
 | word | what wrote at root |
 |---|---|
 | `no-search` | nothing: the program states `(solve :no-search)` |
-| `hrules` | the rules that conclude a hypothesis, or the program's `(open F)`, and no activated obligation |
+| `hypothesis-rules` | the rules that conclude a hypothesis, or the program's `(open F)`, and no activated obligation |
 | `obligations` | an activated obligation alone, what would pay what root owes; empty where root owes nothing |
 | `union` | both: the rules' hypotheses beside an activated obligation's, the counts of the `rung` event the obligations' |
 | `stuck` | an activated obligation, with nothing left to propose while root owes |
@@ -94,7 +94,7 @@ fixpoint.
 **The two rules the reasoning draws** are `ein render rule --fold`'s: the obligation is `std.algebra`'s `total-owed`,
 `ein render rule --fold --name total-owed stdlib/algebra.ein`, whose `:match` is
 `(and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b))))` and whose `:assert` is `(open ?R)`;
-the hypothesis rule is an `(hrule …)` with no parameter, drawn the same way by its name.
+the hypothesis rule is a rule with no parameter that concludes `(open F)`, drawn the same way by its name.
 
 ### 1.3 H, listed
 
@@ -126,7 +126,7 @@ The block is the binary's output, held to it by a test ([§ 2.6](#26-what-holds-
 - **It costs what building H costs**: root's saturation and the generator's pass. No node is read, so no pair layer,
   no small KB and no whole node.
 - **stderr holds one `note:`**, which writers built H, in the word of § 1.2, and how many candidates it holds:
-  ``note: FILE: H, built by the rung `hrules`: …``. An empty H prints nothing on stdout and exits 0, and the note says
+  ``note: FILE: H, from `hypothesis-rules`: …``. An empty H prints nothing on stdout and exits 0, and the note says
   why in the words of the read-out's `universe` row: *no candidate*, and *the program states :no-search* where it
   does. On a program the static check flags, the warning's line comes before the note,
   `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: …`: H is what the routes search over, and nothing is claimed of what
@@ -143,9 +143,9 @@ Each is a corpus program whose note names the writers, re-taken by `ein show hyp
 
 | word | program | what it is |
 |---|---|---|
-| `union` | [`examples/zebra2.ein`](../../../../examples/zebra2.ein) | the Zebra puzzle with `(hrule guess …)`, beside `(bijective color-loc)` and its kin, which owe every attribute arrow |
-| `hrules` | [`examples/branching/09_hrule.ein`](../../../../examples/branching/09_hrule.ein) | an hrule and no obligation |
-| `obligations` | [`examples/zebra2-obligations.ein`](../../../../examples/zebra2-obligations.ein) | `zebra2.ein` with the hrule and the `:hrules` clause deleted and nothing else |
+| `union` | [`examples/zebra2.ein`](../../../../examples/zebra2.ein) | the Zebra puzzle with its hypothesis rule `(rule guess …)` and five activators, beside `(bijective color-loc)` and its kin, which owe every attribute arrow |
+| `hypothesis-rules` | [`examples/branching/09_hrule.ein`](../../../../examples/branching/09_hrule.ein) | a hypothesis rule and no obligation |
+| `obligations` | [`examples/zebra2-obligations.ein`](../../../../examples/zebra2-obligations.ein) | `zebra2.ein` with the hypothesis rule and its activators deleted and nothing else |
 | `obligations`, no candidate | [`examples/ein-bugs/wrong-answers/rung-discharged.ein`](../../../../examples/ein-bugs/wrong-answers/rung-discharged.ein) | an activated obligation and a root that owes nothing |
 | `obligations`, with a later debt | [`examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein) | a rule derives an obligation's activator from a commitment |
 | `obligations`, flagged | [`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | a guard reads facts of a relation whose held extent a commitment can change: the obligation writes what root's guard gives, and the warning's line comes first |
@@ -154,7 +154,7 @@ Each is a corpus program whose note names the writers, re-taken by `ein show hyp
 | `no-search` | [`examples/beliefs/01_common_belief.ein`](../../../../examples/beliefs/01_common_belief.ein) | `(solve :no-search)` |
 
 **The two Zebra files build one $H$**, which is the reasoning's example of obligations that leave nothing
-uncovered: what the hrule proposes, the obligations propose too.
+uncovered: what the hypothesis rule proposes, the obligations propose too.
 The two listings are the same set:
 
 ```sh
@@ -196,7 +196,7 @@ no longer labels of any declaration, so the blind enumerator takes them for gues
 | under an activated obligation a discharged root proposes nothing | `ein-infer/tests/obligation_rung.rs`: `a_discharged_state_owes_nothing_and_declines_nothing` |
 | a module imported for one rule takes the writers of that rule written out; the answer does not depend on the import form | `ein-cli/tests/import_invariance.rs`: `a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`, `every_corpus_program_answers_alike_under_every_import_form` |
 | an obligation's candidates are its guards' scans with the witness step skipped | `ein-infer/tests/obligation_rung.rs`: `the_candidates_are_what_the_guard_scans` |
-| the hrule path and the obligation path build one $H$, and with it one $R$, on the zebra family | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
+| the hypothesis rule's path and the obligation path build one $H$, and with it one $R$, on the zebra family | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hypothesis_rule_finds` |
 | a root that owes and can propose nothing is stuck, reports it, and is no state of $R$ | `ein-infer/tests/obligation_rung.rs`: `owing_and_unable_to_branch_is_stuck_and_says_so` |
 | $H$ holds the payments of a debt only a commitment brings, by the static reading, and $R$ over that $H$ is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles`, `the_rung_line_counts_a_later_debt_apart` |
 | every name of the program is a guessable atom, and no run reaches a name the program lacks | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
@@ -204,8 +204,8 @@ no longer labels of any declaration, so the blind enumerator takes them for gues
 | no relation is a guessable atom, however the program writes it: a rule's conclusion, an activator, a fact inside another, a guard's binding at root | `ein_infer::hypgen`'s unit test `candidate_objects_hold_no_relation`; `ein_ir::from_ir`'s unit test `the_registry_holds_every_atom_first_in_a_tuple` |
 | the blind enumerator is untyped, and `is-a` is a relation like any other: spelt otherwise, a program prints the same on every surface that reports $R$ | `ein-cli/tests/read_out.rs`: `is_a_reads_as_any_other_relation_on_every_surface` |
 | a relation whose facts have three arguments or more has no blind candidate and is named outside the universe | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
-| an hrule that reads a negation proposes what the oracle's does | `ein-cli/tests/hrule_reads_not.rs`: `an_hrule_that_reads_not_is_answered_as_the_oracle_answers`, `every_hrule_reads_the_state_it_was_asked_about` |
-| an hrule's conclusion is one fact | `ein-cli/tests/conclusion_shapes.rs`: `an_hrule_concludes_one_fact` |
+| a hypothesis rule that reads a negation proposes what the oracle's does | `ein-cli/tests/hrule_reads_not.rs`: `an_hrule_that_reads_not_is_answered_as_the_oracle_answers`, `every_hrule_reads_the_state_it_was_asked_about` |
+| a hypothesis is one fact, `(open (and …))` refused and several `(open F)` each proposed | `ein-cli/tests/conclusion_shapes.rs`: `a_hypothesis_is_one_fact` |
 | the mechanisms' conflicts are refused on every command, a dead or redundant declaration is a note, and `:no-search` relaxes no conflict | `ein-cli/tests/mechanism_conflicts.rs`: `a_conflict_is_refused_on_every_command`, `a_dead_or_redundant_list_is_a_note_and_a_silent_pair_says_nothing`, `no_search_relaxes_no_conflict` |
 | no option changes $H$ or $R$ | `ein-cli/tests/lever_invariance.rs`: `every_declared_lever_cell_moves_no_line_of_any_mode` |
 
@@ -301,9 +301,9 @@ The view draws no SVG, as no `ein render` view does: a graph is DOT for Graphviz
 <!-- generated: ein render h-space examples/zebra2.ein -->
 ```text
 h-space      examples/zebra2.ein
-H            56 candidates · 21 dead alone · 0 at root · built by the rung `union`
+H            56 candidates · 21 dead alone · 0 at root · from `union`
 pairs        1 540 · 408 saturated · 327 excluded at root · 66 interacting · 234 implications · 9 equivalence classes
-theory       128 pairs excluded by the theory alone · of root's 327, 45 the theory's and 282 the puzzle's · the small KB drops 18 of 66 stated facts and kills 0 candidates alone
+theory       128 pairs excluded by the theory alone · of root's 327, 45 the theory's and 282 the puzzle's · the small KB drops 18 of 71 stated facts and kills 0 candidates alone
 supports     not asked: --supports names the statements each pair of the puzzle rests on
 cover        36 groups · 0 candidates in no group · 5 components of the theory's graph
 exactly one  36 owed groups · 0 groups nothing owes (0 an unlicensed instance is about) · 0 owed sets that are no group · 0 instances L5 does not license, of the 36 root owes
@@ -509,8 +509,8 @@ and `stated`, the puzzle's statements it rests on with how many of what it cover
 
 | key | what it holds |
 |---|---|
-| `mechanisms` | the hypothesis mechanisms at root's fixpoint: `hrules`, `active_hrule_plans`, `obligation_rules`, `obligation_plans`, counts; `proposed`, `owable`, `closed`, `listed`, `excluded`, relations, `closed` those closed to hypotheses; `no_search`. Or `error` |
-| `relations` | for each relation a candidate is of, in the universe's order: `relation`, `candidates`, `stated_of_it`, `an_active_hrule_proposes_it`, `an_obligation_can_owe_it`, `closed`, `listed`, `excluded`, `candidates_in_no_group`, `grids`, `bijections` |
+| `mechanisms` | the hypothesis mechanisms at root's fixpoint: `hypothesis_rules`, `hypothesis_plans`, `obligation_rules`, `obligation_plans`, counts; `proposed`, `owable`, `closed`, `listed`, `excluded`, relations, `closed` those closed to hypotheses; `no_search`. Or `error` |
+| `relations` | for each relation a candidate is of, in the universe's order: `relation`, `candidates`, `stated_of_it`, `a_hypothesis_rule_proposes_it`, `an_obligation_can_owe_it`, `closed`, `listed`, `excluded`, `candidates_in_no_group`, `grids`, `bijections` |
 
 `stated_of_it` is the facts the program states, the small KB keeps, and that name the relation: a statement of the
 relation whole. It is found by the relation's own name among a fact's arguments and by no other name, so nothing
@@ -536,7 +536,7 @@ read knows which of them means *bijective*. A reader does: on `examples/zebra2.e
 | a theory's pair whose node is alive at root | `cover.pairs_alive_at_root` |
 | a flagged program whose small KB is monotone | `cover.small_monotone` true beside `monotone` false |
 | dead in the small KB and alive at root; held by the small KB's fixpoint and not by root's | `theory.against_root`, `theory.small_beyond_root` |
-| which writers built $H$ | `rung`: `hrules`, `obligations`, `union`, `blind`, `declined`, `stuck` or `no-search` |
+| which writers built $H$ | `rung`: `hypothesis-rules`, `obligations`, `union`, `blind`, `declined`, `stuck` or `no-search` |
 
 The three small universes the reasoning's page draws, a guest's chair and drink, two people and two chairs, and the
 third question of the hat, are not corpus programs; their graphs are what `ein render h-space FILE --view exclusion`,
@@ -599,7 +599,7 @@ How the questions of the reasoning's § 5 are spelt:
 
 | in the reasoning | the corpus program |
 |---|---|
-| theory, ontology, problem: the Zebra puzzle's parts | [`examples/zebra2.ein`](../../../../examples/zebra2.ein). Theory: `(relation drink-loc Drink House)`, `(bijective drink-loc)`, the `co-located` rules and the stdlib rules behind them. Ontology: `(is-a Tea Drink)`. Problem: the clue facts, each with `:source "condition (n)"`, the `(query …)` and `(hrule guess …)`. Imports bring context in: theory from [`stdlib/`](../../../../stdlib/) |
+| theory, ontology, problem: the Zebra puzzle's parts | [`examples/zebra2.ein`](../../../../examples/zebra2.ein). Theory: `(relation drink-loc Drink House)`, `(bijective drink-loc)`, the `co-located` rules and the stdlib rules behind them. Ontology: `(is-a Tea Drink)`. Problem: the clue facts, each with `:source "condition (n)"`, the `(query …)`, the rule `guess` that concludes `(open (?R ?a ?b))` and its activators. Imports bring context in: theory from [`stdlib/`](../../../../stdlib/) |
 | a state built from scratch is not the fork's | [`examples/lattice/11_fifo_gap_static.ein`](../../../../examples/lattice/11_fifo_gap_static.ein) |
 | almost any subset of the cube is some program's region | the programs under [`examples/lattice/synth/`](../../../../examples/lattice/synth/), each written for a chosen region |
 | far more commitments than states | [`examples/features/02_star_in_identifiers.ein`](../../../../examples/features/02_star_in_identifiers.ein), below |

@@ -6,7 +6,7 @@ arguments, not 1 — it compares two values, so write one guard per pair`. The p
 the expanded form: the macro body's for a form the body writes, and for a form the grammar builds for a keyword,
 `(not …)`, `(neq …)` or `(or …)`, which keeps none, its first part's, the call's argument, so that a form a library
 macro writes is placed in the program's file. In a `.einb` it is the stored program's. The rule is named as the
-loader names it, `hrule 'h'` for an hrule.
+loader names it, `rule 'h'`.
 
 **Why.** The form is the macro's, not the rule's, so the rule's name alone does not find it; its position does.
 

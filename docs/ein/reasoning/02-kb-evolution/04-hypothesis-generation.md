@@ -162,13 +162,15 @@ A **hypothesis rule** $h$ is a rule whose conclusion holds a **hypothesis**: a f
 $\mathsf{open}$, which supposes the fact it makes rather than adding it to the knowledge base it matches in. Beside
 its hypotheses the conclusion may hold facts, which are a rewriting rule's
 ([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md);
-[the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A declaration with a
-rule's parts whose whole conclusion is one guess is a hypothesis rule too; a conclusion of more than one fact is no
-such declaration ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). Write
+[the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A hypothesis is one
+fact: $\mathsf{open}$ holds no conjunction, and a rule that supposes several facts holds several hypotheses
+([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). A hypothesis rule is a rule
+like any other, and there is no other way to say what to guess
+([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)). Write
 $\varphi_h$ for the pattern, and $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and
-$\psi_h[a]\theta$. It is **active** under the activators $\operatorname{listed}(h)$: the empty one where $h$ has no
-parameter; otherwise, for a declaration of one guess, each activator the program lists for it, and for any other
-rule each activator root holds, $\operatorname{Act}_{\mathrm{root}}(h)$. A conclusion may point at a fact, and then
+$\psi_h[a]\theta$. It is **active** under the activators $\operatorname{listed}(h)$, as any rule is: the empty one where $h$ has no
+parameter, and otherwise each activator root holds, $\operatorname{Act}_{\mathrm{root}}(h)$, a fact the program
+states or a rule derives. A conclusion may point at a fact, and then
 so does the candidate; a commitment that holds such a candidate holds it and nothing it points at
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#a-context-gives-a-fact-no-truth)). At root it
 writes, for each activator $a$ and each match $\theta$ of its pattern, the fact its hypothesis makes, and beside them
@@ -191,12 +193,13 @@ hypothesis rule whose pattern reads a stored negation reads the state it is matc
 A hypothesis rule is drawn as any rule is, its pattern beside its conclusion. This one says *guess, for each guest
 and each drink, that the guest drinks it*:
 
-![The hrule guess-drink: what it matches and the fact each match proposes, dashed](diagrams/04-rule-guess-drink.svg)
+![The rule guess-drink: what it matches, and the hypothesis each match concludes, the fact drinks dashed in the frame open ctx](diagrams/04-rule-guess-drink.svg)
 
 The drawing folds each fact pattern of three arrows into a labelled arrow
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): a diamond is a variable, a
-box an atom, a solid arrow a premise, a fact the pattern must find, and the dashed arrow the fact the rule
-proposes. A root that holds one guest and two drinks gives
+box an atom, a solid arrow a premise, a fact the pattern must find. The fact the rule proposes is dashed, an
+octagon with its arrows, in the frame of the fact of $\mathsf{open}$ that holds it, drawn as the dashed loop *open*:
+the fact is pointed at and not asserted, as a fact under any other fact is. A root that holds one guest and two drinks gives
 
 $$
 \begin{aligned}

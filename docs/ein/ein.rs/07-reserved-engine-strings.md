@@ -26,7 +26,7 @@ a program's own:
 
 | name | a program may | a program may not | refused by |
 |---|---|---|---|
-| `__closed__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as an argument, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): it is in `ein_core::terms::RESERVED`, the names a declarator may not bind |
+| `__closed__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as an argument, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *macro*, *alias*): it is in `ein_core::terms::RESERVED`, the names a declarator may not bind |
 | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | — | write it anywhere: each names a conclusion no rule drew, which a program cannot | the parse: the grammar's `WRITEBACK` token, which no production takes (*unexpected `<forced-positive>`: the engine's writeback rule name (reserved)*) |
 
 So a printed `:rule <lookahead-dies-immediately>` would always be the engine's. The name in a string or a comment
@@ -129,5 +129,5 @@ about: `HYPOTHESIS_RELATIONS` and `NO_HYPOTHESIS` in [`hypgen.rs`](../../../ein.
 
 Neither touches the saturator: they scope generation only, where `(__closed__ R)` above also states that no rule
 derives R. The mechanisms are read together on root's fixpoint (`ein_infer::mechanisms`): a relation in both lists,
-or listed and closed, is refused before any search, and a list an hrule leaves filtering nothing is a note
+or listed and closed, is refused before any search, and a list a hypothesis rule leaves filtering nothing is a note
 ([`03-design/07-search.md`](03-design/07-search.md)).

@@ -1,8 +1,8 @@
 # Q-M1f.522 — A relation of the program is any atom it writes first in a tuple
 
 An atom is a relation of the program wherever the program writes it first in a tuple, at any depth: the relation of
-a fact it states, of a fact inside another, `=` and `+` in `(think Bob (= 7 (+ 3 4)))`, of any form in a rule's, an
-hrule's or an obligation's `:match` or `:assert`, and the relation an activator gives a parameter that heads a form
+a fact it states, of a fact inside another, `=` and `+` in `(think Bob (= 7 (+ 3 4)))`, of any form in a rule's or an
+obligation's `:match` or `:assert`, and the relation an activator gives a parameter that heads a form
 of its rule, `happy` in `(tag happy)` beside `(rule tag (?R) :match (person ?x) :assert (?R ?x))`. Writing the atom
 first in a tuple is enough. A **declaration**, `(relation R …)`, is an optional fact, a convention some modules of the
 standard library use to reason about a relation's arguments; no relation of the program depends on one, and a

@@ -1,7 +1,7 @@
 # Q-M1f.63 — A program a test writes carries a `:why` on every form
 
 A test that writes a program for the engine to load and answer, a generator of programs among them, writes a `:why`
-on every relation, rule, hrule and macro: a mechanical one that says what the form says, its clauses in words, and
+on every relation, rule and macro: a mechanical one that says what the form says, its clauses in words, and
 never a placeholder. The program loads under the default options. A generator keeps its random draws, so a seed
 writes the program it wrote before. A test that mutates the corpus's own programs starts from programs that carry
 their `:why`s, and keeps its draws too.

@@ -1,7 +1,7 @@
 # Q-M1a.6 — A loader message about a top-level form names no position
 
 A form written at the top level of a file is built without a source position, so a loader message about one
-ends `at None`: `(rule r) missing :match or :assert at None`, `duplicate rule/hrule name 'g' at None`. A message
+ends `at None`: `(rule r) missing :match or :assert at None`, `duplicate rule name 'g' at None`. A message
 about a form inside another, the call of a macro in a rule's body among them, names the file, the line and the
 column, `(rule x): macro m/2 invoked with 1 args at a.ein:6:20`, as a parse error does.
 

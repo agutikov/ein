@@ -230,7 +230,7 @@ labels: `(lives-in Bob)` beside it loads too, a fact of one argument, which no p
 |---|---|
 | carries the **sentence** | its `:why` is what each fact of the relation reads as ([natural language](14-natural-language.md)) |
 | is written with its `:why` | one with no `:why` is refused; a second `(relation lives-in …)`, at the same count or another, is one more fact of `relation`, and each is read ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)) |
-| tells the **blind enumerator** what to guess about | with no hrule and no obligation, the engine proposes facts of declared relations of one or two arguments, over the **guessable atoms**: the program's names less those some declaration writes as a label ([hypotheses](09-hypotheses.md)) |
+| tells the **blind enumerator** what to guess about | where no rule concludes a hypothesis and no obligation is activated, the engine proposes facts of declared relations of one or two arguments, over the **guessable atoms**: the program's names less those some declaration writes as a label ([hypotheses](09-hypotheses.md)) |
 
 The last is the one place the engine itself reads which atoms are labels, and it reads them only as *not a thing to
 guess about*. Everything else a label means is given to it by a rule.

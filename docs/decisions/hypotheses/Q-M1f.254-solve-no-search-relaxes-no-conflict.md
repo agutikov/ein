@@ -1,8 +1,8 @@
 # Q-M1f.254 — `(solve :no-search)` relaxes no conflict
 
 Under `(solve :no-search)` no rung runs, yet every conflict between the hypothesis mechanisms stands, with the same
-line: an hrule is read as active and an obligation as its plans, whatever the search does. `:no-search` beside an
-hrule is one `note:`, *the hrule proposes no candidate*, and beside each list one, *the list filters no candidate*,
+line: a rule that concludes a hypothesis is read as active and an obligation as its plans, whatever the search
+does. `:no-search` beside such a rule is one `note:`, *rule 'guess' proposes no candidate*, and beside each list one, *the list filters no candidate*,
 which replace the notes those declarations print otherwise; beside an obligation or a closure it is silent, judging
 root alone being what an obligation is for there.
 

@@ -188,7 +188,7 @@ parts ([Q-M1f.420](../../../decisions/cli/Q-M1f.420-ein-render-program-draws-the
   declaration is the fact the loader stores, of `relation`. A written check, `(eq …)` or `(neq …)`, is no fact and
   is not drawn. For a program with no rule, no import and no macro it is what `ein render kb` draws of it, but for
   the fact `(relation r)` the loader adds beside a declaration with labels;
-- **a digraph per rule, hrule and macro**, `rule_<name>_…` and `macro_<name>`, as
+- **a digraph per rule and macro**, `rule_<name>_…` and `macro_<name>`, as
   [§ Rules](#rules--ein-render-rules-and-ein-render-rule) draws one; a macro's body is drawn as a rule's match is;
 - **`query`**: each `(query …)` a cluster, its `:goal` drawn as a rule's match is and its other clauses in a note
   beside it, and the `(solve …)` clause a note.
@@ -282,7 +282,7 @@ $$
 $K$ the facts root holds, $\operatorname{arg}_i(f)$ the object under the fact's arrow $i$, arrow $1$ being its
 relation, and $\operatorname{Rel}(P)$ **the relations of the program**, the list a goal and a claim are held to
 ([Q-M1f.119](../../../decisions/language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): every atom it
-writes first in a tuple, `eq` and `neq`, and a relation a `(solve :hrules …)` activator gives its hrule. So:
+writes first in a tuple, and `eq` and `neq`. So:
 
 - **an atom that is a relation is one wherever it stands**: a numeral's `(n z 4)` is kept, `z` being a relation of no
   argument, and so is an order's `(cl eq 0 0 eq)`;

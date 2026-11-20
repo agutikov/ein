@@ -31,9 +31,9 @@ Restrictions alone: two people and two chairs, with no sharing.
   :assert (false)
   :why    "{?p} and {?q} cannot share {?c}")
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?p Person) (is-a ?c Chair))
-  :assert (seat ?p ?c)
+  :assert (open (seat ?p ?c))
   :why    "suppose {?p} sits on {?c}")
 
 (query :goal (seat ?who ?chair) :over maximal)
@@ -105,7 +105,7 @@ program, abridged to its first three layers (the four nodes of layer 3 and the t
 
 With a run's dumps beside it, `--visited` and `--answer`, the drawing also shows what that run did: which nodes it
 visited and which states it reported ([rendering](../04-reference/12-rendering.md)). The program's three rules, the
-hrule that proposes the four candidates and the two restrictions that make nine of the sixteen nodes red, are drawn
+hypothesis rule that proposes the four candidates and the two restrictions that make nine of the sixteen nodes red, are drawn
 on [hypotheses](09-hypotheses.md#as-a-graph).
 
 ## In words
@@ -203,7 +203,7 @@ A program is a **problem** stated in a **context**:
 | **theory** | relations, their properties, and the rules that give them meaning | `(relation drink-loc Drink House)`, `(bijective drink-loc)`, the `co-located` rules and the stdlib rules behind them |
 | **ontology** | facts a solution needs that the problem does not state, because they are obvious | `(is-a Tea Drink)` |
 | **context** | theory and ontology | everything that carries no `:source` and is not a hint or the question |
-| **problem** | facts, the question, and the hints of what to guess, stated in a context | the clues with `:source "condition (n)"`, the `(query …)`, the `(hrule guess …)` |
+| **problem** | facts, the question, and the hints of what to guess, stated in a context | the clues with `:source "condition (n)"`, the `(query …)`, the hypothesis rule `guess` and its activators |
 
 The boundary is not in the language: one file may mix all four, and an import may bring either half of a context, a
 library of rules or a library of facts ([macros and imports](11-macros.md)). **R is a property of a problem in a

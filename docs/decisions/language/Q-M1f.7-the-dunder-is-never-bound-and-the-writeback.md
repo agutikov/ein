@@ -1,7 +1,7 @@
 # Q-M1f.7 — The dunder is never bound, and the writeback names never written
 
 The kernel's dunder, `__closed__`, is refused wherever a program **binds** a name: as a declared relation, as a
-rule's, an hrule's or a macro's name, and as an import's `:as`, each with the loader's line *… shadows a reserved
+rule's or a macro's name, and as an import's `:as`, each with the loader's line *… shadows a reserved
 kernel name*. It is legal wherever a name is **used**: as the relation of a fact, a nested fact, a premise, a
 conclusion, a goal or a claim's fact, and as an argument, so `std.algebra`'s `(imply1 functional __closed__)` hands
 the kernel's trigger to a rule that asserts it. The engine's three writeback rule names, `<forced-positive>`,

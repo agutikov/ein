@@ -10,8 +10,7 @@ the fact `(relation lives)` the loader stores beside it, `(__closed__ asked)`, a
 - **A relation of the program** is the one notion a goal and a claim are held to
   ([Q-M1f.119](../language/Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md)): an atom the program writes
   first in a tuple ([Q-M1f.522](../language/Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md)), the
-  kernel's words it writes among them, `eq` and `neq`, and a relation a `(solve :hrules …)` activator gives its
-  hrule. It is the program's, so the slice reads every state of the program by the same relations, and a relation
+  kernel's words it writes among them, and `eq` and `neq`. It is the program's, so the slice reads every state of the program by the same relations, and a relation
   with no fact in a state is one there too.
 - **An atom that is a relation is one wherever it stands**: `(n z 4)` is kept, `z` being the relation of no argument
   `std.math.arith` declares and a numeral's zero, and so is an order's `(cl eq 0 0 eq)`. The graph does not tell an

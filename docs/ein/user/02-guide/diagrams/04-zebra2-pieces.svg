@@ -2,109 +2,109 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Pages: 1 -->
-<svg width="564pt" height="340pt"
- viewBox="0.00 0.00 564.00 340.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="621pt" height="340pt"
+ viewBox="0.00 0.00 621.00 340.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 336.25)">
-<polygon fill="white" stroke="none" points="-4,4 -4,-336.25 560.08,-336.25 560.08,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-336.25 617.08,-336.25 617.08,4 -4,4"/>
 <!-- imports -->
 <g id="node1" class="node">
 <title>imports</title>
-<polygon fill="none" stroke="black" points="211,-332.25 6,-332.25 6,-289.75 211,-289.75 211,-332.25"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-314.95" font-family="Times,serif" font-size="14.00">imports</text>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-297.7" font-family="Times,serif" font-size="14.00">(std.algebra, std.bijection)</text>
+<polygon fill="none" stroke="black" points="239.5,-332.25 34.5,-332.25 34.5,-289.75 239.5,-289.75 239.5,-332.25"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-314.95" font-family="Times,serif" font-size="14.00">imports</text>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-297.7" font-family="Times,serif" font-size="14.00">(std.algebra, std.bijection)</text>
 </g>
 <!-- engine -->
 <g id="node7" class="node">
 <title>engine</title>
-<ellipse fill="none" stroke="black" cx="308.42" cy="-164" rx="55.42" ry="18"/>
-<text xml:space="preserve" text-anchor="middle" x="308.42" y="-159.32" font-family="Times,serif" font-size="14.00">ein solve</text>
+<ellipse fill="none" stroke="black" cx="365.42" cy="-164" rx="55.42" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="365.42" y="-159.32" font-family="Times,serif" font-size="14.00">ein solve</text>
 </g>
 <!-- imports&#45;&gt;engine -->
 <g id="edge1" class="edge">
 <title>imports&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M200.56,-289.33C206.31,-286.58 211.85,-283.48 217,-280 250.61,-257.27 277.33,-218.06 292.77,-191.59"/>
-<polygon fill="black" stroke="black" points="295.69,-193.54 297.56,-183.11 289.59,-190.09 295.69,-193.54"/>
+<path fill="none" stroke="black" d="M239.91,-295.95C251.91,-291.84 263.58,-286.63 274,-280 308.24,-258.23 334.81,-218.79 350.04,-192.01"/>
+<polygon fill="black" stroke="black" points="353.02,-193.86 354.77,-183.41 346.88,-190.48 353.02,-193.86"/>
 </g>
 <!-- schema -->
 <g id="node2" class="node">
 <title>schema</title>
-<polygon fill="none" stroke="black" points="190.38,-271.25 26.62,-271.25 26.62,-228.75 190.38,-228.75 190.38,-271.25"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-253.95" font-family="Times,serif" font-size="14.00">relation declarations</text>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-236.7" font-family="Times,serif" font-size="14.00">+ property tags</text>
+<polygon fill="none" stroke="black" points="218.88,-271.25 55.12,-271.25 55.12,-228.75 218.88,-228.75 218.88,-271.25"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-253.95" font-family="Times,serif" font-size="14.00">relation declarations</text>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-236.7" font-family="Times,serif" font-size="14.00">+ property tags</text>
 </g>
 <!-- schema&#45;&gt;engine -->
 <g id="edge2" class="edge">
 <title>schema&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M190.78,-229.98C199.76,-226.98 208.66,-223.66 217,-220 237.35,-211.07 258.56,-198.16 275.31,-186.98"/>
-<polygon fill="black" stroke="black" points="277.07,-190.02 283.37,-181.5 273.14,-184.23 277.07,-190.02"/>
+<path fill="none" stroke="black" d="M219.19,-236.79C237.57,-232.51 256.75,-227.01 274,-220 294.74,-211.58 316.11,-198.58 332.86,-187.22"/>
+<polygon fill="black" stroke="black" points="334.69,-190.21 340.91,-181.64 330.7,-184.46 334.69,-190.21"/>
 </g>
 <!-- facts -->
 <g id="node3" class="node">
 <title>facts</title>
-<polygon fill="none" stroke="black" points="188.5,-211 28.5,-211 28.5,-175 188.5,-175 188.5,-211"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-188.32" font-family="Times,serif" font-size="14.00">is&#45;a facts + 15 clues</text>
+<polygon fill="none" stroke="black" points="217,-211 57,-211 57,-175 217,-175 217,-211"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-188.32" font-family="Times,serif" font-size="14.00">is&#45;a facts + 15 clues</text>
 </g>
 <!-- facts&#45;&gt;engine -->
 <g id="edge3" class="edge">
 <title>facts&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M188.86,-181.37C207.92,-178.58 227.98,-175.64 246.08,-172.99"/>
-<polygon fill="black" stroke="black" points="246.48,-176.47 255.86,-171.55 245.46,-169.54 246.48,-176.47"/>
+<path fill="none" stroke="black" d="M217.19,-182.86C244.96,-179.3 275.74,-175.36 301.95,-172"/>
+<polygon fill="black" stroke="black" points="302.28,-175.49 311.76,-170.74 301.4,-168.54 302.28,-175.49"/>
 </g>
 <!-- rules -->
 <g id="node4" class="node">
 <title>rules</title>
-<polygon fill="none" stroke="black" points="217,-157.25 0,-157.25 0,-114.75 217,-114.75 217,-157.25"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-139.95" font-family="Times,serif" font-size="14.00">spatial rules</text>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-122.7" font-family="Times,serif" font-size="14.00">(co&#45;located, adjacent&#45;via, …)</text>
+<polygon fill="none" stroke="black" points="245.5,-157.25 28.5,-157.25 28.5,-114.75 245.5,-114.75 245.5,-157.25"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-139.95" font-family="Times,serif" font-size="14.00">spatial rules</text>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-122.7" font-family="Times,serif" font-size="14.00">(co&#45;located, adjacent&#45;via, …)</text>
 </g>
 <!-- rules&#45;&gt;engine -->
 <g id="edge4" class="edge">
 <title>rules&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M217.43,-151.27C227.1,-152.64 236.65,-153.99 245.72,-155.27"/>
-<polygon fill="black" stroke="black" points="245.02,-158.71 255.41,-156.64 246,-151.78 245.02,-158.71"/>
+<path fill="none" stroke="black" d="M245.9,-149.34C265.15,-151.72 284.6,-154.13 302.03,-156.28"/>
+<polygon fill="black" stroke="black" points="301.31,-159.72 311.66,-157.48 302.17,-152.77 301.31,-159.72"/>
 </g>
 <!-- guess -->
 <g id="node5" class="node">
 <title>guess</title>
-<polygon fill="none" stroke="black" points="184.75,-96.25 32.25,-96.25 32.25,-53.75 184.75,-53.75 184.75,-96.25"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-78.95" font-family="Times,serif" font-size="14.00">(hrule guess …)</text>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-61.7" font-family="Times,serif" font-size="14.00">+ (solve :hrules …)</text>
+<polygon fill="none" stroke="black" points="274,-96.25 0,-96.25 0,-53.75 274,-53.75 274,-96.25"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-78.95" font-family="Times,serif" font-size="14.00">(rule guess …), concluding (open …)</text>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-61.7" font-family="Times,serif" font-size="14.00">+ its activators (guess …)</text>
 </g>
 <!-- guess&#45;&gt;engine -->
 <g id="edge5" class="edge">
 <title>guess&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M185.1,-93.79C195.99,-97.36 206.92,-101.43 217,-106 237.73,-115.4 259.25,-129.02 276.08,-140.7"/>
-<polygon fill="black" stroke="black" points="274,-143.51 284.18,-146.43 278.04,-137.79 274,-143.51"/>
+<path fill="none" stroke="black" d="M248.52,-96.75C257.26,-99.51 265.85,-102.58 274,-106 295.13,-114.87 316.81,-128.58 333.64,-140.45"/>
+<polygon fill="black" stroke="black" points="331.57,-143.27 341.72,-146.29 335.67,-137.6 331.57,-143.27"/>
 </g>
 <!-- query -->
 <g id="node6" class="node">
 <title>query</title>
-<polygon fill="none" stroke="black" points="165.25,-36 45.75,-36 45.75,0 171.25,0 171.25,-30 165.25,-36"/>
-<polyline fill="none" stroke="black" points="165.25,-36 165.25,-30"/>
-<polyline fill="none" stroke="black" points="171.25,-30 165.25,-30"/>
-<text xml:space="preserve" text-anchor="middle" x="108.5" y="-13.32" font-family="Times,serif" font-size="14.00">(query :goal …)</text>
+<polygon fill="none" stroke="black" points="193.75,-36 74.25,-36 74.25,0 199.75,0 199.75,-30 193.75,-36"/>
+<polyline fill="none" stroke="black" points="193.75,-36 193.75,-30"/>
+<polyline fill="none" stroke="black" points="199.75,-30 193.75,-30"/>
+<text xml:space="preserve" text-anchor="middle" x="137" y="-13.32" font-family="Times,serif" font-size="14.00">(query :goal …)</text>
 </g>
 <!-- query&#45;&gt;engine -->
 <g id="edge6" class="edge">
 <title>query&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M171.61,-26.13C187.3,-30.13 203.51,-36.09 217,-45 251.6,-67.84 278.23,-108.53 293.36,-135.89"/>
-<polygon fill="black" stroke="black" points="290.26,-137.5 298.06,-144.67 296.43,-134.2 290.26,-137.5"/>
+<path fill="none" stroke="black" d="M200.04,-20.87C224.56,-24.33 252.05,-31.29 274,-45 309.35,-67.09 335.95,-108.33 350.85,-135.98"/>
+<polygon fill="black" stroke="black" points="347.74,-137.59 355.46,-144.85 353.95,-134.36 347.74,-137.59"/>
 </g>
 <!-- answer -->
 <g id="node8" class="node">
 <title>answer</title>
-<polygon fill="none" stroke="black" points="550.08,-185.25 399.83,-185.25 399.83,-142.75 556.08,-142.75 556.08,-179.25 550.08,-185.25"/>
-<polyline fill="none" stroke="black" points="550.08,-185.25 550.08,-179.25"/>
-<polyline fill="none" stroke="black" points="556.08,-179.25 550.08,-179.25"/>
-<text xml:space="preserve" text-anchor="middle" x="477.96" y="-167.95" font-family="Times,serif" font-size="14.00">Norwegian ↔ water</text>
-<text xml:space="preserve" text-anchor="middle" x="477.96" y="-150.7" font-family="Times,serif" font-size="14.00">Japanese ↔ zebra</text>
+<polygon fill="none" stroke="black" points="607.08,-185.25 456.83,-185.25 456.83,-142.75 613.08,-142.75 613.08,-179.25 607.08,-185.25"/>
+<polyline fill="none" stroke="black" points="607.08,-185.25 607.08,-179.25"/>
+<polyline fill="none" stroke="black" points="613.08,-179.25 607.08,-179.25"/>
+<text xml:space="preserve" text-anchor="middle" x="534.96" y="-167.95" font-family="Times,serif" font-size="14.00">Norwegian ↔ water</text>
+<text xml:space="preserve" text-anchor="middle" x="534.96" y="-150.7" font-family="Times,serif" font-size="14.00">Japanese ↔ zebra</text>
 </g>
 <!-- engine&#45;&gt;answer -->
 <g id="edge7" class="edge">
 <title>engine&#45;&gt;answer</title>
-<path fill="none" stroke="black" d="M364.28,-164C371.93,-164 379.95,-164 388.04,-164"/>
-<polygon fill="black" stroke="black" points="387.97,-167.5 397.97,-164 387.97,-160.5 387.97,-167.5"/>
+<path fill="none" stroke="black" d="M421.28,-164C428.93,-164 436.95,-164 445.04,-164"/>
+<polygon fill="black" stroke="black" points="444.97,-167.5 454.97,-164 444.97,-160.5 444.97,-167.5"/>
 </g>
 </g>
 </svg>
-<!-- source sha256: f1002e27feeef1ee169a718c9fec3fc11a74160c80df9ffdb67ac49b73f19b99 -->
+<!-- source sha256: 19267ad8fef070483f4158f752ce3df86adddc89472620343ff638e9c6c5d5e3 -->

@@ -1,6 +1,6 @@
 # Q-M1f.126 — A relation parameter bound to `absent`, `false` or `eq` is refused where the form it heads would be
 
-`absent`, `false` and `eq` are names, so an activator may bind a rule's or an hrule's relation parameter to one:
+`absent`, `false` and `eq` are names, so an activator may bind a rule's relation parameter to one:
 `(mk absent)`, `(mk false)`, `(mk eq)`. Where the loader sees that binding, a written activator or one a rule
 derives, the parameter is held to what the grammar refuses written out: it is refused for each premise or conclusion
 it heads that the grammar would refuse with the word in its place, `(absent ?x)` at any arity, `(false ?x)` at one

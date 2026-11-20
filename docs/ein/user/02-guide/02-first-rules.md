@@ -140,7 +140,7 @@ the real puzzle.
 (transitive co-located)        ; it forms equivalence classes across attributes
 (co-located Alice Tea :source "(1) Alice drinks Tea")
 (co-located Alice Cat :source "(2) Alice has the Cat")
-;; … with the two rules, the is-a tree, a `guess` hrule and the query
+;; … with the two rules, the is-a tree, a `guess` rule that concludes (open …) and the query
 ```
 
 **English:** "Alice drinks tea and Alice has the cat, so the tea and the cat

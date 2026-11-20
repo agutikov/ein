@@ -421,7 +421,7 @@ answer asks a query of no variable, whose `:goal-text` the read-out prints when 
 1 over. The word *need* does not say whether the answer is 4 boxes, one apple left out, or 5, the last box part full.
 In `words`, a division for *need* that leaves something over derives `(left-over QUANTITY 4 1)` and stops.
 [`readings.ein`](../../../../examples/word_problems/readings.ein) holds the two readings as facts, and which one a
-problem means is a hypothesis: the hrule `read-need` proposes `(reads-as need R)` for each, and a rule answers under
+problem means is a hypothesis: the rule `read-need` concludes `(open (reads-as need R))` for each, and a rule answers under
 each reading. **A reading is always chosen**: the obligation `reading-owed` makes a state that asks the question and
 reads *need* no way owe one, so root is not in R and every state of R names the reading its answer rests on
 ([Q-M1f.332](../../../decisions/corpus/Q-M1f.332-a-word-with-two-readings-always-has-one-chosen.md);
@@ -435,14 +435,14 @@ reads *need* no way owe one, so root is not in R and every state of R names the 
   :assert (open reads-as)
   :why    "a reading of need is owed: the question asks how many {?c} are needed for [{?q}], and the problem does not say what need means")
 
-(hrule read-need ()
+(rule read-need ()
   :match  (and (wanted (needed ?c ?k ?q)) (reading-of need ?m))
-  :assert (reads-as need ?m)
+  :assert (open (reads-as need ?m))
   :why    "suppose need is read as {?m}")
 ```
 
-A problem that imports `readings` names the hrule itself, `(solve :hrules (read-need))`, which a module cannot do for
-it. [`boxes13.ein`](../../../../examples/word_problems/boxes13.ein) answers with two states and two answers, each
+`read-need` has no parameter, so it needs no activator: a problem that imports `readings` gets it with the module,
+whole, and writes nothing more. [`boxes13.ein`](../../../../examples/word_problems/boxes13.ein) answers with two states and two answers, each
 named by its reading:
 
 ```text
@@ -559,7 +559,7 @@ $x \times 4 = 3285$ and $x + x = 1357$ with no answer fact: *no walk ended well*
 
 ### An equation, solved by search
 
-With $x$'s digits as hypotheses, the same equations are a search. An hrule proposes every digit at every place,
+With $x$'s digits as hypotheses, the same equations are a search. A rule proposes every digit at every place,
 `total-owed` from `std.algebra` makes a state with a place unset owe a digit, and `functional` says a place has one:
 
 ```lisp
@@ -567,9 +567,9 @@ With $x$'s digits as hypotheses, the same equations are a search. An hrule propo
 (total-owed dig is-a)   ; every place owes a digit: a state with a place unset is no answer
 (functional dig)        ; and none has two
 
-(hrule guess-digit ()
+(rule guess-digit ()
   :match  (and (is-a ?p Place) (is-a ?d Digit))
-  :assert (dig ?p ?d)
+  :assert (open (dig ?p ?d))
   :why    "suppose the digit of x at {?p} is {?d}")
 
 (rule col-wrong ()
@@ -691,9 +691,9 @@ it are known:
 (functional val)        ; and has one
 (injective val)         ; and no two letters share one
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?l Letter) (is-a ?d Digit))
-  :assert (val ?l ?d)
+  :assert (open (val ?l ?d))
   :why    "suppose {?l} = {?d}")
 
 (rule add-column ()
@@ -826,6 +826,6 @@ What they show about writing such a thing in Ein:
   calls, and how a malformed number is flagged.
 - [Queries and claims](../03-syntax-and-semantics/12-query.md): `:goal-text`, `:expect`, and the region claim.
 - [Hypotheses](../03-syntax-and-semantics/09-hypotheses.md) and [obligations](../03-syntax-and-semantics/08-obligations.md): the
-  hrule and `(open R)` behind the readings and the searches.
+  rules that conclude `(open F)` and `(open R)` behind the readings and the searches.
 - [The read-out](../04-reference/08-read-out.md): every row `ein solve` prints.
 - [The command line](../04-reference/05-cli.md): `--single`, `--trace` and `ein test`.

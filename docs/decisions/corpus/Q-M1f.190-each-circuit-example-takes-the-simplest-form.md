@@ -2,8 +2,8 @@
 
 The programs of `examples/binary_logic/` are each written in the simplest form under which their answer holds:
 
-- **a truth table by search** proposes its candidates from the obligations rung alone, so the program has no hrule
-  and no `(solve …)` form: `std.bool.inputs`' obligation says an input has exactly one value, and R is every total
+- **a truth table by search** proposes its candidates from the obligations alone, so the program has no hypothesis
+  rule and no `(solve …)` form: `std.bool.inputs`' obligation says an input has exactly one value, and R is every total
   assignment (`truth_table.ein`);
 - **Post's criterion** is checked on seven written sets of functions, a set complete by a rule over the class facts
   `std.bool.props` derives, and inside a class by `forall` over its members (`post.ein`);

@@ -7,9 +7,10 @@ position holds a name where the program shows one there:
 
 - a written fact, at any depth and under a `(not …)`;
 - a `(relation …)` declaration, matched as a fact;
-- a rule's or an hrule's conclusion that writes a name, or a variable that can hold one, to a fixpoint;
-- the rule's own activator, or an hrule's in `(solve :hrules …)`;
-- a declared relation the hypotheses are taken from: no hrule declared, the `(solve …)` lists leaving it in, and
+- a rule's conclusion that writes a name, a hypothesis `(open F)` among them, or a variable that can hold one, to
+  a fixpoint;
+- the rule's own written activator;
+- a declared relation the hypotheses are taken from: no rule that concludes a hypothesis declared, the `(solve …)` lists leaving it in, and
   nothing writing the closure marker;
 - a guard that alone binds the variable.
 

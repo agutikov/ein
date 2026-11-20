@@ -242,7 +242,7 @@ changes the drawing and nothing else.
 
 | view | what it draws or lists |
 |---|---|
-| `ein render program FILE` | the program as written, in three parts: its knowledge base as one digraph, drawn as `ein render kb` draws one; a digraph per rule, hrule and macro; the query ([Q-M1f.420](../../../decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md)) |
+| `ein render program FILE` | the program as written, in three parts: its knowledge base as one digraph, drawn as `ein render kb` draws one; a digraph per rule and macro; the query ([Q-M1f.420](../../../decisions/cli/Q-M1f.420-ein-render-program-draws-the-programs-knowledge.md)) |
 | `ein render rules FILE`, `rule FILE --name R` | one digraph per rule, or one rule by name |
 | `ein render constraints FILE` | the facts about relations: every fact root holds at its fixpoint with a relation of the program under an argument arrow, with what it points at ([Q-M1f.530](../../../decisions/cli/Q-M1f.530-ein-render-constraints-draws-roots-facts-about.md)) |
 | `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE` that loads to its state, so a solution draws the way root does. `--goal GOAL`, or `--query N` for the program's `N`-th query, draws the slice of a goal instead: the facts of that knowledge base that answer it, with what they point at ([Q-M1f.529](../../../decisions/cli/Q-M1f.529-ein-render-kb-draws-the-slice-of-a-goal.md)) |
@@ -275,7 +275,7 @@ Every command reads a program by one path, `.ein` or `.einb` alike, and with it 
 So a file that cannot be read, or is not UTF-8, is refused with the same line by `solve`, `saturate`, `oracle`,
 `test`, each view and `kb save`, at each command's load-error exit; `ein test` counts the file an `ERROR` and goes on
 to the next ([`07-diagnostics.md`](07-diagnostics.md)). `--no-require-why`, on every command that loads a program, loads
-one whose relations, rules, hrules or macros lack a `:why` ([`06-config.md` § 3.4](06-config.md)).
+one whose relations, rules or macros lack a `:why` ([`06-config.md` § 3.4](06-config.md)).
 
 ---
 

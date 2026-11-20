@@ -7,4 +7,4 @@ proposed.
 
 **Why.** A rule's conclusion says which: the relation it owes, or the fact it supposes.
 
-**Held by.** `ein_ir::from_ir`'s `validate_open`; `ein_infer::hrule`, which reads a rule's `(open F)` conjuncts.
+**Held by.** `ein_ir::from_ir`'s `validate_open`; `ein_infer::hypothesis_rules`, which reads a rule's `(open F)` conjuncts.

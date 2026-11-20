@@ -15,7 +15,7 @@ digraph ein_infer {
 
   subgraph cluster_worlds {
     label="the worlds: the lattice of commitments"; labeljust=l; fontname="Helvetica"; fontsize=10; color=gray50;
-    hyp     [label="hypgen.rs, open.rs\nhrule.rs, oblgen.rs\nthe writers: H, their union;\na state's open facts"];
+    hyp     [label="hypgen.rs, open.rs\nhypothesis_rules.rs, oblgen.rs\nthe writers: H, their union;\na state's open facts"];
     region  [label="region.rs\nprepare; the node function;\nfan_out; the cube"];
     explore [label="explore.rs\na question to its route"];
     routes  [label="downset.rs, states.rs, tree.rs,\ntree_classes.rs\nknown_dead.rs, order.rs, transversal.rs"];

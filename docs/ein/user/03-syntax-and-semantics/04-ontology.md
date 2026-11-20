@@ -230,7 +230,7 @@ as it declares any relation
 |---|---|
 | `relation` | a relation's declaration, `(relation co-located T T :why "…")`, and the facts that store it |
 | `rule` | a rule, `(rule NAME (PARAMS) :match … :assert … :why "…")` |
-| `hrule` | a rule that proposes a hypothesis rather than concluding a fact ([hypotheses](09-hypotheses.md)) |
+| `open` | a hypothesis, `(open F)`, which a rule concludes to propose `F` rather than conclude it, or what a state owes, `(open R)` ([hypotheses](09-hypotheses.md)) |
 | `macro` | a pattern abbreviation, expanded where it is called ([macros](11-macros.md)) |
 | `not` | a stored negation, `(not F)`, a fact whose one argument is the fact it denies, and a contradiction beside `F` where a rule says so, `std.contradiction`'s where the program imports it ([constraints](06-constraints.md)) |
 | `false` | `(false)`, a fact of no argument and no truth value: a rule concludes it, and the rule every program gets, `std.core`'s, reads it and ends the state that holds it ([constraints](06-constraints.md)) |

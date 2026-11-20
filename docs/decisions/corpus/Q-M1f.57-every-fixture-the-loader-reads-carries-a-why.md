@@ -1,6 +1,6 @@
 # Q-M1f.57 — Every fixture the loader reads carries a `:why`
 
-Every `.ein` file of the project that the loader reads carries a `:why` on each relation, rule, hrule and macro it
+Every `.ein` file of the project that the loader reads carries a `:why` on each relation, rule and macro it
 declares, as every program must under the default options. A fixture the loader refuses carries them too, each
 `:why` on its form's last line, so that no line or column its refusal prints moves. A fixture refused at the parse
 carries none: the parse stops before the loader reads a `:why`, and one written there would be read by nothing and

@@ -1,15 +1,11 @@
 @startebnf
 Solve = "(" , "solve" , SolveClauses , ")" ;
 SolveClause =
-    ":hrules" , Hrules
-  | ":hypothesis-relations" , NameList
+    ":hypothesis-relations" , NameList
   | ":no-hypothesis" , NameList
   | ":no-search"
   | ":expect" , RegionClaim ;
 SolveClauses = { SolveClause } ;
-Hrules = "(" , ")" | "(" , Name , HruleItems , ")" ;
-HruleItem = Name | NameListPlus ;
-HruleItems = { HruleItem } ;
 RegionClaim = "(" , "region" , RegionItems , ")" | "(" , "false" , ")" ;
 RegionItem = Model | "(" , "merged" , Model , MergedFrom , ")" | "(" , "owing" , Models , ")" ;
 RegionItems = { RegionItem } ;

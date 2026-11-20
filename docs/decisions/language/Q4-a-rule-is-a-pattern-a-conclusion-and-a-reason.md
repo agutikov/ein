@@ -2,7 +2,8 @@
 
 A rule is a form of the language, `(rule NAME (PARAMS) :match PATTERN :assert CONCLUSION :why "TEMPLATE")`: a
 pattern over the knowledge base, a conclusion to state where it matches, and the reason a firing gives, in English.
-An hrule has the same form and proposes its conclusion as a hypothesis. Every rule the engine fires is written so,
+A rule that concludes `(open F)` proposes `F` as a hypothesis
+([Q-M1f.567](../hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)). Every rule the engine fires is written so,
 by a program or by a stdlib module; a firing's premises are the facts its pattern matched, recorded with what it
 derives.
 

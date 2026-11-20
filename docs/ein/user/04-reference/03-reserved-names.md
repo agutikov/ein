@@ -32,7 +32,7 @@ program can be written without reading anything else.
 | state a fact | `(R a b)`, any head that is no declarator | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
 | deny a fact | `(not (R a b))`, a stored negation | [§ Rule-body primitives](#rule-body-primitives) |
 | declare a saturation rule | `(rule N (?p…) :match … :assert … :why "…")` | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
-| declare a hypothesis rule | `(hrule N (?p…) :match … :assert … :why "…")` | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
+| declare a hypothesis rule | `(rule N (?p…) :match … :assert (open F) :why "…")`, activated by `(N a…)` | [§ Hypothesis and query control](#hypothesis-and-query-control) |
 | ask about the answer | `(query :goal … [:goal-text …])` | [§ Top-level declarators](#top-level-declarators--the-closed-set) |
 | set a solver flag | `(config :flag v)` | [`06-config.md`](06-config.md) |
 | import a standard-library module | `(import std.X :symbols (…))` | [`02-syntax.md` § Import](02-syntax.md#import) |
@@ -54,18 +54,17 @@ program can be written without reading anything else.
 ## Top-level declarators — the closed set
 
 A program is a **flat sequence of forms**, each classified by its **head**: a head in this table is a declarator, and
-**any other head is a fact**. The set is **closed**. `rule`, `hrule`, `query`, `solve`, `config`, `trace`, `macro`
-and `import` are reserved words, never a name, so a malformed declarator, `(query)` with no clause, is a parse error;
+**any other head is a fact**. The set is **closed**. `rule`, `query`, `solve`, `config`, `trace`, `macro` and
+`import` are reserved words, never a name, so a malformed declarator, `(query)` with no clause, is a parse error;
 `relation` is a position word, a name wherever a name goes, so that a rule can match `(relation ?R ?A ?B)`, and its
 malformed form is a parse error too.
 
 | name | form | meaning |
 |---|---|---|
 | `relation` | `(relation R [A B …] :why "…")` | declare a relation and its signature, a name and **zero or more** slot labels, each an ordinary atom; the declaration is also stored as the fact `(relation R A B …)` and the membership fact `(relation R)` ([what the signature means](02-syntax.md#what-the-signature-means--labels-for-rules-a-shape-for-the-engine)) |
-| `rule` | `(rule N (?p…) :match … :assert … :why "…")` | a saturation rule |
-| `hrule` | `(hrule N (?p…) :match … :assert … :why "…")` | a hypothesis rule: it proposes what may be guessed, and never fires during saturation |
+| `rule` | `(rule N (?p…) :match … :assert … :why "…")` | a rule: a saturation rule, and where its `:assert` concludes `(open F)`, a hypothesis rule, which proposes what may be guessed and whose `(open F)` no saturation fires ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)) |
 | `query` | `(query :goal … …)` | a question about the answer |
-| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:no-search] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region |
+| `solve` | `(solve [:hypothesis-relations …] [:no-hypothesis …] [:no-search] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region |
 | `config` | `(config [:flag v]*)` | the solver's flags |
 | `macro` | `(macro N (?p…) BODY :why "…")` | a pattern alias: a call `(N a…)` in a rule's clause or a query's `:goal` is replaced by BODY at load. A fact headed by `N`, or holding such a form, is refused at load, and so is a relation declared as `N` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | bring module `M`, a dotted name such as `std.macro`, into the program, whole ([`02-syntax.md` § Import](02-syntax.md#import)) |
@@ -76,7 +75,7 @@ malformed form is a parse error too.
 ([`02-syntax.md` § Where a fact came from](02-syntax.md#where-a-fact-came-from--its-provenance-annotation)). A head like
 `(facts …)` is a plain fact of the relation `facts`.
 
-**Declared names are the program's, with one guard**: a `(rule …)`, `(hrule …)`, `(relation …)` or `(macro …)` may
+**Declared names are the program's, with one guard**: a `(rule …)`, `(relation …)` or `(macro …)` may
 not *bind* a name that shadows the language's own vocabulary, and an import's `:as` takes the same guard. The
 vocabulary is the connectives `and`, `or` and `absent`, `open`, the kernel's relation of what a state owes and of
 its hypotheses, the computed relations `eq` and `neq`,
@@ -84,7 +83,7 @@ its hypotheses, the computed relations `eq` and `neq`,
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). The engine's three writeback rule names,
 `<forced-positive>`, `<monotonic-unconditional>` and `<lookahead-dies-immediately>`, are refused wherever a program
 writes them. The guard is about *binding* a name: a fact may still carry a reserved head. **`false` and `not` are the
-standard library's names**, which a relation, a rule, an hrule and an alias may bind and a macro may not: `(false)`
+standard library's names**, which a relation, a rule and an alias may bind and a macro may not: `(false)`
 is the fact `std.core`'s rule reads, and `(not X)` the fact `std.contradiction`'s rules read beside `X`
 ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)), so
 `(relation not Claim)` declares the negation of a claim, and `std.core` may declare either. Each is a position word,
@@ -103,7 +102,7 @@ Two sets answer two questions, and neither contains the other:
 | | the question it answers | its members | how it fails |
 |---|---|---|---|
 | the vocabulary | what may a declarator **not bind**? | `__closed__` `absent` `and` `eq` `neq` `open` `or` `relation` | a **load** error, at the declaration |
-| the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever a name goes |
+| the reserved words ([`01-grammar.md` § 1](01-grammar.md#1-lexical-grammar)) | what may never be a **name**? | `and` `or` `neq` `rule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever a name goes |
 
 Three names are in both, `and`, `neq` and `or`. **`relation` is the one that keeps them apart**: it must read as a name, because `(relation ?R
 ?A ?B)` is a pattern rules match, so it is a position word, a token of its own that the grammar takes wherever a name
@@ -248,16 +247,16 @@ fact a state could hold**
 | name | form | meaning |
 |---|---|---|
 | `__closed__` | `(__closed__ R)` | no fact of R is proposed as a hypothesis: the held extent of R is fixed, and R is a **closed relation**. Written by a program, or derived by `std.closure` or a module's closing rule; the engine infers it for no relation. Used as a relation or as an argument, never bound, and never a guessable atom, one the blind enumerator proposes about. It configures the blind enumerator, and no relation root holds an `open` fact of is closed ([below](#the-mechanisms-and-each-pair)) |
-| `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator guesses facts of the listed relations only; beside the `open` facts root holds, the list names exactly their relations, or the program is refused at load. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are |
+| `:hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | the blind enumerator guesses facts of the listed relations only; beside the `open` facts root holds, the list names exactly their relations, or the program is refused at load. Every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name is |
 | `:no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual: the blind enumerator never guesses a fact of the listed relations, while saturation rules still derive their facts; beside the `open` facts root holds, the list names none of their relations, or the program is refused at load |
 | `:no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, nothing is proposed whatever else the program declares, so R is $\lbrace \emptyset \rbrace$ where root is alive and discharged and empty otherwise. The way to say *judge root alone* |
 | `:expect` on a query | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be: the query's own claim, checked by the engine, and `ein solve` exits 1 when it is false ([`02-syntax.md` § Query](02-syntax.md#query)) |
 | `:expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region: R's states, `(merged …)` states, `(owing …)`, written only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error; `model` is a name ([`02-syntax.md` § Solve](02-syntax.md#solve)) |
 
 **A `(query …)` takes four keywords**, `:goal`, `:goal-text`, `:over` and `:expect`, and any other is refused at the
-parse: the dunder above is a fact, not a keyword. `(solve …)` takes `:hrules`, `:hypothesis-relations`,
-`:no-hypothesis`, `:no-search` and `:expect`, and on a query each of the first four is a parse error whose note names
-`(solve …)`. A keyword that loaded and did nothing would be a silent no-op, which is not survivable once a keyword can
+parse: the dunder above is a fact, not a keyword. `(solve …)` takes `:hypothesis-relations`, `:no-hypothesis`,
+`:no-search` and `:expect`, and on a query each of the first three is a parse error whose note names `(solve …)`.
+`:hrules` is no keyword of any form ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)). A keyword that loaded and did nothing would be a silent no-op, which is not survivable once a keyword can
 carry a claim.
 
 ### The mechanisms, and each pair
@@ -265,7 +264,7 @@ carry a claim.
 What a commitment may be about is steered by declarations. Three writers write a hypothesis, `(open F)`, and H is
 the union of what they write at root
 ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)): the rules that
-conclude one, an `(hrule …)` among them, with the `(open F)` facts the program writes; where an obligation is
+conclude one, with the `(open F)` facts the program writes; where an obligation is
 **activated** at root, the obligations, which propose what would pay the debts root owes, so a root that owes nothing
 under an activated obligation proposes nothing from it; and, only where root holds no `open` fact and activates no
 obligation, the blind enumerator
@@ -281,7 +280,7 @@ mechanism means is [`../03-syntax-and-semantics/09-hypotheses.md`](../03-syntax-
 
 | | mechanism | what it does | read by |
 |---|---|---|---|
-| H | a rule that concludes `(open F)`, activated as any rule is; an `(hrule …)`, activated by `(solve :hrules …)` (one with no parameter always); an `(open F)` the program writes | generates, beside O | itself |
+| H | a rule that concludes `(open F)`, activated as any rule is, by a fact of its name (one with no parameter always); an `(open F)` the program writes | generates, beside O | itself |
 | O | an obligation rule, `:assert (open ?R)`, activated by a fact such as `(total-owed R isa)` | two roles: a state that owes is not in R, whatever generated it; and, activated at root, it proposes facts of the owed relation, beside H | the discharge test; itself |
 | B | the blind enumerator | generates where root holds no `open` fact and activates no obligation | — |
 | HR | `(solve :hypothesis-relations …)` | B's whitelist, *speculate only these*; `()` names none | B; the read-out's `outside` row |
@@ -309,7 +308,7 @@ owes under it, and one that owes nothing at root writes no `open` fact there and
 closure and a derived activator are read where they are derived, at root's fixpoint.
 
 **`:no-search` beside each**: with O it is silent, the obligation judging root alone, which is its use, and with C
-silent too; with H one `note:`, *the hrule proposes no candidate*, and with HR or NH one, *the list filters no
+silent too; with H one `note:`, *rule 'guess' proposes no candidate*, and with HR or NH one, *the list filters no
 candidate*, which replace the notes above. It relaxes no conflict: the `open` facts root holds are written beside it,
 so every conflict above stands beside it
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)).

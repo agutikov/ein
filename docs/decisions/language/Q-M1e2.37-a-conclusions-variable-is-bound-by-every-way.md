@@ -1,6 +1,6 @@
 # Q-M1e2.37 — A conclusion's variable is bound by every way of satisfying the `:match`
 
-Every variable a rule's or an hrule's conclusion writes must be bound by a premise or a parameter on every way of
+Every variable a rule's conclusion writes, a hypothesis's `(open F)` among them, must be bound by a premise or a parameter on every way of
 satisfying its `:match`, each disjunct of an `(or …)` included. A conclusion variable nothing binds, `(rule r ()
 :match (p ?x) :assert (q ?y))`, is refused at load, by every command, one line a variable. What it would mean, the
 conclusion of every name, is written explicitly: a premise of any relation that binds the variable over the objects

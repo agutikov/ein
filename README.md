@@ -19,8 +19,8 @@ with its language, its standard library and its documentation.
   is judged once, at the closure's fixpoint. A relation property such as `(bijective pet-loc)` is a fact, and the
   standard library's rules give it meaning.
 - **Saturation** fires the rules, semi-naively, to a least fixpoint. A fact never changes and is never removed.
-- **Hypotheses** are the candidate facts the program leaves undecided: proposed by the program's `(hrule …)`, or
-  read off what its obligations owe, or enumerated blind. A **commitment** is a set of them; its **state** is what
+- **Hypotheses** are the candidate facts the program leaves undecided: proposed by a rule that concludes `(open F)`,
+  or read off what its obligations owe, or enumerated blind. A **commitment** is a set of them; its **state** is what
   saturation derives from root and the commitment.
 - **The answer is R**: the commitments whose state is alive (no contradiction) and discharged (owes nothing),
   counted in states (`k_s`) and in commitments (`k_c`). Each question about R does the least work it needs, and
@@ -179,16 +179,16 @@ A `.ein` file is a **flat** sequence of S-expression forms, each classified by i
 | head | role |
 |---|---|
 | `relation` | declare a relation, a label for each of its arguments, and the `:why` that reads the declaration |
-| `rule` / `hrule` | a saturation rule / a hypothesis rule: `:match` → `:assert`, with a `:why` |
+| `rule` | a rule: `:match` → `:assert`, with a `:why`; one that concludes `(open F)` is a hypothesis rule |
 | `query` | a question about the answer: a `:goal`, a `:goal-text` template, and with `:expect` what the answer should be |
-| `solve` | the problem's lattice, stated once (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`, `:no-search`), and the expected region |
+| `solve` | the problem's lattice, stated once (`:hypothesis-relations`, `:no-hypothesis`, `:no-search`), and the expected region |
 | `config` | the two solver flags |
 | `import` / `macro` | bring a module into the program / a pattern alias expanded at load |
 | `trace` | a derivation log the engine writes |
 | *anything else* | a **fact**, `(pet-loc Zebra House-5)`, or its stored negation, `(not …)` |
 
 Ein has no numbers, no ranges and no types of its own: `1` and `01` are two names, and arithmetic is a theory in the
-standard library. A `:why` is required on every relation, rule, hrule and macro. The grammar is
+standard library. A `:why` is required on every relation, rule and macro. The grammar is
 [`01-grammar.md`](docs/ein/user/04-reference/01-grammar.md), and the names the language reserves are
 [`03-reserved-names.md`](docs/ein/user/04-reference/03-reserved-names.md).
 
