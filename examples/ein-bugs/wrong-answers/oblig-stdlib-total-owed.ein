@@ -1,44 +1,15 @@
 ;;; `oblig-fresh-name.ein` on the shipped obligation rule.
 ;;;
+;;; Ann owes a Food by `total-owed`, Soup the only one at root, and `special`
+;;; makes Z a Food once anyone likes anything; the obligation's trigger and its
+;;; guard both read `is-a`.
 ;;;
-;;; ── What this program is ───────────────────────────────────────────────
-;;;
-;;; std.algebra's `total-owed`, the rule `(bijective …)` fans out to: Ann
-;;; owes a Food she likes. Soup is the only Food at root and Ann may not like
-;;; it; `special` names `Z` in its `:assert` and makes it a Food once anyone
-;;; likes anything. A rung that reads root's `(is-a ?b Food)` scan finds Soup
-;;; alone, so its H is `(likes Ann Soup)`, dead alone.
-;;;
-;;; `total-owed`'s trigger and its domain both read `is-a`, and `special`
-;;; derives `is-a` from a commitment, so the static check flags the program:
-;;; an `obligation-trigger` site on `is-a` (no new debtor arises here, the
-;;; only derived `is-a` being `(is-a Z Food)`). `no-soup` reads no `absent`:
-;;; no refutation here rests on one.
-;;;
-;;;
-;;; ── What is said of it ─────────────────────────────────────────────────
-;;;
-;;; `{(likes Ann Z)}` saturates to `(is-a Z Food)`, which witnesses Ann's
-;;; debt. A guard over a relation in D declines the obligations rung
-;;; (Q-M1e2.10), here `is-a`, so the blind enumerator, which is untyped
-;;; (Q-M1e.12), builds H: `likes` over Ann, Soup and Z. The control,
-;;; `oblig-stdlib-total-owed-declared.ein`, declines with it.
-;;;
-;;; The program is flagged, so the cube answers it, and nothing is claimed of
-;;; its answer (Q-M1f.564). It states an `:expect`, which `ein test FILE`
-;;; checks for whoever asks; no suite of the project does.
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
-;;;
+;;; The obligation's guard reads `is-a`, which a rule derives once anyone likes
+;;; anything, a relation a commitment can change: the obligation writes what its
+;;; guard gives at root, as any obligation does, and the static check flags the
+;;; program by an `obligation-guard` site (Q-M1f.579). Nothing is claimed of its
+;;; answer: the `:expect` below states what the program was once held to, and no
+;;; run of the corpus checks it.
 
 (import std.algebra :symbols (total-owed))
 
@@ -62,9 +33,7 @@
 
 (solve
   :no-hypothesis (is-a)
-  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
-  ;; the blind enumerator's R, the rung declined (Q-M1e2.10 (a)), which the
-  ;; -declared control answers too.
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
   :expect (region
             ;; state 1 of 16 — 1 candidate · minimal · from {(likes Ann Z)}
             (model (likes Ann Z))

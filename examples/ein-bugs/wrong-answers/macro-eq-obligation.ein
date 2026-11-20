@@ -5,7 +5,7 @@
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; `app`'s body is `(?R ?a)`, so `(app eq ?x)` expands to `(eq ?x)`. `o`
-;;; asserts `(open)`, so it is an obligation, compiled by the pass that reads what
+;;; asserts `(open s)`, so it is an obligation, compiled by the pass that reads what
 ;;; a quiescent state owes, which a saturation never runs.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
@@ -30,5 +30,5 @@
 (macro app (?R ?a) (?R ?a) :why "{?R} holds of {?a}")
 (rule o ()
   :match  (and (a ?x) (app eq ?x))
-  :assert (open)
+  :assert (open s)
   :why "{?x} is an a that equals, so the state owes")

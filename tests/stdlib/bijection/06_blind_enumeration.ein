@@ -1,22 +1,25 @@
-;;; `std.bijection/bijective-setup` — the fan-out **with the blind enumerator
+;;; `std.bijection`'s activators — the fan-out **with the blind enumerator
 ;;; left on**, which is what every other program in this directory turns off.
 ;;;
 ;;; ── Why this file exists ───────────────────────────────────────────────────
 ;;;
-;;; `bijective-setup` derives two obligation activators beside its others —
-;;; `(total-owed R isa)` and `(surjective-owed R isa)` — and an activator fact
-;;; is a **stored** fact. The blind enumerator builds candidates from every
-;;; relation carrying a `(relation …)` signature, so the question "could a run
-;;; start guessing about the obligation activators themselves" is a real one,
-;;; and the answer must not be an argument about signatures. It is this file:
-;;; the enumerator runs unscoped, and `ein-infer/tests/obligation_reports.rs`
-;;; asserts that no `hyp` event it emits names `total-owed`, `surjective-owed`,
-;;; `slot-owed-room` or `slot-owed-fill`.
+;;; The blind enumerator builds candidates from every relation carrying a
+;;; `(relation …)` signature, over the program's names, so the question "could
+;;; a run start guessing about the library's rules themselves" is a real one,
+;;; and the answer must not be an argument about names. It is this file: the
+;;; four obligation rules of the library are in the program, `total-owed` and
+;;; `surjective-owed` from `std.algebra`, `slot-owed-room` and `slot-owed-fill`
+;;; from `std.slots`, each imported whole, the enumerator runs unscoped, and
+;;; `ein-infer/tests/obligation_reports.rs` asserts that no `hyp` event it
+;;; emits names any of them, as a fact's relation or as an argument.
 ;;;
-;;; The six activators that were already there — `total`, `surjective`,
-;;; `domain-elimination`, `range-elimination`, `functional-negative`,
-;;; `injective-negative` — are in exactly the same position and were never
-;;; checked either. They are covered here too, for free.
+;;; The enumerator runs only where root holds no `open` fact and no obligation
+;;; is activated (Q-M1f.576), so the file activates none: `bijective-setup`'s
+;;; activators are written by hand, every one but `(total-owed seats is-a)` and
+;;; `(surjective-owed seats is-a)`, which would activate an obligation. The six
+;;; activators that are there — `total`, `surjective`, `domain-elimination`,
+;;; `range-elimination`, `functional-negative`, `injective-negative` — are
+;;; covered by the same check.
 ;;;
 ;;; ── The puzzle ─────────────────────────────────────────────────────────────
 ;;;
@@ -24,42 +27,8 @@
 ;;; it without a single hypothesis: `functional-negative` and
 ;;; `injective-negative` write the two negatives Ann's chair implies, and
 ;;; `domain-elimination` then forces Bob into the chair that is left. So the
-;;; verdict is a `Solution` at root — and the enumerator still ran, because
-;;; `complete()` is what asks it whether anything is left to guess.
-;;;
-;;; That is the shape this check needs: a program where the enumerator is
-;;; *consulted* about a KB that holds obligation activators, rather than one
-;;; where a search actually happens. A search would work too and cost more.
-;;;
-;;; ── Why there is a second obligation, and it is not decoration ─────────────
-;;;
-;;; Hypothesis generation is a **ladder**: the puzzle's hrules if it has any,
-;;; else, where root activates an obligation, what it owes (Q-M1f.308), else
-;;; the blind enumerator. A program that declares `(bijective seats)` does not
-;;; reach the blind rung on that alone — `total-owed` / `surjective-owed` are
-;;; the generator, and here they owe nothing, so nothing would be proposed and
-;;; this file's check would be vacuous. The claim needs the enumerator, so the
-;;; file has to earn it.
-;;;
-;;; `sorted-somewhere` is what earns it. It is an obligation — every Guest must
-;;; be a member of some declared sort — written as the bare `(open)`, which
-;;; counts and reports and names no relation, so there is nothing to branch on:
-;;; the rung **declines**, and a declined obligation takes the whole call back
-;;; to the blind enumerator. That is this file's rung: `declined`, by
-;;; construction, in one `rung` event per generation call.
-;;;
-;;; It is the bare form and not `(open is-a)`: this program's
-;;; `:no-hypothesis` names `is-a`, and an obligation that owed a relation the
-;;; program never lets be guessed would contradict that list and be refused
-;;; (Q-M1f.244). `(open is-a)` would also be declined by the domain contract
-;;; (`is-a` is what `(total-owed seats is-a)`'s guard scans, and an obligation
-;;; whose scan relation the rung itself proposes is declined); the bare form
-;;; declines for its own reason and owes the same nothing.
-;;;
-;;; The obligation is *satisfied* — `(is-a Ann Guest)` witnesses it through
-;;; `(sort Guest Sortal)` — because the decline is static, per activator, and
-;;; must not depend on the KB happening to owe something. A fixture that owed
-;;; would be testing the tally instead.
+;;; verdict is a `Solution` at root — and the enumerator still ran, because the
+;;; universe is what asks it whether anything is left to guess.
 ;;;
 ;;; ── What `:no-hypothesis` names, and what it deliberately does not ─────────
 ;;;
@@ -68,18 +37,14 @@
 ;;; `(is-a Ann Bob)` and every relative of it, and the search grows past
 ;;; anything a test should pay; `sort` is the same kind of relation and is
 ;;; scoped out for the same reason, which also keeps this file's counters
-;;; small.
-;;; Everything else stays in scope, and that is the point:
-;;; **the obligation activators are not named here**, so if the enumerator
-;;; could propose `(total-owed seats is-a)` it would, and the assertion would
-;;; catch it. A file that scoped them out would be testing its own
-;;; `:no-hypothesis` line.
+;;; small. Everything else stays in scope, and that is the point: **the
+;;; library's rules are not named here**, so if the enumerator could propose
+;;; a fact about one it would, and the assertion would catch it.
 ;;;
-;;; `typecheck-setup` is imported for the same reason and pays for itself: with
-;;; the enumerator loose on `seats`, the kernel imposes no type system
-;;; (Q23) and nothing else would refuse `(seats C1 Ann)` — a chair sitting
-;;; on a guest. The puzzle's own typecheck is what rejects it, which is the
-;;; division of labour the whole is-a-free design rests on.
+;;; The typecheck's activators are written for the same reason: with the
+;;; enumerator loose on `seats`, the kernel imposes no type system (Q23) and
+;;; nothing else would refuse `(seats C1 Ann)` — a chair sitting on a guest.
+;;; The puzzle's own typecheck is what rejects it.
 ;;;
 ;;; ── What the expectation observes ──────────────────────────────────────────
 ;;;
@@ -87,8 +52,9 @@
 ;;; two arrows and the two negatives — which is also the claim that
 ;;; `domain-elimination` fired rather than a guess landing.
 
-(import std.algebra   :symbols (includes))
-(import std.bijection :symbols (bijective-setup typecheck-setup))
+(import std.algebra)
+(import std.bijection)
+(import std.slots)
 
 (relation is-a  T T           :why "{?3} is a {?4}")
 (relation is-a* T T           :why "{?3} is a {?4} (transitively)")
@@ -100,22 +66,18 @@
 
 (sort Guest Sortal) (sort Chair Sortal)
 
-;; The obligation that declines the rung — see the header. A bare `(open)`
-;; names no relation, so no obligation here may be branched on and the blind
-;; enumerator runs.
-(rule sorted-somewhere ()
-  :match  (and (is-a ?x Guest)
-               (absent (and (sort ?k Sortal) (is-a ?x ?k))))
-  :assert (open)
-  :why    "{?x} belongs to no declared sort.")
-
 ;; The typecheck quantifies over the transitive hierarchy; there is no
 ;; inheritance here, so it is `is-a` copied across.
-(includes is-a is-a*)
+(std.algebra.includes is-a is-a*)
 
-(bijection-hierarchy is-a)
-(typecheck-hierarchy is-a*)
-(bijective seats)
+;; `bijective-setup`'s activators, but the two obligations'.
+(std.algebra.functional seats) (std.algebra.injective seats)
+(std.algebra.total seats) (std.algebra.surjective seats)
+(std.algebra.total seats is-a) (std.algebra.surjective seats is-a)
+(std.bijection.domain-elimination seats is-a) (std.bijection.range-elimination seats is-a)
+(std.bijection.functional-negative seats is-a) (std.bijection.injective-negative seats is-a)
+;; `typecheck-setup`'s.
+(std.bijection.typecheck-arg-0 seats is-a* Guest) (std.bijection.typecheck-arg-1 seats is-a* Chair)
 
 (seats Ann C1)
 

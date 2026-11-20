@@ -12,11 +12,10 @@
 ;;; unless its premise excludes a witness derived by no single candidate, and L5's premise, that
 ;;; every read of the debt's guard beside its witness is static, does not.
 ;;;
-;;; What the engine does: L5 does not license the debt (a fact can witness it that is no
-;;; candidate and that root does not deny), so no branch takes it and every mode takes the state
-;;; route over root's extensions; R is the five commitments below, each its own state, as describe
-;;; and the oracle give it. `ein-infer/tests/region.rs` holds the counterexample to the oracle
-;;; (`a_witness_two_candidates_derive_together_stands_for_neither`).
+;;; What the engine does: the obligation proposes what would pay Ann's debt beside the hypothesis
+;;; rules (Q-M1f.570), so `(fed Ann Soup)` is a candidate too, supposed outright: the meal with no
+;;; one who orders, cooks or shops. R is the eight states below, as describe and the oracle give
+;;; it, `{(cooks Bob), (shops Cat)}` merged into the state that also holds the witness.
 
 (import std.algebra :symbols (total-owed))
 
@@ -59,14 +58,13 @@
 (solve
   :hrules (order cook shop)
   :expect (region
-            ;; on the minimal line: the debt paid by the one candidate whose closure holds its witness
-            (model (orders Ann) (fed Ann Soup))
-            (model (orders Ann) (cooks Bob) (fed Ann Soup))
-            (model (orders Ann) (shops Cat) (fed Ann Soup))
-            ;; on the maximal line
-            (model (orders Ann) (cooks Bob) (shops Cat) (fed Ann Soup))
-            ;; on the minimal line: the debt paid by two candidates together, holding neither
-            ;; `(orders Ann)` nor any candidate whose own closure holds the witness
-            (model (cooks Bob) (shops Cat) (fed Ann Soup))))
+            (model (fed Ann Soup))
+            (model (cooks Bob) (fed Ann Soup))
+            (model (fed Ann Soup) (orders Ann))
+            (model (fed Ann Soup) (shops Cat))
+            (model (cooks Bob) (fed Ann Soup) (orders Ann))
+            (model (cooks Bob) (fed Ann Soup) (shops Cat))
+            (model (fed Ann Soup) (orders Ann) (shops Cat))
+            (model (cooks Bob) (fed Ann Soup) (orders Ann) (shops Cat))))
 
 (query :goal (fed ?who ?what))

@@ -1,17 +1,14 @@
-;;; The **control** for [`oblig-stdlib-total-owed.ein`](oblig-stdlib-total-owed.ein)
-;;; — that file plus one fact, `(is-a Z Food)`.
+;;; The control for `oblig-stdlib-total-owed.ein` — that file plus one fact,
+;;; `(is-a Z Food)`.
 ;;;
-;;; With `(is-a Z Food)` at root `total-owed`'s `(is-a ?b Food)` scan would
-;;; find Z. Flagged as its witness is, an `obligation-trigger` site on `is-a`:
-;;; `is-a` is in D here too, and a guard over a relation in D declines the
-;;; rung (Q-M1e2.10), so the untyped blind enumerator builds H. Nothing is
-;;; claimed of its answer (Q-M1f.564). It states an `:expect`, which
-;;; `ein test FILE` checks for whoever asks; no suite of the project does.
+;;; Z is a Food at root too.
 ;;;
-;;;
-;;;
-;;;
-;;;
+;;; The obligation's guard reads `is-a`, which a rule derives once anyone likes
+;;; anything, a relation a commitment can change: the obligation writes what its
+;;; guard gives at root, as any obligation does, and the static check flags the
+;;; program by an `obligation-guard` site (Q-M1f.579). Nothing is claimed of its
+;;; answer: the `:expect` below states what the program was once held to, and no
+;;; run of the corpus checks it.
 
 (import std.algebra :symbols (total-owed))
 

@@ -1,41 +1,15 @@
-;;; The obligations rung never proposed a domain value a commitment derives —
-;;; regression `oblig-fresh-name`
-;;; (`corpus/regressions.toml`).
+;;; `oblig-fresh-name` — an obligation whose domain a commitment grows.
 ;;;
-;;; ── What this program is ───────────────────────────────────────────────
+;;; Ann owes a liked food. The only food at root is Soup, which she may not
+;;; like, and `special` makes Z a food once anyone likes anything, so the value
+;;; that would pay her debt joins the guard's domain only inside a fork.
 ;;;
-;;; Ann owes a `likes` whose object is a `food` (`owes-food`, an obligation:
-;;; its `:assert` is `(open likes)`). At root the only food is Soup, and Ann
-;;; may not like Soup (`no-soup`). `special` names `Z` in its `:assert`: once
-;;; anyone likes anything, Z is on the menu. `liker-is-person` only types the
-;;; blind enumerator's candidates.
-;;;
-;;; A rung that builds H by running `owes-food`'s guard with its witness step
-;;; skipped, over root's KB, finds Soup alone with `(food ?b)`, so its H is
-;;; `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
-;;; commitment (`special` reads `likes`), so it is in D, the relations a
-;;; commitment can change; a check that declines only on a relation the rung
-;;; itself proposes does not see it.
-;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
-;;;
-;;; `{(likes Ann Z)}` saturates to `(food Z)`, which witnesses Ann's debt: an
-;;; alive, discharged state, and the maximal one. With `(food Z)` declared at
-;;; root (`oblig-fresh-name-declared.ein`) R is that one state, and so it is
-;;; when the rung declines and the blind enumerator, whose objects carry `Z`,
-;;; builds H: six `likes` candidates over Ann, Soup and Z, five dead alone.
-;;; Monotone: `food` is in D but read only inside the obligation's `absent`,
-;;; where growth can only pay.
-;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
-;;;
-;;; At `338b5892` (`ein solve FILE`), H was 1 candidate, dead alone, and R was
-;;; empty: every alive node owed, `(region (owing (model)))`. The rung
-;;; declines when an obligation's guard scans a relation in D (here `food`;
-;;; Q-M1e2.10), the blind enumerator builds H, and this file answers its
-;;; control's R, which the `:expect` below states. The regression
-;;; `oblig-fresh-name` is fixed.
-;;;
+;;; The obligation's guard reads `food`, which a rule derives once anyone likes
+;;; anything, a relation a commitment can change: the obligation writes what its
+;;; guard gives at root, as any obligation does, and the static check flags the
+;;; program by an `obligation-guard` site (Q-M1f.579). Nothing is claimed of its
+;;; answer: the `:expect` below states what the program was once held to, and no
+;;; run of the corpus checks it.
 
 (relation person T :why "{?3} is a person")
 (relation food   T :why "{?3} is a food")
@@ -67,8 +41,7 @@
 
 (solve
   :no-hypothesis (person food)
-  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
-  ;; the -declared control's R, which this file answers too.
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
   :expect (region
             ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Z)}
             (model (likes Ann Z))))

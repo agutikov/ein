@@ -1033,105 +1033,6 @@ models    = [
 ]
 
 [[case]]
-id       = "oblig-fresh-name"
-title    = "the obligations rung never proposes a domain value a commitment derives"
-settings = "default"
-decisions = ["Q-M1e2.7"]
-witness  = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [["(likes Ann Z)"]]
-maximal  = [["(likes Ann Z)"]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["likes"]
-models    = [["(likes Ann Z)"]]
-
-[case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["likes"]
-models    = [
-  ["(likes Ann Z)"],
-]
-
-[[case]]
-id       = "oblig-fresh-name-two"
-title    = "the obligations rung never proposes a domain value a commitment derives"
-settings = "default"
-decisions = ["Q-M1e2.7", "Q-M1e2.10"]
-witness  = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 12
-k_c      = 12
-minimal  = [
-  ["(likes Ann Z)", "(likes Bob Soup)"],
-  ["(likes Ann Z)", "(likes Bob Z)"],
-]
-maximal  = [["(likes Ann Bob)", "(likes Ann Z)", "(likes Bob Ann)", "(likes Bob Soup)", "(likes Bob Z)"]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["likes"]
-models    = [["(likes Ann Bob)", "(likes Ann Z)", "(likes Bob Ann)", "(likes Bob Soup)", "(likes Bob Z)"]]
-
-[case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["likes"]
-models    = [
-  ["(likes Ann Bob)", "(likes Ann Z)", "(likes Bob Ann)", "(likes Bob Soup)", "(likes Bob Z)"],
-]
-
-[[case]]
-id       = "oblig-derived-domain"
-title    = "the obligations rung never proposes a domain value a commitment derives"
-settings = "default"
-decisions = ["Q-M1e2.7"]
-witness  = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [["(likes Ann Pie)"]]
-maximal  = [["(likes Ann Pie)"]]
-
-[case.right]
-verdict   = "Solution"
-k         = 1
-exhausted = true
-closes    = ["likes"]
-models    = [["(likes Ann Pie)"]]
-
-[case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["likes"]
-models    = [
-  ["(likes Ann Pie)"],
-]
-
-[[case]]
 id       = "match-only"
 title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
 settings = "default"
@@ -4362,63 +4263,95 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-fact-head.ein:28:2: unexpected `open`"
+refused = "kb load error: examples/ein-bugs/wrong-answers/open-fact-head.ein:27:2: (open x) is written, and x is neither a fact nor a relation of the program — under open a fact is a hypothesis and a relation's name is what a state owes"
 
 [[case]]
 id       = "nested-fact-head"
-title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 32
+k_c      = 32
+minimal  = [[]]
+maximal  = [["(a x)", "(p k)", "(p x)", "(q k)", "(q x)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein:29:5: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "negation-head"
-title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-negation-head.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-negation-head.ein:29:7: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "goal-pattern-head"
-title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein:30:18: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "claim-fact-head"
-title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein:30:40: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "relation-parameter"
@@ -4432,7 +4365,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein:33:7: unexpected `open`"
+refused = "kb load error: examples/ein-bugs/wrong-answers/open-relation-parameter.ein:32:2: (open k) is written, and k is neither a fact nor a relation of the program — under open a fact is a hypothesis and a relation's name is what a state owes"
 
 [[case]]
 id       = "obligation-parameter"
@@ -4446,175 +4379,249 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein:36:6: unexpected `open`"
+refused = "kb load error: examples/ein-bugs/wrong-answers/open-obligation-parameter.ein:34:2: (owe open) makes obligation 'owe' owe open — open is the kernel's relation, of what a state owes and of its hypotheses, and no obligation owes it"
 
 [[case]]
 id       = "fact-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-fact-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-fact-value.ein:29:4: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "is-a-object"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-is-a-object.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-is-a-object.ein:27:7: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "signature-type"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-signature-type.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)", "(t k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-signature-type.ein:29:13: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "premise-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-premise-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-premise-value.ein:30:26: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "eq-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-eq-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-eq-value.ein:28:30: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "conclusion-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein:29:14: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "hrule-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-hrule-value.ein"
 
-[case.right]
-refused   = true
-
-[case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-hrule-value.ein:30:14: unexpected `open`"
-
-[[case]]
-id       = "open-derived-activator/derived-activator"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
-settings = "default"
-decisions = ["Q-M1f.66"]
-witness  = "examples/ein-bugs/wrong-answers/open-derived-activator.ein"
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p open)"]]
 
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-derived-activator.ein:36:17: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "goal-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-goal-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-goal-value.ein:27:17: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "claim-value"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-claim-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-claim-value.ein:28:39: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "macro-argument"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-macro-argument.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-macro-argument.ein:30:27: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "fact-clause"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-fact-clause.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-fact-clause.ein:27:12: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "solve-list"
@@ -4628,63 +4635,96 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-solve-list.ein:29:31: unexpected `open`"
+refused = "kb load error: examples/ein-bugs/wrong-answers/open-solve-list.ein:26:31: solve: its :hypothesis-relations names open, and the program names no relation open — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
 
 [[case]]
 id       = "trace-step"
-title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-trace-step.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-trace-step.ein:26:14: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "macro-verdict"
-title    = "a macro's body writes `open`, the verdict, and loads"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66", "Q-M1f.86"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein:32:18: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "macro-value"
-title    = "a macro's body writes `open`, the verdict, and loads"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66", "Q-M1f.86"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-macro-value.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-macro-value.ein:28:19: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "macro-unused"
-title    = "a macro's body writes `open`, the verdict, and loads"
+title    = "`open` is the kernel's word where the kernel reads it, and a name elsewhere"
 settings = "default"
-decisions = ["Q-M1f.66", "Q-M1f.86"]
+decisions = ["Q-M1f.66", "Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/open-macro-unused.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p k)", "(q k)"]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/open-macro-unused.ein:29:18: unexpected `open`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "unicode-space-nbsp"
@@ -5596,17 +5636,25 @@ refused = "examples/ein-bugs/wrong-answers/absent-fact-name.ein:24:2: unexpected
 
 [[case]]
 id       = "absent-fact-nested"
-title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+title    = "a fact headed `absent` under an ordinary relation is refused, where `absent` is an ordinary name there"
 settings = "default"
-decisions = ["Q-M1f.113", "Q-M1f.122"]
+decisions = ["Q-M1f.571"]
 witness  = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein"
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
-refused   = true
+answered = true
 
 [case.now]
-run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein:24:12: unexpected `absent`"
+run      = "saturate --dump"
+answered = true
 
 [[case]]
 id       = "absent-concluded"

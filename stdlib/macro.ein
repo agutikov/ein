@@ -22,9 +22,8 @@
   :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
 
 ;; `(unknown P)` — third-state match: P is neither asserted nor negated in the
-;; KB. It is not named `open`, the word an obligation concludes: an
-;; obligation is a rule whose conclusion is `(open ?R)`, and `open` is that
-;; verdict's atom (Q-M1d.2).
+;; KB. It is not named `open`, the kernel's word of what a state owes and of
+;; its hypotheses, `(open R)` and `(open F)` (Q-M1f.566).
 (macro unknown (?P)
   (and (absent ?P) (absent (not ?P)))
   :why "{?P} is unknown: neither it nor its negation holds")

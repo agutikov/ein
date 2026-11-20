@@ -7,15 +7,15 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
-;;; An object is an atom, or a fact a state could hold, and no state holds a fact of
-;;; `absent`: refused at the parse, on every command. What Ann says is written
-;;; `(says Ann (not (paid Bob)))`.
+;;; Under an ordinary relation `absent` is an ordinary name (Q-M1f.571): the fact
+;;; inside `says` is of a relation so called, which the kernel does not read, and
+;;; tests no absence. The program loads and stores it, and the goal answers it.
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
 ;;; At `52e05fc1`, release: the program loads and stores `(says Ann (absent (paid Bob)))`,
 ;;; and the goal answers `?c = (absent (paid Bob))`, exit 0 on every command.
-;;; The engine now refuses it at the parse, on every command.
+;;; The engine loads it.
 ;;;
 
 (relation paid Guest :why "{?3} has paid")

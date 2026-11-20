@@ -3,19 +3,15 @@
 ;;; 06_friends_tables_everyone_sits.ein made small enough for `ein oracle`: the pair (Ann, Bob)
 ;;; fits both tables, the duo (Cat, Dan) only the big one, each table has two seats, and everyone
 ;;; owes a seat (`total-owed`). The hrule proposes a friend only the seats of a table their group
-;;; fits, 12 candidates, so the facts that can pay Cat's debt are four, `(sits Cat S1)` and
-;;; `(sits Cat S2)` among them, and nothing proposes those two. No rule of the program concludes
-;;; `sits` and the program marks no relation symmetric, so no state holds either: Cat's debt is
-;;; paid by `(sits Cat B1)` or `(sits Cat B2)` or not at all, and so is Dan's.
+;;; fits, 12 candidates; the obligation proposes beside it every seat that would pay a debt
+;;; (Q-M1f.570), so `(sits Cat S1)`, `(sits Cat S2)`, `(sits Dan S1)` and `(sits Dan S2)`, the
+;;; seats the hrule's guard leaves out, are candidates too: 16.
 ;;;
-;;; What it is the witness of: the obligation tree may branch a state that owes Cat a seat on the
-;;; two candidates alone. Root's fixpoint holds no such fact and no commitment writes one, and
-;;; what saturation adds to a node is what a rule concludes or what the kernel mirrors, so a
-;;; witness that is no candidate, that root does not hold, and of a relation nothing writes is in
-;;; no node at all. Ann's and Bob's debts are paid by candidates alone.
+;;; What it was the witness of: the obligation tree may branch a state that owes Cat a seat on
+;;; the candidates that pay it alone. With the union, every fact that pays a debt is a candidate.
 ;;;
-;;; R: the pair at the small table and the duo at the big one, each in either order, 4 states.
-;;; The pair at the big table leaves the duo no seat, and four at two seats is dead.
+;;; R: the pair at one table and the duo at the other, each in either order, 8 states. Four at
+;;; two seats is dead.
 
 (import std.algebra :symbols (functional injective total-owed))
 
@@ -55,6 +51,10 @@
 (solve
   :hrules (seat)
   :expect (region
+            (model (sits Ann B1) (sits Bob B2) (sits Cat S1) (sits Dan S2))
+            (model (sits Ann B1) (sits Bob B2) (sits Cat S2) (sits Dan S1))
+            (model (sits Ann B2) (sits Bob B1) (sits Cat S1) (sits Dan S2))
+            (model (sits Ann B2) (sits Bob B1) (sits Cat S2) (sits Dan S1))
             (model (sits Ann S1) (sits Bob S2) (sits Cat B1) (sits Dan B2))
             (model (sits Ann S1) (sits Bob S2) (sits Cat B2) (sits Dan B1))
             (model (sits Ann S2) (sits Bob S1) (sits Cat B1) (sits Dan B2))

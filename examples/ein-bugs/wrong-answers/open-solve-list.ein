@@ -8,17 +8,14 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
-;;; and is written nowhere else (Q-M1f.66):
-;;; here it is written as a `(solve …)` form's relation list, so the program is
-;;; refused at the parse, at the `open`, and every command exits 1 (`ein test`:
-;;; 2).
+;;; `open` is no relation of the program, so a `(solve …)` list that names it is
+;;; refused at load, one line, and every command exits 1 (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `f62e34e1`, release: the program loads, H is empty, and R is {∅}, exit 0
 ;;; on every command.
-;;; The engine refuses it at the parse.
+;;; The engine refuses it at load.
 ;;;
 
 (relation a Thing :why "{?3} is an a")

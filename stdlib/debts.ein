@@ -3,10 +3,10 @@
 ;;;
 ;;; An obligation says what a state still **owes**: `std.algebra`'s
 ;;; `total-owed` owes each member of a relation's first label a partner, for
-;;; as long as the state holds none. What it concludes is the verdict
-;;; `(open R)`, which is no fact: a debt a state held would outlive its own
-;;; payment in the state that paid it (Q-M1d.2). So no rule can read what is
-;;; owed.
+;;; as long as the state holds none. What it concludes is `(open R)`, a fact
+;;; of the state that owes, written at its fixpoint where no fork inherits it,
+;;; once a relation (Q-M1f.566): a child that pays the debt holds none. A rule
+;;; that reads it makes its program not monotone (Q-M1f.569).
 ;;;
 ;;; This module states the two halves of a debt that **can** be facts, because
 ;;; each stays true as a state grows:

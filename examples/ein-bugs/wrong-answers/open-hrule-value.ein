@@ -7,17 +7,17 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
-;;; and is written nowhere else (Q-M1f.66):
-;;; here it is written as an hrule's conclusion argument, so the program is
-;;; refused at the parse, at the `open`, and every command exits 1 (`ein test`:
-;;; 2).
+;;; `open` is a name wherever the kernel does not read it, at the head of a
+;;; written fact, a premise or a conclusion, and under an ordinary relation the
+;;; head of a fact the kernel does not read (Q-M1f.66, Q-M1f.571): here it is
+;;; written as an hrule's conclusion argument, so the program loads, and every
+;;; command answers.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `f62e34e1`, release: the program loads, `h` proposes `(p open)`, and R is
 ;;; 2 states, ∅ and `{(p open)}`, exit 0 on every command.
-;;; The engine refuses it at the parse.
+;;; The engine loads it.
 ;;;
 
 (relation a Thing :why "{?3} is an a")

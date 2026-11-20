@@ -1,34 +1,17 @@
-;;; The obligations rung never proposed a domain value a commitment derives,
-;;; **with no rule constant at all** — regression
-;;; `oblig-derived-domain` (`corpus/regressions.toml`).
+;;; `oblig-derived-domain` — an obligation whose domain a commitment grows, with
+;;; no rule constant at all.
 ;;;
-;;; ── What this program is ───────────────────────────────────────────────
+;;; `oblig-fresh-name.ein`'s shape where the value that joins the guard's domain
+;;; inside a fork is named by a fact, `(dish Pie)`, and `special` derives `(food
+;;; ?d)` for every dish once anyone likes anything. Root's guard reads Soup
+;;; alone, which Ann may not like.
 ;;;
-;;; `oblig-fresh-name.ein`'s defect where the value that joins the guard's
-;;; domain inside a fork is named by a **fact**, `(dish Pie)`, so it is a
-;;; name of the program and a candidate object, and nothing about names is
-;;; at stake. `special` derives `(food ?d)` for every dish once anyone likes
-;;; anything. A rung that reads root's `(food ?b)` scan finds Soup alone, and
-;;; Ann may not like Soup: its H is `(likes Ann Soup)`, dead alone.
-;;;
-;;; ── The answer, by hand ────────────────────────────────────────────────
-;;;
-;;; `{(likes Ann Pie)}` saturates to `(food Pie)`, which witnesses Ann's debt:
-;;; R is that one state. With `(food Pie)` declared at root
-;;; (`oblig-derived-domain-declared.ein`) the rung finds it; with the rung
-;;; declined, the blind enumerator does (six `likes` candidates over Ann, Soup
-;;; and Pie, five dead alone).
-;;;
-;;; ── What the engine answered, and why it does not any more ─────────────
-;;;
-;;; At `338b5892` (`ein solve FILE`), H was 1 candidate, dead alone, and R was
-;;; empty, every alive node owing. The rung declines on a guard that scans a
-;;; relation in D (`food`; Q-M1e2.10), and this file answers its control's R,
-;;; which the `:expect` below states. The regression
-;;; `oblig-derived-domain` is fixed.
-;;;
-;;;
-;;;
+;;; The obligation's guard reads `food`, which a rule derives once anyone likes
+;;; anything, a relation a commitment can change: the obligation writes what its
+;;; guard gives at root, as any obligation does, and the static check flags the
+;;; program by an `obligation-guard` site (Q-M1f.579). Nothing is claimed of its
+;;; answer: the `:expect` below states what the program was once held to, and no
+;;; run of the corpus checks it.
 
 (relation person T :why "{?3} is a person")
 (relation food   T :why "{?3} is a food")
@@ -62,8 +45,7 @@
 
 (solve
   :no-hypothesis (person food dish)
-  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
-  ;; the -declared control's R, which this file answers too.
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
   :expect (region
             ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Pie)}
             (model (likes Ann Pie))))

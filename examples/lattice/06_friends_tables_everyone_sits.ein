@@ -10,8 +10,11 @@
 ;;; together. Seat B1 faces the air-conditioner, and Eve will not sit there.
 ;;;
 ;;; A group is proposed seats only at a table it fits, (fits G T), so the
-;;; hypotheses are 3×3 (trio at the big table) + 2×2 (pair at the small one)
-;;; + 2×3 (pair at the big one) = 19. Ein has no arithmetic, so "fits" is data.
+;;; hrule proposes 3×3 (trio at the big table) + 2×2 (pair at the small one)
+;;; + 2×3 (pair at the big one) = 19 seats. Ein has no arithmetic, so "fits"
+;;; is data. The obligation proposes beside them every seat that pays a
+;;; friend's debt, the trio's six at the small table among them (Q-M1f.570):
+;;; 25 candidates.
 ;;;
 ;;; Obligation: every friend has a seat (total-owed). Restrictions: one seat
 ;;; each (functional), one friend per seat (injective), friends together, and
@@ -19,11 +22,11 @@
 ;;; moves no node and k_s = k_c. The program is monotone.
 ;;;
 ;;; With the cube enumerated,
-;;;   ein oracle examples/lattice/06_friends_tables_everyone_sits.ein ;;;       --region-limit 19
+;;;   ein oracle examples/lattice/06_friends_tables_everyone_sits.ein ;;;       --region-limit 25
 ;;; R is 8 nodes, all at L5, each its own component; no holes; the minimal and
 ;;; maximal lines are the same 8 seatings — the pair at the small table in 2
-;;; orders, the trio at the big table with Eve off B1 in 2 × 2. 68 minimal dead
-;;; sets and 675 minimal discharging sets. A bare `ein solve` describes the
+;;; orders, the trio at the big table with Eve off B1 in 2 × 2. A bare
+;;; `ein solve` describes the
 ;;; same R by the obligation tree, with no cube. A seating of the pair at the
 ;;; big table leaves the trio no seat: such a node owes, and is on neither
 ;;; line.

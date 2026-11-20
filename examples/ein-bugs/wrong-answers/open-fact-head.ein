@@ -7,17 +7,16 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
-;;; and is written nowhere else (Q-M1f.66):
-;;; here it is written as a fact's relation, so the program is refused at the
-;;; parse, at the `open`, and every command exits 1 (`ein test`: 2).
+;;; `open` heads a written fact, where the kernel reads it, and takes a relation
+;;; of the program or a fact: `x` is neither, so the program is refused at load,
+;;; one line (Q-M1f.66), and every command exits 1 (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; At `f62e34e1`, release: the program loads, `open` an auto-vivified relation
 ;;; holding `(open x)`; `x` is a name of the program, so H is five candidates
 ;;; and R 32 states, exit 0 on every command.
-;;; The engine refuses it at the parse.
+;;; The engine refuses it at load.
 ;;;
 
 (relation a Thing :why "{?3} is an a")

@@ -8,7 +8,7 @@
 # `slow = true` keeps an entry out of the default sweep, and it is a claim
 # with a threshold behind it: an entry is slow when its declared runs cost
 # **1 s or more together**, which is what `cost_ms` records. Which entries are
-# is `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say, and this
+# is `ein-corpus`'s `the_slow_set_is_exactly_these_sixteen`'s to say, and this
 # header does not copy its list. A re-take moves the flag both ways, which is
 # what a measured flag is for. The rule, and why the sum rather than the
 # slowest run, is corpus/README.md § `slow`.
@@ -287,7 +287,7 @@ note   = "`:expect (false)`, the empty R, spelled with the kernel's own ⊥ rath
 path   = "examples/features/13_mixed_solution_and_open.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "one discharged state beside one that owes: root owes Ann a Food, `{(choice Ann)}` discharges it, and R is that one state, whose `likes` rows the claim states."
+note   = "a state of R beside a sibling that owes: root owes Ann a Food, `{(choice Ann)}` discharges it, `{(choice Bob)}` owes, and the obligation's `(likes Ann Soup)` is a candidate beside the hrule's (Q-M1f.570): R is three states, which the claim states. Its `:no-hypothesis` names `is-a` alone; the form that also names `likes` is `examples/broken/load/no_hypothesis_beside_open.ein`."
 
 [[entry]]
 path   = "examples/features/14_unicode_text.ein"
@@ -728,13 +728,15 @@ note   = "lattice/09 one activator further from root: opening the kitchen derive
 path   = "examples/lattice/13_witness_of_two.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "solve --single", "oracle --dump {out}/region"]
-note   = "a debt one candidate pays alone and two others pay together: Ann's one witness, `(fed Ann Soup)`, is in the closure of `(orders Ann)` and of no other single candidate, and `{(cooks Bob), (shops Cat)}` derives it by a rule that reads both. The program that breaks the claim that a witness a candidate implies may stand for that candidate: that member of R holds none of the candidates whose closure holds the witness. L5 does not license the debt, every mode takes the state route, and R is five states, the oracle's (`ein-infer/tests/region.rs`)."
+note   = "a debt one candidate pays alone and two others pay together: Ann's one witness, `(fed Ann Soup)`, is in the closure of `(orders Ann)` and of `{(cooks Bob), (shops Cat)}` together. The obligation proposes the witness beside the hypothesis rules (Q-M1f.570), so it is a candidate too, supposed outright, and R is eight states, the oracle's, which the claim states."
 
 [[entry]]
 path   = "examples/lattice/14_seats_nothing_proposes.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "solve --single", "solve --maximal", "oracle --dump {out}/region"]
-note   = "06_friends_tables_everyone_sits made small enough for the oracle, 12 candidates: everyone owes a seat, the duo fits only the big table, and the two small-table seats that can pay Cat's and Dan's debts are proposed by nothing and written by no rule. L9 licenses those two debts, their alternatives the big table's two seats; the oracle holds the licence at all 4 096 nodes (`ein-infer/tests/unheld.rs`). R is four seatings."
+slow   = true
+cost_ms = 9128
+note   = "06_friends_tables_everyone_sits made small enough for the oracle: everyone owes a seat, the duo fits only the big table, and the hrule proposes 12 seats; the obligation proposes beside them the four seats that pay Cat's and Dan's debts at the small table (Q-M1f.570), 16 candidates. R is eight seatings, the oracle's, which the claim states."
 
 [[entry]]
 path   = "examples/lattice/15_union_label_dead.ein"
@@ -1352,50 +1354,50 @@ note   = "The control for negative-only.ein: the same program plus `(seen Z)`, w
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
 group  = "regression"
-runs   = ["solve"]
-note   = "`oblig-fresh-name`: Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. The obligations rung would build H from root's `(food ?b)` scan, so `(likes Ann Z)` would be in no candidate; it declines on a guard over a relation in D (Q-M1e2.10 (a)), the blind enumerator builds H, and R is one state, `{(likes Ann Z)}`, the `-declared` control's, which `:expect` states."
+runs   = ["solve --count"]
+note   = "`oblig-fresh-name`: Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein"
 group  = "regression"
-runs   = ["solve", "test"]
-note   = "The control for oblig-fresh-name.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Z)}`, which its `:expect` states and its witness answers."
+runs   = ["solve --count"]
+note   = "The control for oblig-fresh-name.ein: the same program plus `(food Z)` at root. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
 group  = "regression"
-runs   = ["solve"]
-note   = "`oblig-fresh-name-two`: oblig-fresh-name.ein plus Bob, who may like Soup. Committing `(likes Bob Soup)` derives `(food Z)`, where the rung itself would propose `(likes Ann Z)`. The rung declines on a guard over a relation in D (Q-M1e2.10 (a)), and R is the blind enumerator's twelve states, `(likes Ann Bob)` and `(likes Bob Ann)` free, which `:expect` states and the control answers too."
+runs   = ["solve --count"]
+note   = "`oblig-fresh-name-two`: oblig-fresh-name.ein plus Bob, who may like Soup. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein"
 group  = "regression"
-runs   = ["solve", "test"]
-note   = "The control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so the rung declines (Q-M1e2.10 (a)), H is 12 and R twelve states, which its `:expect` states and its witness answers."
+runs   = ["solve --count"]
+note   = "The control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
 group  = "regression"
-runs   = ["solve"]
-note   = "`oblig-derived-domain`: oblig-fresh-name.ein's shape with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. The rung declines on a guard over a relation in D, and R is one state, `{(likes Ann Pie)}`, the `-declared` control's, which `:expect` states."
+runs   = ["solve --count"]
+note   = "`oblig-derived-domain`: oblig-fresh-name.ein's shape with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein"
 group  = "regression"
-runs   = ["solve", "test"]
-note   = "The control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. Its guard reads `food`, in D here too, so the rung declines and the blind enumerator builds H (6), and R is one state, `{(likes Ann Pie)}`, which its `:expect` states and its witness answers."
+runs   = ["solve --count"]
+note   = "The control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. Flagged: its guard reads `food`, which `special` derives once anyone likes anything, a relation a commitment can change, so the obligation writes its guard's candidates at root and the program is not monotone (Q-M1f.579); nothing is claimed of its answer, so the run is `solve --count`, which checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
 group  = "regression"
 runs   = ["solve --count"]
-note   = "on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`), so it takes route 2, the cube; the rung declines on a guard over a relation in D (Q-M1e2.10 (a)) and the blind enumerator builds H. It states an `:expect`, and no run here checks it: nothing is claimed of a flagged program's answer (Q-M1f.564), so the run is `solve --count`, which reads no state."
+note   = "on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. Flagged non-monotone (an obligation-trigger site on `is-a`, and an obligation-guard one), so it takes route 2, the cube; the obligation writes what its guard gives at root (Q-M1f.579). It states an `:expect`, and no run here checks it: nothing is claimed of a flagged program's answer (Q-M1f.564), so the run is `solve --count`, which reads no state."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
 group  = "regression"
 runs   = ["solve --count"]
-note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the rung declines (Q-M1e2.10 (a)). Flagged as its witness is: its `:expect` is checked by no run here, `solve --count` reading no state and no `test` run declared."
+note   = "The control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. `total-owed` scans `is-a`, in D here too, so the program is flagged as it is, and the obligation writes what its guard gives at root (Q-M1f.579). Nothing is claimed of its answer, so the run checks no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/activator-chain-1.ein"
@@ -2361,25 +2363,25 @@ note   = "`fact-head`: `open`, the verdict, written as a top-level fact's relati
 path   = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`nested-fact-head`: `open`, the verdict, written as a nested fact's relation, finding 3's. Refused at the parse, at the `open`, every command, with a note."
+note   = "`nested-fact-head`: `open` written as a nested fact's relation, finding 3's. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-negation-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`open`, the verdict, written as a stored negation's relation: refused at the parse, at the `open`, by every command, with a note, where a run that loaded it would read it as a relation."
+note   = "`open` written as a stored negation's relation. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`goal-pattern-head`: `open`, the verdict, written as a pattern's relation inside a query's goal. Refused at the parse, at the `open`, every command, with a note."
+note   = "`goal-pattern-head`: `open` written as a pattern's relation inside a query's goal. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`claim-fact-head`: `open`, the verdict, written as a nested fact's relation in a query's claim. Refused at the parse, at the `open`, every command, with a note."
+note   = "`claim-fact-head`: `open` written as a nested fact's relation in a query's claim. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein"
@@ -2391,79 +2393,79 @@ note   = "`relation-parameter`: `open`, the verdict, written as a relation param
 path   = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`obligation-parameter`: `open`, the verdict, written as an obligation's relation parameter. Refused at the parse, at the `open`, every command, with a note."
+note   = "`obligation-parameter`: `(owe open)` makes an obligation owe `open`, the kernel's relation: refused at load, every command, one line (Q-M1f.66)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-fact-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`fact-value`: `open`, the verdict, written as a fact's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`fact-value`: `open` written as a fact's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-is-a-object.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`is-a-object`: `open`, the verdict, written as an object's name, typed. Refused at the parse, at the `open`, every command, with a note."
+note   = "`is-a-object`: `open` written as an object's name, typed. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-signature-type.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`signature-type`: `open`, the verdict, written as a type in a relation's signature. Refused at the parse, at the `open`, every command, with a note."
+note   = "`signature-type`: `open` written as a type in a relation's signature. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-premise-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`premise-value`: `open`, the verdict, written as a premise pattern's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`premise-value`: `open` written as a premise pattern's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-eq-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`eq-value`: `open`, the verdict, written as a guard's value. Refused at the parse, at the `open`, every command, with a note."
+note   = "`eq-value`: `open` written as a guard's value. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`conclusion-value`: `open`, the verdict, written as a conclusion's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`conclusion-value`: `open` written as a conclusion's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-hrule-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`hrule-value`: `open`, the verdict, written as an hrule's conclusion argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`hrule-value`: `open` written as an hrule's conclusion argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`open-derived-activator/derived-activator`: `open`, the verdict, written as a derived activator's argument, bound to a relation parameter. Refused at the parse, at the `open`, every command, with a note."
+note   = "`open` written as a derived activator's argument, bound to a relation parameter: `(copy open)` makes `copy` read `(open ?x)`, a rule that reads an `open` fact, so the program loads flagged (Q-M1f.569) and nothing is claimed of its answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-goal-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`goal-value`: `open`, the verdict, written as a query goal's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`goal-value`: `open` written as a query goal's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-claim-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`claim-value`: `open`, the verdict, written as a query claim's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`claim-value`: `open` written as a query claim's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-argument.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`macro-argument`: `open`, the verdict, written as a macro call's argument. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-argument`: `open` written as a macro call's argument. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-fact-clause.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`fact-clause`: `open`, the verdict, written as a fact's `:rule` clause. Refused at the parse, at the `open`, every command, with a note."
+note   = "`fact-clause`: `open` written as a fact's `:rule` clause. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-solve-list.ein"
@@ -2475,25 +2477,25 @@ note   = "`solve-list`: `open`, the verdict, written as a `(solve …)` form's r
 path   = "examples/ein-bugs/wrong-answers/open-trace-step.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`trace-step`: `open`, the verdict, written as a trace step's name. Refused at the parse, at the `open`, every command, with a note."
+note   = "`trace-step`: `open` written as a trace step's name. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`macro-verdict`: `open`, the verdict, written as a macro's body, the verdict, called in an `:assert`. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-verdict`: `open` written as a macro's body, the verdict, called in an `:assert`. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`macro-value`: `open`, the verdict, written as a macro's body, a value. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-value`: `open` written as a macro's body, a value. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/open-macro-unused.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`macro-unused`: `open`, the verdict, written as a macro's body no rule calls. Refused at the parse, at the `open`, every command, with a note."
+note   = "`macro-unused`: `open` written as a macro's body no rule calls. Loads: `open` is a name where the kernel does not read it (Q-M1f.66), and under an ordinary relation the head of a fact the kernel does not read (Q-M1f.571)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein"
@@ -2637,7 +2639,7 @@ note   = "`absent-fact-name`: A written `(absent Bob)` adds `Bob` to the program
 path   = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "A value `(absent (paid Bob))` inside a fact: refused at load, on every command, where a run that loaded it would store it, a fact no premise can read."
+note   = "A value `(absent (paid Bob))` inside a fact: under an ordinary relation `absent` is an ordinary name (Q-M1f.571), so the program loads and the fact is stored, read by a pattern of the relation so called."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-concluded.ein"
@@ -3172,10 +3174,10 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "a retired `(config …)` flag is refused with why it was retired, not as an unknown one. Refused at the parse: its `.expected` is the parse report."
 
 [[entry]]
-path   = "examples/broken/open_in_match.ein"
-group  = "parse-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "`open` is a verdict about the KB and is assert-side only; the message names `(unknown …)`, the premise-side form. Refused at the parse: its `.expected` is the parse report."
+path   = "examples/features/23_a_rule_reads_open.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "a rule that reads an `open` fact, the obligation's `(open ?R)`: its program is flagged by an `open-read` site (Q-M1f.569), loads under the warning, and states no claim."
 
 [[entry]]
 path   = "examples/broken/open_arity.ein"
@@ -3184,11 +3186,17 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "an `open` of more than one argument. The form is `(open)` or `(open ?R)`; anything wider restates the guard in the head. Refused at the parse: its `.expected` is the parse report."
 
 [[entry]]
-path   = "examples/broken/open_mixed_assert.ein"
-group  = "parse-negative"
+path   = "examples/broken/load/open_mixed_assert.ein"
+group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "a rule concluding `open` and a fact would belong to the saturation agenda and the post-fixpoint pass at once. Refused at the parse: its `.expected` is the parse report."
+note   = "what a state owes, `(open ?R)`, beside a fact: an obligation is read at the fixpoint and concludes no fact, so `(open R)` is a rule's whole `:assert` (Q-M1f.575). Refused at load: its `.expected` is the line."
 
+
+[[entry]]
+path   = "examples/broken/load/no_hypothesis_beside_open.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "a `:no-hypothesis` that names a relation root holds an `open` fact of, `likes`, which an activated obligation owes at root: the lists configure the blind enumerator, and one that disagrees with root's `open` facts is an error (Q-M1f.578). `examples/features/13_mixed_solution_and_open.ein` as it was written."
 [[entry]]
 path   = "examples/broken/hrule_reserved_name.ein"
 group  = "parse-negative"
@@ -4364,6 +4372,7 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/bijection/06_blind_enumeration.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "the blind enumerator, run where root holds no `open` fact and activates no obligation (Q-M1f.576), with the library's four obligation rules loaded and none activated: `bijective-setup`'s activators written by hand but the two obligations'. `ein-infer/tests/obligation_reports.rs` holds that no candidate names one of them."
 
 [[entry]]
 path   = "tests/stdlib/bool/circuit/01_propagate.ein"

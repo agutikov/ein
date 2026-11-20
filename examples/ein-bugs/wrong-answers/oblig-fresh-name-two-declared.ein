@@ -1,15 +1,14 @@
-;;; The **control** for [`oblig-fresh-name-two.ein`](oblig-fresh-name-two.ein)
-;;; — that file plus one fact, `(food Z)`.
+;;; The control for `oblig-fresh-name-two.ein` — that file plus one fact, `(food
+;;; Z)`.
 ;;;
-;;; With `(food Z)` at root the obligations rung's `(food ?b)` scan would find
-;;; Z: H `likes` from Ann and from Bob to Soup and to Z, and R three states.
-;;; `food` is in D here too, since `special` derives it from a commitment,
-;;; and a guard over a relation in D declines the rung (Q-M1e2.10): the
-;;; blind enumerator builds H, twelve candidates, and R is twelve states,
-;;; `(likes Ann Bob)` and `(likes Bob Ann)` free, which the `:expect` below
-;;; states and its witness answers.
+;;; Z is a food at root too, so the guard reads it there.
 ;;;
-;;;
+;;; The obligation's guard reads `food`, which a rule derives once anyone likes
+;;; anything, a relation a commitment can change: the obligation writes what its
+;;; guard gives at root, as any obligation does, and the static check flags the
+;;; program by an `obligation-guard` site (Q-M1f.579). Nothing is claimed of its
+;;; answer: the `:expect` below states what the program was once held to, and no
+;;; run of the corpus checks it.
 
 (relation person T :why "{?3} is a person")
 (relation food   T :why "{?3} is a food")

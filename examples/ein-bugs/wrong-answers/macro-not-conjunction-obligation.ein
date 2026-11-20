@@ -5,7 +5,7 @@
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; `o`'s `:match` expands to `(and (a ?x) (absent (not (and (p ?x) (q ?x)))))`,
-;;; as `macro-not-conjunction.ein`'s rule does, and `o` asserts `(open)`, so the
+;;; as `macro-not-conjunction.ein`'s rule does, and `o` asserts `(open s)`, so the
 ;;; pass that reads what a quiescent state owes matches it.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
@@ -30,5 +30,5 @@
 (macro neg (?a) (not ?a) :why "the negation of {?a} is stored")
 (rule o ()
   :match  (and (a ?x) (absent (neg (and (p ?x) (q ?x)))))
-  :assert (open)
+  :assert (open s)
   :why "{?x} is an a, and no negation of p and q is stored of it, so the state owes")
