@@ -678,7 +678,7 @@ baeb654b4cacf412       74L  examples/beliefs/03_liar_denial.ein::cores[minimal]
 21b32f14728c95dc       72L  examples/beliefs/03_liar_denial.ein::cores[single]
 8e2b09d1141f16ec       73L  examples/beliefs/03_liar_denial.ein::cores[n2]
 343ed9eda0cbe423      151L  examples/beliefs/03_liar_denial.ein::oracle
-e6ad32da660bb8c6       90L  examples/beliefs/04_liar_denial_contradicted.ein::load
+df8dac55318bd8d1       89L  examples/beliefs/04_liar_denial_contradicted.ein::load
 65e34dd48da15eb3       37L  examples/beliefs/04_liar_denial_contradicted.ein::saturate
 726db82053fddc48       45L  examples/beliefs/04_liar_denial_contradicted.ein::plan
 6ab9c58249987ef1       24L  examples/beliefs/04_liar_denial_contradicted.ein::match
@@ -758,7 +758,7 @@ c5fb3cc0a86c5ab3       74L  examples/beliefs/05_liar_denial_beside_the_fact.ein:
 a8d38364e0817d85       72L  examples/beliefs/05_liar_denial_beside_the_fact.ein::cores[single]
 a0926f6f53f74a22       73L  examples/beliefs/05_liar_denial_beside_the_fact.ein::cores[n2]
 42587bda02fb3973      151L  examples/beliefs/05_liar_denial_beside_the_fact.ein::oracle
-c2e3f7281136b7a5       79L  examples/beliefs/06_double_negation.ein::load
+5710ef048187a494       77L  examples/beliefs/06_double_negation.ein::load
 de0a5de5a00045bf       10L  examples/beliefs/06_double_negation.ein::saturate
 1927d9d8ab5b4d0c       16L  examples/beliefs/06_double_negation.ein::plan
 298f65810b3c3777        7L  examples/beliefs/06_double_negation.ein::match
@@ -4780,7 +4780,7 @@ fec817ed528a1be4       31L  examples/ein-bugs/naf-upward-closure.ein::dot[kb-fol
 a5df4c0bf9762036       49L  examples/ein-bugs/naf-upward-closure.ein::dot[kb-since]
 5bbf7419af1d6b87       39L  examples/ein-bugs/naf-upward-closure.ein::dot[constraints]
 55f6e6b856da4305       27L  examples/ein-bugs/naf-upward-closure.ein::dot[constraints-fold]
-0519358fa02223c0       74L  examples/ein-bugs/nested-core.ein::load
+b2cb3413f92ddaf8       73L  examples/ein-bugs/nested-core.ein::load
 7653fb8d5347e541       29L  examples/ein-bugs/nested-core.ein::saturate
 70f748780645530a       45L  examples/ein-bugs/nested-core.ein::plan
 c14f04f6ada1fe55       20L  examples/ein-bugs/nested-core.ein::match
@@ -5273,7 +5273,7 @@ b06a50fd165d31e9        7L  examples/ein-bugs/wrong-answers/alt-cap-shared.ein::
 54932c8e0874082f      199L  examples/ein-bugs/wrong-answers/alt-cap-shared.ein::cores[single]
 11be0211d5f05b57      199L  examples/ein-bugs/wrong-answers/alt-cap-shared.ein::cores[n2]
 cefa5de36898466d      335L  examples/ein-bugs/wrong-answers/alt-cap-shared.ein::oracle
-098d42fa276d3147      101L  examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein::load
+837b6323b5948af8      100L  examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein::load
 b1dbed75a8aea002       99L  examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein::saturate
 4829f64d0d58f57a       48L  examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein::plan
 73beff3070a422c6       38L  examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein::match
@@ -7111,7 +7111,7 @@ f8597247c558fffb        4L  examples/ein-bugs/wrong-answers/false-fact-argument.
 e3e92bd2b79baff8        3L  examples/ein-bugs/wrong-answers/false-fact-nested.ein::ir[parse]
 01a983a6c49e6df9        3L  examples/ein-bugs/wrong-answers/false-goal-argument.ein::ir[parse]
 fab04860badc5855        3L  examples/ein-bugs/wrong-answers/false-premise-argument.ein::ir[parse]
-70344f93ececb75b      102L  examples/ein-bugs/wrong-answers/forall-core-elim.ein::load
+45ab3abe6ad0f20a      101L  examples/ein-bugs/wrong-answers/forall-core-elim.ein::load
 f21048b074fc04fa       44L  examples/ein-bugs/wrong-answers/forall-core-elim.ein::saturate
 2a5df146259b7335       57L  examples/ein-bugs/wrong-answers/forall-core-elim.ein::plan
 8fbd5c6afdafe5a3       32L  examples/ein-bugs/wrong-answers/forall-core-elim.ein::match
@@ -7811,7 +7811,7 @@ d41d8cd98f00b204        0L  examples/ein-bugs/wrong-answers/goal-nested-relation
 49830b5421184cdb        1L  examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein::dot[kb-since]
 49830b5421184cdb        1L  examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein::dot[constraints]
 49830b5421184cdb        1L  examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein::dot[constraints-fold]
-1b7053219b51a924       63L  examples/ein-bugs/wrong-answers/goal-nested-var.ein::load
+1135cd954435a47b       61L  examples/ein-bugs/wrong-answers/goal-nested-var.ein::load
 9e6b9ecf06eefcfd       17L  examples/ein-bugs/wrong-answers/goal-nested-var.ein::saturate
 025beb67d51a2c4c       39L  examples/ein-bugs/wrong-answers/goal-nested-var.ein::plan
 3c2344fd858d1f69       12L  examples/ein-bugs/wrong-answers/goal-nested-var.ein::match
@@ -8013,7 +8013,7 @@ b1d2a0786a2bec9d       15L  examples/ein-bugs/wrong-answers/hrule-eq.ein::read-o
 920d172ac216702f       72L  examples/ein-bugs/wrong-answers/hrule-eq.ein::cores[single]
 d77960e3026fe74a       73L  examples/ein-bugs/wrong-answers/hrule-eq.ein::cores[n2]
 328f53c58b02d8e0      151L  examples/ein-bugs/wrong-answers/hrule-eq.ein::oracle
-8aafad933a623107       74L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::load
+a9daf30573ef3300       73L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::load
 92ba20ab77ae4551       17L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::saturate
 025beb67d51a2c4c       39L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::plan
 52b103454c3c595a       12L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::match
@@ -8053,7 +8053,7 @@ b9c15fa81ef5f4f8       76L  examples/ein-bugs/wrong-answers/hrule-reads-absent-n
 042489e58ce1ec0c      111L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::cores[single]
 4c298d5612f0b3aa      112L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::cores[n2]
 2658a7ab43fb0928      197L  examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein::oracle
-d77accb6b8377cf8       37L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::load
+ff460ba31bcf260c       36L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::load
 460fa3a613b60b6d        4L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::saturate
 2b0f401237921a11        4L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::plan
 3eacedd323593872        1L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::match
@@ -8093,7 +8093,7 @@ b53cd1b55bf706f2       76L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein:
 d9751d563ee6d882      111L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::cores[single]
 b53b30e45090ef7a      112L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::cores[n2]
 0775cf9b79c01bf8      196L  examples/ein-bugs/wrong-answers/hrule-reads-not.ein::oracle
-bffacf0108efe942       76L  examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein::load
+2c36e4f06072aac7       75L  examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein::load
 92ba20ab77ae4551       17L  examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein::saturate
 025beb67d51a2c4c       39L  examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein::plan
 52b103454c3c595a       12L  examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein::match
@@ -8253,7 +8253,7 @@ c5d5871715dcef9c      125L  examples/ein-bugs/wrong-answers/import-directives-tw
 80e33c259e170446      112L  examples/ein-bugs/wrong-answers/import-directives-twice.ein::cores[single]
 34aec96e4ba1017d      113L  examples/ein-bugs/wrong-answers/import-directives-twice.ein::cores[n2]
 dbd95f86d9fc1569      251L  examples/ein-bugs/wrong-answers/import-directives-twice.ein::oracle
-21467b34c0605ecb       50L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::load
+719d0183ecac8477       49L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::load
 5ef8e4d65c47c7a9        9L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::saturate
 e70569e573ffb69c        9L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::plan
 cdd793e2e4a35c22        6L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::match
@@ -8293,7 +8293,7 @@ baff431c63ed6905       76L  examples/ein-bugs/wrong-answers/import-facts-flat.ei
 2fc722e6218ee0fc       72L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::cores[single]
 5f159e5fa7fafe27       73L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::cores[n2]
 e6b973ba3eca3112      151L  examples/ein-bugs/wrong-answers/import-facts-flat.ein::oracle
-6a5bbca701239221       50L  examples/ein-bugs/wrong-answers/import-facts-library.ein::load
+dc5e07d8b42468ef       49L  examples/ein-bugs/wrong-answers/import-facts-library.ein::load
 dbab2a9c29b96f83        9L  examples/ein-bugs/wrong-answers/import-facts-library.ein::saturate
 819da620a31e7754        9L  examples/ein-bugs/wrong-answers/import-facts-library.ein::plan
 7a4f4217b72d6195        6L  examples/ein-bugs/wrong-answers/import-facts-library.ein::match
@@ -8333,7 +8333,7 @@ fa35bdb3bf103bf3       15L  examples/ein-bugs/wrong-answers/import-facts-library
 32471dd3f6b9bd49       72L  examples/ein-bugs/wrong-answers/import-facts-library.ein::cores[single]
 4720b9810a0cd984       73L  examples/ein-bugs/wrong-answers/import-facts-library.ein::cores[n2]
 8870d31a10a3cb2c      151L  examples/ein-bugs/wrong-answers/import-facts-library.ein::oracle
-0326b1e50f98d363       50L  examples/ein-bugs/wrong-answers/import-facts-rule.ein::load
+f01802723dba7acd       49L  examples/ein-bugs/wrong-answers/import-facts-rule.ein::load
 76d99bc7c79b3b82        9L  examples/ein-bugs/wrong-answers/import-facts-rule.ein::saturate
 b142644f49815ff3        9L  examples/ein-bugs/wrong-answers/import-facts-rule.ein::plan
 7a4f4217b72d6195        6L  examples/ein-bugs/wrong-answers/import-facts-rule.ein::match
@@ -8453,7 +8453,7 @@ af5bf4854f1d8e11       76L  examples/ein-bugs/wrong-answers/import-facts-table.e
 b52353f90c091981       72L  examples/ein-bugs/wrong-answers/import-facts-table.ein::cores[single]
 12421535e1a3c1b1       73L  examples/ein-bugs/wrong-answers/import-facts-table.ein::cores[n2]
 c59ab94166ebbd98      151L  examples/ein-bugs/wrong-answers/import-facts-table.ein::oracle
-5ac419ebb87ae1e5       50L  examples/ein-bugs/wrong-answers/import-facts-undeclared.ein::load
+e6414aa5e569dcb8       49L  examples/ein-bugs/wrong-answers/import-facts-undeclared.ein::load
 dd5266cba68f798f        9L  examples/ein-bugs/wrong-answers/import-facts-undeclared.ein::saturate
 5ddaa2d82bc32bea        9L  examples/ein-bugs/wrong-answers/import-facts-undeclared.ein::plan
 cdd793e2e4a35c22        6L  examples/ein-bugs/wrong-answers/import-facts-undeclared.ein::match
@@ -10170,7 +10170,7 @@ fec817ed528a1be4       31L  examples/ein-bugs/wrong-answers/naf-nowb.ein::dot[kb
 a5df4c0bf9762036       49L  examples/ein-bugs/wrong-answers/naf-nowb.ein::dot[kb-since]
 5bbf7419af1d6b87       39L  examples/ein-bugs/wrong-answers/naf-nowb.ein::dot[constraints]
 55f6e6b856da4305       27L  examples/ein-bugs/wrong-answers/naf-nowb.ein::dot[constraints-fold]
-17d2f286d7581d10       89L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::load
+6651a7b43c70f302       88L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::load
 a205cfb3b9a21eaa       31L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::saturate
 954c7d8448014a85       49L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::plan
 6aca3464c79cdda1       22L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::match
@@ -10210,7 +10210,7 @@ adb4039c369b34fb      234L  examples/ein-bugs/wrong-answers/negative-only-declar
 6afe2aca7486a781      155L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::cores[single]
 59e4bd648b243ab4      156L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::cores[n2]
 569752939ce3eee1     1110L  examples/ein-bugs/wrong-answers/negative-only-declared.ein::oracle
-3cb73d1593b57eed       79L  examples/ein-bugs/wrong-answers/negative-only.ein::load
+0ae976cbee912e71       78L  examples/ein-bugs/wrong-answers/negative-only.ein::load
 eb6e70da092d7c8d       25L  examples/ein-bugs/wrong-answers/negative-only.ein::saturate
 954c7d8448014a85       49L  examples/ein-bugs/wrong-answers/negative-only.ein::plan
 03794a047388bf0d       18L  examples/ein-bugs/wrong-answers/negative-only.ein::match
@@ -10250,7 +10250,7 @@ dce7d56177b3c621       80L  examples/ein-bugs/wrong-answers/negative-only.ein::c
 532c2d45b0c204db      155L  examples/ein-bugs/wrong-answers/negative-only.ein::cores[single]
 ae8845bdc4a91b98      156L  examples/ein-bugs/wrong-answers/negative-only.ein::cores[n2]
 2a413e0687e3e520     1110L  examples/ein-bugs/wrong-answers/negative-only.ein::oracle
-5ca16a617224c03d       67L  examples/ein-bugs/wrong-answers/nested-fact-activator.ein::load
+8491fcb27ff1ea7a       66L  examples/ein-bugs/wrong-answers/nested-fact-activator.ein::load
 eedd61cc4986afeb        4L  examples/ein-bugs/wrong-answers/nested-fact-activator.ein::saturate
 2b0f401237921a11        4L  examples/ein-bugs/wrong-answers/nested-fact-activator.ein::plan
 3eacedd323593872        1L  examples/ein-bugs/wrong-answers/nested-fact-activator.ein::match
@@ -11515,7 +11515,7 @@ b64666dd9a5047f5       85L  examples/ein-bugs/wrong-answers/open-macro-verdict.e
 84404bf1c423f093       64L  examples/ein-bugs/wrong-answers/open-macro-verdict.ein::cores[single]
 1c100a2f754fbd8a       63L  examples/ein-bugs/wrong-answers/open-macro-verdict.ein::cores[n2]
 43201c5351dfc493      136L  examples/ein-bugs/wrong-answers/open-macro-verdict.ein::oracle
-743a5a9f186ec389       40L  examples/ein-bugs/wrong-answers/open-negation-head.ein::load
+a1658a065eed233f       39L  examples/ein-bugs/wrong-answers/open-negation-head.ein::load
 b5501570b680479e        4L  examples/ein-bugs/wrong-answers/open-negation-head.ein::saturate
 2b0f401237921a11        4L  examples/ein-bugs/wrong-answers/open-negation-head.ein::plan
 3eacedd323593872        1L  examples/ein-bugs/wrong-answers/open-negation-head.ein::match
@@ -12055,7 +12055,7 @@ b1ffb13ce682640e      100L  examples/ein-bugs/wrong-answers/pair-core-root-given
 c22524d3920a6217       96L  examples/ein-bugs/wrong-answers/pair-core-root-given.ein::cores[single]
 ffba6b93f5df7519       97L  examples/ein-bugs/wrong-answers/pair-core-root-given.ein::cores[n2]
 840afc35e393c78b      200L  examples/ein-bugs/wrong-answers/pair-core-root-given.ein::oracle
-78813f2cd3e106e4       81L  examples/ein-bugs/wrong-answers/pair-core-root-negative.ein::load
+29381aefa0c7952a       80L  examples/ein-bugs/wrong-answers/pair-core-root-negative.ein::load
 1ee857283cfd2323       30L  examples/ein-bugs/wrong-answers/pair-core-root-negative.ein::saturate
 1fabb1b428ea2744       44L  examples/ein-bugs/wrong-answers/pair-core-root-negative.ein::plan
 b884be39c1990eff       21L  examples/ein-bugs/wrong-answers/pair-core-root-negative.ein::match
@@ -13335,7 +13335,7 @@ ec2ffa0a4e413a05      160L  examples/ein-bugs/zebra2-hints.ein::cores[maximal]
 203e2c054b7718fa      158L  examples/ein-bugs/zebra2-hints.ein::cores[single]
 7754e9a369b06bd6      158L  examples/ein-bugs/zebra2-hints.ein::cores[n2]
 c5d1522f10e57c77      998L  examples/ein-bugs/zebra2-hints.ein::oracle
-ffc8fc0c5d9184a3      106L  examples/features/01_not_and_absent.ein::load
+22bb753faa3c26cf      105L  examples/features/01_not_and_absent.ein::load
 d18e37cbcb6e1336       51L  examples/features/01_not_and_absent.ein::saturate
 5aa16ec22132c7fb       57L  examples/features/01_not_and_absent.ein::plan
 df776f40a84db47d       38L  examples/features/01_not_and_absent.ein::match
@@ -13439,7 +13439,7 @@ ada2b31ae9cb61fe       85L  examples/features/03_forall.ein::cores[minimal]
 1a95cd58b6e72225      124L  examples/features/03_forall.ein::cores[single]
 4dcb6de70e497037      125L  examples/features/03_forall.ein::cores[n2]
 0ec801dd900e6ca6     1008L  examples/features/03_forall.ein::oracle
-2e589316b0fa5830      121L  examples/features/04_open.ein::load
+8bf032baebce145d      120L  examples/features/04_open.ein::load
 d35ee07e7a0f1792       69L  examples/features/04_open.ein::saturate
 3ecb9e44fd3df71f       50L  examples/features/04_open.ein::plan
 fd1016c2e294855d       48L  examples/features/04_open.ein::match
@@ -13463,7 +13463,7 @@ ab7e4e2f130eef4e       96L  examples/features/04_open.ein::dot[kb-none]
 fa49bf959b3d8176      142L  examples/features/04_open.ein::dot[kb-since]
 92a9f2d5532c5e8d       59L  examples/features/04_open.ein::dot[constraints]
 d1058a497ca1d844       41L  examples/features/04_open.ein::dot[constraints-fold]
-bf1a20691346dbea      187L  examples/features/05_stdlib_domain_elim.ein::load
+8431e9d0cc09a540      185L  examples/features/05_stdlib_domain_elim.ein::load
 bca23c28fcfc2ed8       62L  examples/features/05_stdlib_domain_elim.ein::saturate
 024e46cb30e57bce       95L  examples/features/05_stdlib_domain_elim.ein::plan
 c0a890b7e3e77bf5       81L  examples/features/05_stdlib_domain_elim.ein::match
@@ -13607,7 +13607,7 @@ a3352334ddf1327e      108L  examples/features/09_adjacent_via_same_house.ein::co
 1a778f5fabd9964f      106L  examples/features/09_adjacent_via_same_house.ein::cores[single]
 62bb99f4f2f01623      106L  examples/features/09_adjacent_via_same_house.ein::cores[n2]
 758d5c7105ef3fd6      217L  examples/features/09_adjacent_via_same_house.ein::oracle
-9b212ab35edc2339      209L  examples/features/10_expect.ein::load
+b34f773bab23dac5      208L  examples/features/10_expect.ein::load
 c526ae7754346921       65L  examples/features/10_expect.ein::saturate
 0c0e53a3ca6e42f8       95L  examples/features/10_expect.ein::plan
 d490bfc25857ce8a       33L  examples/features/10_expect.ein::match
@@ -13687,7 +13687,7 @@ c6a7edce4edcf61e      471L  examples/features/11_expect_ambiguity.ein::cores[des
 1d090ee2bcd341d3      114L  examples/features/11_expect_ambiguity.ein::cores[single]
 94d9fd9bb323b4e3      115L  examples/features/11_expect_ambiguity.ein::cores[n2]
 1113b3fd5a6bee9b      652L  examples/features/11_expect_ambiguity.ein::oracle
-1e5274c1bd1ecb6e      100L  examples/features/12_expect_false.ein::load
+f976f3424d64cf87       99L  examples/features/12_expect_false.ein::load
 4bbf7bb73c4adbf5      113L  examples/features/12_expect_false.ein::saturate
 4829f64d0d58f57a       48L  examples/features/12_expect_false.ein::plan
 73beff3070a422c6       38L  examples/features/12_expect_false.ein::match
@@ -13767,7 +13767,7 @@ bc8404b552c133eb      199L  examples/features/13_mixed_solution_and_open.ein::co
 b8e3ef597a525276      150L  examples/features/13_mixed_solution_and_open.ein::cores[single]
 ae17e48f133da926      149L  examples/features/13_mixed_solution_and_open.ein::cores[n2]
 c8866bb8079ebb36      477L  examples/features/13_mixed_solution_and_open.ein::oracle
-2afe2f617476de81       70L  examples/features/14_unicode_text.ein::load
+d60817ead9ba35c2       69L  examples/features/14_unicode_text.ein::load
 d03cd16cea7da2bf       32L  examples/features/14_unicode_text.ein::saturate
 c4d8fd7ba047d81a       24L  examples/features/14_unicode_text.ein::plan
 d2a5c1801c9b86cf        9L  examples/features/14_unicode_text.ein::match
@@ -16175,7 +16175,7 @@ c801b789f80cfbf0       91L  examples/syntax/is-a-shapes.ein::cores[describe]
 173fcaad40f0c2e3       72L  examples/syntax/is-a-shapes.ein::cores[single]
 b55c9533e8180d56       73L  examples/syntax/is-a-shapes.ein::cores[n2]
 d6d16661961b05e4      151L  examples/syntax/is-a-shapes.ein::oracle
-a3e10b00a06db383       21L  examples/syntax/negation.ein::load
+fceda2ba349732b8       18L  examples/syntax/negation.ein::load
 2c99629302902614        4L  examples/syntax/negation.ein::saturate
 2b0f401237921a11        4L  examples/syntax/negation.ein::plan
 3eacedd323593872        1L  examples/syntax/negation.ein::match
@@ -19775,7 +19775,7 @@ bda6a773b4222c04       76L  tests/stdlib/algebra/06_equational.ein::cores[maxima
 f6e90af15f1c5742       72L  tests/stdlib/algebra/06_equational.ein::cores[single]
 7c9bc8f74c37ad56       73L  tests/stdlib/algebra/06_equational.ein::cores[n2]
 547e298bb8ff5878      151L  tests/stdlib/algebra/06_equational.ein::oracle
-88a5bbce03711c90      227L  tests/stdlib/algebra/07_schroder.ein::load
+23094d14ae1555bf      225L  tests/stdlib/algebra/07_schroder.ein::load
 e417d4890a823264       55L  tests/stdlib/algebra/07_schroder.ein::saturate
 f02391e7cc1fde46      116L  tests/stdlib/algebra/07_schroder.ein::plan
 5f5157c4da8d90af       42L  tests/stdlib/algebra/07_schroder.ein::match
@@ -20215,7 +20215,7 @@ d41d8cd98f00b204        0L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::s
 884f38a7a2f7dcda       65L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::cores[single]
 8565ca1670da9f1f       65L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::cores[n2]
 fba1465d63c39509      163L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::oracle
-42090e0e1f248404      227L  tests/stdlib/algebra/18_totality_open_world.ein::load
+a51a35056dd5a15b      226L  tests/stdlib/algebra/18_totality_open_world.ein::load
 4a1d4173556805d7       53L  tests/stdlib/algebra/18_totality_open_world.ein::saturate
 6f0566596518484d      124L  tests/stdlib/algebra/18_totality_open_world.ein::plan
 b4d0dba7398e348b       44L  tests/stdlib/algebra/18_totality_open_world.ein::match
@@ -20255,7 +20255,7 @@ e9f8f369ea720405       74L  tests/stdlib/algebra/18_totality_open_world.ein::cor
 be813d39091355a2       72L  tests/stdlib/algebra/18_totality_open_world.ein::cores[single]
 e691f64717b6d20a       73L  tests/stdlib/algebra/18_totality_open_world.ein::cores[n2]
 d071cd71c13ee062      212L  tests/stdlib/algebra/18_totality_open_world.ein::oracle
-b8482b06bde2551a      216L  tests/stdlib/algebra/19_total_violated.ein::load
+7cad4480fa3cc4dc      214L  tests/stdlib/algebra/19_total_violated.ein::load
 c2383e3ecf97d25a       42L  tests/stdlib/algebra/19_total_violated.ein::saturate
 3f514d462f84c1de      102L  tests/stdlib/algebra/19_total_violated.ein::plan
 7bcad0a54dc3860b       31L  tests/stdlib/algebra/19_total_violated.ein::match
@@ -20295,7 +20295,7 @@ c450bd8e50dfd9dd       67L  tests/stdlib/algebra/19_total_violated.ein::cores[mi
 a480f924b2cff6a9       66L  tests/stdlib/algebra/19_total_violated.ein::cores[single]
 0a4417b675067519       66L  tests/stdlib/algebra/19_total_violated.ein::cores[n2]
 fb9c10331a0c2acf      162L  tests/stdlib/algebra/19_total_violated.ein::oracle
-53fe05ad59859a82      217L  tests/stdlib/algebra/20_surjective_violated.ein::load
+a0e15af32e244ef2      215L  tests/stdlib/algebra/20_surjective_violated.ein::load
 18b2e47bb81de947       47L  tests/stdlib/algebra/20_surjective_violated.ein::saturate
 7d7bc27bdb020592      115L  tests/stdlib/algebra/20_surjective_violated.ein::plan
 b4810ce46dbbfd3a       38L  tests/stdlib/algebra/20_surjective_violated.ein::match
@@ -20375,7 +20375,7 @@ d204165237729c55       76L  tests/stdlib/algebra/21_transitive.ein::cores[maxima
 0dd8b27d8b533909       72L  tests/stdlib/algebra/21_transitive.ein::cores[single]
 439030fa56abd55e       73L  tests/stdlib/algebra/21_transitive.ein::cores[n2]
 16ac3b17dad43906      151L  tests/stdlib/algebra/21_transitive.ein::oracle
-c7efcf49b4fbcf89      192L  tests/stdlib/algebra/22_symmetric_negative.ein::load
+c7593c672f352f94      191L  tests/stdlib/algebra/22_symmetric_negative.ein::load
 0909e6153df810ba       62L  tests/stdlib/algebra/22_symmetric_negative.ein::saturate
 bc59d7c091524dd3      104L  tests/stdlib/algebra/22_symmetric_negative.ein::plan
 2e494e3d4d8ee82a       33L  tests/stdlib/algebra/22_symmetric_negative.ein::match
@@ -20655,7 +20655,7 @@ b44e4dd1eaffda72       66L  tests/stdlib/bijection/01_setup_and_negatives.ein::c
 f6e0c0629866a59e       67L  tests/stdlib/bijection/01_setup_and_negatives.ein::cores[single]
 a9fa6e8955b5ade6       66L  tests/stdlib/bijection/01_setup_and_negatives.ein::cores[n2]
 17b959bdb15d1065      287L  tests/stdlib/bijection/01_setup_and_negatives.ein::oracle
-83e362ffad2ca8c9      264L  tests/stdlib/bijection/02_domain_elimination.ein::load
+03336b60d11119cf      262L  tests/stdlib/bijection/02_domain_elimination.ein::load
 1ce1654434b1a661      128L  tests/stdlib/bijection/02_domain_elimination.ein::saturate
 0e8067a87990b55d      119L  tests/stdlib/bijection/02_domain_elimination.ein::plan
 5dd9d9fee7433779       37L  tests/stdlib/bijection/02_domain_elimination.ein::match
@@ -20695,7 +20695,7 @@ a8a9c9128fff307a       94L  tests/stdlib/bijection/02_domain_elimination.ein::co
 7658d2d4da927e5e       67L  tests/stdlib/bijection/02_domain_elimination.ein::cores[single]
 9ba81cd18fc2ecbf       66L  tests/stdlib/bijection/02_domain_elimination.ein::cores[n2]
 b1859689000c8936      279L  tests/stdlib/bijection/02_domain_elimination.ein::oracle
-64de90bddfb91455      264L  tests/stdlib/bijection/03_range_elimination.ein::load
+0639a332d06229ad      262L  tests/stdlib/bijection/03_range_elimination.ein::load
 966796769afeaaf0      137L  tests/stdlib/bijection/03_range_elimination.ein::saturate
 4b9951f8d68600dd      119L  tests/stdlib/bijection/03_range_elimination.ein::plan
 5dd9d9fee7433779       37L  tests/stdlib/bijection/03_range_elimination.ein::match
@@ -21415,7 +21415,7 @@ f3eaa5bc74daf667       76L  tests/stdlib/closure/02_closed_and_satisfied.ein::co
 2f731bdfa30fa09e       72L  tests/stdlib/closure/02_closed_and_satisfied.ein::cores[single]
 1442b939a5eedd1f       73L  tests/stdlib/closure/02_closed_and_satisfied.ein::cores[n2]
 1c3597079e6f2819      174L  tests/stdlib/closure/02_closed_and_satisfied.ein::oracle
-33768fbd23fd33d2       68L  tests/stdlib/contradiction/01_clash_0.ein::load
+c4ef2dae660bfe52       67L  tests/stdlib/contradiction/01_clash_0.ein::load
 8ff7e695f4f7e5fb       19L  tests/stdlib/contradiction/01_clash_0.ein::saturate
 8ee4dc169bc4c079       46L  tests/stdlib/contradiction/01_clash_0.ein::plan
 058245adcd2d8e31       14L  tests/stdlib/contradiction/01_clash_0.ein::match
@@ -21455,7 +21455,7 @@ aa3b7830d9973945       66L  tests/stdlib/contradiction/01_clash_0.ein::cores[max
 c1941162082c6a06       64L  tests/stdlib/contradiction/01_clash_0.ein::cores[single]
 20b6f30d1fee2ce7       64L  tests/stdlib/contradiction/01_clash_0.ein::cores[n2]
 9c357185caa3ad5e      134L  tests/stdlib/contradiction/01_clash_0.ein::oracle
-9290de7185e88a71       73L  tests/stdlib/contradiction/02_clash_1.ein::load
+7716f86fb2f3b3bc       72L  tests/stdlib/contradiction/02_clash_1.ein::load
 68f005ee11299382       22L  tests/stdlib/contradiction/02_clash_1.ein::saturate
 ab3bc5687c4212be       46L  tests/stdlib/contradiction/02_clash_1.ein::plan
 98d8ab083ba1b198       16L  tests/stdlib/contradiction/02_clash_1.ein::match
@@ -21495,7 +21495,7 @@ d650fc72ff2a56d6       97L  tests/stdlib/contradiction/02_clash_1.ein::cores[des
 6cf8e0a10f5c298b       64L  tests/stdlib/contradiction/02_clash_1.ein::cores[single]
 358c7fdeee220c62       64L  tests/stdlib/contradiction/02_clash_1.ein::cores[n2]
 2630b0dd2bb91363      134L  tests/stdlib/contradiction/02_clash_1.ein::oracle
-0e3efdc827015a7f       77L  tests/stdlib/contradiction/03_clash_2.ein::load
+056aee0c67492f3e       76L  tests/stdlib/contradiction/03_clash_2.ein::load
 741b108ce7a794d9       22L  tests/stdlib/contradiction/03_clash_2.ein::saturate
 4d71838584a4f381       46L  tests/stdlib/contradiction/03_clash_2.ein::plan
 ace80214fe734a2d       16L  tests/stdlib/contradiction/03_clash_2.ein::match
@@ -21535,7 +21535,7 @@ aa81d417705c07a8       65L  tests/stdlib/contradiction/03_clash_2.ein::cores[min
 ce78f9c4ad9516d5       64L  tests/stdlib/contradiction/03_clash_2.ein::cores[single]
 c751d445688df9c3       64L  tests/stdlib/contradiction/03_clash_2.ein::cores[n2]
 022ef99f96b2c595      134L  tests/stdlib/contradiction/03_clash_2.ein::oracle
-c00b0c712bcbf3d0       79L  tests/stdlib/contradiction/04_clash_3.ein::load
+9834684d7f35b904       78L  tests/stdlib/contradiction/04_clash_3.ein::load
 1aea78e4d9f06e7d       22L  tests/stdlib/contradiction/04_clash_3.ein::saturate
 73ec2b49e9a2c501       46L  tests/stdlib/contradiction/04_clash_3.ein::plan
 901557f563d4a07c       16L  tests/stdlib/contradiction/04_clash_3.ein::match
@@ -21575,7 +21575,7 @@ d3170a5109c12281       97L  tests/stdlib/contradiction/04_clash_3.ein::cores[des
 6192b22c6eb9a15d       64L  tests/stdlib/contradiction/04_clash_3.ein::cores[single]
 77e17a6b0ace2eab       64L  tests/stdlib/contradiction/04_clash_3.ein::cores[n2]
 2fe8f0d176bc67d2      134L  tests/stdlib/contradiction/04_clash_3.ein::oracle
-aaabeee73eeb5194       85L  tests/stdlib/contradiction/05_clash_4.ein::load
+280326d14f1acbbc       84L  tests/stdlib/contradiction/05_clash_4.ein::load
 2ccd295eba86a82a       22L  tests/stdlib/contradiction/05_clash_4.ein::saturate
 84d39a995819dd8c       46L  tests/stdlib/contradiction/05_clash_4.ein::plan
 aa864e8a2715d7a9       16L  tests/stdlib/contradiction/05_clash_4.ein::match
@@ -21615,7 +21615,7 @@ cbcc4e2594d8483e       65L  tests/stdlib/contradiction/05_clash_4.ein::cores[min
 9c2da5ebe328aaca       64L  tests/stdlib/contradiction/05_clash_4.ein::cores[single]
 6b7be6d8bc1461c8       64L  tests/stdlib/contradiction/05_clash_4.ein::cores[n2]
 58429ff0a14c1914      134L  tests/stdlib/contradiction/05_clash_4.ein::oracle
-6b33c802591d0e34       89L  tests/stdlib/contradiction/06_clash_5.ein::load
+0def86c05f15910c       88L  tests/stdlib/contradiction/06_clash_5.ein::load
 95bd8d9894fcdc92       22L  tests/stdlib/contradiction/06_clash_5.ein::saturate
 577135fe16fecb86       46L  tests/stdlib/contradiction/06_clash_5.ein::plan
 7cdf60aa2b257e42       16L  tests/stdlib/contradiction/06_clash_5.ein::match
@@ -21655,7 +21655,7 @@ deb6d06b71182772       65L  tests/stdlib/contradiction/06_clash_5.ein::cores[min
 4e1671f4776a1471       64L  tests/stdlib/contradiction/06_clash_5.ein::cores[single]
 9a74665c04369223       64L  tests/stdlib/contradiction/06_clash_5.ein::cores[n2]
 05a43b1e17c1bdce      134L  tests/stdlib/contradiction/06_clash_5.ein::oracle
-c4a8be613c49840a       93L  tests/stdlib/contradiction/07_clash_6.ein::load
+78844c354cd64c90       92L  tests/stdlib/contradiction/07_clash_6.ein::load
 28664688f8e40019       22L  tests/stdlib/contradiction/07_clash_6.ein::saturate
 d2e157f35685f4c7       46L  tests/stdlib/contradiction/07_clash_6.ein::plan
 72836dd4fddf8af1       16L  tests/stdlib/contradiction/07_clash_6.ein::match
@@ -21695,7 +21695,7 @@ ac11ed7efc0d5c95       65L  tests/stdlib/contradiction/07_clash_6.ein::cores[min
 5d6548911cc21e44       64L  tests/stdlib/contradiction/07_clash_6.ein::cores[single]
 f8c04c654dc63c12       64L  tests/stdlib/contradiction/07_clash_6.ein::cores[n2]
 ff78914a7ea7ae4d      134L  tests/stdlib/contradiction/07_clash_6.ein::oracle
-9704245d4bc047d2      270L  tests/stdlib/contradiction/08_clash_satisfied.ein::load
+8f05d3ecaea9b5a3      262L  tests/stdlib/contradiction/08_clash_satisfied.ein::load
 80f7b07da5e70658       55L  tests/stdlib/contradiction/08_clash_satisfied.ein::saturate
 71f6f3605aac6c11      109L  tests/stdlib/contradiction/08_clash_satisfied.ein::plan
 a805e49b7ea6a17e       46L  tests/stdlib/contradiction/08_clash_satisfied.ein::match
@@ -21735,7 +21735,7 @@ a673f00f315b1dc0       91L  tests/stdlib/contradiction/08_clash_satisfied.ein::c
 3772802394d6c38e       72L  tests/stdlib/contradiction/08_clash_satisfied.ein::cores[single]
 9c8b01975595400e       73L  tests/stdlib/contradiction/08_clash_satisfied.ein::cores[n2]
 179e2aeded514330      151L  tests/stdlib/contradiction/08_clash_satisfied.ein::oracle
-aadf1c71bffa44e9      127L  tests/stdlib/contradiction/09_clash_of_declared.ein::load
+68b081de3357d3d7      126L  tests/stdlib/contradiction/09_clash_of_declared.ein::load
 8b717251eec32c29       53L  tests/stdlib/contradiction/09_clash_of_declared.ein::saturate
 ae124bc83875d91a       39L  tests/stdlib/contradiction/09_clash_of_declared.ein::plan
 742ccfc891f2baa4       36L  tests/stdlib/contradiction/09_clash_of_declared.ein::match
@@ -21775,7 +21775,7 @@ eca30ce69f3d761a       74L  tests/stdlib/contradiction/09_clash_of_declared.ein:
 dffaebd4bb0c6554       72L  tests/stdlib/contradiction/09_clash_of_declared.ein::cores[single]
 59a01d25b3305b0d       73L  tests/stdlib/contradiction/09_clash_of_declared.ein::cores[n2]
 4559d110ea2e34e0      151L  tests/stdlib/contradiction/09_clash_of_declared.ein::oracle
-a117368d96fca387       76L  tests/stdlib/contradiction/10_undeclared_not_reached.ein::load
+64c7932dca60b59f       75L  tests/stdlib/contradiction/10_undeclared_not_reached.ein::load
 98f7271703597cca       17L  tests/stdlib/contradiction/10_undeclared_not_reached.ein::saturate
 f40f4e824b7d0176       39L  tests/stdlib/contradiction/10_undeclared_not_reached.ein::plan
 7836953268368463       12L  tests/stdlib/contradiction/10_undeclared_not_reached.ein::match
@@ -22295,7 +22295,7 @@ d88976801184e87a      273L  tests/stdlib/debts/10_discharged_over_r.ein::cores[m
 7fa8928eff82a1fe      221L  tests/stdlib/debts/10_discharged_over_r.ein::cores[single]
 93a6ea5ff60695f7      220L  tests/stdlib/debts/10_discharged_over_r.ein::cores[n2]
 a7288cad5259d98a      791L  tests/stdlib/debts/10_discharged_over_r.ein::oracle
-e929c2ec5898637d      118L  tests/stdlib/elim/01_domain_elimination.ein::load
+e4c060a7a6e7292f      116L  tests/stdlib/elim/01_domain_elimination.ein::load
 0f232e2983c49409       39L  tests/stdlib/elim/01_domain_elimination.ein::saturate
 47cc61ad84b6408b       47L  tests/stdlib/elim/01_domain_elimination.ein::plan
 39ebbbfe8baa5859       62L  tests/stdlib/elim/01_domain_elimination.ein::match
@@ -22335,7 +22335,7 @@ f7c10b01987527f1       74L  tests/stdlib/elim/01_domain_elimination.ein::cores[m
 17ddd5c857ef5284       72L  tests/stdlib/elim/01_domain_elimination.ein::cores[single]
 a48f59cb69892dab       73L  tests/stdlib/elim/01_domain_elimination.ein::cores[n2]
 445df13111d0176d      220L  tests/stdlib/elim/01_domain_elimination.ein::oracle
-06bfdff57946878d      104L  tests/stdlib/elim/02_no_room_left.ein::load
+ea845590f1d30755      101L  tests/stdlib/elim/02_no_room_left.ein::load
 59733c0525577657       17L  tests/stdlib/elim/02_no_room_left.ein::saturate
 60e60acb8ff21ca1       20L  tests/stdlib/elim/02_no_room_left.ein::plan
 66b0bd8535bff04d       14L  tests/stdlib/elim/02_no_room_left.ein::match
@@ -22495,7 +22495,7 @@ be1a03b930200d05       76L  tests/stdlib/macro/01_forall.ein::cores[maximal]
 eaca808b60e0b1a1       72L  tests/stdlib/macro/01_forall.ein::cores[single]
 d8917b570fda83a6       73L  tests/stdlib/macro/01_forall.ein::cores[n2]
 6abfa1ab647939d3      184L  tests/stdlib/macro/01_forall.ein::oracle
-b3bad4f105afc6d6       72L  tests/stdlib/macro/02_unknown.ein::load
+936b4079f73e6630       71L  tests/stdlib/macro/02_unknown.ein::load
 d562927612482054       19L  tests/stdlib/macro/02_unknown.ein::saturate
 4c31ba5bce02dc7d       16L  tests/stdlib/macro/02_unknown.ein::plan
 648130179f988266       14L  tests/stdlib/macro/02_unknown.ein::match
@@ -30335,7 +30335,7 @@ ded477b3c25eece0       64L  tests/stdlib/math/rat/35_natural_numerator_malformed
 2973f375a1e37f3f       63L  tests/stdlib/math/rat/35_natural_numerator_malformed.ein::cores[single]
 44a39070b069482b       63L  tests/stdlib/math/rat/35_natural_numerator_malformed.ein::cores[n2]
 7a0fa0d868bac5f8      142L  tests/stdlib/math/rat/35_natural_numerator_malformed.ein::oracle
-0613763c887c0140      190L  tests/stdlib/negation/01_eliminate.ein::load
+b8d036053d8eec0b      179L  tests/stdlib/negation/01_eliminate.ein::load
 f0a3ab52a7127053       28L  tests/stdlib/negation/01_eliminate.ein::saturate
 b4abbeb7c2bc07d2       64L  tests/stdlib/negation/01_eliminate.ein::plan
 cc1a2e967fe522a3       25L  tests/stdlib/negation/01_eliminate.ein::match
@@ -30455,7 +30455,7 @@ b251472dabf2cee6       73L  tests/stdlib/slots/02_negative.ein::cores[maximal]
 9818bf7577cef549       73L  tests/stdlib/slots/02_negative.ein::cores[single]
 889d98c8cd8f5ba0       72L  tests/stdlib/slots/02_negative.ein::cores[n2]
 2fab815dff2f5c97      321L  tests/stdlib/slots/02_negative.ein::oracle
-e971645c9a830fdb      349L  tests/stdlib/slots/03_fill.ein::load
+7fcf527d125ed005      347L  tests/stdlib/slots/03_fill.ein::load
 ebdd74039d38e821      338L  tests/stdlib/slots/03_fill.ein::saturate
 7bd2fd35e2c052d7      130L  tests/stdlib/slots/03_fill.ein::plan
 a91d5e3bf7a44d55       43L  tests/stdlib/slots/03_fill.ein::match
@@ -30495,7 +30495,7 @@ c3da63b16f6a4620      112L  tests/stdlib/slots/03_fill.ein::cores[describe]
 316f7a3bf9f5701b       73L  tests/stdlib/slots/03_fill.ein::cores[single]
 bd69c2f4cd20786c       72L  tests/stdlib/slots/03_fill.ein::cores[n2]
 570a3d439eae9d38      321L  tests/stdlib/slots/03_fill.ein::oracle
-f74a9120ed186d5b      349L  tests/stdlib/slots/04_elimination.ein::load
+93c65f8db7659978      347L  tests/stdlib/slots/04_elimination.ein::load
 e377215929731451      324L  tests/stdlib/slots/04_elimination.ein::saturate
 2a6811e2290ee986      130L  tests/stdlib/slots/04_elimination.ein::plan
 a91d5e3bf7a44d55       43L  tests/stdlib/slots/04_elimination.ein::match
@@ -30535,7 +30535,7 @@ e7908b26ab9163da       73L  tests/stdlib/slots/04_elimination.ein::cores[maximal
 6978ab0c113b090c       73L  tests/stdlib/slots/04_elimination.ein::cores[single]
 5fe10ac965bebef0       72L  tests/stdlib/slots/04_elimination.ein::cores[n2]
 4bccb1836b53e829      321L  tests/stdlib/slots/04_elimination.ein::oracle
-27ac0cb3a5b6e749      357L  tests/stdlib/slots/05_no_room.ein::load
+16b260f95d5707c5      355L  tests/stdlib/slots/05_no_room.ein::load
 e7d091fc5941edfc      107L  tests/stdlib/slots/05_no_room.ein::saturate
 6c56bffe891531a7      173L  tests/stdlib/slots/05_no_room.ein::plan
 7f2cda2ad19bab25       75L  tests/stdlib/slots/05_no_room.ein::match
@@ -30575,7 +30575,7 @@ d8f582ea23c402ca       67L  tests/stdlib/slots/05_no_room.ein::cores[minimal]
 eb804f85949a818a       66L  tests/stdlib/slots/05_no_room.ein::cores[single]
 ba56a921416f83a5       66L  tests/stdlib/slots/05_no_room.ein::cores[n2]
 3640daaae8c1a872      168L  tests/stdlib/slots/05_no_room.ein::oracle
-10db0932cb6f48c5      372L  tests/stdlib/slots/06_no_fill.ein::load
+80491eba05a7e54a      369L  tests/stdlib/slots/06_no_fill.ein::load
 38d30f45a0636729      175L  tests/stdlib/slots/06_no_fill.ein::saturate
 936a1d5405b0b383      173L  tests/stdlib/slots/06_no_fill.ein::plan
 97e5b838fa5e55b3      129L  tests/stdlib/slots/06_no_fill.ein::match
@@ -30655,7 +30655,7 @@ b88556a96e31f296       74L  tests/stdlib/slots/07_spatial_prune.ein::cores[minim
 22272286dd6990f7       75L  tests/stdlib/slots/07_spatial_prune.ein::cores[single]
 5fcf2b05c3dfacd9       74L  tests/stdlib/slots/07_spatial_prune.ein::cores[n2]
 092f3c9ed8b58a62      489L  tests/stdlib/slots/07_spatial_prune.ein::oracle
-29d52f84ed9cd984      370L  tests/stdlib/slots/08_spatial_adjacent.ein::load
+b7f83f036f02778f      368L  tests/stdlib/slots/08_spatial_adjacent.ein::load
 eda56856ff5152a9     1037L  tests/stdlib/slots/08_spatial_adjacent.ein::saturate
 4df1de366423eeae      121L  tests/stdlib/slots/08_spatial_adjacent.ein::plan
 3e5eb630565bae33       43L  tests/stdlib/slots/08_spatial_adjacent.ein::match
@@ -30855,7 +30855,7 @@ f8af845d1c0cb06b       23L  tests/stdlib/slots/12_owed_fill_satisfied.ein::state
 a0b0acef17a5aa20       72L  tests/stdlib/slots/12_owed_fill_satisfied.ein::cores[single]
 88739d787db7ee78       73L  tests/stdlib/slots/12_owed_fill_satisfied.ein::cores[n2]
 04651657e020da9e      180L  tests/stdlib/slots/12_owed_fill_satisfied.ein::oracle
-174f8ee0ba8d343f      387L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::load
+33dfe6b68acc6d71      386L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::load
 84443894a467c83c      860L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::saturate
 e5239b82e510c762      126L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::plan
 fc874364d6287fce       48L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::match

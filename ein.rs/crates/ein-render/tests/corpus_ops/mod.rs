@@ -156,7 +156,7 @@ pub const IR_MODES: [&str; 4] = ["parse", "dump-compact", "resolve", "expand"];
 #[derive(Clone, Copy)]
 pub enum Op {
     Ir(&'static str),
-    /// The KB after load: registries, fact list and the seven indexes.
+    /// The KB after load: registries, fact list and the six indexes.
     Load,
     /// Root saturation's whole `--events` stream at `Level::Verbose` — every
     /// firing including the redundant ones, plus the ABSENT / CLASH / SUMMARY

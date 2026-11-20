@@ -6469,13 +6469,16 @@ mod tests {
         let compacts = facts(&terms, &kb);
         assert_eq!(compacts[1], "(p (q a))", "{compacts:?}");
         // The inner proposition is interned but not believed: it is not in
-        // the fact list, and that is what makes the negated index meaningful.
+        // the fact list, and the fact that holds it is.
         assert_eq!(kb.n_facts(), 2);
-        let inner = terms.facts.args(kb.facts().next().expect("a fact"))[0]
-            .as_fact()
-            .expect("nested");
+        let negation = kb.facts().next().expect("a fact");
+        let inner = terms.facts.args(negation)[0].as_fact().expect("nested");
         assert!(!kb.contains(inner));
-        assert!(kb.is_negated(inner));
+        assert_eq!(
+            terms.facts.probe(terms.kernel.not, &[Value::fact(inner)]),
+            Some(negation)
+        );
+        assert!(kb.contains(negation));
     }
 
     /// A fact's `:using` lists its premises, each a fact: `:using ((r a

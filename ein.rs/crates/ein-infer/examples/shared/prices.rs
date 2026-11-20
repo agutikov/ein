@@ -661,10 +661,13 @@ impl Denials {
         for x in missing {
             let set: Vec<ein_core::FactId> = x.set.iter().map(|&b| facts[b as usize]).collect();
             let denied = reader
-                .with_fixpoint(&set, |kb, _| {
+                .with_fixpoint(&set, |kb, terms| {
                     let mut d = Bits::new(r.n);
                     for (b, &f) in facts.iter().enumerate() {
-                        if kb.is_negated(f) {
+                        if terms
+                            .probe_fact(terms.kernel.not, &[ein_core::Value::fact(f)])
+                            .is_some_and(|n| kb.contains(n))
+                        {
                             d.insert(b as u32);
                         }
                     }

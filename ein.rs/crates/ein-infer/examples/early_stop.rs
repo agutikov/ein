@@ -281,7 +281,10 @@ impl Plain<'_> {
             if kb.contains(c) {
                 closure.push(b as u32);
             }
-            if kb.is_negated(c) {
+            if terms
+                .probe_fact(terms.kernel.not, &[ein_core::Value::fact(c)])
+                .is_some_and(|n| kb.contains(n))
+            {
                 denied.push(b as u32);
             }
         }

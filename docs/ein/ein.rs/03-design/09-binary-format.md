@@ -331,7 +331,7 @@ and what a run computes stay separable. The section's one writer is the library 
 | unit tests | `cast.rs`: `a_row_is_twelve_bytes_with_no_padding`, `a_cast_refuses_a_partial_record_and_a_misaligned_start`, `the_round_trip_through_bytes_is_the_identity`, `an_aligned_buffer_is_aligned`; `tables.rs`: `a_fresh_table_is_the_identity_and_a_permuted_one_is_not`, `a_value_keeps_its_tag_and_moves_its_payload` |
 
 What *identical* means in a round trip is `ein_core::kb::Kb::diff`: both KBs materialised, then compared field by
-field, fact order, belief, the negated set, every index, the primary map, the alternative lists, closures and
+field, fact order, belief, every index, the primary map, the alternative lists, closures and
 smallest-closure arrivals, so the answer is about content and not about how many forks either went through. Elsewhere
 the container is one of the ways every command reads a program: `ein-cli/tests/program_read.rs`'s
 `every_command_answers_a_program_its_container_and_a_file_relative_import` and

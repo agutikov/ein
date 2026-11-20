@@ -1,7 +1,7 @@
 //! The loader's contract.
 //!
 //! The KB has no CLI surface of its own: `ein_core::shape` renders the
-//! registries, the fact list and the seven indexes as one deterministic text.
+//! registries, the fact list and the six indexes as one deterministic text.
 //! Where each part of the contract is checked:
 //!
 //! | claim | where |

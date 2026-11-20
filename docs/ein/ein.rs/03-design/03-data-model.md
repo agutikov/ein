@@ -31,7 +31,7 @@ source position and everything else take no part in it. In `ein.rs` every identi
 | a nested fact argument | a `Value` whose payload is a `FactId` | integer compare | the integer |
 
 So unifying two arguments starts with a tag test, the matcher's registers hold `Value`s, and the keys of every
-per-fact table (belief, the negated set, provenance, the alive set) are dense integers usable as a `Vec` or bit-set
+per-fact table (belief, provenance, the alive set) are dense integers usable as a `Vec` or bit-set
 index.
 
 **The code's words.** `Value` is the code's word for an **object**, a node of the knowledge-base graph: an atom,
@@ -204,7 +204,7 @@ pub struct Kb {
 ```
 
 A `Layer` holds the facts added at one point in the KB's history and every index over them: `facts`
-(`Vec<FactId>`, insertion order), `present` and `negated` (bit sets), `by_rel`, `by_rel_slot_val` and its Bloom
+(`Vec<FactId>`, insertion order), `present` (a bit set), `by_rel`, `by_rel_slot_val` and its Bloom
 filter `slot_bloom`, `rule_apps_by_rule`, the count `rule_apps`, `rule_apps_on_rel`, `names` (§ 6), and the four
 provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3).
 
@@ -304,7 +304,6 @@ fact list (`rebuild_layer`) and then checks the extent counts (§ 7). Held by
 | `present` | per layer | `FactId` | a bit set: believed here | `Kb::contains` |
 | `by_rel` | per layer | relation `Symbol` | the held extent, append order | `Kb::facts_of` |
 | `by_rel_slot_val` | per layer | `SlotKey` (§ 6.1) | the facts with that object at that position, or a fact of that relation | `Kb::facts_with` |
-| `negated` | per layer | the inner `FactId` of each stored `(not X)` | a bit set | `Kb::is_negated`, `Kb::negated` |
 | `rule_apps_by_rule` | per layer | a rule's name | the facts headed by it: its activators | `Kb::rule_apps_by_rule` |
 | `rule_apps_on_rel` | per layer | a relation's name | rule-application facts naming it as an argument, `(symmetric co-located)` | `Kb::rule_apps_on_relation` |
 | `names` | per layer | any name | `NameEntry { as_head, as_arg }`, direct arguments only | `Kb::names`, `Kb::participation`, the hypothesis generator |
@@ -368,7 +367,7 @@ reported for a key a layer holds, which `facts_with` asserts in debug builds.
 
 `ein_core::bitset::BitSet` is a `Vec<u64>` with `insert`, `remove`, `contains`, `len` and `iter`, hand-rolled because
 that is its whole surface. Equality is over contents, so a set that grew and one that did not compare equal when they
-hold the same ids, which the materialise-against-rebuild check needs. It holds belief and the negated set here, and
+hold the same ids, which the materialise-against-rebuild check needs. It holds belief here, and
 the alive set and dense-id dedups elsewhere in the engine.
 
 ## 7. Per-relation extent counts
@@ -380,7 +379,7 @@ stack; the negation-as-failure boundary asks it once per watched relation ([`06-
 `Kb::check_extent_counts` compares the map with a walk of the layers and is part of `check_layering`. Held by
 `kb.rs`'s `n_facts_of_costs_one_probe_at_any_depth`, which counts probes forty forks deep under `--features
 counters`, and `a_rebuild_reconstructs_the_extent_counts`. The other aggregate reads (`n_facts`, `n_rule_apps`,
-`contains`, `is_negated`) stay $O(\operatorname{depth})$.
+`contains`) stay $O(\operatorname{depth})$.
 
 ## 8. Provenance
 
@@ -547,7 +546,7 @@ relation, `Rule` for a rule's name, whichever registry holds it, `Object` for ev
 ### 9.3 The KB shape dump
 
 `ein_core::shape::shape(kb, terms)` renders a KB as one deterministic text: each fact by its position in the fact
-list, the registries, the seven indexes of § 6 (the participation index by its `DIRECT` keys), the primary
+list, the registries, the six indexes of § 6 (the participation index by its `DIRECT` keys), the primary
 provenance and the alternative counts. `Value`s are written with `repr`, so a name and a nested fact cannot collide,
 and every map is emitted in a sorted order of its own. It is the `load` operation of the corpus shape digests
 ([`ein-render/tests/golden/corpus_shapes.md5`](../../../../ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5)),

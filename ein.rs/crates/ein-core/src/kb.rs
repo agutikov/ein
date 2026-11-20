@@ -184,8 +184,6 @@ pub struct Layer {
     /// A Bloom filter over `by_rel_slot_val`'s keys — derived state, rebuilt
     /// wherever that map is written and never read for anything but skipping.
     slot_bloom: [u64; BLOOM_WORDS],
-    /// The **inner** id of every `(not X)`, as a bitset.
-    negated: BitSet,
     rule_apps_by_rule: FxHashMap<Symbol, Vec<FactId>>,
     /// How many facts this layer added whose head names a rule.
     ///
@@ -227,7 +225,6 @@ impl Default for Layer {
             by_rel: FxHashMap::default(),
             by_rel_slot_val: FxHashMap::default(),
             slot_bloom: [0; BLOOM_WORDS],
-            negated: BitSet::default(),
             rule_apps_by_rule: FxHashMap::default(),
             rule_apps: 0,
             rule_apps_on_rel: FxHashMap::default(),
@@ -338,7 +335,7 @@ impl Layer {
                     .sum::<usize>()
         }
         self.facts.capacity() * size_of::<FactId>()
-            + (self.present.len() + self.negated.len()) * size_of::<u64>()
+            + self.present.len() * size_of::<u64>()
             + size_of_val(&self.slot_bloom)
             + vec_map(&self.by_rel)
             + vec_map(&self.by_rel_slot_val)
@@ -369,9 +366,6 @@ impl Layer {
         }
         if self.present != other.present {
             return Err("belief sets differ".to_string());
-        }
-        if self.negated != other.negated {
-            return Err("negated sets differ".to_string());
         }
         diff_map("by_rel", &self.by_rel, &other.by_rel)?;
         diff_map(
@@ -891,9 +885,6 @@ impl Kb {
             for id in layer.present.iter() {
                 out.present.insert(id);
             }
-            for id in layer.negated.iter() {
-                out.negated.insert(id);
-            }
             for (k, v) in &layer.by_rel {
                 out.by_rel.entry(*k).or_default().extend_from_slice(v);
             }
@@ -1033,19 +1024,6 @@ impl Kb {
             })
             .filter_map(move |l| l.by_rel_slot_val.get(&key))
             .flat_map(|v| v.iter().copied())
-    }
-
-    /// Is `inner` the subject of a stored `(not inner)`?
-    pub fn is_negated(&self, inner: FactId) -> bool {
-        self.layers().any(|l| l.negated.contains(inner.0))
-    }
-
-    pub fn negated(&self) -> impl Iterator<Item = FactId> + '_ {
-        self.layers()
-            .flat_map(|l| l.negated.iter())
-            .map(FactId)
-            .collect::<std::collections::BTreeSet<_>>()
-            .into_iter()
     }
 
     /// How many rule-application facts the KB holds — the version counter
@@ -1324,7 +1302,6 @@ fn index_into(
 ) {
     {
         let (rel, args) = terms.facts.get(id);
-        let not = terms.kernel.not;
 
         layer.by_rel.entry(rel).or_default().push(id);
         if is_rule_app {
@@ -1342,11 +1319,6 @@ fn index_into(
             {
                 layer.rule_apps_on_rel.entry(name).or_default().push(id);
             }
-        }
-        if rel == not
-            && let Some(inner) = args.first().and_then(|v| v.as_fact())
-        {
-            layer.negated.insert(inner.0);
         }
         layer.names.entry(rel).as_head.push(id);
         for value in args {
@@ -1396,7 +1368,6 @@ impl Kb {
             ..Layer::default()
         };
 
-        let not = terms.kernel.not;
         for &id in &layer.facts {
             let (rel, args) = terms.facts.get(id);
             let is_rule_app = self.is_rule_app(rel);
@@ -1418,11 +1389,6 @@ impl Kb {
                         layer.rule_apps_on_rel.entry(name).or_default().push(id);
                     }
                 }
-            }
-            if rel == not
-                && let Some(inner) = args.first().and_then(|v| v.as_fact())
-            {
-                layer.negated.insert(inner.0);
             }
         }
         // Registry names are unioned in, so a relation declared with no facts
@@ -2261,10 +2227,7 @@ mod tests {
             0,
             "the nested fact is interned, not believed, so it is not indexed"
         );
-        // The negated index holds the *inner* id.
-        assert!(kb.is_negated(inner.as_fact().expect("nested")));
-        assert!(!kb.is_negated(f));
-        // Nor does a nested fact bump the names index (Q40).
+        // A nested fact does not bump the names index (Q40).
         assert_eq!(kb.name_as_arg(sym(&mut terms, "Norwegian")).count(), 0);
         assert_eq!(kb.name_as_head(not).collect::<Vec<_>>(), vec![f]);
     }

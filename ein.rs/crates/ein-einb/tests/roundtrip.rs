@@ -7,7 +7,7 @@
 //!
 //! - Into an **empty** interner every id comes back the one it was, so
 //!   [`Kb::diff`] compares the KBs themselves — fact order, belief set,
-//!   negated set, all seven indexes, the primary map and the alternative
+//!   all six indexes, the primary map and the alternative
 //!   lists, and the no-good set.
 //! - Into a **shared** one the ids necessarily move — that is the whole point
 //!   of the remap — so the comparator is [`ein_core::shape`], which names

@@ -1,8 +1,7 @@
 //! A dense set of `u32` ids.
 //!
-//! Three of the KB's indexes are membership tests over `FactId` — belief,
-//! the negated-inner set, and (from
-//! [03-design/03-data-model.md § 6.3](../../../../docs/ein/ein.rs/03-design/03-data-model.md#63-bit-sets)) the alive
+//! Membership tests over `FactId` — belief, and
+//! ([03-design/03-data-model.md § 6.3](../../../../docs/ein/ein.rs/03-design/03-data-model.md#63-bit-sets)) the alive
 //! set. An id is a dense `u32`, so a bitset answers in one shift and one mask
 //! ([03-design/03-data-model.md § 6](../../../../docs/ein/ein.rs/03-design/03-data-model.md#6-the-indexes)).
 //!

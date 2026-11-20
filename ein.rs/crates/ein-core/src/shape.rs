@@ -2,7 +2,7 @@
 //!
 //! [03-design/03-data-model.md § 9.3](../../../../docs/ein/ein.rs/03-design/03-data-model.md#93-the-kb-shape-dump)'s gate was
 //! "every corpus file loads to the same KB", and a KB has no CLI surface of
-//! its own: the registries, the seven indexes and the participation counts
+//! its own: the registries, the six indexes and the participation counts
 //! are exactly the things the output of an `ein` *process* does not show.
 //! This renders all of them as one deterministic text, which is
 //! `corpus_shapes.md5`'s `load` op.
@@ -101,7 +101,7 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
         }
     }
 
-    // The seven indexes, each enumerated in a sorted order of its own.
+    // The six indexes, each enumerated in a sorted order of its own.
     let mut relations: Vec<_> = facts.iter().map(|&f| terms.facts.rel(f)).collect();
     relations.sort_by_key(|&r| terms.syms.rank(r));
     relations.dedup();
@@ -145,11 +145,6 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             ids(&kb.name_as_head(name).collect::<Vec<_>>()),
             ids(&kb.name_as_arg(name).collect::<Vec<_>>()),
         ));
-    }
-    let mut negated: Vec<String> = kb.negated().map(|f| identity(terms, f)).collect();
-    negated.sort();
-    for inner in negated {
-        out.push(format!("NEG {inner}"));
     }
     for (name, _) in program.rules.iter() {
         let apps = kb.rule_apps_by_rule(name).collect::<Vec<_>>();
