@@ -428,7 +428,10 @@ paragraph, no register count, no measurement (the user's rule).
   S-expressions as facts (P1k.20); [M1n](plans/m1n_non_monotone_programs/README.md),
   non-monotone programs (F21, moved into it, with its probes; the register
   holds no row of a flagged program, and the witnesses of the rows it once held
-  stay in the corpus and under `plans/wrong_answers/witnesses/`); each phase
+  stay in the corpus and under `plans/wrong_answers/witnesses/`);
+  [M1p](plans/m1p_ein_to_natural_language/README.md), Ein to natural language:
+  a value's own format (P1p.1), every fact a sentence (P1p.2), reasoning in
+  words (P1p.3); each phase
   **run only on the user's word**.
 
 ## Standing rules

@@ -164,6 +164,12 @@ the tree they left, and one out of that review's close:
   and related followups and ideas"*): F21 moved into it with its probes and the register's five `W8` rows; four
   phases drafted from F21's decisions (detection complete, what a node's state is, what a flagged program's answer
   is, other ways to compute). Each phase runs only on the user's word.
+- **M1p — Ein to natural language** ([m1p_ein_to_natural_language/](m1p_ein_to_natural_language/README.md))
+  — created 2026-11-20 on the user's instruction (*"new milestone M1p improve ein to NL translation … 3 phases:
+  custom formatting, facts formatting, reasoning formatting"*): what replaces the text a fact once took from its
+  relation's declaration, so that every fact, inference and conclusion reads in natural language, and a value such
+  as a decimal number is written as text by a format of its own. Three phases drafted as subjects and open
+  questions. Each phase runs only on the user's word.
 - **M1j — `nlp/` and `smt/` as one proof of concept** (`m1j_nlp_smt_poc/`, deleted
   by M1f's S1f.20.9 and in git) — **done 2026-11-13**, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's
   note; small. The Zebra puzzle's sentences, over a limited vocabulary,
@@ -273,6 +279,11 @@ plans/
 │   ├── README.md                     (the user's instruction verbatim; four phases drafted)
 │   ├── f21_non_monotone_programs_decided.md  F21, moved from followups/: the analysis, D1–D7, what was handed over
 │   └── f21_probes/                   F21's fourteen probes, read by three censuses
+├── m1p_ein_to_natural_language/    Ein to natural language — created 2026-11-20
+│   ├── README.md                     (the user's instruction verbatim; three phases drafted)
+│   ├── p1p.1_custom_formatting/      a value written as text by a format of its own — not started
+│   ├── p1p.2_facts_formatting/       every fact a sentence — not started
+│   └── p1p.3_reasoning_formatting/   an inference, a refutation and an answer in words — not started
 ├── m1h_beyond_word_problems/         beyond word problems — planned 2026-11-12, phases written out 2026-11-13
 │   ├── README.md                     (the user's TODO verbatim; each phase's source section)
 │   ├── open_questions.md             Q-M1h.1–20, none ruled
@@ -356,6 +367,7 @@ Stage files have a stable shape:
 | [M1h](m1h_beyond_word_problems/README.md) | **full to each phase's stop** — 7 phases, 37 stage files (13 past a stop, in outline; two of those hold the place of a plan written after a survey), written out 2026-11-13 on the user's instruction | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Every phase stops for the user before anything ships; Q-M1h.1–20 are open, and its place against M1g is not ruled | — (no estimates, the user's ruling of 2026-11-08) P1h.6, statements, negations and questions (F20 promoted, an open fact read as a question), added 2026-11-18 as a README. |
 | [M1k](m1k_notations_as_facts/README.md) | 2 phases: P1k.10 (from M1f's P1f.30, examples done), P1k.20 (README) | **created** 2026-11-18 on the user's instruction, not started as a milestone: other notations (DOT, S-expressions) read as Ein facts | — |
 | [M1n](m1n_non_monotone_programs/README.md) | F21 moved in, with its probes; 4 phases drafted (README) | **created** 2026-11-19 on the user's instruction, not started: non-monotone programs, the decisions F21 deferred |
+| [M1p](m1p_ein_to_natural_language/README.md) | 3 phases drafted (README each): custom formatting, facts formatting, reasoning formatting | **created** 2026-11-20 on the user's instruction, not started: every fact, inference and conclusion in natural language, and a value's own format |
 | M1j | *(plans removed at M1f's S1f.20.9 — git history)* | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
