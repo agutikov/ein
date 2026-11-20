@@ -210,4 +210,22 @@ the algebra's checks); `Kb::is_negated` on the data-model page, which exists (V-
 
 ### The gate
 
-Run on this record's commit; its result is the next commit's paragraph.
+`./run_tests.sh` once, on `e8e8315f` (this record before its gate paragraph; the project's tree is `e2f68bad`'s),
+with `CARGO_BUILD_JOBS=12 EIN_TEST_JOBS=8`: **exit 0**. The ten static checks clean (`doc_audit`: 2419 files, 0
+findings in links and in decision ids; the release voice; the doc blocks; `cargo fmt`, `clippy -D warnings`,
+`cargo doc -D warnings`); `cargo test --profile gate --workspace`, 167 test binaries, 1 373 tests passed, none failed,
+by the sum of its `test result` lines; `check_test_scratch.py`; `check_generated.py`, 9 generators, every file as
+written; `check_region_routes.py`, 8 programs and 300 random regions; `wrong_answers.py`, 9 open rows; the review
+bundle's smoke, 0 failed; the bench smoke. Its last lines:
+
+```text
+Testing region_n1/zebra2
+Success
+
+Testing region_single/zebra2
+Success
+```
+
+A first run, on `e3a98135`, was stopped after its static checks (all clean) so that the gate ran once, on the last
+commit. Not run, as the brief said: `--nightly`, `--dev-host`, `utils/ci_container.sh`. The stage changes no DOT
+writer, no review bundle and nothing CI installs; it adds three diagram sources, drawn by `utils/render_diagrams.py`.
