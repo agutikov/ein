@@ -4358,6 +4358,11 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "the blind enumerator, run where root holds no `open` fact and activates no obligation (Q-M1f.576), with the library's four obligation rules loaded and none activated: `bijective-setup`'s activators written by hand but the two obligations'. `ein-infer/tests/obligation_reports.rs` holds that no candidate names one of them."
 
 [[entry]]
+path   = "tests/stdlib/bijection/07_setup_owed_activators.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`bijective-setup`'s two activators of the obligations, read on the owing root: on a bijection the two obligations agree at every state, so no claim about R tells one activated for another relation from one activated rightly, and the claim lists the activators themselves."
+[[entry]]
 path   = "tests/stdlib/bool/circuit/01_propagate.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]

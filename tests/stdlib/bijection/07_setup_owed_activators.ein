@@ -1,0 +1,54 @@
+;;; `std.bijection` — `bijective-setup`'s two activators of the obligations,
+;;; `total-owed` and `surjective-owed`.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   bijective-setup   (bijective R) + (bijection-hierarchy isa) concludes,
+;;;                     among its eight activators, the two that make a state
+;;;                     owe: `(total-owed R isa)`, every member of R's first
+;;;                     label an image, and `(surjective-owed R isa)`, every
+;;;                     member of its second a preimage
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Two agents, two colours, one bijective relation over one hierarchy. Root's
+;;; saturation concludes the two activators, each of `wears` over `is-a`, in
+;;; that order: the relation that owes, then the hierarchy its labels are read
+;;; through.
+;;;
+;;; ── What the expectation means, and why it reads the activators ────────────
+;;;
+;;; Root owes, so R is empty and root is the node it stops at. The claim lists
+;;; that node by the two activators it holds, which closes the held extent of
+;;; each: exactly `wears` over `is-a`. An activator with its two arguments
+;;; exchanged would name the hierarchy as the relation that owes, and root
+;;; would hold another fact of it.
+;;;
+;;; No claim about R can say this. On a bijection the two obligations agree at
+;;; every state: with a fact of the relation excluding its row and its column,
+;;; a state gives every member of the first label an image exactly when it
+;;; gives every member of the second a preimage, and what each obligation
+;;; would propose is the same set of facts. So with one of the two activated
+;;; for another relation, the other still makes every state owe what it owed,
+;;; and R, the nodes that owe and the hypotheses are what they were. Where the
+;;; two labels have different counts the elimination rules of the same setup
+;;; end root before any state is asked. The activators are where the
+;;; difference is, so that is what the claim reads.
+(import std.algebra   :symbols (total-owed surjective-owed))
+(import std.bijection)
+
+(relation is-a  T T          :why "{?3} is a {?4}")
+(relation wears Agent Colour :why "{?3} wears {?4}")
+
+(is-a Ann Agent)  (is-a Bob Agent)
+(is-a Red Colour) (is-a Green Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+
+;; Root alone (Q-M1f.254): the question is what root's saturation concludes,
+;; so nothing is guessed. Root owes, and is the owing node R stops at.
+(solve
+  :no-search
+  :expect (region (owing (model (total-owed wears is-a)
+                                (surjective-owed wears is-a)))))

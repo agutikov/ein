@@ -118,7 +118,7 @@ these programs give each rule one.
 | dir | what the programs do |
 |---|---|
 | [`stdlib/algebra/`](stdlib/algebra/) | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and the totality pair's **obligation** duals, each once owing and once satisfied |
-| [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, with the library's obligation rules loaded and none activated |
+| [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, with the library's obligation rules loaded and none activated; and `07_setup_owed_activators.ein`, the setup's two activators of the obligations, read on the owing root because no claim about R tells them apart on a bijection |
 | [`stdlib/elim/`](stdlib/elim/) | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces the one fact left, exactly full refutes |
 | [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a relation whose held extent is closed is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
 | [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
@@ -784,7 +784,7 @@ closure of one
 nothing is proposed whatever the program declares, and the obligations judge
 root, so R is root where it owes nothing and empty, root the owing node it
 stops at, where it owes. That is what the fixtures whose question is root's
-verdict or root's saturation say: `algebra/23` to `26`, `bijection/01` to `03`,
+verdict or root's saturation say: `algebra/23` to `26`, `bijection/01` to `03` and `07`,
 `slots/01` to `04`, `07` to `13`, `region/04_owing` and `05_empty`. A hypothesis rule
 or a list beside `:no-search` proposes or filters nothing, and says so in a
 `note:`

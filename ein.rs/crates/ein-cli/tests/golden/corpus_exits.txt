@@ -2101,6 +2101,11 @@
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: test
+0    tests/stdlib/bijection/07_setup_owed_activators.ein :: render constraints
+1    tests/stdlib/bijection/07_setup_owed_activators.ein :: render rules
+0    tests/stdlib/bijection/07_setup_owed_activators.ein :: saturate
+0    tests/stdlib/bijection/07_setup_owed_activators.ein :: solve
+0    tests/stdlib/bijection/07_setup_owed_activators.ein :: test
 0    tests/stdlib/bool/circuit/01_propagate.ein :: render constraints
 1    tests/stdlib/bool/circuit/01_propagate.ein :: render rules
 0    tests/stdlib/bool/circuit/01_propagate.ein :: saturate
