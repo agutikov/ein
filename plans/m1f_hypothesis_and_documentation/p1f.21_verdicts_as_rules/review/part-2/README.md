@@ -2,7 +2,7 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Fourteen items are open: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
+**Fifteen items are open, the last, 75, with a question the pages wait on: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
 defaults its build took, 70, those of S1f.21.13, 71, those of S1f.21.18, 72, those of S1f.21.20, 73, those of
 S1f.21.14, and 74, those of S1f.21.21. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
 and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
@@ -32,6 +32,7 @@ here blocks the build; each item below stays for your review, and once everythin
 | [**72**](72-S1f.21.20-defaults/README.md) | the nine defaults S1f.21.20 took: the three defects fixed, the pass where a state is used with its flag `--in-flight`, the agenda's tables kept | the flag's name and its commands; whether a printed state's finding in flight is the run's | as built |
 | [**73**](73-S1f.21.14-defaults/README.md) | the ten defaults S1f.21.14 took, writing the part's pages: every page of `docs/ein/` read against the binary | the word *unknown* for a fact held neither way; twelve decision files renamed | as written |
 | [**74**](74-S1f.21.21-defaults/README.md) | the defaults S1f.21.21 took, making the contradiction's rules cheap: a pair matched by one probe, the nested relation a key of the indexes; no firing moved. The first, the pair's rule of no argument, is ruled: it stays | the five that are left | as built |
+| [**75**](75-S1f.21.22-defaults/README.md) | the seven defaults S1f.21.22 took, building what the pages found short: the kb and constraints renders draw root's `open` facts; a written `(open …)` against the lists is a load error | **whether a drawing of root shows the blind enumerator's guesses**: nine pictures of the pages wait on it | (a) as built: it shows them |
 
 Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
 

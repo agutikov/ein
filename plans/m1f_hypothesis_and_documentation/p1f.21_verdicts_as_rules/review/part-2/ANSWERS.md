@@ -286,3 +286,26 @@ for your review, the two most worth your eye:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 75 · The defaults S1f.21.22 took, and what a drawing of root shows
+
+[The item](75-S1f.21.22-defaults/README.md), which has the seven.
+
+**The question the pages wait on.** `ein render kb` now draws the `open` facts root holds, as you ruled them part
+of a state. Where nothing else proposes, those are the blind enumerator's guesses: five on the guide's first
+program, 130 on *zebra2*. Nine pictures on the pages no longer match the binary.
+
+- **(a)** As built: a drawing of root shows all its `open` facts, and the nine pictures are drawn again with them.
+  **Default.**
+- **(b)** An option on `ein render kb` leaves the `open` facts out, as `-P` does for a listing, and the nine pages
+  draw their pictures with it.
+- **(c)** A drawing of root leaves out the blind enumerator's guesses by default, and an option shows them.
+
+Also worth your eye: **1, Q-M1f.666**, the claim row says *not printed* where a class lists an `open` fact;
+**2, Q-M1f.667**, the constraints view keeps `(open R)` and no `(open F)`.
+
+**Your answer:**
+
+**Notes:**

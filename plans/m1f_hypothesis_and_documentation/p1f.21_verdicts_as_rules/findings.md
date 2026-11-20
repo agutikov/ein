@@ -76,18 +76,20 @@ without a path is in [`design.md`](design.md), whole.
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | **fixed** by S1f.21.20 |
 | [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655, Q-M1f.656) and **built** by S1f.21.20: the pass runs at root and at a printed or saved state, and everywhere under `--in-flight` |
 | [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | **fixed** by S1f.21.20: a debug check that walked every rule at every step; the gate's build of the program goes from 4.4 to 1.4 times the release |
-| [V-66](#v-66--the-outside-row-does-not-see-a-programs-written-hypotheses) | the outside row does not see a program's written hypotheses | S1f.21.20 | open; **S1f.21.22 fixes it** |
+| [V-66](#v-66--the-outside-row-does-not-see-a-programs-written-hypotheses) | the outside row does not see a program's written hypotheses | S1f.21.20 | **fixed** by S1f.21.22 |
 | [V-67](#v-67--the-hypothesis-generation-page-defines-stuck-by-the-obligations-share) | the hypothesis generation page defines stuck by the obligations' share | S1f.21.20 | **fixed** by S1f.21.14: *stuck* is a root that owes with $H$ empty, as the engine reads it |
 | [V-68](#v-68--the-streams-diagram-has-no-fire-after-roots-obligation-pass) | the stream's diagram has no fire after root's obligation pass | S1f.21.20 | **fixed** by S1f.21.14: the stream's diagram has the resumed saturation |
-| [V-72](#v-72--the-kb-and-constraints-renders-draw-no-open-fact-root-holds) | the kb and constraints renders draw no open fact root holds | S1f.21.14 | open; **S1f.21.22 fixes it** |
-| [V-73](#v-73--a-written-open-fact-is-not-judged-against-the-lists-and-a-closure) | a written open fact is not judged against the lists and a closure | S1f.21.14 | open; **S1f.21.22 fixes it** |
-| [V-74](#v-74--a-querys-printed-claim-over-open-does-not-read-back) | a query's printed claim over open does not read back | S1f.21.14 | open; **S1f.21.22 fixes it** |
-| [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | open; **S1f.21.22 rewords them** |
+| [V-72](#v-72--the-kb-and-constraints-renders-draw-no-open-fact-root-holds) | the kb and constraints renders draw no open fact root holds | S1f.21.14 | **fixed** by S1f.21.22: the two renders draw the `open` facts root holds; what that does to the pages' pictures is V-85 |
+| [V-73](#v-73--a-written-open-fact-is-not-judged-against-the-lists-and-a-closure) | a written open fact is not judged against the lists and a closure | S1f.21.14 | **fixed** by S1f.21.22: a load error, placed where the fact is written; no corpus program met it |
+| [V-74](#v-74--a-querys-printed-claim-over-open-does-not-read-back) | a query's printed claim over open does not read back | S1f.21.14 | **fixed** by S1f.21.22: the row says the claim is not printed (its default Q-M1f.666) |
+| [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | **fixed** by S1f.21.22 |
 | [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | **fixed** by S1f.21.14 on its resume |
-| [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | open; **S1f.21.22 runs it and fixes it if it does** |
-| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | open; the largest cost at a state that is left, and no part of the contradiction's, whose cost the user accepted; **the user's call** |
+| [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | **fixed** by S1f.21.22: it did depend on the count, shown by a probe; the first finding in the nodes' order is recorded, and a test holds it |
+| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | **ruled by the user 2026-11-20** (Q-M1f.674), *"of course build"*; S1f.21.23 builds it |
 | [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
+| [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | open; **S1f.21.23 rewords them** |
+| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | open; **the user's call first**: whether a drawing of root shows the guesses, review item 75; then the pages |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -968,3 +970,11 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-80 — The cost page's first instruction counts were taken unpinned
 
 **Found** by S1f.21.21. The counts of the cost page's section on why the contradiction costs were taken at the default count of workers, not pinned; pinned to the performance cores with one worker the same engines execute fewer instructions (A on `equation_two_unknowns.ein`: 3 143 M against the page's 3 610 M). The two are not to be set side by side. ****taken up by the coordinator: the final table takes every count one way.**
+
+## V-84 — Two comments of the obligations' reader name forms the parser refuses
+
+**Found** by S1f.21.22. `ein-infer/src/obligations.rs` still mentions `:priority` and a bare `(open)` in comments, and the parser refuses both. They were not on the list S1f.21.22 reworded. **Open; S1f.21.23 rewords them.**
+
+## V-85 — Nine pictures of the pages are no longer what the kb render draws
+
+**Found** by S1f.21.22. Since `ein render kb` draws the `open` facts root holds, the blind enumerator's guesses among them, nine pictures on the pages no longer match the binary: four of the guide (the tiny program, two of the transitive and the co-located firings, the range elimination, where *zebra2*'s root holds 130 `open` facts) and five of the reasoning pages. Three sentences say a drawing draws what it no longer does. Seventeen other pictures are still what the binary draws. A page's picture is a file drawn from its own source, so no check fails. **Open; the user's call first: whether a drawing of root shows the guesses, review item 75; then the pages.**

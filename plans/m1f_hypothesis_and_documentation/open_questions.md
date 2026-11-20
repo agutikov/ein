@@ -590,6 +590,14 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.661](#q-m1f661--the-key-of-a-nested-facts-relation) | The key of a nested fact's relation | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
 | [Q-M1f.662](#q-m1f662--what-a-rule-instance-costs-at-every-state-beside-the-two-tasks) | What a rule instance costs at every state beside the two tasks | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
 | [Q-M1f.663](#q-m1f663--a-position-inside-a-nested-fact-that-has-the-relation-keys-number) | A position inside a nested fact that has the relation key's number | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
+| [Q-M1f.666](#q-m1f666--what-the-claim-row-prints-where-a-class-lists-an-open-fact) | What the claim row prints where a class lists an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.667](#q-m1f667--which-of-roots-open-facts-the-constraints-view-keeps) | Which of root's open facts the constraints view keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.668](#q-m1f668--a-drawing-without-its-open-facts) | A drawing without its open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.669](#q-m1f669--the-shape-goldens-view-of-roots-fixpoint-against-the-loaded-root) | The shape golden's view of root's fixpoint against the loaded root | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.670](#q-m1f670--where-the-load-error-places-a-written-open-fact) | Where the load error places a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.671](#q-m1f671--when-a-workers-finding-in-flight-is-said-on-stderr) | When a worker's finding in flight is said on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.672](#q-m1f672--the-rendering-pages-layers-picture) | The rendering page's layers picture | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.674](#q-m1f674--the-facts-a-resumed-state-added-read-off-its-own-layers) | The facts a resumed state added, read off its own layers | **ruled 2026-11-20 by the user**: built; P1f.21's S1f.21.23 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12025,3 +12033,66 @@ The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/7
 **The default taken**: not keyed, by the scan, the compiled list and the index alike (`SlotKey::keys_inner`), so a position's key and a relation's never share a bucket. The other reading: a field of its own in `SlotKey`, past its 12 bytes.
 
 The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+
+### Q-M1f.666 — What the claim row prints where a class lists an open fact
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: what `as :expect` prints where a class lists an `open` fact, or the absence of one.
+**The default taken**: *not printed: these classes list an open fact, which no claim lists*, the first of the reasons a claim is not printed; an `open` under an ordinary relation is a name, and the claim is printed. The other reading: no row at all; or a claim grammar that takes `open`, which the standing rule that no claim lists one refuses.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.667 — Which of root's open facts the constraints view keeps
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: which of root's `open` facts `ein render constraints` keeps.
+**The default taken**: `(open R)`, a fact about a relation by the slice's own definition (Q-M1f.523), and no `(open F)`, whose argument is a fact. The other reading: every `open` fact root holds, outside the slice's definition.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.668 — A drawing without its open facts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: a view of a drawing without its `open` facts.
+**The default taken**: none: `ein render kb` has no option that leaves them out; `-P` is a listing's (Q-M1f.577). The other reading: a `-P`-like option on `ein render kb`, positive facts alone.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.669 — The shape golden's view of root's fixpoint against the loaded root
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: the shape golden's `kb-since` view, root's fixpoint against the loaded root.
+**The default taken**: drawn with root's `open` facts, as the commands draw root, so its lines move with the two renders'. The other reading: a bare saturation, so only the constraint views' lines move.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.670 — Where the load error places a written open fact
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: where the load error places a written `open` fact.
+**The default taken**: *written at FILE:L:C*, the position of its head's word, a top-level fact keeping none of its own (07-diagnostics.md § 1.5), as a written closure is placed; a closure conflict at the closure where it is written, else at the written fact. The other reading: the list's position alone, with no word on where the fact is.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.671 — When a worker's finding in flight is said on stderr
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: when a worker's in-flight finding is said on stderr.
+**The default taken**: when the fan-out reads its node back, in order, with the hypothesis recorded; a node computed on the caller says it at once, as before. The other reading: said by the worker at once, the hypothesis alone recorded in order.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.672 — The rendering page's layers picture
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: `12-rendering.md`'s layers picture, whose program's root holds 56 guesses of the blind enumerator.
+**The default taken**: the program states `(solve :no-search)`, so the picture is still what the binary draws, byte for byte. The other reading: the picture redrawn with the 56 hypotheses.
+
+The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+
+### Q-M1f.674 — The facts a resumed state added, read off its own layers
+
+**Raised** 2026-11-20 by P1f.21's S1f.21.21, its finding V-78: at every state of a search the saturation's resume
+walks every fact the state holds, and asks of each whether root held it, to find the few the commitment wrote;
+about 17 % of `send_more_money.ein`'s instructions. The knowledge base already reads its facts from a position on,
+skipping whole layers. The user accepted the contradiction's cost, *"I accepted costs of contradiction. Explain
+what is V-78"*, and the coordinator explained it and asked: build it or leave it.
+
+**Ruled 2026-11-20 by the user**, in the session, verbatim:
+
+> of course build
+
+[S1f.21.23](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md) builds it.
