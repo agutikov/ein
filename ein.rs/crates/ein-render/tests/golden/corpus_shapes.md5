@@ -14727,7 +14727,7 @@ d0c0ad1024981a94       42L  examples/lattice/17_flagged_region_claim.ein::dot[kb
 259f64b71550aa28       81L  examples/lattice/17_flagged_region_claim.ein::dot[kb-since]
 1e50974d45cd8570       63L  examples/lattice/17_flagged_region_claim.ein::dot[constraints]
 acc17d682ed59306       42L  examples/lattice/17_flagged_region_claim.ein::dot[constraints-fold]
-5c6652fd62f18f9b       42L  examples/lattice/18_two_candidates.ein::load
+1311183ff1f22e49       43L  examples/lattice/18_two_candidates.ein::load
 f97df4f163338c7e        5L  examples/lattice/18_two_candidates.ein::saturate
 97cd8e5e8c9643aa       10L  examples/lattice/18_two_candidates.ein::plan
 c51f33bdbec102f7        2L  examples/lattice/18_two_candidates.ein::match
@@ -14807,7 +14807,6 @@ e1f24b219ea59126       74L  examples/lattice/18_two_candidates_as_rules.ein::cor
 a59ab6e0d03ec857       72L  examples/lattice/18_two_candidates_as_rules.ein::cores[single]
 08718da464a0eb6f       73L  examples/lattice/18_two_candidates_as_rules.ein::cores[n2]
 03a9a6bbb34a76ca      176L  examples/lattice/18_two_candidates_as_rules.ein::oracle
-cb45731446bcb0e9       59L  examples/lattice/synth/local_not_global.ein::load
 a04b179fa6f173ed       60L  examples/lattice/synth/local_not_global.ein::load
 4f4ba15af63111a1        4L  examples/lattice/synth/local_not_global.ein::saturate
 2b0f401237921a11        4L  examples/lattice/synth/local_not_global.ein::plan
