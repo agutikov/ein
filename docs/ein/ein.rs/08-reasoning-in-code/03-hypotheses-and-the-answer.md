@@ -76,8 +76,8 @@ fixpoint.
 | `no-search` | nothing: the program states `(solve :no-search)` |
 | `hypothesis-rules` | the rules that conclude a hypothesis, or the program's `(open F)`, and no activated obligation |
 | `obligations` | an activated obligation alone, what would pay what root owes; empty where root owes nothing |
-| `union` | both: the rules' hypotheses beside an activated obligation's, the counts of the `rung` event the obligations' |
-| `stuck` | an activated obligation, with nothing left to propose while root owes |
+| `union` | both: the rules' hypotheses beside an activated obligation's, which may be none, the counts of the `rung` event the obligations' |
+| `stuck` | an activated obligation, and nothing left to propose, by it or another writer, while root owes |
 | `declined` | an activated obligation whose witness step did not resolve under its activator: it proposed nothing, and the blind enumerator does not run beside it |
 | `blind` | the blind enumerator: root holds no `open` fact and activates no obligation |
 
@@ -189,7 +189,7 @@ no longer labels of any declaration, so the blind enumerator takes them for gues
 
 | claim | test |
 |---|---|
-| a state holds `(open R)` where it owes and nowhere else, and a fork drops every `open` fact, a written one among them | `ein-infer/tests/open_facts.rs`: `the_seats_hold_what_they_owe_where_they_owe_it`, `a_fork_drops_every_open_fact_a_written_one_among_them` |
+| a state holds `(open R)` where it owes and nowhere else, and a fork drops every `open` fact, a written one among them; the empty commitment's state is root's, which holds the written ones | `ein-infer/tests/open_facts.rs`: `the_seats_hold_what_they_owe_where_they_owe_it`, `a_fork_drops_every_open_fact_a_written_one_among_them`, `the_empty_commitments_state_is_roots` |
 | $H$ is the union of the writers, and the blind enumerator writes only where nothing else does | `ein-infer/tests/open_facts.rs`: `h_is_the_union_of_the_writers`, `the_blind_enumerator_writes_only_where_nothing_else_does` |
 | a rule that reads `open`, and a hypothesis first held above root, make the program not monotone, the second found by the static check and in flight | `ein-infer/tests/open_facts.rs`: `a_rule_that_reads_open_is_flagged`, `a_hypothesis_first_held_above_root_is_found` |
 | the `rung` event a run writes follows what the program states, and `(solve :no-search)` writes none | `ein-infer/tests/obligation_rung.rs`: `the_ladder_dispatches_by_what_the_program_declares` |

@@ -110,7 +110,6 @@ pub type Hook = Box<dyn Fn(&str) + Send + Sync>;
 
 static HOOK: Mutex<Option<Hook>> = Mutex::new(None);
 
-/// Set, or clear with `None`, the in-flight hook ([`Hook`]).
 /// **The `open` facts the program wrote**, of those `kb` holds: each with
 /// the provenance the loader gives a written fact, a source's, where the
 /// pass gives its own a rule's. A root a run has prepared holds the pass's
@@ -127,6 +126,7 @@ pub fn written_by_program(kb: &Kb, terms: &Terms) -> Vec<FactId> {
         .collect()
 }
 
+/// Set, or clear with `None`, the in-flight hook ([`Hook`]).
 pub fn set_in_flight_hook(hook: Option<Hook>) {
     *HOOK.lock().expect("no hook panicked") = hook;
 }
@@ -137,13 +137,14 @@ pub fn set_in_flight_hook(hook: Option<Hook>) {
 /// counters; what root owes is read ([`crate::obligations::tally`],
 /// narrated into `s.events`); and the pass writes root's `(open …)` facts.
 /// Where a rule reads `open`, the saturation resumes over them and the two
-/// repeat until neither adds anything. Returns the writers every state above
-/// root reads, and what root owes.
+/// repeat until neither adds anything, each firing handed to `sink`. Returns
+/// the writers every state above root reads, and what root owes.
 pub fn at_root(
     s: &mut Session<'_>,
     sat: &mut Saturator,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> std::ops::ControlFlow<()>,
+    sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<(Shared, Owes), crate::error::SolveError> {
     let mut written = Written::default();
     crate::hypgen::generate_written(s, stats, &mut written, f)?;
@@ -189,7 +190,7 @@ pub fn at_root(
             return Ok((writers, owes));
         }
         sat.feed(&wrote);
-        sat.saturate(s, None, &mut |_| {})?;
+        sat.saturate(s, None, sink)?;
         owes = crate::obligations::tally(
             s.kb,
             s.terms,

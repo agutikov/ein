@@ -309,6 +309,7 @@ fn generate_with(
         let rules = HypothesisRules::new(s)?;
         let mut wrote = false;
         let mut broke = false;
+        let emitted = stats.emitted;
         if !rules.is_empty() {
             let _ = rules.candidates(s, &mut |s, fact| {
                 wrote = true;
@@ -340,12 +341,16 @@ fn generate_with(
         let activated = !crate::mechanisms::obligation_plans(s)?.is_empty();
         if activated {
             let closed = closed_relations(s.kb, s.terms);
+            let beside = crate::oblgen::Beside {
+                wrote,
+                kept: stats.emitted > emitted,
+            };
             let report = crate::oblgen::generate(
                 s,
                 &allowed,
                 &excluded,
                 &closed,
-                wrote,
+                beside,
                 stats,
                 &mut |s, stats, fact| {
                     let before = stats.emitted;

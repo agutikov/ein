@@ -3168,6 +3168,12 @@ runs   = ["solve", "saturate", "saturate --dump"]
 note   = "a rule that reads an `open` fact, the obligation's `(open ?R)`: its program is flagged by an `open-read` site (Q-M1f.569), loads under the warning, and states no claim."
 
 [[entry]]
+path   = "examples/features/24_written_hypotheses.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "solve --single", "solve -n 2", "solve --maximal", "solve --minimal", "solve --count", "render lattice", "oracle --dump {out}/region"]
+note   = "the program writes its hypotheses, `(open (s a))` and `(open (s b))` (Q-M1f.566), and no rule reads `open`: monotone, H the two, R ∅ and the two states that hold one. A written `(open F)` is held at root alone (Q-M1f.569), and the empty commitment's state is root's, so the node every route builds for ∅ holds both and a saved ∅ loads to the state the run saved; its two claims are what `ein oracle` reads."
+
+[[entry]]
 path   = "examples/broken/open_arity.ein"
 group  = "parse-negative"
 runs   = ["solve", "saturate", "render rules"]

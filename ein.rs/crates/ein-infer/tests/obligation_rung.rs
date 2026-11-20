@@ -187,10 +187,14 @@ fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
 fn the_ladder_dispatches_by_what_the_program_declares() {
     // (file, the modes its generation calls report)
     let (_dir, stuck) = stuck_program();
-    let cases: [(&str, &[&str]); 6] = [
+    let cases: [(&str, &[&str]); 7] = [
         // A hypothesis rule beside the obligations: the union, which pays what root
         // owes with the hypothesis rule's candidates, and is no stuck state.
         ("examples/zebra2.ein", &["union"]),
+        // The same where the obligation offers no candidate, its `absent`
+        // ranging over nothing: H is the rule's two, which pay what root
+        // owes, and root is not stuck.
+        ("examples/lattice/18_two_candidates.ein", &["union"]),
         // the same puzzle with the hypothesis rule deleted: the obligations alone.
         ("examples/zebra2-obligations.ein", &["obligations"]),
         // owes, and every candidate that would pay it is stored false. A

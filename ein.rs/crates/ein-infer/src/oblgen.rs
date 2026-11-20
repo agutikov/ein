@@ -134,7 +134,8 @@ pub enum Mode {
     HypothesisRules,
     /// The obligations wrote: every owed obligation's candidates, deduped.
     Obligations,
-    /// Owed, and nothing may be branched on: every candidate refuted.
+    /// Owed, and nothing may be branched on: no writer's candidate
+    /// survived, every one refuted or scoped out.
     Stuck,
     /// An obligation's witness step did not resolve under an activator: the
     /// call wrote nothing, and the blind enumerator does not run beside an
@@ -145,8 +146,21 @@ pub enum Mode {
     NoSearch,
     /// Rules that conclude a hypothesis, or the program's `open` facts, wrote
     /// beside an activated obligation, and the candidates are the union
-    /// (Q-M1f.570): the report's counts are the obligations'.
+    /// (Q-M1f.570): the report's counts are the obligations', and where the
+    /// obligations offered none, H is the other writers' alone.
     Union,
+}
+
+/// What the state's other writers did before the obligations' call: the
+/// rules that conclude a hypothesis and the program's `open` facts, in
+/// [`crate::hypgen`]'s order.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub(crate) struct Beside {
+    /// They wrote at the state: H is the union.
+    pub wrote: bool,
+    /// A candidate of theirs survived the filters: the state has something
+    /// to branch on, whatever the obligations offer.
+    pub kept: bool,
 }
 
 impl Mode {
@@ -423,7 +437,7 @@ pub(crate) fn generate(
     allowed: &Option<FxHashSet<Symbol>>,
     excluded: &FxHashSet<Symbol>,
     closed: &FxHashSet<Symbol>,
-    beside: bool,
+    beside: Beside,
     stats: &mut HypGenStats,
     emit: &mut dyn FnMut(&mut Session<'_>, &mut HypGenStats, FactId) -> ControlFlow<()>,
 ) -> Result<RungReport, CompileError> {
@@ -598,17 +612,19 @@ pub(crate) fn generate(
     }
     if report.owed > 0
         && !broke
+        && !beside.kept
         && stats.emitted == before
         && stats.filtered[crate::hypgen::Drop::SeenInCall as usize] == seen_before
     {
         // Owed, and nothing survived: every debt was scoped out, or every
-        // candidate is already refuted. Either way the generator proposes
-        // nothing and the caller would otherwise call this state complete.
-        // Judged on what the state owes alone, before a later debt's
-        // candidates are offered. A candidate a rule of the state already
-        // wrote is in H, and pays: no state is stuck for it (Q-M1f.570).
+        // candidate is already refuted, and no other writer kept one.
+        // Either way the generator proposes nothing and the caller would
+        // otherwise call this state complete. Judged on what the state owes
+        // alone, before a later debt's candidates are offered. A candidate a
+        // rule of the state wrote is in H, and the state is not stuck for it
+        // (Q-M1f.570), whether or not an obligation offered it too.
         report.mode = Mode::Stuck;
-    } else if beside {
+    } else if beside.wrote {
         // Rules or the program wrote `open` facts at the state beside the
         // obligations: H is the union of the two.
         report.mode = Mode::Union;
@@ -1405,7 +1421,7 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
-            false,
+            Beside::default(),
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;
@@ -1514,7 +1530,7 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
-            false,
+            Beside::default(),
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;

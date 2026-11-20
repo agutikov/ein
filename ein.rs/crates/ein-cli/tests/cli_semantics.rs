@@ -683,6 +683,43 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
     }
 }
 
+/// **`ein saturate` counts what root's saturation fires after its `open`
+/// facts**: where a rule reads one, the saturation resumes over the facts
+/// the pass writes at root's fixpoint, and its firings are root's, in the
+/// count and the per-rule list. Here `guess`'s hypothesis is written by the
+/// pass, and `noted` fires once on it. The program is flagged; only the
+/// count of firings is held.
+#[test]
+fn saturate_counts_the_firings_after_roots_open_facts() {
+    let s = Scratch::new("resumed-firings");
+    let file = s.at("noted.ein");
+    std::fs::write(
+        &file,
+        "(relation s Thing :why \"s holds of {?3}\")\n\
+         (relation seen Fact :why \"{?3} is supposed\")\n\
+         (thing a)\n\
+         (rule guess (?R) :match (thing ?x) :assert (open (?R ?x)) :why \"suppose {?R} of {?x}\")\n\
+         (guess s)\n\
+         (rule noted () :match (open ?f) :assert (seen ?f) :why \"{?f} is supposed\")\n",
+    )
+    .expect("written");
+    let r = ein(&["saturate", &file]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert_eq!(r.field("total firings").as_deref(), Some("1"), "{}", r.out);
+    assert!(
+        r.out.contains("saturate: ") && r.out.contains(" ms  (1 firings)"),
+        "{}",
+        r.out
+    );
+    assert!(
+        r.out
+            .lines()
+            .any(|l| l.trim_start().starts_with("noted ") && l.contains("1 /      1")),
+        "{}",
+        r.out
+    );
+}
+
 /// **`ein saturate --max-steps N` says where it stopped, in Ein's spelling,
 /// and exits 0**.
 ///

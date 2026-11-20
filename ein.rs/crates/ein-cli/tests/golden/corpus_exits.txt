@@ -1347,6 +1347,17 @@
 0    examples/features/23_a_rule_reads_open.ein :: saturate
 0    examples/features/23_a_rule_reads_open.ein :: saturate --dump
 0    examples/features/23_a_rule_reads_open.ein :: solve
+0    examples/features/24_written_hypotheses.ein :: oracle --dump {out}/region
+0    examples/features/24_written_hypotheses.ein :: render lattice
+0    examples/features/24_written_hypotheses.ein :: saturate
+0    examples/features/24_written_hypotheses.ein :: saturate --dump
+0    examples/features/24_written_hypotheses.ein :: solve
+0    examples/features/24_written_hypotheses.ein :: solve --count
+0    examples/features/24_written_hypotheses.ein :: solve --maximal
+0    examples/features/24_written_hypotheses.ein :: solve --minimal
+0    examples/features/24_written_hypotheses.ein :: solve --single
+0    examples/features/24_written_hypotheses.ein :: solve -n 2
+0    examples/features/24_written_hypotheses.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

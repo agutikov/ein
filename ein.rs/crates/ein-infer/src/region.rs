@@ -23,7 +23,11 @@
 //! ### What a node is
 //!
 //! **The fork route**: root's fixpoint, the commitment's facts written with
-//! hypothesis provenance, the saturation resumed and run to quiescence. That
+//! hypothesis provenance, the saturation resumed and run to quiescence. A
+//! fork drops every `open` fact, and its own are the pass's, written at its
+//! fixpoint (Q-M1f.569); **the empty commitment's state is root's**, so its
+//! node holds the `open` facts the program wrote, as root does, and a node
+//! that commits at least one fact holds none of them ([`fork_of`]). That
 //! is the definition, and the oracle's node: it is never stopped at the first
 //! contradiction, so a dead node's debts, closure, denials and core are its
 //! fixpoint's. That is the engine's own notion of a commitment, minus every
@@ -1065,11 +1069,16 @@ fn prepare_as(
                 (owes, None)
             }
             None => {
-                let (writers, owes) =
-                    crate::open::at_root(&mut s, &mut sat, &mut root_stats.hypgen, &mut |f| {
+                let (writers, owes) = crate::open::at_root(
+                    &mut s,
+                    &mut sat,
+                    &mut root_stats.hypgen,
+                    &mut |f| {
                         proposed.push(f);
                         std::ops::ControlFlow::Continue(())
-                    })?;
+                    },
+                    &mut |_| {},
+                )?;
                 (owes, Some(writers))
             }
         };
@@ -1745,15 +1754,7 @@ impl<'a> Nodes<'a> {
         self.terms.provs.open_fork();
         let mut derived = 0u64;
         let mut firings = Vec::new();
-        let mut fork = self.root.branch();
-        let facts = &with_floor(&self.snapshot, facts);
-        for &h in facts {
-            let (rel, args) = self.terms.facts.get(h);
-            let args = args.to_vec();
-            let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
-            fork.add_and_index_fact(self.terms, rel, &args, Some(prov))
-                .expect("room for a hypothesis");
-        }
+        let mut fork = fork_of(self.root, &self.snapshot, self.terms, facts);
         let mut events = Events::off();
         // The applications, and whether the node reached quiescence within
         // the bound.
@@ -1848,6 +1849,11 @@ impl<'a> Nodes<'a> {
         )?;
         if skip_dead && crate::contradiction::has_contradiction(&kb, self.terms) {
             return Ok(None);
+        }
+        // Nothing more to write: the split is the first fixpoint, root's
+        // where nothing is committed, with what it holds under `open`.
+        if rest.is_empty() {
+            return Ok(Some(crate::canon::state_key(&kb)));
         }
         // A fork of the first fixpoint, which drops its `open` facts: the
         // split's are written at its own fixpoint, as a node's are.
@@ -2028,6 +2034,34 @@ fn fixpoint_firing(
     saturated(root, snapshot, terms, ast, memo, facts, false, events, sink).map(|(fork, _, _)| fork)
 }
 
+/// **Root's fork with the commitment `facts` written**, a saved file's
+/// commitment beside them ([`with_floor`]), not yet saturated: what every
+/// reader of a node starts from. A fork drops every `open` fact
+/// (Q-M1f.569), and **the empty commitment's state is root's**: where
+/// nothing is committed, the fork holds the `open` facts the program wrote
+/// ([`crate::open::written_by_program`]), each with its source, as root
+/// does, so a saved ∅ loads to the state the run saved. The pass writes the
+/// rest at the fork's fixpoint. Root's snapshot holds them already, so the
+/// resumed saturation reads none of them as new.
+fn fork_of(root: &Kb, snapshot: &Snapshot, terms: &mut Terms, facts: &[FactId]) -> Kb {
+    let mut fork = root.branch();
+    let facts = with_floor(snapshot, facts);
+    if facts.is_empty() {
+        let written = crate::open::written_by_program(root, terms);
+        if !written.is_empty() {
+            fork.write_open(terms, &written, |id| root.primary(id));
+        }
+    }
+    for &h in &facts {
+        let (rel, args) = terms.facts.get(h);
+        let args = args.to_vec();
+        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
+        fork.add_and_index_fact(terms, rel, &args, Some(prov))
+            .expect("room for a hypothesis");
+    }
+    fork
+}
+
 /// Root's fork with `facts` written and the saturation resumed, with the
 /// saturator, which can go on: to quiescence, or where `stop`, to the
 /// fork's first contradiction (the module's § What a node is), a route's
@@ -2047,15 +2081,7 @@ fn saturated(
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<(Kb, Saturator, crate::obligations::Owes), SolveError> {
-    let mut fork = root.branch();
-    let facts = &with_floor(snapshot, facts);
-    for &h in facts {
-        let (rel, args) = terms.facts.get(h);
-        let args = args.to_vec();
-        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
-        fork.add_and_index_fact(terms, rel, &args, Some(prov))
-            .expect("room for a hypothesis");
-    }
+    let mut fork = fork_of(root, snapshot, terms, facts);
     let sat = {
         let mut s = Session {
             kb: &mut fork,

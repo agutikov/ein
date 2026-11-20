@@ -709,7 +709,7 @@ pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<Dumped, S
         {}
         // Root's `open` facts, written at its fixpoint as every command writes
         // them (Q-M1f.566).
-        root_open(&mut s, &mut sat)?;
+        root_open(&mut s, &mut sat, &mut |_| {})?;
     }
     let node =
         ein_infer::region::saved_node(&mut kb, &mut terms, &ast).map_err(|e| e.to_string())?;
@@ -729,8 +729,14 @@ pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<Dumped, S
 }
 
 /// Root's `open` facts at the fixpoint `sat` reached, narrating nothing:
-/// what the run's root holds, listed and counted with its facts.
-fn root_open(s: &mut Session<'_>, sat: &mut Saturator) -> Result<(), String> {
+/// what the run's root holds, listed and counted with its facts. Where a rule
+/// reads `open`, the saturation resumes over them, each firing handed to
+/// `sink`.
+fn root_open(
+    s: &mut Session<'_>,
+    sat: &mut Saturator,
+    sink: &mut dyn FnMut(&Firing),
+) -> Result<(), String> {
     let mut silent = Events::off();
     let mut q = Session {
         kb: &mut *s.kb,
@@ -740,9 +746,13 @@ fn root_open(s: &mut Session<'_>, sat: &mut Saturator) -> Result<(), String> {
         memo: s.memo.clone(),
     };
     let mut stats = ein_infer::hypgen::HypGenStats::default();
-    ein_infer::open::at_root(&mut q, sat, &mut stats, &mut |_| {
-        std::ops::ControlFlow::Continue(())
-    })
+    ein_infer::open::at_root(
+        &mut q,
+        sat,
+        &mut stats,
+        &mut |_| std::ops::ControlFlow::Continue(()),
+        sink,
+    )
     .map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -948,9 +958,16 @@ fn bench(
             sat.set_last_firing(firing);
         }
         // Root's `open` facts, written at its fixpoint as every command writes
-        // them (Q-M1f.566); past the step limit there is no fixpoint.
+        // them (Q-M1f.566); past the step limit there is no fixpoint. Where a
+        // rule reads one, what the saturation fires after them is root's
+        // too, counted and listed with the rest.
         if limit_msg.is_none() {
-            root_open(&mut s, &mut sat)?;
+            let mut after: Vec<Firing> = Vec::new();
+            root_open(&mut s, &mut sat, &mut |firing| after.push(firing.clone()))?;
+            for firing in after {
+                per_rule.bump(&tally_key(s.terms.sym(firing.rule), firing.redundant));
+                firings.push(firing);
+            }
         }
         sat_engine = Some(std::mem::replace(&mut sat.engine, Engine::new()));
     }

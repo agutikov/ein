@@ -1,0 +1,32 @@
+;;; Hypotheses the program writes: `(open F)`, F a fact, is a hypothesis
+;;; (Q-M1f.566), whether a rule concludes it or the program writes it, as here.
+;;
+;; Root holds the two `(open …)` facts below, so H is the two candidates. A
+;; written `(open F)` is held at root alone: a node that commits a fact is a
+;; fork of root and holds none of them (Q-M1f.569), and the empty commitment's
+;; state is root's, which holds both, so a saved ∅ loads to the state the run
+;; saved. `clash` kills the state that holds both. No rule reads `open`, so the
+;; program is monotone, and R is ∅ and the two states that hold one of them, as
+;; `ein oracle` reads the four nodes of the cube.
+
+(relation s Thing :why "s holds of {?3}")
+
+(thing a) (thing b)
+
+(open (s a)) (open (s b))
+
+(rule clash ()
+  :match  (and (s a) (s b))
+  :assert (false)
+  :why    "s of a and of b")
+
+(solve
+  :expect (region
+            (model)
+            (model (s a))
+            (model (s b))))
+
+(query :goal (s ?x)
+  :expect (or (model)
+              (model (s a))
+              (model (s b))))

@@ -281,9 +281,13 @@ pub fn check(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Option<Report> {
     sat.saturate(&mut s, None, &mut |_| {}).ok()?;
     // Root's `open` facts, as every command writes them at root's fixpoint.
     let mut stats = crate::hypgen::HypGenStats::default();
-    crate::open::at_root(&mut s, &mut sat, &mut stats, &mut |_| {
-        std::ops::ControlFlow::Continue(())
-    })
+    crate::open::at_root(
+        &mut s,
+        &mut sat,
+        &mut stats,
+        &mut |_| std::ops::ControlFlow::Continue(()),
+        &mut |_| {},
+    )
     .ok()?;
     let mut m = read(&mut s).ok()?;
     // What the blind enumerator wrote is what the lists and a closure let it

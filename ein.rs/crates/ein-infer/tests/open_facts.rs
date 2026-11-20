@@ -9,7 +9,8 @@
 //! - the seats program holds `(open seats)` at each node that owes and at no
 //!   other, neither state of R among them, and its four candidates as
 //!   `(open F)` at root;
-//! - a fork drops every `open` fact, a written one among them;
+//! - a fork drops every `open` fact, a written one among them, and the
+//!   empty commitment's state is root's, which holds the written ones;
 //! - $H$ is the union of the writers (Q-M1f.570), and the blind enumerator
 //!   writes only where nothing else does (Q-M1f.576);
 //! - a rule that reads an `open` fact makes its program not monotone
@@ -152,14 +153,72 @@ fn a_fork_drops_every_open_fact_a_written_one_among_them() {
     let open = open_at(&ast, &mut terms, &mut kb, &[vec![], vec![q_a]]);
     assert_eq!(
         open[0],
-        ["(open (q a))", "(open (q b))"],
-        "a fork of root with nothing added holds the rule's, and not the program's"
+        ["(open (p a))", "(open (q a))", "(open (q b))"],
+        "the empty commitment's state is root's: it holds the program's hypothesis and the rule's"
     );
     assert_eq!(
         open[1],
         ["(open (q a))", "(open (q b))"],
         "a state above root holds what the rule concludes there, (q a) among it though the state \
          holds (q a), and not the program's"
+    );
+}
+
+/// **The empty commitment's state is root's**: the node every route builds
+/// for ∅ holds every fact root holds, the `open` facts the program wrote
+/// among them, each with its source, and nothing root does not; a node
+/// above it holds none of the written ones. Here the program writes its two
+/// hypotheses and a rule reads them, so the program is flagged: what is held
+/// is the state the node is, fact for fact, and not what the program
+/// answers.
+#[test]
+fn the_empty_commitments_state_is_roots() {
+    let text = "(relation s T :why \"s holds of {?3}\")\n\
+                (relation seen F :why \"{?3} is supposed\")\n\
+                (thing a) (thing b)\n(open (s a)) (open (s b))\n\
+                (rule noted () :match (open ?f) :assert (seen ?f) :why \"{?f} is supposed\")\n";
+    let (ast, mut terms, mut kb) = load_text(text);
+    let r = cube(&ast, &mut terms, &mut kb);
+    let s_a = r
+        .candidates
+        .iter()
+        .find(|c| c.text == "(s a)")
+        .expect("(s a) is a candidate")
+        .fact;
+    let cands: Vec<region::Candidate> = Vec::new();
+    let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &cands).expect("prepares");
+    let facts = |k: &Kb, terms: &Terms| -> Vec<String> {
+        let mut v: Vec<String> = k.facts().map(|f| terms.fact_text(f)).collect();
+        v.sort();
+        v
+    };
+    let (empty, above, sources) = nodes
+        .with_fixpoints(&[vec![], vec![s_a]], |kbs, terms| {
+            let sources: Vec<bool> = kbs[0]
+                .open_facts()
+                .iter()
+                .filter(|&&f| terms.fact_text(f).starts_with("(open (s "))
+                .map(|&f| {
+                    kbs[0].primary(f).is_some_and(|p| {
+                        terms.provs.get(p).kind == ein_core::prov::ProvKind::Source
+                    })
+                })
+                .collect();
+            (facts(&kbs[0], terms), facts(&kbs[1], terms), sources)
+        })
+        .expect("every fixpoint");
+    drop(nodes);
+    assert_eq!(empty, facts(&kb, &terms), "∅'s node is root's state");
+    assert_eq!(
+        sources,
+        [true, true],
+        "each written `open` fact keeps its source"
+    );
+    assert!(
+        !above
+            .iter()
+            .any(|f| f == "(open (s a))" || f == "(open (s b))"),
+        "a node above ∅ holds none of the written ones: {above:?}"
     );
 }
 

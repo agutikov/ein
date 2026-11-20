@@ -172,8 +172,8 @@ nothing, and its `mode` says how the obligations went:
 | `mode` | what it means |
 |---|---|
 | `obligations` | it generated: the candidates are the facts that would discharge what this state owes |
-| `union` | it generated beside written `open` facts, and the candidates are both; the counts are the obligations' |
-| `stuck` | it owed something and proposed nothing: every debt scoped out by `:no-hypothesis`, `:hypothesis-relations` or `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
+| `union` | it generated beside written `open` facts, and the candidates are both, the obligations' share empty where they offered none; the counts are the obligations' |
+| `stuck` | it owed something and no writer proposed anything: every debt scoped out by `:no-hypothesis`, `:hypothesis-relations` or `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
 | `declined` | it proposed nothing for a projection that did not resolve for this activator; the blind enumerator does not run beside an activated obligation |
 
 `reason` is the sentence of a `declined` call, and otherwise `rule-order`, the one order the obligations emit in: the owed instances' candidates in report order, plan by
