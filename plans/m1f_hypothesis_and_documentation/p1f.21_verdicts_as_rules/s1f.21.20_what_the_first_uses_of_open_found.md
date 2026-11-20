@@ -84,18 +84,20 @@ the contradiction as rules. Scratch named `build/s20/…` is the worktree's, not
 
 | commit | task | what |
 |---|---|---|
-| `1e2a7478` | 2 | the `WARNING` line before a load's `note:` |
-| `39168e86` | 1, 3 | the empty commitment's state is root's; `features/24_written_hypotheses.ein`; the three reports |
-| `e2676c28` | 5 | the pass at root and where a state is used; `--in-flight`; the decisions Q-M1f.655 and Q-M1f.656 |
-| `0b51c6c8` | 7 | the agenda's tables kept with the snapshot |
-| `0a30e8fe` | 6 | the gate build's check of `compile_all`'s shortcut |
-| `3a094688` | 5 | the check in flight at a printed state too, folded into every surface (Q-M1f.656 as ruled) |
-| `5e84eca8` | | this record's first version, plans only |
-| `3b07ab1b` | 5 | `region`'s module doc names `fork_of` as code: the gate's rustdoc step refused a public doc linking it |
-| `3fbdbd2b` | 5 | X9 of the examples page runs with `--in-flight`: the gate's `read_out_reference.rs` refused the page with no `in flight` row |
+| `2dff3ce7` | 2 | the `WARNING` line before a load's `note:` |
+| `70a3572d` | 1, 3 | the empty commitment's state is root's; `features/24_written_hypotheses.ein`; the three reports |
+| `cff1522b` | 5 | the pass at root and where a state is used; `--in-flight`; the decisions Q-M1f.655 and Q-M1f.656 |
+| `91453f8d` | 7 | the agenda's tables kept with the snapshot |
+| `ebe3797f` | 6 | the gate build's check of `compile_all`'s shortcut |
+| `a7b7105c` | 5 | the check in flight at a printed state too, folded into every surface (Q-M1f.656 as ruled) |
+| `f110f52e` | | this record's first version, plans only |
+| `8efef891` | 5 | `region`'s module doc names `fork_of` as code: the gate's rustdoc step refused a public doc linking it |
+| `48405ab5` | 5 | X9 of the examples page runs with `--in-flight`: the gate's `read_out_reference.rs` refused the page with no `in flight` row |
+| `fc297858` | 1 | `test_cli.rs` counts the new example's two claims in `ein test examples/features`, which the gate refused at 24 |
+| `766f6d7d` | | this record's second version, plans only |
 | this record | | plans only |
 
-The hashes are the branch's after its rebase onto `master` at `dfc5f3a0`.
+The hashes are the branch's after its rebase onto `master` at `fd6cbcc9`.
 
 ### 1. The empty commitment's state is root's (V-61)
 
