@@ -27,7 +27,7 @@
 //! fork drops every `open` fact, and its own are the pass's, written at its
 //! fixpoint (Q-M1f.569); **the empty commitment's state is root's**, so its
 //! node holds the `open` facts the program wrote, as root does, and a node
-//! that commits at least one fact holds none of them ([`fork_of`]). That
+//! that commits at least one fact holds none of them (`fork_of`). That
 //! is the definition, and the oracle's node: it is never stopped at the first
 //! contradiction, so a dead node's debts, closure, denials and core are its
 //! fixpoint's. That is the engine's own notion of a commitment, minus every
