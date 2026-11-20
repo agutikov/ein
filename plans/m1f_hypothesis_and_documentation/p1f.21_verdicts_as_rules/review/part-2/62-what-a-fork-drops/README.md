@@ -184,7 +184,7 @@ facts. Above root it holds all four candidates at every node, at $R$'s two state
 lists `(open (seats Ann C1) :rule asked-total)` beside the four `debt-paid` facts that pay every debt). The reason is
 not the fork: its rules `asked-total` and `asked-surjective` read `(absent (debt-paid …))`, and on the built engine a
 rule that concludes `(open F)` writes its hypothesis for every match of its other premises, its `(absent …)` premise
-not read. The probe shows it alone (a finding of this stage, in its record): `(q a)` is written, so the match
+not read. The probe shows it alone (V-89, a finding of this stage, in its record): `(q a)` is written, so the match
 `(and (p ?x) (absent (q ?x)))` holds of `b` alone; the rule that concludes a fact concludes `(s b)` alone, and the
 rule that concludes a hypothesis writes `(open (r a))` and `(open (r b))`
 (`runs/built/probe-hypothesis-rule-absent.saturate-dump.txt`), so $H$ is two candidates and $R$ four states

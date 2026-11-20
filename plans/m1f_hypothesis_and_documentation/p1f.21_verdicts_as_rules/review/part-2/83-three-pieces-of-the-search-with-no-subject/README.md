@@ -104,7 +104,7 @@ edge. L5's last reason is still *given*, on 15 programs, all under `tests/`, eac
 `(solve :no-search)`: H is empty there by the program's word, so every witness is no candidate, and there is no
 search for the reason to steer; the coupling counts these instances as unlicensed (85 on 19 programs, the 15 among
 them) and reads no payer for them, there being no candidate. The finding's argument (*an activated obligation writes
-every witness its guard gives at root*) holds where the program searches; `:no-search` proposes nothing (a finding
-of this stage, in its record). The stopped layer's sentence the stage's record names is still said on a program
+every witness its guard gives at root*) holds where the program searches; `:no-search` proposes nothing (V-92, a
+finding of this stage, in its record). The stopped layer's sentence the stage's record names is still said on a program
 with no unlicensed instance: `runs/zebra.h-space-budget-1.txt`, `zebra.ein` at `--region-budget 1`, *0 instances
 L5 does not license*, and *an instance L5 does not license has no payers read*.

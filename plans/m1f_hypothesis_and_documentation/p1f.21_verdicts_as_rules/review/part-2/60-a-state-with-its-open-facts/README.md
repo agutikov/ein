@@ -171,8 +171,8 @@ Every `open` fact the page composed is the built engine's, at each of the seven 
   (`runs/built/states/obligation-1.oracle-node.json`); § 3's second block, *an oracle's dump of the node would*,
   is not what the dump shows. Only the state made a root shows the four. That record lists a node's `open` facts
   only where root lacks them, so it cannot show the one root holds and the node has dropped, `(open (seats Ann
-  C1))`, though Q-M1f.572 has every listing of a state list its `open` facts (a finding of this stage, in its
-  record).
+  C1))`, though Q-M1f.572 has every listing of a state list its `open` facts (V-91, a finding of this stage, in
+  its record).
 - **The oracle's `--states` lists no `open` fact at any of the seven**, for the same reason: here every `open` fact
   a state holds is root's too (`runs/built/states/*.oracle-node.json`).
 - **`--in-flight` shows nothing more.** It writes every state's `open` facts, but a state nothing prints is still

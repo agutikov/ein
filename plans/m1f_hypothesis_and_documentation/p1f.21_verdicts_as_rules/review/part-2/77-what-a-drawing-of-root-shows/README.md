@@ -78,8 +78,8 @@ dump and in the drawing alike (`runs/open-counts.txt`; each fact with its writer
 The record gave the two firing pictures one row and one figure, 21, which is the root of the program with the rule.
 `01-before-firing` is drawn from the program without it (`02-saturation-and-negation.md` lines 77 and 78 say so),
 whose root holds one guess more, `(open (near Norwegian House-2))`, the fact the rule derives in the other:
-`runs/neighbour-no-rule.open-facts.txt` against `runs/neighbour.open-facts.txt` (a finding of this stage, in its
-record). Where H is smaller than the count, the other `open` facts point at facts root holds or denies: of the
+`runs/neighbour-no-rule.open-facts.txt` against `runs/neighbour.open-facts.txt` (V-92, a finding of this stage, in
+its record). Where H is smaller than the count, the other `open` facts point at facts root holds or denies: of the
 mini-zebra's 12, three point at facts root holds; of *zebra2*'s 130, five are `(open R)`, what root owes, and of the
 125 hypotheses 7 point at facts root holds and 62 at facts it denies, which stand in the frame `not, open ctx`
 (`runs/composed.txt`).
@@ -143,7 +143,7 @@ holds none it does not.
 | `03-soup-saturated` | 9 | 9 |
 
 Two pictures differ from today's drawing in more than its `open` facts, and both did before the second part, so
-neither is this question's (each a finding of this stage, in its record):
+neither is this question's (V-93, a finding of this stage, in its record):
 
 - `02-co-located-fired`: the two lines today's drawing does not hold are the notes of two derived facts. The page
   has `(co-located Cat Alice)` *by symmetric* and `(co-located Cat Tea)` *by transitive*; today's drawing has them

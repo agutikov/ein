@@ -95,8 +95,8 @@ alone; so the check stays green.
 the rest are derived at root by `clash-of-1` from the declarations; in the events, `r2` and `r1` are enqueued before
 `clash-1` is compiled for `w`, and `r2` is admitted first (`runs/fifo-gap-root-negation-imported.events.jsonl`).
 With `(clash-1 w)` written, `r1` is admitted first and root holds no `p`. So on a program the static check calls
-monotone, the answer moves with whether an activator of `std.contradiction` is written or derived (a finding of this
-stage, in its record), which is one more face of the same defect: the boundary's order decides root's fixpoint.
+monotone, the answer moves with whether an activator of `std.contradiction` is written or derived (V-90, a finding of
+this stage, in its record), which is one more face of the same defect: the boundary's order decides root's fixpoint.
 
 What this gives the question: the program is unflagged and answers what its row says is wrong, as the finding said;
 and the row's claim that the twins answer the perfect model holds today for the `r1`-first twin and for the negation

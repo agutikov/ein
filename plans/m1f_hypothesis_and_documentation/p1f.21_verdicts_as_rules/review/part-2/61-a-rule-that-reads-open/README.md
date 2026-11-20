@@ -133,7 +133,7 @@ prints it at the two states of $R$, each of which owes nothing: each holds `(not
 prints a dead node's state beyond what root holds: the oracle's `--states` keeps a node's facts beyond root's, and
 `(noted seats)` is root's (`runs/built/r-held-and-read.target.oracle/region.json`).
 
-**`noted` reads more than the *must*** (a finding of this stage, in its record). In a `:match`, `(open ?R)` binds
+**`noted` reads more than the *must*** (V-92, a finding of this stage, in its record). In a `:match`, `(open ?R)` binds
 `?R` to the argument of every `open` fact the state holds, what it owes and the hypotheses it holds alike, which is
 what the language reference says a rule that reads `open` matches
 ([`05-rules.md`](../../../../../../docs/ein/user/03-syntax-and-semantics/05-rules.md)). At root the seats hold
