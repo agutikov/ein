@@ -345,9 +345,13 @@ module's: it is a contradiction by `std.contradiction`'s rules, where a program 
 
 ## `std.debts`: the requirement and the payment as facts
 
-An obligation's conclusion is a verdict and no fact, because a debt a state
-held would outlive its own payment in the state that paid it
-([Q-M1d.2](../docs/decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)).
+An obligation's conclusion, `(open R)`, is held by the state that owes
+alone, because a debt every state kept would outlive its own payment in the
+state that paid it: a fork drops it and the engine writes it again at each
+state's fixpoint
+([Q-M1d.2](../docs/decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md),
+[Q-M1f.566](../docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)),
+and a rule that reads it makes its program not monotone.
 The two halves of a debt have no such trouble: the **requirement**, an
 obligation's trigger, and the **payment**, the trigger with the witness the
 obligation's `absent` looks for, each stay true as a state grows. `std.debts`
@@ -1560,7 +1564,7 @@ output through the table, so saturation is simulation, a firing a gate.
 `(is-a WIRE Input)`, written; `(in WIRE BIT)`, the hypothesis; `(require
 WIRE BIT)`, written. An input owes exactly one value, by `std.algebra`'s
 `(total-owed in is-a)` and `(functional in)`, and the obligation is what
-proposes the candidates, two an input, through the obligations rung. R is the
+proposes the candidates, two an input. R is the
 input assignments that contradict nothing, so a truth table is a query's
 classes and satisfiability is R with requirements; an unsatisfiable question
 is R empty because every alive node owes. It is a demonstration, not a SAT

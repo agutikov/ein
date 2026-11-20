@@ -1,16 +1,14 @@
-# Q-M1f.243 — An obligation is read as activated, owed or not
+# Q-M1f.243 — An obligation is read as activated, and judged by the open facts root holds
 
-Wherever Ein reads which obligations a program has, the hypothesis mechanisms' check and the generation ladder
-alike, an obligation is a plan root's activators compile, and one with no parameters always: it is read whether or
-not root owes anything under it, as an hrule is active whether or not its `:match` has a row. So a list that takes
-out a relation an activated obligation owes, or a closure of that relation's held extent, is refused even where root
-has already paid every instance. One reading serves both readers, `ein_infer::mechanisms`' `obligation_plans`. An
-activator only a commitment derives is not read by the check, which judges root.
+Wherever Ein reads which obligations a program has, an obligation is a plan the state's activators compile, and one
+with no parameters always: activated whether or not the state owes anything under it. Activated at root, it keeps
+the blind enumerator off ([Q-M1f.576](Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)). The lists
+and a closure are judged against the `open` facts root holds
+([Q-M1f.578](Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)): an obligation that owes nothing at
+root writes none, and disagrees with nothing.
 
-**Why.** A declaration says what the program means, not what one state happens to owe. Read as owed, the same list
-would conflict or not by the facts of root, and the ladder and the check would read one declaration two ways.
+**Why.** A declaration says what the program means, and an `open` fact what a state owes or supposes; the lists
+configure a generator that does not run beside them, so it is what they say of root's `open` facts that can be
+false.
 
-**Held by.** `ein_infer::mechanisms::check`; `ein-cli/tests/mechanism_conflicts.rs`:
-`a_conflict_is_refused_on_every_command`; the ladder's rung,
-[Q-M1f.308](Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md);
-[`07-diagnostics.md`](../../ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.
+**Held by.** `ein_infer::mechanisms::check` and `obligation_plans`; `ein-cli/tests/mechanism_conflicts.rs`.

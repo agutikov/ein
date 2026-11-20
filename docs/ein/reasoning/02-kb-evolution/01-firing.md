@@ -189,7 +189,7 @@ of candidates added, saturated on its own. No arrow leads back, and none joins t
 Ein answers **finite-domain constraint-satisfaction** questions over a knowledge base, a graph of facts, and the
 rules over it: the Zebra puzzle and its kin. The answer to a program is one thing, the **region** $R$: the
 commitments whose state is alive and owes nothing. What a state can owe is stated by an **obligation**, a
-declaration with a rule's parts that adds no fact and says what a state has still to hold
+declaration with a rule's parts that derives nothing and says what a state has still to hold
 ([solution semantics](06-solution-semantics.md) defines what is owed, and $R$):
 
 $$

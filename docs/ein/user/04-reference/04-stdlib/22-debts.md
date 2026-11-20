@@ -1,9 +1,12 @@
 # Requirements and payments: `std.debts`
 
 An [obligation](../../03-syntax-and-semantics/08-obligations.md) says what a state still **owes**. What it concludes
-is the verdict `(open R)`, which is no fact: a debt a state held would outlive its own payment in the state that
-paid it ([Q-M1d.2](../../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). So
-no rule can read what is owed.
+is the verdict `(open R)` ([Q-M1d.2](../../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)),
+which the state that owes holds alone: a debt a state kept would outlive its own payment in the state that paid it,
+so a fork drops it and the engine writes it again at each state's fixpoint
+([Q-M1f.566](../../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). A rule
+that reads it makes its program not monotone
+([Q-M1f.569](../../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)).
 
 `std.debts` states the two halves of a debt that **can** be facts, because each stays true as a state grows, for the
 four obligations of the library, and the one verdict over them that stays true as well:
@@ -263,8 +266,8 @@ on root keeps what root holds. The static check flags the rule, the read-out ope
 flagged program nothing is claimed
 ([the read-out § 5.1](../08-read-out.md#51-under-lattice-and-monotone-the-warning),
 [Q-M1f.564](../../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)). It is the
-reason an obligation's own conclusion is a verdict and no fact; what is owed is read off a state, by the engine,
-each time.
+reason what a state owes, `(open R)`, is held by that state alone and written again at each state's fixpoint, and
+why a rule that reads it is flagged as this one is.
 
 ### `(debts-discharged)` is about the requirements that are stated
 

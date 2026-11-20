@@ -1,4 +1,4 @@
-# Hypothesis generation: the ladder that builds H
+# Hypothesis generation: the writers that build H
 
 Saturation decides what a program's facts and rules entail. What they leave undecided is guessed: a candidate, also
 called a **hypothesis**, is a fact that a commitment may add, and the candidate set $H$, also called the
@@ -7,8 +7,9 @@ answer's lattice is root with a subset of $H$ committed, so $H$ fixes what the a
 ([Solution semantics](06-solution-semantics.md) defines $R$ over it; [Finding R](07-finding-r.md) says why every
 computation over it agrees).
 
-This page defines $H$: a function of the program and of root's fixpoint, given by cases. The cases are called the
-**ladder**, and each case a **rung**. How a program spells what the ladder reads is
+This page defines $H$: a function of the program and of root's fixpoint. Root holds, under the relation
+$\mathsf{open}$, what it owes and the facts it supposes, each written there by one of three **writers**, and $H$ is
+the facts root supposes, whoever wrote them, less what root settles. How a program spells what the writers read is
 [hypotheses](../../user/03-syntax-and-semantics/09-hypotheses.md) and
 [obligations](../../user/03-syntax-and-semantics/08-obligations.md); how the engine that ships computes $H$, and
 what holds it to this page, is [hypotheses and the answer, in code](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md).
@@ -35,6 +36,11 @@ $$
 hypothesised ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)). It is one
 set, and every node is a subset of that one set: $\operatorname{gen}$ is applied to root and to no other state, so
 nothing a node derives adds a candidate, and nothing is proposed before saturation has decided everything it can.
+Every state holds the facts its own fixpoint supposes (§ 2); one that a state above root holds and root does not is
+held there and proposed nowhere, and a program in which a state holds one is not monotone
+([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md),
+[Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Monotone and non-monotone programs § 3.1](08-monotonicity.md#31-what-it-reads)).
 
 **No option changes $H$.** $\operatorname{gen}$ has two arguments, the program and root's fixpoint. Nothing a
 computation is configured with is a third, so none reaches $H$, and with it none reaches $R$
@@ -57,52 +63,86 @@ $$
 It relaxes no conflict between the mechanisms of § 6
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)).
 
-## 2. The ladder
+## 2. The union
 
-Four things are read off the program and root:
+**What a state holds under $\mathsf{open}$.** At each state's fixpoint, root's and every node's, two kinds of fact
+are written under the relation $\mathsf{open}$
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)):
+
+- $\operatorname{open}(r)$, $r$ a relation, once, where the state owes an instance of an obligation that owes $r$
+  (§ 4); a state that owes nothing holds none;
+- $\operatorname{open}(f)$, $f$ a fact, a **hypothesis**: a fact the state supposes, which a commitment may add.
+
+They are a part of the state that no extension inherits: a node's are written at its own fixpoint, so an
+$\operatorname{open}(r)$ that a commitment pays is not held by the state that pays it, and no rule removes a fact.
+Under $\mathsf{open}$ a relation is what is owed and a fact is a hypothesis
+([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)). Write
+
+$$
+\operatorname{hyp}(S) = \lbrace\, f \;:\; \operatorname{open}(f) \in S,\ f \text{ a fact} \,\rbrace
+$$
+
+for the hypotheses a state $S$ holds. Three **writers** write them:
+
+| writer | where it writes | what it writes |
+|---|---|---|
+| the **hypothesis rules** (§ 3) | wherever a rule's pattern matches | for each match, the fact its conclusion supposes; beside them, at root alone, the hypotheses the program states |
+| the **obligations** (§ 4) | where an obligation is activated | the facts that would pay what the state owes, and what a commitment can bring it to owe |
+| the **blind enumerator** (§ 5) | where root holds nothing under $\mathsf{open}$ and activates no obligation | every argument place of every eligible relation filled with every guessable atom |
+
+Three things are read off the program and root:
 
 | symbol | what it is |
 |---|---|
 | $\nu(P)$ | the program states that there is nothing to guess |
-| $\operatorname{Hr}(P)$ | the **hypothesis rules** the program declares: rules whose conclusion is a guess (§ 3) |
 | $\operatorname{ActOb}(P)$ | the obligations **activated** at root: the pairs $(o, a)$ of an obligation rule $o$ and an activator $a \in \operatorname{Act}_{\mathrm{root}}(o)$ of its parameters, and $(o, ())$ for each obligation rule with no parameter (§ 4) |
-| $\operatorname{declines}(P)$ | the obligations rung **declines** (§ 4.3) |
+| $\beta(P)$ | the blind enumerator writes: root holds no fact under $\mathsf{open}$ that the program, a hypothesis rule or an obligation wrote, and $\operatorname{ActOb}(P) = \emptyset$ |
 
 $$
 \operatorname{gen}(P, \mathrm{root}) \;=\;
 \begin{cases}
 \emptyset & \text{if } \nu(P) \\
-H_{\mathrm{hr}} & \text{else if } \operatorname{Hr}(P) \neq \emptyset \\
-H_{\mathrm{ob}} & \text{else if } \operatorname{ActOb}(P) \neq \emptyset \text{ and not } \operatorname{declines}(P) \\
-H_{\mathrm{bl}} & \text{otherwise}
+H_{\mathrm{bl}} & \text{else if } \beta(P) \\
+H_{\mathrm{hr}} \cup H_{\mathrm{ob}} & \text{otherwise}
 \end{cases}
 $$
 
-![The ladder: the conditions that decide which set H is](diagrams/04-ladder.svg)
+![The union: the two conditions, and the writers whose hypotheses H is](diagrams/04-union.svg)
 
-A diamond is a condition on the program and on root's fixpoint, a box the set $H$ is. The diagram is the definition
-by cases and no more: no arrow is a step taken on a state other than root.
+A diamond is a condition on the program and on root's fixpoint, a box a set of candidates, and an arrow into the
+union box a writer's share of it. The diagram is the definition and no more: no arrow is a step taken on a state
+other than root.
 
-The case is decided by one reading of the program, which everything that reads the ladder shares
-([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)). Three things
-about the third case decide what it means:
+**$H$ is the hypotheses root holds**, whoever wrote them, identical ones one fact, less what root settles
+([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
 
-- **It is about what the program states, not what root owes.** $\operatorname{ActOb}(P)$ is defined by root holding an
-  obligation's activator, whether or not root owes anything under it
-  ([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)). Under an
-  activated obligation a root that owes nothing proposes nothing, $H_{\mathrm{ob}} = \emptyset$, and is complete
-  because it is discharged. Falling back to $H_{\mathrm{bl}}$ wherever nothing was owed would make exhaustion, not
-  discharge, decide when a state is finished, at exactly the states the obligation exists to judge.
-- **It is about what the program activates, not what it loads.** Every import brings its module whole, obligation
-  rules among it ([Q-M1f.247](../../../decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)). An
-  obligation rule with parameters and no activator at root is in no pair of $\operatorname{ActOb}(P)$, so a module
-  imported for another of its names leaves the facts of the program's own eligible relations (§ 5) to
+$$
+\lnot \nu(P) \implies H = \operatorname{unsettled}(\operatorname{hyp}(\mathrm{root}))
+$$
+
+Three things about the union decide what it means:
+
+- **Neither writer overrides the other.** A program that says what to guess and what it owes has both in $H$: what
+  an obligation proposes joins what a hypothesis rule does, and the obligation judges every state, whichever
+  writer's candidates it commits to.
+- **It is about what the program activates, not what root owes or what it loads.** $\operatorname{ActOb}(P)$ is
+  defined by root holding an obligation's activator, whether or not root owes anything under it
+  ([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md),
+  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)). Under an
+  activated obligation a root that owes nothing proposes nothing from it, and is complete because it is discharged;
+  letting $H_{\mathrm{bl}}$ write wherever nothing was owed would make exhaustion, not discharge, decide when a state
+  is finished, at exactly the states the obligation exists to judge. Every import brings its module whole,
+  obligation rules among it ([Q-M1f.247](../../../decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)):
+  an obligation rule with parameters and no activator at root is in no pair of $\operatorname{ActOb}(P)$, so a
+  module imported for another of its names leaves the facts of the program's own eligible relations (§ 5) to
   $H_{\mathrm{bl}}$, and a module imported for one rule gives the $H$ of that rule written out
   ([Q-M1f.249](../../../decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)).
-- **The obligations rung may decline** (§ 4.3), and then $H = H_{\mathrm{bl}}$. $H$ is never part of one rung's set
-  and part of another's.
+- **The blind enumerator writes beside nothing.** $\beta(P)$ is read off what root holds: a hypothesis rule that
+  matches nothing at root keeps the blind enumerator off no more than one the program lacks
+  ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)). $H$ is
+  never part of the blind enumerator's set and part of another writer's.
 
-**Every rung's candidate is a fact root does not settle.** Each rung first forms its **proposals**, a set
+**Every writer's candidate is a fact root does not settle.** Each writer first forms its **proposals**, a set
 $\Pi$ of facts, and $H$ is what of them root leaves open:
 
 $$
@@ -118,28 +158,34 @@ $H$ is a set: a fact proposed twice is in it once, and what the answer depends o
 
 ## 3. The hypothesis rules: what the program says to guess
 
-A **hypothesis rule** $h$ is a declaration with a rule's parts whose conclusion is a guess, proposed and not added
-to the knowledge base it matches in: a pattern $\varphi_h$ and a conclusion $\psi_h$ of one fact pattern, written
-$\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and $\psi_h[a]\theta$
-([the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A conclusion of more than
-one fact is no hypothesis rule
-([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). It is **active** under the
-activators $\operatorname{listed}(h)$: the empty one where $h$ has no parameter, and otherwise each activator the
-program lists for it. A conclusion may point at a fact, and then so does the candidate; a commitment that holds
-such a candidate holds it and nothing it points at
+A **hypothesis rule** $h$ is a rule whose conclusion holds a **hypothesis**: a fact pattern $\psi_h$ under
+$\mathsf{open}$, which supposes the fact it makes rather than adding it to the knowledge base it matches in. Beside
+its hypotheses the conclusion may hold facts, which are a rewriting rule's
+([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md);
+[the rules](../01-static-ir/02-rewriting-rules.md#the-kinds-of-rule) has the kinds of rule). A declaration with a
+rule's parts whose whole conclusion is one guess is a hypothesis rule too; a conclusion of more than one fact is no
+such declaration ([Q-M1f.271](../../../decisions/language/Q-M1f.271-an-hrules-conclusion-is-one-fact.md)). Write
+$\varphi_h$ for the pattern, and $\varphi_h(a, \theta)$ and $\psi_h(a, \theta)$ for $\varphi_h[a]\theta$ and
+$\psi_h[a]\theta$. It is **active** under the activators $\operatorname{listed}(h)$: the empty one where $h$ has no
+parameter; otherwise, for a declaration of one guess, each activator the program lists for it, and for any other
+rule each activator root holds, $\operatorname{Act}_{\mathrm{root}}(h)$. A conclusion may point at a fact, and then
+so does the candidate; a commitment that holds such a candidate holds it and nothing it points at
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#a-context-gives-a-fact-no-truth)). At root it
-proposes, for each activator $a$ and each match $\theta$ of its pattern, the one fact its conclusion makes:
+writes, for each activator $a$ and each match $\theta$ of its pattern, the fact its hypothesis makes, and beside them
+root holds the hypotheses the program states, $\Pi_P$, which no other state holds:
 
 $$
 \begin{aligned}
-\Pi_{\mathrm{hr}} &= \lbrace\, \psi_h(a, \theta) \;:\; h \in \operatorname{Hr}(P), \ a \in \operatorname{listed}(h), \ \mathrm{root} \models \varphi_h(a, \theta) \,\rbrace \\
+\Pi_{\mathrm{hr}} &= \lbrace\, \psi_h(a, \theta) \;:\; h \in \operatorname{Hr}(P), \ a \in \operatorname{listed}(h), \ \mathrm{root} \models \varphi_h(a, \theta) \,\rbrace \ \cup\ \Pi_P \\
 H_{\mathrm{hr}} &= \operatorname{unsettled} \big( \lbrace\, f \in \Pi_{\mathrm{hr}} \;:\; \operatorname{rel}(f) \notin \lbrace \operatorname{eq}, \operatorname{neq} \rbrace \,\rbrace \big)
 \end{aligned}
 $$
 
+with $\operatorname{Hr}(P)$ the hypothesis rules of the program.
+
 An instance of equality or of inequality is no candidate, since a state stores neither
 ([Q-M1f.32](../../../decisions/hypotheses/Q-M1f.32-an-hrules-eq-or-neq-instance-is-no-hypothesis.md)), and a
-hypothesis rule whose pattern reads a stored negation reads root's
+hypothesis rule whose pattern reads a stored negation reads the state it is matched in, root's for $H$
 ([Q-M1f.129](../../../decisions/engine/Q-M1f.129-an-hrule-that-reads-not-reads-the-state-it-was.md)).
 
 A hypothesis rule is drawn as any rule is, its pattern beside its conclusion. This one says *guess, for each guest
@@ -163,26 +209,35 @@ $$
 and these, with a second rule's $\operatorname{vegan}(\mathsf{Ann})$, are the universe of the first drawing of
 [Solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state).
 
-**The hypothesis rules are an override.** A program that says what to guess is never second-guessed by what it owes: where
-$\operatorname{Hr}(P) \neq \emptyset$ no other rung contributes, and the scoping of § 6 filters nothing. What a
-hypothesis rule proposes is what its pattern finds at root:
+**The hypothesis rules write beside the obligations.** What a hypothesis rule proposes joins what an obligation
+does (§ 2), and the scoping of § 6 filters none of it: a scoping that disagrees with it makes the text no program. A
+program that says what to guess is never second-guessed by the blind enumerator, wherever a rule of it matches at
+root.
+
+**A hypothesis rule writes at every state**, at its fixpoint, and what it proposes is what its pattern finds at
+root:
 
 $$
 \operatorname{st}(C) \models \varphi_h(a, \theta) \ \land\ \mathrm{root} \not\models \varphi_h(a, \theta) \implies \psi_h(a, \theta) \text{ is in no candidate on this account}
 $$
 
-A match only a node's state would have proposes nothing, since $H$ is root's.
+A match only a node's state would have is held there and proposes nothing, since $H$ is root's; a state that holds
+a hypothesis root does not makes the program not monotone
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), and a hypothesis
+rule whose pattern reads a relation whose held extent a commitment can change, where growing it adds a match, is a
+site of the static check ([Monotone and non-monotone programs § 3.1](08-monotonicity.md#31-what-it-reads)).
 
-## 4. The obligations rung: what would pay a debt
+## 4. The obligations: what would pay a debt
 
 ### 4.1 An instance, and the facts that would pay it
 
 An **obligation** is a declaration with a rule's parts that is no rewriting rule: it adds no fact to the knowledge
-base it matches in ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)). Its whole conclusion is
-the verdict that the held extent of a relation is incomplete, written $\operatorname{open}(r)$, and its pattern is
-the requirement's guard
+base it matches in during saturation ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)). Its
+whole conclusion is the verdict that the held extent of a relation is incomplete, written $\operatorname{open}(r)$,
+and its pattern is the requirement's guard
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). The relation the
-verdict names is the one the obligation **owes**: what is owed is a fact of it. The guard of $o$ under an activator
+verdict names is the one the obligation **owes**: what is owed is a fact of it. A state that owes an instance of it
+holds $\operatorname{open}(r)$, written at its fixpoint (§ 2), and a state that owes nothing under it holds none. The guard of $o$ under an activator
 $a$ has two parts, a **trigger** $T_o$, which says who is owed, and one absence, over the **witness** $W_o$:
 
 $$
@@ -206,7 +261,7 @@ It folds each fact pattern of three arrows as the drawing above does, and each o
 the octagon of four arrows, the first at $\mathsf{relation}$, declares $r$ with the labels $A$ and $B$, and $x$ is a
 member of $A$. Inside it is the witness: the arrow labelled with the relation, a fact pattern of it, is the witness
 step, and the membership of $y$ in $B$ beside it is the domain. The dashed loop in the lower panel is the
-verdict, a fact of $\mathsf{open}$, on the relation whose facts would pay. In formulas, with the rule's two parameters bound by the activator to a relation
+verdict, a fact of $\mathsf{open}$, on the relation whose facts would pay, which a state that owes holds. In formulas, with the rule's two parameters bound by the activator to a relation
 $r$ and to a membership relation $\operatorname{isa}$:
 
 $$
@@ -228,7 +283,7 @@ For the obligation above, $\operatorname{pay} = \lbrace r(x, y) : \mathrm{root} 
 restates the domain: the set of payments is the guard, read at root, and nothing stores it
 ([Q-M1d.3](../../../decisions/hypotheses/Q-M1d.3-an-obligation-needs-no-closed-domain.md)). An obligation whose guard
 does not say which premise is the witness step, none or two of them, is no obligation where that does not depend on the
-activator, and declines the rung where it does (§ 4.3).
+activator, and proposes nothing where it does (§ 4.3).
 
 **Read off a root.** One guest, two chairs, two drinks; the guest is owed a chair and a drink, each of the two
 relations is stated functional, and a stated fact says nobody at the first chair drinks milk. Root's facts are the
@@ -256,13 +311,14 @@ admits a chair for the guest and nothing else.
 $$
 \begin{aligned}
 \Pi_{\mathrm{ob}} &= \bigcup_{(o, a, \theta) \,\in\, \operatorname{Owed}(\mathrm{root})} \operatorname{pay}(o, a, \theta) \ \cup\ \Pi^{+} \\
-H_{\mathrm{ob}} &= \operatorname{unsettled} \big( \lbrace\, f \in \Pi_{\mathrm{ob}} \;:\; \operatorname{inscope}(\operatorname{rel}(f)) \,\rbrace \big)
+H_{\mathrm{ob}} &= \operatorname{unsettled}(\Pi_{\mathrm{ob}})
 \end{aligned}
 $$
 
-**$H$ on this rung is the union, over the owed instances, of the facts that would pay each**, with the payments
-$\Pi^{+}$ of the debts root is not told of (§ 4.4), less what the program scopes out (§ 6). In the drawing above
-$H_{\mathrm{ob}}$ is the four dotted arrows.
+**What the obligations write is the union, over the owed instances, of the facts that would pay each**, with the
+payments $\Pi^{+}$ of the debts root is not told of (§ 4.4). The scoping of § 6 filters none of it: a scoping that
+disagrees with what root holds under $\mathsf{open}$ makes the text no program. In the drawing above $H_{\mathrm{ob}}$
+is the four dotted arrows.
 
 One instance's payments are jointly exhaustive: the obligation says some witness must hold, so every member of $R$
 above a state that owes the instance holds one of them,
@@ -272,16 +328,18 @@ C \in R \ \land\ \operatorname{owes}(o, a, \theta, \mathrm{root}) \ \implies\ \o
 $$
 
 under the conditions [Satisfiability § 4](10-satisfiability.md) states. But $H$ is one set, the lattice's, so the
-rung proposes every instance's payments together, of which each instance's own set is a subset. A computation that
-branches on one instance at a time reads that instance's alternatives inside $H$
+obligations propose every instance's payments together, of which each instance's own set is a subset. A
+computation that branches on one instance at a time reads that instance's alternatives inside $H$
 ([Finding R § 4](07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences)); nothing is lost by the
 union, and nothing outside it is proposed.
 
-### 4.3 When it declines
+### 4.3 Where the payments can grow
 
 A choice among an instance's payments is exhaustive only while the set of them cannot grow beneath it. Where it
-could, **the rung declines and the blind enumerator builds $H$**
-([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)).
+could, **the obligation still writes what root's guard gives**, as every obligation does, and the program is not
+monotone: nothing is claimed of its answer
+([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md),
+[Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)).
 
 **The relations whose held extent a commitment can change**, $D^{+}$, are read off the rules, with no state
 consulted. For a set $X$ of relations, $D^{+}(X)$ is the fixpoint of
@@ -294,43 +352,37 @@ $$
 
 where $\rho$ ranges over the rules that derive, $\operatorname{reads}(\rho)$ is the relations whose facts its pattern
 reads, with the relation its activators are facts of, and $\operatorname{concludes}(\rho)$ the relations of the facts
-it concludes. It is at relation grain: a relation is in or out whole, whatever its facts. The seed is the relations
-of what the rung would propose, $D^{+} = D^{+}(\operatorname{rels}(\Pi_{\mathrm{ob}}))$.
+it concludes. It is at relation grain: a relation is in or out whole, whatever its facts.
+
+An obligation's payments can grow where its trigger, or its guard beside its witness step, reads facts of a
+relation whose held extent a commitment can change, the relations of $H$ among them:
 
 $$
-\begin{aligned}
-\operatorname{declines}(P) \iff\ & \exists (o, a) \in \operatorname{ActOb}(P) \cup \operatorname{ActOb}^{+}(P). \\
-& \operatorname{d}_1(o, a) \lor \operatorname{d}_2(o, a) \lor \operatorname{d}_3(o) \lor \operatorname{d}_4(o, a)
-\end{aligned}
+\operatorname{grows}(o) \iff \big( \operatorname{rels}(T_o) \cup \operatorname{rels}(\Delta_o) \big) \cap D^{+}(\operatorname{rels}(H)) \neq \emptyset
 $$
 
-| | the condition | why the choice would not be exhaustive |
-|---|---|---|
-| $\operatorname{d}_1$ | $\operatorname{rels}(\Delta_o) \cap \operatorname{rels}(\Pi_{\mathrm{ob}}) \neq \emptyset$: a guard's domain reads facts of a relation the rung itself proposes facts of | a payment of one debt could add a member to another debt's domain |
-| $\operatorname{d}_2$ | $\big( \operatorname{rels}(T_o) \cup \operatorname{rels}(\Delta_o) \big) \cap D^{+} \neq \emptyset$: a trigger, or a guard beside its witness step, reads facts of a relation whose held extent a commitment can change | a member of a domain that only a commitment derives is in no payment read at root, and an $H$ built from root's reading would lack the model that member licenses. The reading is at relation grain, so a program whose root already has that member declines too |
-| $\operatorname{d}_3$ | $o$ names no relation whose facts would pay | the instance owes and is reported, and there is nothing to choose among |
-| $\operatorname{d}_4$ | the witness step of $o$ does not resolve under $a$ | no payment can be formed |
+A member of a domain that only a commitment derives, or that a payment of another debt adds, is in no payment read
+at root, and an $H$ built from root's reading can lack the model that member licenses. Such an obligation does not
+step aside for another writer, since no writer reads a domain it cannot see. It is a site of the static check, by
+its trigger or by its guard ([Monotone and non-monotone programs § 3.1](08-monotonicity.md#31-what-it-reads)), so
+the program is answered and warned of, and nothing is claimed of its answer. The reading is at relation grain, so
+a program whose root already has that member is flagged too.
 
-$\operatorname{ActOb}^{+}(P)$ is the obligations a commitment can activate (§ 4.4), held to the same four conditions.
-
-**One declined obligation declines the whole rung.** Falling through for that obligation alone would leave its
-payments proposed by nobody, and a model needing one would be in no node with nothing saying so. Declining all or
-nothing is what makes the rung's claim unconditional:
+**Where no payment can be formed.** An activated obligation whose witness step does not resolve under its activator
+has no payment to propose. The obligations then propose nothing at root, and the blind enumerator does not write
+beside an activated obligation (§ 2), so the instances stay owed, and are reported as owed:
 
 $$
-\begin{aligned}
-\lnot \operatorname{declines}(P) &\implies \forall I \in \operatorname{Owed}(\mathrm{root}). \ \operatorname{unsettled}(\operatorname{pay}(I)) \subseteq H \\
-\operatorname{declines}(P) &\implies H = H_{\mathrm{bl}}
-\end{aligned}
+\lnot \nu(P) \ \land\ \text{every witness step resolves} \implies \forall I \in \operatorname{Owed}(\mathrm{root}). \ \operatorname{unsettled}(\operatorname{pay}(I)) \subseteq H
 $$
 
-and $H_{\mathrm{bl}}$ reads no domain. A decline is part of the answer, with its reason in words: *an obligation
-reads facts of a relation whose held extent a commitment can change*.
+and where $\operatorname{grows}(o)$ this is all that is claimed of $o$: a payment only a node's domain holds is in no
+candidate, which is why such a program is flagged.
 
 ### 4.4 A debt root is not told of
 
 An obligation's activator is an ordinary fact, so a rule can derive one at a node, and that node owes what root never
-did. **The rung also proposes, at root, what such a debt would**, read off the rules alone
+did. **The obligations also propose, at root, what such a debt would**, read off the rules alone
 ([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). For a set $D$
 of relations:
 
@@ -348,7 +400,7 @@ $$
 1. $\operatorname{ActOb}^{+}_{D}$ is the **activators a commitment can derive**: each conclusion that holds no
    variable and would activate an obligation rule, in a rule that reads facts of a relation whose held extent a
    commitment can change, or is activated by a fact of one;
-2. $\Pi^{+}_{D}$ is, for each such activator root does not hold, **the rung's own reading at root**: the instances
+2. $\Pi^{+}_{D}$ is, for each such activator root does not hold, **the obligation's own reading at root**: the instances
    the obligation would owe there were it activated, each paid as § 4.1 pays a debt root owes;
 3. a candidate that is a fact of a new relation widens what a commitment can change, so **the two are taken to
    their least fixpoint**:
@@ -376,8 +428,8 @@ A program this reading adds a candidate to derives an activator from a commitmen
 
 ### 4.5 Stuck: owing, with nothing to propose
 
-A payment root denies is settled, and is no candidate. A root is **stuck** where it owes and the rung
-has nothing left to propose:
+A payment root denies is settled, and is no candidate. A root is **stuck** where it owes and the
+obligations have nothing left to propose:
 
 $$
 \operatorname{stuck}(P) \iff \operatorname{Owed}(\mathrm{root}) \neq \emptyset \ \land\ H_{\mathrm{ob}} = \emptyset
@@ -396,35 +448,39 @@ $$
 the kind of empty $R$ where alive states exist and every one owes. It is said as such, and an empty proposal is
 never passed for completeness. A scoping that would take out the relation an obligation owes cannot make a state
 stuck: such a program is no program (§ 6,
-[Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
+[Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md),
+[Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 
-### 4.6 What the rung leaves to saturation
+### 4.6 What the obligations leave to saturation
 
-**The ladder is exhaustive where obligations and saturation between them decide every remaining open fact.** Let
+**What the obligations propose is exhaustive where they and saturation between them decide every fact root leaves
+undecided.** Let
 $\operatorname{Elig}(P)$ be the relations the blind enumerator would propose facts of (§ 5). They split in two:
 
 $$
 \operatorname{Elig}(P) = \underbrace{ \lbrace\, r : \text{some obligation of } \operatorname{ActOb}(P) \text{ owes } r \,\rbrace }_{\text{covered}} \ \uplus\ \operatorname{Uncov}(P)
 $$
 
-Where $\operatorname{Uncov}(P) = \emptyset$ the rung is exhaustive by construction: every fact a hypothesis could be
+Where $\operatorname{Uncov}(P) = \emptyset$ the obligations are exhaustive by construction: every fact a hypothesis could be
 about is one some debt can be paid with. Where it is not, the claim rests on saturation deciding the facts of the
 uncovered relations: a hypothesised fact of a relation of which no rule concludes a fact can never be confirmed, and
 the facts of a relation that the program's rules derive from what the obligations settle are decided by them.
 
 The Zebra puzzle is a program of the first kind. Stated with a hypothesis rule that guesses where each thing is, and
 stated with no hypothesis rule and each of its attribute relations stated a bijection, which owes every arrow of
-each, it has the same $H$ on both rungs, and so the same $R$; the relations no obligation names are closed to
+each, it has the same $H$ from either writer, and so the same $R$; the relations no obligation names are closed to
 hypotheses (§ 6) or have their facts derived.
-Whatever rung built $H$, the answer names the relations the program can conclude or ask about of which $H$ holds no
+Whichever writers built $H$, the answer names the relations the program can conclude or ask about of which $H$ holds no
 fact: $R$ holds of them only what the program states and saturation derives
 ([Satisfiability § 5](10-satisfiability.md)).
 
 ## 5. The blind enumerator
 
-Where the program declares no hypothesis rule and activates no obligation, or the obligations rung declines, **every
-argument place of every eligible relation is filled with every guessable atom**, and the program's own rules prune
-what is wrong.
+Where root holds nothing under $\mathsf{open}$ that the program, a hypothesis rule or an obligation wrote, and
+activates no obligation, $\beta(P)$ (§ 2), **every argument place of every eligible relation is filled with every
+guessable atom**, and the program's own rules prune what is wrong
+([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)). Its guesses are
+written under $\mathsf{open}$ as any writer's are.
 
 **The guessable atoms**, $\operatorname{guessable}(P)$, are the names of the program
 ([the rules](../01-static-ir/02-rewriting-rules.md#the-program-and-its-names);
@@ -516,7 +572,8 @@ relation $r$: a fact about $r$ under the reserved marker of closure
 ([the reserved atoms](../01-static-ir/01-knowledge-base.md#the-reserved-atoms)), stated or derived, which **closes
 the held extent of $r$ to hypotheses**: no commitment adds a hypothesised fact of $r$. A relation root's fixpoint
 holds a closure of is **closed to hypotheses**, and $\operatorname{Closed}$ is the set of them. **The three scopings
-bind the obligations rung and the blind enumerator alike**:
+configure the blind enumerator alone**, a white list, a black list and the closures
+([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)):
 
 $$
 \begin{aligned}
@@ -526,33 +583,42 @@ $$
 \end{aligned}
 $$
 
-and no fact of a relation out of scope is a candidate on those two rungs. They do not bind a hypothesis rule: a
-program that declares what to guess gets what it declared.
+and no fact of a relation out of scope is one of its candidates. They filter nothing a hypothesis rule or an
+obligation writes: beside what root holds under $\mathsf{open}$ a scoping either agrees with it, and says nothing,
+or disagrees with it, and the text is no program.
 
-**The declarations do not contradict one another**, judged on root's fixpoint
-([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)). Let
-$\operatorname{Prop} = \operatorname{rels}(\Pi_{\mathrm{hr}})$ be the relations an active hypothesis rule proposes
-facts of and $\operatorname{Ow}$ the relations an obligation of $\operatorname{ActOb}(P)$ owes. A text is a program
-only if none of these holds:
+**The declarations do not contradict what root holds, nor one another**, judged on root's fixpoint
+([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)). A fact
+under $\mathsf{open}$ is **of** the relation it owes, $\operatorname{open}(r)$, or of its hypothesis's,
+$\operatorname{open}(f)$; let $\operatorname{Op}$ be the relations the facts root holds under $\mathsf{open}$ are of:
 
-| a pair that says opposite things of one relation | as a condition |
+$$
+\operatorname{Op} = \lbrace\, r \;:\; \operatorname{open}(r) \in \mathrm{root} \,\rbrace \ \cup\ \operatorname{rels}(\operatorname{hyp}(\mathrm{root}))
+$$
+
+An obligation that owes nothing at root writes nothing there, and disagrees with nothing
+([Q-M1f.243](../../../decisions/hypotheses/Q-M1f.243-an-obligation-is-read-as-activated-owed-or-not.md)). A text is a
+program only if none of these holds:
+
+| a declaration that says the opposite of what root holds, or of another | as a condition |
 |---|---|
-| a hypothesis rule proposes a fact of a relation a list takes out | $\operatorname{Prop} \not\subseteq L^{+}$ where $L^{+}$ is stated, or $\operatorname{Prop} \cap L^{-} \neq \emptyset$ |
-| a hypothesis rule proposes a fact of a relation closed to hypotheses | $\operatorname{Prop} \cap \operatorname{Closed} \neq \emptyset$ |
-| with no hypothesis rule, an obligation owes a relation a list takes out | $\operatorname{Hr}(P) = \emptyset$, and $\operatorname{Ow} \not\subseteq L^{+}$ where $L^{+}$ is stated, or $\operatorname{Ow} \cap L^{-} \neq \emptyset$ |
-| an obligation owes a relation closed to hypotheses, whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)) | $\operatorname{Ow} \cap \operatorname{Closed} \neq \emptyset$ |
+| a closure of a relation root holds a fact under $\mathsf{open}$ of ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)) | $\operatorname{Op} \cap \operatorname{Closed} \neq \emptyset$ |
+| $L^{-}$ names a relation root holds a fact under $\mathsf{open}$ of | $\operatorname{Op} \cap L^{-} \neq \emptyset$ |
+| $L^{+}$, beside the facts root holds under $\mathsf{open}$, names other relations than theirs | $\operatorname{Op} \neq \emptyset$, $L^{+}$ is stated, and $L^{+} \neq \operatorname{Op}$ |
 | a relation is in both lists, or in $L^{+}$ and closed to hypotheses | $L^{+} \cap L^{-} \neq \emptyset$, or $L^{+} \cap \operatorname{Closed} \neq \emptyset$ |
 
-A hypothesis rule beside an obligation is no conflict: the first generates and the second judges. A declaration that
-contradicts nothing and filters nothing, a list beside a hypothesis rule or a name another declaration already takes
-out, is remarked on and changes nothing
+The first three are about a generator that does not run beside what root holds under $\mathsf{open}$: a list or a
+closure that says otherwise of those facts says what the program does not do. A hypothesis rule beside an obligation
+is no conflict: both write, and the obligation judges. Where root holds nothing under $\mathsf{open}$, a name of
+$L^{-}$ that another declaration already takes out contradicts nothing and filters nothing: it is remarked on and
+changes nothing
 ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)). The
 refusals and the remarks, each worded, are the [diagnostics](../../user/04-reference/07-diagnostics.md)'.
 
 ## 7. What H does not depend on
 
-- **The import form.** A program has the same $H$ with its imports selective, whole or aliased, and the rung it
-  takes is the same
+- **The import form.** A program has the same $H$ with its imports selective, whole or aliased, written by the
+  same writers
   ([Q-M1f.249](../../../decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)).
 - **How a closure is stated.** A closure a rule derives and one a program states close the held extent of the same
   relation to hypotheses and give one $H$ and one $R$: $\operatorname{Closed}$ is read on root's fixpoint.

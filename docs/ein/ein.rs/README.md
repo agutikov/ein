@@ -8,7 +8,7 @@ these pages say how `ein.rs` computes it.
 | page | what it holds |
 |---|---|
 | [`01-architecture.md`](01-architecture.md) | the system in its context, the crates and every dependency between them, one `ein solve` from file to read-out, every module and what it owns, where each part of the language lives in code |
-| [`02-algorithms.md`](02-algorithms.md) | the algorithm `ein.rs` uses for each operation, where that places it, the levers that change how and never what, and each algorithm as a flow diagram with pseudocode: saturation and the agenda, the matcher, the generation ladder, the node function, the routes over `R`, core extraction, the obligation pass |
+| [`02-algorithms.md`](02-algorithms.md) | the algorithm `ein.rs` uses for each operation, where that places it, the levers that change how and never what, and each algorithm as a flow diagram with pseudocode: saturation and the agenda, the matcher, the writers of H, the node function, the routes over `R`, core extraction, the obligation pass |
 | [`03-design/`](03-design/README.md) | **the design contracts**: determinism and order, shared assets, the data model, the IR frontend, the matcher, saturation, the search, parallelism, the binary format, the toolchain and layout |
 | [`04-api.md`](04-api.md) | **embedding the crates**: the five steps from a file to an answer, a worked example that is a test, the `.einb` cache, the features, what is and is not the contract |
 | [`05-events.md`](05-events.md) | the `--events` protocol, `ein-events/1`: every kind, its payload, how two streams are compared |

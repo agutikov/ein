@@ -123,16 +123,17 @@ H = \lbrace\, \operatorname{seat}(p, c) \mid\ & \text{is-a}(p, \mathsf{Person}) 
 \end{aligned}
 $$
 
-which is the four facts `ein show hyps` lists. In general $H$ is built by the first rung of the ladder that
-applies, and narrowed by the program's scoping:
+which is the four facts `ein show hyps` lists. In general $H$ is the hypotheses root holds, `(open F)`, less what
+root holds or denies: what the rules that conclude one write, and what the obligations activated at root write, the
+union ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)); or,
+where root holds no `open` fact and activates no obligation, the blind enumerator's, narrowed by the program's
+scoping:
 
 $$
 \begin{aligned}
-H &= \operatorname{scope}(G) \\
-G &= \begin{cases}
-\operatorname{hrules}(\mathrm{root}) & \text{if the program declares an hrule} \\
-\operatorname{payments}(\mathrm{root}) & \text{else, if an obligation is activated at root and its domain cannot grow} \\
-\operatorname{blind}(\mathrm{root}) & \text{else}
+H &= \begin{cases}
+\operatorname{rules}(\mathrm{root}) \cup \operatorname{payments}(\mathrm{root}) & \text{if root holds an open fact or activates an obligation} \\
+\operatorname{scope}(\operatorname{blind}(\mathrm{root})) & \text{else}
 \end{cases}
 \end{aligned}
 $$
@@ -154,25 +155,30 @@ $$
 \end{aligned}
 $$
 
-with $r$ ranging over the declared relations and $\operatorname{scope}$ applied on the second and third rungs
-only. $A$ is the **guessable atoms**: the program's names, less the names a declaration writes as a label, the
+with $r$ ranging over the declared relations and $\operatorname{scope}$ the blind enumerator's alone
+([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)). $A$ is the **guessable atoms**: the program's names, less the names a declaration writes as a label, the
 kernel's own words and the names of relations and rules
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)).
 Candidates are proposed at a fixpoint, after saturation, never in the middle of it
 ([Q19](../../../decisions/hypotheses/Q19-hypotheses-are-proposed-at-a-fixpoint-after.md)).
 
-## Where candidates come from: the ladder
+## Where candidates come from: the writers
 
-| rung | when | the candidates |
+| writer | when | the candidates |
 |---|---|---|
-| **hrules** | the program declares an `hrule` | each active hrule's conclusion, once per match at root. The other two rungs never run |
-| **obligations** | no hrule, and an obligation is activated at root | the facts that would pay what root owes, and what a commitment can bring it to owe; a root that owes nothing proposes nothing ([obligations](08-obligations.md)) |
-| **blind** | neither, or the obligations rung declines | every fact of a declared relation of one or two arguments over the guessable atoms, whatever the labels |
+| **rules** | a rule concludes `(open F)`, an `hrule` among them, or the program writes one | each active rule's hypothesis, once per match at root |
+| **obligations** | an obligation is activated at root | the facts that would pay what root owes, and what a commitment can bring it to owe; a root that owes nothing proposes nothing from it ([obligations](08-obligations.md)) |
+| **blind** | root holds no `open` fact and activates no obligation | every fact of a declared relation of one or two arguments over the guessable atoms, whatever the labels |
 
-The ladder is decided once, at root
-([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), and the
-read-out's `universe` row and `ein show hyps`' note name the rung. An obligation rule the program loads and nothing
-activates chooses no rung: an import brings its module whole, so importing `std.algebra` for `symmetric` loads its two
+The first two write together, their union $H$
+([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)); the blind
+enumerator writes only where neither does
+([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)).
+
+Which writers write is decided once, at root
+([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)), and
+`ein show hyps`' note names them. An obligation rule the program loads and nothing
+activates writes nothing: an import brings its module whole, so importing `std.algebra` for `symmetric` loads its two
 obligation rules, and they decide nothing until a fact activates one.
 
 ### The hrule
@@ -198,7 +204,7 @@ obligation rules, and they decide nothing until a fact activates one.
 
 ### The blind enumerator
 
-With no hrule and no activated obligation, the engine proposes every fact of every declared relation of one or two
+Where root holds no `open` fact and activates no obligation, the engine proposes every fact of every declared relation of one or two
 arguments, over every **guessable atom**, a pair of two different ones for a relation of two. It reads **no
 label**: the declaration `(relation seat Person Chair)` does not keep `(seat C1 Ann)` out. What a label does is
 leave the guessable atoms: `Person`, `Chair` and `T` are written as labels, so no candidate is about them, and the
@@ -212,10 +218,10 @@ more is enumerated. Where `ein` prints *object* in a row about the enumerator, i
 
 | the program states | it means | read by |
 |---|---|---|
-| `(solve :hypothesis-relations (R …))` | propose facts of these relations only; `()` names none | the obligations rung and the blind enumerator |
+| `(solve :hypothesis-relations (R …))` | propose facts of these relations only; `()` names none | the blind enumerator |
 | `(solve :no-hypothesis (R …))` | propose no fact of these | the same |
 | `(__closed__ R)`, written or derived | the held extent of R is fixed: no commitment adds a fact of R | the same, and the read-out |
-| `(solve :no-search)` | the lattice is root alone: nothing is proposed, H is empty, R is {∅} or empty | every rung, before the first |
+| `(solve :no-search)` | the lattice is root alone: nothing is proposed, H is empty, R is {∅} or empty | every writer, before any writes |
 
 Every name a list holds is a relation the program writes elsewhere, or the program is refused at load
 ([Q-M1f.114](../../../decisions/language/Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md)). A
@@ -225,44 +231,43 @@ what makes an `absent` over facts of R safe to read before the search is over, s
 is [query](12-query.md)'s; `ein solve --no-search`, a command declining to search, is another thing from the program's
 `:no-search` ([the CLI](../04-reference/05-cli.md)).
 
-## The mechanisms do not contradict one another
+## The lists and a closure configure the blind enumerator
 
-An hrule (**H**), an obligation (**O**), `:hypothesis-relations` (**HR**), `:no-hypothesis` (**NH**) and
-`(__closed__ R)` (**C**) each say something about what a commitment may be about, and a program in which two of them
-say opposite things of one relation is **refused at load**, on every command, one line per conflict
-([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)). A
-declaration that filters nothing, or repeats what another says, is one `note:` line on stderr and changes nothing
+`:hypothesis-relations` (**HR**), `:no-hypothesis` (**NH**) and `(__closed__ R)` (**C**) say what the blind enumerator
+may guess, and the blind enumerator does not run beside an `open` fact. One that disagrees with the `open` facts
+root holds, of a hypothesis or of what root owes, is **refused at load**, on every command, one line per relation
+([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md),
+[Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md)). A
+name that repeats what another declaration says is one `note:` line on stderr and changes nothing
 ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)).
 
-| pair | refused where | a `note:` where |
+| the program states | refused where | a `note:` where |
 |---|---|---|
-| H + O | never: H generates, O judges | — |
-| H + HR | an active hrule proposes a fact of a relation the list leaves out | the list, which filters nothing beside an hrule |
-| H + NH | an active hrule proposes a fact of a relation the list names | the same |
-| H + C | an active hrule proposes a fact of a closed relation | — |
-| O + HR | no hrule, and an obligation owes facts of a relation the list leaves out | — |
-| O + NH | no hrule, and an obligation owes facts of a relation the list names | — |
-| O + C | an obligation owes facts of a closed relation, whatever generates | — |
-| HR + NH | a relation is in both | no hrule: an NH name HR already leaves out |
+| HR | root holds an `open` fact of a relation the list leaves out, or the list names a relation root holds no `open` fact of while it holds one | — |
+| NH | root holds an `open` fact of a relation the list names | — |
+| C | root holds an `open` fact of a closed relation | — |
+| HR + NH | a relation is in both | an NH name HR already leaves out |
 | HR + C | a listed relation is closed | — |
-| NH + C | never | no hrule: an NH name a closure already closes |
+| NH + C | never | an NH name a closure already closes |
 
-The check reads the program at root's fixpoint, so a closure or an activator a rule derives counts as one written.
-An obligation counts as declared once root activates it, whether root owes it or not. Adding `(__closed__ seat)` to
-the chairs program:
+The check reads the program at root's fixpoint, so a closure or an activator a rule derives counts as one written,
+and an obligation writes once root activates it, whether root owes it or not. The corpus's fixture of a closure
+beside an obligation, [`closed-and-owing.ein`](../../../../examples/ein-bugs/closed-and-owing.ein):
 
+<!-- output -->
 ```text
-kb load error: chairs.ein:19:12: hrule 'guess' proposes facts of seat, and (__closed__ seat), written at chairs.ein:23:2, says seat is closed — a closed relation is one no commitment extends, and each fact the hrule proposes is a commitment: drop the closure, or the hrule's seat
+kb load error: examples/ein-bugs/closed-and-owing.ein:124:2: root holds (open r), which obligation 'total-owed' writes, and (__closed__ r), which rule 'infer-closure' derives, says r is closed — the two lists and a closure configure the blind enumerator, which does not run beside an open fact, and one that disagrees with the open facts root holds is an error, and a closed relation is one no commitment extends: drop the closure, or what writes (open r)
 ```
 
-and `(solve :no-hypothesis (seat))` to the seating program of [obligations](08-obligations.md):
+and of a list beside one, [`no_hypothesis_beside_open.ein`](../../../../examples/broken/load/no_hypothesis_beside_open.ein):
 
+<!-- output -->
 ```text
-kb load error: seats.ein:26:24: solve: its :no-hypothesis names seat, and obligation 'everyone-sits' owes seat — an obligation is paid by facts of the relation it owes, so a state that owes seat and may not be given one is stuck: drop seat from the list
+kb load error: examples/broken/load/no_hypothesis_beside_open.ein:41:24: solve: its :no-hypothesis names likes, and root holds (open likes), which obligation 'total-owed' writes — the two lists and a closure configure the blind enumerator, which does not run beside an open fact, and one that disagrees with the open facts root holds is an error: drop likes from the list
 ```
 
 `(solve :no-search)` relaxes no conflict: beside an obligation or a closure it is silent, beside an hrule or a list it
-is a `note:` saying that nothing is proposed, and every refused pair is refused beside it too
+is a `note:` saying that nothing is proposed, and every refused program is refused beside it too
 ([Q-M1f.254](../../../decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md)). It is the way to say
 *judge root alone*. The exact lines are [diagnostics](../04-reference/07-diagnostics.md)'.
 
@@ -286,7 +291,7 @@ declaration that writes the atom as a label takes it out of the guessable ones.
 
 | command | shows |
 |---|---|
-| `ein show hyps FILE` | H as Ein facts, one candidate a line, uncut, nothing else on stdout; the rung and the count on stderr. Costs root's saturation and the generator, no search |
+| `ein show hyps FILE` | H as Ein facts, one candidate a line, uncut, nothing else on stdout; the writers and the count on stderr. Costs root's saturation and the generator, no search |
 | `ein solve FILE -H` | after the read-out, H by relation, with the candidates dead alone |
 | `ein render h-space FILE` | the structure of H: which candidates exclude each other, the groups, the owed groups and grids, what couples them; a read-out, a graph as DOT (`--view`), or a JSON document (`--dump`) |
 
@@ -294,7 +299,7 @@ None of them changes an answer. What the structure of H means is [the hypothesis
 
 ## See also
 
-- [Obligations](08-obligations.md): the second rung, and the judge beside the first.
+- [Obligations](08-obligations.md): a writer of H, and the judge of every state.
 - [Query](12-query.md): the `(solve …)` form that carries the lists and `:no-search`.
 - [Solutions and models](13-solutions-and-models.md): what the lattice over H is, and R in it.
 - [Diagnostics](../04-reference/07-diagnostics.md): every refusal named here, word for word.

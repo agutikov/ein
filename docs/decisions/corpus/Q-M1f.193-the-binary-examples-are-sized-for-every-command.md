@@ -11,5 +11,5 @@ reloaded. Three inputs are enough to show each thing a circuit program does; whe
 tried at a larger size, test vectors written as facts are one saturation (`adder_against_table.ein`).
 
 **Held by.** The programs' entries in `corpus/corpus.toml`, none `slow`, and `ein-corpus`'s
-`the_slow_set_is_exactly_these_fifteen`; `ein-cli/tests/arith_search_free.rs`, which holds the binary arithmetic and
+`the_slow_set_is_exactly_these_sixteen`; `ein-cli/tests/arith_search_free.rs`, which holds the binary arithmetic and
 the conversions search-free.

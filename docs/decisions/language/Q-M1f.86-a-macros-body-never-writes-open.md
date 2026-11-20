@@ -1,13 +1,11 @@
-# Q-M1f.86 — A macro's body never writes `open`
+# Q-M1f.86 — A macro’s body may write `(open …)`, checked where it is called
 
-`open` is no name, so no template writes it: a macro's body that writes `(open)` or `(open ?R)` is a parse error at
-the `open`, whether a rule calls the macro or not, as `_` and a string are in a body. A rule that states the
-verdict writes it as its own `:assert` ([Q-M1f.66](Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)).
+A macro's body may write `(open ?R)` or `(open (p ?x))`, as any template: it is checked where a rule calls it,
+as every primitive's shape is ([Q-M1f.67](Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)), and a macro
+no rule calls is not read.
 
-**Why.** The verdict is written only as a rule's whole conclusion, and a macro's body is none. A word the grammar
-refuses wherever it stands is refused where it is written, which a call does not change; what a call does decide, a
-primitive's shape, is checked at the call ([Q-M1f.67](Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)).
+**Why.** `open` is a name a template may head; what the call writes is held to the shapes a rule's clause is held
+to, where it is written.
 
-**Held by.** `ein-ir/src/ein.y`'s `Template`, which takes no `open`; `ein-cli/tests/open_reserved.rs`:
-`open_is_refused_wherever_it_is_not_the_verdict`, whose places include a macro's body called in an `:assert`,
-called in a `:match`, and called by no rule.
+**Held by.** `ein-ir/src/ein.y`'s `Template`; `ein_ir::from_ir`'s `refuse_malformed_primitives`;
+`examples/ein-bugs/wrong-answers/open-macro-verdict.ein` and `open-macro-unused.ein`, which load.

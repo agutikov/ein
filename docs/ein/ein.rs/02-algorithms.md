@@ -17,7 +17,7 @@ design page that is its contract.
 | **equality** | none: `eq` is name identity, computed, never stored, and names are never merged ([Q1](../../decisions/language/Q1-the-knowledge-base-is-a-hypergraph-of-atoms.md)) | no congruence closure | [`03-design/03-data-model.md`](03-design/03-data-model.md) |
 | **contradiction** | two bit tests per new fact, `(false)` and a pair `X`, `(not X)`; the agenda fires first what can make one, and a route's node stops at its first | incremental clash detection | [`03-design/06-saturation.md`](03-design/06-saturation.md) |
 | **provenance and cores** | every derivation recorded as an OR over AND-nodes, alternatives kept by premise count and smallest closure; a core is the smallest frontier, by an ATMS label search with a budget | ATMS labels; a minimum-cardinality frontier rather than a subset-minimal unsatisfiable subset | [`03-design/03-data-model.md`](03-design/03-data-model.md), [`03-design/07-search.md`](03-design/07-search.md) |
-| **hypotheses**: the candidates H | a ladder: the program's hrules, else what the obligations owe, else blind enumeration, every guessable atom in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
+| **hypotheses**: the candidates H | a union: what the program's rules that conclude a hypothesis propose, hrules among them, with what would pay what the activated obligations owe; else, where neither writes, blind enumeration, every guessable atom in every slot of every eligible relation | rule-driven, obligation-driven and generate-and-test generation | [`03-design/07-search.md`](03-design/07-search.md) |
 | **the search**: the region `R` | routes over the lattice of commitments, each the least work its question needs: the state route (each alive state once), the obligation tree, the climb and the shrink, the alive down-set, the cube | monotone, upward-closed pruning (a dead node's supersets are dead), minimal transversals for the dead sets and the minimal generators, branching on an owed instance's exhaustive alternatives | [`03-design/07-search.md`](03-design/07-search.md) |
 | **canonicalisation** | a state is its sorted fact set, compared whole, never by hash | canonical forms rather than isomorphism | [`03-design/07-search.md`](03-design/07-search.md) |
 
@@ -141,19 +141,23 @@ activator's seed registers; `run_seeded` binds one step to a new fact first, at 
 fact's; `holds` runs a lifted guard's sub-plan in its own register space, seeded from the parent's registers, and
 stops at the first match.
 
-## 6. Hypothesis generation: the ladder
+## 6. Hypothesis generation: the writers
 
-H is built once, at root's fixpoint, by `hypgen::generate_config_free`. Which rung proposes is decided by one
-function, `hypgen::rung`, before any rung runs; every rung feeds one filter pipeline, and the survivors are sorted
-by text and deduplicated into H. The contract is
+H is built once, at root's fixpoint, by `hypgen::generate_config_free`, and is the union of what its writers
+propose: the rules that conclude a hypothesis, `(open F)`, hrules among them; the `(open F)` facts the program
+writes; the obligations activated at root; and, only where none of those wrote and no obligation is activated, the
+blind enumerator. Every writer feeds one filter pipeline, and the survivors are sorted by text and deduplicated
+into H. What the writers give at root, and at every state above it, the pass of `open.rs` writes as the state's
+`(open …)` facts. The contract is
 [`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation).
 
-![Hypothesis generation as a flow: which rung of the ladder proposes](diagrams/02-hypothesis-ladder.svg)
+![Hypothesis generation as a flow: the writers whose union is H](diagrams/02-hypothesis-writers.svg)
 
-Rung 2 declines, and the blind enumerator runs, where an obligation's guard scans a relation the rung itself
-proposes, or reads one a commitment can change (`oblgen::Mode::Declined`); a state that owes only relations the
-program scopes out proposes nothing and says so (`Mode::Stuck`). The filter that drops a candidate is named on its
-`hyp` event, and the generator's statistics assert that nothing is lost between the two counts:
+An obligation whose witness step does not resolve under its activator proposes nothing, and the blind enumerator
+does not run beside it (`oblgen::Mode::Declined`); an obligation whose guard reads a relation a commitment can
+change still proposes what root's guard gives, and the static check flags the program. A state that owes and has
+nothing left to propose says so (`Mode::Stuck`). The filter that drops a candidate is named on its `hyp` event, and
+the generator's statistics assert that nothing is lost between the two counts:
 
 $$
 \operatorname{raw} = \operatorname{emitted} + \sum_{f \in \text{filters}} \operatorname{dropped}_f
@@ -301,7 +305,8 @@ and the status says it was cut. A core is taken only where a surface prints one 
 ## 10. The obligation pass
 
 A rule whose `:assert` is `(open ?R)` is in no agenda. `obligations::tally` runs once over a KB after its
-saturation returns and reports what the KB still owes; nothing it reports is stored
+saturation returns and reports what the KB still owes, and the pass of `open.rs` writes `(open R)` once for each
+relation owed, into the part of the state no fork inherits
 ([`03-design/06-saturation.md` § 6.2](03-design/06-saturation.md#62-obligations)).
 
 ![The obligation pass as a flow over a saturated knowledge base](diagrams/02-obligation-pass.svg)

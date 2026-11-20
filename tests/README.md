@@ -118,7 +118,7 @@ these programs give each rule one.
 | dir | what the programs do |
 |---|---|
 | [`stdlib/algebra/`](stdlib/algebra/) | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and the totality pair's **obligation** duals, each once owing and once satisfied |
-| [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, by an obligation the rung declines, which is the only way to reach it from a program that declares one |
+| [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, with the library's obligation rules loaded and none activated |
 | [`stdlib/elim/`](stdlib/elim/) | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces the one fact left, exactly full refutes |
 | [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a relation whose held extent is closed is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
 | [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
@@ -146,9 +146,12 @@ are written the way everything else here is, with one exception that is worth
 knowing before writing a ninth.
 
 **A claim says *that* a state owes, never how much.** `:expect`'s forms are
-all assertions about *facts*, and an `open` conclusion is by construction never
-a fact: it is a tally on the search-lattice node, because a stored one would
-survive its own discharge in a fork that paid it. So the owing file of each
+all assertions about facts of the program's relations, and what a state owes,
+`(open R)`, is a fact of the kernel's relation `open`, held once per relation
+and by the owing state alone, because a stored debt would survive its own
+discharge in a fork that paid it
+([Q-M1f.566](../docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)).
+So the owing file of each
 pair names its state under `(owing (model …))` on its `(solve …)` form, the
 satisfied one names its state in R — which is what satisfies the coverage gate
 and what pins the *state* the debt is read from — and the count itself is
@@ -174,16 +177,14 @@ relations and `sort` in `:no-hypothesis`, because a file that scoped the
 activators out would be testing its own scoping line.
 
 **And it has to *earn* the enumerator**, which is worth knowing before editing
-it. Hypothesis generation is a ladder — the puzzle's hrules, else what root
-owes, else the blind enumeration — so a program declaring `(bijective seats)`
-does not reach the third rung on its own. It gets there with a second
-obligation, `sorted-somewhere`, a bare `(open)`, which names no relation to
-branch on, so the rung declines it, and a declined obligation hands the whole
-call to the blind enumerator
-([the ladder § 4.3](../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#43-when-it-declines)).
-So the file is also the corpus's one `mode=declined` fixture, and the
-obligation it adds is *satisfied* on purpose: the decline must not depend on
-the KB happening to owe something.
+it. The blind enumerator writes only where root holds no `open` fact and no
+obligation is activated
+([Q-M1f.576](../docs/decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)),
+so a program declaring `(bijective seats)` does not reach it: `bijective-setup`
+activates `total-owed` and `surjective-owed`. The file writes `bijective-setup`'s
+activators by hand, every one but those two, and imports `std.algebra`,
+`std.bijection` and `std.slots` whole, so the library's four obligation rules are
+loaded and none is activated.
 
 ### `stdlib/contradiction/`: the contradiction a program imports
 
@@ -773,9 +774,10 @@ not how much: `(solve … :expect (region (owing (model …))))` names an owing
 state, which R, the states that are alive *and discharged*, does not hold
 ([solution semantics](../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#2-the-answer-the-region-r)).
 **A list may not switch an obligation's generating role off**: a
-`:no-hypothesis` naming a relation an obligation owes is refused at load, and
-so is a closure of one
-([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
+`:no-hypothesis` naming a relation root owes is refused at load, and so is a
+closure of one
+([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md),
+[Q-M1f.578](../docs/decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 **To judge root alone, write `(solve :no-search)`**: the lattice is root alone,
 nothing is proposed whatever the program declares, and the obligations judge
 root, so R is root where it owes nothing and empty, root the owing node it

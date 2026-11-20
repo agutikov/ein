@@ -13,4 +13,4 @@ everyone knows is kept at its own size because its claim is one question, *is th
 `--single` decides without describing R.
 
 **Held by.** The programs' entries in `corpus/corpus.toml`, the two SEND + MORE = MONEY programs the only `slow`
-ones, `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`; each program's claim, which its `test` run holds.
+ones, `ein-corpus`'s `the_slow_set_is_exactly_these_sixteen`; each program's claim, which its `test` run holds.

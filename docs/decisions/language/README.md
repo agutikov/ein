@@ -38,12 +38,12 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.46](Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md) — A relation parameter that can hold `eq` heads only a form of two arguments
 - [Q-M1f.47](Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md) — A written fact of `eq` at another arity than two is refused at load
 - [Q-M1f.65](Q-M1f.65-a-comment-may-hold-any-character.md) — A comment may hold any character
-- [Q-M1f.66](Q-M1f.66-open-is-written-only-as-a-rules-verdict.md) — `open` is written only as a rule's verdict
+- [Q-M1f.66](Q-M1f.66-open-is-written-only-as-a-rules-verdict.md) — `open` is a name, and the kernel reads it at the head of a written fact, a premise or a conclusion
 - [Q-M1f.67](Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md) — A macro's body is checked where it is called, and an unused macro loads
 - [Q-M1f.74](Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md) — A nested `(or …)` a macro's expansion writes is refused as a written one is
 - [Q-M1f.80](Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md) — A malformed primitive a macro's expansion writes is refused at load
 - [Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md) — A malformed primitive is a form the grammar would refuse where it stands
-- [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro's body never writes `open`
+- [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro’s body may write `(open …)`, checked where it is called
 - [Q-M1f.96](Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md) — A byte-order mark is refused as any character that is not ASCII
 - [Q-M1f.113](Q-M1f.113-an-object-is-an-atom-or-a-fact-a-state-could.md) — An object is an atom, or a fact a state could hold
 - [Q-M1f.114](Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md) — A relation a `(solve …)` list names is one the program writes elsewhere
@@ -79,4 +79,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md) — A relation is overloaded by its count of arguments, and a declaration holds no form to it
 - [Q-M1f.522](Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md) — A relation of the program is any atom it writes first in a tuple
 - [Q-M1f.550](Q-M1f.550-the-engines-word-is-inconsistent.md) — The engine's word is `inconsistent`
+- [Q-M1f.568](Q-M1f.568-directly-under-absent-or-open-the-other.md) — Directly under `absent` or `open` the other is refused, but `(absent (open P))`
+- [Q-M1f.571](Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md) — `absent` takes a premise and `open` a name or a fact; under an ordinary relation both are names
+- [Q-M1f.575](Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md) — `(open R)` is a rule’s whole `:assert`, and `(open F)` stands in a conjunction
 - [Q-M1f.593](Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md) — `not` is a name everywhere but at a form's head

@@ -186,9 +186,9 @@ $$
 ```
 
 - **At most one per program.** A second is refused at load: two would be two lattices, and a program has one lattice
-  and one R. With none, the lattice is the default ladder's, unrestricted, and `(solve)` says the same.
+  and one R. With none, the lattice is the one H's writers give, unrestricted, and `(solve)` says the same.
 - **The lattice is what the lists choose**: which candidates there are, and so which commitments. The lists, the
-  ladder and `:no-search` are [hypotheses](09-hypotheses.md)'. Every name a list holds is something the program has, or
+  writers of H and `:no-search` are [hypotheses](09-hypotheses.md)'. Every name a list holds is something the program has, or
   it is refused at load.
 - **`:no-search` is a flag**, the one keyword with no value: the program states its lattice is root alone, nothing is
   proposed, and R is {∅} where root is alive and owes nothing, empty otherwise. It is how a program says *judge root

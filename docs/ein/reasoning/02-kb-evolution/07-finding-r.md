@@ -112,10 +112,10 @@ $$
 
 The sections below say how much of this table a computation may leave unevaluated.
 
-**What the oracle is not.** It evaluates each node by saturation and takes $H$ from the ladder, so it is the
-reference every route is held to, not a check of those two: a derivation saturation would miss, or a candidate the
-ladder never proposes, is missing from the oracle's $R$ as from every route's. A relation of which the ladder
-proposes no fact is named in every answer, where that puts it outside the universe
+**What the oracle is not.** It evaluates each node by saturation and takes $H$ from what root holds under
+$\mathsf{open}$ ([hypothesis generation](04-hypothesis-generation.md)), so it is the reference every route is held
+to, not a check of those two: a derivation saturation would miss, or a candidate no writer proposes, is missing from
+the oracle's $R$ as from every route's. A relation of which no writer proposes a fact is named in every answer, where that puts it outside the universe
 ([Solution semantics § 1.4](06-solution-semantics.md#14-candidate-and-universe)).
 
 ## 3. A program the static check flags

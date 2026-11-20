@@ -34,8 +34,10 @@ which it holds **owes** that instance, $\operatorname{owes}(o, a, \theta, S)$; t
 $\operatorname{Owed}(S)$, and a state that owes none is **discharged**
 ([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)).
 
-Obligations bound $R$ from below: they set its **minimal line**. The verdict is written nowhere else
-([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md); the user's
+Obligations bound $R$ from below: they set its **minimal line**. A state that owes holds the verdict as a fact,
+$\operatorname{open}(r)$, once, written at its own fixpoint and inherited by no state above it, so a state that pays
+it holds none
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md); the user's
 [obligations page](../../user/03-syntax-and-semantics/08-obligations.md) has the spelling).
 
 One of each, over the same relation: *a guest with no seat owes one*, and *no guest has two seats*.
@@ -240,8 +242,9 @@ is a duplicate, not a gap, and $R$ is a set, so it holds the state once.
 **It holds under two conditions**, each checked rather than assumed:
 
 1. **The alternatives cannot grow beneath the branch.** They are read at root; a domain a commitment could
-   extend would hold, at some state, a witness root never saw. $H$ is not built from obligations wherever that
-   could happen ([hypothesis generation](04-hypothesis-generation.md),
+   extend would hold, at some state, a witness root never saw. Wherever that could happen the obligation still
+   writes what root's guard gives, and the program is one the static check flags, so nothing is claimed of its
+   answer ([hypothesis generation § 4.3](04-hypothesis-generation.md#43-where-the-payments-can-grow),
    [Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)).
 2. **Every witness is a candidate, or refuted at root.** A witness that is neither could pay the instance at a
    state no branch reaches. The branch is taken only for an instance of which this is checked, on the program
@@ -297,7 +300,7 @@ that is answered.
 **A model** is what a state of $R$ adds to the program: the positive part of the state, less the positive part
 of the program as stated
 ([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)). With $X^{+}$ the facts
-of $X$ that are not stored negations:
+of $X$ that are neither stored negations nor facts under $\mathsf{open}$:
 
 $$
 \operatorname{model}(S) \;=\; S^{+} \setminus K_0^{+}

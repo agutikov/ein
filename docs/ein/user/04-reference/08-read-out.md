@@ -313,13 +313,18 @@ them, and `ein oracle`. `ein test`, `ein show hyps` and `ein render lattice`, wh
 stderr line; `--monotone`, whose answer is the verdict itself, prints neither. Then, in detail, under `lattice`:
 what is assumed, what each site puts at stake, and whether it bit, the status and the state apart, because the cube
 reads only
-the status. At most four `site` and four `stale` rows are printed, each then a `…` row; `--dump-answer`'s `answer.txt`
+the status. **A program the run finds not monotone in flight**, a state it built holding a hypothesis root does not
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), prints the same
+warning, its stderr line said at once, when the state was built, and an `in flight` row under `lattice`; where the
+static check found no site, the `lattice` row says *not monotone: found in flight (Q-M1f.574)*, and the summary's
+`monotonicity.in_flight` holds the hypothesis. At most four `site` and four `stale` rows are printed, each then a `…` row; `--dump-answer`'s `answer.txt`
 has them all. The block does not take the listings' 100 lines. Its JSON is the summary's `monotonicity` block,
 [`11-region-dump.md`](11-region-dump.md#monotonicity--the-static-check)'s.
 
 <!-- rows: lattice -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
+| `in flight` | on a program a run found not monotone in flight | the first hypothesis a state the run built holds and root does not ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)) | the run | `monotonicity.in_flight` | none on the examples page: no corpus program holds one |
 | `assumes` | on a flagged program | what a node is taken to be, and that the answer rests on that reading ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)) | — | — | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `site` | per site, up to four | the rule, what it reads and where, what it concludes, and what it puts at stake | around R | `monotonicity.sites[k].rule` | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole), [X14](09-read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 | `…` | past four sites | how many more sites, and what writes every one | the listing | — | none on the examples page: none of its programs has five sites |
@@ -349,8 +354,8 @@ Every question prints these, since every question is over the same H.
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
 | `commit` | when the program is a saved file with a `(commit …)`, a node of its program's lattice ([`10-answer-dump.md`](10-answer-dump.md#a-saved-file-is-a-node-of-its-programs-lattice)) | how many candidates of H the node commits, that R is the part of the program's R above it and the universe the rest of H, and the candidates as the file names them. `∅`, the run's root, is the node | around R | `root.commit` | [X21](09-read-out-examples.md#x21--testssaved04_a_saved_nodeein-a-saved-file-a-node-of-its-programs-lattice) |
-| `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](09-read-out-examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
-| `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no rung proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
+| `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H holds of the obligations is [`06-solution-semantics.md` § 1.4](../../reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](09-read-out-examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
+| `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no writer proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](09-read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 <!-- /rows -->
 
 ---
@@ -462,8 +467,8 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 | flag | its head | what it prints, per listed state | what it is about |
 |---|---|---|---|
 | `-H` | H's size, over how many relations, and how many dead alone | each relation's candidates, and those dead alone | H, the universe |
-| `-p` | per state, its number, and the count of facts | every fact beyond the program as loaded: root's derivations, the commitment and what it derives | a state's facts beyond the program |
-| `-P` | the same, `(not …)` omitted | the positive ones | [the model](../03-syntax-and-semantics/13-solutions-and-models.md#model) |
+| `-p` | per state, its number, and the count of facts | every fact beyond the program as loaded: root's derivations, the commitment and what it derives, its `open` facts among them ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)) | a state's facts beyond the program |
+| `-P` | the same, `(not …)` and `(open …)` omitted ([Q-M1f.577](../../../decisions/read-out/Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)) | the positive ones | [the model](../03-syntax-and-semantics/13-solutions-and-models.md#model) |
 | `-f` | the relations, and the count of facts | every fact of the candidates' relations, given ones too | the candidates' relations' facts |
 
 `-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is
@@ -523,11 +528,11 @@ every error's line.
 
 | line | when | exit |
 |---|---|---|
-| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1) | 0 |
+| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1); and, on one it does not, at once, once, where a run first builds a state that holds a hypothesis root does not (§ 5.1) | 0 |
 | `note: FILE: partial — …` | a run the budget or `--region-limit` stopped. Under describe and `--count` stopped by the budget the note says, by default and not only under `-v`, the forecast (the next step's projection, on top of what was spent, against `--region-budget`: the state route's next layer, or the tree and the classes' next step), what the run established and what it did not, and the options: `--region-budget` larger (the state route: at least the spent and projected facts, which takes the next layer), and the other route where the program has one | 0 |
 | `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, every claim root does not decide under `--no-search`, and every claim of a saved file with a `(commit …)`, whose claims are its program's ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)) | 0 |
 | `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |
-| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :hypothesis-relations …`, `… :no-search …` | at load, on every command: a list beside an hrule, which filters no candidate, or a name another declaration already says; an hrule or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 |
+| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :no-search …` | at load, on every command: where root holds no `open` fact, a name another declaration already says; a rule that concludes a hypothesis or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 |
 | `warning: FILE: rule '<d>': its :assert writes (r ?f), … — a relation is named by a symbol, not a fact, so such an activator activates nothing` and its siblings | when the run ends, on every command, after a flagged program's `WARNING`: the program writes an activator, or a rule could derive one, that binds a relation parameter to a fact, which activates nothing; one line a site ([`07-diagnostics.md` § 2.9](07-diagnostics.md#29-a-rule-shape-that-reads-nothing)) | 0 |
 | `warning: FILE:L:C: rule '<r>': its activator (r (a b)) binds its parameter ?R, … and activates nothing — …` | when the run ends, after the load's: a state of the run holds such an activator, one line each, placed at the rule's `:match` | 0 |
 | `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 |

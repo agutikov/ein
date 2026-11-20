@@ -170,7 +170,11 @@ candidate an alive state so denies is dead above it (L8); and the agenda fires e
 
 A rule whose `:assert` is `(open ?R)` derives nothing and is not in the agenda: it runs as one pass over the KB
 **after** the fixpoint ([`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)), and what it reports,
-a node's debts, is a tally on the node and never a fact. Its event is `owe`.
+a node's debts, the pass of [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once
+for each relation owed, into the part of the state no fork inherits
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), beside the
+hypotheses `(open F)` the rules that conclude one give there. Where a rule reads an `open` fact, the saturation
+resumes over what the pass wrote, and the two repeat until neither adds anything. Its event is `owe`.
 
 ## 7. `is_stalled` is not a read
 

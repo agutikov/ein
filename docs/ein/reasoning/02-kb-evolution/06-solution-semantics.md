@@ -102,8 +102,9 @@ candidate is a constraint on the commitments it considers, never a fact of root
 
 ### 1.4 Candidate and universe
 
-A candidate, or **hypothesis**, is a fact proposed at root, and the candidate set $H$, the **universe**, is the set
-of them ([firing a rule](01-firing.md#two-layers) names both, and this section states them exactly):
+A candidate, or **hypothesis**, is a fact proposed at root, held there under $\mathsf{open}$, and the candidate
+set $H$, the **universe**, is the set of them ([firing a rule](01-firing.md#two-layers) names both, and this section
+states them exactly):
 
 $$
 \begin{aligned}
@@ -114,10 +115,10 @@ $$
 $$
 
 with root denying $h$ where it holds $\lnot h$ and a rule of the program refutes $h$ beside it
-([hypothesis generation § 2](04-hypothesis-generation.md#2-the-ladder)).
+([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union)).
 
-$\operatorname{gen}$ is the **generation ladder** of [Hypothesis generation](04-hypothesis-generation.md), a function
-of the program and of root's fixpoint and of nothing else. Nothing a computation is configured with moves which facts
+$\operatorname{gen}$ is **the union of the writers** of [Hypothesis generation](04-hypothesis-generation.md), a
+function of the program and of root's fixpoint and of nothing else. Nothing a computation is configured with moves which facts
 those are: no option changes the lattice
 ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)). Every later
 definition quantifies over $H$.
@@ -136,24 +137,30 @@ the facts its states differ in, they are listed in $\prec$; a listing says which
 
 Three things decide $H$:
 
-- **which rung of the ladder applies**: the program's own hypothesis rules if it declares one; else, where an
-  obligation is activated at root, the facts that would pay what root owes and what a commitment can bring it to owe
-  ([Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)); else every
-  fact the blind enumerator can form. The middle rung reads each obligation's domain at root, so it **declines**, and
-  the blind enumerator builds $H$, where a domain could grow under it
+- **which writers write at root**: what the program's hypothesis rules propose and the hypotheses it states,
+  together with, where an obligation is activated at root, the facts that would pay what root owes and what a
+  commitment can bring it to owe, the union of the two
+  ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md),
+  [Q-M1f.308](../../../decisions/hypotheses/Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md)); and where
+  neither writes and no obligation is activated, every fact the blind enumerator can form
+  ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)). An
+  obligation reads its domain at root, and where a domain could grow under it, it still writes what root's guard
+  gives and the program is not monotone
   ([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md));
-- **what the program scopes out**: a fact of a relation the program excludes from guessing is no candidate at all;
+- **what the program scopes out**: a fact of a relation the program excludes from the blind enumerator's guessing is
+  none of its candidates, and a scoping that disagrees with what root holds under $\mathsf{open}$ makes the text no
+  program;
 - **what root settles**: a fact root holds, or whose negation root stores, is no candidate.
 
 **$H$ must contain every fact a model needs.** If it does not, either the program is wrong, a name it never writes,
-or the generator is, a candidate it never proposes. $H$ is defined by the ladder, not declaratively: it is not every
+or the generator is, a candidate it never proposes. $H$ is defined by its writers, not declaratively: it is not every
 fact of every relation whose
 [held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) a commitment may extend.
 
-**On the obligations rung, $H$ holds what a debt root does not owe would propose**
+**Where an obligation is activated, $H$ holds what a debt root does not owe would propose**
 ([Q-M1e.11](../../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). $H$ is taken
 once, at root, and what activates an obligation is an ordinary fact, so a rule can derive one at a node: that node
-owes what root never did, and root proposed nothing that pays it. The rung therefore also proposes, at root, the
+owes what root never did, and root proposed nothing that pays it. The obligations therefore also propose, at root, the
 payments of every debt a commitment can bring, read off the rules alone
 ([Hypothesis generation § 4.4](04-hypothesis-generation.md) has the definition). The reading is at relation grain and
 inexact both ways. *Over*: $H$ may hold a candidate for a debt no node owes, a member of a state of $R$ wherever
@@ -164,7 +171,7 @@ answer is the whole cube's.
 
 **What the universe leaves out, the answer names**
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md)). $R$ is over $H$ as
-the ladder scopes it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. With
+its writers build it, so a certificate that $R$ is exhausted certifies all of $R$ over $H$ and nothing beyond it. With
 $\operatorname{rels}(X)$ the relations of the facts of $X$ ([saturation](02-saturation.md)), a relation $r$ is
 **outside the universe** when
 
@@ -177,7 +184,7 @@ $$
 $$
 
 and the held extent of such a relation, in every state of $R$, is only what the program states and saturation
-derives. It is said at relation grain: the facts of a covered relation that the rung does not propose are not named.
+derives. It is said at relation grain: the facts of a covered relation that no writer proposes are not named.
 
 **The universe is untyped**
 ([Q-M1e.12](../../../decisions/hypotheses/Q-M1e.12-the-blind-enumerator-is-untyped.md)). The blind
@@ -671,7 +678,8 @@ states of $R$ and evaluated all eight nodes, the dead triple among them, since n
 
 A **model** is the positive part of a solution's state, less the positive part of the knowledge base as loaded
 ([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)). With $X^{+}$ the facts of
-$X$ that are not stored negations:
+$X$ that are neither stored negations nor facts under $\mathsf{open}$
+([Q-M1f.577](../../../decisions/read-out/Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)):
 
 $$
 \begin{aligned}
@@ -680,8 +688,8 @@ $$
 $$
 
 $K_0$ is the program as loaded, *before the first saturation*: the problem's statements, the declarations of
-relations and of membership, no derived fact. So a model carries no stored negation, nothing the program itself
-states, and nothing loading writes down. It is **what the puzzle did not say and the solution established**: what a
+relations and of membership, no derived fact. So a model carries no stored negation, nothing the state owes or
+supposes, nothing the program itself states, and nothing loading writes down. It is **what the puzzle did not say and the solution established**: what a
 node of $R$ adds.
 
 The state is what is judged, and the model is a projection of it

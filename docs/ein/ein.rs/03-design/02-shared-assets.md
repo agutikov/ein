@@ -73,7 +73,7 @@ corpus enumerates the same entries with the same runs. An entry holds:
 `manifest.rs`'s `every_ein_file_has_an_entry`, so the corpus cannot silently miss a file. **`slow` is checked in both
 directions**: `slow_matches_the_recorded_cost` fails an entry flagged below the line or unflagged above it, against
 its recorded `cost_ms`, with no engine run; `corpus_cli.rs`'s `the_slow_flag_still_describes_the_sweep` compares the
-recorded cost with the sweep it has just run; and `the_slow_set_is_exactly_these_fifteen` names the set. A `slow`
+recorded cost with the sweep it has just run; and `the_slow_set_is_exactly_these_sixteen` names the set. A `slow`
 entry stays out of the default sweep; every sweep reads it with `EIN_CORPUS_SLOW=1`.
 
 The negative fixtures are corpus files too: a program the parser or the loader refuses lives under

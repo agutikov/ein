@@ -676,8 +676,11 @@ $$
 with $a$ nothing where $\rho$ has no parameter, and the absences of $\varphi_\rho$ read where
 [absence](../02-kb-evolution/03-absent-and-naf.md) reads them.
 
-Two more kinds of declaration have a rule's parts and are not rewriting rules: neither adds its conclusion to
-the knowledge base it matches in. Each is defined where it is used, in the part after this one
+Two more kinds of conclusion are no rewriting's: a **hypothesis**, a fact pattern under $\mathsf{open}$ that
+supposes the fact it makes, which a conclusion may hold beside facts, and the verdict of an **obligation**, that the
+held extent of a relation is incomplete, which is a declaration's whole conclusion. Neither is added to the knowledge
+base it matches in while it is saturated: each is written at the fixpoint, under $\mathsf{open}$, in a part of the
+knowledge base that no extension of it inherits. Each is defined where it is used, in the part after this one
 ([the first](../02-kb-evolution/04-hypothesis-generation.md#3-the-hypothesis-rules-what-the-program-says-to-guess),
 [the second](../02-kb-evolution/04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it)).
 

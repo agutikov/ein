@@ -65,7 +65,7 @@ The last three edges are `ein-corpus`'s own `[dev-dependencies]`, for its bench 
 | judge the mechanisms | where two hypothesis mechanisms could conflict, a second load is saturated and they are read together on root's fixpoint | `ein-cli/src/common.rs` (`load_held`), `ein_infer::mechanisms` |
 | compile | each rule, per activator, to a plan, memoised for the run | `ein_infer::{compile, plan, engine}` |
 | saturate root | the closure and the boundary, to root's fixpoint | `ein_infer::{saturator, match_, firing, contradiction}` |
-| build H | the generation ladder at root | `ein_infer::{hypgen, hrule, oblgen}` |
+| build H | the writers at root, their union; each state's `open` facts | `ein_infer::{hypgen, hrule, oblgen, open}` |
 | check | what root owes, the static monotonicity check | `ein_infer::{obligations, monotone}` |
 | answer | the question's route over `R`, each node through the node function | `ein_infer::{explore, tree, tree_classes, states, downset, region}` |
 | read | `R` described once; each listed state's model and each query's projection | `ein_infer::{described, read_out, verdict}` |
@@ -128,7 +128,7 @@ The modules as the path a program's bytes take through them; an arrow is what on
 | `saturator.rs`, `firing.rs`, `contradiction.rs` | the two-phase loop and the agenda; a rule application; the contradiction check |
 | `obligations.rs` | the obligation pass over a quiescent KB |
 | `naf_deps.rs`, `strata.rs` | the static map of what reads an `absent` over what; the rule dependency graph and its strata |
-| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the generation ladder and its rungs; the mechanisms read together; the alive-set invariant; what the universe leaves out |
+| `hypgen.rs`, `hrule.rs`, `oblgen.rs`, `open.rs`, `mechanisms.rs`, `invariant.rs`, `scope.rs` | the writers of H and their union; the pass that writes a state's `open` facts at its fixpoint; the mechanisms read together; the alive-set invariant; what the universe leaves out |
 | `monotone.rs`, `detector.rs`, `extendable.rs` | the static check, the detector, the relations a commitment can extend, followed through each rule's activator |
 | `region.rs` | the node function, the fan-out, the cube (route 2, the oracle) |
 | `explore.rs` | every question about `R` and its route; the licences |
@@ -167,7 +167,7 @@ stdout, which is `ein-cli`'s.
 | a rule | `ein.y` | `from_ir` registers it (`entities`) | `compile::compile_rule`, once per activator, to a `Plan` | the matcher finds its matches; the saturator fires them |
 | `(absent …)` | `ein.y` | — | lifted to a NAF guard (`split_naf`), or a nested step | judged at the boundary, on a quiescent KB |
 | `(open ?R)` | `ein.y` | an obligation rule | compiled like any rule | the obligation pass, after the fixpoint |
-| an hrule | `ein.y` | registered | a plan whose match proposes | `hrule`, the ladder's first rung |
+| an hrule | `ein.y` | registered | a plan whose match proposes | `hrule`, one of the writers of H |
 | a macro | `ein.y` | expanded away before the load (`macros`) | — | — |
 | an import | `ein.y` | resolved before the load (`imports`) | — | — |
 | `(query …)`, `(solve …)` | `ein.y` | registered on the program | a goal compiles under `#query` | the routes; `verdict` projects a goal over a state |

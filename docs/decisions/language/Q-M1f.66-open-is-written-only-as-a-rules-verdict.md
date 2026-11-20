@@ -1,18 +1,18 @@
-# Q-M1f.66 — `open` is written only as a rule's verdict
+# Q-M1f.66 — `open` is a name, and the kernel reads it at the head of a written fact, a premise or a conclusion
 
-`open` is a reserved word, never a name. It is written in one place: as the whole `:assert` of a rule, `(open)` or
-`(open ?R)`, the verdict an obligation states. Everywhere else it is a parse error at the `open`, on every command:
-as a fact's, a nested fact's or a pattern's relation, and as an argument, `(p open)`, a declaration's label, an
-activator's argument, a name in a `(solve …)` list, an import, a trace step or the verdict's own argument. The error
-carries a note saying where the word is written
-([Q-M1f.88](../diagnostics/Q-M1f.88-a-misplaced-open-is-a-parse-error-with-a-note.md)).
+`open` is a word a position gives a meaning to. At the head of a written fact, a premise or a conclusion the kernel
+reads it: what a state owes, `(open R)`, and a hypothesis, `(open F)`
+([Q-M1f.566](../hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). It takes one argument,
+and directly under it neither `open` nor `absent` is written
+([Q-M1f.568](Q-M1f.568-directly-under-absent-or-open-the-other.md)). Everywhere else it is a name: an
+argument, a name `eq` compares, a fact's `:rule`, a trace step's rule, a macro's body, and under an ordinary relation
+the head of a fact ([Q-M1f.571](Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)). It stays refused
+where a program would declare it or make it more than the kernel's: a relation, a rule, a macro or an alias named
+`open`, a name an import lists, a written `(open x)` with `x` neither a fact nor a relation of the program, an
+obligation made to owe `open`, and a `(solve …)` list that names it.
 
-**Why.** A word the engine reads as a verdict in one position and as a name in every other lets a program state,
-unawares, a fact or an argument that an obligation's reader could mistake for the verdict. Reserved in the plain
-sense, it means one thing wherever it is read.
+**Why.** A word the kernel reads where it stands, and that is a name wherever it is not read, is what `not` and
+`absent` are; what a program could make of it beyond that would be a second meaning of the kernel's own relation.
 
-**Held by.** `ein-ir/src/ein.y`'s `Assert`, the one production that takes `open`, and
-`ein_ir::grammar::RESERVED_WORDS`; `ein-cli/tests/open_reserved.rs`:
-`open_is_refused_wherever_it_is_not_the_verdict`, every place on every command, and
-`the_verdict_loads_where_a_rule_concludes_it`; `ein-ir/tests/grammar_pages.rs`, a row of the grammar's table per
-place.
+**Held by.** `ein-ir/src/ein.y`; `ein_ir::grammar::POSITION_WORDS`; `ein_ir::from_ir`'s `write_open_facts` and
+`refuse_open_owed`; `ein-cli/tests/open_reserved.rs`; the grammar's table (`ein-ir/tests/grammar_pages.rs`).

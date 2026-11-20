@@ -18,7 +18,7 @@ semantics. **Nobody declares it**: no part below is read off a relation's name, 
 it.
 
 The answer the structure is *of* is the region $R$ ([Solution semantics](06-solution-semantics.md)), and the set it
-is the structure of is built by the ladder ([Hypothesis generation](04-hypothesis-generation.md)). The structure
+is the structure of is built by the writers of [hypothesis generation](04-hypothesis-generation.md). The structure
 moves no answer ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)): it
 is a set of true statements about $R$'s lattice, and $R$ is defined without it.
 
@@ -143,7 +143,7 @@ member dead alone at root.
 $T \subseteq K_0$ be the facts the program states, $\operatorname{rels}(H)$ the candidates' relations,
 $\operatorname{names}(H)$ and $\operatorname{names}(f)$ the names of the candidates and of a fact $f$, the atoms under
 their argument arrows ([the knowledge base](../01-static-ir/01-knowledge-base.md#nesting)), and $\operatorname{Rd}$
-the relations whose facts the rung that built $H$ reads at root. For $f \in T$:
+the relations whose facts the writers that built $H$ read at root. For $f \in T$:
 
 $$
 \begin{aligned}
@@ -153,8 +153,8 @@ f \in \operatorname{Puz}(P) &\iff \operatorname{given}(f) \,\lor\, \operatorname
 $$
 
 A **given** is a fact of a relation a candidate is of, stated or denied. A **clue** is about the candidates'
-names, and what counts as one depends on the rung that built $H$. Where hypothesis rules or obligations built it, a
-clue is any other fact that names one of them:
+names, and what counts as one depends on the writers that built $H$. Where hypothesis rules or obligations built
+it, a clue is any other fact that names one of them:
 
 $$
 \operatorname{clue}(f) \iff \operatorname{names}(f) \cap \operatorname{names}(H) \neq \emptyset \,\land\, \operatorname{rel}(f) \notin \operatorname{Rd}
@@ -171,13 +171,13 @@ $$
 $$
 
 A fact that names none of them is kept: a declaration that names a relation and none of those names speaks of the
-relation whole. A fact of a relation whose facts the rung reads says what the universe is made of, and is kept. What
+relation whole. A fact of a relation whose facts the writers read says what the universe is made of, and is kept. What
 loading records of a stated fact goes with the fact. The rule singles out no relation by its name. It is held by
 what must be true of any right one:
 
 - the rows and columns of a relation stated a bijection are exactly the theory's pairs;
 - two programs one clue apart have one theory;
-- one puzzle in two encodings has one theory;
+- one puzzle in two encodings has one theory, up to the orientation of a symmetric relation's candidates;
 - the small KB derives no more than the program: $\mathrm{root}^{\circ} \subseteq \mathrm{root}$, and
   $\operatorname{dead}^{\circ}(C) \implies \operatorname{dead}(C)$.
 
@@ -428,15 +428,17 @@ so what the pair layer says of root's nodes holds of the lattice.
 true of the node it was read from, and **nothing above root follows**. The structure says so in its own words, no
 alternatives are read, and so no group is owed.
 
-**Which rung built $H$** is part of every structure: the hypothesis rules, the obligations, the blind enumerator,
-the obligations rung declined, a stuck root, or nothing to guess. The small KB's rule has one branch for the first
-two and another for the blind enumerator.
+**Which writers built $H$** is part of every structure: the hypothesis rules, the obligations, the two together,
+the blind enumerator, obligations that could form no payment, a stuck root, or nothing to guess. The small KB's rule
+has one branch for the hypothesis rules and the obligations and another for the blind enumerator.
 
 **$H$ does not grow, of debts**: on a monotone program a node owes no instance root does not
 ([Finding R § 4](07-finding-r.md#4-a-monotone-program-three-properties-and-the-licences)). Of a hypothesis rule's
 proposals nothing guarantees it: one whose pattern reads facts of a relation whose
 [held extent](../01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it) a commitment can change
-would propose more at a node than at root. The structure is of $H$ as root builds it either way.
+can hold more hypotheses at a node than at root, and its program is then not monotone
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). The structure is
+of $H$ as root builds it either way.
 
 **The programs the small KB's rule does not fit.** It reads the puzzle off the candidates, and four kinds of program
 defeat that reading. On each the structure is still a set of true statements; what it does not do is separate the

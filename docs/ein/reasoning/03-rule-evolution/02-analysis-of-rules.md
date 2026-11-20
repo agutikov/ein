@@ -213,11 +213,12 @@ page of what it serves:
   [negation as failure](../02-kb-evolution/03-absent-and-naf.md);
 - **the alive-set invariant**, that no rule asserts a name the program lacks:
   [saturation](../02-kb-evolution/02-saturation.md);
-- **what a rule can bring a commitment to owe**, read off the obligation rules, the second rung of the
-  hypothesis ladder: [hypothesis generation](../02-kb-evolution/04-hypothesis-generation.md);
-- **the hypothesis mechanisms judged against one another**, a hypothesis rule, an obligation, the scoping a
-  program states and a relation closed to hypotheses
-  ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md));
+- **what a rule can bring a commitment to owe**, read off the obligation rules, one of the writers of the
+  candidate set: [hypothesis generation](../02-kb-evolution/04-hypothesis-generation.md);
+- **the hypothesis mechanisms judged together**, the scoping a program states and a relation closed to hypotheses
+  against what root's hypothesis rules and obligations write, and against one another
+  ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md),
+  [Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md));
 - **the rule shapes that are no program**, a conclusion's variable nothing binds, a rule that reads nothing, a
   rule that could derive an activator binding a relation's place to a fact:
   [the diagnostics](../../user/04-reference/07-diagnostics.md).

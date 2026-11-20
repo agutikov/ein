@@ -886,17 +886,20 @@ solve · examples/lattice/04_obligation_trigger_hole.ein
   merged            none — every state is reached by one commitment, so k_c = k_s
   N                 0 minimal dead sets
   E                 1 minimal discharging set
-  lattice           not monotone: 1 site (the static check) — 1 hole
+  lattice           not monotone: 4 sites (the static check) — 1 hole
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
     site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
     status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes
     paths           every parent path checked reaches the same state — 2 parents of 1 printed state
     minimal hole    {(seats Ann C1)} — owes 1
   universe          2 candidates, 0 dead alone
-    outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 6 facts beyond root
+  work              4 saturations · 7 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
@@ -949,6 +952,7 @@ solve · examples/lattice/06_friends_tables.ein
   sub-cubes         not known
   N                 ≥ 68 minimal dead sets — those met in layer order
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
@@ -1079,6 +1083,7 @@ solve · --count examples/lattice/06_friends_tables.ein
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
@@ -1146,6 +1151,7 @@ solve · --maximal examples/lattice/06_friends_tables.ein
   maximal line      not known — without a licence it needs the whole cube
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    in flight       a state the run built holds (open (sits Dan S1)), which root does not hold
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
@@ -1198,7 +1204,7 @@ solve · examples/zebra2.ein
   N                 not computed by the tree and the classes — ≥ 21 minimal dead sets, the candidates dead alone; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
   work              120 saturations · 5 411 facts beyond root
 
@@ -1290,7 +1296,7 @@ solve · examples/zebra2.ein
   N                 not computed by the tree and the classes — ≥ 21 minimal dead sets, the candidates dead alone; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
   work              120 saturations · 5 411 facts beyond root
 
@@ -1431,7 +1437,7 @@ solve · --maximal -n 1 examples/zebra2.ein
   exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first written among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
   work              5 saturations · 164 facts beyond root
 
@@ -1471,7 +1477,7 @@ solve · --single examples/zebra2.ein
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first by text among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
   work              7 saturations · 278 facts beyond root
 
@@ -2041,7 +2047,7 @@ solve · examples/ein-bugs/zebra2-bad.ein
   empty             every node is dead — root's own fixpoint holds a contradiction
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 0 facts beyond root · 1 layer
 
@@ -2123,17 +2129,20 @@ oracle · examples/lattice/04_obligation_trigger_hole.ein
   merged            none — every state is reached by one commitment, so k_c = k_s
   N                 0 minimal dead sets
   E                 1 minimal discharging set
-  lattice           not monotone: 1 site (the static check) — 1 hole
+  lattice           not monotone: 4 sites (the static check) — 1 hole
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
     site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
     status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes
     paths           every parent path checked reaches the same state — 2 parents of 1 printed state
     minimal hole    {(seats Ann C1)} — owes 1
   universe          2 candidates, 0 dead alone
-    outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
   route             2, the cube — no licence: asked for by name
-  work              4 saturations · 6 facts beyond root
+  work              4 saturations · 7 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
@@ -2292,7 +2301,7 @@ solve · --no-search examples/zebra2.ein
   R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, none visited: R was not searched
-    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
   route             none — --no-search: root's node, and no node past it
   work              1 saturation · 0 facts beyond root
 
@@ -2412,7 +2421,7 @@ solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
   universe          2 candidates, 0 dead alone
     later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 6 facts beyond root
+  work              4 saturations · 7 facts beyond root
 
   (region
     ;; state 1 of 1 — 2 candidates · minimal and maximal · from {(drinks Ann Tea), (likes Ann Soup)}

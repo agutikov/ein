@@ -165,16 +165,20 @@ constrained-reasoning research.
   (below), and adding a rule here means adding a program there. Four of its
   rules are **obligations** — `total-owed` / `surjective-owed` in
   `std.algebra`, `slot-owed-room` / `slot-owed-fill` in `std.slots` — which
-  assert `(open ?R)`, derive nothing, are not in the saturation agenda, and
-  are read by one pass over the quiescent KB. Hypothesis generation is a
-  *ladder* — the puzzle's `(hrule …)` if it declares one, else, where an
-  obligation is **activated** at root, the facts that would discharge what
-  root owes, and what a rule can bring a commitment to owe, read off the rules
-  with no saturation ([`oblgen.rs`](ein.rs/crates/ein-infer/src/oblgen.rs)),
-  so a discharged root under it proposes nothing, else the blind
-  combinatorial enumerator; an obligation rule a program loads (an import
-  brings its module whole) and nothing activates chooses no rung, by one
-  reading `hypgen.rs` and `mechanisms.rs` share. **The calculator's modules
+  conclude `(open ?R)`, are not in the saturation agenda, and are read by one
+  pass over each state's fixpoint, which writes `(open R)` once for each
+  relation the state owes. **H is the union of the hypotheses root holds**
+  ([Q-M1f.570](docs/decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
+  the `(open F)` facts a rule concludes (an hrule among them), the program
+  writes, and an obligation **activated** at root writes for what would
+  discharge what root owes, and what a rule can bring a commitment to owe,
+  read off the rules with no saturation
+  ([`oblgen.rs`](ein.rs/crates/ein-infer/src/oblgen.rs)), less what root
+  holds or denies; the blind combinatorial enumerator writes only where root
+  holds no `open` fact and no obligation is activated, and an obligation rule
+  a program loads (an import brings its module whole) and nothing activates
+  writes nothing, by one reading `open.rs`, `hypgen.rs` and `mechanisms.rs`
+  share. **The calculator's modules
   are under `stdlib/math/`**, `std.math.x` in `math/x.ein` (a dot a directory, at any
   depth, from all three places), their programs under `tests/stdlib/math/`,
   each with an entry name a program may list beside the names it writes:
@@ -269,8 +273,8 @@ constrained-reasoning research.
   it fires and one where it is loaded, activated and satisfied — **where two
   rules reach one verdict, separate them by activation**, because an
   expectation made of facts cannot say which one got there, and **an
-  obligation rule derives nothing**, so its fixture carries an ordinary
-  `(model …)` claim, its owe counts are asserted in
+  obligation rule concludes only `(open R)`**, which no claim lists, so its
+  fixture carries an ordinary `(model …)` claim, its owe counts are asserted in
   `ein-infer/tests/obligation_reports.rs`, and `(solve … :expect (region
   (owing (model …))))` says that a state owes, though not how much.
   **Activation is two events**: `fire` for a saturation rule and `owe` for an
@@ -292,7 +296,7 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py` re-takes it;
-  `corpus_cli`'s `the_slow_set_is_exactly_these_fifteen` names the set). The
+  `corpus_cli`'s `the_slow_set_is_exactly_these_sixteen` names the set). The
   default `--region-budget` is 2²⁰ facts, which the user ruled after 2²⁴ ran
   the gate's sweeps out of memory. **A run is dropped from a `runs` column
   only when it does not ask the fixture's question**, never for costing too
@@ -462,9 +466,25 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   *Value* is the code's word for an object (`ein_core::Value`), and *atom*
   never means an atomic formula: that is a fact.
 - **A fact that is an argument is one a state could hold**: a fact of an
-  ordinary relation or its negation. `eq`, `neq`, `absent`, `and`, `or` and
-  `false` with an argument are never a nested head; `not` of an atom is the
-  negation of no fact.
+  ordinary relation or its negation. `eq`, `neq`, `and`, `or` and `false`
+  with an argument are never a nested head; `not` of an atom is the negation
+  of no fact. **Under an ordinary relation `open` and `absent` are names**
+  ([Q-M1f.571](docs/decisions/language/Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md)):
+  `(think Ann (absent (p A)))` is a fact the kernel reads nothing of.
+- **What a state owes and what it supposes are facts**
+  ([Q-M1f.566](docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
+  [Q-M1f.573](docs/decisions/hypotheses/Q-M1f.573-under-open-a-relation-is-owed-and-a-fact.md)):
+  `(open R)`, once for each relation the state owes, and `(open F)`, a
+  hypothesis. A pass writes them at each state's fixpoint into a layer no
+  fork inherits, and a written `(open F)` is held at root alone. `open` is a
+  position word, read by the kernel at the head of a written fact, a premise
+  or a conclusion; directly under `absent` or `open` the other is refused but
+  `(absent (open P))`, and so is `(absent (absent P))`
+  ([Q-M1f.568](docs/decisions/language/Q-M1f.568-directly-under-absent-or-open-the-other.md)).
+  A rule may read an `open` fact, and its program is flagged
+  ([Q-M1f.569](docs/decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md));
+  a hypothesis first held above root flags its program in flight
+  ([Q-M1f.574](docs/decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 - **A string is natural-language text**, written only after `:why`, `:source`
   or `:goal-text`, never an object. Names are ASCII.
 - `_` and `?_` are refused everywhere. Keywords are closed per form.
@@ -530,9 +550,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   whose premises are a fact and one holding it to the pair
   (`ein_infer::contradiction::detect`), so `refuted by` names the rule that
   concluded the `(false)`, or the rules that derived the pair's two sides.
-- **Under `:assert` a rule concludes a conjunction of literals** — facts and
-  stored negations, with `(false)` and checks among them — or `()`, or an
-  obligation as its whole `:assert`. An `(and …)` is read flat at any depth, by every
+- **Under `:assert` a rule concludes a conjunction of literals** — facts,
+  stored negations and hypotheses `(open F)`, with `(false)` and checks
+  among them — or `()`, or an obligation, `(open R)`, as its whole
+  `:assert`
+  ([Q-M1f.575](docs/decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)). An `(and …)` is read flat at any depth, by every
   reader through one function, `ein_ir::Ast::conjuncts`. No disjunction and
   no compound fact: *one of* is the hypothesis layer's. **An hrule's
   conclusion is one fact**; one of more is refused.
@@ -562,16 +584,19 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   (`ein-cli/tests/import_invariance.rs`, every corpus program selective
   against whole against `:as`). **No import brings a module's `(query …)`,
   `(solve …)` or `(config …)`**: those are a program's.
-- **The hypothesis mechanisms do not contradict one another**: an hrule, an
-  obligation, `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)`,
-  read on root's fixpoint. No active hrule proposes a fact of a relation a list
-  or a closure takes out, no obligation owes one (a list only with no hrule), and no
-  relation is in both lists or listed and closed; a list an hrule leaves
-  filtering nothing, or a redundant name, is a `note:` (`ein_infer::mechanisms`).
-  **`(solve :no-search)`**, a flag with no value, states that the lattice is
-  root alone: nothing is proposed, so R is {∅} or empty, and it is how a program
-  says *judge root alone*. It relaxes no conflict; beside an hrule or a list it
-  is a `note:`, beside an obligation or a closure silent.
+- **The two lists and a closure configure the blind enumerator, and agree
+  with the `open` facts root holds**
+  ([Q-M1f.578](docs/decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)),
+  read on root's fixpoint: no `:no-hypothesis` names, no
+  `:hypothesis-relations` leaves out and no closure closes a relation root
+  holds an `open` fact of, a hypothesis or what it owes; beside them
+  `:hypothesis-relations` names exactly their relations; and no relation is
+  in both lists or listed and closed. A redundant name is a `note:`
+  (`ein_infer::mechanisms`). **`(solve :no-search)`**, a flag with no value,
+  states that the lattice is root alone: nothing is proposed, so R is {∅} or
+  empty, and it is how a program says *judge root alone*. It relaxes no
+  conflict; beside an hrule or a list it is a `note:`, beside an obligation
+  or a closure silent.
 
 ### The answer
 
@@ -757,7 +782,7 @@ EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus swee
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
 python3 utils/gate_times.py run --out g.log -- ./run_tests.sh   # a gate run timed per step and per binary, memory and power sampled; `report g.log`
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fifteen names
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_sixteen names
 EIN_ID_SEEDS=8 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the dev host's, every program
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens

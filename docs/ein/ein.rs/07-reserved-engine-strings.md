@@ -56,10 +56,13 @@ listed with the name, is empty, and a listed drawing that no longer moved on any
 
 ## Bookkeeping carrier heads
 
-**None.** A hypothesis is a fact with a provenance *kind*, `hypothesis` (`ein_core::prov::ProvKind`), never a fact
-wrapped in a carrier head, so the canonical state form,
+**None.** A committed hypothesis is a fact with a provenance *kind*, `hypothesis` (`ein_core::prov::ProvKind`),
+never a fact wrapped in a carrier head. A state's `open` facts, `(open R)` and `(open F)`, are facts of the kernel's
+relation `open` and part of the state
+([Q-M1f.572](../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)), written at
+its fixpoint from the rest of it, so the canonical state form,
 [`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs), excludes nothing: it is the sorted fact set of
-the state, free of provenance. A carrier head added later would have to be registered here **and** excluded by
+the state, its `open` facts among them, free of provenance. A carrier head added later would have to be registered here **and** excluded by
 `state_key`, so that it does not perturb a state's identity ([`03-design/07-search.md`](03-design/07-search.md)).
 
 ## Synthetic writeback rule names
@@ -106,11 +109,13 @@ it), `hypothesis` (a commitment assumed it), `rejected`. The words are the ones 
 ## `__closed__` — engine effect
 
 `(__closed__ R)` has one engine side, in [`hypgen.rs`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) (`CLOSED`):
-the generator reads the `(__closed__ R)` facts in the KB and contributes **no candidate for R**. The marks are the
+the blind enumerator reads the `(__closed__ R)` facts in the KB and proposes **no candidate for R**, at root and,
+in [`open.rs`](../../../ein.rs/crates/ein-infer/src/open.rs), at every state above it. The marks are the
 ones a program writes or a rule derives (`std.closure`'s `infer-closure` asserts `(__closed__ ?R)`), and H holds the
 candidates of every other relation. It is genuinely the engine's: a saturation rule can neither suppress the
-generator nor observe that no rule asserts R. The hypothesis mechanisms are read together, and a closure that
-contradicts an hrule or a list is refused ([`03-design/07-search.md`](03-design/07-search.md)).
+generator nor observe that no rule asserts R. The hypothesis mechanisms are read together, and a closure of a relation
+root holds an `open` fact of, or of one a `:hypothesis-relations` list names, is refused
+([`03-design/07-search.md`](03-design/07-search.md)).
 
 ## Hypothesis-scoping keys
 

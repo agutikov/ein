@@ -34,3 +34,5 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.532](Q-M1f.532-an-or-goals-class-lists-the-facts.md) — An `(or …)` goal's class lists the facts of the disjuncts that hold
 - [Q-M1f.552](Q-M1f.552-ein-saturate-dump-lists-each-kind-of-rule-in.md) — `ein saturate --dump` lists each kind of rule in a section of its own
 - [Q-M1f.553](Q-M1f.553-a-dead-state-holds-a-contradiction-in-the-words.md) — A dead state holds a contradiction, in the words of every surface
+- [Q-M1f.572](Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md) — A state's `open` facts are part of it: listed, drawn and counted
+- [Q-M1f.577](Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md) — `-P` leaves out the `open` facts as it leaves out the `(not …)`

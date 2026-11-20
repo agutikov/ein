@@ -181,10 +181,11 @@ The program's facts saturated by its rules, nothing hypothesised: the lattice's 
 writes `∅`.
 
 ### Hypothesis, candidate
-A fact the generator proposes at root. Which ones exist is the **generation ladder**'s answer: the program's own
-`(hrule …)`, else the facts that would discharge what root owes and what a rule can bring a commitment to owe, else the
-blind enumerator. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide which relations are eligible,
-so a fact of an excluded relation is no hypothesis at all. The blind enumerator proposes about the **guessable
+A fact root supposes, `(open F)`, and does not settle. Which ones exist is the **union of its writers**: what the
+program's rules that conclude one propose, an `(hrule …)` among them, with the facts that would discharge what root
+owes and what a rule can bring a commitment to owe; and, only where root holds no `open` fact and activates no
+obligation, the blind enumerator's guesses. `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)` decide
+which relations the blind enumerator guesses, so a fact of a relation they exclude is none of its guesses. The blind enumerator proposes about the **guessable
 atoms**: the program's names, less a signature's labels, the language's own words, every relation and rule, and the
 dunder `__closed__`
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)); where
@@ -255,7 +256,8 @@ model's **projection**, and the models with one projection form a **projection c
 ### Obligation
 A rule that asserts the verdict `(open ?R)` while a witness is missing
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)). What a state
-**owes** is its undischarged instances, and a state owing none is **discharged**. Obligations set R's minimal line, as
+**owes** is its undischarged instances, and a state owing none is **discharged**; a state that owes holds `(open R)`,
+which no state built on it inherits. Obligations set R's minimal line, as
 restrictions, rules that assert `(false)`, set its maximal line. See
 [`../03-syntax-and-semantics/08-obligations.md`](../03-syntax-and-semantics/08-obligations.md).
 

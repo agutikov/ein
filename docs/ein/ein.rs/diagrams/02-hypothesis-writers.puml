@@ -1,0 +1,19 @@
+@startuml
+start
+if (the program states (solve :no-search)?) then (yes)
+  :no writer runs: H is empty;
+  stop
+else (no)
+endif
+:the rules that conclude a hypothesis, hrules among them:\neach plan's matches at root, one candidate a match (Hrules::candidates);
+:the (open F) facts the program writes;
+if (an obligation is activated at root?) then (yes)
+  :oblgen::generate: the facts that would discharge what root owes,\nand what a rule can bring a commitment to owe;\nnothing where a witness step does not resolve (Mode::Declined);
+elseif (a rule or the program wrote a candidate?) then (no)
+  :the blind enumerator:\nevery eligible relation, every slot,\nover the program's object names;
+else (yes)
+endif
+:each candidate through the filters, in this order:\na stored negation, a fact root holds, a repeat in the call;
+:sort the survivors by text, deduplicate: H, the union of the writers;
+stop
+@enduml

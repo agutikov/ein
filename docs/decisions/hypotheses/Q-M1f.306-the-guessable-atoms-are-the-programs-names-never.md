@@ -3,7 +3,7 @@
 The atoms the blind enumerator guesses about, the **guessable atoms**, are the names index at root's fixpoint, which
 holds every fact's relation and arguments, and every name of the program
 ([Q-M1e.21](Q-M1e.21-a-rule-brings-in-no-name.md)), less the names a declaration writes as a label, the reserved
-words, every relation of the program and every rule's name, and the relation of every fact root's fixpoint holds.
+words and the kernel's words `absent` and `open`, which a program may write as names, every relation of the program and every rule's name, and the relation of every fact root's fixpoint holds.
 Of what remains:
 
 - **the kernel's dunder is never guessable**: `__closed__` is left out by name, where a rule derives a fact of it

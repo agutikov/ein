@@ -249,7 +249,7 @@ changes the drawing and nothing else.
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red; on a flagged program the warning's line on stderr ([`08-read-out.md` § 5.1](08-read-out.md#51-under-lattice-and-monotone-the-warning)) |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
 | `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions, the warning's line first on stderr on a flagged program ([what the structure is](../../reasoning/02-kb-evolution/05-hypothesis-space.md); [the command, its read-out and `h-space.json`](../../ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md#23-the-command)) |
-| `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which rung built H and how many it holds, after the warning's line on a flagged program ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
+| `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which writers built H and how many it holds, after the warning's line on a flagged program ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
 
 ### 2.6 `ein kb`
 

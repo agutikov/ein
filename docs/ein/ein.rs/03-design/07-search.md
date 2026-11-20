@@ -10,21 +10,24 @@ computes it.
 
 ## 1. Hypothesis generation
 
-H is built once, at root, by the generation **ladder** ([`hypgen.rs`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs),
-one function, `rung`):
+H is built once, at root, as **the union of its writers** ([`hypgen.rs`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs),
+`generate_config_free`), the hypotheses root holds, `(open F)`, less what root holds or denies
+([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
 
-1. **the program's `(hrule …)`s**, where it declares any
-   ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)): an hrule without parameters is one plan, an
-   hrule with them one plan per activator `(solve :hrules …)` names, and each plan's `:assert`, one fact, is a
-   candidate per match. The rung is chosen by the declaration: a program whose only hrule has parameters and no
-   activator takes this rung and proposes nothing;
-2. else, **the obligations rung**, where an obligation is activated at root
+1. **the rules that conclude a hypothesis**, `(open F)`, `(hrule …)`s among them
+   ([`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs)): a rule without parameters is one plan, an
+   hrule with them one plan per activator `(solve :hrules …)` names, another rule one per activator root holds, and
+   each `(open F)` of a plan's `:assert` is a candidate per match; with them the `(open F)` facts the program writes,
+   which root alone holds;
+2. beside them, **the obligations** activated at root
    ([`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)): the facts that would discharge what root
    owes, and, read off the rules with no saturation, what a rule can bring a commitment to owe. Under an activated
-   obligation a state that owes nothing proposes nothing. The rung declines the whole call, and the blind enumerator
-   runs instead, where an obligation's guard scans a relation of which the rung itself proposes a fact, or reads one
-   whose held extent a commitment can change;
-3. else, **the blind enumerator**: every eligible relation of one or two arguments, every guessable atom in each of
+   obligation a state that owes nothing proposes nothing from it. An obligation whose guard reads a relation whose
+   held extent a commitment can change still proposes what root's guard gives, and the static check flags the
+   program (§ 7); one whose witness step does not resolve under its activator proposes nothing;
+3. only where neither writes and no obligation is activated, **the blind enumerator**
+   ([Q-M1f.576](../../../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)): every
+   eligible relation of one or two arguments, every guessable atom in each of
    its slots (a binary fact of an atom with itself left out). No slot is filtered by the name its declaration gives
    it: Ein has no types, the names a declaration writes as labels are only left out of the guessable atoms, and a
    candidate the program's rules do not allow is refuted by those rules, in its own node. The guessable atoms,
@@ -36,29 +39,37 @@ one function, `rung`):
    `no_run_reaches_a_name_the_program_does_not_have` the one in the search, which fails when a node reaches a name
    outside root's fixpoint and the rules' constants.
 
-An obligation rule the program loads and nothing activates chooses no rung, so a module imported for another of its
+An obligation rule the program loads and nothing activates writes nothing, so a module imported for another of its
 names takes nothing off the blind enumerator. Candidates then pass a pipeline of filters, each named, and a dropped
-candidate's `hyp` event names its filter ([`../05-events.md`](../05-events.md)), so that every candidate a rung
+candidate's `hyp` event names its filter ([`../05-events.md`](../05-events.md)), so that every candidate a writer
 built is accounted for:
 
 $$
 \operatorname{raw} = \operatorname{emitted} + \sum_{f \in \text{filters}} \operatorname{dropped}_f
 $$
 
-From the program to the bit order of every node mask; the choice between the rungs is drawn as a flow in
-[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-ladder):
+From the program to the bit order of every node mask; the writers are drawn as a flow in
+[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-writers):
 
 ![From the program to the bit order of every node mask](diagrams/07-hypothesis-order.svg)
 
-`(solve :hypothesis-relations …)`, `(solve :no-hypothesis …)` and `(__closed__ R)` scope the blind enumerator
-([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)).
+`(solve :hypothesis-relations …)`, `(solve :no-hypothesis …)` and `(__closed__ R)` configure the blind enumerator
+alone ([`../07-reserved-engine-strings.md`](../07-reserved-engine-strings.md);
+[Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 
 **The mechanisms are read together**, on root's fixpoint
-([`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs)): no active hrule proposes a fact of a
-relation a list or a closure takes out, no obligation owes one, and no relation is in both lists or listed and
-closed; a conflict is refused before any search, and a list an hrule leaves filtering nothing, or a redundant name,
-is a note. **`(solve :no-search)`** states that H is empty: no rung runs, and `R` is $\{\emptyset\}$ where root is
-alive and discharged, empty otherwise. `ein show hyps FILE` prints H, one candidate per line, with no search.
+([`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs)), against the `open` facts the pass of
+[`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes there: where root holds one, no closure closes
+and no `:no-hypothesis` names the relation of one, and a `:hypothesis-relations` names exactly their relations;
+nowhere is a relation in both lists or listed and closed. A conflict is refused before any search, and a redundant
+name is a note. **`(solve :no-search)`** states that H is empty: no writer runs, and `R` is $\{\emptyset\}$ where
+root is alive and discharged, empty otherwise. `ein show hyps FILE` prints H, one candidate per line, with no
+search.
+
+**Every state holds what the writers give at its fixpoint**: the pass of `open.rs` writes `(open R)` once for each
+relation the state owes and `(open F)` for each hypothesis there, into the part of the state no fork inherits
+(`ein_core::Kb::write_open`), root's at root and a node's at the node's own fixpoint. A node above root that holds
+a hypothesis root does not makes the program not monotone, found in flight (§ 7).
 
 ## 2. The node
 
@@ -221,8 +232,14 @@ member of `N`'s for `--dump-answer` and `--trace`, taken after the run on the sa
 the compiled plans and says whether `R` can have a **hole**, a node outside `R` between two inside it. A hole needs a
 commitment that grows and takes a conclusion away, or grows and adds a debt; a **site** is a read that can do either:
 an `(absent …)` at odd depth in a saturation rule over a relation a commitment changes, an obligation's trigger over
-one, or a rule whose activator a commitment can derive. A program with no site is monotone, and its routes take every
-licence of § 3; a program with a site is **flagged**, and gets the cube alone.
+one, or a rule whose activator a commitment can derive. Three more sites let a node hold or need what root's H
+lacks: a rule that reads `open` (`open-read`), a rule that concludes `(open F)` and reads a relation a commitment
+changes at even depth (`hypothesis`), and an obligation whose guard reads one beside its witness
+(`obligation-guard`). A program with no site is monotone, and its routes take every licence of § 3; a program with a
+site is **flagged**, and gets the cube alone. A run that builds a node holding a hypothesis root does not finds the
+program not monotone **in flight** (`open::Writers::first_above`, `Monotonicity::in_flight`): the warning is said
+at once, once, and the answer stands
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 ![The static check: root's plans classified monotone or flagged, and what a flagged program is reported with](diagrams/07-static-check.svg)
 
@@ -244,4 +261,4 @@ L1 off it is the static check: the `absent` is a site, the program is flagged, a
 that each corpus program with the shape is flagged and answered with no licence
 (`a_refutation_under_an_absent_loads_flagged_and_unlicensed`). The relations a commitment can extend, followed
 through each rule's activator, are [`extendable.rs`](../../../../ein.rs/crates/ein-infer/src/extendable.rs)'s, read
-by the obligations rung.
+by the obligations for a debt a commitment can bring.

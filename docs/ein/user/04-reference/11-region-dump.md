@@ -154,7 +154,7 @@ every row is a field some run writes; the test suite holds the table to the bina
 
 | field | what |
 |---|---|
-| `monotone` | the static verdict: no site |
+| `monotone` | the verdict: no site, and nothing found in flight (`in_flight`, below) |
 | `warning` | on a flagged program, the sentence every surface prints in capitals, that the program is not monotone and nothing is claimed of the answer ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)); `null` on a monotone one |
 | `hypothesised` | `H`, the candidates' relations, sorted |
 | `dynamic` | `D`, the relations a commitment can change, sorted; `¬R` for a stored negative |
@@ -174,11 +174,12 @@ every row is a field some run writes; the test suite holds the table to the bina
 | `absents[].class` | `static`, `dynamic-monotone` or `dynamic-non-monotone` |
 | `sites[].rule` | each site, sorted and distinct: the rule |
 | `sites[].activator` | its activator's arguments, empty for an activator site, which is about the rule |
-| `sites[].kind` | `absent`, `obligation-trigger` or `activator` |
+| `sites[].kind` | `absent`, `obligation-trigger`, `activator`, `open-read` (a rule reads `open`), `hypothesis` (a rule that concludes `(open F)` reads a relation in `D` outside an `absent`, or inside an even number) or `obligation-guard` (an obligation's guard reads one beside its witness) |
 | `sites[].relation` | the relation it reads in `D`, or its activator relation |
 | `sites[].depth` | the read's `absent` depth, 0 for a top-level premise |
 | `sites[].concludes` | what the rule concludes, the check's reading: `(false)`, `(not …)`, `a positive fact`, `(open …)`, or that root compiled no plan of it |
 | `sites[].at_stake` | what the site puts at stake: the state, the state and death, or what the status owes, directly or through a node's plan |
+| `in_flight` | the first hypothesis a state the run built holds and root does not, as its text: the program is not monotone, found in flight ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), whatever its sites; `null` where the run built no such state |
 | `assumes.node` | on a flagged program, how a node is built, `fork from root`; `assumes` is `null` on a monotone one |
 | `assumes.open` | on a flagged program, `Q-M1e2.2`, the decision that says the answer rests on that reading of a node |
 | `cycles[].relations` | each cycle through an `absent` over `D`, a strongly connected part of the rules' dependency graph with a negative edge in it: its relations, sorted |

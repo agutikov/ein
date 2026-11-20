@@ -290,9 +290,10 @@ minimal dead set`.
 ## Model
 
 **A model is the positive part of a solution's state, less the positive part of the program as loaded**
-([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)): no `(not …)`, nothing the
-file states, nothing the loader writes down. It is what the puzzle did not say and the solution established. `-P`
-prints it per state, `-p` with the negations. The engine judges states, and a model decides nothing: it is computed
+([Q-M1e.6](../../../decisions/answer/Q-M1e.6-a-model-is-what-a-solutions-state-adds.md)): no `(not …)`, no
+`(open …)`, nothing the file states, nothing the loader writes down. It is what the puzzle did not say and the
+solution established. `-P` prints it per state, `-p` with the negations and the `open` facts
+([Q-M1f.577](../../../decisions/read-out/Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md)). The engine judges states, and a model decides nothing: it is computed
 from a state where a surface prints one ([Q-M1e.7](../../../decisions/answer/Q-M1e.7-a-state-is-what-the-engine-judges-and-a-model-is.md)).
 
 **Projection.** A query's goal cuts a state down to the goal's rows. States that differ only in facts the goal does

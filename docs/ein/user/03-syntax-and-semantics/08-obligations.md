@@ -3,8 +3,9 @@
 An **obligation** says that something must exist: every person likes some food, every house has an owner, every
 chair is taken. It is a rule that matches while the thing is missing and whose whole conclusion is the verdict
 `(open ?R)`, *this state is unfinished: the facts of `?R` are incomplete*. A state the rule matches **owes**; a state
-that owes nothing is **discharged**. An obligation derives nothing and is never stored: it is read once on each state
-the engine reaches, after saturation, and it is half of what decides the answer. The other half is the restriction, a
+that owes nothing is **discharged**. An obligation derives nothing: it is read once on each state the engine
+reaches, after saturation, where the state that owes holds `(open R)`
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), and it is half of what decides the answer. The other half is the restriction, a
 rule that concludes `(false)` ([constraints](06-constraints.md)): restrictions say what a solution may not be,
 obligations what it must contain, and the answer is every state between them
 ([solutions and models](13-solutions-and-models.md)).
@@ -166,17 +167,13 @@ bounds it from above.
 
 ## The form: `(open ?R)`
 
-An obligation is a `rule` whose **whole** `:assert` is `(open ?R)` or `(open)`:
-
-| form | says |
-|---|---|
-| `(open ?R)` | the facts of `?R` are incomplete. `?R` is a parameter of the rule, bound by its activator, or a relation written by name |
-| `(open)` | the state owes something, and names no relation: it counts, and the `:why` is the whole report |
-
-`open` is written there and nowhere else: not in a `:match`, not beside another conclusion, not inside a fact, as an
-argument or in a macro's body ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md),
-[Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)). The requirement is stated once,
-in the guard; `(open ?R)` restates nothing of it
+An obligation is a `rule` whose **whole** `:assert` is `(open ?R)`, `?R` a parameter of the rule, bound by its
+activator, or `(open R)`, a relation written by name: the facts of `R` are incomplete. Beside another conclusion it is
+refused ([Q-M1f.575](../../../decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md));
+`(open F)`, `F` a fact, is a hypothesis and no obligation, and the bare `(open)` is refused at the parse
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). A state that
+owes an instance of `R` holds `(open R)`, once, written at its fixpoint and dropped at a fork, so a state that pays
+it holds none. The requirement is stated once, in the guard; `(open ?R)` restates nothing of it
 ([Q-M1d.2](../../../decisions/hypotheses/Q-M1d.2-an-obligation-is-a-rule-that-concludes-open-r.md)):
 
 - **the witness** is the premise of `?R` inside the rule's one `(absent …)` that binds a variable the rest of the
@@ -191,21 +188,20 @@ premise of `?R`, two do, the premise binds no variable of its own (a ground chec
 premises of `?R` each bind one (a *compound witness*, two facts that together pay, which has no single slot to fill).
 Each refusal is a line of [diagnostics](../04-reference/07-diagnostics.md).
 
-`(open)` with no relation is legal and pays for being unnamed: the engine cannot tell which facts would pay it, so it
-proposes nothing for it, and the blind enumerator guesses over every relation instead. Name the relation.
-
 ## When an obligation is read
 
 An obligation is **not in the saturation agenda**. Saturation runs to its fixpoint; then one pass reads every
 obligation against that fixpoint, and the instances it matches are the state's debts. Three things follow:
 
-- **It derives nothing.** No rule can read a debt, and an obligation cannot enable another rule. A rule that
-  concluded `open` and something else would belong to both passes, so that is refused at the parse.
+- **It derives nothing.** An obligation enables no rule; a rule that reads what a state owes makes its program
+  not monotone ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)). A rule that concluded what a state owes and something else would belong to both
+  passes, so that is refused at load.
 - **Firing is being undischarged.** The rule matches while the witness is missing and stops matching once it is
   there, so the pass asks no second question: what discharges a debt is exactly what the guard looks for.
-- **A debt is never a fact.** `(false)` is stored, because a dead state stays dead whatever is added; a debt exists
-  to be paid by an addition, and a stored one would survive its own payment. So a debt is read on each state, root
-  and every node the engine builds, and belongs to that state alone.
+- **A debt is a fact of the state that owes it alone.** `(false)` is inherited, because a dead state stays dead
+  whatever is added; a debt exists to be paid by an addition, and an inherited one would survive its own payment. So
+  `(open R)` is written at each state's fixpoint, root's and every node's the engine builds, in a part of the state
+  no fork inherits, and a state that pays it holds none.
 
 A state that holds `(false)` is dead whatever it owes. The order of the debts in a report is the order the
 obligation rules are written in.
@@ -250,26 +246,26 @@ the held extent of its relation is fully determined by saturation, and its modul
 The facts that would pay a debt are read off the same guard with the witness step left out: every binding of the
 domain premise for which the witness is neither present nor negated. Nothing is stored, so an object that arrives
 later is seen. Choosing among those facts is exhaustive only while the set cannot grow under the choice, so where an
-obligation's domain could grow, because the guard scans facts of a relation that are themselves guessed, or facts
-of a relation a commitment can add to, the engine does not trust the set and proposes as it would with no obligation
-([Q-M1e2.10](../../../decisions/hypotheses/Q-M1e2.10-the-obligations-rung-declines-where-its-domain.md)). The `universe`
-row of the read-out says which way H was built.
+obligation's domain could grow, because its guard or its trigger reads facts of a relation a commitment can add to,
+the obligation still writes what root's guard gives, and the program is one the static check flags: nothing is
+claimed of its answer ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)). The `universe` row of the read-out says how H was built.
 
 ## What an obligation does to the answer
 
 An obligation plays two parts ([hypotheses](09-hypotheses.md)):
 
 - **It judges.** A state that owes is not in R, whatever proposed it. This holds beside an `hrule` too: the hrule
-  generates, the obligation judges, and that is how [`zebra2.ein`](../../../../examples/zebra2.ein) states its
-  puzzle.
-- **It generates, where nothing else does.** With no `hrule`, and an obligation **activated** at root (a rule with no
-  parameters always is; a parameterised one is once an activator fact matches it), the candidates are the facts that
-  would pay the debts. A root that owes nothing then proposes nothing and is the one state. An obligation rule that a
+  proposes, the obligation proposes and judges, and that is how [`zebra2.ein`](../../../../examples/zebra2.ein)
+  states its puzzle.
+- **It generates.** An obligation **activated** at root (a rule with no parameters always is; a parameterised one is
+  once an activator fact matches it) writes the facts that would pay the debts as hypotheses, beside what a rule
+  proposes ([Q-M1f.570](../../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)). A root that owes nothing then proposes nothing from it. An obligation rule that a
   program loads and nothing activates, as an import of a whole library brings its obligation rules, does neither.
 
-An obligation that owes facts of a relation the program also keeps out of the guessing, by `(__closed__ R)` or,
-with no hrule, by a `(solve …)` list, is refused at load: a state that owed one could never be paid
-([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)).
+An obligation whose `open` facts at root are of a relation the program also keeps out of the guessing, by
+`(__closed__ R)` or by a `(solve …)` list, is refused at load: the lists and a closure configure the blind
+enumerator, and one that disagrees with root's `open` facts says what the program does not do
+([Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 To judge root alone, with nothing proposed, a program states `(solve :no-search)` ([query](12-query.md)).
 
 ## Reading a state that owes
@@ -315,7 +311,8 @@ once it cannot be met. Their reference is the standard library's:
 [`total-owed` and `surjective-owed`](../04-reference/04-stdlib/02-relation-algebra.md#obligations-total-owed-and-surjective-owed),
 [`std.slots`](../04-reference/04-stdlib/05-slots.md#where-root-owes-the-search).
 
-What one of the four owes is no fact, and no rule reads it. Its two halves are facts where a program asks for them:
+What one of the four owes is a fact its state holds, `(open R)`, once a relation. Its two halves, per instance, are
+facts where a program asks for them:
 [`std.debts`](../04-reference/04-stdlib/22-debts.md) states what each requires and what pays it, `(debt-due R J)`
 and `(debt-paid R J)`, and `(debts-discharged)` where nothing required is unpaid.
 
@@ -339,16 +336,16 @@ The cost is ontology, one relation per bound, and the gain is that every bound i
 Each of these is refused before anything runs, on every command, with the line under
 [diagnostics](../04-reference/07-diagnostics.md):
 
-- `open` anywhere but a rule's whole `:assert`, at the parse;
-- `(open …)` with more than one argument, or beside another conclusion, at the parse;
-- `(open ?R)` whose `?R` is no parameter of the rule, or whose witness the guard does not give one way, at load;
-- an obligation owing facts of a relation that a `(__closed__ R)` closes, or, with no hrule, of one a `(solve …)`
-  list leaves out or names in `:no-hypothesis`, at load.
+- `(open)` with no argument, or more than one, and `open` or `absent` directly under `open`, at the parse;
+- `(open R)` beside another conclusion, at load: what a state owes is a rule's whole `:assert`;
+- `(open ?R)` whose witness the guard does not give one way, at load;
+- an obligation owing a relation that a `(__closed__ R)` closes, or that a `(solve …)` list leaves out or names in
+  `:no-hypothesis`, at load: root holds `(open R)` and the lists and a closure configure the blind enumerator.
 
 ## See also
 
 - [Constraints](06-constraints.md): `(false)`, the other bound.
-- [Hypotheses](09-hypotheses.md): the ladder an obligation's second part belongs to.
+- [Hypotheses](09-hypotheses.md): the writers of H, an obligation's payments among them.
 - [Solutions and models](13-solutions-and-models.md): R, its two lines, and the two kinds of empty R.
 - [The standard library](../04-reference/04-stdlib/README.md): `std.algebra`, `std.bijection`, `std.slots`, `std.elim`.
 - [The read-out](../04-reference/08-read-out.md): every row that reports a debt.

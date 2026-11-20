@@ -99,7 +99,7 @@ asks for it alone. The corpus fixture that emits it is `examples/lattice/04_obli
 | `admit` | the boundary round: the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`**: nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
 | `alt` | `Kb::record_justification` returns true | `fact`, `rule`, `premises` |
-| `owe` | the post-fixpoint obligation pass, once per node as its saturation leaves it, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
+| `owe` | the post-fixpoint obligation pass, once per node as its saturation leaves it, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument), `bindings`, `why` (rendered) |
 
 **Three of `compile`'s six numbers are not what they are named**, and they stay as they are because the event is a
 comparison surface: a changed field meaning is a schema version ([§ Versioning](#versioning)), not a fix
@@ -113,8 +113,8 @@ comparison surface: a changed field meaning is a schema version ([§ Versioning]
 
 `asserts` and `rule` mean what they say.
 
-**`owe` is not a firing.** A rule whose `:assert` is the verdict `open` derives nothing, so it is kept out of the
-saturation agenda and runs as one pass over the KB after the fixpoint
+**`owe` is not a firing.** A rule whose `:assert` is what a state owes, `(open R)`, concludes no fact a rule can build
+on during saturation, so it is kept out of the saturation agenda and runs as one pass over the KB after the fixpoint
 ([`03-design/06-saturation.md`](03-design/06-saturation.md)). Three consequences for a reader of this stream:
 
 - **A rule never emits both.** An obligation rule never produces a `fire`; a saturation rule never produces an
@@ -124,10 +124,10 @@ saturation agenda and runs as one pass over the KB after the fixpoint
   too, so a dead node narrates its `owe` lines as any node does: over its fixpoint or, where a monotone program's
   route stops a dead node at its first contradiction, over the node as far as there. Root's lines come first, then
   one group per node visited, each before that node's `enter` line.
-- **Nothing it reports is stored.** An `open` conclusion is a tally on the node, never a fact: a contradiction
-  survives an extension and a debt exists to be discharged by one, so a stored `open` would outlive its own
-  discharge. Reading the KB again does not find what this line reports; `--json-summary`'s `owes` block is the
-  same tally as a document.
+- **What it reports the state holds as `(open R)`, once per relation, in a layer no fork inherits**
+  ([Q-M1f.566](../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)): a debt exists
+  to be discharged by an extension, so a child that pays it holds no `(open R)` of it. The line is one per instance
+  and the fact one per relation; `--json-summary`'s `owes` block is the same tally as a document.
 
 Every derivation is reported exactly once, as a `fire`. `alt` is narrower than it looks: `record_justification` returns true only for a rule's
 provenance with at least one premise, so a source fact derived again records nothing and emits nothing.
@@ -140,7 +140,7 @@ makes the queue's pop order checkable rather than inferred.
 
 | `e` | emitted at | payload |
 |---|---|---|
-| `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
+| `rung` | a generation call at a state where an obligation is activated | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered`; and `later_debts`, `later_candidates` where the call read a debt the state does not owe |
 | `hyp` | each candidate the generator constructs | `fact`; `verdict`, which is `emitted` or the name of the filter that dropped it |
 | `hypskip` | a skip **before** a candidate exists; *verbose only* | `relation`, `reason`, `object` (for `self_edge`), the stream's word for a guessable atom |
 | `enter` | each node a route visits, after the node's own events, in visit order | `layer` (the commitment's size), `commitment` (sorted), `kind`, one of `dead`, `owing` and `in-r`, `owes`, `core` (a dead node's, a list; `null` on a node that is not dead, which has no core), `core_status` (`within-budget`, or `cut-` and the caps the core's search stopped at; `null` where no core was taken) |
@@ -160,33 +160,35 @@ core of a dead node ([Q-M1e2.27](../../decisions/read-out/Q-M1e2.27-in-eins-json
 
 #### `rung`: which generator proposed
 
-Hypothesis generation is a **ladder**: the program's `(hrule …)` if there is one, else, where an obligation is
-activated at the state, what would discharge the debts it owes, else the blind enumerator
-([`03-design/07-search.md`](03-design/07-search.md)). A `rung` line is written once per generation call, and **only** where an
-obligation is activated at the state the call is made at: a program that activates none emits none, whatever
-obligation rules it loads. So the first and third rungs narrate nothing; a line appears only where the obligations
-rung was consulted, and its `mode` says how that went:
+The candidates are **the union of the hypotheses the state holds**
+([Q-M1f.570](../../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)): the `open` facts
+its rules (an hrule among them) and the program wrote, and, where an obligation is activated at the state, what would
+discharge the debts it owes; the blind enumerator runs only where there is none of them
+([`03-design/07-search.md`](03-design/07-search.md)). A `rung` line is written once per generation call, and **only**
+where an obligation is activated at the state the call is made at: a program that activates none emits none,
+whatever obligation rules it loads. So a call of the blind enumerator, or of written `open` facts alone, narrates
+nothing, and its `mode` says how the obligations went:
 
 | `mode` | what it means |
 |---|---|
 | `obligations` | it generated: the candidates are the facts that would discharge what this state owes |
+| `union` | it generated beside written `open` facts, and the candidates are both; the counts are the obligations' |
 | `stuck` | it owed something and proposed nothing: every debt scoped out by `:no-hypothesis`, `:hypothesis-relations` or `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
-| `declined` | it refused the whole call and the blind enumerator ran instead: an obligation whose guard scans a relation the rung itself proposes, or whose trigger or guard beside its witness reads a relation a commitment can change; or a projection that did not resolve for this activator |
+| `declined` | it proposed nothing for a projection that did not resolve for this activator; the blind enumerator does not run beside an activated obligation |
 
-`reason` is the sentence of a `declined` call (*an obligation scans `food`, a relation a commitment can change*),
-and otherwise `rule-order`, the one order the rung emits in: the owed instances' candidates in report order, plan by
+`reason` is the sentence of a `declined` call, and otherwise `rule-order`, the one order the obligations emit in: the owed instances' candidates in report order, plan by
 plan and match by match. `owed` counts the undischarged instances at this quiescence, `branches` those branched on,
 `declined` those scoped out, so that `owed = branches + declined`, and `candidates` the facts proposed before the
 filter pipeline, which is the `hyp` stream's `raw` for this call.
 
-`uncovered` is the ladder's **completeness condition as a number**: how many hypothesis-eligible relations no
-obligation names, under the same eligibility test the blind enumerator applies. `0` says the rung is exhaustive by
-construction: every relation a hypothesis could be about is one some obligation owes. A non-zero count does not say
-the rung is incomplete; it says the claim rests on saturation determining those relations.
+`uncovered` is the obligations' **completeness condition as a number**: how many hypothesis-eligible relations no
+obligation names, under the same eligibility test the blind enumerator applies. `0` says the obligations are exhaustive
+by construction: every relation a hypothesis could be about is one some obligation owes. A non-zero count does not say
+they are incomplete; it says the claim rests on saturation determining those relations, or on the other writers.
 
 **`later_debts` and `later_candidates` are optional**, written only where the call read a debt the state does not
 owe and a commitment can bring: an activator of an obligation rule that the state does not hold and a rule's
-`:assert` concludes. `later_debts` counts those activators, and `later_candidates` the facts the rung proposed for
+`:assert` concludes. `later_debts` counts those activators, and `later_candidates` the facts the obligations proposed for
 them before the filter pipeline, each a `hyp` line after the last one of a debt the state owes. `owed`, `branches`,
 `declined` and `candidates` count what the state owes and none of these, so on such a call the `hyp` stream's `raw`
 is `candidates + later_candidates`. A call that read no such debt writes neither field.
@@ -234,7 +236,7 @@ is, in order:
 1. `run` and `load`, as above;
 2. **root**, in this order: root's saturation (`compile`, `enqueue`, `fire`, …); **how H was built** (one `hyp` per
    candidate and, at `verbose`, the `hypskip`s, with the generator's `rung` line where it reached the obligations
-   rung: after the candidates of a call that generated, before the blind enumerator's of a call that declined);
+   rung: after the candidates of a call that generated, alone on a call that declined);
    root's obligation pass (`owe`); and, on a program the static check flags, one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that node's saturation and obligation events,
    then one `enter` line. A dead node on a monotone program's route narrates its saturation up to the firing that

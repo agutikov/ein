@@ -292,8 +292,8 @@ The form is `(macro NAME (PARAMETER…) BODY :why "TEXT")`, with one parameter o
   ([Q-M1f.80](../../../decisions/language/Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md)). A macro no
   rule calls is never expanded, and loads whatever its body
   ([Q-M1f.67](../../../decisions/language/Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md)).
-- **A body never writes `open`**: the verdict of an obligation is written in the rule
-  ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)).
+- **A body may write `(open …)`**, `(open ?R)` or `(open (p ?x))`: it is checked where a rule calls it, as every
+  template's shape is ([Q-M1f.86](../../../decisions/language/Q-M1f.86-a-macros-body-never-writes-open.md)).
 - **A goal prints as written**: the read-out shows `(housemates Ann ?x)`, not its expansion, and the class lists the
   expansion's instances ([Q-M1f.117](../../../decisions/language/Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md)).
 - **No relation is declared under a macro's name**: a premise `(housemates …)` would be the call and a fact
@@ -412,7 +412,7 @@ depend on which is used**
   it is solved and how it is configured, and a module that is also a program keeps them to itself
   ([Q-M1f.215](../../../decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)).
 - **An obligation rule a module brings decides nothing until something activates it**: importing `std.algebra` for
-  `symmetric` loads its two obligation rules, and they choose no rung of the hypothesis ladder
+  `symmetric` loads its two obligation rules, and they write nothing and take nothing off the blind enumerator
   ([hypotheses](09-hypotheses.md)).
 - **A view draws a file, not a program.** `ein render` draws what the file writes, its imports unresolved, so a
   module's rule is drawn from the module's own file.

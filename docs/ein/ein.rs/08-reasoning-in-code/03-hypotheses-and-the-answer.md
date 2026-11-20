@@ -7,7 +7,7 @@ true. Section *n* here follows the *n*-th of them.
 
 | the reasoning's page | states | here |
 |---|---|---|
-| [Hypothesis generation](../../reasoning/02-kb-evolution/04-hypothesis-generation.md) | $H$ as a definition by cases, the ladder | [§ 1](#1-hypothesis-generation) |
+| [Hypothesis generation](../../reasoning/02-kb-evolution/04-hypothesis-generation.md) | $H$ as the hypotheses root holds, the union of its writers | [§ 1](#1-hypothesis-generation) |
 | [The hypothesis space](../../reasoning/02-kb-evolution/05-hypothesis-space.md) | the structure of $H$: pairs, groups, grids, the coupling | [§ 2](#2-the-hypothesis-space) |
 | [Solution semantics](../../reasoning/02-kb-evolution/06-solution-semantics.md) | the node function, the status of a state, the region $R$ | [§ 3](#3-solution-semantics) |
 | [Finding R](../../reasoning/02-kb-evolution/07-finding-r.md) | the oracle, the licences as lemmas, the agreement theorem | [§ 4](#4-finding-r) |
@@ -25,13 +25,15 @@ test under a crate's `tests/`.
 
 | in the reasoning | in `ein.rs` |
 |---|---|
-| $\operatorname{gen}(P, \mathrm{root})$, the ladder | `hypgen::rung` decides the case, a `Rung` (`NoSearch`, `Hrules`, `Obligations`, `Blind`), and `hypgen::generate_config_free` runs it: one entry for the search, the listing and the structure, with no configuration switch applied |
+| $\operatorname{gen}(P, \mathrm{root})$, the union | `hypgen::generate_config_free` runs the writers at root, the rules that conclude a hypothesis, the program's `(open F)`, the obligations activated there, and the blind enumerator where none of them writes: one entry for the search, the listing and the structure, with no configuration switch applied; its `HypGenStats::rung.mode`, an `oblgen::Mode`, says which wrote |
+| what a state holds under $\mathsf{open}$, $\operatorname{hyp}(S)$ | [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs), the pass at each state's fixpoint: `open::at_root` writes root's and returns the writers every state re-reads, and `ein_core::Kb::write_open` keeps them in the part of a state no fork inherits |
 | $\nu(P)$, nothing to guess | `hypgen::declares_no_search`: the program's `(solve :no-search)` |
-| $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs): each active `(hrule …)` is a compiled plan matched at root, its one `:assert` fact a candidate per match |
-| $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the ladder and the conflict check share |
-| $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`) |
-| $\operatorname{declines}(P)$ and its reason | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
-| $D^{+}$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes once the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change, for the static check and for this rung |
+| $\operatorname{Hr}(P)$, $H_{\mathrm{hr}}$ | [`hrule.rs`](../../../../ein.rs/crates/ein-infer/src/hrule.rs): each active rule that concludes `(open F)`, an `(hrule …)` among them, is a compiled plan matched at the state, each `(open F)` of its `:assert` a hypothesis per match; `ein_core::Program::hypotheses` holds those rules beside `Program::hrules` |
+| $\beta(P)$ | `hypgen::generate_with`: the blind enumerator runs where no rule or program `(open F)` wrote and `mechanisms::obligation_plans` is empty |
+| $\operatorname{ActOb}(P)$ | `mechanisms::obligation_plans`, the one reading of *an obligation activated at root*, which the writers and the conflict check share |
+| $\operatorname{pay}(o, a, \theta)$ | [`oblgen.rs`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs): the guard's own sub-plan run with the witness step skipped (`Matcher::scan_without` in `match_.rs`); `oblgen::payments` reads it at every state for the pass |
+| a witness step that does not resolve under its activator | `oblgen::generate` answers `Mode::Declined`, with the reason, before it emits anything |
+| $D^{+}$, $\operatorname{grows}(o)$ | [`monotone.rs`](../../../../ein.rs/crates/ein-infer/src/monotone.rs) computes once the relations whose held extent ([the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md#the-relation-its-extent-a-fact-of-it)) a commitment can change, for the static check, whose `obligation-trigger` and `obligation-guard` sites (`oblgen::guard_reads`) flag an obligation whose payments can grow; no writer reads it |
 | $\operatorname{ActOb}^{+}$, $\Pi^{+}$: a debt root is not told of | `extendable::derivable_activators`; each such debt is an `oblgen::LaterDebt`, counted apart from what root owes |
 | stuck | `oblgen::Mode::Stuck` |
 | $\operatorname{Uncov}(P)$ | `RungReport::uncovered`, over `hypgen::eligible_relations` |
@@ -42,44 +44,42 @@ test under a crate's `tests/`.
 | the mechanisms judged together | [`mechanisms.rs`](../../../../ein.rs/crates/ein-infer/src/mechanisms.rs), at load, on every command; each refusal and each note, worded, is [`07-diagnostics.md` § 2.26](../../user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) |
 | what the universe leaves out | `scope.rs`: one sentence, on every surface |
 
-### 1.2 The ladder as the engine runs it
+### 1.2 The writers as the engine runs them
 
-The choice between the rungs is one flow, drawn in
-[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-ladder), and its contract is
-[`03-design/07-search.md` § 1](../03-design/07-search.md#1-hypothesis-generation). In the code's words: `hypgen::rung`
-answers `NoSearch`, `Hrules`, `Obligations` or `Blind` before any rung runs; the two lists,
-`:hypothesis-relations` and `:no-hypothesis`, are read once a call, and neither they nor a `(__closed__ R)` fact
-filter what an hrule proposes; `oblgen::generate` scans each owed instance's guard with the witness step skipped,
-then the debts a commitment can bring, and answers `Mode::Declined` with its reason before it emits anything; the
-blind enumerator takes `candidate_objects`, the guessable atoms, and for each of them, each eligible relation and
-each argument place, one candidate a filler, no fact of an atom with itself.
+The writers are one flow, drawn in
+[`02-algorithms.md` § 6](../02-algorithms.md#6-hypothesis-generation-the-writers), and its contract is
+[`03-design/07-search.md` § 1](../03-design/07-search.md#1-hypothesis-generation). In the code's words:
+`hypgen::generate_with` answers `Mode::NoSearch` before anything runs where the program states `(solve
+:no-search)`; else it hands on every match of the rules that conclude a hypothesis (`hrule::Hrules`, hrules
+among them), then the `(open F)` facts the program writes, then, where `mechanisms::obligation_plans` is not
+empty, what `oblgen::generate` proposes: each owed instance's guard scanned with the witness step skipped, then
+the debts a commitment can bring, or `Mode::Declined` with its reason before it emits anything where a witness step
+does not resolve. Only where none of those wrote and no obligation is activated does the blind enumerator run: it
+takes `candidate_objects`, the guessable atoms, and for each of them, each eligible relation and each argument
+place, one candidate a filler, no fact of an atom with itself. The two lists, `:hypothesis-relations` and
+`:no-hypothesis`, and a `(__closed__ R)` fact are its configuration; beside the `open` facts root holds,
+`mechanisms::check` refuses a program in which one disagrees with them.
 
-Every candidate a rung constructs goes through one pipeline, `emit`: it is counted as `raw`, then dropped by the
+Every candidate a writer constructs goes through one pipeline, `emit`: it is counted as `raw`, then dropped by the
 first filter that names it or emitted, so `raw == emitted + Σ filtered` and a dropped candidate's `hyp` event names
-its filter. A skip made before any candidate exists is a `hypskip` event, and a call that reaches the obligations
-rung writes one `rung` event with its `mode`, its `reason` and its counts
-([`05-events.md` § `rung`](../05-events.md#rung-which-generator-proposed)).
+its filter. $H$ is what survives, identical facts one. A skip made before any candidate exists is a `hypskip` event,
+and a call made where an obligation is activated writes one `rung` event with its `mode`, its `reason` and its
+counts ([`05-events.md` § `rung`](../05-events.md#rung-which-generator-proposed)). What the writers gave at root,
+`open::at_root` writes as root's `(open …)` facts, and every state above root re-reads the same writers at its own
+fixpoint.
 
-**The rung's name** is `Mode::as_str`, one of six words, and it is what the read-out's `universe` row, the note of
-`ein show hyps` and the `rung` field of `h-space.json` print:
+**Which writers built $H$** is `Mode::as_str`, one of seven words, and it is what the note of `ein show hyps`, the
+`H` row of `ein render h-space` and the `rung` field of `h-space.json` print:
 
-| word | the case of the definition |
+| word | what wrote at root |
 |---|---|
-| `no-search` | the program states `(solve :no-search)` |
-| `hrules` | the program declares an hrule |
-| `obligations` | an obligation is activated at root and the rung built $H$, empty where root owes nothing |
-| `stuck` | the rung built nothing and root owes |
-| `declined` | the rung declined, and the blind enumerator built $H$ |
-| `blind` | neither an hrule nor an activated obligation |
-
-**A decline says why**, in the `rung` event's `reason`. For
-[`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein),
-`ein solve FILE --events e.jsonl` writes:
-
-<!-- output -->
-```text
-{"e": "rung", "n": 6, "mode": "declined", "reason": "an obligation scans `food`, a relation a commitment can change", "owed": 0, "branches": 0, "declined": 0, "candidates": 0, "uncovered": 0}
-```
+| `no-search` | nothing: the program states `(solve :no-search)` |
+| `hrules` | the rules that conclude a hypothesis, or the program's `(open F)`, and no activated obligation |
+| `obligations` | an activated obligation alone, what would pay what root owes; empty where root owes nothing |
+| `union` | both: the rules' hypotheses beside an activated obligation's, the counts of the `rung` event the obligations' |
+| `stuck` | an activated obligation, with nothing left to propose while root owes |
+| `declined` | an activated obligation whose witness step did not resolve under its activator: it proposed nothing, and the blind enumerator does not run beside it |
+| `blind` | the blind enumerator: root holds no `open` fact and activates no obligation |
 
 **A debt root is not told of is a row of the read-out**, under `universe`. For
 [`examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein),
@@ -119,13 +119,13 @@ lists it and the full name where it does not.
 
 The block is the binary's output, held to it by a test ([§ 2.6](#26-what-holds-the-structure)).
 
-- **It is H as root's generator builds it**, on whichever rung the program is on: the set every route searches over.
+- **It is H as root's writers build it**, whichever of them write: the set every route searches over.
   `ein solve FILE -H` lists the same candidates after a read-out, by relation, within stdout's 100 lines; the document
   of § 2.4 lists them under `candidates` with what the structure says of each. All three are one reading of H, root
   prepared as every route prepares it.
 - **It costs what building H costs**: root's saturation and the generator's pass. No node is read, so no pair layer,
   no small KB and no whole node.
-- **stderr holds one `note:`**, which rung built H and how many candidates it holds:
+- **stderr holds one `note:`**, which writers built H, in the word of § 1.2, and how many candidates it holds:
   ``note: FILE: H, built by the rung `hrules`: …``. An empty H prints nothing on stdout and exits 0, and the note says
   why in the words of the read-out's `universe` row: *no candidate*, and *the program states :no-search* where it
   does. On a program the static check flags, the warning's line comes before the note,
@@ -139,20 +139,22 @@ The block is the binary's output, held to it by a test ([§ 2.6](#26-what-holds-
 
 ### 1.4 A program for each case
 
-Each is a corpus program whose note names the rung, re-taken by `ein show hyps FILE 2>&1 >/dev/null`:
+Each is a corpus program whose note names the writers, re-taken by `ein show hyps FILE 2>&1 >/dev/null`:
 
-| rung | program | what it is |
+| word | program | what it is |
 |---|---|---|
-| `hrules` | [`examples/zebra2.ein`](../../../../examples/zebra2.ein) | the Zebra puzzle with `(hrule guess …)` |
-| `obligations` | [`examples/zebra2-obligations.ein`](../../../../examples/zebra2-obligations.ein) | the same file with the hrule and the `:hrules` clause deleted and nothing else: `(bijective color-loc)` and its kin owe every attribute arrow |
+| `union` | [`examples/zebra2.ein`](../../../../examples/zebra2.ein) | the Zebra puzzle with `(hrule guess …)`, beside `(bijective color-loc)` and its kin, which owe every attribute arrow |
+| `hrules` | [`examples/branching/09_hrule.ein`](../../../../examples/branching/09_hrule.ein) | an hrule and no obligation |
+| `obligations` | [`examples/zebra2-obligations.ein`](../../../../examples/zebra2-obligations.ein) | `zebra2.ein` with the hrule and the `:hrules` clause deleted and nothing else |
 | `obligations`, no candidate | [`examples/ein-bugs/wrong-answers/rung-discharged.ein`](../../../../examples/ein-bugs/wrong-answers/rung-discharged.ein) | an activated obligation and a root that owes nothing |
 | `obligations`, with a later debt | [`examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein) | a rule derives an obligation's activator from a commitment |
-| `declined` | [`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | a guard reads facts of a relation whose held extent a commitment can change |
+| `obligations`, flagged | [`examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein`](../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | a guard reads facts of a relation whose held extent a commitment can change: the obligation writes what root's guard gives, and the warning's line comes first |
 | `stuck` | [`examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein`](../../../../examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein) | root owes, and nothing is left to propose |
-| `blind` | [`examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein`](../../../../examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein) | no hrule, no activated obligation |
+| `blind` | [`examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein`](../../../../examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein) | root holds no `open` fact and activates no obligation |
 | `no-search` | [`examples/beliefs/01_common_belief.ein`](../../../../examples/beliefs/01_common_belief.ein) | `(solve :no-search)` |
 
-**The two Zebra files build one $H$**, which is the reasoning's example of a rung that leaves nothing uncovered.
+**The two Zebra files build one $H$**, which is the reasoning's example of obligations that leave nothing
+uncovered: what the hrule proposes, the obligations propose too.
 The two listings are the same set:
 
 ```sh
@@ -183,14 +185,17 @@ no longer labels of any declaration, so the blind enumerator takes them for gues
 `(lives-in Person House-1)` and the like. No rule reads the labels in either program
 ([Q-M1f.306](../../../decisions/hypotheses/Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md)).
 
-### 1.5 What holds the ladder
+### 1.5 What holds the writers
 
 | claim | test |
 |---|---|
-| the ladder dispatches by what the program states: an hrule overrides, an activated obligation takes the second rung, a declined obligation falls to the blind enumerator, a program with neither takes the blind enumerator, and `(solve :no-search)` runs no rung | `ein-infer/tests/obligation_rung.rs`: `the_ladder_dispatches_by_what_the_program_declares` |
+| a state holds `(open R)` where it owes and nowhere else, and a fork drops every `open` fact, a written one among them | `ein-infer/tests/open_facts.rs`: `the_seats_hold_what_they_owe_where_they_owe_it`, `a_fork_drops_every_open_fact_a_written_one_among_them` |
+| $H$ is the union of the writers, and the blind enumerator writes only where nothing else does | `ein-infer/tests/open_facts.rs`: `h_is_the_union_of_the_writers`, `the_blind_enumerator_writes_only_where_nothing_else_does` |
+| a rule that reads `open`, and a hypothesis first held above root, make the program not monotone, the second found by the static check and in flight | `ein-infer/tests/open_facts.rs`: `a_rule_that_reads_open_is_flagged`, `a_hypothesis_first_held_above_root_is_found` |
+| the `rung` event a run writes follows what the program states, and `(solve :no-search)` writes none | `ein-infer/tests/obligation_rung.rs`: `the_ladder_dispatches_by_what_the_program_declares` |
 | under an activated obligation a discharged root proposes nothing | `ein-infer/tests/obligation_rung.rs`: `a_discharged_state_owes_nothing_and_declines_nothing` |
-| a module imported for one rule takes the rung of that rule written out; the answer does not depend on the import form | `ein-cli/tests/import_invariance.rs`: `a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`, `every_corpus_program_answers_alike_under_every_import_form` |
-| the obligations rung's candidates are its guards' scans with the witness step skipped | `ein-infer/tests/obligation_rung.rs`: `the_candidates_are_what_the_guard_scans` |
+| a module imported for one rule takes the writers of that rule written out; the answer does not depend on the import form | `ein-cli/tests/import_invariance.rs`: `a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`, `every_corpus_program_answers_alike_under_every_import_form` |
+| an obligation's candidates are its guards' scans with the witness step skipped | `ein-infer/tests/obligation_rung.rs`: `the_candidates_are_what_the_guard_scans` |
 | the hrule path and the obligation path build one $H$, and with it one $R$, on the zebra family | `ein-infer/tests/obligation_rung.rs`: `the_theory_finds_what_the_hrule_finds` |
 | a root that owes and can propose nothing is stuck, reports it, and is no state of $R$ | `ein-infer/tests/obligation_rung.rs`: `owing_and_unable_to_branch_is_stuck_and_says_so` |
 | $H$ holds the payments of a debt only a commitment brings, by the static reading, and $R$ over that $H$ is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles`, `the_rung_line_counts_a_later_debt_apart` |
@@ -296,7 +301,7 @@ The view draws no SVG, as no `ein render` view does: a graph is DOT for Graphviz
 <!-- generated: ein render h-space examples/zebra2.ein -->
 ```text
 h-space      examples/zebra2.ein
-H            56 candidates · 21 dead alone · 0 at root · built by the rung `hrules`
+H            56 candidates · 21 dead alone · 0 at root · built by the rung `union`
 pairs        1 540 · 408 saturated · 327 excluded at root · 66 interacting · 234 implications · 9 equivalence classes
 theory       128 pairs excluded by the theory alone · of root's 327, 45 the theory's and 282 the puzzle's · the small KB drops 18 of 66 stated facts and kills 0 candidates alone
 supports     not asked: --supports names the statements each pair of the puzzle rests on
@@ -393,7 +398,7 @@ order. **The document holds no clock and no job count**: it is a function of the
 |---|---|
 | `schema`, `program` | `ein-h-space/1`; the program as the command was given it |
 | `asked` | `region_budget` and `supports` |
-| `n`, `rung`, `monotone`, `root_dead` | how many candidates; which rung built H; the static verdict; whether root's own fixpoint holds a contradiction |
+| `n`, `rung`, `monotone`, `root_dead` | how many candidates; which writers built H, a word of § 1.2; the static verdict; whether root's own fixpoint holds a contradiction |
 | `whole`, `unread` | whether nothing was stopped, cut or left unread; the sentences where something was |
 | `says` | what is true of the program that makes its structure small or empty |
 | `domain` | `pair_layer`, `cover`, `coupling`: each `null`, or on a flagged program the sentence that says what its statements are about |
@@ -531,7 +536,7 @@ read knows which of them means *bijective*. A reader does: on `examples/zebra2.e
 | a theory's pair whose node is alive at root | `cover.pairs_alive_at_root` |
 | a flagged program whose small KB is monotone | `cover.small_monotone` true beside `monotone` false |
 | dead in the small KB and alive at root; held by the small KB's fixpoint and not by root's | `theory.against_root`, `theory.small_beyond_root` |
-| which rung built $H$ | `rung`: `hrules`, `obligations`, `blind`, `declined`, `stuck` or `no-search` |
+| which writers built $H$ | `rung`: `hrules`, `obligations`, `union`, `blind`, `declined`, `stuck` or `no-search` |
 
 The three small universes the reasoning's page draws, a guest's chair and drink, two people and two chairs, and the
 third question of the hat, are not corpus programs; their graphs are what `ein render h-space FILE --view exclusion`,
@@ -542,7 +547,7 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | claim | test |
 |---|---|
 | the excluded pairs are $N$'s members of two candidates, on every corpus program whose describe exhausts | `ein-infer/tests/pair_layer.rs`: `the_excluded_pairs_are_the_pairs_of_n` |
-| the theory's share: a declared bijection's rows and columns are the theory's pairs, two programs a clue apart have one theory, one puzzle in two encodings has one theory, the small KB derives no more than the program | `ein-infer/tests/theory_share.rs`: `the_theory_excludes_a_declared_bijections_rows_and_columns`, `two_programs_one_clue_apart_have_one_theory`, `the_same_puzzle_in_two_encodings_has_one_theory`, `the_theory_derives_no_more_than_the_program` |
+| the theory's share: a declared bijection's rows and columns are the theory's pairs, two programs a clue apart have one theory, one puzzle in two encodings has one theory up to the orientation of a symmetric relation's candidates, the small KB derives no more than the program | `ein-infer/tests/theory_share.rs`: `the_theory_excludes_a_declared_bijections_rows_and_columns`, `two_programs_one_clue_apart_have_one_theory`, `the_same_puzzle_in_two_encodings_has_one_theory`, `the_theory_derives_no_more_than_the_program` |
 | the cover, *exactly one* and the grids, on their controls and over the corpus | `ein-infer/tests/cover.rs`: `every_cover_is_whole_and_its_groups_are_the_maximal_cliques`; `ein-infer/tests/exactly_one.rs` |
 | every member of $N$ lies inside one edge of a conflict or a derivation, and $R$ is the product over the components over every edge, wherever a describe exhausts; the witnesses' holders are read wherever a layer read its singles | `ein-infer/tests/coupling.rs`: `the_coupling_is_held_to_n_and_to_r`, `a_layer_that_read_its_singles_has_its_holders_read` |
 | the coupling a route reads: every edge it reads lies inside one component of the coupling on every program that searches and both read whole | `ein-infer/tests/node_coupling.rs`: `an_edge_of_the_node_alone_lies_inside_the_full_coupling` |
@@ -655,7 +660,7 @@ The files the three commands write are the region dump
 | each `synth/` program has the region it was written for | `ein-infer/tests/region.rs`: `every_synthetic_program_has_the_region_it_was_written_for` |
 | every name of the program is a guessable atom, and no run reaches a name the program does not have | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object`, `no_run_reaches_a_name_the_program_does_not_have` |
 | a dunder is not guessable, and a held extent closed to hypotheses by a rule answers what one closed by a fact answers | `ein-infer/tests/dunder_objects.rs` |
-| the obligations rung's reading of later debts, and $R$ over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
+| the obligations' reading of later debts, and $R$ over its universe is the oracle's | `ein-infer/tests/later_debts.rs`: `the_universe_is_the_static_readings_on_every_probe`, `r_over_the_readings_universe_is_the_oracles` |
 | what the universe leaves out is one sentence on every surface | `ein-cli/tests/read_out.rs`: `the_universes_scope_is_one_sentence_on_every_surface` |
 | a state's identity is its fact list, never a digest; two different closures have different identities | `ein-infer/tests/search_semantics.rs`: `state_key_is_identity_not_a_digest`, `distinct_closures_have_distinct_keys` |
 | H is listed in the universe's order, as the binary lists it | `ein-cli/tests/show_hyps.rs`, which holds the listing on the hypothesis space's page to the binary's |

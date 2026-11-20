@@ -130,8 +130,25 @@ $$
 
 A **site** is a dynamic read at non-monotone polarity, or a rule with parameters whose name is a relation in
 $D$, the relation its **activators** are facts of: a commitment can then make a node apply the rule in a way root
-never did, which a check of root's applications cannot see. A program with no site is **monotone** by the check;
-one with a site is **flagged**. The check costs root's saturation and builds no node.
+never did, which a check of root's applications cannot see.
+
+Three more reads are sites, each about the hypotheses rather than the status: a state above root could then hold, or
+need, what root's candidate set lacks
+([hypothesis generation § 2](04-hypothesis-generation.md#2-the-union)).
+
+| site | the read | why |
+|---|---|---|
+| **a read of $\mathsf{open}$** | a rule's pattern reads a fact under $\mathsf{open}$, at any depth | a fork drops every fact under $\mathsf{open}$ and keeps what a rule concluded from one, so a state can hold a conclusion of a premise it no longer holds ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)) |
+| **a hypothesis** | a rule that concludes a hypothesis reads a relation of $D$ at even depth | growing it adds a match, so a state above root can hold a hypothesis root does not ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)) |
+| **an obligation's guard** | an obligation's guard reads a relation of $D$ beside its witness step | its payments are read off its guard at root, and a member the guard gains above root is in no candidate ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)) |
+
+A program with no site is **monotone** by the check; one with a site is **flagged**. The check costs root's
+saturation and builds no node.
+
+**Found in flight.** A state above root that holds a hypothesis root does not makes the program not monotone,
+whatever its sites: a monotone program, state by state, proves or refutes hypotheses and adds none, and its lattice
+is a cube over root's. A computation that builds such a state says so at once, the answer stands, and nothing is
+claimed of it ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 The rule that gives a seated guest the soup unless the guest is allergic ([absence](03-absent-and-naf.md)), with
 seatings and allergies as candidates, has one site:
@@ -171,8 +188,8 @@ check.
 ### 3.3 The grain
 
 The check reads at **relation grain**: a read is dynamic when its *relation* is in $D$, whatever its pattern.
-The theorem above is stated at that grain, and the same $D$ is the one the obligations rung
-of [hypothesis generation](04-hypothesis-generation.md) reads.
+The theorem above is stated at that grain, and so is the reading of an obligation whose payments can grow in
+[hypothesis generation](04-hypothesis-generation.md#43-where-the-payments-can-grow).
 
 A finer reading, **fact grain**, calls a read dynamic only when its pattern can match a fact a commitment can
 add. It builds an over-approximation of every fact some node holds beyond root, as a closure over **shapes**,
@@ -190,9 +207,8 @@ the program stays flagged.
 
 Fact grain is sufficient too. It would unflag a program whose dynamic reads no commitment can ever match: a
 read that asks for membership under a label, $\operatorname{is-a}(a, \mathsf{House})$, where every candidate is a
-membership between atoms. Ein's check does not read at it: the check and the obligations
-rung read one $D$ at relation grain, so a program with a read whose relation is in $D$ is flagged whatever the
-read's pattern.
+membership between atoms. Ein's check does not read at it: it reads $D$ at relation grain, so a program with a
+read whose relation is in $D$ is flagged whatever the read's pattern.
 
 ### 3.4 The verdict is relative to root
 
@@ -242,8 +258,9 @@ scope is stated.
 
 - an absence over the held extent of a static relation: a guard over positions no commitment changes, the
   spatial reads of the Zebra puzzle;
-- an obligation's witness: the absence inside *every guest owes a seat* is at odd depth of an obligation, and
-  growing the seats can only pay;
+- an obligation's witness step: the absence inside *every guest owes a seat* is at odd depth of an obligation,
+  and growing the seats can only pay. What stands beside it in the absence, the domain, is a site where it reads a
+  relation of $D$ (§ 3.1);
 - a read of a stored negation of a fact of a candidates' relation $r$: $\lnot r \in D$ only where a rule derives
   such a negation.
 
@@ -554,6 +571,9 @@ consequence, and § 8 says which causes produce it.
 | c10 | the FIFO gap | the two rules of § 8.3 | **the state**: cumulativity, on a stratified program | an absence site on the reader |
 | c11 | an activator derived under an absence | a rule deriving $\operatorname{watch}(r)$ under $\operatorname{absent}(q(x))$, whose applied rule refutes reading no absence (§ 8.4) | **the state, and dead**: the absence is in the activator's derivation, which no premise records | an absence site on the deriving rule and an activator site |
 | c12 | a FIFO race over a static read | the two rules of § 3.4, $a$ given | **the state built from scratch**, under a *monotone* verdict; a fork never meets it | nothing: no site |
+| c13 | a rule that reads what a state owes or supposes | a rule that concludes a fact from $\operatorname{open}(\operatorname{seats})$ | **the state**: a fork drops the fact under $\mathsf{open}$ and keeps the conclusion | a read of $\mathsf{open}$ |
+| c14 | a hypothesis a commitment can bring | a rule that supposes a meal for each seated guest, with the seats candidates | **the candidate set**: a node holds a hypothesis root's $H$ lacks | a hypothesis site, or found in flight |
+| c15 | a domain a commitment can grow | an obligation owing each guest a seat among the chairs, where a rule derives a chair from a candidate | **the candidate set**: a payment only a node's guard admits is in no candidate | a guard site |
 
 **The status and the state are apart.** *Exercised* and *conservative* are words about the status. c1, c8, c9,
 c10 and c12 break the state where the cube can say *conservative*, so what is reported of a flagged program
@@ -571,7 +591,9 @@ Read off root's applications, before any node:
 
 - **each site**, with what its rule concludes and which property it puts at stake: an absence site the state,
   and $\operatorname{dead}$ with it when it concludes $\bot$; a trigger the status, $\operatorname{owes}$; an
-  activator either, through the rule a node applies;
+  activator either, through the rule a node applies; a read of $\mathsf{open}$ the state; a hypothesis and an
+  obligation's guard the candidate set;
+- **what a run found in flight**: the first hypothesis a state it built holds and root does not;
 - **each cycle through an absence** over $D$, with its parity: a negative cycle of the rule dependency graph
   ([analysis of rules](../03-rule-evolution/02-analysis-of-rules.md)), restricted to the relations of $D$. An
   even cycle can have several states with no stale fact, two stable models; an odd one need not

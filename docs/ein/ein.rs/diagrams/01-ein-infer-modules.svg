@@ -2,106 +2,106 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Title: ein_infer Pages: 1 -->
-<svg width="1257pt" height="751pt"
- viewBox="0.00 0.00 1257.00 751.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 746.5)">
+<svg width="1258pt" height="764pt"
+ viewBox="0.00 0.00 1258.00 764.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 760)">
 <title>ein_infer</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-746.5 1253.39,-746.5 1253.39,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-760 1254.46,-760 1254.46,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_closure</title>
-<polygon fill="none" stroke="#7f7f7f" points="356,-362 356,-734.5 972,-734.5 972,-362 356,-362"/>
-<text xml:space="preserve" text-anchor="middle" x="445" y="-721" font-family="Helvetica,sans-Serif" font-size="10.00">the closure: one KB to its fixpoint</text>
+<polygon fill="none" stroke="#7f7f7f" points="356,-368.75 356,-748 972,-748 972,-368.75 356,-368.75"/>
+<text xml:space="preserve" text-anchor="middle" x="445" y="-734.5" font-family="Helvetica,sans-Serif" font-size="10.00">the closure: one KB to its fixpoint</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_worlds</title>
-<polygon fill="none" stroke="#7f7f7f" points="8,-8 8,-441 348,-441 348,-8 8,-8"/>
-<text xml:space="preserve" text-anchor="middle" x="111.25" y="-427.5" font-family="Helvetica,sans-Serif" font-size="10.00">the worlds: the lattice of commitments</text>
+<polygon fill="none" stroke="#7f7f7f" points="8,-8 8,-454.5 348,-454.5 348,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="111.25" y="-441" font-family="Helvetica,sans-Serif" font-size="10.00">the worlds: the lattice of commitments</text>
 </g>
 <!-- compile -->
 <g id="node1" class="node">
 <title>compile</title>
-<polygon fill="none" stroke="black" points="768.12,-705.75 569.88,-705.75 569.88,-657.25 768.12,-657.25 768.12,-705.75"/>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-691.3" font-family="Helvetica,sans-Serif" font-size="11.00">compile.rs, plan.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-677.8" font-family="Helvetica,sans-Serif" font-size="11.00">a rule and an activator to a Plan;</text>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-664.3" font-family="Helvetica,sans-Serif" font-size="11.00">the run&#39;s PlanMemo</text>
+<polygon fill="none" stroke="black" points="768.12,-719.25 569.88,-719.25 569.88,-670.75 768.12,-670.75 768.12,-719.25"/>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-704.8" font-family="Helvetica,sans-Serif" font-size="11.00">compile.rs, plan.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-691.3" font-family="Helvetica,sans-Serif" font-size="11.00">a rule and an activator to a Plan;</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-677.8" font-family="Helvetica,sans-Serif" font-size="11.00">the run&#39;s PlanMemo</text>
 </g>
 <!-- engine -->
 <g id="node2" class="node">
 <title>engine</title>
-<polygon fill="none" stroke="black" points="749,-610 589,-610 589,-574 749,-574 749,-610"/>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-595.05" font-family="Helvetica,sans-Serif" font-size="11.00">engine.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-581.55" font-family="Helvetica,sans-Serif" font-size="11.00">the ordered plan list, fired</text>
+<polygon fill="none" stroke="black" points="749,-623.5 589,-623.5 589,-587.5 749,-587.5 749,-623.5"/>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-608.55" font-family="Helvetica,sans-Serif" font-size="11.00">engine.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-595.05" font-family="Helvetica,sans-Serif" font-size="11.00">the ordered plan list, fired</text>
 </g>
 <!-- compile&#45;&gt;engine -->
 <g id="edge1" class="edge">
 <title>compile&#45;&gt;engine</title>
-<path fill="none" stroke="black" d="M669,-657.05C669,-646.16 669,-633.1 669,-621.63"/>
-<polygon fill="black" stroke="black" points="672.5,-621.92 669,-611.92 665.5,-621.92 672.5,-621.92"/>
-<text xml:space="preserve" text-anchor="middle" x="682.88" y="-630.7" font-family="Helvetica,sans-Serif" font-size="9.00">PlanId</text>
+<path fill="none" stroke="black" d="M669,-670.55C669,-659.66 669,-646.6 669,-635.13"/>
+<polygon fill="black" stroke="black" points="672.5,-635.42 669,-625.42 665.5,-635.42 672.5,-635.42"/>
+<text xml:space="preserve" text-anchor="middle" x="682.88" y="-644.2" font-family="Helvetica,sans-Serif" font-size="9.00">PlanId</text>
 </g>
 <!-- sat -->
 <g id="node4" class="node">
 <title>sat</title>
-<polygon fill="none" stroke="black" points="758.38,-526.75 579.62,-526.75 579.62,-478.25 758.38,-478.25 758.38,-526.75"/>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-512.3" font-family="Helvetica,sans-Serif" font-size="11.00">saturator.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-498.8" font-family="Helvetica,sans-Serif" font-size="11.00">the agenda, the closure step,</text>
-<text xml:space="preserve" text-anchor="middle" x="669" y="-485.3" font-family="Helvetica,sans-Serif" font-size="11.00">the NAF boundary</text>
+<polygon fill="none" stroke="black" points="758.38,-540.25 579.62,-540.25 579.62,-491.75 758.38,-491.75 758.38,-540.25"/>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-525.8" font-family="Helvetica,sans-Serif" font-size="11.00">saturator.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-512.3" font-family="Helvetica,sans-Serif" font-size="11.00">the agenda, the closure step,</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-498.8" font-family="Helvetica,sans-Serif" font-size="11.00">the NAF boundary</text>
 </g>
 <!-- engine&#45;&gt;sat -->
 <g id="edge2" class="edge">
 <title>engine&#45;&gt;sat</title>
-<path fill="none" stroke="black" d="M669,-573.71C669,-563.6 669,-550.46 669,-538.29"/>
-<polygon fill="black" stroke="black" points="672.5,-538.56 669,-528.56 665.5,-538.56 672.5,-538.56"/>
-<text xml:space="preserve" text-anchor="middle" x="701.62" y="-547.45" font-family="Helvetica,sans-Serif" font-size="9.00">plans, in order</text>
+<path fill="none" stroke="black" d="M669,-587.21C669,-577.1 669,-563.96 669,-551.79"/>
+<polygon fill="black" stroke="black" points="672.5,-552.06 669,-542.06 665.5,-552.06 672.5,-552.06"/>
+<text xml:space="preserve" text-anchor="middle" x="701.62" y="-560.95" font-family="Helvetica,sans-Serif" font-size="9.00">plans, in order</text>
 </g>
 <!-- match -->
 <g id="node3" class="node">
 <title>match</title>
-<polygon fill="none" stroke="black" points="542.38,-406 363.62,-406 363.62,-370 542.38,-370 542.38,-406"/>
-<text xml:space="preserve" text-anchor="middle" x="453" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">match_.rs, predicates.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="453" y="-377.55" font-family="Helvetica,sans-Serif" font-size="11.00">the register matcher; eq, neq</text>
+<polygon fill="none" stroke="black" points="542.38,-412.75 363.62,-412.75 363.62,-376.75 542.38,-376.75 542.38,-412.75"/>
+<text xml:space="preserve" text-anchor="middle" x="453" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">match_.rs, predicates.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="453" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">the register matcher; eq, neq</text>
 </g>
 <!-- match&#45;&gt;sat -->
 <g id="edge4" class="edge">
 <title>match&#45;&gt;sat</title>
-<path fill="none" stroke="black" d="M483.91,-406.49C502.98,-417.02 528.11,-430.39 551,-441 559.69,-445.03 562.32,-444.96 571,-449 586.35,-456.16 602.69,-464.57 617.54,-472.55"/>
-<polygon fill="black" stroke="black" points="615.76,-475.57 626.22,-477.26 619.1,-469.41 615.76,-475.57"/>
-<text xml:space="preserve" text-anchor="middle" x="619.14" y="-451.7" font-family="Helvetica,sans-Serif" font-size="9.00">each Match</text>
+<path fill="none" stroke="black" d="M479.39,-413.14C498.76,-425.52 525.94,-442.08 551,-454.5 559.58,-458.75 562.32,-458.46 571,-462.5 586.35,-469.66 602.69,-478.07 617.54,-486.05"/>
+<polygon fill="black" stroke="black" points="615.76,-489.07 626.22,-490.76 619.1,-482.91 615.76,-489.07"/>
+<text xml:space="preserve" text-anchor="middle" x="619.14" y="-465.2" font-family="Helvetica,sans-Serif" font-size="9.00">each Match</text>
 </g>
 <!-- sat&#45;&gt;match -->
 <g id="edge3" class="edge">
 <title>sat&#45;&gt;match</title>
-<path fill="none" stroke="black" d="M579.13,-496.39C524.83,-491.21 462.89,-480.85 445.75,-460.25 435.96,-448.49 437.26,-431.56 441.25,-417.16"/>
-<polygon fill="black" stroke="black" points="444.55,-418.33 444.39,-407.73 437.91,-416.12 444.55,-418.33"/>
-<text xml:space="preserve" text-anchor="middle" x="508.38" y="-451.7" font-family="Helvetica,sans-Serif" font-size="9.00">run_one, run_seeded, holds</text>
+<path fill="none" stroke="black" d="M579.13,-509.89C524.83,-504.71 462.89,-494.35 445.75,-473.75 434.37,-460.08 436.51,-440.01 441.33,-423.65"/>
+<polygon fill="black" stroke="black" points="444.54,-425.08 444.47,-414.48 437.92,-422.81 444.54,-425.08"/>
+<text xml:space="preserve" text-anchor="middle" x="508.38" y="-465.2" font-family="Helvetica,sans-Serif" font-size="9.00">run_one, run_seeded, holds</text>
 </g>
 <!-- firing -->
 <g id="node5" class="node">
 <title>firing</title>
-<polygon fill="none" stroke="black" points="783.88,-406 560.12,-406 560.12,-370 783.88,-370 783.88,-406"/>
-<text xml:space="preserve" text-anchor="middle" x="672" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">firing.rs, contradiction.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="672" y="-377.55" font-family="Helvetica,sans-Serif" font-size="11.00">one application; (false) and X, (not X)</text>
+<polygon fill="none" stroke="black" points="783.88,-412.75 560.12,-412.75 560.12,-376.75 783.88,-376.75 783.88,-412.75"/>
+<text xml:space="preserve" text-anchor="middle" x="672" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">firing.rs, contradiction.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="672" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">one application; (false) and X, (not X)</text>
 </g>
 <!-- sat&#45;&gt;firing -->
 <g id="edge5" class="edge">
 <title>sat&#45;&gt;firing</title>
-<path fill="none" stroke="black" d="M730.45,-477.94C737.01,-473.05 742.81,-467.2 747,-460.25 758.2,-441.66 742.11,-424.74 722,-412.06"/>
-<polygon fill="black" stroke="black" points="723.94,-409.14 713.54,-407.13 720.42,-415.19 723.94,-409.14"/>
-<text xml:space="preserve" text-anchor="middle" x="795.83" y="-451.7" font-family="Helvetica,sans-Serif" font-size="9.00">a popped candidate</text>
+<path fill="none" stroke="black" d="M730.45,-491.44C737.01,-486.55 742.81,-480.7 747,-473.75 759.51,-452.98 740.34,-433.33 718.26,-418.95"/>
+<polygon fill="black" stroke="black" points="720.35,-416.12 709.99,-413.9 716.71,-422.1 720.35,-416.12"/>
+<text xml:space="preserve" text-anchor="middle" x="796.05" y="-465.2" font-family="Helvetica,sans-Serif" font-size="9.00">a popped candidate</text>
 </g>
 <!-- obl -->
 <g id="node6" class="node">
 <title>obl</title>
-<polygon fill="none" stroke="black" points="963.75,-406 802.25,-406 802.25,-370 963.75,-370 963.75,-406"/>
-<text xml:space="preserve" text-anchor="middle" x="883" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">obligations.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="883" y="-377.55" font-family="Helvetica,sans-Serif" font-size="11.00">what a quiescent KB owes</text>
+<polygon fill="none" stroke="black" points="963.75,-412.75 802.25,-412.75 802.25,-376.75 963.75,-376.75 963.75,-412.75"/>
+<text xml:space="preserve" text-anchor="middle" x="883" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">obligations.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="883" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">what a quiescent KB owes</text>
 </g>
 <!-- sat&#45;&gt;obl -->
 <g id="edge7" class="edge">
 <title>sat&#45;&gt;obl</title>
-<path fill="none" stroke="black" d="M758.6,-495.36C788.47,-489.65 820.37,-479.19 845,-460.25 858.99,-449.49 868.41,-432.08 874.37,-417.16"/>
-<polygon fill="black" stroke="black" points="877.64,-418.41 877.76,-407.82 871.06,-416.03 877.64,-418.41"/>
-<text xml:space="preserve" text-anchor="middle" x="882.11" y="-451.7" font-family="Helvetica,sans-Serif" font-size="9.00">the fixpoint</text>
+<path fill="none" stroke="black" d="M758.55,-509.45C788.58,-503.81 820.6,-493.24 845,-473.75 860.59,-461.3 870.22,-440.86 875.88,-424.02"/>
+<polygon fill="black" stroke="black" points="879.21,-425.12 878.76,-414.54 872.51,-423.09 879.21,-425.12"/>
+<text xml:space="preserve" text-anchor="middle" x="881.16" y="-465.2" font-family="Helvetica,sans-Serif" font-size="9.00">the fixpoint</text>
 </g>
 <!-- region -->
 <g id="node8" class="node">
@@ -114,9 +114,9 @@
 <!-- sat&#45;&gt;region -->
 <g id="edge8" class="edge">
 <title>sat&#45;&gt;region</title>
-<path fill="none" stroke="black" d="M579.39,-501.09C497.93,-497.64 376.16,-484.64 280,-441 212.92,-410.56 210.51,-380.54 153,-334.5 148.57,-330.95 143.89,-327.28 139.22,-323.65"/>
-<polygon fill="black" stroke="black" points="141.57,-321.04 131.51,-317.71 137.29,-326.59 141.57,-321.04"/>
-<text xml:space="preserve" text-anchor="middle" x="317.5" y="-385.07" font-family="Helvetica,sans-Serif" font-size="9.00">Snapshot of root</text>
+<path fill="none" stroke="black" d="M579.54,-507.55C481.38,-498.24 330.98,-480.34 280,-454.5 229.05,-428.67 231.44,-401.98 189,-363.75 173.68,-349.95 169.19,-347.26 153,-334.5 148.54,-330.99 143.85,-327.33 139.17,-323.72"/>
+<polygon fill="black" stroke="black" points="141.51,-321.11 131.45,-317.79 137.24,-326.66 141.51,-321.11"/>
+<text xml:space="preserve" text-anchor="middle" x="317.5" y="-391.82" font-family="Helvetica,sans-Serif" font-size="9.00">Snapshot of root</text>
 </g>
 <!-- events -->
 <g id="node15" class="node">
@@ -128,36 +128,37 @@
 <!-- sat&#45;&gt;events -->
 <g id="edge19" class="edge">
 <title>sat&#45;&gt;events</title>
-<path fill="none" stroke="black" stroke-dasharray="1,5" d="M758.87,-498.29C909.62,-491.97 1200.08,-475.43 1231,-441 1298.64,-365.69 1162.67,-265.6 1091.56,-220.85"/>
-<polygon fill="black" stroke="black" points="1093.62,-218 1083.27,-215.7 1089.93,-223.95 1093.62,-218"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M758.87,-511.79C909.62,-505.47 1200.08,-488.93 1231,-454.5 1301.79,-375.68 1161.14,-267.97 1089.89,-221"/>
+<polygon fill="black" stroke="black" points="1091.89,-218.13 1081.6,-215.61 1088.08,-224 1091.89,-218.13"/>
 </g>
 <!-- firing&#45;&gt;sat -->
 <g id="edge6" class="edge">
 <title>firing&#45;&gt;sat</title>
-<path fill="none" stroke="black" d="M669.63,-406.25C667.9,-420.67 665.94,-441.77 666.5,-460.25 666.56,-462.31 666.64,-464.43 666.74,-466.57"/>
-<polygon fill="black" stroke="black" points="663.23,-466.64 667.25,-476.44 670.22,-466.27 663.23,-466.64"/>
-<text xml:space="preserve" text-anchor="middle" x="704.75" y="-451.7" font-family="Helvetica,sans-Serif" font-size="9.00">the derived facts</text>
+<path fill="none" stroke="black" d="M669.78,-413.08C667.99,-428.87 665.87,-452.85 666.5,-473.75 666.56,-475.81 666.64,-477.93 666.74,-480.07"/>
+<polygon fill="black" stroke="black" points="663.23,-480.14 667.25,-489.94 670.22,-479.77 663.23,-480.14"/>
+<text xml:space="preserve" text-anchor="middle" x="704.75" y="-465.2" font-family="Helvetica,sans-Serif" font-size="9.00">the derived facts</text>
 </g>
 <!-- obl&#45;&gt;region -->
 <g id="edge9" class="edge">
 <title>obl&#45;&gt;region</title>
-<path fill="none" stroke="black" d="M826.73,-369.56C815.64,-366.63 804.02,-363.93 793,-362 664.42,-339.5 341.19,-337.94 193.91,-316.59"/>
-<polygon fill="black" stroke="black" points="194.68,-313.17 184.26,-315.11 193.61,-320.09 194.68,-313.17"/>
-<text xml:space="preserve" text-anchor="middle" x="628.82" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">Owes</text>
+<path fill="none" stroke="black" d="M837.8,-376.3C823.65,-371.48 807.85,-366.76 793,-363.75 665.04,-337.8 341.22,-338.04 193.91,-316.59"/>
+<polygon fill="black" stroke="black" points="194.68,-313.17 184.26,-315.1 193.61,-320.09 194.68,-313.17"/>
+<text xml:space="preserve" text-anchor="middle" x="629.1" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">Owes</text>
 </g>
 <!-- hyp -->
 <g id="node7" class="node">
 <title>hyp</title>
-<polygon fill="none" stroke="black" points="157.25,-412.25 40.75,-412.25 40.75,-363.75 157.25,-363.75 157.25,-412.25"/>
-<text xml:space="preserve" text-anchor="middle" x="99" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">hypgen.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="99" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">hrule.rs, oblgen.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="99" y="-370.8" font-family="Helvetica,sans-Serif" font-size="11.00">the ladder: H</text>
+<polygon fill="none" stroke="black" points="180.12,-425.75 17.88,-425.75 17.88,-363.75 180.12,-363.75 180.12,-425.75"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-411.3" font-family="Helvetica,sans-Serif" font-size="11.00">hypgen.rs, open.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">hrule.rs, oblgen.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">the writers: H, their union;</text>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-370.8" font-family="Helvetica,sans-Serif" font-size="11.00">a state&#39;s open facts</text>
 </g>
 <!-- hyp&#45;&gt;region -->
 <g id="edge10" class="edge">
 <title>hyp&#45;&gt;region</title>
-<path fill="none" stroke="black" d="M99,-363.34C99,-352.68 99,-339.88 99,-328.15"/>
-<polygon fill="black" stroke="black" points="102.5,-328.41 99,-318.41 95.5,-328.41 102.5,-328.41"/>
+<path fill="none" stroke="black" d="M99,-363.32C99,-352.26 99,-339.67 99,-328.25"/>
+<polygon fill="black" stroke="black" points="102.5,-328.38 99,-318.38 95.5,-328.38 102.5,-328.38"/>
 <text xml:space="preserve" text-anchor="middle" x="123.75" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">candidates</text>
 </g>
 <!-- routes -->
@@ -178,15 +179,15 @@
 <!-- static -->
 <g id="node13" class="node">
 <title>static</title>
-<polygon fill="none" stroke="black" points="1222.12,-406 981.88,-406 981.88,-370 1222.12,-370 1222.12,-406"/>
-<text xml:space="preserve" text-anchor="middle" x="1102" y="-391.05" font-family="Helvetica,sans-Serif" font-size="11.00">monotone.rs, detector.rs, extendable.rs</text>
-<text xml:space="preserve" text-anchor="middle" x="1102" y="-377.55" font-family="Helvetica,sans-Serif" font-size="11.00">the static check over the compiled plans</text>
+<polygon fill="none" stroke="black" points="1222.12,-412.75 981.88,-412.75 981.88,-376.75 1222.12,-376.75 1222.12,-412.75"/>
+<text xml:space="preserve" text-anchor="middle" x="1102" y="-397.8" font-family="Helvetica,sans-Serif" font-size="11.00">monotone.rs, detector.rs, extendable.rs</text>
+<text xml:space="preserve" text-anchor="middle" x="1102" y="-384.3" font-family="Helvetica,sans-Serif" font-size="11.00">the static check over the compiled plans</text>
 </g>
 <!-- region&#45;&gt;static -->
 <g id="edge11" class="edge">
 <title>region&#45;&gt;static</title>
-<path fill="none" stroke="black" d="M182.74,-315.03C185.86,-315.57 188.95,-316.06 192,-316.5 391.45,-345.08 444.34,-316.18 645,-334.5 680.1,-337.7 688.44,-342.12 723.5,-345.75 835.35,-357.35 864.5,-347.41 976,-362 987.4,-363.49 999.31,-365.39 1011.07,-367.48"/>
-<polygon fill="black" stroke="black" points="1010.32,-370.9 1020.79,-369.26 1011.58,-364.02 1010.32,-370.9"/>
+<path fill="none" stroke="black" d="M182.74,-315.03C185.86,-315.57 188.95,-316.06 192,-316.5 391.45,-345.08 444.34,-316.18 645,-334.5 680.1,-337.7 688.46,-341.99 723.5,-345.75 835.37,-357.74 864.8,-346.66 976,-363.75 992.59,-366.3 1010.22,-369.91 1026.87,-373.75"/>
+<polygon fill="black" stroke="black" points="1025.64,-377.06 1036.18,-375.95 1027.25,-370.25 1025.64,-377.06"/>
 <text xml:space="preserve" text-anchor="middle" x="779.75" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">root&#39;s plans, H&#39;s relations</text>
 </g>
 <!-- explain -->
@@ -260,10 +261,10 @@
 <!-- static&#45;&gt;explore -->
 <g id="edge12" class="edge">
 <title>static&#45;&gt;explore</title>
-<path fill="none" stroke="black" d="M1027.6,-369.5C975.39,-357.86 903.78,-343.16 840,-334.5 666.71,-310.96 461.83,-300.28 351.01,-295.91"/>
-<polygon fill="black" stroke="black" points="351.25,-292.42 341.12,-295.53 350.98,-299.41 351.25,-292.42"/>
-<text xml:space="preserve" text-anchor="middle" x="949.76" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">monotone | flagged</text>
+<path fill="none" stroke="black" d="M1029.77,-376.27C1012.19,-372.09 993.43,-367.7 976,-363.75 915.7,-350.09 901.2,-343.25 840,-334.5 666.88,-309.74 461.94,-299.52 351.06,-295.56"/>
+<polygon fill="black" stroke="black" points="351.28,-292.06 341.16,-295.21 351.04,-299.06 351.28,-292.06"/>
+<text xml:space="preserve" text-anchor="middle" x="946.17" y="-337.2" font-family="Helvetica,sans-Serif" font-size="9.00">monotone | flagged</text>
 </g>
 </g>
 </svg>
-<!-- source sha256: fe61b568768dd2ec322feb7245da3c98f0a52c3381026b8cda73a615967c1185 -->
+<!-- source sha256: d6099d2baacf5507c2c47e98485f03a6bbb1c5056fe323c711c3b1aae203aa41 -->

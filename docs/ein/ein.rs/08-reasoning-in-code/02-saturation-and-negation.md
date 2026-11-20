@@ -534,7 +534,7 @@ The reasoning: [satisfiability](../../reasoning/02-kb-evolution/10-satisfiabilit
 
 | notion | code |
 |---|---|
-| what a state owes | [`ein-infer/src/obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): `tally`, one pass over a quiescent knowledge base, its result `Owes`, a tally on the node and never a fact |
+| what a state owes | [`ein-infer/src/obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): `tally`, one pass over a quiescent knowledge base, its result `Owes`, which [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes as `(open R)`, once for each relation owed, into the part of the state no fork inherits |
 | a claim and its outcome | [`ein-infer/src/claim.rs`](../../../../ein.rs/crates/ein-infer/src/claim.rs) compares, [`expect.rs`](../../../../ein.rs/crates/ein-infer/src/expect.rs) is the outcome and its report, [`ein-cli/src/test.rs`](../../../../ein.rs/crates/ein-cli/src/test.rs) the runner and its exit codes |
 | a goal's rows over a state | [`ein-infer/src/verdict.rs`](../../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | the branch on an owed instance | [`ein-infer/src/tree.rs`](../../../../ein.rs/crates/ein-infer/src/tree.rs), the obligation tree, under the licences of [`07-search.md` § 3](../03-design/07-search.md#3-the-licences) |

@@ -1,0 +1,19 @@
+digraph union {
+  graph [rankdir=TB, nodesep=0.45, ranksep=0.4, fontname="Helvetica", fontsize=10];
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.7];
+  nu [shape=diamond, label="ν(P)\nnothing to guess?"];
+  beta [shape=diamond, label="β(P)\nroot holds nothing under open\nand activates no obligation?"];
+  e [shape=box, style="rounded,filled", fillcolor="#f0f0f0", label="H = ∅"];
+  hbl [shape=box, style="rounded,filled", fillcolor="#deebf7", label="H = H_bl\nevery argument place of every eligible relation, every guessable atom (§ 5)"];
+  hu [shape=box, style="rounded,filled", fillcolor="#fff7dc", label="H = H_hr ∪ H_ob\nthe hypotheses root holds, whoever wrote them"];
+  hhr [shape=box, style="rounded,filled", fillcolor="#fde0ef", label="H_hr\nwhat the hypothesis rules and the program write at root (§ 3)"];
+  hob [shape=box, style="rounded,filled", fillcolor="#e5f5e0", label="H_ob\nwhat would pay a debt (§ 4)"];
+  nu -> e [label="yes"];
+  nu -> beta [label="no"];
+  beta -> hbl [label="yes"];
+  beta -> hu [label="no"];
+  hhr -> hu [style=dashed, label="∪"];
+  hob -> hu [style=dashed, label="∪"];
+  {rank=same; hhr; hob;}
+}

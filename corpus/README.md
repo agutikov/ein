@@ -209,7 +209,7 @@ the sweep it has just run, within a factor of the threshold; the recorded
 `cost_ms` is held within the same factor under `EIN_CORPUS_SLOW=1`).
 
 **Which entries are slow is a test's to say**, and this page does not copy its
-list: `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen` names them, in
+list: `ein-corpus`'s `the_slow_set_is_exactly_these_sixteen` names them, in
 path order, and fails when the set moves, and
 `grep -c '^slow *= *true' corpus/corpus.toml` counts them. A re-take of the
 costs can move the flag both ways, which is what a measured flag is for.
