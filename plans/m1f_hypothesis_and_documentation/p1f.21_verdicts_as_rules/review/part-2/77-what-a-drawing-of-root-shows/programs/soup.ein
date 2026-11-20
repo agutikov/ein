@@ -1,0 +1,20 @@
+;;; Item 77: the program docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md writes out at its
+;;; lines 286 to 300, copied as it is. Its `ein render kb --fold` (that page's line 282) is the picture
+;;; 03-soup-saturated of docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md (line 104), cut by hand as that
+;;; page's line 283 says: without its declarations' facts.
+
+(relation is-a     T T         :why "{?3} is a {?4}")
+(relation seats    Guest Chair :why "{?3} is seated at {?4}")
+(relation allergic Guest       :why "{?3} is allergic")
+(relation meal     Guest Food  :why "{?3} is served {?4}")
+
+(is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair) (is-a Soup Food)
+
+(rule soup-unless-allergic ()
+  :match  (and (seats ?g ?c) (absent (allergic ?g)))
+  :assert (meal ?g Soup)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup")
+
+(seats Ann C1)
+(seats Bob C2)
+(allergic Bob)

@@ -1,0 +1,15 @@
+;;; Item 77: the program docs/ein/ein.rs/08-reasoning-in-code/02-saturation-and-negation.md writes out at its
+;;; lines 81 to 94 without the rule `neighbour` (its lines 88 to 92), as that page's lines 77 and 78 say the first
+;;; drawing is: "the second knowledge base with the rule and the first without it". Its `ein render kb --fold` is
+;;; the picture 01-before-firing of docs/ein/reasoning/02-kb-evolution/01-firing.md (line 107), cut by hand as that
+;;; page's line 102 says: without the four declarations' own facts.
+
+(relation is-a T T :why "{?3} is a {?4}")
+(relation lives-in Person House :why "{?3} lives in {?4}")
+(relation next-to House House :why "{?3} is next to {?4}")
+(relation near Person House :why "{?3} lives near {?4}")
+
+(is-a Norwegian Person) (is-a House-1 House) (is-a House-2 House)
+
+(lives-in Norwegian House-1)
+(next-to House-1 House-2)
