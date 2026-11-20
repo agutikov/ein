@@ -76,6 +76,12 @@ without a path is in [`design.md`](design.md), whole.
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655): the pass runs at root and, above it, only at a state that is printed, saved or used; S1f.21.20 builds it |
 | [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task** |
+| [V-72](#v-72--the-kb-and-constraints-renders-draw-no-open-fact-root-holds) | the kb and constraints renders draw no open fact root holds | S1f.21.14 | open; **S1f.21.22 fixes it** |
+| [V-73](#v-73--a-written-open-fact-is-not-judged-against-the-lists-and-a-closure) | a written open fact is not judged against the lists and a closure | S1f.21.14 | open; **S1f.21.22 fixes it** |
+| [V-74](#v-74--a-querys-printed-claim-over-open-does-not-read-back) | a query's printed claim over open does not read back | S1f.21.14 | open; **S1f.21.22 fixes it** |
+| [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | open; **S1f.21.22 rewords them** |
+| [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | open; **S1f.21.14 fixes them when it is resumed** |
+| [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | open; **S1f.21.22 runs it and fixes it if it does** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -908,3 +914,27 @@ sweep runs the gate profile's binary. One `solve` of `examples/beyond_arith/equa
 of the slow flag allows a program with no flag, and a loaded machine passes four (V-60). A debug check paid per
 firing of the calculator's rules is the likely cause; it is not found. **Open**;
 [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) looks for it.
+
+## V-72 — The kb and constraints renders draw no open fact root holds
+
+**Found** by S1f.21.14. `ein render kb` and `ein render constraints` draw none of the `open` facts root holds, on a program or on a saved root's file, while `ein saturate --dump` lists them; a saved node's file is drawn with its own. The user ruled the `open` facts a part of a state every surface shows, with `-P` the view without them (Q-M1f.572). `ein render kb examples/lattice/05_owed_seats_bounded.ein` has no node `open` where root holds five facts of it: the command saturates and does not run the pass. **Open; S1f.21.22 fixes it.**
+
+## V-73 — A written open fact is not judged against the lists and a closure
+
+**Found** by S1f.21.14. `(open (q b))` beside `:hypothesis-relations (p)`, `:no-hypothesis (q)` or `(__closed__ q)` loads, and so does `(open q)` beside `:no-hypothesis (q)`, where the same fact concluded by a rule is the load error the user ruled (Q-M1f.578). The diagnostics page states the decision, and its line for a written one is reached by no program. **Open; S1f.21.22 fixes it.**
+
+## V-74 — A query's printed claim over open does not read back
+
+**Found** by S1f.21.14. A goal `(open ?f)` or `(open (p ?x))` loads and is answered, and the read-out's `as :expect` row prints `(model (open (q a)))`, which the parser refuses as a claim. **Open; S1f.21.22 fixes it.**
+
+## V-75 — Comments of the engine and the library in words the part retired
+
+**Found** by S1f.21.14. Comments in `ein-infer/src/` (`obligations.rs`, `scope.rs`, `hypgen.rs`, `oblgen.rs`, `structure.rs`), `ein-cli/src/show.rs`, `ein-ir/src/grammar.rs`, three test files and two library files still say *never stored*, *the ladder*, *the rung*, *the verdict*, and one says a form is refused that loads. The record of S1f.21.14 lists each. **Open; S1f.21.22 rewords them.**
+
+## V-76 — Sentences of the first part's subjects still stale on the pages
+
+**Found** by S1f.21.14. Nine places the first part's pages left: two pages of the guide, the facts page, a glossary entry, two READMEs under `examples/`, the decision Q-M1f.381 (its test does not exist, and a declaration no longer fixes the count), a drawing of the events page, and the data model's list of what a `Kb` holds. The record of S1f.21.14 lists each. **Open; S1f.21.14 fixes them when it is resumed.**
+
+## V-77 — The hypothesis found in flight may depend on the count of workers
+
+**Found** by S1f.21.14. A worker records the first hypothesis held above root in a cell written once, before the interning that may hand the node back, so under `--jobs N` the hypothesis the warning and the summary name could be another node's than at one job. Read off the code, not run. No verdict may depend on the count of workers. **Open; S1f.21.22 runs it and fixes it if it does.**
