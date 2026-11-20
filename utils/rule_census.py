@@ -20,7 +20,7 @@ specific goals right now, want to see analyze results."*
 **What is read.**  Every tracked `.ein` under `stdlib/`, `examples/` and
 `tests/` (`git ls-files`), as text: the script has an S-expression reader of
 its own (`;` comments, `#| |#` blocks, strings) and runs no engine but under
-`--strata`.  Every `(rule NAME (PARAMS) :match M :assert A)` and `(hrule ...)`
+`--strata`.  Every `(rule NAME (PARAMS) :match M :assert A)`, one that concludes `(open F)` a hypothesis rule,
 written at the top level of a file is one rule, **as written**: no macro is
 expanded for a shape, no import is resolved for a shape, and a rule that the
 loader would refuse is a rule here.  Files under `examples/broken/` are read
@@ -101,7 +101,7 @@ BROKEN = "examples/broken/"
 HEAD_STRUCT = frozenset(("and", "or", "not", "absent", "eq", "neq", "false", "open"))
 ANY_STRUCT = frozenset(("__closed__",))
 COMMUTATIVE = frozenset(("and", "or", "eq", "neq"))
-DECLARATORS = frozenset(("relation", "rule", "hrule", "query", "solve", "config", "trace",
+DECLARATORS = frozenset(("relation", "rule", "query", "solve", "config", "trace",
                          "macro", "import"))
 STD_MACROS = ("forall", "unknown")
 TIE_LIMIT = 5040
@@ -251,7 +251,7 @@ def read_file(path):
             f.facts.append(form)
             continue
         head = form[0]
-        if head in ("rule", "hrule"):
+        if head == "rule":
             ok = (len(form) >= 3 and is_name(form[1]) and isinstance(form[2], list)
                   and all(is_var(p) for p in form[2]))
             if not ok:
@@ -276,6 +276,13 @@ def read_file(path):
             extra = sorted(k for k in seen if k not in (":match", ":assert", ":why"))
             if extra:
                 r.notes.append("other-clause:" + ",".join(str(k) for k in extra))
+            # A rule that concludes a hypothesis, `(open F)` with `F` a fact,
+            # is the hypothesis rules' writer: its kind is told apart.
+            conj = r.assert_[1:] if (isinstance(r.assert_, list) and r.assert_
+                                     and r.assert_[0] == "and") else [r.assert_]
+            if any(isinstance(c, list) and len(c) == 2 and c[0] == "open" and isinstance(c[1], list)
+                   for c in conj):
+                r.kind = "hypothesis"
             f.rules.append(r)
         elif head == "macro":
             if len(form) >= 4 and is_name(form[1]) and isinstance(form[2], list):
@@ -289,12 +296,6 @@ def read_file(path):
                     elif key == ":as":
                         alias = val
                 f.imports.append((str(form[1]), symbols, alias))
-        elif head == "solve":
-            for key, val in clauses(form, 1):
-                if key == ":hrules" and isinstance(val, list):
-                    # `(h1 h2)`: two hrules; `(guess (R A B) (S A B))`: one,
-                    # and the argument lists it is activated with.
-                    f.solve_names.append([item for item in val if is_name(item)])
         elif head in DECLARATORS:
             pass
         else:
@@ -777,7 +778,7 @@ def compute_shapes(rule, macros, canon):
     m = to_node(rule.match, macros)
     a = to_node(rule.assert_, macros)
     kinds, coarse = kinds_of([m, a], params)
-    hr = "hrule " if rule.kind == "hrule" else ""
+    hr = "hypothesis " if rule.kind == "hypothesis" else ""
     prefix = f"{hr}[{len(rule.params)}] "
     s = {}
     for level, mode in MODES_ORDERED.items():
@@ -1061,8 +1062,8 @@ def group_keys(rule, macros, schemas):
             prov = "from several premises (a join's output)"
     k["conclusion variables"] = prov
     k["schema"] = schemas.get(rule.shapes["iii"], "none of the schemas") \
-        if rule.kind == "rule" else "an hrule"
-    k["rule or hrule"] = rule.kind
+        if rule.kind == "rule" else "a hypothesis rule"
+    k["rule or hypothesis rule"] = rule.kind
     rule.keys = k
 
 
@@ -1091,7 +1092,7 @@ KEY_DEFS = (
     ("feeds itself", "whether a conclusion's relation is the relation of a positive premise of the same rule"),
     ("conclusion variables", "where the variables of the positive conclusions come from: none (ground), parameters alone, one premise (and for a rule of one premise and one conclusion, flat: a copy, a permutation, a projection, a constant put in), several premises, or a variable no positive premise binds"),
     ("schema", "the level-(iii) shape is exactly one of the schemas the script lists (`SCHEMAS`: inclusion, converse, symmetry, transitivity, composition, functional, injective, …), a relation a name or a parameter alike"),
-    ("rule or hrule", "the declarator"),
+    ("rule or hypothesis rule", "whether the rule concludes a hypothesis, `(open F)`"),
 )
 
 
@@ -1735,11 +1736,11 @@ def main():
     for root in ROOTS:
         c = by_root[root]
         tot.update(c)
-        rows.append([f"`{root}/`", c["files"], c["files with a rule"], c["rule"], c["hrule"],
-                     c["rule"] + c["hrule"], c["with parameters"]])
-    rows.append(["**all**", tot["files"], tot["files with a rule"], tot["rule"], tot["hrule"],
-                 tot["rule"] + tot["hrule"], tot["with parameters"]])
-    say(md_table(["root", "files", "files with a rule", "`rule`", "`hrule`", "both",
+        rows.append([f"`{root}/`", c["files"], c["files with a rule"], c["rule"], c["hypothesis"],
+                     c["rule"] + c["hypothesis"], c["with parameters"]])
+    rows.append(["**all**", tot["files"], tot["files with a rule"], tot["rule"], tot["hypothesis"],
+                 tot["rule"] + tot["hypothesis"], tot["with parameters"]])
+    say(md_table(["root", "files", "files with a rule", "`rule`", "hypothesis rules", "both",
                   "with parameters"], rows, ["---"] + ["---:"] * 6), "")
     nb = sum(len(f.rules) for f in broken_files)
     say(f"- tracked `.ein` files under the three roots: {len(paths)}; in the census: "
@@ -1752,7 +1753,7 @@ def main():
     say("- rules with a clause missing or written twice: "
         + (", ".join(f"{k} {v}" for k, v in sorted(notes.items())) or "none") + ".")
     malformed = sum(len(f.decls) for f in census_files)
-    say(f"- `rule`/`hrule` forms with no name or no parameter list, left out: {malformed}.")
+    say(f"- `rule` forms with no name or no parameter list, left out: {malformed}.")
     distinct = len(set(r.shapes["alphau"] for r in rules))
     distinct_text = len(set(r.shapes["alpha"] for r in rules))
     say(f"- distinct rules: {distinct_text} up to a renaming of variables with the order as written "
@@ -1778,13 +1779,13 @@ def main():
             continue
         sh = set(r.shapes["ii"] for r in rs)
         own = sum(1 for s in sh if len(shape_groups[s]) == 1)
-        rows.append([f"`{g}`", gfiles[g], len(rs), sum(1 for r in rs if r.kind == "hrule"),
+        rows.append([f"`{g}`", gfiles[g], len(rs), sum(1 for r in rs if r.kind == "hypothesis"),
                      len(set(r.shapes["alphau"] for r in rs)), len(sh), own])
     say("### By directory", "",
         "A rule's group is `stdlib`, `tests/stdlib/<module>`, or the first directory under "
         "`examples/`. *Distinct rules* is by `alphau`; *shapes* is level (ii); *its own* counts the "
         "shapes no other group has.", "",
-        md_table(["group", "files", "rules", "of them `hrule`", "distinct rules", "shapes (ii)",
+        md_table(["group", "files", "rules", "of them hypothesis rules", "distinct rules", "shapes (ii)",
                   "its own"], rows, ["---"] + ["---:"] * 6), "")
     nogroup = sorted(g for g in gfiles if not groups.get(g))
     say("Groups with files and no rule: " + ", ".join(f"`{g}` ({gfiles[g]})" for g in nogroup) + ".", "")
@@ -1872,7 +1873,7 @@ def main():
                          f"{len(set(r.file for r in rs))}\t{roots['stdlib']}\t{roots['examples']}\t"
                          f"{roots['tests']}\t{shape}\t{members}\n")
 
-    say("Reading a shape: `[k]` is the number of parameters, `hrule` marks an hrule, `⇒` stands "
+    say("Reading a shape: `[k]` is the number of parameters, `hypothesis` marks a hypothesis rule, `⇒` stands "
         "between the `:match` and the `:assert`; `R1` a relation, `c1` a constant, `?a` a variable, "
         "`?P1` a parameter, `t1` a term of level (iii), `_` a forgotten term. In the tables' "
         "*distinct* column a shape's rules are counted up to `alphau`.", "")
@@ -2608,7 +2609,7 @@ def main():
             for i in bits(m):
                 solved[i] |= m
                 by_solve.add(i)
-    count("9e", "named together in one `(solve :hrules …)` list",
+    count("9e", "named together in one `(solve …)` list",
           [solved[i] & ~(1 << i) for i in range(N)], False)
     activated = [0] * N
     written_act = Counter()
@@ -2729,7 +2730,7 @@ def main():
     rows = [["rules with parameters", len(with_params)],
             ["… whose activator a file that has the rule in scope writes as a fact", len(by_fact)],
             ["… whose activator a rule in such a scope concludes (5a)", len(by_rule)],
-            ["… named in a `(solve :hrules …)` list of such a file", len(by_list)],
+            ["… named in a `(solve …)` list of such a file", len(by_list)],
             ["… a written fact and a rule's conclusion both", len(by_fact & by_rule)],
             ["… none of the three", len(wp - some)]]
     say(md_table(["", "rules"], rows, ["---", "---:"]), "")
@@ -2940,7 +2941,7 @@ def main():
         with open(args.page, "w", encoding="utf-8") as fh:
             fh.write(page)
     print(f"rule_census: {len(census_files)} files, {N} rules "
-          f"({sum(1 for r in rules if r.kind == 'hrule')} hrules), "
+          f"({sum(1 for r in rules if r.kind == 'hypothesis')} hypothesis rules), "
           f"{len(level_classes['i'])} shapes at level (i), {len(level_classes['ii'])} at (ii), "
           f"{len(level_classes['iii'])} at (iii), {len(level_classes['iiib'])} at (iii′), "
           f"{len(level_classes['iv'])} at (iv); {len(conn_rows)} kinds of connection; "

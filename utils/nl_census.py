@@ -10,7 +10,7 @@ It runs the engine ($EIN_BIN or --bin, default `ein.rs/target/release/ein`).
 `corpus/` and `stdlib/`, per root: how many files the loader reads at all
 (`ein kb save` with `:why` not required), and of those how many it refuses
 when a `:why` is required, with the forms the refusals name (`relation`,
-`rule`, `hrule`, `macro`). A file that does not load either way (a fixture
+`rule`, `macro`). A file that does not load either way (a fixture
 under `examples/broken/`, a witness refused at the parse) is counted apart and
 has no form counted: the loader never reads its `:why`s. Which spelling turns
 the requirement on and off is read from `ein kb save --help`.
@@ -34,7 +34,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "ein"))
 ROOTS = ("examples", "tests", "corpus", "stdlib")
-FORMS = ("relation", "rule", "hrule", "macro")
+FORMS = ("relation", "rule", "macro")
 
 # ── the flag ─────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ def flag_spellings(ein: Path) -> tuple[list[str], list[str]]:
     return ["--require-why"], []
 
 
-REFUSAL = re.compile(r"(relation|rule|hrule|macro) '([^']*)' has no :why")
+REFUSAL = re.compile(r"(relation|rule|macro) '([^']*)' has no :why")
 
 
 def flag_half(ein: Path, scratch: Path) -> dict:

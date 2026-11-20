@@ -119,7 +119,7 @@ Measured: the session that found the three below re-runs at **720 cases, 3 600
 runs, 0 findings, 67 duplicates suppressed**.
 
 The first sessions after the rewrite found three, all of them questions rather
-than fixes and all of them in `fuzz_findings/`: an `(hrule …)` reading `not`
+than fixes and all of them in `fuzz_findings/`: a hypothesis rule reading `not`
 aborts a debug build on a `debug_assert!`; the **unsat core**'s contents move
 under a permuted id space; and the goal-binding row the solve table prints
 does too.
@@ -182,10 +182,10 @@ class Gen:
         self.objs = [f"o{i}" for i in range(1, self.n_obj + 1)]
         self.bins = [f"r{i}" for i in range(rng.randint(2, 4))]
         self.unis = [f"u{i}" for i in range(rng.randint(0, 2))]
-        # An `(hrule …)` switches generation from the blind enumerator to the
-        # rule-driven path, so both get exercised. Int arguments are drawn
-        # independently of it.
-        self.hrule = rng.random() < 0.4
+        # A rule that concludes a hypothesis, `(open F)`, switches generation
+        # from the blind enumerator to the rule-driven path, so both get
+        # exercised. Int arguments are drawn independently of it.
+        self.hypothesis = rng.random() < 0.4
         self.ints = rng.random() < 0.25                      # int args: §2.1's mixed order
         self.macros = rng.random() < 0.4         # forall / open
         self.algebra = rng.random() < 0.3        # symmetric / transitive rules
@@ -300,22 +300,22 @@ class Gen:
         """One rule. The name may not *begin* with a reserved word plus `-`:
         `rule-0` is a parse error (the grammar's SYMBOL
         lookahead is `\\b`-anchored), so the rules are `fire-i` / `hyp-i`."""
-        name = f"{'hyp' if kind == 'hrule' else 'fire'}-{i}"
+        name = f"{'hyp' if kind == 'hypothesis' else 'fire'}-{i}"
         match, bound = self.body()
         params, activator = "()", None
         if kind == "rule" and self.r.random() < 0.15:
             params, activator = "(?P)", f"({name} T)"
         head = self.head(bound)
-        lines = [f"({kind} {name} {params}",
+        lines = [f"(rule {name} {params}",
                  f"  :match  {match}",
-                 f"  :assert {head}"]
+                 f"  :assert {f'(open {head})' if kind == 'hypothesis' else head}"]
         # Every form carries a `:why` since M1f S1f.5.14's T1f.5.14.7, when the
         # loader began to require one: what the form says, its clauses in
         # words (Q-M1f.63). It was *"{name} fired"* on 40 % of rules, the
         # placeholder the stage forbids; the draw stays, so a seed generates
         # the program it did, with a :why on every rule.
         self.r.random()
-        verb = "guesses" if kind == "hrule" else "concludes"
+        verb = "guesses" if kind == "hypothesis" else "concludes"
         lines.append(f'  :why    "{name} {verb} {head} from {match}"')
         out = "\n".join(lines) + ")"
         return out if activator is None else f"{out}\n{activator}"
@@ -350,8 +350,8 @@ class Gen:
         n_rules = self.r.randint(1, 4)
         for i in range(n_rules):
             f.append(self.rule(i))
-        if self.hrule:
-            f.append(self.rule(0, "hrule"))
+        if self.hypothesis:
+            f.append(self.rule(0, "hypothesis"))
         f.append(f"(query :goal ({self.rel()} ?x ?y))")
         if self.r.random() < 0.5:
             lever = self.r.choice(LEVERS)
@@ -458,7 +458,7 @@ PANIC = re.compile(r"panicked at|RUST_BACKTRACE", re.I)
 # script masks.
 DURATION = re.compile(r"\d+\.\d+ ms")
 
-# `panicked at crates/ein-infer/src/hrule.rs:130:13:` and the line after it.
+# `panicked at crates/ein-infer/src/hypothesis_rules.rs:130:13:` and the line after it.
 # Two panics at the same site with the same message are one finding, however
 # many programs reach it — see `report`'s dedup.
 PANIC_SITE = re.compile(r"panicked at ([^\n]+)\n([^\n]*)")

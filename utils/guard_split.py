@@ -129,6 +129,20 @@ def kw(form: list, key: str):
     return None
 
 
+def concludes_a_hypothesis(form: list) -> bool:
+    """A `(rule …)` whose `:assert` concludes `(open F)`, `F` a fact: a
+    hypothesis rule, which a cell's program states its own of."""
+    if not (isinstance(form, list) and form and form[0] == "rule"):
+        return False
+    i = kw(form, ":assert")
+    if i is None:
+        return False
+    a = form[i]
+    conjuncts = a[1:] if isinstance(a, list) and a and a[0] == "and" else [a]
+    return any(isinstance(c, list) and len(c) == 2 and c[0] == "open" and isinstance(c[1], list)
+               for c in conjuncts)
+
+
 # ── the program ───────────────────────────────────────────────────────────────
 
 Key = tuple[bool, str]      # (negated, relation): `q`, or the stored negatives `(not q)`
@@ -228,7 +242,7 @@ class Program:
         self.given: set[Atom] = set()
         for f in self.forms:
             if isinstance(f, list) and f and isinstance(f[0], str) and f[0] not in (
-                    "rule", "hrule", "relation", "import", "query", "solve", "config", "macro", "trace"):
+                    "rule", "relation", "import", "query", "solve", "config", "macro", "trace"):
                 # A fact, less its trailing keywords (`:source "…"`).
                 end = next((i for i, x in enumerate(f) if isinstance(x, str) and x.startswith(":")), len(f))
                 a = atom_of(f[:end])
@@ -291,17 +305,20 @@ class Split:
     def given_activators(self, rule: str) -> list[tuple]:
         return sorted(args for (neg, rel), args in self.prog.given if not neg and rel == rule)
 
-    def forms(self, act_present: set[Atom], gs: dict[Key, set], hrules: bool, extra: list[list]) -> list[list]:
+    def forms(self, act_present: set[Atom], gs: dict[Key, set], hypotheses: bool, extra: list[list]) -> list[list]:
         """The program text of one cell: `gs` is each guard read's extension,
         `act_present` the derivable activators compiled."""
         self.reads_now: dict[Key, list] = {}
         out: list[list] = []
         declared = set()
+        # The program's hypothesis rules and their activators: a cell states
+        # its own candidates.
+        guessing = {f[1] for f in self.prog.forms if concludes_a_hypothesis(f)}
         for f in self.prog.forms:
             if not isinstance(f, list) or not f:
                 continue
             h = f[0]
-            if h in ("hrule", "query", "solve"):
+            if h in ("query", "solve") or h in guessing or concludes_a_hypothesis(f):
                 continue
             if h == "relation":
                 declared.add(f[1])
@@ -343,10 +360,10 @@ class Split:
                        + [":why", why_of(f"{what}, as given or as the guess calls it present, holds of", arity)])
             for a in sorted(gs.get(key, ())):
                 out.append([gs_name(key)] + list(a[1]))
-        if hrules:
+        if hypotheses:
             for i, c in enumerate(self.prog.candidates, 1):
-                out.append(["hrule", f"gs-cand-{i}", [], ":match", ["gs-world", "W"], ":assert", parse(c)[0],
-                            ":why", f'"guess the candidate {c}"'])
+                out.append(["rule", f"gs-cand-{i}", [], ":match", ["gs-world", "W"],
+                            ":assert", ["open", parse(c)[0]], ":why", f'"guess the candidate {c}"'])
         return out + extra
 
     def rewritten(self, form: list) -> list:

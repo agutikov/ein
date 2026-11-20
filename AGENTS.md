@@ -152,8 +152,8 @@ constrained-reasoning research.
   `utils/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
   gate: `zebra2-minus-15` (clue dropped), `ein-bugs/zebra2-bad` (clue added),
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
-  `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
-  `(solve … :hrules …)` clause **deleted and nothing else**.
+  `-minus-15` twin, which are `zebra2` with the hypothesis rule `(rule guess
+  …)` and its five `(guess …)` activators **deleted and nothing else**.
 - **`docs/ein/user/02-guide/06-zebra-walkthrough.md`** — the Wikipedia human
   Zebra walkthrough annotated as ein inference: the **M1 target trace** for
   the engine and the **M2 target** for the NL ⇄ IR round-trip.
@@ -169,7 +169,7 @@ constrained-reasoning research.
   pass over each state's fixpoint, which writes `(open R)` once for each
   relation the state owes. **H is the union of the hypotheses root holds**
   ([Q-M1f.570](docs/decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)):
-  the `(open F)` facts a rule concludes (an hrule among them), the program
+  the `(open F)` facts a rule concludes (a hypothesis rule), the program
   writes, and an obligation **activated** at root writes for what would
   discharge what root owes, and what a rule can bring a commitment to owe,
   read off the rules with no saturation
@@ -506,7 +506,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   rule derives at the same boundary; `ein-infer/tests/agenda.rs` holds it on
   the corpus's monotone programs. Of a flagged program the engine claims no
   answer.
-- **`:why` is required** on every relation, rule, hrule and macro;
+- **`:why` is required** on every relation, rule and macro;
   `--no-require-why` loads a program without. **A `:why` reads the form it
   is written on**: a declaration's, `{?n}` its n-th arrow (`{?1}` the atom
   `relation`, `{?2}` the relation's name, `{?3}` its first label), printed
@@ -528,8 +528,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **`false` and `not` are the standard library's names**
   ([Q-M1f.557](docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)):
   position words, names wherever a name goes but a head, where the grammar
-  gives `(false)` and `(not X)` their shapes; a relation, a rule, an hrule
-  and an alias may bind either (`ein_core::LIBRARY_NAMES`), a macro not. A
+  gives `(false)` and `(not X)` their shapes; a relation, a rule and an
+  alias may bind either (`ein_core::LIBRARY_NAMES`), a macro not. A
   declarator binds none of `eq`, `neq`, `and`, `or`, `absent`, `open`,
   `relation` and `__closed__`.
 - `eq` and `neq` are computed relations, never stored. A conclusion's
@@ -544,8 +544,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   where a rule that states it fires, the state's saturation ends and the
   state is dead, and no fact is written (`ein_core::Kb::ended` holds the
   firing's record, which a core is taken over). A word that is none of the
-  engine's, `:ein` beside an `:assert` and `:ein` on an hrule are refused at
-  load. **The kernel reads `(false)` and `not` by name nowhere to judge a
+  engine's and `:ein` beside an `:assert` are refused at load. **The kernel reads `(false)` and `not` by name nowhere to judge a
   state**: a held `(false)` kills by `std.core`'s rule, and a fact beside its
   stored negation by `std.contradiction`'s, where a program imports it. An
   explanation names the rules a program wrote or imported and reads through
@@ -559,8 +558,14 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `:assert`
   ([Q-M1f.575](docs/decisions/language/Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md)). An `(and …)` is read flat at any depth, by every
   reader through one function, `ein_ir::Ast::conjuncts`. No disjunction and
-  no compound fact: *one of* is the hypothesis layer's. **An hrule's
-  conclusion is one fact**; one of more is refused.
+  no compound fact: *one of* is the hypothesis layer's. **A hypothesis is one
+  fact**: `(open (and …))` is refused, and a rule concludes several
+  hypotheses as several `(open F)`.
+- **A hypothesis rule is a rule that concludes `(open F)`**, activated as
+  every rule is, by a fact of its name the program writes anywhere, or by
+  none where it has no parameter; there is no `hrule` form and no `:hrules`
+  keyword, and a program that writes either is refused at the parse
+  ([Q-M1f.567](docs/decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)).
 - A query's `:goal` is held to what a rule's `:match` is held to. Every name
   in a `(solve …)` list names something the program has. A macro's call is no
   fact.
@@ -598,7 +603,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   (`ein_infer::mechanisms`). **`(solve :no-search)`**, a flag with no value,
   states that the lattice is root alone: nothing is proposed, so R is {∅} or
   empty, and it is how a program says *judge root alone*. It relaxes no
-  conflict; beside an hrule or a list it is a `note:`, beside an obligation
+  conflict; beside a hypothesis rule or a list it is a `note:`, beside an obligation
   or a closure silent.
 
 ### The answer

@@ -83,8 +83,8 @@
     },
 
     "declarator-rule": {
-      "comment": "(rule N …) / (hrule N …) / (macro N …) — head + declared name.",
-      "begin": "(\\()\\s*(rule|hrule|macro)(?=[\\s()])\\s*([A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+)?",
+      "comment": "(rule N …) / (macro N …) — head + declared name.",
+      "begin": "(\\()\\s*(rule|macro)(?=[\\s()])\\s*([A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+)?",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" },

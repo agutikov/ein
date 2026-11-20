@@ -104,7 +104,7 @@ ARITH_NAMES = None
 def declared(module: str) -> set:
     """Every name `stdlib/math/<module>.ein` declares."""
     text = (REPO / "stdlib" / "math" / f"{module}.ein").read_text()
-    return set(re.findall(r"^\((?:relation|rule|hrule|macro)\s+(\S+)", text, re.M))
+    return set(re.findall(r"^\((?:relation|rule|macro)\s+(\S+)", text, re.M))
 
 
 def arith_names() -> set:

@@ -14,12 +14,12 @@ wrappers).
 
 | Element | Example | Scope |
 |---------|---------|-------|
-| Declarator heads (head position only) | `relation` `rule` `hrule` `macro` `query` `solve` `config` `trace` `import` | `keyword.control.declarator` |
+| Declarator heads (head position only) | `relation` `rule` `macro` `query` `solve` `config` `trace` `import` | `keyword.control.declarator` |
 | Declared name | the `symmetric` in `(rule symmetric …)`, the `color-loc` in `(relation color-loc …)` | `entity.name.function` / `entity.name.type` |
 | Rule-body / ⊥ primitives (head only) | `not` `and` `or` `absent` `false` `open` `forall` | `keyword.control.primitive` |
 | Computed predicates (head only) | `eq` `neq` | `keyword.operator.predicate` |
 | Equality head | `=` in `(= a b)`, a name since M1f S1f.5.5's swap, coloured by convention | `keyword.operator.equality` |
-| `:keyword`s | `:match` `:assert` `:why` `:source` `:rule` `:using` `:goal` `:hrules` … (`:` and a run of name characters; each form takes a fixed set, and the parser refuses any other) | `entity.other.attribute-name` |
+| `:keyword`s | `:match` `:assert` `:why` `:source` `:rule` `:using` `:goal` `:expect` … (`:` and a run of name characters; each form takes a fixed set, and the parser refuses any other) | `entity.other.attribute-name` |
 | Variables | `?rel` `?h_other` `?R*` `?_x` `?a.b` (`?` and a run of name characters) | `variable.parameter` |
 | A bare `_` or `?_` | `_`, `?_`: no production takes either since M1f S1f.5.5's swap (S1f.5.1) | `invalid.illegal.underscore` (was the wildcard's `variable.language.wildcard` until the swap) |
 | Strings (+ `{?var}` interpolation) | `"{?rel} is symmetric."` | `string.quoted.double` (+ `variable.other.interpolation`) |

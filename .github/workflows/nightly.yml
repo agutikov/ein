@@ -103,7 +103,7 @@ jobs:
       # binary's others are the per-commit tier's, which runs them).
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test region -- the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6
         env: { EIN_CORPUS_SLOW: "1" }
-      # And `obligation_rung`'s, the theory held to the hrule's 32 states.
+      # And `obligation_rung`'s, the theory held to the hypothesis rule's 32 states.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test obligation_rung
         env: { EIN_CORPUS_SLOW: "1" }
       # The pair layer of the hypothesis set held to `N` on the `slow` entries

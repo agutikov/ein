@@ -87,10 +87,10 @@ _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
     ("match/bind",    ("ein_infer::match_",)),
     ("contradiction", ("ein_infer::contradiction", "ein_infer::nogoods",
                        "ein_infer::naf_deps", "ein_infer::sanity")),
-    # Hypothesis generation, lookahead, commitment + `hrule.rs`, the
-    # hypothesis-rule half.
+    # Hypothesis generation, lookahead, commitment + `hypothesis_rules.rs`,
+    # the hypothesis-rule half.
     ("hypgen/branch", ("ein_infer::hypgen", "ein_infer::lookahead",
-                       "ein_infer::commitment", "ein_infer::hrule")),
+                       "ein_infer::commitment", "ein_infer::hypothesis_rules")),
     # `compute_alive`, `closed.rs`, `verdict.rs`.
     ("alive/closed",  ("ein_infer::closed", "ein_infer::verdict",
                        "compute_alive", "ein_infer::solve")),

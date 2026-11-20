@@ -232,7 +232,7 @@ def file_context(path: Path, imports: dict[str, list[str]]) -> tuple[set[str], s
             continue
         if f[0] == "import" and isinstance(f[1], str):
             todo.append(f[1])
-        elif f[0] in ("rule", "hrule") and isinstance(f[1], str):
+        elif f[0] == "rule" and isinstance(f[1], str):
             local.add(f[1])
     seen: set[str] = set()
     while todo:
