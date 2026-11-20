@@ -334,8 +334,10 @@ def program(spec: dict) -> str:
     for j, t in enumerate(owe_rules, 1):
         pos, neg = literals(t, cands)
         key = f"K{j}"
-        witnesses = neg or ["Z"]  # no 0-literal: a witness no generator proposes
-        needs += [f"(need {key} {c})" for c in witnesses]
+        # No 0-literal: no `need` fact, so the guard gives no witness and the
+        # obligation writes no payment beside the hrule's candidates — a debt
+        # nothing pays.
+        needs += [f"(need {key} {c})" for c in neg]
         prem = [f"(h {c})" for c in pos] or ["(world ?w)"]
         prem.append(f"(absent (and (need {key} ?x) (h ?x)))")
         what = "with " + " ".join(pos) if pos else "from the start"
