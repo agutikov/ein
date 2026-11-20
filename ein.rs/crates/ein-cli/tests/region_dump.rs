@@ -250,7 +250,10 @@ fn region_states_keeps_every_nodes_state() {
         5,
         "root's listing is its open facts, nothing beyond root's: {at_root:?}"
     );
-    assert!(at_root.iter().all(|f| f.starts_with("(open ")), "{at_root:?}");
+    assert!(
+        at_root.iter().all(|f| f.starts_with("(open ")),
+        "{at_root:?}"
+    );
     let without = root.join("e");
     dump(file, &[], &without);
     let region = json(&without.join("region.json"));

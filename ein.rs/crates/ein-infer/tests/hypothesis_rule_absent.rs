@@ -169,8 +169,10 @@ fn at_nodes(
                         .iter()
                         .filter_map(|&f| hypothesis(&terms.fact_text(f)))
                         .collect();
-                    let mut matched: Vec<String> =
-                        k.facts().filter_map(|f| renamed(&terms.fact_text(f))).collect();
+                    let mut matched: Vec<String> = k
+                        .facts()
+                        .filter_map(|f| renamed(&terms.fact_text(f)))
+                        .collect();
                     open.sort();
                     matched.sort();
                     (open, matched)
