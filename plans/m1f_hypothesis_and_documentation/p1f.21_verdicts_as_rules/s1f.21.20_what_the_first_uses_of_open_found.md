@@ -309,6 +309,22 @@ agenda), and keeping them saves that part as well. The two parts were not measur
 
 V-69 to V-71 are not used.
 
+### The gate
+
+`./run_tests.sh` on `96d919fe`, the branch rebased onto `master` at `fd6cbcc9`, with the default 16 test workers:
+**exit 0**, every step: the ten static checks, `cargo test --profile gate --workspace` (168 test binaries, 1 384
+tests, none failed, `corpus_cli`'s cost check among them), the process's checks and the bench smoke. Load average
+1.01, 5.22, 8.66 when it started and 8.75, 7.75, 8.96 when it ended. Two runs before it stopped, each fixed in a
+commit of its own (above): at `cargo doc` (a public doc linked the private `fork_of`), and at `read_out_reference.rs`
+(no example printed the `in flight` row); a run with `--no-fail-fast` then found `test_cli.rs`' count of claims, and
+no other test failed.
+
+On the same tip, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: 5 passed; and
+`… --test id_order_invariance`: 4 passed, the shape golden unmoved on every corpus file.
+
+Not run: the nightly and `utils/ci_container.sh`. The engine changed the pass at a state, the agenda's tables and
+the gate build's check; no DOT writer, review bundle or CI install changed.
+
 ### What the user must see
 
 - Task 5 as ruled: by default the pass writes `open` facts at root and at printed or saved states only, and
