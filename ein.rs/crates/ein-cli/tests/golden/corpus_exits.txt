@@ -843,6 +843,10 @@
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: saturate
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: test
+0    examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein :: test
 0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: saturate
 0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: solve
