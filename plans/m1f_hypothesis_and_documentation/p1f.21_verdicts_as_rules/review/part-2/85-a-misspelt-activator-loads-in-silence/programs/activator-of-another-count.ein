@@ -1,0 +1,21 @@
+;;; Item 85: written-right.ein with an activator of two arguments where the rule has three parameters,
+;;; `(guess at Color)` for `(guess at Color House)`, and nothing else changed. A fact of `guess` at count 2 is no
+;;; activator of a rule of three parameters (Q-M1f.447: a relation is overloaded by its count): it activates nothing,
+;;; `guess` proposes nothing, and the blind enumerator writes H. Written for this item.
+
+(relation at Color House :why "{?3} is at {?4}")
+
+(is-a Red Color) (is-a Green Color)
+(is-a H1 House)  (is-a H2 House)
+
+(rule guess (?R ?T1 ?T2)
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (open (?R ?a ?b))
+  :why    "suppose {?R} holds of {?a} and {?b}")
+
+(rule one-colour-a-house ()
+  :match  (and (at ?a ?h) (at ?b ?h) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both at {?h}")
+
+(guess at Color)

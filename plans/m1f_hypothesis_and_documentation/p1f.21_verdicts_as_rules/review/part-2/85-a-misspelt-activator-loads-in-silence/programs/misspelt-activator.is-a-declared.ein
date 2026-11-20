@@ -1,0 +1,21 @@
+;;; Item 85: misspelt-activator.ein with `is-a` declared, and nothing else changed: the activator
+;;; `(gues at Color House)` activates nothing, and the blind enumerator guesses the facts of both declared
+;;; relations. Written for this item.
+
+(relation is-a T T         :why "{?3} is a {?4}")
+(relation at   Color House :why "{?3} is at {?4}")
+
+(is-a Red Color) (is-a Green Color)
+(is-a H1 House)  (is-a H2 House)
+
+(rule guess (?R ?T1 ?T2)
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (open (?R ?a ?b))
+  :why    "suppose {?R} holds of {?a} and {?b}")
+
+(rule one-colour-a-house ()
+  :match  (and (at ?a ?h) (at ?b ?h) (neq ?a ?b))
+  :assert (false)
+  :why    "{?a} and {?b} are both at {?h}")
+
+(gues at Color House)
