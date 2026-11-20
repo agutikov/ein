@@ -2386,7 +2386,7 @@ exit 0
 
 Ann owes a Food at root. The rule `arm` concludes `(total-owed drinks is-a)`, the activator of a second obligation,
 from any `likes` fact, so the node that holds `(likes Ann Soup)` owes Ann a Drink, a debt root was never told of. The
-obligations rung reads the activator off `arm`'s `:assert` and proposes at root what would pay the debt it brings: H
+obligations read the activator off `arm`'s `:assert` and write at root what would pay the debt it brings: H
 holds `(drinks Ann Tea)` beside `(likes Ann Soup)`, the `later debt` row under `universe` says which candidate is there
 for which activator, and R is the one state that pays both debts. The program is one the static check flags, the
 activator's relation being one a commitment can add a fact of, so the cube answers it.
