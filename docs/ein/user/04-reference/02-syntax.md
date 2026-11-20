@@ -266,14 +266,14 @@ presentation.
 A fact is any top-level form whose head is **not** a declarator:
 
 ```text
-(not <fact> [:source "<text>"])           ; a stored negative: one fact, the head `not` reserved
+(not <fact> [:source "<text>"])           ; a stored negative: one fact, the head `not` shape-pinned
 (<name> <arg>* [:source "<text>"])        ; a fact of a relation: an enumeration, a property tag
 ```
 
 | kind | example | semantics |
 |---|---|---|
 | **a fact of a relation** | `(co-located Englishman Red :source "(2)")` | the relation holds of these arguments |
-| **negative** | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
+| **negative** | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold; beside it, a contradiction where a rule says so, `std.contradiction`'s where the program imports it |
 | **a fact of `=`** | `(= Red Colour-1)` | an ordinary fact of the relation named `=` ([§ 3](#is-a-fact-head-not-a-unifier)) |
 
 An argument is an object, an atom or a fact, `(hypothesis (co-located Norwegian House-2))`

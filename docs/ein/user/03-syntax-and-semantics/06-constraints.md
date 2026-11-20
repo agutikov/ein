@@ -80,7 +80,8 @@ candidate, green in R and red dead (the layer labels, the tooltips and the legen
 ![The lattice of boxes.ein: two nodes in R, green, and two dead, red](diagrams/06-region-boxes.svg)
 
 `(in Dog B2)` is dead alone, by `one-box-per-pet` against root's `(in Dog B1)`, and everything above it is dead
-with it. `(in Cat B2)` is no node at all: root holds its negation, so it was never a candidate. `ein render kb FILE`
+with it. `(in Cat B2)` is no node at all: root holds its negation, which `std.contradiction` refutes it beside, so it
+was never a candidate. `ein render kb FILE`
 draws the stored negation root holds as the rule draws it, a fact of `not` whose arrow `2` is at `(in Cat B2)`,
 which stands in the frame `not ctx`, since nothing holds it.
 
@@ -176,7 +177,7 @@ is refused at load.
 
 *Whatever is held beside its negation is impossible* is one rule in logic, $f \land \lnot f \implies \bot$, and Ein
 cannot write it so: a premise is a fact pattern, its relation and its count of arguments written, and a variable for
-a whole fact is no premise. The rule written with one is refused at the parse:
+a whole fact is no premise. The rule written with one, as `whole-fact.ein`, is refused at the parse:
 
 ```lisp
 (rule contradiction ()
@@ -185,11 +186,17 @@ a whole fact is no premise. The rule written with one is refused at the parse:
   :why    "{?f} holds beside its negation")
 ```
 
+`ein solve whole-fact.ein` prints, and exits 1:
+
 ```text
-cf.ein:2:16: unexpected `?f`: a variable
+whole-fact.ein:2:16: unexpected `?f`: a variable
   repair: Insert `(`
-cf.ein:2:24: unexpected `?f`: a variable
+whole-fact.ein:2:24: unexpected `?f`: a variable
   repair: Insert `(`
+whole-fact.ein:3:3: unexpected `:assert`
+  repair: Delete `:assert`
+whole-fact.ein:4:3: unexpected `:why`
+  repair: Insert `)`, Insert `)`
 ```
 
 So the contradiction is a rule for one relation, or for one count of arguments with the relation a parameter

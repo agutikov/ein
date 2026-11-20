@@ -565,7 +565,7 @@ third question of the hat, are not corpus programs; their graphs are what `ein r
 | $\operatorname{names}(P)$ | `invariant::program_names` |
 | $\mathrm{root}$ | `region::prepare`: root saturated once, and sealed |
 | $\operatorname{st}(C)$, the node function | [`region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs): a copy-on-write fork of root's KB, the commitment's facts written in candidate order, root's saturation resumed; reached by every route through one cache, `explore::Space::eval` |
-| $\operatorname{dead}$ | `contradiction.rs`: the firing of a rule that states `:ein inconsistent`, recorded on the KB (`Kb::ended`; a held `(false)` by `std.core`'s rule), or a fact beside its stored `(not …)`, checked as each fact lands |
+| $\operatorname{dead}$ | `contradiction.rs`: the firing of a rule that states `:ein inconsistent`, recorded on the KB (`Kb::ended`): a held `(false)` by `std.core`'s rule, which a fact beside its stored `(not …)` concludes by `std.contradiction`'s where the program imports it; such a rule fires as soon as it is enabled (`Saturator::at_once`) |
 | $\operatorname{Owed}$, $\operatorname{owes}$ | [`obligations.rs`](../../../../ein.rs/crates/ein-infer/src/obligations.rs): one pass over a quiescent KB; an obligation rule is in no saturation agenda |
 | a node's kind | `dead`, `owing` or `in-r`, with what it owes, its closure and its facts beyond root's |
 | a state's identity, $C \sim C'$ | `canon::state_key`: the sorted fact set itself, never a hash of it |
@@ -752,7 +752,8 @@ of one is licensed by a proposition of the reasoning
 ### 4.5 What a run knows dead
 
 Every route on a monotone program asks one memory before it saturates a set, `known_dead.rs`: a set a saturation
-found dead (L1), or a state met with a candidate its own fixpoint denies (L8)
+found dead (L1), or a state met with a candidate its own fixpoint denies (L8), a `(not h)` beside which a rule refutes `h`
+(`contradiction::Pairs::denies`)
 ([`03-design/07-search.md` § 3](../03-design/07-search.md#3-the-licences)).
 
 A refuted candidate goes into this memory and nowhere else: the fork that found the contradiction is dropped, and

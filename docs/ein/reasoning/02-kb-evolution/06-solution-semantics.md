@@ -109,9 +109,12 @@ $$
 \begin{aligned}
 &H = \operatorname{gen}(P, \mathrm{root}) \\
 &n = \lvert H \rvert \\
-&\forall h \in H.\ \ h \notin \mathrm{root} \,\land\, \lnot h \notin \mathrm{root}
+&\forall h \in H.\ \ h \notin \mathrm{root} \,\land\, \lnot\operatorname{denies}(\mathrm{root}, h)
 \end{aligned}
 $$
+
+with root denying $h$ where it holds $\lnot h$ and a rule of the program refutes $h$ beside it
+([hypothesis generation § 2](04-hypothesis-generation.md#2-the-ladder)).
 
 $\operatorname{gen}$ is the **generation ladder** of [Hypothesis generation](04-hypothesis-generation.md), a function
 of the program and of root's fixpoint and of nothing else. Nothing a computation is configured with moves which facts
