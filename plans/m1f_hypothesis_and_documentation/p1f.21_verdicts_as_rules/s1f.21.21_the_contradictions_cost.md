@@ -112,10 +112,13 @@ time says its load; the instruction counts do not move with it. Scratch named `b
 
 | commit | task | what |
 |---|---|---|
-| `d28618c3` | 1, 2 | a pair matched by a probe; the nested fact's relation a key of the participation index and of the plans a fact seeds; the scan for a never-matched plan from a watermark |
-| `ddce3113` | 1 | `Kb::is_negated` / `Kb::negated` and their set go, with the shape dump's `NEG` rows (V-36); 52 `load` lines of the shape golden banked again |
-| `4d05d590` | | an engine's plan list shared with its clones until one compiles a plan |
+| `953372da` | 1, 2 | a pair matched by a probe; the nested fact's relation a key of the participation index and of the plans a fact seeds; the scan for a never-matched plan from a watermark |
+| `070d5088` | 1 | `Kb::is_negated` / `Kb::negated` and their set go, with the shape dump's `NEG` rows (V-36); 52 `load` lines of the shape golden banked again |
+| `0f382012` | | an engine's plan list shared with its clones until one compiles a plan |
 | this record | | plans only |
+
+The hashes are the branch's after its rebase onto `master` at `cde9ac4c`. Every binary measured as *after* was built
+at `4d05d590`, the same code before the rebase, which brought pages and plans only.
 
 ### 1. A pair matched by a probe
 
@@ -242,7 +245,7 @@ standard library of its own commit (`git archive` of each into `build/s21/tree-<
 `stdlib/`); three runs of the final build agree to within 0.01 %, one run each of the others. The script is
 `build/s21/instr.sh`. Millions:
 
-| program | A `edbe6c3b` | B `ddf09492` | C `08ed0ce7` | D `1655f19d` | before, `0a6e6e3b` | after, `4d05d590` | after / before | after / A |
+| program | A `edbe6c3b` | B `ddf09492` | C `08ed0ce7` | D `1655f19d` | before, `0a6e6e3b` | after | after / before | after / A |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | `beyond_arith/equation_two_unknowns.ein` | 3 143 | 4 847 | 5 011 | 5 036 | 4 221 | 3 404 | 0.81 | 1.08 |
 | `saturation/type-exclusivity/pets.ein` | 2 629 | 3 562 | 4 411 | 4 432 | 3 808 | 3 530 | 0.93 | 1.34 |
@@ -347,8 +350,33 @@ fact a pair's plan is offered, what the release path did before.
 
 ### The gate
 
-GATE
+`./run_tests.sh` on `f484294e`, the branch rebased onto `master` at `cde9ac4c` (whose changes since `0a6e6e3b` are
+pages and plans, no code, corpus or golden), with the default 16 test workers: **exit 0**, every step: the ten
+static checks, `cargo test --profile gate --workspace` (160 test binaries, 1 389 tests, none failed,
+`corpus_cli`'s cost check among them, `renaming_invariance.rs`, `agenda.rs`, `contradiction_rules.rs`,
+`lever_invariance.rs` and the shape golden), the process's checks and the bench smoke. Load average 27.3, 20.1,
+19.1 when it started and 19.0, 17.5, 18.3 when it ended.
+
+On the same tip, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: 5 passed; and
+`… --test id_order_invariance`: 4 passed, the shape golden as banked on every corpus file, `tests/` too.
+
+Not run: the nightly, `utils/ci_container.sh` (no DOT writer, review bundle or CI install changed), and
+`arith_batch` with the counters, which a change to a rule of the calculator asks for and this stage made none.
 
 ### What the user must see
 
-USERSEE
+- **The contradiction as rules, after this stage**, in instructions: `zebra2.ein` executes what A did,
+  `equation_two_unknowns.ein` and `send_more_money.ein` 8 % more than A; against `0a6e6e3b`, 19 %, 7 %, 5 %, 6 %
+  and 10 % less on the five programs (§ 4). The times in § 4 were taken under load 14 to 22 and are not the final
+  table's.
+- **Two builds beyond tasks 1 and 2** (Q-M1f.662): the watermark for a plan never matched and the shared plan
+  list. On `equation_two_unknowns.ein` they save more (576 M) than the probe and the index do (241 M), because what
+  the instances cost there is mostly their count, not their matching.
+- **`Kb::is_negated` and the shape dump's `NEG` rows are gone** (V-36, Q-M1f.659): the only golden lines that moved
+  are 52 `load` lines, each shorter by its `NEG` rows.
+- **`clash-0`'s instance still costs** 0.5 to 8.6 % (§ 3); without it no corpus answer moves but the two programs
+  that test it. The three ways to take it away each change something the user rules on.
+- **V-78**: the largest per-state cost found, about 17 % of `send_more_money.ein`, is a resumed state walking all
+  its facts for its delta, no part of the contradiction.
+- The gate build is faster than before on `equation_two_unknowns.ein` (420 against 443 ms) but 1.66 times release
+  where it was 1.39: its check of each probe is the old release path.
