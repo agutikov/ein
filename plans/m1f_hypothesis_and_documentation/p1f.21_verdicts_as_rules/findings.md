@@ -66,6 +66,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | open; S1f.21.18's, with the form |
 | [V-54](#v-54--one-shape-of-absent-as-a-value-stays-refused) | one shape of absent as a value stays refused | S1f.21.12's build | open; with Q-M1f.618 |
 | [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | open; S1f.21.14's |
+| [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | open; **S1f.21.20 fixes it** |
+| [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | open; **S1f.21.20 fixes it** |
+| [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -813,3 +816,37 @@ is fixed; nothing holds the number to the code. **Open.**
 ## V-55 — A decision's file name says what is no longer true
 
 **Found** by the build of S1f.21.12. Q-M1f.66's file is named `…open-is-written-only-as-a-rules-verdict`. Its heading and text are rewritten; its name is not, since every link to it would move. **Open; S1f.21.14's.**
+
+## V-61 — A written open fact breaks the answer dump's round trip
+
+**Found** by S1f.21.13, on the first form of its example. A program that writes an `(open F)` fact holds it at
+root, and only there (the user's ruling of Q-M1f.569: a written one is dropped at a fork). The node the run builds
+for the empty commitment is a fork of root, so it holds none. `--dump-answer` saves that node as the program, which
+loads to root, with them: the first load is not the state the run saved (18 facts against 16 on the witness,
+[`as_rules_over_open.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open.ein)), and
+`ein-cli/tests/answer_round_trip.rs` refuses it. No corpus program that loads writes an `(open …)` fact, so the
+gate does not meet it. **Open**; [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) fixes it, on the
+reading that the empty commitment's state is root's.
+
+## V-62 — A note of the mechanisms precedes a flagged program's WARNING
+
+**Found** by S1f.21.13. The `WARNING` line is stderr's first on a flagged program (Q-M1f.564), and a load's `note:`
+from the hypothesis mechanisms is printed before it: on the witness
+[`as_rules_over_open_concluded.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open_concluded.ein),
+`ein solve --no-search` writes the note that `:no-search` leaves the rule proposing nothing, then the `WARNING`.
+No corpus program shows it, so the test that holds the order passes. **Open**;
+[S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) fixes it.
+
+## V-63 — Three reports do not see what the open writers did
+
+**Found** by S1f.21.13. No answer moves in any of the three.
+
+- **`ein saturate`'s count of firings** leaves out the saturation that resumes after the `open` pass:
+  `examples/features/23_a_rule_reads_open.ein` prints six firings and a list of rules without the one that read
+  `open`, whose fact is under the derived ones.
+- **The rung reads `stuck`** where a rule's candidates pay what root owes: on `examples/lattice/18_two_candidates.ein`
+  `ein show hyps` says *built by the rung `stuck`: 2 candidates*, while $H$ is the two candidates the rule
+  concludes, each of which pays the instance, and $R$ is the oracle's.
+- **A core leaves out the written `(open …)` facts** its derivation read.
+
+**Open**; [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) fixes it.

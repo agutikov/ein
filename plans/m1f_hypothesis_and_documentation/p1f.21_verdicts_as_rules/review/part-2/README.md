@@ -2,8 +2,8 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Nine items are open: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), and 69, the
-defaults its build took. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
+**Ten items are open: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
+defaults its build took, and 70, those of S1f.21.13. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
 and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
 point, on the corpus at `669d7d43`; where a ruled form cannot be written today, a stand-in runs (`question` for
 `open`) and the page says what stands for what. Each item's `tools/run.sh` re-takes its `runs/` (ignored by git).
@@ -26,6 +26,7 @@ here blocks the build; each item below stays for your review, and once everythin
 | [**64**](64-an-obligation-that-no-longer-steps-aside/README.md) | the eight programs whose obligation steps aside today, and `oblig-derived-domain.ein`: on the stand-in its $R$ is empty; it answers `(likes Ann Pie)` if Pie is a food at root or a rule proposes it | build as ruled | (a) as ruled, the program shown again after the build |
 | [**65**](65-the-lists-and-a-closure/README.md) | the two lists and a closure against root's `open` facts: one corpus program becomes an error | **Q-M1f.595**: the white list's other direction; **Q-M1f.597**: what the check reads | Q-M1f.595 (a): an error too; Q-M1f.597 (a): the `open` facts root holds |
 | [**69**](69-S1f.21.12-defaults/README.md) | the fifteen defaults the build took where your rulings were silent; and what the built engine answers on `oblig-derived-domain.ein`: an empty $R$ | default 13 first: `absent` and `open` as names under `not`, in a guard's value and in `:using` | each as built |
+| [**70**](70-S1f.21.13-defaults/README.md) | the three defaults S1f.21.13 took: the example of the lattice as rules is a pair under `examples/lattice/`, monotone and held by `ein test` | whether the example is written with `open`, flagged and held by no suite | as built: not with `open` |
 
 Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
 

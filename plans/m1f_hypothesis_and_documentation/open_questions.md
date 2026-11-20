@@ -549,6 +549,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.618](#q-m1f618--absent-and-open-heading-a-fact-under-not-in-a-guards-value-and-in-a-using-list) | absent and open heading a fact under not, in a guard's value and in a using list | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.619](#q-m1f619--the-structures-theory-share-under-the-union) | The structure's theory share under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.620](#q-m1f620--a-hypothesis-rule-that-concludes-an-open-fact) | A hypothesis rule that concludes an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
+| [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
+| [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
+| [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11658,3 +11661,30 @@ The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/6
 an hrule whose `:assert` concludes `(open …)`. **The default taken**: refused at load: an hrule proposes a fact, a hypothesis already; a rule that concludes `(open …)` is written instead.
 
 The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+
+### Q-M1f.631 — Where the example of the lattice as rules goes, and its name
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.13 ([its record](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md#record)). The example is a pair under `examples/lattice/`, at the next number, sharing it: `18_two_candidates.ein`, two candidates searched by the engine, and `18_two_candidates_as_rules.ein`, the same lattice written as rules in one saturation.
+
+The other reading: one file, the program as rules alone.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+
+### Q-M1f.632 — How the program as rules writes its candidates
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.13 ([its record](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md#record)). As the survey's page wrote them, as facts of its own, `(question F)`, its header saying they are what the object program's root holds as `(open F)`. So the program is monotone and `ein test` holds its claims. Written with `(open F)`, the language's form, it is flagged for reading `open`, no suite may hold it, and it met two defects of the build (V-61, V-62); both `open` forms are kept beside the stage's record as witnesses.
+
+The other reading: the example in the language's form, flagged, with no claim held, once the two defects are fixed.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+
+### Q-M1f.633 — What the program as rules states beside the survey's
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.13 ([its record](p1f.21_verdicts_as_rules/s1f.21.13_the_search_and_rules.md#record)). A third verdict, `owes`, a world that is alive and pays nothing, so that each of the oracle's three verdicts is a fact of the program; every relation declared with its `:why`; a query for it with its claim.
+
+The other reading: the survey's program as it stood, two verdicts.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).

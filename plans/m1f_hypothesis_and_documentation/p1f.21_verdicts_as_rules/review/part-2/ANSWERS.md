@@ -187,3 +187,20 @@ The defaults most worth your eye:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 70 · The defaults S1f.21.13 took
+
+[The item](70-S1f.21.13-defaults/README.md)
+
+The lattice written as rules is in the corpus as a pair, both monotone and held by `ein test`.
+
+1. **Q-M1f.631**: the pair is `examples/lattice/18_two_candidates.ein` and `18_two_candidates_as_rules.ein`.
+2. **Q-M1f.632**: the program as rules writes its candidates as facts of its own, `(question F)`, not as `(open F)`.
+   Other: written with `open`, where it is flagged and held by no suite.
+3. **Q-M1f.633**: it states a third verdict, `owes`, beside the survey's two.
+
+**Your answer:**
+
+**Notes:**
