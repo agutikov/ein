@@ -4,7 +4,7 @@
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
 re-planned twice the same day, on the answer to Q-M1f.399 and then when the user unblocked
 [S1f.21.10](s1f.21.10_the_kernels_prefix.md), which now builds the engine's key and takes `false` out of the
-kernel's reading (items 24 and 25). **Started 2026-11-20** on the user's word (*"Start stages, if anything can be
+kernel's reading (items 24 and 25). **Done 2026-11-20** ([the record](#record)); started the same day on the user's word (*"Start stages, if anything can be
 done in parallel - do it."*), beside S1f.21.17. Its direction is **ruled**:
 [the fourth instruction](README.md#the-fourth-instruction), `not`, `relation` and `false` are the standard
 library's conventions, `eq` and `neq` stay the kernel's.

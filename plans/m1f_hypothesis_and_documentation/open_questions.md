@@ -513,6 +513,16 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.582](#q-m1f582--nested-fact-activatorein-states-solve-no-search) | `nested-fact-activator.ein` states `(solve :no-search)` | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
 | [Q-M1f.583](#q-m1f583--where-the-fixtures-that-load-now-are-kept) | Where the fixtures that load now are kept | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
 | [Q-M1f.584](#q-m1f584--how-stdcores-rule-prints-under-an-import-that-renames-it) | How `std.core`'s rule prints under an import that renames it | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
+| [Q-M1f.585](#q-m1f585--which-programs-and-modules-gain-the-contradictions-import) | Which programs and modules gain the contradiction's import | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.586](#q-m1f586--an-explanation-reads-through-the-contradictions-rules) | An explanation reads through the contradiction's rules | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.587](#q-m1f587--a-rule-that-refutes-a-pair-fires-at-once) | A rule that refutes a pair fires at once | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.588](#q-m1f588--what-a-denial-is-once-the-pair-is-a-rules) | What a denial is, once the pair is a rule's | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.589](#q-m1f589--the-static-check-reads-not-as-any-relation) | The static check reads `not` as any relation | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.590](#q-m1f590--a-hypothesis-rule-is-matched-as-it-is-reached) | A hypothesis rule is matched as it is reached | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.591](#q-m1f591--the-words-of-the-surfaces-stay) | The words of the surfaces stay | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.592](#q-m1f592--the-registers-rows-the-change-answers) | The register's rows the change answers | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.593](#q-m1f593--not-is-a-name-everywhere-but-at-a-forms-head) | `not` is a name everywhere but at a form's head | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.594](#q-m1f594--the-witnesses-of-the-count-check-and-a-relation-declared-at-several-counts) | The witnesses of the count check, and a relation declared at several counts | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
 | [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
@@ -11328,6 +11338,96 @@ The other reading: always the full name, whatever the import.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
 [review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+
+### Q-M1f.585 — Which programs and modules gain the contradiction's import
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). Every corpus program whose answer rests on a fact beside its stored negation gained `(import std.contradiction)`, 36 files, so that no answer moves; and the library's modules that conclude a stored negation and mean a death by it, `std.algebra`, `std.bijection` and `std.slots`, import it, so a program that imports one of those has the contradiction.
+
+The other reading: a program left without it where it reads better as a theory with no contradiction; none was left so.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.586 — An explanation reads through the contradiction's rules
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). A dead state's core and its `refuted by` read through `std.core`'s rule to the `(false)` it matched, and through the module's rule to the pair, so they name the program's facts and rules as before.
+
+The other reading: the module's rules named in an explanation.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.587 — A rule that refutes a pair fires at once
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). A rule that concludes `(false)` from a fact beside a fact that holds it as its one argument fires in the band of a rule that states the engine's word, so a state ends at the firing that completes the pair, whatever was queued. Which rules those are is read off the compiled plans, by no name.
+
+The other reading: such a rule waits its turn in the agenda, and a state can derive more before it ends.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.588 — What a denial is, once the pair is a rule's
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). A candidate that root holds the negation of is out of $H$, and is counted as denied by licence L8 and by the structure, only where a compiled rule refutes the candidate beside that negation. Where no rule refutes the pair, root denies nothing.
+
+The other reading: `(not F)` at root denies F whatever the program imports.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.589 — The static check reads `not` as any relation
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). The static check's relations are names with no *negated* side; a conclusion that is the holding side of a pair the rules refute is its own kind of site. No corpus verdict moved; two flagged programs' labels read `not` where they read `(not r1)`.
+
+The other reading: the check keeps a negated side for each relation.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.590 — A hypothesis rule is matched as it is reached
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). The look-ahead over a premise that reads `not`, which let a hypothesis rule see a negation another candidate was about to bring, is gone: no caller writes between two candidates.
+
+The other reading: the look-ahead kept, read off the rules.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.591 — The words of the surfaces stay
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). *holds a contradiction*, `:expect (false)`, the events' `kind: dead` and the row `refuted by` are as they were.
+
+The other reading: words that name the rule that ended the state.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.592 — The register's rows the change answers
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). The two rows of case W36 answer right now and are regressions, with their witnesses; W10's recorded core is today's, another explanation of the same answer.
+
+No other reading.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.593 — `not` is a name everywhere but at a form's head
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). `not` is read as a name wherever a name goes, and as the negation only at the head of a form, so `(clash-1 not)` and `(relation not Claim)` are written bare. A relation, a rule, a hypothesis rule and an alias may be named `false` or `not`; a macro may not, since its calls would be every `(false)` and every `(not X)`.
+
+The other reading: `not` stays reserved and the library writes it quoted, which drew it as two nodes in a knowledge base's drawing.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+
+### Q-M1f.594 — The witnesses of the count check, and a relation declared at several counts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.11 ([its record](p1f.21_verdicts_as_rules/s1f.21.11_kill_and_three_conventions.md#record)). The seven `arity-*` programs load, and their regression rows hold the loaded answer; the fixture of a duplicated declaration is gone and `examples/features/22_declared_twice.ein` shows one. A relation declared at several counts is read at each by every reader of a declaration; the read-out's scope note names it once.
+
+The other reading: the seven rows removed with the refusal.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
 
 ### Q-M1f.595 — An `open` fact of a relation the white list leaves out
 

@@ -2,7 +2,8 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**One item is open, 66: the defaults S1f.21.17 took**, for your review after the build, as you asked. The part's
+**Two items are open, 66 and 67: the defaults S1f.21.17 and S1f.21.11 took**, for your review after the build, as
+you asked. The part's
 own questions are all ruled: you answered its six items on 2026-11-19, each answer filed in your words under its
 question in [the ledger](../../../open_questions.md) and in
 [the phase's README](../../README.md#the-rulings-of-the-answers-file).
@@ -12,6 +13,7 @@ question in [the ledger](../../../open_questions.md) and in
 | # | what | the default |
 |---|---|---|
 | [**66**](66-S1f.21.17-defaults/README.md) | the five defaults S1f.21.17 took: the warning's words and when it prints; two regression rows removed; `nested-fact-activator.ein` given `(solve :no-search)`; where three fixtures moved; how `std.core`'s rule prints under a renaming import | each as built |
+| [**67**](67-S1f.21.11-defaults/README.md) | the ten defaults S1f.21.11 took: which programs and modules gain the contradiction's import; how an explanation reads; when a rule that refutes a pair fires; what a denial is; `not` as a name; the witnesses of the count check | each as built |
 
 ## The three readings, confirmed
 

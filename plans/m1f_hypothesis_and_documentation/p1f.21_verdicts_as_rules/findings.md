@@ -40,11 +40,16 @@ without a path is in [`design.md`](design.md), whole.
 | [V-27](#v-27--a-test-may-still-pin-what-a-flagged-program-written-inline-answers) | a test may still pin what a flagged program written inline in it answers: those were not swept | S1f.21.15 | open |
 | [V-28](#v-28--stddebts-says-debts-discharged-is-kept-by-every-larger-state) | `std.debts`' header, its page and the library's README say every larger state keeps `(debts-discharged)`; it holds only where no commitment adds a requirement | the merge of `std.debts` | open; with the second part, where it bears on Q-M1f.566 |
 | [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
-| [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | open; S1f.21.11's task 1.4 reads it |
+| [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | **answered** by Q-M1f.447 as built (S1f.21.11): a declaration twice loads, wherever it is written |
 | [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | open; S1f.21.2's |
 | [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | open; the user's call |
 | [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
 | [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | open; the user's call, with L-109 |
+| [V-35](#v-35--the-renaming-test-does-not-rename-false-and-not) | `renaming_invariance.rs` does not rename `false` and `not`: the kernel still reads both in four places | S1f.21.11 | open |
+| [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | open; a candidate for removal |
+| [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | open |
+| [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
+| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
@@ -675,6 +680,40 @@ user's call**: whether a module's lines are gathered into one.
 program of the milestone's finding L-109 (*the user's call*), loads now: `ein saturate` exits 0 under one warning
 that names `std.algebra.imply1`, and root derives `(in-slice-1 symmetric next-to)`. The refusal L-109 met is gone;
 whether a slice is had by such a rule is still the user's. **Open; the user's call, with L-109.**
+
+## V-35 — The renaming test does not rename `false` and `not`
+
+**Found** by S1f.21.11. Its plan had `ein-render/tests/renaming_invariance.rs` rename `false` and `not` with every
+other name. They are tokens of their own the renamer does not touch, and the kernel still reads both in four
+places, each beside `eq` and `neq`, which are its own: `(not (eq a b))` is the computed `neq`; a false `eq` or `neq`
+conclusion writes `(false)`; `(not ?x)` of a name builds no fact; and the blind enumerator's objects leave both
+out. Renaming them takes those four readings off the kernel first. **Open.**
+
+## V-36 — The index of negations has no reader that decides
+
+**Found** by S1f.21.11. `Kb::is_negated` and `Kb::negated` are read by no decision of `ein-infer` now: the shape
+dump prints the index, a unit test of the loader reads it, and two measurement examples under
+`ein-infer/examples/` still ask it whether a candidate is denied. **Open**; a candidate for removal, with the
+dump's rows.
+
+## V-37 — Every declared relation activates `clash-0` too
+
+**Found** by S1f.21.11. `clash-of-0` matches `(relation ?R)`, which is also the membership fact every declaration
+stores, so a program that imports `std.contradiction` compiles a pair rule of no argument for each declared
+relation, and a trace narrates one more step a relation at root. No answer depends on it. **Open.**
+
+## V-38 — A dead state's explanation names the pairs concluded before it ended
+
+**Found** by S1f.21.11. A state ends at the firing of `std.core`'s rule, which a rule that refutes a pair reaches
+at once. Where the kernel's check listed every pair a state held, an explanation lists the pairs whose `(false)`
+was derived by then, and the recorded derivations are capped. No core and no `refuted by` of the corpus moved.
+**Open.**
+
+## V-39 — The cost of the contradiction as rules is not measured
+
+**Found** by S1f.21.11, whose task 1.5 was not run: the machine was shared with two other stages. The import adds
+the module's fourteen rules to every program that takes it, and two plans a declared relation. **Owed by the
+coordinator**: the bench set by `utils/bench_env.sh`, on a quiet machine.
 
 ## V-40 — Two parse witnesses of `open` write no `:why`
 

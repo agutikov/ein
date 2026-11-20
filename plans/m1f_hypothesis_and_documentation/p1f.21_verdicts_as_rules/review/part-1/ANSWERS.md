@@ -28,3 +28,27 @@ And yours to call: seventeen warning lines for one program that imports `std.alg
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 67 · The defaults S1f.21.11 took
+
+[The item](67-S1f.21.11-defaults/README.md)
+
+No corpus answer moved. The ten, each with its other reading on the item's page:
+
+1. **Q-M1f.585**: 36 corpus programs gained `(import std.contradiction)`; `std.algebra`, `std.bijection` and
+   `std.slots` import it.
+2. **Q-M1f.586**: an explanation reads through the contradiction's rules to the program's own facts and rules.
+3. **Q-M1f.587**: a rule that refutes a pair fires at once, so a state ends where the pair is completed.
+4. **Q-M1f.588**: root denies a candidate only where a rule refutes it beside its negation.
+5. **Q-M1f.589**: the static check reads `not` as any relation.
+6. **Q-M1f.590**: a hypothesis rule's look-ahead over a premise that reads `not` is gone.
+7. **Q-M1f.591**: the surfaces' words stay: *holds a contradiction*, `:expect (false)`, `kind: dead`, `refuted by`.
+8. **Q-M1f.592**: two rows of the wrong-answer register answer right now and are regressions.
+9. **Q-M1f.593**: `not` is a name everywhere but at a form's head; a macro may not be named `false` or `not`.
+10. **Q-M1f.594**: the seven `arity-*` witnesses load and their rows hold the loaded answer.
+
+**Your answer:**
+
+**Notes:**
