@@ -476,3 +476,30 @@ Success
 Not run, on the brief's word: the nightly, the dev host's tier and `utils/ci_container.sh`, which the plan's
 acceptance names and the stage's DOT changes (a dead node's drawing) make part of done: **owed**, with the cost
 (V-39). The census of the kernel's names was re-taken on the tip and is the table above.
+
+### The coordinator's part: the runs on the merged part 1
+
+Taken by the coordinator after both builds of part 1 were merged (S1f.21.17 as `24491e80`, S1f.21.11 up to
+`04665c38`, master at `ddf09492`), in the runner's image:
+
+- **`utils/ci_container.sh`, the gate: exit 0** on `ddf09492` (`build/ci-logs/gate-ddf09492.log`, on this machine).
+- **`utils/ci_container.sh --nightly`: exit 101**, at its first test step, *corpus_cli, the slow entries*
+  (`build/ci-logs/nightly-ddf09492.log`). One test fails, `the_slow_flag_still_describes_the_sweep`, on two entries'
+  cost: `examples/beyond_arith/equation_two_unknowns.ein`, 6034 ms of cells with no `slow` flag, and
+  `examples/beyond_arith/send_more_money_written.ein`, recorded at 1430 ms and swept in 5739 ms. The steps after it
+  did not run.
+- **The cause is the cost of the contradiction as rules, not the machine's load alone.** Each program run by turns
+  on the build before S1f.21.11 (`build/review-bin/ein-head-edbe6c3b`, with that tree's library and program) and
+  on the merged build, three times each, under one load, the same work in both:
+
+  | program | run | saturations | before | after |
+  |---|---|---:|---:|---:|
+  | `equation_two_unknowns.ein` | `ein solve` | 1 191 | 0.52 s | 1.37 s |
+  | `send_more_money_written.ein` | `ein solve --single` | 18 032 | 1.00 s | 1.39 s |
+  | `zebra2.ein` | `ein solve` | 120 | 0.12 s | 0.15 s |
+
+  They are no measurement: two other stages were building at the time. The measurement by `utils/bench_env.sh`
+  is still owed (V-39), on a quiet machine; and the corpus's costs and `slow` flags are taken again then, once
+  the phase's builds are all in, since each of them moves the costs.
+- The nightly's other steps were then run in the main tree with that one test skipped, to find what it hid
+  (`build/ci-logs/nightly-rest-local-*.log`); its result is in the phase's README.

@@ -49,7 +49,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | open; a candidate for removal |
 | [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | open |
 | [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
-| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine |
+| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine; a first reading: 1.3 to 2.6 times the time at the same work, which fails the nightly's cost check; **the user's call** |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
@@ -714,6 +714,14 @@ was derived by then, and the recorded derivations are capped. No core and no `re
 **Found** by S1f.21.11, whose task 1.5 was not run: the machine was shared with two other stages. The import adds
 the module's fourteen rules to every program that takes it, and two plans a declared relation. **Owed by the
 coordinator**: the bench set by `utils/bench_env.sh`, on a quiet machine.
+
+**A first reading, not a measurement** (the coordinator, with two other stages building): by turns on the build
+before the stage and on the merged one, the same saturations in both, `equation_two_unknowns.ein` under
+`ein solve` takes 0.52 s and then 1.37 s, `send_more_money_written.ein` under `--single` 1.00 s and 1.39 s,
+`zebra2.ein` 0.12 s and 0.15 s. It is enough to fail the nightly's check of the corpus's costs: the first of
+the three now costs more than a second and carries no `slow` flag
+([S1f.21.11's record](s1f.21.11_kill_and_three_conventions.md#record)). **The user's call**: whether the cost is
+taken as it is, the flags and costs re-taken, or the pair rules are made cheaper first.
 
 ## V-40 — Two parse witnesses of `open` write no `:why`
 
