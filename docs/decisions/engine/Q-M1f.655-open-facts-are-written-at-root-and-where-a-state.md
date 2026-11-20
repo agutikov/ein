@@ -3,9 +3,10 @@
 The pass that writes a state's `open` facts, what it owes as `(open R)` and its hypotheses as `(open F)`, runs at
 root, where those facts make $H$. Above root it runs only at a state that is printed or saved — the read-out's
 states and their forms, `--dump-answer`'s files, `ein oracle --states`, a trace, a saved file's node — and at a
-state that uses them, which is every state the search builds where a rule of the program reads an `open` fact. At every other state of a search the state's verdict is read as at every state, what
-it owes by the obligations' tally, and nothing is written: no surface reads what it would write. A state printed only
-as a count or a verdict, a node of `--dump-lattice` or an `enter` line of `--events`, writes none.
+state that uses them, which is every state the search builds where a rule of the program reads an `open` fact. At
+every other state of a search the state's verdict is read as at every state, what it owes by the obligations' tally,
+and nothing is written: no surface reads what it would write. A state printed only as a count or a verdict, a node
+of `--dump-lattice` or an `enter` line of `--events`, writes none.
 
 What a state holds under `open` is the same wherever it is read: a state the pass runs at holds what the pass at
 every state would write there, and the empty commitment's state is root's, the `open` facts the program wrote among

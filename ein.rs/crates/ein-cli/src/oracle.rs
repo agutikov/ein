@@ -109,23 +109,32 @@ pub fn run(m: &ArgMatches) -> i32 {
             return 1;
         }
     };
-    if let Some(dir) = dir.as_deref() {
-        let inputs = ein_render::dump::RegionInputs {
-            source: &file,
-            limit,
-        };
-        if let Err(e) = ein_render::dump::write_cube_dir(Path::new(dir), &outcome, &terms, &inputs)
-        {
-            crate::solve::artefact_failed("dump", dir, e);
+    // `--dump DIR`: the cube as the run read it, written once the read-out
+    // has read its states, so that what a printed state found in flight is
+    // the dump's too (Q-M1f.656).
+    let write_dump = |outcome: &Outcome, terms: &Terms| {
+        if let Some(dir) = dir.as_deref() {
+            let inputs = ein_render::dump::RegionInputs {
+                source: &file,
+                limit,
+            };
+            if let Err(e) =
+                ein_render::dump::write_cube_dir(Path::new(dir), outcome, terms, &inputs)
+            {
+                crate::solve::artefact_failed("dump", dir, e);
+            }
         }
-    }
+    };
     let r = match outcome {
         Outcome::Region(r) => r,
-        Outcome::Refused { n, limit, .. } => {
-            eprintln!(
-                "error: {file}: {}",
-                ein_render::dump::region::refusal_note(n, limit)
-            );
+        refused => {
+            write_dump(&refused, &terms);
+            if let Outcome::Refused { n, limit, .. } = refused {
+                eprintln!(
+                    "error: {file}: {}",
+                    ein_render::dump::region::refusal_note(n, limit)
+                );
+            }
             return 2;
         }
     };
@@ -133,7 +142,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         r.topology.dead_not_upward_closed.count,
         r.topology.discharged_not_upward_closed.count,
     );
-    let monotone = r.monotonicity.is_monotone();
+    let for_dump = dir.is_some().then(|| r.clone());
     // What the closing line concludes, on a flagged program, from the
     // detector: the status the cube shows, and whether a node's state holds a
     // stale fact, which the status cannot show.
@@ -170,10 +179,18 @@ pub fn run(m: &ArgMatches) -> i32 {
     let ro = match read_out::of_answer(&mut kb, &mut terms, &ast, answer, &eopts) {
         Ok(ro) => ro,
         Err(e) => {
+            if let Some(region) = for_dump {
+                write_dump(&Outcome::Region(region), &terms);
+            }
             eprintln!("{e}");
             return 1;
         }
     };
+    let monotone = ro.answer.monotonicity.is_monotone();
+    if let Some(mut region) = for_dump {
+        region.monotonicity.in_flight = ro.answer.monotonicity.in_flight.clone();
+        write_dump(&Outcome::Region(region), &terms);
+    }
     let (rc, text) = crate::modes::print(&ro, "oracle", &file, eopts.budget, None, stats);
     // What only the cube can say: whether the static verdict held on it.
     println!();

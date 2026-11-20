@@ -243,9 +243,10 @@ lacks: a rule that reads `open` (`open-read`), a rule that concludes `(open F)` 
 changes at even depth (`hypothesis`), and an obligation whose guard reads one beside its witness
 (`obligation-guard`). A program with no site is monotone, and its routes take every licence of § 3; a program with a
 site is **flagged**, and gets the cube alone. A run that builds a node holding a hypothesis root does not, where
-the pass runs for the search (`open::Pass::Check`: every node under `--in-flight`, and every node of a program that
-reads `open`), finds the program not monotone **in flight** (`open::Writers::first_above`,
-`Monotonicity::in_flight`): the warning is said at once, once, and the answer stands
+the pass runs (a node printed, every node of a program that reads `open`, every node under `--in-flight`), finds
+the program not monotone **in flight** (`open::Writers::first_above`, `Monotonicity::in_flight`, and
+`region::Nodes::in_flight`, which the read-out folds in for the states it prints): the warning is said at once,
+once, and the answer stands
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 
 ![The static check: root's plans classified monotone or flagged, and what a flagged program is reported with](diagrams/07-static-check.svg)

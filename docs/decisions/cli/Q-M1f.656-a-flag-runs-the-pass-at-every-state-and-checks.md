@@ -2,14 +2,17 @@
 
 `--in-flight`, on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`, runs the pass that writes a
 state's `open` facts at every state the run builds, where by default it runs at root and where a state is printed,
-saved or reads them ([Q-M1f.655](../engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). At each
-state it runs at for the search, under the option or on a program a rule of which reads an `open` fact, the run checks
-whether the state holds a hypothesis root does not, which makes the program not monotone, found in flight
-([Q-M1f.574](../answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). A state the pass runs at only to be
-printed or saved is not checked, so every surface of one run reports one finding.
+saved or reads them ([Q-M1f.655](../engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). The
+check in flight is made where the pass runs: at each such state the run checks whether it holds a hypothesis root
+does not, which makes the program not monotone, found in flight
+([Q-M1f.574](../answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). By default that is a state printed
+or saved, and every state of a program a rule of which reads an `open` fact; under the option, every state. What a
+printed state finds is folded into what the run reports, the read-out, the summary and `ein oracle --dump`'s
+`region.json` alike.
 
 It changes no R and no printed state. What the check finds is what it can add: the read-out's `in flight` row, the
-stderr line said at once, and the summary's `monotonicity.in_flight`. It costs the pass at every state.
+stderr line said at once, and the summary's `monotonicity.in_flight`, and, on a program the static check found no
+site in, the warning that a finding makes of it. It costs the pass at every state.
 
 **Why.** The user's ruling: *"also can have cmdline flag that enables firing H-set for every state to detect
 non-monotonicity in-flight"*. The check in flight needs the hypotheses each state's writers give, which is the work

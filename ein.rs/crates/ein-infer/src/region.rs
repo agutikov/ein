@@ -1840,6 +1840,18 @@ impl<'a> Nodes<'a> {
         crate::monotone::plans_of(&self.memo)
     }
 
+    /// The first hypothesis a state read here held that root does not, as
+    /// its text: the check in flight, made where the pass writes a state's
+    /// `open` facts, which every state read here is (Q-M1f.656). A reader
+    /// that prints a run's states folds it into what the run found
+    /// ([`crate::monotone::Monotonicity::with_in_flight`]).
+    pub fn in_flight(&self) -> Option<String> {
+        self.snapshot
+            .open()
+            .and_then(|w| w.first_above())
+            .map(str::to_string)
+    }
+
     fn split_in_fork(
         &mut self,
         first: &[FactId],
@@ -2170,16 +2182,15 @@ fn node_in_region(
     // its first contradiction (the module's § What a node is).
     let stop = axes.stop && !facts.is_empty();
     // What the pass does here (Q-M1f.655, Q-M1f.656): its `open` facts are
-    // written, and the check in flight made, where the run asks the check of
-    // every node or a rule reads them; written for the state's text alone
-    // where the node is printed; else its verdict alone is read.
-    let pass = if axes.in_flight || snapshot.open().is_some_and(|w| w.reads_open) {
-        crate::open::Pass::Check
-    } else if axes.keep_states {
-        crate::open::Pass::Write
-    } else {
-        crate::open::Pass::Tally
-    };
+    // written, and the check in flight made, where the run asks it of every
+    // node, where a rule reads them, and where the node is printed; else its
+    // verdict alone is read.
+    let pass =
+        if axes.in_flight || axes.keep_states || snapshot.open().is_some_and(|w| w.reads_open) {
+            crate::open::Pass::Write
+        } else {
+            crate::open::Pass::Tally
+        };
     let (mut fork, mut sat, owes) = saturated(
         root,
         snapshot,

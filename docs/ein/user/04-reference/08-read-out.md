@@ -315,7 +315,7 @@ what is assumed, what each site puts at stake, and whether it bit, the status an
 reads only
 the status. **A program the run finds not monotone in flight**, a state it built holding a hypothesis root does not
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)), where it checks:
-every state under `--in-flight`, and every state of a program a rule of which reads `open`
+a state it prints, every state of a program a rule of which reads `open`, and every state under `--in-flight`
 ([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)), prints the same
 warning, its stderr line said at once, when the state was built, and an `in flight` row under `lattice`; where the
 static check found no site, the `lattice` row says *not monotone: found in flight (Q-M1f.574)*, and the summary's

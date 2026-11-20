@@ -349,6 +349,15 @@ impl Monotonicity {
         self
     }
 
+    /// The same verdict, with what a reader of the run's states found in
+    /// flight where the run found nothing (`crate::region::Nodes::in_flight`).
+    pub fn with_in_flight(mut self, found: Option<String>) -> Monotonicity {
+        if let Some(f) = found {
+            self.in_flight.get_or_insert(f);
+        }
+        self
+    }
+
     /// Is `rel` in `D` — a relation some commitment can change? A relation
     /// outside it is static: complete at root, and the same at every node.
     /// L5's premise reads it (`crate::oblgen::alternatives`).

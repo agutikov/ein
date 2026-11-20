@@ -388,6 +388,16 @@ pub fn of_answer(
             owing_states.push(OwingState { node: o, model });
         }
         owing_states.sort_by(|a, b| a.model.cmp(&b.model));
+        // A state printed is one the pass writes, and the check in flight is
+        // made there (Q-M1f.656): what it found, where the run found nothing.
+        let found = nodes.in_flight();
+        if found.is_some() {
+            answer.monotonicity =
+                std::mem::take(&mut answer.monotonicity).with_in_flight(found.clone());
+            if let Some(d) = answer.described.as_mut() {
+                d.monotonicity = std::mem::take(&mut d.monotonicity).with_in_flight(found);
+            }
+        }
     }
     let listing = match listing {
         Listing::Owing(_) => Listing::Owing(owing_states),

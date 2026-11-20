@@ -288,9 +288,9 @@ fn a_hypothesis_first_held_above_root_is_found() {
                 (rule ask-drink () :match (is-a ?d Drink) :assert (open (chosen ?d)) :why \"is {?d} chosen?\")\n\
                 (rule ask-extra () :match (and (chosen ?d) (is-a ?e Extra)) :assert (open (with ?d ?e)) :why \"{?d} with {?e}?\")\n";
     let (ast, mut terms, mut kb) = load_text(text);
-    // The check in flight is made where the pass runs for the search: at
-    // every state under `--in-flight` (Q-M1f.656), and by default at none
-    // of this program's, whose rules read no `open` fact (Q-M1f.655).
+    // The check in flight is made where the pass runs: at every state under
+    // `--in-flight` (Q-M1f.656), and by default at none of the cube's nodes,
+    // which nothing prints and whose rules read no `open` fact (Q-M1f.655).
     let r = ein_infer::open::at_every_state(true, || cube(&ast, &mut terms, &mut kb));
     assert!(
         r.monotonicity.sites.iter().any(|s| s

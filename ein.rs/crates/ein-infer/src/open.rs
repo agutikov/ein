@@ -51,10 +51,11 @@
 //! `open` facts, which is every state the search builds where a rule reads
 //! one. Elsewhere a state's verdict is read as at every state, what it owes
 //! by the obligations' tally, and the writing is left out: nothing reads
-//! it. **The check in flight is made at every state a run builds where the
-//! pass runs for use**: on a program a rule of which reads `open`, and under
-//! [`at_every_state`], the command line's `--in-flight` (Q-M1f.656), which
-//! runs the pass at every state.
+//! it. **The check in flight is made where the pass runs** (Q-M1f.656): a
+//! state printed or saved, whose finding the read-out folds into what the
+//! run reports, every state of a program a rule of which reads `open`, and
+//! every state under [`at_every_state`], the command line's `--in-flight`,
+//! which runs the pass at every state a run builds.
 
 use std::cell::Cell;
 
@@ -177,12 +178,10 @@ pub(crate) enum Pass {
     /// What the state owes alone, the obligations' tally: the state is
     /// neither printed nor saved, and nothing of it reads an `open` fact.
     Tally,
-    /// The tally and the writing: a state printed or saved.
+    /// The tally, the writing and the check in flight (Q-M1f.656): a state
+    /// printed or saved, a state of a program a rule of which reads `open`,
+    /// and every state under [`at_every_state`].
     Write,
-    /// The tally, the writing and the check in flight: a state of the
-    /// search where the pass runs for use, under [`at_every_state`] or on a
-    /// program a rule of which reads `open`.
-    Check,
 }
 
 /// **Root's `open` facts**, at root's fixpoint, which `sat` reached: $H$'s
@@ -258,7 +257,7 @@ pub fn at_root(
 /// **A state's `open` facts above root**, at the fixpoint `sat` reached:
 /// what it owes is read ([`crate::obligations::tally`], narrated into
 /// `s.events`), and, but under [`Pass::Tally`], the pass writes what
-/// `writers` write there, the check in flight made under [`Pass::Check`].
+/// `writers` write there, and makes the check in flight.
 /// Where a rule reads `open`, the saturation resumes over them and the two
 /// repeat until neither adds anything, each firing handed to `sink`.
 /// Returns what the state owes.
@@ -275,7 +274,7 @@ pub(crate) fn at_state(
         return Ok(owes);
     }
     loop {
-        let wrote = write(s, writers, &owes, pass == Pass::Check)?;
+        let wrote = write(s, writers, &owes, true)?;
         if !writers.reads_open || wrote.is_empty() {
             return Ok(owes);
         }
