@@ -140,7 +140,7 @@ fn prepare(kb: &mut Kb, terms: &mut Terms, ast: &Ast) -> Option<Prepared> {
         };
         let mut sat = Saturator::new(&mut s).ok()?;
         sat.saturate(&mut s, None, &mut |_| {}).ok()?;
-        sat.snapshot(s.kb)
+        sat.snapshot(s.kb, s.terms)
     };
     let mut h = Vec::new();
     let mut stats = HypGenStats::new();

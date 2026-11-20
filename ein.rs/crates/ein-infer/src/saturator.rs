@@ -75,6 +75,15 @@
 //! the agenda, and for a measurement; no `(config …)` field, option of `ein`
 //! or `EIN_*` name reaches them.
 //!
+//! **The agenda's tables are read once and kept** (`Tables`): which plans
+//! fire at once, the plans of the rules that end a state with the relations
+//! they read, and what decides the first half are functions of the plans,
+//! but for the relations whose holding side the KB holds. A snapshot keeps
+//! them, that set read over its facts, and a saturation resumed from it adds
+//! only what its own facts add, so a state's order is the one it would read
+//! over the whole KB, and no state builds them again. A plan compiled at a
+//! state reads them all again there, over the KB as it stands.
+//!
 //! ### A saturation stopped at its first contradiction
 //!
 //! `Saturator::stop_at_first_contradiction` makes [`Saturator::saturate`]
@@ -554,6 +563,170 @@ pub struct Snapshot {
     /// function reads it and the saturator does not. `None` where root's
     /// were not read, and then a node writes none.
     open: Option<crate::open::Shared>,
+    /// The agenda's tables over the snapshot's plans, read once, which a
+    /// saturation that resumes from it takes rather than building them again
+    /// ([`Tables`]).
+    tables: Arc<Tables>,
+}
+
+/// **The agenda's tables over a set of plans** (the module's § The agenda):
+/// which plans fire at once, the plans of rules that end a state and the
+/// relations each reads, and what decides which plans fire first. Every one
+/// of them is a function of the plans but one set, the relations whose
+/// holding side the knowledge base holds, so a snapshot keeps them, that set
+/// read over its own facts, and a saturation that resumes from it adds to
+/// that set only what its own facts add ([`Saturator::resume`]). A plan
+/// compiled after the snapshot reads them all again, as before.
+#[derive(Clone, Default)]
+struct Tables {
+    /// How many plans they were read over: the engine's length.
+    n: usize,
+    /// [`Saturator::at_once`]'s.
+    at_once: Vec<bool>,
+    /// [`Saturator::end_plans`]' and [`Saturator::end_index`]'s.
+    end_plans: Vec<usize>,
+    end_index: FxHashMap<Symbol, Vec<usize>>,
+    /// What [`Saturator::first`] is read off.
+    first: FirstTables,
+}
+
+/// What decides which plans fire first under an agenda, all of it the
+/// plans' but [`Self::held`] ([`Saturator::refresh_first`]).
+#[derive(Clone, Default)]
+struct FirstTables {
+    /// Per plan: it concludes the holding side of a pair.
+    holding: Vec<bool>,
+    /// Per plan: it concludes a fact a rule that ends a state matches.
+    leads: Vec<bool>,
+    /// Per plan: the relations it concludes facts of.
+    writes: Vec<Vec<Symbol>>,
+    /// What the plans refute beside a fact.
+    pairs: crate::contradiction::Pairs,
+    /// The relations the held side of a pair can be of by the plans: those a
+    /// plan concludes the holding side of, and every one a wrapper reads where
+    /// a plan concludes it of a fact it does not name.
+    planned: FxHashSet<Symbol>,
+    /// Those the knowledge base holds the holding side of, read over the
+    /// snapshot's facts outside its `open` layer, which no fork inherits.
+    held: FxHashSet<Symbol>,
+}
+
+impl FirstTables {
+    /// The tables of `plans`, [`Self::held`] empty.
+    fn of(plans: &[&Plan], terms: &Terms) -> FirstTables {
+        // What a rule that states `:ein inconsistent` matches: a rule that
+        // concludes a fact of it leads to the end of a state.
+        let leads_to = crate::monotone::leads_to_an_end(plans.iter().copied(), terms);
+        // The rules that refute a fact beside one holding it, and each
+        // plan's conclusions that are the holding side of such a pair.
+        let pairs = crate::contradiction::Pairs::of(plans.iter().copied(), terms);
+        let mut leads = Vec::with_capacity(plans.len());
+        let mut writes = Vec::with_capacity(plans.len());
+        for p in plans {
+            let ws = crate::monotone::writes_of(p, terms);
+            leads.push(ws.iter().any(|w| leads_to.contains(w)));
+            writes.push(ws.iter().map(|w| w.name).collect());
+        }
+        let holding = plans
+            .iter()
+            .map(|p| {
+                p.asserts
+                    .iter()
+                    .any(|&slot| pairs.holding_side(p, slot).is_some())
+            })
+            .collect();
+        // determinism-ok: a set asked for membership alone.
+        let mut planned: FxHashSet<Symbol> = FxHashSet::default();
+        for p in plans {
+            for &slot in p.asserts.iter() {
+                match pairs.holding_side(p, slot) {
+                    Some((_, Some(rel))) => {
+                        planned.insert(rel);
+                    }
+                    Some((wrapper, None)) => {
+                        planned.extend(pairs.wrapped_by(wrapper).into_iter().flatten());
+                    }
+                    None => {}
+                }
+            }
+        }
+        FirstTables {
+            holding,
+            leads,
+            writes,
+            pairs,
+            planned,
+            held: FxHashSet::default(),
+        }
+    }
+
+    /// Add to `held` the relation of each of `facts` that holds the other
+    /// side of a pair the plans refute: `(N F)`, `F` of a relation `N` is
+    /// read with.
+    fn hold(
+        &self,
+        facts: impl IntoIterator<Item = FactId>,
+        terms: &Terms,
+        held: &mut FxHashSet<Symbol>,
+    ) {
+        for f in facts {
+            let wrapper = terms.facts.rel(f);
+            if self.pairs.wrapped_by(wrapper).is_none() {
+                continue;
+            }
+            if let [inner] = terms.facts.args(f)
+                && let Some(inner) = inner.as_fact()
+            {
+                let rel = terms.facts.rel(inner);
+                if self.pairs.pairs(wrapper, rel) {
+                    held.insert(rel);
+                }
+            }
+        }
+    }
+
+    /// Per plan, whether its rule fires first under `which`, `held` the
+    /// relations whose holding side the knowledge base holds.
+    fn first(&self, which: FailFirst, held: &FxHashSet<Symbol>) -> Vec<bool> {
+        self.writes
+            .iter()
+            .zip(&self.holding)
+            .zip(&self.leads)
+            .map(|((ws, &holds), &leads)| {
+                holds
+                    || leads
+                    || (which == FailFirst::Pairs
+                        && ws
+                            .iter()
+                            .any(|w| held.contains(w) || self.planned.contains(w)))
+            })
+            .collect()
+    }
+}
+
+/// The plans of rules that fire at once, `at_once`'s, in the engine's order,
+/// and the relations each reads as a positive premise: what
+/// [`Saturator::match_ends`] matches after each step.
+fn ends_of(engine: &Engine, at_once: &[bool]) -> (Vec<usize>, FxHashMap<Symbol, Vec<usize>>) {
+    let end_plans: Vec<usize> = (0..at_once.len()).filter(|&at| at_once[at]).collect();
+    let mut end_index: FxHashMap<Symbol, Vec<usize>> = FxHashMap::default();
+    for &at in &end_plans {
+        let plan = engine.plan(at);
+        let mut rels: Vec<Symbol> = Vec::new();
+        for d in plan.disjuncts.iter() {
+            for step in plan.steps(d.steps) {
+                if let Step::Rel(r) = step
+                    && !rels.contains(&r.rel)
+                {
+                    rels.push(r.rel);
+                }
+            }
+        }
+        for rel in rels {
+            end_index.entry(rel).or_default().push(at);
+        }
+    }
+    (end_plans, end_index)
 }
 
 impl Snapshot {
@@ -657,7 +830,7 @@ impl Saturator {
     ///
     /// Taken at a fixpoint: `queue` is empty there, and `parked` holds exactly
     /// the candidates whose guards still fail.
-    pub fn snapshot(&self, kb: &Kb) -> Snapshot {
+    pub fn snapshot(&self, kb: &Kb, terms: &Terms) -> Snapshot {
         Snapshot {
             engine: self.engine.clone(),
             entries: self.entries.flattened(),
@@ -680,6 +853,37 @@ impl Saturator {
             fail_first: self.fail_first,
             floor: None,
             open: None,
+            tables: Arc::new(self.tables(kb, terms)),
+        }
+    }
+
+    /// The agenda's tables over the engine's plans, [`FirstTables::held`]
+    /// read over `kb`'s facts outside its `open` layer: what a snapshot of
+    /// this saturation keeps.
+    fn tables(&self, kb: &Kb, terms: &Terms) -> Tables {
+        let n = self.engine.len();
+        let plans: Vec<&Plan> = (0..n).map(|at| self.engine.plan(at)).collect();
+        let mut first = FirstTables::of(&plans, terms);
+        let at_once: Vec<bool> = (0..n)
+            .map(|at| plans[at].ends || first.pairs.refutes_at(at))
+            .collect();
+        let (end_plans, end_index) = ends_of(&self.engine, &at_once);
+        let mut held = FxHashSet::default();
+        // determinism-ok: what is read is collected into a set.
+        for wrapper in first.pairs.wrappers() {
+            first.hold(
+                kb.facts_of(wrapper).filter(|&f| !kb.holds_open(f)),
+                terms,
+                &mut held,
+            );
+        }
+        first.held = held;
+        Tables {
+            n,
+            at_once,
+            end_plans,
+            end_index,
+            first,
         }
     }
 
@@ -712,6 +916,21 @@ impl Saturator {
         delta: Vec<FactId>,
     ) -> Result<Saturator, SaturateError> {
         let cfg = s.kb.program().config.clone().unwrap_or_default();
+        // The agenda's tables, the snapshot's, where they were read over the
+        // plans this saturation starts with.
+        let tables = &snapshot.tables;
+        let kept = tables.n == snapshot.engine.len();
+        // The relations whose holding side this KB holds: the snapshot's,
+        // and what this state's own facts add, those beyond the snapshot's
+        // and its `open` layer, which no fork inherits.
+        let held = kept.then(|| {
+            let mut held = tables.first.held.clone();
+            tables
+                .first
+                .hold(s.kb.open_facts().iter().copied(), s.terms, &mut held);
+            tables.first.hold(delta.iter().copied(), s.terms, &mut held);
+            held
+        });
         let mut sat = Saturator {
             engine: snapshot.engine.clone(),
             matcher: Matcher::new(),
@@ -745,10 +964,22 @@ impl Saturator {
             fail_first: AGENDA_SWITCH.with(Cell::get).unwrap_or(snapshot.fail_first),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
-            at_once: Vec::new(),
-            end_plans: Vec::new(),
-            end_index: FxHashMap::default(),
-            ends_n: usize::MAX,
+            at_once: if kept {
+                tables.at_once.clone()
+            } else {
+                Vec::new()
+            },
+            end_plans: if kept {
+                tables.end_plans.clone()
+            } else {
+                Vec::new()
+            },
+            end_index: if kept {
+                tables.end_index.clone()
+            } else {
+                FxHashMap::default()
+            },
+            ends_n: if kept { tables.n } else { usize::MAX },
             open_ends: s.kb.program().rules.values().any(|r| !r.params.is_empty()),
             ends_seeded: None,
             naf_rounds: 0,
@@ -766,7 +997,10 @@ impl Saturator {
             // conclusion one side of a pair: ranked again, so the order is
             // this saturation's throughout (under the written order alone,
             // every rank its tiebreaker).
-            sat.refresh_first(s);
+            match (sat.fail_first, &held) {
+                (Some(which), Some(held)) => sat.first = tables.first.first(which, held),
+                _ => sat.refresh_first(s),
+            }
             let parked = std::mem::take(&mut sat.parked);
             sat.parked = parked
                 .into_iter()
@@ -1068,24 +1302,7 @@ impl Saturator {
         let n = self.engine.len();
         if self.ends_n != n {
             self.refresh_at_once(s);
-            self.end_plans = (0..n).filter(|&at| self.at_once[at]).collect();
-            self.end_index.clear();
-            for &at in &self.end_plans {
-                let plan = self.engine.plan(at);
-                let mut rels: Vec<Symbol> = Vec::new();
-                for d in plan.disjuncts.iter() {
-                    for step in plan.steps(d.steps) {
-                        if let Step::Rel(r) = step
-                            && !rels.contains(&r.rel)
-                        {
-                            rels.push(r.rel);
-                        }
-                    }
-                }
-                for rel in rels {
-                    self.end_index.entry(rel).or_default().push(at);
-                }
-            }
+            (self.end_plans, self.end_index) = ends_of(&self.engine, &self.at_once);
             self.ends_n = n;
         }
         if self.end_plans.is_empty() {
@@ -1564,67 +1781,16 @@ impl Saturator {
             return;
         }
         let plans: Vec<&Plan> = (0..n).map(|at| self.engine.plan(at)).collect();
-        let writes: Vec<Vec<crate::monotone::Rel>> = plans
-            .iter()
-            .map(|p| crate::monotone::writes_of(p, s.terms))
-            .collect();
-        // What a rule that states `:ein inconsistent` matches: a rule that
-        // concludes a fact of it leads to the end of a state.
-        let leads = crate::monotone::leads_to_an_end(plans.iter().copied(), s.terms);
-        // The rules that refute a fact beside one holding it, and each
-        // plan's conclusions that are the holding side of such a pair.
-        let pairs = crate::contradiction::Pairs::of(plans.iter().copied(), s.terms);
-        let holding: Vec<bool> = plans
-            .iter()
-            .map(|p| {
-                p.asserts
-                    .iter()
-                    .any(|&slot| pairs.holding_side(p, slot).is_some())
-            })
-            .collect();
-        // The relations the held side of such a pair can be of: those a plan
-        // concludes the holding side of, every one a wrapper reads where a
-        // plan concludes it of a fact it does not name, and those the KB
-        // holds the holding side of.
+        let tables = FirstTables::of(&plans, s.terms);
+        // The relations whose holding side the KB holds.
         // determinism-ok: a set asked for membership alone.
         let mut held: FxHashSet<Symbol> = FxHashSet::default();
         if which == FailFirst::Pairs {
-            for p in &plans {
-                for &slot in p.asserts.iter() {
-                    match pairs.holding_side(p, slot) {
-                        Some((_, Some(rel))) => {
-                            held.insert(rel);
-                        }
-                        Some((wrapper, None)) => {
-                            held.extend(pairs.wrapped_by(wrapper).into_iter().flatten());
-                        }
-                        None => {}
-                    }
-                }
-            }
-            for wrapper in pairs.wrappers() {
-                for f in s.kb.facts_of(wrapper) {
-                    if let [inner] = s.terms.facts.args(f)
-                        && let Some(inner) = inner.as_fact()
-                    {
-                        let rel = s.terms.facts.rel(inner);
-                        if pairs.pairs(wrapper, rel) {
-                            held.insert(rel);
-                        }
-                    }
-                }
+            for wrapper in tables.pairs.wrappers() {
+                tables.hold(s.kb.facts_of(wrapper), s.terms, &mut held);
             }
         }
-        self.first = writes
-            .iter()
-            .zip(&holding)
-            .map(|(ws, &holds)| {
-                holds
-                    || ws.iter().any(|w| {
-                        leads.contains(w) || (which == FailFirst::Pairs && held.contains(&w.name))
-                    })
-            })
-            .collect();
+        self.first = tables.first(which, &held);
     }
 
     /// The interned structural identity of a disjunct's guard tuple — see
@@ -2124,7 +2290,7 @@ mod tests {
             };
             let mut sat = Saturator::new(&mut s).expect("compiles");
             sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
-            sat.snapshot(s.kb)
+            sat.snapshot(s.kb, s.terms)
         };
 
         // The delta: one new edge, written straight into two forks of the
@@ -2210,7 +2376,7 @@ mod tests {
             };
             let mut sat = Saturator::new(&mut s).expect("compiles");
             sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
-            sat.snapshot(s.kb)
+            sat.snapshot(s.kb, s.terms)
         };
         let edge = terms.syms.get("edge").expect("interned");
         let mut args = |a: &str, b: &str| {

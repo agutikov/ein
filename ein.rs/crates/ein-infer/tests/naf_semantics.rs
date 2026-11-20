@@ -1102,7 +1102,7 @@ fn a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew() {
         let mut sat = Saturator::new(&mut s).expect("compiles");
         sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
         assert_eq!(sat.naf_rounds, 3, "the parent no longer parks anything");
-        sat.snapshot(s.kb)
+        sat.snapshot(s.kb, s.terms)
     };
 
     // One fork per relation, each adding a single fact the parent did not have.

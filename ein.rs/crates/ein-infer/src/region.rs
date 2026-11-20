@@ -1082,7 +1082,7 @@ fn prepare_as(
                 (owes, Some(writers))
             }
         };
-        let snapshot = sat.snapshot(s.kb);
+        let snapshot = sat.snapshot(s.kb, s.terms);
         let snapshot = match &writers {
             Some(w) => snapshot.with_open(Arc::clone(w)),
             None => snapshot,
