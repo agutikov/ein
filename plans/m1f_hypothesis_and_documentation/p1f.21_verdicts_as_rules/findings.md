@@ -62,7 +62,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-49](#v-49--a-written-open-of-a-relations-name-is-held-and-owes-nothing) | a written open of a relation's name is held and owes nothing | S1f.21.12's build | open |
 | [V-50](#v-50--a-rules-open-fact-is-held-where-its-fact-is-held) | a rule's open fact is held where its fact is held | S1f.21.12's build | open |
 | [V-51](#v-51--the-state-route-counts-one-fact-more-on-one-program) | the state route counts one fact more on one program | S1f.21.12's build | open |
-| [V-52](#v-52--one-more-program-costs-past-a-second) | one more program costs past a second | S1f.21.12's build | **owed by the coordinator**, with the corpus's costs |
+| [V-52](#v-52--one-more-program-costs-past-a-second) | one more program costs past a second | S1f.21.12's build | **done**: the corpus's costs taken again on the final engine by the coordinator; the entry's recorded cost is its measurement |
 | [V-53](#v-53--the-generators-words-still-say-hrules-and-rung) | the generator's words still say hrules and rung | S1f.21.12's build | **fixed** by S1f.21.18 |
 | [V-54](#v-54--one-shape-of-absent-as-a-value-stays-refused) | one shape of absent as a value stays refused | S1f.21.12's build | open; with Q-M1f.618 |
 | [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | **fixed** by S1f.21.14, as its class: twelve decision files renamed, ids kept, every reference moved |
@@ -70,7 +70,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-57](#v-57--an-open-of-a-variable-bound-to-a-name-writes-nothing-in-silence) | an open of a variable bound to a name writes nothing in silence | S1f.21.18 | open |
 | [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | open; **the user's call**, review item 85 of part 2 |
 | [V-59](#v-59--the-folded-drawing-of-a-hypothesis-rule-has-a-self-loop) | the folded drawing of a hypothesis rule has a self-loop | S1f.21.18 | open |
-| [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | the check's cause on the gate's build **fixed** by S1f.21.20 (V-65); the corpus's costs are **owed by the coordinator** on the final engine |
+| [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | **done**: its cause on the gate's build fixed by S1f.21.20 (V-65), and the corpus's costs taken again on the final engine; the slow set is the same sixteen |
 | [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | **fixed** by S1f.21.20: the empty commitment's state is root's (its default Q-M1f.636) |
 | [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | **fixed** by S1f.21.20 |
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | **fixed** by S1f.21.20 |

@@ -282,8 +282,9 @@ cost; it is a change to how the saturator matches such rules, and it must keep e
 | `beyond_arith/send_more_money_written.ein` | 1 430 ms | 2 937, 2 938 ms | past twice its record |
 | `branching/06_lookahead_on.ein`, `07_lookahead_off.ein` | 40, 30 ms | 105, 104 and 70, 98 ms | past twice their record; far under the line |
 
-**The manifest was not changed then.** The costs are taken again on the engine of the final table's last
-column, and the flags and the recorded costs move once, with it.
+**The manifest was not changed then.** On the engine of the final table's last column the costs were taken
+again: no flag moves, the slow set is the same sixteen entries, `zebra.ein` at 889 ms and `04_open.ein` at 609 ms
+under the line, and twenty-one recorded costs are written to what was measured.
 
 ## The gate's build
 
