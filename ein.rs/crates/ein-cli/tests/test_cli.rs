@@ -236,8 +236,10 @@ fn a_class_mismatch_names_the_class_it_did_not_list() {
 /// `13_mixed_solution_and_open.ein`, `14_unicode_text.ein` and
 /// `15_unicode_escapes.ein`, the two examples of natural-language text,
 /// `16_eq_neq_goal.ein`, nine claims about `eq` and `neq` in a goal,
-/// `17_eq_neq_premise.ein`, four about them in a premise, and
-/// `22_declared_twice.ein`, four about a relation declared at two counts).
+/// `17_eq_neq_premise.ein`, four about them in a premise,
+/// `22_declared_twice.ein`, four about a relation declared at two counts, and
+/// `24_written_hypotheses.ein`, two about a program that writes its
+/// hypotheses).
 #[test]
 fn a_query_with_no_expectation_is_never_solved() {
     let started = std::time::Instant::now();
@@ -250,7 +252,7 @@ fn a_query_with_no_expectation_is_never_solved() {
         r.out
     );
     assert!(
-        r.summary().contains("24 held") && r.summary().contains("12 files state no expectations"),
+        r.summary().contains("26 held") && r.summary().contains("12 files state no expectations"),
         "{}",
         r.summary()
     );
