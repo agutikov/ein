@@ -2786,6 +2786,12 @@ runs   = ["solve", "saturate", "test"]
 note   = "`hrule-reads-unknown`: a hypothesis rule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. A debug build answers as a release build does."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test", "saturate --dump"]
+note   = "`hypothesis-rule-absent`: a rule that concludes `(open (r ?x))` reads its `(absent (q ?x))` premise as the rule beside it that concludes `(s ?x)` over the same match does: with `(q a)` written both conclude of `b` alone, so H is `(r b)` and R two states, the `:expect`, on a program the static check calls monotone. `ein oracle` builds H as every command does, so `ein-infer/tests/hypothesis_rule_absent.rs` holds H to the match by the rule that concludes a fact (Q-M1f.685)."
+
+[[entry]]
 path   = "examples/ein-bugs/wrong-answers/macro-call-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]

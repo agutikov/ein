@@ -6937,3 +6937,37 @@ relations  = []
 models     = []
 core       = ["(h1 a)", "(h2 a)", "(h3 a)"]
 refuted_by = ["k1"]
+
+[[case]]
+id       = "hypothesis-rule-absent"
+title    = "a rule that concludes a hypothesis reads none of its `absent` premises"
+settings = "default"
+decisions = ["Q-M1f.129", "Q-M1f.567", "Q-M1f.685"]
+witness  = "examples/ein-bugs/wrong-answers/hypothesis-rule-absent.ein"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(r b)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["r"]
+models    = [[], ["(r b)"]]
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["r"]
+outside   = ["s"]
+models    = [
+  [],
+  ["(r b)"],
+]

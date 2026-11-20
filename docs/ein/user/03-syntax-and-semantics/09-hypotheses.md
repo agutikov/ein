@@ -14,6 +14,9 @@ names.
 
 A **hypothesis rule** is a rule that concludes `(open F)`: `F` is not derived but **proposed**, each match giving
 one candidate ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)).
+Its `:match` is read as every rule's, its `(absent …)` premises among them, so a rule that concludes a fact over the
+same `:match` concludes of the same matches
+([Q-M1f.685](../../../decisions/hypotheses/Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md)).
 
 ```lisp
 ;; Two people, two chairs: who sits where?

@@ -29,3 +29,4 @@ Decisions on hypotheses: the rules that conclude one, obligations, the writers o
 - [Q-M1f.578](Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md) — The two lists and a closure configure the blind enumerator, and one that disagrees with root’s open facts is an error
 - [Q-M1f.579](Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md) — An obligation whose guard or trigger reads what a commitment can change writes at root, and is flagged
 - [Q-M1f.590](Q-M1f.590-a-hypothesis-rule-is-matched-as-it-is-reached.md) — A hypothesis rule is matched as it is reached
+- [Q-M1f.685](Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md) — A rule that concludes a hypothesis reads its `absent` premises

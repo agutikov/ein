@@ -442,7 +442,9 @@ concludes several hypotheses as several `(open F)`.
 
 **A hypothesis rule is a rule that concludes `(open F)`** ([Q-M1f.567](../../../decisions/hypotheses/Q-M1f.567-a-hypothesis-rule-is-a-rule-that-concludes-open.md)): it is activated as every rule
 is, by a fact of its name the program writes anywhere in it, or by none where it has no parameter, and the
-hypotheses it concludes at root are H's. There is no `hrule` form and no `:hrules` clause; a program that writes
+hypotheses it concludes at root are H's. Its `:match` is read as every rule's, an `(absent …)` premise judged against
+the state's fixpoint as for a rule that concludes a fact
+([Q-M1f.685](../../../decisions/hypotheses/Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md)). There is no `hrule` form and no `:hrules` clause; a program that writes
 either is refused at the parse
 ([`07-diagnostics.md` § 2.31](07-diagnostics.md#231-a-hypothesis-rule-is-a-rule-there-is-no-hrule-form-and-no-hrules)).
 

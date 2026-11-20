@@ -119,6 +119,17 @@ impl HypothesisRules {
     /// commitment states a fact a state stores, and a state stores neither,
     /// whose facts are computed (Q-M1e2.26, Q-M1f.32).
     ///
+    /// ### A match is one whose `absent` premises hold
+    ///
+    /// The compiler lifts a top-level `(absent …)` out of the match, as it
+    /// does a rule's that concludes a fact, so a walk of the plan's positive
+    /// steps is not yet a match: each lifted guard is judged here, against
+    /// the state, which is a fixpoint, as the saturator judges it at the
+    /// boundary, and a match one of whose guards' queries has a match is
+    /// none (Q-M1f.685). So a rule that concludes a fact and one that
+    /// concludes a hypothesis over one `:match` conclude of the same
+    /// matches, and so does one rule that concludes both.
+    ///
     /// ### Why the matches are collected before any is emitted
     ///
     /// The matcher borrows the KB immutably for the whole walk and the callback
@@ -145,6 +156,7 @@ impl HypothesisRules {
     ) -> ControlFlow<()> {
         type Envs = Vec<(Vec<ein_core::Value>, Vec<crate::plan::Reg>)>;
         let mut matcher = Matcher::new();
+        let mut judge = Matcher::new();
         for plan in &self.plans {
             // A plan's `(open F)` conjuncts: each is a hypothesis, `F` a
             // fact's template or a variable its `:match` binds, which names
@@ -154,7 +166,17 @@ impl HypothesisRules {
                 continue;
             }
             let mut envs: Envs = Vec::new();
-            matcher.run(s.kb, s.terms, s.ast, plan, &mut |m| {
+            let (kb, terms, ast) = (&*s.kb, &*s.terms, s.ast);
+            matcher.run(kb, terms, ast, plan, &mut |m| {
+                // The lifted `(absent …)` premises, judged against the
+                // state: the match holds where none of their queries has a
+                // match, as a goal's and the boundary's do.
+                if m.guards()
+                    .iter()
+                    .any(|g| judge.holds(kb, terms, ast, plan, g, m.regs()))
+                {
+                    return ControlFlow::Continue(());
+                }
                 envs.push((m.regs().to_vec(), m.trail().to_vec()));
                 ControlFlow::Continue(())
             });

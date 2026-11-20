@@ -1,5 +1,5 @@
 ;;; A rule that concludes a hypothesis, `(open F)`, reads its `(absent …)` premises as a rule
-;;; that concludes a fact reads them.
+;;; that concludes a fact reads them — regression `hypothesis-rule-absent`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
@@ -13,7 +13,10 @@
 ;;;
 ;;; The match holds of `b` alone: `a` is q. So `plain` concludes `(s b)` and no `(s a)`,
 ;;; and the one hypothesis `guess` concludes is `(r b)`: H is `(r b)`, and R is two
-;;; states, ∅ and {(r b)}. `ein solve`'s `outside` row names s, which no hypothesis is of.
+;;; states, ∅ and {(r b)}, which the `:expect` states. `ein solve`'s `outside` row names
+;;; s, which no hypothesis is of. `ein oracle` answers the same R, and since it builds H
+;;; the way every command does, `ein-infer/tests/hypothesis_rule_absent.rs` holds H to
+;;; the match by the second rule, the one that concludes a fact (Q-M1f.685).
 
 (relation p T :why "{?3} is p")
 (relation q T :why "{?3} is q")
@@ -32,3 +35,8 @@
   :match  (and (p ?x) (absent (q ?x)))
   :assert (s ?x)
   :why    "{?x} is s: it is not q")
+
+(solve
+  :expect (region
+            (model)
+            (model (r b))))
