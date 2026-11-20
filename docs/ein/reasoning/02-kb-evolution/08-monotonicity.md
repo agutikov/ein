@@ -160,8 +160,8 @@ saturation and builds no node.
 whatever its sites: a monotone program, state by state, proves or refutes hypotheses and adds none, and its lattice
 is a cube over root's. The check is made where a computation writes a state's facts of $\mathsf{open}$, at root,
 at a state that is shown or saved, and where a rule reads them at every state
-([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes)), and a run may be asked to make it at
-every state; where it is made changes no $R$. A computation that finds such a state says so at once, and once; the
+([saturation](02-saturation.md#the-pass-what-a-state-owes-and-supposes); [Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)), and a run may be asked to make
+it at every state ([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)); where it is made changes no $R$. A computation that finds such a state says so at once, and once; the
 answer stands, and nothing is claimed of it
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
 

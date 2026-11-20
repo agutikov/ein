@@ -376,6 +376,7 @@ that writes such a world's facts of $\mathsf{open}$ says so at once, and once, w
 may be asked to do at every world; where the check is made changes no $R$, the answer stands, and nothing is
 claimed of it
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md),
 [Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 ## Stratification

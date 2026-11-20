@@ -198,6 +198,7 @@ pub struct Kb {
     n_by_rel: FxHashMap<Symbol, u32>,                   // § 7
     classes: EqClasses,                                 // § 10
     saturated_facts: usize,                             // the clean mark
+    ended: Vec<ProvId>,                                 // the firings of :ein inconsistent that ended it
     open: Layer,                                        // the state's open facts, which no fork inherits, § 5.1
 }
 ```
@@ -216,11 +217,15 @@ provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3).
   compares the two and `Kb::mark_saturated` sets it. A count serves because a KB's fact list only grows.
   `Kb::facts_from(n)` reads the facts from insertion ordinal `n` on, skipping whole layers below it, so a per-fork
   check costs the fork's own writes.
+- **What ended the state.** `ended` is the record of every firing of a rule that states `:ein inconsistent`, in the
+  order they fired (`Kb::end` appends one, `Kb::ended` reads them); a KB with one is inconsistent
+  (`Kb::is_inconsistent`) and its state dead. No fact stands for it, the list only grows, and a fork inherits it.
 - **The state's `open` facts are a layer of their own**, `open`: what the state owes, `(open R)`, and its
   hypotheses, `(open F)`
   ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)).
   `Kb::write_open` writes them: the pass of `ein_infer::open` at root's fixpoint and at a state above root that is
-  printed or saved or that reads them, and the loader the ones the program writes, at root. A read walks the layer
+  printed or saved or that reads them, every state under `--in-flight` ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)), and the loader the
+  ones the program writes, at root. A read walks the layer
   after the stack, so a state holds, lists and counts them with its facts ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md));
   `Kb::open_facts` reads it alone. `Kb::materialise` concatenates the stack and `n_by_rel` counts it, the layer
   aside, and `Kb::n_facts_of` adds the layer's own count (§ 7).

@@ -134,7 +134,7 @@ a hypothesis ([Q-M1f.573](../../../decisions/hypotheses/Q-M1f.573-under-open-a-r
 | `(open ?R)`, `(open R)` | the held extent of `R` is **incomplete**: a rule's whole `:assert`, an **obligation**. `?R` is a parameter of the rule, bound by its activator; the witness domain and the slot to fill are read off the rule's own `(absent …)` |
 | `(open F)` | `F` is a **hypothesis**, a fact a commitment may suppose: concluded by any rule beside other facts, or written by the program, held at root alone |
 
-**`open` facts are part of a state, and no fork inherits them.** A pass writes them at a state's fixpoint, at root, where they make H, and above root at a state that is printed or saved, or whose rules read them; what a state owes is read at every state:
+**`open` facts are part of a state, and no fork inherits them.** A pass writes them at a state's fixpoint, at root, where they make H, and above root at a state that is printed or saved, or whose rules read them, every state under `--in-flight`; what a state owes is read at every state ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)):
 `(open R)`, once, where the state owes an instance of `R`, and `(open F)` for each hypothesis a rule concludes there,
 each fact that would pay what the state owes, and the blind enumerator's guesses where it runs. A fork drops every one,
 and the pass writes the child's where it runs: no rule deletes a fact, and a commitment that pays a debt leaves no `(open R)` in

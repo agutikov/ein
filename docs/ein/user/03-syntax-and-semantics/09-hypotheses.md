@@ -172,7 +172,8 @@ is a debt ([obligations](08-obligations.md)). A state holds `(open F)` for each 
 `(open R)` once for each relation `R` it owes an instance of
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). Both are a
 part of the state no fork inherits, written at its fixpoint: at root, where they make H, and above root at a state
-that is printed or saved, or whose rules read them. A fork starts without them, and no rule removes a fact; what a
+that is printed or saved, or whose rules read them, and at every state under `--in-flight`
+([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). A fork starts without them, and no rule removes a fact; what a
 state owes is read at every state. H is the hypotheses root holds,
 less the facts root holds or denies.
 

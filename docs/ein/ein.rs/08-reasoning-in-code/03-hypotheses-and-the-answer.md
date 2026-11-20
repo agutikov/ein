@@ -67,7 +67,7 @@ and a call made where an obligation is activated writes one `rung` event with it
 counts ([`05-events.md` § `rung`](../05-events.md#rung-which-generator-proposed)). What the writers gave at root,
 `open::at_root` writes as root's `(open …)` facts; a state above root that is printed or saved, or that uses its
 `open` facts, as every state of a program in which a rule reads one does, re-reads the same writers at its own
-fixpoint, and no other state does.
+fixpoint, and no other state does but under `--in-flight`, which runs it at every state ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)).
 
 **Which writers built $H$** is `Mode::as_str`, one of seven words, and it is what the note of `ein show hyps`, the
 `H` row of `ein render h-space` and the `rung` field of `h-space.json` print:

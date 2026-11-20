@@ -350,8 +350,10 @@ Everything above holds of a **monotone** program, and the read-out's `lattice` r
 that reads an `open` fact
 ([Q-M1f.569](../../../decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)), and no rule
 that concludes a hypothesis from such facts, so that no state above root holds a hypothesis root does not; where a run writes
-the `open` facts of such a state, it says so on stderr when it does
-([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). A program that
+the `open` facts of such a state, at a state it prints or saves, at every state of a program that reads `open`, and
+at every state under `--in-flight`, it says so on stderr when it does
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). A program that
 fails that check
 is **flagged**: R is still the set of alive, discharged nodes, each built as root with its commitment added, and every
 command agrees on it, but the engine claims nothing more of it, not soundness and not completeness

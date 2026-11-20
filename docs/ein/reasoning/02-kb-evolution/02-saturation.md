@@ -215,7 +215,9 @@ nothing under $\mathsf{open}$ and activates no obligation, the blind enumerator'
 the fixpoint $S$ and the rules, so they need not be written to be known. They are written at root, where they make
 $H$, and above root at a state that is shown or saved, or where a rule reads them, which then needs them at every
 state; what a state owes is read at every state whatever is written, since $R$ needs it
-([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)).
+([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state); [Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). Where they are written
+moves no answer, and a computation may be asked to write them at every state, to check each in flight
+([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)).
 
 **A rule that reads them.** A rule may read a fact of $\mathsf{open}$, or its absence. Then the closure and the
 boundary resume from $K_m' \cup \operatorname{opens}(K_m')$, as the sequence above resumes from a fact admitted,

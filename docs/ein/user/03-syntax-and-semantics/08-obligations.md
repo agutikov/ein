@@ -208,7 +208,8 @@ obligation against that fixpoint, and the instances it matches are the state's d
   whatever is added; a debt exists to be paid by an addition, and an inherited one would survive its own payment. So
   `(open R)` is held by the state that owes it, in a part of the state no fork inherits, and a state that pays it
   holds none. What a state owes is read at every state the engine builds; the pass that writes a state's `open`
-  facts runs at root, and above root at a state that is printed or saved, or whose rules read them. No rule removes
+  facts runs at root, and above root at a state that is printed or saved, or whose rules read them, and at every
+  state under `--in-flight` ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). No rule removes
   a fact.
 
 A state that holds `(false)` is dead whatever it owes. The order of the debts in a report is the order the

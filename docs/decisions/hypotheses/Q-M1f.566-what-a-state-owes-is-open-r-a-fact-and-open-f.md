@@ -13,7 +13,8 @@ such.
 
 **The `open` facts are written by a pass at a state's fixpoint** and held in a part of the state no fork
 inherits: a fork drops every one, a written one among them. The pass runs at root, where it makes H, and above root
-at a state that is printed or saved, or whose rules read them; what a state owes is counted at every state. Every rule that concludes `(open …)` is read at every state. No rule deletes a fact. A dead state is
+at a state that is printed or saved, or whose rules read them; what a state owes is counted at every state
+([Q-M1f.655](../engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). Every rule that concludes `(open …)` is read at every state. No rule deletes a fact. A dead state is
 written as any state is: it owes what the tally counts there.
 
 **Why.** An obligation's verdict and a hypothesis are both about what a state has not decided. Held as facts, they can be

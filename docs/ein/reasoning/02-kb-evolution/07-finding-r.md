@@ -124,8 +124,9 @@ the oracle's $R$ as from every route's. A relation of which no writer proposes a
 
 A program is **flagged** when it is not proved monotone
 ([Monotone and non-monotone programs](08-monotonicity.md)), or when a computation of its answer finds a state above
-root that holds a hypothesis root does not
-([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)): that answer
+root that holds a hypothesis root does not, where it writes that state's facts of $\mathsf{open}$
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)): that answer
 stands as computed, and what this section says of a flagged program is said of it. On such a program a dead set can
 have an alive superset, and an alive superset of a member of $R$ can owe:
 

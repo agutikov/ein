@@ -66,7 +66,10 @@ arrow. See [`../03-syntax-and-semantics/02-relations.md`](../03-syntax-and-seman
 ### Label, signature
 The atoms a declaration lists after the declared relation, one for each argument: `Nationality` and `House` in
 `(relation nation-loc Nationality House :why "…")`. Together they are the relation's **signature**. Their number is
-the number of arguments every form of the relation has, which the loader holds; a label itself is an ordinary atom,
+the count of arguments the declaration speaks of; a fact of the relation at another count loads too, a fact of its
+own, since a relation is overloaded by its count
+([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). A label itself is an
+ordinary atom,
 no argument is checked against it, and a rule reads it through the stored declaration, `(relation ?R ?A ?B)`. The
 engine reads a signature only for what may be guessed: whether it is empty, how long it is, and which atoms it
 lists, about which the blind enumerator proposes nothing. See
@@ -124,7 +127,7 @@ instance of an [obligation](#obligation) over it. `(open F)`, `F` a fact, is a *
 may add, concluded by a [hypothesis rule](#hypothesis-rule), written by an obligation or the blind enumerator, or
 written by the program, which root alone then holds. A state's `open` facts are a part of it no fork inherits,
 written at its fixpoint: at root, where they make H, and above root at a state that is printed or saved, or whose
-rules read them. They are listed, drawn and counted with its other facts;
+rules read them, and at every state under `--in-flight` ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). They are listed, drawn and counted with its other facts;
 `-P` leaves them out
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
 [Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). A rule may
@@ -267,9 +270,10 @@ its core. See [`08-read-out.md`](08-read-out.md).
 ### Monotone
 No read that can take a conclusion away, or add a debt or a hypothesis, as a commitment grows. Then dead and
 discharged are upward-closed, and R is convex. A static check over the program, its verdict the read-out's `lattice`
-row; where a run writes the `open` facts of a state above root that holds a hypothesis root does not, it says the
-program is not monotone, at once and once
-([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). Of a program that
+row; where a run writes the `open` facts of a state above root that holds a hypothesis root does not, at a state it
+prints or saves or at every state under `--in-flight`, it says the program is not monotone, at once and once
+([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). Of a program that
 is not, nothing is claimed.
 
 ### Exhausted

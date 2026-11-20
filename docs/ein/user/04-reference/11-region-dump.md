@@ -116,8 +116,9 @@ hold a hypothesis root does not
 ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)); and an obligation
 whose guard reads a relation in `D` beside its witness, `obligation-guard`, which writes its guard's candidates at
 root ([Q-M1f.579](../../../decisions/hypotheses/Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md)).
-A run that writes the `open` facts of a state holding a hypothesis root does not finds the program not monotone
-**in flight**, whatever
+A run that writes the `open` facts of a state holding a hypothesis root does not, at a state it prints or saves,
+at every state of a program a rule of which reads `open`, and at every state under `--in-flight` ([Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)), finds the
+program not monotone **in flight**, whatever
 its sites, and says so as the static check's warning is said (`in_flight`, below). **No site, and nothing found in
 flight, means the program is monotone**: *dead* and *discharged* are both upward-closed, `R` has no holes, and its
 two lines describe it. That is a sufficient condition, and the cube is its check: `region.md` flags a monotone verdict

@@ -173,8 +173,9 @@ over the KB **after** the fixpoint ([`obligations.rs`](../../../../ein.rs/crates
 what it reports, a node's debts, is read at every state. The pass of
 [`open.rs`](../../../../ein.rs/crates/ein-infer/src/open.rs) writes it as `(open R)`, once for each relation owed,
 into the part of the state no fork inherits, at root and at a state above root that is printed or saved or that uses
-its `open` facts
-([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), beside the
+its `open` facts, and at every state under `--in-flight`
+([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
+[Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)), beside the
 hypotheses `(open F)` the writers of H give there ([`07-search.md` § 1](07-search.md#1-hypothesis-generation)), at
 root and where a state is used
 ([Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)). The saturator

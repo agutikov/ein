@@ -149,7 +149,8 @@ writes; the obligations activated at root; and, only where none of those wrote a
 blind enumerator. Every writer feeds one filter pipeline, and the survivors are sorted by text and deduplicated
 into H. What the writers give at root the pass of `open.rs` writes as root's `(open …)` facts; above root the pass
 runs only at a state that is printed or saved, or that uses its `open` facts, as every state of a program in which a
-rule reads one does, and writes what the same writers give there. The contract is
+rule reads one does, and writes what the same writers give there ([Q-M1f.655](../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md)); `--in-flight` runs it at every state
+([Q-M1f.656](../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). The contract is
 [`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation).
 
 ![Hypothesis generation as a flow: the writers whose union is H](diagrams/02-hypothesis-writers.svg)

@@ -86,9 +86,10 @@ site puts at stake (`at_stake`: `state`, `state, dead`, `status: owes`, either t
 is assumed (`assumes: "fork"`, every node a fork of root). The dynamic half (a node's status, its stale facts, its
 parent paths) needs the run, and is the read-out's and `--json-summary`'s, not the stream's
 ([`03-design/07-search.md`](03-design/07-search.md)). A hypothesis first held above root, found where the pass that
-writes `open` facts runs, makes the program not monotone in flight; it is said on stderr, by the read-out and by
-`--json-summary`'s `monotonicity.in_flight`, not in the stream
-([Q-M1f.574](../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)).
+writes `open` facts runs, every state under `--in-flight`, makes the program not monotone in flight; it is said on
+stderr, by the read-out and by `--json-summary`'s `monotonicity.in_flight`, not in the stream
+([Q-M1f.574](../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md),
+[Q-M1f.656](../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)).
 
 A monotone program emits no `monotonicity` line. The same verdict is `--json-summary`'s `monotonicity` block on
 every run, and the `lattice` block on stdout carries the warning when there is a site; `ein solve FILE --monotone`
@@ -134,7 +135,8 @@ of this stream:
 - **What it reports the state holds as `(open R)`, once per relation, in a layer no fork inherits**
   ([Q-M1f.566](../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)), where the
   pass that writes a state's `open` facts runs: at root, and at a state above root that is printed or saved or that
-  uses them ([`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation)). The `owe` lines are
+  uses them, every state under `--in-flight` ([`03-design/07-search.md` § 1](03-design/07-search.md#1-hypothesis-generation),
+  [Q-M1f.655](../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)). The `owe` lines are
   written at every state all the same. A debt exists to be discharged by an extension, so a child that pays it holds
   no `(open R)` of it. The line is one per instance
   and the fact one per relation; `--json-summary`'s `owes` block is the same tally as a document.

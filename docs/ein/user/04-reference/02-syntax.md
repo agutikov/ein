@@ -504,7 +504,8 @@ part to play:
 | `(open F)` | `F`, a fact or a variable the `:match` binds to one, is a **hypothesis**: a commitment may suppose it |
 
 **The `open` facts are part of a state** and no fork inherits them: a pass writes them at a state's fixpoint (at
-root, where they make H, and above root at a state that is printed or saved, or whose rules read them),
+root, where they make H, and above root at a state that is printed or saved, or whose rules read them, every state
+under `--in-flight`; [Q-M1f.655](../../../decisions/engine/Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md), [Q-M1f.656](../../../decisions/cli/Q-M1f.656-a-flag-runs-the-pass-at-every-state-and-checks.md)),
 `(open R)` once where the state owes an instance of `R`, and `(open F)` for each hypothesis a rule concludes there,
 each fact that would pay what the state owes, and the blind enumerator's guesses where it runs; a fork drops every
 one, and no rule deletes a fact
