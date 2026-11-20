@@ -749,7 +749,7 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 #[test]
 fn the_universes_scope_is_one_sentence_on_every_surface() {
     const TAIL: &str = "R holds of it only what the program states and saturation derives";
-    let cases: [(&str, &[&str], String); 4] = [
+    let cases: [(&str, &[&str], String); 5] = [
         (
             "examples/ein-bugs/wrong-answers/uncovered.ein",
             &["knows"],
@@ -769,6 +769,13 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
             format!("flag — no candidate: no hypothesis rule proposes it. {TAIL}"),
         ),
         ("tests/region/01_states.ein", &[], String::new()),
+        // H is the two hypotheses the program writes, of `s`: nothing is
+        // outside it.
+        (
+            "examples/features/24_written_hypotheses.ein",
+            &[],
+            String::new(),
+        ),
     ];
     let run = |args: &[&str]| {
         let out = Command::new(env!("CARGO_BIN_EXE_ein"))
@@ -850,6 +857,64 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
     assert!(
         out.contains(&format!("    outside the universe: {}\n", cases[2].2)),
         "{out}"
+    );
+}
+
+/// **What `as :expect` prints reads back.** A class that lists an `open`
+/// fact, or the absence of one, is stated by no claim, which lists no `open`
+/// fact, so the row says *not printed* and why; under an ordinary relation
+/// `open` is a name, and that class's claim is printed and, pasted into its
+/// query, holds.
+#[test]
+fn a_claim_no_query_can_state_is_not_printed() {
+    const PROGRAM: &str = "(relation q T :why \"q of {?3}\")\n\
+        (relation think A F :why \"{?3} thinks {?4}\")\n\
+        (thing a) (thing b)\n(open (q a)) (open (q b))\n(think Ann (open (q a)))\n";
+    const NOT: &str = "not printed: these classes list an open fact, which no claim lists";
+    let dir = Scratch::new("ein-read-out-open");
+    let file = dir.join("open.ein");
+    let goals = "(query :goal (open ?f))\n\
+                 (query :goal (and (thing ?x) (absent (open (q ?x)))))\n\
+                 (query :goal (think ?w ?f))\n";
+    std::fs::write(&file, format!("{PROGRAM}{goals}")).expect("written");
+    let path = file.to_str().expect("a UTF-8 path");
+    for mode in [&[][..], &["--single"], &["-n", "4"], &["--maximal"]] {
+        let mut argv = vec![path];
+        argv.extend_from_slice(mode);
+        let run = solve(&argv);
+        let printed = rows(&run, "as :expect");
+        assert_eq!(printed.len(), 3, "{mode:?}:\n{}", run.out);
+        // A mode's state above ∅ holds none of the written `open` facts, so
+        // its class of `(open ?f)` lists none, and is not printed for the
+        // mode's own reason.
+        assert!(
+            printed[..2].iter().all(|r| r.starts_with("not printed: ")),
+            "{mode:?}:\n{}",
+            run.out
+        );
+    }
+    let run = solve(&[path]);
+    let printed = rows(&run, "as :expect");
+    assert_eq!(printed[..2], [NOT, NOT], "{}", run.out);
+    let claim = &printed[2];
+    assert_eq!(claim, "(model (think Ann (open (q a))))");
+    let back = dir.join("back.ein");
+    std::fs::write(
+        &back,
+        format!("{PROGRAM}(query :goal (think ?w ?f) :expect {claim})\n"),
+    )
+    .expect("written");
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(["test", back.to_str().expect("a UTF-8 path")])
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    assert_eq!(
+        out.status.code(),
+        Some(0),
+        "the printed claim, read back:\n{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr)
     );
 }
 

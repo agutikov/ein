@@ -2806,6 +2806,14 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
                 out.hint
             ));
         }
+        // A claim lists no `open` fact, so none states these classes.
+        if q.lists_open {
+            out.row(
+                Row::AsExpect,
+                "not printed: these classes list an open fact, which no claim lists",
+            );
+            return;
+        }
         if !q.as_asked {
             out.row(
                 Row::AsExpect,

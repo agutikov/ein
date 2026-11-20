@@ -118,6 +118,9 @@ pub struct Query {
     pub exact: bool,
     /// Sorted by size, then by facts.
     pub classes: Vec<Class>,
+    /// A class lists an `open` fact, or the absence of one, which no claim
+    /// lists: no claim states these classes.
+    pub lists_open: bool,
     /// The query's `:expect`, checked against [`Self::classes`].
     pub claim: Option<Report>,
 }
@@ -496,6 +499,7 @@ pub fn of_answer(
                 .enumerate()
                 .filter(|(i, _)| over.contains(i))
                 .collect();
+            let lists_open = picked.iter().any(|(_, a)| a.lists_open);
             let classes = classes(g.text.as_deref(), picked);
             let claim = g.expect.map(|node| {
                 if saved {
@@ -514,6 +518,7 @@ pub fn of_answer(
                 as_asked,
                 exact,
                 classes,
+                lists_open,
                 claim,
             }
         })
@@ -801,6 +806,7 @@ fn counted(
             as_asked: false,
             exact: false,
             classes: Vec::new(),
+            lists_open: false,
             claim: g.expect.map(|_| not_checked()),
         })
         .collect();
@@ -1165,6 +1171,9 @@ fn model_of(kb: &Kb, terms: &Terms, named: &[String]) -> Vec<String> {
 struct Answered {
     rows: Vec<Row>,
     facts: Vec<String>,
+    /// One of `facts` is an `open` fact, or the absence of one
+    /// ([`names_open`]).
+    lists_open: bool,
 }
 
 /// The goal in `kb`: every match's row, and every match's atoms grounded by
@@ -1179,6 +1188,7 @@ fn answered(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Answered {
     let disjuncts = ein_ir::expect::goal_disjuncts(ast, goal);
     let mut rows: Vec<Row> = Vec::new();
     let mut facts: Vec<String> = Vec::new();
+    let mut lists_open = false;
     for m in goal_matches(ast, terms, kb, Some(goal)) {
         let mut row: Row = m
             .row
@@ -1193,13 +1203,29 @@ fn answered(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Answered {
         row.sort();
         let atoms = disjuncts.get(m.disjunct).map_or(&[][..], Vec::as_slice);
         facts.extend(atoms.iter().filter_map(|c| ground(ast, *c, &row)));
+        lists_open |= atoms.iter().any(|&c| names_open(ast, c));
         rows.push(row);
     }
     rows.sort();
     rows.dedup();
     facts.sort();
     facts.dedup();
-    Answered { rows, facts }
+    Answered {
+        rows,
+        facts,
+        lists_open,
+    }
+}
+
+/// Is a goal's atom an `open` fact, `(open X)`, or the absence of one,
+/// `(absent (open X))`: what a claim cannot list, `open` standing there as
+/// the kernel's word (Q-M1f.568)? Under an ordinary relation it is a name,
+/// and a claim lists it.
+fn names_open(ast: &Ast, conj: NodeId) -> bool {
+    let is_open = |n: NodeId| ast.head_name(n) == Some("open");
+    is_open(conj)
+        || (ast.head_name(conj) == Some("absent")
+            && ast.form_args(conj).first().is_some_and(|&a| is_open(a)))
 }
 
 /// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x
@@ -1238,7 +1264,7 @@ fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
 /// state.
 fn classes(text: Option<&str>, per_state: Vec<(usize, Answered)>) -> Vec<Class> {
     let mut by_key: BTreeMap<Vec<String>, Class> = BTreeMap::new();
-    for (i, Answered { rows, facts }) in per_state {
+    for (i, Answered { rows, facts, .. }) in per_state {
         by_key
             .entry(facts.clone())
             .or_insert_with(|| Class {
