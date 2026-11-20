@@ -32,7 +32,9 @@
 //! check of Q-M1f.574: a hypothesis first held above root makes the program
 //! not monotone. The pass reports each one it writes ([`Writers::first_above`]),
 //! and the run says so at once, once ([`set_in_flight_hook`]); the answer
-//! stands, and nothing is claimed of it.
+//! stands, and nothing is claimed of it. A node a worker computes keeps its
+//! finding, which the fan-out records as it reads the node back, in the
+//! nodes' order, so the hypothesis named is the one named at one job.
 //!
 //! **The blind enumerator at a state above root** is root's raw list, the
 //! facts it proposed there, held to the state: those it neither holds nor
