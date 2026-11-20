@@ -129,7 +129,7 @@ add("""---
 | [X6](#x6--testsregion04_owingein-r-empty-alive-nodes-owe) | `tests/region/04_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
-| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe and `--maximal`; `--minimal` decided at root, ∅ being in R; `--count` |
+| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe and `--maximal`; `--minimal` decided at root, ∅ being in R; `--count`; the check in flight under `--in-flight` |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: cut on stdout and whole in `answer.txt`, its region and the 36 instances root owes; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
@@ -287,9 +287,11 @@ R, so every count is a lower bound. What it *can* certify is one line: ∅ is in
 whatever the program. That is the one state it lists. The other 20 members it met go to `--dump-answer`, and the query
 is answered over all 21 as a lower bound, with no `as :expect`: read back, that claim would say these classes are all.
 The warning says the cube's half is not known past the limit, reads the stale facts of every node the run computed,
-and checks no parent path, because the read-out prints no state of two commitments or more.
+and checks no parent path, because the read-out prints no state of two commitments or more. Under `--in-flight` the
+run writes every state's `open` facts, not only those of the states it prints, and checks at each whether it holds a
+hypothesis root does not: one does, `(sits Dan S1)`, and the `lattice` block has its `in flight` row.
 """)
-add(block(["examples/lattice/06_friends_tables.ein"]))
+add(block(["--in-flight", "examples/lattice/06_friends_tables.ein"]))
 add("""**`--count`** on the same program: the counts are describe's lower bounds, for the same reason, and the warning is
 printed whole, since it qualifies them. Its `paths` row says the spot check was not run: `--count` reads no state.
 """)

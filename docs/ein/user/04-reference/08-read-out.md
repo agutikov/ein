@@ -326,7 +326,7 @@ has them all. The block does not take the listings' 100 lines. Its JSON is the s
 <!-- rows: lattice -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `in flight` | on a program a run found not monotone in flight | the first hypothesis a state the run built holds and root does not ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)) | the run | `monotonicity.in_flight` | none on the examples page: no corpus program holds one |
+| `in flight` | on a program a run found not monotone in flight | the first hypothesis a state the run built holds and root does not ([Q-M1f.574](../../../decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)) | the run | `monotonicity.in_flight` | [X9](09-read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), under `--in-flight` |
 | `assumes` | on a flagged program | what a node is taken to be, and that the answer rests on that reading ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)) | — | — | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `site` | per site, up to four | the rule, what it reads and where, what it concludes, and what it puts at stake | around R | `monotonicity.sites[k].rule` | [X8](09-read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole), [X14](09-read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 | `…` | past four sites | how many more sites, and what writes every one | the listing | — | none on the examples page: none of its programs has five sites |
