@@ -278,3 +278,10 @@ The checks on `e62c407a`: `doc_audit.py --links --check --tracked`, 2450 files, 
 ids; `check_release_voice.py`, 1876 files, none; `check_doc_blocks.py`, 550 pages, rules 1 to 5 hold;
 `render_diagrams.py --check`, 818 diagrams, every picture drawn from its source; `check_generated.py`, 9
 generators, every file as written; `read_out_examples.py` run again, nothing moved.
+
+**The gate** on `b0fbcccb`, this section's commit: `EIN_TEST_JOBS=4 ./run_tests.sh`, **exit 0**, run with four
+workers from the start, two engine stages building beside it and the run before this round having stopped only at
+the slow flag's check under load: the ten static checks, `cargo test --profile gate --workspace` (168 test binaries,
+1384 tests passed, none failed, by the sum of their `test result` lines), the process's checks (`check_generated.py`
+9 generators as written; `check_region_routes.py` 8 programs and 300 regions; `wrong_answers.py` 9 open rows; the
+review bundle's smoke, 0 failed) and the bench smoke. Not run: the nightly, `--dev-host`, `utils/ci_container.sh`.
