@@ -899,7 +899,7 @@ solve · examples/lattice/04_obligation_trigger_hole.ein
   universe          2 candidates, 0 dead alone
     outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 7 facts beyond root
+  work              4 saturations · 6 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
@@ -2142,7 +2142,7 @@ oracle · examples/lattice/04_obligation_trigger_hole.ein
   universe          2 candidates, 0 dead alone
     outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
   route             2, the cube — no licence: asked for by name
-  work              4 saturations · 7 facts beyond root
+  work              4 saturations · 6 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
@@ -2421,7 +2421,7 @@ solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
   universe          2 candidates, 0 dead alone
     later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 7 facts beyond root
+  work              4 saturations · 6 facts beyond root
 
   (region
     ;; state 1 of 1 — 2 candidates · minimal and maximal · from {(drinks Ann Tea), (likes Ann Soup)}

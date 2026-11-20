@@ -204,8 +204,9 @@ pub struct Node {
     /// The candidates whose `(not h)` its fixpoint holds: adding one of them
     /// is a pair contradiction one edge up.
     pub excluded: u64,
-    /// Facts its fixpoint holds beyond root's that are **not** candidates —
-    /// what the node is that its coordinates do not say.
+    /// Facts its fixpoint holds beyond root's that are **not** candidates,
+    /// its `open` facts aside — what the node is that its coordinates do not
+    /// say.
     pub beyond: u32,
     /// Of [`Self::beyond`], the positive facts over a relation the candidate
     /// list proposes: facts a generator could have proposed and root's did
@@ -2195,8 +2196,11 @@ fn node_in_region(
     let floor = snapshot.floor();
     let is_candidate =
         |f: FactId| axes.is_candidate.contains(&f) || floor.is_some_and(|c| c.holds(f));
+    // The node's `open` facts aside, as its work leaves them: the pass
+    // writes them from what root read.
+    let open = terms.kernel.open;
     for &f in &delta {
-        if is_candidate(f) {
+        if is_candidate(f) || terms.facts.rel(f) == open {
             continue;
         }
         node.beyond += 1;

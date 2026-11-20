@@ -210,7 +210,7 @@ $$
 \operatorname{alt}(I, S) = \lbrace\, r(a, b) \;:\; b \text{ a member of } B \,\rbrace \setminus \lbrace\, h \;:\; \operatorname{denies}(S, h) \,\rbrace
 $$
 
-with $\operatorname{denies}$ that of [hypothesis generation](04-hypothesis-generation.md#2-the-ladder): $S$ holds
+with $\operatorname{denies}$ that of [hypothesis generation](04-hypothesis-generation.md#2-the-union): $S$ holds
 $\lnot h$, and a rule of the program refutes $h$ beside it.
 
 **Proposition (jointly exhaustive).** Let $C$ owe $I$, and write ${\uparrow} C = \lbrace C' : C \subseteq C'
