@@ -11986,7 +11986,9 @@ left, verbatim:
 
 > this cost is absolutely acceptable
 
-So the instance stays, as the default had it, and nothing more is built for cost in the phase. **Decision file**:
+And, the same day, on the coordinator's reading of it as covering both: *"I accepted costs of contradiction."* So
+the instance stays, as the default had it, and the contradiction's cost that is left is accepted. The walk of a
+resumed state's facts is no part of it and is not ruled (finding V-78 of P1f.21). **Decision file**:
 [Q-M1f.658](../../docs/decisions/stdlib/Q-M1f.658-a-declared-relation-takes-the-contradictions.md).
 
 ### Q-M1f.659 — How a pair's probe asks whether the state holds the other side

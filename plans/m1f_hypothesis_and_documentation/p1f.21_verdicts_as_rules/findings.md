@@ -85,8 +85,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | open; **S1f.21.22 rewords them** |
 | [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | **fixed** by S1f.21.14 on its resume |
 | [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | open; **S1f.21.22 runs it and fixes it if it does** |
-| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | **left**: the user accepted the cost that is left, 2026-11-20; not built |
-| [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: the user accepted the cost that is left, 2026-11-20; not built |
+| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | open; the largest cost at a state that is left, and no part of the contradiction's, whose cost the user accepted; **the user's call** |
+| [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
