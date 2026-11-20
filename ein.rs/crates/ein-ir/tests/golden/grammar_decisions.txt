@@ -224,7 +224,6 @@
 === "(x (()))"
   <string>:1:5: unexpected `(`
     repair: Insert a name, Shift `(`, Insert a name
-    repair: Insert `not`, Shift `(`, Insert a name
 === "(x ; comment\n y)"
   ok (1 form(s))
 === "(x #| c |# y)"

@@ -15,12 +15,52 @@
   lattice           monotone (the static check) — R is convex: no hole
   universe          51 candidates, 47 dead alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
-  work              52 saturations · 328 facts beyond root · 3 layers
+  work              52 saturations · 344 facts beyond root · 3 layers
 ```
 
-## Root — 7 steps
+## Root — 11 steps
 
-### Step 1 — `derive-functional-negative`
+### Step 1 — `std.contradiction.clash-of-0`
+
+> color-of is declared.
+
+Premises: `relation(color-of)`
+
+Derives `std.contradiction.clash-0(color-of)`.
+
+<dot>
+
+### Step 2 — `std.contradiction.clash-of-0`
+
+> is-a is declared.
+
+Premises: `relation(is-a)`
+
+Derives `std.contradiction.clash-0(is-a)`.
+
+<dot>
+
+### Step 3 — `std.contradiction.clash-of-2`
+
+> color-of is declared with two arguments.
+
+Premises: `relation(color-of, House, Color)` — the colour of House is Color
+
+Derives `std.contradiction.clash-2(color-of)`.
+
+<dot>
+
+### Step 4 — `std.contradiction.clash-of-2`
+
+> is-a is declared with two arguments.
+
+Premises: `relation(is-a, T, T)` — T is a T
+
+Derives `std.contradiction.clash-2(is-a)`.
+
+<dot>
+
+### Step 5 — `derive-functional-negative`
 
 > color-of functional ⟹ functional-negative active.
 
@@ -30,7 +70,7 @@ Derives `functional-negative(color-of)`.
 
 <dot>
 
-### Step 2 — `functional-negative`
+### Step 6 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Green)).
 
@@ -40,7 +80,7 @@ Derives `not(color-of(H1, Green))`.
 
 <dot>
 
-### Step 3 — `functional-negative`
+### Step 7 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Blue)).
 
@@ -50,7 +90,7 @@ Derives `not(color-of(H1, Blue))`.
 
 <dot>
 
-### Step 4 — `derive-injective-negative`
+### Step 8 — `derive-injective-negative`
 
 > color-of injective ⟹ injective-negative active.
 
@@ -60,7 +100,7 @@ Derives `injective-negative(color-of)`.
 
 <dot>
 
-### Step 5 — `injective-negative`
+### Step 9 — `injective-negative`
 
 > color-of injective: (color-of H1 Red) ⟹ (not (color-of H2 Red)).
 
@@ -70,7 +110,7 @@ Derives `not(color-of(H2, Red))`.
 
 <dot>
 
-### Step 6 — `injective-negative`
+### Step 10 — `injective-negative`
 
 > color-of injective: (color-of H1 Red) ⟹ (not (color-of H3 Red)).
 
@@ -80,7 +120,7 @@ Derives `not(color-of(H3, Red))`.
 
 <dot>
 
-### Step 7 — `domain-elimination`
+### Step 11 — `domain-elimination`
 
 > every Color except Red excluded for H1 → (color-of H1 Red)
 

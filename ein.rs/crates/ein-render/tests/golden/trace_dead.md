@@ -12,7 +12,7 @@
   work              1 saturation · 0 facts beyond root · 1 layer
 ```
 
-## Root — 2 steps
+## Root — 4 steps
 
 ### Step 1 — `irreflexive`
 
@@ -31,6 +31,26 @@ Derives `false`.
 Premises: `false`
 
 States `:ein inconsistent`: the state is inconsistent, and the step derives no fact.
+
+<dot>
+
+### Step 3 — `std.contradiction.clash-of-0`
+
+> loops is declared.
+
+Premises: `relation(loops)`
+
+Derives `std.contradiction.clash-0(loops)`.
+
+<dot>
+
+### Step 4 — `std.contradiction.clash-of-2`
+
+> loops is declared with two arguments.
+
+Premises: `relation(loops, Node, Node)` — Node points at Node
+
+Derives `std.contradiction.clash-2(loops)`.
 
 <dot>
 

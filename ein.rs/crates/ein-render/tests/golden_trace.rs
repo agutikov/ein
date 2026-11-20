@@ -200,8 +200,8 @@ fn the_root_section_comes_first_and_each_state_is_derived_from_its_commitment() 
         .filter(|l| l.starts_with("### Step "))
         .count();
     assert_eq!(
-        root_steps, 16,
-        "the root section is not the unconditional 16"
+        root_steps, 20,
+        "the root section is not the unconditional 20"
     );
     // Each state's steps start again at 1, under its own heading.
     let state = &hyp[assuming_at..];

@@ -12,9 +12,47 @@
   work              1 saturation · 0 facts beyond root · 2 layers
 ```
 
-## Root — 0 steps
+## Root — 4 steps
 
-_Root derives nothing beyond what the program gives._
+### Step 1 — `std.contradiction.clash-of-0`
+
+> is-a is declared.
+
+Premises: `relation(is-a)`
+
+Derives `std.contradiction.clash-0(is-a)`.
+
+<dot>
+
+### Step 2 — `std.contradiction.clash-of-0`
+
+> likes is declared.
+
+Premises: `relation(likes)`
+
+Derives `std.contradiction.clash-0(likes)`.
+
+<dot>
+
+### Step 3 — `std.contradiction.clash-of-2`
+
+> is-a is declared with two arguments.
+
+Premises: `relation(is-a, T, T)` — T is a T
+
+Derives `std.contradiction.clash-2(is-a)`.
+
+<dot>
+
+### Step 4 — `std.contradiction.clash-of-2`
+
+> likes is declared with two arguments.
+
+Premises: `relation(likes, Person, Food)` — Person likes Food
+
+Derives `std.contradiction.clash-2(likes)`.
+
+<dot>
 
 ## Owing — 1 node with no alive node one fact up
 

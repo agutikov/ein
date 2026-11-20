@@ -7,12 +7,52 @@
   lattice           monotone (the static check) — R is convex: no hole
   universe          46 candidates
   route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              141 saturations · 656 facts beyond root
+  work              141 saturations · 702 facts beyond root
 ```
 
-## Root — 16 steps
+## Root — 20 steps
 
-### Step 1 — `symmetric`
+### Step 1 — `std.contradiction.clash-of-0`
+
+> is-a is declared.
+
+Premises: `relation(is-a)`
+
+Derives `std.contradiction.clash-0(is-a)`.
+
+<dot>
+
+### Step 2 — `std.contradiction.clash-of-0`
+
+> co-located is declared.
+
+Premises: `relation(co-located)`
+
+Derives `std.contradiction.clash-0(co-located)`.
+
+<dot>
+
+### Step 3 — `std.contradiction.clash-of-2`
+
+> is-a is declared with two arguments.
+
+Premises: `relation(is-a, T, T)` — T is a T
+
+Derives `std.contradiction.clash-2(is-a)`.
+
+<dot>
+
+### Step 4 — `std.contradiction.clash-of-2`
+
+> co-located is declared with two arguments.
+
+Premises: `relation(co-located, Color, House)` — Color is co-located with House
+
+Derives `std.contradiction.clash-2(co-located)`.
+
+<dot>
+
+### Step 5 — `symmetric`
 
 > co-located sym
 
@@ -22,7 +62,17 @@ Derives `co-located(H1, Red)`.
 
 <dot>
 
-### Step 2 — `sibling-exclusive`
+### Step 6 — `symmetric`
+
+> co-located sym
+
+Premises: `co-located(H1, Red)`
+
+Derives `co-located(Red, H1)`.
+
+<dot>
+
+### Step 7 — `sibling-exclusive`
 
 > sib T
 
@@ -32,7 +82,7 @@ Derives `not(co-located(Color, House))`.
 
 <dot>
 
-### Step 3 — `sibling-exclusive`
+### Step 8 — `sibling-exclusive`
 
 > sib T
 
@@ -42,7 +92,7 @@ Derives `not(co-located(House, Color))`.
 
 <dot>
 
-### Step 4 — `sibling-exclusive`
+### Step 9 — `sibling-exclusive`
 
 > sib Color
 
@@ -52,7 +102,7 @@ Derives `not(co-located(Red, Blue))`.
 
 <dot>
 
-### Step 5 — `sibling-exclusive`
+### Step 10 — `sibling-exclusive`
 
 > sib Color
 
@@ -62,7 +112,7 @@ Derives `not(co-located(Red, Green))`.
 
 <dot>
 
-### Step 6 — `sibling-exclusive`
+### Step 11 — `sibling-exclusive`
 
 > sib Color
 
@@ -72,7 +122,7 @@ Derives `not(co-located(Blue, Red))`.
 
 <dot>
 
-### Step 7 — `sibling-exclusive`
+### Step 12 — `sibling-exclusive`
 
 > sib Color
 
@@ -82,7 +132,7 @@ Derives `not(co-located(Blue, Green))`.
 
 <dot>
 
-### Step 8 — `sibling-exclusive`
+### Step 13 — `sibling-exclusive`
 
 > sib Color
 
@@ -92,7 +142,7 @@ Derives `not(co-located(Green, Red))`.
 
 <dot>
 
-### Step 9 — `sibling-exclusive`
+### Step 14 — `sibling-exclusive`
 
 > sib Color
 
@@ -102,7 +152,7 @@ Derives `not(co-located(Green, Blue))`.
 
 <dot>
 
-### Step 10 — `sibling-exclusive`
+### Step 15 — `sibling-exclusive`
 
 > sib House
 
@@ -112,7 +162,7 @@ Derives `not(co-located(H1, H2))`.
 
 <dot>
 
-### Step 11 — `sibling-exclusive`
+### Step 16 — `sibling-exclusive`
 
 > sib House
 
@@ -122,7 +172,7 @@ Derives `not(co-located(H1, H3))`.
 
 <dot>
 
-### Step 12 — `sibling-exclusive`
+### Step 17 — `sibling-exclusive`
 
 > sib House
 
@@ -132,7 +182,7 @@ Derives `not(co-located(H2, H1))`.
 
 <dot>
 
-### Step 13 — `sibling-exclusive`
+### Step 18 — `sibling-exclusive`
 
 > sib House
 
@@ -142,7 +192,7 @@ Derives `not(co-located(H2, H3))`.
 
 <dot>
 
-### Step 14 — `sibling-exclusive`
+### Step 19 — `sibling-exclusive`
 
 > sib House
 
@@ -152,23 +202,13 @@ Derives `not(co-located(H3, H1))`.
 
 <dot>
 
-### Step 15 — `sibling-exclusive`
+### Step 20 — `sibling-exclusive`
 
 > sib House
 
 Premises: `is-a(H3, House)`, `is-a(H2, House)`
 
 Derives `not(co-located(H3, H2))`.
-
-<dot>
-
-### Step 16 — `symmetric`
-
-> co-located sym
-
-Premises: `co-located(H1, Red)`
-
-Derives `co-located(Red, H1)`.
 
 <dot>
 

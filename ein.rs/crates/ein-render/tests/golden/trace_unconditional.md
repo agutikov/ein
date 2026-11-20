@@ -18,9 +18,49 @@
   work              1 saturation · 0 facts beyond root · 2 layers
 ```
 
-## Root — 23 steps
+## Root — 27 steps
 
-### Step 1 — `bijective-properties`
+### Step 1 — `std.contradiction.clash-of-0`
+
+> is-a is declared.
+
+Premises: `relation(is-a)`
+
+Derives `std.contradiction.clash-0(is-a)`.
+
+<dot>
+
+### Step 2 — `std.contradiction.clash-of-0`
+
+> color-loc is declared.
+
+Premises: `relation(color-loc)`
+
+Derives `std.contradiction.clash-0(color-loc)`.
+
+<dot>
+
+### Step 3 — `std.contradiction.clash-of-2`
+
+> is-a is declared with two arguments.
+
+Premises: `relation(is-a, T, T)` — T is a T
+
+Derives `std.contradiction.clash-2(is-a)`.
+
+<dot>
+
+### Step 4 — `std.contradiction.clash-of-2`
+
+> color-loc is declared with two arguments.
+
+Premises: `relation(color-loc, Color, House)` — House is painted Color
+
+Derives `std.contradiction.clash-2(color-loc)`.
+
+<dot>
+
+### Step 5 — `bijective-properties`
 
 > color-loc is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.
 
@@ -30,7 +70,7 @@ Derives `functional(color-loc)`; `injective(color-loc)`; `total(color-loc)`; `su
 
 <dot>
 
-### Step 2 — `derive-functional-negative`
+### Step 6 — `derive-functional-negative`
 
 > color-loc functional ⟹ functional-negative active.
 
@@ -40,7 +80,7 @@ Derives `functional-negative(color-loc)`.
 
 <dot>
 
-### Step 3 — `functional-negative`
+### Step 7 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H1)).
 
@@ -50,7 +90,7 @@ Derives `not(color-loc(Red, H1))`.
 
 <dot>
 
-### Step 4 — `functional-negative`
+### Step 8 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H3)).
 
@@ -60,7 +100,7 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-### Step 5 — `functional-negative`
+### Step 9 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H1)).
 
@@ -70,7 +110,7 @@ Derives `not(color-loc(Green, H1))`.
 
 <dot>
 
-### Step 6 — `functional-negative`
+### Step 10 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H2)).
 
@@ -80,7 +120,7 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-### Step 7 — `derive-domain-elimination`
+### Step 11 — `derive-domain-elimination`
 
 > color-loc functional + total ⟹ domain-elimination active.
 
@@ -90,7 +130,7 @@ Derives `domain-elimination(color-loc)`.
 
 <dot>
 
-### Step 8 — `derive-injective-negative`
+### Step 12 — `derive-injective-negative`
 
 > color-loc injective ⟹ injective-negative active.
 
@@ -100,7 +140,7 @@ Derives `injective-negative(color-loc)`.
 
 <dot>
 
-### Step 9 — `injective-negative`
+### Step 13 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Green H2)).
 
@@ -110,7 +150,7 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-### Step 10 — `injective-negative`
+### Step 14 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Blue H2)).
 
@@ -120,7 +160,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 <dot>
 
-### Step 11 — `injective-negative`
+### Step 15 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Red H3)).
 
@@ -130,7 +170,7 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-### Step 12 — `injective-negative`
+### Step 16 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Blue H3)).
 
@@ -140,7 +180,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 <dot>
 
-### Step 13 — `derive-range-elimination`
+### Step 17 — `derive-range-elimination`
 
 > color-loc injective + surjective ⟹ range-elimination active.
 
@@ -150,7 +190,7 @@ Derives `range-elimination(color-loc)`.
 
 <dot>
 
-### Step 14 — `domain-elimination`
+### Step 18 — `domain-elimination`
 
 > every House except H2 excluded for Red → (color-loc Red H2).
 
@@ -160,7 +200,7 @@ Derives `color-loc(Red, H2)`.
 
 <dot>
 
-### Step 15 — `domain-elimination`
+### Step 19 — `domain-elimination`
 
 > every House except H3 excluded for Green → (color-loc Green H3).
 
@@ -170,7 +210,7 @@ Derives `color-loc(Green, H3)`.
 
 <dot>
 
-### Step 16 — `domain-elimination`
+### Step 20 — `domain-elimination`
 
 > every House except H1 excluded for Blue → (color-loc Blue H1).
 
@@ -180,7 +220,7 @@ Derives `color-loc(Blue, H1)`.
 
 <dot>
 
-### Step 17 — `functional-negative`
+### Step 21 — `functional-negative`
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H2)).
 
@@ -190,7 +230,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 <dot>
 
-### Step 18 — `functional-negative`
+### Step 22 — `functional-negative`
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H3)).
 
@@ -200,7 +240,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 <dot>
 
-### Step 19 — `injective-negative`
+### Step 23 — `injective-negative`
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Red H1)).
 
@@ -210,7 +250,7 @@ Derives `not(color-loc(Red, H1))`.
 
 <dot>
 
-### Step 20 — `injective-negative`
+### Step 24 — `injective-negative`
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Green H1)).
 
@@ -220,7 +260,7 @@ Derives `not(color-loc(Green, H1))`.
 
 <dot>
 
-### Step 21 — `range-elimination`
+### Step 25 — `range-elimination`
 
 > every Color except Blue excluded for H1 → (color-loc Blue H1).
 
@@ -230,7 +270,7 @@ Derives `color-loc(Blue, H1)`.
 
 <dot>
 
-### Step 22 — `range-elimination`
+### Step 26 — `range-elimination`
 
 > every Color except Red excluded for H2 → (color-loc Red H2).
 
@@ -240,7 +280,7 @@ Derives `color-loc(Red, H2)`.
 
 <dot>
 
-### Step 23 — `range-elimination`
+### Step 27 — `range-elimination`
 
 > every Color except Green excluded for H3 → (color-loc Green H3).
 

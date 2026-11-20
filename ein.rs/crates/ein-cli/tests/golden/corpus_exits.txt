@@ -453,9 +453,6 @@
 1    examples/broken/load/region_owing_with_states.ein :: render rules
 1    examples/broken/load/region_owing_with_states.ein :: saturate
 1    examples/broken/load/region_owing_with_states.ein :: solve
-1    examples/broken/load/relation_duplicate.ein :: render rules
-1    examples/broken/load/relation_duplicate.ein :: saturate
-1    examples/broken/load/relation_duplicate.ein :: solve
 1    examples/broken/load/reserved_open_aliased.ein :: render rules
 1    examples/broken/load/reserved_open_aliased.ein :: solve
 1    examples/broken/load/reserved_open_direct.ein :: render rules
@@ -655,6 +652,10 @@
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: test
+0    examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein :: saturate
+0    examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein :: solve
+0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: saturate
+0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: solve
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: solve
@@ -662,20 +663,20 @@
 0    examples/ein-bugs/wrong-answers/and-in-and.ein :: saturate
 0    examples/ein-bugs/wrong-answers/and-in-and.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/and-in-and.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-in-goal.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-in-goal.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-in-match.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-in-match.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-nested-fact.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-nested-fact.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-request.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-request.ein :: solve
-1    examples/ein-bugs/wrong-answers/arity-top-level-fact.ein :: saturate
-1    examples/ein-bugs/wrong-answers/arity-top-level-fact.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-in-goal.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-in-goal.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-in-match.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-in-match.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-nested-fact.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-nested-fact.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-request.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-request.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity-top-level-fact.ein :: saturate
+0    examples/ein-bugs/wrong-answers/arity-top-level-fact.ein :: solve
 0    examples/ein-bugs/wrong-answers/arity3.ein :: solve
 0    examples/ein-bugs/wrong-answers/assert-empty.ein :: saturate
 0    examples/ein-bugs/wrong-answers/assert-empty.ein :: solve
@@ -1356,6 +1357,10 @@
 0    examples/features/21_import_of_core.ein :: saturate
 0    examples/features/21_import_of_core.ein :: saturate --dump
 0    examples/features/21_import_of_core.ein :: solve
+0    examples/features/22_declared_twice.ein :: saturate
+0    examples/features/22_declared_twice.ein :: saturate --dump
+0    examples/features/22_declared_twice.ein :: solve
+0    examples/features/22_declared_twice.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules
@@ -2204,11 +2209,11 @@
 0    tests/stdlib/contradiction/09_clash_of_declared.ein :: saturate
 0    tests/stdlib/contradiction/09_clash_of_declared.ein :: solve
 0    tests/stdlib/contradiction/09_clash_of_declared.ein :: test
-0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: render constraints
-1    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: render rules
-0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: saturate
-0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: solve
-0    tests/stdlib/contradiction/10_clash_of_not_asked.ein :: test
+0    tests/stdlib/contradiction/10_undeclared_not_reached.ein :: render constraints
+1    tests/stdlib/contradiction/10_undeclared_not_reached.ein :: render rules
+0    tests/stdlib/contradiction/10_undeclared_not_reached.ein :: saturate
+0    tests/stdlib/contradiction/10_undeclared_not_reached.ein :: solve
+0    tests/stdlib/contradiction/10_undeclared_not_reached.ein :: test
 0    tests/stdlib/core/01_false_ends_the_state.ein :: render constraints
 0    tests/stdlib/core/01_false_ends_the_state.ein :: render rules
 0    tests/stdlib/core/01_false_ends_the_state.ein :: saturate
