@@ -127,10 +127,7 @@ fn an_empty_h_prints_nothing_and_says_why() {
         assert_eq!(r.code, 0, "{file}: {}", r.err);
         assert!(r.out.is_empty(), "{file}: {}", r.out);
         assert_eq!(universe_row(file), why, "{file}: the read-out's words");
-        assert_eq!(
-            r.err,
-            format!("note: {file}: H, from `{rung}`: {why}\n")
-        );
+        assert_eq!(r.err, format!("note: {file}: H, from `{rung}`: {why}\n"));
     }
 }
 

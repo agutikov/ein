@@ -66,7 +66,14 @@ fn pairs(m: &Mechanisms, terms: &Terms) -> BTreeMap<&'static str, Vec<String>> {
                 .into_iter()
                 .map(|r| {
                     let p = proposed.iter().any(|&s| terms.sym(s) == r);
-                    format!("{r}{}", if p { "" } else { " (no hypothesis rule proposes it)" })
+                    format!(
+                        "{r}{}",
+                        if p {
+                            ""
+                        } else {
+                            " (no hypothesis rule proposes it)"
+                        }
+                    )
                 })
                 .collect(),
         );

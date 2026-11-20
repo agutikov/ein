@@ -141,11 +141,7 @@ pub fn shown_char(c: char) -> String {
 /// The `(query …)` keywords that choose the lattice, which belong on
 /// `(solve …)`, one program having one lattice: a query that writes one is
 /// refused at the keyword, with a note saying where it goes.
-const LATTICE_KEYWORDS: [&str; 3] = [
-    ":hypothesis-relations",
-    ":no-hypothesis",
-    ":no-search",
-];
+const LATTICE_KEYWORDS: [&str; 3] = [":hypothesis-relations", ":no-hypothesis", ":no-search"];
 
 /// One error of a refused file.
 #[derive(Debug, Clone, PartialEq, Eq)]

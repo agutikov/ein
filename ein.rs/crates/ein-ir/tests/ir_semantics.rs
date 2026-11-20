@@ -654,11 +654,7 @@ fn the_import_declarator_needs_a_module_symbol() {
 /// or conclusion, so the accepted rules write `(a)` and `(b)`.
 #[test]
 fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
-    for src in [
-        "(rule x :match (a) :assert (b))",
-        "(rule x)",
-        "(query)",
-    ] {
+    for src in ["(rule x :match (a) :assert (b))", "(rule x)", "(query)"] {
         rejected(src);
     }
     for src in [
@@ -751,9 +747,7 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
         rejected("(ontology :foo bar)").errors[0].what,
         "unexpected `:foo`: a keyword this form does not take"
     );
-    for word in [
-        "rule", "query", "config", "macro", "import", "trace",
-    ] {
+    for word in ["rule", "query", "config", "macro", "import", "trace"] {
         let src = format!("({word} a b c)");
         assert!(
             !accepts(&src),

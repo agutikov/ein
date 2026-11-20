@@ -784,10 +784,7 @@ fn the_program_views_kb_is_the_kb_views_drawing_on_the_corpus() {
                 if k.derived
                     || k.forms.iter().any(|f| {
                         check(*f)
-                            || matches!(
-                                k.ast.head_name(*f),
-                                Some("rule" | "macro" | "import")
-                            )
+                            || matches!(k.ast.head_name(*f), Some("rule" | "macro" | "import"))
                     })
                 {
                     return None;

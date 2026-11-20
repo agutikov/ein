@@ -754,7 +754,10 @@ fn main() {
         if !s.hypothesis_rule_reads.is_empty() {
             note(
                 "hypothesis-rule-reads",
-                format!("{rel} ({}; {reach})", joined(&s.hypothesis_rule_reads, ", ")),
+                format!(
+                    "{rel} ({}; {reach})",
+                    joined(&s.hypothesis_rule_reads, ", ")
+                ),
             );
         }
         match &row.cube {

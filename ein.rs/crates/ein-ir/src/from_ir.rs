@@ -5774,7 +5774,9 @@ mod tests {
                 "(m ?x) binds ?x where rule 'mk' writes (seen (m ?y))",
             ),
             (
-                format!("(p k)\n(rule mk () :match (p ?y) :assert (open (m ?y)) :why \"mk\")\n{not_m}"),
+                format!(
+                    "(p k)\n(rule mk () :match (p ?y) :assert (open (m ?y)) :why \"mk\")\n{not_m}"
+                ),
                 "(m ?x) binds ?x where rule 'mk' writes (open (m ?y))",
             ),
             (

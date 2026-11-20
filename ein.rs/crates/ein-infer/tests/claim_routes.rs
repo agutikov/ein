@@ -784,10 +784,7 @@ fn the_least_question_is_read_off_the_claims_shapes() {
             describe,
         ),
         (
-            format!(
-                "(guess p) (solve :expect (region)){}",
-                q("all", one)
-            ),
+            format!("(guess p) (solve :expect (region)){}", q("all", one)),
             describe,
             describe,
         ),

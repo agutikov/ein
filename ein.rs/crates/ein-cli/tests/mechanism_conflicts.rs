@@ -581,12 +581,7 @@ fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead
             vec![],
             "in R",
         ),
-        (
-            "h",
-            bare(&[DECL, GUESS, h]),
-            vec![rule.to_string()],
-            "in R",
-        ),
+        ("h", bare(&[DECL, GUESS, h]), vec![rule.to_string()], "in R"),
         (
             "h-o",
             bare(&[OWED, DECL, GUESS, OWE_AT, h]),

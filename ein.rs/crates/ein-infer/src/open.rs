@@ -53,8 +53,8 @@ use ein_core::{FactId, Kb, Prov, Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
 
 use crate::compile::CompileError;
-use crate::hypothesis_rules::HypothesisRules;
 use crate::hypgen::{HypGenStats, Written};
+use crate::hypothesis_rules::HypothesisRules;
 use crate::obligations::Owes;
 use crate::saturator::{Saturator, Session};
 
