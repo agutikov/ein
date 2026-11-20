@@ -44,11 +44,11 @@ what the pass costs at a state and on the gate's build of one program.
      `--dump-lattice`, the oracle's dump, a render of a state), and at a state that uses its `open` facts: where
      a rule of the program reads an `open` fact, every state the search builds.
    - **At every state, as before**: what the state owes, its verdict. $R$ needs it, and it is not the writing.
-   - **The check in flight** is made where the pass runs, a default
-     ([Q-M1f.656](../open_questions.md#q-m1f656--the-check-in-flight-once-the-pass-runs-where-a-state-is-used)).
-   - **Optional, so both are runs**: a lever runs the pass at every state, and the lever invariance holds every
-     corpus program to one answer and one printed state under it. Its name and where it is set are the stage's
-     default.
+   - **The check in flight** is made where the pass runs, and **a command-line flag runs the pass at every
+     state**, the user's ruling of
+     [Q-M1f.656](../open_questions.md#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used): *"also can have cmdline flag that enables firing H-set for every state to detect non-monotonicity in-flight"* The flag's name is the stage's default. It changes no
+     $R$: the lever invariance holds every corpus program to one answer and one printed state with it and
+     without, and the options' census names it.
    - Measured again with [the page's script](costs/four_engines.py), a fifth point beside the four.
 6. **[V-65](findings.md#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program): the gate's
    checked build on one program, bounded.** Find the debug check that makes `equation_two_unknowns.ein` cost 3.8

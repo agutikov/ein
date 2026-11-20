@@ -563,7 +563,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
-| [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **defaulted 2026-11-20** by the coordinator: it is made where the pass runs; for the user's review with S1f.21.20's defaults |
+| [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11789,11 +11789,18 @@ any other way, and at no other. What a state owes, its verdict, is read at every
 
 ### Q-M1f.656 — The check in flight, once the pass runs only where a state is used
 
-**Raised and defaulted** 2026-11-20 by the coordinator, on the ruling of
+**Raised** 2026-11-20 by the coordinator, on the ruling of
 [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs). The user ruled that a hypothesis
 first held above root flags its program, by the static check's site and by a check in flight, the warning *"shown
 immediately when detected, once"* ([Q-M1f.574](#q-m1f574--a-hypothesis-first-held-above-root-how-the-program-is-found-not-monotone)). The check in
-flight reads the hypotheses a state holds, which the pass writes. **Default taken**: it is made where the pass
+flight reads the hypotheses a state holds, which the pass writes. The coordinator's default: it is made where the pass
 runs, so a run that prints, saves or uses no state above root finds nothing in flight, and the static site is
 what flags such a program. The other reading: the rules that conclude a hypothesis are read at every state for
 the check alone, which keeps a part of the pass's cost at every state.
+
+**Ruled 2026-11-20 by the user**, in the session, a moment after the ruling of Q-M1f.655, verbatim:
+
+> also can have cmdline flag that enables firing H-set for every state to detect non-monotonicity in-flight
+
+So: by default the check is made where the pass runs. A command-line flag runs the pass at every state a run
+builds, and with it the check in flight is made at every state. The flag changes no $R$.
