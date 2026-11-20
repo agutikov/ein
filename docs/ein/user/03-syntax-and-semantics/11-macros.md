@@ -394,6 +394,13 @@ depend on which is used**
 
 ### What an import brings, and what it does not
 
+- **One module needs no import: `std.core`.** The load brings it into every program, after the program's forms and
+  its imports', and its one rule, `std.core.inconsistent`, ends a state that holds `(false)`
+  ([`std.core`](../04-reference/04-stdlib/21-core.md),
+  [Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A file may import it as
+  any module, which binds its names and brings no second copy. Everything else a program has from the library it
+  imports, the contradiction among it: `(not P)` beside `P` is dead only where the program imports
+  `std.contradiction`, or a module that imports it ([constraints](06-constraints.md#the-contradiction-is-a-rule)).
 - **A module's facts are facts of the program**, stored as if written where the import stands, keeping their own
   `:source` ([Q-M1f.138](../../../decisions/imports/Q-M1f.138-an-imported-fact-keeps-its-own-provenance.md)). Their
   constants are names of the program, so the blind enumerator proposes about them

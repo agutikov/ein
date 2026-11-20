@@ -127,7 +127,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | the reserved words: where the kernel meets a theory written in Ein | `ein_core::terms::RESERVED` (what no declaration binds), `STRUCTURAL` and `PREDICATES` (the words of the pattern language); the grammar's own list in `ein-ir/src/grammar.rs`; the names the kernel itself knows, `ein_core::terms::Kernel`. A relation that is none of these is read by rules only |
 | a name the loader makes up | `ein_core::text::INTERNAL_MARK`, `#`, and `INTERNAL_NAMES` ([`07-reserved-engine-strings.md`](../07-reserved-engine-strings.md)) |
 | the kernel's one marker, of closure | `ein_core::terms::CLOSED`; no name of a theory is the kernel's, held by [`ein-render/tests/renaming_invariance.rs`](../../../../ein.rs/crates/ein-render/tests/renaming_invariance.rs) |
-| a stored negation, falsity | a fact of the relation `not`, one argument, and the fact of `false`, none: `ein_core::terms::Terms`' `kernel` symbols |
+| a stored negation, falsity | a fact of the relation `not`, one argument, and the fact of `false`, none: `ein_core::terms::Terms`' `kernel` symbols, which the grammar shapes; the standard library's names (`ein_core::LIBRARY_NAMES`), which a declaration may bind |
 | what is an object and what is not | the grammar: `FactHead`, `ValueHead`, `NestedFact`, `NegFact`, `NegPattern`, `Negated` in `ein-ir/src/ein.y`; after macro expansion, `refuse_malformed_primitives` in `ein-ir/src/from_ir.rs` |
 | a declaration as facts | `ingest_relation` in `ein-ir/src/from_ir.rs` |
 | every declaration of a relation, at each count | `ein_core::Program::declarations` and `Program::signatures`, written by `ingest_relation` |
@@ -137,7 +137,7 @@ The page: [the knowledge base](../../reasoning/01-static-ir/01-knowledge-base.md
 | the total order of the objects | `ein_core::terms::Terms::cmp_semantic` and `cmp_fact_semantic`; the names' order, the interner's rank table, `rank` in `ein-core/src/intern.rs` ([`03-design/03-data-model.md` § 2.1](../03-design/03-data-model.md#21-the-rank-table)) |
 | the text of an object, which reads back | the one printer, `ein-core/src/text.rs`; `Terms::display` and `Terms::fact_text` |
 | the quoted form | `ein_core::repr::repr` and `repr_str`, with printability in `ein-core/src/printable.rs`; its escapes, code point by code point, are [`03-design/01-determinism-and-order.md` § 7](../03-design/01-determinism-and-order.md#7-the-value-renderer) |
-| a contradiction, and a dead set of facts | `ein_infer::contradiction::detect`, `has_contradiction`, `contradicts` |
+| a contradiction, and a dead set of facts | a firing of a rule that states `:ein inconsistent`, recorded on the KB (`ein_core::Kb::ended`); `ein_infer::contradiction::has_contradiction`, and `detect`, what an explanation reads of it; `std.core`'s rule on a held `(false)` and `std.contradiction`'s on a pair are rules of the standard library ([`stdlib/core.ein`](../../../../stdlib/core.ein), [`stdlib/contradiction.ein`](../../../../stdlib/contradiction.ein)) |
 
 ### What holds it
 

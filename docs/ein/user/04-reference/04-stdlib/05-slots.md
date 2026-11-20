@@ -306,6 +306,12 @@ The obligation is the same question asked before anything is excluded.
 A rule of the module may be activated by itself, as that program does, with the activator its parameters name; the
 file then lists it. [`tests/stdlib/slots/`](../../../../../tests/stdlib/slots/) has a program for each rule.
 
+### The words it shares
+
+A fact of a relation no module declares has no full name: `(bijective R)` is the same fact whoever writes it. So a module that reads such a relation reads it in every program that imports the module, a fact the program wrote for a rule of its own among them, and a module that writes one writes the program's fact. These are the words the module reads and does not declare: `slot-partition`, read by `slot-partition-setup`, and
+`slot-spatial`, read by `slot-spatial-setup`. A program writes them to use the module, `(slot-partition R isa sub
+Super Index)`, and a fact of either that a program writes for a rule of its own activates the module's rules too.
+
 ## How it works
 
 Two setup rules turn the two declarations into the activators of the others. Every rule is on

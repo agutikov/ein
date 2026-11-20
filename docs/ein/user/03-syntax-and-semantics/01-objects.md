@@ -222,13 +222,14 @@ engine never asks whether `Norwegian` *is* a `Person`. Beside the declarations a
 and it loads: the second argument of `lives-in` is not held to `House`, nor the first to `Person`. Renaming the
 labels, `(relation lives-in X Y :why "…")`, changes no fact but the declaration's own.
 
-*Almost*, because a declaration does four things an ordinary fact does not:
+*Almost*, because a declaration does three things an ordinary fact does not, and holds no form to its count of
+labels: `(lives-in Bob)` beside it loads too, a fact of one argument, which no pattern of two matches
+([relations](02-relations.md#a-relation-is-overloaded-by-its-count-and-the-labels-are-not-held)):
 
 | a declaration | which is |
 |---|---|
-| fixes the **count** of arguments | a form headed by `lives-in` has two, wherever it is written, or the program is refused at load ([relations](02-relations.md)) |
 | carries the **sentence** | its `:why` is what each fact of the relation reads as ([natural language](14-natural-language.md)) |
-| is written **once**, with its `:why` | a second `(relation lives-in …)` is refused, and so is one with no `:why` |
+| is written with its `:why` | one with no `:why` is refused; a second `(relation lives-in …)`, at the same count or another, is one more fact of `relation`, and each is read ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)) |
 | tells the **blind enumerator** what to guess about | with no hrule and no obligation, the engine proposes facts of declared relations of one or two arguments, over the **guessable atoms**: the program's names less those some declaration writes as a label ([hypotheses](09-hypotheses.md)) |
 
 The last is the one place the engine itself reads which atoms are labels, and it reads them only as *not a thing to

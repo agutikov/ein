@@ -216,13 +216,69 @@ conclusion, a guard is checked: a true one adds nothing, a false one is `(false)
 
 ## The conclusion
 
-An `:assert` is a conjunction of facts and stored negations, read flat at any depth, with `(false)` and guards among
-them; or `()`, which concludes nothing; or, whole, an obligation `(open ?R)` ([obligations](08-obligations.md)). It is
-never a disjunction: *one of these* is the [hypotheses](09-hypotheses.md)' job. Every variable a conclusion writes is
+A rule states what it concludes under `:assert`, or a word to the engine under `:ein` (below), never both
+([Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). An `:assert` is
+a conjunction of facts and stored negations, read flat at any depth, with `(false)` and guards among them; or `()`,
+which concludes nothing; or, whole, an obligation `(open ?R)` ([obligations](08-obligations.md)). It is never a
+disjunction: *one of these* is the [hypotheses](09-hypotheses.md)' job. Every variable a conclusion writes is
 bound by a parameter or a premise on every way of satisfying the `:match`, each disjunct of an `(or …)` included
 ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)); to conclude a
 fact about every name of the program, write the binding out, a membership premise such as `(is-a ?y Person)`, or
 `(eq ?y ?y)`.
+
+## Ending a state: `:ein inconsistent`
+
+In the place of its `:assert` a rule may state a word to the engine, and the engine has one, `inconsistent`
+([Q-M1f.550](../../../decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)). Where such a rule fires, the
+saturation of the state ends and the state is **dead**; the firing writes no fact, since the word is none: no state
+holds it, no rule matches it, and nothing points at it.
+
+```lisp
+(relation king Person :why "{?3} is the king")
+
+(rule one-king ()
+  :match (and (king ?a) (king ?b) (neq ?a ?b))
+  :ein   inconsistent
+  :why   "{?a} and {?b} are both the king, and there is one king")
+
+(king Ann)
+(king Bob)
+
+(solve :expect (false))
+```
+
+`ein solve FILE` ends:
+
+```text
+  unsat core        (king Ann)
+  unsat core        (king Bob)
+  refuted by        one-king
+
+  (false)
+
+  (solve :expect)   holds
+```
+
+and `--trace` writes the firing as a step that derives nothing:
+
+```text
+### Step 1 — `one-king`
+
+> Ann and Bob are both the king, and there is one king
+
+Premises: `king(Ann)`, `king(Bob)`
+
+States `:ein inconsistent`: the state is inconsistent, and the step derives no fact.
+```
+
+**`(false)` is the usual way to the word.** A rule that concludes `(false)` writes a fact like any other, and what
+makes a state that holds it dead is one rule, which every program gets with no import line, `std.core`'s: it matches
+`(false)` and states `:ein inconsistent`
+([`04-stdlib/21-core.md`](../04-reference/04-stdlib/21-core.md)). So `one-king` with `:assert (false)` answers the
+same, and its trace has one step more, the rule of `std.core` that reads the `(false)`. Writing `(false)` keeps the
+contradiction a fact a rule can read, a claim can state and a trace shows; stating the word says the same with no
+fact between. A word that is not the engine's, `:ein` beside an `:assert`, and `:ein` on an hrule are refused at load
+([`07-diagnostics.md` § 2.30](../04-reference/07-diagnostics.md#230-a-rules-word-to-the-engine)).
 
 ## Parameters and activators
 
@@ -395,8 +451,10 @@ contradiction's core reads. A rule that concludes several facts derives each wit
 
 ## The order rules fire in
 
-Rules fire in a fixed order: first what leads to `(false)`, a rule that concludes it, a stored negation, or a fact
-whose negation can be concluded, then the rest, each half in the order rules are written and facts arrive
+Rules fire in a fixed order: a rule that states `:ein inconsistent` before every other, and so does a rule that
+refutes a fact beside its negation, `std.contradiction`'s where a program imports it; then what leads to the end of a
+state, a rule that concludes `(false)`, or what such a rule reads, or either side of a pair a rule refutes, a stored
+negation among them; then the rest, each half in the order rules are written and facts arrive
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
 rule's `absent` reads facts of a relation that another rule waiting on an `absent` derives facts of, the order
 decides no answer: it decides the order of the trace's steps and which way of reaching a fact is recorded first.
@@ -408,12 +466,17 @@ At the parse or at load, on every command, one line each ([diagnostics](../04-re
 
 - a keyword a rule does not take, `:where` among them, and a keyword pair inside a pattern;
 - a rule, relation or macro with no `:why`, unless `--no-require-why`;
-- a relation variable no parameter binds, and a parameter whose activator would bind it to a fact;
+- a relation variable no parameter binds;
 - a conclusion variable nothing binds;
 - `not`, `eq`, `neq` or `absent` at another count of arguments, `(and)` and `(or)` with nothing to join, and a
   connective, a guard or an `absent` where an argument goes, written or produced by a macro's expansion;
 - a conclusion `(not ?x)` where the program shows that `?x` can be bound to an atom, which has no negation;
-- a premise that reads nothing: a name, a variable or a string where a premise goes.
+- a premise that reads nothing: a name, a variable or a string where a premise goes;
+- a rule that states both `:assert` and `:ein`, and a word after `:ein` that is not the engine's.
+
+An activator that would bind a relation parameter to a fact is no refusal: the program loads, the load says so in a
+`warning:`, and the activator activates nothing
+([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)).
 
 ## See also
 

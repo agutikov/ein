@@ -94,7 +94,7 @@ program's class:
 | L4 | a node of `R` is maximal when every one-up extension is dead |
 | L5 | an owed instance's alternatives are exhaustive: an owing state branches on one owed instance's alternatives |
 | L7 | the cube: every node, nothing skipped (the only licence a flagged program has) |
-| L8 | what a state denies is dead above it: an alive state whose fixpoint stores `(not b)` has a dead extension by `b`, known without saturating it |
+| L8 | what a state denies is dead above it: an alive state whose fixpoint stores `(not b)`, beside which a rule refutes `b` (`ein_infer::contradiction::Pairs::denies`, `std.contradiction`'s where the program imports it), has a dead extension by `b`, known without saturating it |
 | L9 | a fact nothing proposes and nothing writes is in no state |
 
 **What is known dead is one memory** ([`known_dead.rs`](../../../../ein.rs/crates/ein-infer/src/known_dead.rs)):

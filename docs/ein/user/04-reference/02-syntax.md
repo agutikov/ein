@@ -99,7 +99,8 @@ requires, and that each appears once, is the loader's.
 |---|---|---|---|
 | `relation` | `:why` | a string: the template that renders the relation's facts | at load, by default ([§ Relation declarator](#relation-declarator)) |
 | `rule`, `hrule` | `:match` | a premise: what the rule reads | yes |
-| | `:assert` | a conclusion: what it derives, or proposes | yes |
+| | `:assert` | a conclusion: what it derives, or proposes | yes, or a rule's `:ein` in its place |
+| `rule` | `:ein` | a word to the engine, `inconsistent`, in the place of `:assert` ([§ Rules](#rules)) | no |
 | | `:why` | a string: the template that explains a firing | at load, by default |
 | a fact, negated or not | `:source` | a string: the fact is given, and where it is stated | no |
 | | `:rule`, `:using` | a rule's name and its premises: the fact is derived | no |
@@ -347,14 +348,17 @@ writes has none of these, and `ein saturate --dump` writes `:rule` with no `:usi
 ```text
 (rule <name> (<param-vars>*)      ; the parameter list: required, () for a rule with none
   :match <premise>                ; what it reads (§ 3)
-  :assert <conclusion>            ; what it derives
+  :assert <conclusion>            ; what it derives, or
+  :ein <word>                     ; a word to the engine in its place: inconsistent
   :why "<template>")              ; why, for the trace
 ```
 
 A rule is a top-level `(rule …)` form, and an hrule the same shape headed `hrule`. Each has one `:match` and one
-`:assert` ([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). **A rule has no
-priority**: the saturation agenda fires first the rules whose conclusion leads to `(false)`, then the rest, in the
-order they are written and their facts arrive within each half
+`:assert`, or a rule one `:ein` in its place
+([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). **A rule has no
+priority**: the saturation agenda fires first a rule that states `:ein inconsistent` and one that refutes a fact
+beside its negation, then the rules whose conclusion leads to the end of a state, `(false)` among it, then the rest,
+in the order they are written and their facts arrive within each half
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Where no
 rule's `absent` reads facts of a relation that another rule waiting on an `absent` derives facts of, that order
 decides no answer;
@@ -456,18 +460,20 @@ At any moment a fact `P` is **asserted**, matched by `P`; **negated**, matched b
 rule's parameters, which its activator binds to an atom; its arguments are objects, variables or patterns. The loader
 refuses,
 one line naming the rule and the clause ([`07-diagnostics.md`](07-diagnostics.md), *a rule shape that reads nothing*): a
-name or a variable written where a premise goes; a relation written as a variable no parameter binds, at the top
-level or inside a pattern, in a `:match` or an `:assert`; and an activator that binds a relation parameter to a nested
-fact. A string, a bare `_` and a keyword pair anywhere in a premise are refused at the parse.
+name or a variable written where a premise goes; and a relation written as a variable no parameter binds, at the top
+level or inside a pattern, in a `:match` or an `:assert`. An activator that binds a relation parameter to a nested
+fact loads, with a `warning:`, and activates nothing
+([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). A string, a bare
+`_` and a keyword pair anywhere in a premise are refused at the parse.
 
 #### Conclusion forms in `:assert`
 
-A conclusion is ordinarily a fact pattern, with `(and …)` concluding several at once, read flat. Two heads are
-**verdicts about the state**, and neither is stored as a fact:
+A conclusion is ordinarily a fact pattern, with `(and …)` concluding several at once, read flat. One head is a
+fact with a part to play, and one is a **verdict about the state**, stored as no fact:
 
 | conclusion | says |
 |---|---|
-| `(false)` | this state is contradictory |
+| `(false)` | this state is contradictory: a fact of no argument, the standard library's word, which `std.core`'s rule reads to end the state ([`04-stdlib/21-core.md`](04-stdlib/21-core.md)) |
 | `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose held extent is incomplete |
 
 **`open` is written there and nowhere else**
@@ -504,7 +510,7 @@ any relation that binds it, `(R ?y)`, *the objects a relation holds of*, or `(eq
 program*. The two phrases are the line's, and it names no relation of a theory's
 ([Q-M1f.436](../../../decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md)).
 
-`(false)` is stored, since a contradiction survives any extension and a dead state stays dead; `open` is not, because
+`(false)` is stored, a fact like any other, and a dead state stays dead; `open` is not, because
 openness exists to be destroyed by an extension, and a stored one would survive its own discharge. It is a tally on
 the state, read once the state has reached its fixpoint, and a rule that asserts it is an **obligation**, which never
 fires during saturation. `(open ?R)` names the relation whose held extent is incomplete and nothing else: the witness domain and the slot
@@ -822,6 +828,13 @@ relation guessed closes the relation. A fact of a module arrives once, the modul
 stated with two `:source`s keeps its first statement
 ([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)), as it does
 written twice in one file.
+
+**One module every program has with no import: `std.core`**, its one rule from `(false)` to `:ein inconsistent`,
+brought by the load after the program's forms and its imports', under its full name, `std.core.inconsistent`
+([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A file may still import
+it, as any module, which binds its names and brings no second copy; and a library `$EIN_STDLIB` names brings its own
+`core.ein` in its place ([`04-stdlib/21-core.md`](04-stdlib/21-core.md)). Every other module, `std.contradiction`
+among them, a program has only by importing it.
 
 **No import brings a module's `(query …)`, `(solve …)`, `(config …)` or `(trace …)`**
 ([Q-M1f.215](../../../decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)). They are what a

@@ -350,6 +350,21 @@ With all three excluded, in `02_no_room_left.ein`, root is dead:
 `std.elim` and `std.bijection` both declare `domain-elimination`, `typecheck-arg-0` and `typecheck-arg-1`: a file
 that imports both lists each from one of them ([the index](README.md#what-to-list)).
 
+### The words they share
+
+A fact of a relation no module declares has no full name: `(bijective R)` is the same fact whoever writes it. So a module that reads such a relation reads it in every program that imports the module, a fact the program wrote for a rule of its own among them, and a module that writes one writes the program's fact. These are the words the two modules read and do not declare, each with the rules that read it:
+
+| module | word | read by |
+|---|---|---|
+| `std.bijection` | `bijective` | `bijective-setup`, and `std.algebra`'s `bijective-properties`, which the module imports |
+| | `bijection-hierarchy`, `typecheck-hierarchy` | `bijective-setup`, `typecheck-setup` |
+| | `join` | `std.algebra`'s, which it imports |
+| `std.elim` | `functional`, `total` | `domain-elimination` and `no-room-left`, as `(functional R 0 1)` and `(total R 0)`: the positional markers, of three arguments and two |
+
+`std.elim`'s `functional` and `total` are its own positional markers and no name of `std.algebra`'s, whose
+`functional` and `total` are rules a module declares, each with a full name: in a program that imports both, `(functional
+R 0 1)` activates `std.elim`'s rules and `std.algebra.functional`'s activator is another atom.
+
 ## How it works
 
 ### `std.bijection`

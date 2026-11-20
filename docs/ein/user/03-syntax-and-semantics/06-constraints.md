@@ -3,14 +3,17 @@
 A **constraint** says what cannot be. In Ein it is written two ways: a rule that concludes `(false)` where its
 pattern matches, and a **stored negation** `(not P)`, a fact that denies `P`, where the program imports
 `std.contradiction`, whose rules conclude `(false)` from a fact beside its negation: the kernel has no such check of
-its own, and a program that imports no such rule may hold both. A state that derives `(false)` is **dead**: it is no
-answer, and nothing it would add counts. Constraints are
-the upper bound of the answer, what a state may not hold; [obligations](08-obligations.md) are the lower bound, what a
-state still has to find.
+its own, and a program that imports no such rule may hold both. A state that holds `(false)` is **dead**, by the one
+rule every program gets, which reads it and ends the state: it is no answer, and nothing it would add counts. A rule
+may also end a state itself, with `:ein inconsistent` in the place of its `:assert`
+([rules](05-rules.md#ending-a-state-ein-inconsistent)). Constraints are the upper bound of the answer, what a state
+may not hold; [obligations](08-obligations.md) are the lower bound, what a state still has to find.
 
 ## In Ein
 
 ```lisp
+(import std.contradiction)
+
 (relation is-a T T :why "{?3} is a {?4}")
 (relation in Pet Box :why "the {?3} is in box {?4}")
 
@@ -39,6 +42,8 @@ state still has to find.
 The hrule proposes where each pet might be ([hypotheses](09-hypotheses.md)); the two constraints cut the guesses down.
 `one-box-per-pet` refutes any state that puts one pet in two boxes, and `cat-not-in-b2` stores `(not (in Cat B2))`
 at root, so no state may hold `(in Cat B2)`: `ein show hyps FILE` lists two candidates, and that is not one of them.
+The import is what makes the negation a constraint: without its first line `(in Cat B2)` is a third candidate, and a
+third state of the answer holds it beside its negation ([below](#the-contradiction-is-a-rule)).
 
 ```text
   (region
@@ -97,7 +102,7 @@ that states `(in Cat B2 :source "the cat sleeps in box B2")` beside `cat-not-in-
 For a dead state other than root, `--trace` writes the same, under the minimal dead sets:
 
 ```text
-{(in Dog B2)} — dead
+<summary>{(in Dog B2)} — dead</summary>
 
 Core: `(in Dog B1)`, `(in Dog B2)`
 
@@ -123,7 +128,7 @@ Let $\operatorname{sat}(S)$ be the fixpoint of a state $S$ under the program's r
 **dead** when its fixpoint holds the contradiction:
 
 $$
-\operatorname{dead}(S) \iff \bot \in \operatorname{sat}(S)
+\bot \in \operatorname{sat}(S) \implies \operatorname{dead}(S)
 $$
 
 With `std.contradiction` imported, its rules put $\bot$ in every fixpoint that holds a fact $f$ beside $\lnot f$,
@@ -151,14 +156,133 @@ the dead node above it is $\lbrace \operatorname{in}(\mathsf{Dog}, \mathsf{B1}),
 
 ## Two shapes: `(false)` and `(not P)`
 
-**`(false)`** is a contradiction with no further content. It takes no argument: `(false k)` is refused wherever it is
-written, and two contradictions are told apart by what they rest on, not by a witness argument. A rule concludes it
-where the state is impossible as a whole rather than one proposition false, as `one-box-per-pet` does.
+**`(false)`** is a contradiction with no further content: a fact, the standard library's word for what cannot be,
+and no truth value, since nothing reads it by its name. Rules conclude it: a restriction where the state is impossible
+as a whole rather than one proposition false, as `one-box-per-pet` does, a guard concluded and false, and
+`std.contradiction`'s rules from a fact beside its negation. One rule reads it, the one every program gets with no
+import line, `std.core`'s, which ends the state that holds it
+([`std.core`](../04-reference/04-stdlib/21-core.md)). Under an arrow of another fact it ends nothing: `(claims Carol
+(false))` is what Carol claims ([facts](03-facts.md#what-a-context-does-not-do)). It takes no argument: `(false k)` is
+refused wherever it is written, and two contradictions are told apart by what they rest on, not by a witness
+argument.
 
 **`(not P)`** is a fact whose one argument is the fact it denies. It is stored like any fact, by a rule's conclusion
-or written by the program, and it is a contradiction only beside `P`: the pair is one wherever either half came
-from, a statement, a rule or a hypothesis. A negation is of a fact; an atom has none, so a conclusion `(not ?x)` where
-`?x` can be bound to an atom is refused at load.
+or written by the program, and it is a contradiction only beside `P`, and only where a rule says so, the standard
+library's or the program's (below): the pair is then one wherever either half came from, a statement, a rule or a
+hypothesis. A negation is of a fact; an atom has none, so a conclusion `(not ?x)` where `?x` can be bound to an atom
+is refused at load.
+
+## The contradiction is a rule
+
+*Whatever is held beside its negation is impossible* is one rule in logic, $f \land \lnot f \implies \bot$, and Ein
+cannot write it so: a premise is a fact pattern, its relation and its count of arguments written, and a variable for
+a whole fact is no premise. The rule written with one is refused at the parse:
+
+```lisp
+(rule contradiction ()
+  :match  (and ?f (not ?f))
+  :assert (false)
+  :why    "{?f} holds beside its negation")
+```
+
+```text
+cf.ein:2:16: unexpected `?f`: a variable
+  repair: Insert `(`
+cf.ein:2:24: unexpected `?f`: a variable
+  repair: Insert `(`
+```
+
+So the contradiction is a rule for one relation, or for one count of arguments with the relation a parameter
+([cores § A contradiction](../../reasoning/02-kb-evolution/09-cores.md#a-contradiction) has why). **For one
+relation**, the program names it:
+
+```lisp
+(relation in Pet Box :why "the {?3} is in box {?4}")
+
+(rule in-and-not ()
+  :match  (and (in ?p ?b) (not (in ?p ?b)))
+  :assert (false)
+  :why    "the {?p} is in box {?b}, and is not")
+
+(in Cat B2)
+(not (in Cat B2))
+
+(solve :expect (false))
+```
+
+`ein solve FILE` ends:
+
+```text
+  unsat core        (in Cat B2)
+  unsat core        (not (in Cat B2))
+  refuted by        (given)
+
+  (false)
+
+  (solve :expect)   holds
+```
+
+The core is the pair, explained together, and `refuted by` names the rules that put each side there, here none: both
+are given. **For one count**, the relation is a parameter, and each activator turns the rule on for one relation:
+
+```lisp
+(relation in   Pet Box    :why "the {?3} is in box {?4}")
+(relation owns Person Pet :why "{?3} owns the {?4}")
+
+(rule clash (?R)
+  :match  (and (?R ?a ?b) (not (?R ?a ?b)))
+  :assert (false)
+  :why    "({?R} {?a} {?b}) holds beside its negation")
+
+(clash in)
+
+(owns Ann Cat)
+(not (owns Ann Cat))
+
+(solve :no-search)
+```
+
+`(clash in)` reaches `in` and not `owns`, so the pair of `owns` is two facts and root is alive. `ein solve FILE`
+prints, among its rows:
+
+```text
+  states (k_s)      1
+  ∅                 in R — root is alive and owes nothing
+```
+
+With `(clash owns)` added under `(clash in)`, it ends:
+
+```text
+  unsat core        (not (owns Ann Cat))
+  unsat core        (owns Ann Cat)
+  refuted by        (given)
+
+  (false)
+```
+
+**The standard library's is `std.contradiction`**: `clash-0` to `clash-6`, the rule above at each count from none
+to six, and `clash-of-0` to `clash-of-6`, which derive each activator from a declaration of that count, so importing
+it is the whole switch:
+
+```lisp
+(import std.contradiction)
+
+(relation in   Pet Box    :why "the {?3} is in box {?4}")
+(relation owns Person Pet :why "{?3} owns the {?4}")
+
+(owns Ann Cat)
+(not (owns Ann Cat))
+
+(solve :no-search)
+```
+
+`ein solve FILE` ends as the program with `(clash owns)` does. A relation no declaration names, or one of more than
+six arguments, is reached by an activator written by hand, `(clash-1 loose)`; `std.algebra`, `std.bijection` and
+`std.slots`, which conclude stored negations, import the module, so a program that imports one of them has it
+([negation as rules](../04-reference/04-stdlib/20-negation-and-contradiction.md#using-stdcontradiction--a-fact-beside-its-negation-concludes-false)).
+A program that imports none of them and writes no rule of its own has no contradiction of a fact and its negation:
+the two stand together, as in a three- or four-valued or a paraconsistent logic
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)).
 
 ## The three states of a fact
 
@@ -207,14 +331,13 @@ a negation:
 denial says that the denial does not hold, and nothing more.** With $K$ the facts held:
 
 $$
-\begin{aligned}
-\lnot P \in K \ \land\ \lnot\lnot P \in K &\implies \operatorname{dead}(K) \\
-\lnot\lnot P \in K &\ \not\Longrightarrow\ P \in K
-\end{aligned}
+\lnot\lnot P \in K \ \not\Longrightarrow\ P \in K
 $$
 
-So `(not P)` beside `(not (not P))` is a contradiction, a fact with its own negation, and `P` beside
-`(not (not P))` is not one. **That `P` then holds is a rule a program asks for**, one rule for a count of arguments
+`(not P)` beside `(not (not P))` is a fact with its own negation, a contradiction where the program's contradiction
+reaches the relation `not`, as `std.contradiction` does once `not` is declared, `(relation not Claim)`, or activated,
+`(clash-1 not)` ([`examples/beliefs/04_liar_denial_contradicted.ein`](../../../../examples/beliefs/04_liar_denial_contradicted.ein));
+and `P` beside `(not (not P))` is none. **That `P` then holds is a rule a program asks for**, one rule for a count of arguments
 with the relation a parameter, turned on for the relations it is meant for. The standard library has it,
 [`std.negation`](../04-reference/04-stdlib/20-negation-and-contradiction.md#using-stdnegation--eliminating-a-double-negation),
 and `eliminate-2` is its rule for a fact of two arguments:

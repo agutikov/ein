@@ -315,8 +315,10 @@ A context gives a fact no truth. With only `(claims Carol (knows Carol Dan))` wr
   activator written inside another fact applies no rule.
 
 One relation's facts are read as saying something of the fact they point at: `not`. `(not P)` is a held fact
-whose argument is `P`, so it is a context of `P` too, and the one the engine reads: a state that holds `P` and
-`(not P)` is dead ([constraints](06-constraints.md)). What any other context means, whether what a witness claims
+whose argument is `P`, so it is a context of `P` too, and the one the standard library's contradiction reads: where a
+program imports `std.contradiction`, a state that holds `P` and `(not P)` is dead
+([constraints](06-constraints.md#the-contradiction-is-a-rule)); where it imports no such rule, the two stand
+together. What any other context means, whether what a witness claims
 is to be held, is what a program's rules say, and a rule moves a fact from a context into the global one only by
 writing it out ([rules and contexts](05-rules.md#rules-and-contexts)).
 

@@ -195,7 +195,7 @@ relation is in one of four registers:
 |---|---|---|
 | **puzzle** | declared by the program or a module of its own it imports, or the name of one of their rules (an activator) | the program, in the declaration; an activator has none |
 | **stdlib** | the name of a standard library rule (an activator, `(bijective color-loc)`), or a relation a standard library rule concludes without declaring it | nobody: no form declares it |
-| **kernel** | a name the engine reserves: `__closed__`, `absent`, `and`, `eq`, `false`, `neq`, `not`, `open`, `or`, `relation` | the engine, which does not (§ 6) |
+| **kernel** | a name the engine gives a part of its own: `__closed__`, `absent`, `and`, `eq`, `false`, `neq`, `not`, `open`, `or`, `relation`. Two of them, false and not, are the standard library's names, which a declaration may name; a fact of either still reads as written | the engine, which does not (§ 6) |
 | **undeclared** | written or derived, never declared, and no rule's | nobody, until the program declares it |
 
 So a fact that reads as written says where its text would come from: a program that wants a fact read gives it a

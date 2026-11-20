@@ -964,6 +964,21 @@ note: closure-on.ein: H, built by the rung `blind`: no candidate
 [`tests/stdlib/closure/01_infer_closure.ein`](../../../../../tests/stdlib/closure/01_infer_closure.ein) is the case
 the module is for, a relation whose facts saturation decides, and `02_closed_and_satisfied.ein` its control.
 
+### The words they share
+
+A fact of a relation no module declares has no full name: `(bijective R)` is the same fact whoever writes it. So a module that reads such a relation reads it in every program that imports the module, a fact the program wrote for a rule of its own among them, and a module that writes one writes the program's fact. These are the words the three modules read or write and do not declare, each with the rules that read it:
+
+| module | word | read by |
+|---|---|---|
+| `std.algebra` | `bijective` | `bijective-properties`, which derives the activators `(functional R)`, `(injective R)`, `(total R)` and `(surjective R)` from it ([§ `(bijective R)`](#bijective-r-the-four-markers)) |
+| | `join` | `derive-join` and `join-converse` |
+| `std.typing` | `type-hierarchy`, `reflexive` | `type-hierarchy-converse`, `derive-reflexive`; and `std.algebra`'s, which it imports |
+| `std.closure` | `std.algebra`'s, which it imports | |
+
+A program that states `(bijective color-loc)` for a rule of its own, and imports `std.algebra` for another of its
+names, has the four markers derived beside its own conclusions, and the checks they activate: the property is a fact
+the module reads whoever wrote it. A program that wants a word of its own and not the module's names it otherwise.
+
 ## How it works
 
 Every rule of the three modules, as Ein and as the engine draws it, is on

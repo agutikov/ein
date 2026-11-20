@@ -20,7 +20,7 @@ program that wants another logic, three- or four-valued or paraconsistent, write
 A module of the standard library that concludes a stored negation and means a death by it imports the module:
 `std.algebra`, `std.bijection` and `std.slots`, so a program that imports one of them has the contradiction.
 
-What read the kernel's check read the rules instead, with no name
+What reads a pair for an economy reads the rules, with no name
 ([`ein_infer::contradiction::Pairs`](../../ein/ein.rs/03-design/06-saturation.md#61-contradiction)): a rule whose
 match is a fact and one fact holding it as its one argument, and whose firing ends a state, refutes the two
 together. Where one is compiled, a candidate root holds the other side of is not in `H`, a candidate an alive state

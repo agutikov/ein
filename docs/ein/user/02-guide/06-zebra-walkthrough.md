@@ -28,7 +28,10 @@ Each human step is one of three things in Ein.
 - **A supposition refuted**: the human's *"suppose … — impossible"*. The `guess` hrule proposes a fact of each of the
   five relations for each value of its attribute and each house, and `ein show hyps examples/zebra2.ein` lists every
   candidate. A candidate is **dead alone** when
-  assuming it, and nothing else, saturates to `(false)`. To see it, add the candidate to a copy of `zebra2.ein` as a
+  assuming it, and nothing else, ends the state: a rule concludes `(false)`, a check of `std.algebra` such as
+  `surjective`, or `std.contradiction`'s rule from a fact beside its negation, which `std.algebra` imports, and the
+  rule every program gets reads it and states `:ein inconsistent`. To see it, add the candidate to a copy of
+  `zebra2.ein` as a
   stated fact: `ein solve COPY --no-search` then reports `∅ dead — root's own fixpoint holds a contradiction`, and its
   `unsat core` lines name the facts one explanation of the contradiction rests on.
 - **Therefore**: what holds in the answer's one state. Dead is upward-closed, so no state holds a candidate that is

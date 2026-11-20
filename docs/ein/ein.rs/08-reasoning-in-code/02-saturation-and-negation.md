@@ -38,7 +38,8 @@ The reasoning: [firing a rule](../../reasoning/02-kb-evolution/01-firing.md).
 | an application: a rule and its activator | [`ein-infer/src/compile.rs`](../../../../ein.rs/crates/ein-infer/src/compile.rs) compiles one plan per (rule, activator) pair, [`plan.rs`](../../../../ein.rs/crates/ein-infer/src/plan.rs) is the plan, [`engine.rs`](../../../../ein.rs/crates/ein-infer/src/engine.rs) the cache of plans and the record of what fired |
 | satisfaction, $K \models \varphi\theta$ | [`ein-infer/src/match_.rs`](../../../../ein.rs/crates/ein-infer/src/match_.rs), the register matcher; `eq` and `neq` in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs) |
 | a firing and its effect | [`ein-infer/src/firing.rs`](../../../../ein.rs/crates/ein-infer/src/firing.rs): the conclusion instantiated, one `Prov` shared by every fact of one firing, and the key that says an identity already fired |
-| dead | [`ein-infer/src/contradiction.rs`](../../../../ein.rs/crates/ein-infer/src/contradiction.rs): `detect`, `has_contradiction`, and `contradicts` for one new fact |
+| dead | [`ein-infer/src/contradiction.rs`](../../../../ein.rs/crates/ein-infer/src/contradiction.rs): `has_contradiction`, a firing of a rule that states `:ein inconsistent` recorded on the KB (`ein_core::Kb::ended`, written by `ein_infer::firing::end`), and `detect`, what an explanation reads of it; the rule every program gets on a held `(false)` is [`stdlib/core.ein`](../../../../stdlib/core.ein) |
+| the engine's word, a rule's conclusion in the place of literals | `ein_core::EngineWord`, `ein_core::Rule::ein`; a plan that states it, `Plan::ends` |
 | a state's identity | [`ein-infer/src/canon.rs`](../../../../ein.rs/crates/ein-infer/src/canon.rs): the sorted fact list, never a hash of it |
 | a firing's identity | `ein_infer::firing::BindingKey`: the plan, the activator, the registers; the activator half is the compile key's, `ein_infer::compile::PlanKey` |
 | a fork | `ein_core::kb::Kb::fork`: immutable layers below one writable top ([`03-design/03-data-model.md` § 5.1](../03-design/03-data-model.md#51-the-fork)); the fork's own derivation records, `ein_core::prov::ProvArena`'s fork region |
@@ -68,6 +69,8 @@ conclusion is present inserts nothing and is recorded as an alternative derivati
 | no rendering of any corpus program depends on the order its objects were numbered in | `ein-render/tests/id_order_invariance.rs`: `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, `an_id_order_that_reaches_an_output_is_caught` |
 | no rendering depends on how many workers ran | `ein-render/tests/jobs_invariance.rs`: `jobs_does_not_move_any_observable` |
 | a rule written once with a parameter in a relation's place fires for each relation its activators name | `ein-infer/tests/stdlib_semantics.rs`: `a_bijective_declaration_fans_out_into_the_operational_activators` |
+| a firing of a rule that states the engine's word writes no fact and ends the state, and a stopped saturation stops there | `ein-infer/src/saturator.rs`' unit tests `a_rule_that_states_the_key_ends_the_state_and_writes_no_fact`, `a_stopped_saturation_stops_at_the_firing_that_ends_the_state` |
+| the kernel reads no `(false)` by its name, and judges no pair by itself | `ein-infer/src/contradiction.rs`' unit tests `a_held_false_is_no_contradiction_by_its_name`, `a_pair_with_no_rule_over_it_is_no_contradiction`, `a_pair_a_rule_refutes_is_read_as_the_pair` |
 
 ### 1.4 The drawings of the page
 
@@ -458,6 +461,8 @@ The reasoning: [cores](../../reasoning/02-kb-evolution/09-cores.md).
 | a core | [`ein-infer/src/explain.rs`](../../../../ein.rs/crates/ein-infer/src/explain.rs): the label search, `ExplanationBudget` |
 | which cores a run takes | `region::Cores` in [`ein-infer/src/region.rs`](../../../../ein.rs/crates/ein-infer/src/region.rs) |
 | keeping the first derivation alone | `(config :record-alternative-justifications false)` ([`06-config.md`](../../user/04-reference/06-config.md)), the one option that may change a core |
+| the contradiction rule, one a count of arguments | [`stdlib/contradiction.ein`](../../../../stdlib/contradiction.ein): `clash-0` to `clash-6` and `clash-of-0` to `clash-of-6`; what the engine reads of such a rule, with no name, `ein_infer::contradiction::Pairs` |
+| a death by a pair, read as the pair | `ein_infer::contradiction::detect`: through the firing of the rule every program gets, to the `(false)` it matched, and through a derivation of that `(false)` from a fact and one holding it, to the two |
 
 ### 5.2 The algorithm
 
@@ -502,6 +507,7 @@ has `null` for its core and a dead node with the empty core `[]`.
 | a written derivation cycle is refused at load, and every load refusal is reported together | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical` (`examples/broken/load/derivation_cycle.ein`), `load_errors_accumulate_in_pass_order` |
 | a refutation's edges into `⊥` are in the order of the facts' quoted forms, whatever order they were collected in | `ein-render/tests/presentation_semantics.rs`: `the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered` |
 | a dead root's core names the injected clue, with its `:source` | `ein-infer/tests/acceptance.rs`: `the_contradictions_view_is_the_verdict_explained`, `the_injected_clash_carries_the_source_that_names_it` |
+| each contradiction rule fires once on its pair, and without the module the pair is alive and nothing fires | `ein-infer/tests/contradiction_rules.rs`: `each_clash_rule_fires_once_and_its_premises_are_the_pair`, `without_the_module_the_pair_is_alive_and_nothing_fires`, `no_clash_rule_fires_where_no_fact_meets_its_negation`; the programs under [`tests/stdlib/contradiction/`](../../../../tests/stdlib/contradiction/) |
 
 ### 5.4 Commands
 

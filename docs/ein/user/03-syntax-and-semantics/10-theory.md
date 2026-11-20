@@ -94,10 +94,11 @@ where what a theory concludes may depend on the order its rules are admitted in 
 
 ## In words
 
-A theory explains itself through its rules' reasons, chained. The two steps drawn above, as the trace writes them:
+A theory explains itself through its rules' reasons, chained. The two steps drawn above, and the one after them, as
+the trace writes them:
 
 ```text
-### Step 15 — `std.math.positional.div-by-zero`
+### Step 17 — `std.math.positional.div-by-zero`
 
 > the divisor of (n z 7) divided by z is zero
 
@@ -105,17 +106,27 @@ Premises: `std.math.decimal-arith.done(std.math.decimal-arith.div-m1(std.math.de
 
 Derives `std.math.arith.division-by-zero(div(n(z, 7), z))`.
 
-### Step 16 — `std.math.arith.division-by-zero-is-false`
+### Step 18 — `std.math.arith.division-by-zero-is-false`
 
 > (div (n z 7) z) divides by zero: no number is the answer
 
 Premises: `std.math.arith.division-by-zero(div(n(z, 7), z))`
 
 Derives `false`.
+
+### Step 19 — `std.core.inconsistent`
+
+> a state that derives a contradiction is inconsistent
+
+Premises: `false`
+
+States `:ein inconsistent`: the state is inconsistent, and the step derives no fact.
 ```
 
-The flag is one step and the contradiction the next, so the trace shows what was wrong before it shows that the state
-died. A rule the program does not list in an import prints by its full name.
+The flag is one step, the contradiction the next, and the end of the state the third, `std.core`'s rule reading the
+`(false)`, so the trace shows what was wrong before it shows that the state died. `(false)` is a fact a rule
+concludes and a rule reads ([constraints](06-constraints.md)): a theory that wants a state dead concludes it, and the
+rule every program gets ends the state. A rule the program does not list in an import prints by its full name.
 
 ## In mathematics
 
@@ -182,7 +193,7 @@ is how importing a whole theory costs nothing for the parts a program does not u
 ## Derivation rules and refutation rules
 
 A theory's rules are of two kinds. A **derivation** rule concludes facts, and so adds to what holds; a
-**refutation** rule concludes `(false)`, and so removes states from the answer. The two meet on one relation all the
+**refutation** rule concludes `(false)`, or states `:ein inconsistent`, and so removes states from the answer. The two meet on one relation all the
 time: `symmetric` derives `(above b a)` from `(above a b)`, and `asymmetric` refutes a state holding both. A program
 that states both properties of one relation, and one pair of it, is dead at root, and says so:
 

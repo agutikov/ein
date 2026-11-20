@@ -221,7 +221,10 @@ are one state of the answer.
 
 ## The words the kernel reserves
 
-A few names introduce a kind of form, and are no relation a program can declare:
+A few names introduce a kind of form. The first four are no relation a program can declare; the last two are the
+standard library's names, which the grammar gives a shape where they head a form, and which a program may declare
+as it declares any relation
+([Q-M1f.593](../../../decisions/language/Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md)):
 
 | word | introduces |
 |---|---|
@@ -229,8 +232,8 @@ A few names introduce a kind of form, and are no relation a program can declare:
 | `rule` | a rule, `(rule NAME (PARAMS) :match … :assert … :why "…")` |
 | `hrule` | a rule that proposes a hypothesis rather than concluding a fact ([hypotheses](09-hypotheses.md)) |
 | `macro` | a pattern abbreviation, expanded where it is called ([macros](11-macros.md)) |
-| `not` | a stored negation, `(not F)`, a fact whose one argument is the fact it denies ([constraints](06-constraints.md)) |
-| `false` | a contradiction, `(false)`, which a rule concludes and no state that holds it survives |
+| `not` | a stored negation, `(not F)`, a fact whose one argument is the fact it denies, and a contradiction beside `F` where a rule says so, `std.contradiction`'s where the program imports it ([constraints](06-constraints.md)) |
+| `false` | `(false)`, a fact of no argument and no truth value: a rule concludes it, and the rule every program gets, `std.core`'s, reads it and ends the state that holds it ([constraints](06-constraints.md)) |
 
 The rest of the reserved vocabulary is the [reserved names](../04-reference/03-reserved-names.md) reference.
 

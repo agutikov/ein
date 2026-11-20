@@ -91,9 +91,25 @@ and of a config field.
 
 ### Rule
 A rewriting rule: a `:match`, what it reads, whose guards, `(neq ?a ?b)`, are premises in it; an `:assert`, what it
-derives; a `:why`, why; and no other keyword
-([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). See
+derives, or an `:ein`, a word to the engine in its place; a `:why`, why; and no other keyword
+([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md),
+[Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). See
 [`../03-syntax-and-semantics/05-rules.md`](../03-syntax-and-semantics/05-rules.md).
+
+### Inconsistent, `:ein`, the engine's word
+The one word a rule may state to the engine, `:ein inconsistent`, in the place of its `:assert`
+([Q-M1f.550](../../../decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)). It is no fact: no state
+holds it, no rule matches it, nothing points at it. Where a rule that states it fires, the saturation of the state
+ends and the state is [dead](#dead-alive). Every program has one such rule, `std.core`'s, which matches a held
+`(false)`. See [`../03-syntax-and-semantics/05-rules.md` § Ending a state](../03-syntax-and-semantics/05-rules.md#ending-a-state-ein-inconsistent).
+
+### `(false)`, stored negation, the contradiction
+`(false)` is a fact of no argument, the standard library's word for a contradiction and no truth value: rules
+conclude it, and `std.core`'s rule, which every program gets, reads it and ends the state. `(not P)` is a **stored
+negation**, a fact whose one argument is the fact it denies; beside `P` it is a contradiction only where a rule
+concludes `(false)` from the two, `std.contradiction`'s where a program imports it
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). The kernel judges
+no pair by itself. See [`../03-syntax-and-semantics/06-constraints.md`](../03-syntax-and-semantics/06-constraints.md).
 
 ### Hrule
 A hypothesis rule: the shape of a rule, and what it concludes is proposed as a hypothesis rather than derived. See
@@ -184,11 +200,17 @@ A subset of the universe: a node of the lattice. Without merging, the lattice is
 the commitments of $k$ facts.
 
 ### State
-$\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. **Dead** when a
-rule that states `:ein inconsistent` fires in it, as `std.core`'s does on a held `(false)`, which
-`std.contradiction`'s rules conclude from a fact beside its stored negation where a program imports the module
-([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert)); **alive** otherwise; **owing $n$** with $n$
-undischarged obligation instances; **discharged** when it owes nothing.
+$\operatorname{sat}(\text{root} \cup C)$ for a commitment $C$: root's facts and $C$'s, saturated. It is
+[dead or alive](#dead-alive); **owing $n$** with $n$ undischarged obligation instances; **discharged** when it owes
+nothing.
+
+### Dead, alive
+A state is **dead** where a rule that states `:ein inconsistent` fired in its saturation: `std.core`'s on a held
+`(false)`, which a restriction concludes and `std.contradiction`'s rules conclude from a fact beside its stored
+negation where a program imports the module, or a program's own rule that states the word. No fact stands for it,
+and a fork of a dead state is dead. A state is **alive** where no such rule fired: a statement about the whole of
+one state, read once it is finished, and never a fact a state holds, since a larger state can be dead. See
+[the solution semantics § 1.5](../../reasoning/02-kb-evolution/06-solution-semantics.md#15-commitment-node-state).
 
 ### Closure, state class
 $\operatorname{cl}(C)$, the candidates $C$'s state holds, so $C \subseteq \operatorname{cl}(C)$. The commitments that reach
@@ -273,7 +295,8 @@ stop a run, and the report then says it is partial. See [`06-config.md`](06-conf
 The fixpoint of the rules: apply every rule until no new fact is derived. It runs in two phases, repeated: a
 *closure*, in which the rules whose premises are all positive fire until nothing is left to derive, and a *boundary*,
 in which each firing waiting on an `(absent …)` is judged against that fixpoint and one is admitted, after which the
-closure runs again; saturation ends when a boundary admits nothing. The agenda fires first what leads to `(false)`
+closure runs again; saturation ends when a boundary admits nothing. The agenda fires first a rule that ends a
+state, and what leads to the end of one, `(false)` among it
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
 
 ## Properties of relations

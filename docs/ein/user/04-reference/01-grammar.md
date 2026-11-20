@@ -313,12 +313,15 @@ From [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), as EBNF in
 
 <!-- /generated: ein.y -->
 
-Five things the productions say that are easy to read past:
+Six things the productions say that are easy to read past:
 
 - **A `Conclusion` is a conjunction of literals, read flat.** `Conclusions` nests, and an `(and …)` inside an
   `(and …)` concludes each of its members, as the outer one does, at any depth. No production takes `or` in a
   conclusion, or a connective inside a `Term`, so a rule concludes no disjunction and no compound fact
   ([`02-syntax.md` § Rules](02-syntax.md#rules)).
+- **A rule's word to the engine is no `Conclusion`.** `RuleClause` takes `:ein` and one `Name` where it takes
+  `:assert` and an `Assert`, so `:ein inconsistent` writes no fact, pattern or term; which words are the engine's, that
+  a rule states one or the other, and that an hrule states none are the loader's (§ 3).
 - **A stored negative, `NotFact`, takes a fact's clauses**, so a derived `(not …)` fact's provenance, `:rule
   type-exclusivity :using ((c10 a))`, attaches as a fact's does. A `(not …)` in a `:match` or an `:assert` is a
   `Connective` or a `Conclusion` and takes no clause: a keyword pair there is a parse error.

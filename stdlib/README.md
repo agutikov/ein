@@ -71,6 +71,7 @@ files are modules.
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure`: `functional` ∧ `total` ⟹ `(__closed__ R)`. Opt-in, and **not for a relation whose facts the search decides** (the file's caveat) | none |
 | `std.negation` | [`negation.ein`](negation.ein) | the elimination of a double negation, `(not (not g))` ⟹ `g`: `eliminate-0` to `eliminate-6`, one rule a count of arguments with the relation a parameter, each activated a relation ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
 | `std.contradiction` | [`contradiction.ein`](contradiction.ein) | the contradiction, a theory a program imports: `clash-0` to `clash-6` conclude `(false)` from a fact beside its negation, one rule a count with the relation a parameter, and `clash-of-0` to `clash-of-6` derive those activators from every declaration, so the import is the switch; `std.algebra`, `std.bijection` and `std.slots` import it ([§](#stdnegation-and-stdcontradiction-negation-as-rules)) | none |
+| `std.core` | [`core.ein`](core.ein) | the rule every program gets with no import line, `inconsistent`: a held `(false)` ⟹ `:ein inconsistent`, which ends the state ([§](#stdcore-the-rules-every-program-gets)) | none |
 | `std.debts` | [`debts.ein`](debts.ein) | what an obligation requires and what pays it, as facts: for each of the library's four obligations a rule that concludes `(debt-due R J)` from its trigger and one that concludes `(debt-paid R J)` from the trigger with its witness (`total-due` and `total-paid`, `surjective-`, `room-`, `fill-`); `debts-of-total`, `-surjective`, `-room` and `-fill`, which activate a pair from the obligation's activator where the program holds `(debts-of-owed)`; and `discharged-from-nothing-unpaid`, `(debts-discharged)` ([§](#stddebts-the-requirement-and-the-payment-as-facts)) | none |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts)) | none |
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral)) | `arith` |
@@ -98,7 +99,8 @@ program's to say.
 
 ## Importing
 
-Every import brings its module **whole**, with the module's own imports, one
+A program has `std.core` with no import line ([§](#stdcore-the-rules-every-program-gets)); every other module, the
+contradiction's among them, it has by importing it. Every import brings its module **whole**, with the module's own imports, one
 copy per program; the three forms differ only in **names**
 ([Q-M1f.247](../docs/decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)),
 and the answer does not depend on which a file uses

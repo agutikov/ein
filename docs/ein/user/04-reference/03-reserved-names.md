@@ -11,13 +11,14 @@ its own records, which no program writes, are
 
 **The reserved names are the surface between the engine's kernel and a theory written in Ein**
 ([Q-M1f.397](../../../decisions/docs/Q-M1f.397-the-reserved-words-are-mathematics.md)). They are where
-the kernel acts of its own accord: on a declaration, a stored negation and the marker of closure, and on the
-word a rule states to it under `:ein`. `(false)` is shaped by the grammar and read by no part of the kernel: a state
-that holds it is dead by `std.core`'s rule, which every program gets
-([`04-stdlib/21-core.md`](04-stdlib/21-core.md)). What a fact
-of any other relation means is what rules make of it, the program's own or the standard library's. So of whether a
-fact inside a fact holds, the kernel reads one thing, a held `(not P)`; what `(claims Carol …)` or any other
-context says of the fact it points at is a theory's
+the kernel acts of its own accord: on a declaration and the marker of closure, and on the word a rule states to it
+under `:ein`. `(false)` and `(not P)` are shaped by the grammar and judged by no part of the kernel: a state that
+holds `(false)` is dead by `std.core`'s rule, which every program gets
+([`04-stdlib/21-core.md`](04-stdlib/21-core.md)), and one that holds `P` beside `(not P)` by
+`std.contradiction`'s, where the program imports it
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). What a fact
+of any other relation means is what rules make of it, the program's own or the standard library's. So whether a
+fact inside a fact holds is a theory's to say, of `(not P)` as of `(claims Carol …)` or any other context
 ([a fact inside a fact](../03-syntax-and-semantics/03-facts.md#a-fact-inside-a-fact)).
 
 ## Quick reference — from intent to word

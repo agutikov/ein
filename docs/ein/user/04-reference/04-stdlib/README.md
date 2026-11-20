@@ -205,15 +205,15 @@ kb load error: import-clash.ein:2:9: 'domain-elimination' is bound to two full n
 | module | what it is | entry | an import brings | page |
 |---|---|---|---|---|
 | `std.macro` | `forall` and `unknown` | none | nothing more | [1](01-macros.md) |
-| `std.algebra` | the relation algebra: operators, property checks and closures, the totality obligations | none | `std.macro` | [2](02-relation-algebra.md), rules [3](03-relation-algebra-rules.md#stdalgebra) |
+| `std.algebra` | the relation algebra: operators, property checks and closures, the totality obligations | none | `std.macro`, `std.contradiction` | [2](02-relation-algebra.md), rules [3](03-relation-algebra-rules.md#stdalgebra) |
 | `std.typing` | a hierarchy of labels named once; the reflexive closure | none | `std.algebra` | [2](02-relation-algebra.md#using-stdtyping--a-hierarchy-named-once), rules [3](03-relation-algebra-rules.md#stdtyping) |
 | `std.closure` | functional and total, so closed: `(__closed__ R)` | none | `std.algebra` | [2](02-relation-algebra.md#using-stdclosure--closing-a-relation-that-is-a-total-function), rules [3](03-relation-algebra-rules.md#stdclosure) |
-| `std.bijection` | negative completion and elimination for a relation declared `(bijective R)` | none | `std.algebra`, `std.macro` | [4](04-bijections.md) |
+| `std.bijection` | negative completion and elimination for a relation declared `(bijective R)` | none | `std.algebra`, `std.macro`, `std.contradiction` | [4](04-bijections.md) |
 | `std.elim` | the same elimination, with the labels named in the activator | none | `std.macro` | [4](04-bijections.md#using-stdelim--elimination-with-positional-markers) |
-| `std.slots` | one co-location relation whose classes are slots | none | `std.macro` | [5](05-slots.md), rules [6](06-slots-rules.md) |
+| `std.slots` | one co-location relation whose classes are slots | none | `std.macro`, `std.contradiction` | [5](05-slots.md), rules [6](06-slots-rules.md) |
 | `std.negation` | the elimination of a double negation, one rule a count of arguments | none | nothing more | [20](20-negation-and-contradiction.md#using-stdnegation--eliminating-a-double-negation), rules [20](20-negation-and-contradiction.md#stdnegation) |
 | `std.contradiction` | a fact beside its negation, as a rule that concludes `(false)` | none | nothing more | [20](20-negation-and-contradiction.md#using-stdcontradiction--a-fact-beside-its-negation-concludes-false), rules [20](20-negation-and-contradiction.md#stdcontradiction) |
-| `std.core` | the rule from `(false)` to the engine's word, `:ein inconsistent`; in every program, and imported by none | none | nothing more | [21](21-core.md), rule [21](21-core.md#stdcore) |
+| `std.core` | the rule from `(false)` to the engine's word, `:ein inconsistent`; in every program with no import line, and an import of it brings no second copy | none | nothing more | [21](21-core.md), rule [21](21-core.md#stdcore) |
 | `std.debts` | an obligation's requirements and payments as facts, and `(debts-discharged)` | none | `std.algebra`, `std.slots` and what they bring | [22](22-debts.md), rules [22](22-debts.md#how-it-works) |
 | `std.math.digits` | the decimal digit tables, facts and no rule | none | nothing more | [8](08-natural-numbers.md#using-stdmathdigits--the-digit-tables) |
 | `std.math.arith` | `z`, zero; the division by zero's flag and its rule | `arith` | nothing more | [8](08-natural-numbers.md#using-stdmatharith--zero-and-the-division-by-zero), rules [9](09-natural-numbers-rules.md#stdmatharith) |
@@ -232,6 +232,22 @@ kb load error: import-clash.ein:2:9: 'domain-elimination' is bound to two full n
 | `std.bool.props` | thirty relations known of the sixteen, derived by rules | `props` | `gates` | [18](18-boolean-functions.md#using-stdboolprops--what-is-known-of-the-sixteen), rules [19](19-boolean-rules.md#stdboolprops) |
 | `std.bool.circuit` | a circuit as facts, simulated by saturation | `circuit` | `gates` | [18](18-boolean-functions.md#using-stdboolcircuit--a-circuit-simulated-by-saturation), rules [19](19-boolean-rules.md#stdboolcircuit) |
 | `std.bool.inputs` | a circuit's inputs as hypotheses, and required values | `inputs` | `circuit`, `gates`, `std.algebra` | [18](18-boolean-functions.md#using-stdboolinputs--inputs-as-hypotheses), rules [19](19-boolean-rules.md#stdboolinputs) |
+
+**What a program has without importing.** `std.core` alone: the load brings it into every program, after the
+program's forms and its imports', so that a held `(false)` ends a state
+([Q-M1f.551](../../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). Every other module
+is a program's by an import, the contradiction among them: a program that writes `(not P)` and wants a state that
+holds `P` beside it dead imports `std.contradiction`, or a module that imports it, `std.algebra`, `std.bijection` or
+`std.slots` ([Q-M1f.557](../../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)).
+
+**What a module reads and does not declare is shared.** A rule of a module that reads a relation the module does not
+declare, a property fact such as `(bijective R)`, fires on such a fact whoever writes it, so a program that writes
+the fact for a rule of its own gets the module's rules on it too once it imports the module. The words each module
+reads and does not declare are listed on its page: [the relation algebra's](02-relation-algebra.md#the-words-they-share),
+[the bijections'](04-bijections.md#the-words-they-share), [the slots'](05-slots.md#the-words-it-shares) and
+[`std.debts`'](22-debts.md#what-an-import-brings-and-what-the-facts-cost); `std.bool.inputs` shares `std.algebra`'s,
+which it imports, and the other modules share none. Beside them every module shares the library's two names, `not`
+and `false`, which a program writes as any module does.
 
 An **entry** is a module's closing rule: a rule with an empty `:match` that closes the held extent of every relation of the module
 and names every rule of it, so that nothing of the module is left for the search to guess. The relation-algebra
