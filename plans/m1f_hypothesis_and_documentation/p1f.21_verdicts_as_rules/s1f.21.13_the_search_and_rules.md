@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**done 2026-11-20**: the example `2b63821b`, the record below.
+**done 2026-11-20**: the example `2b63821b`, `54cc0002`; the record below.
 **Group:** [I](modifications.md#i-the-search-as-rules), items 36 and 37, with the three rules of item 35 that
 steer a search.
 **Waits on:** [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
@@ -63,12 +63,9 @@ tree.
   fact, `(guess s)`; `clash` and the obligation `some-s` are the page's. It states a region claim and the query's.
 - [`18_two_candidates_as_rules.ein`](../../../examples/lattice/18_two_candidates_as_rules.ein), **the lattice written
   as rules**: the page's `two-worlds.ein` without its last rule, `always`, and the `std.macro` import only `always`
-  read. Brought up to the language: the candidates the page wrote as `(question F)`, its stand-in for *the candidates
-  held as facts*, are `(open F)`, the form the rulings give what root supposes (Q-M1f.566, Q-M1f.573), and the split
-  rules read `(open ?f)` (Q-M1f.632); the hypotheses are written as facts, as the page wrote its `question` facts, and
-  not concluded by the object program's `guess` (Q-M1f.633, V-61); a verdict the page did not state, `owes`, is
-  added, and every relation is declared with its `:why` (Q-M1f.634). Its `(thing a) (thing b)` went: no rule here
-  reads them.
+  read. Its candidates are the page's, facts the program writes, `(question (s a))` and `(question (s b))`, and its
+  header says they are the hypotheses the object program's root holds as `(open F)` (Q-M1f.632, below); a verdict the
+  page did not state, `owes`, is added, and every relation is declared with its `:why` (Q-M1f.633).
 
 **What it shows**: each node of the object program's lattice, as `ein oracle --dump` reads it, is a world, and each
 verdict a fact root holds:
@@ -81,36 +78,25 @@ verdict a fact root holds:
 | the query `(s ?x)`: the classes `a` and `b` | `(possible (s a))`, `(possible (s b))` |
 
 `ein saturate --dump` of the program as rules: `split-1`, `split-2`, `clash-in`, `paid-in` at stratum 0, `owes`,
-`in-R`, `possible` at stratum 1, `;; Strata — stratified, 2 strata`.
+`in-R`, `possible` at stratum 1, `;; Strata — stratified, 2 strata`, `13 firings`.
 
-**What the static check says.** Of the object program, `lattice monotone (the static check) — R is convex: no hole`.
-**The program as rules is flagged**: its split rules read an `open` fact (Q-M1f.569). `ein solve` prints, first on
-stdout and on stderr:
+**What the static check says: neither is flagged.** Each prints `lattice monotone (the static check) — R is convex:
+no hole`, and no `WARNING` row.
 
-<!-- output -->
-```text
-  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
-                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
-                    THE `lattice` ROWS BELOW NAME THE SITES.
-  …
-  lattice           not monotone: 2 sites (the static check) — no hole in this cube
-    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
-    site            split-1: open-read reads open at absent depth 0, concludes a positive fact — at stake: the state
-    site            split-2: open-read reads open at absent depth 0, concludes a positive fact — at stake: the state
-    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
-    state           no stale fact in the cube's 1 nodes
-    paths           no state the read-out prints has an alive parent to check
-  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
-  route             2, the cube — no licence: the static check flags the program
-  work              1 saturation · 0 facts beyond root
-```
-
-and stderr's first line `WARNING: examples/lattice/18_two_candidates_as_rules.ein: THIS PROGRAM IS NOT MONOTONE:
-NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)`. **So no suite holds its answer**: its corpus entry declares no `test`
-run and no run that checks a claim, and its four `:expect` stay in the file for a reader. It is flagged by the form
-the language gives the candidates, and was not reshaped either way: in the page's spelling, `(question F)`, the same
-program is not flagged and `ein test` holds its claims (`build/s13/wq.ein`: `3 held`), and that spelling was not
-taken because the candidates it writes are what the language now writes under `open` (Q-M1f.632).
+**Which it is, and how it got there.** The example was first committed reading the candidates as the language now
+writes them, `(open (s a))` and `(open (s b))` written by the program, its split rules over `(open ?f)` (`2b63821b`).
+That form is flagged, two `open-read` sites (`site split-1: open-read reads open at absent depth 0, concludes a
+positive fact — at stake: the state`), and `ein test FILE` held its four claims for whoever asks. **It failed the
+gate**: `./run_tests.sh` on `54adb21a` stopped at `answer_round_trip`, on that file alone, *models/01.ein: the first
+load is not the state the run saved: … BACKGROUND (18 facts) where it should be (16 facts)*: a written `(open F)`
+loads with the saved file and the run's node holds none (V-61). Its other form, the candidates concluded by the
+object program's `guess`, prints a loader's `note:` before the `WARNING` line, which `non_monotone_warning.rs` refuses
+on a corpus program (V-62). Neither can be fixed in a stage that changes no engine file, so the example went back to
+the page's spelling (`54cc0002`): **not reshaped to escape the flag, but to keep the gate green** with the engine as it
+is, and the plan's acceptance, `ein test` holds its claims, met by a suite. Both `open` forms are kept beside this
+record as the witnesses, [`as_rules_over_open.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open.ein) (V-61) and
+[`as_rules_over_open_concluded.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open_concluded.ein) (V-62); once
+both are fixed the example can read `open`, and is then flagged and held by no suite.
 
 **`ein test`**, on each:
 
@@ -123,20 +109,15 @@ ok           examples/lattice/18_two_candidates.ein
 1 file, 2 expectations: 2 held, 0 FAILED, 0 not checked, 0 errors  (0.01 s)
 
 $ ein test -v examples/lattice/18_two_candidates_as_rules.ein
-WARNING: examples/lattice/18_two_candidates_as_rules.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
 ok           examples/lattice/18_two_candidates_as_rules.ein
   query 1 of 4 · :goal (in-R ?w) — holds (--single: all of R, 1 class over 1 states)
-    not monotone: 2 sites · every node a fork of root; what a node is here is not decided (Q-M1e2.2) · status monotone (conservative) · no stale fact
   query 2 of 4 · :goal (in ?w (false)) — holds (--single: all of R, 1 class over 1 states)
-    not monotone: 2 sites · every node a fork of root; what a node is here is not decided (Q-M1e2.2) · status monotone (conservative) · no stale fact
   query 3 of 4 · :goal (owes ?w) — holds (--single: all of R, 1 class over 1 states)
-    not monotone: 2 sites · every node a fork of root; what a node is here is not decided (Q-M1e2.2) · status monotone (conservative) · no stale fact
   query 4 of 4 · :goal (possible ?f) — holds (--single: all of R, 1 class over 1 states)
-    not monotone: 2 sites · every node a fork of root; what a node is here is not decided (Q-M1e2.2) · status monotone (conservative) · no stale fact
-1 file, 4 expectations: 4 held, 0 FAILED, 0 not checked, 0 errors  (0.01 s)
+1 file, 4 expectations: 4 held, 0 FAILED, 0 not checked, 0 errors  (0.00 s)
 ```
 
-Both exit 0; the second is the check *for whoever asks*, and nothing is claimed of what it holds.
+Both exit 0.
 
 **`ein oracle`**, on the object program (exit 0; the rows that differ from `ein solve`'s):
 
@@ -164,24 +145,24 @@ Both exit 0; the second is the check *for whoever asks*, and nothing is claimed 
 the cube   0 dead nodes with an alive superset · 0 discharged nodes with an owing superset — the static verdict holds
 ```
 
-On the program as rules, `ein oracle` prints the `WARNING` row, the same `lattice` rows, `route 2, the cube — no
-licence: asked for by name`, R `{∅}`, and the four query classes `ein solve` prints; exit 0.
+and on the program as rules, `route 2, the cube — no licence: asked for by name`, `work 1 saturation · 0 facts beyond
+root`, R `{∅}`, its four `:expect` each `holds`, *the cube … the static verdict holds*; exit 0.
 
 **The corpus entries** ([`corpus/corpus.toml`](../../../corpus/corpus.toml)):
 
 | file | runs |
 |---|---|
 | `18_two_candidates.ein` | `solve`, `test`, `saturate`, `render lattice`, `oracle --dump {out}/region` |
-| `18_two_candidates_as_rules.ein` | `saturate`, `saturate --dump`, `render kb`, `solve --count`: none checks a claim (`solve --count` prints *claims not checked — … --count reads no state*); `saturate` asks its question, root being the whole lattice |
+| `18_two_candidates_as_rules.ein` | `solve`, `test`, `saturate`, `saturate --dump`, `render kb` |
 
-Every cell exits 0 (`corpus_exits.txt`, nine lines added); the shape golden gained 64 lines, 40 of the object program
-and 24 of the program as rules, none of its answers, and no other line moved. The catalogue's `lattice/` row has a
-sentence for the pair ([`examples/README.md`](../../../examples/README.md)).
+Every cell exits 0 (`corpus_exits.txt`, ten lines added); the shape golden gained 80 lines, 40 a program, and no
+other line moved. The catalogue's `lattice/` row has a sentence for the pair
+([`examples/README.md`](../../../examples/README.md)).
 
 **V-8, re-taken on this build**: it holds. The page's `two-worlds.ein`, whole, answers `(always ?f)` with `(s a)` and
-`(s b)`, `always … stratum 2`, `3 strata`, and the read-out says `lattice monotone (the static check)`; the example
-with `always` added over `(open ?f)` (`build/s13/v8-open.ein`) answers the same, flagged. The witness to hand to M1n
-at the close is the page's program, unchanged.
+`(s b)`, `always … stratum 2`, `3 strata`, and the read-out says `lattice monotone (the static check)`; the `open`
+form with `always` added over `(open ?f)` (`build/s13/v8-open.ein`) answers the same, flagged. The witness to hand to
+M1n at the close is the page's program, unchanged.
 
 ### 2. $R$ with no search, for the pages
 
@@ -225,49 +206,64 @@ lifted by hand, $\operatorname{Owed}$ written as `paid-in` and `owes`, and the l
 | row | what still holds, checked how | what no longer holds | what would reopen it |
 |---|---|---|---|
 | **search control from inside Ein** (items 35, 36) | The order is done: `ein solve --single examples/zebra2.ein` prints `route … branching on the owed instance with the fewest alternatives left, the first by text among equals … L5 …`, `universe 56 candidates`, `work 7 saturations`; a describe reads the couplings first once they are read, then the same keys (`order.rs`, `Choice::Coupled`). *Hopeless* is L5, as [Finding R](../../../docs/ein/reasoning/02-kb-evolution/07-finding-r.md) states it. No corpus program is known to want another order: nothing measured since | *"Such a rule reads still open, … it needs a pass over each quiescent state, as an obligation has"*: S1f.21.12 built that pass (`ein_infer::open`: `(open R)` and `(open F)` at each state's fixpoint, in a layer no fork inherits), and a rule may read it (Q-M1f.569), the pass and such rules repeating until nothing changes. So a rule that reads *still open* is written today; what it can conclude is a held fact or the engine's one word, and either flags its program: the probe `build/s13/hopeless.ein`, a rule over `(open s)` and `(absent (open (s ?x)))` that states `:ein inconsistent`, prints `site hopeless: open-read reads open at absent depth 0, states :ein inconsistent — at stake: the state, and dead with it`. **The decline holds, on this reason beside the first**: search control written in Ein today flags its program, and nothing is claimed of a flagged program's answer | a program whose search is slow by its order and fast by another, measured; then a word to the engine under `:ein`, the form a rule has for one since Q-M1f.399 and which has one word (Q-M1f.550), that a rule over `open` facts states, the routes read and no state holds; and a ruling that such a rule does not flag its program |
-| **the search as rules in the engine**, every state a context (item 37) | The cube against the tree: *zebra2* is 56 candidates, $2^{56}$ worlds, where `--single` takes 7 saturations and the describe 120 (`work 120 saturations`, `commitments (k_c) 261 982`). No form lifts a rule: a macro wraps a pattern and the rule is written again by hand ([`beliefs/08_global_and_wrapped.ein`](../../../examples/beliefs/08_global_and_wrapped.ein)), and the example lifts `clash` so. Each world's absences need the strata followed: V-8 holds (§ 1) | Nothing of the reason; three of its premises moved, two of them each way. **The contradiction is rules** (S1f.21.11): a program's pair check can be lifted with its other rules, `clash-N` under `(in ?w …)`, where the kernel's check had no rule to lift. **The engine's word ends a state** (S1f.21.10): a lifted rule cannot state it, since it ends every world at once (`build/s13/word-in-a-world.ein`, `clash-in` stating `:ein inconsistent`: `states (k_s) 0`, `refuted by clash-in`, every claim FAILED), so a world's death is a fact, `(in W (false))`, which `std.core`'s rule does not read. **$H$ is held at root** (S1f.21.12): a rule can make the worlds from the `open` facts, as the example does, and its program is flagged | M1n's stratum-order admission, and a form that lifts a rule; as an engine, also a ruling on Q-M1f.569 for a program that reads `open` and builds no node but root, of which nothing can go stale (the example's case) |
+| **the search as rules in the engine**, every state a context (item 37) | The cube against the tree: *zebra2* is 56 candidates, $2^{56}$ worlds, where `--single` takes 7 saturations and the describe 120 (`work 120 saturations`, `commitments (k_c) 261 982`). No form lifts a rule: a macro wraps a pattern and the rule is written again by hand ([`beliefs/08_global_and_wrapped.ein`](../../../examples/beliefs/08_global_and_wrapped.ein)), and the example lifts `clash` so. Each world's absences need the strata followed: V-8 holds (§ 1) | Nothing of the reason; three of its premises moved, two of them each way. **The contradiction is rules** (S1f.21.11): a program's pair check can be lifted with its other rules, `clash-N` under `(in ?w …)`, where the kernel's check had no rule to lift. **The engine's word ends a state** (S1f.21.10): a lifted rule cannot state it, since it ends every world at once (`build/s13/word-in-a-world.ein`, `clash-in` stating `:ein inconsistent`: `states (k_s) 0`, `refuted by clash-in`, every claim FAILED), so a world's death is a fact, `(in W (false))`, which `std.core`'s rule does not read. **$H$ is held at root** (S1f.21.12): a rule can make the worlds from the `open` facts, as the example's first form did, and its program is flagged | M1n's stratum-order admission, and a form that lifts a rule; as an engine, also a ruling on Q-M1f.569 for a program that reads `open` and builds no node but root, of which nothing can go stale (the example's first form) |
 | **facts inferred from the search** | V-8 holds on this build, in the page's spelling, monotone by the static check, and over `open`, flagged (§ 1). A fact the search writes back into a state changes it: written today as a rule that reads an `open` fact and concludes a held fact, which a fork keeps while it drops the `open` fact; [`features/23_a_rule_reads_open.ein`](../../../examples/features/23_a_rule_reads_open.ein) is one, its `(seen r)` held where no `(open r)` is | Nothing: S1f.21.12 made the writeback writable and the static check flags it (`open-read`), so what the row declined is now refused an answer by the flag | M1n's P1n.2, whose D2 is the stratum-order admission; then `always` is one stratum more of the example |
 
 The acceptance's two other lines are the close's: V-8 to M1n with its witness whole (the page's `two-worlds.ein`), and
 the three rows above in the close as what was left and where.
 
-### Defaults taken (Q-M1f.631 to Q-M1f.634)
+### Defaults taken (Q-M1f.631 to Q-M1f.633)
 
 | id | question | default |
 |---|---|---|
 | Q-M1f.631 | where the example goes and its name | `examples/lattice/`, the commitment lattice and $R$, at the next number, 18; the pair shares it, `18_two_candidates.ein` and `18_two_candidates_as_rules.ein`, as `06`'s twins share theirs |
-| Q-M1f.632 | how the program as rules reads the candidates | as `(open F)`, the language's form of what the page wrote `(question F)` for, so that it is item 37's *a rule makes the child worlds from the open facts*; the program is then flagged, its claims stay for a reader and no run checks them. The page's spelling, monotone and held by `ein test`, was the other choice |
-| Q-M1f.633 | who writes the candidates in the program as rules | the program, as facts, as the page wrote its `question` facts, not the object program's `guess` rule: beside `(solve :no-search)` a rule that concludes a hypothesis prints a `note:` before the `WARNING` line (V-61), which `non_monotone_warning.rs` refuses on a corpus program |
-| Q-M1f.634 | what the program as rules states besides the page's | `owes`, a world alive that pays nothing, as the object program's root owes, an absence over relations of the first stratum, so that each of the three verdicts is a fact; each relation declared with its `:why`; the query for it with its claim |
+| Q-M1f.632 | how the program as rules reads the candidates | as the page wrote them, facts of its own, `(question F)`, its header saying they are what the object program's root holds as `(open F)`: the program is monotone and `ein test` holds its claims. The language's form, `(open F)`, read by the split rules, is item 37's *a rule makes the child worlds from the open facts* and flags the program; written by the program it fails the answer dump's round trip (V-61), and concluded by `guess` it prints a `note:` before the `WARNING` line (V-62). It was the first commit, and is kept beside the record as the two witnesses |
+| Q-M1f.633 | what the program as rules states besides the page's | `owes`, a world alive that pays nothing, as the object program's root owes, an absence over relations of the first stratum, so that each of the three verdicts is a fact; each relation declared with its `:why`; the query for it with its claim |
+
+Q-M1f.634 and Q-M1f.635 are not used.
 
 ### Findings outside the stage (V-61 to V-63)
 
-- **V-61 — a `note:` of the mechanisms precedes a flagged program's `WARNING` on stderr.** Q-M1f.564 and Q-M1f.580 keep
+- **V-61 — a written `(open F)` breaks the answer dump's round trip.** A program that writes an `(open F)` fact holds
+  it at root, and only there (Q-M1f.566); the node the run builds for $\emptyset$ is a fork of root, which drops the
+  layer, and holds none. `--dump-answer` saves $\emptyset$ as the program, which loads to root, with them.
+  `ein-cli/tests/answer_round_trip.rs` refuses the difference: on
+  [`as_rules_over_open.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open.ein), as the example's first commit had
+  it under `examples/lattice/`, the gate on `54adb21a` failed with *examples/lattice/18_two_candidates_as_rules.ein:
+  models/01.ein: the first load is not the state the run saved: line 2: ";; ── BACKGROUND (18 facts) ──" where it
+  should be ";; ── BACKGROUND (16 facts) ──" (45 lines against 42)*; `ein saturate --dump` of the saved file lists the
+  two `(open (s …))` among the 18. No corpus program that loads writes an `(open …)` fact: the two that write one,
+  `examples/ein-bugs/wrong-answers/open-fact-head.ein` and `open-relation-parameter.ein`, are refused at load. Whether $\emptyset$'s state is root's or the fork's, and so
+  which side moves, is the question; the states above root were not taken (the example states `(solve :no-search)`).
+- **V-62 — a `note:` of the mechanisms precedes a flagged program's `WARNING` on stderr.** Q-M1f.564 and Q-M1f.580 keep
   the `WARNING` line stderr's first, and `ein-cli/tests/non_monotone_warning.rs` holds it on every corpus program; a
-  load's `note:` from `ein_infer::mechanisms` is printed before it. Shown by `build/s13/wo.ein`, the program as rules
-  with its candidates concluded by `guess` beside `(solve :no-search)`: `ein solve --no-search` writes `note: …:34:8:
-  solve: its :no-search states the lattice is root alone, so rule 'guess' proposes no candidate` first, then `WARNING:
-  …`. No corpus program shows it today (the sweep passes); the example writes its candidates as facts (Q-M1f.633).
-- **V-62 — `ein saturate` counts no firing of the saturation that resumes after the `open` pass.** On a program whose
-  rule reads an `open` fact a rule concluded, the run's `N firings` line and the firing breakdown leave those firings
-  out: `examples/features/23_a_rule_reads_open.ein` prints `6 firings`, the per-rule list without `noted`, whose
-  `(seen r)` is in `DERIVED`; `build/s13/wo.ein` prints `0 firings` beside 17 derived facts. Beside it, on a probe of
-  the same family (`build/s13/word-in-a-world.ein`, flagged), the `unsat core` is `(before (s a) (s b))` alone, the
-  written `(open …)` facts the deriving rule read left out of it.
-- **V-63 — the rung reads `stuck` where a rule's candidates pay what root owes.** `18_two_candidates.ein`: `ein show
-  hyps` says *H, built by the rung `stuck`: 2 candidates*, and the event `{"e": "rung", "mode": "stuck", "owed": 1,
-  "branches": 1, "candidates": 0, …}`, while H is the two candidates `guess` concludes, each of which pays the instance,
-  and R is the oracle's. `oblgen.rs` sets `Mode::Stuck` where the obligation itself offered nothing (its witness
-  `(?R ?x)` has no guard to range over), though its comment says *a candidate a rule of the state already wrote is in
-  H, and pays: no state is stuck for it (Q-M1f.570)*. The page's `two.ein`, with its `hrule`, reads the same. No
-  answer moves.
+  load's `note:` from `ein_infer::mechanisms` is printed before it. Shown by
+  [`as_rules_over_open_concluded.ein`](s1f.21.13_the_search_and_rules/as_rules_over_open_concluded.ein), the
+  candidates concluded by `guess` beside `(solve :no-search)`: `ein solve --no-search` writes `note: …:62:8: solve: its
+  :no-search states the lattice is root alone, so rule 'guess' proposes no candidate` first, then `WARNING: …`. No
+  corpus program shows it today (the sweep passes).
+- **V-63 — three reports do not see what the `open` writers did.** (a) `ein saturate` counts no firing of the
+  saturation that resumes after the `open` pass: `examples/features/23_a_rule_reads_open.ein` prints `6 firings` and a
+  per-rule list without `noted`, whose `(seen r)` is under `DERIVED`; `as_rules_over_open_concluded.ein` prints
+  `0 firings` beside 17 derived facts. (b) The rung reads `stuck` where a rule's candidates pay what root owes: on
+  `18_two_candidates.ein` `ein show hyps` says *H, built by the rung `stuck`: 2 candidates*, and the event `{"e":
+  "rung", "mode": "stuck", "owed": 1, "branches": 1, "candidates": 0, …}`, while H is the two candidates `guess`
+  concludes, each of which pays the instance, and R is the oracle's; `oblgen.rs` sets `Mode::Stuck` where the
+  obligation itself offered nothing (its witness `(?R ?x)` has no guard to range over), though its comment says *a
+  candidate a rule of the state already wrote is in H, and pays: no state is stuck for it (Q-M1f.570)*; the page's
+  `two.ein`, with its `hrule`, reads the same. (c) A core leaves out the written `(open …)` facts its derivation read:
+  `build/s13/word-in-a-world.ein` (the `open` form, `clash-in` stating `:ein inconsistent`, flagged) prints `unsat core
+  (before (s a) (s b))` alone. No answer moves in any of the three.
 
-**What the user must see**: the program as rules is flagged, by the form the language now gives the candidates
-(Q-M1f.632), so the plan's *`ein test` holds its claims* is met by hand and by no suite; V-8 still holds on a program
-the static check calls monotone; V-61 is a contract a corpus program could break.
+**What the user must see**: the example is in the page's spelling, monotone and held by a suite, and not in the
+language's `open` spelling, which fails the gate today (V-61) and is kept as a witness; V-61 itself, $\emptyset$ read
+two ways where a program writes an `(open F)`; V-8 still holds on a program the static check calls monotone.
 
 ### Commits
 
-- `2b63821b` One lattice twice: `examples/lattice/18_two_candidates.ein` and `18_two_candidates_as_rules.ein`, their
-  corpus entries, the catalogue's sentence, the two goldens' new lines.
-- this record, plans only.
+- `2b63821b` One lattice twice: `examples/lattice/18_two_candidates.ein` and `18_two_candidates_as_rules.ein` over
+  `open`, their corpus entries, the catalogue's sentence, the two goldens' new lines.
+- `54adb21a` this record's first version, plans only.
+- `54cc0002` `18_two_candidates_as_rules.ein` in the page's spelling, `(question F)`: its runs, the catalogue's
+  sentence, the goldens banked again.
+- this record, with the two witnesses beside it, plans only.

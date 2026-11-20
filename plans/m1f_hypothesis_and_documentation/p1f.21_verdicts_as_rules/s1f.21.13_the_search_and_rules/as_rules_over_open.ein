@@ -1,0 +1,67 @@
+;;; S1f.21.13's example as first written: the lattice of examples/lattice/18_two_candidates.ein as
+;;; rules, its split rules reading the `open` facts root holds, which the program writes. Flagged
+;;; (`open-read`, two sites). The witness of V-61: put under examples/ with a corpus entry, the
+;;; answer dump's round trip fails on it (ein-cli/tests/answer_round_trip.rs: "models/01.ein: the
+;;; first load is not the state the run saved: BACKGROUND (18 facts) where it should be (16 facts)").
+
+(relation s        Thing       :why "s holds of {?3}")
+(relation world    World       :why "{?3} is a world")
+(relation in       World Fact  :why "{?3} holds {?4}")
+(relation paid     World       :why "{?3} pays what is owed")
+(relation owes     World       :why "{?3} is alive and owes")
+(relation in-R     World       :why "{?3} is alive and owes nothing")
+(relation possible Fact        :why "{?3} holds in some state of R")
+
+;; the hypotheses root holds, and an order on them
+(open (s a)) (open (s b))
+(before (s a) (s b))
+
+;; the worlds: root, and one for each set of candidates
+(world (w))
+(rule split-1 ()
+  :match  (open ?f)
+  :assert (and (world (w ?f)) (in (w ?f) ?f))
+  :why    "the world that supposes {?f}")
+(rule split-2 ()
+  :match  (and (open ?f) (open ?g) (before ?f ?g))
+  :assert (and (world (w ?f ?g)) (in (w ?f ?g) ?f) (in (w ?f ?g) ?g))
+  :why    "the world that supposes {?f} and {?g}")
+
+;; the object program's rule, lifted into a world by hand
+(rule clash-in ()
+  :match  (and (in ?w (s a)) (in ?w (s b)))
+  :assert (in ?w (false))
+  :why    "in {?w}: s of a and of b")
+
+;; the requirement and its payment
+(rule paid-in ()
+  :match  (in ?w (s ?x))
+  :assert (paid ?w)
+  :why    "{?w} holds s of {?x}")
+
+;; the verdicts, each a fact about a world
+(rule owes ()
+  :match  (and (world ?w) (absent (paid ?w)) (absent (in ?w (false))))
+  :assert (owes ?w)
+  :why    "{?w} is alive and pays nothing")
+(rule in-R ()
+  :match  (and (world ?w) (paid ?w) (absent (in ?w (false))))
+  :assert (in-R ?w)
+  :why    "{?w} is alive and owes nothing")
+
+;; a fact inferred from the search
+(rule possible ()
+  :match  (and (in-R ?w) (in ?w ?f))
+  :assert (possible ?f)
+  :why    "{?f} holds in {?w}, a state of R")
+
+(solve :no-search)
+
+(query :goal (in-R ?w)
+  :expect (model (in-R (w (s a))) (in-R (w (s b)))))
+(query :goal (in ?w (false))
+  :expect (model (in (w (s a) (s b)) (false))))
+(query :goal (owes ?w)
+  :expect (model (owes (w))))
+(query :goal (possible ?f)
+  :expect (model (possible (s a)) (possible (s b))))
