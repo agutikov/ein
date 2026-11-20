@@ -229,3 +229,44 @@ fn every_command_that_answers_about_a_commitment_warns() {
         );
     }
 }
+
+/// **The warning is stderr's first line before a load's `note:`**: a
+/// flagged program whose load notes something, a rule that concludes a
+/// hypothesis beside `(solve :no-search)` and a rule that reads `open`,
+/// writes the warning first and the note after it, on every command that
+/// answers about a commitment. Only the order of the lines is held; what the
+/// program answers is not.
+#[test]
+fn the_warning_comes_before_a_loads_note() {
+    let dir = Scratch::new("ein-warning-before-note");
+    let file = dir.join("noted.ein");
+    std::fs::write(
+        &file,
+        "(relation s Thing :why \"s holds of {?3}\")\n\
+         (relation seen Fact :why \"{?3} is supposed\")\n\
+         (thing a)\n\
+         (rule guess (?R) :match (thing ?x) :assert (open (?R ?x)) :why \"suppose {?R} of {?x}\")\n\
+         (guess s)\n\
+         (rule noted () :match (open ?f) :assert (seen ?f) :why \"{?f} is supposed\")\n\
+         (solve :no-search)\n",
+    )
+    .expect("written");
+    let f = file.to_str().expect("utf-8");
+    let line = warning_line(f);
+    for args in [
+        &["solve", f][..],
+        &["solve", f, "--no-search"],
+        &["oracle", f],
+        &["show", "hyps", f],
+        &["render", "lattice", f],
+    ] {
+        let r = ein(args);
+        assert_eq!(r.code, 0, "{args:?}: {}", r.err);
+        let lines: Vec<&str> = r.err.lines().collect();
+        assert_eq!(lines.first(), Some(&line.as_str()), "{args:?}:\n{}", r.err);
+        let note = lines
+            .iter()
+            .position(|l| l.starts_with("note: ") && l.contains("solve: its :no-search"));
+        assert!(note.is_some_and(|at| at > 0), "{args:?}:\n{}", r.err);
+    }
+}

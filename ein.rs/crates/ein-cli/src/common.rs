@@ -176,20 +176,20 @@ pub fn load_held(
     }
 }
 
-/// **What the load noticed and did not refuse**, said once: each line on
-/// stderr as `note: <line>`, on every command, since every command that
-/// loads a program loads it through [`load_held`]: the hypothesis
-/// mechanisms' notes (Q-M1f.242). A command may load one file several
-/// times, once a query and once a question, and each line carries its file
-/// and position, so a line is printed the first time the process meets it
-/// and never again. No answer and no exit code moves.
-fn say_notes(notes: &[String]) {
-    static SAID: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
-    let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());
+/// **What the load noticed and did not refuse**: each line as
+/// `note: <line>`, kept for [`say_warnings`], on every command, since every
+/// command that loads a program loads it through [`load_held`]: the
+/// hypothesis mechanisms' notes (Q-M1f.242). A command may load one file
+/// several times, once a query and once a question, and each line carries
+/// its file and position, so a line is kept the first time the process
+/// meets it and never again. No answer and no exit code moves.
+fn keep_notes(notes: &[String]) {
+    let mut w = WARNINGS.lock().unwrap_or_else(|e| e.into_inner());
     for note in notes {
-        if !said.contains(note) {
-            eprintln!("note: {note}");
-            said.push(note.clone());
+        let line = format!("note: {note}");
+        if !w.said.contains(&line) {
+            w.said.push(line.clone());
+            w.notes.push(line);
         }
     }
 }
@@ -212,26 +212,33 @@ fn keep_warnings(path: &Path, warnings: &[String]) {
     }
 }
 
-/// The load's warning lines: every one met, and those not yet printed.
+/// The load's note and warning lines: every one met, and those not yet
+/// printed.
 struct Warnings {
     said: Vec<String>,
+    notes: Vec<String>,
     pending: Vec<String>,
 }
 
 static WARNINGS: std::sync::Mutex<Warnings> = std::sync::Mutex::new(Warnings {
     said: Vec::new(),
+    notes: Vec::new(),
     pending: Vec::new(),
 });
 
-/// **The warnings, said when a command's run of a program ends**: the
-/// load's ([`keep_warnings`]), then each activator a state of the run held
-/// that binds a relation parameter to a fact, placed at its rule
+/// **The load's notes and the warnings, said when a command's run of a
+/// program ends**: the load's notes ([`keep_notes`]) and warnings
+/// ([`keep_warnings`]), then each activator a state of the run held that
+/// binds a relation parameter to a fact, placed at its rule
 /// (`ein_infer::compile::note_inert_activators`), one `warning:` line each
 /// (Q-M1f.1). At the end, so that a flagged program's `WARNING` line stays
 /// stderr's first (Q-M1f.564). No answer and no exit code moves.
 pub fn say_warnings() {
-    let pending = std::mem::take(&mut WARNINGS.lock().unwrap_or_else(|e| e.into_inner()).pending);
-    for line in pending {
+    let (notes, pending) = {
+        let mut w = WARNINGS.lock().unwrap_or_else(|e| e.into_inner());
+        (std::mem::take(&mut w.notes), std::mem::take(&mut w.pending))
+    };
+    for line in notes.into_iter().chain(pending) {
         eprintln!("{line}");
     }
     for line in ein_infer::take_inert_activators() {
@@ -244,7 +251,7 @@ pub fn say_warnings() {
 /// every command that loads a program loads it here: one line per conflict,
 /// each `kb load error: …`, at the command's load-error exit. A list that
 /// filters no candidate, or a name another declaration already says, is one
-/// `note:` line, as [`say_notes`] says the loader's, and moves nothing.
+/// `note:` line, as [`keep_notes`] keeps the loader's, and moves nothing.
 ///
 /// Derived closures and derived obligation activators exist only at root's
 /// fixpoint, so the judgement reads root: [`ein_infer::mechanisms::check`]
@@ -277,7 +284,7 @@ fn judge_mechanisms(
             .collect::<Vec<_>>()
             .join("\n"));
     }
-    say_notes(&report.notes);
+    keep_notes(&report.notes);
     Ok(())
 }
 
