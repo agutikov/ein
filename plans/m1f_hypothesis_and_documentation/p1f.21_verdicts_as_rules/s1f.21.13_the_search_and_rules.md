@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-19 on the user's word (*"plan sections from this list: A, B, C, ... as stages"*);
-**done 2026-11-20**: the example `2b63821b`, `54cc0002`; the record below.
+**done 2026-11-20**: the example `2b63821b`, `54cc0002`, `4b2a3026`; the record below.
 **Group:** [I](modifications.md#i-the-search-as-rules), items 36 and 37, with the three rules of item 35 that
 steer a search.
 **Waits on:** [Q-M1f.549](../open_questions.md#q-m1f549--hypotheses-as-facts-held-in-which-reading-and-how-far-the-search-goes-into-rules),
@@ -65,7 +65,12 @@ tree.
   as rules**: the page's `two-worlds.ein` without its last rule, `always`, and the `std.macro` import only `always`
   read. Its candidates are the page's, facts the program writes, `(question (s a))` and `(question (s b))`, and its
   header says they are the hypotheses the object program's root holds as `(open F)` (Q-M1f.632, below); a verdict the
-  page did not state, `owes`, is added, and every relation is declared with its `:why` (Q-M1f.633).
+  page did not state, `owes`, is added, and every relation is declared with its `:why` (Q-M1f.633). The page's
+  `(thing a) (thing b)` stay, though no rule here reads them: dropped, `a` and `b` are named only inside a candidate,
+  and `ein-infer/tests/alive_invariant.rs`' `every_name_of_the_program_is_a_candidate_object`, whose banked list
+  `SEEDED` names each corpus program with such a name, failed the gate on `162e99e9` with the two new pairs
+  (`` `a`, in (question (s a)) ``, `` `b`, in (question (s b)) ``); the facts went back in `4b2a3026` rather than the
+  list growing, the test file being the engine's.
 
 **What it shows**: each node of the object program's lattice, as `ein oracle --dump` reads it, is a world, and each
 verdict a fact root holds:
@@ -266,4 +271,6 @@ two ways where a program writes an `(open F)`; V-8 still holds on a program the 
 - `54adb21a` this record's first version, plans only.
 - `54cc0002` `18_two_candidates_as_rules.ein` in the page's spelling, `(question F)`: its runs, the catalogue's
   sentence, the goldens banked again.
-- this record, with the two witnesses beside it, plans only.
+- `162e99e9` this record's second version, with the two witnesses beside it, plans only.
+- `4b2a3026` `18_two_candidates_as_rules.ein` writes `(thing a) (thing b)` again; its shape lines banked again.
+- this record, plans only.
