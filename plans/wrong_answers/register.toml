@@ -709,3 +709,67 @@ empty     = "dead"
 relations = []
 models    = []
 core      = []
+
+[[case]]
+id       = "W99/hypothesis-rule-absent"
+case     = "W99"
+title    = "a rule that concludes a hypothesis reads none of its `absent` premises"
+class    = "model set"
+settings = "default"
+owner    = "S1f.21.24"
+question = ["Q-M1f.129", "Q-M1f.567", "Q-M1f.685", "V-89"]
+witness  = "plans/wrong_answers/witnesses/hypothesis-rule-absent.ein"
+status   = "open"
+open_because = "the function that reads a hypothesis rule's candidates, `HypothesisRules::candidates_by`, runs the matcher and resolves each match's `(open F)` without judging the `absent` guards the plan lifts out of the match, which the saturator judges for a rule that concludes a fact; every reader of a rule's `(open F)` goes through it, H at root, the pass that writes a state's `open` facts, `ein show hyps`, `ein render h-space` and the oracle, so all of them agree on the wrong H. S1f.21.24 fixes it under the coordinator's default Q-M1f.685"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.21.24 (2026-11-20) from P1f.21's finding V-89, found by S1f.21.19 on review item 62's probe and checked by the coordinator on the final binary; the witness is that probe with its header written for the corpus. One `:match`, `(and (p ?x) (absent (q ?x)))`, under `plain`, which concludes `(s ?x)`, and `guess`, which concludes `(open (r ?x))`; `(q a)` written. `ein saturate --dump` holds `(s b :rule plain)` alone of s beside `(open (r a) :rule guess)` and `(open (r b) :rule guess)`. The program is monotone by the static check (q is in no commitment's reach), so the engine claims the four states. `ein oracle` builds H through the same function and answers the same four, so it does not catch it: the second route is the rule that concludes a fact over the same match. The engine before P1f.21's second part proposed the same two from an `hrule`. On Q-M1f.129's witnesses the defect is masked where the `absent` reads the hypothesis's own fact, which H's filter removes"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the release binary built at 3fdf6c97 (2026-11-20): R four states, ∅, {(r a)}, {(r b)} and {(r a), (r b)}, `lattice monotone (the static check)`, `universe 2 candidates`; `ein show hyps` lists (r a) and (r b), and `ein oracle` answers the same R"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["r"]
+models    = [[], ["(r a)"], ["(r a)", "(r b)"], ["(r b)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(r a)", "(r b)"]]
+
+[case.right]
+reading   = "Q-M1f.685, the coordinator's default: the `absent` is read, as every rule's is, judged against the state's fixpoint as the saturator judges a lifted guard for a rule that concludes a fact"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["r"]
+models    = [[], ["(r b)"]]
+derived   = "the match `(and (p ?x) (absent (q ?x)))` holds of `b` alone, `(q a)` being written, as `plain`'s one conclusion `(s b)` shows: the one hypothesis `guess` concludes is `(r b)`, so H is `(r b)`, nothing refutes or owes, and R is ∅ and {(r b)}"
+
+[[case.right.alternative]]
+reading   = "Q-M1f.685's other reading: a hypothesis rule's `absent` is no part of what it proposes"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["r"]
+models    = [[], ["(r a)"], ["(r a)", "(r b)"], ["(r b)"]]
+derived   = "today's answer: every `?x` of p is proposed, H is (r a) and (r b), and R is the four subsets"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 4
+relations = ["r"]
+outside   = ["s"]
+models    = [
+  [],
+  ["(r a)"],
+  ["(r a)", "(r b)"],
+  ["(r b)"],
+]

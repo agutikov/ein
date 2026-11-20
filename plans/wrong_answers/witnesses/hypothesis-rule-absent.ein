@@ -1,0 +1,34 @@
+;;; A rule that concludes a hypothesis, `(open F)`, reads its `(absent …)` premises as a rule
+;;; that concludes a fact reads them.
+;;;
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two things, `a` and `b`, of which `a` is q, and two rules with one `:match`,
+;;; `(and (p ?x) (absent (q ?x)))`: `plain` concludes a fact, `(s ?x)`, and `guess` a
+;;; hypothesis, `(open (r ?x))`. Nothing reads r or s, and no commitment can change q, so
+;;; the static check calls the program monotone.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; The match holds of `b` alone: `a` is q. So `plain` concludes `(s b)` and no `(s a)`,
+;;; and the one hypothesis `guess` concludes is `(r b)`: H is `(r b)`, and R is two
+;;; states, ∅ and {(r b)}. `ein solve`'s `outside` row names s, which no hypothesis is of.
+
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(relation r T :why "{?3} is r")
+(relation s T :why "{?3} is s")
+
+(p a) (p b)
+(q a)
+
+(rule guess ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (open (r ?x))
+  :why    "suppose {?x} is r: it is not q")
+
+(rule plain ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (s ?x)
+  :why    "{?x} is s: it is not q")
