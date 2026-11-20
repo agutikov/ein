@@ -49,9 +49,10 @@ A formula is TeX. After the four come the details, each refusal linked to the
 
 **What a program says about it**
 
-- [Rules](05-rules.md): a pattern, a conclusion and a reason; a rule as a rewrite of the graph; parameters and
-  activators; `absent`.
-- [Constraints](06-constraints.md): `(false)` and `(not …)`, what cannot be, the upper bound of the answer.
+- [Rules](05-rules.md): a pattern, a conclusion and a reason; a rule as a rewrite of the graph; ending a state,
+  `:ein inconsistent`; parameters and activators; `absent`.
+- [Constraints](06-constraints.md): `(false)` and `(not …)`, what cannot be, the upper bound of the answer; the
+  contradiction as a rule.
 - [Properties and operators](07-properties-and-operators.md): the relation algebra as facts and rules.
 - [Obligations](08-obligations.md): `(open ?R)`, what a state still owes, the lower bound of the answer.
 - [Hypotheses](09-hypotheses.md): what the engine may assume, and how a program says where to look.

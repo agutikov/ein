@@ -283,8 +283,9 @@ it is the whole switch:
 (solve :no-search)
 ```
 
-`ein solve FILE` ends as the program with `(clash owns)` does. A relation no declaration names, or one of more than
-six arguments, is reached by an activator written by hand, `(clash-1 loose)`; `std.algebra`, `std.bijection` and
+`ein solve FILE` ends as the program with `(clash owns)` does. A relation no declaration names is reached by an
+activator written by hand, `(clash-1 loose)`, and a fact of more than six arguments by the rule written at its
+count, as `clash` is above; `std.algebra`, `std.bijection` and
 `std.slots`, which conclude stored negations, import the module, so a program that imports one of them has it
 ([negation as rules](../04-reference/04-stdlib/20-negation-and-contradiction.md#using-stdcontradiction--a-fact-beside-its-negation-concludes-false)).
 A program that imports none of them and writes no rule of its own has no contradiction of a fact and its negation:

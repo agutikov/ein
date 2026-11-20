@@ -26,7 +26,7 @@ s &\in (\Sigma^{+} \setminus W_{\!c}) \cup X
 \end{aligned}
 $$
 
-within the shapes the reserved atoms fix: $\lnot t$ is the fact pattern $\operatorname{not}(t)$ with $t$ a fact
+within the shapes the language fixes ([the knowledge base](01-knowledge-base.md#a-fact-about-a-relation-a-fact-about-a-fact-a-negation-falsity)): $\lnot t$ is the fact pattern $\operatorname{not}(t)$ with $t$ a fact
 pattern, a negation among them and never a variable, and $\bot$ is $\operatorname{false}()$. A fact pattern with no variable under any of
 its arrows, at any depth, is a fact. Some of the fact patterns of a pattern graph are its **premises**, as some
 of the facts of a knowledge base are held.

@@ -12,8 +12,9 @@ every relation a program declares, by importing the module and nothing else:
 Its `clash-0` to `clash-6` conclude `(false)` from a fact of `R` beside its negation, one rule a count of arguments
 with the relation a parameter, and its `clash-of-0` to `clash-of-6` derive each activator `(clash-N R)` from a
 declaration of `R` with `N` labels; the rule every program gets then ends the state that holds the `(false)`
-([Q-M1f.551](Q-M1f.551-std-core-is-loaded-into-every-program.md)). A relation no declaration names, and a fact of
-more than six arguments, are reached by an activator the program writes, `(clash-1 loose)`. A program that imports
+([Q-M1f.551](Q-M1f.551-std-core-is-loaded-into-every-program.md)). A relation no declaration names is reached by an
+activator the program writes, `(clash-1 loose)`, and a fact of more than six arguments by a rule the program writes,
+the module's at its count ([Q-M1f.556](Q-M1f.556-the-rules-of-a-stored-negation-are-written-for.md)). A program that imports
 no such rule has no contradiction of that shape, and a state that holds a fact beside its negation is alive in it; a
 program that wants another logic, three- or four-valued or paraconsistent, writes rules of its own.
 

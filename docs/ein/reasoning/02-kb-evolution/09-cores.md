@@ -58,8 +58,8 @@ the first arrow of the premise $q = R(a, b)$; the premise $n = \lnot q$ points a
 fourteen rules are one theory, and a program takes them or does not
 ([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). Taken, they
 reach every relation the program declares, at each count it is declared with, and $n = 0$ besides, a declaration being
-also the fact $\operatorname{decl}(r)$; a relation nothing declares, and a fact of more than six arguments, is reached
-by an activator the program states. Not taken, a world that holds $f$ beside $\lnot f$ holds no $\bot$ and is alive,
+also the fact $\operatorname{decl}(r)$; a relation nothing declares is reached by an activator the program states,
+and a fact of more than six arguments by a rule of the same shape at its count, which the program states. Not taken, a world that holds $f$ beside $\lnot f$ holds no $\bot$ and is alive,
 as a three- or four-valued or a paraconsistent logic would have it, and a program that wants another reading states
 rules of its own.
 
