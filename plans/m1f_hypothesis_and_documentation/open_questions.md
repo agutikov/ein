@@ -598,6 +598,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.671](#q-m1f671--when-a-workers-finding-in-flight-is-said-on-stderr) | When a worker's finding in flight is said on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
 | [Q-M1f.672](#q-m1f672--the-rendering-pages-layers-picture) | The rendering page's layers picture | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
 | [Q-M1f.674](#q-m1f674--the-facts-a-resumed-state-added-read-off-its-own-layers) | The facts a resumed state added, read off its own layers | **ruled 2026-11-20 by the user**: built; P1f.21's S1f.21.23 |
+| [Q-M1f.675](#q-m1f675--how-a-knowledge-base-grown-from-the-snapshots-is-recognised) | How a knowledge base grown from the snapshot's is recognised | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
+| [Q-M1f.676](#q-m1f676--whether-the-snapshot-keeps-its-set-of-facts) | Whether the snapshot keeps its set of facts | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
+| [Q-M1f.677](#q-m1f677--what-a-knowledge-base-that-did-not-grow-from-the-snapshots-gets) | What a knowledge base that did not grow from the snapshot's gets | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
+| [Q-M1f.678](#q-m1f678--where-a-layers-stamp-comes-from) | Where a layer's stamp comes from | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12096,3 +12100,31 @@ what is V-78"*, and the coordinator explained it and asked: build it or leave it
 > of course build
 
 [S1f.21.23](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md) builds it.
+
+### Q-M1f.675 — How a knowledge base grown from the snapshot's is recognised
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: how a KB grown from the snapshot's is recognised.
+**The default taken**: a stamp a layer, fresh where a layer is made or copied and kept where it is moved, and a mark of stamps and lengths, compared at every read (the count of root's layers). The other reading: a fact count alone, `Kb::facts_from(n)`, trusting every caller to hand a fork of the snapshot's KB (a copy of root would read a wrong delta, in silence); or root sealed when the snapshot is taken and its layers compared by `Arc`.
+
+The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+
+### Q-M1f.676 — Whether the snapshot keeps its set of facts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: whether the snapshot keeps its fact set.
+**The default taken**: kept: the facts above the mark are asked of it, so the `open` facts the empty commitment's fork holds as root did, and any fact root held in its `open` layer that a fork writes into its stack, stay out exactly as the walk had them; the set is built once a run and copied with the snapshot, as before. The other reading: the set dropped and root's `open` facts kept apart, the read above the mark taken as it stands.
+
+The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+
+### Q-M1f.677 — What a knowledge base that did not grow from the snapshot's gets
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: what a KB that did not grow from the snapshot's gets.
+**The default taken**: the walk, as before: no engine path in the corpus takes it (§ 1), the tests' copy does. The other reading: refused, a panic: a caller legal today would fail.
+
+The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+
+### Q-M1f.678 — Where a layer's stamp comes from
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: where a stamp comes from.
+**The default taken**: a process-wide atomic counter, relaxed: two draws where a KB branches, one where a layer is sealed; a stamp is compared and nothing else, and its debug form is a constant, so no output reads the number. The other reading: a counter per thread with the thread's id; or the stamps kept by the KB beside each `Arc`.
+
+The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).

@@ -309,3 +309,24 @@ Also worth your eye: **1, Q-M1f.666**, the claim row says *not printed* where a 
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 76 · The defaults S1f.21.23 took
+
+[The item](76-S1f.21.23-defaults/README.md), which has the four.
+
+A resumed state's delta is read off its own layers, on your word. It takes 8.9 % of `send_more_money.ein`'s
+instructions off, and no firing moved.
+
+**One question**: the next cost of the same kind (V-86). At every state the state's key sorts every fact the state
+holds, root's among them, and filters root's back out: about 47 % of `send_more_money.ein`'s instructions now, and
+about 13 % of `equation_two_unknowns.ein`'s.
+
+- **(a)** Not built. **Default.**
+- **(b)** Built, as S1f.21.23 was: the part of the key above root read and sorted at its own size, with no firing
+  and no key moved.
+
+**Your answer:**
+
+**Notes:**

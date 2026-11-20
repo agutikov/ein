@@ -388,8 +388,8 @@ paragraph, no register count, no measurement (the user's rule).
   has removed the `hrule` form and the keyword `:hrules`, and S1f.21.20 has
   fixed what the first uses of `open` found, and S1f.21.21 has made the
   contradiction's rules cheap; S1f.21.22 has built what the pages found
-  short in the binary. Left: S1f.21.23, the delta of a resumed state;
-  S1f.21.19, the review items on the built engine. The part's pages,
+  short in the binary, and S1f.21.23 reads a resumed state's delta off its
+  own layers. Left: S1f.21.19, the review items on the built engine. The part's pages,
   S1f.21.14, are written. Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,
   S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to

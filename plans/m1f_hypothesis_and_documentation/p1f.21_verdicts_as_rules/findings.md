@@ -85,11 +85,14 @@ without a path is in [`design.md`](design.md), whole.
 | [V-75](#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired) | comments of the engine and the library in words the part retired | S1f.21.14 | **fixed** by S1f.21.22 |
 | [V-76](#v-76--sentences-of-the-first-parts-subjects-still-stale-on-the-pages) | sentences of the first part's subjects still stale on the pages | S1f.21.14 | **fixed** by S1f.21.14 on its resume |
 | [V-77](#v-77--the-hypothesis-found-in-flight-may-depend-on-the-count-of-workers) | the hypothesis found in flight may depend on the count of workers | S1f.21.14 | **fixed** by S1f.21.22: it did depend on the count, shown by a probe; the first finding in the nodes' order is recorded, and a test holds it |
-| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | **ruled by the user 2026-11-20** (Q-M1f.674), *"of course build"*; S1f.21.23 builds it |
+| [V-78](#v-78--a-resumed-state-walks-every-fact-it-holds-to-find-what-is-new) | a resumed state walks every fact it holds to find what is new | S1f.21.21 | **ruled by the user (Q-M1f.674) and built** by S1f.21.23: the delta is read off the state's own layers; 8.9 % of `send_more_money.ein`'s instructions off, 3.2 % of `equation_two_unknowns.ein`'s; its figure of 17 % was one cost counted twice (V-87) |
 | [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
-| [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | open; **S1f.21.23 rewords them** |
+| [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | **fixed** by S1f.21.23 |
 | [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | open; **the user's call first**: whether a drawing of root shows the guesses, review item 75; then the pages |
+| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call** |
+| [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
+| [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -978,3 +981,15 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-85 — Nine pictures of the pages are no longer what the kb render draws
 
 **Found** by S1f.21.22. Since `ein render kb` draws the `open` facts root holds, the blind enumerator's guesses among them, nine pictures on the pages no longer match the binary: four of the guide (the tiny program, two of the transitive and the co-located firings, the range elimination, where *zebra2*'s root holds 130 `open` facts) and five of the reasoning pages. Three sentences say a drawing draws what it no longer does. Seventeen other pictures are still what the binary draws. A page's picture is a file drawn from its own source, so no check fails. **Open; the user's call first: whether a drawing of root shows the guesses, review item 75; then the pages.**
+
+## V-86 — A state's key sorts every fact the state holds, root's among them
+
+**Found** by S1f.21.23. At every state of a search the node function takes the state's canonical key: it collects every fact the state holds, root's whole fixpoint among them, sorts them, and then filters root's back out to keep the state's own. On `send_more_money.ein`, on the engine S1f.21.23 leaves, the key is 37.7 % of the instructions and the filter 9.3 %; on `equation_two_unknowns.ein` 10.9 % and 2.1 %. The state's own facts are above root's mark, which S1f.21.23 reads, so the part of the key above root could be read and sorted at its own size; whether anything reads the key whole is what a stage would settle first. The engine did so before the phase. **Open; the largest cost at a state that is left; the user's call.**
+
+## V-87 — The delta's walk was counted twice in its finding
+
+**Found** by S1f.21.23. V-78's figure, about 17 % of `send_more_money.ein`, added the walk's inclusive cost to the cost of the loop inside it. The walk was 8.2 %, and S1f.21.23 takes 8.9 % of that program's instructions off. ****closed: the figure corrected.**
+
+## V-88 — An obligation's relation is never absent
+
+**Found** by S1f.21.23. `Owed::relation` is an `Option` whose `None` no program reaches: an activator that binds an obligation's parameter to a fact activates nothing, so every instance has a relation, and the paths that handle `None` are dead code. **Open.**
