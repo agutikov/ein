@@ -431,18 +431,16 @@ The reading is **at relation grain and inexact both ways**:
 A program this reading adds a candidate to derives an activator from a commitment, so it is not proved monotone
 ([Monotone and non-monotone programs](08-monotonicity.md)), and its answer is the whole lattice's.
 
-### 4.5 Stuck: owing, with every payment settled
+### 4.5 Stuck: owing, with nothing to propose
 
-A payment root denies is settled, and is no candidate. A root is **stuck** where it owes an instance whose
-payments can be formed and of which root leaves none open:
+A payment root denies is settled, and is no candidate. A root is **stuck** where it owes and no writer gives it a
+candidate:
 
 $$
-\operatorname{stuck}(P) \iff \exists I \in \operatorname{Owed}(\mathrm{root}).\ \ \operatorname{unsettled}(\operatorname{pay}(I)) = \emptyset
+\operatorname{stuck}(P) \iff \operatorname{Owed}(\mathrm{root}) \neq \emptyset \ \land\ H = \emptyset
 $$
 
-On a monotone program every witness a state above root holds is a payment read at root (§ 4.3), so a state that
-paid such an instance would hold a payment beside what of root denies it, and be dead; no alive state discharges the
-instance, whatever another writer proposes:
+The lattice is then root alone, and root owes, so no state discharges what it owes:
 
 $$
 \begin{aligned}
@@ -451,10 +449,19 @@ $$
 \end{aligned}
 $$
 
-the kind of empty $R$ where alive states exist and every one owes. An empty $H_{\mathrm{ob}}$ is not that by itself:
-where no payment of an owed instance can be formed (§ 4.3), a hypothesis rule's candidates may pay it, and $R$ is
-what the union of § 2 gives. A scoping
-that would take out the relation an obligation owes cannot make a state stuck: such a program is no program (§ 6,
+the kind of empty $R$ where alive states exist and every one owes. It is said as such, and an empty $H$ is never
+passed for completeness. **An empty $H_{\mathrm{ob}}$ is not that by itself**: where an obligation offers no payment,
+none being formed (§ 4.3) or every one settled, a hypothesis rule's candidates stand beside it in the union of § 2,
+may pay what root owes, and $R$ is what they give. The same end comes with candidates in $H$ where root owes an
+instance whose payments can be formed and every one of which it settles: on a monotone program every witness a state above root holds is a payment
+read at root (§ 4.3), so a state that paid it would hold a payment beside what of root denies it, and be dead,
+
+$$
+\exists I \in \operatorname{Owed}(\mathrm{root}).\ \operatorname{unsettled}(\operatorname{pay}(I)) = \emptyset \ \implies\ R = \emptyset
+$$
+
+whatever another writer proposes. A scoping that would take out the relation an obligation owes cannot make a state
+stuck: such a program is no program (§ 6,
 [Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md),
 [Q-M1f.578](../../../decisions/hypotheses/Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md)).
 
