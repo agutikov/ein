@@ -83,7 +83,7 @@ COMMAND ein render rules
 COMMAND ein show
   ABOUT list what a program holds, as Ein text (render draws, show lists)
 COMMAND ein show hyps
-  ABOUT the hypotheses: the program's hypothesis set H as Ein facts, one candidate per line as the fact is written, every candidate, in the universe's order, and nothing else on stdout; a note on stderr says which rung built H and how many it holds. It is the set every route searches over, and listing it costs root's saturation and the generator, no search. It asks about H, not about R, and changes no answer (docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md, § 1.3)
+  ABOUT the hypotheses: the program's hypothesis set H as Ein facts, one candidate per line as the fact is written, every candidate, in the universe's order, and nothing else on stdout; a note on stderr says which writers built H and how many it holds. It is the set every route searches over, and listing it costs root's saturation and the generator, no search. It asks about H, not about R, and changes no answer (docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md, § 1.3)
   OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers
   POSITIONAL file required=True help=
 COMMAND ein solve

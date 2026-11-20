@@ -263,7 +263,7 @@ fn show_command() -> Command {
                     "the hypotheses: the program's hypothesis set H as Ein facts, one \
                      candidate per line as the fact is written, every candidate, in the \
                      universe's order, and nothing else on stdout; a note on stderr says \
-                     which rung built H and how many it holds. It is the set every route \
+                     which writers built H and how many it holds. It is the set every route \
                      searches over, and listing it costs root's saturation and the \
                      generator, no search. It asks about H, not about R, and changes no \
                      answer (docs/ein/ein.rs/08-reasoning-in-code/03-hypotheses-and-the-answer.md, § 1.3)",

@@ -567,12 +567,23 @@ fn a_blind_run_never_proposes_an_obligation_activator() {
         mode,
         &mut events,
     );
-    let names = [
+    // The fixture imports its modules whole, so a rule's name is written in
+    // full, `std.algebra.total-owed`: each is checked under every spelling a
+    // program can give it, the short name and the full ones.
+    let names: Vec<String> = [
         "total-owed",
         "surjective-owed",
         "slot-owed-room",
         "slot-owed-fill",
-    ];
+    ]
+    .into_iter()
+    .flat_map(ein_corpus::spellings)
+    .collect();
+    assert!(
+        names.iter().any(|n| n == "std.algebra.total-owed")
+            && names.iter().any(|n| n == "std.slots.slot-owed-fill"),
+        "the full names are among the spellings checked: {names:?}"
+    );
     let log = buffer.to_string_lossy();
     let mut proposals = 0usize;
     for line in log.lines() {
@@ -582,7 +593,7 @@ fn a_blind_run_never_proposes_an_obligation_activator() {
         }
         proposals += 1;
         let fact = ev["fact"].as_str().unwrap_or("");
-        for n in names {
+        for n in &names {
             assert!(
                 !fact.starts_with(&format!("({n} ")),
                 "the blind enumerator proposed an obligation activator: {fact}"
@@ -594,7 +605,8 @@ fn a_blind_run_never_proposes_an_obligation_activator() {
                 .skip(1)
             {
                 assert_ne!(
-                    token, n,
+                    token,
+                    n.as_str(),
                     "an obligation rule's name reached the candidate object pool: {fact}"
                 );
             }
