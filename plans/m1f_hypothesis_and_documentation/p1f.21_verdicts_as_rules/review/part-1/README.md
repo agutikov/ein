@@ -2,8 +2,8 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Two items are open, 66 and 67: the defaults S1f.21.17 and S1f.21.11 took**, for your review after the build, as
-you asked. The part's
+**Three items are open, 66, 67 and 68: the defaults S1f.21.17, S1f.21.11 and S1f.21.2 took**, for your review after
+the build, as you asked. The part is built and its pages are written. The part's
 own questions are all ruled: you answered its six items on 2026-11-19, each answer filed in your words under its
 question in [the ledger](../../../open_questions.md) and in
 [the phase's README](../../README.md#the-rulings-of-the-answers-file).
@@ -14,6 +14,7 @@ question in [the ledger](../../../open_questions.md) and in
 |---|---|---|
 | [**66**](66-S1f.21.17-defaults/README.md) | the five defaults S1f.21.17 took: the warning's words and when it prints; two regression rows removed; `nested-fact-activator.ein` given `(solve :no-search)`; where three fixtures moved; how `std.core`'s rule prints under a renaming import | each as built |
 | [**67**](67-S1f.21.11-defaults/README.md) | the ten defaults S1f.21.11 took: which programs and modules gain the contradiction's import; how an explanation reads; when a rule that refutes a pair fires; what a denial is; `not` as a name; the witnesses of the count check | each as built |
+| [**68**](68-S1f.21.2-defaults/README.md) | the five defaults S1f.21.2 took, writing the pages: which readings became decision files; the reasoning pages' notation; the constraints page's program importing the contradiction; five sentences of the second part's pages changed | each as written |
 
 ## The three readings, confirmed
 

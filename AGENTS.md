@@ -377,9 +377,9 @@ paragraph, no register count, no measurement (the user's rule).
   One phase is left: **P1f.21, the kernel's verdicts as rules**
   ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
   run in two parts on the user's word, what does not touch `open` or the
-  hypotheses first: S1f.21.6, S1f.21.8, S1f.21.10, S1f.21.15, S1f.21.17 and
-  S1f.21.11 done; the part's pages, S1f.21.2, and the second part's first
-  build, S1f.21.12, run side by side. S1f.21.16 (the
+  hypotheses first, and that part is built and its pages written:
+  S1f.21.6, S1f.21.8, S1f.21.10, S1f.21.15, S1f.21.17, S1f.21.11 and
+  S1f.21.2 done. The second part's first build, S1f.21.12, is running. S1f.21.16 (the
   `:hrules` clause's spelling, Q-M1f.565) is not started and is dropped
   once the second part removes `:hrules` (the user's word). Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,

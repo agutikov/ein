@@ -52,3 +52,24 @@ No corpus answer moved. The ten, each with its other reading on the item's page:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 68 · The defaults S1f.21.2 took
+
+[The item](68-S1f.21.2-defaults/README.md)
+
+The pages of part 1. No engine code and no corpus program changed. The five:
+
+1. **Q-M1f.601**: nine readings got a decision file of their own; the others are carried by an existing decision or
+   are corpus bookkeeping.
+2. **Q-M1f.602**: the reasoning pages' notation for the engine's word, for *dead* and for *denies*.
+3. **Q-M1f.603**: the constraints page's running program imports `std.contradiction`; the page shows what it
+   answers without the line.
+4. **Q-M1f.604**: the words a module reads and does not declare are listed from a run.
+5. **Q-M1f.605**: five sentences on the hypothesis and search pages, which said a stored negation denies by
+   itself, were changed, though those pages are the second part's.
+
+**Your answer:**
+
+**Notes:**

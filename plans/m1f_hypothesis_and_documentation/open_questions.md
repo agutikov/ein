@@ -529,6 +529,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.598](#q-m1f598--whether-the-pass-writes-open-facts-at-a-dead-state) | Whether the pass writes `open` facts at a dead state | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.599](#q-m1f599--the-blind-enumerator-beside-a-rule-that-concludes-nothing-at-root) | The blind enumerator beside a rule that concludes nothing at root | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.600](#q-m1f600--what-becomes-of-06_blind_enumerationein) | What becomes of `06_blind_enumeration.ein` | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
+| [Q-M1f.601](#q-m1f601--which-of-the-first-parts-readings-get-a-decision-file) | Which of the first part's readings get a decision file | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.602](#q-m1f602--the-reasoning-pages-notation-for-the-engines-word) | The reasoning pages' notation for the engine's word | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.603](#q-m1f603--the-constraints-pages-running-program-imports-the-contradiction) | The constraints page's running program imports the contradiction | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.604](#q-m1f604--how-the-words-a-module-reads-and-does-not-declare-are-listed) | How the words a module reads and does not declare are listed | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.605](#q-m1f605--sentences-of-the-second-parts-pages-changed-by-the-first-parts) | Sentences of the second part's pages changed by the first part's | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11488,3 +11493,48 @@ question after the build, and the review item stays in the bundle until then.
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
+
+### Q-M1f.601 — Which of the first part's readings get a decision file
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.2 ([its record](p1f.21_verdicts_as_rules/s1f.21.2_the_pages.md#record)). A reading about Ein that no decision carried got a file under its id: Q-M1f.552, .553, .555, .556, .559, .580, .589, .590 and .593. One whose content another decision states got none, that decision saying it (Q-M1f.562, .563, .584, .586, .587, .588, .591, .594, and the half of .585 about the library's modules); one about the corpus's bookkeeping got none (Q-M1f.581, .582, .583, .592, and the half of .585 about the programs).
+
+The other reading: a file for every id.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+
+### Q-M1f.602 — The reasoning pages' notation for the engine's word
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.2 ([its record](p1f.21_verdicts_as_rules/s1f.21.2_the_pages.md#record)). On the reasoning pages the word is written as a conclusion in the place of literals, the rules that state it are one set, *dead* is a match of one of them, and *denies* is a stored side beside a rule that refutes the pair.
+
+No other reading was weighed; the notation is the pages' and can be renamed.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+
+### Q-M1f.603 — The constraints page's running program imports the contradiction
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.2 ([its record](p1f.21_verdicts_as_rules/s1f.21.2_the_pages.md#record)). The user's page on constraints runs one program through. Its answer and its dead candidate rest on a negation being a constraint, so the program imports `std.contradiction`; without the line it has three candidates and a third state, and the page says so.
+
+The other reading: the page's program left without the import, and its answer rewritten to the one with no contradiction.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+
+### Q-M1f.604 — How the words a module reads and does not declare are listed
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.2 ([its record](p1f.21_verdicts_as_rules/s1f.21.2_the_pages.md#record)). Each list on the standard library's pages is taken from a run: the relations a program that is one bare import brings into being, with the rules that read each.
+
+The other reading: lists written by reading the modules.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+
+### Q-M1f.605 — Sentences of the second part's pages changed by the first part's
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.2 ([its record](p1f.21_verdicts_as_rules/s1f.21.2_the_pages.md#record)). Five sentences on the pages about hypotheses and the search, which are the second part's, said that a stored negation denies a candidate by itself. Each was untrue once the contradiction was a rule, and was changed; nothing else of those pages was touched.
+
+The other reading: left untrue until the second part's pages are written.
+
+**Default taken**, under the user's word to run the phase on defaults; the user reviews it in
+[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).

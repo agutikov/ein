@@ -26,11 +26,11 @@ without a path is in [`design.md`](design.md), whole.
 | [V-13](#v-13--the-check-on-a-parameters-conclusion-counts-an-hrule-from-its-second-naming) | the check on a parameter's conclusion counts an hrule named in `(solve :hrules …)` only from its second naming | S1f.21.8 | **answered 2026-11-19** by the user's ruling Q-M1f.565: the clause lists activators whole, so an hrule named there is no argument (S1f.21.16) |
 | [V-14](#v-14--a-declaration-an-import-brings-is-not-inert) | a declaration an import brings is not inert: its labels are names of the importing program | S1f.21.8 | open; bears on every module a program gets |
 | [V-15](#v-15--refuted-by-names-one-of-two-contradictions-by-the-relations-name) | `refuted by` names one of two contradictions over one core by the relation's name | S1f.21.8 | open; **disposition accepted by the user 2026-11-19 (*"OK"*)**: S1f.21.11's task 1.3 |
-| [V-16](#v-16--importing-stdalgebra-moves-a-program-that-uses-bijective-for-itself) | importing `std.algebra` moves a program that uses `bijective` for itself | S1f.21.8 | open; **disposition accepted by the user 2026-11-19 (*"OK"*)**: listed on the modules' pages by S1f.21.2, no engine change |
+| [V-16](#v-16--importing-stdalgebra-moves-a-program-that-uses-bijective-for-itself) | importing `std.algebra` moves a program that uses `bijective` for itself | S1f.21.8 | **fixed** by S1f.21.2 (its record) |
 | [V-17](#v-17--the-stdlib-censuss---check-exits-1-on-a-saved-file) | the stdlib census's `--check` exits 1 on a saved file | S1f.21.8 | open; **disposition accepted by the user 2026-11-19 (*"OK"*)**: fixed in the tool at the phase's close |
 | [V-18](#v-18--the-measurement-examples-read-a-refutation-by-false) | the measurement examples read a refutation as a rule that writes `(false)` or a negation, and not one that states the key | S1f.21.10 | open |
 | [V-19](#v-19--a-saved-files-first-line-speaks-of-the-modules-it-imports) | a saved file's first line says *every module it imports*, and it carries `std.core` too | S1f.21.10 | open |
-| [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | open; S1f.21.2's |
+| [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | **fixed** by S1f.21.2 (its record) |
 | [V-21](#v-21--dependent-hypotheses-a-candidate-proposed-above-root) | dependent hypotheses: once a rule concludes `(open H)`, a candidate can be proposed above root, and the search space is a lattice that is no cube | the user, 2026-11-19 | parked on the user's word: not this phase's; M1n's at the close |
 | [V-22](#v-22--a-program-with-no-candidate-is-never-flagged) | a program with no candidate is never flagged, whatever its rules read by `absent`: `W8/fifo-gap-root` answers wrong at root, unwarned | S1f.21.15 | **the user's call**; the register's row, which the stage removed with the other `W8` rows, is back by default |
 | [V-23](#v-23--regression-rows-that-went-with-a-flagged-witness-and-record-another-defect) | regression rows that went because their witness is flagged, though the defect each records is not about monotonicity | S1f.21.15 | open; a monotone witness for each, or left |
@@ -41,7 +41,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-28](#v-28--stddebts-says-debts-discharged-is-kept-by-every-larger-state) | `std.debts`' header, its page and the library's README say every larger state keeps `(debts-discharged)`; it holds only where no commitment adds a requirement | the merge of `std.debts` | open; with the second part, where it bears on Q-M1f.566 |
 | [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
 | [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | **answered** by Q-M1f.447 as built (S1f.21.11): a declaration twice loads, wherever it is written |
-| [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | open; S1f.21.2's |
+| [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | **fixed** by S1f.21.2: both tables have the row |
 | [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | open; the user's call |
 | [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
 | [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | open; the user's call, with L-109 |
@@ -53,6 +53,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | open; S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | open; S1f.21.18's sweep |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | open; S1f.21.12's build |
+| [V-43](#v-43--a-declared-nots-facts-still-read-as-written) | a program may declare `not`, and its facts still read as written in the trace; the kernel-register test still holds a page to a list that names `false` and `not` | S1f.21.2 | open |
+| [V-44](#v-44--a-trace-quoted-on-a-page-is-held-by-no-test) | a trace quoted on a page is held by no test but the natural-language page's | S1f.21.2 | open |
+| [V-45](#v-45--the-binary-formats-minor-version-on-its-page-is-held-by-no-test) | the binary format's minor version on its page is held by no test | S1f.21.2 | open; the page fixed |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -743,3 +746,20 @@ reaches a saved file's forms too.
 hypothesis rules write. Once they conclude `(open (drinks …))`, the loader's check that a goal names a relation of
 the program has to read under `open`, or the program is refused, as it is today with its hypothesis rules deleted.
 **Open**; S1f.21.12's build.
+
+## V-43 — A declared `not`'s facts still read as written
+
+**Found** by S1f.21.2. A program may declare `not` now, as `examples/beliefs/04_liar_denial_contradicted.ein` does,
+and a fact of it still reads as written in the trace, not by anything its declaration says; and the test that
+holds the natural-language page's list of the kernel's own words reads `ein_core::RESERVED`, which still names
+`false` and `not`. **Open.**
+
+## V-44 — A trace quoted on a page is held by no test
+
+**Found** by S1f.21.2. `10-theory.md` quoted a trace whose step numbers had moved, which nothing caught: a block of
+trace on a page is checked only on the natural-language page. **Open.**
+
+## V-45 — The binary format's minor version on its page is held by no test
+
+**Found** by S1f.21.2. `09-binary-format.md` named the format's minor version as 1 where the code has 2. The page
+is fixed; nothing holds the number to the code. **Open.**
