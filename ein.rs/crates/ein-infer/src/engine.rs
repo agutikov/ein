@@ -33,10 +33,35 @@ use crate::plan::{Plan, PlanId};
 ///
 /// `Clone` because a fork that *resumes* the root's saturation
 /// ([`crate::saturator::Snapshot`]) inherits the plan list, its order and
-/// `fired` wholesale. The `Arc`s and the memo handle are shared, so what the
-/// clone actually copies is the index vectors and the `fired` set.
+/// `fired` wholesale. The plan list is shared behind an `Arc` and copied
+/// only where an engine compiles a plan its list does not hold, and the memo
+/// handle is shared, so what the clone copies is the `fired` set.
 #[derive(Clone, Default)]
 pub struct Engine {
+    /// The plans, in cache-insertion order, with what reads them: this
+    /// engine's own order, shared with its clones until one of them compiles
+    /// a plan ([`Arc::make_mut`]).
+    list: Arc<PlanList>,
+    /// Binding keys that have already been applied.
+    pub fired: FxHashSet<BindingKey>,
+    /// Shared with every other engine of this run
+    /// ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)). What
+    /// may **not** be shared is the order below it, which is why the plan
+    /// list is per-engine and this is not.
+    memo: SharedMemo,
+    /// The rule-application count the plan list was last built at — a walk of
+    /// `rules × activators` can only find something new when a rule gained an
+    /// activator, and nothing else adds one.
+    last_rule_apps: usize,
+    /// The facts of the rules' relations the last walk read, counted by
+    /// relation ([`rule_facts`]): what the debug build's check of the
+    /// shortcut compares before it walks again. Unread in a release build.
+    walked_facts: usize,
+}
+
+/// An engine's plans, in its cache-insertion order, and their keys.
+#[derive(Clone, Default)]
+struct PlanList {
     /// The plans, in cache-insertion order.
     plans: Vec<PlanId>,
     /// The same plans, resolved — parallel to `plans`.
@@ -51,21 +76,6 @@ pub struct Engine {
     /// — every argument, as values, not their text — parallel to `plans`.
     activators: Vec<ActivatorId>,
     activator_ids: FxHashMap<Box<[Value]>, ActivatorId>,
-    /// Binding keys that have already been applied.
-    pub fired: FxHashSet<BindingKey>,
-    /// Shared with every other engine of this run
-    /// ([03-design/06-saturation.md § 4](../../../../docs/ein/ein.rs/03-design/06-saturation.md#4-a-node-resumes-roots-saturation)). What
-    /// may **not** be shared is the order below it, which is why `plans` is
-    /// per-engine and this is not.
-    memo: SharedMemo,
-    /// The rule-application count the plan list was last built at — a walk of
-    /// `rules × activators` can only find something new when a rule gained an
-    /// activator, and nothing else adds one.
-    last_rule_apps: usize,
-    /// The facts of the rules' relations the last walk read, counted by
-    /// relation ([`rule_facts`]): what the debug build's check of the
-    /// shortcut compares before it walks again. Unread in a release build.
-    walked_facts: usize,
 }
 
 /// The facts a knowledge base holds of the relations named by its rules,
@@ -98,33 +108,33 @@ impl Engine {
     }
 
     pub fn len(&self) -> usize {
-        self.plans.len()
+        self.list.plans.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.plans.is_empty()
+        self.list.plans.is_empty()
     }
 
     pub fn plan(&self, index: usize) -> &Plan {
-        &self.arcs[index]
+        &self.list.arcs[index]
     }
 
     /// A handle the caller can hold while mutating the engine — which
     /// `Saturator::apply` must, since it writes `fired` with the plan in hand.
     pub fn plan_arc(&self, index: usize) -> Arc<Plan> {
-        Arc::clone(&self.arcs[index])
+        Arc::clone(&self.list.arcs[index])
     }
 
     pub fn plan_id(&self, index: usize) -> PlanId {
-        self.plans[index]
+        self.list.plans[index]
     }
 
     pub fn activator(&self, index: usize) -> ActivatorId {
-        self.activators[index]
+        self.list.activators[index]
     }
 
     pub fn key(&self, index: usize) -> &PlanKey {
-        &self.keys[index]
+        &self.list.keys[index]
     }
 
     /// How many plans this run has compiled, across every engine sharing the
@@ -186,7 +196,7 @@ impl Engine {
         events: &mut Events,
     ) -> Result<usize, CompileError> {
         let key = plan_key(terms, rule, activator);
-        if let Some(&at) = self.by_key.get(&key) {
+        if let Some(&at) = self.list.by_key.get(&key) {
             return Ok(at);
         }
         let (id, plan) = {
@@ -194,7 +204,7 @@ impl Engine {
             let id = memo.intern_keyed(key.clone(), ast, terms, rule, activator)?;
             (id, memo.get_arc(id))
         };
-        let at = self.plans.len();
+        let at = self.list.plans.len();
         // The `compile` event fires on an **engine** miss, not a memo miss: it
         // reports what this engine had to add to its cache, which is what the
         // cache order is about.
@@ -230,16 +240,23 @@ impl Engine {
         // space with two register layouts, and a release build would lose a
         // derivation. With the compile key's list the id and the plan
         // are one-to-one within an engine.
-        let activator_id = self.intern_activator(&key.activator);
-        self.check_layout(plan.rule, activator_id, &plan.reg_names);
-        self.plans.push(id);
-        self.arcs.push(plan);
-        self.keys.push(key.clone());
-        self.activators.push(activator_id);
-        self.by_key.insert(key, at);
+        //
+        // The list is this engine's own from here: where a clone shares it,
+        // it is copied once, as the clone itself copied it before it was
+        // shared.
+        let list = Arc::make_mut(&mut self.list);
+        let activator_id = list.intern_activator(&key.activator);
+        list.check_layout(plan.rule, activator_id, &plan.reg_names);
+        list.plans.push(id);
+        list.arcs.push(plan);
+        list.keys.push(key.clone());
+        list.activators.push(activator_id);
+        list.by_key.insert(key, at);
         Ok(at)
     }
+}
 
+impl PlanList {
     fn intern_activator(&mut self, args: &[Value]) -> ActivatorId {
         if let Some(&id) = self.activator_ids.get(args) {
             return id;
@@ -281,7 +298,9 @@ impl Engine {
             }
         }
     }
+}
 
+impl Engine {
     /// Would a full walk add anything? The shortcut's proof obligation.
     ///
     /// Where the facts of the rules' relations are as many as the last walk
@@ -301,7 +320,7 @@ impl Engine {
         }
         // Every pair the walk would visit is already cached, so the *count* of
         // pairs is the count of distinct keys — which the plan list holds.
-        n <= self.plans.len()
+        n <= self.list.plans.len()
     }
 
     #[cfg(not(debug_assertions))]

@@ -103,7 +103,7 @@ itself one of the fixed orders below.
 | a relation's held extent, `Kb::facts_of` | append order | `Layer::by_rel`, one `Vec<FactId>` per relation |
 | a participation bucket `(relation, slot, value)`, or `(relation, slot, a held fact's relation)` | append order | `Layer::by_rel_slot_val`, keyed by `SlotKey` |
 | `Kb::names` | first-seen order, which no consumer relies on: each sorts | a bitset dedup over each layer's name registry |
-| an engine's plan list | compilation order: each rule with each of its activators, each engine its own list over the shared memo | `Engine::plans: Vec<PlanId>` with `by_key` |
+| an engine's plan list | compilation order: each rule with each of its activators, each engine its own list over the shared memo, shared with a clone until either compiles a plan | `Engine`'s `PlanList`: `plans: Vec<PlanId>` with `by_key`, behind an `Arc` |
 | plans by premise relation, and by a held fact's relation | plan-list order; a fact's plans from two lists merged into it | `Saturator::pos_index`, a `PlanIndex` built by walking the plan list |
 | a match's bindings, `Prov::bindings` | bind order, the matcher's trail | `Box<[(Symbol, Value)]>` |
 | a match's premises, `Prov::premises` | plan-step order, a seeded fact at its own step | `Box<[FactId]>` |

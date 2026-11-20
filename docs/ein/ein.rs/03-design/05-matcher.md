@@ -335,7 +335,9 @@ arguments (`compile::plan_key`, which copies the interned arguments and renders 
   set. The memo is shared and the order is not, because the saturator's full pass walks the plans in list order, so
   the order reaches the firing order: a node lists its own derived activator for an early rule before a root
   activator of a later rule. An engine is `Clone`, so a node that resumes root's saturation inherits its list, its
-  order and its `fired` set.
+  order and its `fired` set. The list, the keys and the activator lists are one value behind an `Arc`, shared by a
+  clone until it compiles a plan of its own and copied then (`Arc::make_mut`), so a node that compiles nothing copies
+  only its `fired` set.
 
 ![The compile cache as a sequence: the saturator, its engine, the run's plan memo and the compiler](diagrams/05-compile-cache.svg)
 
