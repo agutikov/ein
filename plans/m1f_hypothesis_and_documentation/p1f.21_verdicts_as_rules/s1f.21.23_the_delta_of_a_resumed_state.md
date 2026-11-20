@@ -183,7 +183,17 @@ the coordinator takes the timed table on an idle machine.
 
 ### The gate
 
-Not run yet.
+`./run_tests.sh` on `e81c1167` (the code of `30371a5e` and this record before its gate section), with the default 16
+test workers: **exit 0**, every step: the static checks, `cargo test --profile gate --workspace` (168 test
+binaries, 1 395 tests, none failed: the shape golden, `corpus_cli`'s cost check, `lever_invariance.rs`,
+`agenda.rs` among them; no golden moved), the process's checks, the review bundle's smoke and the bench smoke.
+Load average 0.6 when it started and 8.2 when it ended.
+
+On the same tip, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: 5 passed; and
+`… --test id_order_invariance`: 4 passed, the shape golden as banked on every corpus file.
+
+Not run: the nightly, `utils/ci_container.sh` (no DOT writer, review bundle or CI install changed), and
+`arith_batch` (no rule of the calculator changed).
 
 ### What the user must see
 
