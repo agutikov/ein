@@ -73,6 +73,69 @@ Milliseconds. *Work* is the count of saturations `ein solve` reports, one figure
   - `04_open.ein` has no `solve` run; its lattice render costs 2.1 times.
 - **C to D, the `hrule` form removed.** Nothing: every entry within two percent.
 
+## Why the contradiction as rules costs
+
+The user asked, 2026-11-20: *"contradiction as rules - investigate and explain why it costs, because I see only one
+more step added rule firing from (false) to :ein inconsistent. Why the rule match P and not P is slower than
+previously existing built-in detection?"*
+
+**The firing chain is one step longer, and that step costs nothing that can be measured.** A contradiction is
+rare, and the cost is not in firing one. It is in what the engine does at every state and for every fact so that a
+rule *could* fire, where the kernel's check was one probe of a hash table.
+
+**Before** (`ein_infer::contradiction::contradicts` at A): as each derived fact lands, *is its negation held?*,
+one probe. **After**: the pair is a rule, `clash-N`, with one instance for each declared relation, and each
+instance is a compiled plan the matcher runs.
+
+Instructions executed, user space, `perf stat`, one `ein solve`, the same saturations and the same facts on both
+engines:
+
+| program | A | B | B / A | saturations | facts |
+|---|---:|---:|---:|---:|---:|
+| `beyond_arith/equation_two_unknowns.ein` | 3.61 G | 6.67 G | 1.85× | 1 191 | 80 701 |
+| `saturation/type-exclusivity/pets.ein` | 3.61 G | 4.94 G | 1.37× | 11 339 | 76 683 |
+| `features/01_not_and_absent.ein` | 23.65 G | 32.09 G | 1.36× | 65 299 | 390 225 |
+| `beyond_arith/send_more_money.ein` | 11.84 G | 14.06 G | 1.19× | 18 129 | 161 086 |
+| `zebra2.ein` | 1.38 G | 1.30 G | 0.94× | 120 | 5 409, 5 411 |
+
+**The rule instances at root** (`root.plans` of the summary): `pets.ein` 2 before and 13 after,
+`send_more_money.ein` 20 and 63, `equation_two_unknowns.ein` 153 and 338. Each declared relation takes two
+instances, `clash-0` and the rule of its count (V-37), and an imported module's declarations take theirs.
+
+**Where the added instructions go**, by a profile with call stacks (`perf record --call-graph lbr`, one worker),
+each function's cost with what it calls, in millions of instructions added from A to B:
+
+| part | `pets` | `equation_two_unknowns` | `send_more_money` |
+|---|---:|---:|---:|
+| all that is added | 309 | 578 | 1 078 |
+| **1. the agenda's tables, built again at every state** (`Saturator::resume`'s `refresh_first` and `refresh_at_once`) | 132, 43 % | 214, 37 % | 451, 42 % |
+| **2. the rules that end a state, matched ahead of the others after each step** (`end_step`) | 11, 4 % | 144, 25 % | 120, 11 % |
+| **3. every new fact run through its relation's instances, and every pass over more instances** (`enqueue_pass`, `Matcher::run_seeded`) | 111, 36 % | 177, 31 % | 119, 11 % |
+| the rest: the module parsed once a run, a larger engine copied for each state, a larger key of a state | 55, 18 % | 43, 7 % | 388, 36 % |
+
+1. **The tables.** The agenda fires first a rule that ends a state or refutes a pair, then what leads to one
+   (Q-M1f.313). Which rules those are was the kernel's to know; it is now read off the compiled rules and the
+   negations the state holds (`contradiction::Pairs::of`, `monotone::writes_of`, `monotone::leads_to_an_end`). A
+   resumed saturation starts with the tables empty and builds them again, over every plan, at every state a search
+   builds, though they are the same at every state but for what the state's own negations add. **This is no cost
+   of the rule: it is the tables not being kept**, and it is the largest part.
+2. **Ahead of the others.** So that a contradiction ends a state before another rule fires, the rules that fire at
+   once are matched against the new facts after each step. Before, there was one such rule, `std.core`'s, over
+   `(false)`; now there are two for each declared relation, and their index is built again at every state too.
+3. **A match where there was a probe.** A new fact `(R a b)` is handed to the instances of `R`: bindings built,
+   the fact's negation made ground and looked up, and what is found given a key and queued. That is the matcher's
+   ordinary work, many times one probe, done for every fact though it finds a pair almost never. **This part is
+   what a contradiction as a rule costs**, and its size follows the count of instances.
+
+`zebra2.ein` executes no more than before: it builds 120 states, and the three parts are paid by the state and by
+the fact.
+
+**What can go with no change to any answer or any printed line**: part 1 whole, and part 2's index, by keeping
+the tables with the snapshot a state resumes from. [S1f.21.20](../s1f.21.20_what_the_first_uses_of_open_found.md)
+has it as a task. **What is the user's call**: part 3. One instance a relation in place of two (V-37) would halve
+it; an index of the instances by the relation under `not` would spare a negation the instances of every other
+relation.
+
 ## The runs behind the entries that moved most
 
 | entry | run | A | B | C | D |

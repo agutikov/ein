@@ -55,6 +55,17 @@ what the pass costs at a state and on the gate's build of one program.
    times as much on the gate profile as on release. If it can be asked once a state, or under a smaller bound,
    and still check what it checks, do so; else record it.
 
+7. **[V-39](findings.md#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured): the agenda's tables kept,
+   not built again at every state.** [The investigation](costs/README.md#why-the-contradiction-as-rules-costs)
+   finds 37 to 43 % of what the contradiction as rules added in `Saturator::resume`, which starts every state's
+   saturation with `first`, `at_once`, `end_plans` and `end_index` empty and builds them over every plan. Keep
+   them with the snapshot a state resumes from, and at a state add only what its own facts add (a negation the
+   commitment writes can make another plan's conclusion one side of a pair). **What it may not change**: the
+   order of any firing, so no golden moves, no core, no trace. `ein-infer/tests/agenda.rs` holds the agenda.
+   Measured with the page's script and by `perf stat -e instructions:u`, which the machine's load does not move.
+   Not this task: one instance a relation in place of two (V-37), and an index of the instances by the relation
+   under `not`, which are the user's call.
+
 Task 6 is bounded: it ends at what it found, and is owed no number.
 
 ## What must hold
