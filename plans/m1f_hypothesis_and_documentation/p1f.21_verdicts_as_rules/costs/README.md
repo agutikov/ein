@@ -136,6 +136,52 @@ has it as a task. **What is the user's call**: part 3. One instance a relation i
 it; an index of the instances by the relation under `not` would spare a negation the instances of every other
 relation.
 
+## An index over contexts, analysed
+
+The user, 2026-11-20, on the last option above: *"I hope we already have index of all facts by relation. Here we
+have to improve this index by adding index over contexts. Analyze if it would work"*.
+
+**What the engine has.** Facts by relation (`Kb::facts_of`). A participation index, `SlotKey { rel, slot, inner,
+value }`: the facts of `rel` with a name at an argument, or at an argument **of the fact** in that argument, one
+level in. So `(not (R ?a ?b))` with `?a` bound is a bucket lookup. It keys the nested fact's arguments and **not
+its relation**, and no key has a fact as its value: `(not (R ?a ?b))` with nothing bound walks every negation the
+state holds. And the saturator's index of rule instances, `pos_index`, is by the premise's relation alone: a new
+`(not (S x y))` is handed to every instance with a `not` premise, the clash instances of every relation among
+them. Last, `Kb::is_negated`, a set of the facts a state holds the negation of: kept up to date, and read by
+nothing since the kernel's check went (V-36).
+
+**Read as (context, relation) → facts**: the nested fact's relation becomes one more key of the participation
+index, and `pos_index` gains the same key. It works. It only narrows what is offered, in the extent's order, so no
+firing moves. It costs one more key for each fact that holds a fact. What it saves:
+
+- a new negation goes to the instances of its own relation, and to rules whose premise leaves the relation a
+  variable, and not to every other relation's;
+- a rule's `(not (R …))` premise with nothing bound walks the negations of `R` and not all of them, which is
+  every program's gain and not the contradiction's.
+
+**It does not recover the cost measured above.** Facts the firings derive, by `--events`, one worker:
+
+| program | rule instances | positive facts | negations | clash instances |
+|---|---:|---:|---:|---:|
+| `beyond_arith/equation_two_unknowns.ein` | 338 | 77 884 | 0 | 185 |
+| `beyond_arith/send_more_money.ein` | 63 | 50 046 | 0 | 43 |
+| `features/01_not_and_absent.ein` | 14 | 9 | 0 | 4 |
+| `saturation/type-exclusivity/pets.ein` | 13 | 4 | 8 208 | 4 |
+| `zebra2.ein` | 160 | 1 689 | 3 842 | 18 |
+
+Where the contradiction costs most, no negation is derived: every new fact is positive, goes to the two instances
+of its own relation and to no other, and what is paid is the matcher's work for each. `pets.ein` derives
+negations and has two relations. `zebra2.ein` is the shape the index is for, 3 842 negations each tried against
+18 instances with 16 of them of another relation, and it is the program that shows no added cost.
+
+**Read as (context, fact) → held**: *is this fact held under `not`?*, one probe by the fact's id, with no term
+built. That is `Kb::is_negated`, which exists. Used to match a rule of the pair's shape, a fact beside one holding
+it as its one argument, which `contradiction::Pairs` already tells by shape and by no name: a new fact costs one
+probe, and the rule's instance is queued only where the probe hits. The rule still fires as a rule, with its
+premises and its `:why`. This is the reading that would take parts 2 and 3 down to about what the kernel's check
+cost; it is a change to how the saturator matches such rules, and it must keep every firing where it is.
+**Not built; the user's call.**
+
 ## The runs behind the entries that moved most
 
 | entry | run | A | B | C | D |
