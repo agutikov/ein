@@ -438,9 +438,15 @@
 1    examples/broken/load/nested_or.ein :: render rules
 1    examples/broken/load/nested_or.ein :: saturate
 1    examples/broken/load/nested_or.ein :: solve
+1    examples/broken/load/no_hypothesis_beside_open.ein :: render rules
+1    examples/broken/load/no_hypothesis_beside_open.ein :: saturate
+1    examples/broken/load/no_hypothesis_beside_open.ein :: solve
 1    examples/broken/load/open_compound_witness.ein :: render rules
 1    examples/broken/load/open_compound_witness.ein :: saturate
 1    examples/broken/load/open_compound_witness.ein :: solve
+1    examples/broken/load/open_mixed_assert.ein :: render rules
+1    examples/broken/load/open_mixed_assert.ein :: saturate
+1    examples/broken/load/open_mixed_assert.ein :: solve
 1    examples/broken/load/query_class_twice.ein :: render rules
 1    examples/broken/load/query_class_twice.ein :: saturate
 1    examples/broken/load/query_class_twice.ein :: solve
@@ -489,12 +495,6 @@
 1    examples/broken/open_arity.ein :: render rules
 1    examples/broken/open_arity.ein :: saturate
 1    examples/broken/open_arity.ein :: solve
-1    examples/broken/open_in_match.ein :: render rules
-1    examples/broken/open_in_match.ein :: saturate
-1    examples/broken/open_in_match.ein :: solve
-1    examples/broken/open_mixed_assert.ein :: render rules
-1    examples/broken/open_mixed_assert.ein :: saturate
-1    examples/broken/open_mixed_assert.ein :: solve
 1    examples/broken/query_lattice_keyword.ein :: render rules
 1    examples/broken/query_lattice_keyword.ein :: saturate
 1    examples/broken/query_lattice_keyword.ein :: solve
@@ -630,8 +630,8 @@
 1    examples/ein-bugs/wrong-answers/absent-fact-for-not.ein :: solve
 1    examples/ein-bugs/wrong-answers/absent-fact-name.ein :: saturate
 1    examples/ein-bugs/wrong-answers/absent-fact-name.ein :: solve
-1    examples/ein-bugs/wrong-answers/absent-fact-nested.ein :: saturate
-1    examples/ein-bugs/wrong-answers/absent-fact-nested.ein :: solve
+0    examples/ein-bugs/wrong-answers/absent-fact-nested.ein :: saturate
+0    examples/ein-bugs/wrong-answers/absent-fact-nested.ein :: solve
 1    examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein :: saturate
 1    examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein :: solve
 0    examples/ein-bugs/wrong-answers/activator-chain-0.ein :: saturate
@@ -1041,65 +1041,62 @@
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator.ein :: saturate
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein :: test
-0    examples/ein-bugs/wrong-answers/oblig-derived-domain.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein :: test
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein :: test
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein :: solve
-0    examples/ein-bugs/wrong-answers/oblig-fresh-name.ein :: solve
+0    examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-derived-domain.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein :: solve --count
+0    examples/ein-bugs/wrong-answers/oblig-fresh-name.ein :: solve --count
 0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein :: solve --count
 0    examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein :: solve --count
-1    examples/ein-bugs/wrong-answers/open-claim-fact-head.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-claim-fact-head.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-claim-fact-head.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-claim-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-claim-value.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-claim-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-conclusion-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-conclusion-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-derived-activator.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-derived-activator.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-eq-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-eq-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-fact-clause.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-fact-clause.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-conclusion-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-conclusion-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-derived-activator.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-derived-activator.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-eq-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-eq-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-fact-clause.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-fact-clause.ein :: solve
 1    examples/ein-bugs/wrong-answers/open-fact-head.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-fact-head.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-fact-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-fact-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-goal-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-goal-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-hrule-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-hrule-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-is-a-object.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-is-a-object.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-macro-argument.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-macro-argument.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-macro-unused.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-macro-unused.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-macro-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-macro-value.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-macro-verdict.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-macro-verdict.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-negation-head.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-negation-head.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-nested-fact-head.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-nested-fact-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-fact-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-fact-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-goal-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-goal-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-hrule-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-hrule-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-is-a-object.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-is-a-object.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-macro-argument.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-macro-argument.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-macro-unused.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-macro-unused.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-macro-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-macro-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-macro-verdict.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-macro-verdict.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-negation-head.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-negation-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-nested-fact-head.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-nested-fact-head.ein :: solve
 1    examples/ein-bugs/wrong-answers/open-obligation-parameter.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-obligation-parameter.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-premise-value.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-premise-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-premise-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-premise-value.ein :: solve
 1    examples/ein-bugs/wrong-answers/open-relation-parameter.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-relation-parameter.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-signature-type.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-signature-type.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-signature-type.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-signature-type.ein :: solve
 1    examples/ein-bugs/wrong-answers/open-solve-list.ein :: saturate
 1    examples/ein-bugs/wrong-answers/open-solve-list.ein :: solve
-1    examples/ein-bugs/wrong-answers/open-trace-step.ein :: saturate
-1    examples/ein-bugs/wrong-answers/open-trace-step.ein :: solve
+0    examples/ein-bugs/wrong-answers/open-trace-step.ein :: saturate
+0    examples/ein-bugs/wrong-answers/open-trace-step.ein :: solve
 0    examples/ein-bugs/wrong-answers/or-one-key-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/or-one-key-twin.ein :: solve
 0    examples/ein-bugs/wrong-answers/or-one-key.ein :: saturate
@@ -1361,6 +1358,9 @@
 0    examples/features/22_declared_twice.ein :: saturate --dump
 0    examples/features/22_declared_twice.ein :: solve
 0    examples/features/22_declared_twice.ein :: test
+0    examples/features/23_a_rule_reads_open.ein :: saturate
+0    examples/features/23_a_rule_reads_open.ein :: saturate --dump
+0    examples/features/23_a_rule_reads_open.ein :: solve
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules
@@ -2090,7 +2090,7 @@
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: render constraints
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
+1    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: test
