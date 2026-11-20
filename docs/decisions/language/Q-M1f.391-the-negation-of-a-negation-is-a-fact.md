@@ -6,16 +6,20 @@ an argument, in a pattern, in a conclusion, in a goal and in a claim. A rule's c
 where `?x` is bound to a stored negation
 ([Q-M1f.127](Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md)). Written or built, it is one fact.
 
-The kernel reads it as it reads any fact. A fact held with its negation is a contradiction, whatever the fact: so
-`(not g)` beside `(not (not g))` is dead, and `g` beside `(not (not g))` is alive, since nothing there denies `g`.
-Nothing concludes `g` from `(not (not g))`. That step is a rule a theory states, one rule for a count of arguments
-with the relation a parameter:
+The kernel reads it as it reads any fact, and judges no pair of facts by itself. Where a program takes the
+contradiction, `std.contradiction`, a fact beside its own negation is dead whatever the fact, so `(not g)` beside
+`(not (not g))` is dead where the rule for one argument reaches the relation `not`, by a declaration
+`(relation not Claim)` or an activator `(clash-1 not)`
+([Q-M1f.557](../stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)); and `g` beside
+`(not (not g))` is alive, since nothing there denies `g`. Nothing concludes `g` from `(not (not g))` unless the
+program takes that step, `std.negation`'s, one rule for a count of arguments with the relation a parameter
+([Q-M1f.559](../stdlib/Q-M1f.559-the-elimination-of-a-double-negation-is-a-module.md)):
 
 ```lisp
-(rule eliminate (?R)
+(rule eliminate-2 (?R)
   :match  (not (not (?R ?a ?b)))
   :assert (?R ?a ?b)
-  :why    "it is not so that {?a} {?R} {?b} is not so")
+  :why    "it is not so that ({?R} {?a} {?b}) is not so")
 ```
 
 What `not` does not deny is unchanged: an atom

@@ -247,8 +247,37 @@ of them can fire before that fact is derived again, leaving a fact the fork does
 
 **The status of a state** $S$ is four predicates. Two are those of any set of facts,
 $\operatorname{dead}(S)$ and $\operatorname{alive}(S)$: $S$ holds a contradiction, or holds none
-([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)). The other two
-read the obligations. An obligation $o$ under an activator $a$ has a trigger $T_o$ and a witness $W_o$, and a
+([the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither)).
+
+**Dead is a rule's doing, and alive is its absence.** A state is dead where a rule that states the engine's word
+$\mathsf{inconsistent}$ was applied in its saturation
+([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)): the rule every program holds, on a held
+$\bot$, or any other of $P_{\mathsf{inc}}$. Nothing else makes a state dead, and no fact stands for it: the
+application is recorded with what it rests on, as a derivation is, and a core is taken over that record
+([cores](09-cores.md#a-contradiction)). A fork starts from everything its parent holds and has recorded, the
+application that ended it among them, so a dead state's forks are dead, and on a monotone program so is every state
+above a dead one (§ 1.6):
+
+$$
+\operatorname{dead}(C) \;\land\; C \subseteq C' \implies \operatorname{dead}(C')
+$$
+
+*Alive* is the absence of any such application, read on the state once it is finished, as an absence is read on a
+fixpoint ([absence](03-absent-and-naf.md#stratification)):
+
+$$
+\operatorname{alive}(S) \iff \lnot\, \exists\, \rho \in P_{\mathsf{inc}}.\;\; \exists\, a, \theta.\;\; S \models \varphi_\rho[a]\,\theta
+$$
+
+**Why alive is read on a state, and never inherited.** It is true of a state and may be false of a larger one, since
+a commitment can add the facts a rule that ends a state reads. A fact that said *alive* would be held at a state,
+inherited by every fork of it, and stale in a fork that dies: a rule that concluded it from the absence of $\bot$
+would conclude a positive fact from an absence a commitment can fill, which is the shape the static check finds
+([monotonicity § 3](08-monotonicity.md#3-the-static-check)). So *dead* is concluded and kept, by an application
+every larger state of a monotone program makes too, and *alive* is a statement about the whole of one state, read
+on that state alone.
+
+The other two predicates read the obligations. An obligation $o$ under an activator $a$ has a trigger $T_o$ and a witness $W_o$, and a
 state $S$ **owes** the instance $(o, a, \theta)$, written $\operatorname{owes}(o, a, \theta, S)$, where the trigger
 holds in $S$ under $\theta$ and no witness does
 ([hypothesis generation § 4.1](04-hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it) defines

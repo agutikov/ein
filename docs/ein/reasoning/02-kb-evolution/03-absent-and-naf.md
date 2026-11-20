@@ -269,15 +269,18 @@ judged first. That order is not the order of the program's strata:
 
 ## A refutation resting on an absent
 
-Take a rule that concludes $\bot$ or a stored negation and rests on an $\operatorname{absent}(G)$ that reads the
-held extent of a relation a commitment can still extend: directly, through a fact a rule derived under such an
-absence, or through the activator its rule was applied with. Write $D^{+}$ for the relations whose held extent
-a commitment can extend (below) and $\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can
-depend on in those three ways. The shape is
+Take a **refutation**, a rule whose firing can make a state dead: one that ends a state, one that concludes a fact a
+rule that ends a state reads, $\bot$ in every program, or one that concludes the side of a pair a rule refutes that
+holds the other, a stored negation where the program takes the contradiction's rules
+([saturation](02-saturation.md#the-agenda-the-order-rules-fire-in)); write $\operatorname{refutes}(\rho)$. Let it
+rest on an $\operatorname{absent}(G)$ that reads the held extent of a relation a commitment can still extend:
+directly, through a fact a rule derived under such an absence, or through the activator its rule was applied with.
+Write $D^{+}$ for the relations whose held extent a commitment can extend (below) and
+$\operatorname{abs}^{\ast}(\rho)$ for the absences $\rho$'s conclusion can depend on in those three ways. The shape is
 
 $$
 \begin{aligned}
-& \bigl( \bot \in \psi_\rho \;\lor\; \exists f.\; \lnot f \in \psi_\rho \bigr) \\
+& \operatorname{refutes}(\rho) \\
 \land\ & \exists\, \operatorname{absent}(G) \in \operatorname{abs}^{\ast}(\rho).\;\; \operatorname{rels}(G) \cap D^{+} \neq \emptyset
 \end{aligned}
 $$
@@ -353,6 +356,31 @@ A node is a relation, a black arrow a positive read, a red dashed arrow a read u
 reported as a diagnostic, never as a refusal, and only ever as what the graph licenses, since a cycle whose
 rules never fire changes nothing. The graph, its strata and what is reported of them are the
 [analysis of rules](../03-rule-evolution/02-analysis-of-rules.md).
+
+**The end of a state stands last.** A rule that states the engine's word concludes no relation
+([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)). Put it in the graph as one node more, the
+**end**, with an edge into it from each relation such a rule reads, negative where it reads it under an absence. No
+edge leaves the end: it is no fact, so no rule reads it. So every stratification of the program's relations extends
+to one with the end above them all,
+
+$$
+\sigma(\mathrm{end}) \;=\; 1 + \max_{r} \sigma(r)
+$$
+
+and a rule that ends a state never puts a cycle through the graph: a program is stratified with its rules that end
+a state exactly when it is stratified without them. In every program the end reads $\bot$, through the rule every
+program holds, and $\bot$ is concluded from the program's relations, by a restriction or, where the program takes
+it, by the contradiction from a fact beside its negation:
+
+![The end of a state as the last stratum: the program's relations, false concluded from them, the end read from false, and alive read on the finished state as the absence of an end](diagrams/03-the-end-stands-last.svg)
+
+A black arrow is a positive read, a red dashed one a read under an absence, and each box is a stratum. *Alive* is
+read above the last of them: the absence of an end, asked of the finished state as an absence is asked of a
+fixpoint, and never a fact the state holds
+([solution semantics § 1.5](06-solution-semantics.md#15-commitment-node-state)). That the end is last is also why it
+may fire first ([saturation](02-saturation.md#the-agenda-the-order-rules-fire-in)): it writes nothing another rule
+reads, so firing it as soon as it is enabled changes no fact the state's other rules derive, and a death that rests
+on no absence is final once it fires, a state's facts only growing.
 
 ## Worked examples
 

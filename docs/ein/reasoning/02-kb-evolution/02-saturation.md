@@ -183,21 +183,29 @@ later quiescence ([absence](03-absent-and-naf.md)).
 Every saturation, root's, each node's and that of any reading of a fixpoint, derives in one order, the
 **agenda**. It is a total order on the candidates that are enabled and not yet fired, defined by two keys.
 
-**A rule that ends a state fires first.** A rule may end a state in the place of concluding a fact: where it
-is applied, the saturation of the state stops and the state is dead. A candidate of such a rule is before every
-other in the agenda. Every program holds one, with the one premise $\bot$, and below $\bot \in \psi_\rho$ stands
-for *the conclusion holds a fact some such rule has for a premise*, which $\bot$ always is.
+**A rule that ends a state fires first, and so does one that refutes a pair.** A rule may end a state in the place
+of concluding a fact, by stating the engine's word
+([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)): where it is applied, the saturation of the
+state stops and the state is dead. Every program holds one, with the one premise $\bot$. A rule **refutes a pair**
+where its pattern is two premises and nothing else, a fact pattern $r(\bar x)$ of distinct variables and a fact
+$w(r(\bar x))$ that holds it as its one argument, and where it ends a state or concludes a fact a rule that ends a
+state matches whole and alone: the contradiction's rules are such rules, $w$ being $\mathsf{not}$
+([cores](09-cores.md#a-contradiction)). A candidate of either kind is before every other in the agenda, so a state
+ends at the firing that completes what such a rule reads, whatever else waits.
 
-**Leads to $\bot$.** A candidate leads to a contradiction when its rule's conclusion can make one:
+**Leads to an end.** Of the other candidates, one leads to the end of a state when its rule's conclusion can
+complete what a rule that ends a state reads, directly or as one side of a pair a rule refutes:
 
 $$
 \begin{aligned}
-\operatorname{lead}(\kappa, K) \iff\ & \bot \in \psi_\rho \\
-\lor\ & \exists f.\; \lnot f \in \psi_\rho \\
-\lor\ & \exists r(\bar t) \in \psi_\rho.\ \bigl( \text{some rule of } P \text{ concludes } \lnot r(\cdot) \\
-& \phantom{\exists r(\bar t) \in \psi_\rho.\ \bigl(} \lor\; \exists \bar v.\; \lnot r(\bar v) \in K \bigr)
+\operatorname{lead}(\kappa, K) \iff\ & \exists f \in \psi_\rho.\ \operatorname{rel}(f) \text{ is read by a rule of } P_{\mathsf{inc}}, \text{ as } \mathsf{false} \text{ is in every program} \\
+\lor\ & \exists f \in \psi_\rho.\ f \text{ is the side } w(g) \text{ of a pair a rule of } P \text{ refutes} \\
+\lor\ & \exists r(\bar t) \in \psi_\rho.\ \bigl( \text{some rule of } P \text{ concludes such a side } w(r(\cdot)) \\
+& \phantom{\exists r(\bar t) \in \psi_\rho.\ \bigl(} \lor\; \exists \bar v.\; w(r(\bar v)) \in K \bigr)
 \end{aligned}
 $$
+
+A program that takes no rule refuting a pair has no pair, and a stored negation is then a fact of the second half.
 
 **Arrival.** $\operatorname{arr}(\kappa) \in \mathbb{N}$ is the candidate's place in the sequence in which
 candidates become enabled; candidates that become enabled together are taken in the written order of their rules.
@@ -209,8 +217,9 @@ $$
 \end{aligned}
 $$
 
-the two pairs compared by their first key and then by their second, with *false* before *true*: first what leads
-to $\bot$, then the rest, and within each half first in, first out.
+the two pairs compared by their first key and then by their second, with *false* before *true*: after the rules
+that end a state and refute a pair, first what leads to an end, then the rest, and within each half first in,
+first out.
 The $j$-th firing of a saturation is the $\lhd$-least candidate enabled after the first $j - 1$; the boundary
 takes its parked candidates in the same order; a saturation that continues another keeps it
 ([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).

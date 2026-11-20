@@ -229,6 +229,22 @@ that fails is a contradiction, as $\bot$ is. A stored negation has one: where $\
 gives $\lnot\lnot g$, a fact
 ([Q-M1f.391](../../../decisions/language/Q-M1f.391-the-negation-of-a-negation-is-a-fact.md)).
 
+**Or a word to the engine.** In the place of a set of literals a conclusion may be the one word the engine reads,
+$\mathsf{inconsistent}$
+([Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md),
+[Q-M1f.550](../../../decisions/language/Q-M1f.550-the-engines-word-is-inconsistent.md)). It is no fact: no knowledge
+base holds it, no pattern matches it, and no arrow points at it. Its instance is no fact either,
+
+$$
+\mathsf{inconsistent}\,\theta = \emptyset
+$$
+
+and what it says is said of the knowledge base the match stands in: it is **dead**
+([the knowledge base](01-knowledge-base.md#a-fact-its-negation-both-or-neither)). A conclusion is one or the other,
+literals or the word, never both. Write $P_{\mathsf{inc}} \subseteq P$ for the rules of a program $P$ whose conclusion
+is the word; every program holds one, whose pattern is $\bot$ alone
+([Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)).
+
 **The result of rewriting** a knowledge base $K$ by a pattern $\varphi$ and a conclusion $\psi$ **at a match**
 $\theta$ of $\varphi$ in $K$ is the knowledge base
 
@@ -604,8 +620,8 @@ $$
   ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)), and one whose relation is a parameter matches the facts of its count of the relation its
   activator names.
 - **A rule's name is declared once.**
-- **A conclusion is literals and nothing else**: no disjunction, and no fact made of several. *One of these* is
-  not said by a rewriting rule. A conjunction in a conclusion is read flat, as the set of its literals, at any depth of
+- **A conclusion is literals, or the engine's word, and nothing else**: no disjunction, and no fact made of several.
+  *One of these* is not said by a rewriting rule. A conjunction in a conclusion is read flat, as the set of its literals, at any depth of
   nesting, and the empty conclusion adds nothing.
 - **A conclusion $\lnot x$ is of a variable that holds a fact**: where the text shows that $x$ can hold an atom,
   the declaration is no rule
@@ -646,9 +662,19 @@ What a rule does to a knowledge base it matches in is read off its conclusion:
 | the conclusion holds | the result of rewriting |
 |---|---|
 | facts, stored negations among them | holds them |
-| $\bot$ | is dead: the rule is a **constraint**, a pattern that no alive knowledge base matches and satisfies |
-| a check | is $K$ where the check holds of the match, and dead where it does not |
+| $\bot$ | holds $\bot$, and is dead by the rule every program holds, which reads it: the rule is a **constraint**, a pattern that no alive knowledge base matches and satisfies |
+| a check | is $K$ where the check holds of the match, and holds $\bot$ where it does not |
 | nothing | is $K$ |
+| the word $\mathsf{inconsistent}$ | is $K$, and $K$ is dead: the rule **ends a state**, a constraint with no $\bot$ between |
+
+So a knowledge base is dead exactly where a rule of $P_{\mathsf{inc}}$ has a match in it:
+
+$$
+\operatorname{dead}(K) \iff \exists\, \rho \in P_{\mathsf{inc}}.\;\; \exists\, a \in \operatorname{Act}_K(\rho).\;\; \exists\, \theta.\;\; K \models \varphi_\rho[a]\,\theta
+$$
+
+with $a$ nothing where $\rho$ has no parameter, and the absences of $\varphi_\rho$ read where
+[absence](../02-kb-evolution/03-absent-and-naf.md) reads them.
 
 Two more kinds of declaration have a rule's parts and are not rewriting rules: neither adds its conclusion to
 the knowledge base it matches in. Each is defined where it is used, in the part after this one

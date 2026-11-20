@@ -157,7 +157,8 @@ $$
 *Argument.* Every fact of a relation in $D$ is derived only through positive reads of relations of $D$ and reads
 of static relations, whose held extent is the same at every node; so each node's fixpoint contains its subsets'
 fixpoints, and
-$\operatorname{dead}$ is upward-closed, $\bot$ and a stored negation being facts. Every obligation's set of
+$\operatorname{dead}$ is upward-closed, a rule that ends a state matching in every larger fixpoint what it matched in
+a smaller one, $\bot$ and both sides of a pair being facts. Every obligation's set of
 triggered instances is fixed while its witnesses only grow, so $\operatorname{discharged}$ is upward-closed.
 $\square$
 

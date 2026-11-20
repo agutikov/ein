@@ -273,7 +273,7 @@ On a monotone program everything a computation has learnt about death is one fam
 $$
 \begin{aligned}
 \mathcal{K} &= \lbrace\, D \;:\; D \text{ was evaluated and found dead} \,\rbrace \\
-&\phantom{{}={}} \cup\; \lbrace\, s \cup \lbrace b \rbrace \;:\; s \text{ an alive state met},\; \lnot b \in \operatorname{st}(s) \,\rbrace \\
+&\phantom{{}={}} \cup\; \lbrace\, s \cup \lbrace b \rbrace \;:\; s \text{ an alive state met},\; \operatorname{denies}(\operatorname{st}(s), b) \,\rbrace \\
 \bigcup_{D \in \mathcal{K}} \uparrow D &\subseteq \operatorname{Dead}
 \end{aligned}
 $$

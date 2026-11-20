@@ -106,8 +106,13 @@ about the third case decide what it means:
 $\Pi$ of facts, and $H$ is what of them root leaves open:
 
 $$
-\operatorname{unsettled}(\Pi) = \lbrace\, f \in \Pi \;:\; f \notin \mathrm{root} \land \lnot f \notin \mathrm{root} \,\rbrace
+\operatorname{unsettled}(\Pi) = \lbrace\, f \in \Pi \;:\; f \notin \mathrm{root} \land \lnot \operatorname{denies}(\mathrm{root}, f) \,\rbrace
 $$
+
+where root **denies** $f$ when it holds a fact that holds $f$ as its one argument, beside which a rule of the program
+refutes $f$: $\lnot f$, where the program takes the contradiction's rules
+([saturation](02-saturation.md#the-agenda-the-order-rules-fire-in)). Where no rule refutes the pair, a stored
+negation settles nothing.
 
 $H$ is a set: a fact proposed twice is in it once, and what the answer depends on is which candidates it holds.
 
@@ -371,14 +376,14 @@ A program this reading adds a candidate to derives an activator from a commitmen
 
 ### 4.5 Stuck: owing, with nothing to propose
 
-A payment whose negation root stores is settled, and is no candidate. A root is **stuck** where it owes and the rung
+A payment root denies is settled, and is no candidate. A root is **stuck** where it owes and the rung
 has nothing left to propose:
 
 $$
 \operatorname{stuck}(P) \iff \operatorname{Owed}(\mathrm{root}) \neq \emptyset \ \land\ H_{\mathrm{ob}} = \emptyset
 $$
 
-A state that held a payment $f$ of such an instance would hold $f$ beside $\lnot f \in \mathrm{root}$ and be dead, so
+A state that held a payment $f$ of such an instance would hold $f$ beside what of root denies it and be dead, so
 no alive state discharges the instance:
 
 $$

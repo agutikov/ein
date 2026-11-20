@@ -79,7 +79,7 @@ $$
 \end{aligned}
 $$
 
-A rule concludes a conjunction of literals, and nesting adds nothing.
+A rule concludes a conjunction of literals, or states the engine's word, and nesting adds nothing.
 
 **Instantiate.** A rule with parameters stands for one rule per activator
 ([the rules](../01-static-ir/02-rewriting-rules.md#a-rule-declared)):

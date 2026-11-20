@@ -27,3 +27,4 @@ Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store
 - [Q-M1f.413](Q-M1f.413-a-nodes-container-opens-as-the-node.md) — A node's container opens as the node
 - [Q-M1f.313](Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md) — The agenda fires first what leads to `(false)`
 - [Q-M1f.436](Q-M1f.436-the-kernel-reads-no-theorys-name.md) — The kernel reads no theory's name
+- [Q-M1f.589](Q-M1f.589-the-static-check-reads-not-as-any-relation.md) — The static check reads `not` as any relation

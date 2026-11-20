@@ -79,3 +79,4 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md) — A relation is overloaded by its count of arguments, and a declaration holds no form to it
 - [Q-M1f.522](Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md) — A relation of the program is any atom it writes first in a tuple
 - [Q-M1f.550](Q-M1f.550-the-engines-word-is-inconsistent.md) — The engine's word is `inconsistent`
+- [Q-M1f.593](Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md) — `not` is a name everywhere but at a form's head

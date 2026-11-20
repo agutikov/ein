@@ -218,7 +218,7 @@ therefore position-independent and not interner-independent: it cannot be shared
 
 ### 4.1 The format version
 
-`header::FORMAT_MAJOR = 2` and `header::FORMAT_MINOR = 1`. The major moves on any change of layout, and a reader
+`header::FORMAT_MAJOR = 2` and `header::FORMAT_MINOR = 2`. The major moves on any change of layout, and a reader
 refuses every major but its own, with `EinbError::Version` (`.einb format 1.2 — this engine reads 2.x`); a file of
 another major is a cache to save again. The minor moves when a section kind is added, and a reader of the same major
 skips a kind it does not know, which is what makes a minor additive. The numbers in `header::Kind` are on disk and are

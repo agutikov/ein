@@ -54,6 +54,18 @@ $$
 A firing only adds; firing it again adds nothing, so one identity fires at most once; and a dead knowledge base
 stays dead.
 
+**A firing of a rule that states the engine's word** adds nothing, its instance being no fact, and the knowledge
+base it is enabled in is dead ([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)):
+
+$$
+\rho \in P_{\mathsf{inc}} \;\land\; \xi \in \operatorname{en}(K) \implies \operatorname{fire}(K, \xi) = K \;\land\; \operatorname{dead}(K)
+$$
+
+It is the one way a knowledge base becomes dead. A held $\bot$ is a contradiction by such a rule, the one every
+program holds, and a fact beside its stored negation by a rule that concludes $\bot$ from the two where the program
+takes one; the kernel judges no pair by itself
+([cores § A contradiction](09-cores.md#a-contradiction)).
+
 **A firing's identity** is the triple, its rule, its activator, and the objects its variables are bound to
 ([Q-M1e.16](../../../decisions/engine/Q-M1e.16-a-firings-identity-keys-on-every-activator.md)). Two firings are
 one when the three parts are equal, the activators compared **in every argument, as objects**, atoms and nested

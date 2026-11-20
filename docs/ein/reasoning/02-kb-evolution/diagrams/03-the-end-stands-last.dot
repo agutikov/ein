@@ -1,0 +1,19 @@
+digraph the_end_stands_last {
+  rankdir=LR; nodesep=0.35; ranksep=0.7;
+  node [fontname="Inter", fontsize=11, shape=ellipse];
+  edge [fontname="Inter", fontsize=10];
+  subgraph cluster_program { label="the program's strata"; style="rounded"; color="#888888"; fontname="Inter"; fontsize=10;
+    r [label="the program's\nrelations"];
+    bot [label="false"];
+  }
+  subgraph cluster_end { label="the last stratum"; style="rounded"; color="#888888"; fontname="Inter"; fontsize=10;
+    end [label="the end:\ninconsistent", shape=box];
+  }
+  subgraph cluster_alive { label="read on the finished state"; style="rounded,dashed"; color="#888888"; fontname="Inter"; fontsize=10;
+    alive [label="alive"];
+  }
+  r -> bot [label="a restriction;\nf beside ¬f"];
+  bot -> end [label="the rule every\nprogram holds"];
+  r -> end [label="a program's own\nrule that ends a state"];
+  end -> alive [label="¬", color="#d62728", fontcolor="#d62728", style=dashed];
+}

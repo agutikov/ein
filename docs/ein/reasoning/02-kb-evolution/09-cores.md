@@ -9,20 +9,82 @@ what a refutation tells a search. The symbols are those of [firing a rule](01-fi
 ## A contradiction
 
 A contradiction, and *dead* and *alive*, are those of
-[the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither): a world $K$ holds a
-contradiction when a rule that ends a state in the place of concluding a fact is satisfied in it, as the rule every
-program holds is on $\bot$, which a rule concludes to say a state is impossible. This page needs the contradictions
-of $K$ as sets of facts: for each such rule, the facts a satisfied instance of it matched, as a set, of which
-$\lbrace \bot \rbrace$ is the instance of the rule every program holds, read as what $\bot$ was concluded from
-where a rule concluded it from a fact $f$ and its negation alone,
+[the knowledge base](../01-static-ir/01-knowledge-base.md#a-fact-its-negation-both-or-neither): a world $K$ is dead
+where a rule that states the engine's word, a rule of $P_{\mathsf{inc}}$, has a match in it
+([the rules](../01-static-ir/02-rewriting-rules.md#by-its-conclusion)). Its application writes no fact; it is
+recorded with what it rests on, as a derivation is ([below](#a-derivation-record)), and the saturation of the world
+stops there. Every program holds one such rule, whose pattern is $\bot$ alone, so $\bot$ is a fact that rules
+conclude and that rule reads, and nothing reads it by its relation's name.
+
+### The contradiction rule, and why it is a schema
+
+Classical logic's contradiction is one rule over a whole fact: whatever is held beside its negation is impossible.
+
+$$
+f \;\land\; \lnot f \;\implies\; \bot
+$$
+
+![The contradiction rule as a pattern graph: a variable that is a premise, the negation that points at it, and the conclusion falsity, dashed](diagrams/09-contradiction-rule.svg)
+
+The diamond is the variable $f$, filled because it is a premise of its own, a held fact of any relation and any count
+of arguments. The octagon $n$ is the premise $\lnot f$, its first arrow at $\mathsf{not}$ and its second at whatever
+$f$ is; the dashed octagon is the conclusion $\bot$, its first arrow alone.
+
+**No rule is written so.** A premise is a fact pattern, whose relation is an atom or a parameter an activator gives
+its atom, and whose count of arguments is fixed; a variable stands for an object under an argument arrow and is no
+premise of its own ([the rules](../01-static-ir/02-rewriting-rules.md#packing-and-unpacking)). A variable for a whole
+fact would range over every relation and every count at once, which no premise does. So the rule above is a
+**schema**: one rule for each relation $r$ and each count $n$,
+
+$$
+r(x_1, \dots, x_n) \;\land\; \lnot r(x_1, \dots, x_n) \;\implies\; \bot
+$$
+
+**The standard library states it one rule a count.** For each count $n$ from $0$ to $6$, a rule whose relation is
+its parameter $R$, applied under an activator $\operatorname{clash}_n(r)$, and a rule with no parameter that concludes
+that activator from each declaration of $n$ labels:
+
+$$
+\begin{aligned}
+R(x_1, \dots, x_n) \;\land\; \lnot R(x_1, \dots, x_n) &\implies \bot && \text{applied under } \operatorname{clash}_n(R) \\
+\operatorname{decl}(r;\ T_1, \dots, T_n) &\implies \operatorname{clash}_n(r)
+\end{aligned}
+$$
+
+![The contradiction rule for facts of two arguments: its activator pattern, a fact of the parameter R over two variables, the negation that points at it, and falsity, dashed](diagrams/09-contradiction-rule-per-count.svg)
+
+The rule for $n = 2$: the activator pattern $\operatorname{clash}_2(R)$ points at the diamond $R$, which stands under
+the first arrow of the premise $q = R(a, b)$; the premise $n = \lnot q$ points at $q$; the dashed octagon is $\bot$. The
+fourteen rules are one theory, and a program takes them or does not
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). Taken, they
+reach every relation the program declares, at each count it is declared with, and $n = 0$ besides, a declaration being
+also the fact $\operatorname{decl}(r)$; a relation nothing declares, and a fact of more than six arguments, is reached
+by an activator the program states. Not taken, a world that holds $f$ beside $\lnot f$ holds no $\bot$ and is alive,
+as a three- or four-valued or a paraconsistent logic would have it, and a program that wants another reading states
+rules of its own.
+
+**The kernel judges no pair by itself.** A world is dead by the application of a rule that ends a state and in no
+other way: a held $\bot$ by the rule every program holds, a fact beside its stored negation by a rule that concludes
+$\bot$ from the two. Where no rule reads the pair, the pair is two facts:
+
+$$
+\begin{aligned}
+f \in K \;\land\; \lnot f \in K \;\land\; \bot \notin \operatorname{sat}(K) &\implies \operatorname{alive}(K) && \text{where } P_{\mathsf{inc}} \text{ is the rule on } \bot \text{ alone}
+\end{aligned}
+$$
+
+### The contradictions of a world, as sets of facts
+
+This page needs the contradictions of $K$ as sets of facts: for each application of a rule that ends a state, the
+facts its match read, of which $\lbrace \bot \rbrace$ is the application of the rule every program holds; and where a
+rule concluded that $\bot$ from a fact $f$ and its negation alone, the pair, read through the two applications to
+what the death rests on:
 
 $$
 \operatorname{contr}(K) \ni \lbrace f, \lnot f \rbrace \quad \text{where} \quad \bot \in K \text{ was concluded from } f \text{ and } \lnot f
 $$
 
-as the theory of the contradiction concludes it, where a program takes it
-([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)). A world is
-dead exactly where it has one:
+A world is dead exactly where it has one:
 
 $$
 \operatorname{dead}(K) \iff \operatorname{contr}(K) \neq \emptyset

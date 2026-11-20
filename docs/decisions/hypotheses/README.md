@@ -18,3 +18,4 @@ Decisions on hypotheses: hrules, obligations, the generation ladder, the hypothe
 - [Q-M1f.254](Q-M1f.254-solve-no-search-relaxes-no-conflict.md) — `(solve :no-search)` relaxes no conflict
 - [Q-M1f.306](Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md) — The guessable atoms are the program's names, never a kernel dunder
 - [Q-M1f.308](Q-M1f.308-the-ladders-second-rung-is-taken-where-root.md) — The ladder's second rung is taken where root activates an obligation
+- [Q-M1f.590](Q-M1f.590-a-hypothesis-rule-is-matched-as-it-is-reached.md) — A hypothesis rule is matched as it is reached

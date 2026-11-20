@@ -32,3 +32,5 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.400](Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md) — A saved file states the choices made in one `(commit …)`
 - [Q-M1f.401](Q-M1f.401-a-saved-file-carries-its-program-and-modules.md) — A saved file carries its program and modules as written, and reads no other file
 - [Q-M1f.532](Q-M1f.532-an-or-goals-class-lists-the-facts.md) — An `(or …)` goal's class lists the facts of the disjuncts that hold
+- [Q-M1f.552](Q-M1f.552-ein-saturate-dump-lists-each-kind-of-rule-in.md) — `ein saturate --dump` lists each kind of rule in a section of its own
+- [Q-M1f.553](Q-M1f.553-a-dead-state-holds-a-contradiction-in-the-words.md) — A dead state holds a contradiction, in the words of every surface

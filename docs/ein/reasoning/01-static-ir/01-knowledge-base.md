@@ -309,9 +309,13 @@ $$
 - **A stored negation.** $n$ is a fact of the relation $\mathsf{not}$, and its one argument is the fact $g$. It is
   written $\lnot g$ and says that $g$ does not hold.
 - **Falsity.** $\bot$ is the fact of the relation $\mathsf{false}$ with its first arrow alone,
-  $\operatorname{out}(\bot) = (\mathsf{false})$. It says that what holds it is impossible.
+  $\operatorname{out}(\bot) = (\mathsf{false})$. It is a proposition, held or not as any fact is, and no truth
+  value: a rule concludes it to say that what a knowledge base holds is impossible, and a rule reads it
+  ([below](#a-fact-its-negation-both-or-neither)).
 
-The atoms $\mathsf{not}$ and $\mathsf{false}$ are reserved, and the facts under them are of a fixed shape:
+The atoms $\mathsf{not}$ and $\mathsf{false}$ are names whose meaning is a theory's, the standard library's, and the
+language fixes only the shape of a fact under each
+([Q-M1f.593](../../../decisions/language/Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md)):
 
 $$
 \begin{aligned}
@@ -412,12 +416,14 @@ What a context does and does not say of the fact in it is [below](#a-context-giv
 
 A finite set $W \subset \Sigma^{+}$ of names is **reserved**: the language gives the atom one fixed part to play,
 and no declaration takes its name ([the reserved names](../../user/04-reference/03-reserved-names.md) lists $W$).
-Those the graph itself has a part for are $\mathsf{relation}$, $\mathsf{not}$ and $\mathsf{false}$, above, and
-one marker, of closure, which a program may write as a relation or as an argument and which is read where a
-knowledge base grows
+Those the graph itself has a part for are $\mathsf{relation}$, above, and one marker, of closure, which a program
+may write as a relation or as an argument and which is read where a knowledge base grows
 ([Q-M1f.7](../../../decisions/language/Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md)). No name of a
 theory is reserved: a relation's symmetry, a type and a bijection are rules a library states over names the
-program chooses. A subset
+program chooses, and so are a stored negation and falsity, whose shape alone is the language's (above): what
+$\lnot f$ beside $f$ means and what $\bot$ does to a state are rules of the standard library
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md),
+[Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A subset
 $W_{\!c} \subset W$ is the relation of no fact at all: the words that join and test the parts of a pattern,
 equality and inequality among them, which [the next page](02-rewriting-rules.md) defines. So no equality, no
 test and no connective is a fact, and none is an object:
@@ -757,10 +763,12 @@ In the graph the four are the four ways two nodes can be held or not: $f$, and t
 points at it. A negated fact is not merely missing: a stored negation is a fact the set holds, and *open* is
 that it holds neither.
 
-**A contradiction** is what a rule says is one. A rule may *end* a state in the place of concluding a fact,
-and a set in which such a rule is satisfied is **dead**, with no fact standing for it
-([saturation](../02-kb-evolution/02-saturation.md)); one in which none is, is **alive**. Every program holds the
-rule that ends a state on the one premise $\bot$, so the fact of falsity is one:
+**A contradiction** is what a rule says is one. A rule may state, in the place of a conclusion, the one word the
+engine reads, $\mathsf{inconsistent}$, which is no fact
+([the rules](02-rewriting-rules.md#a-conclusion-and-the-result-of-rewriting)): a set in whose saturation such a
+rule is applied is **dead**, with no fact standing for it
+([saturation](../02-kb-evolution/02-saturation.md)), and one in which none is, is **alive**. Every program holds the
+rule that states the word on the one premise $\bot$, so the fact of falsity is one:
 
 $$
 \begin{aligned}
@@ -769,10 +777,20 @@ $$
 \end{aligned}
 $$
 
-Both are properties of the set: a set that includes a dead set is dead. **A contradicted fact is no contradiction by
-itself.** It is one where the program takes the theory of the contradiction, whose rules conclude $\bot$ from a
-fact of a relation the program declares beside its stored negation
-([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)):
+**$\bot$ is a proposition, and no truth value.** Nothing reads it by its name: it is a fact that rules conclude and
+one rule reads. What concludes it is a rule of the program or of a theory it takes, a restriction, a check that
+fails, the contradiction's rules below; what reads it is the rule every program holds, whose application makes the
+set dead. A fact that holds $\bot$ under an arrow says nothing of the set ([below](#a-context-gives-a-fact-no-truth)),
+and a program may state other rules that state the word over other premises, with no $\bot$ between.
+
+Both are properties of the set, read by the rules that state the word: where none of them reads an absence, a set
+that includes a dead set is dead.
+
+**A contradicted fact is no contradiction by itself.** It is one where the program takes the theory of the
+contradiction, whose rules conclude $\bot$ from a fact of a relation the program declares beside its stored negation
+([Q-M1f.557](../../../decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md);
+[cores § A contradiction](../02-kb-evolution/09-cores.md#a-contradiction) has the rule and why it is written one a
+count):
 
 $$
 f \in K \;\land\; \lnot f \in K \implies \bot \in \operatorname{sat}(K)
@@ -837,8 +855,8 @@ $$
 
 **One context is read: that of $\mathsf{not}$.** A stored negation is a held fact that points at the fact it
 denies, so it is a context of that fact like any other, and it is the only one the definitions above read:
-$\lnot g \in K$ makes $g$ negated, and makes $K$ dead where $g$ is in the global context too. The facts of every
-other relation are opaque to those definitions. What $\mathsf{think}$ means, whether what a reliable witness
+$\lnot g \in K$ makes $g$ negated, and, where the program takes the theory of the contradiction, makes $K$ dead
+where $g$ is in the global context too. The facts of every other relation are opaque to those definitions. What $\mathsf{think}$ means, whether what a reliable witness
 says is to be held, is what the rules of a program make of it
 ([packing and unpacking](02-rewriting-rules.md#packing-and-unpacking)), and with no such rule it means nothing.
 

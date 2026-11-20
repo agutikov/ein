@@ -9,7 +9,9 @@ declared more than once, at one count or at several, and no declaration is refus
 is a fact of `relation`, and what several declarations of a name mean is what rules make of them. What reads a
 declaration reads each: the blind enumerator guesses facts of a declared relation at each count it is declared
 with, no label of any declaration is one of its objects, the trace reads a declaration's fact by that declaration's
-`:why`, and `std.contradiction`'s `clash-of-N` activates the rule of each declared count.
+`:why`, and `std.contradiction`'s `clash-of-N` activates the rule of each declared count. The read-out's `outside`
+row, which names the relations the universe leaves out, names such a relation once, at the count first declared, and
+the blind enumerator proposes its facts where any of its counts is one it guesses at.
 
 **Why.** The user's ruling, on the question raised when `relation` became a convention of the standard library: a
 check of a form's count against a declaration is the loader reading a theory's form, and a declaration is a fact a
