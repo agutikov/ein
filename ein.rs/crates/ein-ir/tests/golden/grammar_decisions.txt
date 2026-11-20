@@ -3,9 +3,6 @@
     repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Shift `X`, Delete `:assert`
 === "(rulex A)"
   ok (1 form(s))
-=== "(hrulex (?a) :match X :assert Y)"
-  <string>:1:10: unexpected `?a`: a variable
-    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Shift `X`, Delete `:assert`
 === "(macrox (?a) B)"
   <string>:1:10: unexpected `?a`: a variable
     repair: Insert a name, Delete `?a`

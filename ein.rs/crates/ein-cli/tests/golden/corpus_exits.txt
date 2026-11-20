@@ -362,9 +362,6 @@
 1    examples/broken/expect_unknown_keyword.ein :: render rules
 1    examples/broken/expect_unknown_keyword.ein :: saturate
 1    examples/broken/expect_unknown_keyword.ein :: solve
-1    examples/broken/hrule_reserved_name.ein :: render rules
-1    examples/broken/hrule_reserved_name.ein :: saturate
-1    examples/broken/hrule_reserved_name.ein :: solve
 1    examples/broken/import_alias_not_a_name.ein :: render rules
 1    examples/broken/import_alias_not_a_name.ein :: saturate
 1    examples/broken/import_alias_not_a_name.ein :: solve
@@ -387,9 +384,6 @@
 1    examples/broken/load/ein_beside_assert.ein :: render rules
 1    examples/broken/load/ein_beside_assert.ein :: saturate
 1    examples/broken/load/ein_beside_assert.ein :: solve
-1    examples/broken/load/ein_on_hrule.ein :: render rules
-1    examples/broken/load/ein_on_hrule.ein :: saturate
-1    examples/broken/load/ein_on_hrule.ein :: solve
 1    examples/broken/load/ein_word_unknown.ein :: render rules
 1    examples/broken/load/ein_word_unknown.ein :: saturate
 1    examples/broken/load/ein_word_unknown.ein :: solve
@@ -947,8 +941,6 @@
 1    examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein :: solve
-1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein :: saturate
-1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: solve --minimal
@@ -1151,12 +1143,6 @@
 0    examples/ein-bugs/wrong-answers/saturate-import.ein :: solve
 0    examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein :: saturate
 0    examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein :: solve
-1    examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein :: saturate
-1    examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein :: solve
-1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein :: saturate
-1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein :: solve
-1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein :: saturate
-1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein :: solve
 1    examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein :: saturate
 1    examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein :: solve
 1    examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein :: saturate

@@ -33,7 +33,7 @@
   repair: Insert a name, Delete `:k`, Shift `1..*`, Delete `:s`, Delete `"x\ny"`, Delete `:w`, Delete `_`, Delete `:v`, Delete `?v`
   repair: Insert `:source`, Delete `:k`, Delete `1..*`, Delete `:s`, Shift `"x\ny"`, Delete `:w`, Delete `_`, Delete `:v`, Delete `?v`
   and 3 more repairs
-=== "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")"
+=== "(rule h () :match (p ?a) :assert (open (q ?a)) :why \"w\")"
   ok 1 form(s)
 === "()"
   refused <string>:1:2: unexpected `)`
@@ -67,7 +67,7 @@
   ok 7 form(s)
 === ";;; case 6710 (seed 20260820) — a generated program, minimised\n(relation r0 T T :why \"r0 holds of {?3} and {?4}\")\n(relation r1 T T :why \"r1 holds of {?3} and {?4}\")\n(relation is-a T T :why \"{?3} is a {?4}\")\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)) :why \"r1 holds of {?v0} and {?v1} and r0 of {?v1} and {?v0}, so r1 does not hold of {?v0} and {?v0}\")\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2) :why \"r0 holds of the T {?v0} and {?v1}, r1 of {?v2} and {?v3}, and r1 of o3 and {?v1} is not known false, so r1 holds of {?v2} and {?v2}\")\n"
   ok 9 form(s)
-=== "(hrule hyp-0 ()\n  :match  (and (r0 ?v0 ?v1) (absent (not (r0 ?v1 ?v2))))\n  :assert (not (r1 ?v0 ?v0)) :why \"r0 holds of {?v0} and {?v1} and no r0 from {?v1} is denied: guess r1 does not hold of {?v0} and itself\")\n"
+=== "(rule hyp-0 ()\n  :match  (and (r0 ?v0 ?v1) (absent (not (r0 ?v1 ?v2))))\n  :assert (open (not (r1 ?v0 ?v0))) :why \"r0 holds of {?v0} and {?v1} and no r0 from {?v1} is denied: guess r1 does not hold of {?v0} and itself\")\n"
   ok 1 form(s)
 === "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))\n  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))\n  (step s3 :using (s2))\n  (step s4 :derives (final X)))\n"
   refused <string>:1:18: unexpected `:rule`
@@ -97,9 +97,8 @@
   repair: Insert `)`
 <string>:16:3: unexpected `:assert`
   repair: Delete `:assert`, Shift `(`, Insert `rule`, Shift `q`, Insert `(`
-  repair: Delete `:assert`, Shift `(`, Insert `hrule`, Shift `q`, Insert `(`
   repair: Delete `:assert`, Shift `(`, Shift `q`, Delete `?x`, Delete `)`
-  and 1 more repair
+  repair: Delete `:assert`, Shift `(`, Shift `q`, Delete `?x`, Shift `)`, Delete `)`
 === "; `(absent)` with nothing to be absent.\n;\n; The sibling `empty_absent.ein` is `(absent ?x)`, a guard over no premise:\n; it would fail against every KB, and its candidates would be retired\n; permanently. With no argument at all the hazard is the same: read as an\n; ordinary relation, `absent` would match the empty extent of a relation\n; nobody declared and retire the rule for the run in silence. The grammar\n; refuses it at the parse, at the closing parenthesis (Q-M1e.18: `absent`\n; reads exactly one premise).\n;\n; So the two files are one hazard at two arities, and both are refused at\n; the parse.\n(relation p T)\n(relation q T)\n\n(rule guard-of-nothing ()\n  :match  (and (p ?x) (absent))\n  :assert (q ?x))\n"
   refused <string>:17:30: unexpected `)`
   repair: Delete `)`, Delete `)`, Delete `:assert`
@@ -146,9 +145,6 @@
   refused <string>:8:23: unexpected `:expct`: a keyword this form does not take
   repair: Insert `:goal`, Delete `:expct`
   repair: Insert `:expect`, Delete `:expct`
-=== ";; …and the hrule namespace, which reports its own kind.\n\n(hrule absent () :match (x ?a) :assert (y ?a) :why \"w\")\n"
-  refused <string>:3:8: unexpected `absent`
-  repair: Insert a name, Delete `absent`
 === ";; `:as` takes a bare name.\n\n(import std.macro :as \"m\")\n"
   refused <string>:3:23: unexpected `"m"`: a string
   note: "m" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
@@ -199,7 +195,7 @@
   repair: Insert `:match`
 <string>:9:44: unexpected `)`
   repair: Delete `)`
-=== ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; Solving and asking are two forms: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
+=== ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; Solving and asking are two forms: the keywords that configure the\n;; candidates (`:hypothesis-relations`, `:no-hypothesis`, `:no-search`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
   refused <string>:13:23: unexpected `:no-hypothesis`
   note: :no-hypothesis chooses the lattice and belongs on (solve …) — one program, one lattice
   repair: Insert `:goal`, Delete `:no-hypothesis`
@@ -225,7 +221,6 @@
   repair: Insert a name, Delete `absent`
 === ";; LOAD NEGATIVE — an unknown (solve …) keyword.\n;;\n;; `(solve …)`'s keywords are an allow-list, as `(query …)`'s are\n;; (Q-M1e2.28), so a misspelled lattice keyword cannot load, do nothing and\n;; say nothing.\n;;\n;; Expected (load error): see solve_unknown_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(solve :no-hypothesys (p))\n(query :goal (p A ?h))\n"
   refused <string>:11:8: unexpected `:no-hypothesys`: a keyword this form does not take
-  repair: Insert `:hrules`, Delete `:no-hypothesys`
   repair: Insert `:hypothesis-relations`, Delete `:no-hypothesys`
   repair: Insert `:no-hypothesis`, Delete `:no-hypothesys`
 === ";; Should fail: rule_decl body never closes.\n;; A top-level `(rule …)` with an unterminated body.\n(rule x ()\n  :match a\n  :assert b\n"

@@ -293,6 +293,31 @@ digraph kb {
   "next-to" -> f_1d7fcae35b [xlabel="1", dir=back, color="#d62728", style=solid];
   f_1d7fcae35b -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
   f_1d7fcae35b -> "Blue" [xlabel="3", color="#d62728", style=solid];
+  f_a3e206d2fd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_a3e206d2fd [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_a3e206d2fd -> "co-located" [xlabel="2", color="#8c564b", style=solid];
+  f_a3e206d2fd -> "Color" [xlabel="3", color="#8c564b", style=solid];
+  f_a3e206d2fd -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_e82dc0d2a5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_e82dc0d2a5 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_e82dc0d2a5 -> "co-located" [xlabel="2", color="#8c564b", style=solid];
+  f_e82dc0d2a5 -> "Nationality" [xlabel="3", color="#8c564b", style=solid];
+  f_e82dc0d2a5 -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_2605185a11 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_2605185a11 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_2605185a11 -> "co-located" [xlabel="2", color="#8c564b", style=solid];
+  f_2605185a11 -> "Drink" [xlabel="3", color="#8c564b", style=solid];
+  f_2605185a11 -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_b24201f5cd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_b24201f5cd [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_b24201f5cd -> "co-located" [xlabel="2", color="#8c564b", style=solid];
+  f_b24201f5cd -> "Cigarette" [xlabel="3", color="#8c564b", style=solid];
+  f_b24201f5cd -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_8c494d91c9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_8c494d91c9 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_8c494d91c9 -> "co-located" [xlabel="2", color="#8c564b", style=solid];
+  f_8c494d91c9 -> "Pet" [xlabel="3", color="#8c564b", style=solid];
+  f_8c494d91c9 -> "House" [xlabel="4", color="#8c564b", style=solid];
 
   // layers
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
@@ -304,8 +329,8 @@ digraph kb {
   "layer 1" -> "layer 2" [style=invis];
   "layer 2" -> "layer 3" [style=invis];
   "layer 3" -> "layer 4" [style=invis];
-  { rank=same; "layer 0"; "relation"; "symmetric"; "includes"; "slot-partition"; "slot-spatial"; }
-  { rank=same; "layer 1"; f_37670ec3be; f_181820c099; f_d6a8c6686e; f_5a0a3f0743; f_d6c4ab1c24; f_c1e545ef0f; f_f19a293ea2; f_e737a7aba3; f_9f06e57054; f_745e724a60; f_4b44fea3d9; f_f72996c255; f_3f8678f6e9; f_c6ed576299; f_967edc6f10; f_9afd80fac9; }
+  { rank=same; "layer 0"; "relation"; "symmetric"; "includes"; "slot-partition"; "slot-spatial"; "guess"; }
+  { rank=same; "layer 1"; f_37670ec3be; f_181820c099; f_d6a8c6686e; f_5a0a3f0743; f_d6c4ab1c24; f_c1e545ef0f; f_f19a293ea2; f_e737a7aba3; f_9f06e57054; f_745e724a60; f_4b44fea3d9; f_f72996c255; f_3f8678f6e9; f_c6ed576299; f_967edc6f10; f_9afd80fac9; f_a3e206d2fd; f_e82dc0d2a5; f_2605185a11; f_b24201f5cd; f_8c494d91c9; }
   { rank=same; "layer 2"; "type"; "instance"; "co-located"; "right-of"; "next-to"; }
   { rank=same; "layer 3"; f_6c6b1911f4; f_92c298f88e; f_ba56ec2696; f_ba9b739d59; f_af3826d011; f_716626f200; f_2231bd3b4e; f_f10d30c5be; f_4560afb1b8; f_57a00c25e7; f_a7c02286c6; f_4a4035bef9; f_a22511f112; f_ea36a34f48; f_ac94586865; f_31b50cd141; f_56f8535e64; f_a70122beda; f_3ac9b2490e; f_b5608098a8; f_89d0ab8765; f_ffc0f0899b; f_d33159f5d6; f_203b8a6946; f_d3df2e7cbe; f_667594c4f2; f_372830b515; f_8854c848ee; f_1a3d3922f0; f_5f9324c54a; f_8c29e9c164; f_67c48b8f4c; f_cf83ac6131; f_fb22545dcb; f_d5c9836491; f_92f1c7c66b; f_83ef63e55b; f_9df6070ba8; f_3aae21f697; f_780045e881; f_4c7c183646; f_acb48c76b4; f_db68f2f70d; f_b09fad231e; f_07f260227b; f_2353302b70; f_cd3ea2ba8c; f_f5c887abfb; f_50730465c6; f_6bc19ba38f; f_313e9c9ce1; f_ae8680178d; f_6a71dd1a6f; f_a0fcc7bad9; f_1d7fcae35b; }
   { rank=same; "layer 4"; "T"; "Attribute"; "House"; "Color"; "Nationality"; "Pet"; "Cigarette"; "Drink"; "House-1"; "House-2"; "House-3"; "House-4"; "House-5"; "Red"; "Green"; "Ivory"; "Yellow"; "Blue"; "Englishman"; "Spaniard"; "Ukrainian"; "Norwegian"; "Japanese"; "Dog"; "Snail"; "Fox"; "Horse"; "Zebra"; "Old_Gold"; "Kools"; "Chesterfields"; "Lucky_Strike"; "Parliament"; "Coffee"; "Tea"; "Milk"; "Juice"; "Water"; }
