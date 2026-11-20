@@ -1497,9 +1497,11 @@ pub(crate) fn fan_out(
     axes: &Axes,
     sets: &[Vec<FactId>],
 ) -> Result<Vec<NodeOut>, SolveError> {
-    // `None` is a node handed back.
+    // `None` is a node handed back. Beside each node, the hypothesis above
+    // root it found in flight, which is read back in the nodes' order with
+    // the node ([`crate::open::deferring`]).
     #[allow(unused_mut)]
-    let mut speculated: Vec<Option<Result<NodeOut, SolveError>>> =
+    let mut speculated: Vec<Option<(Result<NodeOut, SolveError>, Option<String>)>> =
         sets.iter().map(|_| None).collect();
     #[cfg(feature = "parallel")]
     if let Some(pool) = pool {
@@ -1511,10 +1513,12 @@ pub(crate) fn fan_out(
                 .map(|facts| {
                     let mut view = shared.worker();
                     view.provs.open_fork();
-                    let out = node_in_region(root, snapshot, &mut view, ast, memo, facts, axes);
+                    let (out, found) = crate::open::deferring(|| {
+                        node_in_region(root, snapshot, &mut view, ast, memo, facts, axes)
+                    });
                     let refused = view.refused();
                     let _ = view.provs.take_fork();
-                    (!refused).then_some(out)
+                    (!refused).then_some((out, found))
                 })
                 .collect_into_vec(&mut speculated)
         });
@@ -1524,7 +1528,12 @@ pub(crate) fn fan_out(
     let mut outs = Vec::with_capacity(sets.len());
     for (k, facts) in sets.iter().enumerate() {
         outs.push(match speculated[k].take() {
-            Some(out) => out?,
+            Some((out, found)) => {
+                if let (Some(text), Some(writers)) = (found, snapshot.open()) {
+                    crate::open::found_above(writers, text);
+                }
+                out?
+            }
             None => node(root, snapshot, terms, ast, memo, facts, axes)?,
         });
     }

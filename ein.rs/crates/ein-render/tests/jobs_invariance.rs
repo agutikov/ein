@@ -435,6 +435,63 @@ fn a_job_count_that_reaches_an_output_is_caught() {
     }
 }
 
+/// **The hypothesis found in flight is the one found at one job**
+/// (Q-M1f.574, Q-M1f.656). Under `--in-flight` every node writes its `open`
+/// facts and is checked for a hypothesis root does not hold. Here each of
+/// eight nodes of one layer holds one, a different one each, so a run that
+/// named whichever worker got there first would name another at each count
+/// of workers. A worker's finding is its node's, and the fan-out records the
+/// first in the nodes' order as it reads every node back, so the run names
+/// `(t a)` at any count, as the summary's `monotonicity.in_flight` and the
+/// read-out's `in flight` row do. Each count runs several times: a race shows
+/// in some runs and not in others.
+#[test]
+fn the_hypothesis_found_in_flight_is_the_one_found_at_one_job() {
+    use ein_infer::region::{self, Options, Outcome};
+    const PROGRAM: &str = "(relation s Thing :why \"s holds of {?3}\")\n\
+        (relation t Thing :why \"t holds of {?3}\")\n\
+        (relation about F :why \"about {?3}\")\n\
+        (thing a) (thing b) (thing c) (thing d) (thing e) (thing f) (thing g) (thing h)\n\
+        (open (s a)) (open (s b)) (open (s c)) (open (s d))\n\
+        (open (s e)) (open (s f)) (open (s g)) (open (s h))\n\
+        (about (t a)) (about (t b)) (about (t c)) (about (t d))\n\
+        (about (t e)) (about (t f)) (about (t g)) (about (t h))\n\
+        (rule follows () :match (s ?x) :assert (open (t ?x)) :why \"t of {?x} may follow\")\n";
+    let found = |jobs: usize| -> Option<String> {
+        let mut ast = ein_ir::Ast::new();
+        let mut terms = Terms::new();
+        let forms = ein_ir::parse(&mut ast, PROGRAM, Some("<test>")).expect("parses");
+        let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let opts = Options {
+            jobs,
+            ..Options::default()
+        };
+        let out = ein_infer::open::at_every_state(true, || {
+            region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {})
+        })
+        .expect("computes");
+        match out {
+            Outcome::Region(r) => r.monotonicity.in_flight,
+            _ => panic!("eight candidates are within the limit"),
+        }
+    };
+    let one = found(1);
+    assert_eq!(
+        one.as_deref(),
+        Some("(t a)"),
+        "at one job the first node of the first layer that holds one names it"
+    );
+    for jobs in [2, 4, 8, 16] {
+        for run in 0..8 {
+            assert_eq!(
+                found(jobs),
+                one,
+                "--jobs {jobs}, run {run}: the hypothesis found in flight is another node's"
+            );
+        }
+    }
+}
+
 fn first_difference(a: &str, b: &str) -> String {
     for (i, (x, y)) in a.lines().zip(b.lines()).enumerate() {
         if x != y {

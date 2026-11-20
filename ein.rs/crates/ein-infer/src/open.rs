@@ -472,10 +472,58 @@ fn closed_relations(s: &Session<'_>) -> FxHashSet<Symbol> {
     out
 }
 
+thread_local! {
+    /// Under [`deferring`], the first hypothesis above root the node this
+    /// worker computes holds: `Some(None)` until it holds one.
+    static DEFERRED: std::cell::RefCell<Option<Option<String>>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+/// **Run `f`, a node a worker computes, keeping its in-flight finding**:
+/// the first hypothesis above root the node holds is returned beside `f`'s
+/// result instead of recorded, so that the fan-out records the first in the
+/// nodes' order as it reads every node back ([`found_above`]), and the run
+/// names the hypothesis it names at one job, whichever worker finishes
+/// first. A node handed back is computed again in order, and its finding
+/// with it.
+pub(crate) fn deferring<T>(f: impl FnOnce() -> T) -> (T, Option<String>) {
+    struct Restore(Option<Option<String>>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            DEFERRED.with(|d| *d.borrow_mut() = self.0.take());
+        }
+    }
+    let restore = Restore(DEFERRED.with(|d| d.replace(Some(None))));
+    let out = f();
+    let found = DEFERRED.with(|d| d.borrow_mut().take()).flatten();
+    drop(restore);
+    (out, found)
+}
+
+/// A worker's node's in-flight finding ([`deferring`]), recorded as the
+/// node is read back in the nodes' order.
+pub(crate) fn found_above(writers: &Writers, text: String) {
+    record_above(writers, text);
+}
+
 /// A hypothesis a state above root holds that root does not: recorded once,
-/// and said at once, once, through the hook (Q-M1f.574).
+/// and said at once, once, through the hook (Q-M1f.574); kept with its node
+/// where a worker computes it ([`deferring`]).
 fn first_above(writers: &Writers, terms: &Terms, f: FactId) {
     let text = crate::events::sexpr(terms, f);
+    let kept = DEFERRED.with(|d| match d.borrow_mut().as_mut() {
+        Some(slot) => {
+            slot.get_or_insert(text.clone());
+            true
+        }
+        None => false,
+    });
+    if !kept {
+        record_above(writers, text);
+    }
+}
+
+fn record_above(writers: &Writers, text: String) {
     let _ = writers.first_above.set(text.clone());
     if !writers.said.swap(true, Ordering::Relaxed)
         && let Some(hook) = HOOK.lock().expect("no hook panicked").as_ref()
