@@ -617,9 +617,11 @@ fn strokes(dot: &str) -> usize {
 /// is no longer past it. The under-determined zebra's exclusion graph is the
 /// pairs of its 96 candidates, and its edges read one application back are
 /// mostly of two questions; the two programs whose `R` passes 2^64
-/// commitments tie every candidate to every other. A run without
+/// commitments tie every candidate to every other; and `zebra.ein`'s 112
+/// candidates, each placement beside its mirror the obligations write
+/// (Q-M1f.570), pass the bound in all four views. A run without
 /// `EIN_CORPUS_SLOW` reads no `slow` entry, and holds the list to the others.
-const STRUCTURE_SKIPPING: [(&str, &str); 8] = [
+const STRUCTURE_SKIPPING: [(&str, &str); 12] = [
     (
         "examples/ein-bugs/wrong-answers/count-past-2-128.ein",
         "coupling",
@@ -636,6 +638,10 @@ const STRUCTURE_SKIPPING: [(&str, &str); 8] = [
         "examples/ein-bugs/wrong-answers/count-past-2-64.ein",
         "one-step",
     ),
+    ("examples/zebra.ein", "exclusion"),
+    ("examples/zebra.ein", "cover"),
+    ("examples/zebra.ein", "coupling"),
+    ("examples/zebra.ein", "one-step"),
     ("examples/zebra2-minus-15-obligations.ein", "exclusion"),
     ("examples/zebra2-minus-15-obligations.ein", "one-step"),
     ("examples/zebra2-minus-15.ein", "exclusion"),

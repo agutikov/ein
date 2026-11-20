@@ -149,6 +149,15 @@ fn programs(slow_too: bool) -> Vec<PathBuf> {
     })
 }
 
+/// **The programs on which the state route counts more facts than route 1**,
+/// exactly: a state is a closure, and a candidate another one implies is in
+/// it, so the state route's dead extension commits it where route 1's fork
+/// from root, stopped at its first contradiction, has not derived it yet. In
+/// `13_mixed_solution_and_open.ein` `(choice Ann)` implies `(likes Ann Soup)`,
+/// a candidate beside it under the union (Q-M1f.570). The saturations are no
+/// more on these, and the read-out is one.
+const COMMITS_AN_IMPLIED_CANDIDATE: [&str; 1] = ["examples/features/13_mixed_solution_and_open.ein"];
+
 /// The first line on which two texts differ.
 fn first_difference(a: &str, b: &str) -> String {
     for (i, (x, y)) in a.lines().zip(b.lines()).enumerate() {
@@ -302,11 +311,19 @@ fn compare(budget: u64, slow: bool) -> Compared {
                 first_difference(&one.text, &states.text)
             ));
         }
-        if states.saturations > one.saturations || states.facts > one.facts {
+        let more_facts = states.facts > one.facts;
+        let named = COMMITS_AN_IMPLIED_CANDIDATE.contains(&rel.as_str());
+        if states.saturations > one.saturations || (more_facts && !named) {
             out.bad.push(format!(
                 "{rel}: the state route did more, {} saturations and {} facts \
                  against route 1's {} and {}",
                 states.saturations, states.facts, one.saturations, one.facts
+            ));
+        }
+        if named && !more_facts {
+            out.bad.push(format!(
+                "{rel}: COMMITS_AN_IMPLIED_CANDIDATE names it, and the state route did no more \
+                 facts than route 1: drop it from the list"
             ));
         }
     }

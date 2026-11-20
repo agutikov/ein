@@ -15,7 +15,8 @@ pub enum Mode {
     /// `-p` — every fact beyond the program as loaded: root's derivations,
     /// the commitment and what it derives, the `(not …)` facts among them.
     All,
-    /// `-P` — `All` with the `(not …)` facts dropped: the state's model, as
+    /// `-P` — `All` with the `(not …)` facts and the `(open …)` facts
+    /// dropped (Q-M1f.577): the state's model, as
     /// `docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md` § 3 defines it.
     Positive,
     /// `-f` — only the facts of the candidates' relations, *whatever their
@@ -51,15 +52,22 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
             // derivations are in every state's block, and a commitment is
             // not derived.
             let not = terms.syms.get("not");
+            let open = terms.kernel.open;
             let picked: Vec<_> = kb
                 .facts()
                 .filter(|&f| beyond_the_program(kb, terms, f))
-                .filter(|&f| !(mode == Mode::Positive && Some(terms.facts.get(f).0) == not))
+                .filter(|&f| {
+                    let rel = terms.facts.get(f).0;
+                    !(mode == Mode::Positive && (Some(rel) == not || rel == open))
+                })
                 .collect();
             (
                 picked,
                 if mode == Mode::Positive {
-                    format!("beyond the program as loaded, (not …) omitted: {WHAT_BEYOND}")
+                    format!(
+                        "beyond the program as loaded, (not …) and (open …) omitted: \
+                         {WHAT_BEYOND}"
+                    )
                 } else {
                     format!("beyond the program as loaded: {WHAT_BEYOND}")
                 },

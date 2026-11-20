@@ -16,7 +16,8 @@
 //!    both have;
 //! 3. **two encodings, one theory**: `zebra.ein` and `zebra2.ein` state one
 //!    puzzle over one `co-located` relation and over five, and the theory
-//!    excludes the same pairs under the renaming;
+//!    excludes the same pairs of placements under the renaming, each in the
+//!    four orientations the one relation writes it in;
 //! 4. **a smaller program derives no more**: what is dead in the small KB is
 //!    dead at root, and the small KB's fixpoint is inside root's, on every
 //!    corpus program the pair layer's own default sweep reads;
@@ -235,21 +236,42 @@ fn two_programs_one_clue_apart_have_one_theory() {
     assert_eq!(small(&minus).dead_alone, []);
 }
 
+/// A `(rel x House-n)` or `(rel House-n x)` candidate's placement,
+/// `[x, House-n]`: a fact and its mirror are one placement.
+fn placement(text: &str) -> [String; 2] {
+    let p = parts(text);
+    if p[1].starts_with("House-") {
+        [p[2].to_string(), p[1].to_string()]
+    } else {
+        [p[1].to_string(), p[2].to_string()]
+    }
+}
+
+/// How many times each of `items` occurs.
+fn counted<T: Ord>(items: impl IntoIterator<Item = T>) -> std::collections::BTreeMap<T, usize> {
+    let mut out = std::collections::BTreeMap::new();
+    for x in items {
+        *out.entry(x).or_default() += 1;
+    }
+    out
+}
+
 /// **Two encodings, one theory.** `zebra.ein` states the puzzle over one
 /// symmetric `co-located` relation whose structure `std.slots` gives, and
 /// `zebra2.ein` over five relations declared bijective. Root proposes the
-/// same 56 placements in both, `(co-located X House-n)` and `(R-loc X
-/// House-n)`, and the theory excludes the same 128 pairs of them: which
-/// statements are the puzzle's does not turn on how a relation is named or
-/// on which module's rules read it.
+/// same 56 placements in both: `(R-loc X House-n)` in `zebra2.ein`, and in
+/// `zebra.ein` the hrule's `(co-located X House-n)` beside its mirror
+/// `(co-located House-n X)`, which pays what a house owes and joins `H`
+/// beside it (Q-M1f.570), each placement twice. The theory excludes the
+/// same 128 pairs of placements, each in its four orientations, 512 pairs,
+/// and never a candidate with its mirror: which statements are the
+/// puzzle's does not turn on how a relation is named or on which module's
+/// rules read it.
 #[test]
 fn the_same_puzzle_in_two_encodings_has_one_theory() {
-    let placements = |t: &Theory| -> (BTreeSet<[String; 2]>, BTreeSet<[[String; 2]; 2]>) {
+    let placements = |t: &Theory| -> (Vec<[String; 2]>, Vec<[[String; 2]; 2]>) {
         let s = small(t);
-        let key = |b: u32| -> [String; 2] {
-            let p = parts(s.text(b));
-            [p[1].to_string(), p[2].to_string()]
-        };
+        let key = |b: u32| placement(s.text(b));
         assert_eq!(s.dead_alone, []);
         (
             (0..s.n() as u32).map(key).collect(),
@@ -265,10 +287,29 @@ fn the_same_puzzle_in_two_encodings_has_one_theory() {
     };
     let one = placements(&theory_of("examples/zebra.ein", &small_alone()));
     let five = placements(&theory_of("examples/zebra2.ein", &small_alone()));
-    assert_eq!(one.0.len(), 56);
-    assert_eq!(one.0, five.0, "one universe, under the renaming");
-    assert_eq!(one.1.len(), 128);
-    assert_eq!(one.1, five.1, "one theory, under the renaming");
+    let (one, five) = (
+        (counted(one.0), counted(one.1)),
+        (counted(five.0), counted(five.1)),
+    );
+    assert_eq!((five.0.len(), five.1.len()), (56, 128));
+    assert!(five.0.values().chain(five.1.values()).all(|&n| n == 1));
+    assert!(
+        one.0.keys().eq(five.0.keys()),
+        "one universe, under the renaming"
+    );
+    assert!(one.0.values().all(|&n| n == 2), "each placement twice");
+    assert!(
+        one.1.keys().eq(five.1.keys()),
+        "one theory, under the renaming"
+    );
+    assert!(
+        one.1.values().all(|&n| n == 4),
+        "each pair in its four orientations"
+    );
+    assert!(
+        one.1.keys().all(|[a, b]| a != b),
+        "no candidate with its mirror"
+    );
 }
 
 /// The instances every run reads, `slow` or not, as the pair layer's sweep
@@ -422,7 +463,11 @@ fn the_theory_derives_no_more_than_the_program() {
 /// program's own node of the pair does not. Returns the pairs of the theory
 /// and of the puzzle.
 fn the_readings_agree(rel: &str) -> (u64, u64) {
-    let t = theory_of(rel, &checked());
+    the_readings_agree_on(&theory_of(rel, &checked()), rel)
+}
+
+/// [`the_readings_agree`], of `rel`'s theory read [`checked`].
+fn the_readings_agree_on(t: &Theory, rel: &str) -> (u64, u64) {
     let l = &t.root;
     assert_eq!(t.supports.len(), l.excluded.len(), "{rel}");
     let r = t.readings();
@@ -453,10 +498,34 @@ fn the_readings_agree_on_the_declared_control() {
     assert_eq!(the_readings_agree("examples/zebra2.ein"), (45, 282));
 }
 
-/// The one-relation encoding's 414: 56 of the theory, 358 of the puzzle.
+/// The one-relation encoding's 1 656: 224 of the theory, 1 432 of the
+/// puzzle. `H` holds each placement in both orientations, so they are 414
+/// pairs of placements, each in its four orientations and all four of one
+/// reading: 56 of the theory, 358 of the puzzle.
 #[test]
 fn the_readings_agree_on_one_relation() {
-    assert_eq!(the_readings_agree("examples/zebra.ein"), (56, 358));
+    let rel = "examples/zebra.ein";
+    let t = theory_of(rel, &checked());
+    assert_eq!(the_readings_agree_on(&t, rel), (224, 1432));
+    let mut folded: std::collections::BTreeMap<[[String; 2]; 2], (usize, usize)> =
+        Default::default();
+    for (&(a, b), of_theory) in t.root.excluded.iter().zip(t.of_the_theory()) {
+        let mut key = [placement(t.root.text(a)), placement(t.root.text(b))];
+        key.sort();
+        let seen = folded.entry(key).or_default();
+        seen.0 += 1;
+        seen.1 += usize::from(of_theory);
+    }
+    assert_eq!(folded.len(), 414);
+    assert!(
+        folded
+            .values()
+            .all(|&(n, theory)| n == 4 && (theory == 0 || theory == 4))
+    );
+    assert_eq!(
+        folded.values().filter(|&&(_, theory)| theory == 4).count(),
+        56
+    );
 }
 
 /// **A support's check is read where root's layer passed its budget.** The

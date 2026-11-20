@@ -482,20 +482,17 @@ fn the_document_is_the_owners_reading_on_every_instance() {
     assert_eq!(bijections(d), (5, 5));
     assert_eq!(len(&d["coupling"]["components"]), 1);
 
-    // One relation: five grids, one family of each owed and the other the
-    // subject of the instances L5 does not license; no bijection.
+    // One relation, each placement in both orientations: a group of the
+    // declared control's of k placements is 2^k groups, every instance root
+    // owes is licensed and owes one of them, and a member is in more than two
+    // groups, so the five components are no grid.
     let d = &z1.0;
-    assert_eq!(len(&d["cover"]["groups"]), 36);
-    assert_eq!(len(&d["exactly_one"]["owed_groups"]), 18);
-    assert_eq!(len(&d["exactly_one"]["unlicensed"]), 18);
-    assert_eq!(bijections(d), (0, 5));
-    let unlicensed = d["coupling"]["debts"]
-        .as_array()
-        .expect("debts")
-        .iter()
-        .filter(|x| x["licensed"] == false)
-        .count();
-    assert!(unlicensed > 0, "the unlicensed half's debts are edges");
+    assert_eq!(len(&d["candidates"]), 112);
+    assert_eq!(len(&d["cover"]["groups"]), 352);
+    assert_eq!(len(&d["exactly_one"]["owed_groups"]), 36);
+    assert_eq!(len(&d["exactly_one"]["unlicensed"]), 0);
+    assert_eq!(bijections(d), (0, 0));
+    assert_eq!(len(&d["exactly_one"]["components_that_are_no_grid"]), 5);
 
     // The under-determined twin: its five bijections all the same.
     assert_eq!(bijections(&z2m.0), (5, 5));
@@ -825,17 +822,47 @@ fn a_stopped_structure_says_what_was_not_read() {
     assert_eq!(r.code, 2, "{}", r.err);
 }
 
+/// Each witness of each instance root owes, in `d`'s table: its fact, the
+/// candidates whose own node holds it at root, and those whose node holds it
+/// in the small KB.
+fn holders(d: &Value) -> Vec<(Value, Value, Value)> {
+    d["exactly_one"]["instances"]
+        .as_array()
+        .expect("instances")
+        .iter()
+        .flat_map(|i| i["witnesses"].as_array().expect("witnesses").iter())
+        .map(|w| {
+            (
+                w["fact"].clone(),
+                w["held_at_root_by"].clone(),
+                w["held_in_the_theory_by"].clone(),
+            )
+        })
+        .collect()
+}
+
+/// How many of `holders`' witnesses some node holds, at root and by the
+/// theory alone.
+fn held(holders: &[(Value, Value, Value)]) -> (usize, usize) {
+    let some = |v: &Value| len(v) > 0;
+    (
+        holders.iter().filter(|(_, r, _)| some(r)).count(),
+        holders.iter().filter(|(_, _, t)| some(t)).count(),
+    )
+}
+
 /// **A layer that read its singles has its holders read, whatever it
 /// spent.** Which candidates' own nodes hold each witness of an owed
 /// instance is read after a layer, off its singles, which the layer left in
-/// the cache: nothing is computed, so no budget is asked. A layer's last
-/// step may carry it past its budget, so one fact under what root's layer
-/// spends the layer reads every pair, having spent more than it was given;
-/// the holders are read all the same, every debt of an instance L5 does not
-/// license is an edge, and the structure is whole, the document the one of
-/// the default budget but for what was asked. The same of the small KB's
-/// layer one fact under its own spend: every unlicensed instance is about
-/// the group it is about at the default budget.
+/// the cache: nothing is computed, so no budget is asked. On the
+/// one-relation zebra 76 witnesses are held by a single's node at root and
+/// 112 by the theory alone, every witness that is a candidate. A layer's
+/// last step may carry it past its budget, so one fact under what root's
+/// layer spends the layer reads every pair, having spent more than it was
+/// given; the holders are read all the same, and the structure is whole,
+/// the document the one of the default budget but for what was asked. The
+/// same of the small KB's layer one fact under its own spend: every
+/// witness's holders, at root and by the theory, are the default budget's.
 ///
 /// Each budget is read off the program's own whole document, so the test
 /// follows the layers' spend wherever the engine moves it.
@@ -844,12 +871,7 @@ fn a_layer_read_whole_has_its_holders_read() {
     let file = "examples/zebra.ein";
     let whole = document_of(file, &[]);
     assert_eq!(whole["whole"], true);
-    let debts = |d: &Value| d["coupling"]["debts"].as_array().expect("debts").clone();
-    let unlicensed = debts(&whole)
-        .iter()
-        .filter(|x| x["licensed"] == false)
-        .count();
-    assert!(unlicensed > 0, "{file} has no unlicensed debt any more");
+    assert_eq!(held(&holders(&whole)), (76, 112), "{file}");
 
     // One fact under what root's layer spends.
     let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");
@@ -866,10 +888,9 @@ fn a_layer_read_whole_has_its_holders_read() {
     );
     assert_eq!(d["exactly_one"]["singles_read"], true);
     assert_eq!(d["exactly_one"]["theory_read"], true);
-    assert_eq!(d["coupling"]["payers_read"], true);
     assert_eq!(d["coupling"]["complete"], true);
     assert_eq!(d["whole"], true, "{}", d["unread"]);
-    assert_eq!(debts(&d), debts(&whole), "every debt is an edge");
+    assert_eq!(holders(&d), holders(&whole), "the holders are read");
     for key in [
         "candidates",
         "pairs",
@@ -900,23 +921,7 @@ fn a_layer_read_whole_has_its_holders_read() {
     assert_eq!(small["work"]["facts"], small_spent);
     assert_eq!(d["exactly_one"]["theory_read"], true);
     assert_eq!(d["exactly_one"]["singles_read"], true);
-    let about = |d: &Value| -> Vec<(Value, Value)> {
-        d["exactly_one"]["instances"]
-            .as_array()
-            .expect("instances")
-            .iter()
-            .filter(|i| i["licensed"] == false)
-            .map(|i| {
-                (
-                    i["about_group"].clone(),
-                    i["pay_by_the_theory_alone"].clone(),
-                )
-            })
-            .collect()
-    };
-    assert_eq!(about(&d).len(), unlicensed);
-    assert!(about(&d).iter().all(|(g, p)| !g.is_null() && !p.is_null()));
-    assert_eq!(about(&d), about(&whole));
+    assert_eq!(holders(&d), holders(&whole), "the holders are read");
     assert_eq!(d["pairs"]["complete"], false, "root's layer stopped");
     assert_eq!(d["whole"], false);
     let unread = d["unread"].as_array().expect("unread");
@@ -932,10 +937,11 @@ fn a_layer_read_whole_has_its_holders_read() {
 /// **Where a layer stopped before its last single the holders are not read,
 /// and nothing calls the structure whole.** At a budget of one fact root's
 /// layer and the small KB's each stop among their singles. No witness has a
-/// holder listed, an instance L5 does not license has no payers and is no
-/// edge, and the owner's coupling says so itself: `payers_read` is false and
-/// `complete` with it. The view says it in a sentence a layer, each a note
-/// and a row, beside the sentence that says the layer stopped.
+/// holder listed, at root or by the theory, and the coupling is not
+/// complete. The view says it in a sentence a layer, each a note and a row,
+/// beside the sentence that says the layer stopped. Every instance the
+/// one-relation zebra's table holds is licensed, so no payer is lacking:
+/// the coupling's `payers_read` is true, and it is incomplete by its pairs.
 #[test]
 fn holders_a_stopped_layer_left_unread_are_said() {
     let file = "examples/zebra.ein";
@@ -944,16 +950,14 @@ fn holders_a_stopped_layer_left_unread_are_said() {
     assert!(d["pairs"]["singles_left"].as_u64().is_some_and(|n| n > 0));
     assert_eq!(d["exactly_one"]["singles_read"], false);
     assert_eq!(d["exactly_one"]["theory_read"], false);
-    assert_eq!(d["coupling"]["payers_read"], false);
+    let witnesses = holders(&d);
+    assert!(!witnesses.is_empty());
+    assert_eq!(held(&witnesses), (0, 0), "no witness has a holder listed");
+    assert_eq!(d["coupling"]["unlicensed_instances"], 0);
+    assert_eq!(d["coupling"]["payers_read"], true);
+    assert_eq!(d["coupling"]["pairs_read"], false);
     assert_eq!(d["coupling"]["complete"], false);
     assert_eq!(d["whole"], false);
-    assert!(
-        d["coupling"]["unlicensed_instances"]
-            .as_u64()
-            .is_some_and(|n| n > 0)
-    );
-    let debts = d["coupling"]["debts"].as_array().expect("debts");
-    assert!(debts.iter().all(|x| x["licensed"] == true), "{debts:?}");
     let unread: Vec<&str> = d["unread"]
         .as_array()
         .expect("unread")

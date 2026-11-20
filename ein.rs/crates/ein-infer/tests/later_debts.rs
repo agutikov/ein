@@ -124,9 +124,10 @@ const CHAIN: &str = "\
 ";
 
 /// The debt a node is told of is over a domain a commitment can change:
-/// `more` derives a `kind` fact, and the later plan's guard scans `kind`. The
-/// rung holds a later plan to its own decline, so the call declines and the
-/// blind enumerator builds H.
+/// `more` derives a `kind` fact, and the later plan's guard scans `kind`. An
+/// obligation does not step aside for that (Q-M1f.579): the later debt pays
+/// with what its guard gives at root, `Tea`, and the static check flags the
+/// program.
 const FLIP: &str = "\
 (relation kind   T T :why \"{?3} is of kind {?4}\")
 (is-a Ann Person) (is-a Soup Food)
@@ -137,11 +138,11 @@ const FLIP: &str = "\
 (solve :no-hypothesis (is-a kind))
 ";
 
-/// **Not reached.** Both debts are stated and no activator is derived: the
-/// hrule that proposes a drink reads `likes`, which the other hrule proposes,
-/// so it proposes at a node what it did not at root. The reading is the
-/// obligations rung's and reads activators, so H is the hrules' at root and
-/// R is empty; the static check calls the program monotone.
+/// Both debts are stated and no activator is derived: the hrule that
+/// proposes a drink reads `likes`, which the other hrule proposes, so it can
+/// propose at a node what it did not at root, a `hypothesis` site of the
+/// static check (Q-M1f.574). H is the union (Q-M1f.570): the hrules' at root
+/// and what pays root's two debts.
 const HRULE_READS_H: &str = "\
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
 (total-owed likes is-a)
@@ -150,8 +151,9 @@ const HRULE_READS_H: &str = "\
 (hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why \"{?p} likes {?f}; guess: (drinks {?p} {?d})?\")
 ";
 
-/// The witness under hrules that each propose a relation where its activator
-/// holds: the hrule rung overrides the ladder, and is as it was.
+/// The witness beside hrules that each propose a relation where its activator
+/// holds: the obligations write beside them, and the later debt pays as it
+/// does with no hrule (Q-M1f.570).
 const HRULE_DERIVED: &str = "\
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
 (total-owed likes is-a)
@@ -268,28 +270,28 @@ const PROBES: &[Probe] = &[
     Probe {
         name: "flip: the later debt's domain is one a commitment can change",
         body: FLIP,
-        rung: Mode::Declined,
-        universe: Err(24),
-        later: &[],
-        r: None,
+        rung: Mode::Obligations,
+        universe: Ok(&[TEA, LIKES_SOUP]),
+        later: &[("(total-owed drinks kind)", &["arm"], &[TEA])],
+        r: Some(&[&[TEA, LIKES_SOUP]]),
         flagged: true,
     },
     Probe {
         name: "an hrule reads what the other proposes, no activator derived",
         body: HRULE_READS_H,
-        rung: Mode::Hrules,
-        universe: Ok(&[LIKES_SOUP]),
+        rung: Mode::Union,
+        universe: Ok(&[TEA, LIKES_SOUP]),
         later: &[],
-        r: Some(&[]),
-        flagged: false,
+        r: Some(&[&[TEA, LIKES_SOUP]]),
+        flagged: true,
     },
     Probe {
-        name: "the witness on the hrule rung",
+        name: "the witness beside the hrules",
         body: HRULE_DERIVED,
-        rung: Mode::Hrules,
-        universe: Ok(&[LIKES_SOUP]),
-        later: &[],
-        r: Some(&[]),
+        rung: Mode::Union,
+        universe: Ok(&[TEA, LIKES_SOUP]),
+        later: &[("(total-owed drinks is-a)", &["arm"], &[TEA])],
+        r: Some(&[&[TEA, LIKES_SOUP]]),
         flagged: true,
     },
 ];

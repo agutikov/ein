@@ -11,7 +11,8 @@
 //!    rows and columns are read here off the candidates' texts, which is the
 //!    reading by name the cover itself does not make;
 //! 2. **two encodings, one cover**: `zebra.ein` states the same puzzle over
-//!    one relation, and has the same groups under the renaming;
+//!    one relation, each placement in both orientations, and its groups,
+//!    folded onto their placements, are the same groups under the renaming;
 //! 3. **one clue apart**: `zebra2-minus-15.ein`'s groups are its own rows and
 //!    columns, and over the candidates both programs have they are
 //!    `zebra2.ein`'s;
@@ -190,22 +191,38 @@ fn the_groups_of_a_declared_bijection_are_its_rows_and_columns() {
 }
 
 /// **Two encodings, one cover.** `zebra.ein` proposes the same 56
-/// placements over one relation, `(co-located X House-n)`, with no relation
-/// to tell an attribute's kind by: its groups are `zebra2.ein`'s under the
-/// renaming, an attribute's houses and, at each house, the attributes **of
-/// one kind**, which no candidate's text says.
+/// placements over one relation, with no relation to tell an attribute's
+/// kind by, each in both orientations: the hrule's `(co-located X House-n)`
+/// and its mirror `(co-located House-n X)`, which pays what a house owes and
+/// joins `H` beside it (Q-M1f.570). Its groups, each candidate folded onto
+/// its placement, are `zebra2.ein`'s under the renaming, an attribute's
+/// houses and, at each house, the attributes **of one kind**, which no
+/// candidate's text says.
+///
+/// **Each of them `2^k` times**: a candidate and its mirror exclude nothing
+/// between them, and each excludes both orientations of every placement the
+/// other excludes, so a group of `zebra2.ein`'s of `k` placements is `2^k`
+/// groups here, one for each way round its members are written, each
+/// holding a placement once: 352 groups, and no candidate in exactly two.
 #[test]
 fn one_puzzle_in_two_encodings_has_one_cover() {
+    // A candidate's placement, `[x, House-n]`, whichever way round it is
+    // written.
+    let placement = |text: &str| -> [String; 2] {
+        let p = parts(text);
+        if p[1].starts_with("House-") {
+            [p[2].to_string(), p[1].to_string()]
+        } else {
+            [p[1].to_string(), p[2].to_string()]
+        }
+    };
     let placements = |c: &Cover| -> BTreeSet<BTreeSet<[String; 2]>> {
         c.groups
             .iter()
             .map(|g| {
-                g.iter()
-                    .map(|&b| {
-                        let p = parts(c.text(b));
-                        [p[1].to_string(), p[2].to_string()]
-                    })
-                    .collect()
+                let set: BTreeSet<[String; 2]> = g.iter().map(|&b| placement(c.text(b))).collect();
+                assert_eq!(set.len(), g.len(), "a placement once in a group");
+                set
             })
             .collect()
     };
@@ -213,13 +230,28 @@ fn one_puzzle_in_two_encodings_has_one_cover() {
         cover_of("examples/zebra.ein"),
         cover_of("examples/zebra2.ein"),
     );
-    assert!(one.complete() && in_exactly_two(&one));
-    assert_eq!(one.groups.len(), 36);
+    assert!(one.complete() && in_exactly_two(&five) && !in_exactly_two(&one));
+    assert_eq!((one.n(), five.n()), (112, 56));
     assert_eq!(placements(&one), placements(&five));
-    // Half of them are no line of the one relation: a house's line there
-    // holds every kind of attribute.
+    let blown: usize = five.groups.iter().map(|g| 1 << g.len()).sum();
+    assert_eq!((one.groups.len(), blown), (352, 352));
+    // A group is a line of the one relation only where it is written all one
+    // way round, 72 of them, and of those 38 are: a house's line there holds
+    // every kind of attribute.
+    let one_way: BTreeSet<Set> = groups_of(&one)
+        .into_iter()
+        .filter(|g| {
+            let ways: BTreeSet<bool> = g
+                .iter()
+                .map(|t| parts(t)[1].starts_with("House-"))
+                .collect();
+            ways.len() == 1
+        })
+        .collect();
+    assert_eq!(one_way.len(), 72);
     let (groups, lines) = (groups_of(&one), lines(&one));
-    assert_eq!(groups.intersection(&lines).count(), 19);
+    assert!(groups.intersection(&lines).all(|g| one_way.contains(g)));
+    assert_eq!(groups.intersection(&lines).count(), 38);
 }
 
 /// **One clue apart.** `zebra2-minus-15.ein` leaves 96 candidates and none
@@ -712,7 +744,12 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     let (mut read, mut with_groups, mut groups, mut overlapping) = (0usize, 0usize, 0usize, 0);
     let (mut in_none, mut flagged, mut steps) = (0usize, 0usize, 0u64);
     let (mut instances, mut owed, mut grids, mut bijections) = (0usize, 0usize, 0usize, 0usize);
-    for h in results.into_iter().flatten() {
+    let mut longest = String::new();
+    for (file, got) in files.iter().zip(results) {
+        let Some(h) = got else { continue };
+        if h.steps.max(h.root_steps) > steps {
+            longest = rel_of(file);
+        }
         instances += h.instances;
         owed += h.owed_groups;
         grids += h.grids;
@@ -735,12 +772,14 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     eprintln!(
         "cover: {read} programs read, {with_groups} with a group ({groups} groups), \
          {overlapping} with a candidate in two or more, {in_none} with a candidate in none, \
-         {flagged} flagged; the longest enumeration {steps} calls of {}; exactly one: \
-         {instances} instances root owes, {owed} owed groups, {grids} grids, {bijections} of \
-         them bijections",
+         {flagged} flagged; the longest enumeration {steps} calls of {}, {longest}'s; exactly \
+         one: {instances} instances root owes, {owed} owed groups, {grids} grids, {bijections} \
+         of them bijections",
         structure::CLIQUE_STEPS
     );
-    // Not vacuous, and nowhere near the bound.
+    // Not vacuous, and well inside the bound: the longest enumeration is of
+    // the maximal cliques of root's graph on the one-relation zebra, every
+    // placement in both orientations, and is under a quarter of it.
     assert!(read >= 300, "only {read} programs read");
     assert!(
         with_groups >= 40,
@@ -751,7 +790,10 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
         "only {overlapping} with overlapping groups"
     );
     assert!(flagged >= 10, "only {flagged} flagged programs read");
-    assert!(steps * 16 < structure::CLIQUE_STEPS, "{steps} calls");
+    assert!(
+        steps * 4 < structure::CLIQUE_STEPS,
+        "{longest}: {steps} calls"
+    );
     assert!(instances >= 150, "only {instances} instances root owes");
     assert!(owed >= 60, "only {owed} owed groups");
     assert!(grids >= 20, "only {grids} grids");

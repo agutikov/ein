@@ -263,7 +263,8 @@ fn a_program_that_states_no_obligation_keeps_its_word() {
 /// obligated relation can't be `__closed__` also): the closed-and-owing twin
 /// of `02_closed_and_satisfied.ein` is `examples/ein-bugs/closed-and-owing.ein`, the
 /// refusal's fixture, which the mechanisms check refuses with one line naming
-/// the obligation, its activator, the closure and the rule that derives it;
+/// the `open` fact root holds, the obligation that writes it, the closure and
+/// the rule that derives it (Q-M1f.578);
 /// and `02` keeps the closure, drops the obligation, and is `Solution` by
 /// exhaustion.
 #[test]
@@ -280,8 +281,8 @@ fn the_closed_and_owing_corner_is_a_conflict() {
     assert_eq!(report.conflicts.len(), 1, "{:?}", report.conflicts);
     let line = &report.conflicts[0];
     for want in [
-        "obligation 'total-owed', activated by (total-owed r is-a)",
-        "owes r, and (__closed__ r), which rule 'infer-closure' derives, says r is closed",
+        "root holds (open r), which obligation 'total-owed' writes",
+        "and (__closed__ r), which rule 'infer-closure' derives, says r is closed",
     ] {
         assert!(line.contains(want), "{line:?} does not say {want:?}");
     }

@@ -1,18 +1,20 @@
-//! **A conflict between the hypothesis mechanisms is refused, on every
-//! command** (Q-M1f.245, Q-M1f.242;
+//! **A declaration of the blind enumerator that disagrees with the `open`
+//! facts root holds is refused, on every command** (Q-M1f.578, Q-M1f.245,
+//! Q-M1f.242;
 //! [`07-diagnostics.md` § 2.26](../../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)).
 //!
-//! Five declarations steer what a commitment may be about: an hrule (H), an
-//! obligation (O), `:hypothesis-relations` (HR), `:no-hypothesis` (NH) and a
-//! closure `(__closed__ R)` (C). Read on root's fixpoint, since a closure and
-//! an obligation's activator may be derived
-//! ([`ein_infer::mechanisms::check`]), each pair is a **conflict** where its
-//! two declarations say opposite things of one relation, refused at load with
-//! one line per conflict, at the command's load-error exit; a **dead** list
-//! (one an hrule makes filter nothing) or a **redundant** name is one `note:`
-//! line on stderr and moves nothing; H + O, the Zebra puzzle's form, is
-//! silent. Held here on witnesses of every pair, on a word problem that
-//! writes two conflicts at once, and on the corpus's fixture of the refusal.
+//! An hrule (H) and an activated obligation (O) write `open` facts at root;
+//! `:hypothesis-relations` (HR), `:no-hypothesis` (NH) and a closure
+//! `(__closed__ R)` (C) configure the blind enumerator, which does not run
+//! beside them. Read on root's fixpoint, since a closure and an obligation's
+//! activator may be derived ([`ein_infer::mechanisms::check`]), a list or a
+//! closure that disagrees with root's `open` facts is a **conflict**, refused
+//! at load with one line per relation, at the command's load-error exit, and
+//! so are two lists that contradict each other; a **redundant** name, where
+//! root holds no `open` fact, is one `note:` line on stderr and moves nothing;
+//! H + O, the Zebra puzzle's form, is silent, and so is a list that agrees.
+//! Held here on witnesses of every pair, on a word problem that writes two
+//! conflicts at once, and on the corpus's fixture of the refusal.
 
 use std::path::Path;
 use std::process::Command;
@@ -64,48 +66,46 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
     vec![
         (
             "h-hr",
-            program(&[DECL, GUESS, h, " :hypothesis-relations (near))\n"]),
-            "solve: its :hypothesis-relations leaves out at, and hrule 'guess' (at Color House) \
-             proposes facts of at — no list filters an hrule's candidates",
+            program(&[DECL, GUESS, h, " :hypothesis-relations ())\n"]),
+            "solve: its :hypothesis-relations leaves out at, and root holds (open (at ",
         ),
         (
             "h-nh",
             program(&[DECL, GUESS, h, " :no-hypothesis (at))\n"]),
-            "solve: its :no-hypothesis names at, and hrule 'guess' (at Color House) proposes \
-             facts of at — no list filters an hrule's candidates",
+            "solve: its :no-hypothesis names at, and root holds (open (at ",
         ),
         (
             "h-c",
             program(&[DECL, GUESS, "(__closed__ at)\n", h, ")\n"]),
-            "hrule 'guess' (at Color House) proposes facts of at, and (__closed__ at), written at ",
+            "root holds (open (at ",
         ),
         (
             "h-c-derived",
             program(&[DECL, GUESS, CLOSE_AT, h, ")\n"]),
-            "hrule 'guess' (at Color House) proposes facts of at, and (__closed__ at), which rule \
-             'close-at' derives, says at is closed",
+            "which hrule 'guess' writes, and (__closed__ at), which rule 'close-at' derives, says \
+             at is closed",
         ),
         (
             "o-hr",
-            program(&[OWED, DECL, OWE_AT, "(solve :hypothesis-relations (near))\n"]),
-            "solve: its :hypothesis-relations leaves out at, and obligation 'total-owed', \
-             activated by (total-owed at is-a), written at ",
+            program(&[OWED, DECL, OWE_AT, "(solve :hypothesis-relations (near at))\n"]),
+            "solve: its :hypothesis-relations names near, and root holds no open fact of near",
         ),
         (
             "o-hr-empty",
             program(&[OWED, DECL, OWE_AT, "(solve :hypothesis-relations ())\n"]),
-            "solve: its :hypothesis-relations leaves out at, and obligation 'total-owed'",
+            "solve: its :hypothesis-relations leaves out at, and root holds (open at)",
         ),
         (
             "o-nh",
             program(&[OWED, DECL, OWE_AT, "(solve :no-hypothesis (at))\n"]),
-            "solve: its :no-hypothesis names at, and obligation 'total-owed', activated by \
-             (total-owed at is-a), written at ",
+            "solve: its :no-hypothesis names at, and root holds (open at), which obligation \
+             'total-owed' writes",
         ),
         (
             "o-c",
             program(&[OWED, DECL, OWE_AT, "(__closed__ at)\n(solve)\n"]),
-            "obligation 'total-owed', activated by (total-owed at is-a), written at ",
+            "root holds (open at), which obligation 'total-owed' writes, and (__closed__ at), \
+             written at ",
         ),
         (
             "o-c-derived-beside-an-hrule",
@@ -117,7 +117,25 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
                 CLOSE_AT,
                 "(solve :hrules (guess (near House House)))\n",
             ]),
-            "obligation 'total-owed', activated by (total-owed at is-a), written at ",
+            "root holds (open at), which obligation 'total-owed' writes, and (__closed__ at), \
+             which rule 'close-at' derives, says at is closed",
+        ),
+        (
+            "o-nh-beside-an-hrule",
+            program(&[
+                OWED,
+                DECL,
+                GUESS,
+                OWE_AT,
+                "(solve :hrules (guess (near House House)) :no-hypothesis (at))\n",
+            ]),
+            "solve: its :no-hypothesis names at, and root holds (open at), which obligation \
+             'total-owed' writes",
+        ),
+        (
+            "h-hr-names-more",
+            program(&[DECL, GUESS, h, " :hypothesis-relations (at near))\n"]),
+            "solve: its :hypothesis-relations names near, and root holds no open fact of near",
         ),
         (
             "hr-nh",
@@ -142,8 +160,6 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
 /// empty note is a program that prints none.
 fn accepted() -> Vec<(&'static str, String, String)> {
     let h = "(solve :hrules (guess (at Color House))";
-    let dead = "filters no candidate — the program declares hrule 'guess', and no list \
-                filters an hrule's candidates";
     vec![
         // H + O, the zebra form: silent.
         ("h-o", program(&[OWED, DECL, GUESS, OWE_AT, h, ")\n"]), ""),
@@ -153,6 +169,7 @@ fn accepted() -> Vec<(&'static str, String, String)> {
             program(&[DECL, GUESS, "(__closed__ near)\n", h, ")\n"]),
             "",
         ),
+        // A list that agrees with root's `open` facts says nothing.
         (
             "o-hr-listed",
             program(&[OWED, DECL, OWE_AT, "(solve :hypothesis-relations (at))\n"]),
@@ -177,31 +194,21 @@ fn accepted() -> Vec<(&'static str, String, String)> {
             "",
         ),
         (
-            "h-hr-dead",
+            "h-hr-agrees",
             program(&[DECL, GUESS, h, " :hypothesis-relations (at))\n"]),
-            // `dead` after `solve: its :hypothesis-relations `
-            "solve: its :hypothesis-relations ",
+            "",
         ),
         (
-            "h-nh-dead",
+            "h-nh-other",
             program(&[DECL, GUESS, h, " :no-hypothesis (near))\n"]),
-            "solve: its :no-hypothesis ",
+            "",
         ),
+        // An hrule no clause activates writes nothing: the list is the blind
+        // enumerator's.
         (
-            "h-inactive-nh-dead",
+            "h-inactive-nh",
             program(&[DECL, GUESS, "(solve :no-hypothesis (near))\n"]),
-            "solve: its :no-hypothesis ",
-        ),
-        (
-            "o-nh-beside-an-hrule-dead",
-            program(&[
-                OWED,
-                DECL,
-                GUESS,
-                OWE_AT,
-                "(solve :hrules (guess (near House House)) :no-hypothesis (at))\n",
-            ]),
-            "solve: its :no-hypothesis ",
+            "",
         ),
         (
             "hr-nh-redundant",
@@ -219,17 +226,7 @@ fn accepted() -> Vec<(&'static str, String, String)> {
         ),
     ]
     .into_iter()
-    .map(|(shape, text, note): (&str, String, &str)| {
-        // A dead list's note: the list, then why it filters nothing.
-        let note = if note.ends_with("its :hypothesis-relations ")
-            || note.ends_with("its :no-hypothesis ")
-        {
-            format!("{note}{dead}")
-        } else {
-            note.to_string()
-        };
-        (shape, text, note)
-    })
+    .map(|(shape, text, note): (&str, String, &str)| (shape, text, note.to_string()))
     .collect()
 }
 
@@ -439,12 +436,12 @@ fn a_word_problem_is_refused_for_its_two_conflicts() {
         std::fs::write(&file, text).expect("written");
         let (b, lines) = refused_everywhere(
             &file,
-            "solve: its :no-hypothesis names has, and hrule 'maybe-apples' proposes facts of has",
+            "solve: its :no-hypothesis names has, and root holds (open (has ",
             scratch.path(),
         );
         bad.extend(b.into_iter().map(|b| format!("{stem}: {b}")));
-        let second = "hrule 'maybe-apples' proposes facts of has, and (__closed__ has), which rule \
-                      'words' derives, says has is closed";
+        let second = "which hrule 'maybe-apples' writes, and (__closed__ has), which rule 'words' \
+                      derives, says has is closed";
         if lines.len() != 2 || !lines[1].contains(second) {
             bad.push(format!(
                 "{stem}: {lines:?}, want two lines, the second {second:?}"
@@ -461,8 +458,8 @@ fn the_corpus_fixture_is_refused_on_every_command() {
     let scratch = Scratch::new("ein-mechanism-fixture");
     let (bad, lines) = refused_everywhere(
         Path::new("examples/ein-bugs/closed-and-owing.ein"),
-        "obligation 'total-owed', activated by (total-owed r is-a), written at \
-         examples/ein-bugs/closed-and-owing.ein:",
+        "root holds (open r), which obligation 'total-owed' writes, and (__closed__ r), which \
+         rule 'infer-closure' derives, says r is closed",
         scratch.path(),
     );
     let mut bad = bad;
@@ -535,8 +532,7 @@ fn bare(parts: &[&str]) -> String {
 
 /// **What `:no-search` makes dead is one note each, and beside an obligation
 /// or a closure it is silent**: an hrule *proposes no candidate*, a list
-/// *filters no candidate*, in place of the notes the check prints beside an
-/// hrule.
+/// *filters no candidate*.
 /// Each answers R as root alone: {∅}, or empty where root owes.
 #[test]
 fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead() {
@@ -605,7 +601,7 @@ fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead
             "in R",
         ),
         (
-            "h-nh-dead",
+            "h-nh",
             bare(&[
                 DECL,
                 GUESS,

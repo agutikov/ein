@@ -37,7 +37,21 @@
 //!
 //! A [`Site`] is a non-monotone read, or a rule whose **activator** relation
 //! is in `D`: a commitment can then compile plans root never had, which this
-//! check cannot see.
+//! check cannot see. Three more read the hypotheses, each a site wherever it
+//! stands:
+//!
+//! - **a rule whose `:match` reads `open`** (Q-M1f.569): a fork drops every
+//!   `open` fact and keeps what a rule concluded from one, so such a program
+//!   is not monotone, whatever it reads;
+//! - **a rule that concludes `(open F)` and reads a relation in `D` at even
+//!   depth** (Q-M1f.574): a state above root can then hold a hypothesis root
+//!   does not, which no node of root's lattice supposes. The depth is an
+//!   obligation's trigger's: growing what is read at even depth adds a match,
+//!   and under one `absent` takes one away, so no hypothesis is first held
+//!   above root there;
+//! - **an obligation whose guard reads a relation in `D`** beside its witness
+//!   (Q-M1f.579): it writes its guard's candidates at root, and a value the
+//!   guard gains at a node is in no candidate.
 //!
 //! ### Which property it is about
 //!
@@ -186,6 +200,15 @@ pub enum SiteKind {
     /// The rule's activator relation is in `D`, so a node can compile a plan
     /// of this rule that root never had, and nothing here reads it.
     Activator,
+    /// A rule's `:match` reads `open`, at any depth (Q-M1f.569).
+    OpenRead,
+    /// A rule that concludes `(open F)` reads a relation in `D` at even
+    /// depth (Q-M1f.574): a hypothesis can be first held above
+    /// root.
+    Hypothesis,
+    /// An obligation's guard reads a relation in `D` beside its witness
+    /// (Q-M1f.579): what would pay a debt can grow above root.
+    ObligationGuard,
 }
 
 impl SiteKind {
@@ -194,6 +217,9 @@ impl SiteKind {
             SiteKind::Absent => "absent",
             SiteKind::ObligationTrigger => "obligation-trigger",
             SiteKind::Activator => "activator",
+            SiteKind::OpenRead => "open-read",
+            SiteKind::Hypothesis => "hypothesis",
+            SiteKind::ObligationGuard => "obligation-guard",
         }
     }
 }
@@ -299,12 +325,28 @@ pub struct Monotonicity {
     /// fixpoint may still depend on the boundary's admission order and need not
     /// be unique. A diagnostic and not a refusal: the answer stands.
     pub negative_cycles: Vec<crate::strata::Cycle>,
+    /// **Found in flight** (Q-M1f.574): the first hypothesis a state the run
+    /// built held that root does not, as the fact's text. A program the run
+    /// finds so is not monotone, whatever its sites: the answer stands, and
+    /// nothing is claimed of it. `None` before a run, and after one that
+    /// built no such state.
+    pub in_flight: Option<String>,
 }
 
 impl Monotonicity {
-    /// No site: the module docs' theorem applies.
+    /// No site, and nothing found in flight: the module docs' theorem
+    /// applies.
     pub fn is_monotone(&self) -> bool {
-        self.sites.is_empty()
+        self.sites.is_empty() && self.in_flight.is_none()
+    }
+
+    /// The same verdict, with what the run found in flight, if anything
+    /// (`crate::open::Writers::first_above`).
+    pub fn after_run(mut self, writers: Option<&crate::open::Shared>) -> Monotonicity {
+        if let Some(f) = writers.and_then(|w| w.first_above()) {
+            self.in_flight.get_or_insert_with(|| f.to_string());
+        }
+        self
     }
 
     /// Is `rel` in `D` — a relation some commitment can change? A relation
@@ -349,12 +391,16 @@ pub fn plans_of(memo: &SharedMemo) -> Vec<Arc<Plan>> {
 ///
 /// `kb` supplies the program's registries — which rules are saturation rules,
 /// which are obligations, which have activators. A plan of an `hrule`, or of
-/// anything else the memo holds, is not read: an hrule proposes, and what it
-/// proposes is already `H`.
+/// anything else the memo holds, is not read as a saturation or an
+/// obligation plan: an hrule proposes, and what it proposes is already `H`.
+/// `hypotheses` are the plans of the rules that conclude `(open F)`, hrules
+/// among them ([`crate::hrule::Hrules`]), which no memo holds: each is read
+/// for the two sites of a hypothesis, a read of `open` and a read of `D`.
 pub fn classify(
     kb: &Kb,
     terms: &Terms,
     plans: &[Arc<Plan>],
+    hypotheses: &[Arc<Plan>],
     hypothesised: &FxHashSet<Symbol>,
 ) -> Monotonicity {
     let program = kb.program();
@@ -426,9 +472,68 @@ pub fn classify(
             }
         }
     }
+    // A read of `open`, in any rule's `:match` (Q-M1f.569): a site wherever
+    // it stands.
+    let open = terms.kernel.open;
+    for plan in kinded.iter().map(|(_, p)| *p).chain(hypotheses.iter().map(|p| &**p)) {
+        for (rel, depth) in reads_of(plan, terms) {
+            if rel.name == open {
+                out.sites.push(Site {
+                    rule: plan.rule,
+                    activator: plan.activator_args.clone(),
+                    kind: SiteKind::OpenRead,
+                    relation: rel,
+                    depth,
+                });
+            }
+        }
+    }
+    // A rule that concludes `(open F)` reading what a commitment can change,
+    // at the depth where growing it adds a match (Q-M1f.574): its
+    // hypotheses can grow above root.
+    for plan in hypotheses {
+        for (rel, depth) in reads_of(plan, terms) {
+            if rel.name != open && depth.is_multiple_of(2) && in_set(&dynamic, rel, terms) {
+                out.sites.push(Site {
+                    rule: plan.rule,
+                    activator: plan.activator_args.clone(),
+                    kind: SiteKind::Hypothesis,
+                    relation: rel,
+                    depth,
+                });
+            }
+        }
+    }
+    // An obligation's guard reading what a commitment can change, beside its
+    // witness (Q-M1f.579): what would pay a debt can grow above root.
+    for (kind, plan) in &kinded {
+        if *kind != PlanKind::Obligation {
+            continue;
+        }
+        let arc = plans.iter().find(|p| std::ptr::eq(&***p, *plan));
+        let Some(reads) = arc.and_then(|p| crate::oblgen::guard_reads(p, terms)) else {
+            continue;
+        };
+        for rel in reads {
+            if in_set(&dynamic, rel, terms) {
+                out.sites.push(Site {
+                    rule: plan.rule,
+                    activator: plan.activator_args.clone(),
+                    kind: SiteKind::ObligationGuard,
+                    relation: rel,
+                    depth: 1,
+                });
+            }
+        }
+    }
     // Activator sites are about **rules**, not plans: the plan a commitment
     // would compile is exactly the one the memo does not hold.
-    for rule in program.rules.values().chain(program.obligations.values()) {
+    for rule in program
+        .rules
+        .values()
+        .chain(program.obligations.values())
+        .chain(program.hypotheses.values())
+    {
         if !rule.params.is_empty() && in_set(&dynamic, Rel::pos(rule.name), terms) {
             out.sites.push(Site {
                 rule: rule.name,
@@ -476,34 +581,6 @@ pub fn classify(
     // program: the graph is the one the detector restricts to `D`.
     out.negative_cycles = crate::strata::graph(kb, terms, plans).cycles;
     out
-}
-
-/// `D` over `plans` from the seed `hypothesised`: the relations a commitment
-/// to facts of those relations can change — the seed, closed under *a
-/// saturation plan that reads a relation in `D` asserts into `D`*.
-///
-/// The one computation of `D`. [`classify`] seeds it with `H`'s relations;
-/// the obligations rung seeds it with the relations it would propose, and
-/// declines on a guard that scans one (`crate::oblgen::generate`), before
-/// `H` exists to seed [`classify`] with.
-pub(crate) fn dynamic(
-    kb: &Kb,
-    terms: &Terms,
-    plans: &[Arc<Plan>],
-    hypothesised: impl IntoIterator<Item = Symbol>,
-) -> FxHashSet<Rel> {
-    let program = kb.program();
-    let saturation: Vec<(&Plan, Vec<(Rel, u32)>)> = plans
-        .iter()
-        .filter(|p| program.rules.contains(p.rule))
-        .map(|p| (&**p, reads_of(p, terms)))
-        .collect();
-    let saturation: Vec<(&Plan, &[(Rel, u32)])> =
-        saturation.iter().map(|(p, r)| (*p, r.as_slice())).collect();
-    // determinism-ok: the seed of a set, closed to a fixpoint; nothing reads
-    // its order.
-    let seed = hypothesised.into_iter().map(Rel::pos);
-    close(seed, &saturation, &[], terms)
 }
 
 /// `D` followed through the rules root has no plan of: the extendable

@@ -712,6 +712,9 @@ pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<Dumped, S
             .map_err(|e| crate::common::saturate_error_line(&e))?
             .is_some()
         {}
+        // Root's `open` facts, written at its fixpoint as every command writes
+        // them (Q-M1f.566).
+        root_open(&mut s, &mut sat)?;
     }
     let node =
         ein_infer::region::saved_node(&mut kb, &mut terms, &ast).map_err(|e| e.to_string())?;
@@ -728,6 +731,25 @@ pub fn dump_section(path: &Path, load: &ein_ir::LoadOptions) -> Result<Dumped, S
         facts: facts_section(&terms, kb),
         saved,
     })
+}
+
+/// Root's `open` facts at the fixpoint `sat` reached, narrating nothing:
+/// what the run's root holds, listed and counted with its facts.
+fn root_open(s: &mut Session<'_>, sat: &mut Saturator) -> Result<(), String> {
+    let mut silent = Events::off();
+    let mut q = Session {
+        kb: &mut *s.kb,
+        terms: &mut *s.terms,
+        ast: s.ast,
+        events: &mut silent,
+        memo: s.memo.clone(),
+    };
+    let mut stats = ein_infer::hypgen::HypGenStats::default();
+    ein_infer::open::at_root(&mut q, sat, &mut stats, &mut |_| {
+        std::ops::ControlFlow::Continue(())
+    })
+    .map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 /// The per-rule tally's key: a rule name and whether the firing was
@@ -930,6 +952,11 @@ fn bench(
             firings.push(firing.clone());
             sat.set_last_firing(firing);
         }
+        // Root's `open` facts, written at its fixpoint as every command writes
+        // them (Q-M1f.566); past the step limit there is no fixpoint.
+        if limit_msg.is_none() {
+            root_open(&mut s, &mut sat)?;
+        }
         sat_engine = Some(std::mem::replace(&mut sat.engine, Engine::new()));
     }
     if let Some(msg) = &limit_msg {
@@ -966,16 +993,23 @@ fn bench(
     let node = match committed {
         Some(n) if limit_msg.is_none() => {
             let t = Instant::now();
-            let root_facts = kb.facts().count();
             let node = ein_infer::region::saved_node(&mut kb, &mut terms, &ast)
                 .map_err(|e| e.to_string())?
                 .ok_or("a saved file's (commit …) names no node")?;
+            // What saturation built beyond root: a node holds no `open` fact
+            // of root's, and its own are the pass's (Q-M1f.566).
+            let open = terms.kernel.open;
+            let beyond = node
+                .kb
+                .facts()
+                .filter(|&f| !kb.contains(f) && terms.facts.rel(f) != open)
+                .count();
             println!();
             println!(
                 "commit:   {} ms  ({} candidates of H committed, {} facts beyond root)",
                 ms(t),
                 n,
-                node.kb.facts().count() - root_facts
+                beyond
             );
             Some(node)
         }

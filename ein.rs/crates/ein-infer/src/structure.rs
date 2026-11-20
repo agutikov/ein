@@ -1643,9 +1643,11 @@ fn theory_in(
         .iter()
         .map(|c| subject(terms, &pairs, c.fact))
         .collect();
+    // The program's own writers built H: its rules that conclude a
+    // hypothesis, its obligations, or the two together (Q-M1f.570).
     let declared = matches!(
         read.rung,
-        crate::oblgen::Mode::Hrules | crate::oblgen::Mode::Obligations
+        crate::oblgen::Mode::Hrules | crate::oblgen::Mode::Obligations | crate::oblgen::Mode::Union
     );
     let generator_reads = {
         // The generator's readers take a session, and read root through
@@ -1662,14 +1664,22 @@ fn theory_in(
         if declared {
             hypothesised.extend(crate::hypgen::eligible_relations(&mut s)?);
         }
-        match read.rung {
-            crate::oblgen::Mode::Hrules => crate::hrule::Hrules::new(&mut s)?
+        let rules = |s: &mut crate::saturator::Session<'_>| -> Result<FxHashSet<Symbol>, SolveError> {
+            Ok(crate::hrule::Hrules::new(s)?
                 .plans()
                 .iter()
                 .flat_map(|p| crate::monotone::reads_of(p, s.terms))
                 .map(|(r, _)| r.name)
-                .collect(),
+                .collect())
+        };
+        match read.rung {
+            crate::oblgen::Mode::Hrules => rules(&mut s)?,
             crate::oblgen::Mode::Obligations => read.obligation_reads,
+            crate::oblgen::Mode::Union => {
+                let mut both = rules(&mut s)?;
+                both.extend(read.obligation_reads);
+                both
+            }
             _ => FxHashSet::default(),
         }
     };
@@ -2063,8 +2073,9 @@ fn universe_alone(sp: &Space<'_>) -> PairLayer {
 /// the facts a file writes it drops **(a) a fact of a candidates' relation**,
 /// stated or denied ([`Stated::hypothesised`]): a given. Of the others:
 ///
-/// - where **the program's own rung built `H`** ([`Stated::declared`]), the
-///   relations that rung reads are what the universe is made of, and a fact
+/// - where **the program's own writers built `H`** ([`Stated::declared`]),
+///   its rules that conclude a hypothesis, its obligations or both, the
+///   relations they read are what the universe is made of, and a fact
 ///   of one is kept ([`Stated::generator_reads`]): it says what kind of
 ///   thing an object is. **(b) Every other fact that names one of the
 ///   candidates' objects** ([`Stated::objects`]) is dropped: it says
@@ -2092,7 +2103,7 @@ pub fn small_kb(p: &Stated<'_>, fact: FactId) -> Verdict {
     }
     if p.declared {
         if p.generator_reads.contains(&rel) {
-            return Verdict::theory("a fact of a relation the rung that built H reads");
+            return Verdict::theory("a fact of a relation the writers that built H read");
         }
         return Verdict::puzzle("(b) names one of the candidates' objects");
     }

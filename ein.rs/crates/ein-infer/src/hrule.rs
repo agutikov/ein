@@ -1,19 +1,25 @@
-//! Rule-driven hypothesis generation — `(hrule …)`.
+//! The rules that conclude a hypothesis — `(open F)` — and `(hrule …)`.
 //!
-//! An hrule is a rule by shape whose *firing yields a candidate hypothesis*
-//! instead of a derived fact: the puzzle declares which hypotheses are worth
-//! trying rather than leaving it all to the blind combinatorial enumerator.
+//! **A rule that concludes `(open F)`**, `F` a fact or a variable its
+//! `:match` binds to one, states a hypothesis (Q-M1f.566, Q-M1f.573): the
+//! puzzle says which facts are worth supposing rather than leaving it all to
+//! the blind combinatorial enumerator. It is activated as any rule is, by a
+//! fact of its name ([`crate::compile::activators_for`]), and the facts it
+//! concludes beside its `(open …)` conjuncts are an ordinary rule's, which
+//! the saturator fires (`ein_core::Program::hypotheses`).
 //!
-//! Because hrules live in their own registry, `compile_all` never walks them —
-//! **the saturator never sees an hrule**.
-//! [`crate::hypgen`] is the sole consumer: each `:match` over the KB yields a
-//! binding, and [`crate::firing::build_fact`] over the `:assert` template
-//! becomes a candidate routed through the ordinary filter pipeline.
+//! **An hrule is read as such a rule**: `(hrule guess (?R ?T) :match M
+//! :assert F)` is the rule that concludes `(open F)`, activated by the
+//! activators its `(solve … :hrules (guess (a b) …))` clause writes, which
+//! are not facts of the state. A parameter-less hrule needs none.
 //!
-//! A generic hrule — `(hrule guess (?rel ?type) …)` — takes its activators
-//! from the `(solve … :hrules (NAME (a b) …))` keywords rather than from
-//! puzzle state, because an hrule activator *steers the search*. A
-//! parameter-less hrule needs none.
+//! Both live outside the saturator's registry, so `compile_all` never walks
+//! them: **the saturator never fires the `(open …)` a rule concludes**. A fork
+//! drops every `open` fact, so a rule that concludes one is read at every
+//! state by the pass that writes a state's `open` facts at its fixpoint
+//! ([`crate::open`], Q-M1f.569), and at root its hypotheses are $H$'s
+//! ([`crate::hypgen`]): each `:match` over the KB yields a binding, and
+//! [`crate::firing::build_fact`] over the hypothesis's template is `F`.
 
 use std::ops::ControlFlow;
 use std::sync::Arc;
@@ -29,15 +35,22 @@ use crate::match_::Matcher;
 use crate::plan::{Plan, Slot};
 use crate::saturator::Session;
 
-/// The compiled hrule plans — built once, reused per generation pass.
+/// The compiled plans of the rules that conclude a hypothesis — built once,
+/// reused per generation pass and per state.
 pub struct Hrules {
     plans: Vec<Arc<Plan>>,
+    /// Per plan: whether it is a rule of `ein_core::Program::hypotheses`,
+    /// whose hypotheses are its `(open F)` templates, rather than an hrule,
+    /// whose `:assert` is `F`.
+    opened: Vec<bool>,
 }
 
 impl Hrules {
     /// Compile one plan per parameter-less hrule, and one per `:hrules`
-    /// activator of a generic one. With no matching activator a generic hrule
-    /// contributes nothing.
+    /// activator of a generic one; then one per activator the state holds of
+    /// each rule that concludes `(open F)`, one alone for such a rule with no
+    /// parameters. With no matching activator a generic rule contributes
+    /// nothing.
     pub fn new(s: &mut Session<'_>) -> Result<Hrules, CompileError> {
         let activators = hrule_activators(s.kb, s.terms, s.ast);
         let hrules: Vec<Rule> = s.kb.program().hrules.values().cloned().collect();
@@ -66,13 +79,33 @@ impl Hrules {
                 )?));
             }
         }
-        Ok(Hrules { plans })
+        let mut opened = vec![false; plans.len()];
+        // Compiled here, never into the memo: a rule that concludes facts
+        // beside its hypotheses has its saturation plan there under the same
+        // name, and the memo holds what a state's saturation compiled.
+        let rules: Vec<Rule> = s.kb.program().hypotheses.values().cloned().collect();
+        for rule in &rules {
+            crate::compile::note_inert_activators(s.ast, s.terms, s.kb, rule);
+            for act in crate::compile::activators_for(s.kb, s.terms, rule) {
+                plans.push(Arc::new(crate::compile::compile_rule(
+                    s.ast, s.terms, rule, act,
+                )?));
+                opened.push(true);
+            }
+        }
+        Ok(Hrules { plans, opened })
+    }
+
+    /// No plan: no rule concludes a hypothesis at the state.
+    pub(crate) fn is_empty(&self) -> bool {
+        self.plans.is_empty()
     }
 
     /// The compiled plans, in the generator's order: one per hrule without
-    /// parameters and one per activator of one with them
-    /// ([`crate::mechanisms`] reads which hrule and activator each is).
-    pub(crate) fn plans(&self) -> &[Arc<Plan>] {
+    /// parameters and one per activator of one with them, then the rules
+    /// that conclude `(open F)` ([`crate::mechanisms`] reads which rule and
+    /// activator each is, and the static check what each reads).
+    pub fn plans(&self) -> &[Arc<Plan>] {
         &self.plans
     }
 
@@ -86,8 +119,48 @@ impl Hrules {
     ) -> rustc_hash::FxHashSet<ein_core::Symbol> {
         self.plans
             .iter()
-            .filter_map(|p| crate::compile::asserted_relation(p, terms))
+            .zip(&self.opened)
+            .flat_map(|(p, &opened)| {
+                if opened {
+                    hypotheses_of(p, terms)
+                        .into_iter()
+                        .filter_map(|x| match x {
+                            Slot::Nested { rel, .. } => Some(rel),
+                            _ => None,
+                        })
+                        .collect()
+                } else {
+                    crate::compile::asserted_relation(p, terms)
+                        .into_iter()
+                        .collect::<Vec<_>>()
+                }
+            })
             .collect()
+    }
+
+    /// Each plan with the relation of each hypothesis it states, in the
+    /// generator's order: an hrule's `:assert`'s, a rule's `(open F)`
+    /// conjuncts' where `F` is written as a fact, `None` where it is a
+    /// variable or no fact's template ([`crate::mechanisms`] reads it).
+    pub(crate) fn proposals(
+        &self,
+        terms: &ein_core::Terms,
+    ) -> Vec<(Arc<Plan>, Option<ein_core::Symbol>)> {
+        let mut out = Vec::new();
+        for (p, &opened) in self.plans.iter().zip(&self.opened) {
+            if opened {
+                for x in hypotheses_of(p, terms) {
+                    let rel = match x {
+                        Slot::Nested { rel, .. } => Some(rel),
+                        _ => None,
+                    };
+                    out.push((Arc::clone(p), rel));
+                }
+            } else {
+                out.push((Arc::clone(p), crate::compile::asserted_relation(p, terms)));
+            }
+        }
+        out
     }
 
     /// One candidate per hrule match against the KB.
@@ -111,6 +184,15 @@ impl Hrules {
         s: &mut Session<'_>,
         f: &mut dyn FnMut(&mut Session<'_>, FactId) -> ControlFlow<()>,
     ) -> ControlFlow<()> {
+        self.candidates_by(s, &mut |s, _, fact| f(s, fact))
+    }
+
+    /// [`Self::candidates`], each with the rule whose match gave it.
+    pub(crate) fn candidates_by(
+        &self,
+        s: &mut Session<'_>,
+        f: &mut dyn FnMut(&mut Session<'_>, Symbol, FactId) -> ControlFlow<()>,
+    ) -> ControlFlow<()> {
         type Envs = Vec<(Vec<Value>, Vec<crate::plan::Reg>)>;
         let mut matcher = Matcher::new();
         let mut matches = |s: &Session<'_>, plan: &Plan| -> Envs {
@@ -131,7 +213,33 @@ impl Hrules {
                 && crate::firing::computed(s.terms, plan, template).is_none())
             .then_some(template)
         };
-        for plan in self.plans.iter() {
+        for (plan, &opened) in self.plans.iter().zip(&self.opened) {
+            if opened {
+                // A rule's `(open F)` conjuncts: each is a hypothesis, `F` a
+                // fact's template or a variable its `:match` binds, which
+                // names no hypothesis where it holds a name.
+                let templates = hypotheses_of(plan, s.terms);
+                if templates.is_empty() {
+                    continue;
+                }
+                let envs = matches(s, plan);
+                for (regs, trail) in &envs {
+                    let env = Env {
+                        regs,
+                        trail,
+                        premises: &[],
+                    };
+                    for &x in &templates {
+                        if let Ok(Some(value)) =
+                            crate::firing::resolve(s.terms, s.ast, plan, env, x)
+                            && let Some(fact) = value.as_fact()
+                        {
+                            f(s, plan.rule, fact)?;
+                        }
+                    }
+                }
+                continue;
+            }
             let Some(template) = proposes(s, plan) else {
                 continue;
             };
@@ -143,7 +251,7 @@ impl Hrules {
                     premises: &[],
                 };
                 match build_fact(s.terms, s.ast, plan, env, template) {
-                    Ok(Some(fact)) => f(s, fact)?,
+                    Ok(Some(fact)) => f(s, plan.rule, fact)?,
                     // The negation of a name is no fact, and no hypothesis:
                     // `(not ?x)` with `?x` bound to a
                     // name the loader could not foresee.
@@ -164,6 +272,22 @@ impl Hrules {
         }
         ControlFlow::Continue(())
     }
+}
+
+/// What each `(open F)` conjunct of `plan`'s `:assert` states: `F`'s slot,
+/// a fact's template or a register, in the order written; none for an
+/// `(open R)`, which no plan of a rule that concludes a hypothesis holds.
+fn hypotheses_of(plan: &Plan, terms: &ein_core::Terms) -> Vec<Slot> {
+    plan.asserts
+        .iter()
+        .filter_map(|&t| match t {
+            Slot::Nested { rel, slots } if rel == terms.kernel.open && slots.len() == 1 => {
+                Some(plan.slots[slots.start as usize])
+            }
+            _ => None,
+        })
+        .filter(|x| matches!(x, Slot::Nested { .. } | Slot::Reg(_)))
+        .collect()
 }
 
 /// Activator argument-tuples per hrule name, read from the

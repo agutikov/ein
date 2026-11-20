@@ -1,5 +1,5 @@
 //! **Hypotheses from obligations, asserted**
-//! ([04-hypothesis-generation.md § 4](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt)).
+//! ([04-hypothesis-generation.md § 4](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-what-would-pay-a-debt)).
 //!
 //! [`obligation_reports.rs`](obligation_reports.rs)'s sibling.
 //! That suite checks what a quiescent state *says* it owes; this one checks
@@ -14,7 +14,7 @@
 //! pinned as a test would be a test of the fixtures' arithmetic rather than
 //! of the engine. The ladder these tests hold is [the page's].
 //!
-//! [the page's]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-ladder
+//! [the page's]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-union
 
 //!
 //! **It reads the routes** ([`ein_infer::explore`]). The ladder is what
@@ -177,23 +177,21 @@ fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
 
 // ── The ladder ─────────────────────────────────────────────────────
 
-/// **The dispatch, one file per rung.**
+/// **The dispatch, one file per mode.**
 ///
-/// `(hrule …)` presence is the switch — the override rung — and the two
-/// rungs below it are the ladder's. The fourth row is the one that keeps the
-/// corpus still: a program that declares no obligation rule narrates
-/// **nothing**, so its event stream carries no `rung` line.
+/// The obligations narrate a `rung` line wherever one is activated; written
+/// `open` facts beside them make it `union` (Q-M1f.570). The last row is the
+/// one that keeps the corpus still: a program that declares no obligation
+/// rule narrates **nothing**, so its event stream carries no `rung` line.
 #[test]
 fn the_ladder_dispatches_by_what_the_program_declares() {
     // (file, the modes its generation calls report)
     let (_dir, stuck) = stuck_program();
     let cases: [(&str, &[&str]); 6] = [
-        // Rung 1 — and it narrates nothing, exactly as rung 3 does, which is
-        // what keeps every pre-M1d stream byte-identical. The claim that this
-        // is an *override* rather than an absence of debt is the assertion
-        // below: `zebra2.ein` owes 36 at root and takes the hrule path anyway.
-        ("examples/zebra2.ein", &[]),
-        // the same puzzle with the hrule deleted: rung 2.
+        // An hrule beside the obligations: the union, which pays what root
+        // owes with the hrule's candidates, and is no stuck state.
+        ("examples/zebra2.ein", &["union"]),
+        // the same puzzle with the hrule deleted: the obligations alone.
         ("examples/zebra2-obligations.ein", &["obligations"]),
         // owes, and every candidate that would pay it is stored false. A
         // `:no-hypothesis` naming the relation it owes would be refused at
@@ -202,12 +200,12 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         // `(solve :no-search)`: no rung runs, and none narrates,
         // though root owes.
         ("tests/region/04_owing.ein", &[]),
-        // an obligation whose guard scans a relation the rung proposes.
-        (
-            "tests/stdlib/bijection/06_blind_enumeration.ein",
-            &["declined"],
-        ),
-        // no obligation rule at all — rung 3, and not a word about it.
+        // an obligation whose guard scans a relation it proposes: it does
+        // not step aside (Q-M1f.579); no obligation is activated here, and
+        // the blind enumerator runs.
+        ("tests/stdlib/bijection/06_blind_enumeration.ein", &[]),
+        // no obligation rule at all — the blind enumerator, and not a word
+        // about it.
         ("examples/branching/02_one_dead_one_alive.ein", &[]),
     ];
     for (rel, want) in cases {
@@ -217,9 +215,8 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         let want: BTreeSet<&str> = want.iter().copied().collect();
         assert_eq!(uniq, want, "{rel} took the wrong rung(s)");
     }
-    // The override, stated as the thing it overrides: zebra2 owes 36 slots at
-    // root — the same 36 `zebra2-obligations.ein` branches on — and its hrule
-    // is why nothing above reports a rung for it.
+    // zebra2 owes 36 slots at root — the same 36 `zebra2-obligations.ein`
+    // branches on — and its hrule's candidates pay them.
     assert_eq!(
         root_owes("examples/zebra2.ein"),
         36,

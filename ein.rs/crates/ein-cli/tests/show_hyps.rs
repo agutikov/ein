@@ -67,7 +67,7 @@ fn universe_row(file: &str) -> String {
 #[test]
 fn stdout_is_the_facts_and_stderr_one_note() {
     for (file, rung, more_than) in [
-        ("examples/zebra.ein", "hrules", 1),
+        ("examples/zebra.ein", "union", 1),
         ("examples/branching/06_lookahead_on.ein", "blind", 100),
     ] {
         let r = ein(&["show", "hyps", file]);

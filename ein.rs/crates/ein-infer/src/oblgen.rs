@@ -1,33 +1,28 @@
-//! The obligations rung — hypotheses from what a state still owes.
+//! The obligations — hypotheses from what a state still owes.
 //!
-//! [The ladder's second rung](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt).
+//! [What would pay a debt](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#4-the-obligations-what-would-pay-a-debt).
 //! [The pass over a quiescent state](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#when-an-obligation-is-read)
 //! makes it able to say what it owes; this makes the debt a
 //! *choice point*.
 //!
-//! ### The ladder
+//! ### The writers
 //!
-//! [03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)'s
-//! "hrule presence *is* the switch", grown one rung:
+//! H is the union of the hypotheses root holds (Q-M1f.570): what a rule that
+//! concludes `(open F)` writes, an hrule among them, what the program writes,
+//! and, where an obligation is activated, **what this module writes**: the
+//! facts that would pay what the state owes. The blind combinatorial
+//! enumerator writes only where none of them does (Q-M1f.576).
 //!
-//! | the program declares | hypotheses come from |
-//! |---|---|
-//! | any `(hrule …)` | the program's hrules — an override |
-//! | an obligation activated at the state, no hrule | **this module** |
-//! | neither | the blind combinatorial enumerator |
-//!
-//! The middle row is about what the program **states**, an obligation and its
-//! activator, not about what this state happens to owe: a discharged state
-//! under rung 2 proposes nothing and is therefore complete, which is what
-//! *complete means discharged* has to mean. Falling back to the blind
-//! enumerator whenever nothing was owed would put exhaustion back in charge of
-//! completeness and make the rung unreachable at exactly the states it exists
-//! to judge. Nor is it about what the program **loads**: an obligation rule
-//! is activated where the state holds its activator, and always where it has
-//! no parameters (`mechanisms::obligation_plans`, the one reading of
-//! an obligation). Every import brings its module whole, obligation rules
-//! among it, so a rule nothing activates takes no program off the blind
-//! enumerator.
+//! An obligation writes where it is activated, not where the state happens
+//! to owe: a discharged state proposes nothing from it and is therefore
+//! complete, which is what *complete means discharged* has to mean. Falling
+//! back to the blind enumerator whenever nothing was owed would put
+//! exhaustion back in charge of completeness. Nor is it about what the
+//! program **loads**: an obligation rule is activated where the state holds
+//! its activator, and always where it has no parameters
+//! (`mechanisms::obligation_plans`, the one reading of an obligation). Every
+//! import brings its module whole, obligation rules among it, so a rule
+//! nothing activates takes no program off the blind enumerator.
 //!
 //! ### The candidate set
 //!
@@ -38,7 +33,7 @@
 //! ([`crate::match_::Matcher::scan_without`]). Nothing restates the domain:
 //! the branch set is the guard, evaluated at this quiescence, which is
 //! [`08-obligations.md`](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#what-an-obligation-quantifies-over)
-//! C1 and C4 in one call.
+//! C1 in one call.
 //!
 //! ### What it proposes, and why it is the union
 //!
@@ -54,29 +49,23 @@
 //! scanned at root by this module's projection, and branches on one instance
 //! at a time where L5 or L9 licenses it.
 //!
-//! ### When it declines
+//! ### Where the payments can grow
 //!
-//! The domain contract's C4: a branch is jointly exhaustive only while the
-//! candidate set cannot grow underneath it, so an obligation whose guard scans
-//! a relation the rung itself proposes is **declined** — and a declined
-//! obligation takes the whole call back to the blind generator, which is what
-//! keeps completeness a property of the ladder rather than of the puzzle.
-//!
-//! **A relation grows by derivation too**. The candidates are the
-//! guard's scan over *root's* KB, so a domain value only a commitment derives
-//! would be in no candidate, and R would miss the model it licenses. So the
-//! rung also declines when an obligation's trigger,
-//! or a guard beside its witness step, reads a relation in `D`: the relations
-//! a commitment can change, seeded with what this rung proposes and closed
-//! under the saturation plans, which [`crate::monotone`] computes once for
-//! this and for its static check. On the fall-through (Q-M1e2.10) R is the
-//! blind enumerator's region, which
-//! on an untyped relation holds facts no rule refutes or requires. `D` is at
-//! relation grain, so a program that names the value at root declines too.
-//! Scoping is the other half: `:no-hypothesis`, `:hypothesis-relations` and
-//! `(__closed__ R)` bind here exactly as they bind the blind enumerator, and
-//! a state owing only relations they exclude is **stuck** — reported, never
-//! silently complete.
+//! A branch is jointly exhaustive only while the candidate set cannot grow
+//! underneath it. The candidates are the guard's scan over the state's KB,
+//! so a domain value only a commitment derives is in no candidate of root's.
+//! An obligation does not step aside for that (Q-M1f.579): it writes what its
+//! guard gives at the state, and where its trigger, or a guard beside its
+//! witness step, reads a relation in `D` — the relations a commitment can
+//! change, which [`crate::monotone`] computes — the static check flags the
+//! program (`obligation-trigger`, `obligation-guard`), and nothing is claimed
+//! of its answer. The two lists and a closure configure the blind enumerator
+//! (Q-M1f.578); one that disagrees with the `open` facts root holds is
+//! refused at load, so at root they scope nothing here. A state owing only
+//! what every candidate of which is refuted is **stuck** — reported, never
+//! silently complete. An obligation whose witness step does not resolve
+//! under an activator is **declined**: the call writes nothing, and the blind
+//! enumerator does not run beside an activated obligation.
 //!
 //! ### A debt root is not told of
 //!
@@ -101,10 +90,8 @@
 //! 3. a candidate that adds a relation adds it to the seed, so the two steps
 //!    are **repeated until they add nothing**.
 //!
-//! A later plan is held to every decline above together with the state's:
-//! a later debt whose guard scans a relation a commitment can change declines
-//! the call, and the blind enumerator builds H. Scoping binds it as it binds
-//! any plan. What the state owes is counted as before
+//! A later plan's guard is scanned as the state's are, and where it reads a
+//! relation a commitment can change the static check flags the program. What the state owes is counted as before
 //! ([`RungReport::owed`], `branches`, `candidates`); what a later debt adds
 //! counts apart ([`RungReport::later_debts`], `later_candidates`) and is
 //! emitted after it, so a call that reads no later debt emits what it emitted,
@@ -116,11 +103,12 @@
 //! holds a candidate for a debt nothing owes, which R keeps wherever nothing
 //! refutes it. *Under*: an activator its rule writes with a variable is not
 //! read, and the node that derives it owes what no candidate pays. It does
-//! not reach a generator of another kind either: an hrule whose `:match`
-//! reads what a commitment can change proposes at a node what it did not at
-//! root, and the hrule rung is as it was. The program stays one the static
-//! check flags, since the activator's relation is one a commitment can
-//! change; what a node is there is not this module's.
+//! not reach a writer of another kind either: a rule that concludes a
+//! hypothesis and reads what a commitment can change writes at a node what
+//! it did not at root, which is the static check's `hypothesis` site
+//! (Q-M1f.574). The program stays one the static check flags, since the
+//! activator's relation is one a commitment can change; what a node is there
+//! is not this module's.
 
 use std::ops::ControlFlow;
 use std::sync::Arc;
@@ -134,26 +122,31 @@ use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Slot, Span, Step};
 use crate::saturator::Session;
 
-/// Which rung of the ladder a generation call took.
+/// Which writers a generation call took H from.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub enum Mode {
     /// No obligation is activated at the state — the blind enumerator.
     #[default]
     Blind,
-    /// A `(hrule …)` overrides the ladder. Never narrated — rung 1 emits no
-    /// `rung` line.
+    /// Rules that conclude a hypothesis, an hrule among them, or the
+    /// program's `open` facts wrote, and no obligation is activated. Never
+    /// narrated: no `rung` line.
     Hrules,
-    /// The rung generated: every owed obligation's candidates, deduped.
+    /// The obligations wrote: every owed obligation's candidates, deduped.
     Obligations,
-    /// Owed, and nothing may be branched on — the ladder's dead end.
+    /// Owed, and nothing may be branched on: every candidate refuted.
     Stuck,
-    /// An obligation was declined (C4, over what the rung proposes or over
-    /// `D`, or a projection that will not resolve), so
-    /// the call fell through to the blind enumerator.
+    /// An obligation's witness step did not resolve under an activator: the
+    /// call wrote nothing, and the blind enumerator does not run beside an
+    /// activated obligation.
     Declined,
-    /// The program states `(solve :no-search)`: no rung ran,
-    /// and nothing was proposed. Never narrated, as rung 1 is not.
+    /// The program states `(solve :no-search)`: no writer ran,
+    /// and nothing was proposed. Never narrated.
     NoSearch,
+    /// Rules that conclude a hypothesis, or the program's `open` facts, wrote
+    /// beside an activated obligation, and the candidates are the union
+    /// (Q-M1f.570): the report's counts are the obligations'.
+    Union,
 }
 
 impl Mode {
@@ -165,6 +158,7 @@ impl Mode {
             Mode::Stuck => "stuck",
             Mode::Declined => "declined",
             Mode::NoSearch => "no-search",
+            Mode::Union => "union",
         }
     }
 }
@@ -172,7 +166,7 @@ impl Mode {
 /// What one generation call did with the obligations it found.
 ///
 /// Zero everywhere for a program that activates no obligation at the state:
-/// the ladder asks that before anything here runs.
+/// the generator asks that before anything here runs.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub struct RungReport {
     pub mode: Mode,
@@ -196,7 +190,7 @@ pub struct RungReport {
     /// only a model-set comparison can settle, and the zebra family is where
     /// it was settled.
     ///
-    /// [what the rung leaves]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#46-what-the-rung-leaves-to-saturation
+    /// [what the rung leaves]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#46-what-the-obligations-leave-to-saturation
     pub uncovered: u64,
     /// Debts this state does not owe and a commitment can bring: the
     /// activators of an obligation rule, not held here, that a rule's
@@ -429,6 +423,7 @@ pub(crate) fn generate(
     allowed: &Option<FxHashSet<Symbol>>,
     excluded: &FxHashSet<Symbol>,
     closed: &FxHashSet<Symbol>,
+    beside: bool,
     stats: &mut HypGenStats,
     emit: &mut dyn FnMut(&mut Session<'_>, &mut HypGenStats, FactId) -> ControlFlow<()>,
 ) -> Result<RungReport, CompileError> {
@@ -453,40 +448,11 @@ pub(crate) fn generate(
     let mut matcher = Matcher::new();
     let mut guards = Matcher::new();
     let uncovered = loop {
-        // C4 — the candidate set must not be able to grow underneath the
-        // branch, so no accepted obligation may scan a relation this rung
-        // proposes.
-        let owed_rels: FxHashSet<Symbol> = projs.iter().map(|p| p.relation).collect();
-        for p in &projs {
-            if let Some(rel) = scanned_relation_in(p, &owed_rels) {
-                let rel = s.terms.sym(rel).to_string();
-                let reason = format!("an obligation scans `{rel}`, which the rung itself proposes");
-                return Ok(declined(s, &reason));
-            }
-        }
-        // C4 over `D`: nor may it grow by derivation. A
-        // relation a commitment can change — `D`, seeded with what this rung
-        // proposes and closed under the saturation plans, `crate::monotone`'s
-        // one computation of it — can gain at a node a domain value root's
-        // scan never saw, and the candidate that value licenses is then in no
-        // `H`.
-        let proposed = projs
-            .iter()
-            .filter(|p| p.skip.is_none())
-            .map(|p| p.relation);
-        let dynamic = crate::monotone::dynamic(s.kb, s.terms, &compiled, proposed);
-        for p in &projs {
-            if let Some(rel) = premise_reads(p, s.terms)
-                .into_iter()
-                .find(|&r| crate::monotone::in_set(&dynamic, r, s.terms))
-            {
-                let reason = format!(
-                    "an obligation scans `{}`, a relation a commitment can change",
-                    rel.label(s.terms)
-                );
-                return Ok(declined(s, &reason));
-            }
-        }
+        // An obligation whose guard or trigger reads what a commitment can
+        // change does not step aside (Q-M1f.579): it writes its guard's
+        // candidates at this state, and the program is one the static check
+        // flags (`crate::monotone`'s `ObligationGuard` and
+        // `ObligationTrigger` sites).
         // The plans admitted since the last round, each scanned once, in
         // report order: plan order, then match order.
         for p in &projs[scans.len()..] {
@@ -558,6 +524,7 @@ pub(crate) fn generate(
             fresh.push(Arc::new(plan));
         }
         if fresh.is_empty() {
+            let owed_rels: FxHashSet<Symbol> = projs.iter().map(|p| p.relation).collect();
             break uncovered_relations(s, allowed, excluded, closed, &owed_rels);
         }
         // A later plan declines the call as one of the state's does: the
@@ -612,6 +579,7 @@ pub(crate) fn generate(
         .sum();
 
     let before = stats.emitted;
+    let seen_before = stats.filtered[crate::hypgen::Drop::SeenInCall as usize];
     let mut broke = false;
     // Every instance's alternatives, in report order: the union, which is
     // what H holds. `apply_filters`' `seen_in_call` drops a candidate an
@@ -628,13 +596,22 @@ pub(crate) fn generate(
             break;
         }
     }
-    if report.owed > 0 && !broke && stats.emitted == before {
+    if report.owed > 0
+        && !broke
+        && stats.emitted == before
+        && stats.filtered[crate::hypgen::Drop::SeenInCall as usize] == seen_before
+    {
         // Owed, and nothing survived: every debt was scoped out, or every
         // candidate is already refuted. Either way the generator proposes
         // nothing and the caller would otherwise call this state complete.
         // Judged on what the state owes alone, before a later debt's
-        // candidates are offered.
+        // candidates are offered. A candidate a rule of the state already
+        // wrote is in H, and pays: no state is stuck for it (Q-M1f.570).
         report.mode = Mode::Stuck;
+    } else if beside {
+        // Rules or the program wrote `open` facts at the state beside the
+        // obligations: H is the union of the two.
+        report.mode = Mode::Union;
     }
     // The later debts' candidates, after everything the state owes, so a
     // call that reads none emits what it emitted and in that order.
@@ -656,7 +633,39 @@ pub(crate) fn generate(
     Ok(report)
 }
 
-/// The rung fell through — nothing emitted, the blind enumerator takes it.
+/// **What would pay what `s`'s state owes**, as the pass that writes a
+/// state's `open` facts reads it at every state ([`crate::open`]): for each
+/// obligation activated at the state, in report order, each owed instance's
+/// candidates, read off its guard as [`generate`] reads them, with the rule
+/// that owes it. Unscoped, since the two lists and a closure configure the
+/// blind enumerator alone (Q-M1f.578), and with no debt the state does not
+/// owe: a debt a commitment brings is owed, and paid, where it is brought.
+/// Narrates nothing and counts nothing. Where an obligation's projection does
+/// not resolve under its activator, the call is declined and nothing pays.
+pub(crate) fn payments(s: &mut Session<'_>) -> Result<Vec<(Symbol, FactId)>, CompileError> {
+    let memo = s.memo.clone();
+    let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;
+    let mut matcher = Matcher::new();
+    let mut guards = Matcher::new();
+    let none = FxHashSet::default();
+    let mut out = Vec::new();
+    for plan in plans {
+        let mut projs = Vec::with_capacity(1);
+        if admit(s.terms, vec![plan], &None, &none, &none, &mut projs).is_err() {
+            // A witness step that does not resolve declines the call, which
+            // writes nothing ([`generate`]): no payment either.
+            return Ok(Vec::new());
+        }
+        let p = &projs[0];
+        for b in scan(s, p, &mut matcher, &mut guards).branches {
+            out.extend(b.candidates.into_iter().map(|f| (p.plan.rule, f)));
+        }
+    }
+    Ok(out)
+}
+
+/// The call is declined — nothing emitted, and the blind enumerator does not
+/// run beside an activated obligation.
 fn declined(s: &mut Session<'_>, reason: &str) -> RungReport {
     let report = RungReport {
         mode: Mode::Declined,
@@ -799,58 +808,6 @@ fn bears_local(plan: &Plan, guard: &NafGuard, slots: Span) -> bool {
         Slot::Reg(r) => guard.scope_of.get(*r as usize).copied().flatten().is_none(),
         _ => false,
     })
-}
-
-/// The first relation this obligation's guard **scans** that the rung also
-/// proposes — C4's disqualifier, or `None` when the branch is stable.
-fn scanned_relation_in(p: &Proj, owed: &FxHashSet<Symbol>) -> Option<Symbol> {
-    for (d, &(gi, at)) in p.witness.iter().enumerate() {
-        let guard = &p.plan.guards(p.plan.disjuncts[d].guards)[gi];
-        if let Some(rel) = scan_rels(&p.plan, guard.sub, Some(at), owed) {
-            return Some(rel);
-        }
-        // Every other guard of the disjunct narrows the same instance, so a
-        // relation *it* scans can grow the instance set the same way.
-        for (j, g) in p.plan.guards(p.plan.disjuncts[d].guards).iter().enumerate() {
-            if j != gi
-                && let Some(rel) = scan_rels(&p.plan, g.sub, None, owed)
-            {
-                return Some(rel);
-            }
-        }
-    }
-    // The rule's own positive premises decide which instances exist at all.
-    for d in p.plan.disjuncts.iter() {
-        if let Some(rel) = scan_rels(&p.plan, d.steps, None, owed) {
-            return Some(rel);
-        }
-    }
-    None
-}
-
-/// Relations read by `span`, nested queries included, minus the step at
-/// `skip` — intersected with `owed`.
-fn scan_rels(
-    plan: &Plan,
-    span: Span,
-    skip: Option<usize>,
-    owed: &FxHashSet<Symbol>,
-) -> Option<Symbol> {
-    for (i, step) in plan.steps(span).iter().enumerate() {
-        if skip == Some(i) {
-            continue;
-        }
-        match step {
-            Step::Rel(r) if owed.contains(&r.rel) => return Some(r.rel),
-            Step::Absent { sub } => {
-                if let Some(rel) = scan_rels(plan, *sub, None, owed) {
-                    return Some(rel);
-                }
-            }
-            _ => {}
-        }
-    }
-    None
 }
 
 /// The witness step's slots, resolved against one scan row.
@@ -1247,10 +1204,30 @@ fn static_premises(
     Ok(())
 }
 
+/// **What an obligation's guards read beside its witness step**, disjunct by
+/// disjunct, at the `absent` depth each read is at: the static check's
+/// `ObligationGuard` site reads it (Q-M1f.579), the trigger having a site of
+/// its own. `None` for a plan whose witness does not resolve, which names no
+/// guard.
+pub(crate) fn guard_reads(
+    plan: &Arc<Plan>,
+    terms: &ein_core::Terms,
+) -> Option<Vec<crate::monotone::Rel>> {
+    let p = project(plan, terms)?;
+    let mut reads = Vec::new();
+    for (d, &(gi, at)) in p.witness.iter().enumerate() {
+        let disjunct = &p.plan.disjuncts[d];
+        for (j, g) in p.plan.guards(disjunct.guards).iter().enumerate() {
+            let skip = (j == gi).then_some(at);
+            reads.extend(crate::monotone::reads_in(&p.plan, g.sub, skip, terms));
+        }
+    }
+    Some(reads)
+}
+
 /// Every relation an obligation reads beside its witness step, disjunct by
 /// disjunct: its trigger, which says who owes, and its guards, which scan the
-/// witness's domain. L5's premise ([`static_premises`]) and the rung's C4
-/// over `D` ([`generate`]) read the same list.
+/// witness's domain. L5's premise ([`static_premises`]) reads it.
 fn premise_reads(p: &Proj, terms: &ein_core::Terms) -> Vec<crate::monotone::Rel> {
     let mut reads = Vec::new();
     for (d, &(gi, at)) in p.witness.iter().enumerate() {
@@ -1428,6 +1405,7 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
+            false,
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;
@@ -1463,22 +1441,6 @@ mod tests {
         assert_eq!(r.candidates, 2, "Soup and Stew, and nothing else");
     }
 
-    /// **A bare `(open)` declines the whole call.** It counts and reports —
-    /// that is what it is for — but it names no relation, so there is no
-    /// branch to take and the rung may not claim to be exhaustive. Falling
-    /// through to the blind enumerator is the only answer that stays complete.
-    #[test]
-    fn a_bare_open_has_no_branch_and_declines() {
-        let r = rung_of(&format!(
-            "{OWING}(rule owed (?R ?isa)\n\
-             \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
-             \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — something is still owed\"\n)\n\
-             (owed likes is-a)\n"
-        ));
-        assert_eq!(r.mode, Mode::Declined);
-    }
-
     /// **Owed, and nothing survived the pipeline ⇒ stuck.** The same program
     /// as above with every candidate rejected — which is what a relation whose
     /// whole row already carries a stored negative looks like. The generator
@@ -1499,13 +1461,14 @@ mod tests {
         assert_eq!(rung_with(&src, true).mode, Mode::Obligations);
     }
 
-    /// **C4**: an obligation whose guard scans a relation the rung itself
-    /// proposes is declined, and the decline takes the whole call. Here the
-    /// same rule is activated twice — once owing `likes` and scanning `is-a`,
-    /// once owing `is-a` — so the branch over foods could grow underneath
-    /// itself.
+    /// **An obligation whose guard scans a relation the rung itself proposes
+    /// does not step aside** (Q-M1f.579): it writes what its guard gives at
+    /// the state. Here the same rule is activated twice — once owing `likes`
+    /// and scanning `is-a`, once owing `is-a` — so the branch over foods can
+    /// grow underneath itself, which the static check's `obligation-guard`
+    /// site says.
     #[test]
-    fn an_obligation_that_scans_what_the_rung_proposes_declines() {
+    fn an_obligation_that_scans_what_the_rung_proposes_writes_its_candidates() {
         let r = rung_of(&format!(
             "{OWING}(relation sort T T :why \"{{?3}} is of sort {{?4}}\")\n(sort P S)\n(sort F S)\n\
              (rule owed (?R ?isa)\n\
@@ -1514,7 +1477,8 @@ mod tests {
              \x20 :assert (open ?R) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — one is still owed\"\n)\n\
              (owed likes is-a)\n(owed is-a sort)\n"
         ));
-        assert_eq!(r.mode, Mode::Declined);
+        assert_eq!(r.mode, Mode::Obligations);
+        assert!(r.candidates > 0, "it writes what its guards give");
     }
 
     /// Root saturated with the memo the rung then reads, as
@@ -1550,6 +1514,7 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
+            false,
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;
@@ -1577,22 +1542,18 @@ mod tests {
                              \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
                              \x20 :assert (open likes) :why \"{?a} is a person who likes no food yet — one is still owed\"\n)\n";
 
-    /// **C4 over `D`** (Q-M1e2.10): a guard that scans a relation a
-    /// commitment can change
-    /// declines the rung, and its `rung` line says so. Without `special`,
-    /// `food` is static and the same obligation branches.
+    /// **An obligation whose guard scans a relation a commitment can change
+    /// does not step aside** (Q-M1f.579): it writes what its guard gives at
+    /// root, as `food` stands there, and the static check flags the program.
+    /// Without `special`, `food` is static, and the same obligation branches
+    /// the same way.
     #[test]
-    fn an_obligation_that_scans_a_relation_a_commitment_derives_declines() {
+    fn an_obligation_that_scans_a_relation_a_commitment_derives_writes_at_root() {
         let (r, rung) = rung_at_root(&format!(
             "{OWES_FOOD}(rule special ()\n  :match  (likes ?p ?f)\n  :assert (food Z) :why \"{{?p}} likes {{?f}}, so Z is a food\")\n"
         ));
-        assert_eq!(r.mode, Mode::Declined);
-        assert!(
-            rung.contains(
-                "\"reason\": \"an obligation scans `food`, a relation a commitment can change\""
-            ),
-            "{rung}"
-        );
+        assert_eq!(r.mode, Mode::Obligations, "{rung}");
+        assert!(rung.contains("\"reason\": \"rule-order\""), "{rung}");
         let (r, rung) = rung_at_root(OWES_FOOD);
         assert_eq!(r.mode, Mode::Obligations, "{rung}");
         assert!(rung.contains("\"reason\": \"rule-order\""), "{rung}");

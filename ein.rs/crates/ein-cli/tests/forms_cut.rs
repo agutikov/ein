@@ -96,11 +96,12 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
         assert_eq!(r.code, 0, "{flags:?}: {}", r.err);
         let lines = added(&bare.out, &r.out);
         // The read-out spent the 100 lines: one item, the form's head, and
-        // the line that says where the rest is. 20 lines is H's head (four)
-        // or a state of `-p` (nine) with room to spare, against tens of
-        // thousands for `-p` drawn from every state.
+        // the line that says where the rest is. 40 lines is H's head (four)
+        // or a state of `-p` (twenty-five, its `open` facts among them) with
+        // room to spare, against tens of thousands for `-p` drawn from every
+        // state.
         assert!(
-            lines.len() <= 20,
+            lines.len() <= 40,
             "{flags:?} printed {} lines after the read-out:\n{}",
             lines.len(),
             lines.join("\n")
@@ -253,8 +254,9 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
 /// `-f`'s header names the candidates' relations as Ein spells names, not
 /// `:hrules ['co-located', 'is-a']` in a Python list's spelling, on
 /// `branching/02`, which declares no `:hrules`. `-p`'s and `-P`'s do not
-/// call a state's facts *derived*: on `lattice/02` state 2's one fact is its
-/// commitment. They are the facts beyond the program as loaded, and
+/// call a state's facts *derived*: on `lattice/02` state 2's facts are its
+/// commitment and its `open` facts, which `-P` leaves out (Q-M1f.577), its
+/// commitment its one fact there. They are the facts beyond the program as loaded, and
 /// not *beyond root*: on `branching/02` ∅'s block lists root's derivations,
 /// and ∅ has no fact beyond root. So no header says *derived*, `:hrules` or
 /// *beyond root*, and each names the set it prints.
@@ -283,18 +285,21 @@ fn the_fact_dumps_headers_say_what_they_print() {
     let h = header(&p, "state 2 of 7");
     assert_eq!(
         h,
-        format!("final-state facts (beyond the program as loaded: {BEYOND}; 1 fact):")
+        format!("final-state facts (beyond the program as loaded: {BEYOND}; 4 facts):")
     );
     assert!(
-        p.out.contains(&format!("{h}\n  (a-prop X)\n")),
-        "state 2's one fact is its commitment, (a-prop X):\n{}",
+        p.out.contains(&format!(
+            "{h}\n  (a-prop X)\n  (open (a-prop X))\n  (open (b-prop X))\n  (open (c-prop X))\n"
+        )),
+        "state 2's facts are its commitment, (a-prop X), and the hrule's three hypotheses:\n{}",
         p.out
     );
     let pp = ein(&["solve", THREE, "-P"]);
     assert_eq!(
         header(&pp, "state 2 of 7"),
         format!(
-            "final-state facts (beyond the program as loaded, (not …) omitted: {BEYOND}; 1 fact):"
+            "final-state facts (beyond the program as loaded, (not …) and (open …) omitted: {BEYOND}; \
+             1 fact):"
         )
     );
     let root = ein(&["solve", BRANCHING_02, "-p"]);
@@ -305,8 +310,8 @@ fn the_fact_dumps_headers_say_what_they_print() {
     );
     assert_eq!(
         header(&root, "state 1 of 20"),
-        format!("final-state facts (beyond the program as loaded: {BEYOND}; 11 facts):"),
-        "∅'s block is root's own derivations"
+        format!("final-state facts (beyond the program as loaded: {BEYOND}; 59 facts):"),
+        "∅'s block is root's own derivations and its 48 hypotheses"
     );
     for r in [&f, &p, &pp, &root] {
         for l in r.out.lines().filter(|l| l.starts_with("final-state facts")) {

@@ -549,6 +549,11 @@ pub struct Snapshot {
     /// function reads it and the saturator does not. `None` at a program's
     /// root.
     floor: Option<Arc<crate::region::Floor>>,
+    /// What the pass that writes a state's `open` facts writes at every
+    /// state above root, read at root ([`crate::open::Writers`]): the node
+    /// function reads it and the saturator does not. `None` where root's
+    /// were not read, and then a node writes none.
+    open: Option<crate::open::Shared>,
 }
 
 impl Snapshot {
@@ -562,6 +567,18 @@ impl Snapshot {
     pub(crate) fn above(mut self, floor: crate::region::Floor) -> Snapshot {
         self.floor = Some(Arc::new(floor));
         self
+    }
+
+    /// The same snapshot, every fork of it given its `open` facts by
+    /// `writers` at its fixpoint.
+    pub(crate) fn with_open(mut self, writers: crate::open::Shared) -> Snapshot {
+        self.open = Some(writers);
+        self
+    }
+
+    /// The writers of a state's `open` facts every fork of it reads.
+    pub(crate) fn open(&self) -> Option<&crate::open::Shared> {
+        self.open.as_ref()
     }
 
     /// The facts `kb` has and the snapshot did not — the first half of a
@@ -662,6 +679,7 @@ impl Saturator {
             facts: kb.facts().collect(),
             fail_first: self.fail_first,
             floor: None,
+            open: None,
         }
     }
 
@@ -884,6 +902,18 @@ impl Saturator {
     /// (`crate::region`'s § What a node is).
     pub(crate) fn run_to_quiescence(&mut self) {
         self.stop_first = false;
+    }
+
+    /// Facts written into the KB outside the saturation, a state's `open`
+    /// facts the pass wrote at its fixpoint ([`crate::open`]): the next
+    /// round's delta, so a rule that reads one fires on it, and a parked
+    /// candidate that reads its relation is judged again.
+    pub(crate) fn feed(&mut self, facts: &[FactId]) {
+        match &mut self.delta {
+            Some(d) => d.extend_from_slice(facts),
+            None => self.delta = Some(facts.to_vec()),
+        }
+        self.needs_enqueue = true;
     }
 
     /// How many `(binding_key, guards)` pairs the dedup has seen.

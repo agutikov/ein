@@ -428,7 +428,7 @@ pub(crate) fn compute_prepared(
                     crate::region::narrate_node(events, &mut o, text(set), || closure);
                 }
                 let id = out.points.len() as u32;
-                stats.facts += o.state.len() as u64;
+                stats.facts += o.work;
                 let class = *classes.entry(o.state).or_insert(id);
                 let status = (if o.dead { DEAD } else { 0 }) | (if o.owes > 0 { OWING } else { 0 });
                 stats.visited += 1;
@@ -533,7 +533,7 @@ pub(crate) fn compute_prepared(
             };
             crate::region::narrate_node(events, &mut o, text(&all), || closure);
         }
-        out.top_facts = o.state.len() as u64;
+        out.top_facts = o.work;
         out.top = Some(Point {
             set: (0..out.n() as u32).collect(),
             status: (if o.dead { DEAD } else { 0 }) | (if o.owes > 0 { OWING } else { 0 }),

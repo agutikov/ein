@@ -334,7 +334,9 @@ impl Row {
     /// puts the program on.
     fn rung_under(&self, from: Class) -> &'static str {
         match self.rung {
-            Mode::Hrules | Mode::NoSearch | Mode::Blind | Mode::Declined => self.rung.as_str(),
+            Mode::Hrules | Mode::NoSearch | Mode::Blind | Mode::Declined | Mode::Union => {
+                self.rung.as_str()
+            }
             Mode::Obligations | Mode::Stuck if self.class < from => "blind",
             Mode::Obligations | Mode::Stuck => self.rung.as_str(),
         }
@@ -470,7 +472,9 @@ fn read(path: &Path, limit: u32, check: bool) -> Result<Row, &'static str> {
     row.today = Some(today(path, limit).map(|(k_c, k_s, _)| (k_c, k_s)));
     let hypothesised: FxHashSet<Symbol> = list.iter().map(|&f| terms.facts.get(f).0).collect();
     let root_plans = monotone::plans_of(&p.memo);
-    let m = monotone::classify(&kb, &terms, &root_plans, &hypothesised);
+    // H here is the blind list, which no rule that concludes a hypothesis
+    // writes: the static check reads the memo's plans alone.
+    let m = monotone::classify(&kb, &terms, &root_plans, &[], &hypothesised);
     let cube = if list.is_empty() {
         Err("same")
     } else if list.len() > limit as usize || list.len() >= 64 {

@@ -25,6 +25,12 @@
 //!   has that instance licensed, and the route refuses the run at the first
 //!   node that holds the witness.
 //!
+//! **Under the union no instance is L9's** (Q-M1f.570): an activated
+//! obligation writes every witness its guard gives at root as a hypothesis,
+//! so no witness of an instance root owes is unproposed, and L5 refuses none
+//! for that reason. The four readings stand, each over no instance on the
+//! corpus, and each fails the day one appears.
+//!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test unheld
 //! ```
@@ -125,14 +131,13 @@ fn licensed(path: &Path) -> Option<Vec<(Licensed, String)>> {
 }
 
 /// **Where L9 licenses**: the instances, program by program, over the whole
-/// corpus and register. Each is an instance L5 refuses because a witness is
-/// no candidate and root does not deny it; each has a candidate among its
-/// witnesses to branch on; and each relies on `sits`, which no rule of
-/// either program concludes. No other program's unlicensed instance is
-/// L9's: the Zebra puzzle's `slot-owed-fill` debts (`co-located` is written
-/// by the slot rules and mirrored), which the list's being whole says
-/// without naming the puzzle here, and `13_witness_of_two.ein`'s (`fed` is
-/// written by two rules), held below.
+/// corpus and register, each one L5 refuses because a witness is no
+/// candidate and root does not deny it. There is none: the two programs it
+/// licensed while their rules proposed the candidates alone,
+/// `06_friends_tables_everyone_sits.ein` and
+/// `14_seats_nothing_proposes.ein`, hold every witness as a candidate
+/// under the union, and so do the Zebra puzzle's `slot-owed-fill` debts and
+/// `13_witness_of_two.ein`'s, which L5 licenses now, held below.
 #[test]
 fn l9_licenses_where_nothing_writes_the_witness_relation() {
     let files = corpus_and_regressions();
@@ -171,29 +176,10 @@ fn l9_licenses_where_nothing_writes_the_witness_relation() {
         }
         by_program.push((rel, texts));
     }
-    let want: Vec<(String, Vec<String>)> = [
-        (
-            "examples/lattice/06_friends_tables_everyone_sits.ein",
-            vec![
-                "(total-owed sits is-a) R=sits isa=is-a A=Friend B=Seat a=Cat: 3 alternatives, 2 unheld `sits`",
-                "(total-owed sits is-a) R=sits isa=is-a A=Friend B=Seat a=Dan: 3 alternatives, 2 unheld `sits`",
-                "(total-owed sits is-a) R=sits isa=is-a A=Friend B=Seat a=Eve: 3 alternatives, 2 unheld `sits`",
-            ],
-        ),
-        (
-            "examples/lattice/14_seats_nothing_proposes.ein",
-            vec![
-                "(total-owed sits is-a) R=sits isa=is-a A=Friend B=Seat a=Cat: 2 alternatives, 2 unheld `sits`",
-                "(total-owed sits is-a) R=sits isa=is-a A=Friend B=Seat a=Dan: 2 alternatives, 2 unheld `sits`",
-            ],
-        ),
-    ]
-    .into_iter()
-    .map(|(p, v)| (p.to_string(), v.into_iter().map(String::from).collect()))
-    .collect();
+    let want: Vec<(String, Vec<String>)> = Vec::new();
     assert_eq!(by_program, want);
-    // The implied witness's program it does not reach, and why: its witness
-    // relation is written.
+    // The implied witness's program: its witness is a candidate, and L5
+    // licenses the instance.
     let rel = "examples/lattice/13_witness_of_two.ein";
     let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
     let t = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
@@ -202,15 +188,15 @@ fn l9_licenses_where_nothing_writes_the_witness_relation() {
     let not = t
         .instances
         .iter()
-        .filter(|i| i.alternatives.is_err() && i.unheld.is_none())
+        .filter(|i| i.alternatives.is_err())
         .count();
-    assert_eq!(not, 1, "{rel}");
+    assert_eq!(not, 0, "{rel}");
 }
 
 /// **L9 is the oracle's.** On every monotone cube the oracle enumerates
 /// with an instance L9 licenses, at every node and every alive state of the
-/// cube: the module's three readings. Not vacuous: `14_seats_nothing_proposes`
-/// is read, two instances L9 licenses, owed at states the cube holds.
+/// cube: the module's three readings. The corpus has no such cube under the
+/// union, which the sweep says: it reads none.
 #[test]
 fn l9_is_the_oracle_on_every_monotone_program_it_reaches() {
     use ein_infer::events::Events;
@@ -340,8 +326,9 @@ fn l9_is_the_oracle_on_every_monotone_program_it_reaches() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     assert!(
-        programs >= 1 && nodes_read >= 4096 && owing >= 2,
-        "{programs} programs, {nodes_read} nodes, {owing} owed instances L9 licenses"
+        programs == 0 && nodes_read == 0 && owing == 0,
+        "{programs} programs, {nodes_read} nodes, {owing} owed instances L9 licenses: \
+         a program with an instance L9 licenses is back, and this sweep reads it"
     );
     eprintln!("L9: {programs} programs, {nodes_read} nodes, {owing} owed instances L9 licenses");
 }
@@ -393,7 +380,11 @@ fn every_question_answers_alike_with_l9_and_without() {
         .into_iter()
         .filter(|p| licensed(p).is_some_and(|l| !l.is_empty()))
         .collect();
-    assert!(files.len() >= 2, "{files:?}");
+    // None under the union (Q-M1f.570), which the census above holds: a
+    // program with an instance L9 licenses is read here the day one appears.
+    if files.is_empty() {
+        return;
+    }
     let mut failures: Vec<String> = Vec::new();
     let mut totals: Vec<(&str, [u64; 4])> = questions().iter().map(|(q, _)| (*q, [0; 4])).collect();
     let mut named = 0usize;
@@ -488,9 +479,10 @@ fn every_question_answers_alike_with_l9_and_without() {
     }
 }
 
-/// A debt `takeaway` can pay with a fact no candidate proposes: Ann's
-/// witnesses are `(fed Ann Soup)`, a candidate, and `(fed Ann Stew)`, which
-/// the rule writes from `(orders Ann)`.
+/// A debt `takeaway` can pay with a fact no hrule proposes: Ann's witnesses
+/// are `(fed Ann Soup)`, the hrule's, and `(fed Ann Stew)`, which the rule
+/// writes from `(orders Ann)` and the obligation writes as a hypothesis
+/// beside the hrules (Q-M1f.570).
 const WRITTEN_WITNESS: &str = r#"
 (import std.algebra :symbols (total-owed))
 (relation is-a   T T        :why "{?3} is a {?4}")
@@ -513,15 +505,13 @@ const WRITTEN_WITNESS: &str = r#"
 (solve :hrules (feed order))
 "#;
 
-/// **A node that breaks L9's premise refuses the run.** `takeaway` writes
-/// `fed`, so L9 does not license Ann's debt and every question answers
-/// from L5's table: R is three states. Under `unheld::trusting`, which
-/// calls every relation unwritten, the debt is licensed with `(fed Ann
-/// Soup)` alone, and the first node a route computes that holds `(fed Ann
-/// Stew)` beside root's facts refuses the run: an engine defect, never an
-/// answer.
+/// **A witness written by a rule is a candidate too.** Under the union both
+/// of Ann's witnesses are candidates, so L5 licenses her debt with the two
+/// as its alternatives and L9 has nothing to license: R is five states, and
+/// under `unheld::trusting`, which calls every relation unwritten, every
+/// question answers as it does without it, no node refusing the run.
 #[test]
-fn a_node_that_breaks_the_premise_refuses_the_run() {
+fn a_witness_a_rule_writes_is_a_candidate_too() {
     let run = |mode: Mode| {
         let (mut kb, mut terms, ast) = loaded_text("written_witness", WRITTEN_WITNESS);
         explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
@@ -542,18 +532,19 @@ fn a_node_that_breaks_the_premise_refuses_the_run() {
     let t = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
         .expect("prepares")
         .expect("a table");
-    assert!(t.instances.len() == 1 && t.instances[0].unheld.is_none());
+    assert_eq!(t.instances.len(), 1);
+    assert_eq!(
+        t.instances[0].alternatives.as_ref().map(|a| a.len()),
+        Ok(2),
+        "L5 licenses the debt, both witnesses its alternatives"
+    );
     let d = run(describe).expect("answers");
-    assert_eq!(d.described.as_ref().expect("described").states.len(), 3);
+    assert_eq!(d.described.as_ref().expect("described").states.len(), 5);
     for mode in [maximal, single] {
         let a = run(mode).expect("answers");
         assert!(!a.licences.contains(&Licence::Unheld), "{mode:?}");
-        let err = unheld::trusting(|| run(mode)).expect_err("the premise broken refuses");
-        let err = err.to_string();
-        assert!(
-            err.contains("L9: a node holds `(fed Ann Stew)`"),
-            "{mode:?}: {err}"
-        );
+        let trusted = unheld::trusting(|| run(mode)).expect("no node refuses the run");
+        assert_eq!(closures(&trusted), closures(&a), "{mode:?}");
     }
     // The switches are the calling thread's, and gone when they return.
     assert!(run(maximal).is_ok() && !unheld::is_without());

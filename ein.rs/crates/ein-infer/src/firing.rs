@@ -266,7 +266,7 @@ fn not_a_fact(
 
 /// A slot's value, or `None` where it holds the negation of a name
 /// ([`build_fact`]).
-fn resolve(
+pub(crate) fn resolve(
     terms: &mut Terms,
     ast: &Ast,
     plan: &Plan,

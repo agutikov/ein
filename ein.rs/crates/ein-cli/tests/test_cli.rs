@@ -250,7 +250,7 @@ fn a_query_with_no_expectation_is_never_solved() {
         r.out
     );
     assert!(
-        r.summary().contains("24 held") && r.summary().contains("11 files state no expectations"),
+        r.summary().contains("24 held") && r.summary().contains("12 files state no expectations"),
         "{}",
         r.summary()
     );
@@ -1197,15 +1197,19 @@ fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
 /// out (`outside the universe: …`, Q-M1e2.3), and every row carries
 /// `outside`, the summary's `root.hypgen` field under its name and in its
 /// shape, `null` where no run checked the row's claim:
-/// `examples/lattice/13_witness_of_two.ein` prints `outside the universe: fed
-/// …`, and its row carries it.
+/// `examples/lattice/15_union_label_dead.ein` prints `outside the universe:
+/// flag …`, and its row carries it; `examples/lattice/13_witness_of_two.ein`'s
+/// query states no claim.
 #[test]
 fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
+    const WITNESS: &str = "examples/lattice/15_union_label_dead.ein";
+    const SILENT: &str = "examples/lattice/13_witness_of_two.ein";
     let d = Dir::new("report-scope");
     let out = d.0.join("r.json");
     let r = ein(&[
         "test",
-        "examples/lattice/13_witness_of_two.ein",
+        WITNESS,
+        SILENT,
         "-v",
         "--json-report",
         &out.to_string_lossy(),
@@ -1218,25 +1222,29 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     assert!(bad.is_empty(), "{}\n{}", bad.join("\n"), r.out);
 
     let rows = doc["rows"].as_array().expect("rows");
-    let row = |place: &str, query: u64| -> &serde_json::Value {
+    let row = |path: &str, place: &str, query: u64| -> &serde_json::Value {
         rows.iter()
-            .find(|x| x["place"] == place && x["query"] == query)
-            .unwrap_or_else(|| panic!("no {place} row {query}"))
+            .find(|x| {
+                x["path"].as_str().is_some_and(|p| p.ends_with(path))
+                    && x["place"] == place
+                    && x["query"] == query
+            })
+            .unwrap_or_else(|| panic!("no {path} {place} row {query}"))
     };
     // The witness.
-    let cube = row("solve", 0);
+    let cube = row(WITNESS, "solve", 0);
     assert_eq!(
         cube["outside"],
-        serde_json::json!([{"relation": "fed", "arity": 2, "why": "no-hrule"}]),
+        serde_json::json!([{"relation": "flag", "arity": 1, "why": "no-hrule"}]),
         "{cube}"
     );
     assert!(
-        r.out.contains("    outside the universe: fed — "),
+        r.out.contains("    outside the universe: flag — "),
         "{}",
         r.out
     );
-    // Its query states no claim and no run checked it: `null`.
-    let silent = row("query", 1);
+    // A query that states no claim, which no run checked: `null`.
+    let silent = row(SILENT, "query", 1);
     assert_eq!(silent["outcome"], "no-expect");
     assert!(silent["outside"].is_null(), "{silent}");
 }
@@ -1876,8 +1884,8 @@ fn a_claim_one_fact_off_reads_as_one_fact_off() {
 }
 
 /// **A missing state and an extra one**, beside a match and a near-miss:
-/// `examples/lattice/14_seats_nothing_proposes.ein`'s region with its second
-/// state written three facts off and its fourth one fact off. The missing
+/// `examples/lattice/14_seats_nothing_proposes.ein`'s region with its sixth
+/// state written two facts off and its eighth one fact off. The missing
 /// model is given the state nearest it and the extra state the model nearest
 /// it.
 #[test]
@@ -1905,15 +1913,15 @@ fn a_region_claim_names_the_missing_and_the_extra() {
     let r = ein(&["test", &file, "--diff", "full"]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     for line in [
-        "    diff: 4 models against R's 4 states, compared over sits",
-        "      2 match, 1 near (1 fact off), 1 missing, 1 extra",
+        "    diff: 8 models against R's 8 states, compared over sits",
+        "      6 match, 1 near (1 fact off), 1 missing, 1 extra",
         "      = model 1 is state 1",
-        "      - model 2: no state is it; the nearest is state 1, 2 facts off",
-        "      = model 3 is state 3",
-        "      ~ model 4 is state 4, 1 fact off",
+        "      - model 6: no state is it; the nearest is state 1, 2 facts off",
+        "      = model 7 is state 7",
+        "      ~ model 8 is state 8, 1 fact off",
         "          - (sits Dan B2)",
         "          + (sits Dan B1)",
-        "      + state 2: no model is it; the nearest is model 1, 2 facts off",
+        "      + state 6: no model is it; the nearest is model 5, 2 facts off",
     ] {
         assert!(
             r.out.lines().any(|l| l == line),

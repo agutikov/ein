@@ -159,6 +159,9 @@ pub enum AtStake {
     Owes,
     OwesThroughPlan,
     StateThroughPlan,
+    /// What a commitment can be about: a state above root can hold a
+    /// hypothesis root does not (Q-M1f.574, Q-M1f.579).
+    Hypotheses,
 }
 
 impl AtStake {
@@ -170,6 +173,7 @@ impl AtStake {
             AtStake::Owes => "the status: owes",
             AtStake::OwesThroughPlan => "the status: owes, through a plan a node compiles",
             AtStake::StateThroughPlan => "the state, through a plan a node compiles",
+            AtStake::Hypotheses => "the hypotheses: a state can hold one root does not",
         }
     }
 
@@ -181,6 +185,7 @@ impl AtStake {
             AtStake::Owes,
             AtStake::OwesThroughPlan,
             AtStake::StateThroughPlan,
+            AtStake::Hypotheses,
         ]
         .into_iter()
         .find(|a| a.key() == key)
@@ -194,6 +199,7 @@ impl AtStake {
             AtStake::Owes => "status: owes",
             AtStake::OwesThroughPlan => "status: owes, through a node's plan",
             AtStake::StateThroughPlan => "state, through a node's plan",
+            AtStake::Hypotheses => "hypotheses",
         }
     }
 }
@@ -333,7 +339,10 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
         .iter()
         .map(|s| {
             let mine: Vec<&Arc<Plan>> = plans.iter().filter(|p| p.rule == s.rule).collect();
-            let concludes = if s.kind == SiteKind::ObligationTrigger {
+            let concludes = if matches!(
+                s.kind,
+                SiteKind::ObligationTrigger | SiteKind::ObligationGuard | SiteKind::Hypothesis
+            ) {
                 Concludes::Open
             } else if mine.is_empty() {
                 Concludes::NoRootPlan
@@ -343,8 +352,11 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
                     .map_or(Concludes::Positive, Concludes::Refutes)
             };
             let at_stake = match s.kind {
-                SiteKind::Absent if concludes == Concludes::Positive => AtStake::State,
-                SiteKind::Absent => AtStake::StateAndDead,
+                SiteKind::Absent | SiteKind::OpenRead if concludes == Concludes::Positive => {
+                    AtStake::State
+                }
+                SiteKind::Absent | SiteKind::OpenRead => AtStake::StateAndDead,
+                SiteKind::Hypothesis | SiteKind::ObligationGuard => AtStake::Hypotheses,
                 SiteKind::ObligationTrigger => AtStake::Owes,
                 SiteKind::Activator if program.obligations.contains(s.rule) => {
                     AtStake::OwesThroughPlan

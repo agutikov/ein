@@ -598,6 +598,16 @@ pub struct Kb {
     /// the facts, the list only grows, and a fork inherits it: a state above
     /// an inconsistent one holds what ended it.
     ended: Vec<ProvId>,
+    /// **The state's `open` facts** (Q-M1f.566): what it owes, `(open R)`,
+    /// and its hypotheses, `(open F)`, which the pass writes at the state's
+    /// fixpoint ([`Kb::write_open`]), and at root the ones the program writes.
+    /// A layer of its own, read with the others, so a state holds, lists and
+    /// counts them with its facts (Q-M1f.572); and **no fork inherits it**:
+    /// [`Kb::branch`] starts the child with none, so a fork drops every
+    /// `open` fact and the pass makes the child's at its own fixpoint, while
+    /// what a rule concluded from one stays, as every other fact does. No
+    /// rule deletes a fact: the layer is dropped whole, at the fork.
+    open: Layer,
 }
 
 /// **A copy of the KB**, as it stands: the registries copied, the sealed
@@ -620,6 +630,7 @@ impl Clone for Kb {
             classes: self.classes.clone(),
             saturated_facts: self.saturated_facts,
             ended: self.ended.clone(),
+            open: self.open.clone(),
         }
     }
 }
@@ -649,6 +660,7 @@ impl Kb {
             classes: EqClasses::new(),
             saturated_facts: 0,
             ended: Vec::new(),
+            open: Layer::default(),
         }
     }
 
@@ -669,6 +681,7 @@ impl Kb {
             classes: EqClasses::new(),
             saturated_facts: 0,
             ended: Vec::new(),
+            open: Layer::default(),
         }
     }
 
@@ -695,7 +708,17 @@ impl Kb {
 
     // ── Layers ─────────────────────────────────────────────────────
 
+    /// Every layer a read walks, oldest first: the stack ([`Kb::stack`]),
+    /// then the state's `open` facts ([`Kb::open`]).
     fn layers(&self) -> impl Iterator<Item = &Layer> {
+        self.stack().chain(std::iter::once(&self.open))
+    }
+
+    /// The layers a fork shares and a write appends to: the sealed ones and
+    /// the top, oldest first. What [`Kb::materialise`] concatenates and
+    /// [`Kb::n_facts_of`]'s counts are kept over; the `open` facts are no part
+    /// of it.
+    fn stack(&self) -> impl Iterator<Item = &Layer> {
         self.sealed
             .iter()
             .map(|l| &**l)
@@ -704,7 +727,9 @@ impl Kb {
 
     /// Newest first — for the reads where the topmost answer wins.
     fn layers_rev(&self) -> impl Iterator<Item = &Layer> {
-        std::iter::once(&self.top).chain(self.sealed.iter().rev().map(|l| &**l))
+        std::iter::once(&self.open)
+            .chain(std::iter::once(&self.top))
+            .chain(self.sealed.iter().rev().map(|l| &**l))
     }
 
     fn seal(&mut self) {
@@ -787,16 +812,23 @@ impl Kb {
             rules_by_relation: Arc::clone(&self.rules_by_relation),
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
-            saturated_facts: self.saturated_facts,
+            // The parent's mark less its `open` facts, which the branch does
+            // not hold: a branch of a clean parent starts clean.
+            saturated_facts: self.saturated_facts.saturating_sub(self.open.facts.len()),
             ended: self.ended.clone(),
+            open: Layer::default(),
         }
     }
 
     /// An archival copy, for a state that has to survive later mutations of
     /// the KB it was taken from: a [`Kb::fork`], whose sealed layers no later
-    /// write reaches.
+    /// write reaches, with the state's `open` facts, which a fork drops and
+    /// an archive of the state keeps.
     pub fn snapshot(&mut self) -> Kb {
-        self.fork()
+        let mut copy = self.fork();
+        copy.open = self.open.clone();
+        copy.saturated_facts = self.saturated_facts;
+        copy
     }
 
     /// Collapse the layer stack into one. No route calls it; a test holds it
@@ -819,10 +851,11 @@ impl Kb {
         self.top = merged;
     }
 
-    /// Base + delta as a single layer, by concatenation.
+    /// Base + delta as a single layer, by concatenation: the stack
+    /// ([`Kb::stack`]), the `open` facts aside.
     pub fn materialise(&self) -> Layer {
         let mut out = Layer::default();
-        for layer in self.layers() {
+        for layer in self.stack() {
             out.facts.extend_from_slice(&layer.facts);
             for id in layer.present.iter() {
                 out.present.insert(id);
@@ -943,7 +976,12 @@ impl Kb {
     /// `depth()`.
     pub fn n_facts_of(&self, rel: Symbol) -> usize {
         crate::counters::bump(|c| c.extent_probe += 1);
-        self.n_by_rel.get(&rel).copied().unwrap_or(0) as usize
+        let open = if self.open.facts.is_empty() {
+            0
+        } else {
+            self.open.by_rel.get(&rel).map_or(0, Vec::len)
+        };
+        self.n_by_rel.get(&rel).copied().unwrap_or(0) as usize + open
     }
 
     /// The participation index: facts with `value` in argument `slot` of
@@ -1146,29 +1184,96 @@ impl Kb {
     /// `:hrules` keyword and never from the store, because an hrule activator
     /// steers the search.
     fn is_rule_app(&self, rel: Symbol) -> bool {
-        self.program.rules.contains(rel) || self.program.obligations.contains(rel)
+        self.program.rules.contains(rel)
+            || self.program.obligations.contains(rel)
+            || self.program.hypotheses.contains(rel)
     }
 
     /// Append one fact to every reverse index — the incremental half of
     /// [`Kb::rebuild_indexes`], and it must agree with it exactly.
     pub fn index_fact(&mut self, terms: &Terms, id: FactId) {
-        let (rel, args) = terms.facts.get(id);
+        let rel = terms.facts.rel(id);
+        *self.n_by_rel.entry(rel).or_default() += 1;
         let is_rule_app = self.is_rule_app(rel);
+        let relations = &self.program.relations;
+        index_into(&mut self.top, terms, id, is_rule_app, |n| relations.contains(n));
+    }
+
+    // ── The state's `open` facts ───────────────────────────────────
+
+    /// The state's `open` facts, in the order written: the program's at
+    /// root, then the pass's ([`Kb::open`]'s field).
+    pub fn open_facts(&self) -> &[FactId] {
+        &self.open.facts
+    }
+
+    /// Does the state hold `id` among its `open` facts?
+    pub fn holds_open(&self, id: FactId) -> bool {
+        self.open.present.contains(id.0)
+    }
+
+    /// **Write the state's `open` facts**: each of `facts` the state does not
+    /// hold yet, with `prov`, into the part of the state no fork inherits,
+    /// and `false` where every one was held. Each is a fact of `open`,
+    /// interned by the caller. A state that was at its fixpoint stays marked
+    /// so: the pass writes them at the fixpoint, and they are part of it
+    /// (Q-M1f.566).
+    pub fn write_open(
+        &mut self,
+        terms: &Terms,
+        facts: &[FactId],
+        prov: impl Fn(FactId) -> Option<ProvId>,
+    ) -> bool {
+        let clean = !self.written_since_saturation();
+        let mut wrote = false;
+        for &id in facts {
+            if self.contains(id) {
+                continue;
+            }
+            self.open.facts.push(id);
+            self.open.present.insert(id.0);
+            if let Some(p) = prov(id) {
+                self.open.primary.insert(id, p);
+            }
+            let rel = terms.facts.rel(id);
+            let is_rule_app = self.is_rule_app(rel);
+            let relations = &self.program.relations;
+            index_into(&mut self.open, terms, id, is_rule_app, |n| relations.contains(n));
+            wrote = true;
+        }
+        if clean {
+            self.saturated_facts = self.n_facts();
+        }
+        wrote
+    }
+}
+
+/// Append fact `id` to every reverse index of `layer`: what
+/// [`Kb::index_fact`] does to the top, and [`Kb::write_open`] to the
+/// state's `open` facts.
+fn index_into(
+    layer: &mut Layer,
+    terms: &Terms,
+    id: FactId,
+    is_rule_app: bool,
+    is_relation: impl Fn(Symbol) -> bool,
+) {
+    {
+        let (rel, args) = terms.facts.get(id);
         let not = terms.kernel.not;
 
-        self.top.by_rel.entry(rel).or_default().push(id);
-        *self.n_by_rel.entry(rel).or_default() += 1;
+        layer.by_rel.entry(rel).or_default().push(id);
         if is_rule_app {
-            self.top.rule_apps_by_rule.entry(rel).or_default().push(id);
-            self.top.rule_apps += 1;
+            layer.rule_apps_by_rule.entry(rel).or_default().push(id);
+            layer.rule_apps += 1;
         }
         for (slot, value) in args.iter().enumerate() {
             // The join-key types only: a nested fact has no single value of
             // its own to key on…
             if value.tag() != Tag::Fact {
                 let key = SlotKey::direct(rel, slot as u16, *value);
-                self.top.by_rel_slot_val.entry(key).or_default().push(id);
-                self.top.bloom_add(&key);
+                layer.by_rel_slot_val.entry(key).or_default().push(id);
+                layer.bloom_add(&key);
             } else if let Some(nested) = value.as_fact() {
                 // …so key one level in instead. Only one level: it serves
                 // a premise over a stored negation, `(not (R ?a ?b))`, and
@@ -1183,30 +1288,33 @@ impl Kb {
                             inner: inner as u16,
                             value: *deep,
                         };
-                        self.top.by_rel_slot_val.entry(key).or_default().push(id);
-                        self.top.bloom_add(&key);
+                        layer.by_rel_slot_val.entry(key).or_default().push(id);
+                        layer.bloom_add(&key);
                     }
                 }
             }
             if let Some(name) = value.as_sym()
                 && is_rule_app
-                && self.program.relations.contains(name)
+                && is_relation(name)
             {
-                self.top.rule_apps_on_rel.entry(name).or_default().push(id);
+                layer.rule_apps_on_rel.entry(name).or_default().push(id);
             }
         }
         if rel == not
             && let Some(inner) = args.first().and_then(|v| v.as_fact())
         {
-            self.top.negated.insert(inner.0);
+            layer.negated.insert(inner.0);
         }
-        self.top.names.entry(rel).as_head.push(id);
+        layer.names.entry(rel).as_head.push(id);
         for value in args {
             if let Some(name) = value.as_sym() {
-                self.top.names.entry(name).as_arg.push(id);
+                layer.names.entry(name).as_arg.push(id);
             }
         }
     }
+}
+
+impl Kb {
 
     /// Recompute every reverse index from the registries and the fact list.
     ///
@@ -1401,7 +1509,7 @@ impl Kb {
     /// KB-shape fixture already asks whether the layer stack still adds up.
     pub fn check_extent_counts(&self) -> Result<(), String> {
         let mut walked: FxHashMap<Symbol, u32> = FxHashMap::default();
-        for layer in self.layers() {
+        for layer in self.stack() {
             for (&rel, ids) in &layer.by_rel {
                 *walked.entry(rel).or_default() += ids.len() as u32;
             }

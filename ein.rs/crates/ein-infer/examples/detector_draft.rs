@@ -166,6 +166,10 @@ fn draft(path: &Path, bound: usize) -> Json {
                     "the status: owes, through a plan a node compiles"
                 }
                 SiteKind::Activator => "the state, through a plan a node compiles",
+                SiteKind::OpenRead => "the state",
+                SiteKind::Hypothesis | SiteKind::ObligationGuard => {
+                    "the hypotheses: a state can hold one root does not"
+                }
             };
             sites.push(json!({
                 "site": s.render(&terms),

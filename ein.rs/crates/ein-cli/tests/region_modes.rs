@@ -810,9 +810,9 @@ fn the_monotone_question_is_about_the_program() {
                 "  monotone          no — 1 site\n{assumes}\
                  \x20   site            soup-unless-allergic: absent reads allergic at absent \
                  depth 1, concludes a positive fact — at stake: the state\n\
-                 \x20   bit             not computed — the cube is 2^3 = 8 saturations: `ein \
+                 \x20   bit             not computed — the cube is 2^4 = 16 saturations: `ein \
                  oracle FILE` computes it, and so does a bare `ein solve FILE`\n{}",
-                tail("3 candidates")
+                tail("4 candidates")
             ),
         ),
         (

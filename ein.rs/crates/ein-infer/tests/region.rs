@@ -245,24 +245,39 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
 // read it too, so a census and this test read one program.
 use written::ACTIVATOR_REFUTES;
 
+/// A program whose one site is an obligation's trigger: it owes a meal to a
+/// diner, a seat makes a guest a diner, and the guard reads `food`, which no
+/// commitment changes. `lattice/04`'s obligation is `std.algebra`'s, whose
+/// trigger and guard read one relation, so its guard is a site too
+/// (Q-M1f.579), and so are its hrules, which read that relation (Q-M1f.574).
+const TRIGGER_ALONE: &str = "\
+(relation guest T :why \"{?3} is a guest\")
+(relation chair T :why \"{?3} is a chair\")
+(relation diner T :why \"{?3} dines\")
+(relation food  T :why \"{?3} is a food\")
+(relation seats T T :why \"{?3} is seated at {?4}\")
+(relation meal  T T :why \"{?3} is served {?4}\")
+(guest Ann) (chair C1) (food Soup)
+(rule seated-dines () :match (seats ?g ?c) :assert (diner ?g) :why \"{?g} is seated, so {?g} dines\")
+(rule owes-meal () :match (and (diner ?g) (absent (and (food ?f) (meal ?g ?f)))) :assert (open meal) :why \"{?g} is served no food yet\")
+(hrule seat () :match (and (guest ?g) (chair ?c)) :assert (seats ?g ?c) :why \"guess that {?g} is seated at {?c}\")
+";
+
 /// **One fixture per cause**
 /// ([08-monotonicity.md § 9](../../../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#9-the-causes)).
 /// Each program's only site is of its cause: an `absent` that takes a
-/// witness away (`lattice/08`), an obligation's trigger (`lattice/04`), and
-/// an activator (`lattice/09`). None of the three concludes a refutation.
-/// [`ACTIVATOR_REFUTES`] is the third cause carrying a refutation, with the
-/// activator still the only site. What each program's cube shows is not held:
-/// of a flagged program's answer nothing is claimed.
+/// witness away (`lattice/08`), an obligation's trigger ([`TRIGGER_ALONE`]),
+/// and an activator (`lattice/09`). None of the three concludes a
+/// refutation. `lattice/04`, the trigger's corpus fixture, has the trigger
+/// among three causes. [`ACTIVATOR_REFUTES`] is the third cause carrying a
+/// refutation, with the activator still the only site. What each program's
+/// cube shows is not held: of a flagged program's answer nothing is claimed.
 #[test]
 fn each_cause_has_a_fixture_whose_only_site_is_of_its_kind() {
     let cases: &[(&str, SiteKind)] = &[
         (
             "examples/lattice/08_absent_witness_hole.ein",
             SiteKind::Absent,
-        ),
-        (
-            "examples/lattice/04_obligation_trigger_hole.ein",
-            SiteKind::ObligationTrigger,
         ),
         (
             "examples/lattice/09_activator_hole.ein",
@@ -278,15 +293,34 @@ fn each_cause_has_a_fixture_whose_only_site_is_of_its_kind() {
         );
     }
 
-    let (mut kb, mut terms, ast) = loaded_text("activator-refutes", ACTIVATOR_REFUTES);
-    let Outcome::Region(r) =
-        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-            .expect("computes")
-    else {
-        panic!("activator-refutes: within the limit");
-    };
-    let kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
-    assert_eq!(kinds, [SiteKind::Activator]);
+    let rel = "examples/lattice/04_obligation_trigger_hole.ein";
+    let (r, _) = region_of(rel);
+    let mut kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
+    kinds.dedup();
+    assert_eq!(
+        kinds,
+        [
+            SiteKind::Hypothesis,
+            SiteKind::ObligationTrigger,
+            SiteKind::ObligationGuard
+        ],
+        "{rel}"
+    );
+
+    for (name, text, kind) in [
+        ("activator-refutes", ACTIVATOR_REFUTES, SiteKind::Activator),
+        ("trigger-alone", TRIGGER_ALONE, SiteKind::ObligationTrigger),
+    ] {
+        let (mut kb, mut terms, ast) = loaded_text(name, text);
+        let Outcome::Region(r) =
+            region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+                .expect("computes")
+        else {
+            panic!("{name}: within the limit");
+        };
+        let kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
+        assert_eq!(kinds, [kind], "{name}");
+    }
 }
 
 // ── Fact grain ──────────────────────────────────────────────────────
@@ -1909,14 +1943,14 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
 }
 
 /// L5's premise on the zebra family, past the oracle's limit: what the table
-/// licenses, and why it licenses no more. On `zebra.ein` the hrule proposes
-/// `(co-located v House-n)` only, so each `slot-owed-room` debt is licensed
-/// and no `slot-owed-fill` one is: its witnesses `(co-located House-n v)` are
-/// derived by symmetry, never proposed.
+/// licenses. On `zebra.ein` the hrule proposes `(co-located v House-n)` only,
+/// and the `slot-owed-fill` debts' witnesses, `(co-located House-n v)`, are
+/// what that obligation writes beside them (Q-M1f.570): every debt is
+/// licensed.
 #[test]
 fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
     for (file, instances, licensed) in [
-        ("examples/zebra.ein", 36, 18),
+        ("examples/zebra.ein", 36, 36),
         ("examples/zebra2.ein", 36, 36),
         ("examples/zebra2-obligations.ein", 36, 36),
         ("examples/zebra2-minus-15.ein", 46, 46),
@@ -1931,96 +1965,66 @@ fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
             "{file}"
         );
         for i in &t.instances {
-            // The program writes no `slot-owed-fill`: its full name.
             let rule = terms.sym(i.key.0).to_string();
-            let short = rule.strip_prefix("std.slots.").unwrap_or(&rule);
-            match (&i.alternatives, short) {
-                (Ok(a), _) => assert!(!a.is_empty(), "{file}: {rule} licensed, no alternative"),
-                (Err(why), "slot-owed-fill") => {
-                    assert!(why.contains("no candidate proposes"), "{file}: {why}")
-                }
-                (Err(why), _) => panic!("{file}: {rule} not licensed: {why}"),
+            match &i.alternatives {
+                Ok(a) => assert!(!a.is_empty(), "{file}: {rule} licensed, no alternative"),
+                Err(why) => panic!("{file}: {rule} not licensed: {why}"),
             }
         }
     }
 }
 
-/// **A witness a candidate implies does not stand for that candidate.** The
-/// claim that it may: let an instance `I` that root owes have witnesses none
-/// of which is a candidate, each in the closure of some candidate, every
-/// other read of its guard static (L5's premise); let `A(I)` be the
-/// candidates whose closure holds a witness; then every member of `R` above
-/// a state owing `I` holds a member of `A(I)`. `13_witness_of_two.ein` is
-/// the program that breaks it: Ann's one witness, `(fed Ann Soup)`, is in
-/// the closure of `(orders Ann)` and of no other single candidate, and
-/// `{(cooks Bob), (shops Cat)}` derives it by a rule that reads both, a
-/// member of `R` that holds none of `A(I)`. So a premise that licensed it
-/// would have to exclude a witness derived at a node by no single
-/// candidate, and L5's does not; L5 does not license the instance, which is
-/// why the modes' answer is the oracle's.
+/// **A witness two candidates derive together is a candidate itself.** The
+/// claim L5's premise guards against: let an instance `I` that root owes
+/// have witnesses none of which is a candidate, each in the closure of some
+/// candidate; then every member of `R` above a state owing `I` would hold a
+/// member of `A(I)`, the candidates whose closure holds a witness.
+/// `13_witness_of_two.ein` broke it while its rule proposed the candidates
+/// alone: Ann's one witness, `(fed Ann Soup)`, is in the closure of `(orders
+/// Ann)` and of no other single candidate, and `{(cooks Bob), (shops Cat)}`
+/// derives it by a rule that reads both. Under the union (Q-M1f.570) the
+/// obligation writes the witness as a hypothesis beside the rule's three, so
+/// it is a candidate, L5 licenses the instance with it as its one
+/// alternative, and every member of `R` holds it: the pair that derives it
+/// together is in `R` with it in its closure.
 #[test]
-fn a_witness_two_candidates_derive_together_stands_for_neither() {
+fn a_witness_two_candidates_derive_together_is_a_candidate_itself() {
     let rel = "examples/lattice/13_witness_of_two.ein";
     let (r, _) = region_of(rel);
     assert!(r.monotonicity.is_monotone(), "{rel}: monotone");
-    assert_eq!(r.n(), 3);
-    let bit = |text: &str| -> u64 {
-        let b = r
-            .candidates
+    assert_eq!(r.n(), 4);
+    let index = |text: &str| -> usize {
+        r.candidates
             .iter()
             .position(|c| c.text == text)
-            .unwrap_or_else(|| panic!("{rel}: no candidate {text}"));
-        1 << b
+            .unwrap_or_else(|| panic!("{rel}: no candidate {text}"))
     };
-    let (orders, cooks, shops) = (bit("(orders Ann)"), bit("(cooks Bob)"), bit("(shops Cat)"));
+    let fed = index("(fed Ann Soup)");
+    let (cooks, shops) = (1u64 << index("(cooks Bob)"), 1u64 << index("(shops Cat)"));
     // Root owes the debt, so every member of R is above a state that owes it.
     assert!(!r.in_r(0), "{rel}: root owes");
-    // L5's premise holds of the guard's other reads, and the instance is
-    // not licensed: its witness is no candidate, and root neither holds nor
-    // denies it.
     let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
     let table = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
         .expect("prepares")
         .expect("a monotone program with an obligation");
     assert_eq!(table.instances.len(), 1);
-    let why = table.instances[0]
+    let alternatives = table.instances[0]
         .alternatives
         .as_ref()
-        .expect_err("not licensed");
-    assert!(
-        why.contains("a `fed` fact can witness it that no candidate proposes"),
-        "{rel}: {why}"
-    );
-    // A(I): the single candidates whose closure holds the witness.
-    let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
-    let mut nodes = region::Nodes::new(&mut kb, &mut terms, &ast, &r.candidates).expect("nodes");
-    let mut implied = 0u64;
-    for (b, c) in r.candidates.iter().enumerate() {
-        let holds = nodes
-            .with_fixpoint(&[c.fact], |kb, terms| {
-                kb.facts()
-                    .any(|f| ein_infer::events::sexpr(terms, f) == "(fed Ann Soup)")
-            })
-            .expect("a node");
-        if holds {
-            implied |= 1 << b;
-        }
-    }
-    assert_eq!(implied, orders, "{rel}: A(I) is (orders Ann) alone");
-    // R is five states, and one of them holds none of A(I).
+        .expect("licensed: its witness is a candidate");
+    assert_eq!(&alternatives[..], &[fed as u32], "{rel}: the witness alone");
+    // Every member of R holds the witness, the pair that derives it among
+    // them.
     let members: Vec<u64> = (0..1u64 << r.n()).filter(|&m| r.in_r(m)).collect();
-    assert_eq!(members.len(), 5, "{rel}: {:?}", names(&r, &members));
-    let missed: Vec<u64> = members
-        .iter()
-        .copied()
-        .filter(|&m| r.nodes[m as usize].closure & implied == 0)
-        .collect();
-    assert_eq!(
-        missed,
-        vec![cooks | shops],
-        "{rel}: {:?}",
-        names(&r, &missed)
-    );
+    assert!(!members.is_empty(), "{rel}: R is not empty");
+    for &m in &members {
+        assert!(
+            r.nodes[m as usize].closure & (1 << fed) != 0,
+            "{rel}: {:?} does not hold the witness",
+            names(&r, &[m])
+        );
+    }
+    assert!(r.in_r(cooks | shops), "{rel}: the pair that derives it is in R");
 }
 
 /// **A dead node's core follows the activator its refutation rests on, where

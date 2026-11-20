@@ -2,8 +2,9 @@
 //! Q-M1f.122 to .126).
 //!
 //! *An object is an atom, or a fact a state could hold: a fact of an ordinary
-//! relation, or the stored negation of a fact a state could hold.* So no fact, value or conclusion is headed
-//! `absent`, which is negation as failure, a premise's test (Q-M1f.122);
+//! relation, or the stored negation of a fact a state could hold.* So no written fact and no conclusion is
+//! headed `absent`, which is negation as failure, a premise's test (Q-M1f.122),
+//! and under an ordinary relation it is a name (Q-M1f.571);
 //! `false` takes no argument anywhere (Q-M1f.123); `(eq …)`, computed and
 //! never stored, is no value, as `(neq …)` is none (Q-M1f.124); and a
 //! pattern's argument is what a value can be, so a connective there is
@@ -61,8 +62,8 @@ const NEQ_NOTE: &str = "note: neq is computed and never stored";
 
 /// `(shape, the forms after HEAD, what the first line of stderr holds, what
 /// stderr holds besides)`.
-const REFUSED: [(&str, &str, &str, &str); 52] = [
-    // ── `absent` heads no fact, value or conclusion (Q-M1f.122) ──
+const REFUSED: [(&str, &str, &str, &str); 45] = [
+    // ── `absent` heads no written fact and no conclusion (Q-M1f.122) ──
     (
         "absent-fact",
         "(absent k)",
@@ -74,24 +75,6 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
         "(absent (p a))",
         "unexpected `absent`",
         "the stored negation of a fact is (not …)",
-    ),
-    (
-        "absent-nested",
-        "(q (absent k))",
-        "unexpected `absent`",
-        ABSENT_NOTE,
-    ),
-    (
-        "absent-negated",
-        "(not (absent k))",
-        "unexpected `absent`",
-        ABSENT_NOTE,
-    ),
-    (
-        "absent-using",
-        "(q a :rule r :using ((absent k)))",
-        "unexpected `absent`",
-        ABSENT_NOTE,
     ),
     (
         "absent-concluded",
@@ -106,36 +89,11 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
         ABSENT_NOTE,
     ),
     (
-        "absent-concluded-value",
-        "(rule r () :match (p ?x) :assert (q (absent ?x)) :why \"w\")",
-        "unexpected `absent`",
-        ABSENT_NOTE,
-    ),
-    (
-        "absent-concluded-negated",
-        "(rule r () :match (p ?x) :assert (not (absent ?x)) :why \"w\")",
-        "unexpected `absent`",
-        ABSENT_NOTE,
-    ),
-    (
-        "absent-premise-negated",
-        "(rule r () :match (and (p ?x) (not (absent ?x))) :assert (won ?x) :why \"w\")",
-        "unexpected `absent`",
-        ABSENT_NOTE,
-    ),
-    (
         "absent-macro-concluded",
         "(macro m (?a) (absent ?a) :why \"m\")\n\
          (rule r () :match (p ?x) :assert (m ?x) :why \"w\")",
         "rule 'r': its :assert writes (absent ?x), and absent is negation as failure, a \
          premise's test, and no fact is of it",
-        "",
-    ),
-    (
-        "absent-pattern-argument",
-        "(rule r () :match (and (p ?x) (q (absent (q ?x)))) :assert (won ?x) :why \"w\")",
-        "rule 'r': its :match writes (q (absent (q ?x))), and (absent (q ?x)) is written where \
-         a value goes — absent is negation as failure",
         "",
     ),
     (
@@ -398,7 +356,9 @@ const REFUSED: [(&str, &str, &str, &str); 52] = [
 ];
 
 /// A connective a macro leaves as a pattern's argument: through a call's
-/// argument, at any depth, and the stdlib's `forall` called inside a pattern.
+/// argument, at any depth, and `forall`'s shape called inside a pattern,
+/// where the `absent` it leaves is a name (Q-M1f.571) and the `and` under it
+/// a connective.
 const REFUSED_THROUGH_A_MACRO: [(&str, &str, &str); 3] = [
     (
         "macro-argument",
@@ -417,16 +377,16 @@ const REFUSED_THROUGH_A_MACRO: [(&str, &str, &str); 3] = [
     ),
     (
         "forall-inside-a-pattern",
-        "(import std.macro :symbols (forall))\n\
-         (rule r () :match (and (p ?x) (absent (h (forall ?y (p ?y) (q ?y))))) :assert (won ?x) \
+        "(macro all (?b ?G ?B) (absent (and ?G (absent ?B))) :why \"all\")\n\
+         (rule r () :match (and (p ?x) (absent (h (all ?y (p ?y) (q ?y))))) :assert (won ?x) \
          :why \"w\")",
-        "rule 'r': its :match writes (h (absent (and (p ?y) (absent (q ?y))))), and (absent \
-         (and (p ?y) (absent (q ?y)))) is written where a value goes",
+        "rule 'r': its :match writes (absent (and (p ?y) (absent (q ?y)))), and (and (p ?y) \
+         (absent (q ?y))) is a connective where a value goes",
     ),
 ];
 
 /// What keeps loading: `(shape, the forms after HEAD)`.
-const ACCEPTED: [(&str, &str); 19] = [
+const ACCEPTED: [(&str, &str); 26] = [
     ("false-alone", "(false)"),
     ("false-alone-with-a-source", "(false :source \"given\")"),
     ("false-alone-as-a-value", "(q (false))"),
@@ -488,6 +448,36 @@ const ACCEPTED: [(&str, &str); 19] = [
         "(import std.macro :symbols (forall))\n\
          (rule r () :match (and (p ?x) (forall ?y (and (p ?y) (neq ?y b)) (p ?y))) \
          :assert (won ?x) :why \"w\")",
+    ),
+    // `absent` under an ordinary relation, under `not` and in `:using` is a
+    // name, the kernel reading nothing of it (Q-M1f.571).
+    (
+        "absent-nested",
+        "(q (absent k))",
+    ),
+    (
+        "absent-negated",
+        "(not (absent k))",
+    ),
+    (
+        "absent-using",
+        "(q a :rule r :using ((absent k)))",
+    ),
+    (
+        "absent-concluded-value",
+        "(rule r () :match (p ?x) :assert (q (absent ?x)) :why \"w\")",
+    ),
+    (
+        "absent-concluded-negated",
+        "(rule r () :match (p ?x) :assert (not (absent ?x)) :why \"w\")",
+    ),
+    (
+        "absent-premise-negated",
+        "(rule r () :match (and (p ?x) (not (absent ?x))) :assert (won ?x) :why \"w\")",
+    ),
+    (
+        "absent-pattern-argument",
+        "(rule r () :match (and (p ?x) (q (absent (q ?x)))) :assert (won ?x) :why \"w\")",
     ),
 ];
 
@@ -602,15 +592,15 @@ fn a_form_that_is_no_value_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The regressions' nineteen witnesses of the value rule, each read from its
-/// file, as `regressions.rs` reads one command's run of each.
+/// The regressions' eighteen witnesses of the value rule the loader refuses,
+/// each read from its file, as `regressions.rs` reads one command's run of
+/// each; `absent-fact-nested.ein` loads (Q-M1f.571).
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-value-rule-witnesses");
-    let witnesses: [(&str, &str, &str); 19] = [
+    let witnesses: [(&str, &str, &str); 18] = [
         ("absent-fact-for-not", "unexpected `absent`", ABSENT_NOTE),
         ("absent-fact-name", "unexpected `absent`", ABSENT_NOTE),
-        ("absent-fact-nested", "unexpected `absent`", ABSENT_NOTE),
         ("absent-concluded", "unexpected `absent`", ABSENT_NOTE),
         ("absent-hrule-concluded", "unexpected `absent`", ABSENT_NOTE),
         (

@@ -1,23 +1,23 @@
-//! Hypothesis generation — the enumerator that proposes what to guess.
+//! Hypothesis generation — what a state's `open` facts propose, and $H$.
 //!
-//! **Three** modes, and the switch is a ladder
-//! ([04-hypothesis-generation.md § 2](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-ladder)):
-//! rule-driven
-//! when the puzzle declares any `(hrule …)` ([`crate::hrule`]); otherwise
-//! obligation-driven where an obligation is **activated** at the state, a plan
-//! its activators compile ([`crate::oblgen`], which proposes what would pay
-//! the debts the state owes, and for a debt a rule can bring a commitment to
-//! owe as well), so that under an activated obligation a state that owes
-//! nothing proposes nothing and is complete; otherwise, or where that rung
-//! declines, blind combinatorial. An obligation rule the program loads and
-//! nothing activates chooses no rung: every import brings its module whole,
-//! and a module imported for another of its names takes nothing off the blind
-//! enumerator. The switch is one function, `rung`, which
-//! [`eligible_relations`] reads too. Then an eight-stage
-//! filter pipeline whose **attribution** — which counter a drop lands in — is
-//! observable through [`HypGenStats`] and through the `hyp` / `hypskip`
-//! events, and every rung feeds it: what changes between them is which
-//! candidates are proposed, never what happens to one afterwards.
+//! **Three writers** of a hypothesis `(open F)` (Q-M1f.566, Q-M1f.570): a
+//! rule that concludes one, an `(hrule …)` among them ([`crate::hrule`]),
+//! with the `(open F)` the program writes; an obligation **activated** at the
+//! state, a plan its activators compile ([`crate::oblgen`], which proposes
+//! what would pay the debts the state owes, and for a debt a rule can bring a
+//! commitment to owe as well), so that under an activated obligation a state
+//! that owes nothing proposes nothing and is complete; and the blind
+//! combinatorial enumerator, **only where the state holds no `open` fact and
+//! no obligation is activated** (Q-M1f.576, Q-M1f.578). $H$ is
+//! the union of the first two, identical facts one, less what the state
+//! holds or denies, or else the third's. An obligation rule the program loads
+//! and nothing activates writes nothing: every import brings its module
+//! whole, and a module imported for another of its names takes nothing off
+//! the blind enumerator. Then an eight-stage filter pipeline whose
+//! **attribution** — which counter a drop lands in — is observable through
+//! [`HypGenStats`] and through the `hyp` / `hypskip` events, and every writer
+//! feeds it: what changes between them is which candidates are proposed,
+//! never what happens to one afterwards.
 //!
 //! ### What must not change
 //!
@@ -149,7 +149,7 @@ pub struct HypGenStats {
     pub emitted: u64,
     pub filtered: [u64; 3],
     pub pre_candidate: [u64; 4],
-    /// Which rung of the ladder this call took, and what it found owed. All
+    /// Which writers this call took H from, and what it found owed. All
     /// zeros and [`crate::oblgen::Mode::Blind`] for a program
     /// that declares no obligation rule, which is the shape every counter
     /// baseline was taken under.
@@ -186,11 +186,10 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 /// The blind combinatorial enumerator alone, whatever the program declares,
 /// and **config-free** as [`generate_config_free`] is.
 ///
-/// **Not a search entry point.** No route walks the ladder; this answers a
-/// question *about* a state that the ladder cannot be asked, because the rung
-/// that is active there stops as soon as its own candidates run out: *how many
-/// facts would the blind enumerator still propose at a state the rung called
-/// complete?* That number is the state's
+/// **Not a search entry point.** No route reads it; this answers a question
+/// *about* a state that the writers cannot be asked, because where any of them
+/// writes the blind enumerator does not: *how many facts would the blind
+/// enumerator still propose at a state the writers called complete?* That number is the state's
 /// [leftover-open count](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it),
 /// and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
@@ -204,10 +203,21 @@ pub fn generate_blind(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(s, stats, f, Rungs::BlindOnly)
+    generate_with(s, stats, f, Rungs::BlindOnly, None)
 }
 
-/// Yield candidate hypothesis facts in the ladder's order, calling `f` per
+/// Every fact the blind enumerator builds at `s`'s state, once each and no
+/// filter applied, narrating nothing: what a state above root re-reads
+/// ([`crate::open`]).
+pub(crate) fn generate_blind_raw(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+) -> Result<(), CompileError> {
+    generate_with(s, stats, f, Rungs::BlindRaw, None)
+}
+
+/// Yield candidate hypothesis facts in the writers' order, calling `f` per
 /// survivor: the **config-free** candidate list, whatever the program's
 /// `(config …)` says. It is the list H is built from at root's fixpoint
 /// (`region::prepare_with`), so every command and the oracle read it.
@@ -224,94 +234,68 @@ pub fn generate_config_free(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(s, stats, f, Rungs::Ladder)
+    generate_with(s, stats, f, Rungs::Ladder, None)
 }
 
-/// The rung of the ladder a program takes at a state, before any rung runs:
-/// what [`rung`] decides.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub(crate) enum Rung {
-    /// `(solve :no-search)`: no rung runs.
-    NoSearch,
-    /// The program declares an `(hrule …)`: rung 1, alone.
-    Hrules,
-    /// An obligation is activated at the state: rung 2, which may still
-    /// decline to the blind enumerator ([`crate::oblgen::Mode::Declined`]).
-    Obligations,
-    /// Neither: rung 3, the blind enumerator. A program that loads an
-    /// obligation rule and activates none is here.
-    Blind,
-}
-
-/// **The switch**: which rung the ladder takes at `s`'s state, which is root
-/// wherever H is built. In order: `(solve :no-search)`; an hrule the program
-/// declares, active or not; an obligation **activated** at the state, a plan
-/// the state's activators compile, an obligation rule without parameters at
-/// every state ([`crate::mechanisms::obligation_plans`], the one reading of
-/// an obligation, which the mechanisms check reads too); otherwise the blind
-/// enumerator.
-///
-/// So the second rung is chosen by what the program states, an obligation
-/// with its activator, and not by what it loads: every import brings its
-/// module whole, obligation rules among it, and a rule nothing activates
-/// chooses no rung. Nor is it chosen by what the state happens to owe: under
-/// an activated obligation a discharged state proposes nothing and is
-/// complete, which is what *complete means discharged* has to mean.
-///
-/// The ladder (`generate_with`) and [`eligible_relations`] read this one
-/// function, so the rung a call takes and the relations the advisory calls
-/// eligible are decided once.
-pub(crate) fn rung(s: &mut Session<'_>) -> Result<Rung, CompileError> {
-    if declares_no_search(s.kb.program(), s.ast) {
-        return Ok(Rung::NoSearch);
-    }
-    if !s.kb.program().hrules.is_empty() {
-        return Ok(Rung::Hrules);
-    }
-    if crate::mechanisms::obligation_plans(s)?.is_empty() {
-        return Ok(Rung::Blind);
-    }
-    Ok(Rung::Obligations)
-}
-
-/// Which rungs of the generation ladder a call is allowed to use.
+/// Which writers of a hypothesis a call runs.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Rungs {
-    /// Every rung, in order — what the search runs.
+    /// Every writer, as root's $H$ and a state's `open` facts read them.
     Ladder,
-    /// The bottom rung only — [`generate_blind`]'s probe.
+    /// The blind enumerator only — [`generate_blind`]'s probe.
     BlindOnly,
+    /// The blind enumerator only, every fact it builds, no filter applied —
+    /// [`generate_blind_raw`].
+    BlindRaw,
 }
 
-/// The ladder, with the rungs the caller is allowed to use.
+/// **What each writer wrote at a state** (Q-M1f.566): the hypotheses the
+/// pass that writes a state's `open` facts writes `(open F)` of
+/// ([`crate::open`]). A rule's are every match, the facts the state holds
+/// or denies among them, since a rule concludes what its match gives; an
+/// obligation's and the blind enumerator's are what passed the filters: the
+/// facts that would pay what is owed, and the facts still undecided.
+#[derive(Clone, Default, Debug)]
+pub(crate) struct Written {
+    pub rules: Vec<FactId>,
+    pub obligations: Vec<FactId>,
+    pub blind: Vec<FactId>,
+    /// Whether the blind enumerator ran: the state held no `open` fact, and
+    /// no obligation was activated there.
+    pub blind_ran: bool,
+}
+
+/// The writers, with the ones the caller allows: one body for every entry
+/// point, because the setup — the `(solve …)` relation lists, the per-call
+/// `Ctx` — is what every writer shares, and a second copy of it is a second
+/// place for the filter order to drift.
 ///
-/// One body for every entry point, because the setup — the `(query …)`
-/// relation lists, the per-call `Ctx` — is what every rung shares, and a
-/// second copy of it is a second place for the filter order to drift.
+/// In order (Q-M1f.570, Q-M1f.576): the rules that conclude a hypothesis,
+/// hrules among them, every match; the `(open F)` the state holds that the
+/// program wrote; the obligations activated at the state; and the blind
+/// enumerator, where none of those wrote and no obligation is activated. Each
+/// candidate goes through the one filter pipeline, so $H$ is their union,
+/// identical facts one, less what the state holds or denies.
 fn generate_with(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
     rungs: Rungs,
+    mut written: Option<&mut Written>,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
-    // The switch, [`rung`]; the probe takes the blind enumerator whatever the
-    // program declares.
-    let rung = match rungs {
-        Rungs::Ladder => rung(s)?,
-        Rungs::BlindOnly => Rung::Blind,
-    };
     // `(solve :no-search)`: the program states that its
-    // lattice is root alone, so no rung runs and nothing is proposed, whatever
-    // hrules, obligations or lists it also declares. Before anything is
-    // compiled, so the call narrates nothing.
-    if rung == Rung::NoSearch {
+    // lattice is root alone, so no writer runs and nothing is proposed,
+    // whatever rules, obligations or lists it also declares. Before anything
+    // is compiled, so the call narrates nothing.
+    if rungs == Rungs::Ladder && declares_no_search(s.kb.program(), s.ast) {
         stats.rung.mode = crate::oblgen::Mode::NoSearch;
         return Ok(());
     }
     let allowed = query_relations(s, HYPOTHESIS_RELATIONS);
     let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
     let mut ctx = Ctx {
+        raw: rungs == Rungs::BlindRaw,
         seen: FxHashSet::default(),
         pairs: crate::contradiction::Pairs::of(
             crate::monotone::plans_of(&s.memo).iter().map(|p| &**p),
@@ -319,35 +303,76 @@ fn generate_with(
         ),
     };
 
-    if rung == Rung::Hrules {
-        // Rung 1 — the user's own generator, an override. `(hrule …)` presence
-        // *is* the switch: a puzzle that says
-        // what to guess is never second-guessed by what it owes.
-        stats.rung.mode = crate::oblgen::Mode::Hrules;
-        let hrules = Hrules::new(s)?;
-        let _ = hrules.candidates(s, &mut |s, fact| emit(s, &mut ctx, stats, fact, f));
-        return Ok(());
-    }
-
-    // Rung 2 — the theory's own generator: branch on what the state owes,
-    // where an obligation is activated. `Mode::Declined` is the one answer
-    // that falls through, and it falls through having emitted nothing.
-    if rung == Rung::Obligations {
-        let closed = closed_relations(s.kb, s.terms);
-        let report = crate::oblgen::generate(
-            s,
-            &allowed,
-            &excluded,
-            &closed,
-            stats,
-            &mut |s, stats, fact| emit(s, &mut ctx, stats, fact, f),
-        )?;
-        stats.rung = report;
-        if report.mode != crate::oblgen::Mode::Declined {
+    if rungs == Rungs::Ladder {
+        // The rules that conclude a hypothesis, the program's own
+        // generator: every match is written, and goes through the filters.
+        let rules = Hrules::new(s)?;
+        let mut wrote = false;
+        let mut broke = false;
+        if !rules.is_empty() {
+            let _ = rules.candidates(s, &mut |s, fact| {
+                wrote = true;
+                if let Some(w) = written.as_deref_mut() {
+                    w.rules.push(fact);
+                }
+                let flow = emit(s, &mut ctx, stats, fact, f);
+                broke |= flow.is_break();
+                flow
+            });
+        }
+        if broke {
+            return Ok(());
+        }
+        // The `open` facts the state holds that no writer of this call
+        // wrote: at root, the program's.
+        let held: Vec<FactId> = crate::open::written_by_program(s.kb, s.terms);
+        for o in held {
+            wrote = true;
+            let Some(fact) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) else {
+                continue;
+            };
+            if emit(s, &mut ctx, stats, fact, f).is_break() {
+                return Ok(());
+            }
+        }
+        // The obligations activated at the state: what would pay what it
+        // owes. `Mode::Declined` writes nothing.
+        let activated = !crate::mechanisms::obligation_plans(s)?.is_empty();
+        if activated {
+            let closed = closed_relations(s.kb, s.terms);
+            let report = crate::oblgen::generate(
+                s,
+                &allowed,
+                &excluded,
+                &closed,
+                wrote,
+                stats,
+                &mut |s, stats, fact| {
+                    let before = stats.emitted;
+                    let flow = emit(s, &mut ctx, stats, fact, f);
+                    if stats.emitted != before
+                        && let Some(w) = written.as_deref_mut()
+                    {
+                        w.obligations.push(fact);
+                    }
+                    flow
+                },
+            )?;
+            stats.rung = report;
+            return Ok(());
+        }
+        if wrote {
+            stats.rung.mode = crate::oblgen::Mode::Hrules;
             return Ok(());
         }
     }
 
+    // The blind enumerator: the state holds no `open` fact and no obligation
+    // is activated there.
+    stats.rung.mode = crate::oblgen::Mode::Blind;
+    if let Some(w) = written.as_deref_mut() {
+        w.blind_ran = true;
+    }
     // Hoisted out of the per-(object, relation, slot) fill, which
     // would otherwise re-sort the names in each. Safe because the sequence
     // cannot change mid-call: the pass writes nothing to the KB, and
@@ -355,16 +380,40 @@ fn generate_with(
     let objects = candidate_objects(s.kb, s.terms, s.ast);
     let by_count = by_participation(s.kb, s.terms, &objects);
     let relations = relation_plan(s, &allowed, &excluded);
+    let mut keep = |fact: FactId| {
+        if let Some(w) = written.as_deref_mut() {
+            w.blind.push(fact);
+        }
+        f(fact)
+    };
     for focal in by_count {
-        if raw_candidates(s, &mut ctx, stats, focal, &objects, &relations, f)?.is_break() {
+        if raw_candidates(s, &mut ctx, stats, focal, &objects, &relations, &mut keep)?
+            .is_break()
+        {
             return Ok(());
         }
     }
     Ok(())
 }
 
+/// The writers at `s`'s state, every candidate handed to `f` as
+/// [`generate_config_free`] hands it, and what each wrote recorded in
+/// `written`: the pass that writes a state's `open` facts reads it, at root
+/// with $H$ ([`crate::open`]).
+pub(crate) fn generate_written(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    written: &mut Written,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+) -> Result<(), CompileError> {
+    generate_with(s, stats, f, Rungs::Ladder, Some(written))
+}
+
 /// What a pass carries across candidates but not across calls.
 struct Ctx {
+    /// Hand every candidate on, the filters not applied but the repeat's:
+    /// the blind enumerator's raw list ([`generate_blind_raw`]).
+    raw: bool,
     seen: FxHashSet<FactId>,
     /// What the state's rules refute beside a fact
     /// ([`crate::contradiction::Pairs`]): a candidate the state holds the
@@ -381,6 +430,13 @@ fn emit(
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> ControlFlow<()> {
     stats.raw += 1;
+    if ctx.raw {
+        return if ctx.seen.insert(fact) {
+            f(fact)
+        } else {
+            ControlFlow::Continue(())
+        };
+    }
     let dropped = apply_filters(s, ctx, stats, fact);
     if dropped.is_none() {
         stats.emitted += 1;
@@ -658,7 +714,9 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
         }
     }
     let k = &terms.kernel;
-    let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
+    // `open` among them: a name where the kernel does not read it
+    // (Q-M1f.571), and the kernel's word, as `absent` is.
+    let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.open, k.eq, k.neq];
     // The kernel's dunder: its own word, never an object, whether a rule
     // derives a fact headed by it or a program writes it as a value.
     let dunder = k.closed;
@@ -769,40 +827,27 @@ pub(crate) fn scoping(
 /// Which relations **this program's generator can still propose** — the
 /// eligibility the refutation warning ([`crate::naf_deps`]) is stated over.
 ///
-/// It reads the ladder rather than one rung, because the hazard is *the search
-/// can still add a fact of R*, and which rung would add it does not matter.
-/// The rung is the generator's own switch, `rung`, read once for both:
+/// It reads every writer, because the hazard is *the search can still add a
+/// fact of R*, and which writer would add it does not matter (Q-M1f.570):
 ///
-/// - **hrules** are an override, so the eligible set is exactly what they
-///   conclude. `closed` / `:hypothesis-relations` / `:no-hypothesis` are not
-///   applied — `apply_filters` does not consult them and neither does
-///   [`Hrules`], so a puzzle that declares a generator gets what it asked for.
-/// - **obligations**, where one is activated, propose the facts that would
-///   discharge what the state owes, so the set is the `(open ?R)` arguments
-///   of the activated plans, scoped by all three. The
-///   rung proposes for a debt a commitment can bring too
+/// - the **rules that conclude a hypothesis**, an hrule among them, and the
+///   `open` facts the state holds: what they conclude, unscoped, since the
+///   two lists and a closure configure the blind enumerator alone
+///   (Q-M1f.578);
+/// - beside them, the **obligations** activated at the state, which propose
+///   the facts that would discharge what the state owes, so the set gains
+///   the `(open ?R)` arguments of the activated plans. The
+///   obligations propose for a debt a commitment can bring too
 ///   ([`crate::oblgen::LaterDebt`]), and that debt's relation is **not** in
-///   this set: which debts those are is read from the rung's own scans, and
+///   this set: which debts those are is read from the obligations' scans, and
 ///   this is the advisory's cheap reading of the program's plans at the
 ///   state.
-/// - otherwise the **blind** set: every declared relation with a signature,
+/// - where none writes, the **blind** set: every declared relation with a signature,
 ///   less the three scopings — `relation_plan`'s filter, read off the same
 ///   helpers so the two cannot drift.
 ///
 /// The closed set is the one **in the KB**: the markers a program writes and
 /// the ones a rule derives (`std.closure`'s).
-///
-/// **One residual, written down rather than papered over.** The obligations
-/// rung can *decline* — a bare `(open)`, a projection that will not resolve
-/// per activator, or [`crate::oblgen`]'s C4 — and fall through to the blind
-/// enumerator, which proposes far more. Whether it declines is a property of
-/// the state, not of the program, so this is the rung the program *means* and
-/// not provably the rung it takes. Answering it exactly would mean running
-/// `oblgen`'s prologue before root has a hypothesis, and the cost of being
-/// wrong here is an under-warning on an advisory. Taking the union instead was
-/// tried and rejected: on `zebra2-obligations.ein` it makes every declared
-/// relation eligible and the warning fires 40 times on a puzzle that solves
-/// correctly — which is a warning nobody would leave on.
 ///
 /// It is also **not** the stratification question, and the two do not overlap:
 /// a watched relation a *rule* derives can flip a guard during saturation,
@@ -810,15 +855,9 @@ pub(crate) fn scoping(
 /// the guard is judged at a fixpoint. This one is about a *commitment*
 /// discharging the guard in a world the search never enters.
 pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
-    // The ladder's switch, read as the generator reads it.
-    let rung = rung(s)?;
-    // `(solve :no-search)`: no rung proposes anything.
-    if rung == Rung::NoSearch {
+    // `(solve :no-search)`: no writer proposes anything.
+    if declares_no_search(s.kb.program(), s.ast) {
         return Ok(FxHashSet::default());
-    }
-    if rung == Rung::Hrules {
-        let hrules = Hrules::new(s)?;
-        return Ok(hrules.asserted_relations(s.terms));
     }
     let allowed = query_relations(s, HYPOTHESIS_RELATIONS);
     let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
@@ -828,13 +867,34 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
             && !excluded.contains(&r)
             && allowed.as_ref().is_none_or(|a| a.contains(&r))
     };
-    if rung == Rung::Obligations {
-        let plans = crate::mechanisms::obligation_plans(s)?;
-        return Ok(plans
-            .iter()
-            .filter_map(|p| crate::obligations::open_argument(p, s.terms))
-            .filter(|&r| scoped(r))
-            .collect());
+    // The writers, as the generator reads them: the rules that conclude a
+    // hypothesis and the `open` facts the state holds, with the obligations
+    // activated there; else the blind enumerator.
+    let hrules = Hrules::new(s)?;
+    let mut matched = false;
+    let _ = hrules.candidates(s, &mut |_, _| {
+        matched = true;
+        ControlFlow::Break(())
+    });
+    let mut out: FxHashSet<Symbol> = FxHashSet::default();
+    let written = crate::open::written_by_program(s.kb, s.terms);
+    if matched || !written.is_empty() {
+        out.extend(hrules.asserted_relations(s.terms));
+        for &o in &written {
+            if let Some(fact) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) {
+                out.insert(s.terms.facts.rel(fact));
+            }
+        }
+    }
+    let plans = crate::mechanisms::obligation_plans(s)?;
+    if !plans.is_empty() || !out.is_empty() {
+        out.extend(
+            plans
+                .iter()
+                .filter_map(|p| crate::obligations::open_argument(p, s.terms))
+                .filter(|&r| scoped(r)),
+        );
+        return Ok(out);
     }
     let program = s.kb.program();
     Ok(program

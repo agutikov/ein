@@ -39,10 +39,20 @@ pub struct Program {
     ///
     /// Three things read it, none of them the saturator: `obligations::tally`
     /// reports the undischarged instances once per quiescent KB,
-    /// `oblgen` branches on the facts that would discharge them — the
-    /// hypothesis ladder's middle rung — and `verdict_of` declines
+    /// `oblgen` writes the facts that would discharge them as hypotheses,
+    /// beside the other writers (Q-M1f.570), and `verdict_of` declines
     /// to call an undischarged state a model, which is the `Open` word.
     pub obligations: Registry<Rule>,
+    /// **The rules that conclude a hypothesis**, `(open F)` with `F` a fact
+    /// or a variable the `:match` binds to one (Q-M1f.566, Q-M1f.573): each
+    /// with its whole `:assert`, `(open …)` conjuncts and facts beside them.
+    /// Activated as a rule is, by a fact of its name, and read by the pass
+    /// that writes a state's `open` facts at its fixpoint, never by the
+    /// saturator: a fork drops every `open` fact, so a rule that concludes
+    /// one is read at every state (Q-M1f.569). The facts beside its
+    /// `(open …)` conjuncts are an ordinary rule's: [`Program::rules`] holds
+    /// the rule again with them alone, under the same name.
+    pub hypotheses: Registry<Rule>,
     pub macros: Registry<Macro>,
     /// **Every** `(query …)` block, in source order
     /// ([12-query.md](../../../../docs/ein/user/03-syntax-and-semantics/12-query.md#claims)).
@@ -174,6 +184,10 @@ impl Program {
         self.obligations.insert_new(rule.name, rule);
     }
 
+    pub fn add_hypothesis(&mut self, rule: Rule) {
+        self.hypotheses.insert_new(rule.name, rule);
+    }
+
     /// A name's `NameRef` category.
     ///
     /// `relation` and `rule` are the only two kernel forms hardcoded as
@@ -202,7 +216,10 @@ impl Program {
         if self.relations.contains(name) {
             return NameCategory::Relation;
         }
-        if self.rules.contains(name) || self.obligations.contains(name) {
+        if self.rules.contains(name)
+            || self.obligations.contains(name)
+            || self.hypotheses.contains(name)
+        {
             return NameCategory::Rule;
         }
         NameCategory::Object

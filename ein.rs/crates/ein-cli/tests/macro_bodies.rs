@@ -235,7 +235,7 @@ fn site(site: &str, call: &str, clause: &str) -> Option<(&'static str, String)> 
         "obligation" if clause == ":match" => (
             "rule 'r'",
             format!(
-                "(rule r ()\n  :match  {}\n  :assert (open)\n  :why \"owed for {{?x}}\")\n",
+                "(rule r ()\n  :match  {}\n  :assert (open a)\n  :why \"owed for {{?x}}\")\n",
                 m("(a ?x)")
             ),
         ),

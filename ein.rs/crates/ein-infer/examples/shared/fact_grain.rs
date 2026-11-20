@@ -478,7 +478,11 @@ pub fn classify(
                 }
                 hit
             }
-            SiteKind::Absent | SiteKind::ObligationTrigger => {
+            SiteKind::Absent
+            | SiteKind::ObligationTrigger
+            | SiteKind::ObligationGuard
+            | SiteKind::OpenRead
+            | SiteKind::Hypothesis => {
                 let mut hits: Vec<String> = plans
                     .iter()
                     .filter(|p| p.rule == site.rule && p.activator_args == site.activator)
@@ -534,7 +538,11 @@ fn gave_up(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], relation: &Monotonicity)
                     .expect("an activator site names a rule or an obligation");
                 Some(any(site.rule, arity))
             }
-            SiteKind::Absent | SiteKind::ObligationTrigger => {
+            SiteKind::Absent
+            | SiteKind::ObligationTrigger
+            | SiteKind::ObligationGuard
+            | SiteKind::OpenRead
+            | SiteKind::Hypothesis => {
                 let mut hits: Vec<String> = plans
                     .iter()
                     .filter(|p| p.rule == site.rule && p.activator_args == site.activator)

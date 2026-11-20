@@ -258,7 +258,9 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
     let plans = monotone::plans_of(&p.memo);
     let hypothesised: FxHashSet<Symbol> =
         p.proposed.iter().map(|&f| terms.facts.get(f).0).collect();
-    let m = monotone::classify(&kb, &terms, &plans, &hypothesised);
+    // An obligation census: the static check reads the memo's plans, and no
+    // rule that concludes a hypothesis.
+    let m = monotone::classify(&kb, &terms, &plans, &[], &hypothesised);
     let extendable: FxHashSet<Rel> =
         ein_infer::extendable::relations(&kb, &terms, &ast, &plans, &m)
             .into_iter()

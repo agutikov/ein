@@ -278,7 +278,7 @@ fn typing_row(root: &Root, kb: &Kb, terms: &Terms) -> Json {
         None => rustc_hash::FxHashSet::default(),
     };
     let classify = |h: &rustc_hash::FxHashSet<Symbol>| {
-        monotone::classify(kb, terms, &root.plans, h).is_monotone()
+        monotone::classify(kb, terms, &root.plans, &root.hypotheses, h).is_monotone()
     };
     let typed: rustc_hash::FxHashSet<Symbol> = root
         .proposed

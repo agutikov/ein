@@ -146,6 +146,9 @@ rows! {
     Route => "route", Row;
     /// What the run cost.
     Work => "work", Row;
+    /// A hypothesis a state the run built holds and root does not: the
+    /// program found not monotone in flight (Q-M1f.574).
+    InFlight => "in flight", Block;
     /// What a node is taken to be on a flagged program.
     Assumes => "assumes", Block;
     /// A site of the static check.
@@ -313,6 +316,7 @@ impl Row {
         (
             "lattice",
             &[
+                Row::InFlight,
                 Row::Assumes,
                 Row::Site,
                 Row::MoreSites,
@@ -667,7 +671,11 @@ fn loud_warning(out: &mut Out, m: &Monotonicity, o: &Options) {
         return;
     }
     out.row(Row::Warning, format!("{WARNING}.\n{WARNING_MORE}"));
-    out.stderr.push(ein_infer::detector::warning_line(o.file));
+    // Found in flight alone, the stderr line was said when it was found
+    // (Q-M1f.574).
+    if !m.sites.is_empty() {
+        out.stderr.push(ein_infer::detector::warning_line(o.file));
+    }
 }
 
 /// Print `r` as `ein solve` (or `ein oracle`) does.
@@ -836,11 +844,21 @@ fn lattice_block(
     };
     out.row(
         Row::Lattice,
-        format!(
-            "not monotone: {} (the static check) — {h}",
-            plural(m.sites.len() as u64, "site", "sites")
-        ),
+        if m.sites.is_empty() {
+            format!("not monotone: found in flight (Q-M1f.574) — {h}")
+        } else {
+            format!(
+                "not monotone: {} (the static check) — {h}",
+                plural(m.sites.len() as u64, "site", "sites")
+            )
+        },
     );
+    if let Some(f) = &m.in_flight {
+        out.line(sub_row(
+            Row::InFlight,
+            format!("a state the run built holds (open {f}), which root does not hold"),
+        ));
+    }
     let (uncut, hint) = (out.uncut, out.hint);
     for l in static_rows(m, uncut, hint) {
         out.line(l);

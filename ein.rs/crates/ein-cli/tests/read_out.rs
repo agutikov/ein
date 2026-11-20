@@ -143,15 +143,16 @@ fn the_word_is_printed_once_and_is_the_summarys() {
 
 /// **The mixed regime** — a root that owes beside one state that does not.
 ///
-/// `examples/features/13_mixed_solution_and_open.ein` has two complete
-/// nodes, one discharged and one open, and the count beside the word is the
-/// models' and not the nodes'. Under R the open node is ∅, which owes, so it is not a
-/// state of R: R is one state, `∅ not in R` says why the other is not, and
-/// `--single` answers `Solution`.
+/// `examples/features/13_mixed_solution_and_open.ein` has owing nodes beside
+/// discharged ones, and the count is the states' and not the nodes'. ∅ and
+/// `{(choice Bob)}` owe, so neither is a state of R: R is three states, the
+/// hrule's `(choice Ann)` and what the obligation proposes beside it
+/// (Q-M1f.570), `∅ not in R` says why root is not, and `--single` answers
+/// `Ambiguity`.
 #[test]
 fn an_owing_node_is_not_a_state() {
     let run = solve(&["examples/features/13_mixed_solution_and_open.ein"]);
-    assert_eq!(run.summary["region"]["k_s"], 1, "one state");
+    assert_eq!(run.summary["region"]["k_s"], 3, "three states");
     assert_eq!(run.summary["region"]["root"], "owing");
     assert_eq!(run.summary["region"]["root_owes"], 1);
     assert_eq!(rows(&run, "∅"), vec!["not in R — root owes 1 instance"]);
@@ -165,7 +166,7 @@ fn an_owing_node_is_not_a_state() {
         "examples/features/13_mixed_solution_and_open.ein",
         "--single",
     ]);
-    assert_eq!(single.summary["verdict"]["word"], "Solution");
+    assert_eq!(single.summary["verdict"]["word"], "Ambiguity");
 }
 
 /// **An empty R of the owing kind** reports zero states, says which kind of
@@ -211,7 +212,9 @@ fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
 ///   summary's `root_owed` is `null`, as `root_owes` is.
 ///
 /// R, the claim and the exit code are what they were: the query's one class
-/// is every mark, on the one state.
+/// is every mark, on the one state. The obligation's witness has no guard, so
+/// it proposes no payment at root, and H is the hrule's one candidate
+/// (Q-M1f.570).
 #[test]
 fn the_read_out_names_what_root_owes() {
     let dir = Scratch::new("ein-read-out-owed");
@@ -228,7 +231,7 @@ fn the_read_out_names_what_root_owes() {
              (hrule guess () :match () :assert (go) :why \"suppose every thing is marked\")\n\
              (rule mark-all () :match (and (go) (thing ?x)) :assert (mark ?x red) \
              :why \"{{?x}} is marked, every thing being so\")\n\
-             (rule owe-mark () :match (and (thing ?x) (absent (and (ink ?i) (mark ?x ?i)))) \
+             (rule owe-mark () :match (and (thing ?x) (absent (mark ?x ?c))) \
              :assert (open mark) :why \"{{?x}} owes a mark\")\n\
              (query :goal (go) :expect (model (go)))\n",
             things.join(" ")
@@ -740,7 +743,7 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 /// claim, and the summary lists the relations in `root.hypgen.outside`, on
 /// `--monotone` too. One witness per rung: `uncovered.ein`'s obligations,
 /// `arity3.ein`'s blind enumerator (whose `is-a`, scoped out by
-/// `:no-hypothesis`, is not named), `examples/lattice/13_witness_of_two.ein`'s
+/// `:no-hypothesis`, is not named), `examples/lattice/15_union_label_dead.ein`'s
 /// hrules, which states a claim; and a program that leaves nothing out prints no row and an
 /// empty list.
 #[test]
@@ -761,9 +764,9 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
             ),
         ),
         (
-            "examples/lattice/13_witness_of_two.ein",
-            &["fed"],
-            format!("fed — no candidate: no hrule proposes it. {TAIL}"),
+            "examples/lattice/15_union_label_dead.ein",
+            &["flag"],
+            format!("flag — no candidate: no hrule proposes it. {TAIL}"),
         ),
         ("tests/region/01_states.ein", &[], String::new()),
     ];
@@ -843,7 +846,7 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
         assert_eq!(listed(&cube["outside"]), *relations, "{file}: region.json");
     }
     // `ein test`, beside the claim it prints.
-    let out = run(&["test", "-v", "examples/lattice/13_witness_of_two.ein"]);
+    let out = run(&["test", "-v", "examples/lattice/15_union_label_dead.ein"]);
     assert!(
         out.contains(&format!("    outside the universe: {}\n", cases[2].2)),
         "{out}"

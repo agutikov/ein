@@ -34,6 +34,19 @@ pub use ein_ir::read::Held;
 /// neither a `.einb` container nor UTF-8 gives
 /// [`ein_ir::read::not_utf8_line`].
 pub fn read_program(path: &Path) -> Result<Held, String> {
+    // A hypothesis a state above root holds that root does not makes the
+    // program not monotone, found in flight (Q-M1f.574): the warning is said
+    // at once, once, on stderr, the static check having found no site.
+    let file = path.display().to_string();
+    ein_infer::open::set_in_flight_hook(Some(Box::new(move |_| {
+        // Once a file, whatever runs of it the command makes.
+        static SAID: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+        let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());
+        if !said.contains(&file) {
+            said.push(file.clone());
+            eprintln!("{}", ein_infer::detector::warning_line(&file));
+        }
+    })));
     ein_ir::read::read_program(path).map_err(|e| e.line)
 }
 

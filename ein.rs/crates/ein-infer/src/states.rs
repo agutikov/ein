@@ -418,7 +418,7 @@ pub(crate) fn compute_resumable(
         narrate(events, &out.candidates, &mut o, &[]);
         let mut stats = Layer {
             visited: 1,
-            facts: o.state.len() as u64,
+            facts: o.work,
             ..Layer::default()
         };
         out.root = Root {
@@ -643,7 +643,7 @@ pub(crate) fn compute_resumable(
             for ((mut o, set), pairs) in outs.into_iter().zip(chunk).zip(chunk_owners) {
                 narrate(events, &out.candidates, &mut o, set);
                 stats.visited += 1;
-                stats.facts += o.state.len() as u64;
+                stats.facts += o.work;
                 if o.dead {
                     stats.dead += 1;
                     for &(s, b) in pairs {
@@ -665,7 +665,7 @@ pub(crate) fn compute_resumable(
                 } else {
                     stats.r += 1;
                 }
-                let node_facts = o.state.len() as u64;
+                let node_facts = o.work;
                 let closure: Box<[u32]> = o.closure.into_boxed_slice();
                 let bits = Bits::of(n, &closure);
                 // A fork only adds: the fixpoint holds its commitment.
@@ -782,7 +782,7 @@ pub(crate) fn compute_resumable(
         out.top = Some(Top {
             dead: o.dead,
             owes: o.owes,
-            facts: o.state.len() as u64,
+            facts: o.work,
         });
     }
     out.cost.nodes = t_nodes.elapsed();

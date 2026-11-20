@@ -119,7 +119,9 @@ const LAMP: &str = r#"(relation wired :why "the house is wired")
 "#;
 
 /// **Every surface prints `(on)` and `(lit)`, and none `(on )` or `(lit )`.**
-/// The forms `-p` and `-P` list state 2's two facts, `-f` its one fact of the
+/// The form `-p` lists root's `open` fact and state 2's facts, its `open`
+/// fact among them, `-P` state 2's two facts with no `open` one
+/// (Q-M1f.577), `-f` its one fact of the
 /// candidates' relation, each line the fact's text; the saturated dump writes
 /// a fact with its clause after the relation, `(wired :source …)`, and its
 /// declaration as `(relation wired)`.
@@ -133,7 +135,7 @@ fn every_surface_prints_a_fact_of_no_argument_as_written() {
     holds("ein solve", &plain.out, &["(model (on))", "(model (lit))"]);
 
     for (flag, facts) in [
-        ("-p", &["(lit)", "(on)"][..]),
+        ("-p", &["(open (on))", "(lit)", "(on)", "(open (on))"][..]),
         ("-P", &["(lit)", "(on)"][..]),
         ("-f", &["(on)"][..]),
     ] {
@@ -224,8 +226,9 @@ const STALE: &str = r#"(relation on :why "the switch is on")
 "#;
 
 /// **The `stale` row and `-p` print one text for one fact**: the row names
-/// `(alive)` as the fact the dead node holds stale, and the form lists it as
-/// root's one fact beyond the program.
+/// `(alive)` as the fact the dead node holds stale, and the form lists it
+/// among root's facts beyond the program, beside root's hypothesis, which
+/// `-p` lists as part of the state (Q-M1f.572).
 #[test]
 fn the_stale_row_and_the_form_print_one_text() {
     let scratch = Scratch::new("ein-fact-of-no-argument-stale");
@@ -242,7 +245,7 @@ fn the_stale_row_and_the_form_print_one_text() {
         stale.contains("{(on)}, dead: (alive) ← alive-from-no-false"),
         "{stale}"
     );
-    assert_eq!(form_facts(&r.out), ["(alive)"], "{}", r.out);
+    assert_eq!(form_facts(&r.out), ["(alive)", "(open (on))"], "{}", r.out);
 }
 
 /// **A load refusal prints the fact as written**: a written derivation cycle

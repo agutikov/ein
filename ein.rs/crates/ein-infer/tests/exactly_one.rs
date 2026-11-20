@@ -10,12 +10,14 @@
 //! 1. **the declared control**: `zebra2.ein` declares five relations
 //!    bijective. Five grids, one a relation, every row and every column an
 //!    owed group: five bijections;
-//! 2. **one relation, five grids, half of each owed**: `zebra.ein` states the
-//!    same puzzle over one relation through `std.slots`. The same five
-//!    grids; of each, the family *an attribute's houses* is owed, and the
-//!    family *a house's attributes of one kind* is owed by nothing L5
-//!    licenses: an instance is about each of those groups whose witnesses
-//!    are the mirrored facts no candidate proposes;
+//! 2. **one relation, both orientations, no grid**: `zebra.ein` states the
+//!    same puzzle over one relation through `std.slots`, and its `H` holds
+//!    each placement in both orientations, the hrule's and the mirror that
+//!    pays what a house owes. Every instance root owes is licensed and owes
+//!    a group, the rows in one orientation and the columns in the other; but
+//!    a candidate and its mirror exclude nothing between them, so a member
+//!    is in more than two groups, and the five components, `zebra2.ein`'s
+//!    five grids with each placement twice, are no grid;
 //! 3. **one clue apart**: `zebra2-minus-15.ein`, five bijections over more
 //!    candidates;
 //! 4. **letters and digits**: one grid of eight by ten, the letters owed
@@ -38,7 +40,7 @@ use std::path::Path;
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
 use ein_infer::structure::{
-    self, Cover, CoverOptions, ExactlyOne, Mark, NoTable, NotAGrid, Owing, UNPROPOSED, WitnessIs,
+    self, Cover, CoverOptions, ExactlyOne, Mark, NoTable, NotAGrid, Owing, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
 
@@ -192,116 +194,224 @@ fn a_declared_bijections_rows_and_columns_are_owed_groups() {
     );
 }
 
-/// **One relation, five grids, half of each owed.** `zebra.ein` proposes
-/// the same 56 placements over one relation: the same five grids as
-/// `zebra2.ein`'s under the renaming, found though one relation holds them
-/// all and no candidate's text says an attribute's kind.
+/// A `(co-located x y)` candidate's placement, `[attribute, house]`,
+/// whichever way round it is written: a fact and its mirror are one
+/// placement.
+fn placement(text: &str) -> [String; 2] {
+    let p = parts(text);
+    if p[1].starts_with("House-") {
+        [p[2].to_string(), p[1].to_string()]
+    } else {
+        [p[1].to_string(), p[2].to_string()]
+    }
+}
+
+/// The candidate written the other way round.
+fn mirror(text: &str) -> String {
+    let p = parts(text);
+    format!("({} {} {})", p[0], p[2], p[1])
+}
+
+/// **One relation, both orientations, no grid.** `zebra.ein` proposes the
+/// same 56 placements over one relation, each in both orientations: the
+/// hrule writes `(co-located v House-n)`, and `slot-owed-fill`, *a house has
+/// no attribute of a kind yet*, writes what pays it, the mirror
+/// `(co-located House-n v)`, which joins `H` beside the hrule's
+/// (Q-M1f.570): 112 candidates, the 36 of them dead alone at root 18
+/// placements twice. `symmetric` brings each of a candidate and its mirror
+/// from the other, so the two exclude nothing between them, and each
+/// excludes both orientations of whatever the other placement excludes.
 ///
-/// Root owes 36 instances. The 18 of `slot-owed-room`, *an attribute is in
-/// no house yet*, are licensed and each owes a group: in every grid one
-/// family whole. The 18 of `slot-owed-fill`, *a house has no attribute of a
-/// kind yet*, L5 does not license: a fact that can witness one is
-/// `(co-located House-n v)`, and the candidates are `(co-located v
-/// House-n)`. Each is about one of the 18 groups nothing owes, the other
-/// family of every grid.
+/// Root owes 36 instances and **every one is licensed and owes a group**:
+/// every fact that can witness one is a candidate or denied at root. The 18
+/// of `slot-owed-room`, *an attribute is in no house yet*, each owe an
+/// attribute's houses written the hrule's way; the 18 of `slot-owed-fill`
+/// each owe a house's attributes of one kind written the mirror's way.
+/// Folded onto their placements the 36 owed groups are `zebra2.ein`'s 36,
+/// each once, found though one relation holds them all and no candidate's
+/// text says an attribute's kind.
 ///
-/// **What is true of those witnesses**: 56 of them are no candidate and
-/// not denied, one the mirror of each candidate. By the theory alone each
-/// is brought by its mirror's node and by no other. At root the 38 whose
-/// mirror is alive alone are in that candidate's closure, and the 18 whose
-/// mirror is dead alone are held by no single's node.
+/// **And no grid**: a member of a line of `k` placements is in `2^(k−1)` of
+/// the groups folded from it, one for each orientation of the line's other
+/// members, so a member is in more than two groups. The five components are
+/// `zebra2.ein`'s five grids under the renaming, each placement twice, and
+/// each is no grid, its members in at most 16 groups where the grid is four
+/// by four and 8 where it is three by three.
+///
+/// **What is true of the mirrors that pay a house**: one witness of
+/// `slot-owed-fill` the mirror of each of the hrule's 56 candidates, and
+/// each a candidate. By the theory alone each is brought by its own node
+/// and its mirror's, and by no other. At root the 38 alive alone are in
+/// both closures, and the 18 dead alone are held by no single's node.
 #[test]
-fn one_relation_holds_five_grids_and_half_of_each_is_owed() {
+fn one_relation_owes_a_group_in_each_orientation_and_holds_no_grid() {
     let (c, x) = read("examples/zebra.ein");
     let (c2, x2) = read("examples/zebra2.ein");
-    assert_eq!(x.grids.grids.len(), 5);
-    assert_eq!(x.grids.not, []);
-    assert_eq!(placements(&c, &x), placements(&c2, &x2));
     assert!(
         c.candidates
             .iter()
             .all(|k| parts(&k.text)[0] == "co-located")
     );
-
-    assert_eq!((x.owed.root_owes, x.owed.table().len()), (36, 36));
-    assert_eq!(x.owed_groups().len(), 18);
-    assert_eq!(x.unowed().len(), 18);
-    assert_eq!(x.unlicensed().len(), 18);
-    assert_eq!(x.not_groups(), []);
-    for (i, owing) in x.owed.table().iter().zip(&x.owing) {
-        match owing {
-            Owing::Group(_) => assert_eq!(i.rule, "std.slots.slot-owed-room"),
-            Owing::Unlicensed { about, .. } => {
-                assert_eq!(i.rule, "std.slots.slot-owed-fill");
-                assert_eq!(i.alternatives, Err(UNPROPOSED.to_string()));
-                assert!(about.is_some(), "{}", i.text);
-            }
-            other => panic!("{} stands as {other:?}", i.text),
-        }
-    }
-    // In every grid one family is owed whole, and every group of the other
-    // has an unlicensed instance about it and is owed by nothing.
-    for k in 0..5u32 {
-        let mut share = x.share(k).to_vec();
-        share.sort_by_key(|s| s.owed);
-        assert_eq!((share[0].owed, share[0].about), (0, share[0].groups));
-        assert_eq!((share[1].owed, share[1].about), (share[1].groups, 0));
-        assert_eq!(share[0].groups, share[1].groups, "as many rows as columns");
-        assert!(!x.is_bijection(k));
-    }
-    // The 18 groups nothing owes are the 18 an instance is about, one each.
-    let about: Vec<u32> = (0..c.groups.len() as u32)
-        .filter(|&g| !x.about[g as usize].is_empty())
+    // The 56 placements, each twice.
+    let texts: BTreeSet<&str> = c.candidates.iter().map(|k| k.text.as_str()).collect();
+    assert_eq!(texts.len(), 112);
+    assert!(texts.iter().all(|t| texts.contains(mirror(t).as_str())));
+    let folded: BTreeSet<[String; 2]> = texts.iter().map(|t| placement(t)).collect();
+    let zebra2: BTreeSet<[String; 2]> = c2
+        .candidates
+        .iter()
+        .map(|k| {
+            let p = parts(&k.text);
+            [p[1].to_string(), p[2].to_string()]
+        })
         .collect();
-    assert_eq!(about, x.unowed());
-    assert!(x.about.iter().all(|a| a.len() <= 1));
-
-    // The witnesses, by the nodes.
+    assert_eq!(folded, zebra2, "one universe, under the renaming");
     let dead: BTreeSet<u32> = (0..c.n() as u32)
         .filter(|&b| c.marks[b as usize] == Mark::DeadAlone)
         .collect();
-    assert_eq!(dead.len(), 18);
-    let mut mirrored: BTreeMap<u32, usize> = BTreeMap::new();
-    let (mut brought, mut by_nothing, mut whole) = (0, 0, 0);
-    for &k in &x.unlicensed() {
-        let i = &x.owed.table()[k as usize];
+    assert_eq!(dead.len(), 36);
+    let dead_texts: BTreeSet<&str> = dead.iter().map(|&b| c.text(b)).collect();
+    assert!(
+        dead_texts
+            .iter()
+            .all(|t| dead_texts.contains(mirror(t).as_str())),
+        "a placement is dead alone in both orientations or in neither"
+    );
+
+    // Every instance licensed, and each owes a group in one orientation.
+    assert_eq!((x.owed.root_owes, x.owed.table().len()), (36, 36));
+    assert_eq!(x.owed_groups().len(), 36);
+    assert_eq!(x.unowed().len(), 316);
+    assert_eq!((x.unlicensed(), x.not_groups()), (vec![], vec![]));
+    assert!(x.owed_by.iter().all(|by| by.len() <= 1));
+    let mut by_rule: BTreeMap<String, usize> = BTreeMap::new();
+    for (i, owing) in x.owed.table().iter().zip(&x.owing) {
+        let Owing::Group(g) = owing else {
+            panic!("{} stands as {owing:?}", i.text)
+        };
+        let alternatives = i.alternatives.as_ref().expect("licensed");
+        assert_eq!(c.members(*g), &alternatives[..]);
+        let mirrored = i.rule == "std.slots.slot-owed-fill";
+        assert!(
+            mirrored || i.rule == "std.slots.slot-owed-room",
+            "{}",
+            i.rule
+        );
+        assert!(
+            alternatives
+                .iter()
+                .all(|&b| parts(c.text(b))[1].starts_with("House-") == mirrored),
+            "{}",
+            i.text
+        );
+        let witnesses = i.witnesses.as_ref().expect("its witnesses");
+        assert!(witnesses.iter().all(|w| w.is != WitnessIs::Unproposed));
+        *by_rule.entry(i.rule.clone()).or_default() += 1;
+    }
+    assert_eq!(by_rule.values().collect::<Vec<_>>(), [&18, &18]);
+    let owed: BTreeSet<BTreeSet<[String; 2]>> = x
+        .owed_groups()
+        .iter()
+        .map(|&g| c.members(g).iter().map(|&b| placement(c.text(b))).collect())
+        .collect();
+    let lines: BTreeSet<BTreeSet<[String; 2]>> = c2
+        .groups
+        .iter()
+        .map(|g| {
+            g.iter()
+                .map(|&b| {
+                    let p = parts(c2.text(b));
+                    [p[1].to_string(), p[2].to_string()]
+                })
+                .collect()
+        })
+        .collect();
+    assert_eq!(owed, lines, "the owed groups are zebra2.ein's, folded");
+
+    // No grid: the five components are zebra2.ein's grids, each placement
+    // twice, and a member is in more than two groups.
+    assert_eq!(x.grids.grids, []);
+    let mut most: Vec<u32> = x
+        .grids
+        .not
+        .iter()
+        .map(|&(_, why)| match why {
+            NotAGrid::MoreThanTwo { most } => most,
+            other => panic!("a component is no grid for {other:?}"),
+        })
+        .collect();
+    most.sort_unstable();
+    assert_eq!(most, [8, 8, 16, 16, 16]);
+    let components: BTreeSet<BTreeSet<[String; 2]>> = c
+        .components
+        .iter()
+        .map(|k| {
+            let set: BTreeSet<[String; 2]> = k.iter().map(|&b| placement(c.text(b))).collect();
+            assert_eq!(set.len() * 2, k.len(), "each placement twice");
+            set
+        })
+        .collect();
+    assert_eq!(components, placements(&c2, &x2));
+
+    // The mirrors that pay a house, by the nodes.
+    let (mut mirrored, mut brought, mut by_nothing) = (BTreeSet::new(), 0, 0);
+    for i in x.owed.table() {
+        if i.rule != "std.slots.slot-owed-fill" {
+            continue;
+        }
         for w in i.witnesses.as_ref().expect("its witnesses") {
             match w.is {
-                WitnessIs::Candidate(_) => panic!("{} is a candidate", w.text),
+                WitnessIs::Unproposed => panic!("{} is proposed by nothing", w.text),
                 WitnessIs::Denied => {
                     assert!(w.held_at_root.is_empty() && w.held_in_theory.is_empty());
                 }
-                WitnessIs::Unproposed => {
-                    // By the theory: its mirror, and no other candidate.
-                    let [b] = w.held_in_theory[..] else {
-                        panic!("{} is brought by {:?}", w.text, w.held_in_theory)
-                    };
-                    let (p, q) = (parts(&w.text), parts(c.text(b)));
-                    assert_eq!((p[0], p[1], p[2]), (q[0], q[2], q[1]));
-                    *mirrored.entry(b).or_default() += 1;
-                    // At root: in its mirror's closure where that is alive
-                    // alone, and in no single's where it is dead alone.
+                WitnessIs::Candidate(b) => {
+                    // By the theory: its own node and its mirror's, and no
+                    // other candidate's.
+                    let held: BTreeSet<String> = w
+                        .held_in_theory
+                        .iter()
+                        .map(|&h| c.text(h).to_string())
+                        .collect();
+                    assert_eq!(
+                        held,
+                        BTreeSet::from([w.text.clone(), mirror(&w.text)]),
+                        "{}",
+                        w.text
+                    );
+                    assert!(mirrored.insert(mirror(&w.text)), "{}", w.text);
+                    // At root: in both closures where it is alive alone, and
+                    // in no single's where it is dead alone.
                     if dead.contains(&b) {
                         assert!(w.held_at_root.is_empty(), "{}", w.text);
                         by_nothing += 1;
                     } else {
-                        assert!(w.held_at_root.contains(&b), "{}", w.text);
+                        let at_root: BTreeSet<String> = w
+                            .held_at_root
+                            .iter()
+                            .map(|&h| c.text(h).to_string())
+                            .collect();
+                        assert!(
+                            at_root.contains(&w.text) && at_root.contains(&mirror(&w.text)),
+                            "{}",
+                            w.text
+                        );
                         brought += 1;
                     }
                 }
             }
         }
-        let (all, by) = x.brought(k).expect("read");
-        whole += usize::from(all == by);
     }
+    let hrules: BTreeSet<String> = texts
+        .iter()
+        .filter(|t| !parts(t)[1].starts_with("House-"))
+        .map(|t| t.to_string())
+        .collect();
     assert_eq!(
-        mirrored.len(),
-        56,
-        "one witness the mirror of each candidate"
+        mirrored, hrules,
+        "one witness the mirror of each of the hrule's"
     );
-    assert!(mirrored.values().all(|&n| n == 1));
     assert_eq!((brought, by_nothing), (38, 18));
-    assert_eq!(whole, 5, "instances every such witness of which is brought");
 }
 
 /// **One clue apart.** `zebra2-minus-15.ein` leaves 96 candidates, none
@@ -389,48 +499,56 @@ fn a_program_with_no_table_owes_no_group() {
 
 /// **A member in more than two groups is in no grid.** A rule that seats
 /// two friends at one table ties a friend's seats to another's, so a
-/// candidate is in nine groups or ten: one component, and no grid. The
-/// program that owes every friend a seat has two owed groups, the two
-/// friends every seat of whom its hrule proposes; of the three others a
-/// seat can witness the debt that no candidate proposes, that root does not
-/// deny, and that no single's node brings, at root or by the theory: such
-/// an instance is about no group.
+/// candidate is in nine groups, eleven or thirteen: one component, and no
+/// grid. The program owes every friend a seat, and `H` holds every seat of
+/// every friend, 25: the hrule proposes the seats at a table the friend's
+/// group fits, and the obligation every seat that would pay the friend's
+/// debt, which joins `H` beside the hrule's (Q-M1f.570). So each of the
+/// five instances is licensed, every seat that can witness it a candidate,
+/// and owes a group, the friend's five seats.
 #[test]
 fn a_member_in_more_than_two_groups_is_in_no_grid() {
     let (c, x) = read("examples/lattice/06_friends_tables_everyone_sits.ein");
     assert!(c.monotone);
+    assert_eq!(c.n(), 25);
     assert_eq!(c.components.len(), 1);
     assert!(x.grids.grids.is_empty());
     assert!(matches!(
         x.grids.not[..],
-        [(0, NotAGrid::MoreThanTwo { most: 10 })]
+        [(0, NotAGrid::MoreThanTwo { most: 13 })]
     ));
+    let mut in_groups: Vec<usize> = c.member_of.iter().map(Vec::len).collect();
+    in_groups.sort_unstable();
+    in_groups.dedup();
+    assert_eq!(in_groups, [9, 11, 13]);
     assert_eq!(x.owed.table().len(), 5);
-    assert_eq!(x.owed_groups().len(), 2);
-    assert_eq!(x.unlicensed().len(), 3);
-    for &k in &x.unlicensed() {
-        assert!(matches!(
-            x.owing[k as usize],
-            Owing::Unlicensed { about: None, .. }
-        ));
-        let i = &x.owed.table()[k as usize];
-        let unproposed: Vec<&structure::Witness> = i
-            .witnesses
-            .as_ref()
-            .expect("its witnesses")
-            .iter()
-            .filter(|w| w.is == WitnessIs::Unproposed)
-            .collect();
-        assert_eq!(unproposed.len(), 2, "{}", i.text);
-        assert!(
-            unproposed
-                .iter()
-                .all(|w| w.held_at_root.is_empty() && w.held_in_theory.is_empty())
+    assert_eq!(x.owed_groups().len(), 5);
+    assert_eq!(x.unlicensed(), []);
+    for (i, owing) in x.owed.table().iter().zip(&x.owing) {
+        let Owing::Group(g) = owing else {
+            panic!("{} stands as {owing:?}", i.text)
+        };
+        let members = texts(&c, c.members(*g));
+        let friend = parts(members.first().expect("a member"))[1].to_string();
+        assert_eq!(
+            members,
+            ["B1", "B2", "B3", "S1", "S2"]
+                .map(|s| format!("(sits {friend} {s})"))
+                .into(),
+            "{}",
+            i.text
         );
-        assert_eq!(x.brought(k), Some((2, 0)));
+        let witnesses = i.witnesses.as_ref().expect("its witnesses");
+        assert!(
+            witnesses
+                .iter()
+                .all(|w| matches!(w.is, WitnessIs::Candidate(_))),
+            "{}",
+            i.text
+        );
     }
     // The groups nothing owes are named, each with its members.
-    assert_eq!(x.unowed().len(), 24);
+    assert_eq!(x.unowed().len(), 50);
     assert!(
         x.unowed()
             .iter()

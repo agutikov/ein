@@ -171,6 +171,12 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
                     .collect(),
             ),
         ),
+        // A hypothesis a state the run built holds and root does not, the
+        // program found not monotone in flight (Q-M1f.574).
+        (
+            "in_flight",
+            m.in_flight.as_deref().map_or(Json::Null, Json::str),
+        ),
     ];
     pairs.extend(static_half(m));
     Json::obj(pairs)

@@ -237,6 +237,7 @@ pub fn read_present(
     let ids = u32_array(&mut r, n)?;
     let mut kb = Kb::with_program(program);
     let mut seen = vec![false; terms.facts.len()];
+    let mut opens: Vec<FactId> = Vec::new();
     for &raw in ids.iter() {
         let id = maps.fact(raw)?;
         let slot = seen.get_mut(id.0 as usize).ok_or(EinbError::BadId {
@@ -247,11 +248,17 @@ pub fn read_present(
             return Err(EinbError::Malformed("a fact is believed twice"));
         }
         *slot = true;
+        // A state's `open` facts go back where no fork inherits them.
+        if terms.facts.rel(id) == terms.kernel.open {
+            opens.push(id);
+            continue;
+        }
         kb.restore_fact(id, provs.primary(id));
     }
     for (fact, alts) in &provs.alts {
         kb.restore_alternatives(*fact, alts.clone());
     }
+    kb.write_open(terms, &opens, |id| provs.primary(id));
     Ok(kb)
 }
 

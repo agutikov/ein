@@ -440,13 +440,16 @@ fn every_door_draws_a_fact_in_both_forms() {
         assert_eq!(r.code, 0, "{argv:?}: {}", r.err);
         std::fs::read_to_string(&out).expect("the trace is written")
     };
+    // Each state holds its hypotheses as `open` facts (Q-M1f.572), so every
+    // `seat` fact is an argument, a node; what folds is the `open` fact, a
+    // loop on the fact it supposes.
     let (canonical, fold) = (trace(&[]), trace(&["--fold"]));
-    let seat = |md: &str| {
+    let open = |md: &str| {
         md.lines()
-            .any(|l| l.contains(" -> ") && (l.contains("label=\"seat")))
+            .any(|l| l.contains(" -> ") && l.contains("label=\"open by "))
     };
-    assert!(!seat(&canonical), "the trace folds by default");
-    assert!(seat(&fold), "--fold folds nothing in the trace");
+    assert!(!open(&canonical), "the trace folds by default");
+    assert!(open(&fold), "--fold folds nothing in the trace");
     // A step's own drawing: a fact a firing reads or derives is the end of
     // the derivation's arrows, and an arrow goes only to or from a node, so
     // it is its octagon under `--fold` too, and the step is drawn as it is

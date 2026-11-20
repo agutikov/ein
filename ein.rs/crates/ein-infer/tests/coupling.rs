@@ -622,22 +622,6 @@ fn a_debt_is_an_edge() {
     assert!(c.components.len() < c.conflict_components.len());
     assert_eq!(c.conflict_components.len(), c.committed.len());
 
-    // An instance L5 does not license is an edge of the payers read: the
-    // rule's match reads a relation a commitment can change, and Bob's two
-    // foods are candidates in no group.
-    let (_, c) = read(
-        "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein",
-        CouplingReading::Node,
-    );
-    assert_eq!(c.unlicensed, 2);
-    let [debt] = &c.debts[..] else {
-        panic!("one debt is an edge: {:?}", c.debts);
-    };
-    assert!(!debt.licensed);
-    let payers: Vec<&str> = debt.payers.iter().map(|&b| c.text(b)).collect();
-    assert_eq!(payers, ["(likes Bob Soup)", "(likes Bob Z)"]);
-    assert_eq!(c.debts_across(), [0]);
-
     // A letter owes a digit, and its ten digits are one question: no edge.
     let (_, send) = read(SEND, CouplingReading::Node);
     assert!(send.debts.is_empty() && send.unlicensed == 0);
@@ -730,7 +714,8 @@ fn a_dead_root_has_no_coupling() {
     assert!(!c.complete());
 }
 
-/// The one-relation zebra, whose table holds instances L5 does not license.
+/// The one-relation zebra, each placement in both orientations, every
+/// instance of its table licensed.
 const Z1: &str = "examples/zebra.ein";
 
 /// [`Z1`]'s structure at the default budget, read once.
@@ -752,25 +737,42 @@ fn whole_at(rel: &str, budget: u64) -> structure::Whole {
     structure::whole(&mut kb, &mut terms, &ast, &asked).expect("a structure")
 }
 
+/// The witnesses of `x`'s table that some single's node holds: at root, and
+/// by the theory alone.
+fn holders(x: &structure::ExactlyOne) -> (usize, usize) {
+    let witnesses = x
+        .owed
+        .table()
+        .iter()
+        .flat_map(|i| i.witnesses.iter().flatten());
+    let (mut at_root, mut in_theory) = (0, 0);
+    for w in witnesses {
+        at_root += usize::from(!w.held_at_root.is_empty());
+        in_theory += usize::from(!w.held_in_theory.is_empty());
+    }
+    (at_root, in_theory)
+}
+
 /// **A layer that read its singles has its witnesses' holders read,
 /// whatever it spent.** The holders are read off the singles a layer left
 /// in the cache, and nothing is computed for them, so no budget is asked.
-/// A layer's last step is afforded by a projection and may carry it past its
-/// budget: one fact under what root's layer spends on the one-relation
-/// zebra, the layer reads every pair, the holders are read, every debt of an
-/// instance L5 does not license is an edge and the coupling is the one of
-/// the default budget, complete. And one fact under what the small KB's
-/// layer spends, that layer reads every pair and each unlicensed instance
-/// is about the group it is about at the default budget. Each budget is
-/// read off the program's own spend.
+/// On the one-relation zebra 76 of the witnesses of what root owes are
+/// held by a single's node at root, and 112 by the theory alone, every
+/// witness that is a candidate. A layer's last step is afforded by a
+/// projection and may carry it past its budget: one fact under what root's
+/// layer spends, the layer reads every pair, the holders are read, and
+/// *exactly one* and the coupling are the ones of the default budget,
+/// complete. And one fact under what the small KB's layer spends, that
+/// layer reads every pair, and every witness's holders, at root and by the
+/// theory, and every instance's standing are the default budget's. Each
+/// budget is read off the program's own spend.
 #[test]
 fn a_layer_that_read_its_singles_has_its_holders_read() {
     let rel = Z1;
     let whole = z1_whole();
     let parts = whole.parts.as_ref().expect("a cover");
-    let unlicensed = parts.coupling.debts.iter().filter(|d| !d.licensed).count();
-    assert!(unlicensed > 0, "{rel} has no unlicensed debt any more");
-    assert!(parts.coupling.payers_read && parts.coupling.complete());
+    assert_eq!(holders(&parts.exactly_one), (76, 112), "{rel}");
+    assert!(parts.coupling.complete());
 
     // One fact under what root's layer spends.
     let spent = whole.theory.root.work.facts;
@@ -784,8 +786,7 @@ fn a_layer_that_read_its_singles_has_its_holders_read() {
     assert_eq!(root.work.facts, spent, "its last step passed the budget");
     let p = at.parts.as_ref().expect("a cover");
     assert!(p.exactly_one.owed.singles_read && p.exactly_one.owed.theory_read);
-    assert!(p.coupling.payers_read && p.coupling.complete());
-    assert_eq!(p.coupling.debts, parts.coupling.debts);
+    assert!(p.coupling.complete());
     assert_eq!(said(&p.coupling), said(&parts.coupling));
     assert_eq!(p.exactly_one, parts.exactly_one);
 
@@ -802,39 +803,22 @@ fn a_layer_that_read_its_singles_has_its_holders_read() {
     assert_eq!(small.work.facts, small_spent);
     let p = at.parts.as_ref().expect("a cover");
     assert!(p.exactly_one.owed.theory_read && p.exactly_one.owed.singles_read);
+    assert_eq!(p.exactly_one.owed, parts.exactly_one.owed);
     assert_eq!(p.exactly_one.owing, parts.exactly_one.owing);
-    assert_eq!(p.exactly_one.about, parts.exactly_one.about);
-    let about = p.exactly_one.about.iter().filter(|a| !a.is_empty()).count();
-    assert_eq!(
-        about, unlicensed,
-        "each unlicensed instance is about a group"
-    );
-    // Root's layer stopped at that budget, and its payers were read.
-    assert!(!at.theory.root.complete() && p.coupling.payers_read);
-    assert!(!p.coupling.complete());
+    // Root's layer stopped at that budget, and the coupling with it.
+    assert!(!at.theory.root.complete() && !p.coupling.complete());
 }
 
-/// **Where the holders cannot be read the coupling is not complete, and
-/// says which reading it lacks.** At a budget of one fact root's layer stops
-/// among its singles: no witness's holders are read, no instance L5 does not
-/// license is an edge, and [`Coupling::payers_read`] is false.
-/// [`Coupling::complete`] reads that field: a coupling whole in everything
-/// else is not complete without it. A program whose table holds no
-/// unlicensed instance has no payers to read, and lacks none.
+/// **Where the payers cannot be read the coupling is not complete, and says
+/// which reading it lacks**: [`Coupling::complete`] reads
+/// [`Coupling::payers_read`], and a coupling whole in everything else is not
+/// complete without it. The payers read are those of an instance L5 does
+/// not license, and both zebras' tables hold none: at a budget of one fact
+/// root's layer stops among its singles and no witness's holders are read,
+/// and nothing is lacking of the payers. Each coupling is incomplete by its
+/// pairs.
 #[test]
 fn holders_unread_leave_the_coupling_incomplete() {
-    let at = whole_at(Z1, 1);
-    assert!(
-        at.theory.root.singles_left > 0,
-        "the layer read its singles"
-    );
-    let p = at.parts.as_ref().expect("a cover");
-    assert!(!p.exactly_one.owed.singles_read && !p.exactly_one.owed.theory_read);
-    let c = &p.coupling;
-    assert!(c.unlicensed > 0);
-    assert!(!c.payers_read && !c.complete());
-    assert!(c.debts.iter().all(|d| d.licensed), "{:?}", c.debts);
-
     let mut c = z1_whole().parts.as_ref().expect("a cover").coupling.clone();
     assert!(c.payers_read && c.complete());
     c.payers_read = false;
@@ -842,6 +826,21 @@ fn holders_unread_leave_the_coupling_incomplete() {
     assert!(!c.complete());
 
     // Every instance licensed: nothing is lacking of the payers.
+    let at = whole_at(Z1, 1);
+    assert!(
+        at.theory.root.singles_left > 0,
+        "the layer read its singles"
+    );
+    let p = at.parts.as_ref().expect("a cover");
+    assert!(!p.exactly_one.owed.singles_read && !p.exactly_one.owed.theory_read);
+    assert_eq!(
+        holders(&p.exactly_one),
+        (0, 0),
+        "no witness's holders are read"
+    );
+    assert!(p.coupling.unlicensed == 0 && p.coupling.payers_read);
+    assert!(!p.coupling.complete(), "its pairs were not read");
+
     let at = whole_at(Z2, 1);
     assert!(at.theory.root.singles_left > 0);
     let p = at.parts.as_ref().expect("a cover");

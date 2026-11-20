@@ -103,7 +103,7 @@ impl Cell {
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
 /// `ein_corpus::manifest::SLOW_MS` or more together. Which ones is
-/// `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say
+/// `ein-corpus`'s `the_slow_set_is_exactly_these_sixteen`'s to say
 /// ([03-design/02-shared-assets.md § 5](../../../../docs/ein/ein.rs/03-design/02-shared-assets.md#5-the-corpus)).
 /// Their cells run only with the flag, not by default.
 ///

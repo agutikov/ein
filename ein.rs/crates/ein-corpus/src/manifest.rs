@@ -313,7 +313,7 @@ mod tests {
     /// It is `assert_eq!` on the names rather than a floor on the count,
     /// because a floor over a growing corpus decays.
     #[test]
-    fn the_slow_set_is_exactly_these_fifteen() {
+    fn the_slow_set_is_exactly_these_sixteen() {
         let manifest = corpus();
         let slow: Vec<&str> = manifest
             .entry
@@ -331,6 +331,7 @@ mod tests {
                 "examples/beyond_arith/send_more_money_written.ein",
                 "examples/lattice/06_friends_tables.ein",
                 "examples/lattice/07_two_pairs_two_tables.ein",
+                "examples/lattice/14_seats_nothing_proposes.ein",
                 "examples/saturation/square-bwd/floors.ein",
                 "examples/saturation/square-bwd/houses.ein",
                 "examples/saturation/square-bwd/meetings.ein",
@@ -390,7 +391,7 @@ mod tests {
     }
 
     /// **The `heavy_dump` set, by name**, as
-    /// [`the_slow_set_is_exactly_these_fifteen`] pins `slow`'s. Whether the
+    /// [`the_slow_set_is_exactly_these_sixteen`] pins `slow`'s. Whether the
     /// flag is *true* is `answer_round_trip`'s to say, which dumps the
     /// unflagged entries by default and the flagged ones only under
     /// `EIN_CORPUS_SLOW=1`; so an entry that gained the flag would leave the

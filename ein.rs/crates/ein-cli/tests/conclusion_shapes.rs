@@ -13,7 +13,7 @@
 //!
 //! | the conclusion | where |
 //! |---|---|
-//! | a fact, a stored negation, an `(and …)` of them, an `and` inside an `and`, `(false)`, a check, `()`, `(open)` | [`every_shape_a_rule_concludes`], through `ein saturate --dump` and `ein solve` |
+//! | a fact, a stored negation, an `(and …)` of them, an `and` inside an `and`, `(false)`, a check, `()`, a hypothesis beside a fact | [`every_shape_a_rule_concludes`], through `ein saturate --dump` and `ein solve` |
 //! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion, held by invariance |
 //! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs`, and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
 //! | the same written by a macro's expansion | refused at load: `docs/ein/user/04-reference/07-diagnostics.md` § 2.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
@@ -166,9 +166,11 @@ fn every_shape_a_rule_concludes() {
             &["(p a)", "(q a)"],
             "alive",
         ),
-        // The empty conclusion, and the bare obligation, which root owes.
+        // The empty conclusion, and a hypothesis beside a fact, of `s`, a
+        // relation no closure closes: root holds both, and the hypothesis,
+        // held, is no candidate.
         ("()", &[], "alive"),
-        ("(open)", &[], "owing"),
+        ("(and (s a) (open (s a)))", &["(s a)", "(open (s a))"], "alive"),
     ];
     for &(assert, facts, status) in rows {
         let text = program(assert);
@@ -201,7 +203,8 @@ fn every_shape_a_rule_concludes() {
 }
 
 /// An `(open ?R)` whose `?R` its activator binds: an obligation, which
-/// derives nothing, and a state that owes it is out of R.
+/// derives nothing, and a state that owes it is out of R and holds `(open R)`
+/// (Q-M1f.566).
 #[test]
 fn an_obligation_concludes_nothing() {
     let text = "(relation item Node :why \"{?3} is an item\")\n\
@@ -212,9 +215,10 @@ fn an_obligation_concludes_nothing() {
                 (owed tag)\n";
     let dump = ein(text, &["saturate", "--dump"]);
     assert_eq!(dump.code, 0, "{}", dump.stderr);
-    assert!(
-        derived(&dump.stdout).is_empty(),
-        "an obligation derives nothing"
+    assert_eq!(
+        derived(&dump.stdout),
+        ["(open tag)"],
+        "an obligation derives nothing, and root holds what it owes"
     );
     let solve = ein(text, &["solve"]);
     let s = solve.summary.expect("solve writes its summary");

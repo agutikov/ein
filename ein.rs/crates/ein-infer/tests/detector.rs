@@ -17,7 +17,7 @@ use ein_infer::canon::state_key;
 use ein_infer::compile::SharedMemo;
 use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static};
 use ein_infer::events::Events;
-use ein_infer::monotone::Monotonicity;
+use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Nodes, Options, Outcome};
 use ein_infer::saturator::{Saturator, Session};
 use ein_ir::{Ast, load, parse};
@@ -132,7 +132,7 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // Every corpus program the static check flags. A program the check flags
     // moves this count when it joins the corpus, and one it no longer flags
     // when it changes.
-    assert_eq!(flagged, 51, "the flagged corpus programs");
+    assert_eq!(flagged, 59, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [
@@ -207,38 +207,63 @@ fn the_order_check_finds_every_fifo_race() {
 }
 
 /// What each kind of site concludes and puts at stake, one fixture per cause
-/// (`08-monotonicity.md` § 9's c2, c4, c5, c6).
+/// (`08-monotonicity.md` § 9's c2, c4, c5, c6), each read at the one site of
+/// its kind the fixture has: an hrule that reads what a commitment can change
+/// is a site of its own, `hypothesis` (Q-M1f.574), and so is an obligation's
+/// guard that does (Q-M1f.579), both on the trigger's fixture.
 #[test]
 fn each_site_names_what_it_concludes_and_puts_at_stake() {
     // What the first fixture's rule concludes is `(false)`, a fact a rule
     // that states `:ein inconsistent` matches; the others, by the word.
-    let cases: &[(&str, Option<Concludes>, AtStake)] = &[
+    let cases: &[(&str, SiteKind, Option<Concludes>, AtStake)] = &[
         (
             "examples/ein-bugs/naf-upward-closure.ein",
+            SiteKind::Absent,
             None,
             AtStake::StateAndDead,
         ),
         (
             "examples/lattice/08_absent_witness_hole.ein",
+            SiteKind::Absent,
             Some(Concludes::Positive),
             AtStake::State,
         ),
         (
             "examples/lattice/04_obligation_trigger_hole.ein",
+            SiteKind::ObligationTrigger,
             Some(Concludes::Open),
             AtStake::Owes,
         ),
         (
+            "examples/lattice/04_obligation_trigger_hole.ein",
+            SiteKind::ObligationGuard,
+            Some(Concludes::Open),
+            AtStake::Hypotheses,
+        ),
+        (
             "examples/lattice/09_activator_hole.ein",
+            SiteKind::Activator,
             Some(Concludes::NoRootPlan),
             AtStake::OwesThroughPlan,
         ),
+        (
+            "examples/features/23_a_rule_reads_open.ein",
+            SiteKind::OpenRead,
+            Some(Concludes::Positive),
+            AtStake::State,
+        ),
     ];
-    for (rel, concludes, at_stake) in cases {
+    for (rel, kind, concludes, at_stake) in cases {
         let (m, t) = file(rel);
         let sites: Vec<String> = m.sites.iter().map(|s| s.render(&t)).collect();
-        assert_eq!(m.detector.stakes.len(), 1, "{rel}: {sites:?}");
-        let stake = &m.detector.stakes[0];
+        assert_eq!(m.detector.stakes.len(), m.sites.len(), "{rel}: {sites:?}");
+        let of: Vec<usize> = (0..m.sites.len())
+            .filter(|&i| m.sites[i].kind == *kind)
+            .collect();
+        let [i] = of[..] else {
+            panic!("{rel}: one {} site, of {sites:?}", kind.as_str());
+        };
+        let stake = &m.detector.stakes[i];
         match concludes {
             Some(c) => assert_eq!(stake.concludes, *c, "{rel}"),
             None => {
@@ -256,8 +281,23 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
                 assert_eq!(stake.concluded, "(false)", "{rel}");
             }
         }
-        assert_eq!(m.detector.stakes[0].at_stake, *at_stake, "{rel}");
+        assert_eq!(stake.at_stake, *at_stake, "{rel}");
     }
+    // The hrules of the trigger's fixture read `is-a`, which a commitment
+    // can change: two `hypothesis` sites, each at stake the hypotheses.
+    let (m, t) = file("examples/lattice/04_obligation_trigger_hole.ein");
+    let hyps: Vec<String> = (0..m.sites.len())
+        .filter(|&i| m.sites[i].kind == SiteKind::Hypothesis)
+        .inspect(|&i| assert_eq!(m.detector.stakes[i].at_stake, AtStake::Hypotheses))
+        .map(|i| m.sites[i].render(&t))
+        .collect();
+    assert_eq!(
+        hyps,
+        [
+            "dine: hypothesis reads is-a at absent depth 0",
+            "seat: hypothesis reads is-a at absent depth 0"
+        ]
+    );
 }
 
 // ── (c): robust, on the corpus ──────────────────────────────────────
@@ -293,9 +333,20 @@ fn scratch(base: &mut Kb, terms: &mut Terms, ast: &Ast, facts: &[FactId]) -> Box
         let mut sat = Saturator::new(&mut s).expect("compiles");
         sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
     }
-    let key = state_key(&kb);
+    let key = saturated_key(&kb);
     terms.provs.discard_fork();
     key
+}
+
+/// A state's key, its `open` facts aside: what saturation builds. A pass
+/// writes them at the fixpoint from what root read, and a node built from
+/// scratch has no root.
+fn saturated_key(kb: &Kb) -> Box<[FactId]> {
+    state_key(kb)
+        .iter()
+        .copied()
+        .filter(|&f| !kb.holds_open(f))
+        .collect()
 }
 
 /// What one program's sweep found.
@@ -345,19 +396,21 @@ fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
             .collect()
     };
     let mut out = Swept::default();
-    let mut keys: Vec<Box<[FactId]>> = Vec::with_capacity(1 << n);
+    let mut saturated: Vec<Box<[FactId]>> = Vec::with_capacity(1 << n);
     {
         let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &r.candidates).ok()?;
         let check = StaleCheck::of(&nodes.plans());
         for mask in 0..1u64 << n {
-            let (key, stale) = nodes
+            let (key, bare, stale) = nodes
                 .with_fixpoint(&facts(mask), |kb, terms| {
                     (
                         state_key(kb),
+                        saturated_key(kb),
                         detector::stale_facts(kb, terms, &ast, &check),
                     )
                 })
                 .ok()?;
+            saturated.push(bare);
             out.nodes += 1;
             out.stale
                 .extend(stale.into_iter().map(|f| format!("{}: {f}", r.name(mask))));
@@ -374,11 +427,10 @@ fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
                         .push(format!("{} from {}", r.name(mask), r.name(sub)));
                 }
             }
-            keys.push(key);
         }
     }
     for mask in 0..1u64 << n {
-        if scratch(&mut base, &mut terms, &ast, &facts(mask)) != keys[mask as usize] {
+        if scratch(&mut base, &mut terms, &ast, &facts(mask)) != saturated[mask as usize] {
             out.scratch_differs.push(r.name(mask));
         }
     }

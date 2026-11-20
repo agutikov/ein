@@ -118,13 +118,25 @@ pub(crate) fn outside(
     // Clause 3: what the rung proposes facts of.
     let proposed: FxHashSet<Symbol> = match mode {
         Mode::Hrules => crate::hrule::Hrules::new(s)?.asserted_relations(s.terms),
-        Mode::Obligations | Mode::Stuck => {
+        Mode::Obligations | Mode::Stuck | Mode::Union => {
             let memo = s.memo.clone();
-            crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?
-                .iter()
-                .filter_map(|p| crate::obligations::open_argument(p, s.terms))
-                .chain(later.iter().copied())
-                .collect()
+            let mut owed: FxHashSet<Symbol> =
+                crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?
+                    .iter()
+                    .filter_map(|p| crate::obligations::open_argument(p, s.terms))
+                    .chain(later.iter().copied())
+                    .collect();
+            // The union's other half: what the rules that conclude a
+            // hypothesis, and the program's `open` facts, propose.
+            if mode == Mode::Union {
+                owed.extend(crate::hrule::Hrules::new(s)?.asserted_relations(s.terms));
+                for o in crate::open::written_by_program(s.kb, s.terms) {
+                    if let Some(f) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) {
+                        owed.insert(s.terms.facts.rel(f));
+                    }
+                }
+            }
+            owed
         }
         Mode::Blind | Mode::Declined | Mode::NoSearch => declared
             .iter()
@@ -147,7 +159,7 @@ pub(crate) fn outside(
     }
     let why = match mode {
         Mode::Hrules => Why::NoHrule,
-        Mode::Obligations | Mode::Stuck => Why::NotOwed,
+        Mode::Obligations | Mode::Stuck | Mode::Union => Why::NotOwed,
         Mode::Blind | Mode::Declined | Mode::NoSearch => Why::Arity,
     };
     let mut out: Vec<Outside> = declared

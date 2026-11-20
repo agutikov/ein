@@ -527,6 +527,8 @@ pub(crate) fn compute_prepared(
         root_owes: _,
     } = prepared;
     let n = candidates.len();
+    // What the run finds in flight, read once it is done (Q-M1f.574).
+    let writers = snapshot.open().cloned();
 
     if n > opts.limit as usize || n >= 64 {
         return Ok(Outcome::Refused {
@@ -634,7 +636,7 @@ pub(crate) fn compute_prepared(
         let mut step = crate::events::Stepped::default();
         for (mut out, &mask) in outs.into_iter().zip(batch) {
             step.visited += 1;
-            step.facts += out.state.len() as u64;
+            step.facts += out.work;
             if out.dead {
                 step.dead += 1;
             } else if out.owes > 0 {
@@ -770,6 +772,7 @@ pub(crate) fn compute_prepared(
         None
     };
 
+    let monotonicity = monotonicity.after_run(writers.as_ref());
     Ok(Outcome::Region(Box::new(Region {
         candidates,
         status,
@@ -1027,9 +1030,16 @@ fn prepare_as(
 ) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
 
-    // Root's fixpoint, and the snapshot every node resumes from.
+    // Root's fixpoint, its `open` facts, and the snapshot every node resumes
+    // from. The universe is built at the fixpoint, config-free, in
+    // rendered-text order, by the writers of root's `open` facts (Q-M1f.566):
+    // narrated, so the stream says how H was built — the writers and each
+    // candidate. What root owes is read there too, and the pass writes
+    // root's `open` facts; where a rule reads one, the saturation resumes
+    // over them.
     let mut root_stats = RootStats::default();
-    let snapshot = {
+    let mut proposed: Vec<FactId> = Vec::new();
+    let (snapshot, owes, writers) = {
         let mut s = Session {
             kb: root,
             terms,
@@ -1046,29 +1056,38 @@ fn prepare_as(
             sat.naf_retired,
             sat.naf_dropped,
         ];
-        sat.snapshot(s.kb)
+        let (owes, writers) = match universe {
+            // A universe the caller named is built by no writer of this
+            // root's, and no state above it is given `open` facts.
+            Some(_) => {
+                let owes = crate::obligations::tally(s.kb, s.terms, s.ast, &memo, s.events)?;
+                (owes, None)
+            }
+            None => {
+                let (writers, owes) = crate::open::at_root(
+                    &mut s,
+                    &mut sat,
+                    &mut root_stats.hypgen,
+                    &mut |f| {
+                        proposed.push(f);
+                        std::ops::ControlFlow::Continue(())
+                    },
+                )?;
+                (owes, Some(writers))
+            }
+        };
+        let snapshot = sat.snapshot(s.kb);
+        let snapshot = match &writers {
+            Some(w) => snapshot.with_open(Arc::clone(w)),
+            None => snapshot,
+        };
+        (snapshot, owes, writers)
     };
     let root_dead = crate::contradiction::has_contradiction(root, terms);
 
-    // The universe, config-free, in rendered-text order. Narrated, so the
-    // stream says how H was built — the rung and each candidate.
     let candidates: Vec<Candidate> = match universe {
         Some(named) => named.to_vec(),
         None => {
-            let mut proposed: Vec<FactId> = Vec::new();
-            {
-                let mut s = Session {
-                    kb: root,
-                    terms,
-                    ast,
-                    events,
-                    memo: memo.clone(),
-                };
-                crate::hypgen::generate_config_free(&mut s, &mut root_stats.hypgen, &mut |f| {
-                    proposed.push(f);
-                    std::ops::ControlFlow::Continue(())
-                })?;
-            }
             let mut candidates: Vec<(String, Candidate)> = proposed
                 .into_iter()
                 .map(|fact| {
@@ -1087,10 +1106,9 @@ fn prepare_as(
         }
     };
 
-    // The static check, over root's plans. Root's tally is what compiles the
+    // The static check, over root's plans. Root's tally is what compiled the
     // obligation plans; a node can only compile one root lacks through an
     // activator a commitment derives, and that is a site of its own.
-    let owes = crate::obligations::tally(root, terms, ast, &memo, events)?;
     let root_owes = owes.total();
     root_stats.dead = root_dead;
     root_stats.owes = root_owes as u32;
@@ -1110,7 +1128,17 @@ fn prepare_as(
         .map(|c| terms.facts.get(c.fact).0)
         .collect();
     let plans = crate::monotone::plans_of(&memo);
-    let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
+    let hypotheses: Vec<Arc<Plan>> = writers
+        .as_ref()
+        .map(|w| w.rules.plans().to_vec())
+        .unwrap_or_default();
+    let monotonicity =
+        crate::monotone::classify(root, terms, &plans, &hypotheses, &hypothesised);
+    if !monotonicity.is_monotone()
+        && let Some(w) = &writers
+    {
+        w.said_already();
+    }
     // What the universe leaves out, read off the rung the pass took and the
     // plans root compiled: no event, since nothing is generated. A universe
     // the caller named was built by no rung of this root's.
@@ -1203,7 +1231,7 @@ fn above(
     let snapshot = p.snapshot.above(floor.clone());
     terms.provs.open_fork();
     let read = (|| -> Result<(bool, usize, Vec<String>), SolveError> {
-        let (fork, _) = saturated(
+        let (fork, _, owes) = saturated(
             root,
             &snapshot,
             terms,
@@ -1215,7 +1243,6 @@ fn above(
             &mut |_| {},
         )?;
         let dead = crate::contradiction::has_contradiction(&fork, terms);
-        let owes = crate::obligations::tally(&fork, terms, ast, &p.memo, &mut Events::off())?;
         let owed = owes
             .instances()
             .iter()
@@ -1378,6 +1405,11 @@ pub(crate) struct NodeOut {
     /// Its two masks are set only while `n < 64`; [`Self::closure`] is the
     /// first of them at any `n`.
     pub node: Node,
+    /// Of [`Self::state`], the facts saturation built, its `open` facts
+    /// aside: the work a node costs, which every route counts and the
+    /// region budget is spent in. The pass writes the `open` facts from what
+    /// root read, and a node holds about as many as $H$ has candidates.
+    pub work: u64,
     /// Its fixpoint's facts **beyond root's**, sorted by id — the state's key.
     /// Every fixpoint holds root's, since a fork only adds, so two keys are
     /// equal exactly when the two states are.
@@ -1821,6 +1853,9 @@ impl<'a> Nodes<'a> {
         if skip_dead && crate::contradiction::has_contradiction(&kb, self.terms) {
             return Ok(None);
         }
+        // A fork of the first fixpoint, which drops its `open` facts: the
+        // split's are written at its own fixpoint, as a node's are.
+        let mut kb = kb.fork();
         for &h in rest {
             let (rel, args) = self.terms.facts.get(h);
             let args = args.to_vec();
@@ -1838,6 +1873,9 @@ impl<'a> Nodes<'a> {
         };
         let mut sat = Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
+        if let Some(writers) = self.snapshot.open() {
+            crate::open::at_state(&mut s, &mut sat, writers, &mut |_| {})?;
+        }
         Ok(Some(crate::canon::state_key(&kb)))
     }
 
@@ -1991,13 +2029,17 @@ fn fixpoint_firing(
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Kb, SolveError> {
-    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink).map(|(fork, _)| fork)
+    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink)
+        .map(|(fork, _, _)| fork)
 }
 
 /// Root's fork with `facts` written and the saturation resumed, with the
 /// saturator, which can go on: to quiescence, or where `stop`, to the
 /// fork's first contradiction (the module's § What a node is), a route's
-/// node on a monotone program and nothing else.
+/// node on a monotone program and nothing else. At the end what the fork
+/// owes is read, narrated into `events`, and the pass writes its `open`
+/// facts ([`crate::open::at_state`]), a dead fork's as any fork's
+/// (Q-M1f.566), where root's writers were read.
 #[allow(clippy::too_many_arguments)]
 fn saturated(
     root: &Kb,
@@ -2009,7 +2051,7 @@ fn saturated(
     stop: bool,
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
-) -> Result<(Kb, Saturator), SolveError> {
+) -> Result<(Kb, Saturator, crate::obligations::Owes), SolveError> {
     let mut fork = root.branch();
     let facts = &with_floor(snapshot, facts);
     for &h in facts {
@@ -2033,9 +2075,17 @@ fn saturated(
             sat.stop_at_first_contradiction();
         }
         sat.saturate(&mut s, None, sink)?;
-        sat
+        let owes = match snapshot.open() {
+            Some(writers) => crate::open::at_state(&mut s, &mut sat, writers, sink)?,
+            None => {
+                let memo = s.memo.clone();
+                crate::obligations::tally(s.kb, s.terms, s.ast, &memo, s.events)?
+            }
+        };
+        (sat, owes)
     };
-    Ok((fork, sat))
+    let (sat, owes) = sat;
+    Ok((fork, sat, owes))
 }
 
 /// Fork root, write `facts`, saturate to quiescence (a dead node only as far
@@ -2072,7 +2122,7 @@ fn node_in_region(
     // A route's dead node on a monotone program, root's excepted, as far as
     // its first contradiction (the module's § What a node is).
     let stop = axes.stop && !facts.is_empty();
-    let (mut fork, mut sat) = saturated(
+    let (mut fork, mut sat, owes) = saturated(
         root,
         snapshot,
         terms,
@@ -2091,7 +2141,6 @@ fn node_in_region(
         node.first_rules = rules_of(terms, &first.first_steps(&fork, terms));
         node.absent_premises = absent_premises(&fork, terms, first);
     }
-    let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut ev)?;
     node.owes = owes.total() as u32;
     let owed: Vec<u32> = match &axes.instances {
         Some(t) => owes
@@ -2198,6 +2247,10 @@ fn node_in_region(
         } else {
             Vec::new()
         },
+        work: delta
+            .iter()
+            .filter(|&&f| terms.facts.rel(f) != terms.kernel.open)
+            .count() as u64,
         state: delta.into_boxed_slice(),
         closure,
         denied,
@@ -2239,7 +2292,7 @@ pub(crate) fn narrate_node(
             core_status: out.node.core_status,
             refuted_by: &out.node.refuted_by,
             closure: &closure,
-            facts: out.state.len() as u64,
+            facts: out.work,
         });
     }
     if !events.on() {

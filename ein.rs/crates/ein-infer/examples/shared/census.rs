@@ -76,6 +76,9 @@ pub struct Root {
     pub owes: Owes,
     /// Every plan the memo holds after root's saturation and tally.
     pub plans: Vec<Arc<Plan>>,
+    /// The plans of the rules that conclude a hypothesis, which no memo
+    /// holds and the static check reads beside it.
+    pub hypotheses: Vec<Arc<Plan>>,
     pub monotonicity: Monotonicity,
 }
 
@@ -125,7 +128,21 @@ pub fn root_of<T>(
     let hypothesised: rustc_hash::FxHashSet<Symbol> =
         proposed.iter().map(|&f| terms.facts.get(f).0).collect();
     let plans = monotone::plans_of(&memo);
-    let monotonicity = monotone::classify(kb, terms, &plans, &hypothesised);
+    // The plans of the rules that conclude a hypothesis, which the static
+    // check reads beside the memo's.
+    let hypotheses = {
+        let mut s = Session {
+            kb,
+            terms,
+            ast,
+            events: &mut events,
+            memo: memo.clone(),
+        };
+        ein_infer::hrule::Hrules::new(&mut s)
+            .map(|h| h.plans().to_vec())
+            .unwrap_or_default()
+    };
+    let monotonicity = monotone::classify(kb, terms, &plans, &hypotheses, &hypothesised);
     Some((
         Root {
             firings,
@@ -133,6 +150,7 @@ pub fn root_of<T>(
             rung,
             owes,
             plans,
+            hypotheses,
             monotonicity,
         },
         read,

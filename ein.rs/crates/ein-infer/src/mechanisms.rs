@@ -1,25 +1,22 @@
 //! The hypothesis mechanisms a program declares, read at a state
 //! ([04-hypothesis-generation.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
 //!
-//! Five declarations steer what a commitment may be about, and a sixth
-//! mechanism, the blind enumerator, is what runs where none of the generating
-//! ones does ([`crate::hypgen`]'s ladder):
+//! Three writers of a hypothesis, `(open F)` (Q-M1f.566, Q-M1f.570): a rule
+//! that concludes one, an `(hrule …)` among them, with the `(open …)` the
+//! program writes; an obligation, activated, which writes `(open R)` where an
+//! instance is owed and `(open F)` for what would pay it; and the blind
+//! enumerator, which runs only where root holds no `open` fact and no
+//! obligation is activated ([`crate::hypgen`]). Three declarations configure
+//! the blind enumerator, a white list and a black list (Q-M1f.578):
 //!
 //! | | mechanism | read here as |
 //! |---|---|---|
-//! | H | `(hrule …)`, activated by `(solve :hrules …)` | [`Mechanisms::proposals`]: each active hrule plan and the relation its `:assert` proposes |
+//! | H | a rule that concludes `(open F)`, an `(hrule …)` activated by `(solve :hrules …)` | [`Mechanisms::proposals`]: each active plan and the relation each hypothesis is of |
 //! | O | an obligation rule, `:assert (open ?R)` | [`Mechanisms::obligations`]: each obligation plan the state's activators compile, and the relation it owes |
 //! | HR | `(solve :hypothesis-relations …)` | [`Mechanisms::listed`] |
 //! | NH | `(solve :no-hypothesis …)` | [`Mechanisms::excluded`] |
 //! | C | `(__closed__ R)`, stated or derived | [`Mechanisms::closed`] |
-//!
-//! An hrule is **active** where the generator would compile a plan of it: one
-//! without parameters always, one with parameters once per `:hrules`
-//! activator of its arity ([`crate::hrule::Hrules::new`]). An obligation is
-//! one whose activator the state holds ([`crate::obligations`]'s plans), so a
-//! *derived* activator, `bijective-setup`'s `(total color-loc is-a)`, is read
-//! only at a fixpoint, as a derived closure is: the reader is meant for
-//! root's, before any search.
+//! | | the `open` facts the state holds | [`Mechanisms::open`] |
 //!
 //! [`read`] reads; it decides nothing and writes nothing but the plans it
 //! compiles into the session's memo, which a later reader of the same memo
@@ -27,50 +24,45 @@
 //!
 //! ### The check
 //!
-//! [`check`] judges the pairs on root's fixpoint, at load (Q-M1f.245), and
-//! reports a conflict wherever two mechanisms contradict each other. A
-//! **conflict** is a
-//! pair whose two declarations say opposite things of one relation; a **dead**
-//! list is one that filters no candidate, and a **redundant** name one that
-//! says what another declaration already says:
+//! [`check`] judges the program on root's fixpoint, at load (Q-M1f.245),
+//! **against the `open` facts root holds** (Q-M1f.578): where root holds
+//! one, a declaration of the blind enumerator that disagrees with them is a
+//! **conflict**, which refuses the program (Q-M1f.578):
 //!
-//! | pair | conflict | note |
-//! |---|---|---|
-//! | H + O | never: H generates, O judges | — |
-//! | H + HR | an active hrule proposes a relation the list leaves out | the list is dead |
-//! | H + NH | an active hrule proposes a relation the list names | the list is dead |
-//! | H + C | an active hrule proposes a closed relation | — |
-//! | O + HR | no hrule, and an obligation owes a relation the list leaves out | — |
-//! | O + NH | no hrule, and an obligation owes a relation the list names | — |
-//! | O + C | an obligation owes a closed relation | — |
-//! | HR + NH | a relation in both | no hrule: NH names one HR leaves out |
-//! | HR + C | a listed relation is closed | — |
-//! | NH + C | never | no hrule: NH names a closed relation |
+//! | the declaration | a conflict where root holds an `open` fact |
+//! |---|---|
+//! | C | of a relation it closes |
+//! | NH | of a relation it names |
+//! | HR | of a relation it leaves out, or none of a relation it names |
 //!
-//! An obligation is read as a plan root's activators compile, whether or not
-//! root owes it, as an hrule is read as active whether or not its `:match`
-//! has a row; the generation ladder reads it so too, its second rung taken
-//! where one is (`obligation_plans`). Under an hrule the two lists filter
-//! nothing (Q-M1f.242), so their dead note replaces a redundancy note about
-//! them.
+//! An `open` fact is of the relation it owes, `(open R)`, or of its
+//! hypothesis's, `(open F)`. Beside `open` facts that agree with them the
+//! lists filter nothing, since the blind enumerator does not run there, and
+//! say so nowhere. Where root holds none, they are the blind enumerator's,
+//! and two of them still contradict each other: a relation in both lists,
+//! and a listed relation that is closed. A **redundant** name, one a
+//! `:no-hypothesis` names that another declaration already takes out, is a
+//! `note:`.
+//!
 //! The lines carry no prefix: `ein-cli` prints a conflict as a load error and
 //! a note as `note:`, on every command, before the command reads anything
 //! else.
 //!
 //! **`(solve :no-search)`** (Q-M1f.254), [`Mechanisms::no_search`], states
-//! that the lattice is root alone: no rung
-//! runs ([`crate::hypgen::declares_no_search`]). Beside an obligation it is
+//! that the lattice is root alone: no hypothesis is proposed
+//! ([`crate::hypgen::declares_no_search`]). Beside an obligation it is
 //! silent, the obligation judging root alone, which is its use; beside a
-//! closure silent too. Beside an hrule it is one note, *the hrule proposes no
-//! candidate*, and beside each list one, *the list filters no candidate*,
-//! which replace the notes above. It relaxes no conflict: the table's are read
-//! as declared, as an obligation is, and stand (Q-M1f.254).
+//! closure silent too. Beside a rule that concludes a hypothesis it is one
+//! note, *the rule proposes no candidate*, and beside each list one, *the
+//! list filters no candidate*, which replace the notes above. It relaxes no
+//! conflict: the `open` facts root holds are written beside it, and every
+//! conflict stands (Q-M1f.254).
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::FxHashSet;
 
-use crate::compile::{CompileError, SharedMemo, asserted_relation};
+use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::saturator::{Saturator, Session};
 
@@ -90,13 +82,23 @@ pub struct Plan {
     pub relation: Option<Symbol>,
 }
 
+/// One `open` fact a state holds: the fact, the relation it is of, and what
+/// wrote it.
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct Open {
+    pub fact: FactId,
+    /// The relation it owes, `(open R)`, or its hypothesis's, `(open F)`.
+    pub relation: Symbol,
+}
+
 /// What a program declares, at one state.
 #[derive(Clone, Default, Debug)]
 pub struct Mechanisms {
-    /// Every `(hrule …)` the program declares, in load order, active or not.
-    /// Non-empty is what takes the ladder's first rung.
+    /// Every rule the program declares that concludes a hypothesis, an
+    /// `(hrule …)` among them, in load order, active or not.
     pub hrules: Vec<Symbol>,
-    /// The active hrule plans, in the generator's order.
+    /// The active plans of those, in the generator's order, one per
+    /// hypothesis each states.
     pub proposals: Vec<Plan>,
     /// Every obligation rule the program declares, in load order.
     pub obligation_rules: Vec<Symbol>,
@@ -114,6 +116,9 @@ pub struct Mechanisms {
     /// `(solve :no-search)`: the program states its lattice is root alone,
     /// so no rung runs.
     pub no_search: bool,
+    /// The `open` facts the state holds, in the order written: at root's
+    /// fixpoint, once the pass has written them ([`crate::open`]).
+    pub open: Vec<Open>,
 }
 
 impl Mechanisms {
@@ -132,21 +137,39 @@ impl Mechanisms {
 /// they were loaded, and closures and activators as the state holds them.
 pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
     let program = s.kb.program_arc();
-    let hrules: Vec<Symbol> = program.hrules.iter().map(|(n, _)| n).collect();
+    let hrules: Vec<Symbol> = program
+        .hrules
+        .iter()
+        .chain(program.hypotheses.iter())
+        .map(|(n, _)| n)
+        .collect();
     let proposals = if hrules.is_empty() {
         Vec::new()
     } else {
         crate::hrule::Hrules::new(s)?
-            .plans()
+            .proposals(s.terms)
             .iter()
-            .map(|p| Plan {
+            .map(|(p, relation)| Plan {
                 rule: p.rule,
                 activator: p.activator_args.clone(),
                 activator_fact: p.activator,
-                relation: asserted_relation(p, s.terms),
+                relation: *relation,
             })
             .collect()
     };
+    let open: Vec<Open> = s
+        .kb
+        .open_facts()
+        .iter()
+        .filter_map(|&fact| {
+            let arg = *s.terms.facts.args(fact).first()?;
+            let relation = match arg.as_fact() {
+                Some(f) => s.terms.facts.rel(f),
+                None => arg.as_sym()?,
+            };
+            Some(Open { fact, relation })
+        })
+        .collect();
     let obligation_rules: Vec<Symbol> = program.obligations.iter().map(|(n, _)| n).collect();
     let obligations = obligation_plans(s)?
         .iter()
@@ -167,6 +190,7 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
         excluded,
         closed,
         no_search: crate::hypgen::declares_no_search(&program, s.ast),
+        open,
     })
 }
 
@@ -220,7 +244,7 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         })
     };
     let present = [
-        !program.hrules.is_empty(),
+        !program.hrules.is_empty() || !program.hypotheses.is_empty(),
         !program.obligations.is_empty(),
         lists(crate::hypgen::HYPOTHESIS_RELATIONS),
         lists(crate::hypgen::NO_HYPOTHESIS),
@@ -244,6 +268,7 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         .values()
         .chain(program.hrules.values())
         .chain(program.obligations.values())
+        .chain(program.hypotheses.values())
         .filter_map(|r| r.assert_.as_ref())
         .any(|a| writes_name(ast, NodeId(a.expr.0), ein_core::terms::CLOSED))
 }
@@ -264,11 +289,22 @@ pub fn check(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Option<Report> {
     };
     let mut sat = Saturator::new(&mut s).ok()?;
     sat.saturate(&mut s, None, &mut |_| {}).ok()?;
-    let m = read(&mut s).ok()?;
+    // Root's `open` facts, as every command writes them at root's fixpoint.
+    let mut stats = crate::hypgen::HypGenStats::default();
+    crate::open::at_root(&mut s, &mut sat, &mut stats, &mut |_| {
+        std::ops::ControlFlow::Continue(())
+    })
+    .ok()?;
+    let mut m = read(&mut s).ok()?;
+    // What the blind enumerator wrote is what the lists and a closure let it
+    // write: they configure it, and its `open` facts are no other writer's.
+    if stats.rung.mode == crate::oblgen::Mode::Blind {
+        m.open.clear();
+    }
     Some(judge(&m, s.kb, s.terms, s.ast))
 }
 
-/// The pairs, judged: § The check's table, in its order.
+/// The declarations, judged: § The check's table, in its order.
 pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     let w = Words { kb, terms, ast };
     let solve = kb.program().solve();
@@ -297,105 +333,81 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
             .map(|&(node, _)| node)
     };
     let left_out = |r: Symbol| m.listed.as_ref().is_some_and(|l| !l.contains(&r));
-    let h = !m.hrules.is_empty();
     let mut out = Report::default();
     let mut conflict = |line: String| {
         if !out.conflicts.contains(&line) {
             out.conflicts.push(line);
         }
     };
-    let no_list = |rel: &str| {
-        format!(
-            "no list filters an hrule's candidates, so the program says both that {rel} is \
-             guessed and that it is not"
-        )
-    };
-    let stuck = |rel: &str| {
-        format!(
-            "an obligation is paid by facts of the relation it owes, so a state that owes {rel} \
-             and may not be given one is stuck"
-        )
-    };
+    const CONFIGURES: &str = "the two lists and a closure configure the blind enumerator, which \
+                              does not run beside an open fact, and one that disagrees with the \
+                              open facts root holds is an error";
 
-    // H + HR, H + NH, H + C.
-    for p in &m.proposals {
-        let Some(r) = p.relation else { continue };
-        let rel = name(r);
-        if let Some((value, _)) = &hr
-            && left_out(r)
-        {
-            conflict(format!(
-                "{}solve: its :hypothesis-relations leaves out {rel}, and {} proposes facts of \
-                 {rel} — {}: drop the list, which filters nothing where an hrule is declared, or \
-                 the hrule's {rel}",
-                w.at(*value),
-                w.hrule(p),
-                no_list(&rel),
-            ));
+    // The `open` facts root holds against NH, HR and C (Q-M1f.578): one line
+    // per relation, at its first `open` fact.
+    let mut said: Vec<Symbol> = Vec::new();
+    for o in &m.open {
+        if said.contains(&o.relation) {
+            continue;
         }
+        said.push(o.relation);
+        let rel = name(o.relation);
+        let held = w.open_fact(o.fact);
         if let Some(node) = in_list(&nh, &rel) {
             conflict(format!(
-                "{}solve: its :no-hypothesis names {rel}, and {} proposes facts of {rel} — {}: \
-                 drop {rel} from the list, which filters nothing where an hrule is declared, or \
-                 the hrule's {rel}",
+                "{}solve: its :no-hypothesis names {rel}, and root holds {held} — {CONFIGURES}: \
+                 drop {rel} from the list",
                 w.at(node),
-                w.hrule(p),
-                no_list(&rel),
             ));
         }
-        if m.closed.contains(&r) {
-            let at = kb
-                .program()
-                .hrules
-                .get(p.rule)
-                .and_then(|rule| rule.assert_.as_ref())
-                .map_or(String::new(), |a| w.at(NodeId(a.expr.0)));
+        if let Some((value, listed)) = &hr
+            && !listed.iter().any(|(_, n)| *n == rel)
+        {
             conflict(format!(
-                "{at}{} proposes facts of {rel}, and {} says {rel} is closed — a closed relation \
-                 is one no commitment extends, and each fact the hrule proposes is a commitment: \
-                 drop the closure, or the hrule's {rel}",
-                w.hrule(p),
-                w.closure(r),
+                "{}solve: its :hypothesis-relations leaves out {rel}, and root holds {held} — \
+                 {CONFIGURES}, so beside them it names exactly their relations: add {rel} to the \
+                 list, or drop the list",
+                w.at(*value),
+            ));
+        }
+        if m.closed.contains(&o.relation) {
+            // Placed where the closure is written, else where what writes the
+            // `open` fact is: an obligation's activator, a rule's `:assert`.
+            let at = w
+                .written(w.closure_fact(o.relation))
+                .or_else(|| {
+                    m.obligations
+                        .iter()
+                        .filter(|p| p.relation == Some(o.relation))
+                        .find_map(|p| w.written(p.activator_fact))
+                })
+                .or_else(|| {
+                    m.proposals
+                        .iter()
+                        .filter(|p| p.relation == Some(o.relation))
+                        .find_map(|p| w.assert_of(p.rule))
+                })
+                .unwrap_or_default();
+            conflict(format!(
+                "{at}root holds {held}, and {} says {rel} is closed — {CONFIGURES}, and a closed \
+                 relation is one no commitment extends: drop the closure, or what writes {}",
+                w.closure(o.relation),
+                terms.fact_text(o.fact),
             ));
         }
     }
-    // O + HR, O + NH (no hrule), O + C.
-    for p in &m.obligations {
-        let Some(r) = p.relation else { continue };
-        let rel = name(r);
-        if !h {
-            if let Some((value, _)) = &hr
-                && left_out(r)
-            {
+    if !m.open.is_empty()
+        && let Some((_, listed)) = &hr
+    {
+        for (node, r) in listed {
+            if !m.open.iter().any(|o| terms.sym(o.relation) == r) {
                 conflict(format!(
-                    "{}solve: its :hypothesis-relations leaves out {rel}, and {} owes {rel} — {}: \
-                     add {rel} to the list",
-                    w.at(*value),
-                    w.obligation(p),
-                    stuck(&rel),
-                ));
-            }
-            if let Some(node) = in_list(&nh, &rel) {
-                conflict(format!(
-                    "{}solve: its :no-hypothesis names {rel}, and {} owes {rel} — {}: drop {rel} \
+                    "{}solve: its :hypothesis-relations names {r}, and root holds no open fact of \
+                     {r} — {CONFIGURES}, so beside them it names exactly their relations: drop {r} \
                      from the list",
-                    w.at(node),
-                    w.obligation(p),
-                    stuck(&rel),
+                    w.at(*node),
                 ));
             }
-        }
-        if m.closed.contains(&r) {
-            conflict(format!(
-                "{}{} owes {rel}, and {} says {rel} is closed — an obligated relation is not \
-                 closed: {}; drop the closure, or the obligation",
-                w.written(p.activator_fact)
-                    .or_else(|| w.written(w.closure_fact(r)))
-                    .unwrap_or_default(),
-                w.obligation(p),
-                w.closure(r),
-                stuck(&rel),
-            ));
         }
     }
     // HR + NH, HR + C.
@@ -430,30 +442,32 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         return out;
     }
 
-    // The notes: a dead list under an hrule; with none, a redundant name.
-    let hrules = || {
+    let h = !m.hrules.is_empty();
+    let rules = || {
         m.hrules
             .iter()
             .map(|&h| format!("'{}'", terms.sym(h)))
             .collect::<Vec<_>>()
             .join(", ")
     };
-    // `(solve :no-search)`: no rung runs, so an hrule proposes
-    // nothing and a list filters nothing, each a note; beside an obligation
-    // it is silent, the obligation judging root alone, which is its use. The
-    // conflicts above are read as declared, as an obligation is, and stand.
+    let all_hrules = m.hrules.iter().all(|&r| kb.program().hrules.contains(r));
+    // `(solve :no-search)`: nothing is proposed, so a rule that concludes a
+    // hypothesis proposes no candidate and a list filters nothing, each a
+    // note; beside an obligation it is silent, the obligation judging root
+    // alone, which is its use. The conflicts above stand.
     if m.no_search {
         let at = list(crate::hypgen::NO_SEARCH).map_or(String::new(), |(at, _)| w.at(at));
         if h {
-            let (one, word) = if m.hrules.len() == 1 {
-                ("hrule", "proposes")
-            } else {
-                ("hrules", "propose")
+            let (one, word) = match (m.hrules.len() == 1, all_hrules) {
+                (true, true) => ("hrule", "proposes"),
+                (true, false) => ("rule", "proposes"),
+                (false, true) => ("hrules", "propose"),
+                (false, false) => ("rules", "propose"),
             };
             out.notes.push(format!(
                 "{at}solve: its :no-search states the lattice is root alone, so {one} {} {word} \
                  no candidate",
-                hrules(),
+                rules(),
             ));
         }
         for (key, l) in [
@@ -469,21 +483,11 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         }
         return out;
     }
-    for (key, l) in [
-        (crate::hypgen::HYPOTHESIS_RELATIONS, &hr),
-        (crate::hypgen::NO_HYPOTHESIS, &nh),
-    ] {
-        let Some((value, _)) = l else { continue };
-        if h {
-            out.notes.push(format!(
-                "{}solve: its :{key} filters no candidate — the program declares hrule {}, and \
-                 no list filters an hrule's candidates",
-                w.at(*value),
-                hrules(),
-            ));
-        }
-    }
-    if !h && let Some((_, named)) = &nh {
+    // Where root holds no `open` fact, the lists are the blind enumerator's:
+    // a name the other declarations already take out is redundant.
+    if m.open.is_empty()
+        && let Some((_, named)) = &nh
+    {
         for (node, r) in named {
             let sym = terms.syms.get(r);
             if hr.is_some() && sym.is_none_or(left_out) {
@@ -603,29 +607,53 @@ impl Words<'_> {
         }
     }
 
-    /// `hrule 'h'`, and its activator as `:hrules` writes it.
-    fn hrule(&self, p: &Plan) -> String {
-        let h = self.terms.sym(p.rule);
-        if p.activator.is_empty() {
-            format!("hrule '{h}'")
-        } else {
-            let args: Vec<String> = p.activator.iter().map(|&v| self.terms.display(v)).collect();
-            format!("hrule '{h}' ({})", args.join(" "))
+    /// Where rule `rule`'s `:assert` is written, `FILE:LINE:COL: `: a rule
+    /// that concludes a hypothesis, an hrule among them.
+    fn assert_of(&self, rule: Symbol) -> Option<String> {
+        let program = self.kb.program();
+        let r = program.hrules.get(rule).or_else(|| program.hypotheses.get(rule))?;
+        let a = r.assert_.as_ref()?;
+        self.ast.loc(NodeId(a.expr.0)).map(|_| self.at(NodeId(a.expr.0)))
+    }
+
+    /// An `open` fact root holds, and what wrote it: `(open (p a)), which
+    /// rule 'r' writes`, `(open p), which obligation 'o' writes`, or
+    /// `(open (p a)), written at FILE:L:C`.
+    fn open_fact(&self, fact: FactId) -> String {
+        let text = self.terms.fact_text(fact);
+        let Some(prov) = self.kb.primary(fact).map(|id| self.terms.provs.get(id)) else {
+            return text;
+        };
+        match prov.rule {
+            Some(r) if r == self.terms.kernel.open => format!("{text}, a hypothesis root holds"),
+            Some(r) => {
+                let program = self.kb.program();
+                let kind = if program.obligations.contains(r) {
+                    "obligation"
+                } else if program.hrules.contains(r) {
+                    "hrule"
+                } else {
+                    "rule"
+                };
+                format!("{text}, which {kind} '{}' writes", self.terms.sym(r))
+            }
+            None => match prov.loc {
+                Some(l) => format!(
+                    "{text}, written at {}",
+                    ein_ir::loc_repr(
+                        self.ast,
+                        Some(ein_ir::Loc {
+                            file: ein_ir::FileId(l.file),
+                            line: l.line,
+                            col: l.col,
+                        })
+                    )
+                ),
+                None => format!("{text}, which the program writes"),
+            },
         }
     }
 
-    /// `obligation 'o', activated by (o a b), which rule 'r' derives,`.
-    fn obligation(&self, p: &Plan) -> String {
-        let o = self.terms.sym(p.rule);
-        match p.activator_fact {
-            Some(f) => {
-                let by = self.sourced(f);
-                let comma = if by.ends_with(',') { "" } else { "," };
-                format!("obligation '{o}', activated by {by}{comma}")
-            }
-            None => format!("obligation '{o}'"),
-        }
-    }
 }
 
 /// `(solve …)`'s `:KEY` value, where `pair` is that keyword's pair.

@@ -661,6 +661,8 @@ pub fn run_with(
     }
     let t0 = Instant::now();
     let prepared = region::prepare_with(root, terms, ast, events)?;
+    // What the run finds in flight, read once it is done (Q-M1f.574).
+    let writers = prepared.snapshot.open().cloned();
     if opts.no_search {
         let mut answer = root_alone(root, terms, ast, prepared, opts, events)?;
         answer.wall = t0.elapsed();
@@ -707,6 +709,10 @@ pub fn run_with(
     } else {
         flagged(root, terms, ast, prepared, t0, opts, events)?
     };
+    answer.monotonicity = std::mem::take(&mut answer.monotonicity).after_run(writers.as_ref());
+    if let Some(d) = answer.described.as_mut() {
+        d.monotonicity = std::mem::take(&mut d.monotonicity).after_run(writers.as_ref());
+    }
     if fork_only_adds {
         answer.licences = vec![Licence::ForkOnlyAdds];
         // Root is dead, so every node is, and the route read root alone.
@@ -1289,7 +1295,7 @@ impl<'a> Space<'a> {
         let mut step = crate::events::Stepped::default();
         for (s, mut o) in fresh.into_iter().zip(outs) {
             step.visited += 1;
-            step.facts += o.state.len() as u64;
+            step.facts += o.work;
             if o.dead {
                 step.dead += 1;
             } else if o.owes > 0 {
@@ -1330,7 +1336,7 @@ impl<'a> Space<'a> {
             if let Some(records) = self.records.as_mut() {
                 records.insert(s.clone(), o.node.clone());
             }
-            self.spent += o.state.len() as u64;
+            self.spent += o.work;
             let next = self.classes.len() as u32;
             let class = *self.classes.entry(o.state).or_insert(next);
             if !o.dead && o.owes > 0 && !self.owed_text.contains_key(&class) {

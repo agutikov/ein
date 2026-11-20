@@ -134,7 +134,12 @@ impl Solutions {
             .iter()
             .map(|kb| SolutionNode {
                 state_key: ein_infer::state_key(kb),
-                delta: kb.facts().filter(|f| !base.contains(*f)).collect(),
+                // Base's `open` facts are no fork's, so a model's are its
+                // own: in the delta.
+                delta: kb
+                    .facts()
+                    .filter(|&f| !base.contains(f) || base.holds_open(f))
+                    .collect(),
                 bindings: ein_infer::goal_bindings(ast, terms, kb, None),
             })
             .collect();
