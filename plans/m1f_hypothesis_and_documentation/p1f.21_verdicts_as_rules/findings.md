@@ -49,7 +49,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | open; a candidate for removal |
 | [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | open |
 | [V-38](#v-38--a-dead-states-explanation-names-the-pairs-concluded-before-it-ended) | a dead state's explanation names the pairs concluded before the state ended, not every pair it would hold | S1f.21.11 | open |
-| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **owed by the coordinator**, on a quiet machine; a first reading: 1.3 to 2.6 times the time at the same work, which fails the nightly's cost check; **the user's call** |
+| [V-39](#v-39--the-cost-of-the-contradiction-as-rules-is-not-measured) | the cost of the contradiction as rules is not measured | S1f.21.11 | **measured 2026-11-20** ([the page](costs/README.md)): at the same work 1.0 to 1.06 times the time on the zebras and the squares, 1.15 to 1.4 on the programs that search a wide cube, 1.6 on the calculator under a search; **the user's call** |
 | [V-40](#v-40--two-parse-witnesses-of-open-write-no-why) | `examples/broken/open_in_match.ein` and `open_mixed_assert.ein` write no `:why`: once `open` parses where they write it, both are refused for that first | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
 | [V-41](#v-41--a-saved-file-holds-a-hypothesis-rule-inside-its-program-form) | `tests/saved/04_a_saved_node.ein` holds an `(hrule …)` inside a saved program's `(program …)` form | the examples of S1f.21.12 | **fixed** by S1f.21.18 |
 | [V-42](#v-42--a-goal-names-a-relation-only-hypothesis-rules-write) | `examples/syntax/query-full.ein`'s goal names `drinks`, which only its hypothesis rules write | the examples of S1f.21.12 | **fixed** by S1f.21.12's build |
@@ -74,6 +74,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | open; **S1f.21.20 fixes it** |
 | [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
+| [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task**; what is left is **the user's call**, with V-39 |
+| [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task** |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -744,6 +746,8 @@ the three now costs more than a second and carries no `slow` flag
 ([S1f.21.11's record](s1f.21.11_kill_and_three_conventions.md#record)). **The user's call**: whether the cost is
 taken as it is, the flags and costs re-taken, or the pair rules are made cheaper first.
 
+**Measured 2026-11-20**, on an idle machine, on AC, a release build before and after, each on its own corpus: [the page](costs/README.md). At the same count of saturations the contradiction as rules costs 1.0 to 1.06 times the time on the zebras and the squares, 1.15 to 1.4 on the programs that search a wide cube (`send_more_money.ein` 1.37, `01_not_and_absent.ein` 1.26, `zebra2-minus-15.ein` 1.15), and 1.6 on `equation_two_unknowns.ein`. The first reading, 1.3 to 2.6, was taken under load. **The user's call**: the cost accepted, or the pair's rules made cheaper.
+
 ## V-40 — Two parse witnesses of `open` write no `:why`
 
 **Found** by the examples of S1f.21.12 ([item 58](review/part-2/58-the-corpus-under-the-rulings/README.md)).
@@ -875,3 +879,32 @@ No corpus program shows it, so the test that holds the order passes. **Open**;
 - **A core leaves out the written `(open …)` facts** its derivation read.
 
 **Open**; [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) fixes it.
+
+## V-64 — The pass that writes a state's open facts costs at every state
+
+**Found** by the coordinator's cost measurement after S1f.21.18 ([the page](costs/README.md)). Since S1f.21.12 a
+pass writes each state's `open` facts at its fixpoint: what a rule concludes, what the state owes and what would
+pay it, what the blind enumerator leaves undecided. It runs at every state a search builds. At the same count of
+saturations the search costs 1.02 to 1.13 times what it did on the zebras and the squares, 1.2 to 1.3 on three programs that
+search a wide cube, 1.5 on the two `send_more_money` programs, and `04_open.ein`'s lattice render 2.1 times. A
+profile of `send_more_money.ein` has `Kb::write_open` first, at 13 % of the samples, with the end of a
+saturation step, the drop of an `Engine` and the allocator's free among the next five; none is in the profile of
+the engine before.
+
+With V-39 the two builds make `send_more_money.ein` 2.05 times what it cost before the phase's first part, and
+`04_open.ein` 3 times. `zebra.ein` is 2.4 times, most of it the union's 353 saturations where there were 120
+(V-48).
+
+**Open.** [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) takes out what is plain engineering, with
+no change to what a state holds or a surface prints. A state that does not hold its `open` facts until something
+reads them is a design choice, not built: **the user's call**, with V-39.
+
+## V-65 — The gate's checked build costs four times the release on one program
+
+**Found** by the coordinator's cost measurement ([the page](costs/README.md#the-gates-build)). The per-commit
+sweep runs the gate profile's binary. One `solve` of `examples/beyond_arith/equation_two_unknowns.ein` costs
+1 513 ms on it against 398 ms on the release build, 3.8 times, where `zebra.ein` costs 1.5 times and
+`04_open.ein` 1.1. Its two declared runs so cost three seconds in the per-commit sweep, against the four the check
+of the slow flag allows a program with no flag, and a loaded machine passes four (V-60). A debug check paid per
+firing of the calculator's rules is the likely cause; it is not found. **Open**;
+[S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) looks for it.

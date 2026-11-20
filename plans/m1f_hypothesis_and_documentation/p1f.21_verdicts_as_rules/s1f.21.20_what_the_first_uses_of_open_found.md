@@ -4,14 +4,16 @@
 **Status:** planned 2026-11-20 by the coordinator, under the user's word to run the phase to its end on defaults
 ([the README](README.md#the-word-to-run-to-the-end)); **not started**.
 **Waits on:** [S1f.21.18](s1f.21.18_the_hrule_form_removed.md), which changes the same files of the engine.
-**Writes:** `ein-infer/src/` (`region.rs`, `open.rs`, `oblgen.rs`, `explain.rs`), `ein-cli` (the order of stderr's
-lines, `ein saturate`'s counts), their tests; the pages and goldens that move with a report's words.
+**Writes:** `ein-infer/src/` (`region.rs`, `open.rs`, `oblgen.rs`, `explain.rs`), `ein-core/src/kb.rs` for the
+pass's cost, `ein-cli` (the order of stderr's lines, `ein saturate`'s counts), their tests; the pages and goldens
+that move with a report's words.
 
 ## What it is
 
 [S1f.21.13](s1f.21.13_the_search_and_rules.md) was the first stage to write a program with `open` facts after
 [S1f.21.12](s1f.21.12_hypotheses_as_facts.md) built them, and met three defects of that build, none of which moves
-a corpus answer. This stage fixes them.
+a corpus answer. This stage fixes them. The coordinator's cost measurement after S1f.21.18 added two tasks, on
+what the pass costs at a state and on the gate's build of one program.
 
 ## Tasks
 
@@ -33,6 +35,21 @@ a corpus answer. This stage fixes them.
    ([Q-M1f.632](../open_questions.md#q-m1f632--how-the-program-as-rules-writes-its-candidates)). Whether it is
    written with `open`, flagged and held by no suite, is the user's to say in review item 70: **it is left as it
    is here.**
+
+5. **[V-64](findings.md#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state): the pass's cost
+   at a state, bounded.** At the same count of saturations the search costs 1.2 to 1.5 times what it did before
+   the pass, 2.1 on one lattice render ([the measurement](costs/README.md)). Profile it, and take out what is
+   plain engineering: work the pass does at a state that nothing reads, such as a saturation resumed where no
+   rule reads `open`, an index built for facts no premise matches, a copy, a sort. **What it may not change**:
+   what any state holds, what any surface prints, any answer, the reading of any ruling. A state that holds its
+   `open` facts only once something reads them is a design choice: its expected gain is recorded, and it is not
+   built. Measured again with [the page's script](costs/four_engines.py), a fifth point beside the four.
+6. **[V-65](findings.md#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program): the gate's
+   checked build on one program, bounded.** Find the debug check that makes `equation_two_unknowns.ein` cost 3.8
+   times as much on the gate profile as on release. If it can be asked once a state, or under a smaller bound,
+   and still check what it checks, do so; else record it.
+
+Tasks 5 and 6 are bounded: each ends at what it found, and neither is owed a number.
 
 ## What must hold
 
