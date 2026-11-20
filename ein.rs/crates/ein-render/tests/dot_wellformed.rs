@@ -128,8 +128,9 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// twin holds them. Every fact drawn as its octagon with an arrow to its
 /// relation and to each argument (Q-M1f.419), a saturated knowledge base of a
 /// few hundred facts is past the bound too: the `kb-since` view of the Zebra
-/// programs (`examples/`, `examples/ein-bugs/`) and of the programs of
-/// `std.math.binary` (`tests/stdlib/math/binary/`). The calculator's
+/// programs (`examples/`, `examples/ein-bugs/`), of the programs of
+/// `std.math.binary` (`tests/stdlib/math/binary/`) and of two of
+/// `std.bool.inputs` (`tests/stdlib/bool/inputs/`). The calculator's
 /// witnesses of a form at another count load, so they hold the tables too
 /// (`examples/ein-bugs/wrong-answers/`).
 /// `cargo test -p ein-render --test dot_wellformed
@@ -139,7 +140,7 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// noticed. A run without `EIN_CORPUS_SLOW` reads no program under `tests/`,
 /// and holds the directories it reads to the entries outside it; a run with
 /// it, to every entry.
-const SKIPPING: [&str; 22] = [
+const SKIPPING: [&str; 23] = [
     "examples",
     "examples/arith",
     "examples/beyond_arith",
@@ -151,6 +152,7 @@ const SKIPPING: [&str; 22] = [
     "stdlib/bool",
     "stdlib/math",
     "tests/saved",
+    "tests/stdlib/bool/inputs",
     "tests/stdlib/bool/props",
     "tests/stdlib/math/binary",
     "tests/stdlib/math/binary-arith",
