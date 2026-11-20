@@ -70,12 +70,15 @@ without a path is in [`design.md`](design.md), whole.
 | [V-57](#v-57--an-open-of-a-variable-bound-to-a-name-writes-nothing-in-silence) | an open of a variable bound to a name writes nothing in silence | S1f.21.18 | open |
 | [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | open; **the user's call**: whether a note says that a rule that concludes a hypothesis has no activator |
 | [V-59](#v-59--the-folded-drawing-of-a-hypothesis-rule-has-a-self-loop) | the folded drawing of a hypothesis rule has a self-loop | S1f.21.18 | open |
-| [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | **owed by the coordinator**: the corpus's costs taken again |
-| [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | open; **S1f.21.20 fixes it** |
-| [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | open; **S1f.21.20 fixes it** |
-| [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | open; **S1f.21.20 fixes it** |
-| [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655): the pass runs at root and, above it, only at a state that is printed, saved or used; S1f.21.20 builds it |
-| [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | open; **S1f.21.20 has a bounded task** |
+| [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | the check's cause on the gate's build **fixed** by S1f.21.20 (V-65); the corpus's costs are **owed by the coordinator** on the final engine |
+| [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | **fixed** by S1f.21.20: the empty commitment's state is root's (its default Q-M1f.636) |
+| [V-62](#v-62--a-note-of-the-mechanisms-precedes-a-flagged-programs-warning) | a `note:` of the hypothesis mechanisms is printed before a flagged program's `WARNING` on stderr | S1f.21.13 | **fixed** by S1f.21.20 |
+| [V-63](#v-63--three-reports-do-not-see-what-the-open-writers-did) | three reports do not see what the `open` writers did: `ein saturate`'s count of firings, the rung's name where a rule's candidates pay, a core's facts | S1f.21.13 | **fixed** by S1f.21.20 |
+| [V-64](#v-64--the-pass-that-writes-a-states-open-facts-costs-at-every-state) | the pass that writes a state's `open` facts costs at every state: at the same work the search takes 1.2 to 1.5 times as long, and `04_open.ein`'s lattice render 2.1 times | the coordinator's cost measurement | **ruled by the user 2026-11-20** (Q-M1f.655, Q-M1f.656) and **built** by S1f.21.20: the pass runs at root and at a printed or saved state, and everywhere under `--in-flight` |
+| [V-65](#v-65--the-gates-checked-build-costs-four-times-the-release-on-one-program) | the gate's checked build costs 3.8 times the release build on `equation_two_unknowns.ein`, where it costs 1.5 times on the zebra: why the per-commit check of the slow flag fails under load | the coordinator's cost measurement | **fixed** by S1f.21.20: a debug check that walked every rule at every step; the gate's build of the program goes from 4.4 to 1.4 times the release |
+| [V-66](#v-66--the-outside-row-does-not-see-a-programs-written-hypotheses) | the outside row does not see a program's written hypotheses | S1f.21.20 | open; **S1f.21.22 fixes it** |
+| [V-67](#v-67--the-hypothesis-generation-page-defines-stuck-by-the-obligations-share) | the hypothesis generation page defines stuck by the obligations' share | S1f.21.20 | open; **S1f.21.14 fixes it when it is resumed** |
+| [V-68](#v-68--the-streams-diagram-has-no-fire-after-roots-obligation-pass) | the stream's diagram has no fire after root's obligation pass | S1f.21.20 | open; **S1f.21.14 fixes it when it is resumed** |
 | [V-72](#v-72--the-kb-and-constraints-renders-draw-no-open-fact-root-holds) | the kb and constraints renders draw no open fact root holds | S1f.21.14 | open; **S1f.21.22 fixes it** |
 | [V-73](#v-73--a-written-open-fact-is-not-judged-against-the-lists-and-a-closure) | a written open fact is not judged against the lists and a closure | S1f.21.14 | open; **S1f.21.22 fixes it** |
 | [V-74](#v-74--a-querys-printed-claim-over-open-does-not-read-back) | a query's printed claim over open does not read back | S1f.21.14 | open; **S1f.21.22 fixes it** |
@@ -914,6 +917,18 @@ sweep runs the gate profile's binary. One `solve` of `examples/beyond_arith/equa
 of the slow flag allows a program with no flag, and a loaded machine passes four (V-60). A debug check paid per
 firing of the calculator's rules is the likely cause; it is not found. **Open**;
 [S1f.21.20](s1f.21.20_what_the_first_uses_of_open_found.md) looks for it.
+
+## V-66 — The outside row does not see a program's written hypotheses
+
+**Found** by S1f.21.20. On a program whose $H$ is its written `(open F)` facts alone, the read-out's `outside` row reads the relations the hypothesis rules conclude and not the program's written ones: `examples/features/24_written_hypotheses.ein` prints *outside s — no candidate: no hypothesis rule proposes it*, while $H$ is two candidates of `s`. No answer moves; the example's shape lines bank the sentence. **Open; S1f.21.22 fixes it.**
+
+## V-67 — The hypothesis generation page defines stuck by the obligations' share
+
+**Found** by S1f.21.20. `04-hypothesis-generation.md` § 4.5 defines *stuck* by the obligations' share of $H$, under which its implication, stuck gives an empty $R$, is false on `examples/lattice/18_two_candidates.ein`. The engine reads stuck by the whole of $H$ since S1f.21.20. **Open; S1f.21.14 fixes it when it is resumed.**
+
+## V-68 — The stream's diagram has no fire after root's obligation pass
+
+**Found** by S1f.21.20. `05-events.md`'s diagram goes from `owe` to `monotonicity` or a node; a program in which a rule reads `open` narrates the resumed saturation's `fire` lines there, and at each node after its `owe` lines. A flagged program only. **Open; S1f.21.14 fixes it when it is resumed.**
 
 ## V-72 — The kb and constraints renders draw no open fact root holds
 

@@ -225,3 +225,25 @@ The defaults most worth your eye:
 **Your answer:**
 
 **Notes:**
+
+---
+
+## 72 · The defaults S1f.21.20 took
+
+[The item](72-S1f.21.20-defaults/README.md), which has the nine, each with what was asked.
+
+The pass runs as you ruled: at root, at a printed or saved state, and everywhere under the flag. The defaults most
+worth your eye:
+
+- **6, Q-M1f.641**: the flag is `--in-flight`, on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`,
+  and no `(config …)` field. Other: `--open-every-state`, or a config flag.
+- **7, Q-M1f.642**: what a printed state finds in flight is folded into the read-out, the summary and the oracle's
+  dump. Other: only what the search found is reported, and a printed state's finding is the stderr line alone.
+- **8, Q-M1f.643**: a state printed only as a count or a verdict (`--dump-lattice`, `--count`, an `enter` event)
+  writes no `open` facts. Other: every state a dump or a render names writes them.
+- **1, Q-M1f.636**: the empty commitment's state is root's, the written `(open F)` facts among it.
+- **5, Q-M1f.640**: a load's `note:` lines are said when the run ends, so the `WARNING` is stderr's first line.
+
+**Your answer:**
+
+**Notes:**

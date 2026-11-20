@@ -36,6 +36,9 @@ each ruling, and found the binary short of two rulings and of two of its own con
 5. **[V-75](findings.md#v-75--comments-of-the-engine-and-the-library-in-words-the-part-retired): the comments in the part's words.** Each place the record of S1f.21.14 lists,
    reworded to what the engine does; a comment that says a form is refused that loads is corrected to the
    grammar. The library's two files change in comments alone, and its manifest is written again.
+6. **[V-66](findings.md#v-66--the-outside-row-does-not-see-a-programs-written-hypotheses): the `outside` row sees a program's written hypotheses.** Found by
+   S1f.21.20 on the example it added: the row says no hypothesis rule proposes a relation the program's own
+   `(open F)` facts are of. The row reads what the program writes as it reads what a rule concludes.
 
 ## What must hold
 

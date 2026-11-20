@@ -562,6 +562,15 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
 | [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
+| [Q-M1f.636](#q-m1f636--which-state-is-the-empty-commitments-where-a-program-writes-open-facts) | Which state is the empty commitment's where a program writes open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.637](#q-m1f637--the-rungs-word-where-a-rules-candidates-stand-beside-an-obligation-that-offers-none) | The rung's word where a rule's candidates stand beside an obligation that offers none | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.638](#q-m1f638--a-core-above-the-empty-commitment-that-read-a-written-open-fact) | A core above the empty commitment that read a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.639](#q-m1f639--the-saturate-commands-events-and-the-firings-after-roots-open-facts) | The saturate command's events and the firings after root's open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.640](#q-m1f640--when-a-loads-note-is-said) | When a load's note is said | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.641](#q-m1f641--the-name-of-the-flag-that-runs-the-pass-at-every-state) | The name of the flag that runs the pass at every state | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.642](#q-m1f642--how-what-a-printed-state-finds-in-flight-reaches-the-surfaces) | How what a printed state finds in flight reaches the surfaces | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.643](#q-m1f643--which-states-are-printed-or-saved) | Which states are printed or saved | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
+| [Q-M1f.644](#q-m1f644--the-cheaper-form-of-the-check-the-gates-build-made-at-every-step) | The cheaper form of the check the gate's build made at every step | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
@@ -11771,6 +11780,69 @@ The other reading: the survey's program as it stood, two verdicts.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
 [review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+
+### Q-M1f.636 — Which state is the empty commitment's where a program writes open facts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: which state is ∅'s where the program writes `(open F)`.
+**The default taken**: the plan's: ∅'s state is root's, the written facts among it; a node that commits a fact holds none. The other reading: root too drops a written one once it is read into H, so no state holds it.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.637 — The rung's word where a rule's candidates stand beside an obligation that offers none
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the rung's word where a rule's candidates survive beside an obligation that offers none.
+**The default taken**: `union`: the rules wrote beside an activated obligation, and H is the union, the obligations' share empty; `stuck` is a state that owes and to which no writer gave a candidate. The other reading: `hypothesis-rules`, the writer that built H, though an obligation is activated.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.638 — A core above the empty commitment that read a written open fact
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: a core above ∅ whose derivation, made at root, read a written `(open F)`.
+**The default taken**: it lists what the state holds: a fork holds no written `open` fact (Q-M1f.569), and the explanation grounds out a premise the state does not hold, as it does any; at ∅ the state holds them and the core lists them (`build/s20/core-above.ein`: the core of `{(s b)}` is `(s b)`). The other reading: list the written fact, a premise the derivation read, though the state does not hold it.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.639 — The saturate command's events and the firings after root's open facts
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: `ein saturate --events` and the firings after root's `open` facts.
+**The default taken**: counted and listed by the read-out, not narrated: the stream of `ein saturate` stays the first three states of `05-events.md`'s machine, and its root pass narrates nothing, as before. The other reading: narrate them as `fire` lines after root's saturation.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.640 — When a load's note is said
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: when a load's `note:` is said.
+**The default taken**: when the run ends, before the load's `warning:` lines, on every command. The other reading: before the run but after the `WARNING`, which needs the static check's verdict before any note.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.641 — The name of the flag that runs the pass at every state
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the flag's name and its commands.
+**The default taken**: `--in-flight`, on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`, every command that builds the states of a search; no `(config …)` field. The other reading: `--open-every-state`, the mechanism's name; or a config flag.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.642 — How what a printed state finds in flight reaches the surfaces
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: how what a printed state finds in flight reaches the run's surfaces.
+**The default taken**: the read-out folds the finding of the states it prints into its answer's verdict, where the search found nothing; `ein oracle --dump` writes `region.json` after the read-out, with it; its stderr line is said at once, as every finding's. The other reading: each surface reports what the search alone found, and a printed state's finding is the stderr line alone.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.643 — Which states are printed or saved
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: which states are printed or saved.
+**The default taken**: every `region::Nodes` reader (the read-out's states and forms, the dumps' state files, the trace, a member of N's core, `EIN_LEFTOVER`), `ein oracle --states`' nodes and a saved file's node; a state printed only as a count or a verdict, `--dump-lattice`'s nodes, `--events`' `enter` lines, `--count`, writes none; `ein test` as `ein solve`, a claim listing no `open` fact. The other reading: every state a dump or a render names, `--dump-lattice`'s among them.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+
+### Q-M1f.644 — The cheaper form of the check the gate's build made at every step
+
+**Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the cheaper form of task 6's check.
+**The default taken**: count the rules' facts by relation, and walk only where the count moved: no call the full walk would refuse passes, where `Kb::n_facts_of` agrees with the rule-application index, which `Kb::index_fact` keeps together. The other reading: ask the full walk once a state, at the state's fixpoint, which misses a skip a later walk repairs.
+
+The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
 
 ### Q-M1f.655 — Where the pass that writes a state's open facts runs
 
