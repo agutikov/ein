@@ -145,7 +145,7 @@ core of a dead node.
 | compilation, `Engine` | each rule with each of its activators, in registry and append order; the memo shares plans, never the order |
 | the enqueue pass | a full pass walks the plan list; a delta pass walks the delta facts in order, then the plans `pos_index` gives each, in plan-list order; a pair's plan takes a probe at its place in that order and queues the match a seeded match would |
 | the boundary | parked candidates in rank order; the first whose guards pass is admitted, one per round |
-| a resumed node's delta | the facts the snapshot lacks in the order the KB holds them, which is the order the caller wrote them (`Snapshot::new_facts_of`); every route writes a commitment in H's order |
+| a resumed node's delta | the facts the snapshot lacks in the order the KB holds them, which is the order the caller wrote them, read above the snapshot's mark of root's stack (`Snapshot::new_facts_of`, `Kb::facts_above`); every route writes a commitment in H's order |
 
 ### 4.2 The hypothesis set and the search
 

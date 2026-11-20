@@ -588,12 +588,11 @@ pub struct Saturator {
 /// account of itself — the observables and `last_firing` — because the fork's
 /// narration is its own.
 ///
-/// `facts` is the parent's fact set at the snapshot. It is what makes the
-/// resumed delta computable without enumerating every site that writes to root
-/// (none does today; the walk's forced positives, singleton `(not h)`
-/// writebacks and lookahead kill cache did): the fork's delta is *whatever root
-/// has that the snapshot did not*, plus the commitment. A site added later is
-/// covered by construction.
+/// `facts` is the parent's fact set at the snapshot, and `mark` where its
+/// stack stood ([`Kb::mark`]). They are what makes the resumed delta
+/// computable without enumerating every site that writes to root: the fork's
+/// delta is *whatever root has that the snapshot did not*, plus the
+/// commitment. A site added later is covered by construction.
 #[derive(Clone)]
 pub struct Snapshot {
     engine: Engine,
@@ -617,6 +616,7 @@ pub struct Snapshot {
     may_collide: bool,
     plans_seen: usize,
     facts: FxHashSet<FactId>,
+    mark: ein_core::Mark,
     /// The agenda the saturation was built under, which a resumed one takes
     /// on whatever thread it runs (the module's § The agenda).
     fail_first: Option<FailFirst>,
@@ -923,7 +923,31 @@ impl Snapshot {
     /// store's order `refuted_by` names rules in, the `absent`s a refutation
     /// rests on) and a full alternatives list (the core) — would move with the
     /// interner (`fork-delta-order`).
+    ///
+    /// **Read above the snapshot's layers**: a fork of the snapshot's KB
+    /// holds root's facts at the snapshot first, all of them the snapshot's,
+    /// so what it holds after them ([`Kb::facts_above`]) is all that can be
+    /// new, and the delta costs its own size rather than root's fixpoint. A
+    /// fact there the snapshot held is no part of it: an `open` fact the
+    /// empty commitment's fork holds as root does, which root's own were.
+    /// A KB that did not grow from the snapshot's is walked whole. On a build
+    /// with debug assertions (the gate's) the read is held to the walk.
     pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {
+        let Some(above) = kb.facts_above(&self.mark) else {
+            return self.walk_for_new_facts(kb);
+        };
+        let delta: Vec<FactId> = above.filter(|f| !self.facts.contains(f)).collect();
+        debug_assert_eq!(
+            delta,
+            self.walk_for_new_facts(kb),
+            "the facts above the snapshot's layers are the walk's delta"
+        );
+        delta
+    }
+
+    /// The facts `kb` has and the snapshot did not, every fact `kb` holds
+    /// asked.
+    fn walk_for_new_facts(&self, kb: &Kb) -> Vec<FactId> {
         kb.facts().filter(|f| !self.facts.contains(f)).collect()
     }
 }
@@ -1011,6 +1035,7 @@ impl Saturator {
             may_collide: self.may_collide,
             plans_seen: self.plans_seen,
             facts: kb.facts().collect(),
+            mark: kb.mark(),
             fail_first: self.fail_first,
             floor: None,
             open: None,
@@ -2671,6 +2696,69 @@ mod tests {
             vec![late, early],
             "the delta is the order the facts were written, not their ids'"
         );
+    }
+
+    /// The delta read above the snapshot's layers leaves out what the
+    /// snapshot held: a fact root held, written again, and an `open` fact a
+    /// fork holds as root did. A KB that did not grow from the snapshot's, a
+    /// copy of root whose top is its own, is walked whole, to the same delta.
+    #[test]
+    fn a_delta_holds_nothing_the_snapshot_held_on_either_read() {
+        let src = "(relation edge T T :why \"there is an edge from {?3} to {?4}\")\n(relation path T T :why \"there is a path from {?3} to {?4}\")\n\
+                   (rule step () :match (edge ?a ?b) :assert (path ?a ?b) :why \"there is an edge from {?a} to {?b}, so there is a path from {?a} to {?b}\")\n\
+                   (edge A B)\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let edge = terms.syms.get("edge").expect("interned");
+        let owed = terms
+            .intern_fact(terms.kernel.open, &[Value::sym(edge)])
+            .expect("room");
+        let snapshot = {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: SharedMemo::default(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+            assert!(s.kb.write_open(s.terms, &[owed], |_| None));
+            sat.snapshot(s.kb, s.terms)
+        };
+        let mut args = |a: &str, b: &str| {
+            [
+                Value::sym(terms.intern_text(a).expect("room")),
+                Value::sym(terms.intern_text(b).expect("room")),
+            ]
+        };
+        let (ab, cd) = (args("A", "B"), args("C", "D"));
+        let held = terms.intern_fact(edge, &ab).expect("room");
+        let new = terms.intern_fact(edge, &cd).expect("room");
+
+        // A copy of root, its top still unsealed, appends apart: no read
+        // above the snapshot's layers, so the walk.
+        let mut copy = kb.clone();
+        assert!(copy.facts_above(&kb.mark()).is_none());
+        for a in [ab, cd] {
+            copy.add_and_index_fact(&mut terms, edge, &a, None)
+                .expect("room");
+        }
+        assert_eq!(snapshot.new_facts_of(&copy), vec![new]);
+
+        // A fork, read above the snapshot's layers.
+        let mut fork = kb.fork();
+        for a in [ab, cd] {
+            fork.add_and_index_fact(&mut terms, edge, &a, None)
+                .expect("room");
+        }
+        assert!(fork.write_open(&terms, &[owed], |_| None));
+        assert!(fork.facts_above(&snapshot.mark).is_some());
+        assert!(fork.contains(held) && fork.contains(owed));
+        assert_eq!(snapshot.new_facts_of(&fork), vec![new]);
     }
 
     /// `naf_dropped` is **structurally** 0: a guard is judged once, on the

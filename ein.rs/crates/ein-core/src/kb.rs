@@ -35,6 +35,7 @@ use crate::terms::Terms;
 use crate::value::{Tag, Value};
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 /// The per-fact cap on recorded **alternative** justifications.
 ///
@@ -172,11 +173,64 @@ pub struct NameEntry {
 const BLOOM_BITS: usize = 2048;
 const BLOOM_WORDS: usize = BLOOM_BITS / 64;
 
+/// **A layer's identity**, which [`Kb::facts_above`] reads: a number no other
+/// layer was given, drawn where a layer is made and where one is copied, and
+/// kept where a layer is moved, as sealing moves the top behind an `Arc`. So
+/// two layers with one stamp are one layer at two moments, and since a layer
+/// only appends, the facts it held at the first are the first facts it holds
+/// at the second. Compared and nothing else: no order and no output reads it.
+struct Stamp(u64);
+
+/// Not the number, which depends on how many layers every thread made
+/// before: a layer's debug form stays a function of its facts.
+impl std::fmt::Debug for Stamp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("Stamp")
+    }
+}
+
+/// The next stamp: process-wide, so no two layers of any thread share one.
+static STAMPS: AtomicU64 = AtomicU64::new(0);
+
+impl Default for Stamp {
+    fn default() -> Stamp {
+        Stamp(STAMPS.fetch_add(1, Ordering::Relaxed))
+    }
+}
+
+/// A copy is another layer: the two append apart, so the copy is stamped
+/// afresh.
+impl Clone for Stamp {
+    fn clone(&self) -> Stamp {
+        Stamp::default()
+    }
+}
+
+/// **Where a KB's stack stood** ([`Kb::mark`]): the stamp and the length of
+/// each layer that held its facts then, oldest first, and their sum. A KB
+/// whose stack begins with the same layers, each as long and the last at
+/// least as long, holds those facts first, in the same order, and
+/// [`Kb::facts_above`] reads what it holds after them.
+#[derive(Clone, Debug, Default)]
+pub struct Mark {
+    layers: Box<[(u64, usize)]>,
+    n: usize,
+}
+
+impl Mark {
+    /// How many facts the stack held at the mark.
+    pub fn n_facts(&self) -> usize {
+        self.n
+    }
+}
+
 /// Facts added at one point in a KB's history, with the indexes over them.
 ///
 /// Sealed layers are shared by `Arc`; the top layer is the only writable one.
 #[derive(Clone, Debug)]
 pub struct Layer {
+    /// Which layer this is ([`Stamp`]).
+    stamp: Stamp,
     facts: Vec<FactId>,
     present: BitSet,
     by_rel: FxHashMap<Symbol, Vec<FactId>>,
@@ -220,6 +274,7 @@ pub struct Layer {
 impl Default for Layer {
     fn default() -> Layer {
         Layer {
+            stamp: Stamp::default(),
             facts: Vec::new(),
             present: BitSet::default(),
             by_rel: FxHashMap::default(),
@@ -960,6 +1015,49 @@ impl Kb {
                 Some(&l.facts[n.saturating_sub(start)..])
             })
             .flat_map(|s| s.iter().copied())
+    }
+
+    /// **Where this KB's stack stands** ([`Mark`]): each sealed layer, and
+    /// the top where it holds a fact, by stamp and length. The `open` facts
+    /// are no part of it: a fork does not inherit them.
+    pub fn mark(&self) -> Mark {
+        let layers: Box<[(u64, usize)]> = self
+            .sealed
+            .iter()
+            .map(|l| &**l)
+            .chain((!self.top.facts.is_empty()).then_some(&self.top))
+            .map(|l| (l.stamp.0, l.facts.len()))
+            .collect();
+        let n = layers.iter().map(|&(_, len)| len).sum();
+        Mark { layers, n }
+    }
+
+    /// **Every believed fact after `mark`'s**, in insertion order, where this
+    /// KB grew from the stack `mark` was taken of: its stack begins with the
+    /// mark's layers, each as long as it was and the last at least as long,
+    /// so it holds the mark's facts first. A fork of a marked KB does, and
+    /// so does the marked KB written since. `None` where it does not: a copy
+    /// whose top is its own (a layer's `Stamp`), a KB flattened or rebuilt,
+    /// or any other KB.
+    ///
+    /// The facts the KB wrote since the mark, then its `open` facts, as
+    /// [`Kb::facts`] reads them after the mark's: what it costs is the
+    /// mark's layers compared and those facts read, not the facts below.
+    pub fn facts_above(&self, mark: &Mark) -> Option<impl Iterator<Item = FactId> + '_> {
+        let last = mark.layers.len().checked_sub(1);
+        let mut stack = self.stack();
+        for (i, &(stamp, len)) in mark.layers.iter().enumerate() {
+            let layer = stack.next()?;
+            let as_long = if Some(i) == last {
+                layer.facts.len() >= len
+            } else {
+                layer.facts.len() == len
+            };
+            if layer.stamp.0 != stamp || !as_long {
+                return None;
+            }
+        }
+        Some(self.facts_from(mark.n))
     }
 
     pub fn n_facts(&self) -> usize {
@@ -2100,6 +2198,103 @@ mod tests {
         assert_eq!(child.facts_of(rel).collect::<Vec<_>>(), vec![a, b, c]);
         assert!(child.contains(c) && !kb.contains(c));
         assert!(kb.contains(d) && !child.contains(d));
+    }
+
+    /// [`Kb::facts_above`]: a KB grown from a marked one, the marked KB
+    /// written since or a fork of it, reads what it holds after the mark's
+    /// facts, its `open` facts last, which is [`Kb::facts`] past them; a KB
+    /// that did not grow from it reads `None`.
+    #[test]
+    fn the_facts_above_a_mark_are_what_a_kb_grown_from_it_holds_after_them() {
+        let (mut terms, mut root) = fixture();
+        let a = add(
+            &mut root,
+            &mut terms,
+            "co-located",
+            &["Norwegian", "House-1"],
+        );
+        let mut kb = root.fork();
+        let b = add(
+            &mut kb,
+            &mut terms,
+            "co-located",
+            &["Englishman", "House-2"],
+        );
+        let mark = kb.mark();
+        assert_eq!(mark.n_facts(), 2);
+        assert_eq!(
+            kb.facts_above(&mark).map(|f| f.collect::<Vec<_>>()),
+            Some(vec![])
+        );
+
+        // A copy taken while the top holds a fact appends apart: its top is
+        // its own.
+        let copy = kb.clone();
+        assert!(copy.facts_above(&mark).is_none());
+
+        // The marked KB written since.
+        let c = add(&mut kb, &mut terms, "next-to", &["House-1", "House-2"]);
+        assert_eq!(
+            kb.facts_above(&mark).map(|f| f.collect::<Vec<_>>()),
+            Some(vec![c])
+        );
+
+        // A fork of it, with a write and an `open` fact of its own; and its
+        // parent written after the fork, which the fork does not hold.
+        let mut fork = kb.fork();
+        let d = add(
+            &mut fork,
+            &mut terms,
+            "co-located",
+            &["Spaniard", "House-3"],
+        );
+        let co_located = sym(&mut terms, "co-located");
+        let open = terms
+            .intern_fact(terms.kernel.open, &[Value::sym(co_located)])
+            .expect("room");
+        assert!(fork.write_open(&terms, &[open], |_| None));
+        let e = add(&mut kb, &mut terms, "co-located", &["Ukrainian", "House-4"]);
+        let above: Vec<FactId> = fork.facts_above(&mark).expect("grown from it").collect();
+        assert_eq!(above, vec![c, d, open]);
+        assert_eq!(above, fork.facts().skip(mark.n_facts()).collect::<Vec<_>>());
+        assert_eq!(fork.facts().take(2).collect::<Vec<_>>(), vec![a, b]);
+        assert_eq!(
+            kb.facts_above(&mark).map(|f| f.collect::<Vec<_>>()),
+            Some(vec![c, e])
+        );
+
+        // A mark whose top holds nothing is its sealed layers.
+        let sealed = kb.sealed().mark();
+        let mut child = kb.branch();
+        let f = add(&mut child, &mut terms, "next-to", &["House-2", "House-3"]);
+        assert_eq!(
+            child.facts_above(&sealed).map(|i| i.collect::<Vec<_>>()),
+            Some(vec![f])
+        );
+
+        // Flattened, the same facts in one new layer; and another KB with
+        // the same facts: neither grew from the mark.
+        let mut flat = fork.clone();
+        flat.flatten();
+        assert_eq!(
+            flat.facts().collect::<Vec<_>>(),
+            fork.facts().collect::<Vec<_>>()
+        );
+        assert!(flat.facts_above(&mark).is_none());
+        let (mut terms2, mut other) = fixture();
+        add(
+            &mut other,
+            &mut terms2,
+            "co-located",
+            &["Norwegian", "House-1"],
+        );
+        add(
+            &mut other,
+            &mut terms2,
+            "co-located",
+            &["Englishman", "House-2"],
+        );
+        assert!(other.facts_above(&mark).is_none());
     }
 
     #[test]

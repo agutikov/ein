@@ -206,7 +206,8 @@ pub struct Kb {
 A `Layer` holds the facts added at one point in the KB's history and every index over them: `facts`
 (`Vec<FactId>`, insertion order), `present` (a bit set), `by_rel`, `by_rel_slot_val` and its Bloom
 filter `slot_bloom`, `rule_apps_by_rule`, the count `rule_apps`, `rule_apps_on_rel`, `names` (§ 6), and the four
-provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3).
+provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3). Its `stamp` is its identity: a number no other
+layer is given, drawn where a layer is made or copied and kept where one is moved, as sealing moves the top.
 
 - **A read walks the layers.** An ordered list is the concatenation of each layer's list, oldest first, which is the
   order a copy-then-append fork would give. A last-wins map (the provenance tables) is read newest first and the
@@ -217,6 +218,14 @@ provenance tables `primary`, `alts`, `closure`, `best` (§ 8.3).
   compares the two and `Kb::mark_saturated` sets it. A count serves because a KB's fact list only grows.
   `Kb::facts_from(n)` reads the facts from insertion ordinal `n` on, skipping whole layers below it, so a per-fork
   check costs the fork's own writes.
+- **Where a stack stood.** `Kb::mark` records each layer of the stack that holds a fact, by stamp and length, oldest
+  first. A KB whose stack begins with those layers, each as long and the last at least as long, holds the mark's
+  facts first and in the same order: a fork of the marked KB, or the marked KB written since. `Kb::facts_above`
+  reads, for such a KB, what it holds after them, its `open` facts last, and answers `None` for any other, a copy
+  whose top is its own or a KB flattened among them. What it costs is the mark's layers compared and the facts read:
+  a resumed node's delta ([`06-saturation.md` § 4](06-saturation.md#4-a-node-resumes-roots-saturation)). Held by
+  `kb.rs`' `the_facts_above_a_mark_are_what_a_kb_grown_from_it_holds_after_them` and `saturator.rs`'
+  `a_delta_holds_nothing_the_snapshot_held_on_either_read`.
 - **What ended the state.** `ended` is the record of every firing of a rule that states `:ein inconsistent`, in the
   order they fired (`Kb::end` appends one, `Kb::ended` reads them); a KB with one is inconsistent
   (`Kb::is_inconsistent`) and its state dead. No fact stands for it, the list only grows, and a fork inherits it.

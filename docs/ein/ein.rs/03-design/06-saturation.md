@@ -112,8 +112,11 @@ A node of a search is root's saturation, continued
 state at quiescence (what it has fired, its parked set with their watch stamps, the boundary's clock, the agenda it
 was built under), and `Saturator::resume` continues it over the node's KB, a fork of root's
 ([`03-data-model.md`](03-data-model.md)), seeded with the delta: the facts the fork has that the snapshot did not, in the
-order the KB holds them, which is the order the caller wrote the commitment in. Three things make that root's
-fixpoint grown by the commitment:
+order the KB holds them, which is the order the caller wrote the commitment in. `Snapshot::new_facts_of` reads it
+above the snapshot's mark of root's stack ([`03-data-model.md` § 5](03-data-model.md#5-the-layered-kb)), the
+facts the fork holds after root's, less any the snapshot held, so it costs the delta's size and not root's fixpoint;
+a KB that did not grow from the snapshot's is walked whole, and the gate's build holds the read to that walk. Three
+things make that root's fixpoint grown by the commitment:
 
 - root was at quiescence, so every match over root's facts was enqueued and applied there; a match that is new in the
   node reads at least one delta fact, which is what a seeded run starts from;
