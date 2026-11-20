@@ -501,5 +501,13 @@ Taken by the coordinator after both builds of part 1 were merged (S1f.21.17 as `
   They are no measurement: two other stages were building at the time. The measurement by `utils/bench_env.sh`
   is still owed (V-39), on a quiet machine; and the corpus's costs and `slow` flags are taken again then, once
   the phase's builds are all in, since each of them moves the costs.
-- The nightly's other steps were then run in the main tree with that one test skipped, to find what it hid
-  (`build/ci-logs/nightly-rest-local-*.log`); its result is in the phase's README.
+- **The nightly's other steps, run in the main tree with that one test skipped**, to find what it hid
+  (`./run_tests.sh --nightly` from a scratch copy that skips `the_slow_flag_still_describes_the_sweep` alone):
+  - the first run stopped at *dot_wellformed, every program*: `tests/stdlib/bool/inputs/01_in_drives.ein` and
+    `02_required.ein` have a `kb-since` view of 1 085 and 1 097 edges with the contradiction's rules in their
+    library, past the sweep's bound of 1 000, in a directory its list did not name. Fixed by the coordinator,
+    `a010b369`: the directory is named;
+  - **the second run, on `a010b369`, exit 0**: all 76 steps, the deep corpus, the four shards, the twelve shards of
+    the mutation census, the fuzzer's two seeds and the bench smoke (`build/ci-logs/nightly-rest-local-a010b369.log`).
+  So the merged part 1 passes the nightly but for the cost check. That run was in the main tree, with this
+  machine's Graphviz; the nightly in the runner's image is run whole once the costs are taken again.
